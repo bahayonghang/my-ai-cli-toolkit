@@ -1,0 +1,6 @@
+[submodule "skills/latex-thesis-zh"]
+	path = skills/latex-thesis-zh
+	url = https://github.com/bahayonghang/academic-writing-skills.git
+[submodule "skills/latex-paper-en"]
+	path = skills/latex-paper-en
+	url = https://github.com/bahayonghang/academic-writing-skills.git
