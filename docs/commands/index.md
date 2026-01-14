@@ -6,8 +6,8 @@ Slash commands provide quick access to common development workflows. They are in
 
 | Command | Description |
 |---------|-------------|
-| [export](/commands/export) | Summarize session context and export to a markdown file |
-| [import](/commands/import) | Restore session context from a summary file |
+| [export-summary](/commands/export-summary) | Summarize session context and export to a markdown file |
+| [import-summary](/commands/import-summary) | Restore session context from a summary file |
 | [git-commit](/commands/git-commit) | Analyze changes and generate Conventional Commits messages |
 
 ## What are Commands?

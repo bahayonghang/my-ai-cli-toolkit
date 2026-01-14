@@ -1,11 +1,11 @@
 # Export Session Context
 
-The `/export` command analyzes the current session history and generates a structured summary for context inheritance.
+The `/export-summary` command analyzes the current session history and generates a structured summary for context inheritance.
 
 ## Usage
 
 ```bash
-/export
+/export-summary
 ```
 
 ## Description

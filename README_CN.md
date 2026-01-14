@@ -62,8 +62,8 @@ python3 install_tui.py
 
 | 命令 | 描述 |
 |------|------|
-| [export](commands/claude/export.md) | 总结会话上下文并导出为 Markdown 文件 |
-| [import](commands/claude/import.md) | 从总结文件中恢复会话上下文 |
+| [export-summary](commands/claude/export-summary.md) | 总结会话上下文并导出为 Markdown 文件 |
+| [import-summary](commands/claude/import-summary.md) | 从总结文件中恢复会话上下文 |
 | [git-commit](commands/claude/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息（可选 emoji） |
 
 ### OMO Agents (多代理系统)

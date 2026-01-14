@@ -1,11 +1,11 @@
-# 导出会话上下文 (Export)
+# 导出会话上下文 (Export Summary)
 
-`/export` 命令用于分析当前会话历史，并生成结构化的总结，以便于上下文继承。
+`/export-summary` 命令用于分析当前会话历史，并生成结构化的总结，以便于上下文继承。
 
 ## 用法
 
 ```bash
-/export
+/export-summary
 ```
 
 ## 描述
