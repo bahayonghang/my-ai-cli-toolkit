@@ -5,9 +5,11 @@ CCR 风格的紧凑布局，优化性能。
 
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import TabbedContent, TabPane, Input
+from textual.widgets import TabbedContent, TabPane, Input, ProgressBar, Static
 from textual.binding import Binding
-from textual.containers import Vertical, Container
+from textual.containers import Vertical, Container, Horizontal
+from textual.worker import Worker, WorkerState
+from textual import work
 
 from ..components.header import Header
 from ..components.footer import Footer
@@ -37,6 +39,7 @@ class MainScreen(Screen):
         self._platform = platform
         self._manager: TUIManager | None = None
         self._search_visible = False
+        self._installing = False  # 安装进行中标志
     
     @property
     def manager(self) -> TUIManager:
@@ -63,6 +66,12 @@ class MainScreen(Screen):
                         yield ItemListView(item_type="skills", id="skills-list")
                     with TabPane(self._get_commands_tab_label(), id="commands-tab"):
                         yield ItemListView(item_type="commands", id="commands-list")
+            # 进度条区域（默认隐藏）
+            with Container(id="progress-container", classes="-hidden"):
+                with Horizontal(id="progress-row"):
+                    yield Static("Installing...", id="progress-label")
+                    yield ProgressBar(total=100, show_eta=False, id="progress-bar")
+                    yield Static("0/0", id="progress-count")
         yield Footer()
     
     def on_mount(self) -> None:
@@ -153,15 +162,19 @@ class MainScreen(Screen):
             self._show_message(result.message, "error")
     
     def action_select_all(self) -> None:
-        """全选当前列表（不安装）"""
+        """全选当前列表（仅选择，不安装）"""
         active_list = self._get_active_list()
         active_list.select_all()
         self._update_selection_count()
         count = len(active_list.get_selected_items())
-        self._show_message(f"Selected {count} items", "info")
+        self._show_message(f"Selected {count} items (press i to install)", "info")
     
     def action_install_selected(self) -> None:
-        """安装选中项"""
+        """安装选中项（异步）"""
+        if self._installing:
+            self._show_message("Installation in progress...", "warning")
+            return
+        
         active_list = self._get_active_list()
         selected = active_list.get_selected_items()
         
@@ -169,13 +182,42 @@ class MainScreen(Screen):
             self._show_message("No items selected (use Space or a)", "warning")
             return
         
-        is_skill = active_list.item_type == "skills"
-        total = len(selected)
-        success_count = 0
+        # 开始异步安装
+        self._start_batch_install(selected)
+    
+    def _start_batch_install(self, items: list[SelectableItem]) -> None:
+        """启动批量异步安装"""
+        self._installing = True
+        total = len(items)
         
-        for i, item in enumerate(selected, 1):
-            self._show_message(f"Installing {i}/{total}...", "info")
-            
+        # 显示进度条
+        progress_container = self.query_one("#progress-container")
+        progress_container.remove_class("-hidden")
+        
+        progress_bar = self.query_one("#progress-bar", ProgressBar)
+        progress_bar.update(total=total, progress=0)
+        
+        progress_count = self.query_one("#progress-count", Static)
+        progress_count.update(f"0/{total}")
+        
+        progress_label = self.query_one("#progress-label", Static)
+        progress_label.update("Installing...")
+        
+        # 启动异步安装 worker
+        self._run_batch_install(items)
+    
+    @work(exclusive=True, thread=True)
+    def _run_batch_install(self, items: list[SelectableItem]) -> dict:
+        """在后台线程中执行批量安装"""
+        active_list = self._get_active_list()
+        is_skill = active_list.item_type == "skills"
+        
+        total = len(items)
+        success_count = 0
+        results = []
+        
+        for i, item in enumerate(items):
+            # 执行安装
             if is_skill:
                 result = self.manager.install_skill(item.item_name)
             else:
@@ -183,12 +225,85 @@ class MainScreen(Screen):
             
             if result.success:
                 success_count += 1
-                item.update_install_status(InstallStatus.INSTALLED)
+                results.append((item, True))
+            else:
+                results.append((item, False))
+            
+            # 通过 call_from_thread 更新 UI
+            self.app.call_from_thread(
+                self._update_install_progress, 
+                i + 1, 
+                total, 
+                item.item_name,
+                result.success
+            )
         
+        return {"success": success_count, "total": total, "results": results}
+    
+    def _update_install_progress(
+        self, 
+        current: int, 
+        total: int, 
+        item_name: str,
+        success: bool
+    ) -> None:
+        """更新安装进度（在主线程中调用）"""
+        try:
+            progress_bar = self.query_one("#progress-bar", ProgressBar)
+            progress_bar.update(progress=current)
+            
+            progress_count = self.query_one("#progress-count", Static)
+            progress_count.update(f"{current}/{total}")
+            
+            progress_label = self.query_one("#progress-label", Static)
+            status_icon = "✓" if success else "✗"
+            progress_label.update(f"{status_icon} {item_name}")
+            
+            # 更新列表项状态
+            if success:
+                active_list = self._get_active_list()
+                for item in active_list.items:
+                    if item.item_name == item_name:
+                        item.update_install_status(InstallStatus.INSTALLED)
+                        break
+        except Exception:
+            pass
+    
+    def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
+        """处理 worker 状态变化"""
+        if event.state == WorkerState.SUCCESS:
+            self._on_batch_install_complete(event.worker.result)
+        elif event.state == WorkerState.ERROR:
+            self._on_batch_install_error()
+    
+    def _on_batch_install_complete(self, result: dict) -> None:
+        """批量安装完成回调"""
+        self._installing = False
+        
+        # 隐藏进度条
+        progress_container = self.query_one("#progress-container")
+        progress_container.add_class("-hidden")
+        
+        # 取消所有选择
+        active_list = self._get_active_list()
         active_list.deselect_all()
         self._update_selection_count()
         self._update_installed_count()
-        self._show_message(f"Installed {success_count}/{total}", "success")
+        
+        # 显示完成消息
+        success = result.get("success", 0)
+        total = result.get("total", 0)
+        self._show_message(f"Installed {success}/{total} items", "success")
+    
+    def _on_batch_install_error(self) -> None:
+        """批量安装出错回调"""
+        self._installing = False
+        
+        # 隐藏进度条
+        progress_container = self.query_one("#progress-container")
+        progress_container.add_class("-hidden")
+        
+        self._show_message("Installation failed", "error")
     
     def action_toggle_selection(self) -> None:
         self._get_active_list().toggle_focused_selection()

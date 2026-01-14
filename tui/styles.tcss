@@ -224,3 +224,49 @@ SelectableItem #content {
 .-hidden {
     display: none;
 }
+
+/* === 进度条区域 === */
+#progress-container {
+    width: 100%;
+    height: 3;
+    padding: 0 1;
+    background: $surface;
+    border-top: solid $panel;
+}
+
+#progress-container.-hidden {
+    display: none;
+}
+
+#progress-row {
+    width: 100%;
+    height: 3;
+    align: center middle;
+    padding: 1 0;
+}
+
+#progress-label {
+    width: 30;
+    padding: 0 1;
+    color: $text;
+}
+
+#progress-bar {
+    width: 1fr;
+    height: 1;
+}
+
+#progress-bar Bar {
+    width: 1fr;
+}
+
+#progress-bar Bar > .bar--bar {
+    color: $success;
+}
+
+#progress-count {
+    width: 10;
+    text-align: right;
+    padding: 0 1;
+    color: $accent;
+}
