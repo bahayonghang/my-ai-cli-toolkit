@@ -9,14 +9,14 @@ A curated collection of Claude Code skills and prompts for enhanced AI-assisted 
 - 🎯 Reusable AI skill modules covering frontend design, research, documentation, and more
 - 📦 Unified skill format (`SKILL.md`) for easy extension and maintenance
 - 🔄 Cross-platform Python installation script (`install.py`)
-- 🎛️ Multi-target support: Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), and Qwen Code (`~/.qwen/`)
+- 🎛️ Multi-target support: Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`), and Google Antigravity (`~/.gemini/antigravity/`)
 - ⚡ Slash commands for common workflows (git commit, etc.)
 
 ## Prerequisites
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), or [Qwen Code](https://qwenlm.github.io/qwen-code-docs/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), or [Google Antigravity](https://antigravity.google/)
 
 ## Quick Start
 
@@ -58,13 +58,41 @@ Run `python3 install.py --help` for more options.
 
 ## Commands
 
-Slash commands provide quick access to common workflows. Install them to `~/.claude/commands/`.
+Slash commands provide quick access to common workflows. Available for both Claude and Gemini platforms.
+
+### Claude Commands
 
 | Command | Description |
 |---------|-------------|
 | [export-summary](commands/claude/export-summary.md) | Summarize session context and export to a markdown file |
 | [import-summary](commands/claude/import-summary.md) | Restore session context from a summary file |
-| [git-commit](commands/claude/git-commit.md) | Analyze changes and generate Conventional Commits messages (optional emoji) |
+| [git-commit](commands/claude/zcf/git-commit.md) | Analyze changes and generate Conventional Commits messages (optional emoji) |
+| [git-cleanBranches](commands/claude/zcf/git-cleanBranches.md) | Safely find and clean merged or stale Git branches with dry-run mode |
+| [git-rollback](commands/claude/zcf/git-rollback.md) | Interactive rollback of Git branches to historical revisions |
+| [git-worktree](commands/claude/zcf/git-worktree.md) | Manage Git worktrees with smart defaults and IDE integration |
+| [init-project](commands/claude/zcf/init-project.md) | Initialize project AI context with CLAUDE.md index generation |
+
+### Gemini Commands
+
+| Command | Description |
+|---------|-------------|
+| [export-summary](commands/gemini/export-summary.toml) | Summarize session context and export to a markdown file |
+| [import-summary](commands/gemini/import- summary.toml) | Restore session context from a summary file |
+| [git-commit](commands/gemini/zcf/git-commit.toml) | Analyze changes and generate Conventional Commits messages (optional emoji) |
+| [git-cleanBranches](commands/gemini/zcf/git-cleanBranches.toml) | Safely find and clean merged or stale Git branches with dry-run mode |
+| [git-rollback](commands/gemini/zcf/git-rollback.toml) | Interactive rollback of Git branches to historical revisions |
+| [git-worktree](commands/gemini/zcf/git-worktree.toml) | Manage Git worktrees with smart defaults and IDE integration |
+| [init-project](commands/gemini/zcf/init-project.toml) | Initialize project AI context with CLAUDE.md index generation |
+
+### Antigravity Workflows
+
+Workflows for Google Antigravity IDE, triggered via `/workflow-name` in the agent chat.
+
+| Workflow | Description |
+|----------|-------------|
+| [export-summary](commands/antigravity/export-summary.md) | Summarize session context and export to a markdown file |
+| [import-summary](commands/antigravity/import-summary.md) | Restore session context from a summary file |
+| [git-commit](commands/antigravity/git-commit.md) | Analyze changes and generate Conventional Commits messages |
 
 ### OMO Agents (Multi-Agent System)
 
@@ -101,6 +129,9 @@ python3 install.py --target codex install-all
 # Install to Qwen
 python3 install.py --target qwen install-all
 
+# Install to Antigravity
+python3 install.py --target antigravity install-all
+
 # Update global CLAUDE.md
 python3 install.py prompt-update
 ```
@@ -127,11 +158,12 @@ python3 install_tui.py
 ```
 
 The TUI provides:
-- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen)
-- 📋 Tabbed interface for Skills and Commands
+- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity)
+- 📋 Tabbed interface for Skills and Commands/Workflows
 - ⌨️ Keyboard shortcuts for quick operations
 - 🔍 Real-time search filtering
 - ✅ Multi-select batch installation
+- 📁 Nested directory support for commands (e.g., `zcf/git-commit`)
 
 **TUI Keyboard Shortcuts:**
 
@@ -159,7 +191,28 @@ The TUI provides:
 │   ├── CLAUDE.md           # Global workflow configuration
 │   └── TRANSLATE.md        # Translation guidelines
 ├── commands/               # Slash commands
-│   └── git-commit.md       # Git commit command
+│   ├── claude/             # Claude-specific commands
+│   │   ├── export-summary.md
+│   │   ├── import-summary.md
+│   │   └── zcf/            # ZCF utility commands
+│   │       ├── git-commit.md
+│   │       ├── git-cleanBranches.md
+│   │       ├── git-rollback.md
+│   │       ├── git-worktree.md
+│   │       └── init-project.md
+│   ├── gemini/             # Gemini-specific commands
+│   │   ├── export-summary.toml
+│   │   ├── import- summary.toml
+│   │   └── zcf/            # ZCF utility commands
+│   │       ├── git-commit.toml
+│   │       ├── git-cleanBranches.toml
+│   │       ├── git-rollback.toml
+│   │       ├── git-worktree.toml
+│   │       └── init-project.toml
+│   └── antigravity/        # Antigravity workflows
+│       ├── export-summary.md
+│       ├── import-summary.md
+│       └── git-commit.md
 └── skills/
     └── <skill-name>/
         ├── SKILL.md        # Skill definition (required)
@@ -230,13 +283,14 @@ Technical content translation guidelines:
 
 ## FAQ
 
-**Q: What's the difference between Claude, Codex, Gemini, and Qwen targets?**
+**Q: What's the difference between Claude, Codex, Gemini, Qwen, and Antigravity targets?**
 
 A: The target determines the installation directory:
-- Claude: `~/.claude/skills/` (default)
-- Codex: `~/.codex/skills/`
-- Gemini: `~/.gemini/skills/`
-- Qwen: `~/.qwen/skills/`
+- Claude: `~/.claude/skills/` and `~/.claude/commands/` (default)
+- Codex: `~/.codex/skills/` and `~/.codex/prompts/`
+- Gemini: `~/.gemini/skills/` and `~/.gemini/commands/`
+- Qwen: `~/.qwen/skills/` and `~/.qwen/commands/`
+- Antigravity: `~/.gemini/antigravity/skills/` and `~/.gemini/antigravity/workflows/`
 
 **Q: How do I update an existing skill?**
 

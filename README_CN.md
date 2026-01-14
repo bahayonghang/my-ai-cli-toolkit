@@ -9,14 +9,14 @@ Claude Code 技能和提示词集合，用于增强 AI 辅助开发工作流。
 - 🎯 可复用的 AI 技能模块，覆盖前端设计、技术研究、文档生成等场景
 - 📦 统一的技能定义格式（`SKILL.md`），便于扩展和维护
 - 🔄 跨平台 Python 安装脚本 (`install.py`)
-- 🎛️ 多目标支持：Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`) 和 Qwen Code (`~/.qwen/`)
+- 🎛️ 多目标支持：Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`) 和 Google Antigravity (`~/.gemini/antigravity/`)
 - ⚡ 斜杠命令，用于常见工作流（git commit 等）
 
 ## 前置要求
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), 或 [Qwen Code](https://qwenlm.github.io/qwen-code-docs/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), 或 [Google Antigravity](https://antigravity.google/)
 
 ## 快速开始
 
@@ -58,13 +58,41 @@ python3 install_tui.py
 
 ## 命令
 
-斜杠命令提供常见工作流的快捷访问。安装到 `~/.claude/commands/`。
+斜杠命令提供常见工作流的快捷访问。支持 Claude 和 Gemini 平台。
+
+### Claude 命令
 
 | 命令 | 描述 |
 |------|------|
 | [export-summary](commands/claude/export-summary.md) | 总结会话上下文并导出为 Markdown 文件 |
 | [import-summary](commands/claude/import-summary.md) | 从总结文件中恢复会话上下文 |
-| [git-commit](commands/claude/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息（可选 emoji） |
+| [git-commit](commands/claude/zcf/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息（可选 emoji） |
+| [git-cleanBranches](commands/claude/zcf/git-cleanBranches.md) | 安全查找并清理已合并或过期的 Git 分支，支持 dry-run 模式 |
+| [git-rollback](commands/claude/zcf/git-rollback.md) | 交互式回滚 Git 分支到历史版本 |
+| [git-worktree](commands/claude/zcf/git-worktree.md) | 管理 Git worktree，支持智能默认和 IDE 集成 |
+| [init-project](commands/claude/zcf/init-project.md) | 初始化项目 AI 上下文，生成 CLAUDE.md 索引 |
+
+### Gemini 命令
+
+| 命令 | 描述 |
+|------|------|
+| [export-summary](commands/gemini/export-summary.toml) | 总结会话上下文并导出为 Markdown 文件 |
+| [import-summary](commands/gemini/import- summary.toml) | 从总结文件中恢复会话上下文 |
+| [git-commit](commands/gemini/zcf/git-commit.toml) | 分析改动并生成 Conventional Commits 风格的提交信息（可选 emoji） |
+| [git-cleanBranches](commands/gemini/zcf/git-cleanBranches.toml) | 安全查找并清理已合并或过期的 Git 分支，支持 dry-run 模式 |
+| [git-rollback](commands/gemini/zcf/git-rollback.toml) | 交互式回滚 Git 分支到历史版本 |
+| [git-worktree](commands/gemini/zcf/git-worktree.toml) | 管理 Git worktree，支持智能默认和 IDE 集成 |
+| [init-project](commands/gemini/zcf/init-project.toml) | 初始化项目 AI 上下文，生成 CLAUDE.md 索引 |
+
+### Antigravity 工作流
+
+Google Antigravity IDE 的工作流，在 Agent 聊天中通过 `/workflow-name` 触发。
+
+| 工作流 | 描述 |
+|--------|------|
+| [export-summary](commands/antigravity/export-summary.md) | 总结会话上下文并导出为 Markdown 文件 |
+| [import-summary](commands/antigravity/import-summary.md) | 从总结文件中恢复会话上下文 |
+| [git-commit](commands/antigravity/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息 |
 
 ### OMO Agents (多代理系统)
 
@@ -101,6 +129,9 @@ python3 install.py --target codex install-all
 # 安装到 Qwen
 python3 install.py --target qwen install-all
 
+# 安装到 Antigravity
+python3 install.py --target antigravity install-all
+
 # 更新全局 CLAUDE.md
 python3 install.py prompt-update
 ```
@@ -127,11 +158,12 @@ python3 install_tui.py
 ```
 
 TUI 提供以下功能：
-- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen)
-- 📋 Skills 和 Commands 双标签页界面
+- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity)
+- 📋 Skills 和 Commands/Workflows 双标签页界面
 - ⌨️ 键盘快捷键快速操作
 - 🔍 实时搜索过滤
 - ✅ 多选批量安装
+- 📁 支持嵌套目录的命令（如 `zcf/git-commit`）
 
 **TUI 键盘快捷键：**
 
@@ -159,7 +191,28 @@ TUI 提供以下功能：
 │   ├── CLAUDE.md           # 全局工作流配置
 │   └── TRANSLATE.md        # 翻译指南
 ├── commands/               # 斜杠命令
-│   └── git-commit.md       # Git 提交命令
+│   ├── claude/             # Claude 专用命令
+│   │   ├── export-summary.md
+│   │   ├── import-summary.md
+│   │   └── zcf/            # ZCF 实用命令
+│   │       ├── git-commit.md
+│   │       ├── git-cleanBranches.md
+│   │       ├── git-rollback.md
+│   │       ├── git-worktree.md
+│   │       └── init-project.md
+│   ├── gemini/             # Gemini 专用命令
+│   │   ├── export-summary.toml
+│   │   ├── import- summary.toml
+│   │   └── zcf/            # ZCF 实用命令
+│   │       ├── git-commit.toml
+│   │       ├── git-cleanBranches.toml
+│   │       ├── git-rollback.toml
+│   │       ├── git-worktree.toml
+│   │       └── init-project.toml
+│   └── antigravity/        # Antigravity 工作流
+│       ├── export-summary.md
+│       ├── import-summary.md
+│       └── git-commit.md
 └── skills/
     └── <skill-name>/
         ├── SKILL.md        # 技能定义（必需）
@@ -230,13 +283,14 @@ TUI 提供以下功能：
 
 ## 常见问题
 
-**Q: Claude, Codex, Gemini 和 Qwen 目标有什么区别？**
+**Q: Claude, Codex, Gemini, Qwen 和 Antigravity 目标有什么区别？**
 
-A: 目标决定了技能安装的目录：
-- Claude: `~/.claude/skills/` (默认)
-- Codex: `~/.codex/skills/`
-- Gemini: `~/.gemini/skills/`
-- Qwen: `~/.qwen/skills/`
+A: 目标决定了技能和命令安装的目录：
+- Claude: `~/.claude/skills/` 和 `~/.claude/commands/` (默认)
+- Codex: `~/.codex/skills/` 和 `~/.codex/prompts/`
+- Gemini: `~/.gemini/skills/` 和 `~/.gemini/commands/`
+- Qwen: `~/.qwen/skills/` 和 `~/.qwen/commands/`
+- Antigravity: `~/.gemini/antigravity/skills/` 和 `~/.gemini/antigravity/workflows/`
 
 **Q: 如何更新已安装的技能？**
 

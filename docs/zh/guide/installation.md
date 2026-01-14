@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), 或 [Qwen Code](https://qwenlm.github.io/qwen-code-docs/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), 或 [Google Antigravity](https://antigravity.google/)
 
 ## 克隆仓库
 
@@ -33,6 +33,9 @@ python3 install.py --target codex install-all
 
 # 安装到 Qwen
 python3 install.py --target qwen install-all
+
+# 安装到 Antigravity
+python3 install.py --target antigravity install-all
 ```
 
 ### 更新全局提示词
@@ -57,11 +60,12 @@ python3 install_tui.py
 
 ### 功能特性
 
-- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen)
-- 📋 Skills 和 Commands 双标签页界面
+- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity)
+- 📋 Skills 和 Commands/Workflows 双标签页界面
 - ⌨️ 键盘快捷键快速操作
 - 🔍 实时搜索过滤
 - ✅ 多选批量安装
+- 📁 支持嵌套目录的命令（如 `zcf/git-commit`）
 
 ### 键盘快捷键
 
@@ -97,9 +101,10 @@ python3 install.py installed
 
 ## 安装路径
 
-| 目标 | 路径 |
-|------|------|
-| Claude | `~/.claude/skills/` |
-| Codex | `~/.codex/skills/` |
-| Gemini | `~/.gemini/skills/` |
-| Qwen | `~/.qwen/skills/` |
+| 目标 | Skills 路径 | Commands/Workflows 路径 |
+|------|-------------|-------------------------|
+| Claude | `~/.claude/skills/` | `~/.claude/commands/` |
+| Codex | `~/.codex/skills/` | `~/.codex/prompts/` |
+| Gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
+| Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
+| Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |

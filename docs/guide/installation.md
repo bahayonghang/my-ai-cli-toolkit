@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), or [Qwen Code](https://qwenlm.github.io/qwen-code-docs/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), or [Google Antigravity](https://antigravity.google/)
 
 ## Clone Repository
 
@@ -33,6 +33,9 @@ python3 install.py --target codex install-all
 
 # Install to Qwen
 python3 install.py --target qwen install-all
+
+# Install to Antigravity
+python3 install.py --target antigravity install-all
 ```
 
 ### Update Global Prompt
@@ -57,11 +60,12 @@ python3 install_tui.py
 
 ### Features
 
-- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen)
-- 📋 Tabbed interface for Skills and Commands
+- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity)
+- 📋 Tabbed interface for Skills and Commands/Workflows
 - ⌨️ Keyboard shortcuts for quick operations
 - 🔍 Real-time search filtering
 - ✅ Multi-select batch installation
+- 📁 Nested directory support for commands (e.g., `zcf/git-commit`)
 
 ### Keyboard Shortcuts
 
@@ -97,9 +101,10 @@ python3 install.py installed
 
 ## Installation Paths
 
-| Target | Path |
-|--------|------|
-| Claude | `~/.claude/skills/` |
-| Codex | `~/.codex/skills/` |
-| Gemini | `~/.gemini/skills/` |
-| Qwen | `~/.qwen/skills/` |
+| Target | Skills Path | Commands/Workflows Path |
+|--------|-------------|-------------------------|
+| Claude | `~/.claude/skills/` | `~/.claude/commands/` |
+| Codex | `~/.codex/skills/` | `~/.codex/prompts/` |
+| Gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
+| Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
+| Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
