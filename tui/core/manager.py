@@ -5,6 +5,7 @@ TUI Manager - 封装 SkillManager 的 TUI 专用管理器
 Requirements: 14.3, 6.1, 6.2, 8.1, 8.2, 2.7, 6.6, 13.2, 13.4
 """
 
+import os
 import sys
 from pathlib import Path
 from typing import Callable, Optional
@@ -74,6 +75,8 @@ class TUIManager:
         """
         if self.platform in ["gemini", "qwen"]:
             src_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "antigravity":
+            src_dir = COMMANDS_SRC_DIR / "antigravity"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         return src_dir.exists()
@@ -86,6 +89,8 @@ class TUIManager:
         """获取命令源目录路径"""
         if self.platform in ["gemini", "qwen"]:
             return COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "antigravity":
+            return COMMANDS_SRC_DIR / "antigravity"
         return COMMANDS_SRC_DIR / "claude"
     
     def get_skills(self) -> list[ItemInfo]:
@@ -119,10 +124,11 @@ class TUIManager:
         return skills
     
     def get_commands(self) -> list[ItemInfo]:
-        """获取所有命令列表
+        """获取所有命令列表（支持嵌套目录）
         
         根据平台返回对应的命令列表:
         - gemini/qwen: 从 commands/gemini/ 获取
+        - antigravity: 从 commands/antigravity/ 获取
         - claude/codex: 从 commands/claude/ 获取
         
         Returns:
@@ -130,25 +136,35 @@ class TUIManager:
             
         Note:
             如果源目录不存在，返回空列表
+            支持嵌套目录，如 zcf/git-commit.md
         """
         commands = []
         
         # 根据平台确定命令源目录
         if self.platform in ["gemini", "qwen"]:
             src_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "antigravity":
+            src_dir = COMMANDS_SRC_DIR / "antigravity"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         
         if not src_dir.exists():
             return commands
         
-        for cmd_file in sorted(src_dir.iterdir()):
+        # 递归遍历所有文件
+        for cmd_file in sorted(src_dir.rglob("*")):
             if cmd_file.is_file():
-                target_file = self._manager.target_commands_dir / cmd_file.name
+                # 计算相对路径作为命令名（不含扩展名）
+                rel_path = cmd_file.relative_to(src_dir)
+                # 命令名：目录/文件名（不含扩展名）
+                cmd_name = str(rel_path.with_suffix("")).replace("\\", "/")
+                
+                # 目标路径保持相同的目录结构
+                target_file = self._manager.target_commands_dir / rel_path
                 installed = target_file.exists()
                 
                 commands.append(ItemInfo(
-                    name=cmd_file.stem,
+                    name=cmd_name,
                     item_type=ItemType.COMMAND,
                     description=None,
                     status=InstallStatus.INSTALLED if installed else InstallStatus.NOT_INSTALLED,
@@ -219,10 +235,10 @@ class TUIManager:
             )
     
     def install_command(self, name: str) -> InstallResult:
-        """安装单个命令
+        """安装单个命令（支持嵌套目录）
         
         Args:
-            name: 命令名称
+            name: 命令名称，可以包含路径如 "zcf/git-commit"
             
         Returns:
             安装结果
@@ -234,6 +250,8 @@ class TUIManager:
         # 根据平台确定命令源目录
         if self.platform in ["gemini", "qwen"]:
             src_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "antigravity":
+            src_dir = COMMANDS_SRC_DIR / "antigravity"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         
@@ -247,26 +265,39 @@ class TUIManager:
             )
         
         try:
-            # 查找命令文件
+            # 查找命令文件（支持嵌套路径）
             src_file = None
-            for f in src_dir.iterdir():
-                if f.is_file() and f.stem == name:
-                    src_file = f
-                    break
+            # 将命令名转换为路径格式
+            name_path = Path(name.replace("/", os.sep))
+            
+            # 遍历所有文件查找匹配的命令
+            for f in src_dir.rglob("*"):
+                if f.is_file():
+                    rel_path = f.relative_to(src_dir)
+                    # 比较不含扩展名的路径
+                    if rel_path.with_suffix("") == name_path:
+                        src_file = f
+                        break
             
             if src_file is None:
                 return InstallResult(
                     success=False,
                     item_name=name,
                     message=f"Command not found: {name}",
-                    error=f"No file with stem '{name}' in {src_dir}",
+                    error=f"No file matching '{name}' in {src_dir}",
                 )
             
             # 确保目标目录存在
             self._manager.ensure_dirs()
             
+            # 计算目标路径（保持目录结构）
+            rel_path = src_file.relative_to(src_dir)
+            target_file = self._manager.target_commands_dir / rel_path
+            
+            # 确保目标子目录存在
+            target_file.parent.mkdir(parents=True, exist_ok=True)
+            
             # 复制文件
-            target_file = self._manager.target_commands_dir / src_file.name
             shutil.copy2(src_file, target_file)
             
             return InstallResult(

@@ -1,141 +1,67 @@
 """列表组件 - SelectableItem 和 ItemListView
 
-提供可选择的列表项和通用列表视图组件。
+简洁紧凑的列表项设计，优化性能。
 Requirements: 3.1, 3.3-3.9, 4.1-4.8, 9.1, 9.2, 11.2
 """
 
 from typing import Optional
 from textual.widgets import Static, ListView, ListItem
-from textual.containers import Horizontal, Center
 from textual.message import Message
 
 from ..core.models import ItemInfo, InstallStatus
-from ..core.formatters import format_checkbox, format_status_icon, format_empty_state_message
 
 
 class SelectableItem(ListItem):
-    """可选择的列表项组件
+    """紧凑型可选择列表项
     
-    显示复选框、状态图标、名称和描述。
-    支持选择状态切换。
-    使用 Unicode 符号美化显示：
-    - 复选框: ☐ (未选中) / ☑ (选中)
-    - 状态图标: ✓ (已安装/绿色) / ○ (未安装/灰色)
-    
-    Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6
+    单行显示: ☐/☑  ✓/○  name  -  description
+    优化性能：减少嵌套组件，使用纯文本渲染
     """
     
     DEFAULT_CSS = """
     SelectableItem {
-        height: 5;
-        padding: 1 2;
-        margin: 0 0 1 0;
-        background: $panel;
+        height: 1;
+        padding: 0 1;
+        background: transparent;
     }
-
+    
     SelectableItem:hover {
-        background: $surface;
-        border-left: thick $secondary;
+        background: $surface-lighten-2;
     }
-
+    
+    /* 选中状态 (Space 选中) - 橙色高亮 */
     SelectableItem.-selected {
-        background: $primary 30%;
-        border-left: thick $accent;
+        background: $warning 30%;
     }
-
-    SelectableItem:focus {
-        background: $primary;
-        border: wide $accent;
+    
+    SelectableItem.-selected #content {
+        color: $warning;
+        text-style: bold;
     }
-
-    SelectableItem.-selected:focus {
-        background: $accent;
-        border: wide $primary;
+    
+    /* ListView 高亮状态 (键盘浏览) - 实色绿色背景 */
+    SelectableItem.-highlight {
+        background: $success;
     }
-
-    /* 聚焦时左侧边框指示器 */
-    SelectableItem:focus-within {
-        border-left: thick $accent;
+    
+    SelectableItem.-highlight #content {
+        color: $background;
+        text-style: bold;
     }
-
-    SelectableItem #item-row {
+    
+    /* 选中且高亮 */
+    SelectableItem.-selected.-highlight {
+        background: $success;
+    }
+    
+    SelectableItem.-selected.-highlight #content {
+        color: $background;
+        text-style: bold;
+    }
+    
+    SelectableItem #content {
         width: 100%;
-        height: 100%;
-    }
-
-    SelectableItem #checkbox {
-        width: 6;
-        content-align: center middle;
-        color: $primary;
-        text-style: bold;
-    }
-
-    SelectableItem.-selected #checkbox {
-        color: $accent;
-    }
-
-    SelectableItem:focus #checkbox {
-        color: $accent;
-        text-style: bold;
-    }
-
-    SelectableItem.-selected:focus #checkbox {
-        color: $background;
-        text-style: bold;
-    }
-
-    SelectableItem #status {
-        width: 5;
-        content-align: center middle;
-    }
-
-    SelectableItem .status-installed {
-        color: $success;
-    }
-
-    SelectableItem .status-not-installed {
-        color: $text-muted;
-    }
-
-    SelectableItem #name {
-        width: 30%;
-        text-style: bold;
-        content-align: left middle;
-        padding: 0 2;
-    }
-
-    SelectableItem.-selected #name {
-        color: $foreground;
-        text-style: bold;
-    }
-
-    SelectableItem:focus #name {
-        color: $foreground;
-        text-style: bold;
-    }
-
-    SelectableItem.-selected:focus #name {
-        color: $background;
-        text-style: bold;
-    }
-
-    SelectableItem #desc {
-        width: 1fr;
-        color: $text-muted;
-        content-align: left middle;
-        padding: 0 2;
-    }
-
-    SelectableItem.-selected #desc {
-        color: $foreground;
-    }
-
-    SelectableItem:focus #desc {
-        color: $foreground;
-    }
-
-    SelectableItem.-selected:focus #desc {
-        color: $background;
+        color: $text;
     }
     """
     
@@ -146,141 +72,95 @@ class SelectableItem(ListItem):
             self.item = item
             self.selected = selected
     
-    def __init__(
-        self,
-        item_info: ItemInfo,
-        selected: bool = False,
-    ) -> None:
-        """初始化 SelectableItem
-        
-        Args:
-            item_info: 项目信息
-            selected: 初始选择状态
-        """
+    def __init__(self, item_info: ItemInfo, selected: bool = False) -> None:
         super().__init__()
         self.item_info = item_info
         self._selected = selected
+        self._content: Optional[Static] = None
     
     @property
     def item_name(self) -> str:
-        """获取项目名称"""
         return self.item_info.name
     
     @property
     def description(self) -> Optional[str]:
-        """获取项目描述"""
         return self.item_info.description
     
     @property
     def installed(self) -> bool:
-        """检查是否已安装"""
         return self.item_info.is_installed
     
     @property
     def selected(self) -> bool:
-        """获取选择状态"""
         return self._selected
     
     @selected.setter
     def selected(self, value: bool) -> None:
-        """设置选择状态"""
         if self._selected != value:
             self._selected = value
             self._update_display()
             self.post_message(self.SelectionChanged(self, value))
     
     def compose(self):
-        """构建组件结构"""
-        with Horizontal(id="item-row"):
-            yield Static(self._format_checkbox(), id="checkbox")
-            yield Static(self._format_status(), id="status", classes=self._get_status_class())
-            yield Static(self.item_name, id="name")
-            yield Static(self.description or "", id="desc")
+        """单个 Static 组件，最小化嵌套"""
+        self._content = Static(self._render_line(False), id="content")
+        yield self._content
     
-    def _format_checkbox(self) -> str:
-        """格式化复选框显示
+    def _render_line(self, highlighted: bool = False) -> str:
+        """渲染单行内容: ▶/  ☐/☑  ✓/○  name  -  description"""
+        # 高亮指示箭头
+        arrow = "▶" if highlighted else " "
+        # 复选框
+        checkbox = "☑" if self._selected else "☐"
+        # 安装状态
+        status = "✓" if self.installed else "○"
+        # 名称 (固定宽度)
+        name = self.item_name.ljust(26)[:26]
+        # 描述
+        desc = self.description or ""
         
-        使用 Unicode 符号: ☐ (未选中) / ☑ (选中)
-        Requirements: 4.1
-        """
-        return format_checkbox(self._selected)
-    
-    def _format_status(self) -> str:
-        """格式化状态图标
-        
-        使用 Unicode 符号: ✓ (已安装) / ○ (未安装)
-        Requirements: 4.2
-        """
-        return format_status_icon(self.installed)
-    
-    def _get_status_class(self) -> str:
-        """获取状态对应的 CSS 类名"""
-        return "status-installed" if self.installed else "status-not-installed"
+        return f"{arrow} {checkbox}  {status}  {name}  {desc}"
     
     def _update_display(self) -> None:
-        """更新显示状态"""
-        try:
-            checkbox = self.query_one("#checkbox", Static)
-            checkbox.update(self._format_checkbox())
-            if self._selected:
-                self.add_class("-selected")
-            else:
-                self.remove_class("-selected")
-        except Exception:
-            pass  # 组件可能尚未挂载
+        """更新显示"""
+        if self._selected:
+            self.add_class("-selected")
+        else:
+            self.remove_class("-selected")
+        
+        if self._content:
+            # 检查是否有高亮
+            highlighted = self.has_class("-highlight")
+            self._content.update(self._render_line(highlighted))
     
     def toggle_selection(self) -> None:
         """切换选择状态"""
         self.selected = not self._selected
     
     def update_install_status(self, status: InstallStatus) -> None:
-        """更新安装状态
-        
-        Args:
-            status: 新的安装状态
-        """
+        """更新安装状态"""
         self.item_info.status = status
-        try:
-            status_widget = self.query_one("#status", Static)
-            status_widget.update(self._format_status())
-            status_widget.remove_class("status-installed")
-            status_widget.remove_class("status-not-installed")
-            status_widget.add_class(self._get_status_class())
-        except Exception:
-            pass  # 组件可能尚未挂载
-
+        if self._content:
+            highlighted = self.has_class("-highlight")
+            self._content.update(self._render_line(highlighted))
 
 
 class ItemListView(ListView):
-    """通用列表视图组件
+    """高性能列表视图
     
-    用于显示 Skills 或 Commands 列表，支持选择、过滤等操作。
-    当列表为空时显示居中的空状态消息。
-    
-    Requirements: 3.1, 3.6, 3.7, 9.1, 9.2, 11.2
+    支持选择、过滤，显示分页信息。
     """
     
     DEFAULT_CSS = """
     ItemListView {
         height: 1fr;
         border: round $primary;
-        padding: 0 1;
+        padding: 0;
+        scrollbar-size: 1 1;
     }
     
     ItemListView:focus {
         border: round $accent;
-    }
-    
-    ItemListView .empty-state {
-        width: 100%;
-        height: 100%;
-        align: center middle;
-    }
-    
-    ItemListView .empty-state-message {
-        text-align: center;
-        color: $text-muted;
-        padding: 4;
     }
     """
     
@@ -291,40 +171,26 @@ class ItemListView(ListView):
             self.count = count
     
     def __init__(self, item_type: str = "skills", id: str | None = None) -> None:
-        """初始化 ItemListView
-        
-        Args:
-            item_type: 项目类型 ("skills" 或 "commands")
-            id: 组件 ID
-        """
         super().__init__(id=id)
         self.item_type = item_type
         self._all_items: list[SelectableItem] = []
         self._filter_text: str = ""
-        self._empty_state_widget: Optional[Static] = None
+        self._last_highlighted: Optional[SelectableItem] = None
     
     @property
     def items(self) -> list[SelectableItem]:
-        """获取所有项目列表"""
         return self._all_items
     
-    def compose(self):
-        """构建组件结构，包含空状态占位"""
-        # 空状态消息会在需要时动态添加
-        yield from super().compose()
-    
     def load_items(self, item_infos: list[ItemInfo]) -> None:
-        """从 ItemInfo 列表加载项目
-        
-        Args:
-            item_infos: 项目信息列表
-        """
+        """加载项目列表"""
         self.clear()
         self._all_items = []
-        self._remove_empty_state()
         
         if not item_infos:
-            self._show_empty_state()
+            # 空状态
+            empty = ListItem(Static("  (empty)", classes="text-muted"))
+            empty.can_focus = False
+            self.append(empty)
             return
         
         for info in item_infos:
@@ -332,136 +198,99 @@ class ItemListView(ListView):
             self._all_items.append(item)
             self.append(item)
     
-    def _show_empty_state(self) -> None:
-        """显示空状态消息
-        
-        Requirements: 9.1 - 空列表应显示居中消息和图标
-        """
-        if self._empty_state_widget is None:
-            message = format_empty_state_message(self.item_type)
-            self._empty_state_widget = Static(
-                message,
-                classes="empty-state-message"
-            )
-            # 使用 ListItem 包装以便在 ListView 中显示
-            empty_item = ListItem(Center(self._empty_state_widget, classes="empty-state"))
-            empty_item.can_focus = False  # 空状态不可聚焦
-            self.append(empty_item)
-    
-    def _remove_empty_state(self) -> None:
-        """移除空状态消息"""
-        if self._empty_state_widget is not None:
-            try:
-                # 清除列表会移除空状态
-                self._empty_state_widget = None
-            except Exception:
-                pass
-    
     def get_selected_items(self) -> list[SelectableItem]:
-        """获取所有选中的项目
-        
-        Returns:
-            选中的 SelectableItem 列表
-        """
         return [item for item in self._all_items if item.selected]
     
     def get_selected_names(self) -> list[str]:
-        """获取所有选中项目的名称
-        
-        Returns:
-            选中项目名称列表
-        """
         return [item.item_name for item in self._all_items if item.selected]
     
     def select_all(self) -> None:
-        """全选所有可见项目"""
         for item in self._get_visible_items():
             item.selected = True
         self._notify_selection_changed()
     
     def deselect_all(self) -> None:
-        """取消全选"""
         for item in self._all_items:
             item.selected = False
         self._notify_selection_changed()
     
     def filter_items(self, text: str) -> None:
-        """过滤列表项目
-        
-        根据名称进行大小写不敏感的过滤。
-        
-        Args:
-            text: 过滤文本
-        """
+        """过滤列表"""
         self._filter_text = text.lower()
         self._apply_filter()
     
     def clear_filter(self) -> None:
-        """清除过滤"""
         self._filter_text = ""
         self._apply_filter()
     
     def _apply_filter(self) -> None:
-        """应用过滤条件
-        
-        如果过滤后没有匹配项，显示空状态消息。
-        Requirements: 9.1
-        """
+        """应用过滤"""
         self.clear()
-        self._remove_empty_state()
+        visible = [item for item in self._all_items if self._matches_filter(item)]
         
-        visible_items = [item for item in self._all_items if self._matches_filter(item)]
-        
-        if not visible_items:
-            # 显示过滤后的空状态
-            self._show_empty_state()
+        if not visible:
+            empty = ListItem(Static("  No matches", classes="text-muted"))
+            empty.can_focus = False
+            self.append(empty)
             return
         
-        for item in visible_items:
+        for item in visible:
             self.append(item)
     
     def _matches_filter(self, item: SelectableItem) -> bool:
-        """检查项目是否匹配过滤条件
-        
-        Args:
-            item: 要检查的项目
-            
-        Returns:
-            是否匹配
-        """
         if not self._filter_text:
             return True
         return self._filter_text in item.item_name.lower()
     
     def _get_visible_items(self) -> list[SelectableItem]:
-        """获取当前可见的项目列表"""
         if not self._filter_text:
             return self._all_items
         return [item for item in self._all_items if self._matches_filter(item)]
     
     def _notify_selection_changed(self) -> None:
-        """通知选中数量变更"""
         count = len(self.get_selected_items())
         self.post_message(self.SelectionCountChanged(count))
     
     def on_selectable_item_selection_changed(self, event: SelectableItem.SelectionChanged) -> None:
-        """处理项目选择状态变更"""
         self._notify_selection_changed()
     
     def get_focused_item(self) -> Optional[SelectableItem]:
-        """获取当前聚焦的项目
-        
-        Returns:
-            当前聚焦的 SelectableItem，如果没有则返回 None
-        """
-        if self.highlighted_child is not None:
-            child = self.highlighted_child
-            if isinstance(child, SelectableItem):
-                return child
+        if self.highlighted_child and isinstance(self.highlighted_child, SelectableItem):
+            return self.highlighted_child
         return None
     
     def toggle_focused_selection(self) -> None:
-        """切换当前聚焦项目的选择状态"""
         focused = self.get_focused_item()
         if focused:
             focused.toggle_selection()
+    
+    def watch_index(self, old_index: int, new_index: int) -> None:
+        """监听高亮索引变化，更新高亮样式"""
+        # 移除旧的高亮
+        if self._last_highlighted:
+            self._last_highlighted.remove_class("-highlight")
+            self._last_highlighted._update_display()
+        
+        # 添加新的高亮
+        if self.highlighted_child and isinstance(self.highlighted_child, SelectableItem):
+            self.highlighted_child.add_class("-highlight")
+            self.highlighted_child._update_display()
+            self._last_highlighted = self.highlighted_child
+    
+    def get_page_info(self) -> tuple[int, int]:
+        """获取分页信息 (当前页, 总页数)"""
+        total = len(self._all_items)
+        if total == 0:
+            return (1, 1)
+        # 简单估算：假设每页显示约 20 项
+        page_size = 20
+        total_pages = max(1, (total + page_size - 1) // page_size)
+        # 当前页基于滚动位置估算
+        current_page = 1
+        if self.highlighted_child:
+            try:
+                idx = self._all_items.index(self.highlighted_child)
+                current_page = (idx // page_size) + 1
+            except (ValueError, AttributeError):
+                pass
+        return (current_page, total_pages)

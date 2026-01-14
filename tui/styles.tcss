@@ -1,115 +1,71 @@
-/* MyClaude Skills TUI 全局样式文件
- * 
- * 本文件整合所有组件样式，使用主题变量确保一致性。
- * 遵循统一的间距和边框规范。
- * 
- * Requirements: 8.1, 8.2, 8.3, 8.4
- * 
- * 间距规范:
- * - 小间距: 1 (组件内部紧凑元素)
- * - 中间距: 2 (组件内边距)
- * - 大间距: 4 (区域分隔)
- * 
- * 边框规范:
- * - 所有边框使用 round 样式 (圆角)
- * - 默认边框颜色: $primary 或 $panel
- * - 聚焦边框颜色: $accent
+/* MyClaude Skills TUI - 简洁风格
+ * CCR-inspired minimal design
  */
 
-/* ============================================================
- * 全局基础样式
- * Requirements: 8.1, 8.2
- * ============================================================ */
-
+/* === 全局 === */
 Screen {
-    background: $surface;
+    background: $background;
 }
 
-/* ============================================================
- * 平台选择屏幕样式
- * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5
- * ============================================================ */
-
+/* === 平台选择屏幕 === */
 PlatformSelectScreen {
     align: center middle;
     background: $background;
-    width: 100%;
-    height: 100%;
 }
 
-/* 卡片容器 - 圆角边框、背景色、微妙边框，放大尺寸 */
-/* Requirements: 2.1, 8.4 */
 PlatformSelectScreen #container {
-    width: 80%;
-    max-width: 80;
+    width: 60;
     height: auto;
-    padding: 2 4;
+    padding: 1 2;
     border: round $primary;
     background: $surface;
 }
 
-/* 标题 - emoji + 主品牌色 + 粗体，放大 */
-/* Requirements: 2.2 */
 PlatformSelectScreen #title {
     text-align: center;
     text-style: bold;
-    padding: 2 0;
     color: $primary;
+    padding: 1 0;
 }
 
-/* 分隔线 */
-/* Requirements: 8.2 */
 PlatformSelectScreen #separator {
     text-align: center;
-    color: $primary-darken-2;
-    padding: 1 0 2 0;
+    color: $text-muted;
 }
 
-/* 副标题 */
 PlatformSelectScreen #subtitle {
     text-align: center;
     color: $text-muted;
-    padding: 1 0 3 0;
+    padding: 0 0 1 0;
 }
 
-/* 平台选项列表，放大尺寸 */
-/* Requirements: 2.3, 2.4, 8.3, 8.4 */
 PlatformSelectScreen #platform-list {
     width: 100%;
     height: auto;
     border: round $panel;
-    padding: 2 3;
+    padding: 1;
     background: $background;
 }
 
-/* 聚焦时高亮边框 */
 PlatformSelectScreen #platform-list:focus {
     border: round $accent;
 }
 
-/* 高亮选项样式 - 清晰的视觉指示 */
-/* Requirements: 2.3 */
 PlatformSelectScreen #platform-list > .option-list--option-highlighted {
-    background: $primary;
-    color: $foreground;
+    background: $success;
+    color: $background;
     text-style: bold;
 }
 
-/* 键盘提示 - Unicode 符号美化 */
-/* Requirements: 2.5 */
 PlatformSelectScreen #hint {
     text-align: center;
-    color: $foreground;
-    padding: 3 0 1 0;
+    color: $text-muted;
+    padding: 1 0 0 0;
 }
 
-/* ============================================================
- * 主界面布局样式
- * Requirements: 8.1, 8.2
- * ============================================================ */
-
+/* === 主界面 === */
 MainScreen {
-    background: $surface;
+    background: $background;
 }
 
 MainScreen #main-container {
@@ -120,469 +76,151 @@ MainScreen #main-container {
 MainScreen #content-area {
     width: 100%;
     height: 1fr;
-    padding: 1 2;
+    padding: 0 1;
 }
 
-/* 搜索容器 */
-/* Requirements: 8.1 */
+/* === 搜索框 === */
 MainScreen #search-container {
     width: 100%;
-    height: 5;
-    padding: 1 2;
+    height: 3;
+    padding: 0 1;
 }
 
 MainScreen #search-container.-hidden {
     display: none;
 }
 
-/* ============================================================
- * 搜索框样式
- * Requirements: 7.1, 7.2, 7.3, 7.4
- * ============================================================ */
-
-/* 搜索框基础样式 - 圆角边框 */
-/* Requirements: 7.1, 8.4 */
 MainScreen #search-input {
     width: 100%;
-    height: 3;
-    border: round $panel;
-    background: $background;
-    padding: 0 2;
-}
-
-/* 搜索框聚焦状态 - 高亮边框 */
-/* Requirements: 7.2 */
-MainScreen #search-input:focus {
-    border: round $accent;
+    height: 1;
+    border: none;
     background: $surface;
+    padding: 0 1;
 }
 
-/* 搜索框 placeholder 样式 - 柔和颜色 */
-/* Requirements: 7.3 */
-Input.-placeholder {
-    color: $foreground;
+MainScreen #search-input:focus {
+    background: $panel;
 }
 
-/* 搜索框光标样式 */
-Input > .input--cursor {
-    background: $primary;
-    color: $foreground;
-}
-
-/* ============================================================
- * TabbedContent 标签页样式
- * Requirements: 6.1, 6.2, 6.3, 6.4
- * ============================================================ */
-
+/* === TabbedContent === */
 MainScreen TabbedContent {
     height: 1fr;
 }
 
-/* 标签栏容器 */
 TabbedContent > ContentSwitcher {
     height: 1fr;
 }
 
-/* 标签页内容区域 */
-/* Requirements: 8.1 */
 MainScreen TabPane {
     padding: 0;
 }
 
-/* 标签栏样式 - 简化设计 */
-/* Requirements: 6.3 */
+/* === Tabs 标签栏 === */
 Tabs {
     width: 100%;
-    background: $background;
+    background: $surface;
     dock: top;
-    height: 3;
+    height: 1;
 }
 
-/* 单个标签样式 - 简洁设计 */
-/* Requirements: 6.1, 8.3 */
 Tab {
     width: auto;
-    min-width: 16;
-    height: 3;
-    padding: 0 4;
+    min-width: 14;
+    height: 1;
+    padding: 0 2;
     background: $panel;
-    color: $foreground;
+    color: $text;
     text-style: bold;
-    content-align: center middle;
     margin: 0 1 0 0;
 }
 
-/* 标签悬停效果 */
 Tab:hover {
-    background: $surface;
-    color: $secondary;
+    background: $surface-lighten-1;
+    color: $accent;
 }
 
-/* 活动标签样式 - 高亮背景 */
-/* Requirements: 6.2 */
 Tab.-active {
-    background: $accent;
+    background: $warning;
     color: $background;
-    text-style: bold;
 }
 
-/* 聚焦状态 */
 Tab:focus {
     background: $primary;
-    color: $foreground;
+    color: $text;
 }
 
-/* 活动标签聚焦状态 */
 Tab.-active:focus {
-    background: $accent;
+    background: $warning;
     color: $background;
 }
 
-/* 标签下划线指示器 - 隐藏 */
 Underline {
     display: none;
 }
 
-/* ============================================================
- * Header 组件样式
- * Requirements: 3.1, 3.2, 3.3, 3.4
- * ============================================================ */
-
-Header {
-    dock: top;
-    height: 3;
-    background: $primary;
-    padding: 0 2;
-}
-
-Header #header-container {
-    width: 100%;
-    height: 100%;
-    align: left middle;
-}
-
-/* 标题 - emoji + 粗体 + 高对比度颜色 */
-/* Requirements: 3.1 */
-Header #app-title {
-    content-align: left middle;
-    width: 1fr;
-    text-style: bold;
-    color: $foreground;
-}
-
-/* 平台徽章 - 圆角、次要颜色背景、粗体 */
-/* Requirements: 3.2, 8.4 */
-Header #platform-badge {
-    content-align: center middle;
-    width: auto;
-    min-width: 14;
-    background: $secondary;
-    padding: 0 2;
-    margin: 0 0 0 1;
-    color: $foreground;
-    text-style: bold;
-}
-
-/* ============================================================
- * Footer 组件样式
- * Requirements: 5.1, 5.2, 5.3, 5.4
- * ============================================================ */
-
-Footer {
-    dock: bottom;
-    height: 3;
-    background: $background;
-    padding: 0 2;
-    border-top: solid $primary;
-}
-
-Footer #footer-container {
-    width: 100%;
-    height: 100%;
-    align: left middle;
-}
-
-/* 状态消息 */
-/* Requirements: 5.1 */
-Footer #status-message {
-    content-align: left middle;
-    width: 1fr;
-    padding-left: 1;
-}
-
-/* 选中计数 - 高亮显示 */
-/* Requirements: 5.2 */
-Footer #selection-count {
-    content-align: right middle;
-    width: auto;
-    padding: 0 2;
-    color: $accent;
-    text-style: bold;
-}
-
-/* 状态消息语义颜色 */
-/* Requirements: 5.1 */
-Footer .status-info {
-    color: $foreground;
-}
-
-Footer .status-success {
-    color: $success;
-}
-
-Footer .status-warning {
-    color: $warning;
-}
-
-Footer .status-error {
-    color: $error;
-}
-
-/* ============================================================
- * 列表视图样式 - 简化边框
- * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 8.3, 8.4
- * ============================================================ */
-
+/* === 列表视图 === */
 ItemListView {
     height: 1fr;
-    background: $surface;
+    border: round $primary;
     padding: 0;
+    scrollbar-size: 1 1;
 }
 
 ItemListView:focus {
-    background: $surface;
+    border: round $accent;
 }
 
-/* ============================================================
- * 可选择列表项样式 - 增强视觉反馈
- * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6
- * ============================================================ */
-
-/* 基础样式 - 带左侧指示条 */
-/* Requirements: 4.6, 8.3 */
+/* === 列表项 === */
 SelectableItem {
-    height: 3;
+    height: 1;
     padding: 0 1;
-    background: $panel;
-    border-left: wide transparent;
+    background: transparent;
 }
 
 SelectableItem:hover {
-    background: $surface;
-    border-left: wide $secondary;
+    background: $surface-lighten-2;
 }
 
-/* 选中状态 (checkbox checked) */
-/* Requirements: 4.3 */
+/* 选中状态 (Space) - 橙色 */
 SelectableItem.-selected {
-    background: $primary 20%;
-    border-left: wide $accent;
+    background: $warning 30%;
 }
 
-SelectableItem.-selected #name {
-    color: $accent;
+SelectableItem.-selected #content {
+    color: $warning;
     text-style: bold;
 }
 
-SelectableItem.-selected #checkbox {
-    color: $accent;
+/* 键盘浏览高亮 - 实色绿色背景 */
+SelectableItem.-highlight {
+    background: $success;
+}
+
+SelectableItem.-highlight #content {
+    color: $background;
     text-style: bold;
 }
 
-SelectableItem.-selected #desc {
-    color: $foreground;
+/* 选中且高亮 */
+SelectableItem.-selected.-highlight {
+    background: $success;
 }
 
-/* ============================================================
- * ListView 高亮状态 - 当前光标所在项 (方向键浏览)
- * Requirements: 4.4
- * ============================================================ */
-
-/* 聚焦状态 - 绿色文字 + 左侧指示条 */
-SelectableItem:focus {
-    background: $panel;
-    border-left: wide $success;
+SelectableItem.-selected.-highlight #content {
+    color: $background;
     text-style: bold;
 }
 
-/* 聚焦状态下的文字颜色 - 绿色高亮 */
-SelectableItem:focus #name {
-    color: $success;
-    text-style: bold;
-}
-
-SelectableItem:focus #desc {
-    color: $success;
-}
-
-SelectableItem:focus #checkbox {
-    color: $success;
-    text-style: bold;
-}
-
-SelectableItem:focus #status {
-    color: $success;
-}
-
-/* 选中且聚焦状态 - 绿色文字 + 强调背景 */
-SelectableItem.-selected:focus {
-    background: $success 30%;
-    border-left: wide $success;
-}
-
-SelectableItem.-selected:focus #name {
-    color: $success;
-    text-style: bold;
-}
-
-SelectableItem.-selected:focus #desc {
-    color: $success;
-}
-
-SelectableItem.-selected:focus #checkbox {
-    color: $success;
-    text-style: bold;
-}
-
-SelectableItem.-selected:focus #status {
-    color: $success;
-}
-
-/* 列表项内部容器 */
-SelectableItem #item-row {
+SelectableItem #content {
     width: 100%;
-    height: 100%;
+    color: $text;
 }
 
-/* 复选框 - Unicode 符号 ☐/☑ */
-/* Requirements: 4.1 */
-SelectableItem #checkbox {
-    width: 6;
-    content-align: center middle;
-    color: $primary;
-    text-style: bold;
-}
-
-SelectableItem.-selected #checkbox {
-    color: $accent;
-}
-
-/* 状态图标 - Unicode 符号 ✓/○ */
-/* Requirements: 4.2 */
-SelectableItem #status {
-    width: 5;
-    content-align: center middle;
-}
-
-/* 已安装状态 - 绿色对勾 */
-SelectableItem .status-installed {
-    color: $success;
-}
-
-/* 未安装状态 - 灰色圆圈 */
-SelectableItem .status-not-installed {
-    color: $text-muted;
-}
-
-/* 名称 - 粗体显示 */
-/* Requirements: 4.5 */
-SelectableItem #name {
-    width: 30%;
-    text-style: bold;
-    content-align: left middle;
-    padding: 0 2;
-}
-
-/* 描述 - 柔和颜色 */
-/* Requirements: 4.5 */
-SelectableItem #desc {
-    width: 1fr;
-    color: $text-muted;
-    content-align: left middle;
-    padding: 0 2;
-}
-
-/* ============================================================
- * 空状态和加载状态样式
- * Requirements: 9.1, 9.2, 9.3
- * ============================================================ */
-
-/* 空列表提示 - 居中显示 */
-/* Requirements: 9.1 */
-.empty-list-message {
-    text-align: center;
-    color: $text-muted;
-    padding: 4;
-}
-
-/* 加载状态提示 */
-/* Requirements: 9.2 */
-.loading-message {
-    text-align: center;
-    color: $text-muted;
-    padding: 2;
-}
-
-/* 进度指示器样式 */
-/* Requirements: 9.3 */
-.progress-indicator {
-    color: $accent;
-    text-style: bold;
-}
-
-/* ============================================================
- * 通用工具类
- * Requirements: 8.1, 8.2
- * ============================================================ */
-
-/* 隐藏元素 */
-.-hidden {
-    display: none;
-}
-
-/* 文本对齐 */
-.text-center {
-    text-align: center;
-}
-
-.text-left {
-    text-align: left;
-}
-
-.text-right {
-    text-align: right;
-}
-
-/* 文本样式 */
-.text-bold {
-    text-style: bold;
-}
-
+/* === 工具类 === */
 .text-muted {
     color: $text-muted;
 }
 
-/* 间距工具类 */
-.padding-small {
-    padding: 1;
-}
-
-.padding-medium {
-    padding: 2;
-}
-
-.padding-large {
-    padding: 4;
-}
-
-.margin-small {
-    margin: 1;
-}
-
-.margin-medium {
-    margin: 2;
-}
-
-.margin-large {
-    margin: 4;
+.-hidden {
+    display: none;
 }

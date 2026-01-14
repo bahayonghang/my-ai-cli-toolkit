@@ -1,97 +1,67 @@
-"""Header 组件 - 顶部标题栏
+"""Header 组件 - 简洁顶部栏
 
-显示应用标题和当前平台标识。
+显示标题和平台徽章，CCR 风格。
 Requirements: 3.1, 3.2, 3.3, 3.4
 """
 
 from textual.widgets import Static
 from textual.containers import Horizontal
 
-from tui.core.formatters import format_platform_badge
-
 
 class Header(Static):
-    """顶部标题栏组件
+    """简洁顶部标题栏
     
-    显示应用标题 "MyClaude Skills Manager" 和当前平台标识。
-    
-    设计规范:
-    - 使用 $primary 颜色作为背景 (Requirements 3.3)
-    - 平台徽章使用 $secondary 背景色和圆角 (Requirements 3.2)
-    - 标题文字加粗并使用高对比度颜色 (Requirements 3.1)
-    - 保持一致的高度和内边距 (Requirements 3.4)
+    左侧: 🚀 标题
+    右侧: 平台徽章 (橙色背景)
     """
     
     DEFAULT_CSS = """
     Header {
         dock: top;
-        height: 3;
+        height: 1;
         background: $primary;
-        padding: 0 2;
+        padding: 0 1;
     }
     
-    Header #header-container {
+    Header #header-row {
         width: 100%;
-        height: 100%;
-        align: left middle;
+        height: 1;
     }
     
     Header #app-title {
-        content-align: left middle;
         width: 1fr;
-        text-style: bold;
         color: $text;
+        text-style: bold;
     }
     
     Header #platform-badge {
-        content-align: center middle;
         width: auto;
-        min-width: 12;
-        background: $secondary;
-        padding: 0 2;
-        margin: 0 0 0 1;
-        color: $text;
+        min-width: 10;
+        background: $warning;
+        color: $background;
         text-style: bold;
+        padding: 0 2;
     }
     """
     
-    # 应用图标
-    APP_ICON = "🚀"
-    APP_TITLE = "MyClaude Skills Manager"
+    APP_TITLE = "🚀 MyClaude Skills Manager"
     
     def __init__(self, platform: str = "") -> None:
-        """初始化 Header 组件
-        
-        Args:
-            platform: 当前平台名称
-        """
         super().__init__()
         self._platform = platform
     
     def compose(self):
-        """构建组件结构"""
-        with Horizontal(id="header-container"):
-            yield Static(f"{self.APP_ICON} {self.APP_TITLE}", id="app-title")
+        with Horizontal(id="header-row"):
+            yield Static(self.APP_TITLE, id="app-title")
             yield Static(self._format_badge(), id="platform-badge")
     
     def _format_badge(self) -> str:
-        """格式化平台徽章显示文本
-        
-        Returns:
-            格式化后的徽章文本，包含大写平台名称
-            
-        Requirements: 3.2 - 平台徽章应显示大写格式
-        """
-        if self._platform:
-            return format_platform_badge(self._platform)
-        return "—"
+        return self._platform.upper() if self._platform else "—"
     
     def set_platform(self, platform: str) -> None:
-        """设置当前平台
-        
-        Args:
-            platform: 平台名称 (claude/codex/gemini)
-        """
         self._platform = platform
-        badge = self.query_one("#platform-badge", Static)
-        badge.update(self._format_badge())
+        try:
+            badge = self.query_one("#platform-badge", Static)
+            badge.update(self._format_badge())
+        except Exception:
+            pass
