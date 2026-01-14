@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), or [Google Antigravity](https://antigravity.google/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), or [Windsurf](https://windsurf.com/)
 
 ## Clone Repository
 
@@ -36,6 +36,9 @@ python3 install.py --target qwen install-all
 
 # Install to Antigravity
 python3 install.py --target antigravity install-all
+
+# Install to Windsurf
+python3 install.py --target windsurf install-all
 ```
 
 ### Update Global Prompt
@@ -60,7 +63,7 @@ python3 install_tui.py
 
 ### Features
 
-- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity)
+- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf)
 - 📋 Tabbed interface for Skills and Commands/Workflows
 - ⌨️ Keyboard shortcuts for quick operations
 - 🔍 Real-time search filtering
@@ -108,3 +111,4 @@ python3 install.py installed
 | Gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
 | Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
+| Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |

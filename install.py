@@ -63,6 +63,12 @@ TARGET_CONFIG = {
         "skills": HOME_DIR / ".gemini" / "antigravity" / "skills",
         "commands": HOME_DIR / ".gemini" / "antigravity" / "workflows",
         "prompt": None
+    },
+    "windsurf": {
+        "base": HOME_DIR / ".codeium" / "windsurf",
+        "skills": HOME_DIR / ".codeium" / "windsurf" / "skills",
+        "commands": HOME_DIR / ".codeium" / "windsurf" / "workflows",
+        "prompt": None
     }
 }
 
@@ -142,6 +148,8 @@ class SkillManager:
             src_cmd_dir = COMMANDS_SRC_DIR / "gemini"
         elif self.target == "antigravity":
             src_cmd_dir = COMMANDS_SRC_DIR / "antigravity"
+        elif self.target == "windsurf":
+            src_cmd_dir = COMMANDS_SRC_DIR / "windsurf"
         else:
             # Claude and Codex share commands from 'claude' folder
             src_cmd_dir = COMMANDS_SRC_DIR / "claude"
@@ -161,6 +169,8 @@ class SkillManager:
                 log_info(f"Note: For Codex, commands are installed as prompts in {self.target_commands_dir}")
             elif self.target == "antigravity":
                 log_info(f"Note: For Antigravity, commands are installed as workflows in {self.target_commands_dir}")
+            elif self.target == "windsurf":
+                log_info(f"Note: For Windsurf, commands are installed as workflows in {self.target_commands_dir}")
         except Exception as e:
             log_error(f"Failed to install commands: {e}")
 

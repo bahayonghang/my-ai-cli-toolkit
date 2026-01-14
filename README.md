@@ -9,14 +9,14 @@ A curated collection of Claude Code skills and prompts for enhanced AI-assisted 
 - 🎯 Reusable AI skill modules covering frontend design, research, documentation, and more
 - 📦 Unified skill format (`SKILL.md`) for easy extension and maintenance
 - 🔄 Cross-platform Python installation script (`install.py`)
-- 🎛️ Multi-target support: Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`), and Google Antigravity (`~/.gemini/antigravity/`)
+- 🎛️ Multi-target support: Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`), Google Antigravity (`~/.gemini/antigravity/`), and Windsurf (`~/.codeium/windsurf/`)
 - ⚡ Slash commands for common workflows (git commit, etc.)
 
 ## Prerequisites
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), or [Google Antigravity](https://antigravity.google/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), or [Windsurf](https://windsurf.com/)
 
 ## Quick Start
 
@@ -94,6 +94,16 @@ Workflows for Google Antigravity IDE, triggered via `/workflow-name` in the agen
 | [import-summary](commands/antigravity/import-summary.md) | Restore session context from a summary file |
 | [git-commit](commands/antigravity/git-commit.md) | Analyze changes and generate Conventional Commits messages |
 
+### Windsurf Workflows
+
+Workflows for Windsurf IDE, triggered via `/workflow-name` in Cascade.
+
+| Workflow | Description |
+|----------|-------------|
+| [export-summary](commands/windsurf/export-summary.md) | Summarize session context and export to a markdown file |
+| [import-summary](commands/windsurf/import-summary.md) | Restore session context from a summary file |
+| [git-commit](commands/windsurf/git-commit.md) | Analyze changes and generate Conventional Commits messages |
+
 ### OMO Agents (Multi-Agent System)
 
 Inspired by [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode), these skills enable multi-agent collaboration where specialized agents work together on complex tasks.
@@ -132,6 +142,9 @@ python3 install.py --target qwen install-all
 # Install to Antigravity
 python3 install.py --target antigravity install-all
 
+# Install to Windsurf
+python3 install.py --target windsurf install-all
+
 # Update global CLAUDE.md
 python3 install.py prompt-update
 ```
@@ -158,7 +171,7 @@ python3 install_tui.py
 ```
 
 The TUI provides:
-- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity)
+- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf)
 - 📋 Tabbed interface for Skills and Commands/Workflows
 - ⌨️ Keyboard shortcuts for quick operations
 - 🔍 Real-time search filtering
@@ -209,7 +222,11 @@ The TUI provides:
 │   │       ├── git-rollback.toml
 │   │       ├── git-worktree.toml
 │   │       └── init-project.toml
-│   └── antigravity/        # Antigravity workflows
+│   ├── antigravity/        # Antigravity workflows
+│   │   ├── export-summary.md
+│   │   ├── import-summary.md
+│   │   └── git-commit.md
+│   └── windsurf/           # Windsurf workflows
 │       ├── export-summary.md
 │       ├── import-summary.md
 │       └── git-commit.md
@@ -283,7 +300,7 @@ Technical content translation guidelines:
 
 ## FAQ
 
-**Q: What's the difference between Claude, Codex, Gemini, Qwen, and Antigravity targets?**
+**Q: What's the difference between Claude, Codex, Gemini, Qwen, Antigravity, and Windsurf targets?**
 
 A: The target determines the installation directory:
 - Claude: `~/.claude/skills/` and `~/.claude/commands/` (default)
@@ -291,6 +308,7 @@ A: The target determines the installation directory:
 - Gemini: `~/.gemini/skills/` and `~/.gemini/commands/`
 - Qwen: `~/.qwen/skills/` and `~/.qwen/commands/`
 - Antigravity: `~/.gemini/antigravity/skills/` and `~/.gemini/antigravity/workflows/`
+- Windsurf: `~/.codeium/windsurf/skills/` and `~/.codeium/windsurf/workflows/`
 
 **Q: How do I update an existing skill?**
 

@@ -9,14 +9,14 @@ Claude Code 技能和提示词集合，用于增强 AI 辅助开发工作流。
 - 🎯 可复用的 AI 技能模块，覆盖前端设计、技术研究、文档生成等场景
 - 📦 统一的技能定义格式（`SKILL.md`），便于扩展和维护
 - 🔄 跨平台 Python 安装脚本 (`install.py`)
-- 🎛️ 多目标支持：Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`) 和 Google Antigravity (`~/.gemini/antigravity/`)
+- 🎛️ 多目标支持：Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`), Google Antigravity (`~/.gemini/antigravity/`) 和 Windsurf (`~/.codeium/windsurf/`)
 - ⚡ 斜杠命令，用于常见工作流（git commit 等）
 
 ## 前置要求
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), 或 [Google Antigravity](https://antigravity.google/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), 或 [Windsurf](https://windsurf.com/)
 
 ## 快速开始
 
@@ -94,6 +94,16 @@ Google Antigravity IDE 的工作流，在 Agent 聊天中通过 `/workflow-name`
 | [import-summary](commands/antigravity/import-summary.md) | 从总结文件中恢复会话上下文 |
 | [git-commit](commands/antigravity/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息 |
 
+### Windsurf 工作流
+
+Windsurf IDE 的工作流，在 Cascade 中通过 `/workflow-name` 触发。
+
+| 工作流 | 描述 |
+|--------|------|
+| [export-summary](commands/windsurf/export-summary.md) | 总结会话上下文并导出为 Markdown 文件 |
+| [import-summary](commands/windsurf/import-summary.md) | 从总结文件中恢复会话上下文 |
+| [git-commit](commands/windsurf/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息 |
+
 ### OMO Agents (多代理系统)
 
 受 [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) 启发，这些技能实现多代理协作，让专业代理协同处理复杂任务。
@@ -132,6 +142,9 @@ python3 install.py --target qwen install-all
 # 安装到 Antigravity
 python3 install.py --target antigravity install-all
 
+# 安装到 Windsurf
+python3 install.py --target windsurf install-all
+
 # 更新全局 CLAUDE.md
 python3 install.py prompt-update
 ```
@@ -158,7 +171,7 @@ python3 install_tui.py
 ```
 
 TUI 提供以下功能：
-- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity)
+- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf)
 - 📋 Skills 和 Commands/Workflows 双标签页界面
 - ⌨️ 键盘快捷键快速操作
 - 🔍 实时搜索过滤
@@ -209,7 +222,11 @@ TUI 提供以下功能：
 │   │       ├── git-rollback.toml
 │   │       ├── git-worktree.toml
 │   │       └── init-project.toml
-│   └── antigravity/        # Antigravity 工作流
+│   ├── antigravity/        # Antigravity 工作流
+│   │   ├── export-summary.md
+│   │   ├── import-summary.md
+│   │   └── git-commit.md
+│   └── windsurf/           # Windsurf 工作流
 │       ├── export-summary.md
 │       ├── import-summary.md
 │       └── git-commit.md
@@ -283,7 +300,7 @@ TUI 提供以下功能：
 
 ## 常见问题
 
-**Q: Claude, Codex, Gemini, Qwen 和 Antigravity 目标有什么区别？**
+**Q: Claude, Codex, Gemini, Qwen, Antigravity 和 Windsurf 目标有什么区别？**
 
 A: 目标决定了技能和命令安装的目录：
 - Claude: `~/.claude/skills/` 和 `~/.claude/commands/` (默认)
@@ -291,6 +308,7 @@ A: 目标决定了技能和命令安装的目录：
 - Gemini: `~/.gemini/skills/` 和 `~/.gemini/commands/`
 - Qwen: `~/.qwen/skills/` 和 `~/.qwen/commands/`
 - Antigravity: `~/.gemini/antigravity/skills/` 和 `~/.gemini/antigravity/workflows/`
+- Windsurf: `~/.codeium/windsurf/skills/` 和 `~/.codeium/windsurf/workflows/`
 
 **Q: 如何更新已安装的技能？**
 

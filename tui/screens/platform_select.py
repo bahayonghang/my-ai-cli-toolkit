@@ -23,6 +23,7 @@ PLATFORM_ICONS = {
     "gemini": "✨",
     "qwen": "🌙",
     "antigravity": "🚀",
+    "windsurf": "🏄",
 }
 
 
@@ -135,6 +136,7 @@ class PlatformSelectScreen(Screen):
         PlatformConfig("gemini", "Gemini", "~/.gemini/"),
         PlatformConfig("qwen", "Qwen", "~/.qwen/"),
         PlatformConfig("antigravity", "Antigravity", "~/.gemini/antigravity/"),
+        PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/"),
     ]
     
     def compose(self) -> ComposeResult:

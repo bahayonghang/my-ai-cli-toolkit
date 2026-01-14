@@ -77,6 +77,8 @@ class TUIManager:
             src_dir = COMMANDS_SRC_DIR / "gemini"
         elif self.platform == "antigravity":
             src_dir = COMMANDS_SRC_DIR / "antigravity"
+        elif self.platform == "windsurf":
+            src_dir = COMMANDS_SRC_DIR / "windsurf"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         return src_dir.exists()
@@ -91,6 +93,8 @@ class TUIManager:
             return COMMANDS_SRC_DIR / "gemini"
         elif self.platform == "antigravity":
             return COMMANDS_SRC_DIR / "antigravity"
+        elif self.platform == "windsurf":
+            return COMMANDS_SRC_DIR / "windsurf"
         return COMMANDS_SRC_DIR / "claude"
     
     def get_skills(self) -> list[ItemInfo]:
@@ -145,6 +149,8 @@ class TUIManager:
             src_dir = COMMANDS_SRC_DIR / "gemini"
         elif self.platform == "antigravity":
             src_dir = COMMANDS_SRC_DIR / "antigravity"
+        elif self.platform == "windsurf":
+            src_dir = COMMANDS_SRC_DIR / "windsurf"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         
@@ -252,6 +258,8 @@ class TUIManager:
             src_dir = COMMANDS_SRC_DIR / "gemini"
         elif self.platform == "antigravity":
             src_dir = COMMANDS_SRC_DIR / "antigravity"
+        elif self.platform == "windsurf":
+            src_dir = COMMANDS_SRC_DIR / "windsurf"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         
