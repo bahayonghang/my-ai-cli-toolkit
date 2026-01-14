@@ -57,6 +57,12 @@ TARGET_CONFIG = {
         "skills": HOME_DIR / ".qwen" / "skills",
         "commands": HOME_DIR / ".qwen" / "commands",
         "prompt": None
+    },
+    "antigravity": {
+        "base": HOME_DIR / ".gemini" / "antigravity",
+        "skills": HOME_DIR / ".gemini" / "antigravity" / "skills",
+        "commands": HOME_DIR / ".gemini" / "antigravity" / "workflows",
+        "prompt": None
     }
 }
 
@@ -134,6 +140,8 @@ class SkillManager:
         # Determine source directory based on target
         if self.target in ["gemini", "qwen"]:
             src_cmd_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.target == "antigravity":
+            src_cmd_dir = COMMANDS_SRC_DIR / "antigravity"
         else:
             # Claude and Codex share commands from 'claude' folder
             src_cmd_dir = COMMANDS_SRC_DIR / "claude"
@@ -151,6 +159,8 @@ class SkillManager:
             log_success(f"Installed commands to {self.target_commands_dir}")
             if self.target == "codex":
                 log_info(f"Note: For Codex, commands are installed as prompts in {self.target_commands_dir}")
+            elif self.target == "antigravity":
+                log_info(f"Note: For Antigravity, commands are installed as workflows in {self.target_commands_dir}")
         except Exception as e:
             log_error(f"Failed to install commands: {e}")
 
