@@ -1,15 +1,15 @@
 [project]
 name = "myclaude-skills"
-version = "0.1.0"
+version = "1.0.0"
 description = "MyClaude Skills TUI - Terminal User Interface for managing skills and commands"
 requires-python = ">=3.10"
 dependencies = [
-    "textual>=0.47.0",
+    "textual>=7.2.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
+    "pytest>=9.0.2",
     "hypothesis>=6.0.0",
 ]
 
