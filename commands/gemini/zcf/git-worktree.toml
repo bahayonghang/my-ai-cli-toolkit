@@ -1,5 +1,5 @@
 description = "管理 Git worktree，在项目平级的 ../.zcf/项目名/ 目录下创建，支持智能默认、IDE 集成和内容迁移"
-prompt = """# Claude Command: Git Worktree
+prompt = '''# Claude Command: Git Worktree
 
 管理 Git worktree，支持智能默认、IDE 集成和内容迁移，使用结构化的 `../.zcf/项目名/` 路径。
 
@@ -261,4 +261,4 @@ git config worktree.ide.autodetect true  # 默认
 - **跨平台**: 支持 Windows、macOS、Linux
 - **环境文件**: 自动复制 `.gitignore` 中列出的环境文件到新 worktree
 - **文件排除**: 模板文件如 `.env.example` 仅保留在主仓库中
-"""
+'''

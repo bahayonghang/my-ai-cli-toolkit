@@ -1,5 +1,5 @@
 description = "交互式回滚 Git 分支到历史版本；列分支、列版本、二次确认后执行 reset / revert"
-prompt = """# Claude Command: Git Rollback
+prompt = '''# Claude Command: Git Rollback
 
 **目的**：安全、可视地将指定分支回滚到旧版本。
 默认处于 **只读预览 (`--dry-run`)**；真正执行需加 `--yes` 或在交互中确认。
@@ -77,4 +77,4 @@ prompt = """# Claude Command: Git Rollback
    - **revert** 更安全，生成新提交保留历史，但会增加一次记录。
 2. **嵌入式仓库** 常有大体积二进制文件；回滚前请确保 LFS/子模块状态一致。
 3. 若仓库启用了 CI 强制校验，回滚后可能自动触发流水线；确认管控策略以免误部署旧版本。
-"""
+'''
