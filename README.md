@@ -55,6 +55,7 @@ Run `python3 install.py --help` for more options.
 | [IEEE-writing-skills](skills/IEEE-writing-skills/) | Translate, polish, restructure, and validate academic papers for IEEE publications |
 | [latex-paper-en](skills/latex-paper-en/) | LaTeX academic paper assistant for English conference/journal papers |
 | [latex-thesis-zh](skills/latex-thesis-zh/) | Chinese doctoral/master thesis LaTeX assistant with GB/T 7714 support |
+| [mcp-to-skill](skills/mcp-to-skill/) | Convert MCP servers to Claude Code Skills with complete packaging |
 
 ## Commands
 

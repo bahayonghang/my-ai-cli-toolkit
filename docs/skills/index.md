@@ -17,6 +17,7 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 | [tech-blog](./tech-blog) | Documentation | Write technical blog posts |
 | [tech-design-doc](./tech-design-doc) | Documentation | Generate technical design documents |
 | [claude-expert-skill-creator](./claude-expert-skill-creator) | Development | Create production-ready skills from expert knowledge |
+| [mcp-to-skill](./mcp-to-skill) | Development | Convert MCP servers to Claude Code Skills |
 | [IEEE-writing-skills](./IEEE-writing-skills) | Academic | Translate, polish, and validate IEEE papers |
 | [latex-paper-en](./latex-paper-en) | Academic | LaTeX assistant for English academic papers |
 | [latex-thesis-zh](./latex-thesis-zh) | Academic | Chinese thesis LaTeX assistant with GB/T 7714 |
@@ -67,6 +68,7 @@ Skills for academic paper and thesis writing:
 ### Skill Development
 Skills for creating new skills:
 - **claude-expert-skill-creator** - Create production-ready skills with layered architecture
+- **mcp-to-skill** - Convert MCP servers to Claude Code Skills
 
 ### OMO Agents (Multi-Agent System)
 

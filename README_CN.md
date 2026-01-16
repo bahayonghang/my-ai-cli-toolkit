@@ -55,6 +55,7 @@ python3 install_tui.py
 | [IEEE-writing-skills](skills/IEEE-writing-skills/) | IEEE 学术论文翻译、润色、重构和格式验证 |
 | [latex-paper-en](skills/latex-paper-en/) | 英文学术论文 LaTeX 助手，支持会议/期刊论文 |
 | [latex-thesis-zh](skills/latex-thesis-zh/) | 中文博士/硕士学位论文 LaTeX 助手，支持 GB/T 7714 |
+| [mcp-to-skill](skills/mcp-to-skill/) | 将 MCP 服务器转换为 Claude Code 技能，支持完整打包 |
 
 ## 命令
 
