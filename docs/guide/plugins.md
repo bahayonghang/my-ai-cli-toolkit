@@ -66,3 +66,71 @@ Use the `/plugin` command in Claude Code to manage plugins:
 2. Navigate to `Marketplaces` tab
 3. Select `+ Add Marketplace`
 4. Enter the repository in format `owner/repo`
+
+## Plugin Installer CLI
+
+This project includes a cross-platform CLI tool for batch installing plugins.
+
+### Installation
+
+```bash
+cd claude-plugin-install-scripts
+pip install typer rich tomli  # Python < 3.11
+pip install typer rich        # Python >= 3.11
+```
+
+### Usage
+
+```bash
+# List all available plugins
+python install.py list
+
+# List by category
+python install.py list --category python
+
+# Install all plugins
+python install.py install --all
+
+# Install specific plugins
+python install.py install python-development canvas
+
+# Install by category
+python install.py install --category python
+
+# Dry run (show commands only)
+python install.py install --all --dry-run
+
+# View all categories
+python install.py categories
+```
+
+### Available Plugins
+
+| Category | Plugin | Description |
+|----------|--------|-------------|
+| python | `python-development` | Python dev suite (python-pro, django-pro, fastapi-pro) |
+| javascript | `javascript-typescript` | JS/TS dev suite (javascript-pro, typescript-pro) |
+| review | `comprehensive-review` | Code review suite (architect-review, code-reviewer, security-auditor) |
+| infrastructure | `deployment` | Deployment tools |
+| infrastructure | `kubernetes` | Kubernetes configuration tools |
+| security | `security-scanning` | Security scanning tools |
+| tools | `canvas` | Canvas plugin for split-pane generation |
+
+### Configuration
+
+Plugins are configured in `claude-plugin-install-scripts/plugins.toml`:
+
+```toml
+# Define a marketplace
+[marketplaces.wshobson-agents]
+repo = "wshobson/agents"
+description = "Claude Code Workflows & Skills"
+
+# Define a plugin
+[plugins.python-development]
+marketplace = "wshobson-agents"
+description = "Python dev suite"
+category = "python"
+```
+
+To add new plugins, simply edit the TOML file.

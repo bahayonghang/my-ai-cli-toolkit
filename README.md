@@ -323,6 +323,35 @@ A: Yes. The `installed` command shows which skills come from this repository vs 
 
 A: Backups are created in `~/.claude/` with timestamp suffix, e.g., `CLAUDE.md.backup.20240115_143022`.
 
+## Plugin Installer
+
+A cross-platform CLI tool for installing Claude Code plugins from various marketplaces.
+
+```bash
+cd claude-plugin-install-scripts
+
+# Install dependencies
+pip install typer rich tomli  # Python < 3.11
+pip install typer rich        # Python >= 3.11
+
+# List available plugins
+python install.py list
+
+# Install all plugins
+python install.py install --all
+
+# Install specific plugins
+python install.py install python-development canvas
+
+# Install by category
+python install.py install --category python
+
+# View categories
+python install.py categories
+```
+
+Plugin configuration is stored in `claude-plugin-install-scripts/plugins.toml`. See [Plugin Installer Documentation](claude-plugin-install-scripts/README.md) for details.
+
 ## License
 
 MIT
