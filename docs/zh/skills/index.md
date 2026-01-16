@@ -16,6 +16,7 @@ MyClaude Skills 提供一系列专门的 AI 技能，用于不同的开发任务
 | [spec-interview](./spec-interview) | 规划 | 通过系统性提问完善规格说明 |
 | [tech-blog](./tech-blog) | 文档 | 撰写技术博客 |
 | [tech-design-doc](./tech-design-doc) | 文档 | 生成技术设计文档 |
+| [skill-manager](./skill-manager) | 开发 | 搜索和安装 31,767+ 社区技能 |
 
 ### OMO Agents (多代理系统)
 
@@ -53,6 +54,10 @@ MyClaude Skills 提供一系列专门的 AI 技能，用于不同的开发任务
 - **tech-blog** - 技术博客文章
 - **tech-design-doc** - 设计文档
 - **spec-interview** - 规格说明完善
+
+### 技能开发类
+用于创建和管理技能：
+- **skill-manager** - 搜索和安装 31,767+ 社区技能
 
 ### OMO Agents (多代理系统)
 

@@ -4,3 +4,4 @@ ref/
 .serena/
 
 *.pyc
+.hypothesis/
