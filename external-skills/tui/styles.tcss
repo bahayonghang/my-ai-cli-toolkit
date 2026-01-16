@@ -1,0 +1,245 @@
+/* External Skills TUI - 简洁风格
+ * 复用 MyClaude Skills TUI 设计模式
+ * Requirements: 2.3
+ */
+
+/* === 全局 === */
+Screen {
+    background: $background;
+}
+
+/* === 平台选择屏幕 === */
+PlatformSelectScreen {
+    align: center middle;
+    background: $background;
+}
+
+PlatformSelectScreen #container {
+    width: 60;
+    height: auto;
+    padding: 1 2;
+    border: round $primary;
+    background: $surface;
+}
+
+PlatformSelectScreen #title {
+    text-align: center;
+    text-style: bold;
+    color: $primary;
+    padding: 1 0;
+}
+
+PlatformSelectScreen #subtitle {
+    text-align: center;
+    color: $text-muted;
+    padding: 0 0 1 0;
+}
+
+PlatformSelectScreen #platform-list {
+    width: 100%;
+    height: auto;
+    border: round $panel;
+    padding: 1;
+    background: $background;
+}
+
+PlatformSelectScreen #platform-list:focus {
+    border: round $accent;
+}
+
+PlatformSelectScreen #platform-list > .option-list--option-highlighted {
+    background: $success;
+    color: $background;
+    text-style: bold;
+}
+
+PlatformSelectScreen #hint {
+    text-align: center;
+    color: $text-muted;
+    padding: 1 0 0 0;
+}
+
+/* === 主界面 === */
+MainScreen {
+    background: $background;
+}
+
+MainScreen #main-container {
+    width: 100%;
+    height: 100%;
+}
+
+MainScreen #content-area {
+    width: 100%;
+    height: 1fr;
+    padding: 0 1;
+}
+
+/* === 搜索框 === */
+MainScreen #search-container {
+    width: 100%;
+    height: 3;
+    padding: 0 1;
+}
+
+MainScreen #search-container.-hidden {
+    display: none;
+}
+
+MainScreen #search-input {
+    width: 100%;
+    height: 1;
+    border: none;
+    background: $surface;
+    padding: 0 1;
+}
+
+MainScreen #search-input:focus {
+    background: $panel;
+}
+
+/* === 技能列表 === */
+SkillListView {
+    height: 1fr;
+    border: round $primary;
+    padding: 0;
+    scrollbar-size: 1 1;
+}
+
+SkillListView:focus {
+    border: round $accent;
+}
+
+/* === 列表项 === */
+SkillListItem {
+    height: 1;
+    padding: 0 1;
+    background: transparent;
+}
+
+SkillListItem:hover {
+    background: $surface-lighten-2;
+}
+
+/* 键盘浏览高亮 - 绿色背景 */
+SkillListItem.-highlight {
+    background: $success;
+}
+
+SkillListItem.-highlight #content {
+    color: $background;
+    text-style: bold;
+}
+
+SkillListItem #content {
+    width: 100%;
+    color: $text;
+}
+
+/* === 进度条区域 === */
+#progress-container {
+    width: 100%;
+    height: auto;
+    padding: 0 1;
+    background: $surface;
+    border-top: solid $panel;
+}
+
+#progress-container.-hidden {
+    display: none;
+}
+
+#progress-row {
+    width: 100%;
+    height: 3;
+    align: center middle;
+    padding: 1 0;
+}
+
+#progress-label {
+    width: 30;
+    padding: 0 1;
+    color: $text;
+}
+
+#progress-bar {
+    width: 1fr;
+    height: 1;
+}
+
+#progress-bar Bar {
+    width: 1fr;
+}
+
+#progress-bar Bar > .bar--bar {
+    color: $success;
+}
+
+#progress-count {
+    width: 10;
+    text-align: right;
+    padding: 0 1;
+    color: $accent;
+}
+
+/* === 日志区域 === */
+#log-container {
+    width: 100%;
+    height: 10;
+    padding: 0 1;
+    background: $surface;
+}
+
+#log-container.-hidden {
+    display: none;
+}
+
+#install-log {
+    width: 100%;
+    height: 100%;
+    border: round $panel;
+    background: $background;
+    padding: 0 1;
+}
+
+/* === 技能详情模态框 === */
+SkillDetailModal {
+    align: center middle;
+}
+
+SkillDetailModal #dialog {
+    width: 70;
+    height: auto;
+    max-height: 80%;
+    padding: 1 2;
+    border: round $primary;
+    background: $surface;
+}
+
+SkillDetailModal #title {
+    text-align: center;
+    text-style: bold;
+    color: $primary;
+    padding: 1 0;
+}
+
+SkillDetailModal #content {
+    width: 100%;
+    height: auto;
+    padding: 1 0;
+}
+
+SkillDetailModal #hint {
+    text-align: center;
+    color: $text-muted;
+    padding: 1 0 0 0;
+}
+
+/* === 工具类 === */
+.text-muted {
+    color: $text-muted;
+}
+
+.-hidden {
+    display: none;
+}

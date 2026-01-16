@@ -1,0 +1,65 @@
+# External Skills Registry - 外部技能注册表
+# 支持通过 npm/npx/pip/git 安装的外部技能
+#
+# 类型说明:
+#   npm-cli  - 全局安装 npm 包后执行 init 命令
+#   npx      - 直接通过 npx 执行（无需全局安装）
+#   pip-cli  - 全局安装 pip 包后执行命令
+#   git      - 克隆 git 仓库后执行安装脚本
+
+# ============================================================
+# UI/UX Pro Max - 设计智能技能
+# ============================================================
+[skills.ui-ux-pro-max]
+description = "UI/UX design intelligence for AI coding assistants"
+type = "npm-cli"
+package = "uipro-cli"
+install_command = "npm install -g uipro-cli"
+init_command = "uipro init"
+init_args = ["--ai", "{target}"]
+# 目标平台映射 (本项目 target -> 外部工具 target)
+target_map = { claude = "claude", codex = "codex", gemini = "gemini", windsurf = "windsurf", kiro = "kiro" }
+# 支持的所有目标
+supported_targets = ["claude", "codex", "cursor", "windsurf", "kiro", "gemini", "copilot", "antigravity", "trae", "opencode", "all"]
+requires = ["node"]
+homepage = "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
+license = "MIT"
+
+# ============================================================
+# 示例: npx 类型 (无需全局安装)
+# ============================================================
+# [skills.example-npx-skill]
+# description = "Example skill using npx"
+# type = "npx"
+# package = "example-skill-cli"
+# init_command = "npx example-skill-cli install"
+# init_args = ["--platform", "{target}"]
+# supported_targets = ["claude", "codex"]
+# requires = ["node"]
+
+# ============================================================
+# 示例: pip 类型
+# ============================================================
+# [skills.example-pip-skill]
+# description = "Example Python-based skill"
+# type = "pip-cli"
+# package = "example-skill"
+# install_command = "pip install example-skill"
+# init_command = "example-skill init"
+# init_args = ["--target", "{target}"]
+# supported_targets = ["claude"]
+# requires = ["python3"]
+
+# ============================================================
+# 示例: git 类型
+# ============================================================
+# [skills.example-git-skill]
+# description = "Example skill from git repo"
+# type = "git"
+# repo = "https://github.com/user/skill-repo"
+# branch = "main"
+# post_clone = "pip install -r requirements.txt"
+# init_command = "python install.py"
+# init_args = ["--target", "{target}"]
+# supported_targets = ["claude", "codex"]
+# requires = ["python3", "git"]
