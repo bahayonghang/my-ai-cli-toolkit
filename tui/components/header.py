@@ -1,9 +1,10 @@
 """Header 组件 - 简洁顶部栏
 
-显示标题和平台徽章，CCR 风格。
+显示标题和平台徽章，CCR 风格。支持显示项目路径和 Kiro 模式。
 Requirements: 3.1, 3.2, 3.3, 3.4
 """
 
+from pathlib import Path
 from textual.widgets import Static
 from textual.containers import Horizontal
 
@@ -11,8 +12,8 @@ from textual.containers import Horizontal
 class Header(Static):
     """简洁顶部标题栏
     
-    左侧: 🚀 标题
-    右侧: 平台徽章 (橙色背景)
+    左侧: 🚀 标题 [项目路径]
+    右侧: 平台徽章 (橙色背景) [Kiro 标识]
     """
     
     DEFAULT_CSS = """
@@ -46,21 +47,55 @@ class Header(Static):
     
     APP_TITLE = "🚀 MyClaude Skills Manager"
     
-    def __init__(self, platform: str = "") -> None:
+    def __init__(
+        self, 
+        platform: str = "",
+        project_path: str | None = None,
+        use_kiro: bool = False
+    ) -> None:
         super().__init__()
         self._platform = platform
+        self._project_path = project_path
+        self._use_kiro = use_kiro
     
     def compose(self):
         with Horizontal(id="header-row"):
-            yield Static(self.APP_TITLE, id="app-title")
+            yield Static(self._format_title(), id="app-title")
             yield Static(self._format_badge(), id="platform-badge")
     
-    def _format_badge(self) -> str:
-        return self._platform.upper() if self._platform else "—"
+    def _format_title(self) -> str:
+        """格式化标题，包含项目路径信息"""
+        title = self.APP_TITLE
+        if self._project_path:
+            try:
+                # 尝试获取相对路径，更简洁
+                rel_path = Path(self._project_path).relative_to(Path.cwd())
+                title += f" | 📁 {rel_path}"
+            except ValueError:
+                # 如果无法获取相对路径，使用绝对路径
+                title += f" | 📁 {self._project_path}"
+        return title
     
-    def set_platform(self, platform: str) -> None:
+    def _format_badge(self) -> str:
+        """格式化平台徽章，包含 Kiro 标识"""
+        badge = self._platform.upper() if self._platform else "—"
+        if self._use_kiro:
+            badge += " [KIRO]"
+        return badge
+    
+    def set_platform(
+        self, 
+        platform: str,
+        project_path: str | None = None,
+        use_kiro: bool = False
+    ) -> None:
+        """更新平台信息"""
         self._platform = platform
+        self._project_path = project_path
+        self._use_kiro = use_kiro
         try:
+            title = self.query_one("#app-title", Static)
+            title.update(self._format_title())
             badge = self.query_one("#platform-badge", Static)
             badge.update(self._format_badge())
         except Exception:

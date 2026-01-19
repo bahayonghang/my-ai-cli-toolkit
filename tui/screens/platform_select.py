@@ -1,14 +1,15 @@
 """平台选择屏幕
 
 启动时首先显示，让用户选择目标平台 (Claude, Codex, Gemini)。
-支持键盘导航和选择。
+支持键盘导航和选择。支持项目路径输入和 Kiro 模式选择。
 
 Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 2.5
 """
 
+from pathlib import Path
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, OptionList
+from textual.widgets import Static, OptionList, Input, Checkbox, Button
 from textual.widgets.option_list import Option
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal
@@ -104,6 +105,58 @@ class PlatformSelectScreen(Screen):
         text-style: bold;
     }
     
+    /* 项目路径输入区 */
+    PlatformSelectScreen #project-section {
+        width: 100%;
+        height: auto;
+        padding: 2 0 0 0;
+    }
+    
+    PlatformSelectScreen #project-label {
+        text-align: center;
+        color: $text-muted;
+        padding: 0 0 1 0;
+    }
+    
+    PlatformSelectScreen #project-path-input {
+        width: 100%;
+        border: round $panel;
+        background: $surface;
+    }
+    
+    PlatformSelectScreen #project-path-input:focus {
+        border: round $accent;
+    }
+    
+    /* Kiro 复选框区 */
+    PlatformSelectScreen #kiro-section {
+        width: 100%;
+        height: auto;
+        padding: 1 0 0 0;
+        align: center middle;
+    }
+    
+    PlatformSelectScreen #kiro-checkbox {
+        width: auto;
+    }
+    
+    /* 按钮区 */
+    PlatformSelectScreen #button-section {
+        width: 100%;
+        height: auto;
+        padding: 2 0 0 0;
+        align: center middle;
+    }
+    
+    PlatformSelectScreen #button-row {
+        width: auto;
+        height: auto;
+    }
+    
+    PlatformSelectScreen Button {
+        margin: 0 1;
+    }
+    
     /* 底部提示栏 */
     PlatformSelectScreen #footer-area {
         width: 100%;
@@ -153,11 +206,29 @@ class PlatformSelectScreen(Screen):
                     *[Option(self._format_option(p), id=p.id) for p in self.PLATFORMS],
                     id="platform-list"
                 )
+                
+                # 项目路径输入区
+                with Vertical(id="project-section"):
+                    yield Static("📁 Project Path (Optional)", id="project-label")
+                    yield Input(
+                        placeholder="./my-project or /absolute/path",
+                        id="project-path-input"
+                    )
+                
+                # Kiro 复选框区
+                with Vertical(id="kiro-section"):
+                    yield Checkbox("Use Kiro Structure (.kiro/)", id="kiro-checkbox")
+                
+                # 按钮区
+                with Vertical(id="button-section"):
+                    with Horizontal(id="button-row"):
+                        yield Button("Continue", variant="primary", id="continue-btn")
+                        yield Button("Cancel", variant="default", id="cancel-btn")
         
         # 底部提示栏
         with Vertical(id="footer-area"):
             with Horizontal(id="footer-row"):
-                yield Static("↑↓ Navigate  ⏎ Select  ⎋ Quit", id="hint")
+                yield Static("↑↓ Navigate  ⏎ Select  Tab Switch  ⎋ Quit", id="hint")
                 yield Static("v1.0", id="version")
     
     def _format_option(self, platform: PlatformConfig) -> str:
@@ -170,8 +241,61 @@ class PlatformSelectScreen(Screen):
         self.query_one("#platform-list", OptionList).focus()
     
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        if event.option.id:
-            self.app.set_platform(str(event.option.id))
+        """当用户在平台列表中按回车时，聚焦到继续按钮"""
+        # 不直接进入，而是让用户点击 Continue 按钮
+        try:
+            self.query_one("#continue-btn", Button).focus()
+        except Exception:
+            pass
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """处理按钮点击事件"""
+        if event.button.id == "cancel-btn":
+            self.app.exit()
+            return
+        
+        if event.button.id == "continue-btn":
+            # 收集参数
+            platform_list = self.query_one("#platform-list", OptionList)
+            if platform_list.highlighted is None:
+                self.notify("Please select a platform", severity="warning")
+                return
+            
+            platform_option = platform_list.get_option_at_index(platform_list.highlighted)
+            if platform_option is None or platform_option.id is None:
+                self.notify("Invalid platform selection", severity="error")
+                return
+            
+            platform = str(platform_option.id)
+            project_path = self.query_one("#project-path-input", Input).value.strip()
+            use_kiro = self.query_one("#kiro-checkbox", Checkbox).value
+            
+            # 验证参数
+            if use_kiro and not project_path:
+                self.notify(
+                    "Kiro structure requires a project path",
+                    severity="error",
+                    title="Validation Error"
+                )
+                return
+            
+            # 验证路径存在性（如果提供了路径）
+            if project_path:
+                path = Path(project_path)
+                if not path.exists():
+                    self.notify(
+                        f"Path does not exist: {project_path}",
+                        severity="warning",
+                        title="Path Warning"
+                    )
+                    # 不阻止继续，只是警告
+            
+            # 传递参数到主界面
+            self.app.set_platform(
+                platform,
+                project_path=project_path if project_path else None,
+                use_kiro=use_kiro
+            )
     
     def action_quit(self) -> None:
         self.app.exit()

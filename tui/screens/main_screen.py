@@ -34,9 +34,16 @@ class MainScreen(Screen):
         Binding("k", "cursor_up", "k Up", show=False),
     ]
     
-    def __init__(self, platform: str = "claude") -> None:
+    def __init__(
+        self, 
+        platform: str = "claude",
+        project_path: str | None = None,
+        use_kiro: bool = False
+    ) -> None:
         super().__init__()
         self._platform = platform
+        self._project_path = project_path
+        self._use_kiro = use_kiro
         self._manager: TUIManager | None = None
         self._search_visible = False
         self._installing = False  # 安装进行中标志
@@ -44,7 +51,11 @@ class MainScreen(Screen):
     @property
     def manager(self) -> TUIManager:
         if self._manager is None:
-            self._manager = TUIManager(self._platform)
+            self._manager = TUIManager(
+                self._platform, 
+                project_path=self._project_path, 
+                use_kiro=self._use_kiro
+            )
         return self._manager
     
     def _get_commands_tab_label(self) -> str:
@@ -56,7 +67,11 @@ class MainScreen(Screen):
         return "Commands"
     
     def compose(self) -> ComposeResult:
-        yield Header(platform=self._platform)
+        yield Header(
+            platform=self._platform,
+            project_path=self._project_path,
+            use_kiro=self._use_kiro
+        )
         with Vertical(id="main-container"):
             with Container(id="search-container", classes="-hidden"):
                 yield Input(placeholder="Search... (Esc)", id="search-input")
@@ -80,7 +95,11 @@ class MainScreen(Screen):
     
     def _refresh_data(self) -> None:
         header = self.query_one(Header)
-        header.set_platform(self._platform)
+        header.set_platform(
+            self._platform,
+            project_path=self._project_path,
+            use_kiro=self._use_kiro
+        )
         
         skills_list = self.query_one("#skills-list", ItemListView)
         if self.manager.check_skills_source_exists():

@@ -38,16 +38,27 @@ class TUIManager:
     
     Attributes:
         platform: 目标平台 (claude, codex, gemini)
+        project_path: 项目路径（可选）
+        use_kiro: 是否使用 Kiro 结构
     """
     
-    def __init__(self, platform: str):
+    def __init__(
+        self, 
+        platform: str,
+        project_path: Optional[str] = None,
+        use_kiro: bool = False
+    ):
         """初始化 TUIManager
         
         Args:
             platform: 目标平台名称
+            project_path: 项目路径（可选）
+            use_kiro: 是否使用 Kiro 结构
         """
         self.platform = platform
-        self._manager = SkillManager(platform)
+        self.project_path = project_path
+        self.use_kiro = use_kiro
+        self._manager = SkillManager(platform, project_path=project_path, use_kiro=use_kiro)
     
     @property
     def target_skills_dir(self) -> Path:

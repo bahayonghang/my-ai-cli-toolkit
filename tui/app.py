@@ -41,6 +41,8 @@ class SkillInstallerApp(App):
         """初始化应用"""
         super().__init__()
         self.current_platform: str | None = None
+        self.current_project_path: str | None = None
+        self.current_use_kiro: bool = False
         # 注册 MyClaude 自定义主题
         self.register_theme(myclaudeTheme)
     
@@ -53,17 +55,30 @@ class SkillInstallerApp(App):
         self.theme = "myclaude"
         self.push_screen("platform_select")
     
-    def set_platform(self, platform: str) -> None:
+    def set_platform(
+        self, 
+        platform: str,
+        project_path: str | None = None,
+        use_kiro: bool = False
+    ) -> None:
         """设置当前平台并进入主界面
         
         Args:
             platform: 平台名称 (claude/codex/gemini)
+            project_path: 项目路径（可选）
+            use_kiro: 是否使用 Kiro 结构
         
         Requirements: 1.4 - 选择平台后进入主界面
         """
         self.current_platform = platform
+        self.current_project_path = project_path
+        self.current_use_kiro = use_kiro
         # 创建并推送主界面，传入平台参数
-        main_screen = MainScreen(platform=platform)
+        main_screen = MainScreen(
+            platform=platform,
+            project_path=project_path,
+            use_kiro=use_kiro
+        )
         self.push_screen(main_screen)
     
     def action_toggle_platform(self) -> None:
