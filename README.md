@@ -151,18 +151,91 @@ python3 install.py --target windsurf install-all
 python3 install.py prompt-update
 ```
 
+### Project-Level Installation
+
+Install skills to a specific project instead of globally:
+
+```bash
+# Install to a project directory
+python3 install.py install frontend-engineer --project ./my-web-app
+
+# Install to a Kiro project (.kiro/skills/ and .kiro/steering/)
+python3 install.py install skill-name --project ./my-kiro-project --kiro
+
+# Install all skills to a project
+python3 install.py install-all --project ./my-project
+
+# Install with different target platforms
+python3 install.py install skill-name --project ./my-project --target codex
+
+# List skills in a project
+python3 install.py list-skills --project ./my-project
+
+# List installed skills in a project
+python3 install.py installed --project ./my-project
+```
+
+**Project Installation Features:**
+- 📁 Install to any project directory (relative or absolute paths)
+- 🎯 Supports all target platforms (Claude, Codex, Gemini, Qwen, Antigravity, Windsurf)
+- 🚀 Kiro mode: Use `.kiro/skills/` and `.kiro/steering/` structure
+- 🔄 Path normalization: Handles `~`, `..`, `.`, and symlinks automatically
+- ✅ Permission validation: Checks write access before installation
+- 📊 Clear feedback: Shows installation location and progress
+
+**Directory Structure:**
+
+Global installation:
+```
+~/.claude/
+├── skills/
+│   └── frontend-engineer/
+└── commands/
+    └── git-commit.md
+```
+
+Project-level installation (Claude):
+```
+./my-project/
+├── .claude/
+│   ├── skills/
+│   │   └── frontend-engineer/
+│   └── commands/
+│       └── git-commit.md
+└── src/
+```
+
+Project-level installation (Kiro):
+```
+./my-kiro-project/
+├── .kiro/
+│   ├── skills/
+│   │   └── frontend-engineer/
+│   └── steering/
+│       └── git-commit.md
+└── src/
+```
+
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `python3 install.py list` | List all available skills |
+| `python3 install.py list-skills` | List all available skills |
 | `python3 install.py installed` | List currently installed skills |
 | `python3 install.py install <skill> [skill2...]` | Install specific skill(s) |
 | `python3 install.py install-all` | Install all skills |
+| `python3 install.py install-commands` | Install commands/workflows |
 | `python3 install.py interactive` | Interactive skill selection |
 | `python3 install.py prompt-diff` | Show diff between local and global CLAUDE.md |
 | `python3 install.py prompt-update` | Sync CLAUDE.md to ~/.claude/ |
 | `python3 install.py --target gemini <command>` | Run command targeting Gemini |
+| `python3 install.py --project <path> <command>` | Install to project directory |
+| `python3 install.py --project <path> --kiro <command>` | Install to Kiro project (.kiro/) |
+
+**Common Options:**
+- `--target, -t`: Target platform (claude, codex, gemini, qwen, antigravity, windsurf)
+- `--project, -p`: Project path for local installation (relative or absolute)
+- `--kiro`: Use Kiro structure (.kiro/skills/ and .kiro/steering/)
 
 ### TUI Mode (Recommended)
 
@@ -174,6 +247,8 @@ python3 install_tui.py
 
 The TUI provides:
 - 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf)
+- 📁 **Project path input** for local installation
+- 🚀 **Kiro mode checkbox** for .kiro/ structure
 - 📋 Tabbed interface for Skills and Commands/Workflows
 - ⌨️ Keyboard shortcuts for quick operations
 - 🔍 Real-time search filtering
@@ -194,6 +269,14 @@ The TUI provides:
 | `/` | Search |
 | `t` | Switch platform |
 | `q` | Quit |
+
+**TUI Project Installation:**
+1. Launch TUI: `python3 install_tui.py`
+2. Select your target platform
+3. Enter project path (optional): `./my-project`
+4. Check "Use Kiro Structure" if needed
+5. Click "Continue" to proceed
+6. Install skills as usual
 
 **Requirements:** Python 3.10+ and [Textual](https://textual.textualize.io/) library (`pip install textual`)
 
@@ -312,6 +395,30 @@ A: The target determines the installation directory:
 - Antigravity: `~/.gemini/antigravity/skills/` and `~/.gemini/antigravity/workflows/`
 - Windsurf: `~/.codeium/windsurf/skills/` and `~/.codeium/windsurf/workflows/`
 
+**Q: How do I install skills to a specific project?**
+
+A: Use the `--project` parameter:
+```bash
+python3 install.py install skill-name --project ./my-project
+```
+This installs to `./my-project/.claude/skills/` instead of `~/.claude/skills/`.
+
+**Q: What is Kiro mode?**
+
+A: Kiro mode uses a special directory structure (`.kiro/skills/` and `.kiro/steering/`) designed for Kiro projects:
+```bash
+python3 install.py install skill-name --project ./my-kiro-project --kiro
+```
+This installs to `./my-kiro-project/.kiro/skills/` and commands to `.kiro/steering/`.
+
+**Q: Can I use relative paths for project installation?**
+
+A: Yes! The installer automatically handles:
+- Relative paths: `./my-project`, `../other-project`
+- Absolute paths: `/home/user/projects/my-project`
+- Home directory: `~/projects/my-project`
+- Parent directories: `../../my-project`
+
 **Q: How do I update an existing skill?**
 
 A: Simply run the install command again. It will overwrite the existing skill with the latest version.
@@ -323,6 +430,10 @@ A: Yes. The `installed` command shows which skills come from this repository vs 
 **Q: Where is the backup stored when updating CLAUDE.md?**
 
 A: Backups are created in `~/.claude/` with timestamp suffix, e.g., `CLAUDE.md.backup.20240115_143022`.
+
+**Q: What happens if I don't have write permission to the project directory?**
+
+A: The installer validates write permissions before installation and shows a clear error message with suggestions if permission is denied.
 
 ## Plugin Installer
 
