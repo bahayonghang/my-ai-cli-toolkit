@@ -11,10 +11,74 @@ from textual.message import Message
 from ..core.models import ItemInfo, InstallStatus
 
 
+def get_display_width(text: str) -> int:
+    """计算字符串的显示宽度（考虑中文字符）
+    
+    Args:
+        text: 要计算宽度的字符串
+        
+    Returns:
+        显示宽度（中文字符算2，英文字符算1）
+    """
+    width = 0
+    for char in text:
+        # 中文字符、全角符号等占2个显示宽度
+        if ord(char) > 0x7F:  # 非ASCII字符
+            width += 2
+        else:
+            width += 1
+    return width
+
+
+def truncate_to_width(text: str, max_width: int) -> str:
+    """截断字符串到指定显示宽度
+    
+    Args:
+        text: 要截断的字符串
+        max_width: 最大显示宽度
+        
+    Returns:
+        截断后的字符串
+    """
+    if not text:
+        return ""
+    
+    result = []
+    current_width = 0
+    
+    for char in text:
+        char_width = 2 if ord(char) > 0x7F else 1
+        if current_width + char_width > max_width:
+            break
+        result.append(char)
+        current_width += char_width
+    
+    return ''.join(result)
+
+
+def pad_to_width(text: str, target_width: int) -> str:
+    """填充字符串到指定显示宽度
+    
+    Args:
+        text: 要填充的字符串
+        target_width: 目标显示宽度
+        
+    Returns:
+        填充后的字符串
+    """
+    current_width = get_display_width(text)
+    if current_width >= target_width:
+        return text
+    
+    # 用空格填充到目标宽度
+    padding = target_width - current_width
+    return text + ' ' * padding
+
+
 class SelectableItem(ListItem):
     """紧凑型可选择列表项
     
-    单行显示: ☐/☑  ✓/○  name  -  description
+    单行显示: ☐/☑  ✓/○/⚠  name  -  description  [dates]
     优化性能：减少嵌套组件，使用纯文本渲染
     """
     
@@ -59,6 +123,11 @@ class SelectableItem(ListItem):
         text-style: bold;
     }
     
+    /* 需要更新的项目 - 黄色警告 */
+    SelectableItem.-outdated #content {
+        color: $warning;
+    }
+    
     SelectableItem #content {
         width: 100%;
         color: $text;
@@ -91,6 +160,10 @@ class SelectableItem(ListItem):
         return self.item_info.is_installed
     
     @property
+    def needs_update(self) -> bool:
+        return self.item_info.needs_update
+    
+    @property
     def selected(self) -> bool:
         return self._selected
     
@@ -106,20 +179,54 @@ class SelectableItem(ListItem):
         self._content = Static(self._render_line(False), id="content")
         yield self._content
     
+    def _format_datetime(self, dt) -> str:
+        """格式化日期时间为简短格式
+        
+        Args:
+            dt: datetime 对象
+            
+        Returns:
+            格式化的日期字符串，如 "01-21 14:30"
+        """
+        if dt is None:
+            return "N/A".ljust(11)
+        return dt.strftime("%m-%d %H:%M")
+    
     def _render_line(self, highlighted: bool = False) -> str:
-        """渲染单行内容: ▶/  ☐/☑  ✓/○  name  -  description"""
+        """渲染单行内容（表格式布局）
+        
+        格式: ▶ ☐ ✓ Name                     Description                                      Src Time     Tgt Time
+        """
         # 高亮指示箭头
         arrow = "▶" if highlighted else " "
-        # 复选框
-        checkbox = "☑" if self._selected else "☐"
-        # 安装状态
-        status = "✓" if self.installed else "○"
-        # 名称 (固定宽度)
-        name = self.item_name.ljust(26)[:26]
-        # 描述
-        desc = self.description or ""
         
-        return f"{arrow} {checkbox}  {status}  {name}  {desc}"
+        # 复选框列 (固定1字符)
+        checkbox = "☑" if self._selected else "☐"
+        
+        # 状态列 (固定1字符)
+        if self.needs_update:
+            status = "⚠"  # 需要更新
+        elif self.installed:
+            status = "✓"  # 已安装
+        else:
+            status = "○"  # 未安装
+        
+        # 名称列 (固定显示宽度 24)
+        name_text = truncate_to_width(self.item_name, 24)
+        name = pad_to_width(name_text, 24)
+        
+        # 描述列 (固定显示宽度 48，考虑中文字符)
+        desc = self.description or ""
+        desc_text = truncate_to_width(desc, 48)
+        desc = pad_to_width(desc_text, 48)
+        
+        # 源时间列 (固定宽度 11: "MM-DD HH:MM")
+        src_time = self._format_datetime(self.item_info.source_mtime)
+        
+        # 目标时间列 (固定宽度 11)
+        tgt_time = self._format_datetime(self.item_info.target_mtime)
+        
+        return f"{arrow} {checkbox} {status} {name} {desc} {src_time} {tgt_time}"
     
     def _update_display(self) -> None:
         """更新显示"""
@@ -127,6 +234,12 @@ class SelectableItem(ListItem):
             self.add_class("-selected")
         else:
             self.remove_class("-selected")
+        
+        # 标记需要更新的项目
+        if self.needs_update:
+            self.add_class("-outdated")
+        else:
+            self.remove_class("-outdated")
         
         if self._content:
             # 检查是否有高亮
@@ -162,6 +275,15 @@ class ItemListView(ListView):
     ItemListView:focus {
         border: round $accent;
     }
+    
+    /* 表头样式 */
+    .list-header {
+        background: $surface;
+        color: $accent;
+        text-style: bold;
+        height: 1;
+        padding: 0 1;
+    }
     """
     
     class SelectionCountChanged(Message):
@@ -181,10 +303,24 @@ class ItemListView(ListView):
     def items(self) -> list[SelectableItem]:
         return self._all_items
     
+    def _create_header(self) -> ListItem:
+        """创建表头"""
+        # 格式与 SelectableItem._render_line 对齐
+        # ▶ ☐ ✓ Name                     Description                                      Src Time     Tgt Time
+        # 列名对齐：箭头(1) 空格 复选框列(1) 空格 状态列(1) 空格 名称(24) 空格 描述(48) 空格 源时间(11) 空格 目标时间(11)
+        # 使用空格填充使列名与数据对齐
+        header_text = "  ☐ ✓ Name                     Description                                      Src Time     Tgt Time"
+        header = ListItem(Static(header_text, classes="list-header"))
+        header.can_focus = False
+        return header
+    
     def load_items(self, item_infos: list[ItemInfo]) -> None:
         """加载项目列表"""
         self.clear()
         self._all_items = []
+        
+        # 添加表头
+        self.append(self._create_header())
         
         if not item_infos:
             # 空状态
@@ -226,6 +362,10 @@ class ItemListView(ListView):
     def _apply_filter(self) -> None:
         """应用过滤"""
         self.clear()
+        
+        # 添加表头
+        self.append(self._create_header())
+        
         visible = [item for item in self._all_items if self._matches_filter(item)]
         
         if not visible:

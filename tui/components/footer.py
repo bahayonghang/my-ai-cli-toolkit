@@ -60,6 +60,7 @@ class Footer(Static):
         self._selected_count = 0
         self._installed_count = 0
         self._total_count = 0
+        self._outdated_count = 0  # 需要更新的数量
     
     def compose(self):
         with Horizontal(id="footer-row"):
@@ -88,10 +89,17 @@ class Footer(Static):
         self._selected_count = count
         self._update_status_display()
     
-    def update_installed_count(self, installed: int, total: int) -> None:
-        """更新已安装统计"""
+    def update_installed_count(self, installed: int, total: int, outdated: int = 0) -> None:
+        """更新已安装统计
+        
+        Args:
+            installed: 已安装数量
+            total: 总数量
+            outdated: 需要更新的数量
+        """
         self._installed_count = installed
         self._total_count = total
+        self._outdated_count = outdated
         self._update_status_display()
     
     def _update_status_display(self) -> None:
@@ -106,6 +114,8 @@ class Footer(Static):
                 parts.append(f"Selected: {self._selected_count}")
             if self._total_count > 0:
                 parts.append(f"✓ Installed {self._installed_count}/{self._total_count}")
+            if self._outdated_count > 0:
+                parts.append(f"⚠ {self._outdated_count} need update")
             
             status.update("  ".join(parts) if parts else "")
         except Exception:

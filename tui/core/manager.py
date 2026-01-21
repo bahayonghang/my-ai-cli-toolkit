@@ -7,6 +7,7 @@ Requirements: 14.3, 6.1, 6.2, 8.1, 8.2, 2.7, 6.6, 13.2, 13.4
 
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -108,6 +109,51 @@ class TUIManager:
             return COMMANDS_SRC_DIR / "windsurf"
         return COMMANDS_SRC_DIR / "claude"
     
+    def _get_file_mtime(self, path: Path) -> Optional[datetime]:
+        """获取文件修改时间
+        
+        Args:
+            path: 文件路径
+            
+        Returns:
+            修改时间，如果文件不存在返回 None
+        """
+        try:
+            if path.exists():
+                return datetime.fromtimestamp(path.stat().st_mtime)
+        except Exception:
+            pass
+        return None
+    
+    def _determine_install_status(
+        self, 
+        target_path: Path,
+        source_mtime: Optional[datetime],
+        target_mtime: Optional[datetime]
+    ) -> InstallStatus:
+        """判断安装状态
+        
+        Args:
+            target_path: 目标路径
+            source_mtime: 源文件修改时间
+            target_mtime: 目标文件修改时间
+            
+        Returns:
+            安装状态
+        """
+        if not target_path.exists():
+            return InstallStatus.NOT_INSTALLED
+        
+        # 如果无法获取修改时间，默认为已安装
+        if source_mtime is None or target_mtime is None:
+            return InstallStatus.INSTALLED
+        
+        # 比较修改时间（源文件更新则标记为过期）
+        if source_mtime > target_mtime:
+            return InstallStatus.OUTDATED
+        
+        return InstallStatus.INSTALLED
+    
     def get_skills(self) -> list[ItemInfo]:
         """获取所有技能列表
         
@@ -124,16 +170,27 @@ class TUIManager:
         for skill_dir in sorted(SKILLS_SRC_DIR.iterdir()):
             if skill_dir.is_dir():
                 target_path = self._manager.target_skills_dir / skill_dir.name
-                installed = target_path.exists()
+                
+                # 获取修改时间
+                source_mtime = self._get_file_mtime(skill_dir)
+                target_mtime = self._get_file_mtime(target_path)
+                
+                # 判断安装状态
+                status = self._determine_install_status(
+                    target_path, source_mtime, target_mtime
+                )
+                
                 desc = self._manager.get_skill_description(skill_dir)
                 
                 skills.append(ItemInfo(
                     name=skill_dir.name,
                     item_type=ItemType.SKILL,
                     description=desc,
-                    status=InstallStatus.INSTALLED if installed else InstallStatus.NOT_INSTALLED,
+                    status=status,
                     source_path=skill_dir,
                     target_path=target_path,
+                    source_mtime=source_mtime,
+                    target_mtime=target_mtime,
                 ))
         
         return skills
@@ -178,15 +235,25 @@ class TUIManager:
                 
                 # 目标路径保持相同的目录结构
                 target_file = self._manager.target_commands_dir / rel_path
-                installed = target_file.exists()
+                
+                # 获取修改时间
+                source_mtime = self._get_file_mtime(cmd_file)
+                target_mtime = self._get_file_mtime(target_file)
+                
+                # 判断安装状态
+                status = self._determine_install_status(
+                    target_file, source_mtime, target_mtime
+                )
                 
                 commands.append(ItemInfo(
                     name=cmd_name,
                     item_type=ItemType.COMMAND,
                     description=None,
-                    status=InstallStatus.INSTALLED if installed else InstallStatus.NOT_INSTALLED,
+                    status=status,
                     source_path=cmd_file,
                     target_path=target_file,
+                    source_mtime=source_mtime,
+                    target_mtime=target_mtime,
                 ))
         
         return commands

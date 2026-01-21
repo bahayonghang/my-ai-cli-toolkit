@@ -135,8 +135,9 @@ class MainScreen(Screen):
         active_list = self._get_active_list()
         items = active_list.items
         installed = sum(1 for item in items if item.installed)
+        outdated = sum(1 for item in items if item.needs_update)
         total = len(items)
-        self.query_one(Footer).update_installed_count(installed, total)
+        self.query_one(Footer).update_installed_count(installed, total, outdated)
     
     def action_next_tab(self) -> None:
         tabs = self.query_one("#tabs", TabbedContent)

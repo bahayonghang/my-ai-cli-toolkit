@@ -5,6 +5,7 @@ TUI 数据模型
 """
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Optional
@@ -20,6 +21,7 @@ class InstallStatus(Enum):
     """安装状态枚举"""
     INSTALLED = "installed"
     NOT_INSTALLED = "not_installed"
+    OUTDATED = "outdated"  # 已安装但源文件更新
 
 
 @dataclass
@@ -33,6 +35,8 @@ class ItemInfo:
         status: 安装状态
         source_path: 源文件路径 (可选)
         target_path: 目标安装路径 (可选)
+        source_mtime: 源文件修改时间 (可选)
+        target_mtime: 目标文件修改时间 (可选)
     """
     name: str
     item_type: ItemType
@@ -40,11 +44,18 @@ class ItemInfo:
     status: InstallStatus = InstallStatus.NOT_INSTALLED
     source_path: Optional[Path] = None
     target_path: Optional[Path] = None
+    source_mtime: Optional[datetime] = None
+    target_mtime: Optional[datetime] = None
     
     @property
     def is_installed(self) -> bool:
         """检查是否已安装"""
-        return self.status == InstallStatus.INSTALLED
+        return self.status in (InstallStatus.INSTALLED, InstallStatus.OUTDATED)
+    
+    @property
+    def needs_update(self) -> bool:
+        """检查是否需要更新"""
+        return self.status == InstallStatus.OUTDATED
 
 
 @dataclass
