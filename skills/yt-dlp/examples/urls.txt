@@ -1,0 +1,22 @@
+# yt-dlp 批量下载 URL 列表示例
+# 每行一个 URL，以 # 开头的行会被忽略
+
+# ==================== YouTube ====================
+# https://www.youtube.com/watch?v=dQw4w9WgXcQ
+# https://youtu.be/dQw4w9WgXcQ
+
+# ==================== Bilibili ====================
+# https://www.bilibili.com/video/BV1xx411c7mD/
+# https://b23.tv/xxx
+
+# ==================== Twitter/X ====================
+# https://twitter.com/user/status/123456789
+
+# ==================== Instagram ====================
+# https://www.instagram.com/p/ABC123/
+
+# ==================== TikTok ====================
+# https://www.tiktok.com/@user/video/123456789
+
+# ==================== 播放列表 ====================
+# https://www.youtube.com/playlist?list=PLxxxxxx
