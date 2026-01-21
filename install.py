@@ -412,11 +412,15 @@ class SkillManager:
             log_warn(f"No specific commands found for target {self.target} in {src_cmd_dir}")
             return
 
-        # Copy contents to target_commands_dir
+        # Copy contents to target_commands_dir with force overwrite
         try:
-            # shutil.copytree requires the destination dir to not exist for Python < 3.8 if dirs_exist_ok is not used
-            # We use dirs_exist_ok=True (Python 3.8+) to allow merging/overwriting
-            shutil.copytree(src_cmd_dir, self.target_commands_dir, dirs_exist_ok=True)
+            # Force overwrite: remove existing directory first
+            if self.target_commands_dir.exists():
+                log_warn(f"Overwriting existing commands directory: {self.target_commands_dir}")
+                shutil.rmtree(self.target_commands_dir)
+            
+            # Copy fresh content
+            shutil.copytree(src_cmd_dir, self.target_commands_dir)
 
             log_success(f"Installed commands to {self.target_commands_dir}")
             if self.target == "codex":
