@@ -20,6 +20,7 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 | [mcp-to-skill](./mcp-to-skill) | Development | Convert MCP servers to Claude Code Skills |
 | [skill-manager](./skill-manager) | Development | Search and install 31,767+ community skills |
 | [external-skills-tui](./external-skills-tui) | Development | TUI for managing external npm/pip/git skills |
+| [yt-dlp](./yt-dlp) | Utilities | Video downloader for YouTube, Bilibili, and 1000+ sites |
 | [IEEE-writing-skills](./IEEE-writing-skills) | Academic | Translate, polish, and validate IEEE papers |
 | [latex-paper-en](./latex-paper-en) | Academic | LaTeX assistant for English academic papers |
 | [latex-thesis-zh](./latex-thesis-zh) | Academic | Chinese thesis LaTeX assistant with GB/T 7714 |
@@ -73,6 +74,11 @@ Skills for creating and managing skills:
 - **mcp-to-skill** - Convert MCP servers to Claude Code Skills
 - **skill-manager** - Search and install 31,767+ community skills from GitHub
 - **external-skills-tui** - Modern TUI for managing external npm/pip/git skills
+
+### Utilities
+
+Useful tools and utilities:
+- **yt-dlp** - Video downloader for YouTube, Bilibili, and 1000+ sites with automatic FFmpeg detection
 
 ### OMO Agents (Multi-Agent System)
 

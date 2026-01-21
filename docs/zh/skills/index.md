@@ -17,6 +17,7 @@ MyClaude Skills 提供一系列专门的 AI 技能，用于不同的开发任务
 | [tech-blog](./tech-blog) | 文档 | 撰写技术博客 |
 | [tech-design-doc](./tech-design-doc) | 文档 | 生成技术设计文档 |
 | [skill-manager](./skill-manager) | 开发 | 搜索和安装 31,767+ 社区技能 |
+| [yt-dlp](./yt-dlp) | 实用工具 | YouTube、Bilibili 等 1000+ 网站的视频下载器 |
 
 ### OMO Agents (多代理系统)
 
@@ -58,6 +59,11 @@ MyClaude Skills 提供一系列专门的 AI 技能，用于不同的开发任务
 ### 技能开发类
 用于创建和管理技能：
 - **skill-manager** - 搜索和安装 31,767+ 社区技能
+
+### 实用工具
+
+实用工具和辅助功能：
+- **yt-dlp** - YouTube、Bilibili 等 1000+ 网站的视频下载器，自动 FFmpeg 检测
 
 ### OMO Agents (多代理系统)
 

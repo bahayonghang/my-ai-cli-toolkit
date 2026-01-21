@@ -57,6 +57,7 @@ Run `python3 install.py --help` for more options.
 | [latex-thesis-zh](skills/latex-thesis-zh/) | Chinese doctoral/master thesis LaTeX assistant with GB/T 7714 support |
 | [mcp-to-skill](skills/mcp-to-skill/) | Convert MCP servers to Claude Code Skills with complete packaging |
 | [skill-manager](skills/skill-manager/) | Search, browse, and install 31,767+ community skills with intelligent folder-level downloads |
+| [yt-dlp](skills/yt-dlp/) | Powerful video downloader for YouTube, Bilibili, and 1000+ sites with automatic FFmpeg detection |
 
 ## Commands
 

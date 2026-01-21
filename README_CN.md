@@ -57,6 +57,7 @@ python3 install_tui.py
 | [latex-thesis-zh](skills/latex-thesis-zh/) | 中文博士/硕士学位论文 LaTeX 助手，支持 GB/T 7714 |
 | [mcp-to-skill](skills/mcp-to-skill/) | 将 MCP 服务器转换为 Claude Code 技能，支持完整打包 |
 | [skill-manager](skills/skill-manager/) | 搜索、浏览和安装 31,767+ 社区技能，支持智能文件夹级下载 |
+| [yt-dlp](skills/yt-dlp/) | 强大的视频下载工具，支持 YouTube、Bilibili 等 1000+ 网站，自动 FFmpeg 检测 |
 
 ## 命令
 
