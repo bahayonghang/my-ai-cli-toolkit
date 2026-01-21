@@ -22,6 +22,7 @@ export default defineConfig({
               items: [
                 { text: 'Introduction', link: '/guide/' },
                 { text: 'Installation', link: '/guide/installation' },
+                { text: 'TUI Guide', link: '/guide/tui' },
                 { text: 'Commands', link: '/guide/commands' }
               ]
             },
@@ -96,6 +97,7 @@ export default defineConfig({
               items: [
                 { text: '简介', link: '/zh/guide/' },
                 { text: '安装', link: '/zh/guide/installation' },
+                { text: 'TUI 指南', link: '/zh/guide/tui' },
                 { text: '命令', link: '/zh/guide/commands' }
               ]
             },

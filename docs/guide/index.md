@@ -14,9 +14,39 @@ Skills are reusable AI instruction modules that enhance Claude Code's capabiliti
 ## Core Features
 
 - **Modular Design** - Each skill is self-contained and focused on a specific task
-- **Easy Installation** - Simple CLI commands to install skills
+- **Easy Installation** - Simple CLI commands or modern TUI interface
+- **Update Detection** - Automatically detect outdated installations
 - **Cross-Platform** - Works on Linux, macOS, and Windows
-- **Dual Target** - Supports both Claude Code and Codex CLI
+- **Multi-Target** - Supports Claude Code, Codex CLI, Gemini, Qwen, Antigravity, and Windsurf
+- **Chinese Support** - Full support for Chinese characters in TUI
+
+## Installation Methods
+
+### TUI (Recommended)
+
+Modern terminal interface with visual feedback and update detection:
+
+```bash
+python install_tui.py
+```
+
+Features:
+- 📊 Table layout with clear columns
+- 🔄 Automatic update detection
+- ⌨️ Keyboard shortcuts
+- 🌏 Chinese character support
+
+[Learn more about TUI →](/guide/tui)
+
+### CLI
+
+Traditional command-line interface:
+
+```bash
+python install.py install-all
+```
+
+[Learn more about CLI →](/guide/installation)
 
 ## Available Skills
 
@@ -34,6 +64,7 @@ Skills are reusable AI instruction modules that enhance Claude Code's capabiliti
 
 ## Next Steps
 
+- [TUI Guide](/guide/tui) - Modern terminal interface (recommended)
 - [Installation](/guide/installation) - Set up MyClaude Skills
 - [Commands](/guide/commands) - Learn available CLI commands
 - [Creating Skills](/guide/creating-skills) - Build your own skills

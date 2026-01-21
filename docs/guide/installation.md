@@ -55,35 +55,64 @@ python3 install.py interactive
 
 ## TUI Mode (Recommended)
 
-For a modern, visual experience, use the TUI (Terminal User Interface):
+For a modern, visual experience with update detection, use the TUI (Terminal User Interface):
 
 ```bash
-python3 install_tui.py
+python install_tui.py
 ```
 
-### Features
+### Key Features
 
-- 🎯 Visual platform selection (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf)
-- 📋 Tabbed interface for Skills and Commands/Workflows
-- ⌨️ Keyboard shortcuts for quick operations
-- 🔍 Real-time search filtering
-- ✅ Multi-select batch installation
-- 📁 Nested directory support for commands (e.g., `zcf/git-commit`)
+- 🎯 **Visual Platform Selection**: Choose from Claude/Codex/Gemini/Qwen/Antigravity/Windsurf
+- 📊 **Table Layout**: Clean, aligned columns with clear headers
+- 🔄 **Update Detection**: Automatically detects outdated installations
+- 📋 **Tabbed Interface**: Separate tabs for Skills and Commands/Workflows
+- ⌨️ **Keyboard Shortcuts**: Quick operations with intuitive keys
+- 🔍 **Real-time Search**: Filter items as you type
+- ✅ **Batch Operations**: Multi-select and install multiple items
+- 🌏 **Chinese Support**: Full support for Chinese characters with proper alignment
+- 📁 **Nested Directories**: Support for nested command structures (e.g., `zcf/git-commit`)
 
-### Keyboard Shortcuts
+### Table Layout
+
+```
+  ☐ ✓ Name                     Description                                      Src Time     Tgt Time
+--------------------------------------------------------------------------------------------------------
+  ☐ ✓ article-cover            Generate professional article cover images as SV 01-02 15:43 01-02 15:43
+  ☑ ⚠ document-writer          Write technical documents with proper structure, 01-21 14:30 01-07 12:36
+  ☐ ○ paper-check              学术论文全流程检查工具，支持格式检查和内容分析（ 01-19 22:34 N/A        
+```
+
+**Column Meanings**:
+- **☐/☑**: Selection status (unselected / selected)
+- **✓/⚠/○**: Installation status (installed / needs update / not installed)
+- **Src Time**: Source file modification time
+- **Tgt Time**: Target file modification time (N/A if not installed)
+
+### Quick Start
+
+1. Launch TUI: `python install_tui.py`
+2. Select your platform
+3. Browse items with ↑↓ or jk keys
+4. Press `Space` to select items
+5. Press `i` to install selected items
+6. Items with ⚠ status need updates
+
+### Essential Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
-| `Tab` | Switch between Skills/Commands tabs |
-| `i` / `Enter` | Install focused item |
+| `↑↓` / `jk` | Navigate items |
+| `Tab` | Switch Skills/Commands tabs |
 | `Space` | Toggle selection |
-| `s` | Install selected items |
-| `a` | Install all items |
-| `Ctrl+A` | Select all |
-| `Ctrl+D` | Deselect all |
+| `i` | Install selected items |
+| `Enter` | Install focused item |
+| `a` | Select all |
 | `/` | Search |
-| `t` | Switch platform |
+| `Esc` | Clear search / Back |
 | `q` | Quit |
+
+For detailed TUI documentation, see [TUI Guide](./tui.md).
 
 ### Requirements
 
