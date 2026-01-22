@@ -47,7 +47,7 @@ Run `python3 install.py --help` for more options.
 | [frontend-design](skills/frontend-design/) | Build distinctive, production-grade frontend interfaces |
 | [gemini-image](skills/gemini-image/) | AI image generation via Gemini API (text-to-image, image-to-image) |
 | [research](skills/research/) | Technical research with web search and citation support |
-| [spec-interview](skills/spec-interview/) | Deep interview to refine technical specs through systematic questioning |
+| [spec-interview](skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration for spec-driven development |
 | [paper-replication](skills/paper-replication/) | Replicate deep learning papers into industrial-grade PyTorch code with detailed module documentation |
 | [tech-blog](skills/tech-blog/) | Write technical blog posts with source code analysis |
 | [tech-design-doc](skills/tech-design-doc/) | Generate structured technical design documents |

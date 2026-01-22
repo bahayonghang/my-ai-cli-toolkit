@@ -47,7 +47,7 @@ python3 install_tui.py
 | [frontend-design](skills/frontend-design/) | 构建独特的生产级前端界面 |
 | [gemini-image](skills/gemini-image/) | 通过 Gemini API 生成图像（文生图、图生图） |
 | [research](skills/research/) | 技术研究，支持网络搜索和引用 |
-| [spec-interview](skills/spec-interview/) | 通过系统性提问深度访谈，完善技术规格说明 |
+| [spec-interview](skills/spec-interview/) | 通过系统性访谈完善技术规格，集成 OpenSpec 实现规范驱动开发 |
 | [paper-replication](skills/paper-replication/) | 将深度学习论文复现为工业级 PyTorch 代码，含详细模块文档 |
 | [tech-blog](skills/tech-blog/) | 撰写带源码分析的技术博客 |
 | [tech-design-doc](skills/tech-design-doc/) | 生成结构化的技术设计文档 |
