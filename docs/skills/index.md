@@ -8,11 +8,13 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 |-------|----------|-------------|
 | [article-cover](./article-cover) | Design | Generate professional SVG cover images |
 | [codex](./codex) | Development | Code analysis and web search via Codex CLI |
+| [drawio](./drawio) | Design | AI-powered Draw.io diagram generation with real-time preview |
 | [excalidraw](./excalidraw) | Design | Create hand-drawn style diagrams |
 | [frontend-design](./frontend-design) | Design | Build distinctive frontend interfaces |
 | [gemini-image](./gemini-image) | Design | AI image generation via Gemini API |
 | [research](./research) | Research | Technical research with citations |
-| [spec-interview](./spec-interview) | Planning | Refine specs through systematic questioning |
+| [spec-interview](./spec-interview) | Planning | Refine specs through systematic questioning with OpenSpec integration |
+| [typst-paper](./typst-paper) | Academic | Typst academic paper assistant with modular workflow |
 | [paper-replication](./paper-replication) | Development | Replicate deep learning papers to PyTorch |
 | [tech-blog](./tech-blog) | Documentation | Write technical blog posts |
 | [tech-design-doc](./tech-design-doc) | Documentation | Generate technical design documents |
@@ -43,6 +45,7 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 ### Design Skills
 Skills for creating visual assets and interfaces:
 - **article-cover** - SVG cover images for articles
+- **drawio** - AI-powered Draw.io diagrams with real-time browser preview
 - **excalidraw** - Hand-drawn diagrams
 - **frontend-design** - Production-grade UI
 - **gemini-image** - AI-generated images
@@ -67,6 +70,7 @@ Skills for academic paper and thesis writing:
 - **IEEE-writing-skills** - IEEE paper translation, polishing, restructuring, and validation
 - **latex-paper-en** - English academic paper LaTeX assistant with format checking and compilation
 - **latex-thesis-zh** - Chinese thesis LaTeX assistant with GB/T 7714 format support
+- **typst-paper** - Typst academic paper assistant with modular workflow (compile, format check, grammar analysis, de-AI editing) for English and Chinese papers
 
 ### Skill Development
 Skills for creating and managing skills:

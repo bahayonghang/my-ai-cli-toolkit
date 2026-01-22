@@ -43,11 +43,13 @@ python3 install_tui.py
 |------|------|
 | [article-cover](skills/article-cover/) | 为博客文章生成专业的 SVG 封面图 |
 | [codex](skills/codex/) | Codex CLI 集成，支持深度代码分析和网络搜索 |
+| [drawio](skills/drawio/) | AI 驱动的 Draw.io 图表生成工具，支持实时浏览器预览、流程图、架构图和云基础设施图 |
 | [excalidraw](skills/excalidraw/) | 创建手绘风格的 Excalidraw JSON 图表 |
 | [frontend-design](skills/frontend-design/) | 构建独特的生产级前端界面 |
 | [gemini-image](skills/gemini-image/) | 通过 Gemini API 生成图像（文生图、图生图） |
 | [research](skills/research/) | 技术研究，支持网络搜索和引用 |
 | [spec-interview](skills/spec-interview/) | 通过系统性访谈完善技术规格，集成 OpenSpec 实现规范驱动开发 |
+| [typst-paper](skills/typst-paper/) | Typst 学术论文助手，支持模块化工作流（编译、格式检查、语法分析、去AI化编辑），适用于中英文论文 |
 | [paper-replication](skills/paper-replication/) | 将深度学习论文复现为工业级 PyTorch 代码，含详细模块文档 |
 | [tech-blog](skills/tech-blog/) | 撰写带源码分析的技术博客 |
 | [tech-design-doc](skills/tech-design-doc/) | 生成结构化的技术设计文档 |

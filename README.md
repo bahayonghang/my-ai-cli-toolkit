@@ -43,11 +43,13 @@ Run `python3 install.py --help` for more options.
 |-------|-------------|
 | [article-cover](skills/article-cover/) | Generate professional SVG cover images for blog posts and articles |
 | [codex](skills/codex/) | Codex CLI integration for deep code analysis and web search |
+| [drawio](skills/drawio/) | AI-powered Draw.io diagram generation with real-time browser preview and support for flowcharts, architecture diagrams, and cloud infrastructure |
 | [excalidraw](skills/excalidraw/) | Create hand-drawn style diagrams as Excalidraw JSON files |
 | [frontend-design](skills/frontend-design/) | Build distinctive, production-grade frontend interfaces |
 | [gemini-image](skills/gemini-image/) | AI image generation via Gemini API (text-to-image, image-to-image) |
 | [research](skills/research/) | Technical research with web search and citation support |
 | [spec-interview](skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration for spec-driven development |
+| [typst-paper](skills/typst-paper/) | Typst academic paper assistant with modular workflow (compile, format check, grammar analysis, de-AI editing) for English and Chinese papers |
 | [paper-replication](skills/paper-replication/) | Replicate deep learning papers into industrial-grade PyTorch code with detailed module documentation |
 | [tech-blog](skills/tech-blog/) | Write technical blog posts with source code analysis |
 | [tech-design-doc](skills/tech-design-doc/) | Generate structured technical design documents |

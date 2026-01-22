@@ -8,15 +8,17 @@ MyClaude Skills 提供一系列专门的 AI 技能，用于不同的开发任务
 |------|------|------|
 | [article-cover](./article-cover) | 设计 | 生成专业的 SVG 封面图 |
 | [codex](./codex) | 开发 | 通过 Codex CLI 进行代码分析和网络搜索 |
+| [drawio](./drawio) | 设计 | AI 驱动的 Draw.io 图表生成，支持实时预览 |
 | [excalidraw](./excalidraw) | 设计 | 创建手绘风格图表 |
 | [frontend-design](./frontend-design) | 设计 | 构建独特的前端界面 |
 | [gemini-image](./gemini-image) | 设计 | 通过 Gemini API 生成图像 |
 | [paper-replication](./paper-replication) | 开发 | 将深度学习论文复现为 PyTorch 代码 |
 | [research](./research) | 研究 | 技术研究，支持引用 |
-| [spec-interview](./spec-interview) | 规划 | 通过系统性提问完善规格说明 |
+| [spec-interview](./spec-interview) | 规划 | 通过系统性提问完善规格说明，集成 OpenSpec |
 | [tech-blog](./tech-blog) | 文档 | 撰写技术博客 |
 | [tech-design-doc](./tech-design-doc) | 文档 | 生成技术设计文档 |
 | [skill-manager](./skill-manager) | 开发 | 搜索和安装 31,767+ 社区技能 |
+| [typst-paper](./typst-paper) | 学术 | Typst 学术论文助手，支持模块化工作流 |
 | [yt-dlp](./yt-dlp) | 实用工具 | YouTube、Bilibili 等 1000+ 网站的视频下载器 |
 
 ### OMO Agents (多代理系统)
@@ -37,6 +39,7 @@ MyClaude Skills 提供一系列专门的 AI 技能，用于不同的开发任务
 ### 设计类技能
 用于创建视觉资产和界面：
 - **article-cover** - 文章 SVG 封面图
+- **drawio** - AI 驱动的 Draw.io 图表，支持实时浏览器预览
 - **excalidraw** - 手绘风格图表
 - **frontend-design** - 生产级 UI
 - **gemini-image** - AI 生成图像
