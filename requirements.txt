@@ -1,2 +1,9 @@
-# MyClaude Skills TUI Dependencies
+# MyClaude Skills Dependencies
+
+# TUI 模式
 textual>=0.47.0
+
+# CLI 模式 (external-skills)
+typer>=0.9.0
+rich>=13.0.0
+tomli>=2.0.0; python_version < "3.11"

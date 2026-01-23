@@ -60,3 +60,9 @@ prompt-update:
 # 显示提示词差异
 prompt-diff:
     ./install.sh prompt-diff
+
+ruff-check:
+    uvx ruff check .
+
+ruff-format-check:
+    uvx ruff format --check .

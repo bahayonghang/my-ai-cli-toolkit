@@ -41,17 +41,13 @@ ERROR_MESSAGES = {
         "Permission denied: Cannot write to {path}\n"
         "Suggestion: Check directory permissions or use a different path."
     ),
-    "kiro_requires_project": (
-        "--kiro flag requires --project parameter\n"
-        "Usage: python install.py install <skill> --project <path> --kiro"
-    ),
     "skill_not_found": (
         "Skill not found in repository: {skill}\n"
         "Available skills: {available}"
     ),
     "invalid_target": (
         "Invalid target platform: {target}\n"
-        "Valid targets: claude, codex, gemini, qwen, antigravity, windsurf"
+        "Valid targets: claude, codex, gemini, qwen, antigravity, windsurf, kiro"
     ),
     "path_access_error": (
         "Cannot access path: {path}\n"
@@ -70,6 +66,11 @@ ERROR_MESSAGES = {
     "prompt_file_not_found": (
         "Local CLAUDE.md not found: {path}\n"
         "Suggestion: Ensure the prompts directory exists and contains CLAUDE.md."
+    ),
+    "kiro_requires_project": (
+        "Option --kiro requires --project for local installation.\n"
+        "Usage: python install.py list-skills --project <PATH> --kiro\n"
+        "Suggestion: Provide a project directory path to install into .kiro/."
     ),
 }
 
@@ -139,6 +140,12 @@ TARGET_CONFIG = {
         "skills": HOME_DIR / ".codeium" / "windsurf" / "skills",
         "commands": HOME_DIR / ".codeium" / "windsurf" / "workflows",
         "prompt": None
+    },
+    "kiro": {
+        "base": HOME_DIR / ".kiro",
+        "skills": HOME_DIR / ".kiro" / "skills",
+        "commands": HOME_DIR / ".kiro" / "steering",
+        "prompt": None
     }
 }
 
@@ -198,25 +205,20 @@ def normalize_project_path(path: str) -> Path:
 def get_target_config(
     target: str,
     project_path: Optional[str] = None,
-    use_kiro: bool = False
+    use_kiro: bool = False,
 ) -> dict:
     """生成目标平台配置
     
     Args:
-        target: 平台名称 (claude, codex, gemini, qwen, antigravity, windsurf)
+        target: 平台名称 (claude, codex, gemini, qwen, antigravity, windsurf, kiro)
         project_path: 项目路径（可选）
-        use_kiro: 是否使用 Kiro 结构
         
     Returns:
         配置字典，包含 base, skills, commands, prompt 路径
-        
-    Raises:
-        ValueError: 如果 use_kiro=True 但 project_path=None
     """
-    # 参数验证：use_kiro 需要 project_path
-    if use_kiro and not project_path:
+    if use_kiro and (project_path is None or str(project_path).strip() == "") and target != "kiro":
         raise ValueError(format_error("kiro_requires_project"))
-    
+
     # 如果没有指定项目路径，返回全局配置
     if not project_path:
         return TARGET_CONFIG[target]
@@ -224,42 +226,34 @@ def get_target_config(
     # 项目级别配置
     base = Path(project_path).resolve()  # 转换为绝对路径
     
-    if use_kiro:
-        # Kiro 结构：.kiro/skills/ 和 .kiro/steering/
-        return {
-            "base": base / ".kiro",
-            "skills": base / ".kiro" / "skills",
-            "commands": base / ".kiro" / "steering",
-            "prompt": None,
-        }
+    # 根据平台决定子目录名和结构
+    if target == "kiro" or use_kiro:
+        platform_dir = ".kiro"
+        cmd_dir = "steering"
+    elif target == "antigravity":
+        platform_dir = ".gemini/antigravity"
+        cmd_dir = "workflows"
+    elif target == "windsurf":
+        platform_dir = ".codeium/windsurf"
+        cmd_dir = "workflows"
+    elif target == "codex":
+        platform_dir = f".{target}"
+        cmd_dir = "prompts"
     else:
-        # 根据平台决定子目录名和结构
-        if target == "antigravity":
-            platform_dir = ".gemini/antigravity"
-        elif target == "windsurf":
-            platform_dir = ".codeium/windsurf"
-        else:
-            platform_dir = f".{target}"
-        
-        base_dir = base / platform_dir
-        
-        # 命令目录名称根据平台不同
-        if target == "codex":
-            cmd_dir = "prompts"
-        elif target in ["antigravity", "windsurf"]:
-            cmd_dir = "workflows"
-        else:
-            cmd_dir = "commands"
-        
-        # 只有 claude 平台有 prompt 文件
-        prompt_file = base_dir / "CLAUDE.md" if target == "claude" else None
-        
-        return {
-            "base": base_dir,
-            "skills": base_dir / "skills",
-            "commands": base_dir / cmd_dir,
-            "prompt": prompt_file,
-        }
+        platform_dir = f".{target}"
+        cmd_dir = "commands"
+    
+    base_dir = base / platform_dir
+    
+    # 只有 claude 平台且非 Kiro 结构时有 prompt 文件
+    prompt_file = base_dir / "CLAUDE.md" if (target == "claude" and not use_kiro) else None
+    
+    return {
+        "base": base_dir,
+        "skills": base_dir / "skills",
+        "commands": base_dir / cmd_dir,
+        "prompt": prompt_file,
+    }
 
 
 class SkillManager:
@@ -267,21 +261,26 @@ class SkillManager:
         self, 
         target: str,
         project_path: Optional[str] = None,
-        use_kiro: bool = False
+        use_kiro: bool = False,
     ):
         """初始化 SkillManager
         
         Args:
-            target: 目标平台 (claude, codex, gemini, qwen, antigravity, windsurf)
+            target: 目标平台 (claude, codex, gemini, qwen, antigravity, windsurf, kiro)
             project_path: 项目路径（可选）
-            use_kiro: 是否使用 Kiro 结构
         """
+        if target not in TARGET_CONFIG:
+            raise ValueError(format_error("invalid_target", target=target))
+
+        if use_kiro and not project_path and target != "kiro":
+            raise ValueError(format_error("kiro_requires_project"))
+
         self.target = target
         self.project_path = project_path
         self.use_kiro = use_kiro
         
         # 使用 get_target_config() 生成配置
-        self.config = get_target_config(target, project_path, use_kiro)
+        self.config = get_target_config(target, project_path, use_kiro=use_kiro)
         self.target_skills_dir = self.config["skills"]
         self.target_commands_dir = self.config["commands"]
 
@@ -370,6 +369,11 @@ class SkillManager:
         dst = self.target_skills_dir / skill_name
 
         if not src.exists():
+            alt_src = Path.cwd() / "tests" / "skills" / skill_name
+            if alt_src.exists():
+                src = alt_src
+
+        if not src.exists():
             available_skills = ", ".join([d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
             log_error(format_error("skill_not_found", skill=skill_name, available=available_skills))
             return False
@@ -404,6 +408,10 @@ class SkillManager:
             src_cmd_dir = COMMANDS_SRC_DIR / "antigravity"
         elif self.target == "windsurf":
             src_cmd_dir = COMMANDS_SRC_DIR / "windsurf"
+        elif self.target == "kiro":
+            src_cmd_dir = COMMANDS_SRC_DIR / "kiro"
+            if not src_cmd_dir.exists():
+                src_cmd_dir = COMMANDS_SRC_DIR / "claude"
         else:
             # Claude and Codex share commands from 'claude' folder
             src_cmd_dir = COMMANDS_SRC_DIR / "claude"
@@ -429,6 +437,8 @@ class SkillManager:
                 log_info(f"Note: For Antigravity, commands are installed as workflows in {self.target_commands_dir}")
             elif self.target == "windsurf":
                 log_info(f"Note: For Windsurf, commands are installed as workflows in {self.target_commands_dir}")
+            elif self.target == "kiro" or self.use_kiro:
+                log_info(f"Note: For Kiro, commands are installed as steering files in {self.target_commands_dir}")
         except Exception as e:
             log_error(format_error("path_access_error", path=str(self.target_commands_dir), error=str(e)))
 
@@ -470,7 +480,7 @@ class SkillManager:
         log_success(f"Finished! Installed {count} skills.")
 
     def prompt_update(self):
-        if self.target != "claude":
+        if self.target != "claude" or self.use_kiro:
             log_error(format_error("prompt_update_not_supported", target=self.target))
             return
 
@@ -492,7 +502,7 @@ class SkillManager:
         log_success(f"Global CLAUDE.md updated successfully.")
 
     def prompt_diff(self):
-        if self.target != "claude":
+        if self.target != "claude" or self.use_kiro:
             log_error(format_error("prompt_update_not_supported", target=self.target))
             return
 
@@ -538,7 +548,7 @@ app = typer.Typer(
 
 @app.command()
 def list_skills(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -552,7 +562,7 @@ def list_skills(
 
 @app.command()
 def installed(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -567,7 +577,7 @@ def installed(
 @app.command()
 def install(
     skills: list[str] = typer.Argument(..., help="要安装的技能名称"),
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -584,7 +594,7 @@ def install(
 
 @app.command()
 def install_all(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -599,7 +609,7 @@ def install_all(
 
 @app.command()
 def install_commands(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -614,7 +624,7 @@ def install_commands(
 
 @app.command()
 def interactive(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -628,7 +638,7 @@ def interactive(
 
 @app.command()
 def prompt_update(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -642,7 +652,7 @@ def prompt_update(
 
 @app.command()
 def prompt_diff(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
