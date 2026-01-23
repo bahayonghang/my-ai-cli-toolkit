@@ -31,13 +31,11 @@ def test_tui_project_install_workflow(tmp_path):
             # 初始化 TUIManager
             manager = TUIManager(
                 platform="claude",
-                project_path=str(project_dir),
-                use_kiro=False
+                project_path=str(project_dir)
             )
             
             # 验证配置
             assert manager.project_path == str(project_dir)
-            assert manager.use_kiro is False
             
             # 获取技能列表
             skills = manager.get_skills()
@@ -74,14 +72,12 @@ def test_tui_kiro_install_workflow(tmp_path):
         with patch("install.SKILLS_SRC_DIR", skills_src):
             # 初始化 TUIManager（Kiro 模式）
             manager = TUIManager(
-                platform="claude",
-                project_path=str(project_dir),
-                use_kiro=True
+                platform="kiro",
+                project_path=str(project_dir)
             )
             
             # 验证配置
             assert manager.project_path == str(project_dir)
-            assert manager.use_kiro is True
             
             # 安装技能
             result = manager.install_skill("test-skill")
@@ -121,13 +117,11 @@ def test_tui_global_install_backward_compatibility(tmp_path):
             
             # 验证配置
             assert manager.project_path is None
-            assert manager.use_kiro is False
             
             # 验证 SkillManager 被正确调用（不带项目路径）
             mock_skill_manager.assert_called_once_with(
                 "claude",
-                project_path=None,
-                use_kiro=False
+                project_path=None
             )
 
 
@@ -158,8 +152,7 @@ def test_tui_relative_path_handling(tmp_path):
     # 测试相对路径显示
     header = Header(
         platform="claude",
-        project_path=str(project_dir),
-        use_kiro=False
+        project_path=str(project_dir)
     )
     
     title = header._format_title()

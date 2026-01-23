@@ -97,7 +97,9 @@ def test_property_11_get_commands_returns_platform_specific_commands(platform: s
     # 获取源目录中的所有命令文件
     if expected_src_dir.exists():
         expected_command_names = sorted([
-            f.stem for f in expected_src_dir.iterdir() if f.is_file()
+            str(f.relative_to(expected_src_dir).with_suffix("")).replace("\\", "/")
+            for f in expected_src_dir.rglob("*")
+            if f.is_file()
         ])
     else:
         expected_command_names = []
@@ -122,7 +124,7 @@ def test_property_11_get_commands_returns_platform_specific_commands(platform: s
         assert cmd.source_path.exists(), (
             f"Command {cmd.name} source_path does not exist: {cmd.source_path}"
         )
-        assert cmd.source_path.parent == expected_src_dir, (
-            f"Command {cmd.name} source_path {cmd.source_path} is not from "
+        assert cmd.source_path.is_relative_to(expected_src_dir), (
+            f"Command {cmd.name} source_path {cmd.source_path} is not under "
             f"expected directory {expected_src_dir}"
         )

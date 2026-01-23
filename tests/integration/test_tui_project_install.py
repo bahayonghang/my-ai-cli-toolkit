@@ -1,6 +1,6 @@
 """TUI 项目级别安装功能测试
 
-测试 TUI 组件对项目路径和 Kiro 模式的支持。
+测试 TUI 组件对项目路径的支持。
 """
 
 import pytest
@@ -17,42 +17,36 @@ def test_tui_manager_init_with_project_path():
     with patch("tui.core.manager.SkillManager") as mock_skill_manager:
         manager = TUIManager(
             platform="claude",
-            project_path="./test-project",
-            use_kiro=False
+            project_path="./test-project"
         )
         
         assert manager.platform == "claude"
         assert manager.project_path == "./test-project"
-        assert manager.use_kiro is False
         
         # 验证 SkillManager 被正确调用
         mock_skill_manager.assert_called_once_with(
             "claude",
-            project_path="./test-project",
-            use_kiro=False
+            project_path="./test-project"
         )
 
 
-def test_tui_manager_init_with_kiro():
-    """测试 TUIManager 使用 Kiro 模式初始化"""
+def test_tui_manager_init_with_kiro_platform():
+    """测试 TUIManager 使用 Kiro 平台初始化"""
     from tui.core.manager import TUIManager
     
     with patch("tui.core.manager.SkillManager") as mock_skill_manager:
         manager = TUIManager(
-            platform="claude",
-            project_path="./kiro-project",
-            use_kiro=True
+            platform="kiro",
+            project_path="./kiro-project"
         )
         
-        assert manager.platform == "claude"
+        assert manager.platform == "kiro"
         assert manager.project_path == "./kiro-project"
-        assert manager.use_kiro is True
         
         # 验证 SkillManager 被正确调用
         mock_skill_manager.assert_called_once_with(
-            "claude",
-            project_path="./kiro-project",
-            use_kiro=True
+            "kiro",
+            project_path="./kiro-project"
         )
 
 
@@ -65,13 +59,11 @@ def test_tui_manager_init_global():
         
         assert manager.platform == "claude"
         assert manager.project_path is None
-        assert manager.use_kiro is False
         
         # 验证 SkillManager 被正确调用
         mock_skill_manager.assert_called_once_with(
             "claude",
-            project_path=None,
-            use_kiro=False
+            project_path=None
         )
 
 
@@ -84,28 +76,24 @@ def test_main_screen_init_with_project():
     
     screen = MainScreen(
         platform="claude",
-        project_path="./test-project",
-        use_kiro=False
+        project_path="./test-project"
     )
     
     assert screen._platform == "claude"
     assert screen._project_path == "./test-project"
-    assert screen._use_kiro is False
 
 
-def test_main_screen_init_with_kiro():
-    """测试 MainScreen 使用 Kiro 模式初始化"""
+def test_main_screen_init_with_kiro_platform():
+    """测试 MainScreen 使用 Kiro 平台初始化"""
     from tui.screens.main_screen import MainScreen
     
     screen = MainScreen(
-        platform="claude",
-        project_path="./kiro-project",
-        use_kiro=True
+        platform="kiro",
+        project_path="./kiro-project"
     )
     
-    assert screen._platform == "claude"
+    assert screen._platform == "kiro"
     assert screen._project_path == "./kiro-project"
-    assert screen._use_kiro is True
 
 
 def test_main_screen_init_global():
@@ -116,7 +104,6 @@ def test_main_screen_init_global():
     
     assert screen._platform == "claude"
     assert screen._project_path is None
-    assert screen._use_kiro is False
 
 
 # 测试 SkillInstallerApp
@@ -132,43 +119,39 @@ def test_app_set_platform_with_project():
     with patch.object(app, "push_screen") as mock_push:
         app.set_platform(
             platform="claude",
-            project_path="./test-project",
-            use_kiro=False
+            project_path="./test-project"
         )
         
         assert app.current_platform == "claude"
         assert app.current_project_path == "./test-project"
-        assert app.current_use_kiro is False
         
         # 验证 MainScreen 被创建并推送
         mock_push.assert_called_once()
         main_screen = mock_push.call_args[0][0]
         assert main_screen._platform == "claude"
         assert main_screen._project_path == "./test-project"
-        assert main_screen._use_kiro is False
 
 
-def test_app_set_platform_with_kiro():
-    """测试应用设置平台和 Kiro 模式"""
+def test_app_set_platform_with_kiro_platform():
+    """测试应用设置平台为 Kiro"""
     from tui.app import SkillInstallerApp
     
     app = SkillInstallerApp()
     
     with patch.object(app, "push_screen") as mock_push:
         app.set_platform(
-            platform="claude",
-            project_path="./kiro-project",
-            use_kiro=True
+            platform="kiro",
+            project_path="./kiro-project"
         )
         
-        assert app.current_platform == "claude"
+        assert app.current_platform == "kiro"
         assert app.current_project_path == "./kiro-project"
-        assert app.current_use_kiro is True
         
         # 验证 MainScreen 被创建并推送
         mock_push.assert_called_once()
         main_screen = mock_push.call_args[0][0]
-        assert main_screen._use_kiro is True
+        assert main_screen._platform == "kiro"
+        assert main_screen._project_path == "./kiro-project"
 
 
 def test_app_set_platform_global():
@@ -182,7 +165,6 @@ def test_app_set_platform_global():
         
         assert app.current_platform == "claude"
         assert app.current_project_path is None
-        assert app.current_use_kiro is False
 
 
 # 测试 Header 组件
@@ -194,8 +176,7 @@ def test_header_format_title_with_project():
     
     header = Header(
         platform="claude",
-        project_path="./test-project",
-        use_kiro=False
+        project_path="./test-project"
     )
     
     title = header._format_title()
@@ -208,13 +189,11 @@ def test_header_format_badge_with_kiro():
     from tui.components.header import Header
     
     header = Header(
-        platform="claude",
-        project_path="./kiro-project",
-        use_kiro=True
+        platform="kiro",
+        project_path="./kiro-project"
     )
     
     badge = header._format_badge()
-    assert "CLAUDE" in badge
     assert "KIRO" in badge
 
 
@@ -224,8 +203,7 @@ def test_header_format_badge_without_kiro():
     
     header = Header(
         platform="claude",
-        project_path="./test-project",
-        use_kiro=False
+        project_path="./test-project"
     )
     
     badge = header._format_badge()

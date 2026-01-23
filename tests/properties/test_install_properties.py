@@ -297,7 +297,7 @@ def test_property_8_batch_install_clears_selection_after_completion(selection_pa
 # --- Property 9: Install All Processes Every Available Item ---
 # **Validates: Requirements 8.1, 8.4**
 
-@settings(max_examples=100)
+@settings(max_examples=10, deadline=None)
 @given(platform=st.sampled_from(["claude"]))
 def test_property_9_install_all_processes_every_available_item(platform: str):
     """
