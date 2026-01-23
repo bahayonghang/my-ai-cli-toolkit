@@ -1,6 +1,6 @@
 """Header 组件 - 简洁顶部栏
 
-显示标题和平台徽章，CCR 风格。支持显示项目路径和 Kiro 模式。
+显示标题和平台徽章，CCR 风格。支持显示项目路径。
 Requirements: 3.1, 3.2, 3.3, 3.4
 """
 
@@ -50,13 +50,11 @@ class Header(Static):
     def __init__(
         self, 
         platform: str = "",
-        project_path: str | None = None,
-        use_kiro: bool = False
+        project_path: str | None = None
     ) -> None:
         super().__init__()
         self._platform = platform
         self._project_path = project_path
-        self._use_kiro = use_kiro
     
     def compose(self):
         with Horizontal(id="header-row"):
@@ -79,20 +77,18 @@ class Header(Static):
     def _format_badge(self) -> str:
         """格式化平台徽章，包含 Kiro 标识"""
         badge = self._platform.upper() if self._platform else "—"
-        if self._use_kiro:
+        if self._platform == "kiro":
             badge += " [KIRO]"
         return badge
     
     def set_platform(
         self, 
         platform: str,
-        project_path: str | None = None,
-        use_kiro: bool = False
+        project_path: str | None = None
     ) -> None:
         """更新平台信息"""
         self._platform = platform
         self._project_path = project_path
-        self._use_kiro = use_kiro
         try:
             title = self.query_one("#app-title", Static)
             title.update(self._format_title())

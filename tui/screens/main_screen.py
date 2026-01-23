@@ -37,13 +37,11 @@ class MainScreen(Screen):
     def __init__(
         self, 
         platform: str = "claude",
-        project_path: str | None = None,
-        use_kiro: bool = False
+        project_path: str | None = None
     ) -> None:
         super().__init__()
         self._platform = platform
         self._project_path = project_path
-        self._use_kiro = use_kiro
         self._manager: TUIManager | None = None
         self._search_visible = False
         self._installing = False  # 安装进行中标志
@@ -53,8 +51,7 @@ class MainScreen(Screen):
         if self._manager is None:
             self._manager = TUIManager(
                 self._platform, 
-                project_path=self._project_path, 
-                use_kiro=self._use_kiro
+                project_path=self._project_path
             )
         return self._manager
     
@@ -64,13 +61,14 @@ class MainScreen(Screen):
             return "Workflows"
         elif self._platform == "codex":
             return "Prompts"
+        elif self._platform == "kiro":
+            return "Steering"
         return "Commands"
     
     def compose(self) -> ComposeResult:
         yield Header(
             platform=self._platform,
             project_path=self._project_path,
-            use_kiro=self._use_kiro
         )
         with Vertical(id="main-container"):
             with Container(id="search-container", classes="-hidden"):
@@ -98,7 +96,6 @@ class MainScreen(Screen):
         header.set_platform(
             self._platform,
             project_path=self._project_path,
-            use_kiro=self._use_kiro
         )
         
         skills_list = self.query_one("#skills-list", ItemListView)

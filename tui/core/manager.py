@@ -40,26 +40,22 @@ class TUIManager:
     Attributes:
         platform: 目标平台 (claude, codex, gemini)
         project_path: 项目路径（可选）
-        use_kiro: 是否使用 Kiro 结构
     """
     
     def __init__(
         self, 
         platform: str,
-        project_path: Optional[str] = None,
-        use_kiro: bool = False
+        project_path: Optional[str] = None
     ):
         """初始化 TUIManager
         
         Args:
             platform: 目标平台名称
             project_path: 项目路径（可选）
-            use_kiro: 是否使用 Kiro 结构
         """
         self.platform = platform
         self.project_path = project_path
-        self.use_kiro = use_kiro
-        self._manager = SkillManager(platform, project_path=project_path, use_kiro=use_kiro)
+        self._manager = SkillManager(platform, project_path=project_path)
     
     @property
     def target_skills_dir(self) -> Path:
@@ -91,6 +87,10 @@ class TUIManager:
             src_dir = COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
             src_dir = COMMANDS_SRC_DIR / "windsurf"
+        elif self.platform == "kiro":
+            src_dir = COMMANDS_SRC_DIR / "kiro"
+            if not src_dir.exists():
+                src_dir = COMMANDS_SRC_DIR / "claude"
         else:
             src_dir = COMMANDS_SRC_DIR / "claude"
         return src_dir.exists()
@@ -107,6 +107,10 @@ class TUIManager:
             return COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
             return COMMANDS_SRC_DIR / "windsurf"
+        elif self.platform == "kiro":
+            kiro_dir = COMMANDS_SRC_DIR / "kiro"
+            if kiro_dir.exists():
+                return kiro_dir
         return COMMANDS_SRC_DIR / "claude"
     
     def _get_file_mtime(self, path: Path) -> Optional[datetime]:

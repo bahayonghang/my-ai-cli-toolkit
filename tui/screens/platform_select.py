@@ -1,7 +1,7 @@
 """平台选择屏幕
 
 启动时首先显示，让用户选择目标平台 (Claude, Codex, Gemini)。
-支持键盘导航和选择。支持项目路径输入和 Kiro 模式选择。
+支持键盘导航和选择。支持项目路径输入。
 
 Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 2.5
 """
@@ -9,7 +9,7 @@ Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 2.5
 from pathlib import Path
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, OptionList, Input, Checkbox, Button
+from textual.widgets import Static, OptionList, Input, Button
 from textual.widgets.option_list import Option
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal
@@ -25,6 +25,7 @@ PLATFORM_ICONS = {
     "qwen": "🌙",
     "antigravity": "🚀",
     "windsurf": "🏄",
+    "kiro": "🧭",
 }
 
 
@@ -128,18 +129,6 @@ class PlatformSelectScreen(Screen):
         border: round $accent;
     }
     
-    /* Kiro 复选框区 */
-    PlatformSelectScreen #kiro-section {
-        width: 100%;
-        height: auto;
-        padding: 1 0 0 0;
-        align: center middle;
-    }
-    
-    PlatformSelectScreen #kiro-checkbox {
-        width: auto;
-    }
-    
     /* 按钮区 */
     PlatformSelectScreen #button-section {
         width: 100%;
@@ -190,6 +179,7 @@ class PlatformSelectScreen(Screen):
         PlatformConfig("qwen", "Qwen", "~/.qwen/"),
         PlatformConfig("antigravity", "Antigravity", "~/.gemini/antigravity/"),
         PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/"),
+        PlatformConfig("kiro", "Kiro", "~/.kiro/"),
     ]
     
     def compose(self) -> ComposeResult:
@@ -214,10 +204,6 @@ class PlatformSelectScreen(Screen):
                         placeholder="./my-project or /absolute/path",
                         id="project-path-input"
                     )
-                
-                # Kiro 复选框区
-                with Vertical(id="kiro-section"):
-                    yield Checkbox("Use Kiro Structure (.kiro/)", id="kiro-checkbox")
                 
                 # 按钮区
                 with Vertical(id="button-section"):
@@ -268,16 +254,6 @@ class PlatformSelectScreen(Screen):
             
             platform = str(platform_option.id)
             project_path = self.query_one("#project-path-input", Input).value.strip()
-            use_kiro = self.query_one("#kiro-checkbox", Checkbox).value
-            
-            # 验证参数
-            if use_kiro and not project_path:
-                self.notify(
-                    "Kiro structure requires a project path",
-                    severity="error",
-                    title="Validation Error"
-                )
-                return
             
             # 验证路径存在性（如果提供了路径）
             if project_path:
@@ -294,7 +270,6 @@ class PlatformSelectScreen(Screen):
             self.app.set_platform(
                 platform,
                 project_path=project_path if project_path else None,
-                use_kiro=use_kiro
             )
     
     def action_quit(self) -> None:
