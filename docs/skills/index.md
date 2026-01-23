@@ -7,25 +7,35 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 | Skill | Category | Description |
 |-------|----------|-------------|
 | [article-cover](./article-cover) | Design | Generate professional SVG cover images |
-| [codex](./codex) | Development | Code analysis and web search via Codex CLI |
 | [drawio](./drawio) | Design | AI-powered Draw.io diagram generation with real-time preview |
 | [excalidraw](./excalidraw) | Design | Create hand-drawn style diagrams |
 | [frontend-design](./frontend-design) | Design | Build distinctive frontend interfaces |
 | [gemini-image](./gemini-image) | Design | AI image generation via Gemini API |
-| [research](./research) | Research | Technical research with citations |
-| [spec-interview](./spec-interview) | Planning | Refine specs through systematic questioning with OpenSpec integration |
-| [typst-paper](./typst-paper) | Academic | Typst academic paper assistant with modular workflow |
+| [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | Design | Advanced UI/UX design intelligence (External) |
+| [codex](./codex) | Development | Code analysis and web search via Codex CLI |
 | [paper-replication](./paper-replication) | Development | Replicate deep learning papers to PyTorch |
-| [tech-blog](./tech-blog) | Documentation | Write technical blog posts |
-| [tech-design-doc](./tech-design-doc) | Documentation | Generate technical design documents |
+| [paper-check](./paper-check) | Development | Code review and validation assistant |
+| [gemini](./gemini) | Development | Gemini integration for enhanced reasoning |
 | [claude-expert-skill-creator](./claude-expert-skill-creator) | Development | Create production-ready skills from expert knowledge |
 | [mcp-to-skill](./mcp-to-skill) | Development | Convert MCP servers to Claude Code Skills |
 | [skill-manager](./skill-manager) | Development | Search and install 31,767+ community skills |
-| [external-skills-tui](./external-skills-tui) | Development | TUI for managing external npm/pip/git skills |
-| [yt-dlp](./yt-dlp) | Utilities | Video downloader for YouTube, Bilibili, and 1000+ sites |
+| [skill-seekers](./skill-seekers) | Development | Generate LLM skills from documentation and codebases |
+| [explore](./explore) | Development | Fast code search agent for locating code and tracing dependencies |
+| [agent-browser](https://github.com/vercel-labs/agent-browser) | Development | Browser automation skill from Vercel Labs (External) |
+| [research](./research) | Research | Technical research with citations |
+| [librarian](./librarian) | Research | External docs and best practices |
+| [multimodal-looker](./multimodal-looker) | Research | Visual analyst for images, PDFs, charts |
+| [tech-blog](./tech-blog) | Documentation | Write technical blog posts |
+| [tech-design-doc](./tech-design-doc) | Documentation | Generate technical design documents |
+| [spec-interview](./spec-interview) | Documentation | Refine specs through systematic questioning |
+| [document-writer](./document-writer) | Documentation | README, API docs, architecture docs |
 | [IEEE-writing-skills](./IEEE-writing-skills) | Academic | Translate, polish, and validate IEEE papers |
 | [latex-paper-en](./latex-paper-en) | Academic | LaTeX assistant for English academic papers |
-| [latex-thesis-zh](./latex-thesis-zh) | Academic | Chinese thesis LaTeX assistant with GB/T 7714 |
+| [latex-thesis-zh](./latex-thesis-zh) | Academic | Chinese thesis LaTeX assistant |
+| [typst-paper](./typst-paper) | Academic | Typst academic paper assistant |
+| [git-commit-cn](./git-commit-cn) | Academic/Util | Chinese version of git commit message generator |
+| [yt-dlp](./yt-dlp) | Utilities | Video downloader for YouTube, Bilibili, and 1000+ sites |
+| [external-skills-tui](./external-skills-tui) | Utilities | TUI for managing external npm/pip/git skills |
 
 ### OMO Agents (Multi-Agent System)
 
@@ -34,11 +44,6 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 | [omo-agents](./omo-agents) | Overview | Multi-agent orchestration system guide |
 | [sisyphus](./sisyphus) | Orchestrator | Complex task planning and parallel execution |
 | [oracle](./oracle) | Architect | Design decisions, code review, debugging |
-| [explore](./explore) | Scout | Fast code search and dependency tracing |
-| [librarian](./librarian) | Researcher | External docs and best practices |
-| [frontend-engineer](./frontend-engineer) | UI Expert | Beautiful, polished interfaces |
-| [document-writer](./document-writer) | Writer | README, API docs, architecture docs |
-| [multimodal-looker](./multimodal-looker) | Analyst | Images, PDFs, charts analysis |
 
 ## Skill Categories
 
@@ -49,61 +54,55 @@ Skills for creating visual assets and interfaces:
 - **excalidraw** - Hand-drawn diagrams
 - **frontend-design** - Production-grade UI
 - **gemini-image** - AI-generated images
+- **ui-ux-pro-max** - Advanced UI/UX design intelligence (External)
 
 ### Development Skills
 Skills for code analysis and generation:
 - **codex** - Deep code analysis with Codex CLI
 - **paper-replication** - Deep learning paper to PyTorch code
+- **paper-check** - Code review and validation assistant
+- **gemini** - Gemini integration for enhanced reasoning
+- **explore** - Fast code search agent
+- **agent-browser** - Browser automation (External)
 
 ### Research Skills
 Skills for gathering and organizing information:
 - **research** - Web research with citations
+- **librarian** - Documentation researcher
+- **multimodal-looker** - Visual analyst
 
 ### Documentation Skills
 Skills for creating technical documents:
 - **tech-blog** - Technical blog posts
 - **tech-design-doc** - Design documents
 - **spec-interview** - Specification refinement
+- **document-writer** - Technical writer
 
 ### Academic Writing Skills
 Skills for academic paper and thesis writing:
-- **IEEE-writing-skills** - IEEE paper translation, polishing, restructuring, and validation
-- **latex-paper-en** - English academic paper LaTeX assistant with format checking and compilation
-- **latex-thesis-zh** - Chinese thesis LaTeX assistant with GB/T 7714 format support
-- **typst-paper** - Typst academic paper assistant with modular workflow (compile, format check, grammar analysis, de-AI editing) for English and Chinese papers
+- **IEEE-writing-skills** - IEEE paper translation and polishing
+- **latex-paper-en** - English academic paper LaTeX assistant
+- **latex-thesis-zh** - Chinese thesis LaTeX assistant
+- **typst-paper** - Typst academic paper assistant
+- **git-commit-cn** - Chinese git commit messages
 
 ### Skill Development
 Skills for creating and managing skills:
-- **claude-expert-skill-creator** - Create production-ready skills with layered architecture
-- **mcp-to-skill** - Convert MCP servers to Claude Code Skills
-- **skill-manager** - Search and install 31,767+ community skills from GitHub
-- **external-skills-tui** - Modern TUI for managing external npm/pip/git skills
+- **claude-expert-skill-creator** - Create production-ready skills
+- **mcp-to-skill** - Convert MCP servers to skills
+- **skill-manager** - Search and install community skills
+- **skill-seekers** - Generate skills from docs
 
 ### Utilities
-
 Useful tools and utilities:
-- **yt-dlp** - Video downloader for YouTube, Bilibili, and 1000+ sites with automatic FFmpeg detection
+- **yt-dlp** - Video downloader
+- **external-skills-tui** - Manage external skills
 
 ### OMO Agents (Multi-Agent System)
-
-Inspired by [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode), these skills enable multi-agent collaboration where specialized agents work together on complex tasks.
-
-**Core Concept**: Instead of a single AI handling everything, specialized agents collaborate—each excelling in their domain—to deliver better results.
-
-- **sisyphus** - Main orchestrator that plans, delegates, and executes complex tasks
-- **oracle** - Expert architect for design decisions and code review
-- **explore** - Fast code search for locating code and tracing dependencies
-- **librarian** - Documentation researcher for external docs and best practices
-- **frontend-engineer** - UI/UX expert for creating beautiful interfaces
-- **document-writer** - Technical writer for README and API docs
-- **multimodal-looker** - Visual analyst for images, PDFs, and charts
-
-**Quick Start**:
-```
-@sisyphus Add user authentication to this project
-```
-
-Sisyphus will automatically coordinate other agents to complete the task.
+Multi-agent collaboration system where specialized agents work together.
+- **sisyphus** - Main orchestrator
+- **oracle** - Expert architect
+- **omo-agents** - System overview
 
 ## Installation
 
@@ -111,20 +110,9 @@ Install all skills:
 
 ::: code-group
 ```bash [Linux/macOS]
-./install.sh install-all
+python3 install.py install-all
 ```
 ```powershell [Windows]
-.\install.ps1 install-all
-```
-:::
-
-Install specific skills:
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh install frontend-design excalidraw
-```
-```powershell [Windows]
-.\install.ps1 install frontend-design excalidraw
+python install.py install-all
 ```
 :::

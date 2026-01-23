@@ -7,6 +7,7 @@ Slash commands provide quick access to common development workflows. They are in
 - Gemini: `~/.gemini/commands/`
 - Qwen: `~/.qwen/commands/`
 - Antigravity: `~/.gemini/antigravity/workflows/`
+- Windsurf: `~/.codeium/windsurf/workflows/`
 
 Commands can be invoked using `/command-name` in Claude Code, Gemini CLI, or Antigravity.
 
@@ -29,6 +30,13 @@ Commands can be invoked using `/command-name` in Claude Code, Gemini CLI, or Ant
 | [git-worktree](git-worktree) | Manage Git worktrees with smart defaults and IDE integration |
 | [init-project](init-project) | Initialize project AI context with CLAUDE.md index generation |
 
+### Planning Commands (Gemini Only)
+
+| Command | Description |
+|---------|-------------|
+| [plan/impl](plan/impl) | Implementation planning workflow |
+| [plan/new](plan/new) | New feature planning workflow |
+
 ## What are Commands?
 
 Commands are predefined workflows that Claude/Gemini can execute with a single slash command. Unlike skills (which provide context and capabilities), commands are action-oriented and designed for specific tasks.
@@ -39,10 +47,10 @@ Commands are installed alongside skills using the install script:
 
 ::: code-group
 ```bash [Linux/macOS]
-./install.sh install-all
+python3 install.py install-all
 ```
 ```powershell [Windows]
-.\install.ps1 install-all
+python install.py install-all
 ```
 :::
 
@@ -52,6 +60,7 @@ Commands are copied to the appropriate directory based on target:
 - Gemini: `~/.gemini/commands/`
 - Qwen: `~/.qwen/commands/`
 - Antigravity: `~/.gemini/antigravity/workflows/`
+- Windsurf: `~/.codeium/windsurf/workflows/`
 
 ## Usage
 
