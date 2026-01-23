@@ -26,6 +26,20 @@ homepage = "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
 license = "MIT"
 
 # ============================================================
+# Agent Browser - Vercel Labs 浏览器自动化技能
+# ============================================================
+[skills.agent-browser]
+description = "Browser automation skill from Vercel Labs for AI agents"
+type = "npx"
+package = "skills"
+init_command = "npx skills add"
+init_args = ["https://github.com/vercel-labs/agent-browser", "--skill", "agent-browser"]
+supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
+requires = ["node"]
+homepage = "https://github.com/vercel-labs/agent-browser"
+license = "MIT"
+
+# ============================================================
 # 示例: npx 类型 (无需全局安装)
 # ============================================================
 # [skills.example-npx-skill]
