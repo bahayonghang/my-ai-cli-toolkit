@@ -55,6 +55,7 @@ class ExternalSkill:
     requires: list[str] = field(default_factory=list)
     repo: str = ""
     branch: str = "main"
+    dest: str = ""
     post_clone: str = ""
     homepage: str = ""
     license: str = ""
@@ -84,6 +85,7 @@ def load_registry() -> dict[str, ExternalSkill]:
             requires=s_data.get("requires", []),
             repo=s_data.get("repo", ""),
             branch=s_data.get("branch", "main"),
+            dest=s_data.get("dest", ""),
             post_clone=s_data.get("post_clone", ""),
             homepage=s_data.get("homepage", ""),
             license=s_data.get("license", ""),
@@ -123,6 +125,7 @@ def check_dependencies(requires: list[str]) -> tuple[bool, list[str]]:
         "python": "python",
         "pip": "pip",
         "git": "git",
+        "claude": "claude",
     }
 
     for req in requires:
@@ -154,6 +157,10 @@ def run_command(cmd: str, cwd: Optional[Path] = None, dry_run: bool = False) -> 
         return False
 
 
+def cmd_from_args(args: list[str]) -> str:
+    return subprocess.list2cmdline(args)
+
+
 def build_init_command(skill: ExternalSkill, target: str) -> str:
     """构建初始化命令"""
     # 映射目标平台
@@ -166,6 +173,10 @@ def build_init_command(skill: ExternalSkill, target: str) -> str:
     ]
 
     return f"{skill.init_command} {' '.join(args)}"
+
+
+def is_git_repo(path: Path) -> bool:
+    return (path / ".git").exists()
 
 
 @app.command("list")
@@ -307,6 +318,48 @@ def install_skill(
     rprint(f"\n[bold cyan]📦 安装技能: {skill.name}[/bold cyan]")
     rprint(f"[dim]目标平台: {target}[/dim]")
     rprint(f"[dim]项目目录: {cwd}[/dim]\n")
+
+    if skill.type == "git":
+        if not skill.repo:
+            rprint(f"[red]❌ git 类型技能缺少 repo 字段: {skill.name}[/red]")
+            raise typer.Exit(1)
+
+        dest = cwd / (skill.dest or os.path.join(".claude", "plugins", skill.name))
+        dest_parent = dest.parent
+        if not dest_parent.exists() and not dry_run:
+            dest_parent.mkdir(parents=True, exist_ok=True)
+
+        rprint("[bold]Step 1: 拉取/克隆仓库[/bold]")
+        if dest.exists():
+            if not is_git_repo(dest):
+                rprint(f"[red]❌ 目标目录已存在但不是 git 仓库: {dest}[/red]")
+                raise typer.Exit(1)
+
+            pull_cmd = cmd_from_args(["git", "-C", str(dest), "pull", "origin", skill.branch])
+            if not run_command(pull_cmd, dry_run=dry_run):
+                rprint("[red]❌ 更新失败[/red]")
+                raise typer.Exit(1)
+        else:
+            clone_cmd = cmd_from_args(["git", "clone", "--branch", skill.branch, skill.repo, str(dest)])
+            if not run_command(clone_cmd, dry_run=dry_run):
+                rprint("[red]❌ 克隆失败[/red]")
+                raise typer.Exit(1)
+
+        if skill.post_clone:
+            rprint("\n[bold]Step 2: 克隆后处理[/bold]")
+            if not run_command(skill.post_clone, cwd=dest, dry_run=dry_run):
+                rprint("[red]❌ 克隆后处理失败[/red]")
+                raise typer.Exit(1)
+
+        if skill.init_command:
+            rprint("\n[bold]Step 3: 初始化项目[/bold]")
+            init_cmd = build_init_command(skill, target)
+            if not run_command(init_cmd, cwd=cwd, dry_run=dry_run):
+                rprint("[red]❌ 初始化失败[/red]")
+                raise typer.Exit(1)
+
+        rprint(f"\n[green]✓ 技能 {skill.name} 安装完成！[/green]")
+        return
 
     # Step 1: 全局安装 (如果需要)
     if not skip_install and skill.install_command:

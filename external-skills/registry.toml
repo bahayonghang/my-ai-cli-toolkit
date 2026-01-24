@@ -40,6 +40,19 @@ homepage = "https://github.com/vercel-labs/agent-browser"
 license = "MIT"
 
 # ============================================================
+# planning-with-files - 文件化规划插件（Claude Code）
+# ============================================================
+[skills.planning-with-files]
+description = "File-based planning workflow plugin for Claude Code"
+type = "git"
+repo = "https://github.com/OthmanAdi/planning-with-files.git"
+branch = "master"
+dest = ".claude/plugins/planning-with-files"
+supported_targets = ["claude"]
+requires = ["git"]
+homepage = "https://github.com/OthmanAdi/planning-with-files"
+
+# ============================================================
 # 示例: npx 类型 (无需全局安装)
 # ============================================================
 # [skills.example-npx-skill]
