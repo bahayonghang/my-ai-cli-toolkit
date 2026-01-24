@@ -119,7 +119,7 @@ export default defineConfig({
                 { text: 'article-cover', link: '/zh/skills/article-cover' },
                 { text: 'codex', link: '/zh/skills/codex' },
                 { text: 'excalidraw', link: '/zh/skills/excalidraw' },
-                { text: 'frontend-design', link: '/zh/skills/frontend-design' },
+                { text: 'frontend-engineer', link: '/zh/skills/frontend-engineer' },
                 { text: 'gemini-image', link: '/zh/skills/gemini-image' },
                 { text: 'paper-replication', link: '/zh/skills/paper-replication' },
                 { text: 'research', link: '/zh/skills/research' },

@@ -1,0 +1,94 @@
+/* Custom Theme Styles */
+
+:root {
+  --vp-c-brand: #6366f1;
+  --vp-c-brand-light: #818cf8;
+  --vp-c-brand-dark: #4f46e5;
+  --vp-c-brand-dimm: rgba(99, 102, 241, 0.08);
+  
+  --vp-code-block-bg: #1e1e2e;
+  --vp-code-font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+}
+
+/* Typography */
+h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding-bottom: 0.5rem;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  display: table;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th {
+  background-color: var(--vp-c-bg-soft);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+tr:hover td {
+  background-color: var(--vp-c-bg-soft);
+}
+
+/* Code Blocks */
+.vp-doc div[class*='language-'] {
+  border-radius: 8px;
+  margin: 16px 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Lists */
+.vp-doc ul, .vp-doc ol {
+  padding-left: 1.5rem;
+}
+
+.vp-doc li {
+  margin: 0.5rem 0;
+}
+
+/* Blockquotes */
+blockquote {
+  background: var(--vp-c-bg-soft);
+  border-left: 4px solid var(--vp-c-brand);
+  padding: 1rem;
+  border-radius: 0 8px 8px 0;
+  color: var(--vp-c-text-2);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .vp-doc table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Navigation Bar */
+.VPNavBar {
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.dark .VPNavBar {
+  background-color: rgba(30, 30, 32, 0.8);
+}
