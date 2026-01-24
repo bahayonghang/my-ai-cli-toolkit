@@ -16,6 +16,7 @@ A curated collection of Claude Code skills, prompts, and workflows for enhanced 
   - **Qwen Code** (`~/.qwen/`)
   - **Google Antigravity** (`~/.gemini/antigravity/`)
   - **Windsurf** (`~/.codeium/windsurf/`)
+  - **Trae** (`~/.trae/`)
 - ⚡ **Slash Commands**: Quick access to common workflows like `git commit`, `export-summary`, and more.
 - 🖥️ **TUI Management**: Interactive Terminal User Interface for easy skill browsing and installation.
 - 🧩 **External Skills**: Support for installing skills from npm, pip, and git repositories.
@@ -180,7 +181,8 @@ python3 install_tui.py
 │   ├── claude/             # Claude-specific commands
 │   ├── gemini/             # Gemini-specific commands
 │   ├── antigravity/        # Antigravity workflows
-│   └── windsurf/           # Windsurf workflows
+│   ├── windsurf/           # Windsurf workflows
+│   └── trae/               # Trae workflows
 ├── skills/                 # Local skills directory
 │   └── <skill-name>/       # Individual skill modules
 └── external-skills/        # External skill configurations

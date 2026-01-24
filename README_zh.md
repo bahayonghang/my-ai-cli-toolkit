@@ -16,6 +16,7 @@
   - **Qwen Code** (`~/.qwen/`)
   - **Google Antigravity** (`~/.gemini/antigravity/`)
   - **Windsurf** (`~/.codeium/windsurf/`)
+  - **Trae** (`~/.trae/`)
 - ⚡ **斜杠命令**: 快速访问常用工作流，如 `git commit`, `export-summary` 等。
 - 🖥️ **TUI 管理界面**: 交互式终端用户界面，便于浏览和安装技能。
 - 🧩 **外部技能**: 支持从 npm, pip 和 git 仓库安装技能。
@@ -180,7 +181,8 @@ python3 install_tui.py
 │   ├── claude/             # Claude 专用命令
 │   ├── gemini/             # Gemini 专用命令
 │   ├── antigravity/        # Antigravity 工作流
-│   └── windsurf/           # Windsurf 工作流
+│   ├── windsurf/           # Windsurf 工作流
+│   └── trae/               # Trae 工作流
 ├── skills/                 # 本地技能目录
 │   └── <skill-name>/       # 独立技能模块
 └── external-skills/        # 外部技能配置

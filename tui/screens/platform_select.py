@@ -26,6 +26,7 @@ PLATFORM_ICONS = {
     "antigravity": "🚀",
     "windsurf": "🏄",
     "kiro": "🧭",
+    "trae": "🧩",
 }
 
 
@@ -180,6 +181,7 @@ class PlatformSelectScreen(Screen):
         PlatformConfig("antigravity", "Antigravity", "~/.gemini/antigravity/"),
         PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/"),
         PlatformConfig("kiro", "Kiro", "~/.kiro/"),
+        PlatformConfig("trae", "Trae", "~/.trae/"),
     ]
     
     def compose(self) -> ComposeResult:

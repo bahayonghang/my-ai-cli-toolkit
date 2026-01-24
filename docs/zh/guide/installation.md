@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), 或 [Windsurf](https://windsurf.com/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), 或 [Trae](https://www.trae.ai/)
 
 ## 克隆仓库
 
@@ -88,10 +88,10 @@ python3 install_tui.py
 ### 依赖要求
 
 - Python 3.10+
-- [Textual](https://textual.textualize.io/) 库
+- `requirements.txt` 中列出的依赖
 
 ```bash
-pip install textual
+pip install -r requirements.txt
 ```
 
 ## 验证安装
@@ -112,3 +112,4 @@ python3 install.py installed
 | Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
+| Trae | `~/.trae/skills/` | `~/.trae/commands/` |

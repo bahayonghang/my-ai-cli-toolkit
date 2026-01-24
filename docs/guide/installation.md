@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), or [Windsurf](https://windsurf.com/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), or [Trae](https://www.trae.ai/)
 
 ## Clone Repository
 
@@ -117,10 +117,10 @@ For detailed TUI documentation, see [TUI Guide](./tui.md).
 ### Requirements
 
 - Python 3.10+
-- [Textual](https://textual.textualize.io/) library
+- Dependencies listed in `requirements.txt`
 
 ```bash
-pip install textual
+pip install -r requirements.txt
 ```
 
 ## Verify Installation
@@ -141,3 +141,4 @@ python3 install.py installed
 | Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
+| Trae | `~/.trae/skills/` | `~/.trae/commands/` |

@@ -47,7 +47,7 @@ ERROR_MESSAGES = {
     ),
     "invalid_target": (
         "Invalid target platform: {target}\n"
-        "Valid targets: claude, codex, gemini, qwen, antigravity, windsurf, kiro"
+        "Valid targets: claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae"
     ),
     "path_access_error": (
         "Cannot access path: {path}\n"
@@ -146,6 +146,12 @@ TARGET_CONFIG = {
         "skills": HOME_DIR / ".kiro" / "skills",
         "commands": HOME_DIR / ".kiro" / "steering",
         "prompt": None
+    },
+    "trae": {
+        "base": HOME_DIR / ".trae",
+        "skills": HOME_DIR / ".trae" / "skills",
+        "commands": HOME_DIR / ".trae" / "commands",
+        "prompt": None
     }
 }
 
@@ -230,6 +236,9 @@ def get_target_config(
     if target == "kiro" or use_kiro:
         platform_dir = ".kiro"
         cmd_dir = "steering"
+    elif target == "trae":
+        platform_dir = ".trae"
+        cmd_dir = "commands"
     elif target == "antigravity":
         platform_dir = ".gemini/antigravity"
         cmd_dir = "workflows"
@@ -266,7 +275,7 @@ class SkillManager:
         """初始化 SkillManager
         
         Args:
-            target: 目标平台 (claude, codex, gemini, qwen, antigravity, windsurf, kiro)
+            target: 目标平台 (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)
             project_path: 项目路径（可选）
         """
         if target not in TARGET_CONFIG:
@@ -404,6 +413,10 @@ class SkillManager:
         # Determine source directory based on target
         if self.target in ["gemini", "qwen"]:
             src_cmd_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.target == "trae":
+            src_cmd_dir = COMMANDS_SRC_DIR / "trae"
+            if not src_cmd_dir.exists():
+                src_cmd_dir = COMMANDS_SRC_DIR / "claude"
         elif self.target == "antigravity":
             src_cmd_dir = COMMANDS_SRC_DIR / "antigravity"
         elif self.target == "windsurf":
@@ -548,7 +561,7 @@ app = typer.Typer(
 
 @app.command()
 def list_skills(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -562,7 +575,7 @@ def list_skills(
 
 @app.command()
 def installed(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -577,7 +590,7 @@ def installed(
 @app.command()
 def install(
     skills: list[str] = typer.Argument(..., help="要安装的技能名称"),
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -594,7 +607,7 @@ def install(
 
 @app.command()
 def install_all(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -609,7 +622,7 @@ def install_all(
 
 @app.command()
 def install_commands(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -624,7 +637,7 @@ def install_commands(
 
 @app.command()
 def interactive(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -638,7 +651,7 @@ def interactive(
 
 @app.command()
 def prompt_update(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):
@@ -652,7 +665,7 @@ def prompt_update(
 
 @app.command()
 def prompt_diff(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro)"),
+    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
     project: Optional[str] = ProjectOption,
     kiro: bool = KiroFlag
 ):

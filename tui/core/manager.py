@@ -83,6 +83,10 @@ class TUIManager:
         """
         if self.platform in ["gemini", "qwen"]:
             src_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "trae":
+            src_dir = COMMANDS_SRC_DIR / "trae"
+            if not src_dir.exists():
+                src_dir = COMMANDS_SRC_DIR / "claude"
         elif self.platform == "antigravity":
             src_dir = COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
@@ -103,6 +107,10 @@ class TUIManager:
         """获取命令源目录路径"""
         if self.platform in ["gemini", "qwen"]:
             return COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "trae":
+            trae_dir = COMMANDS_SRC_DIR / "trae"
+            if trae_dir.exists():
+                return trae_dir
         elif self.platform == "antigravity":
             return COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
@@ -219,6 +227,10 @@ class TUIManager:
         # 根据平台确定命令源目录
         if self.platform in ["gemini", "qwen"]:
             src_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "trae":
+            src_dir = COMMANDS_SRC_DIR / "trae"
+            if not src_dir.exists():
+                src_dir = COMMANDS_SRC_DIR / "claude"
         elif self.platform == "antigravity":
             src_dir = COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
@@ -338,6 +350,10 @@ class TUIManager:
         # 根据平台确定命令源目录
         if self.platform in ["gemini", "qwen"]:
             src_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "trae":
+            src_dir = COMMANDS_SRC_DIR / "trae"
+            if not src_dir.exists():
+                src_dir = COMMANDS_SRC_DIR / "claude"
         elif self.platform == "antigravity":
             src_dir = COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
