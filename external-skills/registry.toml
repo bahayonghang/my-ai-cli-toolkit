@@ -53,6 +53,20 @@ requires = ["git"]
 homepage = "https://github.com/OthmanAdi/planning-with-files"
 
 # ============================================================
+# Remotion Best Practices - Remotion 视频开发最佳实践
+# ============================================================
+[skills.remotion-best-practices]
+description = "Best practices and guidelines for Remotion video development"
+type = "npx"
+package = "skills"
+init_command = "npx skills add"
+init_args = ["https://github.com/remotion-dev/skills", "--skill", "remotion-best-practices"]
+supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
+requires = ["node"]
+homepage = "https://github.com/remotion-dev/skills"
+license = "MIT"
+
+# ============================================================
 # 示例: npx 类型 (无需全局安装)
 # ============================================================
 # [skills.example-npx-skill]
