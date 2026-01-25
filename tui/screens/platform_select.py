@@ -40,138 +40,6 @@ class PlatformSelectScreen(Screen):
         Binding("escape", "quit", "Quit", show=True),
     ]
     
-    DEFAULT_CSS = """
-    PlatformSelectScreen {
-        background: $background;
-        layout: vertical;
-    }
-    
-    /* 顶部标题区 */
-    PlatformSelectScreen #header-area {
-        width: 100%;
-        height: 5;
-        background: $surface;
-        border-bottom: solid $primary;
-        align: center middle;
-    }
-    
-    PlatformSelectScreen #brand {
-        width: 100%;
-        height: 100%;
-        align: center middle;
-    }
-    
-    PlatformSelectScreen #brand-text {
-        text-style: bold;
-        color: $primary;
-        text-align: center;
-        width: 100%;
-    }
-    
-    /* 中央内容区 */
-    PlatformSelectScreen #main-area {
-        width: 100%;
-        height: 1fr;
-        align: center middle;
-    }
-    
-    PlatformSelectScreen #select-container {
-        width: 80%;
-        max-width: 100;
-        height: auto;
-        padding: 2 4;
-    }
-    
-    PlatformSelectScreen #subtitle {
-        text-align: center;
-        color: $text-muted;
-        padding: 0 0 2 0;
-    }
-    
-    /* 平台选项列表 - 大尺寸卡片风格 */
-    PlatformSelectScreen #platform-list {
-        width: 100%;
-        height: auto;
-        border: round $panel;
-        padding: 1 2;
-        background: $surface;
-    }
-    
-    PlatformSelectScreen #platform-list:focus {
-        border: round $accent;
-    }
-    
-    PlatformSelectScreen #platform-list > .option-list--option-highlighted {
-        background: $success;
-        color: $background;
-        text-style: bold;
-    }
-    
-    /* 项目路径输入区 */
-    PlatformSelectScreen #project-section {
-        width: 100%;
-        height: auto;
-        padding: 2 0 0 0;
-    }
-    
-    PlatformSelectScreen #project-label {
-        text-align: center;
-        color: $text-muted;
-        padding: 0 0 1 0;
-    }
-    
-    PlatformSelectScreen #project-path-input {
-        width: 100%;
-        border: round $panel;
-        background: $surface;
-    }
-    
-    PlatformSelectScreen #project-path-input:focus {
-        border: round $accent;
-    }
-    
-    /* 按钮区 */
-    PlatformSelectScreen #button-section {
-        width: 100%;
-        height: auto;
-        padding: 2 0 0 0;
-        align: center middle;
-    }
-    
-    PlatformSelectScreen #button-row {
-        width: auto;
-        height: auto;
-    }
-    
-    PlatformSelectScreen Button {
-        margin: 0 1;
-    }
-    
-    /* 底部提示栏 */
-    PlatformSelectScreen #footer-area {
-        width: 100%;
-        height: 1;
-        background: $surface;
-        border-top: solid $panel;
-    }
-    
-    PlatformSelectScreen #footer-row {
-        width: 100%;
-        height: 1;
-        padding: 0 2;
-    }
-    
-    PlatformSelectScreen #hint {
-        width: 1fr;
-        color: $text-muted;
-    }
-    
-    PlatformSelectScreen #version {
-        width: auto;
-        color: $text-muted;
-    }
-    """
-    
     # 平台配置
     PLATFORMS = [
         PlatformConfig("claude", "Claude", "~/.claude/"),
@@ -187,8 +55,7 @@ class PlatformSelectScreen(Screen):
     def compose(self) -> ComposeResult:
         # 顶部标题栏 - 使用大字体 ASCII 风格
         with Vertical(id="header-area"):
-            with Vertical(id="brand"):
-                yield Static("🚀  M y C l a u d e   S k i l l s   M a n a g e r  🚀", id="brand-text")
+            yield Static("🚀  M y C l a u d e   S k i l l s   M a n a g e r  🚀", id="brand-text")
         
         # 中央选择区
         with Vertical(id="main-area"):
@@ -208,10 +75,9 @@ class PlatformSelectScreen(Screen):
                     )
                 
                 # 按钮区
-                with Vertical(id="button-section"):
-                    with Horizontal(id="button-row"):
-                        yield Button("Continue", variant="primary", id="continue-btn")
-                        yield Button("Cancel", variant="default", id="cancel-btn")
+                with Horizontal(id="button-row"):
+                    yield Button("Continue", variant="primary", id="continue-btn")
+                    yield Button("Cancel", variant="default", id="cancel-btn")
         
         # 底部提示栏
         with Vertical(id="footer-area"):
@@ -220,10 +86,11 @@ class PlatformSelectScreen(Screen):
                 yield Static("v1.0", id="version")
     
     def _format_option(self, platform: PlatformConfig) -> str:
-        """格式化平台选项显示 - 带上下空行增加间距"""
+        """格式化平台选项显示"""
         icon = PLATFORM_ICONS.get(platform.id, "📁")
         name = platform.name.ljust(10)
-        return f"\n{icon}  {name}  →  {platform.path}\n"
+        # 移除手动换行，使用 CSS padding
+        return f"{icon}  {name}  →  {platform.path}"
     
     def on_mount(self) -> None:
         self.query_one("#platform-list", OptionList).focus()

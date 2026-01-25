@@ -10,16 +10,16 @@ from textual.theme import Theme
 
 # 主题颜色常量 - 便于测试和复用
 THEME_COLORS = {
-    "primary": "#7C3AED",      # 紫色 - 主品牌色
-    "secondary": "#06B6D4",    # 青色 - 次要强调
-    "accent": "#F59E0B",       # 琥珀色 - 高亮/警告
-    "foreground": "#F1F5F9",   # 更亮的浅灰 - 主文本 (提升对比度)
-    "background": "#0F172A",   # 深蓝黑 - 背景
-    "success": "#10B981",      # 绿色 - 成功状态
-    "warning": "#F59E0B",      # 琥珀色 - 警告状态
-    "error": "#EF4444",        # 红色 - 错误状态
-    "surface": "#1E293B",      # 深灰蓝 - 表面/卡片
-    "panel": "#475569",        # 更亮的灰蓝 - 面板 (增强与 surface 对比)
+    "primary": "#22D3EE",      # Cyan-400
+    "secondary": "#60A5FA",    # Blue-400
+    "accent": "#F97316",       # Orange-500
+    "foreground": "#F8FAFC",   # Slate-50
+    "background": "#0B1020",   # Deep Navy
+    "success": "#10B981",      # Emerald-500
+    "warning": "#F59E0B",      # Amber-500
+    "error": "#EF4444",        # Red-500
+    "surface": "#111827",      # Slate-900 (Card Background)
+    "panel": "#1F2937",        # Slate-800 (Border/Highlight)
 }
 
 # 必需的主题属性列表
@@ -61,6 +61,8 @@ def create_myclaude_theme() -> Theme:
             "footer-key-foreground": THEME_COLORS["primary"],
             "input-selection-background": f"{THEME_COLORS['primary']} 40%",
             "input-cursor-foreground": THEME_COLORS["primary"],
+            "text-muted": "#94A3B8",
+            "text-subtle": "#7C879A",
         },
     )
 

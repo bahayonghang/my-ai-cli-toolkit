@@ -9,59 +9,169 @@ Screen {
 
 /* === 平台选择屏幕 === */
 PlatformSelectScreen {
-    align: center middle;
     background: $background;
+    layout: vertical;
 }
 
-PlatformSelectScreen #container {
-    width: 60;
+PlatformSelectScreen #header-area {
+    width: 100%;
+    dock: top;
+    height: 4;
+    background: $background;
+    border-bottom: solid $panel;
+    padding: 0 2;
+    align: center middle;
+}
+
+PlatformSelectScreen #brand-text {
+    color: $secondary;
+    text-style: bold;
+    width: 100%;
+    text-align: center;
+}
+
+PlatformSelectScreen #main-area {
+    width: 100%;
+    height: 1fr;
+    align: center middle;
+}
+
+PlatformSelectScreen #select-container {
+    width: 90%;
+    max-width: 80;
+    min-width: 46;
     height: auto;
-    padding: 1 2;
-    border: round $primary;
+    padding: 1 3 1 3;
+    border: round $panel;
     background: $surface;
 }
 
-PlatformSelectScreen #title {
-    text-align: center;
-    text-style: bold;
-    color: $primary;
-    padding: 1 0;
-}
-
-PlatformSelectScreen #separator {
-    text-align: center;
-    color: $text-muted;
+PlatformSelectScreen #select-container:focus-within {
+    border: round $primary;
 }
 
 PlatformSelectScreen #subtitle {
     text-align: center;
     color: $text-muted;
     padding: 0 0 1 0;
+    text-style: bold;
 }
 
 PlatformSelectScreen #platform-list {
     width: 100%;
     height: auto;
-    border: round $panel;
+    min-height: 6;
+    max-height: 14;
     padding: 1;
+    border: round $panel;
     background: $background;
+    color: $foreground;
+    scrollbar-size: 1 1;
 }
 
 PlatformSelectScreen #platform-list:focus {
-    border: round $accent;
+    border: round $primary;
 }
 
-PlatformSelectScreen #platform-list > .option-list--option-highlighted {
-    background: $success;
+PlatformSelectScreen OptionList > .option-list--option-highlighted {
+    background: $primary;
     color: $background;
     text-style: bold;
 }
 
-PlatformSelectScreen #hint {
-    text-align: center;
-    color: $text-muted;
-    padding: 1 0 0 0;
+PlatformSelectScreen #project-section {
+    margin-top: 1;
+    padding: 1 1;
+    border: round $panel;
+    background: $background;
 }
+
+PlatformSelectScreen #project-label {
+    color: $text-muted;
+    padding: 0 0 1 0;
+    text-align: left;
+}
+
+PlatformSelectScreen Input {
+    width: 100%;
+    background: $surface;
+    border: round $panel;
+    padding: 0 1;
+    color: $foreground;
+}
+
+PlatformSelectScreen Input:focus {
+    border: round $primary;
+    background: $background;
+}
+
+PlatformSelectScreen #button-row {
+    width: 100%;
+    height: auto;
+    layout: horizontal;
+    align: center middle;
+    padding: 2 0 1 0;
+}
+
+PlatformSelectScreen Button {
+    min-width: 14;
+    margin: 0 1;
+    height: 3;
+    border: round $panel;
+    background: $panel;
+    color: $foreground;
+    text-style: bold;
+    transition: background 150ms, color 150ms, border 150ms;
+}
+
+PlatformSelectScreen Button:focus {
+    border: round $accent;
+}
+
+PlatformSelectScreen Button:disabled {
+    opacity: 60%;
+}
+
+PlatformSelectScreen #continue-btn {
+    background: $primary;
+    color: $background;
+    text-style: bold;
+}
+
+PlatformSelectScreen #continue-btn:hover {
+    background: $secondary;
+}
+
+PlatformSelectScreen #cancel-btn {
+    background: $surface-lighten-1;
+    color: $foreground;
+}
+
+PlatformSelectScreen #footer-area {
+    dock: bottom;
+    height: 1;
+    background: $background;
+    color: $text-muted;
+    padding: 0 1;
+    border-top: solid $panel;
+}
+
+PlatformSelectScreen #footer-row {
+    width: 100%;
+    align: left middle;
+}
+
+PlatformSelectScreen #hint {
+    width: 1fr;
+    color: $text-muted;
+}
+
+PlatformSelectScreen #version {
+    width: 6;
+    text-align: right;
+    color: $text-muted;
+}
+
 
 /* === 主界面 === */
 MainScreen {
@@ -129,7 +239,7 @@ Tab {
     height: 1;
     padding: 0 2;
     background: $panel;
-    color: $text;
+    color: $foreground;
     text-style: bold;
     margin: 0 1 0 0;
 }
@@ -146,7 +256,7 @@ Tab.-active {
 
 Tab:focus {
     background: $primary;
-    color: $text;
+    color: $foreground;
 }
 
 Tab.-active:focus {
@@ -213,7 +323,7 @@ SelectableItem.-selected.-highlight #content {
 
 SelectableItem #content {
     width: 100%;
-    color: $text;
+    color: $foreground;
 }
 
 /* === 工具类 === */
@@ -248,7 +358,7 @@ SelectableItem #content {
 #progress-label {
     width: 30;
     padding: 0 1;
-    color: $text;
+    color: $foreground;
 }
 
 #progress-bar {
