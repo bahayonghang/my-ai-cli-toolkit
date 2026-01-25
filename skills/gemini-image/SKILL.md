@@ -1,6 +1,8 @@
 ---
 name: gemini-image
 description: Generate images using AI when user wants to create pictures, draw, paint, or generate artwork. Supports text-to-image and image-to-image generation.
+category: content-creation
+tags: [image-generation, ai-art, text-to-image, gemini]
 ---
 
 # Gemini Image Generation

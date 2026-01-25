@@ -14,6 +14,8 @@ description: |
   - "bib", "bibliography", "参考文献" → 参考文献模块
   - "deai", "去AI化", "humanize", "降低AI痕迹" → 去AI化编辑模块
   - "template", "模板", "IEEE", "ACM" → 模板配置模块
+category: academic-writing
+tags: [typst, paper, academic, bilingual]
 ---
 
 # Typst 学术论文助手

@@ -1,6 +1,8 @@
 ---
 name: tech-design-doc
 description: Generate technical design documents with proper structure, diagrams, and implementation details. Default language is English unless user requests Chinese.
+category: documentation
+tags: [design-doc, architecture, adr, rfc, technical-spec]
 ---
 
 # Technical Design Document Skill

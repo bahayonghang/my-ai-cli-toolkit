@@ -2,6 +2,8 @@
 name: create-expert-skill
 description: Create production-ready skills from expert knowledge. Extracts domain expertise and system ontologies, uses scripts for deterministic work, loads knowledge progressively. Use when building skills that must work reliably in production.
 version: 2.2
+category: skill-management
+tags: [skill-creation, knowledge-extraction, production-ready, ontology]
 ---
 
 # Expert Skill Creation

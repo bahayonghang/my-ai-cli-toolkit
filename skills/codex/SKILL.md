@@ -1,6 +1,8 @@
 ---
 name: codex
 description: Execute Codex CLI for code generation, analysis, web search and web fetch. Two capabilities - (1) Code Generation with deep reasoning, (2) Web Search & Fetch for online research.
+category: development-tools
+tags: [cli, code-generation, web-search, reasoning, codex]
 ---
 
 # Codex CLI Integration

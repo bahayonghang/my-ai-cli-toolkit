@@ -2,6 +2,8 @@
 name: yt-dlp
 description: 强大的视频下载工具，支持 YouTube 和 1000+ 网站，自动选择最佳格式、字幕下载、播放列表处理
 license: MIT
+category: media-processing
+tags: [video-download, youtube, bilibili, subtitle, media]
 ---
 
 # yt-dlp 视频下载 Skill

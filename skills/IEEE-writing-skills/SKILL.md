@@ -2,6 +2,8 @@
 name: ieee-writer
 description: Translate, polish, restructure, and validate academic papers for IEEE publications. Strict adherence to IEEE style, academic tone, and formatting rules.
 version: 1.0
+category: academic-writing
+tags: [ieee, academic, paper, translation, validation]
 ---
 
 # IEEE Writing Assistant

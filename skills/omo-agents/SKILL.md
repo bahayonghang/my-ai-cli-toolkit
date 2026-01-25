@@ -2,6 +2,8 @@
 name: omo-agents
 description: |
   oh-my-opencode 风格的多代理编排系统。提供 7 个专业代理协同工作：Sisyphus（主编排）、Oracle（架构顾问）、Librarian（文档研究）、Explore（代码搜索）、Frontend Engineer（UI/UX）、Document Writer（文档撰写）、Multimodal Looker（多模态分析）。当需要复杂开发任务、多角度问题解决、或特定专业领域帮助时使用。
+category: ai-orchestration
+tags: [multi-agent, orchestration, omo, sisyphus, oracle, omo-skills]
 ---
 
 # OMO Agents - 多代理编排系统

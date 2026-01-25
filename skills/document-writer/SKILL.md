@@ -2,6 +2,8 @@
 name: document-writer
 description: |
   技术文档撰写专家代理，将复杂代码库转化为清晰文档。当用户需要以下帮助时使用：(1) 编写 README (2) API 文档 (3) 架构文档 (4) 用户指南 (5) 变更日志 (6) 注释和 JSDoc。触发词包括：「写文档」「README」「API 文档」「使用说明」「注释」等文档相关请求。
+category: ai-orchestration
+tags: [documentation, readme, api-docs, jsdoc, omo-skills]
 ---
 
 # Document Writer - 技术文档专家

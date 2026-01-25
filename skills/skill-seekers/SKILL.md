@@ -1,6 +1,8 @@
 ---
 name: skill-seekers
 description: Generate LLM skills from documentation, codebases, and GitHub repositories
+category: skill-management
+tags: [skill-generation, codebase-analysis, documentation, automation]
 ---
 
 # Skill Seekers

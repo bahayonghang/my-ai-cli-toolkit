@@ -2,6 +2,8 @@
 name: paper-check
 description: 学术论文全流程质检工具，支持全局检查和7个部分的专项审查（标题/摘要/引言/方法/结果/讨论/结论），适用于Gemini和Codex CLI
 license: MIT
+category: academic-writing
+tags: [paper, quality-check, academic, validation, review]
 ---
 
 # 学术论文检查 Skill

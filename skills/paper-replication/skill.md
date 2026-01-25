@@ -1,6 +1,8 @@
 ---
 name: paper-replication
 description: 深度学习论文复现的skill。可以读取pdf并解析其中的图片、公式、表格等内容，然后参考下面的prompts。触发词包括"帮我复现这篇论文"、"论文复现"、"实现这个模型"，或当用户提供深度学习论文需要转化为PyTorch代码时。
+category: academic-writing
+tags: [paper, deep-learning, pytorch, replication, research]
 ---
 
 # Deep Learning Paper Replication Skill

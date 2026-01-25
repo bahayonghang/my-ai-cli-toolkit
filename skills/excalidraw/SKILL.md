@@ -1,6 +1,8 @@
 ---
 name: excalidraw
 description: Generate hand-drawn style diagrams (architecture, flowcharts, system design) as .excalidraw.json files. Use when user wants diagrams, mentions Excalidraw, or needs Mermaid-to-visual conversion.
+category: visual-design
+tags: [diagram, flowchart, architecture, excalidraw, hand-drawn]
 ---
 
 # Excalidraw Diagram Generation

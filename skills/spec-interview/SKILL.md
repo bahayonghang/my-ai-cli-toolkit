@@ -2,6 +2,8 @@
 name: spec-interview
 description: 通过系统性访谈完善技术规格文档，访谈完成后自动创建 OpenSpec proposal。适用于需求细化、技术方案设计、规范驱动开发等场景。
 license: MIT
+category: documentation
+tags: [spec, interview, openspec, requirements, design]
 ---
 
 # 规格访谈技能

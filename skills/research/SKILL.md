@@ -1,6 +1,8 @@
 ---
 name: research
 description: Use codex web search for technical research, output reports with complete citation links. Focus on key results users care about, minimize irrelevant content.
+category: research
+tags: [web-search, technical-research, citation, report]
 ---
 
 # Technical Research Skill
