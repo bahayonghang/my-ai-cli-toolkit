@@ -147,10 +147,12 @@ edges:
 
 ## Design Principles
 
-1. **KISS**: Simple, predictable styling
-2. **DRY**: Reusable tokens and themes
-3. **Consistency**: Same semantic = same visual
-4. **Accessibility**: High contrast, print-safe options
+1. **Content in Components**: Prefer embedding text and formulas in nodes (shapes) rather than standalone text boxes. Use standalone text only when no suitable shape exists. Exception: edge labels for connector annotations.
+   > 文字、公式等尽量写入形状组件中，而非独立文本框；仅当无合适形状时才使用独立文本框。例外：边标签用于箭头标注。
+2. **KISS**: Simple, predictable styling
+3. **DRY**: Reusable tokens and themes
+4. **Consistency**: Same semantic = same visual
+5. **Accessibility**: High contrast, print-safe options
 
 ---
 

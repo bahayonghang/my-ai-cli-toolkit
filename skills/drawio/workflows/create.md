@@ -195,11 +195,13 @@ edges:
 
 ## Best Practices
 
-1. **Specify theme** for consistent styling across diagrams
-2. **Use semantic types** for automatic shape selection
-3. **Describe relationships** with connector types (data, optional, etc.)
-4. **Keep it simple** - aim for ≤20 nodes per diagram
-5. **Use modules** for grouping related components
+1. **Content in Components** - Prefer embedding text and formulas in nodes (shapes) rather than standalone text boxes. Use standalone text only when no suitable shape exists. Exception: edge labels for connector annotations.
+   > 文字、公式等尽量写入形状组件中，而非独立文本框；仅当无合适形状时才使用独立文本框。例外：边标签用于箭头标注。
+2. **Specify theme** for consistent styling across diagrams
+3. **Use semantic types** for automatic shape selection
+4. **Describe relationships** with connector types (data, optional, etc.)
+5. **Keep it simple** - aim for ≤20 nodes per diagram
+6. **Use modules** for grouping related components
 
 ## Complexity Guardrails
 
