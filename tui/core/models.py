@@ -4,7 +4,7 @@ TUI 数据模型
 定义 TUI 使用的核心数据结构。
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -27,7 +27,7 @@ class InstallStatus(Enum):
 @dataclass
 class ItemInfo:
     """通用项目信息模型
-    
+
     Attributes:
         name: 项目名称
         item_type: 项目类型 (SKILL 或 COMMAND)
@@ -37,6 +37,8 @@ class ItemInfo:
         target_path: 目标安装路径 (可选)
         source_mtime: 源文件修改时间 (可选)
         target_mtime: 目标文件修改时间 (可选)
+        category: 技能分类 (可选，仅适用于 SKILL 类型)
+        tags: 技能标签列表 (仅适用于 SKILL 类型)
     """
     name: str
     item_type: ItemType
@@ -46,6 +48,8 @@ class ItemInfo:
     target_path: Optional[Path] = None
     source_mtime: Optional[datetime] = None
     target_mtime: Optional[datetime] = None
+    category: Optional[str] = None
+    tags: list[str] = field(default_factory=list)
     
     @property
     def is_installed(self) -> bool:

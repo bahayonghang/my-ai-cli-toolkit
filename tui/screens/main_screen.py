@@ -14,6 +14,7 @@ from textual import work
 from ..components.header import Header
 from ..components.footer import Footer
 from ..components.item_list import ItemListView, SelectableItem
+from ..components.category_filter import CategoryFilterBar
 from ..core.manager import TUIManager
 from ..core.models import InstallStatus
 
@@ -73,6 +74,8 @@ class MainScreen(Screen):
         with Vertical(id="main-container"):
             with Container(id="search-container", classes="-hidden"):
                 yield Input(placeholder="Search... (Esc)", id="search-input")
+            # Category filter bar (Skills tab only, hidden by default until data loads)
+            yield CategoryFilterBar(categories=[], id="category-filter")
             with Container(id="content-area"):
                 with TabbedContent(id="tabs"):
                     with TabPane("Skills", id="skills-tab"):
@@ -97,22 +100,35 @@ class MainScreen(Screen):
             self._platform,
             project_path=self._project_path,
         )
-        
+
         skills_list = self.query_one("#skills-list", ItemListView)
         if self.manager.check_skills_source_exists():
             skills_list.load_items(self.manager.get_skills())
+            # Initialize category filter bar with available categories
+            self._init_category_filter()
         else:
             skills_list.load_items([])
             self._show_message("Skills dir not found", "error")
-        
+
         commands_list = self.query_one("#commands-list", ItemListView)
         if self.manager.check_commands_source_exists():
             commands_list.load_items(self.manager.get_commands())
         else:
             commands_list.load_items([])
-        
+
         self.query_one(Footer).update_selection_count(0)
         self._update_installed_count()
+
+    def _init_category_filter(self) -> None:
+        """Initialize category filter bar with available categories."""
+        try:
+            filter_bar = self.query_one("#category-filter", CategoryFilterBar)
+            categories = self.manager.get_all_categories()
+            # Update categories dynamically
+            filter_bar.update_categories(categories)
+        except Exception as e:
+            # Log error for debugging
+            self._show_message(f"Filter init error: {e}", "warning")
     
     def _get_active_list(self) -> ItemListView:
         tabs = self.query_one("#tabs", TabbedContent)
@@ -141,10 +157,36 @@ class MainScreen(Screen):
         if tabs.active == "skills-tab":
             tabs.active = "commands-tab"
             self.query_one("#commands-list", ItemListView).focus()
+            self._hide_category_filter()
         else:
             tabs.active = "skills-tab"
             self.query_one("#skills-list", ItemListView).focus()
+            self._show_category_filter()
         self._update_selection_count()
+        self._update_installed_count()
+
+    def _show_category_filter(self) -> None:
+        """Show the category filter bar."""
+        try:
+            filter_bar = self.query_one("#category-filter", CategoryFilterBar)
+            filter_bar.remove_class("-hidden")
+        except Exception:
+            pass
+
+    def _hide_category_filter(self) -> None:
+        """Hide the category filter bar."""
+        try:
+            filter_bar = self.query_one("#category-filter", CategoryFilterBar)
+            filter_bar.add_class("-hidden")
+        except Exception:
+            pass
+
+    def on_category_filter_bar_category_changed(
+        self, event: CategoryFilterBar.CategoryChanged
+    ) -> None:
+        """Handle category filter change."""
+        skills_list = self.query_one("#skills-list", ItemListView)
+        skills_list.filter_by_category(event.category)
         self._update_installed_count()
     
     def action_cursor_down(self) -> None:

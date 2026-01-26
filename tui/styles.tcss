@@ -272,7 +272,7 @@ Underline {
 ItemListView {
     height: 1fr;
     border: round $primary;
-    padding: 0;
+    padding: 0 1;
     scrollbar-size: 1 1;
 }
 
@@ -282,8 +282,8 @@ ItemListView:focus {
 
 /* === 列表项 === */
 SelectableItem {
-    height: 1;
-    padding: 0 1;
+    height: 2;
+    padding: 0 2;
     background: transparent;
 }
 
@@ -379,4 +379,57 @@ SelectableItem #content {
     text-align: right;
     padding: 0 1;
     color: $accent;
+}
+
+/* === Category Filter Bar === */
+#category-filter {
+    width: 100%;
+    height: 4;
+    padding: 1 2;
+    background: $surface;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#category-filter.-hidden {
+    display: none;
+}
+
+CategoryFilterBar {
+    width: 100%;
+    height: 4;
+    padding: 1 2;
+    background: $surface;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+CategoryFilterBar.-hidden {
+    display: none;
+}
+
+CategoryButton {
+    min-width: 10;
+    height: 2;
+    padding: 0 2;
+    margin: 0 1 0 0;
+    border: none;
+    background: $panel;
+    color: $foreground;
+}
+
+CategoryButton:hover {
+    background: $surface-lighten-1;
+    color: $accent;
+}
+
+CategoryButton.-active {
+    background: $primary;
+    color: $background;
+    text-style: bold;
+}
+
+CategoryButton:focus {
+    background: $accent;
+    color: $background;
 }

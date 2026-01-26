@@ -76,58 +76,58 @@ def pad_to_width(text: str, target_width: int) -> str:
 
 
 class SelectableItem(ListItem):
-    """紧凑型可选择列表项
-    
-    单行显示: ☐/☑  ✓/○/⚠  name  -  description  [dates]
-    优化性能：减少嵌套组件，使用纯文本渲染
+    """可选择列表项
+
+    双行显示: ☐/☑  ✓/○/⚠  name  -  description  [dates]
+    优化视觉效果：增加行高和列间距
     """
-    
+
     DEFAULT_CSS = """
     SelectableItem {
-        height: 1;
-        padding: 0 1;
+        height: 2;
+        padding: 0 2;
         background: transparent;
     }
-    
+
     SelectableItem:hover {
         background: $surface-lighten-2;
     }
-    
+
     /* 选中状态 (Space 选中) - 橙色高亮 */
     SelectableItem.-selected {
         background: $warning 30%;
     }
-    
+
     SelectableItem.-selected #content {
         color: $warning;
         text-style: bold;
     }
-    
+
     /* ListView 高亮状态 (键盘浏览) - 实色绿色背景 */
     SelectableItem.-highlight {
         background: $success;
     }
-    
+
     SelectableItem.-highlight #content {
         color: $background;
         text-style: bold;
     }
-    
+
     /* 选中且高亮 */
     SelectableItem.-selected.-highlight {
         background: $success;
     }
-    
+
     SelectableItem.-selected.-highlight #content {
         color: $background;
         text-style: bold;
     }
-    
+
     /* 需要更新的项目 - 黄色警告 */
     SelectableItem.-outdated #content {
         color: $warning;
     }
-    
+
     SelectableItem #content {
         width: 100%;
         color: $text;
@@ -193,16 +193,19 @@ class SelectableItem(ListItem):
         return dt.strftime("%m-%d %H:%M")
     
     def _render_line(self, highlighted: bool = False) -> str:
-        """渲染单行内容（表格式布局）
-        
-        格式: ▶ ☐ ✓ Name                     Description                                      Src Time     Tgt Time
+        """渲染单行内容（表格式布局，优化间距）
+
+        格式: ▶  ☐  ✓  Name                       Description                                   Src Time      Tgt Time
         """
+        # Column separator (3 spaces for better readability)
+        SEP = "   "
+
         # 高亮指示箭头
         arrow = "▶" if highlighted else " "
-        
+
         # 复选框列 (固定1字符)
         checkbox = "☑" if self._selected else "☐"
-        
+
         # 状态列 (固定1字符)
         if self.needs_update:
             status = "⚠"  # 需要更新
@@ -210,23 +213,23 @@ class SelectableItem(ListItem):
             status = "✓"  # 已安装
         else:
             status = "○"  # 未安装
-        
-        # 名称列 (固定显示宽度 24)
-        name_text = truncate_to_width(self.item_name, 24)
-        name = pad_to_width(name_text, 24)
-        
-        # 描述列 (固定显示宽度 48，考虑中文字符)
+
+        # 名称列 (固定显示宽度 26)
+        name_text = truncate_to_width(self.item_name, 26)
+        name = pad_to_width(name_text, 26)
+
+        # 描述列 (固定显示宽度 42，考虑中文字符)
         desc = self.description or ""
-        desc_text = truncate_to_width(desc, 48)
-        desc = pad_to_width(desc_text, 48)
-        
-        # 源时间列 (固定宽度 11: "MM-DD HH:MM")
-        src_time = self._format_datetime(self.item_info.source_mtime)
-        
-        # 目标时间列 (固定宽度 11)
-        tgt_time = self._format_datetime(self.item_info.target_mtime)
-        
-        return f"{arrow} {checkbox} {status} {name} {desc} {src_time} {tgt_time}"
+        desc_text = truncate_to_width(desc, 42)
+        desc = pad_to_width(desc_text, 42)
+
+        # 源时间列 (固定宽度 12: "MM-DD HH:MM")
+        src_time = self._format_datetime(self.item_info.source_mtime).ljust(12)
+
+        # 目标时间列 (固定宽度 12)
+        tgt_time = self._format_datetime(self.item_info.target_mtime).ljust(12)
+
+        return f"{arrow}{SEP}{checkbox}{SEP}{status}{SEP}{name}{SEP}{desc}{SEP}{src_time}{SEP}{tgt_time}"
     
     def _update_display(self) -> None:
         """更新显示"""
@@ -268,21 +271,21 @@ class ItemListView(ListView):
     ItemListView {
         height: 1fr;
         border: round $primary;
-        padding: 0;
+        padding: 0 1;
         scrollbar-size: 1 1;
     }
-    
+
     ItemListView:focus {
         border: round $accent;
     }
-    
+
     /* 表头样式 */
     .list-header {
         background: $surface;
         color: $accent;
         text-style: bold;
-        height: 1;
-        padding: 0 1;
+        height: 2;
+        padding: 0 2;
     }
     """
     
@@ -297,7 +300,9 @@ class ItemListView(ListView):
         self.item_type = item_type
         self._all_items: list[SelectableItem] = []
         self._filter_text: str = ""
+        self._filter_category: Optional[str] = None
         self._last_highlighted: Optional[SelectableItem] = None
+        self._filter_apply_scheduled = False
     
     @property
     def items(self) -> list[SelectableItem]:
@@ -305,11 +310,10 @@ class ItemListView(ListView):
     
     def _create_header(self) -> ListItem:
         """创建表头"""
-        # 格式与 SelectableItem._render_line 对齐
-        # ▶ ☐ ✓ Name                     Description                                      Src Time     Tgt Time
-        # 列名对齐：箭头(1) 空格 复选框列(1) 空格 状态列(1) 空格 名称(24) 空格 描述(48) 空格 源时间(11) 空格 目标时间(11)
-        # 使用空格填充使列名与数据对齐
-        header_text = "  ☐ ✓ Name                     Description                                      Src Time     Tgt Time"
+        # 格式与 SelectableItem._render_line 对齐（使用 3 空格分隔符）
+        # 列: 箭头(1) SEP(3) 复选框(1) SEP(3) 状态(1) SEP(3) 名称(26) SEP(3) 描述(42) SEP(3) 源时间(12) SEP(3) 目标时间(12)
+        SEP = "   "
+        header_text = f" {SEP}☐{SEP}✓{SEP}{'Name':<26}{SEP}{'Description':<42}{SEP}{'Src Time':<12}{SEP}{'Tgt Time':<12}"
         header = ListItem(Static(header_text, classes="list-header"))
         header.can_focus = False
         return header
@@ -353,14 +357,34 @@ class ItemListView(ListView):
     def filter_items(self, text: str) -> None:
         """过滤列表"""
         self._filter_text = text.lower()
-        self._apply_filter()
+        self._schedule_filter_apply()
     
     def clear_filter(self) -> None:
         self._filter_text = ""
-        self._apply_filter()
-    
+        self._filter_category = None
+        self._schedule_filter_apply()
+
+    def filter_by_category(self, category: Optional[str]) -> None:
+        """Filter items by category.
+
+        Args:
+            category: Category to filter by, or None for all items
+        """
+        self._filter_category = category
+        self._schedule_filter_apply()
+
+    def _schedule_filter_apply(self) -> None:
+        """在刷新后调度过滤应用，避免首次点击渲染异常。"""
+        if self._filter_apply_scheduled:
+            return
+        self._filter_apply_scheduled = True
+        # 确保产生一次刷新循环，保证 call_after_refresh 执行。
+        self.refresh()
+        self.call_after_refresh(self._apply_filter)
+
     def _apply_filter(self) -> None:
         """应用过滤"""
+        self._filter_apply_scheduled = False
         self.clear()
         
         # 添加表头
@@ -378,12 +402,29 @@ class ItemListView(ListView):
             self.append(item)
     
     def _matches_filter(self, item: SelectableItem) -> bool:
-        if not self._filter_text:
-            return True
-        return self._filter_text in item.item_name.lower()
-    
+        """Check if item matches current filter criteria.
+
+        Args:
+            item: Item to check
+
+        Returns:
+            True if item matches all active filters
+        """
+        # Check category filter
+        if self._filter_category is not None:
+            item_category = item.item_info.category
+            if item_category != self._filter_category:
+                return False
+
+        # Check text filter
+        if self._filter_text:
+            if self._filter_text not in item.item_name.lower():
+                return False
+
+        return True
+
     def _get_visible_items(self) -> list[SelectableItem]:
-        if not self._filter_text:
+        if not self._filter_text and self._filter_category is None:
             return self._all_items
         return [item for item in self._all_items if self._matches_filter(item)]
     

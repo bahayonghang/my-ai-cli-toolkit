@@ -168,44 +168,59 @@ class TUIManager:
     
     def get_skills(self) -> list[ItemInfo]:
         """获取所有技能列表
-        
+
         Returns:
             技能信息列表
-            
+
         Note:
             如果源目录不存在，返回空列表
         """
         skills = []
         if not SKILLS_SRC_DIR.exists():
             return skills
-        
+
         for skill_dir in sorted(SKILLS_SRC_DIR.iterdir()):
             if skill_dir.is_dir():
                 target_path = self._manager.target_skills_dir / skill_dir.name
-                
+
                 # 获取修改时间
                 source_mtime = self._get_file_mtime(skill_dir)
                 target_mtime = self._get_file_mtime(target_path)
-                
+
                 # 判断安装状态
                 status = self._determine_install_status(
                     target_path, source_mtime, target_mtime
                 )
-                
-                desc = self._manager.get_skill_description(skill_dir)
-                
+
+                # Use frontmatter parser for rich metadata
+                metadata = SkillManager.parse_skill_frontmatter(skill_dir)
+
                 skills.append(ItemInfo(
                     name=skill_dir.name,
                     item_type=ItemType.SKILL,
-                    description=desc,
+                    description=metadata.get("description"),
                     status=status,
                     source_path=skill_dir,
                     target_path=target_path,
                     source_mtime=source_mtime,
                     target_mtime=target_mtime,
+                    category=metadata.get("category"),
+                    tags=metadata.get("tags", []),
                 ))
-        
+
         return skills
+
+    def get_all_categories(self) -> list[str]:
+        """获取所有可用的技能分类
+
+        Returns:
+            分类名称列表（去重并排序）
+        """
+        categories = set()
+        for skill in self.get_skills():
+            if skill.category:
+                categories.add(skill.category)
+        return sorted(categories)
     
     def get_commands(self) -> list[ItemInfo]:
         """获取所有命令列表（支持嵌套目录）
