@@ -6,6 +6,24 @@
 #   npx      - 直接通过 npx 执行（无需全局安装）
 #   pip-cli  - 全局安装 pip 包后执行命令
 #   git      - 克隆 git 仓库后执行安装脚本
+#   vercel   - 使用 Vercel Skills CLI (npx skills add)
+
+# ============================================================
+# 全局配置
+# ============================================================
+[config]
+# 默认安装方式: "copy" | "symlink"
+default_install_method = "symlink"
+# 默认安装范围: "global" | "project"
+default_scope = "global"
+# 是否自动检测已安装的 agents
+auto_detect_agents = true
+# 支持的所有 agent 平台
+known_agents = [
+    "amp", "antigravity", "claude", "clawdbot", "cline", "codex", 
+    "codebuddy", "copilot", "cursor", "droid", "gemini", "kiro",
+    "neovate", "opencode", "qoder", "trae", "windsurf"
+]
 
 # ============================================================
 # UI/UX Pro Max - 设计智能技能
@@ -30,10 +48,12 @@ license = "MIT"
 # ============================================================
 [skills.agent-browser]
 description = "Browser automation skill from Vercel Labs for AI agents"
-type = "npx"
+type = "vercel"
 package = "skills"
-init_command = "npx skills add"
-init_args = ["https://github.com/vercel-labs/agent-browser", "--skill", "agent-browser"]
+repo = "https://github.com/vercel-labs/agent-browser"
+skill_name = "agent-browser"
+install_method = "symlink"
+scope = "global"
 supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
 requires = ["node"]
 homepage = "https://github.com/vercel-labs/agent-browser"
@@ -57,14 +77,49 @@ homepage = "https://github.com/OthmanAdi/planning-with-files"
 # ============================================================
 [skills.remotion-best-practices]
 description = "Best practices and guidelines for Remotion video development"
-type = "npx"
+type = "vercel"
 package = "skills"
-init_command = "npx skills add"
-init_args = ["https://github.com/remotion-dev/skills", "--skill", "remotion-best-practices"]
+repo = "https://github.com/remotion-dev/skills"
+skill_name = "remotion-best-practices"
+install_method = "symlink"
+scope = "global"
 supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
 requires = ["node"]
 homepage = "https://github.com/remotion-dev/skills"
 license = "MIT"
+
+# ============================================================
+# Vercel React Best Practices - Vercel Labs React 最佳实践
+# ============================================================
+[skills.vercel-react-best-practices]
+description = "React best practices and guidelines from Vercel Labs for AI agents"
+type = "vercel"
+package = "skills"
+repo = "https://github.com/vercel-labs/agent-skills"
+skill_name = "vercel-react-best-practices"
+install_method = "symlink"  # symlink | copy
+scope = "global"  # global | project
+supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
+requires = ["node"]
+homepage = "https://github.com/vercel-labs/agent-skills"
+license = "MIT"
+
+# ============================================================
+# Find Skills - Vercel Labs 技能发现元技能
+# ============================================================
+[skills.find-skills]
+description = "Helps AI agents discover and suggest skills from the ecosystem"
+type = "vercel"
+package = "skills"
+repo = "https://github.com/vercel-labs/skills"
+skill_name = "find-skills"
+install_method = "symlink"
+scope = "global"
+supported_targets = ["all"]
+requires = ["node"]
+homepage = "https://github.com/vercel-labs/skills"
+license = "MIT"
+recommended = true  # 推荐安装的元技能
 
 # ============================================================
 # 示例: npx 类型 (无需全局安装)

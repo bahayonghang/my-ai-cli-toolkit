@@ -2,18 +2,21 @@
 """
 External Skills Installer - 外部技能安装工具
 
-支持通过 npm/npx/pip/git 安装的外部技能
+支持通过 npm/npx/pip/git/vercel 安装的外部技能
 
 Usage:
     python install.py list                              # 列出所有外部技能
+    python install.py agents                            # 列出检测到的 AI agents
     python install.py install <skill> --target claude   # 安装并初始化技能
     python install.py init <skill> --target claude      # 仅初始化（已安装的技能）
     python install.py check <skill>                     # 检查依赖
+    python install.py info <skill>                      # 显示技能详情
 """
 
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -28,16 +31,43 @@ except ImportError:
 import typer
 from rich import print as rprint
 from rich.console import Console
+from rich.panel import Panel
 from rich.table import Table
+from rich.tree import Tree
 
 app = typer.Typer(
     name="external-skills",
-    help="外部技能安装工具 - 支持 npm/npx/pip/git 类型的技能",
+    help="外部技能安装工具 - 支持 npm/npx/pip/git/vercel 类型的技能",
     add_completion=False,
 )
 console = Console()
 
 CONFIG_FILE = Path(__file__).parent / "registry.toml"
+
+# ASCII Art Banner
+BANNER = r"""
+███████╗██╗  ██╗████████╗███████╗██████╗ ███╗   ██╗ █████╗ ██╗
+██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝██╔══██╗████╗  ██║██╔══██╗██║
+█████╗   ╚███╔╝    ██║   █████╗  ██████╔╝██╔██╗ ██║███████║██║
+██╔══╝   ██╔██╗    ██║   ██╔══╝  ██╔══██╗██║╚██╗██║██╔══██║██║
+███████╗██╔╝ ██╗   ██║   ███████╗██║  ██║██║ ╚████║██║  ██║███████╗
+╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
+███████╗██╗  ██╗██╗██╗     ██╗     ███████╗
+██╔════╝██║ ██╔╝██║██║     ██║     ██╔════╝
+███████╗█████╔╝ ██║██║     ██║     ███████╗
+╚════██║██╔═██╗ ██║██║     ██║     ╚════██║
+███████║██║  ██╗██║███████╗███████╗███████║
+╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚══════╝
+"""
+
+
+@dataclass
+class RegistryConfig:
+    """注册表全局配置"""
+    default_install_method: str = "symlink"
+    default_scope: str = "global"
+    auto_detect_agents: bool = True
+    known_agents: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -45,23 +75,27 @@ class ExternalSkill:
     """外部技能定义"""
     name: str
     description: str = ""
-    type: str = "npm-cli"  # npm-cli | npx | pip-cli | git
+    type: str = "npm-cli"  # npm-cli | npx | pip-cli | git | vercel
     package: str = ""
+    repo: str = ""
+    skill_name: str = ""  # Vercel 类型的技能名
+    install_method: str = "symlink"  # symlink | copy
+    scope: str = "global"  # global | project
     install_command: str = ""
     init_command: str = ""
     init_args: list[str] = field(default_factory=list)
     target_map: dict[str, str] = field(default_factory=dict)
     supported_targets: list[str] = field(default_factory=list)
     requires: list[str] = field(default_factory=list)
-    repo: str = ""
     branch: str = "main"
     dest: str = ""
     post_clone: str = ""
     homepage: str = ""
     license: str = ""
+    recommended: bool = False
 
 
-def load_registry() -> dict[str, ExternalSkill]:
+def load_registry() -> tuple[RegistryConfig, dict[str, ExternalSkill]]:
     """加载技能注册表"""
     if not CONFIG_FILE.exists():
         rprint(f"[red]❌ 配置文件不存在: {CONFIG_FILE}[/red]")
@@ -70,6 +104,16 @@ def load_registry() -> dict[str, ExternalSkill]:
     with open(CONFIG_FILE, "rb") as f:
         data = tomllib.load(f)
 
+    # 加载全局配置
+    config_data = data.get("config", {})
+    config = RegistryConfig(
+        default_install_method=config_data.get("default_install_method", "symlink"),
+        default_scope=config_data.get("default_scope", "global"),
+        auto_detect_agents=config_data.get("auto_detect_agents", True),
+        known_agents=config_data.get("known_agents", []),
+    )
+
+    # 加载技能
     skills: dict[str, ExternalSkill] = {}
     for name, s_data in data.get("skills", {}).items():
         skills[name] = ExternalSkill(
@@ -77,21 +121,51 @@ def load_registry() -> dict[str, ExternalSkill]:
             description=s_data.get("description", ""),
             type=s_data.get("type", "npm-cli"),
             package=s_data.get("package", ""),
+            repo=s_data.get("repo", ""),
+            skill_name=s_data.get("skill_name", ""),
+            install_method=s_data.get("install_method", config.default_install_method),
+            scope=s_data.get("scope", config.default_scope),
             install_command=s_data.get("install_command", ""),
             init_command=s_data.get("init_command", ""),
             init_args=s_data.get("init_args", []),
             target_map=s_data.get("target_map", {}),
             supported_targets=s_data.get("supported_targets", []),
             requires=s_data.get("requires", []),
-            repo=s_data.get("repo", ""),
             branch=s_data.get("branch", "main"),
             dest=s_data.get("dest", ""),
             post_clone=s_data.get("post_clone", ""),
             homepage=s_data.get("homepage", ""),
             license=s_data.get("license", ""),
+            recommended=s_data.get("recommended", False),
         )
 
-    return skills
+    return config, skills
+
+
+def get_home_dir() -> Path:
+    """获取用户主目录"""
+    return Path.home()
+
+
+def detect_installed_agents(config: RegistryConfig) -> list[str]:
+    """检测已安装的 AI agent 平台"""
+    home = get_home_dir()
+    detected: list[str] = []
+
+    for agent in config.known_agents:
+        agent_dir = home / f".{agent}"
+        if agent_dir.exists():
+            detected.append(agent)
+
+    return detected
+
+
+def get_agent_skills_dir(agent: str, scope: str = "global") -> Path:
+    """获取 agent 的 skills 目录"""
+    if scope == "global":
+        return get_home_dir() / f".{agent}" / "skills"
+    else:
+        return Path.cwd() / f".{agent}" / "skills"
 
 
 def check_command_exists(cmd: str) -> bool:
@@ -136,28 +210,49 @@ def check_dependencies(requires: list[str]) -> tuple[bool, list[str]]:
     return len(missing) == 0, missing
 
 
-def run_command(cmd: str, cwd: Optional[Path] = None, dry_run: bool = False) -> bool:
+def run_command(
+    cmd: str | list[str],
+    cwd: Optional[Path] = None,
+    dry_run: bool = False,
+    capture: bool = False,
+) -> tuple[bool, str]:
     """执行命令"""
-    rprint(f"[cyan]$ {cmd}[/cyan]")
+    if isinstance(cmd, list):
+        cmd_str = subprocess.list2cmdline(cmd)
+    else:
+        cmd_str = cmd
+
+    rprint(f"[cyan]$ {cmd_str}[/cyan]")
 
     if dry_run:
         rprint("[yellow](dry-run, 跳过执行)[/yellow]")
-        return True
+        return True, ""
 
     try:
-        result = subprocess.run(
-            cmd,
-            shell=True,
-            cwd=cwd,
-            text=True,
-        )
-        return result.returncode == 0
+        if capture:
+            result = subprocess.run(
+                cmd if isinstance(cmd, list) else cmd_str,
+                shell=not isinstance(cmd, list),
+                cwd=cwd,
+                text=True,
+                capture_output=True,
+            )
+            return result.returncode == 0, result.stdout
+        else:
+            result = subprocess.run(
+                cmd if isinstance(cmd, list) else cmd_str,
+                shell=not isinstance(cmd, list),
+                cwd=cwd,
+                text=True,
+            )
+            return result.returncode == 0, ""
     except Exception as e:
         rprint(f"[red]执行失败: {e}[/red]")
-        return False
+        return False, ""
 
 
 def cmd_from_args(args: list[str]) -> str:
+    """从参数列表构建命令字符串"""
     return subprocess.list2cmdline(args)
 
 
@@ -176,38 +271,106 @@ def build_init_command(skill: ExternalSkill, target: str) -> str:
 
 
 def is_git_repo(path: Path) -> bool:
+    """检查路径是否为 git 仓库"""
     return (path / ".git").exists()
 
 
-@app.command("list")
-def list_skills():
-    """列出所有外部技能"""
-    skills = load_registry()
+def create_symlink(source: Path, target: Path) -> bool:
+    """创建符号链接"""
+    try:
+        if target.exists() or target.is_symlink():
+            target.unlink()
 
-    rprint("\n[bold cyan]📦 External Skills Registry[/bold cyan]\n")
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+        if sys.platform == "win32":
+            # Windows 需要管理员权限或开发者模式
+            import ctypes
+            if ctypes.windll.shell32.IsUserAnAdmin():
+                target.symlink_to(source, target_is_directory=source.is_dir())
+            else:
+                # 降级为复制
+                rprint("[yellow]⚠️  Windows 需要管理员权限创建符号链接，降级为复制模式[/yellow]")
+                if source.is_dir():
+                    shutil.copytree(source, target, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(source, target)
+        else:
+            target.symlink_to(source)
+
+        return True
+    except Exception as e:
+        rprint(f"[red]创建符号链接失败: {e}[/red]")
+        return False
+
+
+def show_banner():
+    """显示 Banner"""
+    console.print(BANNER, style="bold cyan")
+    console.print("External Skills Installer", style="bold", justify="center")
+    console.print("", justify="center")
+
+
+@app.command("list")
+def list_skills(
+    show_banner_flag: bool = typer.Option(True, "--banner/--no-banner", help="是否显示 Banner"),
+):
+    """列出所有外部技能"""
+    config, skills = load_registry()
+
+    if show_banner_flag:
+        show_banner()
+    else:
+        rprint("\n[bold cyan]📦 External Skills Registry[/bold cyan]\n")
 
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Name", style="cyan")
     table.add_column("Type", style="green")
-    table.add_column("Package")
+    table.add_column("Method", style="yellow")
+    table.add_column("Scope")
     table.add_column("Targets")
     table.add_column("Description")
 
     for skill in skills.values():
+        method_icon = "🔗" if skill.install_method == "symlink" else "📋"
+        scope_icon = "🌍" if skill.scope == "global" else "📁"
         targets_str = ", ".join(skill.supported_targets[:3])
         if len(skill.supported_targets) > 3:
             targets_str += f" (+{len(skill.supported_targets) - 3})"
 
         table.add_row(
-            skill.name,
+            f"{'⭐ ' if skill.recommended else ''}{skill.name}",
             skill.type,
-            skill.package or skill.repo or "-",
+            f"{method_icon} {skill.install_method}",
+            f"{scope_icon} {skill.scope}",
             targets_str,
-            skill.description[:50] + "..." if len(skill.description) > 50 else skill.description,
+            skill.description[:40] + "..." if len(skill.description) > 40 else skill.description,
         )
 
     console.print(table)
     rprint(f"\n[dim]共 {len(skills)} 个外部技能[/dim]")
+    rprint("[dim]⭐ = 推荐安装[/dim]")
+
+
+@app.command("agents")
+def list_agents():
+    """列出检测到的 AI agent 平台"""
+    config, _ = load_registry()
+    detected = detect_installed_agents(config)
+
+    rprint(f"\n[bold cyan]🤖 检测到 {len(detected)} 个已安装的 AI Agent:[/bold cyan]\n")
+
+    tree = Tree("AI Agents")
+    for agent in detected:
+        skills_dir = get_agent_skills_dir(agent)
+        skill_count = len(list(skills_dir.iterdir())) if skills_dir.exists() else 0
+        tree.add(f"[cyan]{agent}[/cyan] - {skill_count} skills installed")
+
+    if not detected:
+        rprint("[yellow]未检测到任何已安装的 AI agent[/yellow]")
+        rprint(f"[dim]支持检测的 agents: {', '.join(config.known_agents[:10])}...[/dim]")
+    else:
+        console.print(tree)
 
 
 @app.command("info")
@@ -215,7 +378,7 @@ def show_info(
     skill_name: str = typer.Argument(..., help="技能名称"),
 ):
     """显示技能详细信息"""
-    skills = load_registry()
+    _, skills = load_registry()
 
     if skill_name not in skills:
         rprint(f"[red]❌ 未知技能: {skill_name}[/red]")
@@ -223,19 +386,24 @@ def show_info(
 
     skill = skills[skill_name]
 
-    rprint(f"\n[bold cyan]📦 {skill.name}[/bold cyan]\n")
-    rprint(f"[dim]Description:[/dim] {skill.description}")
-    rprint(f"[dim]Type:[/dim] {skill.type}")
-    rprint(f"[dim]Package:[/dim] {skill.package or skill.repo or '-'}")
-    rprint(f"[dim]License:[/dim] {skill.license or '-'}")
-    rprint(f"[dim]Homepage:[/dim] {skill.homepage or '-'}")
-    rprint(f"[dim]Requires:[/dim] {', '.join(skill.requires) or '-'}")
-    rprint(f"[dim]Supported Targets:[/dim] {', '.join(skill.supported_targets)}")
+    panel_content = f"""
+[dim]Description:[/dim] {skill.description}
+[dim]Type:[/dim] {skill.type}
+[dim]Install Method:[/dim] {'🔗 ' if skill.install_method == 'symlink' else '📋 '}{skill.install_method}
+[dim]Scope:[/dim] {'🌍 ' if skill.scope == 'global' else '📁 '}{skill.scope}
+[dim]Package:[/dim] {skill.package or skill.repo or '-'}
+[dim]License:[/dim] {skill.license or '-'}
+[dim]Homepage:[/dim] {skill.homepage or '-'}
+[dim]Requires:[/dim] {', '.join(skill.requires) or '-'}
+[dim]Supported Targets:[/dim] {', '.join(skill.supported_targets[:8])}{'...' if len(skill.supported_targets) > 8 else ''}
+"""
 
     if skill.install_command:
-        rprint(f"\n[dim]Install Command:[/dim]\n  {skill.install_command}")
+        panel_content += f"\n[dim]Install Command:[/dim]\n  {skill.install_command}"
     if skill.init_command:
-        rprint(f"\n[dim]Init Command:[/dim]\n  {skill.init_command} {' '.join(skill.init_args)}")
+        panel_content += f"\n[dim]Init Command:[/dim]\n  {skill.init_command} {' '.join(skill.init_args)}"
+
+    console.print(Panel(panel_content, title=f"📦 {skill.name}", border_style="cyan"))
 
 
 @app.command("check")
@@ -243,7 +411,7 @@ def check_skill(
     skill_name: str = typer.Argument(..., help="技能名称"),
 ):
     """检查技能依赖"""
-    skills = load_registry()
+    _, skills = load_registry()
 
     if skill_name not in skills:
         rprint(f"[red]❌ 未知技能: {skill_name}[/red]")
@@ -289,7 +457,7 @@ def install_skill(
     ),
 ):
     """安装并初始化外部技能"""
-    skills = load_registry()
+    _, skills = load_registry()
 
     if skill_name not in skills:
         rprint(f"[red]❌ 未知技能: {skill_name}[/red]")
@@ -317,8 +485,21 @@ def install_skill(
 
     rprint(f"\n[bold cyan]📦 安装技能: {skill.name}[/bold cyan]")
     rprint(f"[dim]目标平台: {target}[/dim]")
-    rprint(f"[dim]项目目录: {cwd}[/dim]\n")
+    rprint(f"[dim]项目目录: {cwd}[/dim]")
+    rprint(f"[dim]安装方式: {'🔗 ' if skill.install_method == 'symlink' else '📋 '}{skill.install_method}[/dim]\n")
 
+    # Vercel Skills 类型处理
+    if skill.type == "vercel":
+        rprint("[bold]Step 1: 使用 npx skills 安装[/bold]")
+        install_cmd = f"npx skills add {skill.skill_name or skill.name}"
+        success, _ = run_command(install_cmd, cwd=cwd, dry_run=dry_run)
+        if not success:
+            rprint("[red]❌ Vercel Skills 安装失败[/red]")
+            raise typer.Exit(1)
+        rprint(f"\n[green]✓ 技能 {skill.name} 安装完成！[/green]")
+        return
+
+    # Git 类型处理
     if skill.type == "git":
         if not skill.repo:
             rprint(f"[red]❌ git 类型技能缺少 repo 字段: {skill.name}[/red]")
@@ -336,35 +517,41 @@ def install_skill(
                 raise typer.Exit(1)
 
             pull_cmd = cmd_from_args(["git", "-C", str(dest), "pull", "origin", skill.branch])
-            if not run_command(pull_cmd, dry_run=dry_run):
+            success, _ = run_command(pull_cmd, dry_run=dry_run)
+            if not success:
                 rprint("[red]❌ 更新失败[/red]")
                 raise typer.Exit(1)
         else:
             clone_cmd = cmd_from_args(["git", "clone", "--branch", skill.branch, skill.repo, str(dest)])
-            if not run_command(clone_cmd, dry_run=dry_run):
+            success, _ = run_command(clone_cmd, dry_run=dry_run)
+            if not success:
                 rprint("[red]❌ 克隆失败[/red]")
                 raise typer.Exit(1)
 
         if skill.post_clone:
             rprint("\n[bold]Step 2: 克隆后处理[/bold]")
-            if not run_command(skill.post_clone, cwd=dest, dry_run=dry_run):
+            success, _ = run_command(skill.post_clone, cwd=dest, dry_run=dry_run)
+            if not success:
                 rprint("[red]❌ 克隆后处理失败[/red]")
                 raise typer.Exit(1)
 
         if skill.init_command:
             rprint("\n[bold]Step 3: 初始化项目[/bold]")
             init_cmd = build_init_command(skill, target)
-            if not run_command(init_cmd, cwd=cwd, dry_run=dry_run):
+            success, _ = run_command(init_cmd, cwd=cwd, dry_run=dry_run)
+            if not success:
                 rprint("[red]❌ 初始化失败[/red]")
                 raise typer.Exit(1)
 
         rprint(f"\n[green]✓ 技能 {skill.name} 安装完成！[/green]")
         return
 
+    # npm-cli / npx / pip-cli 类型处理
     # Step 1: 全局安装 (如果需要)
     if not skip_install and skill.install_command:
         rprint("[bold]Step 1: 全局安装[/bold]")
-        if not run_command(skill.install_command, dry_run=dry_run):
+        success, _ = run_command(skill.install_command, dry_run=dry_run)
+        if not success:
             rprint("[red]❌ 安装失败[/red]")
             raise typer.Exit(1)
         rprint()
@@ -373,7 +560,8 @@ def install_skill(
     if skill.init_command:
         rprint("[bold]Step 2: 初始化项目[/bold]")
         init_cmd = build_init_command(skill, target)
-        if not run_command(init_cmd, cwd=cwd, dry_run=dry_run):
+        success, _ = run_command(init_cmd, cwd=cwd, dry_run=dry_run)
+        if not success:
             rprint("[red]❌ 初始化失败[/red]")
             raise typer.Exit(1)
 
@@ -397,7 +585,7 @@ def init_skill(
     ),
 ):
     """仅初始化技能（假设已全局安装）"""
-    skills = load_registry()
+    _, skills = load_registry()
 
     if skill_name not in skills:
         rprint(f"[red]❌ 未知技能: {skill_name}[/red]")
@@ -415,7 +603,8 @@ def init_skill(
     rprint(f"[dim]项目目录: {cwd}[/dim]\n")
 
     init_cmd = build_init_command(skill, target)
-    if not run_command(init_cmd, cwd=cwd, dry_run=dry_run):
+    success, _ = run_command(init_cmd, cwd=cwd, dry_run=dry_run)
+    if not success:
         rprint("[red]❌ 初始化失败[/red]")
         raise typer.Exit(1)
 
