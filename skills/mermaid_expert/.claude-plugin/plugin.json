@@ -1,0 +1,11 @@
+{
+  "name": "mermaid-expert",
+  "description": "Expert guidance for Mermaid.js diagramming library. Create flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, git graphs, and block diagrams. Use when working with Mermaid syntax, creating diagrams, or visualizing complex concepts and workflows.",
+  "version": "1.0.0",
+  "author": {
+    "name": "StrayDragon",
+    "url": "https://github.com/StrayDragon/straydragon-claude-skills"
+  },
+  "categories": ["development", "documentation", "visualization"],
+  "tags": ["mermaid", "diagrams", "flowcharts", "documentation", "visualization", "markdown", "web", "charts"]
+}

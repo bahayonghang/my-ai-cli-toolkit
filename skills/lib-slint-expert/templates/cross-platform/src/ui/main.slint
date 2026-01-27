@@ -1,0 +1,205 @@
+import {
+    Button,
+    VerticalLayout,
+    HorizontalLayout,
+    ScrollView,
+    Text,
+    TextArea
+} from "std-widgets.slint";
+
+export component CrossPlatformApp inherits Window {
+    title: "Slint Cross-Platform Demo";
+    width: 600px;
+    height: 500px;
+
+    // App state
+    property <string> current-theme: "light";
+    property <string> platform-info: "Click to detect platform";
+    property <string> test-results: "Click to test features";
+    property <string> status-text: "Ready";
+
+    // Callbacks
+    callback show-platform-info;
+    callback test-features;
+    callback toggle-theme;
+
+    // Theme-aware styling
+    @colors := {
+        light: {
+            background: #ffffff,
+            surface: #f8f9fa,
+            text: #2c3e50,
+            primary: #3498db,
+            secondary: #6c757d
+        },
+        dark: {
+            background: #1a1a1a,
+            surface: #2d2d2d,
+            text: #ecf0f1,
+            primary: #3498db,
+            secondary: #95a5a6
+        }
+    };
+
+    @theme := @colors[current-theme];
+
+    background: @theme.background;
+
+    VerticalLayout {
+        spacing: 20px;
+        padding: 30px;
+
+        // Header
+        Rectangle {
+            background: @theme.surface;
+            border-radius: 12px;
+            height: 80px;
+
+            VerticalLayout {
+                padding: 20px;
+                spacing: 8px;
+
+                Text {
+                    text: "Cross-Platform Slint App";
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: @theme.text;
+                }
+
+                Text {
+                    text: "Running on: " + current-theme + " theme";
+                    font-size: 14px;
+                    color: @theme.secondary;
+                }
+            }
+        }
+
+        // Platform info section
+        Rectangle {
+            background: @theme.surface;
+            border-radius: 8px;
+            padding: 20px;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Platform Information";
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: @theme.text;
+                }
+
+                ScrollView {
+                    viewport-height: 80px;
+
+                    Text {
+                        text: platform-info;
+                        wrap: word-wrap;
+                        color: @theme.text;
+                    }
+                }
+
+                Button {
+                    text: "Detect Platform";
+                    background: @theme.primary;
+                    clicked => { root.show-platform-info(); }
+                }
+            }
+        }
+
+        // Features test section
+        Rectangle {
+            background: @theme.surface;
+            border-radius: 8px;
+            padding: 20px;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Platform Features";
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: @theme.text;
+                }
+
+                ScrollView {
+                    viewport-height: 80px;
+
+                    Text {
+                        text: test-results;
+                        wrap: word-wrap;
+                        color: @theme.text;
+                    }
+                }
+
+                Button {
+                    text: "Test Features";
+                    background: @theme.primary;
+                    clicked => { root.test-features(); }
+                }
+            }
+        }
+
+        // Controls section
+        Rectangle {
+            background: @theme.surface;
+            border-radius: 8px;
+            padding: 20px;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Controls";
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: @theme.text;
+                }
+
+                HorizontalLayout {
+                    spacing: 15px;
+
+                    Button {
+                        text: "Toggle Theme";
+                        background: @theme.secondary;
+                        clicked => { root.toggle-theme(); }
+                    }
+
+                    Button {
+                        text: "Show Info";
+                        background: @theme.primary;
+                        clicked => { root.show-platform-info(); }
+                    }
+                }
+            }
+        }
+
+        // Status bar
+        Rectangle {
+            background: @theme.surface;
+            border-radius: 6px;
+            height: 40px;
+
+            Text {
+                text: status-text;
+                color: @theme.secondary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                font-size: 14px;
+            }
+        }
+    }
+
+    // Platform-specific initialization
+    init => {
+        // Auto-detect platform on startup
+        show-platform-info();
+
+        // Apply theme-specific styles
+        if (current-theme == "dark") {
+            // Additional dark mode setup
+        }
+    }
+}

@@ -1,0 +1,13 @@
+[package]
+name = "slint-component-library"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+slint = "1.13"
+
+[build-dependencies]
+slint-build = "1.13"
+
+[dev-dependencies]
+slint-testing = "1.13"

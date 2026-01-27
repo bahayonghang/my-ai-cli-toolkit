@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slint Cross-Platform Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">Loading Slint application...</div>
+    <canvas id="canvas"></canvas>
+
+    <script type="module">
+        import init, { slint } from './pkg/slint_cross_platform.js';
+
+        async function run() {
+            const loading = document.getElementById('loading');
+            const canvas = document.getElementById('canvas');
+
+            try {
+                await init();
+
+                // Hide loading message
+                loading.style.display = 'none';
+
+                // Create the Slint application
+                const app = new slint.CrossPlatformApp();
+
+                // Set up canvas size
+                canvas.width = 600;
+                canvas.height = 500;
+
+                // Connect the canvas to the Slint runtime
+                app.window().canvas_element = canvas;
+
+                // Show the window and run the event loop
+                app.run();
+
+            } catch (error) {
+                loading.textContent = `Error: ${error}`;
+                console.error('Failed to load Slint application:', error);
+            }
+        }
+
+        run();
+    </script>
+</body>
+</html>

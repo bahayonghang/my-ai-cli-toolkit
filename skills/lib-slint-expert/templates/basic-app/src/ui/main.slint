@@ -1,0 +1,70 @@
+import { Button, VerticalLayout, HorizontalLayout } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "Slint Basic Application";
+    width: 400px;
+    height: 300px;
+
+    property <int> counter-value: 0;
+
+    callback counter-button-clicked;
+    callback reset-button-clicked;
+
+    VerticalLayout {
+        spacing: 20px;
+        padding: 40px;
+        alignment: center;
+
+        Text {
+            text: "Welcome to Slint!";
+            font-size: 24px;
+            font-weight: bold;
+            horizontal-alignment: center;
+            color: #3498db;
+        }
+
+        Rectangle {
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-width: 2px;
+            border-color: #e9ecef;
+            height: 80px;
+
+            VerticalLayout {
+                alignment: center;
+
+                Text {
+                    text: "Counter: " + counter-value;
+                    font-size: 20px;
+                    font-weight: 600;
+                    horizontal-alignment: center;
+                    color: #2c3e50;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 15px;
+            alignment: center;
+
+            Button {
+                text: "Increment";
+                background: #3498db;
+                clicked => { root.counter-button-clicked(); }
+            }
+
+            Button {
+                text: "Reset";
+                background: #e74c3c;
+                clicked => { root.reset-button-clicked(); }
+            }
+        }
+
+        Text {
+            text: counter-value > 10 ? "Great job! 🎉" : "Keep clicking!";
+            font-size: 16px;
+            horizontal-alignment: center;
+            color: counter-value > 10 ? #27ae60 : #7f8c8d;
+        }
+    }
+}
