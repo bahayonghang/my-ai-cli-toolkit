@@ -33,6 +33,8 @@ class MainScreen(Screen):
         Binding("escape", "escape_action", "Esc Back", show=False),
         Binding("j", "cursor_down", "j Down", show=False),
         Binding("k", "cursor_up", "k Up", show=False),
+        Binding("down", "cursor_down", "↓ Down", show=False),
+        Binding("up", "cursor_up", "↑ Up", show=False),
     ]
     
     def __init__(
