@@ -62,11 +62,19 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [codex](skills/codex/) | Codex CLI integration for deep code analysis and web search |
 | [paper-replication](skills/paper-replication/) | Replicate deep learning papers into industrial-grade PyTorch code |
 | [paper-check](skills/paper-check/) | Code review and validation assistant |
+| [review-code](skills/review-code/) | Multi-dimensional code review with structured reports |
 | [claude-expert-skill-creator](skills/claude-expert-skill-creator/) | Create production-ready skills from expert knowledge |
 | [mcp-to-skill](skills/mcp-to-skill/) | Convert MCP servers to Claude Code Skills |
-| [skill-manager](skills/skill-manager/) | Search and install 31,767+ community skills |
+| [skill-manager](skills/skill-manager/) | Lifecycle manager for GitHub-based skills |
+| [skill-evolution-manager](skills/skill-evolution-manager/) | Evolve skills based on user feedback and experience |
+| [github-to-skills](skills/github-to-skills/) | Convert GitHub repos into AI skills automatically |
 | [skill-seekers](skills/skill-seekers/) | Generate LLM skills from documentation and codebases |
 | [explore](skills/explore/) | Fast code search agent for locating code and tracing dependencies |
+| [rust-cli-tui-developer](skills/rust-cli-tui-developer/) | Expert guidance for Rust CLI and TUI development |
+| [lib-slint-expert](skills/lib-slint-expert/) | Comprehensive Slint GUI development expert |
+| [vue-best-practices](skills/vue-best-practices/) | Vue 3 and TypeScript best practices with Volar |
+| [uv-expert](skills/uv-expert/) | Expert guidance for uv Python package manager |
+| [gh-bootstrap](skills/gh-bootstrap/) | One-stop GitHub repository configuration tool |
 | [agent-browser](https://github.com/vercel-labs/agent-browser) | Browser automation skill from Vercel Labs (External Skill) |
 | [gemini](skills/gemini/) | Gemini integration for enhanced reasoning |
 
@@ -84,6 +92,7 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [tech-design-doc](skills/tech-design-doc/) | Generate structured technical design documents |
 | [spec-interview](skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration |
 | [document-writer](skills/document-writer/) | Technical writer for README, API docs, and architecture docs |
+| [mermaid-expert](skills/mermaid_expert/) | Expert guidance for Mermaid.js diagramming library |
 
 ### 🎓 Academic
 | Skill | Description |
@@ -104,6 +113,7 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 ### 🛠️ Utilities
 | Skill | Description |
 |-------|-------------|
+| [planning-with-files](skills/planning-with-files/) | File-based planning for complex multi-step tasks |
 | [yt-dlp](skills/yt-dlp/) | Video downloader for YouTube, Bilibili, and 1000+ sites |
 
 ## Commands

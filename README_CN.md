@@ -39,27 +39,74 @@ python3 install_tui.py
 
 ## 技能列表
 
+技能按领域分类，提供专业化的 AI 辅助能力。
+
+### 🎨 设计
 | 技能 | 描述 |
 |------|------|
 | [article-cover](skills/article-cover/) | 为博客文章生成专业的 SVG 封面图 |
-| [codex](skills/codex/) | Codex CLI 集成，支持深度代码分析和网络搜索 |
 | [drawio](skills/drawio/) | AI 驱动的 Draw.io 图表生成工具，支持实时浏览器预览、流程图、架构图和云基础设施图 |
 | [excalidraw](skills/excalidraw/) | 创建手绘风格的 Excalidraw JSON 图表 |
 | [frontend-design](skills/frontend-design/) | 构建独特的生产级前端界面 |
 | [gemini-image](skills/gemini-image/) | 通过 Gemini API 生成图像（文生图、图生图） |
-| [research](skills/research/) | 技术研究，支持网络搜索和引用 |
-| [spec-interview](skills/spec-interview/) | 通过系统性访谈完善技术规格，集成 OpenSpec 实现规范驱动开发 |
-| [typst-paper](skills/typst-paper/) | Typst 学术论文助手，支持模块化工作流（编译、格式检查、语法分析、去AI化编辑），适用于中英文论文 |
+
+### 💻 开发
+| 技能 | 描述 |
+|------|------|
+| [codex](skills/codex/) | Codex CLI 集成，支持深度代码分析和网络搜索 |
 | [paper-replication](skills/paper-replication/) | 将深度学习论文复现为工业级 PyTorch 代码，含详细模块文档 |
+| [paper-check](skills/paper-check/) | 代码审查和验证助手 |
+| [review-code](skills/review-code/) | 多维度代码审查，生成结构化报告 |
+| [claude-expert-skill-creator](skills/claude-expert-skill-creator/) | 从专家知识创建生产级技能，采用分层架构 |
+| [mcp-to-skill](skills/mcp-to-skill/) | 将 MCP 服务器转换为 Claude Code 技能，支持完整打包 |
+| [skill-manager](skills/skill-manager/) | GitHub 技能生命周期管理器 |
+| [skill-evolution-manager](skills/skill-evolution-manager/) | 基于用户反馈的技能进化管理器 |
+| [github-to-skills](skills/github-to-skills/) | 自动将 GitHub 仓库转换为 AI 技能 |
+| [skill-seekers](skills/skill-seekers/) | 从文档、代码库和 GitHub 仓库生成 LLM 技能，支持 AI 增强分析 |
+| [explore](skills/explore/) | 快速代码搜索代理，定位代码和追踪依赖 |
+| [rust-cli-tui-developer](skills/rust-cli-tui-developer/) | Rust CLI 和 TUI 开发专家指导 |
+| [lib-slint-expert](skills/lib-slint-expert/) | 全面的 Slint GUI 开发专家 |
+| [vue-best-practices](skills/vue-best-practices/) | Vue 3 和 TypeScript 最佳实践，支持 Volar |
+| [uv-expert](skills/uv-expert/) | uv Python 包管理器专家指导 |
+| [gh-bootstrap](skills/gh-bootstrap/) | 一站式 GitHub 仓库配置初始化工具 |
+| [gemini](skills/gemini/) | Gemini 集成，增强推理能力 |
+
+### 🔍 研究
+| 技能 | 描述 |
+|------|------|
+| [research](skills/research/) | 技术研究，支持网络搜索和引用 |
+| [librarian](skills/librarian/) | 文档研究员，查找外部文档和最佳实践 |
+| [multimodal-looker](skills/multimodal-looker/) | 视觉分析师，分析图片、PDF、图表和图表 |
+
+### 📝 文档
+| 技能 | 描述 |
+|------|------|
 | [tech-blog](skills/tech-blog/) | 撰写带源码分析的技术博客 |
 | [tech-design-doc](skills/tech-design-doc/) | 生成结构化的技术设计文档 |
-| [claude-expert-skill-creator](skills/claude-expert-skill-creator/) | 从专家知识创建生产级技能，采用分层架构 |
+| [spec-interview](skills/spec-interview/) | 通过系统性访谈完善技术规格，集成 OpenSpec 实现规范驱动开发 |
+| [document-writer](skills/document-writer/) | 技术写手，撰写 README、API 文档和架构文档 |
+| [mermaid-expert](skills/mermaid_expert/) | Mermaid.js 图表库专家指导 |
+
+### 🎓 学术
+| 技能 | 描述 |
+|------|------|
 | [IEEE-writing-skills](skills/IEEE-writing-skills/) | IEEE 学术论文翻译、润色、重构和格式验证 |
 | [latex-paper-en](skills/latex-paper-en/) | 英文学术论文 LaTeX 助手，支持会议/期刊论文 |
 | [latex-thesis-zh](skills/latex-thesis-zh/) | 中文博士/硕士学位论文 LaTeX 助手，支持 GB/T 7714 |
-| [mcp-to-skill](skills/mcp-to-skill/) | 将 MCP 服务器转换为 Claude Code 技能，支持完整打包 |
-| [skill-manager](skills/skill-manager/) | 搜索、浏览和安装 31,767+ 社区技能，支持智能文件夹级下载 |
-| [skill-seekers](skills/skill-seekers/) | 从文档、代码库和 GitHub 仓库生成 LLM 技能，支持 AI 增强分析 |
+| [typst-paper](skills/typst-paper/) | Typst 学术论文助手，支持模块化工作流（编译、格式检查、语法分析、去AI化编辑），适用于中英文论文 |
+| [git-commit-cn](skills/git-commit-cn/) | 中文版 git commit 信息生成器 |
+
+### 🤖 OMO Agents (多代理系统)
+| 技能 | 描述 |
+|------|------|
+| [omo-agents](skills/omo-agents/) | 多代理编排系统概览和使用指南 |
+| [sisyphus](skills/sisyphus/) | 主编排代理，用于复杂任务规划和并行执行 |
+| [oracle](skills/oracle/) | 专家架构师，负责设计决策、代码审查和调试指导 |
+
+### 🛠️ 实用工具
+| 技能 | 描述 |
+|------|------|
+| [planning-with-files](skills/planning-with-files/) | 基于文件的复杂多步骤任务规划 |
 | [yt-dlp](skills/yt-dlp/) | 强大的视频下载工具，支持 YouTube、Bilibili 等 1000+ 网站，自动 FFmpeg 检测 |
 
 ## 命令

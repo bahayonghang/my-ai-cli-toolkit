@@ -15,12 +15,20 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 | [codex](./codex) | Development | Code analysis and web search via Codex CLI |
 | [paper-replication](./paper-replication) | Development | Replicate deep learning papers to PyTorch |
 | [paper-check](./paper-check) | Development | Code review and validation assistant |
+| [review-code](./review-code) | Development | Multi-dimensional code review with structured reports |
 | [gemini](./gemini) | Development | Gemini integration for enhanced reasoning |
 | [claude-expert-skill-creator](./claude-expert-skill-creator) | Development | Create production-ready skills from expert knowledge |
 | [mcp-to-skill](./mcp-to-skill) | Development | Convert MCP servers to Claude Code Skills |
-| [skill-manager](./skill-manager) | Development | Search and install 31,767+ community skills |
+| [skill-manager](./skill-manager) | Development | Lifecycle manager for GitHub-based skills |
+| [skill-evolution-manager](./skill-evolution-manager) | Development | Evolve skills based on user feedback |
+| [github-to-skills](./github-to-skills) | Development | Convert GitHub repos into AI skills |
 | [skill-seekers](./skill-seekers) | Development | Generate LLM skills from documentation and codebases |
 | [explore](./explore) | Development | Fast code search agent for locating code and tracing dependencies |
+| [rust-cli-tui-developer](./rust-cli-tui-developer) | Development | Expert guidance for Rust CLI and TUI development |
+| [lib-slint-expert](./lib-slint-expert) | Development | Comprehensive Slint GUI development expert |
+| [vue-best-practices](./vue-best-practices) | Development | Vue 3 and TypeScript best practices |
+| [uv-expert](./uv-expert) | Development | Expert guidance for uv Python package manager |
+| [gh-bootstrap](./gh-bootstrap) | Development | One-stop GitHub repository configuration tool |
 | [agent-browser](https://github.com/vercel-labs/agent-browser) | Development | Browser automation skill from Vercel Labs (External) |
 | [research](./research) | Research | Technical research with citations |
 | [librarian](./librarian) | Research | External docs and best practices |
@@ -29,12 +37,14 @@ MyClaude Skills provides a collection of specialized AI skills for different dev
 | [tech-design-doc](./tech-design-doc) | Documentation | Generate technical design documents |
 | [spec-interview](./spec-interview) | Documentation | Refine specs through systematic questioning |
 | [document-writer](./document-writer) | Documentation | README, API docs, architecture docs |
+| [mermaid-expert](./mermaid-expert) | Documentation | Expert guidance for Mermaid.js diagramming |
 | [IEEE-writing-skills](./IEEE-writing-skills) | Academic | Translate, polish, and validate IEEE papers |
 | [latex-paper-en](./latex-paper-en) | Academic | LaTeX assistant for English academic papers |
 | [latex-thesis-zh](./latex-thesis-zh) | Academic | Chinese thesis LaTeX assistant |
 | [typst-paper](./typst-paper) | Academic | Typst academic paper assistant |
 | [git-commit-cn](./git-commit-cn) | Academic/Util | Chinese version of git commit message generator |
 | [yt-dlp](./yt-dlp) | Utilities | Video downloader for YouTube, Bilibili, and 1000+ sites |
+| [planning-with-files](./planning-with-files) | Utilities | File-based planning for complex multi-step tasks |
 | [external-skills-tui](./external-skills-tui) | Utilities | TUI for managing external npm/pip/git skills |
 
 ### OMO Agents (Multi-Agent System)
@@ -61,8 +71,14 @@ Skills for code analysis and generation:
 - **codex** - Deep code analysis with Codex CLI
 - **paper-replication** - Deep learning paper to PyTorch code
 - **paper-check** - Code review and validation assistant
+- **review-code** - Multi-dimensional code review with structured reports
 - **gemini** - Gemini integration for enhanced reasoning
 - **explore** - Fast code search agent
+- **rust-cli-tui-developer** - Expert guidance for Rust CLI and TUI development
+- **lib-slint-expert** - Comprehensive Slint GUI development expert
+- **vue-best-practices** - Vue 3 and TypeScript best practices
+- **uv-expert** - Expert guidance for uv Python package manager
+- **gh-bootstrap** - One-stop GitHub repository configuration tool
 - **agent-browser** - Browser automation (External)
 
 ### Research Skills
@@ -77,6 +93,7 @@ Skills for creating technical documents:
 - **tech-design-doc** - Design documents
 - **spec-interview** - Specification refinement
 - **document-writer** - Technical writer
+- **mermaid-expert** - Expert guidance for Mermaid.js diagramming
 
 ### Academic Writing Skills
 Skills for academic paper and thesis writing:
@@ -90,12 +107,15 @@ Skills for academic paper and thesis writing:
 Skills for creating and managing skills:
 - **claude-expert-skill-creator** - Create production-ready skills
 - **mcp-to-skill** - Convert MCP servers to skills
-- **skill-manager** - Search and install community skills
+- **skill-manager** - Lifecycle manager for GitHub-based skills
+- **skill-evolution-manager** - Evolve skills based on user feedback
+- **github-to-skills** - Convert GitHub repos into AI skills
 - **skill-seekers** - Generate skills from docs
 
 ### Utilities
 Useful tools and utilities:
 - **yt-dlp** - Video downloader
+- **planning-with-files** - File-based planning for complex tasks
 - **external-skills-tui** - Manage external skills
 
 ### OMO Agents (Multi-Agent System)
