@@ -178,7 +178,9 @@
         "padding": { "type": "integer" },
         "labelFontSize": { "type": "integer" },
         "labelFontWeight": { "type": "integer" },
-        "labelFontColor": { "$ref": "#/definitions/color" }
+        "labelFontColor": { "$ref": "#/definitions/color" },
+        "dashed": { "type": "boolean", "description": "Whether module border is dashed (IEEE style)" },
+        "dashPattern": { "type": ["string", "null"], "description": "Dash pattern (e.g., '8 4')" }
       }
     },
     "canvas": {

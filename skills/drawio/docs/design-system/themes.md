@@ -1,6 +1,6 @@
 # Themes
 
-The Draw.io Design System provides 4 built-in themes optimized for different use cases. Custom themes can be created using the JSON theme format.
+The Draw.io Design System provides 5 built-in themes optimized for different use cases. Custom themes can be created using the JSON theme format.
 
 ---
 
@@ -32,11 +32,40 @@ meta:
 
 ---
 
-### Academic
+### Academic Color (Recommended for Academic)
 
-High-contrast black/white/gray for IEEE-style publications, optimized for print.
+Colorful academic style with semantic colors, optimized for digital viewing and color printing.
 
-**Best for**: Research papers, academic publications, IEEE diagrams, grayscale printing
+**Best for**: Research papers, academic publications, presentations, digital documents
+
+**Characteristics**:
+- Semantic colorful palette (blue, green, amber, purple)
+- No rounded corners (sharp edges)
+- Serif typography (Times New Roman)
+- High readability with visual distinction
+
+```yaml
+meta:
+  theme: academic-color
+```
+
+| Element | Fill | Stroke |
+|---------|------|--------|
+| service | 💙 `#DBEAFE` | `#2563EB` |
+| database | 💚 `#D1FAE5` | `#059669` |
+| decision | 🟡 `#FEF3C7` | `#D97706` |
+| queue | 💜 `#EDE9FE` | `#7C3AED` |
+| user | 🩵 `#E0F2FE` | `#0284C7` |
+
+> **Recommended**: Use this theme for academic diagrams unless grayscale printing is required.
+
+---
+
+### Academic (Grayscale)
+
+High-contrast black/white/gray for IEEE-style publications, optimized for grayscale print.
+
+**Best for**: Grayscale printing, strict IEEE format requirements
 
 **Characteristics**:
 - Pure black/white/gray palette
@@ -255,12 +284,13 @@ meta:
 
 ```
 skills/drawio/themes/
-├── theme.schema.json    # JSON Schema for validation
-├── tech-blue.json       # Default theme
-├── academic.json        # IEEE/print theme
-├── nature.json          # Green/environmental theme
-├── dark.json            # Dark mode theme
-└── [custom].json        # User custom themes
+├── theme.schema.json      # JSON Schema for validation
+├── tech-blue.json         # Default theme
+├── academic-color.json    # Academic colorful (recommended)
+├── academic.json          # Academic grayscale
+├── nature.json            # Green/environmental theme
+├── dark.json              # Dark mode theme
+└── [custom].json          # User custom themes
 ```
 
 ---

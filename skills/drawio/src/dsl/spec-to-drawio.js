@@ -42,6 +42,7 @@ const DEFAULT_THEME = {
       fontSize: 13,
       rounded: 8
     },
+    // Traditional types
     service: { fillColor: '#DBEAFE', strokeColor: '#2563EB' },
     database: { fillColor: '#D1FAE5', strokeColor: '#059669' },
     decision: { fillColor: '#FEF3C7', strokeColor: '#D97706' },
@@ -49,7 +50,22 @@ const DEFAULT_THEME = {
     queue: { fillColor: '#EDE9FE', strokeColor: '#7C3AED' },
     user: { fillColor: '#E0F2FE', strokeColor: '#0284C7' },
     document: { fillColor: '#FFFFFF', strokeColor: '#CBD5E1' },
-    formula: { fillColor: '#FFFFFF', strokeColor: '#2563EB', strokeWidth: 1 }
+    formula: { fillColor: '#FFFFFF', strokeColor: '#2563EB', strokeWidth: 1 },
+    // Deep learning types
+    input: { fillColor: '#FFCDD2', strokeColor: '#E57373' },
+    output: { fillColor: '#CFD8DC', strokeColor: '#78909C' },
+    loss: { fillColor: '#FFCCBC', strokeColor: '#FF7043' },
+    feature: { fillColor: '#BBDEFB', strokeColor: '#42A5F5' },
+    conv: { fillColor: '#BBDEFB', strokeColor: '#1E88E5' },
+    pool: { fillColor: '#B3E5FC', strokeColor: '#039BE5' },
+    embed: { fillColor: '#D1C4E9', strokeColor: '#7E57C2' },
+    temporal: { fillColor: '#E1BEE7', strokeColor: '#AB47BC' },
+    attention: { fillColor: '#C8E6C9', strokeColor: '#66BB6A' },
+    gate: { fillColor: '#FFE0B2', strokeColor: '#FFA726' },
+    norm: { fillColor: '#DCEDC8', strokeColor: '#8BC34A' },
+    graph: { fillColor: '#B2EBF2', strokeColor: '#26C6DA' },
+    matrix: { fillColor: '#E8EAF6', strokeColor: '#7986CB' },
+    operator: { fillColor: '#FFFFFF', strokeColor: '#424242' }
   },
   connector: {
     primary: { strokeColor: '#1E293B', strokeWidth: 2, dashed: false, endArrow: 'block', endFill: true },
@@ -66,7 +82,9 @@ const DEFAULT_THEME = {
     padding: 24,
     labelFontSize: 14,
     labelFontWeight: 600,
-    labelFontColor: '#1E293B'
+    labelFontColor: '#1E293B',
+    dashed: false,
+    dashPattern: '8 4'
   },
   canvas: {
     background: '#FFFFFF',
@@ -88,17 +106,57 @@ export function loadTheme(themeName) {
 // ============================================================================
 
 const SHAPE_KEYWORDS = {
+  // Traditional types (check first for backward compatibility)
   database: ['database', 'db', 'sql', 'storage', 'redis', 'mongo', 'postgresql', 'mysql', 'cache'],
   decision: ['decision', 'condition', 'branch', 'switch', 'route'],
   terminal: ['start', 'begin', 'end', 'finish', 'stop', 'terminate'],
   queue: ['queue', 'buffer', 'kafka', 'rabbitmq', 'stream', 'sqs', 'message'],
-  user: ['user', 'actor', 'client', 'person', 'customer'],
+  user: ['user', 'user icon', 'client', 'person', 'customer', 'human'],
   document: ['document', 'doc', 'file', 'report', 'log'],
   formula: ['formula', 'equation', 'math', '$$'],
-  cloud: ['cloud', 'internet', 'external', 'web']
+  cloud: ['cloud', 'internet', 'external', 'web'],
+
+  // Deep learning - Input/Output
+  input: ['input_', 'input layer', 'inputdata', 'x_train', 'x_test', 'sample batch', 'input data', 'input signal'],
+  output: ['output_', 'output layer', 'prediction', 'y_hat', 'logits', 'probs', 'output data', 'reconstructed'],
+  loss: ['loss', 'criterion', 'objective', 'mse loss', 'cross_entropy', 'bceloss', 'loss function', 'error'],
+
+  // Deep learning - Feature extraction & Encoding/Decoding
+  feature: ['feature extractor', 'backbone', 'encoder block', 'feature extraction'],
+  conv: ['conv1d', 'conv2d', 'conv3d', 'convolution', 'convolutional', 'tcn', '1d conv', '2d conv', '3d conv'],
+  pool: ['pooling', 'maxpool', 'avgpool', 'adaptive pool', 'max pooling', 'avg pooling', 'global pool'],
+  embed: ['embedding', 'embeddings', 'lookup', 'token embed', 'word embed', 'positional'],
+
+  // Deep learning - Decoder (separate from encoder for different colors if needed)
+  // Using feature type for decoder as it's semantically similar
+
+  // Deep learning - Temporal/Sequential
+  temporal: ['lstm', 'rnn', 'gru', 'temporal', 'recurrent', 'sequence', 'seq2seq', 'bilstm', 'bigru', 'hidden state'],
+
+  // Deep learning - Attention & Transformer
+  attention: ['attention', 'attn', 'softmax', 'transformer', 'self-attention', 'multi-head', 'mha', 'cross-attention', 'qkv'],
+
+  // Deep learning - Normalization & Regularization
+  norm: ['batchnorm', 'layernorm', 'groupnorm', 'instancenorm', 'normalization', 'batch norm', 'layer norm', 'dropout'],
+
+  // Deep learning - Gate & Activation
+  gate: ['gating', 'gate mechanism', 'multiply gate', 'sigmoid gate', 'tanh gate', 'forget gate', 'input gate', 'output gate'],
+
+  // Deep learning - Graph Neural Network
+  graph: ['graph conv', 'gcn', 'gnn', 'graph attention', 'adjacency', 'node feature', 'edge feature', 'message passing', 'aggregation'],
+
+  // Deep learning - Matrix operations & Linear layers
+  matrix: ['matmul', 'linear layer', 'fc layer', 'dense layer', 'mlp', 'weight matrix', 'fully connected', 'projection'],
+
+  // Deep learning - Operators (for small circular nodes)
+  operator: ['⊕', '⊗', '⊙', 'concat', 'element-wise', 'hadamard', 'residual add', 'skip add', '⊞'],
+
+  // Deep learning - 3D Feature Maps / Tensors (for CNN visualizations)
+  tensor3d: ['tensor', 'feature map', '3d feature', 'activation map', 'channel', 'h×w×c', 'hwc', 'chw', 'nchw', 'nhwc', 'cube', '3d block', 'volume']
 }
 
 const SHAPE_STYLES = {
+  // Traditional shapes
   service: 'rounded=1;arcSize=20',
   database: 'shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15',
   decision: 'rhombus',
@@ -108,7 +166,24 @@ const SHAPE_STYLES = {
   document: 'shape=document;boundedLbl=1',
   formula: 'rounded=1',
   cloud: 'ellipse;shape=cloud',
-  process: 'rounded=1;arcSize=20'
+  process: 'rounded=1;arcSize=20',
+
+  // Deep learning shapes
+  input: 'rounded=1;arcSize=15',
+  output: 'rounded=1;arcSize=15',
+  loss: 'rounded=1;arcSize=15',
+  feature: 'rounded=1;arcSize=15',
+  conv: 'rounded=1;arcSize=10',
+  pool: 'rounded=1;arcSize=10',
+  embed: 'rounded=1;arcSize=15',
+  temporal: 'rounded=1;arcSize=15',
+  attention: 'rounded=1;arcSize=15',
+  gate: 'rounded=1;arcSize=10',
+  norm: 'rounded=1;arcSize=10',
+  graph: 'rounded=1;arcSize=15',
+  matrix: 'rounded=1;arcSize=5',
+  operator: 'ellipse',
+  tensor3d: 'shape=cube;size=10;direction=south'
 }
 
 /**
@@ -146,17 +221,41 @@ export function detectSemanticType(label, explicitType) {
 // ============================================================================
 
 const SIZE_PRESETS = {
+  tiny: { width: 32, height: 32 },      // For operators (⊕⊗)
   small: { width: 80, height: 40 },
   medium: { width: 120, height: 60 },
   large: { width: 160, height: 80 },
-  xl: { width: 200, height: 100 }
+  xl: { width: 200, height: 100 },
+  // 3D Feature Map sizes (cube-like proportions)
+  tensor_sm: { width: 40, height: 48 },   // Small feature map
+  tensor_md: { width: 60, height: 72 },   // Medium feature map
+  tensor_lg: { width: 80, height: 96 },   // Large feature map
+  tensor_xl: { width: 100, height: 120 }  // Extra large feature map
+}
+
+// Default sizes for specific node types
+const TYPE_DEFAULT_SIZES = {
+  operator: 'tiny',
+  decision: 'medium',
+  terminal: 'small',
+  user: 'small',
+  tensor3d: 'tensor_md'
 }
 
 /**
- * Get node dimensions based on size preset
+ * Get node dimensions based on size preset or node type
  */
-export function getNodeSize(size = 'medium') {
-  return SIZE_PRESETS[size] || SIZE_PRESETS.medium
+export function getNodeSize(size, nodeType = null) {
+  // If explicit size is provided and valid, use it
+  if (size && SIZE_PRESETS[size]) {
+    return SIZE_PRESETS[size]
+  }
+  // If node type has a default size, use it
+  if (nodeType && TYPE_DEFAULT_SIZES[nodeType]) {
+    return SIZE_PRESETS[TYPE_DEFAULT_SIZES[nodeType]]
+  }
+  // Fallback to medium
+  return SIZE_PRESETS.medium
 }
 
 // ============================================================================
@@ -218,7 +317,8 @@ export function calculateLayout(spec, theme) {
       let nodeY = moduleY + containerPadding + 40 // Header space
 
       for (const node of moduleNodes) {
-        const size = getNodeSize(node.size)
+        const semanticType = detectSemanticType(node.label, node.type)
+        const size = getNodeSize(node.size, semanticType)
         const nodeX = snapToGrid(moduleX + containerPadding, gridSize)
         positions.set(node.id, {
           x: nodeX,
@@ -253,7 +353,8 @@ export function calculateLayout(spec, theme) {
       let maxHeight = 0
 
       for (const node of moduleNodes) {
-        const size = getNodeSize(node.size)
+        const semanticType = detectSemanticType(node.label, node.type)
+        const size = getNodeSize(node.size, semanticType)
         positions.set(node.id, {
           x: snapToGrid(nodeX, gridSize),
           y: snapToGrid(moduleY + containerPadding + 40, gridSize),
@@ -283,7 +384,8 @@ export function calculateLayout(spec, theme) {
     const maxCols = 4
 
     for (const node of nodes) {
-      const size = getNodeSize(node.size)
+      const semanticType = detectSemanticType(node.label, node.type)
+      const size = getNodeSize(node.size, semanticType)
       positions.set(node.id, {
         x: snapToGrid(40 + col * (size.width + nodeMargin), gridSize),
         y: snapToGrid(40 + row * (size.height + nodeMargin), gridSize),
@@ -383,7 +485,7 @@ export function generateConnectorStyle(edge, theme, routing = 'orthogonal') {
  */
 export function generateModuleStyle(module, theme) {
   const moduleTheme = theme.module || {}
-  
+
   const fillColor = module.style?.fillColor || module.color || moduleTheme.fillColor || '#F8FAFC'
   const strokeColor = module.style?.strokeColor || moduleTheme.strokeColor || '#E2E8F0'
   const strokeWidth = moduleTheme.strokeWidth || 1
@@ -391,6 +493,10 @@ export function generateModuleStyle(module, theme) {
   const fontColor = moduleTheme.labelFontColor || '#1E293B'
   const fontSize = moduleTheme.labelFontSize || 14
   const fontWeight = moduleTheme.labelFontWeight || 600
+
+  // IEEE style dashed border support
+  const dashed = module.style?.dashed ?? moduleTheme.dashed ?? false
+  const dashPattern = module.style?.dashPattern || moduleTheme.dashPattern || '8 4'
 
   const parts = [
     `rounded=1`,
@@ -406,7 +512,9 @@ export function generateModuleStyle(module, theme) {
     'verticalAlign=top',
     'align=left',
     'spacingLeft=12',
-    'spacingTop=10'
+    'spacingTop=10',
+    dashed ? 'dashed=1' : '',
+    dashed ? `dashPattern=${dashPattern}` : ''
   ].filter(Boolean)
 
   return parts.join(';')

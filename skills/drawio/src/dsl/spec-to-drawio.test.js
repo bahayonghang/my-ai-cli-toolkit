@@ -15,6 +15,7 @@ import {
   calculateLayout,
   generateNodeStyle,
   generateConnectorStyle,
+  generateModuleStyle,
   checkComplexity
 } from './spec-to-drawio.js'
 
@@ -62,6 +63,55 @@ describe('detectSemanticType', () => {
     assert.strictEqual(detectSemanticType('API Gateway', null), 'service')
     assert.strictEqual(detectSemanticType('Unknown Component', null), 'service')
   })
+
+  // Deep learning type detection tests
+  it('should detect deep learning temporal types', () => {
+    assert.strictEqual(detectSemanticType('LSTM Layer', null), 'temporal')
+    assert.strictEqual(detectSemanticType('BiLSTM', null), 'temporal')
+    assert.strictEqual(detectSemanticType('GRU Cell', null), 'temporal')
+    assert.strictEqual(detectSemanticType('RNN Block', null), 'temporal')
+  })
+
+  it('should detect deep learning attention types', () => {
+    assert.strictEqual(detectSemanticType('Self-Attention', null), 'attention')
+    assert.strictEqual(detectSemanticType('Multi-Head Attention', null), 'attention')
+    assert.strictEqual(detectSemanticType('Transformer Block', null), 'attention')
+    assert.strictEqual(detectSemanticType('Softmax Layer', null), 'attention')
+  })
+
+  it('should detect deep learning feature extraction types', () => {
+    assert.strictEqual(detectSemanticType('Feature Extractor', null), 'feature')
+    assert.strictEqual(detectSemanticType('Encoder Block', null), 'feature')
+    assert.strictEqual(detectSemanticType('Conv2D Layer', null), 'conv')
+    assert.strictEqual(detectSemanticType('Convolutional Block', null), 'conv')
+  })
+
+  it('should detect deep learning normalization types', () => {
+    assert.strictEqual(detectSemanticType('BatchNorm', null), 'norm')
+    assert.strictEqual(detectSemanticType('LayerNorm', null), 'norm')
+    assert.strictEqual(detectSemanticType('Normalization', null), 'norm')
+  })
+
+  it('should detect deep learning graph types', () => {
+    assert.strictEqual(detectSemanticType('GCN Layer', null), 'graph')
+    assert.strictEqual(detectSemanticType('Graph Conv', null), 'graph')
+    assert.strictEqual(detectSemanticType('GNN Block', null), 'graph')
+  })
+
+  it('should detect deep learning matrix operation types', () => {
+    assert.strictEqual(detectSemanticType('MatMul', null), 'matrix')
+    assert.strictEqual(detectSemanticType('Linear Layer', null), 'matrix')
+    assert.strictEqual(detectSemanticType('FC Layer', null), 'matrix')
+    assert.strictEqual(detectSemanticType('Dense Layer', null), 'matrix')
+  })
+
+  it('should detect 3D tensor/feature map types', () => {
+    assert.strictEqual(detectSemanticType('Feature Map', null), 'tensor3d')
+    assert.strictEqual(detectSemanticType('Tensor 224×224×64', null), 'tensor3d')
+    assert.strictEqual(detectSemanticType('NCHW', null), 'tensor3d')
+    assert.strictEqual(detectSemanticType('Activation Map', null), 'tensor3d')
+    assert.strictEqual(detectSemanticType('3D Block', null), 'tensor3d')
+  })
 })
 
 // ============================================================================
@@ -90,15 +140,39 @@ describe('snapToGrid', () => {
 
 describe('getNodeSize', () => {
   it('should return correct preset sizes', () => {
+    assert.deepStrictEqual(getNodeSize('tiny'), { width: 32, height: 32 })
     assert.deepStrictEqual(getNodeSize('small'), { width: 80, height: 40 })
     assert.deepStrictEqual(getNodeSize('medium'), { width: 120, height: 60 })
     assert.deepStrictEqual(getNodeSize('large'), { width: 160, height: 80 })
     assert.deepStrictEqual(getNodeSize('xl'), { width: 200, height: 100 })
   })
 
+  it('should return correct tensor3d preset sizes', () => {
+    assert.deepStrictEqual(getNodeSize('tensor_sm'), { width: 40, height: 48 })
+    assert.deepStrictEqual(getNodeSize('tensor_md'), { width: 60, height: 72 })
+    assert.deepStrictEqual(getNodeSize('tensor_lg'), { width: 80, height: 96 })
+    assert.deepStrictEqual(getNodeSize('tensor_xl'), { width: 100, height: 120 })
+  })
+
   it('should default to medium for unknown sizes', () => {
     assert.deepStrictEqual(getNodeSize(), { width: 120, height: 60 })
     assert.deepStrictEqual(getNodeSize('unknown'), { width: 120, height: 60 })
+  })
+
+  it('should use type-based default size when no explicit size', () => {
+    // Operator nodes should default to tiny (32x32)
+    assert.deepStrictEqual(getNodeSize(null, 'operator'), { width: 32, height: 32 })
+    assert.deepStrictEqual(getNodeSize(undefined, 'operator'), { width: 32, height: 32 })
+    // Decision nodes default to medium
+    assert.deepStrictEqual(getNodeSize(null, 'decision'), { width: 120, height: 60 })
+    // tensor3d nodes default to tensor_md
+    assert.deepStrictEqual(getNodeSize(null, 'tensor3d'), { width: 60, height: 72 })
+  })
+
+  it('should prioritize explicit size over type default', () => {
+    // Even if operator defaults to tiny, explicit large should be used
+    assert.deepStrictEqual(getNodeSize('large', 'operator'), { width: 160, height: 80 })
+    assert.deepStrictEqual(getNodeSize('small', 'operator'), { width: 80, height: 40 })
   })
 })
 
@@ -177,6 +251,64 @@ describe('generateConnectorStyle', () => {
     assert.ok(style.includes('strokeWidth=1'), 'should contain strokeWidth=1')
     assert.ok(style.includes('endArrow=open'), 'should contain endArrow=open')
     assert.ok(style.includes('endFill=0'), 'should contain endFill=0')
+  })
+})
+
+// ============================================================================
+// Module Style Tests (IEEE dashed border support)
+// ============================================================================
+
+describe('generateModuleStyle', () => {
+  it('should generate solid border by default', () => {
+    const theme = {
+      module: {
+        fillColor: '#F8FAFC',
+        strokeColor: '#E2E8F0',
+        strokeWidth: 1,
+        rounded: 12,
+        dashed: false
+      }
+    }
+    const style = generateModuleStyle({ id: 'm1', label: 'Module' }, theme)
+    assert.ok(style.includes('fillColor=#F8FAFC'), 'should contain fillColor')
+    assert.ok(!style.includes('dashed=1'), 'should not contain dashed=1')
+  })
+
+  it('should generate dashed border for IEEE style', () => {
+    const theme = {
+      module: {
+        fillColor: '#FAFAFA',
+        strokeColor: '#BDBDBD',
+        strokeWidth: 1.5,
+        rounded: 8,
+        dashed: true,
+        dashPattern: '8 4'
+      }
+    }
+    const style = generateModuleStyle({ id: 'm1', label: 'TDE Module' }, theme)
+    assert.ok(style.includes('dashed=1'), 'should contain dashed=1')
+    assert.ok(style.includes('dashPattern=8 4'), 'should contain dashPattern=8 4')
+  })
+
+  it('should allow module-level style override', () => {
+    const theme = {
+      module: {
+        fillColor: '#FAFAFA',
+        strokeColor: '#BDBDBD',
+        dashed: false
+      }
+    }
+    const moduleWithStyle = {
+      id: 'm1',
+      label: 'Custom Module',
+      style: {
+        dashed: true,
+        dashPattern: '4 2'
+      }
+    }
+    const style = generateModuleStyle(moduleWithStyle, theme)
+    assert.ok(style.includes('dashed=1'), 'should contain dashed=1 from module style')
+    assert.ok(style.includes('dashPattern=4 2'), 'should use module dashPattern')
   })
 })
 

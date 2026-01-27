@@ -41,7 +41,8 @@ The skill includes a unified design system providing consistent visual language:
 | Theme | Use Case |
 |-------|----------|
 | **Tech Blue** | Software architecture, DevOps (default) |
-| **Academic** | IEEE papers, grayscale print |
+| **Academic Color** ⭐ | Academic papers, research (recommended) |
+| **Academic** | IEEE grayscale print only |
 | **Nature** | Environmental, lifecycle diagrams |
 | **Dark Mode** | Presentations, slides |
 
@@ -89,7 +90,7 @@ MCP server auto-configures on first use:
 ```json
 {
   "command": "npx",
-  "args": ["--yes", "@next-ai-drawio/mcp-server@0.1.15"]
+  "args": ["--yes", "@next-ai-drawio/mcp-server@latest"]
 }
 ```
 

@@ -50,9 +50,12 @@ Step 6: Iterate
 | Theme | Use Case | How to Request |
 |-------|----------|----------------|
 | **tech-blue** (default) | Software architecture, DevOps | No specification needed |
-| **academic** | IEEE papers, grayscale print | `--theme academic` or "学术风格" |
+| **academic-color** ⭐ | Academic papers, research (color) | `--theme academic-color` or "学术风格" |
+| **academic** | IEEE grayscale print only | `--theme academic` or "学术灰度" |
 | **nature** | Environmental, lifecycle | `--theme nature` or "自然风格" |
 | **dark** | Presentations, slides | `--theme dark` or "深色模式" |
+
+> ⭐ **Recommended for academic**: Use `academic-color` for digital documents and color printing. Use `academic` only for strict grayscale requirements.
 
 ### Semantic Node Types
 
