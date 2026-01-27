@@ -1,6 +1,6 @@
 # 简介
 
-MyClaude Skills 是一个 Claude Code 技能和提示词集合，用于增强 AI 辅助开发工作流。
+AI Skills Hub 是一个跨平台的 AI CLI 资源管理器，为 Claude Code、Codex CLI、Gemini CLI、Qwen Code 等多个平台提供统一的技能、命令和提示词管理。
 
 ## 什么是技能？
 
@@ -14,9 +14,11 @@ MyClaude Skills 是一个 Claude Code 技能和提示词集合，用于增强 AI
 ## 核心特性
 
 - **模块化设计** - 每个技能独立且专注于特定任务
-- **简单安装** - 简单的 CLI 命令即可安装技能
+- **简单安装** - 简单的 CLI 命令或现代化 TUI 界面
+- **更新检测** - 自动检测过期的安装
 - **跨平台** - 支持 Linux、macOS 和 Windows
-- **双目标** - 同时支持 Claude Code 和 Codex CLI
+- **多目标** - 支持 Claude Code、Codex CLI、Gemini、Qwen、Antigravity 和 Windsurf
+- **中文支持** - TUI 完整支持中文字符
 
 ## 可用技能
 
@@ -34,6 +36,6 @@ MyClaude Skills 是一个 Claude Code 技能和提示词集合，用于增强 AI
 
 ## 下一步
 
-- [安装](/zh/guide/installation) - 设置 MyClaude Skills
+- [安装](/zh/guide/installation) - 设置 AI Skills Hub
 - [命令](/zh/guide/commands) - 了解可用的 CLI 命令
 - [创建技能](/zh/guide/creating-skills) - 构建自己的技能

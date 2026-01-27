@@ -169,6 +169,6 @@ grep -r "pattern" --exclude-dir=node_modules --exclude-dir=.git
 
 ## 相关
 
-- [omo-agents](/zh/skills/omo-agents) - 多代理系统概览
-- [sisyphus](/zh/skills/sisyphus) - 主编排代理
-- [librarian](/zh/skills/librarian) - 外部文档研究
+- [omo-agents](/zh/agents/omo-agents) - 多代理系统概览
+- [sisyphus](/zh/agents/sisyphus) - 主编排代理
+- [librarian](/zh/agents/librarian) - 外部文档研究

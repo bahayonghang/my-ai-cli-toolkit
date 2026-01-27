@@ -1,6 +1,6 @@
 # Introduction
 
-MyClaude Skills is a curated collection of Claude Code skills and prompts for enhanced AI-assisted development workflows.
+AI Skills Hub is a cross-platform resource manager for AI CLI tools, providing unified skills, commands, and prompts for Claude Code, Codex CLI, Gemini CLI, Qwen Code, and more.
 
 ## What are Skills?
 
@@ -65,6 +65,6 @@ python install.py install-all
 ## Next Steps
 
 - [TUI Guide](/guide/tui) - Modern terminal interface (recommended)
-- [Installation](/guide/installation) - Set up MyClaude Skills
+- [Installation](/guide/installation) - Set up AI Skills Hub
 - [Commands](/guide/commands) - Learn available CLI commands
 - [Creating Skills](/guide/creating-skills) - Build your own skills

@@ -19,13 +19,13 @@ oh-my-opencode 项目证明了 LLM 代理在以下情况下工作最佳：
 
 | 代理 | 角色 | 适用场景 |
 |------|------|----------|
-| [@sisyphus](/zh/skills/sisyphus) | 编排者 | 复杂多步骤任务、协调工作 |
-| [@oracle](/zh/skills/oracle) | 架构师 | 设计决策、代码审查、调试 |
-| [@librarian](/zh/skills/librarian) | 研究员 | 文档查找、最佳实践、开源研究 |
-| [@explore](/zh/skills/explore) | 侦察兵 | 代码搜索、依赖追踪 |
-| [@frontend-engineer](/zh/skills/frontend-engineer) | UI 专家 | 精美界面、动画效果 |
-| [@document-writer](/zh/skills/document-writer) | 写手 | README、API 文档、技术写作 |
-| [@multimodal-looker](/zh/skills/multimodal-looker) | 分析师 | 图片、PDF、图表分析 |
+| [@sisyphus](/zh/agents/sisyphus) | 编排者 | 复杂多步骤任务、协调工作 |
+| [@oracle](/zh/agents/oracle) | 架构师 | 设计决策、代码审查、调试 |
+| [@librarian](/zh/agents/librarian) | 研究员 | 文档查找、最佳实践、开源研究 |
+| [@explore](/zh/agents/explore) | 侦察兵 | 代码搜索、依赖追踪 |
+| [@frontend-engineer](/zh/agents/frontend-engineer) | UI 专家 | 精美界面、动画效果 |
+| [@document-writer](/zh/agents/document-writer) | 写手 | README、API 文档、技术写作 |
+| [@multimodal-looker](/zh/agents/multimodal-looker) | 分析师 | 图片、PDF、图表分析 |
 
 ## 快速开始
 
@@ -150,10 +150,10 @@ Sisyphus:
 
 ## 相关技能
 
-- [sisyphus](/zh/skills/sisyphus) - 主编排代理
-- [oracle](/zh/skills/oracle) - 架构顾问
-- [librarian](/zh/skills/librarian) - 文档研究员
-- [explore](/zh/skills/explore) - 代码搜索专家
-- [frontend-engineer](/zh/skills/frontend-engineer) - UI/UX 专家
-- [document-writer](/zh/skills/document-writer) - 技术写手
-- [multimodal-looker](/zh/skills/multimodal-looker) - 视觉内容分析师
+- [sisyphus](/zh/agents/sisyphus) - 主编排代理
+- [oracle](/zh/agents/oracle) - 架构顾问
+- [librarian](/zh/agents/librarian) - 文档研究员
+- [explore](/zh/agents/explore) - 代码搜索专家
+- [frontend-engineer](/zh/agents/frontend-engineer) - UI/UX 专家
+- [document-writer](/zh/agents/document-writer) - 技术写手
+- [multimodal-looker](/zh/agents/multimodal-looker) - 视觉内容分析师

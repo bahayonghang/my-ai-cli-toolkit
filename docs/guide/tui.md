@@ -1,6 +1,6 @@
 # TUI (Terminal User Interface) Guide
 
-The TUI provides a modern, visual interface for managing MyClaude Skills and Commands with an intuitive table layout and real-time update detection.
+The TUI provides a modern, visual interface for managing AI Skills Hub resources with an intuitive table layout and real-time update detection.
 
 ## Quick Start
 

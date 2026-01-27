@@ -1,9 +1,9 @@
 ---
 layout: home
 hero:
-  name: MyClaude Skills
-  text: AI 辅助开发工作流
-  tagline: Claude Code 技能、命令和提示词集合
+  name: AI Skills Hub
+  text: 跨平台 AI CLI 资源管理器
+  tagline: 统一的技能、命令与提示词管理，支持 Claude、Codex、Gemini、Qwen 等多平台
   actions:
     - theme: brand
       text: 快速开始

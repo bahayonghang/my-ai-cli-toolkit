@@ -20,7 +20,7 @@ Slint GUI Expert provides comprehensive guidance for developing modern GUI appli
 
 Slint uses a declarative markup language for UI definition:
 
-```slint
+```qml
 component MyButton inherits Rectangle {
     in property <string> text;
     callback clicked;

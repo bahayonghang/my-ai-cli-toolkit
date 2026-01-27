@@ -198,6 +198,6 @@ export async function login(prevState: any, formData: FormData) {
 
 ## 相关
 
-- [omo-agents](/zh/skills/omo-agents) - 多代理系统概览
-- [sisyphus](/zh/skills/sisyphus) - 主编排代理
-- [explore](/zh/skills/explore) - 内部代码搜索
+- [omo-agents](/zh/agents/omo-agents) - 多代理系统概览
+- [sisyphus](/zh/agents/sisyphus) - 主编排代理
+- [explore](/zh/agents/explore) - 内部代码搜索

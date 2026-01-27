@@ -150,5 +150,5 @@ const useStore = create((set) => ({
 
 ## Related
 
-- [omo-agents](/skills/omo-agents) - Multi-agent system overview
-- [sisyphus](/skills/sisyphus) - Main orchestrator
+- [omo-agents](/agents/omo-agents) - Multi-agent system overview
+- [sisyphus](/agents/sisyphus) - Main orchestrator

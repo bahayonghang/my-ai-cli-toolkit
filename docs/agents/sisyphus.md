@@ -111,6 +111,6 @@ New feature development requiring: auth system, UI, database schema
 
 ## Related
 
-- [omo-agents](/skills/omo-agents) - Multi-agent system overview
-- [oracle](/skills/oracle) - Architecture consultant
-- [explore](/skills/explore) - Code search specialist
+- [omo-agents](/agents/omo-agents) - Multi-agent system overview
+- [oracle](/agents/oracle) - Architecture consultant
+- [explore](/agents/explore) - Code search specialist

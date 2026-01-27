@@ -1,9 +1,9 @@
 ---
 layout: home
 hero:
-  name: MyClaude Skills
-  text: AI-Assisted Development Workflows
-  tagline: A curated collection of Claude Code skills, commands, and prompts
+  name: AI Skills Hub
+  text: Cross-Platform AI CLI Resource Manager
+  tagline: Unified skills, commands, and prompts for Claude, Codex, Gemini, Qwen, and more
   actions:
     - theme: brand
       text: Get Started

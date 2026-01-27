@@ -190,6 +190,6 @@ grep -r "pattern" --exclude-dir=node_modules --exclude-dir=.git
 
 ## Related
 
-- [omo-agents](/skills/omo-agents) - Multi-agent system overview
-- [sisyphus](/skills/sisyphus) - Main orchestrator
-- [librarian](/skills/librarian) - External documentation research
+- [omo-agents](/agents/omo-agents) - Multi-agent system overview
+- [sisyphus](/agents/sisyphus) - Main orchestrator
+- [librarian](/agents/librarian) - External documentation research

@@ -111,6 +111,6 @@
 
 ## 相关
 
-- [omo-agents](/zh/skills/omo-agents) - 多代理系统概览
-- [oracle](/zh/skills/oracle) - 架构顾问
-- [explore](/zh/skills/explore) - 代码搜索专家
+- [omo-agents](/zh/agents/omo-agents) - 多代理系统概览
+- [oracle](/zh/agents/oracle) - 架构顾问
+- [explore](/zh/agents/explore) - 代码搜索专家

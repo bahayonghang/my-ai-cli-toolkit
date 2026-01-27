@@ -25,17 +25,17 @@ Commands can be invoked using `/command-name` in Claude Code, Gemini CLI, or Ant
 | Command | Description |
 |---------|-------------|
 | [git-commit](/commands/git-commit) | Analyze changes and generate Conventional Commits messages (optional emoji) |
-| [git-cleanBranches](git-cleanBranches) | Safely find and clean merged or stale Git branches with dry-run mode |
-| [git-rollback](git-rollback) | Interactive rollback of Git branches to historical revisions |
-| [git-worktree](git-worktree) | Manage Git worktrees with smart defaults and IDE integration |
-| [init-project](init-project) | Initialize project AI context with CLAUDE.md index generation |
+| git-cleanBranches | Safely find and clean merged or stale Git branches with dry-run mode |
+| git-rollback | Interactive rollback of Git branches to historical revisions |
+| git-worktree | Manage Git worktrees with smart defaults and IDE integration |
+| init-project | Initialize project AI context with CLAUDE.md index generation |
 
 ### Planning Commands (Gemini Only)
 
 | Command | Description |
 |---------|-------------|
-| [plan/impl](plan/impl) | Implementation planning workflow |
-| [plan/new](plan/new) | New feature planning workflow |
+| plan/impl | Implementation planning workflow |
+| plan/new | New feature planning workflow |
 
 ## What are Commands?
 

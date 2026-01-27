@@ -57,12 +57,12 @@ import { xxx } from 'xxx'
 
 ## Documentation
 
-- [API Reference](./docs/api.md)
-- [Configuration Guide](./docs/config.md)
+- [API Reference](docs/api.md)
+- [Configuration Guide](docs/config.md)
 
 ## Contributing
 
-[Contributing Guide](./CONTRIBUTING.md)
+[Contributing Guide](CONTRIBUTING.md)
 
 ## License
 
@@ -211,5 +211,5 @@ Before submitting documentation:
 
 ## Related
 
-- [omo-agents](/skills/omo-agents) - Multi-agent system overview
-- [sisyphus](/skills/sisyphus) - Main orchestrator
+- [omo-agents](/agents/omo-agents) - Multi-agent system overview
+- [sisyphus](/agents/sisyphus) - Main orchestrator

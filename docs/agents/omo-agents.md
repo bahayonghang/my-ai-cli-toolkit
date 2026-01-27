@@ -19,13 +19,13 @@ The oh-my-opencode project demonstrates that LLM agents work best when:
 
 | Agent | Role | Best For |
 |-------|------|----------|
-| [@sisyphus](/skills/sisyphus) | Orchestrator | Complex multi-step tasks, coordination |
-| [@oracle](/skills/oracle) | Architect | Design decisions, code review, debugging |
-| [@librarian](/skills/librarian) | Researcher | Documentation, best practices, OSS research |
-| [@explore](/skills/explore) | Scout | Code search, dependency tracking |
-| [@frontend-engineer](/skills/frontend-engineer) | UI Expert | Beautiful interfaces, animations |
-| [@document-writer](/skills/document-writer) | Writer | README, API docs, technical writing |
-| [@multimodal-looker](/skills/multimodal-looker) | Analyst | Images, PDFs, diagrams |
+| [@sisyphus](/agents/sisyphus) | Orchestrator | Complex multi-step tasks, coordination |
+| [@oracle](/agents/oracle) | Architect | Design decisions, code review, debugging |
+| [@librarian](/agents/librarian) | Researcher | Documentation, best practices, OSS research |
+| [@explore](/agents/explore) | Scout | Code search, dependency tracking |
+| [@frontend-engineer](/agents/frontend-engineer) | UI Expert | Beautiful interfaces, animations |
+| [@document-writer](/agents/document-writer) | Writer | README, API docs, technical writing |
+| [@multimodal-looker](/agents/multimodal-looker) | Analyst | Images, PDFs, diagrams |
 
 ## Quick Start
 
@@ -150,10 +150,10 @@ Sisyphus:
 
 ## Related Skills
 
-- [sisyphus](/skills/sisyphus) - Main orchestrator agent
-- [oracle](/skills/oracle) - Architecture consultant
-- [librarian](/skills/librarian) - Documentation researcher
-- [explore](/skills/explore) - Code search specialist
-- [frontend-engineer](/skills/frontend-engineer) - UI/UX expert
-- [document-writer](/skills/document-writer) - Technical writer
-- [multimodal-looker](/skills/multimodal-looker) - Visual content analyst
+- [sisyphus](/agents/sisyphus) - Main orchestrator agent
+- [oracle](/agents/oracle) - Architecture consultant
+- [librarian](/agents/librarian) - Documentation researcher
+- [explore](/agents/explore) - Code search specialist
+- [frontend-engineer](/agents/frontend-engineer) - UI/UX expert
+- [document-writer](/agents/document-writer) - Technical writer
+- [multimodal-looker](/agents/multimodal-looker) - Visual content analyst

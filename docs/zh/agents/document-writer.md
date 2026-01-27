@@ -57,12 +57,12 @@ import { xxx } from 'xxx'
 
 ## 文档
 
-- [API 参考](./docs/api.md)
-- [配置指南](./docs/config.md)
+- [API 参考](docs/api.md)
+- [配置指南](docs/config.md)
 
 ## 贡献
 
-[贡献指南](./CONTRIBUTING.md)
+[贡献指南](CONTRIBUTING.md)
 
 ## 许可证
 
@@ -211,5 +211,5 @@ console.log(result)
 
 ## 相关
 
-- [omo-agents](/zh/skills/omo-agents) - 多代理系统概览
-- [sisyphus](/zh/skills/sisyphus) - 主编排代理
+- [omo-agents](/zh/agents/omo-agents) - 多代理系统概览
+- [sisyphus](/zh/agents/sisyphus) - 主编排代理

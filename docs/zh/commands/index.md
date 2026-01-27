@@ -25,17 +25,17 @@
 | 命令 | 描述 |
 |---------|-------------|
 | [git-commit](/commands/git-commit) | 分析变更并生成符合 Conventional Commits 规范的消息 (可选表情符号) |
-| [git-cleanBranches](git-cleanBranches) | 安全地查找并清理已合并或过期的 Git 分支，支持试运行 (dry-run) |
-| [git-rollback](git-rollback) | 交互式地将 Git 分支回滚到历史版本 |
-| [git-worktree](git-worktree) | 使用智能默认值和 IDE 集成来管理 Git worktrees |
-| [init-project](init-project) | 初始化项目 AI 上下文并生成 CLAUDE.md 索引 |
+| git-cleanBranches | 安全地查找并清理已合并或过期的 Git 分支，支持试运行 (dry-run) |
+| git-rollback | 交互式地将 Git 分支回滚到历史版本 |
+| git-worktree | 使用智能默认值和 IDE 集成来管理 Git worktrees |
+| init-project | 初始化项目 AI 上下文并生成 CLAUDE.md 索引 |
 
 ### 规划命令 (Planning Commands - 仅限 Gemini)
 
 | 命令 | 描述 |
 |---------|-------------|
-| [plan/impl](plan/impl) | 实现规划工作流 |
-| [plan/new](plan/new) | 新功能规划工作流 |
+| plan/impl | 实现规划工作流 |
+| plan/new | 新功能规划工作流 |
 
 ## 什么是命令？
 
