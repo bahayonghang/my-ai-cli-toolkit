@@ -75,42 +75,34 @@ class TUIManager:
         """
         return SKILLS_SRC_DIR.exists()
     
-    def check_commands_source_exists(self) -> bool:
-        """检查命令源目录是否存在
+    def _get_platform_commands_dir(self) -> Path:
+        """根据平台获取命令源目录（内部方法）
         
         Returns:
-            源目录是否存在
+            命令源目录路径
+            
+        Note:
+            - gemini: commands/gemini/
+            - qwen: commands/qwen/ (fallback to claude)
+            - trae: commands/trae/ (fallback to claude)
+            - antigravity: commands/antigravity/
+            - windsurf: commands/windsurf/
+            - kiro: commands/kiro/ (fallback to claude)
+            - 其他: commands/claude/
         """
-        if self.platform in ["gemini", "qwen"]:
-            src_dir = COMMANDS_SRC_DIR / "gemini"
-        elif self.platform == "trae":
-            src_dir = COMMANDS_SRC_DIR / "trae"
-            if not src_dir.exists():
-                src_dir = COMMANDS_SRC_DIR / "claude"
-        elif self.platform == "antigravity":
-            src_dir = COMMANDS_SRC_DIR / "antigravity"
-        elif self.platform == "windsurf":
-            src_dir = COMMANDS_SRC_DIR / "windsurf"
-        elif self.platform == "kiro":
-            src_dir = COMMANDS_SRC_DIR / "kiro"
-            if not src_dir.exists():
-                src_dir = COMMANDS_SRC_DIR / "claude"
-        else:
-            src_dir = COMMANDS_SRC_DIR / "claude"
-        return src_dir.exists()
-    
-    def get_skills_source_dir(self) -> Path:
-        """获取技能源目录路径"""
-        return SKILLS_SRC_DIR
-    
-    def get_commands_source_dir(self) -> Path:
-        """获取命令源目录路径"""
-        if self.platform in ["gemini", "qwen"]:
+        if self.platform == "gemini":
             return COMMANDS_SRC_DIR / "gemini"
+        elif self.platform == "qwen":
+            # Qwen now uses Markdown format like Claude (as of 2025)
+            qwen_dir = COMMANDS_SRC_DIR / "qwen"
+            if qwen_dir.exists():
+                return qwen_dir
+            return COMMANDS_SRC_DIR / "claude"
         elif self.platform == "trae":
             trae_dir = COMMANDS_SRC_DIR / "trae"
             if trae_dir.exists():
                 return trae_dir
+            return COMMANDS_SRC_DIR / "claude"
         elif self.platform == "antigravity":
             return COMMANDS_SRC_DIR / "antigravity"
         elif self.platform == "windsurf":
@@ -119,7 +111,25 @@ class TUIManager:
             kiro_dir = COMMANDS_SRC_DIR / "kiro"
             if kiro_dir.exists():
                 return kiro_dir
-        return COMMANDS_SRC_DIR / "claude"
+            return COMMANDS_SRC_DIR / "claude"
+        else:
+            return COMMANDS_SRC_DIR / "claude"
+    
+    def check_commands_source_exists(self) -> bool:
+        """检查命令源目录是否存在
+        
+        Returns:
+            源目录是否存在
+        """
+        return self._get_platform_commands_dir().exists()
+    
+    def get_skills_source_dir(self) -> Path:
+        """获取技能源目录路径"""
+        return SKILLS_SRC_DIR
+    
+    def get_commands_source_dir(self) -> Path:
+        """获取命令源目录路径"""
+        return self._get_platform_commands_dir()
     
     def _get_file_mtime(self, path: Path) -> Optional[datetime]:
         """获取文件修改时间
@@ -226,7 +236,8 @@ class TUIManager:
         """获取所有命令列表（支持嵌套目录）
         
         根据平台返回对应的命令列表:
-        - gemini/qwen: 从 commands/gemini/ 获取
+        - gemini: 从 commands/gemini/ 获取
+        - qwen: 从 commands/qwen/ 获取（fallback 到 claude）
         - antigravity: 从 commands/antigravity/ 获取
         - claude/codex: 从 commands/claude/ 获取
         
@@ -239,19 +250,8 @@ class TUIManager:
         """
         commands = []
         
-        # 根据平台确定命令源目录
-        if self.platform in ["gemini", "qwen"]:
-            src_dir = COMMANDS_SRC_DIR / "gemini"
-        elif self.platform == "trae":
-            src_dir = COMMANDS_SRC_DIR / "trae"
-            if not src_dir.exists():
-                src_dir = COMMANDS_SRC_DIR / "claude"
-        elif self.platform == "antigravity":
-            src_dir = COMMANDS_SRC_DIR / "antigravity"
-        elif self.platform == "windsurf":
-            src_dir = COMMANDS_SRC_DIR / "windsurf"
-        else:
-            src_dir = COMMANDS_SRC_DIR / "claude"
+        # 使用统一的平台目录获取方法
+        src_dir = self._get_platform_commands_dir()
         
         if not src_dir.exists():
             return commands
@@ -362,19 +362,8 @@ class TUIManager:
         """
         import shutil
         
-        # 根据平台确定命令源目录
-        if self.platform in ["gemini", "qwen"]:
-            src_dir = COMMANDS_SRC_DIR / "gemini"
-        elif self.platform == "trae":
-            src_dir = COMMANDS_SRC_DIR / "trae"
-            if not src_dir.exists():
-                src_dir = COMMANDS_SRC_DIR / "claude"
-        elif self.platform == "antigravity":
-            src_dir = COMMANDS_SRC_DIR / "antigravity"
-        elif self.platform == "windsurf":
-            src_dir = COMMANDS_SRC_DIR / "windsurf"
-        else:
-            src_dir = COMMANDS_SRC_DIR / "claude"
+        # 使用统一的平台目录获取方法
+        src_dir = self._get_platform_commands_dir()
         
         # 检查源目录
         if not src_dir.exists():

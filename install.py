@@ -126,7 +126,7 @@ TARGET_CONFIG = {
     "qwen": {
         "base": HOME_DIR / ".qwen",
         "skills": HOME_DIR / ".qwen" / "skills",
-        "commands": HOME_DIR / ".qwen" / "commands",
+        "commands": HOME_DIR / ".qwen" / "commands",  # Qwen now uses Markdown format like Claude
         "prompt": None
     },
     "antigravity": {
@@ -535,8 +535,13 @@ class SkillManager:
         self.ensure_dirs()
 
         # Determine source directory based on target
-        if self.target in ["gemini", "qwen"]:
+        if self.target == "gemini":
             src_cmd_dir = COMMANDS_SRC_DIR / "gemini"
+        elif self.target == "qwen":
+            # Qwen now uses Markdown format like Claude (as of 2025)
+            src_cmd_dir = COMMANDS_SRC_DIR / "qwen"
+            if not src_cmd_dir.exists():
+                src_cmd_dir = COMMANDS_SRC_DIR / "claude"
         elif self.target == "trae":
             src_cmd_dir = COMMANDS_SRC_DIR / "trae"
             if not src_cmd_dir.exists():
