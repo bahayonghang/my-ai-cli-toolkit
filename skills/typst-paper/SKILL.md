@@ -14,8 +14,6 @@ description: |
   - "bib", "bibliography", "参考文献" → 参考文献模块
   - "deai", "去AI化", "humanize", "降低AI痕迹" → 去AI化编辑模块
   - "template", "模板", "IEEE", "ACM" → 模板配置模块
-category: academic-writing
-tags: [typst, paper, academic, bilingual]
 ---
 
 # Typst 学术论文助手
@@ -27,6 +25,17 @@ tags: [typst, paper, academic, bilingual]
 3. 绝不在未经许可的情况下修改专业术语
 4. 始终先以注释形式输出修改建议
 5. Typst 编译速度快（毫秒级），适合实时预览
+
+## 参数约定（$ARGUMENTS）
+
+- `$ARGUMENTS` 用于接收主 `.typ` 路径、目标章节、模块选择等关键信息。
+- 若 `$ARGUMENTS` 缺失或含糊，先询问：主 `.typ` 路径、目标范围、所需模块。
+- 路径按字面处理，不推断或补全未提供的路径。
+
+## 执行约束
+
+- 仅在用户明确要求时执行脚本/编译命令。
+- 涉及清理或覆盖输出文件的操作前先确认。
 
 ## 统一输出协议（全部模块）
 
@@ -53,9 +62,11 @@ tags: [typst, paper, academic, bilingual]
 ```
 
 常见情况：
+- **脚本不存在**：确认 `scripts/` 路径与工作目录
 - **Typst 未安装**：建议通过 `cargo install typst-cli` 或包管理器安装
 - **字体缺失**：使用 `typst fonts` 查看可用字体
 - **文件不存在**：请用户提供正确 `.typ` 路径
+- **编译失败**：优先定位首个错误并请求日志片段
 
 ## 模块（独立调用）
 
@@ -395,139 +406,8 @@ The proposed method improves performance in the experiments...
 ### 模块：模板配置
 **触发词**: template, 模板, IEEE, ACM, Springer, NeurIPS
 
-**Typst 学术模板**:
-
-**IEEE 模板**:
-```typst
-#import "@preview/charged-ieee:0.1.0": ieee
-
-#show: ieee.with(
-  title: [Your Paper Title],
-  authors: (
-    (
-      name: "Author Name",
-      department: [Department],
-      organization: [University],
-      location: [City, Country],
-      email: "author@email.com"
-    ),
-  ),
-  abstract: [
-    Your abstract here...
-  ],
-  index-terms: ("Machine Learning", "Deep Learning"),
-  bibliography: bibliography("references.bib"),
-)
-
-// Your content here
-```
-
-**ACM 模板**:
-```typst
-// 使用 ACM 两栏格式
-#set page(
-  paper: "us-letter",
-  margin: (x: 0.75in, y: 1in),
-  columns: 2,
-  column-gutter: 0.33in
-)
-
-#set text(font: "Linux Libertine", size: 9pt)
-#set par(justify: true)
-```
-
-**通用学术论文模板**:
-```typst
-#set page(
-  paper: "a4",
-  margin: (x: 2.5cm, y: 2.5cm)
-)
-
-#set text(
-  font: "Times New Roman",
-  size: 11pt,
-  lang: "en"
-)
-
-#set par(
-  justify: true,
-  leading: 0.65em,
-  first-line-indent: 1.5em
-)
-
-#set heading(numbering: "1.1")
-
-// 标题
-#align(center)[
-  #text(size: 16pt, weight: "bold")[Your Paper Title]
-  
-  #v(0.5em)
-  
-  Author Name#super[1], Co-author Name#super[2]
-  
-  #v(0.3em)
-  
-  #text(size: 10pt)[
-    #super[1]University Name, #super[2]Institution Name
-  ]
-]
-
-// 摘要
-#heading(outlined: false, numbering: none)[Abstract]
-Your abstract here...
-
-// 正文
-= Introduction
-Your content here...
-```
-
-**中文论文模板**:
-```typst
-#set page(
-  paper: "a4",
-  margin: (x: 3.17cm, y: 2.54cm)
-)
-
-#set text(
-  font: ("Source Han Serif", "Noto Serif CJK SC"),
-  size: 12pt,
-  lang: "zh",
-  region: "cn"
-)
-
-#set par(
-  justify: true,
-  leading: 1em,
-  first-line-indent: 2em
-)
-
-#set heading(numbering: "1.1")
-
-// 标题
-#align(center)[
-  #text(size: 18pt, weight: "bold")[论文标题]
-  
-  #v(0.5em)
-  
-  作者姓名#super[1]，合作者姓名#super[2]
-  
-  #v(0.3em)
-  
-  #text(size: 10.5pt)[
-    #super[1]大学名称，#super[2]机构名称
-  ]
-]
-
-// 摘要
-#heading(outlined: false, numbering: none)[摘要]
-摘要内容...
-
-*关键词*：关键词1；关键词2；关键词3
-
-// 正文
-= 引言
-正文内容...
-```
+模板配置示例与用法已移至参考文档：
+- [TEMPLATES.md](references/TEMPLATES.md)
 
 ---
 
@@ -539,6 +419,7 @@ Your content here...
 - Typst 语法与排版：`references/TYPST_SYNTAX.md`
 - 写作风格与常见错误：`references/STYLE_GUIDE.md`、`references/COMMON_ERRORS.md`
 - 去AI化策略：`references/DEAI_GUIDE.md`
+- 模板示例与配置：`references/TEMPLATES.md`
 
 ## 注意事项
 
