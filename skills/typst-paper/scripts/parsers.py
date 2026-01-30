@@ -65,7 +65,7 @@ class TypstParser(DocumentParser):
         r'#table\([^)]+\)',           # Tables
         r'\$[^$]+\$',                 # Math $...$
         r'//.*',                      # Line comments
-        r'/\[.*?\]',                 # Block comments
+        r'/\*.*?\*/',                 # Block comments
         r'<[a-zA-Z0-9_-]+>',          # Labels <label>
         r'#link\([^)]+\)',            # Links
     ]
@@ -136,7 +136,7 @@ class TypstParser(DocumentParser):
     def clean_text(self, content: str, keep_structure: bool = False) -> str:
         # Remove comments
         content = re.sub(r'//.*', '', content)
-        content = re.sub(r'/\[.*?\]', '', content, flags=re.DOTALL)
+        content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
 
         # Remove math
         content = re.sub(r'\$[^$]+\$', '', content)
