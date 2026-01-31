@@ -36,9 +36,9 @@ def main():
     print("按 Ctrl+C 或 'q' 退出应用")
     print("=" * 60)
     print()
-    
+
     input("按 Enter 键启动 TUI 应用...")
-    
+
     app = SkillInstallerApp()
     app.run()
 

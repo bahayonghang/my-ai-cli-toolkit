@@ -7,24 +7,22 @@ Property 2: Color Contrast Ratio Compliance
 **Validates: Requirements 1.1, 1.2, 1.4**
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 # 添加项目根目录到 sys.path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-import pytest
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from tui.core.theme import (
-    myclaudeTheme,
-    THEME_COLORS,
     REQUIRED_THEME_PROPERTIES,
+    THEME_COLORS,
     create_myclaude_theme,
 )
-
 
 # --- 辅助函数 ---
 
@@ -42,7 +40,7 @@ def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
 
 def relative_luminance(rgb: tuple[int, int, int]) -> float:
     """计算相对亮度 (WCAG 2.1 标准)
-    
+
     参考: https://www.w3.org/WAI/GL/wiki/Relative_luminance
     """
     def adjust(c: int) -> float:
@@ -50,22 +48,22 @@ def relative_luminance(rgb: tuple[int, int, int]) -> float:
         if c_srgb <= 0.03928:
             return c_srgb / 12.92
         return ((c_srgb + 0.055) / 1.055) ** 2.4
-    
+
     r, g, b = rgb
     return 0.2126 * adjust(r) + 0.7152 * adjust(g) + 0.0722 * adjust(b)
 
 
 def contrast_ratio(color1: str, color2: str) -> float:
     """计算两个颜色之间的对比度 (WCAG 2.1 标准)
-    
+
     参考: https://www.w3.org/WAI/GL/wiki/Contrast_ratio
     """
     l1 = relative_luminance(hex_to_rgb(color1))
     l2 = relative_luminance(hex_to_rgb(color2))
-    
+
     lighter = max(l1, l2)
     darker = min(l1, l2)
-    
+
     return (lighter + 0.05) / (darker + 0.05)
 
 
@@ -77,10 +75,10 @@ def contrast_ratio(color1: str, color2: str) -> float:
 def test_property_1_theme_structure_completeness(prop_name: str):
     """
     Property 1: Theme Structure Completeness
-    
-    *For any* valid MyClaude theme object, it SHALL contain all required 
+
+    *For any* valid MyClaude theme object, it SHALL contain all required
     base color properties with valid hex color values.
-    
+
     **Feature: tui-beautify, Property 1: Theme Structure Completeness**
     **Validates: Requirements 1.1, 1.4**
     """
@@ -88,7 +86,7 @@ def test_property_1_theme_structure_completeness(prop_name: str):
     assert prop_name in THEME_COLORS, (
         f"THEME_COLORS should contain property '{prop_name}'"
     )
-    
+
     # 验证颜色值是有效的 hex 格式
     color_value = THEME_COLORS[prop_name]
     assert is_valid_hex_color(color_value), (
@@ -99,9 +97,9 @@ def test_property_1_theme_structure_completeness(prop_name: str):
 def test_property_1_all_required_properties_present():
     """
     Property 1: Theme Structure Completeness (完整性检查)
-    
+
     验证所有必需属性都存在于 THEME_COLORS 中。
-    
+
     **Feature: tui-beautify, Property 1: Theme Structure Completeness**
     **Validates: Requirements 1.1, 1.4**
     """
@@ -109,7 +107,7 @@ def test_property_1_all_required_properties_present():
         assert prop_name in THEME_COLORS, (
             f"THEME_COLORS should contain required property '{prop_name}'"
         )
-        
+
         color_value = THEME_COLORS[prop_name]
         assert is_valid_hex_color(color_value), (
             f"Color value for '{prop_name}' should be valid hex: {color_value}"
@@ -119,17 +117,17 @@ def test_property_1_all_required_properties_present():
 def test_property_1_theme_object_creation():
     """
     Property 1: Theme Structure Completeness (主题对象创建)
-    
+
     验证 create_myclaude_theme() 能成功创建主题对象。
-    
+
     **Feature: tui-beautify, Property 1: Theme Structure Completeness**
     **Validates: Requirements 1.1, 1.4**
     """
     theme = create_myclaude_theme()
-    
+
     # 验证主题名称
     assert theme.name == "myclaude", "Theme name should be 'myclaude'"
-    
+
     # 验证是深色主题
     assert theme.dark is True, "Theme should be a dark theme"
 
@@ -150,19 +148,19 @@ CONTRAST_PAIRS = [
 def test_property_2_color_contrast_ratio_compliance(pair: tuple[str, str]):
     """
     Property 2: Color Contrast Ratio Compliance
-    
-    *For any* foreground/background color pair in the theme, 
+
+    *For any* foreground/background color pair in the theme,
     the WCAG contrast ratio SHALL be at least 4.5:1.
-    
+
     **Feature: tui-beautify, Property 2: Color Contrast Ratio Compliance**
     **Validates: Requirements 1.2**
     """
     fg_name, bg_name = pair
     fg_color = THEME_COLORS[fg_name]
     bg_color = THEME_COLORS[bg_name]
-    
+
     ratio = contrast_ratio(fg_color, bg_color)
-    
+
     # WCAG AA 标准要求普通文本对比度至少 4.5:1
     assert ratio >= 4.5, (
         f"Contrast ratio between {fg_name} ({fg_color}) and {bg_name} ({bg_color}) "
@@ -173,22 +171,22 @@ def test_property_2_color_contrast_ratio_compliance(pair: tuple[str, str]):
 def test_property_2_all_contrast_pairs():
     """
     Property 2: Color Contrast Ratio Compliance (所有颜色对)
-    
+
     验证所有前景/背景颜色对的对比度。
-    
+
     **Feature: tui-beautify, Property 2: Color Contrast Ratio Compliance**
     **Validates: Requirements 1.2**
     """
     for fg_name, bg_name in CONTRAST_PAIRS:
         fg_color = THEME_COLORS[fg_name]
         bg_color = THEME_COLORS[bg_name]
-        
+
         ratio = contrast_ratio(fg_color, bg_color)
-        
+
         assert ratio >= 4.5, (
             f"Contrast ratio between {fg_name} ({fg_color}) and {bg_name} ({bg_color}) "
             f"should be at least 4.5:1, but got {ratio:.2f}:1"
         )
-        
+
         # 打印对比度信息 (用于调试)
         print(f"{fg_name} on {bg_name}: {ratio:.2f}:1")

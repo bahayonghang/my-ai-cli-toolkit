@@ -14,15 +14,14 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-import pytest
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from tui.core.formatters import (
     PlatformConfig,
-    format_platform_option,
     format_platform_badge,
+    format_platform_option,
 )
-
 
 # --- 生成策略 ---
 
