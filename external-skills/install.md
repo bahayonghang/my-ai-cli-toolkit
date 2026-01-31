@@ -1,17 +1,40 @@
 # npx
 ## skills plugin
 
+```shell
+# Vercel React 和 Next.js 性能优化最佳实践（包含 57 条规则，涵盖性能、可访问性等 8 大类别）
 npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices
+```
 
+```shell
+# Claude 技能创建器（交互式引导创建新的 Claude Code 技能，包含结构和元数据）
 npx skills add https://github.com/anthropics/skills --skill skill-creator
+```
 
+```shell
+# AI Agent 浏览器自动化工具（基于 Rust 的无头浏览器 CLI，支持网页测试、表单填充、截图和数据提取）
 npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser
+```
 
+```shell
+# 技能发现工具（帮助查找和安装 agent skills 生态系统中的可用技能包）
 npx skills add https://github.com/vercel-labs/skills --skill find-skills
+```
 
+```shell
+# Vue 3 开发最佳实践（包含 Composition API、响应式系统、组件设计等 Vue 开发指南）
 npx skills add https://github.com/hyf0/vue-skills --skill vue-best-practices
+```
 
+```shell
+# Remotion 视频创建最佳实践（使用 React 以编程方式创建视频的动画、音频和资源管理指南）
 npx skills add https://github.com/remotion-dev/skills --skill remotion-best-practices
+```
+
+```shell
+# Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）
+npx skills add vuejs-ai/skills
+```
 
 ## ui ux pro max
 
