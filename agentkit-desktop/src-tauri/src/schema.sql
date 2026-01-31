@@ -128,3 +128,42 @@ FOR EACH ROW
 BEGIN
     UPDATE resources SET updated_at = datetime('now') WHERE id = OLD.id;
 END;
+
+-- ============================================
+-- Marketplace Skills Cache (SkillsMP API)
+-- ============================================
+
+-- Marketplace skills cache table
+CREATE TABLE IF NOT EXISTS marketplace_skills (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    owner TEXT NOT NULL,
+    repo TEXT NOT NULL,
+    stars INTEGER DEFAULT 0,
+    downloads INTEGER,
+    categories TEXT,  -- JSON array
+    platforms TEXT,   -- JSON array
+    source TEXT CHECK (source IN ('vercel-labs', 'community', 'official')),
+    updated_at TEXT,
+    installed INTEGER DEFAULT 0,
+    cached_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Cache metadata for TTL management
+CREATE TABLE IF NOT EXISTS marketplace_cache_meta (
+    key TEXT PRIMARY KEY,
+    value TEXT,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Indexes for marketplace queries
+CREATE INDEX IF NOT EXISTS idx_marketplace_skills_stars ON marketplace_skills(stars DESC);
+CREATE INDEX IF NOT EXISTS idx_marketplace_skills_updated ON marketplace_skills(updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_marketplace_skills_source ON marketplace_skills(source);
+CREATE INDEX IF NOT EXISTS idx_marketplace_skills_name ON marketplace_skills(name);
+
+-- Insert default cache TTL (1 hour = 3600 seconds)
+INSERT OR IGNORE INTO marketplace_cache_meta (key, value, updated_at) VALUES
+    ('cache_ttl_seconds', '3600', datetime('now')),
+    ('last_refresh', NULL, datetime('now'));
