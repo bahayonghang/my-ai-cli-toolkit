@@ -126,3 +126,86 @@ export const PLATFORM_DISPLAY_NAMES: Record<Platform, string> = {
   trae: "Trae",
   opencode: "OpenCode",
 };
+
+// ============================================================================
+// Marketplace Types
+// ============================================================================
+
+/** Marketplace skill source type */
+export type MarketplaceSource = "vercel-labs" | "community" | "official";
+
+/** Marketplace sort options */
+export type MarketplaceSortBy = "popular" | "trending" | "latest" | "top";
+
+/** Marketplace skill from SkillsMP API */
+export interface MarketplaceSkill {
+  id: string;
+  name: string;
+  description?: string;
+  owner: string;
+  repo: string;
+  stars: number;
+  downloads?: number;
+  categories: string[];
+  platforms: string[];
+  source: string;
+  updatedAt: string;
+  installed: boolean;
+}
+
+/** Query parameters for marketplace API */
+export interface MarketplaceQuery {
+  sortBy: string;
+  search?: string;
+  category?: string;
+  source?: string;
+  platform?: string;
+  page: number;
+  perPage: number;
+}
+
+/** Filter options for marketplace */
+export interface MarketplaceFilters {
+  category?: string;
+  source?: string;
+  platform?: string;
+  search?: string;
+}
+
+/** Marketplace category */
+export interface MarketplaceCategory {
+  id: string;
+  name: string;
+  count: number;
+}
+
+/** Skill installation result */
+export interface InstallResult {
+  success: boolean;
+  skillId: string;
+  message?: string;
+  error?: string;
+}
+
+/** Marketplace cache statistics */
+export interface CacheStats {
+  skillCount: number;
+  lastRefresh?: string;
+  ttlSeconds: number;
+  isValid: boolean;
+}
+
+/** Default marketplace query */
+export const DEFAULT_MARKETPLACE_QUERY: MarketplaceQuery = {
+  sortBy: "popular",
+  page: 1,
+  perPage: 50,
+};
+
+/** Marketplace sort options with display names */
+export const MARKETPLACE_SORT_OPTIONS: { value: MarketplaceSortBy; label: string }[] = [
+  { value: "popular", label: "Popular" },
+  { value: "trending", label: "Trending" },
+  { value: "latest", label: "Latest" },
+  { value: "top", label: "Top" },
+];

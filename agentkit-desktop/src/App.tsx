@@ -4,10 +4,10 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useResourceStore, usePlatformStore, useSettingsStore } from "@/stores";
-import { ResourceCard, ResourceDetail, ExternalPanel, ToastContainer, useToast, FilterPanel } from "@/components";
+import { ResourceCard, ResourceDetail, ExternalPanel, ToastContainer, useToast, FilterPanel, MarketplacePanel } from "@/components";
 import type { Platform } from "@/types";
 
-type TabType = "skills" | "commands" | "agents" | "external" | "settings";
+type TabType = "skills" | "commands" | "agents" | "external" | "marketplace" | "settings";
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>("skills");
@@ -257,6 +257,12 @@ function App() {
             active={activeTab === "external"}
             onClick={() => setActiveTab("external")}
           />
+          <NavItem
+            icon="🛒"
+            label="Marketplace"
+            active={activeTab === "marketplace"}
+            onClick={() => setActiveTab("marketplace")}
+          />
 
           <div className="border-t border-gray-200 dark:border-gray-700 my-3" />
 
@@ -467,6 +473,8 @@ function App() {
               <SettingsPanel />
             ) : activeTab === "external" ? (
               <ExternalPanel />
+            ) : activeTab === "marketplace" ? (
+              <MarketplacePanel />
             ) : resourcesLoading ? (
               <div className="flex items-center justify-center h-64">
                 <p className="text-gray-500 dark:text-gray-400">Loading resources...</p>

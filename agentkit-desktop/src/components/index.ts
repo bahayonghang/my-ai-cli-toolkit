@@ -13,3 +13,9 @@ export { ToastContainer } from "./Toast";
 export { FilterPanel } from "./FilterPanel";
 export type { ToastMessage, ToastType } from "./Toast";
 export { useToast } from "../hooks/useToast";
+
+// Marketplace components
+export { MarketplacePanel } from "./MarketplacePanel";
+export { SkillCard } from "./SkillCard";
+export { MarketFilterBar } from "./MarketFilterBar";
+export { SortTabs } from "./SortTabs";
