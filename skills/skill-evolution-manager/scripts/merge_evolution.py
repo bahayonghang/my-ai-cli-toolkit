@@ -1,7 +1,8 @@
+import datetime
+import json
 import os
 import sys
-import json
-import datetime
+
 
 def merge_evolution(skill_dir, new_data_json_str):
     """
@@ -9,11 +10,11 @@ def merge_evolution(skill_dir, new_data_json_str):
     Deduplicates list items.
     """
     evolution_json_path = os.path.join(skill_dir, "evolution.json")
-    
+
     # Load existing or create new
     if os.path.exists(evolution_json_path):
         try:
-            with open(evolution_json_path, 'r', encoding='utf-8') as f:
+            with open(evolution_json_path, encoding='utf-8') as f:
                 current_data = json.load(f)
         except Exception:
             current_data = {}
@@ -29,7 +30,7 @@ def merge_evolution(skill_dir, new_data_json_str):
     # Merge logic
     # 1. Update timestamp
     current_data['last_updated'] = datetime.datetime.now().isoformat()
-    
+
     # 2. Merge Lists (preferences, fixes, contexts) with deduplication
     for list_key in ['preferences', 'fixes', 'contexts']:
         if list_key in new_data:
@@ -41,9 +42,9 @@ def merge_evolution(skill_dir, new_data_json_str):
                     if item not in existing_list:
                         existing_list.append(item)
                 current_data[list_key] = existing_list
-                
+
     # 3. Overwrite/Append Custom Prompts (Concatenate if exists to preserve history? Or overwrite?)
-    # Decision: Overwrite if provided, as prompts usually need to be coherent. 
+    # Decision: Overwrite if provided, as prompts usually need to be coherent.
     # Or, the Agent should have read the old one and combined it before sending here.
     # We assume Agent sends the FINAL desired state for custom_prompts if it wants to merge.
     if 'custom_prompts' in new_data:
@@ -56,7 +57,7 @@ def merge_evolution(skill_dir, new_data_json_str):
     # Save back
     with open(evolution_json_path, 'w', encoding='utf-8') as f:
         json.dump(current_data, f, indent=2, ensure_ascii=False)
-        
+
     print(f"Successfully merged evolution data for {os.path.basename(skill_dir)}")
     return True
 
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python merge_evolution.py <skill_dir> <json_string>")
         sys.exit(1)
-        
+
     skill_dir = sys.argv[1]
     json_str = sys.argv[2]
     merge_evolution(skill_dir, json_str)

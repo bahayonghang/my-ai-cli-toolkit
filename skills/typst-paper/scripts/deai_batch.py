@@ -13,8 +13,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
-from collections import defaultdict
 
 # Import local parsers
 try:
@@ -35,7 +33,7 @@ class DeAIBatchProcessor:
         self.section_ranges = self.parser.split_sections(self.content)
         self.comment_prefix = self.parser.get_comment_prefix()
 
-    def analyze_section(self, section_name: str) -> Dict:
+    def analyze_section(self, section_name: str) -> dict:
         """Analyze a section for AI traces."""
         if section_name not in self.section_ranges:
             return {
@@ -79,7 +77,7 @@ class DeAIBatchProcessor:
             'traces': traces,
         }
 
-    def _check_ai_patterns(self, text: str) -> List[str]:
+    def _check_ai_patterns(self, text: str) -> list[str]:
         """Check text for AI writing patterns."""
         patterns = []
 
@@ -132,7 +130,7 @@ class DeAIBatchProcessor:
 
         return patterns
 
-    def generate_batch_report(self, analyses: Dict[str, Dict]) -> str:
+    def generate_batch_report(self, analyses: dict[str, dict]) -> str:
         """Generate batch processing report."""
         report = []
         report.append("=" * 70)
@@ -162,7 +160,7 @@ class DeAIBatchProcessor:
             report.append(f"Density: {density:.1f}%")
 
             if trace_count > 0:
-                report.append(f"\nTraces (first 5):")
+                report.append("\nTraces (first 5):")
                 for i, trace in enumerate(analysis['traces'][:5], 1):
                     report.append(f"\n  [{i}] Line {trace['line']}")
                     report.append(f"      Patterns: {', '.join(trace['patterns'])}")

@@ -20,7 +20,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 
 class FormatChecker:
@@ -123,7 +122,7 @@ class FormatChecker:
         headings = re.findall(r'^(=+)\s+(.+)$', self.content, re.MULTILINE)
         if headings:
             print(f"  ✓ Found {len(headings)} headings")
-            levels = set(len(h[0]) for h in headings)
+            levels = {len(h[0]) for h in headings}
             print(f"  ✓ Heading levels: {sorted(levels)}")
         else:
             self.warnings.append("No headings found")

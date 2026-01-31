@@ -9,11 +9,9 @@ Usage: python3 session-catchup.py [project-path]
 """
 
 import json
-import sys
 import os
+import sys
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
-from datetime import datetime
 
 PLANNING_FILES = ['task_plan.md', 'progress.md', 'findings.md']
 
@@ -27,17 +25,17 @@ def get_project_dir(project_path: str) -> Path:
     return Path.home() / '.claude' / 'projects' / sanitized
 
 
-def get_sessions_sorted(project_dir: Path) -> List[Path]:
+def get_sessions_sorted(project_dir: Path) -> list[Path]:
     """Get all session files sorted by modification time (newest first)."""
     sessions = list(project_dir.glob('*.jsonl'))
     main_sessions = [s for s in sessions if not s.name.startswith('agent-')]
     return sorted(main_sessions, key=lambda p: p.stat().st_mtime, reverse=True)
 
 
-def parse_session_messages(session_file: Path) -> List[Dict]:
+def parse_session_messages(session_file: Path) -> list[dict]:
     """Parse all messages from a session file, preserving order."""
     messages = []
-    with open(session_file, 'r') as f:
+    with open(session_file) as f:
         for line_num, line in enumerate(f):
             try:
                 data = json.loads(line)
@@ -48,7 +46,7 @@ def parse_session_messages(session_file: Path) -> List[Dict]:
     return messages
 
 
-def find_last_planning_update(messages: List[Dict]) -> Tuple[int, Optional[str]]:
+def find_last_planning_update(messages: list[dict]) -> tuple[int, str | None]:
     """
     Find the last time a planning file was written/edited.
     Returns (line_number, filename) or (-1, None) if not found.
@@ -77,7 +75,7 @@ def find_last_planning_update(messages: List[Dict]) -> Tuple[int, Optional[str]]
     return last_update_line, last_update_file
 
 
-def extract_messages_after(messages: List[Dict], after_line: int) -> List[Dict]:
+def extract_messages_after(messages: list[dict], after_line: int) -> list[dict]:
     """Extract conversation messages after a certain line number."""
     result = []
     for msg in messages:
@@ -143,7 +141,7 @@ def main():
     project_dir = get_project_dir(project_path)
 
     # Check if planning files exist (indicates active task)
-    has_planning_files = any(
+    any(
         Path(project_path, f).exists() for f in PLANNING_FILES
     )
 

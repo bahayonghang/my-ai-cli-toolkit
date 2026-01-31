@@ -6,7 +6,6 @@ Supports TypeScript/JavaScript and Python MCP servers.
 
 import argparse
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any
@@ -34,7 +33,6 @@ def extract_ts_tools(content: str) -> list[dict[str, Any]]:
         })
 
     # Pattern for MCP SDK tool definitions
-    tool_pattern = r'server\.setRequestHandler\s*\(\s*.*?tools/call.*?\{([^}]+)\}'
 
     # Pattern for category-based tools
     category_pattern = r'export\s+const\s+(\w+)(?:Category)?\s*:\s*ScriptCategory\s*=\s*\{[^}]*name:\s*["\']([^"\']+)["\'][^}]*description:\s*["\']([^"\']+)["\']'

@@ -7,10 +7,9 @@ FFmpeg 检测脚本
     python check-ffmpeg.py
 """
 
+import platform
 import subprocess
 import sys
-import platform
-import shutil
 
 
 def run_command(cmd):
@@ -45,7 +44,7 @@ def check_ffmpeg():
 def get_install_instructions():
     """根据操作系统返回安装指令"""
     system = platform.system()
-    os_version = platform.version()
+    platform.version()
 
     instructions = {
         "Windows": [
@@ -70,7 +69,7 @@ def get_install_instructions():
     if system == "Linux":
         try:
             # 尝试检测具体的 Linux 发行版
-            with open("/etc/os-release", "r") as f:
+            with open("/etc/os-release") as f:
                 os_release = f.read().lower()
                 if "ubuntu" in os_release or "debian" in os_release:
                     return instructions["Linux"][:1]
@@ -78,7 +77,7 @@ def get_install_instructions():
                     return instructions["Linux"][1:2]
                 elif "fedora" in os_release:
                     return instructions["Linux"][2:3]
-        except:
+        except Exception:
             pass
 
     return instructions.get(system, [
@@ -114,7 +113,7 @@ def main():
         print("请根据您的操作系统安装 FFmpeg:")
         print()
 
-        system = platform.system()
+        platform.system()
         instructions = get_install_instructions()
 
         for i, (method, command) in enumerate(instructions, 1):

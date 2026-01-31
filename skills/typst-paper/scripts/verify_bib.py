@@ -20,7 +20,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Set
 
 
 class BibChecker:
@@ -88,7 +87,7 @@ class BibChecker:
             return False
 
         try:
-            with open(self.bib_file, 'r', encoding='utf-8') as f:
+            with open(self.bib_file, encoding='utf-8') as f:
                 data = yaml.safe_load(f)
         except Exception as e:
             print(f"[ERROR] Failed to parse YAML: {e}")
@@ -140,7 +139,7 @@ class BibChecker:
                 keys_lower[key_lower] = key
 
         if not any('Duplicate key' in issue for issue in self.issues):
-            print(f"  ✓ No duplicate keys found")
+            print("  ✓ No duplicate keys found")
 
     def check_citations(self):
         """Check citations in Typst file."""
@@ -170,7 +169,7 @@ class BibChecker:
                 f"Citations not found in bibliography: {', '.join(sorted(missing))}"
             )
         else:
-            print(f"  ✓ All citations found in bibliography")
+            print("  ✓ All citations found in bibliography")
 
         # Check for unused entries
         unused = set(self.entries.keys()) - citations
@@ -180,7 +179,7 @@ class BibChecker:
                 + (f" and {len(unused) - 5} more" if len(unused) > 5 else "")
             )
         else:
-            print(f"  ✓ All bibliography entries are cited")
+            print("  ✓ All bibliography entries are cited")
 
     def check_style(self):
         """Check style-specific requirements."""

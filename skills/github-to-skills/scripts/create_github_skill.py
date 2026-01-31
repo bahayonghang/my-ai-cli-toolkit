@@ -1,8 +1,8 @@
-import sys
-import os
-import json
 import datetime
-import subprocess
+import json
+import os
+import sys
+
 
 def create_skill(repo_info, output_dir):
     """
@@ -11,12 +11,12 @@ def create_skill(repo_info, output_dir):
     repo_name = repo_info['name']
     safe_name = "".join(c if c.isalnum() or c in ('-','_') else '-' for c in repo_name).lower()
     skill_path = os.path.join(output_dir, safe_name)
-    
+
     # 1. Create Directory Structure
     os.makedirs(os.path.join(skill_path, "scripts"), exist_ok=True)
     os.makedirs(os.path.join(skill_path, "references"), exist_ok=True)
     os.makedirs(os.path.join(skill_path, "assets"), exist_ok=True)
-    
+
     # 2. Create SKILL.md with Extended Metadata
     skill_md_content = f"""---
 name: {safe_name}
@@ -39,7 +39,7 @@ This skill wraps the capabilities of [{repo_info['name']}]({repo_info['url']}).
 
 ## Usage
 
-This skill provides a Python wrapper to interface with the tool. 
+This skill provides a Python wrapper to interface with the tool.
 
 ### Prerequisites
 
@@ -50,10 +50,10 @@ Ensure the following dependencies are installed:
 
 The wrapper script in `scripts/wrapper.py` handles the invocation of the underlying tool.
 """
-    
+
     with open(os.path.join(skill_path, "SKILL.md"), "w", encoding="utf-8") as f:
         f.write(skill_md_content)
-        
+
     # 3. Create Placeholder Wrapper Script
     wrapper_content = f"""import sys
 import subprocess
@@ -79,11 +79,11 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python create_github_skill.py <json_info_file> <output_skills_dir>")
         sys.exit(1)
-        
+
     json_file = sys.argv[1]
     output_dir = sys.argv[2]
-    
-    with open(json_file, 'r', encoding='utf-8') as f:
+
+    with open(json_file, encoding='utf-8') as f:
         repo_info = json.load(f)
-        
+
     create_skill(repo_info, output_dir)

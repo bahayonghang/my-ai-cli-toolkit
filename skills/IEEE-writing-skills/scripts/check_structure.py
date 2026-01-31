@@ -1,6 +1,7 @@
-import sys
-import re
 import json
+import re
+import sys
+
 
 def check_structure(file_path):
     report = {
@@ -10,7 +11,7 @@ def check_structure(file_path):
     }
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content = f.read()
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -35,25 +36,25 @@ def check_structure(file_path):
     for sec in required_sections:
         if not re.search(fr'\b{sec}\b', content, re.IGNORECASE):
             missing_sections.append(sec)
-    
+
     if missing_sections:
         report["issues"].append(f"Missing required sections: {', '.join(missing_sections)}")
 
     # 3. Tone Guard (Forbidden Words)
     forbidden_words = [
-        "very", "amazing", "totally", "huge", "incredible", 
-        "unfortunately", "obviously", "surprisingly", 
+        "very", "amazing", "totally", "huge", "incredible",
+        "unfortunately", "obviously", "surprisingly",
         "a lot of", "kind of", "basically", "actually",
         "I think", "I believe", "I feel"
     ]
-    
+
     found_forbidden = []
     for word in forbidden_words:
         # Simple word boundary check
         matches = re.findall(fr'\b{re.escape(word)}\b', content, re.IGNORECASE)
         if matches:
             found_forbidden.append(f"{word} ({len(matches)})")
-    
+
     if found_forbidden:
         report["issues"].append(f"Found forbidden/non-academic words: {', '.join(found_forbidden)}")
 
@@ -63,6 +64,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(json.dumps({"status": "error", "message": "No file provided"}))
         sys.exit(1)
-    
+
     result = check_structure(sys.argv[1])
     print(json.dumps(result, indent=2))

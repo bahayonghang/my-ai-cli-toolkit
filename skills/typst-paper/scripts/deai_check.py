@@ -10,12 +10,10 @@ Usage:
 """
 
 import argparse
+import json
 import re
 import sys
-import json
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-from collections import defaultdict
 
 # Import local parsers
 try:
@@ -119,7 +117,7 @@ class AITraceChecker:
         suggestion_type: str,
         section_name: str,
         category: str
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Find pattern occurrences in a specific section."""
         if section_name not in self.section_ranges:
             return []
@@ -154,7 +152,7 @@ class AITraceChecker:
 
         return matches
 
-    def check_section(self, section_name: str) -> Dict:
+    def check_section(self, section_name: str) -> dict:
         """Check a specific section for AI traces."""
         results = {
             'section': section_name,
@@ -185,7 +183,7 @@ class AITraceChecker:
         results['trace_count'] = len(results['traces'])
         return results
 
-    def analyze_document(self) -> Dict:
+    def analyze_document(self) -> dict:
         """Analyze entire document."""
         analysis = {
             'total_lines': len(self.lines),
@@ -197,12 +195,12 @@ class AITraceChecker:
 
         return analysis
 
-    def calculate_density_score(self, result: Dict) -> float:
+    def calculate_density_score(self, result: dict) -> float:
         if result['total_lines'] == 0:
             return 0.0
         return (result['trace_count'] / result['total_lines']) * 100
 
-    def generate_suggestions_json(self, analysis: Dict) -> List[Dict]:
+    def generate_suggestions_json(self, analysis: dict) -> list[dict]:
         """Generate structured suggestions for Agent."""
         suggestions = []
         for section_name, result in analysis['sections'].items():
@@ -246,7 +244,7 @@ class AITraceChecker:
         }
         return instructions.get(key, 'Rewrite to be more specific and objective.')
 
-    def generate_report(self, analysis: Dict) -> str:
+    def generate_report(self, analysis: dict) -> str:
         """Generate human-readable analysis report."""
         report = []
         report.append("=" * 70)

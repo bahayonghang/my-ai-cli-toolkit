@@ -5,15 +5,14 @@ Support for Typst document parsing.
 
 import re
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Any
 
 
 class DocumentParser(ABC):
     """Abstract base class for document parsers."""
 
     @abstractmethod
-    def split_sections(self, content: str) -> Dict[str, Tuple[int, int]]:
+    def split_sections(self, content: str) -> dict[str, tuple[int, int]]:
         """
         Split document into sections.
         Returns map of {section_name: (start_line, end_line)}.
@@ -73,7 +72,7 @@ class TypstParser(DocumentParser):
     def get_comment_prefix(self) -> str:
         return '//'
 
-    def split_sections(self, content: str) -> Dict[str, Tuple[int, int]]:
+    def split_sections(self, content: str) -> dict[str, tuple[int, int]]:
         lines = content.split('\n')
         sections = {}
         current_section = 'preamble'
@@ -85,14 +84,12 @@ class TypstParser(DocumentParser):
             if line.startswith('//'):
                 continue
 
-            matched = False
             for section_name, pattern in self.SECTION_PATTERNS.items():
                 if re.search(pattern, line, re.IGNORECASE):
                     if current_section != 'preamble':
                         sections[current_section] = (start_line, i - 1)
                     current_section = section_name
                     start_line = i
-                    matched = True
                     break
 
         if current_section != 'preamble':
