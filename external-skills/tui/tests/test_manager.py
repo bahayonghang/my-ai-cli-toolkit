@@ -8,22 +8,14 @@ ExternalSkillManager 单元测试
 
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # 添加 external-skills/tui 目录到 sys.path
 TUI_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(TUI_ROOT))
 
 import pytest
-
 from core.manager import ExternalSkillManager
-from core.models import (
-    ExternalSkillInfo,
-    DependencyCheckResult,
-    DependencyStatus,
-    InstallResult,
-)
-
 
 # --- 测试用的 fixture ---
 
@@ -98,7 +90,7 @@ class TestGetSkills:
         """测试技能信息字段正确性"""
         skills = manager_claude.get_skills()
         test_skill = next(s for s in skills if s.name == "test-skill")
-        
+
         assert test_skill.description == "A test skill"
         assert test_skill.skill_type == "npm-cli"
         assert test_skill.package == "test-package"
@@ -113,7 +105,7 @@ class TestGetSkills:
         test_skill = next(s for s in skills if s.name == "test-skill")
         all_skill = next(s for s in skills if s.name == "all-platform-skill")
         no_deps = next(s for s in skills if s.name == "no-deps-skill")
-        
+
         assert test_skill.is_supported is True
         assert all_skill.is_supported is True  # "all" 支持所有平台
         assert no_deps.is_supported is True
@@ -124,7 +116,7 @@ class TestGetSkills:
         test_skill = next(s for s in skills if s.name == "test-skill")
         all_skill = next(s for s in skills if s.name == "all-platform-skill")
         no_deps = next(s for s in skills if s.name == "no-deps-skill")
-        
+
         assert test_skill.is_supported is False  # gemini 不在 supported_targets 中
         assert all_skill.is_supported is True  # "all" 支持所有平台
         assert no_deps.is_supported is False  # 只支持 claude
@@ -142,7 +134,7 @@ class TestGetSkills:
         """测试无效的 TOML 格式"""
         invalid_file = tmp_path / "invalid.toml"
         invalid_file.write_text("this is not valid toml [[[")
-        
+
         manager = ExternalSkillManager(
             platform="claude",
             registry_path=invalid_file
@@ -154,7 +146,7 @@ class TestGetSkills:
         """测试空的 registry"""
         empty_file = tmp_path / "empty.toml"
         empty_file.write_text("[skills]")
-        
+
         manager = ExternalSkillManager(
             platform="claude",
             registry_path=empty_file
@@ -173,7 +165,7 @@ class TestGetSkills:
         """测试清除缓存"""
         manager_claude.get_skills()
         assert manager_claude._skills_cache is not None
-        
+
         manager_claude.clear_cache()
         assert manager_claude._skills_cache is None
 
@@ -221,7 +213,7 @@ class TestCheckDependencies:
     def test_all_deps_satisfied(self, mock_check, manager_claude):
         """测试所有依赖都满足"""
         mock_check.return_value = True
-        
+
         result = manager_claude.check_dependencies("test-skill")
         assert result.all_satisfied is True
         assert len(result.dependencies) == 2
@@ -232,10 +224,10 @@ class TestCheckDependencies:
         """测试部分依赖缺失"""
         # node 存在，npm 不存在
         mock_check.side_effect = lambda cmd: cmd == "node"
-        
+
         result = manager_claude.check_dependencies("test-skill")
         assert result.all_satisfied is False
-        
+
         node_status = next(d for d in result.dependencies if d.name == "node")
         npm_status = next(d for d in result.dependencies if d.name == "npm")
         assert node_status.satisfied is True
@@ -263,7 +255,7 @@ class TestInstallSkill:
     def test_install_missing_deps(self, mock_check, manager_claude):
         """测试安装时依赖缺失"""
         mock_check.return_value = False
-        
+
         result = manager_claude.install_skill("test-skill")
         assert result.success is False
         assert "缺少依赖" in result.error
@@ -274,7 +266,7 @@ class TestInstallSkill:
         """测试成功安装"""
         mock_check.return_value = True
         mock_run.return_value = True
-        
+
         result = manager_claude.install_skill("test-skill")
         assert result.success is True
         assert result.skill_name == "test-skill"
@@ -286,7 +278,7 @@ class TestInstallSkill:
         """测试安装命令失败"""
         mock_check.return_value = True
         mock_run.return_value = False  # 命令执行失败
-        
+
         result = manager_claude.install_skill("test-skill")
         assert result.success is False
         assert result.error is not None
@@ -297,11 +289,11 @@ class TestInstallSkill:
         """测试安装时的输出回调"""
         mock_check.return_value = True
         mock_run.return_value = True
-        
+
         outputs = []
         def on_output(msg):
             outputs.append(msg)
-        
+
         result = manager_claude.install_skill("test-skill", on_output=on_output)
         assert result.success is True
         assert len(outputs) > 0  # 应该有输出
@@ -312,7 +304,7 @@ class TestInstallSkill:
         """测试跳过全局安装"""
         mock_check.return_value = True
         mock_run.return_value = True
-        
+
         result = manager_claude.install_skill("test-skill", skip_install=True)
         assert result.success is True
         # 应该只调用一次 (init 命令)，而不是两次 (install + init)

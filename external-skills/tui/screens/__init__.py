@@ -8,8 +8,8 @@ External Skills TUI 屏幕视图模块
 Requirements: 10.4
 """
 
-from .platform_select import PlatformSelectScreen
 from .main_screen import MainScreen
+from .platform_select import PlatformSelectScreen
 
 __all__ = [
     "PlatformSelectScreen",

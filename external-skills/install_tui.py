@@ -8,12 +8,12 @@ import sys
 
 def main() -> int:
     """运行 External Skills TUI 应用
-    
+
     Returns:
         退出码 (0 表示正常退出)
     """
     from tui.app import ExternalSkillApp
-    
+
     app = ExternalSkillApp()
     app.run()
     return 0

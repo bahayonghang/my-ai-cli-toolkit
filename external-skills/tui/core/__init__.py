@@ -8,13 +8,13 @@ External Skills TUI 核心业务逻辑模块
 Requirements: 10.1, 10.4
 """
 
+from .manager import ExternalSkillManager
 from .models import (
-    ExternalSkillInfo,
     DependencyCheckResult,
     DependencyStatus,
+    ExternalSkillInfo,
     InstallResult,
 )
-from .manager import ExternalSkillManager
 
 __all__ = [
     "ExternalSkillInfo",

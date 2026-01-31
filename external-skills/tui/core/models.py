@@ -12,9 +12,9 @@ from dataclasses import dataclass, field
 @dataclass
 class ExternalSkillInfo:
     """外部技能信息
-    
+
     存储从 registry.toml 加载的技能元数据。
-    
+
     Attributes:
         name: 技能名称
         description: 技能描述
@@ -40,9 +40,9 @@ class ExternalSkillInfo:
 @dataclass
 class DependencyStatus:
     """单个依赖状态
-    
+
     表示单个依赖的检查结果。
-    
+
     Attributes:
         name: 依赖名称 (如 node, npm, python3, git)
         satisfied: 是否满足
@@ -54,9 +54,9 @@ class DependencyStatus:
 @dataclass
 class DependencyCheckResult:
     """依赖检查结果
-    
+
     表示技能所有依赖的检查结果。
-    
+
     Attributes:
         all_satisfied: 是否所有依赖都满足
         dependencies: 各依赖的状态列表
@@ -68,9 +68,9 @@ class DependencyCheckResult:
 @dataclass
 class InstallResult:
     """安装结果
-    
+
     表示技能安装操作的结果。
-    
+
     Attributes:
         success: 是否成功
         skill_name: 技能名称

@@ -9,8 +9,8 @@ External Skills TUI UI 组件模块
 Requirements: 10.4
 """
 
-from .skill_list import SkillItem, SkillListView
 from .skill_detail import SkillDetailModal, render_skill_detail
+from .skill_list import SkillItem, SkillListView
 
 # TODO: 在后续任务中导出更多组件
 # from .footer import Footer

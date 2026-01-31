@@ -13,15 +13,13 @@ from pathlib import Path
 TUI_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(TUI_ROOT))
 
-import pytest
 
 from core.models import (
-    ExternalSkillInfo,
-    DependencyStatus,
     DependencyCheckResult,
+    DependencyStatus,
+    ExternalSkillInfo,
     InstallResult,
 )
-
 
 # --- ExternalSkillInfo 测试 ---
 

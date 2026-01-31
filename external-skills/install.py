@@ -21,7 +21,6 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 try:
     import tomllib
@@ -212,7 +211,7 @@ def check_dependencies(requires: list[str]) -> tuple[bool, list[str]]:
 
 def run_command(
     cmd: str | list[str],
-    cwd: Optional[Path] = None,
+    cwd: Path | None = None,
     dry_run: bool = False,
     capture: bool = False,
 ) -> tuple[bool, str]:
@@ -443,7 +442,7 @@ def install_skill(
         "claude", "--target", "-t",
         help="目标平台 (claude, codex, gemini, windsurf, kiro, etc.)",
     ),
-    project_dir: Optional[Path] = typer.Option(
+    project_dir: Path | None = typer.Option(
         None, "--project", "-p",
         help="项目目录 (默认: 当前目录)",
     ),
@@ -472,7 +471,7 @@ def install_skill(
         raise typer.Exit(1)
 
     # 检查依赖
-    rprint(f"\n[bold cyan]🔍 检查依赖...[/bold cyan]")
+    rprint("\n[bold cyan]🔍 检查依赖...[/bold cyan]")
     ok, missing = check_dependencies(skill.requires)
     if not ok:
         rprint(f"[red]❌ 缺少依赖: {', '.join(missing)}[/red]")
@@ -575,7 +574,7 @@ def init_skill(
         "claude", "--target", "-t",
         help="目标平台",
     ),
-    project_dir: Optional[Path] = typer.Option(
+    project_dir: Path | None = typer.Option(
         None, "--project", "-p",
         help="项目目录 (默认: 当前目录)",
     ),
@@ -608,7 +607,7 @@ def init_skill(
         rprint("[red]❌ 初始化失败[/red]")
         raise typer.Exit(1)
 
-    rprint(f"\n[green]✓ 初始化完成！[/green]")
+    rprint("\n[green]✓ 初始化完成！[/green]")
 
 
 if __name__ == "__main__":
