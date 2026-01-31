@@ -14,6 +14,8 @@ dependencies = [
 dev = [
     "pytest>=9.0.2",
     "hypothesis>=6.0.0",
+    "ruff>=0.8.0",
+    "pyright>=1.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -25,3 +27,71 @@ addopts = "-v"
 
 [tool.hypothesis]
 max_examples = 100
+
+[tool.ruff]
+line-length = 127
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # function call in default argument (typer pattern)
+    "E402",  # module level import not at top (test files with sys.path)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore module naming for directories with hyphens
+"external-skills/**" = ["N999"]
+# Ignore variable naming in specific files
+"tui/components/item_list.py" = ["N806"]
+"tui/core/theme.py" = ["N816"]
+# Test files often need sys.path manipulation
+"tests/**" = ["E402"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pyright]
+include = ["install.py", "tui", "external-skills/tui"]
+exclude = [
+    "**/__pycache__",
+    ".venv",
+    ".hypothesis",
+    "node_modules",
+    "docs",
+    # Installation target directories (should not be type-checked)
+    ".claude",
+    ".codex",
+    ".gemini",
+    ".trae",
+    ".codeium",
+    ".qwen",
+    ".kiro",
+    # Other directories with standalone scripts
+    "skills",
+    "commands",
+    "agents",
+    "agentkit-desktop",
+    "claude-plugin-install-scripts",
+    # Test directories (require dev dependencies)
+    "tests",
+    "external-skills/tui/tests",
+]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"
+reportMissingImports = "warning"
+reportMissingTypeStubs = false
+# Relax checks for dynamic framework patterns (Textual)
+reportAttributeAccessIssue = "warning"
+reportArgumentType = "warning"
