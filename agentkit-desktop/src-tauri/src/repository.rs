@@ -24,10 +24,11 @@ impl<'a> ResourceRepository<'a> {
         let mut stmt = self.conn.prepare(
             "SELECT id, name, type, description, source_type, source_path, source_url,
                     source_branch, source_package, created_at, updated_at
-             FROM resources ORDER BY name"
+             FROM resources ORDER BY name",
         )?;
 
-        let resources = stmt.query_map([], |row| self.row_to_resource(row))?
+        let resources = stmt
+            .query_map([], |row| self.row_to_resource(row))?
             .collect::<Result<Vec<_>>>()?;
 
         // Load platform status for each resource
@@ -47,7 +48,7 @@ impl<'a> ResourceRepository<'a> {
         let mut stmt = self.conn.prepare(
             "SELECT id, name, type, description, source_type, source_path, source_url,
                     source_branch, source_package, created_at, updated_at
-             FROM resources WHERE id = ?"
+             FROM resources WHERE id = ?",
         )?;
 
         let mut rows = stmt.query(params![id])?;
@@ -126,12 +127,19 @@ impl<'a> ResourceRepository<'a> {
 
     /// Delete a resource
     pub fn delete(&self, id: &str) -> Result<()> {
-        self.conn.execute("DELETE FROM resources WHERE id = ?", params![id])?;
+        self.conn
+            .execute("DELETE FROM resources WHERE id = ?", params![id])?;
         Ok(())
     }
 
     /// Update platform status for a resource
-    pub fn update_platform_status(&self, resource_id: &str, platform: Platform, status: SyncStatus, target_path: Option<&str>) -> Result<()> {
+    pub fn update_platform_status(
+        &self,
+        resource_id: &str,
+        platform: Platform,
+        status: SyncStatus,
+        target_path: Option<&str>,
+    ) -> Result<()> {
         let platform_str = platform_to_str(&platform);
         let status_str = sync_status_to_str(&status);
         let synced_at = if status == SyncStatus::Synced {
@@ -152,7 +160,7 @@ impl<'a> ResourceRepository<'a> {
     /// Get platform status for a resource
     fn get_platform_status(&self, resource_id: &str) -> Result<HashMap<Platform, SyncStatus>> {
         let mut stmt = self.conn.prepare(
-            "SELECT platform, status FROM resource_platform_status WHERE resource_id = ?"
+            "SELECT platform, status FROM resource_platform_status WHERE resource_id = ?",
         )?;
 
         let mut status_map = HashMap::new();
@@ -164,7 +172,10 @@ impl<'a> ResourceRepository<'a> {
 
         for row in rows {
             let (platform_str, status_str) = row?;
-            if let (Some(platform), Some(status)) = (str_to_platform(&platform_str), str_to_sync_status(&status_str)) {
+            if let (Some(platform), Some(status)) = (
+                str_to_platform(&platform_str),
+                str_to_sync_status(&status_str),
+            ) {
                 status_map.insert(platform, status);
             }
         }
@@ -177,10 +188,11 @@ impl<'a> ResourceRepository<'a> {
         let mut stmt = self.conn.prepare(
             "SELECT t.name FROM tags t
              JOIN resource_tags rt ON t.id = rt.tag_id
-             WHERE rt.resource_id = ?"
+             WHERE rt.resource_id = ?",
         )?;
 
-        let tags = stmt.query_map(params![resource_id], |row| row.get(0))?
+        let tags = stmt
+            .query_map(params![resource_id], |row| row.get(0))?
             .collect::<Result<Vec<String>>>()?;
 
         Ok(tags)
@@ -191,10 +203,11 @@ impl<'a> ResourceRepository<'a> {
         let mut stmt = self.conn.prepare(
             "SELECT c.name FROM categories c
              JOIN resource_categories rc ON c.id = rc.category_id
-             WHERE rc.resource_id = ?"
+             WHERE rc.resource_id = ?",
         )?;
 
-        let categories = stmt.query_map(params![resource_id], |row| row.get(0))?
+        let categories = stmt
+            .query_map(params![resource_id], |row| row.get(0))?
             .collect::<Result<Vec<String>>>()?;
 
         Ok(categories)
@@ -253,7 +266,13 @@ impl<'a> ResourceRepository<'a> {
         let updated_at: String = row.get(10)?;
 
         let resource_type = str_to_resource_type(&type_str).unwrap_or(ResourceType::Skill);
-        let source = self.columns_to_source(&source_type, source_path, source_url, source_branch, source_package);
+        let source = self.columns_to_source(
+            &source_type,
+            source_path,
+            source_url,
+            source_branch,
+            source_package,
+        );
 
         Ok(ResourceItem {
             id,
@@ -270,36 +289,60 @@ impl<'a> ResourceRepository<'a> {
     }
 
     /// Convert source to database columns
-    fn source_to_columns(&self, source: &ResourceSource) -> (&'static str, Option<String>, Option<String>, Option<String>, Option<String>) {
+    fn source_to_columns(
+        &self,
+        source: &ResourceSource,
+    ) -> (
+        &'static str,
+        Option<String>,
+        Option<String>,
+        Option<String>,
+        Option<String>,
+    ) {
         match source {
-            ResourceSource::Local { path } => ("local", Some(path.display().to_string()), None, None, None),
-            ResourceSource::Git { url, branch } => ("git", None, Some(url.clone()), Some(branch.clone()), None),
+            ResourceSource::Local { path } => {
+                ("local", Some(path.display().to_string()), None, None, None)
+            }
+            ResourceSource::Git { url, branch } => {
+                ("git", None, Some(url.clone()), Some(branch.clone()), None)
+            }
             ResourceSource::Npm { package } => ("npm", None, None, None, Some(package.clone())),
             ResourceSource::Pip { package } => ("pip", None, None, None, Some(package.clone())),
-            ResourceSource::Vercel { skill_name } => ("vercel", None, None, None, Some(skill_name.clone())),
+            ResourceSource::Vercel { skill_name } => {
+                ("vercel", None, None, None, Some(skill_name.clone()))
+            }
         }
     }
 
     /// Convert database columns to source
-    fn columns_to_source(&self, source_type: &str, path: Option<String>, url: Option<String>, branch: Option<String>, package: Option<String>) -> ResourceSource {
+    fn columns_to_source(
+        &self,
+        source_type: &str,
+        path: Option<String>,
+        url: Option<String>,
+        branch: Option<String>,
+        package: Option<String>,
+    ) -> ResourceSource {
         match source_type {
             "local" => ResourceSource::Local {
-                path: path.map(std::path::PathBuf::from).unwrap_or_default()
+                path: path.map(std::path::PathBuf::from).unwrap_or_default(),
             },
             "git" => ResourceSource::Git {
                 url: url.unwrap_or_default(),
-                branch: branch.unwrap_or_else(|| "main".to_string())
+                branch: branch.unwrap_or_else(|| "main".to_string()),
             },
             "npm" => ResourceSource::Npm {
-                package: package.unwrap_or_default()
+                package: package.unwrap_or_default(),
             },
             "pip" => ResourceSource::Pip {
-                package: package.unwrap_or_default()
+                package: package.unwrap_or_default(),
             },
             "vercel" => ResourceSource::Vercel {
-                skill_name: package.unwrap_or_default()
+                skill_name: package.unwrap_or_default(),
             },
-            _ => ResourceSource::Local { path: std::path::PathBuf::new() },
+            _ => ResourceSource::Local {
+                path: std::path::PathBuf::new(),
+            },
         }
     }
 }
@@ -315,7 +358,12 @@ impl<'a> PlatformRepository<'a> {
     }
 
     /// Update platform detection status
-    pub fn update_detection(&self, platform: Platform, detected: bool, base_path: Option<&str>) -> Result<()> {
+    pub fn update_detection(
+        &self,
+        platform: Platform,
+        detected: bool,
+        base_path: Option<&str>,
+    ) -> Result<()> {
         let platform_str = platform_to_str(&platform);
         let now = chrono::Utc::now().to_rfc3339();
 
@@ -342,9 +390,9 @@ impl<'a> PlatformRepository<'a> {
 
     /// Get all platforms
     pub fn get_all(&self) -> Result<Vec<PlatformRecord>> {
-        let mut stmt = self.conn.prepare(
-            "SELECT platform, detected, base_path, link_mode FROM platforms"
-        )?;
+        let mut stmt = self
+            .conn
+            .prepare("SELECT platform, detected, base_path, link_mode FROM platforms")?;
 
         let rows = stmt.query_map([], |row| {
             let platform_str: String = row.get(0)?;
@@ -379,7 +427,9 @@ impl<'a> SettingsRepository<'a> {
 
     /// Get a setting value
     pub fn get(&self, key: &str) -> Result<Option<String>> {
-        let mut stmt = self.conn.prepare("SELECT value FROM settings WHERE key = ?")?;
+        let mut stmt = self
+            .conn
+            .prepare("SELECT value FROM settings WHERE key = ?")?;
         let mut rows = stmt.query(params![key])?;
 
         if let Some(row) = rows.next()? {
@@ -400,19 +450,23 @@ impl<'a> SettingsRepository<'a> {
 
     /// Get all settings as Settings struct
     pub fn get_settings(&self) -> Result<Settings> {
-        let default_link_mode = self.get("default_link_mode")?
+        let default_link_mode = self
+            .get("default_link_mode")?
             .and_then(|v| serde_json::from_str(&v).ok())
             .unwrap_or(LinkMode::Symlink);
 
-        let theme = self.get("theme")?
+        let theme = self
+            .get("theme")?
             .and_then(|v| serde_json::from_str(&v).ok())
             .unwrap_or(Theme::System);
 
-        let language = self.get("language")?
+        let language = self
+            .get("language")?
             .and_then(|v| serde_json::from_str(&v).ok())
             .unwrap_or(Language::English);
 
-        let auto_detect_platforms = self.get("auto_detect_platforms")?
+        let auto_detect_platforms = self
+            .get("auto_detect_platforms")?
             .and_then(|v| serde_json::from_str(&v).ok())
             .unwrap_or(true);
 
@@ -426,10 +480,19 @@ impl<'a> SettingsRepository<'a> {
 
     /// Save settings
     pub fn save_settings(&self, settings: &Settings) -> Result<()> {
-        self.set("default_link_mode", &serde_json::to_string(&settings.default_link_mode).unwrap())?;
+        self.set(
+            "default_link_mode",
+            &serde_json::to_string(&settings.default_link_mode).unwrap(),
+        )?;
         self.set("theme", &serde_json::to_string(&settings.theme).unwrap())?;
-        self.set("language", &serde_json::to_string(&settings.language).unwrap())?;
-        self.set("auto_detect_platforms", &serde_json::to_string(&settings.auto_detect_platforms).unwrap())?;
+        self.set(
+            "language",
+            &serde_json::to_string(&settings.language).unwrap(),
+        )?;
+        self.set(
+            "auto_detect_platforms",
+            &serde_json::to_string(&settings.auto_detect_platforms).unwrap(),
+        )?;
         Ok(())
     }
 }

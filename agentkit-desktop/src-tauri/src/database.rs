@@ -4,6 +4,7 @@
 
 use rusqlite::{Connection, Result};
 use std::path::PathBuf;
+use tracing::{debug, error, info};
 
 /// Database manager
 pub struct Database {
@@ -14,29 +15,48 @@ impl Database {
     /// Create a new database connection
     pub fn new(path: Option<PathBuf>) -> Result<Self> {
         let conn = match path {
-            Some(p) => {
+            Some(ref p) => {
+                debug!(path = %p.display(), "Opening database file");
                 // Ensure parent directory exists
                 if let Some(parent) = p.parent() {
-                    std::fs::create_dir_all(parent).ok();
+                    if let Err(e) = std::fs::create_dir_all(parent) {
+                        error!(path = %parent.display(), error = %e, "Failed to create database directory");
+                    }
                 }
                 Connection::open(p)?
             }
-            None => Connection::open_in_memory()?,
+            None => {
+                debug!("Opening in-memory database");
+                Connection::open_in_memory()?
+            }
         };
 
         let db = Self { conn };
         db.init()?;
+
+        if let Some(ref p) = path {
+            info!(path = %p.display(), "Database initialized successfully");
+        } else {
+            info!("In-memory database initialized successfully");
+        }
+
         Ok(db)
     }
 
     /// Get the default database path
     pub fn default_path() -> Option<PathBuf> {
-        dirs::data_local_dir().map(|p| p.join("agentkit-desktop").join("agentkit.db"))
+        let path = dirs::data_local_dir().map(|p| p.join("agentkit-desktop").join("agentkit.db"));
+        if let Some(ref p) = path {
+            debug!(path = %p.display(), "Default database path");
+        }
+        path
     }
 
     /// Initialize database schema
     fn init(&self) -> Result<()> {
+        debug!("Initializing database schema");
         self.conn.execute_batch(include_str!("schema.sql"))?;
+        debug!("Database schema initialized");
         Ok(())
     }
 
@@ -66,7 +86,8 @@ mod tests {
         let db = Database::new(None).expect("Failed to create database");
 
         // Check that tables exist
-        let count: i32 = db.conn()
+        let count: i32 = db
+            .conn()
             .query_row(
                 "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='resources'",
                 [],

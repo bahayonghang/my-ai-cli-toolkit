@@ -129,7 +129,11 @@ impl SkillManager {
     ) -> Result<Vec<SyncResult>, ManagerError> {
         let source_path = match &skill.source {
             ResourceSource::Local { path } => path.clone(),
-            _ => return Err(ManagerError::InvalidFormat("Only local skills can be installed".to_string())),
+            _ => {
+                return Err(ManagerError::InvalidFormat(
+                    "Only local skills can be installed".to_string(),
+                ))
+            }
         };
 
         let mut results = Vec::new();
@@ -222,7 +226,8 @@ impl CommandManager {
 
             if path.is_dir() {
                 // This is a platform directory (e.g., "claude", "gemini")
-                let platform_name = path.file_name()
+                let platform_name = path
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_default();
 
@@ -262,7 +267,11 @@ impl CommandManager {
     }
 
     /// Parse a command file
-    fn parse_command_file(&self, path: &Path, platform: &str) -> Result<Option<ResourceItem>, ManagerError> {
+    fn parse_command_file(
+        &self,
+        path: &Path,
+        platform: &str,
+    ) -> Result<Option<ResourceItem>, ManagerError> {
         let name = path
             .file_stem()
             .map(|n| n.to_string_lossy().to_string())
@@ -305,7 +314,11 @@ impl CommandManager {
     ) -> Result<Vec<SyncResult>, ManagerError> {
         let source_path = match &command.source {
             ResourceSource::Local { path } => path.clone(),
-            _ => return Err(ManagerError::InvalidFormat("Only local commands can be installed".to_string())),
+            _ => {
+                return Err(ManagerError::InvalidFormat(
+                    "Only local commands can be installed".to_string(),
+                ))
+            }
         };
 
         let mut results = Vec::new();
@@ -442,7 +455,11 @@ fn parse_frontmatter(content: &str) -> (HashMap<String, String>, &str) {
     for line in fm_content.lines() {
         if let Some((key, value)) = line.split_once(':') {
             let key = key.trim().to_string();
-            let value = value.trim().trim_matches('"').trim_matches('\'').to_string();
+            let value = value
+                .trim()
+                .trim_matches('"')
+                .trim_matches('\'')
+                .to_string();
             frontmatter.insert(key, value);
         }
     }
@@ -511,12 +528,19 @@ This is a test."#;
     fn test_parse_tags_with_brackets() {
         // Simulate parsing tags like in parse_skill_dir
         let tags_str = "[svg, graphics, cover-image, blog, design]";
-        let t = tags_str.trim().trim_start_matches('[').trim_end_matches(']');
-        let tags: Vec<String> = t.split(',')
+        let t = tags_str
+            .trim()
+            .trim_start_matches('[')
+            .trim_end_matches(']');
+        let tags: Vec<String> = t
+            .split(',')
             .map(|s| s.trim().to_string())
             .filter(|s| !s.is_empty())
             .collect();
 
-        assert_eq!(tags, vec!["svg", "graphics", "cover-image", "blog", "design"]);
+        assert_eq!(
+            tags,
+            vec!["svg", "graphics", "cover-image", "blog", "design"]
+        );
     }
 }

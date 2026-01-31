@@ -8,6 +8,7 @@ use std::fs;
 use std::io;
 use std::path::Path;
 use thiserror::Error;
+use tracing::{debug, error, info, warn};
 
 /// Sync engine errors
 #[derive(Debug, Error)]
@@ -48,11 +49,15 @@ pub struct SymlinkStrategy;
 
 impl LinkStrategy for SymlinkStrategy {
     fn sync(&self, source: &Path, target: &Path) -> Result<(), SyncError> {
+        debug!(source = %source.display(), target = %target.display(), "Creating symlink");
+
         if !source.exists() {
+            error!(source = %source.display(), "Source not found");
             return Err(SyncError::SourceNotFound(source.display().to_string()));
         }
 
         if target.exists() {
+            warn!(target = %target.display(), "Target already exists");
             return Err(SyncError::TargetExists(target.display().to_string()));
         }
 
@@ -75,10 +80,12 @@ impl LinkStrategy for SymlinkStrategy {
             }
         }
 
+        debug!(target = %target.display(), "Symlink created successfully");
         Ok(())
     }
 
     fn remove(&self, target: &Path) -> Result<(), SyncError> {
+        debug!(target = %target.display(), "Removing symlink");
         if target.is_symlink() {
             fs::remove_file(target)?;
         } else if target.is_dir() {
@@ -112,15 +119,20 @@ pub struct JunctionStrategy;
 #[cfg(windows)]
 impl LinkStrategy for JunctionStrategy {
     fn sync(&self, source: &Path, target: &Path) -> Result<(), SyncError> {
+        debug!(source = %source.display(), target = %target.display(), "Creating junction");
+
         if !source.exists() {
+            error!(source = %source.display(), "Source not found");
             return Err(SyncError::SourceNotFound(source.display().to_string()));
         }
 
         if !source.is_dir() {
+            warn!(source = %source.display(), "Junction requires directory source");
             return Err(SyncError::NotSupported);
         }
 
         if target.exists() {
+            warn!(target = %target.display(), "Target already exists");
             return Err(SyncError::TargetExists(target.display().to_string()));
         }
 
@@ -137,15 +149,17 @@ impl LinkStrategy for JunctionStrategy {
             .output()?;
 
         if !output.status.success() {
-            return Err(SyncError::PermissionDenied(
-                String::from_utf8_lossy(&output.stderr).to_string(),
-            ));
+            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+            error!(target = %target.display(), error = %stderr, "Junction creation failed");
+            return Err(SyncError::PermissionDenied(stderr));
         }
 
+        debug!(target = %target.display(), "Junction created successfully");
         Ok(())
     }
 
     fn remove(&self, target: &Path) -> Result<(), SyncError> {
+        debug!(target = %target.display(), "Removing junction");
         if target.exists() {
             fs::remove_dir(target)?;
         }
@@ -174,11 +188,15 @@ pub struct CopyStrategy;
 
 impl LinkStrategy for CopyStrategy {
     fn sync(&self, source: &Path, target: &Path) -> Result<(), SyncError> {
+        debug!(source = %source.display(), target = %target.display(), "Copying files");
+
         if !source.exists() {
+            error!(source = %source.display(), "Source not found");
             return Err(SyncError::SourceNotFound(source.display().to_string()));
         }
 
         if target.exists() {
+            warn!(target = %target.display(), "Target already exists");
             return Err(SyncError::TargetExists(target.display().to_string()));
         }
 
@@ -193,10 +211,12 @@ impl LinkStrategy for CopyStrategy {
             fs::copy(source, target)?;
         }
 
+        debug!(target = %target.display(), "Copy completed successfully");
         Ok(())
     }
 
     fn remove(&self, target: &Path) -> Result<(), SyncError> {
+        debug!(target = %target.display(), "Removing copied files");
         if target.is_dir() {
             fs::remove_dir_all(target)?;
         } else if target.exists() {
@@ -212,12 +232,10 @@ impl LinkStrategy for CopyStrategy {
 
         // For copy strategy, we compare modification times
         match (source.metadata(), target.metadata()) {
-            (Ok(src_meta), Ok(tgt_meta)) => {
-                match (src_meta.modified(), tgt_meta.modified()) {
-                    (Ok(src_time), Ok(tgt_time)) => tgt_time >= src_time,
-                    _ => false,
-                }
-            }
+            (Ok(src_meta), Ok(tgt_meta)) => match (src_meta.modified(), tgt_meta.modified()) {
+                (Ok(src_time), Ok(tgt_time)) => tgt_time >= src_time,
+                _ => false,
+            },
             _ => false,
         }
     }
@@ -253,6 +271,7 @@ pub struct SyncEngine {
 
 impl SyncEngine {
     pub fn new(default_mode: LinkMode) -> Self {
+        debug!(mode = ?default_mode, "Creating sync engine");
         Self { default_mode }
     }
 
@@ -269,24 +288,48 @@ impl SyncEngine {
     }
 
     /// Sync source to target using the specified mode
-    pub fn sync(&self, source: &Path, target: &Path, mode: Option<LinkMode>) -> Result<(), SyncError> {
+    pub fn sync(
+        &self,
+        source: &Path,
+        target: &Path,
+        mode: Option<LinkMode>,
+    ) -> Result<(), SyncError> {
         let mode = mode.unwrap_or(self.default_mode);
         let strategy = self.get_strategy(&mode);
 
+        info!(
+            source = %source.display(),
+            target = %target.display(),
+            strategy = strategy.name(),
+            "Syncing resource"
+        );
+
         // Try the requested strategy, fall back to copy if it fails
         match strategy.sync(source, target) {
-            Ok(()) => Ok(()),
+            Ok(()) => {
+                info!(target = %target.display(), strategy = strategy.name(), "Sync completed");
+                Ok(())
+            }
             Err(SyncError::PermissionDenied(_)) | Err(SyncError::NotSupported) => {
                 // Fall back to copy strategy
+                warn!(
+                    strategy = strategy.name(),
+                    "Strategy failed, falling back to copy"
+                );
                 let copy_strategy = CopyStrategy;
                 copy_strategy.sync(source, target)
             }
-            Err(e) => Err(e),
+            Err(e) => {
+                error!(error = %e, "Sync failed");
+                Err(e)
+            }
         }
     }
 
     /// Remove a synced target
     pub fn remove(&self, target: &Path) -> Result<(), SyncError> {
+        info!(target = %target.display(), "Removing synced resource");
+
         // Determine what kind of link/file it is and remove appropriately
         if target.is_symlink() {
             SymlinkStrategy.remove(target)
@@ -296,6 +339,7 @@ impl SyncEngine {
             fs::remove_file(target)?;
             Ok(())
         } else {
+            debug!(target = %target.display(), "Target does not exist, nothing to remove");
             Ok(())
         }
     }

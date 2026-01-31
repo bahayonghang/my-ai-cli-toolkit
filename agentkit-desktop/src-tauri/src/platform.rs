@@ -8,10 +8,7 @@ use std::process::Command;
 
 /// Detect all supported platforms
 pub fn detect_all_platforms() -> Vec<PlatformInfo> {
-    Platform::all()
-        .into_iter()
-        .map(detect_platform)
-        .collect()
+    Platform::all().into_iter().map(detect_platform).collect()
 }
 
 /// Detect a single platform
@@ -19,10 +16,7 @@ pub fn detect_platform(platform: Platform) -> PlatformInfo {
     let home_dir = dirs::home_dir();
     let base_path = home_dir.as_ref().map(|h| h.join(platform.base_path()));
 
-    let detected = base_path
-        .as_ref()
-        .map(|p| p.exists())
-        .unwrap_or(false);
+    let detected = base_path.as_ref().map(|p| p.exists()).unwrap_or(false);
 
     let has_cli = check_cli_available(platform);
 
@@ -47,18 +41,14 @@ fn check_cli_available(platform: Platform) -> bool {
     // On Windows, try both with and without .cmd/.exe extension
     #[cfg(target_os = "windows")]
     {
-        let result = Command::new("where")
-            .arg(cmd_name)
-            .output();
+        let result = Command::new("where").arg(cmd_name).output();
 
         matches!(result, Ok(output) if output.status.success())
     }
 
     #[cfg(not(target_os = "windows"))]
     {
-        let result = Command::new("which")
-            .arg(cmd_name)
-            .output();
+        let result = Command::new("which").arg(cmd_name).output();
 
         matches!(result, Ok(output) if output.status.success())
     }
@@ -85,8 +75,8 @@ fn determine_link_mode() -> LinkMode {
 /// Check if we can create symlinks on Windows
 #[cfg(target_os = "windows")]
 fn can_create_symlinks() -> bool {
-    use std::fs;
     use std::env;
+    use std::fs;
 
     let temp_dir = env::temp_dir();
     let test_target = temp_dir.join("agentkit_symlink_test_target");
