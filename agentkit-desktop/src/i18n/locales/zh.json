@@ -8,6 +8,7 @@
     "commands": "命令",
     "agents": "代理",
     "external": "外部",
+    "marketplace": "技能市场",
     "settings": "设置"
   },
   "platform": {
@@ -78,6 +79,37 @@
     "tipGit": "Git 仓库应在根目录或 skills/ 目录下包含技能",
     "tipVercel": "Vercel 注册表技能经过审核和验证",
     "tipPip": "pip 包遵循与 npm 相同的结构"
+  },
+  "marketplace": {
+    "title": "技能市场",
+    "subtitle": "发现并安装社区技能",
+    "searchPlaceholder": "搜索技能...",
+    "refresh": "刷新",
+    "loading": "加载技能中...",
+    "noSkills": "暂无可用技能",
+    "noMatch": "没有匹配的技能",
+    "clearFilters": "清除筛选",
+    "allCategories": "所有分类",
+    "allSources": "所有来源",
+    "allPlatforms": "所有平台",
+    "community": "社区",
+    "official": "官方",
+    "installed": "已安装",
+    "install": "安装",
+    "uninstall": "卸载",
+    "installing": "安装中...",
+    "skillCount": "{{count}} 个技能",
+    "showingSkills": "显示 {{count}} 个技能",
+    "lastRefresh": "上次刷新: {{time}}",
+    "nodejsRequired": "需要 Node.js",
+    "nodejsRequiredDesc": "技能市场需要 Node.js 来安装技能。请先安装 Node.js。",
+    "downloadNodejs": "下载 Node.js",
+    "sort": {
+      "popular": "热门",
+      "trending": "趋势",
+      "latest": "最新",
+      "top": "精选"
+    }
   },
   "error": {
     "title": "哎呀！出错了",

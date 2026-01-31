@@ -8,6 +8,7 @@
     "commands": "Commands",
     "agents": "Agents",
     "external": "External",
+    "marketplace": "Marketplace",
     "settings": "Settings"
   },
   "platform": {
@@ -78,6 +79,37 @@
     "tipGit": "Git repos should have skills in the root or skills/ directory",
     "tipVercel": "Vercel registry skills are curated and verified",
     "tipPip": "pip packages follow the same structure as npm"
+  },
+  "marketplace": {
+    "title": "Skill Marketplace",
+    "subtitle": "Discover and install skills from the community",
+    "searchPlaceholder": "Search skills...",
+    "refresh": "Refresh",
+    "loading": "Loading skills...",
+    "noSkills": "No skills available",
+    "noMatch": "No skills match your filters",
+    "clearFilters": "Clear filters",
+    "allCategories": "All Categories",
+    "allSources": "All Sources",
+    "allPlatforms": "All Platforms",
+    "community": "Community",
+    "official": "Official",
+    "installed": "Installed",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "installing": "Installing...",
+    "skillCount": "{{count}} skills",
+    "showingSkills": "Showing {{count}} skills",
+    "lastRefresh": "Last refresh: {{time}}",
+    "nodejsRequired": "Node.js Required",
+    "nodejsRequiredDesc": "The skill marketplace requires Node.js to install skills. Please install Node.js to continue.",
+    "downloadNodejs": "Download Node.js",
+    "sort": {
+      "popular": "Popular",
+      "trending": "Trending",
+      "latest": "Latest",
+      "top": "Top"
+    }
   },
   "error": {
     "title": "Oops! Something went wrong",
