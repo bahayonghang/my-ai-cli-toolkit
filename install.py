@@ -2,15 +2,15 @@
 """
 命令行交互版本的技能管理器，使用typer实现
 """
-import typer
-from pathlib import Path
-import sys
-from typing import Optional
+import datetime
 
 # 将 install.py 中的代码复制过来以保持功能一致
-import os
 import shutil
-import datetime
+import sys
+from pathlib import Path
+
+import typer
+
 
 # --- Colors & Styles (Standard ANSI) ---
 class Colors:
@@ -77,21 +77,21 @@ ERROR_MESSAGES = {
 
 def format_error(error_key: str, **kwargs) -> str:
     """格式化错误消息
-    
+
     Args:
         error_key: ERROR_MESSAGES 中的键名
         **kwargs: 用于格式化消息的参数
-        
+
     Returns:
         格式化后的错误消息
-        
+
     Example:
         >>> format_error("path_not_exist", path="./nonexistent")
         'Project path does not exist: ./nonexistent\\nSuggestion: ...'
     """
     if error_key not in ERROR_MESSAGES:
         return f"Unknown error: {error_key}"
-    
+
     try:
         return ERROR_MESSAGES[error_key].format(**kwargs)
     except KeyError as e:
@@ -155,15 +155,15 @@ TARGET_CONFIG = {
     }
 }
 
-def validate_project_path(path: str) -> tuple[bool, Optional[str]]:
+def validate_project_path(path: str) -> tuple[bool, str | None]:
     """验证项目路径
-    
+
     Args:
         path: 项目路径（支持 ~, .., . 等）
-        
+
     Returns:
         (是否有效, 错误消息)
-        
+
     Note:
         - 自动处理 ~ 用户目录扩展
         - 自动解析相对路径 (.., .)
@@ -174,15 +174,15 @@ def validate_project_path(path: str) -> tuple[bool, Optional[str]]:
         p = Path(path).expanduser().resolve()
     except Exception as e:
         return False, format_error("path_access_error", path=path, error=str(e))
-    
+
     # 检查存在性
     if not p.exists():
         return False, format_error("path_not_exist", path=str(p))
-    
+
     # 检查是否为目录
     if not p.is_dir():
         return False, format_error("path_not_dir", path=str(p))
-    
+
     # 检查写权限
     test_file = p / ".myclaude_write_test"
     try:
@@ -192,16 +192,16 @@ def validate_project_path(path: str) -> tuple[bool, Optional[str]]:
         return False, format_error("permission_denied", path=str(p))
     except Exception as e:
         return False, format_error("path_access_error", path=str(p), error=str(e))
-    
+
     return True, None
 
 
 def normalize_project_path(path: str) -> Path:
     """规范化项目路径
-    
+
     Args:
         path: 原始路径（可能包含 ~, .., . 等）
-        
+
     Returns:
         规范化后的绝对路径
     """
@@ -210,15 +210,15 @@ def normalize_project_path(path: str) -> Path:
 
 def get_target_config(
     target: str,
-    project_path: Optional[str] = None,
+    project_path: str | None = None,
     use_kiro: bool = False,
 ) -> dict:
     """生成目标平台配置
-    
+
     Args:
         target: 平台名称 (claude, codex, gemini, qwen, antigravity, windsurf, kiro)
         project_path: 项目路径（可选）
-        
+
     Returns:
         配置字典，包含 base, skills, commands, prompt 路径
     """
@@ -228,10 +228,10 @@ def get_target_config(
     # 如果没有指定项目路径，返回全局配置
     if not project_path:
         return TARGET_CONFIG[target]
-    
+
     # 项目级别配置
     base = Path(project_path).resolve()  # 转换为绝对路径
-    
+
     # 根据平台决定子目录名和结构
     if target == "kiro" or use_kiro:
         platform_dir = ".kiro"
@@ -251,12 +251,12 @@ def get_target_config(
     else:
         platform_dir = f".{target}"
         cmd_dir = "commands"
-    
+
     base_dir = base / platform_dir
-    
+
     # 只有 claude 平台且非 Kiro 结构时有 prompt 文件
     prompt_file = base_dir / "CLAUDE.md" if (target == "claude" and not use_kiro) else None
-    
+
     return {
         "base": base_dir,
         "skills": base_dir / "skills",
@@ -267,13 +267,13 @@ def get_target_config(
 
 class SkillManager:
     def __init__(
-        self, 
+        self,
         target: str,
-        project_path: Optional[str] = None,
+        project_path: str | None = None,
         use_kiro: bool = False,
     ):
         """初始化 SkillManager
-        
+
         Args:
             target: 目标平台 (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)
             project_path: 项目路径（可选）
@@ -287,7 +287,7 @@ class SkillManager:
         self.target = target
         self.project_path = project_path
         self.use_kiro = use_kiro
-        
+
         # 使用 get_target_config() 生成配置
         self.config = get_target_config(target, project_path, use_kiro=use_kiro)
         self.target_skills_dir = self.config["skills"]
@@ -295,21 +295,21 @@ class SkillManager:
 
     def get_install_location_info(self) -> str:
         """获取安装位置描述信息
-        
+
         Returns:
             人类可读的安装位置描述
         """
         if self.project_path:
             # 将 project_path 转换为 Path 对象并解析为绝对路径
             abs_path = Path(self.project_path).resolve()
-            
+
             try:
                 # 尝试获取相对于当前工作目录的相对路径
                 rel_path = abs_path.relative_to(Path.cwd())
             except ValueError:
                 # 如果无法计算相对路径（例如在不同驱动器），使用绝对路径
                 rel_path = abs_path
-            
+
             if self.use_kiro:
                 return f"Project: {rel_path} (Kiro structure)"
             else:
@@ -349,9 +349,9 @@ class SkillManager:
             return result
 
         try:
-            with open(skill_md, 'r', encoding='utf-8') as f:
+            with open(skill_md, encoding='utf-8') as f:
                 content = f.read()
-        except (IOError, OSError):
+        except OSError:
             return result
 
         # Check for YAML frontmatter (--- delimited)
@@ -467,7 +467,8 @@ class SkillManager:
             desc = self.get_skill_description(skill)
             status = f"{Colors.SUCCESS}Installed{Colors.ENDC}" if (self.target_skills_dir / skill.name).exists() else f"{Colors.FAIL}Not installed{Colors.ENDC}"
             print(f"\n[{i}] {Colors.BOLD}{skill.name}{Colors.ENDC}")
-            if desc: print(f"    Description: {desc}")
+            if desc:
+                print(f"    Description: {desc}")
             print(f"    Status: {status}")
 
     def list_installed(self):
@@ -493,11 +494,11 @@ class SkillManager:
             if not valid:
                 log_error(error_msg)
                 return False
-            
+
             # 记录项目路径信息
             if not quiet:
                 log_info(f"Installing to project: {self.get_install_location_info()}")
-        
+
         src = SKILLS_SRC_DIR / skill_name
         dst = self.target_skills_dir / skill_name
 
@@ -513,11 +514,13 @@ class SkillManager:
 
         self.ensure_dirs()
         if dst.exists():
-            if not quiet: log_warn(f"Overwriting existing skill: {skill_name}")
+            if not quiet:
+                log_warn(f"Overwriting existing skill: {skill_name}")
             shutil.rmtree(dst)
 
         shutil.copytree(src, dst)
-        if not quiet: log_success(f"Installed: {skill_name} -> {dst}")
+        if not quiet:
+            log_success(f"Installed: {skill_name} -> {dst}")
         return True
 
     def install_commands(self):
@@ -527,10 +530,10 @@ class SkillManager:
             if not valid:
                 log_error(error_msg)
                 return
-            
+
             # 记录项目路径信息
             log_info(f"Installing commands to project: {self.get_install_location_info()}")
-        
+
         log_info(f"Installing commands for {self.target}...")
         self.ensure_dirs()
 
@@ -568,7 +571,7 @@ class SkillManager:
             if self.target_commands_dir.exists():
                 log_warn(f"Overwriting existing commands directory: {self.target_commands_dir}")
                 shutil.rmtree(self.target_commands_dir)
-            
+
             # Copy fresh content
             shutil.copytree(src_cmd_dir, self.target_commands_dir)
 
@@ -641,7 +644,7 @@ class SkillManager:
             shutil.copy2(global_md, backup)
 
         shutil.copy2(local_md, global_md)
-        log_success(f"Global CLAUDE.md updated successfully.")
+        log_success("Global CLAUDE.md updated successfully.")
 
     def prompt_diff(self):
         if self.target != "claude" or self.use_kiro:
@@ -660,7 +663,7 @@ class SkillManager:
             return
 
         import difflib
-        with open(local_md, 'r', encoding='utf-8') as f1, open(global_md, 'r', encoding='utf-8') as f2:
+        with open(local_md, encoding='utf-8') as f1, open(global_md, encoding='utf-8') as f2:
             diff = difflib.unified_diff(
                 f2.readlines(), f1.readlines(),
                 fromfile='Global CLAUDE.md', tofile='Local CLAUDE.md'
@@ -670,7 +673,7 @@ class SkillManager:
 
 # --- 公共 CLI 参数定义 ---
 ProjectOption = typer.Option(
-    None, 
+    None,
     "--project", "-p",
     help="Project path for local installation (relative or absolute)"
 )
@@ -691,7 +694,7 @@ app = typer.Typer(
 @app.command()
 def list_skills(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """列出可用的技能"""
@@ -705,7 +708,7 @@ def list_skills(
 @app.command()
 def installed(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """列出已安装的技能"""
@@ -720,14 +723,14 @@ def installed(
 def install(
     skills: list[str] = typer.Argument(..., help="要安装的技能名称"),
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """安装指定的技能"""
     try:
         mgr = SkillManager(target, project_path=project, use_kiro=kiro)
         log_info(f"Installing to: {mgr.get_install_location_info()}")
-        
+
         for skill in skills:
             mgr.install_skill(skill)
     except ValueError as e:
@@ -737,7 +740,7 @@ def install(
 @app.command()
 def install_all(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """安装所有技能"""
@@ -752,7 +755,7 @@ def install_all(
 @app.command()
 def install_commands(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """安装命令"""
@@ -767,7 +770,7 @@ def install_commands(
 @app.command()
 def interactive(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """交互式安装"""
@@ -781,7 +784,7 @@ def interactive(
 @app.command()
 def prompt_update(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """更新 CLAUDE.md 提示文件"""
@@ -795,7 +798,7 @@ def prompt_update(
 @app.command()
 def prompt_diff(
     target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
-    project: Optional[str] = ProjectOption,
+    project: str | None = ProjectOption,
     kiro: bool = KiroFlag
 ):
     """比较本地和全局 CLAUDE.md 提示文件"""
