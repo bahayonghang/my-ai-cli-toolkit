@@ -1,0 +1,95 @@
+{
+  "app": {
+    "title": "AgentKit",
+    "subtitle": "AI Tool Resource Manager"
+  },
+  "nav": {
+    "skills": "Skills",
+    "commands": "Commands",
+    "agents": "Agents",
+    "external": "External",
+    "settings": "Settings"
+  },
+  "platform": {
+    "detected": "Detected Platforms",
+    "detecting": "Detecting...",
+    "none": "No platforms detected"
+  },
+  "resource": {
+    "search": "Search resources...",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "loading": "Loading resources...",
+    "noMatch": "No resources match your search",
+    "noFound": "No {{type}} found",
+    "scan": "Scan for resources",
+    "description": "Description",
+    "tags": "Tags",
+    "installStatus": "Installation Status",
+    "notInstalled": "Not installed on any platform",
+    "selectPlatforms": "Select Platforms"
+  },
+  "action": {
+    "install": "Install",
+    "installing": "Installing...",
+    "uninstall": "Uninstall",
+    "removing": "Removing...",
+    "updateAll": "Update All Installed",
+    "updating": "Updating..."
+  },
+  "status": {
+    "synced": "Synced",
+    "notInstalled": "Not Installed",
+    "outdated": "Outdated",
+    "conflict": "Conflict",
+    "notSupported": "Not Supported"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "language": "Language",
+    "langEnglish": "English",
+    "langChinese": "中文",
+    "linkMode": "Default Link Mode",
+    "linkSymlink": "Symlink",
+    "linkJunction": "Junction (Windows)",
+    "linkCopy": "Copy",
+    "linkModeHint": "Symlink is recommended for most cases"
+  },
+  "external": {
+    "title": "Install External Skills",
+    "subtitle": "Install skills from npm, pip, git repositories, or the Vercel skill registry.",
+    "npm": "npm Package",
+    "pip": "pip Package",
+    "git": "Git Repository",
+    "vercel": "Vercel Registry",
+    "branch": "Branch",
+    "targetPlatforms": "Target Platforms",
+    "selectAllDetected": "Select all detected",
+    "noPlatforms": "No platforms detected. Please check your installation.",
+    "enterPackage": "Please enter a package/repository name",
+    "selectPlatform": "Please select at least one platform",
+    "installSkill": "Install Skill",
+    "tips": "Tips",
+    "tipNpm": "npm packages should export a SKILL.md file",
+    "tipGit": "Git repos should have skills in the root or skills/ directory",
+    "tipVercel": "Vercel registry skills are curated and verified",
+    "tipPip": "pip packages follow the same structure as npm"
+  },
+  "error": {
+    "title": "Oops! Something went wrong",
+    "description": "An unexpected error occurred. Please try again or restart the application.",
+    "details": "Error Details",
+    "tryAgain": "Try Again",
+    "reload": "Reload App"
+  },
+  "platformSelector": {
+    "detected": "Detected",
+    "other": "Other Platforms",
+    "selectAll": "Select all detected",
+    "clear": "Clear"
+  }
+}

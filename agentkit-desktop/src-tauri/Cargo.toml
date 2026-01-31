@@ -1,0 +1,38 @@
+[package]
+name = "agentkit-desktop"
+version = "0.1.0"
+description = "A cross-platform desktop application for managing AI coding tool resources"
+authors = ["AgentKit Contributors"]
+edition = "2021"
+rust-version = "1.70"
+
+[lib]
+name = "agentkit_desktop_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+anyhow = "1"
+tokio = { version = "1", features = ["full"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "5"
+walkdir = "2"
+toml = "0.8"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-shell = "2"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

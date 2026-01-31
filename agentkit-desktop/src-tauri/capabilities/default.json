@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schemas.tauri.app/config/2/capability",
+  "identifier": "default",
+  "description": "Default capability for AgentKit Desktop",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open"
+  ]
+}

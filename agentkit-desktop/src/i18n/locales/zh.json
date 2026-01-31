@@ -1,0 +1,95 @@
+{
+  "app": {
+    "title": "AgentKit",
+    "subtitle": "AI 工具资源管理器"
+  },
+  "nav": {
+    "skills": "技能",
+    "commands": "命令",
+    "agents": "代理",
+    "external": "外部",
+    "settings": "设置"
+  },
+  "platform": {
+    "detected": "已检测平台",
+    "detecting": "检测中...",
+    "none": "未检测到平台"
+  },
+  "resource": {
+    "search": "搜索资源...",
+    "refresh": "刷新",
+    "refreshing": "刷新中...",
+    "loading": "加载资源中...",
+    "noMatch": "没有匹配的资源",
+    "noFound": "未找到{{type}}",
+    "scan": "扫描资源",
+    "description": "描述",
+    "tags": "标签",
+    "installStatus": "安装状态",
+    "notInstalled": "未安装到任何平台",
+    "selectPlatforms": "选择平台"
+  },
+  "action": {
+    "install": "安装",
+    "installing": "安装中...",
+    "uninstall": "卸载",
+    "removing": "移除中...",
+    "updateAll": "更新所有已安装",
+    "updating": "更新中..."
+  },
+  "status": {
+    "synced": "已同步",
+    "notInstalled": "未安装",
+    "outdated": "需更新",
+    "conflict": "冲突",
+    "notSupported": "不支持"
+  },
+  "settings": {
+    "title": "设置",
+    "theme": "主题",
+    "themeSystem": "跟随系统",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "language": "语言",
+    "langEnglish": "English",
+    "langChinese": "中文",
+    "linkMode": "默认链接模式",
+    "linkSymlink": "符号链接",
+    "linkJunction": "Junction (Windows)",
+    "linkCopy": "复制",
+    "linkModeHint": "大多数情况下推荐使用符号链接"
+  },
+  "external": {
+    "title": "安装外部技能",
+    "subtitle": "从 npm、pip、Git 仓库或 Vercel 技能注册表安装技能。",
+    "npm": "npm 包",
+    "pip": "pip 包",
+    "git": "Git 仓库",
+    "vercel": "Vercel 注册表",
+    "branch": "分支",
+    "targetPlatforms": "目标平台",
+    "selectAllDetected": "选择所有已检测",
+    "noPlatforms": "未检测到平台，请检查安装。",
+    "enterPackage": "请输入包名或仓库地址",
+    "selectPlatform": "请至少选择一个平台",
+    "installSkill": "安装技能",
+    "tips": "提示",
+    "tipNpm": "npm 包应导出 SKILL.md 文件",
+    "tipGit": "Git 仓库应在根目录或 skills/ 目录下包含技能",
+    "tipVercel": "Vercel 注册表技能经过审核和验证",
+    "tipPip": "pip 包遵循与 npm 相同的结构"
+  },
+  "error": {
+    "title": "哎呀！出错了",
+    "description": "发生了意外错误。请重试或重启应用程序。",
+    "details": "错误详情",
+    "tryAgain": "重试",
+    "reload": "重新加载"
+  },
+  "platformSelector": {
+    "detected": "已检测",
+    "other": "其他平台",
+    "selectAll": "选择所有已检测",
+    "clear": "清除"
+  }
+}

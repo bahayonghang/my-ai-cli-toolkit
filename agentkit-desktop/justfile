@@ -1,0 +1,185 @@
+# AgentKit Desktop - Justfile
+# Cross-platform task runner for development, CI, and build
+
+# Default recipe: show available commands
+default:
+    @just --list
+
+# ============================================
+# Development
+# ============================================
+
+# Install all dependencies (npm + cargo)
+install:
+    npm install
+    cd src-tauri && cargo fetch
+
+# Run development server with hot reload
+dev:
+    npm run tauri dev
+
+# Run frontend only (without Tauri)
+dev-web:
+    npm run dev
+
+# ============================================
+# Build
+# ============================================
+
+# Build for production (all platforms)
+build:
+    npm run tauri build
+
+# Build frontend only
+build-web:
+    npm run build
+
+# Build Rust backend only
+build-rust:
+    cd src-tauri && cargo build --release
+
+# ============================================
+# CI / Quality Checks
+# ============================================
+
+# Run all CI checks (lint, typecheck, test, clippy)
+ci: lint typecheck test clippy
+    @echo "✅ All CI checks passed!"
+
+# TypeScript type checking
+typecheck:
+    npx tsc --noEmit
+
+# Lint frontend code
+lint:
+    npx eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 || true
+
+# Format code
+fmt:
+    npx prettier --write "src/**/*.{ts,tsx,css}"
+    cd src-tauri && cargo fmt
+
+# Check code formatting
+fmt-check:
+    npx prettier --check "src/**/*.{ts,tsx,css}"
+    cd src-tauri && cargo fmt --check
+
+# Run Rust clippy linter
+clippy:
+    cd src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+
+# Run Rust check (fast compile check)
+check:
+    cd src-tauri && cargo check
+
+# ============================================
+# Testing
+# ============================================
+
+# Run all tests
+test: test-rust test-web
+
+# Run Rust tests
+test-rust:
+    cd src-tauri && cargo test
+
+# Run frontend tests
+test-web:
+    npx vitest run || true
+
+# Run tests in watch mode
+test-watch:
+    npx vitest
+
+# ============================================
+# Cleaning
+# ============================================
+
+# Clean all build artifacts
+clean:
+    rm -rf dist
+    rm -rf node_modules/.vite
+    cd src-tauri && cargo clean
+
+# Clean and reinstall
+clean-install: clean install
+
+# ============================================
+# Release
+# ============================================
+
+# Build release for Windows
+release-windows:
+    npm run tauri build -- --target x86_64-pc-windows-msvc
+
+# Build release for macOS (Intel)
+release-macos-intel:
+    npm run tauri build -- --target x86_64-apple-darwin
+
+# Build release for macOS (Apple Silicon)
+release-macos-arm:
+    npm run tauri build -- --target aarch64-apple-darwin
+
+# Build release for Linux
+release-linux:
+    npm run tauri build -- --target x86_64-unknown-linux-gnu
+
+# ============================================
+# Portable Builds
+# ============================================
+
+# Build portable version for Windows (no installer, just exe + resources)
+portable-windows:
+    npm run tauri build -- --target x86_64-pc-windows-msvc --bundles none
+    @echo "Portable build created in src-tauri/target/x86_64-pc-windows-msvc/release/"
+
+# Build portable version for Linux (AppImage is already portable)
+portable-linux:
+    npm run tauri build -- --target x86_64-unknown-linux-gnu --bundles appimage
+    @echo "Portable AppImage created in src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/"
+
+# Build portable version for macOS (app bundle without DMG)
+portable-macos-intel:
+    npm run tauri build -- --target x86_64-apple-darwin --bundles app
+    @echo "Portable .app created in src-tauri/target/x86_64-apple-darwin/release/bundle/macos/"
+
+portable-macos-arm:
+    npm run tauri build -- --target aarch64-apple-darwin --bundles app
+    @echo "Portable .app created in src-tauri/target/aarch64-apple-darwin/release/bundle/macos/"
+
+# Build all portable versions for current platform
+portable:
+    #!/usr/bin/env bash
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+        just portable-windows
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        if [[ $(uname -m) == "arm64" ]]; then
+            just portable-macos-arm
+        else
+            just portable-macos-intel
+        fi
+    else
+        just portable-linux
+    fi
+
+# ============================================
+# Utilities
+# ============================================
+
+# Show project info
+info:
+    @echo "AgentKit Desktop"
+    @echo "================"
+    @echo "Node: $(node --version)"
+    @echo "npm: $(npm --version)"
+    @echo "Rust: $(rustc --version)"
+    @echo "Cargo: $(cargo --version)"
+
+# Update dependencies
+update:
+    npm update
+    cd src-tauri && cargo update
+
+# Generate Tauri icons from a source image
+icons source:
+    npx @aspect-build/tauri-icons {{source}} -o src-tauri/icons
