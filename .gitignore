@@ -3,6 +3,8 @@
 .trae/
 ref/
 .serena/
+openspec/
+
 
 *.pyc
 .hypothesis/
