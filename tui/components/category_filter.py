@@ -4,11 +4,10 @@ Horizontal category filter bar for skills filtering.
 Requirements: Filter skills by category, combinable with text search.
 """
 
-from typing import Optional
-from textual.widgets import Static, Button
+
 from textual.containers import Horizontal
 from textual.message import Message
-
+from textual.widgets import Button, Static
 
 # Category display label mapping (raw category -> display label)
 CATEGORY_LABELS = {
@@ -70,7 +69,7 @@ class CategoryButton(Button):
 
     def __init__(
         self,
-        category: Optional[str],
+        category: str | None,
         label: str,
         active: bool = False,
         id: str | None = None,
@@ -126,7 +125,7 @@ class CategoryFilterBar(Horizontal):
     class CategoryChanged(Message):
         """Message sent when category selection changes."""
 
-        def __init__(self, category: Optional[str]) -> None:
+        def __init__(self, category: str | None) -> None:
             """Initialize message.
 
             Args:
@@ -148,8 +147,8 @@ class CategoryFilterBar(Horizontal):
         """
         super().__init__(id=id)
         self._categories = categories
-        self._active_category: Optional[str] = None
-        self._buttons: dict[Optional[str], CategoryButton] = {}
+        self._active_category: str | None = None
+        self._buttons: dict[str | None, CategoryButton] = {}
 
     def compose(self):
         """Compose the filter bar with category buttons."""
@@ -189,7 +188,7 @@ class CategoryFilterBar(Horizontal):
         if isinstance(event.button, CategoryButton):
             self._select_category(event.button.category)
 
-    def _select_category(self, category: Optional[str]) -> None:
+    def _select_category(self, category: str | None) -> None:
         """Select a category and update button states.
 
         Args:
@@ -211,7 +210,7 @@ class CategoryFilterBar(Horizontal):
         self.post_message(self.CategoryChanged(category))
 
     @property
-    def active_category(self) -> Optional[str]:
+    def active_category(self) -> str | None:
         """Get currently active category."""
         return self._active_category
 

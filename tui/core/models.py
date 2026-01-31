@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 
 class ItemType(Enum):
@@ -42,20 +41,20 @@ class ItemInfo:
     """
     name: str
     item_type: ItemType
-    description: Optional[str] = None
+    description: str | None = None
     status: InstallStatus = InstallStatus.NOT_INSTALLED
-    source_path: Optional[Path] = None
-    target_path: Optional[Path] = None
-    source_mtime: Optional[datetime] = None
-    target_mtime: Optional[datetime] = None
-    category: Optional[str] = None
+    source_path: Path | None = None
+    target_path: Path | None = None
+    source_mtime: datetime | None = None
+    target_mtime: datetime | None = None
+    category: str | None = None
     tags: list[str] = field(default_factory=list)
-    
+
     @property
     def is_installed(self) -> bool:
         """检查是否已安装"""
         return self.status in (InstallStatus.INSTALLED, InstallStatus.OUTDATED)
-    
+
     @property
     def needs_update(self) -> bool:
         """检查是否需要更新"""
@@ -65,7 +64,7 @@ class ItemInfo:
 @dataclass
 class InstallResult:
     """安装结果
-    
+
     Attributes:
         success: 是否成功
         item_name: 项目名称
@@ -75,4 +74,4 @@ class InstallResult:
     success: bool
     item_name: str
     message: str
-    error: Optional[str] = None
+    error: str | None = None

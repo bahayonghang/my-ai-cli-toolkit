@@ -7,7 +7,6 @@ Requirements: 1.1, 1.4
 
 from textual.theme import Theme
 
-
 # 主题颜色常量 - 便于测试和复用
 THEME_COLORS = {
     "primary": "#22D3EE",      # Cyan-400
@@ -25,7 +24,7 @@ THEME_COLORS = {
 # 必需的主题属性列表
 REQUIRED_THEME_PROPERTIES = [
     "primary",
-    "secondary", 
+    "secondary",
     "accent",
     "foreground",
     "background",
@@ -39,7 +38,7 @@ REQUIRED_THEME_PROPERTIES = [
 
 def create_myclaude_theme() -> Theme:
     """创建 MyClaude 自定义主题
-    
+
     Returns:
         配置好的 Theme 对象
     """
