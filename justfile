@@ -30,22 +30,32 @@ help:
     @echo "  just prompt-update     - 更新全局 CLAUDE.md 提示词"
     @echo "  just prompt-diff       - 显示本地与全局提示词的差异"
     @echo ""
-    @echo "🔍 代码质量检查："
+    @echo "🔍 代码质量检查 (Python)："
     @echo "  just ruff-check        - 运行 Ruff 代码检查"
     @echo "  just ruff-format-check - 检查代码格式是否符合规范"
     @echo "  just ruff-format       - 自动格式化代码"
     @echo "  just ruff-fix          - 自动修复可修复的问题"
+    @echo ""
+    @echo "🦀 代码质量检查 (Rust - AgentKit Desktop)："
+    @echo "  just rust-format-check - 检查 Rust 代码格式"
+    @echo "  just rust-format       - 自动格式化 Rust 代码"
+    @echo "  just rust-clippy       - 运行 Clippy 静态分析"
+    @echo "  just rust-test         - 运行 Rust 单元测试"
+    @echo "  just rust-check-all    - 运行所有 Rust 检查"
+    @echo "  just rust-fix          - 格式化并运行检查"
     @echo ""
     @echo "🧪 测试命令："
     @echo "  just test              - 运行所有测试"
     @echo "  just test-unit         - 仅运行单元测试"
     @echo "  just test-integration  - 仅运行集成测试"
     @echo "  just test-e2e          - 仅运行端到端测试"
+    @echo "  just ci                - 在本地执行完整 CI 流程 (ruff + pyright + pytest)"
     @echo ""
     @echo "💡 使用示例："
     @echo "  just install drawio excalidraw  # 安装多个技能"
     @echo "  just docs                       # 快速启动文档开发"
-    @echo "  just ruff-fix                   # 修复代码问题"
+    @echo "  just ruff-fix                   # 修复 Python 代码问题"
+    @echo "  just rust-fix                   # 修复 Rust 代码格式"
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
 
@@ -129,6 +139,30 @@ ruff-format:
 ruff-fix:
     uvx ruff check --fix .
 
+# ============ Rust 代码检查 (AgentKit Desktop) ============
+
+# 运行 Rust 格式检查
+rust-format-check:
+    cd agentkit-desktop/src-tauri && cargo fmt --check
+
+# 自动格式化 Rust 代码
+rust-format:
+    cd agentkit-desktop/src-tauri && cargo fmt
+
+# 运行 Clippy 静态分析 (严格模式)
+rust-clippy:
+    cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+
+# 运行 Rust 单元测试
+rust-test:
+    cd agentkit-desktop/src-tauri && cargo test
+
+# 运行所有 Rust 检查 (格式 + Clippy + 测试)
+rust-check-all: rust-format-check rust-clippy rust-test
+
+# 修复 Rust 代码格式并运行检查
+rust-fix: rust-format rust-clippy
+
 # ============ 测试相关 ============
 
 # 运行所有测试套件
@@ -151,7 +185,25 @@ test-e2e:
 test-coverage:
     pytest --cov=. --cov-report=html --cov-report=term
 
-# ============ 开发工具 ============
+# 在本地执行完整 CI 流程
+ci:
+    @echo "════════════════════════════════════════════════════════════════"
+    @echo "  🚀 开始执行 CI 流程"
+    @echo "════════════════════════════════════════════════════════════════"
+    @echo ""
+    @echo "🔍 步骤 1/3: Ruff 代码检查..."
+    uv run ruff check .
+    @echo ""
+    @echo "🔍 步骤 2/3: Pyright 类型检查..."
+    uv run pyright
+    @echo ""
+    @echo "🧪 步骤 3/3: 运行测试 (pytest)..."
+    uv run pytest
+    @echo ""
+    @echo "════════════════════════════════════════════════════════════════"
+    @echo "  ✅ CI 流程执行完成！"
+    @echo "════════════════════════════════════════════════════════════════"
+
 
 # 清理临时文件和缓存
 clean:
