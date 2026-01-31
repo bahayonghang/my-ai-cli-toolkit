@@ -11,10 +11,8 @@ Usage:
 
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 try:
     import tomllib
@@ -131,7 +129,7 @@ def get_install_commands(
 
 @app.command("list")
 def list_plugins(
-    category: Optional[str] = typer.Option(
+    category: str | None = typer.Option(
         None, "--category", "-c", help="按分类筛选"
     ),
 ):
@@ -171,7 +169,7 @@ def list_plugins(
     console.print(p_table)
 
     # 分类统计
-    categories = set(p.category for p in config.plugins.values())
+    categories = {p.category for p in config.plugins.values()}
     rprint(f"\n[dim]分类: {', '.join(sorted(categories))}[/dim]")
     rprint(f"[dim]共 {len(config.plugins)} 个插件[/dim]")
 
@@ -184,7 +182,7 @@ def install_plugins(
     all_plugins: bool = typer.Option(
         False, "--all", "-a", help="安装所有插件"
     ),
-    category: Optional[str] = typer.Option(
+    category: str | None = typer.Option(
         None, "--category", "-c", help="按分类安装"
     ),
     dry_run: bool = typer.Option(
