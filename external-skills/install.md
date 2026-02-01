@@ -35,6 +35,10 @@ npx skills add https://github.com/remotion-dev/skills --skill remotion-best-prac
 # Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）
 npx skills add vuejs-ai/skills
 ```
+```shell
+# Postgres 
+npx skills add supabase/agent-skills
+```
 
 ## ui ux pro max
 
