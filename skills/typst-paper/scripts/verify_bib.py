@@ -27,15 +27,15 @@ class BibChecker:
 
     # Required fields for common BibTeX entry types
     REQUIRED_FIELDS = {
-        'article': ['author', 'title', 'journal', 'year'],
-        'book': ['author', 'title', 'publisher', 'year'],
-        'inproceedings': ['author', 'title', 'booktitle', 'year'],
-        'conference': ['author', 'title', 'booktitle', 'year'],
-        'incollection': ['author', 'title', 'booktitle', 'publisher', 'year'],
-        'phdthesis': ['author', 'title', 'school', 'year'],
-        'mastersthesis': ['author', 'title', 'school', 'year'],
-        'techreport': ['author', 'title', 'institution', 'year'],
-        'misc': ['title'],
+        "article": ["author", "title", "journal", "year"],
+        "book": ["author", "title", "publisher", "year"],
+        "inproceedings": ["author", "title", "booktitle", "year"],
+        "conference": ["author", "title", "booktitle", "year"],
+        "incollection": ["author", "title", "booktitle", "publisher", "year"],
+        "phdthesis": ["author", "title", "school", "year"],
+        "mastersthesis": ["author", "title", "school", "year"],
+        "techreport": ["author", "title", "institution", "year"],
+        "misc": ["title"],
     }
 
     def __init__(self, bib_file: str, typ_file: str = None, style: str = None):
@@ -49,13 +49,13 @@ class BibChecker:
     def load_bibtex(self) -> bool:
         """Load and parse BibTeX file."""
         try:
-            content = self.bib_file.read_text(encoding='utf-8')
+            content = self.bib_file.read_text(encoding="utf-8")
         except Exception as e:
             print(f"[ERROR] Failed to read file: {e}")
             return False
 
         # Parse BibTeX entries
-        entry_pattern = r'@(\w+)\s*\{\s*([^,]+)\s*,([^}]+)\}'
+        entry_pattern = r"@(\w+)\s*\{\s*([^,]+)\s*,([^}]+)\}"
         matches = re.finditer(entry_pattern, content, re.DOTALL)
 
         for match in matches:
@@ -71,10 +71,7 @@ class BibChecker:
                 field_value = field_match.group(2).strip()
                 fields[field_name] = field_value
 
-            self.entries[key] = {
-                'type': entry_type,
-                'fields': fields
-            }
+            self.entries[key] = {"type": entry_type, "fields": fields}
 
         return True
 
@@ -87,7 +84,7 @@ class BibChecker:
             return False
 
         try:
-            with open(self.bib_file, encoding='utf-8') as f:
+            with open(self.bib_file, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
         except Exception as e:
             print(f"[ERROR] Failed to parse YAML: {e}")
@@ -95,11 +92,8 @@ class BibChecker:
 
         # Convert Hayagriva format to internal format
         for key, entry in data.items():
-            entry_type = entry.get('type', 'misc')
-            self.entries[key] = {
-                'type': entry_type,
-                'fields': entry
-            }
+            entry_type = entry.get("type", "misc")
+            self.entries[key] = {"type": entry_type, "fields": entry}
 
         return True
 
@@ -108,8 +102,8 @@ class BibChecker:
         print("\n[CHECK] Required Fields")
 
         for key, entry in self.entries.items():
-            entry_type = entry['type']
-            fields = entry['fields']
+            entry_type = entry["type"]
+            fields = entry["fields"]
 
             if entry_type in self.REQUIRED_FIELDS:
                 required = self.REQUIRED_FIELDS[entry_type]
@@ -129,7 +123,7 @@ class BibChecker:
 
         # BibTeX keys are case-insensitive
         keys_lower = {}
-        for key in self.entries.keys():
+        for key in self.entries:
             key_lower = key.lower()
             if key_lower in keys_lower:
                 self.issues.append(
@@ -138,7 +132,7 @@ class BibChecker:
             else:
                 keys_lower[key_lower] = key
 
-        if not any('Duplicate key' in issue for issue in self.issues):
+        if not any("Duplicate key" in issue for issue in self.issues):
             print("  ✓ No duplicate keys found")
 
     def check_citations(self):
@@ -149,25 +143,23 @@ class BibChecker:
         print("\n[CHECK] Citations")
 
         try:
-            content = self.typ_file.read_text(encoding='utf-8')
+            content = self.typ_file.read_text(encoding="utf-8")
         except Exception as e:
             print(f"[ERROR] Failed to read Typst file: {e}")
             return
 
         # Find all citations in Typst file
-        citations = set(re.findall(r'@(\w+)', content))
+        citations = set(re.findall(r"@(\w+)", content))
 
         # Remove special Typst references (figures, tables, etc.)
-        citations = {c for c in citations if not c.startswith(('fig:', 'tab:', 'eq:', 'sec:'))}
+        citations = {c for c in citations if not c.startswith(("fig:", "tab:", "eq:", "sec:"))}
 
         print(f"  ✓ Found {len(citations)} unique citations in Typst file")
 
         # Check for missing entries
         missing = citations - set(self.entries.keys())
         if missing:
-            self.issues.append(
-                f"Citations not found in bibliography: {', '.join(sorted(missing))}"
-            )
+            self.issues.append(f"Citations not found in bibliography: {', '.join(sorted(missing))}")
         else:
             print("  ✓ All citations found in bibliography")
 
@@ -188,22 +180,22 @@ class BibChecker:
 
         print(f"\n[CHECK] Style Requirements ({self.style.upper()})")
 
-        if self.style == 'ieee':
+        if self.style == "ieee":
             # IEEE typically uses numeric citations
             print("  ℹ IEEE uses numeric citations [1], [2], etc.")
 
-        elif self.style == 'apa':
+        elif self.style == "apa":
             # APA uses author-year citations
             print("  ℹ APA uses author-year citations (Smith, 2020)")
 
-        elif self.style == 'gb-7714-2015':
+        elif self.style == "gb-7714-2015":
             # Chinese national standard
             print("  ℹ GB/T 7714-2015 is the Chinese national standard")
             # Check for Chinese characters in titles
             chinese_entries = []
             for key, entry in self.entries.items():
-                title = entry['fields'].get('title', '')
-                if re.search(r'[\u4e00-\u9fff]', title):
+                title = entry["fields"].get("title", "")
+                if re.search(r"[\u4e00-\u9fff]", title):
                     chinese_entries.append(key)
             if chinese_entries:
                 print(f"  ✓ Found {len(chinese_entries)} entries with Chinese titles")
@@ -213,11 +205,11 @@ class BibChecker:
         print(f"[INFO] Checking bibliography: {self.bib_file}")
 
         # Load file based on extension
-        if self.bib_file.suffix == '.bib':
+        if self.bib_file.suffix == ".bib":
             if not self.load_bibtex():
                 return 1
             print(f"[INFO] Loaded {len(self.entries)} BibTeX entries")
-        elif self.bib_file.suffix in ['.yml', '.yaml']:
+        elif self.bib_file.suffix in [".yml", ".yaml"]:
             if not self.load_hayagriva():
                 return 1
             print(f"[INFO] Loaded {len(self.entries)} Hayagriva entries")
@@ -260,7 +252,7 @@ class BibChecker:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Bibliography Verification Script for Typst',
+        description="Bibliography Verification Script for Typst",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -279,17 +271,14 @@ Supported Styles:
   mla         MLA citations
   chicago     Chicago author-date
   gb-7714-2015  Chinese national standard
-        """
+        """,
     )
-    parser.add_argument('bib_file', help='Bibliography file to check (.bib or .yml)')
+    parser.add_argument("bib_file", help="Bibliography file to check (.bib or .yml)")
+    parser.add_argument("--typ", help="Typst file to check citations against")
     parser.add_argument(
-        '--typ',
-        help='Typst file to check citations against'
-    )
-    parser.add_argument(
-        '--style',
-        choices=['ieee', 'apa', 'mla', 'chicago', 'gb-7714-2015'],
-        help='Citation style to check'
+        "--style",
+        choices=["ieee", "apa", "mla", "chicago", "gb-7714-2015"],
+        help="Citation style to check",
     )
 
     args = parser.parse_args()
@@ -305,5 +294,5 @@ Supported Styles:
     sys.exit(checker.run_checks())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
