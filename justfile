@@ -44,12 +44,15 @@ help:
     @echo "  just rust-check-all    - 运行所有 Rust 检查"
     @echo "  just rust-fix          - 格式化并运行检查"
     @echo ""
+    @echo "📘 代码质量检查 (TypeScript - AgentKit Desktop)："
+    @echo "  just ts-check          - 运行 TypeScript 类型检查"
+    @echo ""
     @echo "🧪 测试命令："
     @echo "  just test              - 运行所有测试"
     @echo "  just test-unit         - 仅运行单元测试"
     @echo "  just test-integration  - 仅运行集成测试"
     @echo "  just test-e2e          - 仅运行端到端测试"
-    @echo "  just ci                - 在本地执行完整 CI 流程 (ruff + pyright + pytest)"
+    @echo "  just ci                - 在本地执行完整 CI 流程 (ruff + pyright + tsc + pytest)"
     @echo ""
     @echo "💡 使用示例："
     @echo "  just install drawio excalidraw  # 安装多个技能"
@@ -163,6 +166,12 @@ rust-check-all: rust-format-check rust-clippy rust-test
 # 修复 Rust 代码格式并运行检查
 rust-fix: rust-format rust-clippy
 
+# ============ TypeScript 检查 (AgentKit Desktop) ============
+
+# 运行 TypeScript 类型检查
+ts-check:
+    cd agentkit-desktop && npx tsc --noEmit
+
 # ============ 测试相关 ============
 
 # 运行所有测试套件
@@ -191,13 +200,16 @@ ci:
     @echo "  🚀 开始执行 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "🔍 步骤 1/3: Ruff 代码检查..."
+    @echo "🔍 步骤 1/4: Ruff 代码检查..."
     uv run ruff check .
     @echo ""
-    @echo "🔍 步骤 2/3: Pyright 类型检查..."
+    @echo "🔍 步骤 2/4: Pyright 类型检查..."
     uv run pyright
     @echo ""
-    @echo "🧪 步骤 3/3: 运行测试 (pytest)..."
+    @echo "🔍 步骤 3/4: AgentKit Desktop TypeScript 检查..."
+    cd agentkit-desktop && npx tsc --noEmit
+    @echo ""
+    @echo "🧪 步骤 4/4: 运行测试 (pytest)..."
     uv run pytest
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
