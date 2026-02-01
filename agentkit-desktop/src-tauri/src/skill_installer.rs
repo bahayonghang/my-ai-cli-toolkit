@@ -2,9 +2,9 @@
 //!
 //! Handles skill installation via npx skills CLI.
 
+use crate::utils::create_command;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
-use std::process::Command;
 use tracing::{debug, error, info, warn};
 
 /// Installation result
@@ -29,8 +29,8 @@ impl SkillInstaller {
     /// Check if Node.js/npx is available
     pub fn check_nodejs_available() -> Result<bool> {
         debug!("Checking Node.js/npx availability");
-        // Try npx first
-        let npx_result = Command::new("npx").arg("--version").output();
+        // Try npx first (using create_command for Windows compatibility)
+        let npx_result = create_command("npx").arg("--version").output();
 
         if let Ok(output) = npx_result {
             if output.status.success() {
@@ -41,7 +41,7 @@ impl SkillInstaller {
         }
 
         // Try node as fallback check
-        let node_result = Command::new("node").arg("--version").output();
+        let node_result = create_command("node").arg("--version").output();
 
         if let Ok(output) = node_result {
             if output.status.success() {
@@ -58,7 +58,7 @@ impl SkillInstaller {
     /// Get Node.js version if available
     pub fn get_nodejs_version() -> Option<String> {
         debug!("Getting Node.js version");
-        let output = Command::new("node").arg("--version").output().ok()?;
+        let output = create_command("node").arg("--version").output().ok()?;
 
         if output.status.success() {
             let version = String::from_utf8_lossy(&output.stdout).trim().to_string();
@@ -88,7 +88,7 @@ impl SkillInstaller {
 
         // Run npx skills add owner/repo
         debug!(skill = %skill_ref, "Running npx skills add");
-        let output = Command::new("npx")
+        let output = create_command("npx")
             .args(["skills", "add", &skill_ref])
             .output()
             .map_err(|e| {
@@ -153,7 +153,7 @@ impl SkillInstaller {
 
         // Run npx skills add owner/repo --dir target_dir
         debug!(skill = %skill_ref, target = %target_dir.display(), "Running npx skills add with --dir");
-        let output = Command::new("npx")
+        let output = create_command("npx")
             .args([
                 "skills",
                 "add",
@@ -251,7 +251,7 @@ impl SkillInstaller {
 
         // Run npx skills remove owner/repo
         debug!(skill = %skill_ref, "Running npx skills remove");
-        let output = Command::new("npx")
+        let output = create_command("npx")
             .args(["skills", "remove", &skill_ref])
             .output()
             .map_err(|e| {

@@ -105,7 +105,7 @@ export function MarketFilterBar({
         {/* Category filter */}
         <select
           value={filters.category || ""}
-          onChange={(e) => onFiltersChange({ category: e.target.value || undefined })}
+          onChange={(e) => onFiltersChange(e.target.value ? { category: e.target.value } : {})}
           className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="">{t("marketplace.allCategories")}</option>
@@ -119,7 +119,7 @@ export function MarketFilterBar({
         {/* Source filter */}
         <select
           value={filters.source || ""}
-          onChange={(e) => onFiltersChange({ source: e.target.value || undefined })}
+          onChange={(e) => onFiltersChange(e.target.value ? { source: e.target.value } : {})}
           className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="">{t("marketplace.allSources")}</option>
@@ -131,7 +131,7 @@ export function MarketFilterBar({
         {/* Platform filter */}
         <select
           value={filters.platform || ""}
-          onChange={(e) => onFiltersChange({ platform: e.target.value || undefined })}
+          onChange={(e) => onFiltersChange(e.target.value ? { platform: e.target.value } : {})}
           className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="">{t("marketplace.allPlatforms")}</option>

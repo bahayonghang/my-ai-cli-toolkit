@@ -6,6 +6,7 @@
 //! - Git repositories
 //! - Vercel skill registry
 
+use crate::utils::create_command;
 use anyhow::{anyhow, Result};
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -43,7 +44,7 @@ impl ExternalHandler for NpmHandler {
 
     fn check_prerequisites(&self) -> Result<()> {
         debug!("Checking npm prerequisites");
-        let output = Command::new("npm")
+        let output = create_command("npm")
             .arg("--version")
             .output()
             .map_err(|e| {
@@ -79,7 +80,7 @@ impl ExternalHandler for NpmHandler {
         let package_json = target_dir.join("package.json");
         if !package_json.exists() {
             debug!("Initializing npm project");
-            let output = Command::new("npm")
+            let output = create_command("npm")
                 .args(["init", "-y"])
                 .current_dir(target_dir)
                 .output()?;
@@ -96,7 +97,7 @@ impl ExternalHandler for NpmHandler {
 
         // Install the package
         debug!(package = %package, "Running npm install");
-        let output = Command::new("npm")
+        let output = create_command("npm")
             .args(["install", package])
             .current_dir(target_dir)
             .output()?;
@@ -281,7 +282,7 @@ impl ExternalHandler for VercelHandler {
     fn check_prerequisites(&self) -> Result<()> {
         debug!("Checking vercel/npx prerequisites");
         // Vercel skills use npx, so we need npm
-        let output = Command::new("npx")
+        let output = create_command("npx")
             .arg("--version")
             .output()
             .map_err(|e| {
@@ -316,7 +317,7 @@ impl ExternalHandler for VercelHandler {
         // Use npx to download from Vercel skill registry
         // This assumes the Vercel skill registry CLI exists
         debug!(skill_name = %skill_name, "Running npx @anthropic/skills add");
-        let output = Command::new("npx")
+        let output = create_command("npx")
             .args([
                 "@anthropic/skills",
                 "add",

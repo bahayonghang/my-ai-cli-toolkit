@@ -40,10 +40,12 @@ function App() {
   const { fetchSettings } = useSettingsStore();
 
   // Memoize fetch functions to avoid useEffect dependency warnings
-  const initializeApp = useCallback(() => {
+  const initializeApp = useCallback(async () => {
+    // Priority 1: Fetch settings first (theme/language) - critical for UX
+    await fetchSettings();
+    // Priority 2: Fetch platforms and resources in parallel (non-blocking)
     fetchPlatforms();
     fetchResources();
-    fetchSettings();
   }, [fetchPlatforms, fetchResources, fetchSettings]);
 
   // Initialize on mount

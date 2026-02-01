@@ -1,6 +1,6 @@
 //! Marketplace Module
 //!
-//! SkillsMP API client for fetching community skills from https://skillsmp.com/
+//! Agent Skills Index API client for fetching community skills.
 //!
 //! Features:
 //! - Browser-like headers to bypass Cloudflare protection
@@ -11,13 +11,13 @@ use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{debug, error, info, warn};
 
-/// Base URL for SkillsMP API
-const SKILLSMP_BASE_URL: &str = "https://skillsmp.com/api";
+/// Base URL for Agent Skills Index public API
+const AGENT_SKILLS_INDEX_BASE_URL: &str = "https://skillsmp.com/api/v1";
 
 /// User-Agent string mimicking a real browser to bypass Cloudflare
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-/// Marketplace skill from SkillsMP API
+/// Marketplace skill from API
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MarketplaceSkill {
     pub id: String,
@@ -85,10 +85,10 @@ struct ApiResponse<T> {
     #[serde(default)]
     pub data: Option<T>,
     #[serde(default)]
-    pub error: Option<String>,
+    pub error: Option<serde_json::Value>,
 }
 
-/// SkillsMP API client
+/// Agent Skills Index API client
 pub struct MarketplaceClient {
     client: reqwest::Client,
     base_url: String,
@@ -112,7 +112,7 @@ impl MarketplaceClient {
                 .default_headers(headers)
                 .build()
                 .unwrap_or_default(),
-            base_url: SKILLSMP_BASE_URL.to_string(),
+            base_url: AGENT_SKILLS_INDEX_BASE_URL.to_string(),
         }
     }
 
@@ -138,7 +138,7 @@ impl MarketplaceClient {
         }
     }
 
-    /// Fetch skills from SkillsMP API with fallback to sample data
+    /// Fetch skills from Agent Skills Index API with fallback to sample data
     pub async fn fetch_skills(&self, query: &MarketplaceQuery) -> Result<Vec<MarketplaceSkill>> {
         debug!(query = ?query, "Fetching skills from marketplace");
         match self.fetch_skills_from_api(query).await {
@@ -156,31 +156,51 @@ impl MarketplaceClient {
 
     /// Internal method to fetch skills from API
     async fn fetch_skills_from_api(&self, query: &MarketplaceQuery) -> Result<Vec<MarketplaceSkill>> {
-        let mut url = format!("{}/skills", self.base_url);
+        let has_search = query
+            .search
+            .as_ref()
+            .map(|s| !s.trim().is_empty())
+            .unwrap_or(false);
+        let mut url = if has_search {
+            format!("{}/skills/search", self.base_url)
+        } else {
+            format!("{}/skills", self.base_url)
+        };
 
         // Build query parameters
         let mut params = vec![];
 
-        if let Some(ref search) = query.search {
+        if has_search {
+            let search = query.search.as_ref().map(|s| s.trim()).unwrap_or("");
             if !search.is_empty() {
                 params.push(format!("q={}", urlencoding::encode(search)));
             }
-        }
+            params.push(format!("page={}", query.page));
+            if query.per_page > 0 {
+                params.push(format!("limit={}", query.per_page));
+            }
+            if let Some(sort_by) = map_search_sort_param(&query.sort_by) {
+                params.push(format!("sortBy={}", sort_by));
+            }
+        } else {
+            params.push(format!("sort={}", map_sort_param(&query.sort_by)));
+            params.push(format!("order={}", map_sort_order(&query.sort_by)));
+            params.push(format!("page={}", query.page));
+            if query.per_page > 0 {
+                params.push(format!("limit={}", query.per_page));
+            }
 
-        params.push(format!("sort={}", query.sort_by));
-        params.push(format!("page={}", query.page));
-        params.push(format!("per_page={}", query.per_page));
+            if let Some(ref category) = query.category {
+                if !category.is_empty() && category != "all" {
+                    params.push(format!("category={}", urlencoding::encode(category)));
+                }
+            }
 
-        if let Some(ref category) = query.category {
-            params.push(format!("category={}", urlencoding::encode(category)));
-        }
-
-        if let Some(ref source) = query.source {
-            params.push(format!("source={}", urlencoding::encode(source)));
-        }
-
-        if let Some(ref platform) = query.platform {
-            params.push(format!("platform={}", urlencoding::encode(platform)));
+            if let Some(ref platform) = query.platform {
+                if !platform.is_empty() && platform != "all" {
+                    params.push(format!("platform={}", urlencoding::encode(platform)));
+                }
+            }
         }
 
         if !params.is_empty() {
@@ -233,27 +253,7 @@ impl MarketplaceClient {
         let text = response.text().await?;
         debug!(response_length = text.len(), "Received response body");
 
-        // Try parsing as direct array
-        if let Ok(skills) = serde_json::from_str::<Vec<MarketplaceSkill>>(&text) {
-            debug!(count = skills.len(), "Parsed skills as direct array");
-            return Ok(skills);
-        }
-
-        // Try parsing as wrapped response
-        if let Ok(api_response) = serde_json::from_str::<ApiResponse<Vec<MarketplaceSkill>>>(&text)
-        {
-            if let Some(error) = api_response.error {
-                error!(error = %error, "API returned error");
-                return Err(anyhow!("API error: {}", error));
-            }
-            let skills = api_response.data.unwrap_or_default();
-            debug!(count = skills.len(), "Parsed skills from wrapped response");
-            return Ok(skills);
-        }
-
-        // Return empty if parsing fails
-        warn!("Failed to parse API response, returning empty list");
-        Ok(vec![])
+        parse_skills_response(&text)
     }
 
     /// Search skills with keyword
@@ -297,26 +297,10 @@ impl MarketplaceClient {
         }
 
         let text = response.text().await?;
-
-        // Try parsing as direct array
-        if let Ok(categories) = serde_json::from_str::<Vec<MarketplaceCategory>>(&text) {
-            info!(count = categories.len(), "Fetched categories from API");
-            return Ok(categories);
-        }
-
-        // Try parsing as wrapped response
-        if let Ok(api_response) =
-            serde_json::from_str::<ApiResponse<Vec<MarketplaceCategory>>>(&text)
-        {
-            if let Some(data) = api_response.data {
-                info!(count = data.len(), "Fetched categories from wrapped response");
-                return Ok(data);
-            }
-        }
-
-        // Return default categories
-        warn!("Failed to parse categories response, using defaults");
-        Ok(default_categories())
+        parse_categories_response(&text).or_else(|e| {
+            warn!(error = %e, "Failed to parse categories response, using defaults");
+            Ok(default_categories())
+        })
     }
 }
 
@@ -324,6 +308,316 @@ impl Default for MarketplaceClient {
     fn default() -> Self {
         Self::new()
     }
+}
+
+fn map_sort_param(sort_by: &str) -> &'static str {
+    match sort_by {
+        "latest" => "updated",
+        "trending" => "updated",
+        "top" => "stars",
+        _ => "stars",
+    }
+}
+
+fn map_sort_order(sort_by: &str) -> &'static str {
+    match sort_by {
+        "name" => "asc",
+        _ => "desc",
+    }
+}
+
+fn map_search_sort_param(sort_by: &str) -> Option<&'static str> {
+    match sort_by {
+        "latest" | "trending" => Some("recent"),
+        "top" | "popular" => Some("stars"),
+        _ => None,
+    }
+}
+
+fn parse_skills_response(text: &str) -> Result<Vec<MarketplaceSkill>> {
+    // Try direct array of expected struct
+    if let Ok(skills) = serde_json::from_str::<Vec<MarketplaceSkill>>(text) {
+        debug!(count = skills.len(), "Parsed skills as direct array");
+        return Ok(skills);
+    }
+
+    // Try wrapped response
+    if let Ok(api_response) = serde_json::from_str::<ApiResponse<Vec<MarketplaceSkill>>>(text) {
+        if let Some(error) = api_response.error {
+            let message = format_api_error(&error);
+            error!(error = %message, "API returned error");
+            return Err(anyhow!("API error: {}", message));
+        }
+        let skills = api_response.data.unwrap_or_default();
+        debug!(count = skills.len(), "Parsed skills from wrapped response");
+        return Ok(skills);
+    }
+
+    // Try value-based parsing for alternate field names
+    let value: serde_json::Value = serde_json::from_str(text)?;
+    if let Some(error) = value.get("error") {
+        let message = format_api_error(error);
+        error!(error = %message, "API returned error");
+        return Err(anyhow!("API error: {}", message));
+    }
+    if let Some(skills) = parse_skills_from_value(&value) {
+        debug!(count = skills.len(), "Parsed skills from value");
+        return Ok(skills);
+    }
+
+    warn!("Failed to parse API response, unable to map skills");
+    Err(anyhow!("Unexpected API response format"))
+}
+
+fn parse_skills_from_value(value: &serde_json::Value) -> Option<Vec<MarketplaceSkill>> {
+    match value {
+        serde_json::Value::Array(items) => Some(
+            items
+                .iter()
+                .filter_map(normalize_skill_from_value)
+                .collect(),
+        ),
+        serde_json::Value::Object(map) => {
+            if let Some(data) = map.get("data") {
+                return parse_skills_from_value(data);
+            }
+            if let Some(items) = map.get("skills") {
+                return parse_skills_from_value(items);
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+fn normalize_skill_from_value(value: &serde_json::Value) -> Option<MarketplaceSkill> {
+    let obj = value.as_object()?;
+
+    let owner = obj
+        .get("owner")
+        .and_then(|v| v.as_str())
+        .or_else(|| obj.get("github_owner").and_then(|v| v.as_str()))
+        .unwrap_or_default()
+        .to_string();
+    let repo = obj
+        .get("repo")
+        .and_then(|v| v.as_str())
+        .or_else(|| obj.get("github_repo").and_then(|v| v.as_str()))
+        .unwrap_or_default()
+        .to_string();
+
+    if owner.is_empty() || repo.is_empty() {
+        return None;
+    }
+
+    let name = obj
+        .get("name")
+        .and_then(|v| v.as_str())
+        .filter(|s| !s.is_empty())
+        .unwrap_or(&repo)
+        .to_string();
+
+    let description = obj
+        .get("description")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
+
+    let stars = obj
+        .get("stars")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0) as u32;
+
+    let downloads = obj
+        .get("downloads")
+        .and_then(|v| v.as_u64())
+        .map(|v| v as u32);
+
+    let categories = extract_string_list(obj.get("categories"));
+    let platforms = extract_string_list(obj.get("platforms"));
+
+    let source = normalize_source(
+        obj.get("source")
+            .and_then(|v| v.as_str())
+            .unwrap_or("community"),
+    );
+
+    let updated_at = obj
+        .get("updated_at")
+        .and_then(|v| v.as_str())
+        .or_else(|| obj.get("updatedAt").and_then(|v| v.as_str()))
+        .or_else(|| obj.get("updated").and_then(|v| v.as_str()))
+        .unwrap_or_default()
+        .to_string();
+
+    let id = obj
+        .get("id")
+        .and_then(|v| v.as_str())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| format!("{}/{}", owner, repo));
+
+    let installed = obj
+        .get("installed")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+
+    Some(MarketplaceSkill {
+        id,
+        name,
+        description,
+        owner,
+        repo,
+        stars,
+        downloads,
+        categories,
+        platforms,
+        source,
+        updated_at,
+        installed,
+    })
+}
+
+fn extract_string_list(value: Option<&serde_json::Value>) -> Vec<String> {
+    let mut result = Vec::new();
+    let Some(value) = value else {
+        return result;
+    };
+
+    match value {
+        serde_json::Value::Array(items) => {
+            for item in items {
+                if let Some(text) = item.as_str() {
+                    result.push(text.to_string());
+                    continue;
+                }
+                if let Some(obj) = item.as_object() {
+                    if let Some(name) = obj.get("name").and_then(|v| v.as_str()) {
+                        result.push(name.to_string());
+                        continue;
+                    }
+                    if let Some(slug) = obj.get("slug").and_then(|v| v.as_str()) {
+                        result.push(slug.to_string());
+                    }
+                }
+            }
+        }
+        serde_json::Value::String(text) => {
+            result.push(text.to_string());
+        }
+        _ => {}
+    }
+
+    result
+}
+
+fn normalize_source(source: &str) -> String {
+    match source {
+        "official" | "community" | "vercel-labs" => source.to_string(),
+        _ => "community".to_string(),
+    }
+}
+
+fn parse_categories_response(text: &str) -> Result<Vec<MarketplaceCategory>> {
+    if let Ok(categories) = serde_json::from_str::<Vec<MarketplaceCategory>>(text) {
+        info!(count = categories.len(), "Fetched categories from API");
+        return Ok(categories);
+    }
+
+    if let Ok(api_response) = serde_json::from_str::<ApiResponse<Vec<MarketplaceCategory>>>(text)
+    {
+        if let Some(error) = api_response.error {
+            let message = format_api_error(&error);
+            error!(error = %message, "API returned error");
+            return Err(anyhow!("API error: {}", message));
+        }
+        if let Some(data) = api_response.data {
+            info!(count = data.len(), "Fetched categories from wrapped response");
+            return Ok(data);
+        }
+    }
+
+    let value: serde_json::Value = serde_json::from_str(text)?;
+    if let Some(error) = value.get("error") {
+        let message = format_api_error(error);
+        error!(error = %message, "API returned error");
+        return Err(anyhow!("API error: {}", message));
+    }
+    if let Some(categories) = parse_categories_from_value(&value) {
+        info!(count = categories.len(), "Parsed categories from value");
+        return Ok(categories);
+    }
+
+    Err(anyhow!("Unexpected categories response format"))
+}
+
+fn parse_categories_from_value(value: &serde_json::Value) -> Option<Vec<MarketplaceCategory>> {
+    match value {
+        serde_json::Value::Array(items) => Some(
+            items
+                .iter()
+                .filter_map(normalize_category_from_value)
+                .collect(),
+        ),
+        serde_json::Value::Object(map) => {
+            if let Some(data) = map.get("data") {
+                return parse_categories_from_value(data);
+            }
+            if let Some(items) = map.get("categories") {
+                return parse_categories_from_value(items);
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+fn normalize_category_from_value(value: &serde_json::Value) -> Option<MarketplaceCategory> {
+    if let Some(text) = value.as_str() {
+        let id = text.to_lowercase().replace(' ', "-");
+        return Some(MarketplaceCategory {
+            id,
+            name: text.to_string(),
+            count: 0,
+        });
+    }
+
+    let obj = value.as_object()?;
+    let name = obj
+        .get("name")
+        .and_then(|v| v.as_str())
+        .or_else(|| obj.get("title").and_then(|v| v.as_str()))
+        .or_else(|| obj.get("slug").and_then(|v| v.as_str()))
+        .unwrap_or_default()
+        .to_string();
+
+    if name.is_empty() {
+        return None;
+    }
+
+    let id = obj
+        .get("id")
+        .and_then(|v| v.as_str())
+        .or_else(|| obj.get("slug").and_then(|v| v.as_str()))
+        .unwrap_or_else(|| name.as_str())
+        .to_string();
+
+    let count = obj
+        .get("skillCount")
+        .or_else(|| obj.get("count"))
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0) as u32;
+
+    Some(MarketplaceCategory { id, name, count })
+}
+
+fn format_api_error(error: &serde_json::Value) -> String {
+    if let Some(message) = error.get("message").and_then(|v| v.as_str()) {
+        return message.to_string();
+    }
+    if let Some(message) = error.as_str() {
+        return message.to_string();
+    }
+    error.to_string()
 }
 
 /// Default categories when API is unavailable

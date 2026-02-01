@@ -70,14 +70,18 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { sortBy, searchQuery, filters } = get();
+      const searchValue = queryOverride?.search ?? (searchQuery || undefined);
+      const categoryValue = queryOverride?.category ?? filters.category;
+      const sourceValue = queryOverride?.source ?? filters.source;
+      const platformValue = queryOverride?.platform ?? filters.platform;
       const query: MarketplaceQuery = {
         sortBy: queryOverride?.sortBy ?? sortBy,
-        search: queryOverride?.search ?? (searchQuery || undefined),
-        category: queryOverride?.category ?? filters.category,
-        source: queryOverride?.source ?? filters.source,
-        platform: queryOverride?.platform ?? filters.platform,
         page: queryOverride?.page ?? 1,
         perPage: queryOverride?.perPage ?? 50,
+        ...(searchValue !== undefined && { search: searchValue }),
+        ...(categoryValue !== undefined && { category: categoryValue }),
+        ...(sourceValue !== undefined && { source: sourceValue }),
+        ...(platformValue !== undefined && { platform: platformValue }),
       };
 
       const skills = await invoke<MarketplaceSkill[]>("get_marketplace_skills", { query });

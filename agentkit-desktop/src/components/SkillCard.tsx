@@ -8,11 +8,12 @@ import type { MarketplaceSkill } from "@/types";
 interface SkillCardProps {
   skill: MarketplaceSkill;
   installing?: boolean;
+  disabled?: boolean; // Disable install/uninstall actions (e.g., when Node.js unavailable)
   onInstall?: () => void;
   onUninstall?: () => void;
 }
 
-export function SkillCard({ skill, installing, onInstall, onUninstall }: SkillCardProps) {
+export function SkillCard({ skill, installing, disabled, onInstall, onUninstall }: SkillCardProps) {
   const { t } = useTranslation();
 
   const handleAction = (e: React.MouseEvent) => {
@@ -99,7 +100,8 @@ export function SkillCard({ skill, installing, onInstall, onUninstall }: SkillCa
             {/* Install/Uninstall button */}
             <button
               onClick={handleAction}
-              disabled={installing}
+              disabled={installing || disabled}
+              title={disabled ? "Node.js required" : undefined}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 skill.installed
                   ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"

@@ -14,6 +14,7 @@ pub mod platform;
 pub mod repository;
 pub mod skill_installer;
 pub mod sync;
+pub mod utils;
 
 pub use commands::*;
 pub use database::*;
@@ -27,3 +28,4 @@ pub use platform::*;
 pub use repository::*;
 pub use skill_installer::*;
 pub use sync::*;
+pub use utils::*;

@@ -72,31 +72,36 @@ export function MarketplacePanel() {
     }
   };
 
-  // Node.js not available warning
-  if (nodejsAvailable === false) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-        <span className="text-5xl mb-4">⚠️</span>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-          {t("marketplace.nodejsRequired")}
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400 max-w-md mb-4">
-          {t("marketplace.nodejsRequiredDesc")}
-        </p>
-        <a
-          href="https://nodejs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
-        >
-          {t("marketplace.downloadNodejs")}
-        </a>
-      </div>
-    );
-  }
+  // Check if Node.js is available for installation
+  const canInstall = nodejsAvailable === true;
 
   return (
     <div className="flex flex-col h-full">
+      {/* Node.js Warning Banner (shown when unavailable but doesn't block UI) */}
+      {nodejsAvailable === false && (
+        <div className="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                {t("marketplace.nodejsRequired")}
+              </p>
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                {t("marketplace.nodejsRequiredDesc")}
+              </p>
+            </div>
+            <a
+              href="https://nodejs.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+            >
+              {t("marketplace.downloadNodejs")}
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-surface-light dark:bg-surface-dark">
         <div className="flex items-center justify-between mb-4">
@@ -179,6 +184,7 @@ export function MarketplacePanel() {
                 key={skill.id}
                 skill={skill}
                 installing={installing === `${skill.owner}/${skill.repo}`}
+                disabled={!canInstall}
                 onInstall={() => handleInstall(skill.owner, skill.repo)}
                 onUninstall={() => handleUninstall(skill.owner, skill.repo)}
               />
