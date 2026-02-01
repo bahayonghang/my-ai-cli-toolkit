@@ -14,7 +14,7 @@
   font-weight: 400;
 
   color: #0f0f0f;
-  background-color: #f8fafc;
+  /* Background controlled by Tailwind classes and inline critical CSS */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,7 +25,6 @@
 
 .dark {
   color: #f8fafc;
-  background-color: #11111b;
 }
 
 /* Custom scrollbar */

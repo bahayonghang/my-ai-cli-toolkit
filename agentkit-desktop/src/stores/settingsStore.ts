@@ -39,8 +39,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       const settings = await invoke<Settings>("get_settings");
       set({ settings, loading: false });
 
-      // Apply theme and language
-      applyTheme(settings.theme);
+      // Apply theme (no transition on initial load - already applied by inline script)
+      applyTheme(settings.theme, false);
       changeLanguage(settings.language);
     } catch (error) {
       set({ error: String(error), loading: false });
@@ -56,9 +56,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       await invoke("update_settings", { settings: merged });
       set({ settings: merged, loading: false });
 
-      // Apply theme if changed
+      // Apply theme with smooth transition when user changes it
       if (newSettings.theme) {
-        applyTheme(newSettings.theme);
+        applyTheme(newSettings.theme, true);
       }
 
       // Apply language if changed
@@ -89,24 +89,43 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 }));
 
 /**
- * Apply theme to document
+ * Apply theme to document with optional smooth transition
+ * @param theme - Theme to apply ('dark', 'light', or 'system')
+ * @param enableTransition - Whether to enable smooth transition animation
  */
-function applyTheme(theme: Theme) {
+function applyTheme(theme: Theme, enableTransition = false) {
   const root = document.documentElement;
 
+  // Cache theme preference to localStorage for instant load on next visit
+  localStorage.setItem("agentkit-theme", theme);
+
+  // Determine if dark mode should be applied
+  let isDark = false;
   if (theme === "dark") {
-    root.classList.add("dark");
+    isDark = true;
   } else if (theme === "light") {
-    root.classList.remove("dark");
+    isDark = false;
   } else {
     // System theme
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    if (prefersDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  // Enable transition for smooth theme switching (not on initial load)
+  if (enableTransition) {
+    root.classList.add("theme-transition");
+  }
+
+  // Apply or remove dark class
+  if (isDark) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
+  // Remove transition class after animation completes
+  if (enableTransition) {
+    setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 200);
   }
 }
