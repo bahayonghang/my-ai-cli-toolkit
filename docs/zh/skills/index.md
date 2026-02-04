@@ -36,6 +36,7 @@ AI Skills Hub 提供了针对不同开发任务的专用 AI 技能集合。
 | [skill-evolution-manager](./skill-evolution-manager) | 技能开发 | 根据用户反馈迭代优化技能 | ✅ |
 | [github-to-skills](./github-to-skills) | 技能开发 | 将 GitHub 仓库转换为 AI 技能 | ✅ |
 | [skill-seekers](./skill-seekers) | 技能开发 | 从文档和代码库生成 LLM 技能 | ✅ |
+| [memory-system](./memory-system) | 知识管理 | 本地记忆系统，支持 Markdown 文件的语义搜索 | ✅ |
 | [yt-dlp](./yt-dlp) | 工具 | 视频下载器 (YouTube, Bilibili 等 1000+ 网站) | ✅ |
 | [planning-with-files](./planning-with-files) | 工具 | 基于文件的复杂任务规划 | ✅ |
 | [external-skills-tui](./external-skills-tui) | 工具 | 管理外部 npm/pip/git 技能的 TUI | ✅ |
@@ -89,6 +90,10 @@ AI Skills Hub 提供了针对不同开发任务的专用 AI 技能集合。
 - **skill-evolution-manager** - 技能迭代优化
 - **github-to-skills** - GitHub 仓库转技能
 - **skill-seekers** - 从文档生成技能
+
+### 知识管理
+用于管理和搜索知识的技能：
+- **memory-system** - 本地记忆系统，支持 Markdown 文件的语义搜索
 
 ### 工具
 实用的工具和程序：

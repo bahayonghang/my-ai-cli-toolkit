@@ -36,6 +36,7 @@ AI Skills Hub provides a collection of specialized AI skills for different devel
 | [skill-evolution-manager](./skill-evolution-manager) | Skill Development | Evolve skills based on user feedback | ✅ |
 | [github-to-skills](./github-to-skills) | Skill Development | Convert GitHub repos into AI skills | ✅ |
 | [skill-seekers](./skill-seekers) | Skill Development | Generate LLM skills from documentation and codebases | ✅ |
+| [memory-system](./memory-system) | Knowledge Management | Local memory system with semantic search for Markdown files | ✅ |
 | [yt-dlp](./yt-dlp) | Utilities | Video downloader for YouTube, Bilibili, and 1000+ sites | ✅ |
 | [planning-with-files](./planning-with-files) | Utilities | File-based planning for complex multi-step tasks | ✅ |
 | [external-skills-tui](./external-skills-tui) | Utilities | TUI for managing external npm/pip/git skills | ✅ |
@@ -89,6 +90,10 @@ Skills for creating and managing skills:
 - **skill-evolution-manager** - Evolve skills based on user feedback
 - **github-to-skills** - Convert GitHub repos into AI skills
 - **skill-seekers** - Generate skills from docs
+
+### Knowledge Management
+Skills for managing and searching knowledge:
+- **memory-system** - Local memory system with semantic search for Markdown files
 
 ### Utilities
 Useful tools and utilities:

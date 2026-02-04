@@ -110,6 +110,11 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [sisyphus](skills/sisyphus/) | Main orchestrator for complex task planning and execution |
 | [oracle](skills/oracle/) | Expert architect for design decisions and code review |
 
+### 🧠 Knowledge Management
+| Skill | Description |
+|-------|-------------|
+| [memory-system](skills/memory-system/) | Local memory system that indexes Markdown files to SQLite for cross-session semantic search with vector and full-text search |
+
 ### 🛠️ Utilities
 | Skill | Description |
 |-------|-------------|

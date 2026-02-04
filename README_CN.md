@@ -103,6 +103,11 @@ python3 install_tui.py
 | [sisyphus](skills/sisyphus/) | 主编排代理，用于复杂任务规划和并行执行 |
 | [oracle](skills/oracle/) | 专家架构师，负责设计决策、代码审查和调试指导 |
 
+### 🧠 知识管理
+| 技能 | 描述 |
+|------|------|
+| [memory-system](skills/memory-system/) | 本地记忆系统，将 Markdown 文件索引到 SQLite 实现跨会话语义搜索，支持向量搜索和全文搜索 |
+
 ### 🛠️ 实用工具
 | 技能 | 描述 |
 |------|------|
