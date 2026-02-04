@@ -88,6 +88,10 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 ### 📝 Documentation
 | Skill | Description |
 |-------|-------------|
+| [docx](skills/docx/) | Create, read, edit, and manipulate Word documents (.docx files) with tracked changes and comments |
+| [xlsx](skills/xlsx/) | Create, read, edit, and analyze Excel spreadsheets (.xlsx files) with formulas and formatting |
+| [pptx](skills/pptx/) | Create, read, edit, and design PowerPoint presentations (.pptx files) with professional layouts |
+| [pdf](skills/pdf/) | Process PDF files: merge, split, extract text/tables, OCR, watermark, and create new PDFs |
 | [tech-blog](skills/tech-blog/) | Write technical blog posts with source code analysis |
 | [tech-design-doc](skills/tech-design-doc/) | Generate structured technical design documents |
 | [spec-interview](skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration |
@@ -118,6 +122,7 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 ### 🛠️ Utilities
 | Skill | Description |
 |-------|-------------|
+| [lsp-manager](skills/lsp-manager/) | Auto-detect languages and configure LSP servers for code intelligence |
 | [planning-with-files](skills/planning-with-files/) | File-based planning for complex multi-step tasks |
 | [yt-dlp](skills/yt-dlp/) | Video downloader for YouTube, Bilibili, and 1000+ sites |
 

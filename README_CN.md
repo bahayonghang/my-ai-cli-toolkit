@@ -81,6 +81,10 @@ python3 install_tui.py
 ### 📝 文档
 | 技能 | 描述 |
 |------|------|
+| [docx](skills/docx/) | 创建、读取、编辑和操作 Word 文档（.docx 文件），支持修订追踪和批注 |
+| [xlsx](skills/xlsx/) | 创建、读取、编辑和分析 Excel 电子表格（.xlsx 文件），支持公式和格式化 |
+| [pptx](skills/pptx/) | 创建、读取、编辑和设计 PowerPoint 演示文稿（.pptx 文件），支持专业布局 |
+| [pdf](skills/pdf/) | 处理 PDF 文件：合并、拆分、提取文本/表格、OCR、水印和创建新 PDF |
 | [tech-blog](skills/tech-blog/) | 撰写带源码分析的技术博客 |
 | [tech-design-doc](skills/tech-design-doc/) | 生成结构化的技术设计文档 |
 | [spec-interview](skills/spec-interview/) | 通过系统性访谈完善技术规格，集成 OpenSpec 实现规范驱动开发 |
@@ -111,6 +115,7 @@ python3 install_tui.py
 ### 🛠️ 实用工具
 | 技能 | 描述 |
 |------|------|
+| [lsp-manager](skills/lsp-manager/) | 自动检测编程语言并配置 LSP 服务器，提供代码智能支持 |
 | [planning-with-files](skills/planning-with-files/) | 基于文件的复杂多步骤任务规划 |
 | [yt-dlp](skills/yt-dlp/) | 强大的视频下载工具，支持 YouTube、Bilibili 等 1000+ 网站，自动 FFmpeg 检测 |
 

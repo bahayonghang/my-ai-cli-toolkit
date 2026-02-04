@@ -88,6 +88,10 @@ export default defineConfig({
               text: 'Documentation',
               collapsed: false,
               items: [
+                { text: 'docx', link: '/skills/docx' },
+                { text: 'xlsx', link: '/skills/xlsx' },
+                { text: 'pptx', link: '/skills/pptx' },
+                { text: 'pdf', link: '/skills/pdf' },
                 { text: 'tech-blog', link: '/skills/tech-blog' },
                 { text: 'tech-design-doc', link: '/skills/tech-design-doc' },
                 { text: 'spec-interview', link: '/skills/spec-interview' },
@@ -232,6 +236,10 @@ export default defineConfig({
               text: '文档',
               collapsed: false,
               items: [
+                { text: 'docx', link: '/zh/skills/docx' },
+                { text: 'xlsx', link: '/zh/skills/xlsx' },
+                { text: 'pptx', link: '/zh/skills/pptx' },
+                { text: 'pdf', link: '/zh/skills/pdf' },
                 { text: 'tech-blog', link: '/zh/skills/tech-blog' },
                 { text: 'tech-design-doc', link: '/zh/skills/tech-design-doc' },
                 { text: 'spec-interview', link: '/zh/skills/spec-interview' },
