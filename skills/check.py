@@ -4,9 +4,16 @@
 """
 
 import re
+import sys
+import io
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 import yaml
+
+
+# 确保 stdout 使用 UTF-8 编码，解决 Windows GBK 编码问题
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 
 def extract_yaml_frontmatter(content: str) -> Optional[Dict]:
