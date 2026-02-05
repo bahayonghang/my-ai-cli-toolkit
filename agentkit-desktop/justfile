@@ -5,6 +5,59 @@
 default:
     @just --list
 
+# Show detailed help with command descriptions
+help:
+    @echo "AgentKit Desktop - Available Commands"
+    @echo "======================================"
+    @echo ""
+    @echo "📦 Development:"
+    @echo "  install          - Install all dependencies (npm + cargo)"
+    @echo "  dev              - Run development server with hot reload"
+    @echo "  dev-web          - Run frontend only (without Tauri)"
+    @echo ""
+    @echo "🔨 Build:"
+    @echo "  build            - Build for production (all platforms)"
+    @echo "  tauri-build      - Build Tauri application (alias for build)"
+    @echo "  build-web        - Build frontend only"
+    @echo "  build-rust       - Build Rust backend only"
+    @echo ""
+    @echo "✅ Quality Checks:"
+    @echo "  ci               - Run all CI checks (lint, typecheck, test, clippy)"
+    @echo "  typecheck        - TypeScript type checking"
+    @echo "  lint             - Lint frontend code"
+    @echo "  fmt              - Format code (TypeScript + Rust)"
+    @echo "  fmt-check        - Check code formatting"
+    @echo "  clippy           - Run Rust clippy linter"
+    @echo "  check            - Run Rust check (fast compile check)"
+    @echo ""
+    @echo "🧪 Testing:"
+    @echo "  test             - Run all tests (Rust + frontend)"
+    @echo "  test-rust        - Run Rust tests"
+    @echo "  test-web         - Run frontend tests"
+    @echo "  test-watch       - Run tests in watch mode"
+    @echo ""
+    @echo "🚀 Release:"
+    @echo "  release-windows  - Build release for Windows"
+    @echo "  release-macos-intel - Build release for macOS (Intel)"
+    @echo "  release-macos-arm - Build release for macOS (Apple Silicon)"
+    @echo "  release-linux    - Build release for Linux"
+    @echo ""
+    @echo "📦 Portable Builds:"
+    @echo "  portable         - Build portable version for current platform"
+    @echo "  portable-windows - Build portable Windows version"
+    @echo "  portable-linux   - Build portable Linux AppImage"
+    @echo "  portable-macos-intel - Build portable macOS (Intel)"
+    @echo "  portable-macos-arm - Build portable macOS (Apple Silicon)"
+    @echo ""
+    @echo "🧹 Utilities:"
+    @echo "  clean            - Clean all build artifacts"
+    @echo "  clean-install    - Clean and reinstall dependencies"
+    @echo "  info             - Show project info"
+    @echo "  update           - Update dependencies"
+    @echo "  icons <source>   - Generate Tauri icons from source image"
+    @echo ""
+    @echo "Run 'just <command>' to execute a command"
+
 # ============================================
 # Development
 # ============================================
@@ -28,6 +81,10 @@ dev-web:
 
 # Build for production (all platforms)
 build:
+    npm run tauri build
+
+# Build Tauri application (alias for build)
+tauri-build:
     npm run tauri build
 
 # Build frontend only
