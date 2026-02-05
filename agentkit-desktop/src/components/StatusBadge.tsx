@@ -31,37 +31,37 @@ function getStatusConfig(status: SyncStatus) {
       return {
         icon: "✓",
         label: "Synced",
-        className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+        className: "bg-green-500/20 text-green-300 border border-green-500/20",
       };
     case "outdated":
       return {
         icon: "↻",
         label: "Outdated",
-        className: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+        className: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/20",
       };
     case "not_installed":
       return {
         icon: "○",
         label: "Not Installed",
-        className: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400",
+        className: "bg-slate-500/20 text-slate-400 border border-slate-500/20",
       };
     case "conflict":
       return {
         icon: "!",
         label: "Conflict",
-        className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+        className: "bg-red-500/20 text-red-300 border border-red-500/20",
       };
     case "not_supported":
       return {
         icon: "✗",
         label: "Not Supported",
-        className: "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500",
+        className: "bg-slate-700/30 text-slate-500 border border-slate-700/30",
       };
     default:
       return {
         icon: "?",
         label: "Unknown",
-        className: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400",
+        className: "bg-slate-500/10 text-slate-400",
       };
   }
 }

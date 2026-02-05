@@ -61,11 +61,10 @@ export function FilterPanel({
       {/* Filter Toggle Button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors ${
-          hasActiveFilters
-            ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300"
-            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-        }`}
+        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors border-b border-white/5 ${hasActiveFilters
+          ? "bg-primary-500/10 text-primary-300"
+          : "text-slate-400 hover:text-white hover:bg-white/5"
+          }`}
       >
         <div className="flex items-center gap-2">
           <span>🔽</span>
@@ -85,12 +84,12 @@ export function FilterPanel({
 
       {/* Filter Content */}
       {isExpanded && (
-        <div className="px-4 py-3 space-y-4 bg-gray-50 dark:bg-gray-800/50">
+        <div className="px-6 py-4 space-y-5 bg-black/20 backdrop-blur-sm shadow-inner">
           {/* Categories */}
           {categories.length > 0 && (
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                   Categories
                 </h4>
                 {selectedCategories.size > 0 && (
@@ -107,11 +106,10 @@ export function FilterPanel({
                   <button
                     key={category}
                     onClick={() => handleCategoryToggle(category)}
-                    className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
-                      selectedCategories.has(category)
-                        ? "bg-primary-500 text-white"
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                    }`}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${selectedCategories.has(category)
+                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
+                      : "bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10 hover:text-white hover:border-white/10"
+                      }`}
                   >
                     {category}
                   </button>
@@ -144,7 +142,7 @@ export function FilterPanel({
                   placeholder="Search tags..."
                   value={tagSearch}
                   onChange={(e) => setTagSearch(e.target.value)}
-                  className="w-full px-3 py-1.5 mb-2 text-xs bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full px-4 py-2 mb-3 text-xs bg-black/30 text-white border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 placeholder-slate-500"
                 />
               )}
 
@@ -154,7 +152,7 @@ export function FilterPanel({
                   <button
                     key={`selected-${tag}`}
                     onClick={() => handleTagToggle(tag)}
-                    className="px-2.5 py-1 text-xs rounded-full bg-primary-500 text-white"
+                    className="px-3 py-1 text-xs rounded-full bg-primary-500/20 text-primary-300 border border-primary-500/30 hover:bg-primary-500/30 transition-colors"
                   >
                     {tag} ✕
                   </button>
@@ -166,7 +164,7 @@ export function FilterPanel({
                     <button
                       key={tag}
                       onClick={() => handleTagToggle(tag)}
-                      className="px-2.5 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                      className="px-3 py-1 text-xs rounded-full bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10 hover:text-white hover:border-white/10 transition-colors"
                     >
                       {tag}
                     </button>

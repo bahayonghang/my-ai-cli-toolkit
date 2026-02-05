@@ -76,7 +76,7 @@ export function MarketplacePanel() {
   const canInstall = nodejsAvailable === true;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="space-y-0">
       {/* Node.js Warning Banner (shown when unavailable but doesn't block UI) */}
       {nodejsAvailable === false && (
         <div className="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
@@ -103,19 +103,19 @@ export function MarketplacePanel() {
       )}
 
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-surface-light dark:bg-surface-dark">
-        <div className="flex items-center justify-between mb-4">
+      <div className="p-6 border-b border-white/5 bg-slate-900/30 backdrop-blur-sm sticky top-0 z-30">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-white tracking-tight">
               {t("marketplace.title")}
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-400 mt-1">
               {t("marketplace.subtitle")}
             </p>
           </div>
           {/* Cache stats */}
           {cacheStats && (
-            <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+            <div className="text-xs text-slate-500 text-right font-medium">
               <p>
                 {t("marketplace.skillCount", { count: cacheStats.skillCount })}
               </p>
@@ -127,7 +127,7 @@ export function MarketplacePanel() {
                 </p>
               )}
               {nodejsVersion && (
-                <p className="text-green-600 dark:text-green-400">
+                <p className="text-emerald-400">
                   Node.js {nodejsVersion}
                 </p>
               )}
@@ -169,7 +169,7 @@ export function MarketplacePanel() {
       )}
 
       {/* Skills Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="p-6">
         {loading && skills.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64">
             <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4" />

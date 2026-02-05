@@ -80,24 +80,24 @@ export function ResourceDetail({
     .map(([platform]) => platform as Platform);
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
+    <div className="h-full flex flex-col frosted-glass-heavy border-l border-white/10 shadow-2xl z-40">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-6 border-b border-white/10 bg-white/5 backdrop-blur-md">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">{typeIcon}</span>
+          <div className="flex items-center gap-4">
+            <span className="text-4xl filter drop-shadow-md">{typeIcon}</span>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold text-white tracking-tight">
                 {resource.name}
               </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+              <p className="text-sm text-slate-400 capitalize font-medium">
                 {resource.resourceType}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
           >
             ✕
           </button>
@@ -109,10 +109,10 @@ export function ResourceDetail({
         {/* Description */}
         {resource.description && (
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
               Description
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-slate-300 leading-relaxed bg-white/5 p-4 rounded-lg border border-white/5">
               {resource.description}
             </p>
           </div>
@@ -121,14 +121,14 @@ export function ResourceDetail({
         {/* Tags */}
         {resource.tags.length > 0 && (
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
               Tags
             </h3>
             <div className="flex flex-wrap gap-2">
               {resource.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
+                  className="px-2.5 py-1 text-sm bg-white/5 text-slate-300 border border-white/10 rounded-md backdrop-blur-sm"
                 >
                   {tag}
                 </span>
@@ -139,17 +139,17 @@ export function ResourceDetail({
 
         {/* Installation Status */}
         <div>
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
             Installation Status
           </h3>
           {Object.keys(resource.platformStatus).length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2 bg-white/5 p-4 rounded-lg border border-white/5">
               {Object.entries(resource.platformStatus).map(([platform, status]) => (
                 <div
                   key={platform}
                   className="flex items-center justify-between py-1"
                 >
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-slate-300 font-medium">
                     {PLATFORM_DISPLAY_NAMES[platform as Platform] || platform}
                   </span>
                   <StatusBadge status={status} />
@@ -165,7 +165,7 @@ export function ResourceDetail({
 
         {/* Platform Selection */}
         <div>
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
             Select Platforms
           </h3>
           <PlatformSelector
@@ -179,7 +179,7 @@ export function ResourceDetail({
       </div>
 
       {/* Actions */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+      <div className="p-6 border-t border-white/10 bg-black/20 backdrop-blur-md mt-auto space-y-3">
         <div className="flex gap-2">
           <button
             onClick={handleInstall}
@@ -200,7 +200,7 @@ export function ResourceDetail({
           <button
             onClick={handleUpdate}
             disabled={loading}
-            className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50"
+            className="w-full px-4 py-3 bg-white/5 text-slate-300 rounded-lg font-medium hover:bg-white/10 hover:text-white border border-white/5 transition-all disabled:opacity-50"
           >
             {loading ? "Updating..." : "Update All Installed"}
           </button>
