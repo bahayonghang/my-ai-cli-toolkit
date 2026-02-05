@@ -87,3 +87,12 @@ uipro init --ai trae        # Trae   # All assistants
 
 /plugin install mgrep
 ```
+
+## rust skills
+```shell
+# 步骤 1: 添加 marketplace
+/plugin marketplace add ZhangHanDong/rust-skills
+
+# 步骤 2: 安装插件
+/plugin install rust-skills@rust-skills
+```
