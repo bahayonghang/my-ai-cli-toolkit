@@ -10,11 +10,14 @@ use std::fs;
 use std::path::PathBuf;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{
-    fmt::{self, format::FmtSpan},
+    fmt::{self},
     layer::SubscriberExt,
     util::SubscriberInitExt,
     EnvFilter,
 };
+
+#[cfg(debug_assertions)]
+use tracing_subscriber::fmt::format::FmtSpan;
 
 /// Default log retention period in days
 const LOG_RETENTION_DAYS: u64 = 30;

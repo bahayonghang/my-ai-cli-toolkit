@@ -36,7 +36,7 @@ pub struct MarketplaceSkill {
 }
 
 /// Query parameters for marketplace API
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MarketplaceQuery {
     #[serde(default = "default_sort")]
     pub sort_by: String,
@@ -48,6 +48,20 @@ pub struct MarketplaceQuery {
     pub page: u32,
     #[serde(default = "default_per_page")]
     pub per_page: u32,
+}
+
+impl Default for MarketplaceQuery {
+    fn default() -> Self {
+        Self {
+            sort_by: default_sort(),
+            search: None,
+            category: None,
+            source: None,
+            platform: None,
+            page: default_page(),
+            per_page: default_per_page(),
+        }
+    }
 }
 
 fn default_sort() -> String {
