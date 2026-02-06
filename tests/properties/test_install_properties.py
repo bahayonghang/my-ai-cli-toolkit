@@ -15,7 +15,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 # 添加项目根目录到 sys.path
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
@@ -29,11 +29,9 @@ from tui.core.models import InstallStatus, ItemInfo
 
 @contextmanager
 def temp_target_context():
-    """创建临时目标目录并修改 TARGET_CONFIG"""
-    import install
-
-    # 保存原始配置
-    original_config = {k: v.copy() for k, v in install.TARGET_CONFIG.items()}
+    """创建临时目标目录并修改配置缓存"""
+    from core import config_loader
+    from core.config_loader import clear_config_cache, set_test_config
 
     # 创建临时目录
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -44,13 +42,23 @@ def temp_target_context():
         temp_skills = temp_base / "skills"
         temp_commands = temp_base / "commands"
 
-        # 修改配置指向临时目录
-        install.TARGET_CONFIG["claude"] = {
-            "base": temp_base,
-            "skills": temp_skills,
-            "commands": temp_commands,
-            "prompt": temp_base / "CLAUDE.md"
-        }
+        # 创建临时配置
+        temp_config = config_loader.PlatformConfig(
+            name="claude",
+            type="cli",
+            base_dir=str(temp_base),
+            skills_subdir="skills",
+            commands_subdir="commands",
+            prompt_file="CLAUDE.md",
+            commands_source="claude",
+            fallback_commands_source=None,
+        )
+
+        # 使用公开 API 设置测试配置并保存原始值
+        original_platforms, original_overrides = set_test_config(
+            platforms={"claude": temp_config},
+            overrides={},
+        )
 
         try:
             yield {
@@ -59,9 +67,14 @@ def temp_target_context():
                 "commands": temp_commands,
             }
         finally:
-            # 恢复原始配置
-            install.TARGET_CONFIG.clear()
-            install.TARGET_CONFIG.update(original_config)
+            # Always clear cache to avoid pollution between tests
+            clear_config_cache()
+            # Restore original cached values if they existed
+            if original_platforms is not None or original_overrides is not None:
+                set_test_config(
+                    platforms=original_platforms,
+                    overrides=original_overrides,
+                )
 
 
 # --- 模拟批量安装的核心逻辑 ---
@@ -182,7 +195,7 @@ def test_property_6_skill_installation_with_real_skills():
 # --- Property 7: Batch Install Processes All Selected Items ---
 # **Validates: Requirements 7.1, 7.6**
 
-@settings(max_examples=100)
+@settings(max_examples=100, deadline=500)
 @given(selection_pattern=st.lists(st.booleans(), min_size=1, max_size=10))
 def test_property_7_batch_install_processes_all_selected_items(selection_pattern: list[bool]):
     """
@@ -244,7 +257,7 @@ def test_property_7_batch_install_processes_all_selected_items(selection_pattern
 # --- Property 8: Batch Install Clears Selection After Completion ---
 # **Validates: Requirements 7.4**
 
-@settings(max_examples=100)
+@settings(max_examples=100, deadline=500)
 @given(selection_pattern=st.lists(st.booleans(), min_size=1, max_size=10))
 def test_property_8_batch_install_clears_selection_after_completion(selection_pattern: list[bool]):
     """

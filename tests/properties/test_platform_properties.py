@@ -18,7 +18,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from tui.core.formatters import (
-    PlatformConfig,
+    PlatformDisplay,
     format_platform_badge,
     format_platform_option,
 )
@@ -32,7 +32,7 @@ PATH_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.
 
 @st.composite
 def platform_config_strategy(draw):
-    """生成随机的 PlatformConfig"""
+    """生成随机的 PlatformDisplay"""
     platform_id = draw(st.text(alphabet=PLATFORM_ID_CHARS, min_size=1, max_size=20))
     platform_name = draw(st.text(alphabet=PLATFORM_NAME_CHARS, min_size=1, max_size=20))
     path_style = draw(st.sampled_from(["home", "absolute"]))
@@ -41,7 +41,7 @@ def platform_config_strategy(draw):
     else:
         path_segment = draw(st.text(alphabet="abcdefghijklmnopqrstuvwxyz", min_size=1, max_size=10))
         path = f"/home/user/.{path_segment}/"
-    return PlatformConfig(id=platform_id, name=platform_name, path=path)
+    return PlatformDisplay(id=platform_id, name=platform_name, path=path)
 
 
 # --- Property 7: Platform Option Format ---
@@ -49,7 +49,7 @@ def platform_config_strategy(draw):
 
 @settings(max_examples=100)
 @given(platform=platform_config_strategy())
-def test_property_7_platform_option_format(platform: PlatformConfig):
+def test_property_7_platform_option_format(platform: PlatformDisplay):
     """Property 7: Platform Option Format - validates Requirements 2.4"""
     formatted = format_platform_option(platform)
     assert platform.name in formatted
@@ -58,7 +58,7 @@ def test_property_7_platform_option_format(platform: PlatformConfig):
 
 @settings(max_examples=100)
 @given(platform=platform_config_strategy())
-def test_property_7_platform_option_name_before_path(platform: PlatformConfig):
+def test_property_7_platform_option_name_before_path(platform: PlatformDisplay):
     """Property 7: Name appears before path - validates Requirements 2.4"""
     formatted = format_platform_option(platform)
     name_index = formatted.find(platform.name)
@@ -69,9 +69,9 @@ def test_property_7_platform_option_name_before_path(platform: PlatformConfig):
 def test_property_7_real_platforms():
     """Property 7: Real platforms test - validates Requirements 2.4"""
     real_platforms = [
-        PlatformConfig("claude", "Claude", "~/.claude/"),
-        PlatformConfig("codex", "Codex", "~/.codex/"),
-        PlatformConfig("gemini", "Gemini", "~/.gemini/"),
+        PlatformDisplay("claude", "Claude", "~/.claude/"),
+        PlatformDisplay("codex", "Codex", "~/.codex/"),
+        PlatformDisplay("gemini", "Gemini", "~/.gemini/"),
     ]
     for platform in real_platforms:
         formatted = format_platform_option(platform)

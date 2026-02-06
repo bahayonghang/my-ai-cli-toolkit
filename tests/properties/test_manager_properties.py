@@ -17,7 +17,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from install import COMMANDS_SRC_DIR, SKILLS_SRC_DIR
+from core.paths import COMMANDS_SRC_DIR, SKILLS_SRC_DIR
 from tui.core.manager import TUIManager
 from tui.core.models import ItemType
 

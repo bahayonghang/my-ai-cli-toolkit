@@ -133,13 +133,14 @@ class TestUnifiedExceptionHandling:
         assert error is not None
         assert "Suggestion" in error
 
-        # 2. Kiro 需要项目路径
-        from install import get_target_config
+        # 2. Kiro 需要项目路径 (validation moved to SkillManager.__init__)
         with pytest.raises(ValueError) as exc_info:
-            get_target_config("claude", use_kiro=True)
+            SkillManager("claude", use_kiro=True)
 
-        error_message = str(exc_info.value)
-        assert "Usage" in error_message
+        error_message = str(exc_info.value).lower()
+        # 检查错误消息包含关键信息
+        assert "kiro" in error_message
+        assert "project" in error_message
 
 
 class TestPathValidationIntegration:

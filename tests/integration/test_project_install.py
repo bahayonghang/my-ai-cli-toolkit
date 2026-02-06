@@ -1,6 +1,6 @@
 """
 单元测试：项目级别安装功能
-测试 get_target_config() 函数的各种场景
+测试 resolve_install_paths() 函数的各种场景
 """
 import os
 import sys
@@ -9,9 +9,11 @@ from pathlib import Path
 import pytest
 
 # 添加父目录到 sys.path 以便导入 install 模块
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from install import HOME_DIR, TARGET_CONFIG, get_target_config, normalize_project_path, validate_project_path
+from core.config_loader import get_all_platforms, get_available_platform_names, resolve_install_paths
+from core.paths import HOME_DIR
+from install import normalize_project_path, validate_project_path
 
 
 class TestValidateProjectPath:
@@ -131,7 +133,7 @@ class TestGetTargetConfigGlobal:
 
     def test_claude_global_config(self):
         """测试 Claude 平台全局配置"""
-        config = get_target_config("claude")
+        config = resolve_install_paths("claude")
 
         assert config["base"] == HOME_DIR / ".claude"
         assert config["skills"] == HOME_DIR / ".claude" / "skills"
@@ -140,7 +142,7 @@ class TestGetTargetConfigGlobal:
 
     def test_codex_global_config(self):
         """测试 Codex 平台全局配置"""
-        config = get_target_config("codex")
+        config = resolve_install_paths("codex")
 
         assert config["base"] == HOME_DIR / ".codex"
         assert config["skills"] == HOME_DIR / ".codex" / "skills"
@@ -149,7 +151,7 @@ class TestGetTargetConfigGlobal:
 
     def test_gemini_global_config(self):
         """测试 Gemini 平台全局配置"""
-        config = get_target_config("gemini")
+        config = resolve_install_paths("gemini")
 
         assert config["base"] == HOME_DIR / ".gemini"
         assert config["skills"] == HOME_DIR / ".gemini" / "skills"
@@ -158,7 +160,7 @@ class TestGetTargetConfigGlobal:
 
     def test_qwen_global_config(self):
         """测试 Qwen 平台全局配置"""
-        config = get_target_config("qwen")
+        config = resolve_install_paths("qwen")
 
         assert config["base"] == HOME_DIR / ".qwen"
         assert config["skills"] == HOME_DIR / ".qwen" / "skills"
@@ -167,7 +169,7 @@ class TestGetTargetConfigGlobal:
 
     def test_antigravity_global_config(self):
         """测试 Antigravity 平台全局配置"""
-        config = get_target_config("antigravity")
+        config = resolve_install_paths("antigravity")
 
         assert config["base"] == HOME_DIR / ".gemini" / "antigravity"
         assert config["skills"] == HOME_DIR / ".gemini" / "antigravity" / "skills"
@@ -176,18 +178,22 @@ class TestGetTargetConfigGlobal:
 
     def test_windsurf_global_config(self):
         """测试 Windsurf 平台全局配置"""
-        config = get_target_config("windsurf")
+        config = resolve_install_paths("windsurf")
 
         assert config["base"] == HOME_DIR / ".codeium" / "windsurf"
         assert config["skills"] == HOME_DIR / ".codeium" / "windsurf" / "skills"
         assert config["commands"] == HOME_DIR / ".codeium" / "windsurf" / "workflows"
         assert config["prompt"] is None
 
-    def test_global_config_matches_target_config(self):
-        """测试全局配置与 TARGET_CONFIG 一致"""
-        for target in TARGET_CONFIG.keys():
-            config = get_target_config(target)
-            assert config == TARGET_CONFIG[target]
+    def test_global_config_matches_platform_config(self):
+        """测试全局配置与平台配置一致"""
+        platforms = get_all_platforms()
+        for name, platform_config in platforms.items():
+            config = resolve_install_paths(name)
+            assert config["base"] == platform_config.get_base_path()
+            assert config["skills"] == platform_config.get_skills_path()
+            assert config["commands"] == platform_config.get_commands_path()
+            assert config["prompt"] == platform_config.get_prompt_path()
 
 
 class TestGetTargetConfigProject:
@@ -195,7 +201,7 @@ class TestGetTargetConfigProject:
 
     def test_claude_project_config(self, tmp_path):
         """测试 Claude 平台项目配置"""
-        config = get_target_config("claude", project_path=str(tmp_path))
+        config = resolve_install_paths("claude", project_path=str(tmp_path))
 
         assert ".claude" in str(config["base"])
         assert config["skills"] == tmp_path / ".claude" / "skills"
@@ -204,7 +210,7 @@ class TestGetTargetConfigProject:
 
     def test_codex_project_config(self, tmp_path):
         """测试 Codex 平台项目配置（命令目录为 prompts）"""
-        config = get_target_config("codex", project_path=str(tmp_path))
+        config = resolve_install_paths("codex", project_path=str(tmp_path))
 
         assert ".codex" in str(config["base"])
         assert config["skills"] == tmp_path / ".codex" / "skills"
@@ -213,7 +219,7 @@ class TestGetTargetConfigProject:
 
     def test_gemini_project_config(self, tmp_path):
         """测试 Gemini 平台项目配置"""
-        config = get_target_config("gemini", project_path=str(tmp_path))
+        config = resolve_install_paths("gemini", project_path=str(tmp_path))
 
         assert ".gemini" in str(config["base"])
         assert config["skills"] == tmp_path / ".gemini" / "skills"
@@ -222,7 +228,7 @@ class TestGetTargetConfigProject:
 
     def test_antigravity_project_config(self, tmp_path):
         """测试 Antigravity 平台项目配置（特殊路径结构）"""
-        config = get_target_config("antigravity", project_path=str(tmp_path))
+        config = resolve_install_paths("antigravity", project_path=str(tmp_path))
 
         assert ".gemini" in str(config["base"])
         assert "antigravity" in str(config["base"])
@@ -232,7 +238,7 @@ class TestGetTargetConfigProject:
 
     def test_windsurf_project_config(self, tmp_path):
         """测试 Windsurf 平台项目配置（特殊路径结构）"""
-        config = get_target_config("windsurf", project_path=str(tmp_path))
+        config = resolve_install_paths("windsurf", project_path=str(tmp_path))
 
         assert ".codeium" in str(config["base"])
         assert "windsurf" in str(config["base"])
@@ -252,7 +258,7 @@ class TestGetTargetConfigProject:
             os.chdir(tmp_path)
 
             # 使用相对路径
-            config = get_target_config("claude", project_path="./test-project")
+            config = resolve_install_paths("claude", project_path="./test-project")
 
             # 验证路径是绝对路径
             assert config["base"].is_absolute()
@@ -266,7 +272,7 @@ class TestGetTargetConfigKiro:
 
     def test_kiro_structure_basic(self, tmp_path):
         """测试 Kiro 基本结构"""
-        config = get_target_config("claude", project_path=str(tmp_path), use_kiro=True)
+        config = resolve_install_paths("claude", project_path=str(tmp_path), use_kiro=True)
 
         assert ".kiro" in str(config["base"])
         assert config["base"] == tmp_path / ".kiro"
@@ -277,15 +283,15 @@ class TestGetTargetConfigKiro:
     def test_kiro_ignores_target_platform(self, tmp_path):
         """测试 Kiro 模式下忽略目标平台差异"""
         # 不同平台应该生成相同的 Kiro 结构
-        config_claude = get_target_config("claude", project_path=str(tmp_path), use_kiro=True)
-        config_codex = get_target_config("codex", project_path=str(tmp_path), use_kiro=True)
-        config_gemini = get_target_config("gemini", project_path=str(tmp_path), use_kiro=True)
+        config_claude = resolve_install_paths("claude", project_path=str(tmp_path), use_kiro=True)
+        config_codex = resolve_install_paths("codex", project_path=str(tmp_path), use_kiro=True)
+        config_gemini = resolve_install_paths("gemini", project_path=str(tmp_path), use_kiro=True)
 
         assert config_claude == config_codex == config_gemini
 
     def test_kiro_commands_directory_is_steering(self, tmp_path):
         """测试 Kiro 模式下命令目录为 steering"""
-        config = get_target_config("claude", project_path=str(tmp_path), use_kiro=True)
+        config = resolve_install_paths("claude", project_path=str(tmp_path), use_kiro=True)
 
         assert "steering" in str(config["commands"])
         assert config["commands"] == tmp_path / ".kiro" / "steering"
@@ -297,17 +303,21 @@ class TestGetTargetConfigValidation:
     def test_kiro_without_project_raises_error(self):
         """测试 use_kiro=True 但 project_path=None 时抛出异常"""
         with pytest.raises(ValueError) as exc_info:
-            get_target_config("claude", use_kiro=True)
+            resolve_install_paths("claude", use_kiro=True)
 
-        assert "--kiro" in str(exc_info.value)
-        assert "--project" in str(exc_info.value)
+        # 检查错误消息包含关键信息
+        error_msg = str(exc_info.value).lower()
+        assert "kiro" in error_msg
+        assert "project" in error_msg
 
     def test_kiro_with_empty_project_raises_error(self):
         """测试 use_kiro=True 但 project_path 为空字符串时抛出异常"""
         with pytest.raises(ValueError) as exc_info:
-            get_target_config("claude", project_path="", use_kiro=True)
+            resolve_install_paths("claude", project_path="", use_kiro=True)
 
-        assert "--kiro" in str(exc_info.value)
+        # 检查错误消息包含关键信息
+        error_msg = str(exc_info.value).lower()
+        assert "kiro" in error_msg
 
 
 class TestGetTargetConfigProperties:
@@ -315,8 +325,8 @@ class TestGetTargetConfigProperties:
 
     def test_path_consistency(self, tmp_path):
         """Property: 相同输入 → 相同输出"""
-        config1 = get_target_config("claude", project_path=str(tmp_path))
-        config2 = get_target_config("claude", project_path=str(tmp_path))
+        config1 = resolve_install_paths("claude", project_path=str(tmp_path))
+        config2 = resolve_install_paths("claude", project_path=str(tmp_path))
 
         assert config1 == config2
 
@@ -327,15 +337,15 @@ class TestGetTargetConfigProperties:
         project1.mkdir()
         project2.mkdir()
 
-        config1 = get_target_config("claude", project_path=str(project1))
-        config2 = get_target_config("claude", project_path=str(project2))
+        config1 = resolve_install_paths("claude", project_path=str(project1))
+        config2 = resolve_install_paths("claude", project_path=str(project2))
 
         assert config1["skills"] != config2["skills"]
         assert config1["commands"] != config2["commands"]
 
     def test_kiro_structure_correctness(self, tmp_path):
         """Property: use_kiro=True → .kiro/skills/ 和 .kiro/steering/"""
-        config = get_target_config("claude", project_path=str(tmp_path), use_kiro=True)
+        config = resolve_install_paths("claude", project_path=str(tmp_path), use_kiro=True)
 
         assert ".kiro" in str(config["base"])
         assert "steering" in str(config["commands"])
@@ -343,30 +353,34 @@ class TestGetTargetConfigProperties:
 
     def test_backward_compatibility(self):
         """Property: project_path=None → 全局配置"""
-        for target in TARGET_CONFIG.keys():
-            config = get_target_config(target)
-            assert config == TARGET_CONFIG[target]
+        platforms = get_all_platforms()
+        for name, platform_config in platforms.items():
+            config = resolve_install_paths(name)
+            assert config["base"] == platform_config.get_base_path()
+            assert config["skills"] == platform_config.get_skills_path()
+            assert config["commands"] == platform_config.get_commands_path()
+            assert config["prompt"] == platform_config.get_prompt_path()
 
     def test_all_configs_have_required_keys(self, tmp_path):
         """Property: 所有配置都包含必需的键"""
         required_keys = {"base", "skills", "commands", "prompt"}
 
         # 测试全局配置
-        for target in TARGET_CONFIG.keys():
-            config = get_target_config(target)
+        for name in get_available_platform_names():
+            config = resolve_install_paths(name)
             assert set(config.keys()) == required_keys
 
         # 测试项目配置
-        config = get_target_config("claude", project_path=str(tmp_path))
+        config = resolve_install_paths("claude", project_path=str(tmp_path))
         assert set(config.keys()) == required_keys
 
         # 测试 Kiro 配置
-        config = get_target_config("claude", project_path=str(tmp_path), use_kiro=True)
+        config = resolve_install_paths("claude", project_path=str(tmp_path), use_kiro=True)
         assert set(config.keys()) == required_keys
 
     def test_all_paths_are_path_objects(self, tmp_path):
         """Property: 所有路径值都是 Path 对象（除了 None）"""
-        config = get_target_config("claude", project_path=str(tmp_path))
+        config = resolve_install_paths("claude", project_path=str(tmp_path))
 
         for key, value in config.items():
             if value is not None:

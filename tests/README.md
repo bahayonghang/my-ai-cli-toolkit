@@ -42,23 +42,23 @@
 要运行所有测试，请使用以下命令：
 
 ```bash
-pytest
+uv run pytest
 ```
 
 要运行特定类型的测试，请使用以下命令之一：
 
 ```bash
 # 运行单元测试
-pytest tests/unit/
+uv run pytest tests/unit/
 
 # 运行集成测试
-pytest tests/integration/
+uv run pytest tests/integration/
 
 # 运行端到端测试
-pytest tests/e2e/
+uv run pytest tests/e2e/
 
 # 运行属性测试
-pytest tests/properties/
+uv run pytest tests/properties/
 
 # 运行手动测试（如果有的话）
 python tests/manual/<test_file>.py

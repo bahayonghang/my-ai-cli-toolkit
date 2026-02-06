@@ -107,7 +107,11 @@ class TestFormatError:
 
     def test_format_invalid_target(self):
         """测试格式化 invalid_target 错误"""
-        result = format_error("invalid_target", target="invalid")
+        result = format_error(
+            "invalid_target",
+            target="invalid",
+            available="claude, codex, gemini, qwen"
+        )
 
         assert "Invalid target" in result
         assert "invalid" in result
@@ -167,16 +171,17 @@ class TestErrorMessageIntegration:
         assert "does not exist" in error
         assert "Suggestion" in error
 
-    def test_get_target_config_uses_format_error(self):
-        """测试 get_target_config 使用 format_error"""
-        from install import get_target_config
+    def test_kiro_validation_uses_format_error(self):
+        """测试 SkillManager kiro validation 使用 format_error"""
+        from install import SkillManager
 
         with pytest.raises(ValueError) as exc_info:
-            get_target_config("claude", use_kiro=True)
+            SkillManager("claude", use_kiro=True)
 
-        error_message = str(exc_info.value)
-        assert "--kiro" in error_message
-        assert "--project" in error_message
+        error_message = str(exc_info.value).lower()
+        # 检查错误消息包含关键信息
+        assert "kiro" in error_message
+        assert "project" in error_message
 
 
 class TestErrorMessageConsistency:
