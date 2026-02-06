@@ -15,7 +15,7 @@ from textual.screen import Screen
 from textual.widgets import Button, Input, OptionList, Static
 from textual.widgets.option_list import Option
 
-from ..core import PlatformConfig
+from ..core import PlatformDisplay
 
 # 平台图标映射
 PLATFORM_ICONS = {
@@ -42,14 +42,14 @@ class PlatformSelectScreen(Screen):
 
     # 平台配置
     PLATFORMS = [
-        PlatformConfig("claude", "Claude", "~/.claude/"),
-        PlatformConfig("codex", "Codex", "~/.codex/"),
-        PlatformConfig("gemini", "Gemini", "~/.gemini/"),
-        PlatformConfig("qwen", "Qwen", "~/.qwen/"),
-        PlatformConfig("antigravity", "Antigravity", "~/.gemini/antigravity/"),
-        PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/"),
-        PlatformConfig("kiro", "Kiro", "~/.kiro/"),
-        PlatformConfig("trae", "Trae", "~/.trae/"),
+        PlatformDisplay("claude", "Claude", "~/.claude/"),
+        PlatformDisplay("codex", "Codex", "~/.codex/"),
+        PlatformDisplay("gemini", "Gemini", "~/.gemini/"),
+        PlatformDisplay("qwen", "Qwen", "~/.qwen/"),
+        PlatformDisplay("antigravity", "Antigravity", "~/.gemini/antigravity/"),
+        PlatformDisplay("windsurf", "Windsurf", "~/.codeium/windsurf/"),
+        PlatformDisplay("kiro", "Kiro", "~/.kiro/"),
+        PlatformDisplay("trae", "Trae", "~/.trae/"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -85,7 +85,7 @@ class PlatformSelectScreen(Screen):
                 yield Static("↑↓ Navigate  ⏎ Select  Tab Switch  ⎋ Quit", id="hint")
                 yield Static("v1.0", id="version")
 
-    def _format_option(self, platform: PlatformConfig) -> str:
+    def _format_option(self, platform: PlatformDisplay) -> str:
         """格式化平台选项显示"""
         icon = PLATFORM_ICONS.get(platform.id, "📁")
         name = platform.name.ljust(10)

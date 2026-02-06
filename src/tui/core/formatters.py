@@ -1,6 +1,4 @@
-"""格式化工具函数
-
-提供 TUI 界面中各种元素的格式化函数。
+"""Formatting utilities for TUI display.
 
 Requirements: 2.4, 3.2, 4.1, 4.2, 5.1, 5.2
 """
@@ -8,14 +6,17 @@ Requirements: 2.4, 3.2, 4.1, 4.2, 5.1, 5.2
 from typing import NamedTuple
 
 
-class PlatformConfig(NamedTuple):
-    """平台配置数据结构"""
+class PlatformDisplay(NamedTuple):
+    """Platform display data (for TUI rendering only).
+
+    Renamed from PlatformConfig to avoid clash with core.config_loader.PlatformConfig.
+    """
     id: str
     name: str
     path: str
 
 
-# Unicode 符号常量
+# Unicode symbol constants
 CHECKBOX_CHECKED = "☑"
 CHECKBOX_UNCHECKED = "☐"
 STATUS_INSTALLED = "✓"
@@ -27,51 +28,50 @@ ICON_INFO = "ℹ"
 ARROW_INDICATOR = "▸"
 
 
-def format_platform_option(platform: PlatformConfig) -> str:
-    """格式化平台选项显示文本
+def format_platform_option(platform: PlatformDisplay) -> str:
+    """Format platform option display text.
 
     Args:
-        platform: 平台配置 (id, name, path)
+        platform: Platform display info (id, name, path)
 
     Returns:
-        格式化后的选项文本，包含平台名称和目标路径
+        Formatted option text with platform name and target path
 
     Example:
-        >>> format_platform_option(PlatformConfig("claude", "Claude", "~/.claude/"))
+        >>> format_platform_option(PlatformDisplay("claude", "Claude", "~/.claude/"))
         'Claude    ~/.claude/'
 
-    Requirements: 2.4 - 平台选项应显示名称和目标路径
+    Requirements: 2.4
     """
-    # 使用固定宽度格式化，确保对齐
     return f"{platform.name:<10}{platform.path}"
 
 
 def format_platform_badge(platform_name: str) -> str:
-    """格式化 Header 平台徽章
+    """Format Header platform badge.
 
     Args:
-        platform_name: 平台名称
+        platform_name: Platform name
 
     Returns:
-        大写格式的平台名称
+        Uppercase platform name
 
     Example:
         >>> format_platform_badge("claude")
         'CLAUDE'
 
-    Requirements: 3.2 - 平台徽章应显示大写格式
+    Requirements: 3.2
     """
     return platform_name.upper()
 
 
 def format_checkbox(selected: bool) -> str:
-    """格式化复选框符号
+    """Format checkbox symbol.
 
     Args:
-        selected: 是否选中
+        selected: Whether selected
 
     Returns:
-        Unicode 复选框符号
+        Unicode checkbox symbol
 
     Example:
         >>> format_checkbox(True)
@@ -79,19 +79,19 @@ def format_checkbox(selected: bool) -> str:
         >>> format_checkbox(False)
         '☐'
 
-    Requirements: 4.1 - 使用 Unicode 复选框符号
+    Requirements: 4.1
     """
     return CHECKBOX_CHECKED if selected else CHECKBOX_UNCHECKED
 
 
 def format_status_icon(installed: bool) -> str:
-    """格式化安装状态图标
+    """Format installation status icon.
 
     Args:
-        installed: 是否已安装
+        installed: Whether installed
 
     Returns:
-        Unicode 状态图标
+        Unicode status icon
 
     Example:
         >>> format_status_icon(True)
@@ -99,19 +99,19 @@ def format_status_icon(installed: bool) -> str:
         >>> format_status_icon(False)
         '○'
 
-    Requirements: 4.2 - 使用 Unicode 状态图标
+    Requirements: 4.2
     """
     return STATUS_INSTALLED if installed else STATUS_NOT_INSTALLED
 
 
 def format_selection_count(count: int) -> str:
-    """格式化选中计数显示
+    """Format selection count display.
 
     Args:
-        count: 选中数量 (非负整数)
+        count: Selected count (non-negative integer)
 
     Returns:
-        格式化的选中计数文本，count > 0 时显示 "Selected: N"，否则为空
+        Formatted selection count text
 
     Example:
         >>> format_selection_count(3)
@@ -119,7 +119,7 @@ def format_selection_count(count: int) -> str:
         >>> format_selection_count(0)
         ''
 
-    Requirements: 5.2 - 选中计数显示格式
+    Requirements: 5.2
     """
     if count > 0:
         return f"Selected: {count}"
@@ -127,15 +127,15 @@ def format_selection_count(count: int) -> str:
 
 
 def get_message_icon(level: str) -> str:
-    """获取消息级别对应的图标
+    """Get icon for message level.
 
     Args:
-        level: 消息级别 (info, success, warning, error)
+        level: Message level (info, success, warning, error)
 
     Returns:
-        对应的 Unicode 图标
+        Corresponding Unicode icon
 
-    Requirements: 5.1 - 状态消息前添加语义图标
+    Requirements: 5.1
     """
     icons = {
         "info": ICON_INFO,
@@ -147,15 +147,15 @@ def get_message_icon(level: str) -> str:
 
 
 def get_message_css_class(level: str) -> str:
-    """获取消息级别对应的 CSS 类名
+    """Get CSS class name for message level.
 
     Args:
-        level: 消息级别 (info, success, warning, error)
+        level: Message level (info, success, warning, error)
 
     Returns:
-        CSS 类名
+        CSS class name
 
-    Requirements: 5.1 - 状态消息应用对应的 CSS 类
+    Requirements: 5.1
     """
     valid_levels = {"info", "success", "warning", "error"}
     if level in valid_levels:
@@ -163,48 +163,32 @@ def get_message_css_class(level: str) -> str:
     return "status-info"
 
 
-# 空状态和加载状态常量
+# Empty state and loading state constants
 ICON_EMPTY = "📭"
 ICON_LOADING = "⏳"
 ICON_PROGRESS = "⚙"
 
 
 def format_empty_state_message(item_type: str) -> str:
-    """格式化空列表状态消息
-
-    Args:
-        item_type: 项目类型 ("skills" 或 "commands")
-
-    Returns:
-        格式化后的空状态消息，包含图标
+    """Format empty list state message.
 
     Example:
         >>> format_empty_state_message("skills")
         '📭 No skills found'
-        >>> format_empty_state_message("commands")
-        '📭 No commands found'
 
-    Requirements: 9.1 - 空列表应显示居中消息和图标
+    Requirements: 9.1
     """
     return f"{ICON_EMPTY} No {item_type} found"
 
 
 def format_loading_message(item_type: str = "") -> str:
-    """格式化加载状态消息
-
-    Args:
-        item_type: 项目类型 (可选)
-
-    Returns:
-        格式化后的加载消息，包含图标
+    """Format loading state message.
 
     Example:
         >>> format_loading_message("skills")
         '⏳ Loading skills...'
-        >>> format_loading_message()
-        '⏳ Loading...'
 
-    Requirements: 9.2 - 加载状态应显示加载指示器
+    Requirements: 9.2
     """
     if item_type:
         return f"{ICON_LOADING} Loading {item_type}..."
@@ -212,20 +196,12 @@ def format_loading_message(item_type: str = "") -> str:
 
 
 def format_progress_message(action: str, current: int, total: int) -> str:
-    """格式化进度消息
-
-    Args:
-        action: 操作名称 (如 "Installing")
-        current: 当前进度
-        total: 总数
-
-    Returns:
-        格式化后的进度消息，包含图标和进度数字
+    """Format progress message.
 
     Example:
         >>> format_progress_message("Installing", 2, 5)
         '⚙ Installing... (2/5)'
 
-    Requirements: 9.2, 9.3 - 进度状态应显示进度指示
+    Requirements: 9.2, 9.3
     """
     return f"{ICON_PROGRESS} {action}... ({current}/{total})"

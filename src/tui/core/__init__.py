@@ -1,11 +1,11 @@
 """
-TUI 核心业务逻辑模块
+TUI core business logic module.
 
-包含:
-- models: 数据模型 (ItemType, InstallStatus, ItemInfo, InstallResult)
-- manager: TUIManager 封装 SkillManager
-- theme: MyClaude 自定义主题
-- formatters: 格式化工具函数
+Contains:
+- models: Data models (ItemType, InstallStatus, ItemInfo, InstallResult)
+- manager: TUIManager wrapping SkillManager
+- theme: MyClaude custom theme
+- formatters: Formatting utilities
 """
 
 from .formatters import (
@@ -17,7 +17,7 @@ from .formatters import (
     ICON_PROGRESS,
     STATUS_INSTALLED,
     STATUS_NOT_INSTALLED,
-    PlatformConfig,
+    PlatformDisplay,
     format_checkbox,
     format_empty_state_message,
     format_loading_message,
@@ -43,7 +43,7 @@ __all__ = [
     "THEME_COLORS",
     "REQUIRED_THEME_PROPERTIES",
     # Formatters
-    "PlatformConfig",
+    "PlatformDisplay",
     "format_platform_option",
     "format_platform_badge",
     "format_checkbox",

@@ -83,10 +83,10 @@ Represents an installation target:
 
 ```bash
 # Run TUI from project root
-python install_tui.py
+uv run python src/install_tui.py
 
 # Or directly
-python -m tui.app
+uv run python -m tui.app
 ```
 
 ## Keybindings
@@ -112,7 +112,7 @@ python -m tui.app
 
 ```bash
 # Run TUI-specific tests
-pytest tests/properties/test_footer_properties.py
-pytest tests/properties/test_selection_properties.py
-pytest tests/e2e/test_tui_e2e_project.py
+uv run pytest tests/properties/test_footer_properties.py
+uv run pytest tests/properties/test_selection_properties.py
+uv run pytest tests/e2e/test_tui_e2e_project.py
 ```

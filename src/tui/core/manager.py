@@ -1,31 +1,26 @@
 """
-TUI Manager - 封装 SkillManager 的 TUI 专用管理器
+TUI Manager - TUI-specific manager wrapping SkillManager.
 
-提供 TUI 所需的所有业务逻辑接口。
+Provides all business logic interfaces needed by the TUI.
 Requirements: 14.3, 6.1, 6.2, 8.1, 8.2, 2.7, 6.6, 13.2, 13.4
 """
 
 import os
-import sys
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
-# 添加项目根目录到 sys.path 以导入 install.py
-_PROJECT_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(_PROJECT_ROOT))
-
-from install import (
-    COMMANDS_SRC_DIR,
-    SKILLS_SRC_DIR,
-    SkillManager,
-)
+# No more sys.path hack needed - pythonpath=["src"] handles module resolution
+from core.config_loader import get_commands_source_dir
+from core.paths import COMMANDS_SRC_DIR, SKILLS_SRC_DIR
+from core.skill_meta import parse_skill_frontmatter
+from install import SkillManager
 
 from .models import InstallResult, InstallStatus, ItemInfo, ItemType
 
 
 class SourceDirectoryError(Exception):
-    """源目录不存在错误"""
+    """Source directory not found error."""
     def __init__(self, directory: Path, message: str = ""):
         self.directory = directory
         self.message = message or f"Source directory not found: {directory}"
@@ -33,13 +28,11 @@ class SourceDirectoryError(Exception):
 
 
 class TUIManager:
-    """TUI 专用的管理器封装
-
-    封装 install.py 的 SkillManager，提供 TUI 所需的接口。
+    """TUI-specific manager wrapping install.py's SkillManager.
 
     Attributes:
-        platform: 目标平台 (claude, codex, gemini)
-        project_path: 项目路径（可选）
+        platform: Target platform (claude, codex, gemini)
+        project_path: Project path (optional)
     """
 
     def __init__(
@@ -47,11 +40,11 @@ class TUIManager:
         platform: str,
         project_path: str | None = None
     ):
-        """初始化 TUIManager
+        """Initialize TUIManager.
 
         Args:
-            platform: 目标平台名称
-            project_path: 项目路径（可选）
+            platform: Target platform name
+            project_path: Project path (optional)
         """
         self.platform = platform
         self.project_path = project_path
@@ -59,86 +52,42 @@ class TUIManager:
 
     @property
     def target_skills_dir(self) -> Path:
-        """获取目标技能目录"""
+        """Get target skills directory."""
         return self._manager.target_skills_dir
 
     @property
     def target_commands_dir(self) -> Path:
-        """获取目标命令目录"""
+        """Get target commands directory."""
         return self._manager.target_commands_dir
 
     def check_skills_source_exists(self) -> bool:
-        """检查技能源目录是否存在
-
-        Returns:
-            源目录是否存在
-        """
+        """Check if skills source directory exists."""
         return SKILLS_SRC_DIR.exists()
 
     def _get_platform_commands_dir(self) -> Path:
-        """根据平台获取命令源目录（内部方法）
-
-        Returns:
-            命令源目录路径
-
-        Note:
-            - gemini: commands/gemini/
-            - qwen: commands/qwen/ (fallback to claude)
-            - trae: commands/trae/ (fallback to claude)
-            - antigravity: commands/antigravity/
-            - windsurf: commands/windsurf/
-            - kiro: commands/kiro/ (fallback to claude)
-            - 其他: commands/claude/
-        """
-        if self.platform == "gemini":
-            return COMMANDS_SRC_DIR / "gemini"
-        elif self.platform == "qwen":
-            # Qwen now uses Markdown format like Claude (as of 2025)
-            qwen_dir = COMMANDS_SRC_DIR / "qwen"
-            if qwen_dir.exists():
-                return qwen_dir
-            return COMMANDS_SRC_DIR / "claude"
-        elif self.platform == "trae":
-            trae_dir = COMMANDS_SRC_DIR / "trae"
-            if trae_dir.exists():
-                return trae_dir
-            return COMMANDS_SRC_DIR / "claude"
-        elif self.platform == "antigravity":
-            return COMMANDS_SRC_DIR / "antigravity"
-        elif self.platform == "windsurf":
-            return COMMANDS_SRC_DIR / "windsurf"
-        elif self.platform == "kiro":
-            kiro_dir = COMMANDS_SRC_DIR / "kiro"
-            if kiro_dir.exists():
-                return kiro_dir
-            return COMMANDS_SRC_DIR / "claude"
-        else:
-            return COMMANDS_SRC_DIR / "claude"
+        """Get platform-specific commands source directory (internal)."""
+        return get_commands_source_dir(self.platform, COMMANDS_SRC_DIR)
 
     def check_commands_source_exists(self) -> bool:
-        """检查命令源目录是否存在
-
-        Returns:
-            源目录是否存在
-        """
+        """Check if commands source directory exists."""
         return self._get_platform_commands_dir().exists()
 
     def get_skills_source_dir(self) -> Path:
-        """获取技能源目录路径"""
+        """Get skills source directory path."""
         return SKILLS_SRC_DIR
 
     def get_commands_source_dir(self) -> Path:
-        """获取命令源目录路径"""
+        """Get commands source directory path."""
         return self._get_platform_commands_dir()
 
     def _get_file_mtime(self, path: Path) -> datetime | None:
-        """获取文件修改时间
+        """Get file modification time.
 
         Args:
-            path: 文件路径
+            path: File path
 
         Returns:
-            修改时间，如果文件不存在返回 None
+            Modification time, or None if file doesn't exist
         """
         try:
             if path.exists():
@@ -153,37 +102,32 @@ class TUIManager:
         source_mtime: datetime | None,
         target_mtime: datetime | None
     ) -> InstallStatus:
-        """判断安装状态
+        """Determine installation status.
 
         Args:
-            target_path: 目标路径
-            source_mtime: 源文件修改时间
-            target_mtime: 目标文件修改时间
+            target_path: Target path
+            source_mtime: Source file modification time
+            target_mtime: Target file modification time
 
         Returns:
-            安装状态
+            Installation status
         """
         if not target_path.exists():
             return InstallStatus.NOT_INSTALLED
 
-        # 如果无法获取修改时间，默认为已安装
         if source_mtime is None or target_mtime is None:
             return InstallStatus.INSTALLED
 
-        # 比较修改时间（源文件更新则标记为过期）
         if source_mtime > target_mtime:
             return InstallStatus.OUTDATED
 
         return InstallStatus.INSTALLED
 
     def get_skills(self) -> list[ItemInfo]:
-        """获取所有技能列表
+        """Get all skills list.
 
         Returns:
-            技能信息列表
-
-        Note:
-            如果源目录不存在，返回空列表
+            List of skill info items
         """
         skills = []
         if not SKILLS_SRC_DIR.exists():
@@ -193,17 +137,15 @@ class TUIManager:
             if skill_dir.is_dir():
                 target_path = self._manager.target_skills_dir / skill_dir.name
 
-                # 获取修改时间
                 source_mtime = self._get_file_mtime(skill_dir)
                 target_mtime = self._get_file_mtime(target_path)
 
-                # 判断安装状态
                 status = self._determine_install_status(
                     target_path, source_mtime, target_mtime
                 )
 
-                # Use frontmatter parser for rich metadata
-                metadata = SkillManager.parse_skill_frontmatter(skill_dir)
+                # Use shared frontmatter parser from core.skill_meta
+                metadata = parse_skill_frontmatter(skill_dir)
 
                 skills.append(ItemInfo(
                     name=skill_dir.name,
@@ -221,10 +163,10 @@ class TUIManager:
         return skills
 
     def get_all_categories(self) -> list[str]:
-        """获取所有可用的技能分类
+        """Get all available skill categories.
 
         Returns:
-            分类名称列表（去重并排序）
+            Sorted list of category names (deduplicated)
         """
         categories = set()
         for skill in self.get_skills():
@@ -233,45 +175,28 @@ class TUIManager:
         return sorted(categories)
 
     def get_commands(self) -> list[ItemInfo]:
-        """获取所有命令列表（支持嵌套目录）
-
-        根据平台返回对应的命令列表:
-        - gemini: 从 commands/gemini/ 获取
-        - qwen: 从 commands/qwen/ 获取（fallback 到 claude）
-        - antigravity: 从 commands/antigravity/ 获取
-        - claude/codex: 从 commands/claude/ 获取
+        """Get all commands list (supports nested directories).
 
         Returns:
-            命令信息列表
-
-        Note:
-            如果源目录不存在，返回空列表
-            支持嵌套目录，如 zcf/git-commit.md
+            List of command info items
         """
         commands = []
 
-        # 使用统一的平台目录获取方法
         src_dir = self._get_platform_commands_dir()
 
         if not src_dir.exists():
             return commands
 
-        # 递归遍历所有文件
         for cmd_file in sorted(src_dir.rglob("*")):
             if cmd_file.is_file():
-                # 计算相对路径作为命令名（不含扩展名）
                 rel_path = cmd_file.relative_to(src_dir)
-                # 命令名：目录/文件名（不含扩展名）
                 cmd_name = str(rel_path.with_suffix("")).replace("\\", "/")
 
-                # 目标路径保持相同的目录结构
                 target_file = self._manager.target_commands_dir / rel_path
 
-                # 获取修改时间
                 source_mtime = self._get_file_mtime(cmd_file)
                 target_mtime = self._get_file_mtime(target_file)
 
-                # 判断安装状态
                 status = self._determine_install_status(
                     target_file, source_mtime, target_mtime
                 )
@@ -290,17 +215,16 @@ class TUIManager:
         return commands
 
     def install_skill(self, name: str) -> InstallResult:
-        """安装单个技能
+        """Install a single skill.
 
         Args:
-            name: 技能名称
+            name: Skill name
 
         Returns:
-            安装结果
+            Installation result
 
         Requirements: 6.1, 6.5, 6.6
         """
-        # 检查源目录
         if not SKILLS_SRC_DIR.exists():
             return InstallResult(
                 success=False,
@@ -309,7 +233,6 @@ class TUIManager:
                 error=f"Source directory does not exist: {SKILLS_SRC_DIR}",
             )
 
-        # 检查技能是否存在
         skill_src = SKILLS_SRC_DIR / name
         if not skill_src.exists():
             return InstallResult(
@@ -350,22 +273,20 @@ class TUIManager:
             )
 
     def install_command(self, name: str) -> InstallResult:
-        """安装单个命令（支持嵌套目录）
+        """Install a single command (supports nested directories).
 
         Args:
-            name: 命令名称，可以包含路径如 "zcf/git-commit"
+            name: Command name, may include path like "zcf/git-commit"
 
         Returns:
-            安装结果
+            Installation result
 
         Requirements: 6.2, 6.5, 6.6
         """
         import shutil
 
-        # 使用统一的平台目录获取方法
         src_dir = self._get_platform_commands_dir()
 
-        # 检查源目录
         if not src_dir.exists():
             return InstallResult(
                 success=False,
@@ -375,16 +296,12 @@ class TUIManager:
             )
 
         try:
-            # 查找命令文件（支持嵌套路径）
             src_file = None
-            # 将命令名转换为路径格式
             name_path = Path(name.replace("/", os.sep))
 
-            # 遍历所有文件查找匹配的命令
             for f in src_dir.rglob("*"):
                 if f.is_file():
                     rel_path = f.relative_to(src_dir)
-                    # 比较不含扩展名的路径
                     if rel_path.with_suffix("") == name_path:
                         src_file = f
                         break
@@ -397,17 +314,13 @@ class TUIManager:
                     error=f"No file matching '{name}' in {src_dir}",
                 )
 
-            # 确保目标目录存在
             self._manager.ensure_dirs()
 
-            # 计算目标路径（保持目录结构）
             rel_path = src_file.relative_to(src_dir)
             target_file = self._manager.target_commands_dir / rel_path
 
-            # 确保目标子目录存在
             target_file.parent.mkdir(parents=True, exist_ok=True)
 
-            # 复制文件
             shutil.copy2(src_file, target_file)
 
             return InstallResult(
@@ -434,13 +347,13 @@ class TUIManager:
         self,
         callback: Callable[[str, bool], None] | None = None
     ) -> tuple[int, int, list[str]]:
-        """安装所有技能
+        """Install all skills.
 
         Args:
-            callback: 进度回调函数，接收 (skill_name, success) 参数
+            callback: Progress callback receiving (skill_name, success)
 
         Returns:
-            (成功数, 失败数, 失败列表)
+            (success_count, fail_count, failure_list)
         """
         success_count = 0
         fail_count = 0
@@ -464,13 +377,13 @@ class TUIManager:
         self,
         callback: Callable[[str, bool], None] | None = None
     ) -> tuple[int, int, list[str]]:
-        """安装所有命令
+        """Install all commands.
 
         Args:
-            callback: 进度回调函数，接收 (command_name, success) 参数
+            callback: Progress callback receiving (command_name, success)
 
         Returns:
-            (成功数, 失败数, 失败列表)
+            (success_count, fail_count, failure_list)
         """
         success_count = 0
         fail_count = 0

@@ -3,10 +3,10 @@ import sys
 
 
 def main() -> int:
-    """运行 TUI 应用
+    """Run the TUI application.
 
     Returns:
-        退出码 (0 表示正常退出)
+        Exit code (0 for normal exit)
     """
     from tui.app import SkillInstallerApp
 
@@ -19,6 +19,5 @@ if __name__ == "__main__":
     try:
         sys.exit(main())
     except KeyboardInterrupt:
-        # 优雅处理 Ctrl+C 中断
         print("\nAborted by user.")
         sys.exit(0)
