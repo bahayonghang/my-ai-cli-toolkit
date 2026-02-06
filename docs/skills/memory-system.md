@@ -23,7 +23,7 @@ The Memory System skill provides a powerful local knowledge base that:
 ## Installation
 
 ```bash
-python3 install.py install memory-system
+uv run python src/install.py install memory-system
 ```
 
 ## Dependencies
@@ -31,7 +31,7 @@ python3 install.py install memory-system
 The skill requires Python packages for vector embeddings:
 
 ```bash
-pip3 install sentence-transformers numpy
+uv add sentence-transformers numpy
 ```
 
 ## Usage

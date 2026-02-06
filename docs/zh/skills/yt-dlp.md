@@ -17,7 +17,7 @@
 
 ```bash
 # 安装技能
-python install.py install yt-dlp
+uv run python src/install.py install yt-dlp
 
 # 基础用法
 yt-dlp "https://www.youtube.com/watch?v=VIDEO_ID"

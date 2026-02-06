@@ -75,33 +75,33 @@ This project includes a cross-platform CLI tool for batch installing plugins.
 
 ```bash
 cd claude-plugin-install-scripts
-pip install typer rich tomli  # Python < 3.11
-pip install typer rich        # Python >= 3.11
+uv add typer rich tomli  # Python < 3.11
+uv add typer rich        # Python >= 3.11
 ```
 
 ### Usage
 
 ```bash
 # List all available plugins
-python install.py list
+uv run python install.py list
 
 # List by category
-python install.py list --category python
+uv run python install.py list --category python
 
 # Install all plugins
-python install.py install --all
+uv run python install.py install --all
 
 # Install specific plugins
-python install.py install python-development canvas
+uv run python install.py install python-development canvas
 
 # Install by category
-python install.py install --category python
+uv run python install.py install --category python
 
 # Dry run (show commands only)
-python install.py install --all --dry-run
+uv run python install.py install --all --dry-run
 
 # View all categories
-python install.py categories
+uv run python install.py categories
 ```
 
 ### Available Plugins

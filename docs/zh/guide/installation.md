@@ -19,38 +19,38 @@ cd my-claude-skills
 
 ```bash
 # 默认目标是 Claude
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 
 ### 安装到指定目标
 
 ```bash
 # 安装到 Gemini
-python3 install.py --target gemini install-all
+uv run python src/install.py --target gemini install-all
 
 # 安装到 Codex
-python3 install.py --target codex install-all
+uv run python src/install.py --target codex install-all
 
 # 安装到 Qwen
-python3 install.py --target qwen install-all
+uv run python src/install.py --target qwen install-all
 
 # 安装到 Antigravity
-python3 install.py --target antigravity install-all
+uv run python src/install.py --target antigravity install-all
 
 # 安装到 Windsurf
-python3 install.py --target windsurf install-all
+uv run python src/install.py --target windsurf install-all
 ```
 
 ### 更新全局提示词
 
 ```bash
-python3 install.py prompt-update
+uv run python src/install.py prompt-update
 ```
 
 ### 交互模式
 
 ```bash
-python3 install.py interactive
+uv run python src/install.py interactive
 ```
 
 ## TUI 模式 (推荐)
@@ -58,7 +58,7 @@ python3 install.py interactive
 如需现代化的可视化体验，可使用 TUI (终端用户界面)：
 
 ```bash
-python3 install_tui.py
+uv run python src/install_tui.py
 ```
 
 ### 功能特性
@@ -91,7 +91,7 @@ python3 install_tui.py
 - `requirements.txt` 中列出的依赖
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 验证安装
@@ -99,7 +99,7 @@ pip install -r requirements.txt
 检查已安装的技能：
 
 ```bash
-python3 install.py installed
+uv run python src/install.py installed
 ```
 
 ## 安装路径

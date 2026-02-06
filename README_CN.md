@@ -8,7 +8,7 @@ Claude Code 技能和提示词集合，用于增强 AI 辅助开发工作流。
 
 - 🎯 可复用的 AI 技能模块，覆盖前端设计、技术研究、文档生成等场景
 - 📦 统一的技能定义格式（`SKILL.md`），便于扩展和维护
-- 🔄 跨平台 Python 安装脚本 (`install.py`)
+- 🔄 跨平台 Python 安装脚本 (`src/install.py`)
 - 🎛️ 多目标支持：Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`), Google Antigravity (`~/.gemini/antigravity/`) 和 Windsurf (`~/.codeium/windsurf/`)
 - ⚡ 斜杠命令，用于常见工作流（git commit 等）
 
@@ -26,16 +26,16 @@ git clone https://github.com/anthropics/my-claude-skills.git
 cd my-claude-skills
 
 # 安装所有技能
-python3 install.py install-all
+uv run python src/install.py install-all
 
 # 更新全局提示词配置
-python3 install.py prompt-update
+uv run python src/install.py prompt-update
 
 # 或使用 TUI 进行交互式管理
-python3 install_tui.py
+uv run python src/install_tui.py
 ```
 
-运行 `python3 install.py --help` 查看更多选项。
+运行 `uv run python src/install.py --help` 查看更多选项。
 
 ## 技能列表
 
@@ -191,46 +191,46 @@ git clone https://github.com/anthropics/my-claude-skills.git
 cd my-claude-skills
 
 # 安装所有技能到 Claude (默认)
-python3 install.py install-all
+uv run python src/install.py install-all
 
 # 安装到 Gemini
-python3 install.py --target gemini install-all
+uv run python src/install.py --target gemini install-all
 
 # 安装到 Codex
-python3 install.py --target codex install-all
+uv run python src/install.py --target codex install-all
 
 # 安装到 Qwen
-python3 install.py --target qwen install-all
+uv run python src/install.py --target qwen install-all
 
 # 安装到 Antigravity
-python3 install.py --target antigravity install-all
+uv run python src/install.py --target antigravity install-all
 
 # 安装到 Windsurf
-python3 install.py --target windsurf install-all
+uv run python src/install.py --target windsurf install-all
 
 # 更新全局 CLAUDE.md
-python3 install.py prompt-update
+uv run python src/install.py prompt-update
 ```
 
 ## 命令说明
 
 | 命令 | 描述 |
 |------|------|
-| `python3 install.py list` | 列出所有可用技能 |
-| `python3 install.py installed` | 列出已安装的技能 |
-| `python3 install.py install <skill> [skill2...]` | 安装指定技能 |
-| `python3 install.py install-all` | 安装所有技能 |
-| `python3 install.py interactive` | 交互式技能选择 |
-| `python3 install.py prompt-diff` | 显示本地与全局 CLAUDE.md 的差异 |
-| `python3 install.py prompt-update` | 同步 CLAUDE.md 到 ~/.claude/ |
-| `python3 install.py --target gemini <command>` | 以 Gemini 为目标执行命令 |
+| `uv run python src/install.py list` | 列出所有可用技能 |
+| `uv run python src/install.py installed` | 列出已安装的技能 |
+| `uv run python src/install.py install <skill> [skill2...]` | 安装指定技能 |
+| `uv run python src/install.py install-all` | 安装所有技能 |
+| `uv run python src/install.py interactive` | 交互式技能选择 |
+| `uv run python src/install.py prompt-diff` | 显示本地与全局 CLAUDE.md 的差异 |
+| `uv run python src/install.py prompt-update` | 同步 CLAUDE.md 到 ~/.claude/ |
+| `uv run python src/install.py --target gemini <command>` | 以 Gemini 为目标执行命令 |
 
 ### TUI 模式 (推荐)
 
 如需更友好的交互体验，可使用 TUI (终端用户界面)：
 
 ```bash
-python3 install_tui.py
+uv run python src/install_tui.py
 ```
 
 TUI 提供以下功能：
@@ -256,13 +256,17 @@ TUI 提供以下功能：
 | `t` | 切换平台 |
 | `q` | 退出 |
 
-**依赖要求：** Python 3.10+ 和 [Textual](https://textual.textualize.io/) 库 (`pip install textual`)
+**依赖要求：** Python 3.10+ 和 [Textual](https://textual.textualize.io/) 库 (`uv add textual`)
 
 ## 项目结构
 
 ```
 .
-├── install.py              # 统一 Python 安装脚本
+├── src/                    # Python 源代码
+│   ├── install.py          # 统一 Python 安装脚本
+│   ├── install_tui.py      # 终端用户界面
+│   ├── core/               # 共享模块 (paths, config, skill_meta)
+│   └── tui/                # TUI 组件和屏幕
 ├── prompts/
 │   ├── CLAUDE.md           # 全局工作流配置
 │   └── TRANSLATE.md        # 翻译指南
@@ -352,6 +356,7 @@ TUI 提供以下功能：
 4. 测试安装：
    ```bash
    ./install.sh install my-new-skill
+   # or: uv run python src/install.py install my-new-skill
    ```
 
 ### 贡献规范
@@ -393,23 +398,23 @@ A: 备份创建在 `~/.claude/` 目录下，带有时间戳后缀，如 `CLAUDE.
 cd claude-plugin-install-scripts
 
 # 安装依赖
-pip install typer rich tomli  # Python < 3.11
-pip install typer rich        # Python >= 3.11
+uv add typer rich tomli  # Python < 3.11
+uv add typer rich        # Python >= 3.11
 
 # 列出可用插件
-python install.py list
+uv run python install.py list
 
 # 安装所有插件
-python install.py install --all
+uv run python install.py install --all
 
 # 安装指定插件
-python install.py install python-development canvas
+uv run python install.py install python-development canvas
 
 # 按分类安装
-python install.py install --category python
+uv run python install.py install --category python
 
 # 查看分类
-python install.py categories
+uv run python install.py categories
 ```
 
 插件配置保存在 `claude-plugin-install-scripts/plugins.toml` 中。详见 [插件安装器文档](claude-plugin-install-scripts/README.md)。

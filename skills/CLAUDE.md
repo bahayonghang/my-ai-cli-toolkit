@@ -142,5 +142,5 @@ Skills Metadata 完整性检查报告
 
 4. 安装测试：
    ```bash
-   python install.py install my-new-skill
+   uv run python src/install.py install my-new-skill
    ```

@@ -21,10 +21,10 @@ AI 驱动的 Draw.io 图表生成工具，支持实时浏览器预览。
 
 ```bash
 # 安装技能
-python3 install.py install drawio
+uv run python src/install.py install drawio
 
 # 或安装所有技能
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 
 该技能会自动配置 MCP 服务器：

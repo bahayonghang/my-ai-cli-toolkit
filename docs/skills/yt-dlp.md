@@ -17,7 +17,7 @@ Powerful video downloader supporting 1000+ websites including YouTube, Bilibili,
 
 ```bash
 # Install the skill
-python install.py install yt-dlp
+uv run python src/install.py install yt-dlp
 
 # Basic usage
 yt-dlp "https://www.youtube.com/watch?v=VIDEO_ID"

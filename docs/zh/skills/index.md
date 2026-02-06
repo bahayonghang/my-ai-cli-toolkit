@@ -119,9 +119,9 @@ AI Skills Hub 提供了针对不同开发任务的专用 AI 技能集合。
 
 ::: code-group
 ```bash [Linux/macOS]
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 ```powershell [Windows]
-python install.py install-all
+uv run python src/install.py install-all
 ```
 :::

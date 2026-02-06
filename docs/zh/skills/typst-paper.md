@@ -24,10 +24,10 @@ Typst 学术论文助手，支持中英文论文的模块化工作流。
 
 ```bash
 # 安装技能
-python3 install.py install typst-paper
+uv run python src/install.py install typst-paper
 
 # 或安装所有技能
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 
 ## 前置要求

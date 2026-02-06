@@ -8,12 +8,12 @@
 
 ```bash
 # CLI 模式（必需）
-pip install typer rich tomli  # Python < 3.11 需要 tomli
+uv add typer rich tomli  # Python < 3.11 需要 tomli
 # 或
-pip install typer rich        # Python >= 3.11
+uv add typer rich        # Python >= 3.11
 
 # TUI 模式（可选）
-pip install textual
+uv add textual
 ```
 
 ### 使用方法
@@ -22,35 +22,35 @@ pip install textual
 
 ```bash
 # 列出所有技能（带推荐标记）
-python install.py list
+uv run python install.py list
 
 # 检测已安装的 AI agents
-python install.py agents
+uv run python install.py agents
 
 # 查看技能详情
-python install.py info vercel-react-best-practices
+uv run python install.py info vercel-react-best-practices
 
 # 检查依赖
-python install.py check vercel-react-best-practices
+uv run python install.py check vercel-react-best-practices
 
 # 安装技能到指定平台
-python install.py install vercel-react-best-practices --target claude
+uv run python install.py install vercel-react-best-practices --target claude
 
 # 安装到其他平台
-python install.py install ui-ux-pro-max --target codex
-python install.py install ui-ux-pro-max --target kiro
+uv run python install.py install ui-ux-pro-max --target codex
+uv run python install.py install ui-ux-pro-max --target kiro
 
 # 指定项目目录
-python install.py install ui-ux-pro-max --target claude --project /path/to/project
+uv run python install.py install ui-ux-pro-max --target claude --project /path/to/project
 
 # 跳过全局安装（已安装过 CLI）
-python install.py install ui-ux-pro-max --target claude --skip-install
+uv run python install.py install ui-ux-pro-max --target claude --skip-install
 
 # Dry-run 模式（只显示命令）
-python install.py install ui-ux-pro-max --target claude --dry-run
+uv run python install.py install ui-ux-pro-max --target claude --dry-run
 
 # 仅初始化（已安装 CLI）
-python install.py init ui-ux-pro-max --target claude
+uv run python install.py init ui-ux-pro-max --target claude
 ```
 
 **CLI 功能特性：**
@@ -65,7 +65,7 @@ python install.py init ui-ux-pro-max --target claude
 现代化终端界面，支持键盘导航、搜索过滤、实时安装进度显示：
 
 ```bash
-python install_tui.py
+uv run python install_tui.py
 ```
 
 TUI 功能特性：

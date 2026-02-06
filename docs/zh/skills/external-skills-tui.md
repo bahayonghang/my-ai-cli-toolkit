@@ -20,10 +20,10 @@ External Skills TUI 是一个基于 Textual 的终端应用程序，提供直观
 
 ```bash
 # 安装依赖
-pip install textual typer rich
+uv add textual typer rich
 
 # Python < 3.11 需要
-pip install tomli
+uv add tomli
 ```
 
 ## 使用方法

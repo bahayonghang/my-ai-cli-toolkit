@@ -24,10 +24,10 @@ This skill provides a comprehensive toolkit for writing academic papers using Ty
 
 ```bash
 # Install the skill
-python3 install.py install typst-paper
+uv run python src/install.py install typst-paper
 
 # Or install all skills
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 
 ## Prerequisites

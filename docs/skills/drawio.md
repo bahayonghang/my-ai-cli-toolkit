@@ -21,10 +21,10 @@ This skill enables Claude Code to create, edit, and manage draw.io diagrams thro
 
 ```bash
 # Install the skill
-python3 install.py install drawio
+uv run python src/install.py install drawio
 
 # Or install all skills
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 
 The skill automatically configures the MCP server with:

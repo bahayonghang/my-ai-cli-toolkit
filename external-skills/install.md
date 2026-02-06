@@ -1,3 +1,8 @@
+# 查找skills的网站
+1. https://claudemarketplaces.com/
+2. https://skillsmp.com/
+3. https://skills.sh/
+
 # npx
 ## skills plugin
 
@@ -17,7 +22,7 @@ npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browse
 ```
 
 ```shell
-# 技能发现工具（帮助查找和安装 agent skills 生态系统中的可用技能包）
+# 技能发现工具（帮助查找和安装 agent skills 生态系统中的可用技能包）⭐⭐⭐⭐⭐
 npx skills add https://github.com/vercel-labs/skills --skill find-skills
 ```
 
@@ -95,4 +100,18 @@ uipro init --ai trae        # Trae   # All assistants
 
 # 步骤 2: 安装插件
 /plugin install rust-skills@rust-skills
+```
+
+## oh-my-claudecode
+```shell
+/plugin marketplace add https://github.com/Yeachan-Heo/oh-my-claudecode
+
+/plugin install oh-my-claudecode
+```
+
+## planning-with-files
+```shell
+/plugin marketplace add OthmanAdi/planning-with-files
+
+/plugin install planning-with-files@planning-with-files
 ```

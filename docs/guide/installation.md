@@ -19,38 +19,38 @@ cd my-claude-skills
 
 ```bash
 # Default target is Claude
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 
 ### Install to Specific Target
 
 ```bash
 # Install to Gemini
-python3 install.py --target gemini install-all
+uv run python src/install.py --target gemini install-all
 
 # Install to Codex
-python3 install.py --target codex install-all
+uv run python src/install.py --target codex install-all
 
 # Install to Qwen
-python3 install.py --target qwen install-all
+uv run python src/install.py --target qwen install-all
 
 # Install to Antigravity
-python3 install.py --target antigravity install-all
+uv run python src/install.py --target antigravity install-all
 
 # Install to Windsurf
-python3 install.py --target windsurf install-all
+uv run python src/install.py --target windsurf install-all
 ```
 
 ### Update Global Prompt
 
 ```bash
-python3 install.py prompt-update
+uv run python src/install.py prompt-update
 ```
 
 ### Interactive Mode
 
 ```bash
-python3 install.py interactive
+uv run python src/install.py interactive
 ```
 
 ## TUI Mode (Recommended)
@@ -58,7 +58,7 @@ python3 install.py interactive
 For a modern, visual experience with update detection, use the TUI (Terminal User Interface):
 
 ```bash
-python install_tui.py
+uv run python src/install_tui.py
 ```
 
 ### Key Features
@@ -91,7 +91,7 @@ python install_tui.py
 
 ### Quick Start
 
-1. Launch TUI: `python install_tui.py`
+1. Launch TUI: `uv run python src/install_tui.py`
 2. Select your platform
 3. Browse items with ↑↓ or jk keys
 4. Press `Space` to select items
@@ -120,7 +120,7 @@ For detailed TUI documentation, see [TUI Guide](./tui.md).
 - Dependencies listed in `requirements.txt`
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Verify Installation
@@ -128,7 +128,7 @@ pip install -r requirements.txt
 Check installed skills:
 
 ```bash
-python3 install.py installed
+uv run python src/install.py installed
 ```
 
 ## Installation Paths

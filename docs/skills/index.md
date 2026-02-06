@@ -119,9 +119,9 @@ Install all skills:
 
 ::: code-group
 ```bash [Linux/macOS]
-python3 install.py install-all
+uv run python src/install.py install-all
 ```
 ```powershell [Windows]
-python install.py install-all
+uv run python src/install.py install-all
 ```
 :::

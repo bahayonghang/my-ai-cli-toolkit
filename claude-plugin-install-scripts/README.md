@@ -5,9 +5,9 @@
 ## 依赖安装
 
 ```bash
-pip install typer rich tomli  # Python < 3.11 需要 tomli
+uv add typer rich tomli  # Python < 3.11 需要 tomli
 # 或
-pip install typer rich        # Python >= 3.11
+uv add typer rich        # Python >= 3.11
 ```
 
 ## 使用方法
@@ -15,32 +15,32 @@ pip install typer rich        # Python >= 3.11
 ### 列出所有插件
 
 ```bash
-python install.py list
+uv run python install.py list
 
 # 按分类筛选
-python install.py list --category python
+uv run python install.py list --category python
 ```
 
 ### 安装插件
 
 ```bash
 # 安装所有插件
-python install.py install --all
+uv run python install.py install --all
 
 # 安装指定插件
-python install.py install python-development canvas
+uv run python install.py install python-development canvas
 
 # 按分类安装
-python install.py install --category python
+uv run python install.py install --category python
 
 # 只显示命令 (dry-run)
-python install.py install --all --dry-run
+uv run python install.py install --all --dry-run
 ```
 
 ### 查看分类
 
 ```bash
-python install.py categories
+uv run python install.py categories
 ```
 
 ## 配置文件

@@ -66,7 +66,7 @@ scoop install ffmpeg
 
 ```bash
 # 在项目根目录执行
-python install.py install yt-dlp
+uv run python src/install.py install yt-dlp
 ```
 
 然后就可以直接跟 AI 说：

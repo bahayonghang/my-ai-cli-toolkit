@@ -8,7 +8,7 @@ A curated collection of Claude Code skills, prompts, and workflows for enhanced 
 
 - 🎯 **Modular Skills**: Reusable AI skill modules covering frontend design, research, documentation, academic writing, and more.
 - 📦 **Unified Format**: Standardized `SKILL.md` definition for easy extension and maintenance.
-- 🔄 **Cross-Platform**: Single Python installation script (`install.py`) that works everywhere (Windows, Linux, macOS).
+- 🔄 **Cross-Platform**: Single Python installation script (`src/install.py`) that works everywhere (Windows, Linux, macOS).
 - 🎛️ **Multi-Target Support**:
   - **Claude Code** (`~/.claude/`)
   - **Codex CLI** (`~/.codex/`)
@@ -29,17 +29,17 @@ git clone https://github.com/anthropics/my-claude-skills.git
 cd my-claude-skills
 
 # Run the interactive TUI (Recommended)
-python3 install_tui.py
+uv run python src/install_tui.py
 ```
 
 Or use the command line:
 
 ```bash
 # Install all skills to Claude (default)
-python3 install.py install-all
+uv run python src/install.py install-all
 
 # Update global prompt configuration
-python3 install.py prompt-update
+uv run python src/install.py prompt-update
 ```
 
 ## Skills
@@ -156,13 +156,13 @@ Slash commands provide quick access to common workflows. Available for Claude, G
 ### Basic Installation
 ```bash
 # Install all skills to Claude (default)
-python3 install.py install-all
+uv run python src/install.py install-all
 
 # Install to specific platform
-python3 install.py --target gemini install-all
-python3 install.py --target codex install-all
-python3 install.py --target antigravity install-all
-python3 install.py --target windsurf install-all
+uv run python src/install.py --target gemini install-all
+uv run python src/install.py --target codex install-all
+uv run python src/install.py --target antigravity install-all
+uv run python src/install.py --target windsurf install-all
 ```
 
 ### Project-Level Installation
@@ -170,17 +170,17 @@ Install skills to a specific project directory instead of globally:
 
 ```bash
 # Install to a project directory
-python3 install.py install frontend-engineer --project ./my-web-app
+uv run python src/install.py install frontend-engineer --project ./my-web-app
 
 # Install to a Kiro project (.kiro/skills/ structure)
-python3 install.py install skill-name --project ./my-kiro-project --kiro
+uv run python src/install.py install skill-name --project ./my-kiro-project --kiro
 ```
 
 ### TUI Mode (Recommended)
 For a user-friendly experience, use the Terminal User Interface:
 
 ```bash
-python3 install_tui.py
+uv run python src/install_tui.py
 ```
 
 **TUI Features:**
@@ -194,8 +194,11 @@ python3 install_tui.py
 
 ```
 .
-├── install.py              # Unified Python installer
-├── install_tui.py          # Terminal User Interface
+├── src/                    # Python source code
+│   ├── install.py          # Unified Python installer
+│   ├── install_tui.py      # Terminal User Interface
+│   ├── core/               # Shared modules (paths, config, skill_meta)
+│   └── tui/                # TUI components and screens
 ├── prompts/                # Global prompts (CLAUDE.md)
 ├── commands/               # Slash commands
 │   ├── claude/             # Claude-specific commands
@@ -214,7 +217,7 @@ python3 install_tui.py
 1. Create a new directory under `skills/`.
 2. Create `SKILL.md` with the skill definition.
 3. (Optional) Add `scripts/`, `config/`, or `references/`.
-4. Run `./install.py install <your-skill>` to test.
+4. Run `uv run python src/install.py install <your-skill>` to test.
 
 ## License
 

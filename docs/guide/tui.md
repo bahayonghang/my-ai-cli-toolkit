@@ -7,7 +7,7 @@ The TUI provides a modern, visual interface for managing AI Skills Hub resources
 Launch the TUI:
 
 ```bash
-python install_tui.py
+uv run python src/install_tui.py
 ```
 
 ## Features Overview
@@ -107,7 +107,7 @@ The TUI fully supports Chinese characters with proper width calculation:
 
 ### 1. Check for Updates
 
-1. Launch TUI: `python install_tui.py`
+1. Launch TUI: `uv run python src/install_tui.py`
 2. Select your platform (e.g., Claude)
 3. Look for items with ⚠ status in the **St** column
 4. Compare **Src Time** and **Tgt Time** columns
@@ -233,7 +233,7 @@ The TUI compares file modification times to determine update status:
 Install dependencies:
 
 ```bash
-pip install textual
+uv add textual
 ```
 
 ## Troubleshooting
@@ -244,7 +244,7 @@ pip install textual
 
 **Solution**: Install Textual library
 ```bash
-pip install textual
+uv add textual
 ```
 
 ### Chinese characters misaligned
@@ -272,7 +272,7 @@ pip install textual
 Install to a specific project directory:
 
 ```bash
-python install_tui.py
+uv run python src/install_tui.py
 # Select platform
 # Choose "Project-specific installation"
 # Enter project path
@@ -283,7 +283,7 @@ python install_tui.py
 For Kiro-based projects:
 
 ```bash
-python install_tui.py
+uv run python src/install_tui.py
 # Select platform
 # Enable "Use Kiro structure"
 ```

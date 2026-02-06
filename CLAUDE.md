@@ -38,9 +38,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```mermaid
 graph TB
     subgraph Root["📁 my-claude-code-settings"]
+        pyproject["pyproject.toml"]
+    end
+
+    subgraph Src["📁 src/"]
         install["install.py<br/>Main CLI installer"]
         install_tui["install_tui.py<br/>TUI entry point"]
-        pyproject["pyproject.toml"]
+        core_mod["core/<br/>paths, config_loader, skill_meta"]
     end
 
     subgraph Skills["📁 skills/ (40+ skills)"]
@@ -54,7 +58,7 @@ graph TB
         other_cmd["antigravity/ windsurf/<br/>trae/ qwen/"]
     end
 
-    subgraph TUI["📁 tui/"]
+    subgraph TUI["📁 src/tui/"]
         tui_app["app.py"]
         tui_core["core/<br/>manager, models, formatters"]
         tui_comp["components/<br/>header, footer, item_list"]
@@ -88,9 +92,10 @@ graph TB
         test_prop["properties/"]
     end
 
-    Root --> Skills
-    Root --> Commands
-    Root --> TUI
+    Root --> Src
+    Src --> Skills
+    Src --> Commands
+    Src --> TUI
     Root --> Agents
     Root --> AgentKit
     Root --> External
@@ -106,8 +111,9 @@ graph TB
 
 | Module | Path | Description | Local CLAUDE.md |
 |--------|------|-------------|-----------------|
-| **Core Installer** | `install.py` | CLI skill manager with SkillManager class | - |
-| **TUI** | `tui/` | Textual-based interactive installer | ✅ |
+| **Core Installer** | `src/install.py` | CLI skill manager with SkillManager class | - |
+| **Core Modules** | `src/core/` | Shared paths, config_loader, skill_meta | - |
+| **TUI** | `src/tui/` | Textual-based interactive installer | ✅ |
 | **Skills** | `skills/` | 40+ skill definitions | - |
 | **Commands** | `commands/` | Platform-specific slash commands | - |
 | **Agents** | `agents/` | AI agent definitions (CCW + Specialist) | ✅ |
@@ -121,33 +127,33 @@ graph TB
 
 ```bash
 # Install all skills (default target: Claude)
-python install.py install-all
+uv run python src/install.py install-all
 
 # Install to specific target
-python install.py --target gemini install-all
-python install.py --target codex install-all
-python install.py --target qwen install-all
-python install.py --target antigravity install-all
-python install.py --target windsurf install-all
-python install.py --target trae install-all
+uv run python src/install.py --target gemini install-all
+uv run python src/install.py --target codex install-all
+uv run python src/install.py --target qwen install-all
+uv run python src/install.py --target antigravity install-all
+uv run python src/install.py --target windsurf install-all
+uv run python src/install.py --target trae install-all
 
 # List available/installed skills
-python install.py list
-python install.py installed
+uv run python src/install.py list
+uv run python src/install.py installed
 
 # Install specific skill(s)
-python install.py install <skill-name> [skill2...]
+uv run python src/install.py install <skill-name> [skill2...]
 
 # Sync prompts/CLAUDE.md to global config
-python install.py prompt-update
-python install.py prompt-diff
+uv run python src/install.py prompt-update
+uv run python src/install.py prompt-diff
 
 # TUI mode (requires Python 3.10+ and textual)
-python install_tui.py
+uv run python src/install_tui.py
 
 # Run tests
-pytest tests/
-pytest tests/test_install_properties.py -v
+uv run pytest tests/
+uv run pytest tests/properties/test_install_properties.py -v
 
 # Documentation (VitePress)
 cd docs && npm install && npm run dev
@@ -156,16 +162,21 @@ cd docs && npm install && npm run dev
 cd agentkit-desktop && npm install && npm run tauri dev
 
 # External Skills TUI
-python external-skills/install_tui.py
+uv run python external-skills/install_tui.py
 ```
 
 ## Architecture
 
 ### Core Components
 
-- **`install.py`**: Main installer with `SkillManager` class handling skill discovery, installation, and prompt management. Target configs define installation paths for each platform.
+- **`src/install.py`**: Main installer with `SkillManager` class handling skill discovery, installation, and prompt management. Target configs define installation paths for each platform.
 
-- **`tui/`**: Textual-based TUI application
+- **`src/core/`**: Shared modules
+  - `paths.py` - Unified path constants (PROJECT_ROOT, HOME_DIR, *_SRC_DIR)
+  - `config_loader.py` - Platform configuration loading from `platforms.toml`
+  - `skill_meta.py` - SKILL.md frontmatter parser
+
+- **`src/tui/`**: Textual-based TUI application
   - `app.py` - Main app entry
   - `core/manager.py` - Installation manager with async progress support
   - `core/formatters.py` - Display formatting utilities
@@ -231,7 +242,7 @@ Detailed instructions and documentation...
 - Python 3.10+ required for TUI (Textual library)
 - Tests use pytest with hypothesis for property-based testing
 - Comments in English
-- Follow existing patterns in `install.py` and `tui/` modules
+- Follow existing patterns in `src/install.py` and `src/tui/` modules
 - Rust code follows standard Rust conventions (src-tauri)
 - TypeScript/React follows ESLint config in agentkit-desktop
 

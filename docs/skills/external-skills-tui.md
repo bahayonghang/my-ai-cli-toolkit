@@ -20,10 +20,10 @@ External Skills TUI is a Textual-based terminal application that provides an int
 
 ```bash
 # Install dependencies
-pip install textual typer rich
+uv add textual typer rich
 
 # For Python < 3.11
-pip install tomli
+uv add tomli
 ```
 
 ## Usage

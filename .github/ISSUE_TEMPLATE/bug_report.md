@@ -9,7 +9,7 @@ Thank you for reporting a possible bug in myclaude-skills.
 
 Please fill in as much of the template below as you can.
 
-Version: output of `python install.py --version` or check pyproject.toml
+Version: output of `uv run python src/install.py --version` or check pyproject.toml
 Platform: output of `uname -a` (UNIX), or version and 32 or 64-bit (Windows)
 Subsystem: if known, please specify the affected module name
 

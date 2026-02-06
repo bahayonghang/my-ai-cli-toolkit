@@ -23,7 +23,7 @@ Memory System 技能提供强大的本地知识库功能：
 ## 安装
 
 ```bash
-python3 install.py install memory-system
+uv run python src/install.py install memory-system
 ```
 
 ## 依赖
@@ -31,7 +31,7 @@ python3 install.py install memory-system
 该技能需要 Python 包来生成向量嵌入：
 
 ```bash
-pip3 install sentence-transformers numpy
+uv add sentence-transformers numpy
 ```
 
 ## 使用方法

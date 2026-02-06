@@ -30,5 +30,5 @@ features:
     details: Consistent SKILL.md format for easy extension and maintenance.
   - icon: 🔄
     title: Cross-Platform
-    details: Single Python installation script (`install.py`) that works everywhere.
+    details: Single Python installation script (`src/install.py`) powered by uv, works everywhere.
 ---

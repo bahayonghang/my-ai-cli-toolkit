@@ -27,7 +27,7 @@ Skills are reusable AI instruction modules that enhance Claude Code's capabiliti
 Modern terminal interface with visual feedback and update detection:
 
 ```bash
-python install_tui.py
+uv run python src/install_tui.py
 ```
 
 Features:
@@ -43,7 +43,7 @@ Features:
 Traditional command-line interface:
 
 ```bash
-python install.py install-all
+uv run python src/install.py install-all
 ```
 
 [Learn more about CLI →](/guide/installation)
