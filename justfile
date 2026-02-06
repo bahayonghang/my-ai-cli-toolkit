@@ -87,42 +87,42 @@ docs: docs-install docs-dev
 
 # 列出所有可用的技能及其描述
 list:
-    python3 install.py list
+    uv run python src/install.py list
 
 # 安装所有技能到 Claude (~/.claude/skills/)
 install-all:
-    python3 install.py install-all
+    uv run python src/install.py install-all
 
 # 安装所有技能到 Codex (~/.codex/skills/)
 install-all-codex:
-    python3 install.py --target=codex install-all
+    uv run python src/install.py --target=codex install-all
 
 # 安装指定的一个或多个技能
 # 用法: just install drawio excalidraw
 install +skills:
-    python3 install.py install {{skills}}
+    uv run python src/install.py install {{skills}}
 
 # 列出已安装的技能
 installed:
-    python3 install.py installed
+    uv run python src/install.py installed
 
 # 交互式选择并安装技能
 interactive:
-    python3 install.py interactive
+    uv run python src/install.py interactive
 
 # 启动 TUI (终端用户界面) 进行技能管理
 tui:
-    python3 install_tui.py
+    uv run python src/install_tui.py
 
 # ============ 提示词管理 ============
 
 # 将本地 CLAUDE.md 同步到全局配置 (~/.claude/CLAUDE.md)
 prompt-update:
-    python3 install.py prompt-update
+    uv run python src/install.py prompt-update
 
 # 显示本地与全局 CLAUDE.md 的差异
 prompt-diff:
-    python3 install.py prompt-diff
+    uv run python src/install.py prompt-diff
 
 # ============ 代码质量检查 ============
 
@@ -229,15 +229,15 @@ clean:
 # 检查项目依赖是否已安装
 check-deps:
     @echo "检查 Python 依赖..."
-    @python3 -c "import yaml" 2>/dev/null || echo "⚠️  缺少 PyYAML，请运行: pip install pyyaml"
-    @python3 -c "import pytest" 2>/dev/null || echo "⚠️  缺少 pytest，请运行: pip install pytest"
-    @python3 -c "import textual" 2>/dev/null || echo "⚠️  缺少 textual，请运行: pip install textual"
+    @uv run python -c "import yaml" 2>/dev/null || echo "⚠️  缺少 PyYAML，请运行: uv add pyyaml"
+    @uv run python -c "import pytest" 2>/dev/null || echo "⚠️  缺少 pytest，请运行: uv add pytest"
+    @uv run python -c "import textual" 2>/dev/null || echo "⚠️  缺少 textual，请运行: uv add textual"
     @echo "✓ 依赖检查完成"
 
 # 显示项目信息
 info:
     @echo "项目: MyClaude Skills"
-    @echo "Python 版本: $(python3 --version)"
-    @echo "技能数量: $(python3 install.py list | wc -l)"
+    @echo "Python 版本: $(uv run python --version)"
+    @echo "技能数量: $(uv run python src/install.py list | wc -l)"
     @echo "文档路径: docs/"
     @echo "技能路径: skills/"
