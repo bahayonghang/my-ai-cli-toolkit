@@ -3,7 +3,6 @@
 
 import json
 import sys
-from pathlib import Path
 
 # 预定义的语言配置模板
 CONFIGS = {
@@ -91,11 +90,11 @@ CONFIGS = {
 def generate_lsp_config(languages):
     """根据检测到的语言生成 LSP 配置"""
     config = {}
-    
+
     for lang in languages:
         if lang in CONFIGS:
             config.update(CONFIGS[lang])
-    
+
     return config
 
 def generate_plugin_manifest(name="auto-lsp"):
@@ -111,19 +110,19 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("用法: generate_config.py <语言1> <语言2> ...")
         sys.exit(1)
-    
+
     languages = sys.argv[1:]
-    
+
     # 生成 LSP 配置
     lsp_config = generate_lsp_config(languages)
-    
+
     # 生成插件清单
     plugin_manifest = generate_plugin_manifest()
-    
+
     # 输出结果
     output = {
         ".lsp.json": lsp_config,
         "plugin.json": plugin_manifest
     }
-    
+
     print(json.dumps(output, indent=2))

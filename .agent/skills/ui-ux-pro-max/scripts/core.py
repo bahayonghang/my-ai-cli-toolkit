@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 UI/UX Pro Max Core - BM25 search engine for UI/UX style guides
 """
 
 import csv
 import re
-from pathlib import Path
-from math import log
 from collections import defaultdict
+from math import log
+from pathlib import Path
 
 # ============ CONFIGURATION ============
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -158,7 +157,7 @@ class BM25:
 # ============ SEARCH FUNCTIONS ============
 def _load_csv(filepath):
     """Load CSV and return list of dicts"""
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, encoding='utf-8') as f:
         return list(csv.DictReader(f))
 
 

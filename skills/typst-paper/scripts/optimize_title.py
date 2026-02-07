@@ -10,7 +10,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Optional
 
 # Import parsers from the same directory
 try:
@@ -282,7 +281,7 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
 
 
 def generate_title_candidates(
-    keywords: dict[str, list[str]], lang: str, current_title: Optional[str] = None
+    keywords: dict[str, list[str]], lang: str, current_title: str | None = None
 ) -> list[tuple[str, str]]:
     """Generate title candidates based on keywords."""
     candidates = []

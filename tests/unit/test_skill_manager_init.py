@@ -10,7 +10,8 @@ import pytest
 # 添加父目录到 sys.path 以便导入 install 模块
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from install import HOME_DIR, SkillManager
+from core.paths import HOME_DIR
+from install import SkillManager
 
 
 class TestSkillManagerInit:

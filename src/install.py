@@ -10,12 +10,12 @@ from pathlib import Path
 import typer
 
 from core.config_loader import (
+    ERROR_MSG_KIRO_REQUIRES_PROJECT,
     get_available_platform_names,
     get_commands_source_dir,
     resolve_install_paths,
-    ERROR_MSG_KIRO_REQUIRES_PROJECT,
 )
-from core.paths import COMMANDS_SRC_DIR, HOME_DIR, PROMPTS_SRC_DIR, SKILLS_SRC_DIR
+from core.paths import COMMANDS_SRC_DIR, PROMPTS_SRC_DIR, SKILLS_SRC_DIR
 from core.skill_meta import parse_skill_frontmatter
 
 

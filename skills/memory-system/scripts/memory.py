@@ -18,7 +18,6 @@ import re
 import sqlite3
 import struct
 import sys
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -84,7 +83,7 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
         norm = np.linalg.norm(a) * np.linalg.norm(b)
         return float(dot / norm) if norm > 0 else 0.0
     except ImportError:
-        dot = sum(x * y for x, y in zip(a, b))
+        dot = sum(x * y for x, y in zip(a, b, strict=False))
         na = sum(x * x for x in a) ** 0.5
         nb = sum(x * x for x in b) ** 0.5
         return dot / (na * nb) if na * nb > 0 else 0.0
@@ -216,7 +215,7 @@ def chunk_markdown(text: str) -> list[dict]:
                 overlap_lines.insert(0, ol)
             current_chunk_lines = overlap_lines
             current_start = i - len(overlap_lines) + 1
-            current_chars = sum(len(l) + 1 for l in overlap_lines)
+            current_chars = sum(len(line) + 1 for line in overlap_lines)
 
     # 最后一块
     if current_chunk_lines:
@@ -262,7 +261,7 @@ def list_md_files(memory_dir: str) -> list[str]:
 
 def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
     """索引单个文件，返回 chunk 数量"""
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         content = f.read()
 
     chunks = chunk_markdown(content)
@@ -278,7 +277,7 @@ def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
     texts = [c["text"] for c in chunks]
     embeddings = embed_texts(texts)
 
-    for chunk, emb in zip(chunks, embeddings):
+    for chunk, emb in zip(chunks, embeddings, strict=False):
         chunk_id = f"{filepath}:{chunk['start_line']}-{chunk['end_line']}"
         th = text_hash(chunk["text"])
         conn.execute(

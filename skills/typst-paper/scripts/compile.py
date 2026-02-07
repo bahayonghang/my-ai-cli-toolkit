@@ -23,7 +23,6 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Optional
 
 
 class TypstCompiler:
@@ -49,9 +48,9 @@ class TypstCompiler:
 
     def compile(
         self,
-        output: Optional[str] = None,
+        output: str | None = None,
         format: str = "pdf",
-        font_path: Optional[str] = None,
+        font_path: str | None = None,
         watch: bool = False,
     ) -> int:
         """

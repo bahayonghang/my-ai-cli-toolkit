@@ -17,13 +17,11 @@ from core.config_loader import (
     DEFAULT_PROJECT_OVERRIDES,
     ERROR_MSG_KIRO_REQUIRES_PROJECT,
     PlatformConfig,
-    ProjectInstallOverride,
     clear_config_cache,
     get_all_platforms,
     get_available_platform_names,
     get_commands_source_dir,
     get_platform_config,
-    get_project_override,
     resolve_install_paths,
     set_test_config,
 )
