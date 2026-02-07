@@ -10,16 +10,16 @@ from textual.theme import Theme
 # Theme color constants - for testing and reuse
 # Catppuccin Mocha palette
 THEME_COLORS = {
-    "primary": "#89b4fa",      # Blue (soft blue accent)
-    "secondary": "#74c7ec",    # Sapphire (complementary)
-    "accent": "#cba6f7",       # Mauve (highlight/selection)
-    "foreground": "#cdd6f4",   # Text (readable light)
-    "background": "#1e1e2e",   # Base (warm dark)
-    "success": "#a6e3a1",      # Green (confirmation)
-    "warning": "#fab387",      # Peach (attention)
-    "error": "#f38ba8",        # Red (error/danger)
-    "surface": "#313244",      # Surface0 (elevated panels)
-    "panel": "#45475a",        # Surface2 (borders/dividers)
+    "primary": "#89b4fa",  # Blue (soft blue accent)
+    "secondary": "#74c7ec",  # Sapphire (complementary)
+    "accent": "#cba6f7",  # Mauve (highlight/selection)
+    "foreground": "#cdd6f4",  # Text (readable light)
+    "background": "#1e1e2e",  # Base (warm dark)
+    "success": "#a6e3a1",  # Green (confirmation)
+    "warning": "#fab387",  # Peach (attention)
+    "error": "#f38ba8",  # Red (error/danger)
+    "surface": "#313244",  # Surface0 (elevated panels)
+    "panel": "#45475a",  # Surface2 (borders/dividers)
 }
 
 # 必需的主题属性列表
@@ -61,8 +61,8 @@ def create_myclaude_theme() -> Theme:
             "footer-key-foreground": THEME_COLORS["primary"],
             "input-selection-background": f"{THEME_COLORS['primary']} 40%",
             "input-cursor-foreground": THEME_COLORS["primary"],
-            "text-muted": "#a6adc8",     # Subtext0
-            "text-subtle": "#6c7086",     # Overlay0
+            "text-muted": "#a6adc8",  # Subtext0
+            "text-subtle": "#6c7086",  # Overlay0
         },
     )
 

@@ -11,6 +11,7 @@ class PlatformDisplay(NamedTuple):
 
     Renamed from PlatformConfig to avoid clash with core.config_loader.PlatformConfig.
     """
+
     id: str
     name: str
     path: str

@@ -12,12 +12,14 @@ from pathlib import Path
 
 class ItemType(Enum):
     """项目类型枚举"""
+
     SKILL = "skill"
     COMMAND = "command"
 
 
 class InstallStatus(Enum):
     """安装状态枚举"""
+
     INSTALLED = "installed"
     NOT_INSTALLED = "not_installed"
     OUTDATED = "outdated"  # 已安装但源文件更新
@@ -39,6 +41,7 @@ class ItemInfo:
         category: 技能分类 (可选，仅适用于 SKILL 类型)
         tags: 技能标签列表 (仅适用于 SKILL 类型)
     """
+
     name: str
     item_type: ItemType
     description: str | None = None
@@ -71,6 +74,7 @@ class InstallResult:
         message: 结果消息
         error: 错误信息 (可选)
     """
+
     success: bool
     item_name: str
     message: str

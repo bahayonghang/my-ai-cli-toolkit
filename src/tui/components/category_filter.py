@@ -4,13 +4,13 @@ Horizontal category filter bar for skills filtering.
 Requirements: Filter skills by category, combinable with text search.
 """
 
-
 from textual.containers import Horizontal
 from textual.message import Message
 from textual.widgets import Button, Static
 
 # Category display label mapping (raw category -> display label)
 CATEGORY_LABELS = {
+    # Skill categories
     "academic-writing": "Academic",
     "visual-design": "Visual",
     "development-tools": "DevTools",
@@ -18,6 +18,17 @@ CATEGORY_LABELS = {
     "content-creation": "Content",
     "research": "Research",
     "automation": "Automation",
+    # Command directory categories
+    "cc": "CC",
+    "cli": "CLI",
+    "gh": "GitHub",
+    "issue": "Issue",
+    "kiro": "Kiro",
+    "memory": "Memory",
+    "task": "Task",
+    "workflow": "Workflow",
+    "zcf": "ZCF",
+    "general": "General",
 }
 
 
@@ -25,15 +36,18 @@ def get_category_label(category: str) -> str:
     """Get display label for a category.
 
     Args:
-        category: Raw category name from SKILL.md
+        category: Raw category name from SKILL.md or directory name
 
     Returns:
         Human-readable display label
     """
     if category in CATEGORY_LABELS:
         return CATEGORY_LABELS[category]
+    # Short names (<=3 chars) → uppercase (e.g. directory abbreviations)
+    if len(category) <= 3:
+        return category.upper()
     # Fallback: capitalize and replace hyphens with spaces
-    return category.replace('-', ' ').title()
+    return category.replace("-", " ").title()
 
 
 class CategoryButton(Button):
@@ -158,24 +172,14 @@ class CategoryFilterBar(Horizontal):
         self._buttons.clear()
 
         # Always create "All" button first (active by default)
-        all_btn = CategoryButton(
-            category=None,
-            label="All",
-            active=True,
-            id="cat-all"
-        )
+        all_btn = CategoryButton(category=None, label="All", active=True, id="cat-all")
         self._buttons[None] = all_btn
         yield all_btn
 
         # Add category buttons if any were provided at init time
         for i, category in enumerate(self._categories):
             label = get_category_label(category)
-            btn = CategoryButton(
-                category=category,
-                label=label,
-                active=False,
-                id=f"cat-{i}"
-            )
+            btn = CategoryButton(category=category, label=label, active=False, id=f"cat-{i}")
             self._buttons[category] = btn
             yield btn
 

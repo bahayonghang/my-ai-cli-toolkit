@@ -4,8 +4,6 @@ Displays app title and platform badge with icon.
 Requirements: 3.1, 3.2, 3.3, 3.4
 """
 
-from pathlib import Path
-
 from textual.containers import Horizontal
 from textual.widgets import Static
 
@@ -63,11 +61,9 @@ class Header(Static):
     def __init__(
         self,
         platform: str = "",
-        project_path: str | None = None
     ) -> None:
         super().__init__()
         self._platform = platform
-        self._project_path = project_path
 
     def compose(self):
         with Horizontal(id="header-row"):
@@ -75,15 +71,8 @@ class Header(Static):
             yield Static(self._format_badge(), id="platform-badge")
 
     def _format_title(self) -> str:
-        """Format title with optional project path."""
-        title = self.APP_TITLE
-        if self._project_path:
-            try:
-                rel_path = Path(self._project_path).relative_to(Path.cwd())
-                title += f" | 📁 {rel_path}"
-            except ValueError:
-                title += f" | 📁 {self._project_path}"
-        return title
+        """Format title."""
+        return self.APP_TITLE
 
     def _format_badge(self) -> str:
         """Format platform badge with icon."""
@@ -93,14 +82,9 @@ class Header(Static):
         name = self._platform.upper()
         return f"{icon} {name}"
 
-    def set_platform(
-        self,
-        platform: str,
-        project_path: str | None = None
-    ) -> None:
+    def set_platform(self, platform: str) -> None:
         """Update platform info."""
         self._platform = platform
-        self._project_path = project_path
         try:
             title = self.query_one("#app-title", Static)
             title.update(self._format_title())

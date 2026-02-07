@@ -4,7 +4,6 @@
 Requirements: 3.1, 3.3-3.9, 4.1-4.8, 9.1, 9.2, 11.2
 """
 
-
 from textual.message import Message
 from textual.widgets import ListItem, ListView, Static
 
@@ -53,7 +52,7 @@ def truncate_to_width(text: str, max_width: int) -> str:
         result.append(char)
         current_width += char_width
 
-    return ''.join(result)
+    return "".join(result)
 
 
 def pad_to_width(text: str, target_width: int) -> str:
@@ -72,7 +71,7 @@ def pad_to_width(text: str, target_width: int) -> str:
 
     # 用空格填充到目标宽度
     padding = target_width - current_width
-    return text + ' ' * padding
+    return text + " " * padding
 
 
 class SelectableItem(ListItem):
@@ -136,6 +135,7 @@ class SelectableItem(ListItem):
 
     class SelectionChanged(Message):
         """选择状态变更消息"""
+
         def __init__(self, item: "SelectableItem", selected: bool) -> None:
             super().__init__()
             self.item = item
@@ -270,12 +270,13 @@ class ItemListView(ListView):
 
     class SelectionCountChanged(Message):
         """选中数量变更消息"""
+
         def __init__(self, count: int) -> None:
             super().__init__()
             self.count = count
 
-    def __init__(self, item_type: str = "skills", id: str | None = None) -> None:
-        super().__init__(id=id)
+    def __init__(self, item_type: str = "skills", id: str | None = None, classes: str | None = None) -> None:
+        super().__init__(id=id, classes=classes)
         self.item_type = item_type
         self._all_items: list[SelectableItem] = []
         self._filter_text: str = ""

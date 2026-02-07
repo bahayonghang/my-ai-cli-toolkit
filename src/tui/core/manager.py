@@ -21,6 +21,7 @@ from .models import InstallResult, InstallStatus, ItemInfo, ItemType
 
 class SourceDirectoryError(Exception):
     """Source directory not found error."""
+
     def __init__(self, directory: Path, message: str = ""):
         self.directory = directory
         self.message = message or f"Source directory not found: {directory}"
@@ -35,11 +36,7 @@ class TUIManager:
         project_path: Project path (optional)
     """
 
-    def __init__(
-        self,
-        platform: str,
-        project_path: str | None = None
-    ):
+    def __init__(self, platform: str, project_path: str | None = None):
         """Initialize TUIManager.
 
         Args:
@@ -97,10 +94,7 @@ class TUIManager:
         return None
 
     def _determine_install_status(
-        self,
-        target_path: Path,
-        source_mtime: datetime | None,
-        target_mtime: datetime | None
+        self, target_path: Path, source_mtime: datetime | None, target_mtime: datetime | None
     ) -> InstallStatus:
         """Determine installation status.
 
@@ -140,39 +134,27 @@ class TUIManager:
                 source_mtime = self._get_file_mtime(skill_dir)
                 target_mtime = self._get_file_mtime(target_path)
 
-                status = self._determine_install_status(
-                    target_path, source_mtime, target_mtime
-                )
+                status = self._determine_install_status(target_path, source_mtime, target_mtime)
 
                 # Use shared frontmatter parser from core.skill_meta
                 metadata = parse_skill_frontmatter(skill_dir)
 
-                skills.append(ItemInfo(
-                    name=skill_dir.name,
-                    item_type=ItemType.SKILL,
-                    description=metadata.get("description"),
-                    status=status,
-                    source_path=skill_dir,
-                    target_path=target_path,
-                    source_mtime=source_mtime,
-                    target_mtime=target_mtime,
-                    category=metadata.get("category"),
-                    tags=metadata.get("tags", []),
-                ))
+                skills.append(
+                    ItemInfo(
+                        name=skill_dir.name,
+                        item_type=ItemType.SKILL,
+                        description=metadata.get("description"),
+                        status=status,
+                        source_path=skill_dir,
+                        target_path=target_path,
+                        source_mtime=source_mtime,
+                        target_mtime=target_mtime,
+                        category=metadata.get("category"),
+                        tags=metadata.get("tags", []),
+                    )
+                )
 
         return skills
-
-    def get_all_categories(self) -> list[str]:
-        """Get all available skill categories.
-
-        Returns:
-            Sorted list of category names (deduplicated)
-        """
-        categories = set()
-        for skill in self.get_skills():
-            if skill.category:
-                categories.add(skill.category)
-        return sorted(categories)
 
     def get_commands(self) -> list[ItemInfo]:
         """Get all commands list (supports nested directories).
@@ -197,20 +179,25 @@ class TUIManager:
                 source_mtime = self._get_file_mtime(cmd_file)
                 target_mtime = self._get_file_mtime(target_file)
 
-                status = self._determine_install_status(
-                    target_file, source_mtime, target_mtime
-                )
+                status = self._determine_install_status(target_file, source_mtime, target_mtime)
 
-                commands.append(ItemInfo(
-                    name=cmd_name,
-                    item_type=ItemType.COMMAND,
-                    description=None,
-                    status=status,
-                    source_path=cmd_file,
-                    target_path=target_file,
-                    source_mtime=source_mtime,
-                    target_mtime=target_mtime,
-                ))
+                # Determine category from directory structure
+                parts = rel_path.parts
+                category = parts[0] if len(parts) > 1 else "general"
+
+                commands.append(
+                    ItemInfo(
+                        name=cmd_name,
+                        item_type=ItemType.COMMAND,
+                        description=None,
+                        status=status,
+                        source_path=cmd_file,
+                        target_path=target_file,
+                        source_mtime=source_mtime,
+                        target_mtime=target_mtime,
+                        category=category,
+                    )
+                )
 
         return commands
 
@@ -343,10 +330,7 @@ class TUIManager:
                 error=str(e),
             )
 
-    def install_all_skills(
-        self,
-        callback: Callable[[str, bool], None] | None = None
-    ) -> tuple[int, int, list[str]]:
+    def install_all_skills(self, callback: Callable[[str, bool], None] | None = None) -> tuple[int, int, list[str]]:
         """Install all skills.
 
         Args:
@@ -373,10 +357,7 @@ class TUIManager:
 
         return success_count, fail_count, failures
 
-    def install_all_commands(
-        self,
-        callback: Callable[[str, bool], None] | None = None
-    ) -> tuple[int, int, list[str]]:
+    def install_all_commands(self, callback: Callable[[str, bool], None] | None = None) -> tuple[int, int, list[str]]:
         """Install all commands.
 
         Args:

@@ -1,5 +1,5 @@
 /* MyClaude Skills TUI - Catppuccin Mocha Theme
- * Soft modern aesthetic with gentle contrast
+ * Two-column layout with sidebar + content panel
  */
 
 /* === Global === */
@@ -16,10 +16,10 @@ PlatformSelectScreen {
 PlatformSelectScreen #header-area {
     width: 100%;
     dock: top;
-    height: 5;
+    height: 7;
     background: $surface;
     border-bottom: solid $panel;
-    padding: 1 2;
+    padding: 2 2;
     align: center middle;
 }
 
@@ -32,6 +32,7 @@ PlatformSelectScreen #brand-text {
 
 PlatformSelectScreen #brand-sub {
     color: $text-muted;
+    text-style: italic;
     width: 100%;
     text-align: center;
 }
@@ -66,95 +67,6 @@ PlatformSelectScreen OptionList > .option-list--option-highlighted {
     background: $primary 30%;
     color: $foreground;
     text-style: bold;
-}
-
-/* Bottom panel: project path + buttons, docked to bottom */
-PlatformSelectScreen #bottom-panel {
-    dock: bottom;
-    width: 100%;
-    height: auto;
-    padding: 0 3;
-    background: $surface;
-    border-top: solid $panel;
-}
-
-PlatformSelectScreen #project-row {
-    width: 100%;
-    height: 3;
-    align: left middle;
-    padding: 1 0 0 0;
-}
-
-PlatformSelectScreen #project-label {
-    width: auto;
-    color: $warning;
-    padding: 0 1 0 0;
-}
-
-PlatformSelectScreen #project-path-input {
-    width: 1fr;
-    height: 1;
-    background: $background;
-    border: round $panel;
-    padding: 0 1;
-    color: $foreground;
-}
-
-PlatformSelectScreen #project-path-input:focus {
-    border: round $primary;
-}
-
-PlatformSelectScreen #button-row {
-    width: 100%;
-    height: auto;
-    align: center middle;
-    padding: 0 0 1 0;
-}
-
-PlatformSelectScreen Button {
-    min-width: 14;
-    margin: 0 1 0 0;
-    height: 3;
-    border: solid $panel;
-    background: $surface;
-    color: $foreground;
-    text-style: bold;
-    transition: background 150ms, color 150ms;
-}
-
-PlatformSelectScreen Button:focus {
-    background: $accent;
-    color: $background;
-}
-
-PlatformSelectScreen Button:hover {
-    background: $panel;
-    color: $primary;
-}
-
-PlatformSelectScreen #continue-btn {
-    background: $primary;
-    color: $background;
-}
-
-PlatformSelectScreen #continue-btn:hover {
-    background: $secondary;
-    color: $background;
-}
-
-PlatformSelectScreen #continue-btn:focus {
-    background: $accent;
-    color: $background;
-}
-
-PlatformSelectScreen #cancel-btn {
-    background: $panel;
-    color: $foreground;
-}
-
-PlatformSelectScreen #cancel-btn:hover {
-    background: $error 30%;
-    color: $error;
 }
 
 PlatformSelectScreen #footer-area {
@@ -194,9 +106,105 @@ MainScreen #main-container {
     height: 100%;
 }
 
-MainScreen #content-area {
+/* === Two-Column Layout === */
+#two-column {
     width: 100%;
     height: 1fr;
+}
+
+/* === Left Sidebar === */
+#sidebar {
+    width: 22;
+    height: 100%;
+    background: #181825;
+    border-right: tall $panel;
+    padding: 0;
+}
+
+/* Sidebar toggle buttons (Skills/Commands) */
+#sidebar-toggle {
+    width: 100%;
+    height: auto;
+    padding: 1 0 0 0;
+}
+
+#sidebar-toggle Button {
+    width: 100%;
+    height: 1;
+    min-width: 10;
+    border: none;
+    padding: 0 1;
+    margin: 0;
+    background: transparent;
+    color: $text-muted;
+}
+
+#sidebar-toggle Button.-active {
+    background: $accent 20%;
+    color: $accent;
+    text-style: bold;
+}
+
+#sidebar-toggle Button:hover {
+    background: $surface;
+    color: $primary;
+}
+
+#sidebar-toggle Button:focus {
+    background: $primary 30%;
+    color: $foreground;
+}
+
+/* Sidebar separator */
+#sidebar-sep {
+    width: 100%;
+    height: 1;
+    color: $panel;
+    padding: 0 1;
+}
+
+/* Sidebar category list */
+#category-list {
+    height: 1fr;
+    border: none;
+    background: transparent;
+    padding: 0;
+    scrollbar-size: 1 1;
+}
+
+#category-list:focus {
+    border: none;
+}
+
+/* Category items */
+CategoryItem {
+    height: 1;
+    padding: 0 1;
+    background: transparent;
+}
+
+CategoryItem:hover {
+    background: $surface;
+}
+
+CategoryItem.-active {
+    background: $accent 25%;
+}
+
+CategoryItem.-active .cat-text {
+    color: $accent;
+    text-style: bold;
+}
+
+CategoryItem .cat-text {
+    width: 100%;
+    color: $text-muted;
+}
+
+/* === Right Content Panel === */
+#content-panel {
+    width: 1fr;
+    height: 100%;
     padding: 0 1;
 }
 
@@ -223,63 +231,6 @@ MainScreen #search-input:focus {
     background: $panel;
 }
 
-/* === TabbedContent === */
-MainScreen TabbedContent {
-    height: 1fr;
-}
-
-TabbedContent > ContentSwitcher {
-    height: 1fr;
-}
-
-MainScreen TabPane {
-    padding: 0;
-}
-
-/* === Tabs Bar === */
-Tabs {
-    width: 100%;
-    background: $surface;
-    dock: top;
-    height: 1;
-}
-
-Tab {
-    width: auto;
-    min-width: 14;
-    height: 1;
-    padding: 0 2;
-    background: $panel;
-    color: $foreground;
-    text-style: bold;
-    margin: 0 1 0 0;
-    transition: background 150ms, color 150ms;
-}
-
-Tab:hover {
-    background: $surface;
-    color: $primary;
-}
-
-Tab.-active {
-    background: $accent;
-    color: $background;
-}
-
-Tab:focus {
-    background: $primary;
-    color: $background;
-}
-
-Tab.-active:focus {
-    background: $accent;
-    color: $background;
-}
-
-Underline {
-    display: none;
-}
-
 /* === List View === */
 ItemListView {
     height: 1fr;
@@ -290,6 +241,10 @@ ItemListView {
 
 ItemListView:focus {
     border: solid $primary;
+}
+
+ItemListView.-hidden {
+    display: none;
 }
 
 /* === List Items === */
@@ -399,56 +354,184 @@ SelectableItem.-outdated #content {
     color: $primary;
 }
 
-/* === Category Filter Bar === */
-#category-filter {
-    width: 100%;
-    height: 3;
-    padding: 0 1;
+/* === Install Modal === */
+InstallModal {
+    align: center middle;
+}
+
+#install-dialog {
+    width: 56;
+    max-height: 80%;
     background: $surface;
-    overflow-x: auto;
-    overflow-y: hidden;
+    border: round $primary;
+    padding: 1 2;
 }
 
-#category-filter.-hidden {
-    display: none;
-}
-
-CategoryFilterBar {
-    width: 100%;
-    height: 3;
-    padding: 0 1;
-    background: $surface;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-CategoryFilterBar.-hidden {
-    display: none;
-}
-
-CategoryButton {
-    min-width: 10;
-    height: 1;
-    padding: 0 2;
-    margin: 0 1 0 0;
-    border: none;
-    background: $panel;
-    color: $foreground;
-    transition: background 150ms, color 150ms;
-}
-
-CategoryButton:hover {
-    background: $surface;
+#dialog-title {
+    text-align: center;
+    text-style: bold;
     color: $primary;
+    width: 100%;
+    padding: 0 0 0 0;
 }
 
-CategoryButton.-active {
-    background: $accent;
-    color: $background;
+#dialog-sep {
+    width: 100%;
+    height: 1;
+    color: $panel;
+}
+
+#mode-label {
+    color: $foreground;
+    padding: 1 0 0 0;
+}
+
+#install-radio {
+    padding: 0 0 0 1;
+    height: auto;
+}
+
+#install-radio RadioButton {
+    height: 1;
+    padding: 0 1;
+    background: transparent;
+}
+
+#path-container {
+    height: auto;
+    padding: 0 1;
+}
+
+#path-container.-hidden {
+    display: none;
+}
+
+#path-input {
+    width: 100%;
+    height: 1;
+    border: round $panel;
+    background: $background;
+    padding: 0 1;
+}
+
+#path-input:focus {
+    border: round $primary;
+}
+
+#items-label {
+    color: $text-muted;
+    padding: 1 0 0 0;
+}
+
+#items-list {
+    max-height: 10;
+    padding: 0 1;
+    color: $foreground;
+}
+
+#dialog-buttons {
+    align: center middle;
+    padding: 1 0 0 0;
+    height: auto;
+}
+
+#dialog-buttons Button {
+    min-width: 14;
+    margin: 0 1;
+    height: 3;
+    border: solid $panel;
     text-style: bold;
 }
 
-CategoryButton:focus {
+#btn-install {
     background: $primary;
     color: $background;
+}
+
+#btn-install:hover {
+    background: $accent;
+    color: $background;
+}
+
+#btn-install:focus {
+    background: $accent;
+    color: $background;
+}
+
+#btn-cancel {
+    background: $panel;
+    color: $foreground;
+}
+
+#btn-cancel:hover {
+    background: $error 30%;
+    color: $error;
+}
+
+/* === Detail Modal === */
+DetailModal {
+    align: center middle;
+}
+
+#detail-dialog {
+    width: 70;
+    max-height: 85%;
+    background: $surface;
+    border: round $accent;
+    padding: 1 2;
+}
+
+#detail-title {
+    text-align: center;
+    text-style: bold;
+    color: $accent;
+    width: 100%;
+}
+
+#detail-sep {
+    width: 100%;
+    height: 1;
+    color: $panel;
+}
+
+#detail-scroll {
+    height: auto;
+    max-height: 40;
+    padding: 1 1;
+    scrollbar-size: 1 1;
+}
+
+#detail-meta {
+    color: $foreground;
+    padding: 0 0 0 0;
+}
+
+#detail-desc-label {
+    color: $primary;
+    padding: 0;
+}
+
+#detail-desc {
+    color: $foreground;
+    padding: 0 0 0 2;
+}
+
+#detail-body-label {
+    color: $primary;
+    padding: 0;
+}
+
+#detail-body {
+    color: $foreground;
+    padding: 0 0 0 2;
+}
+
+#detail-files-label {
+    color: $primary;
+    padding: 0;
+}
+
+#detail-files {
+    color: $foreground;
+    padding: 0 0 0 2;
 }
