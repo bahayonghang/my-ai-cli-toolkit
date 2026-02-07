@@ -37,7 +37,8 @@ pub fn get_log_dir() -> Option<PathBuf> {
 /// - Console logging (in debug builds)
 /// - Environment-based log level filtering
 pub fn init_logging() -> anyhow::Result<()> {
-    let log_dir = get_log_dir().ok_or_else(|| anyhow::anyhow!("Failed to determine log directory"))?;
+    let log_dir =
+        get_log_dir().ok_or_else(|| anyhow::anyhow!("Failed to determine log directory"))?;
 
     // Ensure log directory exists
     fs::create_dir_all(&log_dir)?;
@@ -51,11 +52,10 @@ pub fn init_logging() -> anyhow::Result<()> {
     let file_appender = RollingFileAppender::new(Rotation::DAILY, &log_dir, "agentkit.log");
 
     // Build the subscriber
-    let env_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| {
-            // Default log levels
-            EnvFilter::new("agentkit_desktop=info,agentkit_desktop_lib=info,warn")
-        });
+    let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+        // Default log levels
+        EnvFilter::new("agentkit_desktop=info,agentkit_desktop_lib=info,warn")
+    });
 
     // File layer - JSON format for structured logging
     let file_layer = fmt::layer()
@@ -150,11 +150,7 @@ fn cleanup_old_logs(log_dir: &PathBuf, retention_days: u64) -> anyhow::Result<u3
     }
 
     if deleted_count > 0 {
-        tracing::info!(
-            deleted_count,
-            retention_days,
-            "Cleaned up old log files"
-        );
+        tracing::info!(deleted_count, retention_days, "Cleaned up old log files");
     }
 
     Ok(deleted_count)
@@ -162,7 +158,8 @@ fn cleanup_old_logs(log_dir: &PathBuf, retention_days: u64) -> anyhow::Result<u3
 
 /// Manually trigger log cleanup (can be called from frontend)
 pub fn trigger_log_cleanup() -> anyhow::Result<u32> {
-    let log_dir = get_log_dir().ok_or_else(|| anyhow::anyhow!("Failed to determine log directory"))?;
+    let log_dir =
+        get_log_dir().ok_or_else(|| anyhow::anyhow!("Failed to determine log directory"))?;
     cleanup_old_logs(&log_dir, LOG_RETENTION_DAYS)
 }
 

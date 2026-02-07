@@ -88,10 +88,7 @@ impl ExternalHandler for NpmHandler {
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
                 error!(error = %stderr, "Failed to initialize npm project");
-                return Err(anyhow!(
-                    "Failed to initialize npm project: {}",
-                    stderr
-                ));
+                return Err(anyhow!("Failed to initialize npm project: {}", stderr));
             }
         }
 
@@ -137,13 +134,10 @@ impl ExternalHandler for PipHandler {
 
     fn check_prerequisites(&self) -> Result<()> {
         debug!("Checking pip prerequisites");
-        let output = Command::new("pip")
-            .arg("--version")
-            .output()
-            .map_err(|e| {
-                error!(error = %e, "pip is not installed or not in PATH");
-                anyhow!("pip is not installed or not in PATH")
-            })?;
+        let output = create_command("pip").arg("--version").output().map_err(|e| {
+            error!(error = %e, "pip is not installed or not in PATH");
+            anyhow!("pip is not installed or not in PATH")
+        })?;
 
         if !output.status.success() {
             error!("pip is not working properly");
@@ -171,7 +165,7 @@ impl ExternalHandler for PipHandler {
 
         // Install to target directory
         debug!(package = %package, "Running pip install");
-        let output = Command::new("pip")
+        let output = create_command("pip")
             .args([
                 "install",
                 "--target",
@@ -206,13 +200,10 @@ impl ExternalHandler for GitHandler {
 
     fn check_prerequisites(&self) -> Result<()> {
         debug!("Checking git prerequisites");
-        let output = Command::new("git")
-            .arg("--version")
-            .output()
-            .map_err(|e| {
-                error!(error = %e, "git is not installed or not in PATH");
-                anyhow!("git is not installed or not in PATH")
-            })?;
+        let output = create_command("git").arg("--version").output().map_err(|e| {
+            error!(error = %e, "git is not installed or not in PATH");
+            anyhow!("git is not installed or not in PATH")
+        })?;
 
         if !output.status.success() {
             error!("git is not working properly");
@@ -254,7 +245,7 @@ impl ExternalHandler for GitHandler {
         args.push(&target_str);
 
         debug!(args = ?args, "Running git clone");
-        let output = Command::new("git").args(&args).output()?;
+        let output = create_command("git").args(&args).output()?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
@@ -382,7 +373,10 @@ impl ExternalSkillsManager {
     /// Check if prerequisites for a source type are available
     pub fn check_prerequisites(&self, source: &ExternalSource) -> Result<()> {
         let handler = self.get_handler(source);
-        debug!(handler = handler.name(), "Checking prerequisites for handler");
+        debug!(
+            handler = handler.name(),
+            "Checking prerequisites for handler"
+        );
         handler.check_prerequisites()
     }
 

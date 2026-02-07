@@ -35,7 +35,7 @@ pub fn find_executable(name: &str) -> Option<PathBuf> {
         // npm global
         format!(
             "C:\\Users\\{}\\.npm-global\\{}.cmd",
-            home.split('\\').last()?,
+            home.split('\\').next_back()?,
             name
         ),
         // Standard Node.js
@@ -49,10 +49,7 @@ pub fn find_executable(name: &str) -> Option<PathBuf> {
         format!("{}\\AppData\\Roaming\\nvm\\current\\{}.cmd", home, name),
         format!("{}\\AppData\\Roaming\\nvm\\current\\{}.exe", home, name),
         // fnm (Fast Node Manager)
-        format!(
-            "{}\\AppData\\Local\\fnm_multishells\\*\\{}.cmd",
-            home, name
-        ),
+        format!("{}\\AppData\\Local\\fnm_multishells\\*\\{}.cmd", home, name),
     ];
 
     for path_str in common_paths {

@@ -6,7 +6,9 @@ use crate::database::Database;
 use crate::external::{ExternalSkillsManager, ExternalSource};
 use crate::logging::{self, LogInfo};
 use crate::manager::{CommandManager, SkillManager};
-use crate::marketplace::{MarketplaceCategory, MarketplaceClient, MarketplaceQuery, MarketplaceSkill, MarketplaceFilters};
+use crate::marketplace::{
+    MarketplaceCategory, MarketplaceClient, MarketplaceFilters, MarketplaceQuery, MarketplaceSkill,
+};
 use crate::marketplace_cache::MarketplaceCache;
 use crate::models::{
     ExternalSkill, LinkMode, Platform, PlatformInfo, ResourceItem, Settings, SyncResult,
@@ -83,7 +85,10 @@ pub fn detect_platforms() -> Vec<String> {
         .filter(|p| p.detected)
         .map(|p| p.platform.display_name().to_string())
         .collect();
-    info!(count = platforms.len(), "Detected platforms: {:?}", platforms);
+    info!(
+        count = platforms.len(),
+        "Detected platforms: {:?}", platforms
+    );
     platforms
 }
 
@@ -105,16 +110,16 @@ pub fn get_platform_info(platform: Platform) -> PlatformInfo {
 
 /// Get all resources (skills, commands, agents)
 #[tauri::command]
-pub fn get_resources(state: State<AppState>) -> Vec<ResourceItem> {
+pub fn get_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, String> {
     debug!("Getting all resources");
     // First, try to get from database
-    let db = state.db.lock().unwrap();
+    let db = state.db.lock().map_err(|e| e.to_string())?;
     let repo = ResourceRepository::new(db.conn());
 
     if let Ok(resources) = repo.get_all() {
         if !resources.is_empty() {
             info!(count = resources.len(), "Retrieved resources from database");
-            return resources;
+            return Ok(resources);
         }
     }
 
@@ -139,14 +144,14 @@ pub fn get_resources(state: State<AppState>) -> Vec<ResourceItem> {
     }
 
     info!(count = resources.len(), "Total resources discovered");
-    resources
+    Ok(resources)
 }
 
 /// Get a resource by ID
 #[tauri::command]
-pub fn get_resource_by_id(state: State<AppState>, id: String) -> Option<ResourceItem> {
+pub fn get_resource_by_id(state: State<AppState>, id: String) -> Result<Option<ResourceItem>, String> {
     debug!(id = %id, "Getting resource by ID");
-    let db = state.db.lock().unwrap();
+    let db = state.db.lock().map_err(|e| e.to_string())?;
     let repo = ResourceRepository::new(db.conn());
 
     match repo.get_by_id(&id) {
@@ -156,11 +161,11 @@ pub fn get_resource_by_id(state: State<AppState>, id: String) -> Option<Resource
             } else {
                 debug!(id = %id, "Resource not found");
             }
-            resource
+            Ok(resource)
         }
         Err(e) => {
             warn!(id = %id, error = %e, "Failed to get resource");
-            None
+            Ok(None)
         }
     }
 }
@@ -189,13 +194,10 @@ pub async fn install_resource(
             let skill_manager = SkillManager::new(state.skills_source.clone());
             let skills = skill_manager.discover().map_err(|e| e.to_string())?;
 
-            skills
-                .into_iter()
-                .find(|s| s.id == id)
-                .ok_or_else(|| {
-                    error!(id = %id, "Resource not found");
-                    format!("Resource not found: {}", id)
-                })?
+            skills.into_iter().find(|s| s.id == id).ok_or_else(|| {
+                error!(id = %id, "Resource not found");
+                format!("Resource not found: {}", id)
+            })?
         }
     };
 
@@ -247,12 +249,14 @@ pub async fn install_resource(
         for result in &results {
             if result.success {
                 debug!(id = %result.resource_id, platform = ?result.platform, "Updating platform status to synced");
-                let _ = repo.update_platform_status(
+                if let Err(e) = repo.update_platform_status(
                     &result.resource_id,
                     result.platform,
                     crate::models::SyncStatus::Synced,
                     None,
-                );
+                ) {
+                    warn!(error = %e, "Failed to update platform status");
+                }
             }
         }
     }
@@ -312,12 +316,14 @@ pub async fn uninstall_resource(
 
         for platform in &platforms {
             debug!(id = %id, platform = ?platform, "Updating platform status to not installed");
-            let _ = repo.update_platform_status(
+            if let Err(e) = repo.update_platform_status(
                 &id,
                 *platform,
                 crate::models::SyncStatus::NotInstalled,
                 None,
-            );
+            ) {
+                warn!(error = %e, "Failed to update platform status");
+            }
         }
     }
 
@@ -365,8 +371,12 @@ pub async fn update_resource(state: State<'_, AppState>, id: String) -> Result<b
         crate::models::ResourceType::Skill => {
             let manager = SkillManager::new(state.skills_source.clone());
             // Uninstall first, then reinstall
-            let _ = manager.uninstall(&resource, &installed_platforms, &sync_engine);
-            let _ = manager.install(&resource, &installed_platforms, &sync_engine);
+            if let Err(e) = manager.uninstall(&resource, &installed_platforms, &sync_engine) {
+                warn!(id = %id, error = %e, "Uninstall during update failed");
+            }
+            if let Err(e) = manager.install(&resource, &installed_platforms, &sync_engine) {
+                warn!(id = %id, error = %e, "Reinstall during update failed");
+            }
         }
         _ => {
             warn!(id = %id, resource_type = ?resource.resource_type, "Update not implemented for this resource type");
@@ -508,12 +518,12 @@ pub fn check_external_handlers(state: State<AppState>) -> Vec<(String, bool)> {
 
 /// Get application settings
 #[tauri::command]
-pub fn get_settings(state: State<AppState>) -> Settings {
+pub fn get_settings(state: State<AppState>) -> Result<Settings, String> {
     debug!("Getting application settings");
-    let db = state.db.lock().unwrap();
+    let db = state.db.lock().map_err(|e| e.to_string())?;
     let repo = SettingsRepository::new(db.conn());
 
-    repo.get_settings().unwrap_or_default()
+    Ok(repo.get_settings().unwrap_or_default())
 }
 
 /// Update application settings
@@ -546,13 +556,10 @@ pub async fn sync_resource(
     // Just call install for single platform
     let results = install_resource(state, id.clone(), vec![platform]).await?;
 
-    results
-        .into_iter()
-        .next()
-        .ok_or_else(|| {
-            error!(id = %id, "No sync result returned");
-            "No sync result".to_string()
-        })
+    results.into_iter().next().ok_or_else(|| {
+        error!(id = %id, "No sync result returned");
+        "No sync result".to_string()
+    })
 }
 
 /// Refresh resources by re-scanning the filesystem
@@ -581,7 +588,9 @@ pub fn refresh_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, St
         let repo = ResourceRepository::new(db.conn());
 
         for resource in &resources {
-            let _ = repo.insert(resource);
+            if let Err(e) = repo.insert(resource) {
+                warn!(id = %resource.id, error = %e, "Failed to insert resource into database");
+            }
         }
         debug!(count = resources.len(), "Saved resources to database");
     }
@@ -642,23 +651,25 @@ pub async fn get_marketplace_skills(
 
     // Check cache first (sync operation, lock released after this block)
     if let Some(cached_skills) = try_get_cached_skills(&state, &query)? {
-        info!(count = cached_skills.len(), "Returning cached marketplace skills");
+        info!(
+            count = cached_skills.len(),
+            "Returning cached marketplace skills"
+        );
         return Ok(cached_skills);
     }
 
     // Cache expired or empty, fetch from API (async operation, no lock held)
     info!("Fetching marketplace skills from API");
     let client = MarketplaceClient::new();
-    let skills = client
-        .fetch_skills(&query)
-        .await
-        .map_err(|e| {
-            error!(error = %e, "Failed to fetch marketplace skills");
-            e.to_string()
-        })?;
+    let skills = client.fetch_skills(&query).await.map_err(|e| {
+        error!(error = %e, "Failed to fetch marketplace skills");
+        e.to_string()
+    })?;
 
     // Update cache (sync operation)
-    let _ = update_skills_cache(&state, &skills);
+    if let Err(e) = update_skills_cache(&state, &skills) {
+        warn!(error = %e, "Failed to update skills cache");
+    }
 
     info!(count = skills.len(), "Fetched marketplace skills from API");
     Ok(skills)
@@ -724,7 +735,9 @@ pub fn install_marketplace_skill(
         let db = state.db.lock().map_err(|e| e.to_string())?;
         let cache = MarketplaceCache::new(db.conn());
         let skill_id = format!("{}/{}", owner, repo);
-        let _ = cache.update_skill_installed(&skill_id, true);
+        if let Err(e) = cache.update_skill_installed(&skill_id, true) {
+            warn!(skill_id = %skill_id, error = %e, "Failed to update cache installed status");
+        }
     } else {
         warn!(owner = %owner, repo = %repo, message = ?result.message, "Marketplace skill installation returned failure");
     }
@@ -752,7 +765,9 @@ pub fn uninstall_marketplace_skill(
         let db = state.db.lock().map_err(|e| e.to_string())?;
         let cache = MarketplaceCache::new(db.conn());
         let skill_id = format!("{}/{}", owner, repo);
-        let _ = cache.update_skill_installed(&skill_id, false);
+        if let Err(e) = cache.update_skill_installed(&skill_id, false) {
+            warn!(skill_id = %skill_id, error = %e, "Failed to update cache uninstalled status");
+        }
     } else {
         warn!(owner = %owner, repo = %repo, message = ?result.message, "Marketplace skill uninstall returned failure");
     }
@@ -782,18 +797,20 @@ pub async fn refresh_marketplace_cache(
     debug!("Fetching fresh data from marketplace API");
     let client = MarketplaceClient::new();
     let query = MarketplaceQuery::default();
-    let skills = client
-        .fetch_skills(&query)
-        .await
-        .map_err(|e| {
-            error!(error = %e, "Failed to fetch skills from API");
-            e.to_string()
-        })?;
+    let skills = client.fetch_skills(&query).await.map_err(|e| {
+        error!(error = %e, "Failed to fetch skills from API");
+        e.to_string()
+    })?;
 
     // Update cache with fresh data (sync operation)
-    let _ = update_skills_cache(&state, &skills);
+    if let Err(e) = update_skills_cache(&state, &skills) {
+        warn!(error = %e, "Failed to update skills cache after refresh");
+    }
 
-    info!(count = skills.len(), "Marketplace cache refreshed successfully");
+    info!(
+        count = skills.len(),
+        "Marketplace cache refreshed successfully"
+    );
     Ok(skills)
 }
 
@@ -818,7 +835,10 @@ pub async fn get_marketplace_categories(
     }; // Lock released here
 
     if let Some(categories) = cache_result {
-        info!(count = categories.len(), "Returning cached marketplace categories");
+        info!(
+            count = categories.len(),
+            "Returning cached marketplace categories"
+        );
         return Ok(categories);
     }
 
@@ -830,7 +850,10 @@ pub async fn get_marketplace_categories(
         e.to_string()
     })?;
 
-    info!(count = categories.len(), "Fetched marketplace categories from API");
+    info!(
+        count = categories.len(),
+        "Fetched marketplace categories from API"
+    );
     Ok(categories)
 }
 

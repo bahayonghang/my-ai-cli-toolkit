@@ -134,7 +134,8 @@ impl<'a> MarketplaceCache<'a> {
 
         let mut stmt = self.conn.prepare(&sql)?;
 
-        let params_refs: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|p| p.as_ref()).collect();
+        let params_refs: Vec<&dyn rusqlite::ToSql> =
+            params_vec.iter().map(|p| p.as_ref()).collect();
 
         let skills: Vec<MarketplaceSkill> = stmt
             .query_map(params_refs.as_slice(), |row| {
@@ -206,7 +207,10 @@ impl<'a> MarketplaceCache<'a> {
             [],
         )?;
 
-        info!(count = skills.len(), "Marketplace cache updated successfully");
+        info!(
+            count = skills.len(),
+            "Marketplace cache updated successfully"
+        );
         Ok(())
     }
 
@@ -242,7 +246,11 @@ impl<'a> MarketplaceCache<'a> {
             )
             .unwrap_or(false);
 
-        debug!(is_valid = is_valid, ttl_seconds = ttl, "Cache validity checked");
+        debug!(
+            is_valid = is_valid,
+            ttl_seconds = ttl,
+            "Cache validity checked"
+        );
         Ok(is_valid)
     }
 
@@ -261,11 +269,11 @@ impl<'a> MarketplaceCache<'a> {
     pub fn get_cache_stats(&self) -> Result<CacheStats> {
         debug!("Getting cache statistics");
 
-        let skill_count: u32 = self
-            .conn
-            .query_row("SELECT COUNT(*) FROM marketplace_skills", [], |row| {
-                row.get(0)
-            })?;
+        let skill_count: u32 =
+            self.conn
+                .query_row("SELECT COUNT(*) FROM marketplace_skills", [], |row| {
+                    row.get(0)
+                })?;
 
         let last_refresh: Option<String> = self
             .conn

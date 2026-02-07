@@ -117,8 +117,14 @@ impl MarketplaceClient {
 
         let mut headers = HeaderMap::new();
         headers.insert(UA, HeaderValue::from_static(USER_AGENT));
-        headers.insert(ACCEPT, HeaderValue::from_static("application/json, text/plain, */*"));
-        headers.insert(ACCEPT_LANGUAGE, HeaderValue::from_static("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"));
+        headers.insert(
+            ACCEPT,
+            HeaderValue::from_static("application/json, text/plain, */*"),
+        );
+        headers.insert(
+            ACCEPT_LANGUAGE,
+            HeaderValue::from_static("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"),
+        );
 
         Self {
             client: reqwest::Client::builder()
@@ -139,8 +145,14 @@ impl MarketplaceClient {
 
         let mut headers = HeaderMap::new();
         headers.insert(UA, HeaderValue::from_static(USER_AGENT));
-        headers.insert(ACCEPT, HeaderValue::from_static("application/json, text/plain, */*"));
-        headers.insert(ACCEPT_LANGUAGE, HeaderValue::from_static("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"));
+        headers.insert(
+            ACCEPT,
+            HeaderValue::from_static("application/json, text/plain, */*"),
+        );
+        headers.insert(
+            ACCEPT_LANGUAGE,
+            HeaderValue::from_static("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"),
+        );
 
         Self {
             client: reqwest::Client::builder()
@@ -169,7 +181,10 @@ impl MarketplaceClient {
     }
 
     /// Internal method to fetch skills from API
-    async fn fetch_skills_from_api(&self, query: &MarketplaceQuery) -> Result<Vec<MarketplaceSkill>> {
+    async fn fetch_skills_from_api(
+        &self,
+        query: &MarketplaceQuery,
+    ) -> Result<Vec<MarketplaceSkill>> {
         let has_search = query
             .search
             .as_ref()
@@ -223,15 +238,10 @@ impl MarketplaceClient {
 
         debug!(url = %url, "Sending API request");
 
-        let response = self
-            .client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|e| {
-                error!(error = %e, "Network error during API request");
-                anyhow!("Network error: {} (check your internet connection)", e)
-            })?;
+        let response = self.client.get(&url).send().await.map_err(|e| {
+            error!(error = %e, "Network error during API request");
+            anyhow!("Network error: {} (check your internet connection)", e)
+        })?;
 
         let status = response.status();
         debug!(status = %status, "Received API response");
@@ -253,7 +263,10 @@ impl MarketplaceClient {
                 }
                 500..=599 => {
                     error!(status = %status, "Server error from API");
-                    format!("Server error ({}). The service may be temporarily down.", status)
+                    format!(
+                        "Server error ({}). The service may be temporarily down.",
+                        status
+                    )
                 }
                 _ => {
                     error!(status = %status, "API request failed");
@@ -436,10 +449,7 @@ fn normalize_skill_from_value(value: &serde_json::Value) -> Option<MarketplaceSk
         .and_then(|v| v.as_str())
         .map(|s| s.to_string());
 
-    let stars = obj
-        .get("stars")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0) as u32;
+    let stars = obj.get("stars").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
 
     let downloads = obj
         .get("downloads")
@@ -537,15 +547,17 @@ fn parse_categories_response(text: &str) -> Result<Vec<MarketplaceCategory>> {
         return Ok(categories);
     }
 
-    if let Ok(api_response) = serde_json::from_str::<ApiResponse<Vec<MarketplaceCategory>>>(text)
-    {
+    if let Ok(api_response) = serde_json::from_str::<ApiResponse<Vec<MarketplaceCategory>>>(text) {
         if let Some(error) = api_response.error {
             let message = format_api_error(&error);
             error!(error = %message, "API returned error");
             return Err(anyhow!("API error: {}", message));
         }
         if let Some(data) = api_response.data {
-            info!(count = data.len(), "Fetched categories from wrapped response");
+            info!(
+                count = data.len(),
+                "Fetched categories from wrapped response"
+            );
             return Ok(data);
         }
     }
@@ -612,7 +624,7 @@ fn normalize_category_from_value(value: &serde_json::Value) -> Option<Marketplac
         .get("id")
         .and_then(|v| v.as_str())
         .or_else(|| obj.get("slug").and_then(|v| v.as_str()))
-        .unwrap_or_else(|| name.as_str())
+        .unwrap_or(name.as_str())
         .to_string();
 
     let count = obj
@@ -676,7 +688,9 @@ fn default_skills() -> Vec<MarketplaceSkill> {
         MarketplaceSkill {
             id: "anthropics/claude-code".to_string(),
             name: "Claude Code".to_string(),
-            description: Some("Official Claude Code skills and workflows for AI-assisted development".to_string()),
+            description: Some(
+                "Official Claude Code skills and workflows for AI-assisted development".to_string(),
+            ),
             owner: "anthropics".to_string(),
             repo: "claude-code".to_string(),
             stars: 5000,
@@ -690,7 +704,9 @@ fn default_skills() -> Vec<MarketplaceSkill> {
         MarketplaceSkill {
             id: "anthropics/prompt-engineering".to_string(),
             name: "Prompt Engineering".to_string(),
-            description: Some("Best practices and templates for effective prompt engineering".to_string()),
+            description: Some(
+                "Best practices and templates for effective prompt engineering".to_string(),
+            ),
             owner: "anthropics".to_string(),
             repo: "prompt-engineering".to_string(),
             stars: 3500,
@@ -704,7 +720,9 @@ fn default_skills() -> Vec<MarketplaceSkill> {
         MarketplaceSkill {
             id: "community/web-developer".to_string(),
             name: "Web Developer".to_string(),
-            description: Some("Full-stack web development skills with React, Vue, and Node.js".to_string()),
+            description: Some(
+                "Full-stack web development skills with React, Vue, and Node.js".to_string(),
+            ),
             owner: "community".to_string(),
             repo: "web-developer".to_string(),
             stars: 2800,
@@ -732,7 +750,9 @@ fn default_skills() -> Vec<MarketplaceSkill> {
         MarketplaceSkill {
             id: "community/devops-toolkit".to_string(),
             name: "DevOps Toolkit".to_string(),
-            description: Some("CI/CD, Docker, Kubernetes, and infrastructure automation skills".to_string()),
+            description: Some(
+                "CI/CD, Docker, Kubernetes, and infrastructure automation skills".to_string(),
+            ),
             owner: "community".to_string(),
             repo: "devops-toolkit".to_string(),
             stars: 1800,
@@ -746,7 +766,9 @@ fn default_skills() -> Vec<MarketplaceSkill> {
         MarketplaceSkill {
             id: "community/python-data-science".to_string(),
             name: "Python Data Science".to_string(),
-            description: Some("Data analysis, visualization, and machine learning with Python".to_string()),
+            description: Some(
+                "Data analysis, visualization, and machine learning with Python".to_string(),
+            ),
             owner: "community".to_string(),
             repo: "python-data-science".to_string(),
             stars: 1500,
