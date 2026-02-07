@@ -1,6 +1,6 @@
-"""Header 组件 - 简洁顶部栏
+"""Header component - compact title bar
 
-显示标题和平台徽章，CCR 风格。支持显示项目路径。
+Displays app title and platform badge with icon.
 Requirements: 3.1, 3.2, 3.3, 3.4
 """
 
@@ -9,12 +9,24 @@ from pathlib import Path
 from textual.containers import Horizontal
 from textual.widgets import Static
 
+# Platform icon mapping (shared with platform_select)
+PLATFORM_ICONS = {
+    "claude": "🤖",
+    "codex": "📦",
+    "gemini": "✨",
+    "qwen": "🌙",
+    "antigravity": "🚀",
+    "windsurf": "🏄",
+    "kiro": "🧭",
+    "trae": "🧩",
+}
+
 
 class Header(Static):
-    """简洁顶部标题栏
+    """Compact title bar
 
-    左侧: 🚀 标题 [项目路径]
-    右侧: 平台徽章 (橙色背景) [Kiro 标识]
+    Left: 🚀 Title [project path]
+    Right: Platform badge with icon (e.g. "🤖 CLAUDE")
     """
 
     DEFAULT_CSS = """
@@ -39,7 +51,7 @@ class Header(Static):
     Header #platform-badge {
         width: auto;
         min-width: 10;
-        background: $warning;
+        background: $accent;
         color: $background;
         text-style: bold;
         padding: 0 2;
@@ -63,31 +75,30 @@ class Header(Static):
             yield Static(self._format_badge(), id="platform-badge")
 
     def _format_title(self) -> str:
-        """格式化标题，包含项目路径信息"""
+        """Format title with optional project path."""
         title = self.APP_TITLE
         if self._project_path:
             try:
-                # 尝试获取相对路径，更简洁
                 rel_path = Path(self._project_path).relative_to(Path.cwd())
                 title += f" | 📁 {rel_path}"
             except ValueError:
-                # 如果无法获取相对路径，使用绝对路径
                 title += f" | 📁 {self._project_path}"
         return title
 
     def _format_badge(self) -> str:
-        """格式化平台徽章，包含 Kiro 标识"""
-        badge = self._platform.upper() if self._platform else "—"
-        if self._platform == "kiro":
-            badge += " [KIRO]"
-        return badge
+        """Format platform badge with icon."""
+        if not self._platform:
+            return "—"
+        icon = PLATFORM_ICONS.get(self._platform, "📁")
+        name = self._platform.upper()
+        return f"{icon} {name}"
 
     def set_platform(
         self,
         platform: str,
         project_path: str | None = None
     ) -> None:
-        """更新平台信息"""
+        """Update platform info."""
         self._platform = platform
         self._project_path = project_path
         try:

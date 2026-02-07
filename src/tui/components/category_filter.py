@@ -42,7 +42,7 @@ class CategoryButton(Button):
     DEFAULT_CSS = """
     CategoryButton {
         min-width: 10;
-        height: 2;
+        height: 1;
         padding: 0 2;
         margin: 0 1 0 0;
         border: none;
@@ -52,17 +52,17 @@ class CategoryButton(Button):
 
     CategoryButton:hover {
         background: $surface-lighten-1;
-        color: $accent;
+        color: $primary;
     }
 
     CategoryButton.-active {
-        background: $primary;
+        background: $accent;
         color: $background;
         text-style: bold;
     }
 
     CategoryButton:focus {
-        background: $accent;
+        background: $primary;
         color: $background;
     }
     """
@@ -110,8 +110,8 @@ class CategoryFilterBar(Horizontal):
     DEFAULT_CSS = """
     CategoryFilterBar {
         width: 100%;
-        height: 4;
-        padding: 1 2;
+        height: 3;
+        padding: 0 1;
         background: $surface;
         overflow-x: auto;
         overflow-y: hidden;

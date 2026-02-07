@@ -1,24 +1,25 @@
-"""MyClaude Skills TUI 自定义主题
+"""MyClaude Skills TUI Custom Theme
 
-定义 MyClaude 专属的深色主题，灵感来自现代 IDE 和终端应用。
+Catppuccin Mocha inspired dark theme for modern IDE-like aesthetics.
 
 Requirements: 1.1, 1.4
 """
 
 from textual.theme import Theme
 
-# 主题颜色常量 - 便于测试和复用
+# Theme color constants - for testing and reuse
+# Catppuccin Mocha palette
 THEME_COLORS = {
-    "primary": "#22D3EE",      # Cyan-400
-    "secondary": "#60A5FA",    # Blue-400
-    "accent": "#F97316",       # Orange-500
-    "foreground": "#F8FAFC",   # Slate-50
-    "background": "#0B1020",   # Deep Navy
-    "success": "#10B981",      # Emerald-500
-    "warning": "#F59E0B",      # Amber-500
-    "error": "#EF4444",        # Red-500
-    "surface": "#111827",      # Slate-900 (Card Background)
-    "panel": "#1F2937",        # Slate-800 (Border/Highlight)
+    "primary": "#89b4fa",      # Blue (soft blue accent)
+    "secondary": "#74c7ec",    # Sapphire (complementary)
+    "accent": "#cba6f7",       # Mauve (highlight/selection)
+    "foreground": "#cdd6f4",   # Text (readable light)
+    "background": "#1e1e2e",   # Base (warm dark)
+    "success": "#a6e3a1",      # Green (confirmation)
+    "warning": "#fab387",      # Peach (attention)
+    "error": "#f38ba8",        # Red (error/danger)
+    "surface": "#313244",      # Surface0 (elevated panels)
+    "panel": "#45475a",        # Surface2 (borders/dividers)
 }
 
 # 必需的主题属性列表
@@ -37,10 +38,10 @@ REQUIRED_THEME_PROPERTIES = [
 
 
 def create_myclaude_theme() -> Theme:
-    """创建 MyClaude 自定义主题
+    """Create the MyClaude custom theme.
 
     Returns:
-        配置好的 Theme 对象
+        Configured Theme object with Catppuccin Mocha palette
     """
     return Theme(
         name="myclaude",
@@ -60,11 +61,11 @@ def create_myclaude_theme() -> Theme:
             "footer-key-foreground": THEME_COLORS["primary"],
             "input-selection-background": f"{THEME_COLORS['primary']} 40%",
             "input-cursor-foreground": THEME_COLORS["primary"],
-            "text-muted": "#94A3B8",
-            "text-subtle": "#7C879A",
+            "text-muted": "#a6adc8",     # Subtext0
+            "text-subtle": "#6c7086",     # Overlay0
         },
     )
 
 
-# 预创建的主题实例
+# Pre-created theme instance
 myclaudeTheme = create_myclaude_theme()

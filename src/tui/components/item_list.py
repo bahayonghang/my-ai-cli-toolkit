@@ -76,54 +76,54 @@ def pad_to_width(text: str, target_width: int) -> str:
 
 
 class SelectableItem(ListItem):
-    """可选择列表项
+    """Selectable list item
 
-    双行显示: ☐/☑  ✓/○/⚠  name  -  description  [dates]
-    优化视觉效果：增加行高和列间距
+    Single-line display: ☐/☑ ✓/○/⚠ name description
+    Compact 1-line layout for maximum information density.
     """
 
     DEFAULT_CSS = """
     SelectableItem {
-        height: 2;
-        padding: 0 2;
+        height: 1;
+        padding: 0 1;
         background: transparent;
     }
 
     SelectableItem:hover {
-        background: $surface-lighten-2;
+        background: $surface-lighten-1;
     }
 
-    /* 选中状态 (Space 选中) - 橙色高亮 */
+    /* Selection state (Space toggle) - accent highlight */
     SelectableItem.-selected {
-        background: $warning 30%;
+        background: $accent 20%;
     }
 
     SelectableItem.-selected #content {
-        color: $warning;
+        color: $accent;
         text-style: bold;
     }
 
-    /* ListView 高亮状态 (键盘浏览) - 实色绿色背景 */
+    /* Keyboard navigation highlight - primary background */
     SelectableItem.-highlight {
-        background: $success;
+        background: $primary 30%;
     }
 
     SelectableItem.-highlight #content {
-        color: $background;
+        color: $foreground;
         text-style: bold;
     }
 
-    /* 选中且高亮 */
+    /* Selected + highlighted */
     SelectableItem.-selected.-highlight {
-        background: $success;
+        background: $primary 30%;
     }
 
     SelectableItem.-selected.-highlight #content {
-        color: $background;
+        color: $foreground;
         text-style: bold;
     }
 
-    /* 需要更新的项目 - 黄色警告 */
+    /* Outdated items - warning color */
     SelectableItem.-outdated #content {
         color: $warning;
     }
@@ -175,61 +175,40 @@ class SelectableItem(ListItem):
             self.post_message(self.SelectionChanged(self, value))
 
     def compose(self):
-        """单个 Static 组件，最小化嵌套"""
         self._content = Static(self._render_line(False), id="content")
         yield self._content
 
-    def _format_datetime(self, dt) -> str:
-        """格式化日期时间为简短格式
-
-        Args:
-            dt: datetime 对象
-
-        Returns:
-            格式化的日期字符串，如 "01-21 14:30"
-        """
-        if dt is None:
-            return "N/A".ljust(11)
-        return dt.strftime("%m-%d %H:%M")
-
     def _render_line(self, highlighted: bool = False) -> str:
-        """渲染单行内容（表格式布局，优化间距）
+        """Render single-line content (compact table layout).
 
-        格式: ▶  ☐  ✓  Name                       Description                                   Src Time      Tgt Time
+        Format: ▶ ☐ ✓ Name                           Description...
         """
-        # Column separator (3 spaces for better readability)
-        SEP = "   "
+        SEP = "  "
 
-        # 高亮指示箭头
+        # Highlight arrow indicator
         arrow = "▶" if highlighted else " "
 
-        # 复选框列 (固定1字符)
+        # Checkbox column (1 char)
         checkbox = "☑" if self._selected else "☐"
 
-        # 状态列 (固定1字符)
+        # Status column (1 char)
         if self.needs_update:
-            status = "⚠"  # 需要更新
+            status = "⚠"
         elif self.installed:
-            status = "✓"  # 已安装
+            status = "✓"
         else:
-            status = "○"  # 未安装
+            status = "○"
 
-        # 名称列 (固定显示宽度 26)
-        name_text = truncate_to_width(self.item_name, 26)
-        name = pad_to_width(name_text, 26)
+        # Name column (fixed display width 30)
+        name_text = truncate_to_width(self.item_name, 30)
+        name = pad_to_width(name_text, 30)
 
-        # 描述列 (固定显示宽度 42，考虑中文字符)
+        # Description column (fill remaining, ~50 chars)
         desc = self.description or ""
-        desc_text = truncate_to_width(desc, 42)
-        desc = pad_to_width(desc_text, 42)
+        desc_text = truncate_to_width(desc, 50)
+        desc = pad_to_width(desc_text, 50)
 
-        # 源时间列 (固定宽度 12: "MM-DD HH:MM")
-        src_time = self._format_datetime(self.item_info.source_mtime).ljust(12)
-
-        # 目标时间列 (固定宽度 12)
-        tgt_time = self._format_datetime(self.item_info.target_mtime).ljust(12)
-
-        return f"{arrow}{SEP}{checkbox}{SEP}{status}{SEP}{name}{SEP}{desc}{SEP}{src_time}{SEP}{tgt_time}"
+        return f"{arrow}{SEP}{checkbox}{SEP}{status}{SEP}{name}{SEP}{desc}"
 
     def _update_display(self) -> None:
         """更新显示"""
@@ -279,13 +258,13 @@ class ItemListView(ListView):
         border: round $accent;
     }
 
-    /* 表头样式 */
+    /* Table header style */
     .list-header {
         background: $surface;
         color: $accent;
         text-style: bold;
-        height: 2;
-        padding: 0 2;
+        height: 1;
+        padding: 0 1;
     }
     """
 
@@ -309,11 +288,9 @@ class ItemListView(ListView):
         return self._all_items
 
     def _create_header(self) -> ListItem:
-        """创建表头"""
-        # 格式与 SelectableItem._render_line 对齐（使用 3 空格分隔符）
-        # 列: 箭头(1) SEP(3) 复选框(1) SEP(3) 状态(1) SEP(3) 名称(26) SEP(3) 描述(42) SEP(3) 源时间(12) SEP(3) 目标时间(12)
-        SEP = "   "
-        header_text = f" {SEP}☐{SEP}✓{SEP}{'Name':<26}{SEP}{'Description':<42}{SEP}{'Src Time':<12}{SEP}{'Tgt Time':<12}"
+        """Create table header row."""
+        SEP = "  "
+        header_text = f" {SEP}☐{SEP}✓{SEP}{'Name':<30}{SEP}{'Description':<50}"
         header = ListItem(Static(header_text, classes="list-header"))
         header.can_focus = False
         return header
@@ -327,8 +304,7 @@ class ItemListView(ListView):
         self.append(self._create_header())
 
         if not item_infos:
-            # 空状态
-            empty = ListItem(Static("  (empty)", classes="text-muted"))
+            empty = ListItem(Static("  📭 No items found", classes="text-muted"))
             empty.can_focus = False
             self.append(empty)
             return
@@ -393,7 +369,7 @@ class ItemListView(ListView):
         visible = [item for item in self._all_items if self._matches_filter(item)]
 
         if not visible:
-            empty = ListItem(Static("  No matches", classes="text-muted"))
+            empty = ListItem(Static("  🔍 No matches found", classes="text-muted"))
             empty.can_focus = False
             self.append(empty)
             return
