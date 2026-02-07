@@ -5,7 +5,6 @@
 Requirements: 5.1, 4.1, 3.1, 6.1, 7.1
 """
 
-
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
@@ -631,11 +630,7 @@ class MainScreen(Screen):
                     status_lines.append(f"  {status} {dep.name}")
 
                 missing = [d.name for d in result.dependencies if not d.satisfied]
-                self._show_message(
-                    f"❌ 技能 {skill.name} 缺少依赖: {', '.join(missing)}\n" +
-                    "\n".join(status_lines),
-                    "error"
-                )
+                self._show_message(f"❌ 技能 {skill.name} 缺少依赖: {', '.join(missing)}\n" + "\n".join(status_lines), "error")
         except ValueError as e:
             self._show_message(f"❌ {e}", "error")
 
@@ -711,9 +706,7 @@ class MainScreen(Screen):
         if event.input.id == "search-input":
             self._get_skill_list().focus()
 
-    def on_skill_list_view_skill_highlighted(
-        self, event: SkillListView.SkillHighlighted
-    ) -> None:
+    def on_skill_list_view_skill_highlighted(self, event: SkillListView.SkillHighlighted) -> None:
         """处理技能高亮变化事件"""
         if event.skill:
             self._update_status(f"Selected: {event.skill.name}")

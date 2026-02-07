@@ -19,6 +19,7 @@ from textual.widgets.option_list import Option
 @dataclass
 class PlatformConfig:
     """平台配置数据类"""
+
     id: str
     name: str
     path: str
@@ -165,19 +166,13 @@ class PlatformSelectScreen(Screen):
         # 顶部标题栏 - 使用大字体 ASCII 风格
         with Vertical(id="header-area"):
             with Vertical(id="brand"):
-                yield Static(
-                    "📦  E x t e r n a l   S k i l l s   M a n a g e r  📦",
-                    id="brand-text"
-                )
+                yield Static("📦  E x t e r n a l   S k i l l s   M a n a g e r  📦", id="brand-text")
 
         # 中央选择区
         with Vertical(id="main-area"):
             with Vertical(id="select-container"):
                 yield Static("Select your target platform", id="subtitle")
-                yield OptionList(
-                    *[Option(self._format_option(p), id=p.id) for p in self.PLATFORMS],
-                    id="platform-list"
-                )
+                yield OptionList(*[Option(self._format_option(p), id=p.id) for p in self.PLATFORMS], id="platform-list")
 
         # 底部提示栏
         with Vertical(id="footer-area"):

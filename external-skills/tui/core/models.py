@@ -26,6 +26,7 @@ class ExternalSkillInfo:
         license: 许可证
         is_supported: 是否支持当前平台
     """
+
     name: str
     description: str
     skill_type: str  # npm-cli | npx | pip-cli | git
@@ -47,6 +48,7 @@ class DependencyStatus:
         name: 依赖名称 (如 node, npm, python3, git)
         satisfied: 是否满足
     """
+
     name: str
     satisfied: bool
 
@@ -61,6 +63,7 @@ class DependencyCheckResult:
         all_satisfied: 是否所有依赖都满足
         dependencies: 各依赖的状态列表
     """
+
     all_satisfied: bool
     dependencies: list[DependencyStatus] = field(default_factory=list)
 
@@ -77,6 +80,7 @@ class InstallResult:
         message: 结果消息
         error: 错误信息 (失败时)
     """
+
     success: bool
     skill_name: str
     message: str

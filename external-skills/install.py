@@ -16,6 +16,7 @@ Usage:
 from __future__ import annotations
 
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -63,6 +64,7 @@ BANNER = r"""
 @dataclass
 class RegistryConfig:
     """注册表全局配置"""
+
     default_install_method: str = "symlink"
     default_scope: str = "global"
     auto_detect_agents: bool = True
@@ -72,6 +74,7 @@ class RegistryConfig:
 @dataclass
 class ExternalSkill:
     """外部技能定义"""
+
     name: str
     description: str = ""
     type: str = "npm-cli"  # npm-cli | npx | pip-cli | git | vercel
@@ -209,18 +212,35 @@ def check_dependencies(requires: list[str]) -> tuple[bool, list[str]]:
     return len(missing) == 0, missing
 
 
+def _parse_command(cmd: str) -> list[str]:
+    """Parse a command string into argument list safely.
+
+    Args:
+        cmd: Command string
+
+    Returns:
+        List of arguments
+    """
+    posix = sys.platform != "win32"
+    return shlex.split(cmd, posix=posix)
+
+
 def run_command(
     cmd: str | list[str],
     cwd: Path | None = None,
     dry_run: bool = False,
     capture: bool = False,
 ) -> tuple[bool, str]:
-    """执行命令"""
-    if isinstance(cmd, list):
-        cmd_str = subprocess.list2cmdline(cmd)
-    else:
-        cmd_str = cmd
+    """Execute command safely without shell injection.
 
+    Always uses shell=False by parsing string commands with shlex.
+    """
+    if isinstance(cmd, list):
+        cmd_list = cmd
+    else:
+        cmd_list = _parse_command(cmd)
+
+    cmd_str = subprocess.list2cmdline(cmd_list)
     rprint(f"[cyan]$ {cmd_str}[/cyan]")
 
     if dry_run:
@@ -230,8 +250,8 @@ def run_command(
     try:
         if capture:
             result = subprocess.run(
-                cmd if isinstance(cmd, list) else cmd_str,
-                shell=not isinstance(cmd, list),
+                cmd_list,
+                shell=False,
                 cwd=cwd,
                 text=True,
                 capture_output=True,
@@ -239,8 +259,8 @@ def run_command(
             return result.returncode == 0, result.stdout
         else:
             result = subprocess.run(
-                cmd if isinstance(cmd, list) else cmd_str,
-                shell=not isinstance(cmd, list),
+                cmd_list,
+                shell=False,
                 cwd=cwd,
                 text=True,
             )
@@ -261,10 +281,7 @@ def build_init_command(skill: ExternalSkill, target: str) -> str:
     mapped_target = skill.target_map.get(target, target)
 
     # 替换参数中的 {target}
-    args = [
-        arg.replace("{target}", mapped_target)
-        for arg in skill.init_args
-    ]
+    args = [arg.replace("{target}", mapped_target) for arg in skill.init_args]
 
     return f"{skill.init_command} {' '.join(args)}"
 
@@ -285,6 +302,7 @@ def create_symlink(source: Path, target: Path) -> bool:
         if sys.platform == "win32":
             # Windows 需要管理员权限或开发者模式
             import ctypes
+
             if ctypes.windll.shell32.IsUserAnAdmin():
                 target.symlink_to(source, target_is_directory=source.is_dir())
             else:
@@ -388,13 +406,13 @@ def show_info(
     panel_content = f"""
 [dim]Description:[/dim] {skill.description}
 [dim]Type:[/dim] {skill.type}
-[dim]Install Method:[/dim] {'🔗 ' if skill.install_method == 'symlink' else '📋 '}{skill.install_method}
-[dim]Scope:[/dim] {'🌍 ' if skill.scope == 'global' else '📁 '}{skill.scope}
-[dim]Package:[/dim] {skill.package or skill.repo or '-'}
-[dim]License:[/dim] {skill.license or '-'}
-[dim]Homepage:[/dim] {skill.homepage or '-'}
-[dim]Requires:[/dim] {', '.join(skill.requires) or '-'}
-[dim]Supported Targets:[/dim] {', '.join(skill.supported_targets[:8])}{'...' if len(skill.supported_targets) > 8 else ''}
+[dim]Install Method:[/dim] {"🔗 " if skill.install_method == "symlink" else "📋 "}{skill.install_method}
+[dim]Scope:[/dim] {"🌍 " if skill.scope == "global" else "📁 "}{skill.scope}
+[dim]Package:[/dim] {skill.package or skill.repo or "-"}
+[dim]License:[/dim] {skill.license or "-"}
+[dim]Homepage:[/dim] {skill.homepage or "-"}
+[dim]Requires:[/dim] {", ".join(skill.requires) or "-"}
+[dim]Supported Targets:[/dim] {", ".join(skill.supported_targets[:8])}{"..." if len(skill.supported_targets) > 8 else ""}
 """
 
     if skill.install_command:
@@ -439,19 +457,27 @@ def check_skill(
 def install_skill(
     skill_name: str = typer.Argument(..., help="技能名称"),
     target: str = typer.Option(
-        "claude", "--target", "-t",
+        "claude",
+        "--target",
+        "-t",
         help="目标平台 (claude, codex, gemini, windsurf, kiro, etc.)",
     ),
     project_dir: Path | None = typer.Option(
-        None, "--project", "-p",
+        None,
+        "--project",
+        "-p",
         help="项目目录 (默认: 当前目录)",
     ),
     skip_install: bool = typer.Option(
-        False, "--skip-install", "-s",
+        False,
+        "--skip-install",
+        "-s",
         help="跳过全局安装，仅执行初始化",
     ),
     dry_run: bool = typer.Option(
-        False, "--dry-run", "-n",
+        False,
+        "--dry-run",
+        "-n",
         help="只显示命令，不执行",
     ),
 ):
@@ -504,7 +530,13 @@ def install_skill(
             rprint(f"[red]❌ git 类型技能缺少 repo 字段: {skill.name}[/red]")
             raise typer.Exit(1)
 
-        dest = cwd / (skill.dest or os.path.join(".claude", "plugins", skill.name))
+        dest_value = skill.dest or os.path.join(".claude", "plugins", skill.name)
+        dest = cwd / dest_value
+        # Validate against path traversal
+        resolved_dest = dest.resolve()
+        if not resolved_dest.is_relative_to(cwd.resolve()):
+            rprint(f"[red]❌ Path traversal detected in dest: {dest_value}[/red]")
+            raise typer.Exit(1)
         dest_parent = dest.parent
         if not dest_parent.exists() and not dry_run:
             dest_parent.mkdir(parents=True, exist_ok=True)
@@ -571,15 +603,21 @@ def install_skill(
 def init_skill(
     skill_name: str = typer.Argument(..., help="技能名称"),
     target: str = typer.Option(
-        "claude", "--target", "-t",
+        "claude",
+        "--target",
+        "-t",
         help="目标平台",
     ),
     project_dir: Path | None = typer.Option(
-        None, "--project", "-p",
+        None,
+        "--project",
+        "-p",
         help="项目目录 (默认: 当前目录)",
     ),
     dry_run: bool = typer.Option(
-        False, "--dry-run", "-n",
+        False,
+        "--dry-run",
+        "-n",
         help="只显示命令，不执行",
     ),
 ):

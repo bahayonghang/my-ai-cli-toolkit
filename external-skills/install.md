@@ -64,6 +64,13 @@ uipro init --ai trae        # Trae   # All assistants
 
 # plugin
 
+## claude-plugins-official
+
+```shell
+/plugin marketplace add anthropics/claude-plugins-official
+
+```
+
 ## everything  Claude code
 ```shell
 # Add this repo as a marketplace
@@ -107,6 +114,8 @@ uipro init --ai trae        # Trae   # All assistants
 /plugin marketplace add https://github.com/Yeachan-Heo/oh-my-claudecode
 
 /plugin install oh-my-claudecode
+
+/oh-my-claudecode:omc-setup
 ```
 
 ## planning-with-files

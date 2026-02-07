@@ -8,6 +8,7 @@ Requirements: 2.1, 4.2, 5.1, 10.1
 
 from __future__ import annotations
 
+import shlex
 import subprocess
 import sys
 from collections.abc import Callable
@@ -182,9 +183,7 @@ class ExternalSkillManager:
             target_map = raw_skill.get("target_map", {})
 
             # 构建完整的初始化命令
-            full_init_cmd = self._build_init_command(
-                init_command, init_args, target_map
-            )
+            full_init_cmd = self._build_init_command(init_command, init_args, target_map)
 
             if on_output:
                 on_output(f"[Step 2] 初始化项目: {full_init_cmd}")
@@ -288,9 +287,7 @@ class ExternalSkillManager:
             return True
         return self.platform in supported_targets
 
-    def _check_dependencies_list(
-        self, requires: list[str]
-    ) -> DependencyCheckResult:
+    def _check_dependencies_list(self, requires: list[str]) -> DependencyCheckResult:
         """检查依赖列表
 
         Args:
@@ -358,23 +355,28 @@ class ExternalSkillManager:
         cwd: Path | None = None,
         on_output: Callable[[str], None] | None = None,
     ) -> bool:
-        """执行命令
+        """Execute command safely without shell injection.
+
+        Parses string commands with shlex and uses shell=False.
 
         Args:
-            cmd: 命令字符串
-            cwd: 工作目录
-            on_output: 输出回调函数
+            cmd: Command string
+            cwd: Working directory
+            on_output: Output callback function
 
         Returns:
-            命令是否成功执行
+            Whether command executed successfully
         """
         if on_output:
             on_output(f"$ {cmd}")
 
         try:
+            posix = sys.platform != "win32"
+            cmd_list = shlex.split(cmd, posix=posix)
+
             result = subprocess.run(
-                cmd,
-                shell=True,
+                cmd_list,
+                shell=False,
                 cwd=cwd,
                 capture_output=True,
                 text=True,
@@ -412,10 +414,7 @@ class ExternalSkillManager:
         mapped_target = target_map.get(self.platform, self.platform)
 
         # 替换参数中的 {target}
-        args = [
-            arg.replace("{target}", mapped_target)
-            for arg in init_args
-        ]
+        args = [arg.replace("{target}", mapped_target) for arg in init_args]
 
         return f"{init_command} {' '.join(args)}".strip()
 

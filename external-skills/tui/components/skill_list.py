@@ -5,7 +5,6 @@
 Requirements: 2.2, 2.4, 6.2, 6.3
 """
 
-
 from textual.message import Message
 from textual.widgets import ListItem, ListView, Static
 
@@ -160,6 +159,7 @@ class SkillListView(ListView):
 
     class SkillHighlighted(Message):
         """技能高亮变更消息"""
+
         def __init__(self, skill: ExternalSkillInfo | None) -> None:
             super().__init__()
             self.skill = skill
