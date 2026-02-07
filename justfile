@@ -52,7 +52,7 @@ help:
     @echo "  just test-unit         - 仅运行单元测试"
     @echo "  just test-integration  - 仅运行集成测试"
     @echo "  just test-e2e          - 仅运行端到端测试"
-    @echo "  just ci                - 在本地执行完整 CI 流程 (ruff + pyright + tsc + pytest)"
+    @echo "  just ci                - 在本地执行完整 CI 流程 (ruff + pyright + pytest + tsc + cargo)"
     @echo ""
     @echo "💡 使用示例："
     @echo "  just install drawio excalidraw  # 安装多个技能"
@@ -194,23 +194,35 @@ test-e2e:
 test-coverage:
     pytest --cov=. --cov-report=html --cov-report=term
 
-# 在本地执行完整 CI 流程
+# 在本地执行完整 CI 流程 (与 GitHub Actions 保持一致)
 ci:
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  🚀 开始执行 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "🔍 步骤 1/4: Ruff 代码检查..."
+    @echo "🔍 步骤 1/8: Ruff 代码检查..."
     uv run ruff check .
     @echo ""
-    @echo "🔍 步骤 2/4: Pyright 类型检查..."
+    @echo "🔍 步骤 2/8: Ruff 格式检查..."
+    uv run ruff format --check .
+    @echo ""
+    @echo "🔍 步骤 3/8: Pyright 类型检查..."
     uv run pyright
     @echo ""
-    @echo "🔍 步骤 3/4: AgentKit Desktop TypeScript 检查..."
+    @echo "🧪 步骤 4/8: 运行测试 (pytest)..."
+    uv run pytest
+    @echo ""
+    @echo "📘 步骤 5/8: AgentKit Desktop TypeScript 检查..."
     cd agentkit-desktop && npx tsc --noEmit
     @echo ""
-    @echo "🧪 步骤 4/4: 运行测试 (pytest)..."
-    uv run pytest
+    @echo "🦀 步骤 6/8: Rust 格式检查..."
+    cd agentkit-desktop/src-tauri && cargo fmt --check
+    @echo ""
+    @echo "🦀 步骤 7/8: Rust Clippy 静态分析..."
+    cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+    @echo ""
+    @echo "🦀 步骤 8/8: Rust 单元测试..."
+    cd agentkit-desktop/src-tauri && cargo test
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  ✅ CI 流程执行完成！"
