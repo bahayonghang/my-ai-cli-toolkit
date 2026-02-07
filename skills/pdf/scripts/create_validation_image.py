@@ -14,10 +14,10 @@ def create_validation_image(page_number, fields_json_path, input_path, output_pa
 
         for field in data["form_fields"]:
             if field["page_number"] == page_number:
-                entry_box = field['entry_bounding_box']
-                label_box = field['label_bounding_box']
-                draw.rectangle(entry_box, outline='red', width=2)
-                draw.rectangle(label_box, outline='blue', width=2)
+                entry_box = field["entry_bounding_box"]
+                label_box = field["label_bounding_box"]
+                draw.rectangle(entry_box, outline="red", width=2)
+                draw.rectangle(label_box, outline="blue", width=2)
                 num_boxes += 2
 
         img.save(output_path)

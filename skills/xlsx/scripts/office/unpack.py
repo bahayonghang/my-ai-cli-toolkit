@@ -98,9 +98,7 @@ def _escape_smart_quotes(xml_file: Path) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Unpack an Office file (DOCX, PPTX, XLSX) for editing"
-    )
+    parser = argparse.ArgumentParser(description="Unpack an Office file (DOCX, PPTX, XLSX) for editing")
     parser.add_argument("input_file", help="Office file to unpack")
     parser.add_argument("output_directory", help="Output directory")
     parser.add_argument(

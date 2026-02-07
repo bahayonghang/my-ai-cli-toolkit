@@ -169,9 +169,7 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
     ineffective_found = [word for word in ineffective_words if word in title_lower]
     if ineffective_found:
         conciseness_score = max(0, 25 - len(ineffective_found) * 10)
-        issues.append(
-            f"[Critical/严重] Contains ineffective words/包含无效词汇: {', '.join(ineffective_found)}"
-        )
+        issues.append(f"[Critical/严重] Contains ineffective words/包含无效词汇: {', '.join(ineffective_found)}")
     else:
         conciseness_score = 25
     scores["conciseness"] = conciseness_score
@@ -184,14 +182,10 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
             searchability_score = 30
         elif len(technical_terms) == 1:
             searchability_score = 20
-            issues.append(
-                "[Major/重要] Consider placing more key terms in first 65 characters/建议在前65字符内放置更多关键词"
-            )
+            issues.append("[Major/重要] Consider placing more key terms in first 65 characters/建议在前65字符内放置更多关键词")
         else:
             searchability_score = 10
-            issues.append(
-                "[Critical/严重] Key terms should appear in first 65 characters/关键术语应出现在前65字符内"
-            )
+            issues.append("[Critical/严重] Key terms should appear in first 65 characters/关键术语应出现在前65字符内")
     else:  # Chinese
         first_20 = title[:20]
         has_method = bool(re.search(r"(Transformer|LSTM|神经网络|深度学习|机器学习)", first_20))
@@ -206,9 +200,7 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
             )
         else:
             searchability_score = 10
-            issues.append(
-                "[Critical/严重] Key terms should appear in first 20 chars/关键术语应出现在前20字内"
-            )
+            issues.append("[Critical/严重] Key terms should appear in first 20 chars/关键术语应出现在前20字内")
 
     scores["searchability"] = searchability_score
 
@@ -219,14 +211,10 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
             length_score = 15
         elif 8 <= word_count <= 20:
             length_score = 10
-            issues.append(
-                f"[Minor/次要] Length acceptable ({word_count} words) but could be optimized/长度可接受但可优化"
-            )
+            issues.append(f"[Minor/次要] Length acceptable ({word_count} words) but could be optimized/长度可接受但可优化")
         else:
             length_score = 5
-            issues.append(
-                f"[Major/重要] Length suboptimal ({word_count} words, target: 10-15)/长度不理想（目标：10-15词）"
-            )
+            issues.append(f"[Major/重要] Length suboptimal ({word_count} words, target: 10-15)/长度不理想（目标：10-15词）")
     else:  # Chinese
         char_count = count_chinese_chars(title)
         if 15 <= char_count <= 25:
@@ -246,9 +234,7 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
 
     # 4. Specificity (20%)
     vague_terms = (
-        ["method", "approach", "system", "model", "algorithm"]
-        if lang == "en"
-        else ["方法", "系统", "模型", "算法", "技术"]
+        ["method", "approach", "system", "model", "algorithm"] if lang == "en" else ["方法", "系统", "模型", "算法", "技术"]
     )
     vague_found = sum(1 for term in vague_terms if term in title_lower)
     if vague_found == 0:
@@ -257,9 +243,7 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
         specificity_score = 15
     else:
         specificity_score = 10
-        issues.append(
-            "[Major/重要] Title contains vague terms, be more specific/标题包含模糊术语，需更具体"
-        )
+        issues.append("[Major/重要] Title contains vague terms, be more specific/标题包含模糊术语，需更具体")
     scores["specificity"] = specificity_score
 
     # 5. Jargon-Free (10%)
@@ -268,9 +252,7 @@ def score_title(title: str, lang: str = None) -> dict[str, any]:
     obscure_abbrevs = [a for a in abbrevs if a not in ACCEPTABLE_ABBREVS]
     if obscure_abbrevs:
         jargon_score = 5
-        issues.append(
-            f"[Minor/次要] Obscure abbreviations found/发现生僻缩写: {', '.join(obscure_abbrevs)}"
-        )
+        issues.append(f"[Minor/次要] Obscure abbreviations found/发现生僻缩写: {', '.join(obscure_abbrevs)}")
     else:
         jargon_score = 10
     scores["jargon"] = jargon_score
@@ -363,9 +345,7 @@ def optimize_title(title: str, lang: str = None) -> str:
     return optimized
 
 
-def format_report(
-    title: str, score_data: dict, candidates: list[tuple[str, str]] = None, lang: str = "en"
-) -> str:
+def format_report(title: str, score_data: dict, candidates: list[tuple[str, str]] = None, lang: str = "en") -> str:
     """Format optimization report."""
     report = []
     report.append("// " + "=" * 60)
@@ -389,12 +369,8 @@ def format_report(
             word_count = len(candidate.split()) if lang == "en" else count_chinese_chars(candidate)
             unit = "words" if lang == "en" else "字"
             report.append(f'// {i}. "{candidate}" [Score/评分: {cand_score["total"]}/100]')
-            report.append(
-                f"//    - Concise/简洁: {'✅' if cand_score['breakdown']['conciseness'] >= 20 else '⚠️'}"
-            )
-            report.append(
-                f"//    - Searchable/可搜索: {'✅' if cand_score['breakdown']['searchability'] >= 20 else '⚠️'}"
-            )
+            report.append(f"//    - Concise/简洁: {'✅' if cand_score['breakdown']['conciseness'] >= 20 else '⚠️'}")
+            report.append(f"//    - Searchable/可搜索: {'✅' if cand_score['breakdown']['searchability'] >= 20 else '⚠️'}")
             report.append(
                 f"//    - Length/长度: {'✅' if cand_score['breakdown']['length'] >= 10 else '⚠️'} ({word_count} {unit})"
             )
@@ -414,18 +390,12 @@ def format_report(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Optimize Typst paper titles (English/Chinese) following best practices"
-    )
+    parser = argparse.ArgumentParser(description="Optimize Typst paper titles (English/Chinese) following best practices")
     parser.add_argument("typ_file", help="Main .typ file")
-    parser.add_argument(
-        "--generate", action="store_true", help="Generate title candidates from content"
-    )
+    parser.add_argument("--generate", action="store_true", help="Generate title candidates from content")
     parser.add_argument("--optimize", action="store_true", help="Optimize existing title")
     parser.add_argument("--check", action="store_true", help="Check title quality")
-    parser.add_argument(
-        "--lang", choices=["en", "zh"], help="Force language (auto-detect if not specified)"
-    )
+    parser.add_argument("--lang", choices=["en", "zh"], help="Force language (auto-detect if not specified)")
 
     args = parser.parse_args()
 

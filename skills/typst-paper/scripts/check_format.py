@@ -140,17 +140,13 @@ class FormatChecker:
             labeled_figures = re.findall(r"#figure\([^)]+\)\s*<([^>]+)>", self.content)
             print(f"  ✓ Labeled figures/tables: {len(labeled_figures)}")
             if len(labeled_figures) < len(figures):
-                self.warnings.append(
-                    f"{len(figures) - len(labeled_figures)} figures/tables without labels"
-                )
+                self.warnings.append(f"{len(figures) - len(labeled_figures)} figures/tables without labels")
 
             # Check for captions
             captioned_figures = re.findall(r"caption:\s*\[", self.content)
             print(f"  ✓ Figures/tables with captions: {len(captioned_figures)}")
             if len(captioned_figures) < len(figures):
-                self.warnings.append(
-                    f"{len(figures) - len(captioned_figures)} figures/tables without captions"
-                )
+                self.warnings.append(f"{len(figures) - len(captioned_figures)} figures/tables without captions")
         else:
             print("  ℹ No figures or tables found")
 
@@ -191,9 +187,7 @@ class FormatChecker:
             labeled_equations = re.findall(r"\$\s+[^$]+\s+\$\s*<([^>]+)>", self.content)
             print(f"  ✓ Labeled equations: {len(labeled_equations)}")
             if len(labeled_equations) < len(display_math):
-                self.warnings.append(
-                    f"{len(display_math) - len(labeled_equations)} display equations without labels"
-                )
+                self.warnings.append(f"{len(display_math) - len(labeled_equations)} display equations without labels")
 
         if not inline_math and not display_math:
             print("  ℹ No math expressions found")

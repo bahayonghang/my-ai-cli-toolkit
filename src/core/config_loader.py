@@ -177,12 +177,8 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
 DEFAULT_PROJECT_OVERRIDES: dict[str, ProjectInstallOverride] = {
     "kiro": ProjectInstallOverride(platform_dir=".kiro", commands_subdir="steering"),
     "trae": ProjectInstallOverride(platform_dir=".trae", commands_subdir="commands"),
-    "antigravity": ProjectInstallOverride(
-        platform_dir=".gemini/antigravity", commands_subdir="workflows"
-    ),
-    "windsurf": ProjectInstallOverride(
-        platform_dir=".codeium/windsurf", commands_subdir="workflows"
-    ),
+    "antigravity": ProjectInstallOverride(platform_dir=".gemini/antigravity", commands_subdir="workflows"),
+    "windsurf": ProjectInstallOverride(platform_dir=".codeium/windsurf", commands_subdir="workflows"),
     "codex": ProjectInstallOverride(platform_dir=".codex", commands_subdir="prompts"),
 }
 

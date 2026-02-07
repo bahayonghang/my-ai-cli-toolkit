@@ -25,6 +25,7 @@ def backup_skill(skill_path):
     except Exception as e:
         return False, str(e)
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python update_helper.py <skill_dir>")

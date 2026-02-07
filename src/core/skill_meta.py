@@ -33,22 +33,22 @@ def parse_skill_frontmatter(skill_path: Path) -> dict:
         return result
 
     try:
-        with open(skill_md, encoding='utf-8') as f:
+        with open(skill_md, encoding="utf-8") as f:
             content = f.read()
     except OSError:
         return result
 
     # Check for YAML frontmatter (--- delimited)
-    if not content.startswith('---'):
+    if not content.startswith("---"):
         # Legacy fallback: search for description line
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             if line.startswith("description:"):
                 result["description"] = line.replace("description:", "").strip()
                 break
         return result
 
     # Parse YAML frontmatter
-    parts = content.split('---', 2)
+    parts = content.split("---", 2)
     if len(parts) < 3:
         return result
 
@@ -59,7 +59,7 @@ def parse_skill_frontmatter(skill_path: Path) -> dict:
     multiline_value = []
     in_multiline = False
 
-    for line in frontmatter.split('\n'):
+    for line in frontmatter.split("\n"):
         stripped = line.strip()
 
         # Skip empty lines
@@ -69,22 +69,22 @@ def parse_skill_frontmatter(skill_path: Path) -> dict:
             continue
 
         # Check for key: value pattern
-        if ':' in line and not line.startswith(' ') and not line.startswith('\t'):
+        if ":" in line and not line.startswith(" ") and not line.startswith("\t"):
             # Save previous multiline value
             if in_multiline and current_key:
                 if current_key == "description":
-                    result["description"] = '\n'.join(multiline_value).strip()
+                    result["description"] = "\n".join(multiline_value).strip()
                 in_multiline = False
                 multiline_value = []
 
-            colon_idx = line.index(':')
+            colon_idx = line.index(":")
             key = line[:colon_idx].strip()
-            value = line[colon_idx + 1:].strip()
+            value = line[colon_idx + 1 :].strip()
 
             if key == "name":
                 result["name"] = value if value else skill_path.name
             elif key == "description":
-                if value.startswith('|'):
+                if value.startswith("|"):
                     # Multiline description
                     in_multiline = True
                     current_key = "description"
@@ -97,9 +97,9 @@ def parse_skill_frontmatter(skill_path: Path) -> dict:
                 result["version"] = value if value else None
             elif key == "tags":
                 # Handle inline array format: tags: [a, b, c]
-                if value.startswith('[') and value.endswith(']'):
+                if value.startswith("[") and value.endswith("]"):
                     tags_str = value[1:-1]
-                    result["tags"] = [t.strip() for t in tags_str.split(',') if t.strip()]
+                    result["tags"] = [t.strip() for t in tags_str.split(",") if t.strip()]
                 elif value:
                     # Single tag on same line
                     result["tags"] = [value]
@@ -110,16 +110,16 @@ def parse_skill_frontmatter(skill_path: Path) -> dict:
                     multiline_value = []
         elif in_multiline:
             # Handle multiline content
-            if line.startswith('  ') or line.startswith('\t'):
+            if line.startswith("  ") or line.startswith("\t"):
                 content_line = line.strip()
-                if current_key == "tags" and content_line.startswith('- '):
+                if current_key == "tags" and content_line.startswith("- "):
                     multiline_value.append(content_line[2:].strip())
                 elif current_key == "description":
                     multiline_value.append(content_line)
             else:
                 # End of multiline
                 if current_key == "description":
-                    result["description"] = '\n'.join(multiline_value).strip()
+                    result["description"] = "\n".join(multiline_value).strip()
                 elif current_key == "tags":
                     result["tags"] = multiline_value
                 in_multiline = False
@@ -128,7 +128,7 @@ def parse_skill_frontmatter(skill_path: Path) -> dict:
     # Handle trailing multiline value
     if in_multiline and current_key:
         if current_key == "description":
-            result["description"] = '\n'.join(multiline_value).strip()
+            result["description"] = "\n".join(multiline_value).strip()
         elif current_key == "tags":
             result["tags"] = multiline_value
 

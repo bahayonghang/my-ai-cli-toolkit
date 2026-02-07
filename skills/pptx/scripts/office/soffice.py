@@ -37,8 +37,9 @@ def run_soffice(args: list[str], **kwargs) -> subprocess.CompletedProcess:
     return subprocess.run(["soffice"] + args, env=env, **kwargs)
 
 
-
-_SHIM_SO = Path(tempfile.gettempdir()) / "lo_socket_shim.so"
+# User-private directory to prevent temp file hijacking (LD_PRELOAD is Linux-only)
+_SHIM_DIR = Path(tempfile.gettempdir()) / f"lo_shim_{os.getuid()}"
+_SHIM_SO = _SHIM_DIR / "lo_socket_shim.so"
 
 
 def _needs_shim() -> bool:
@@ -54,7 +55,8 @@ def _ensure_shim() -> Path:
     if _SHIM_SO.exists():
         return _SHIM_SO
 
-    src = Path(tempfile.gettempdir()) / "lo_socket_shim.c"
+    _SHIM_DIR.mkdir(mode=0o700, exist_ok=True)
+    src = _SHIM_DIR / "lo_socket_shim.c"
     src.write_text(_SHIM_SOURCE)
     subprocess.run(
         ["gcc", "-shared", "-fPIC", "-o", str(_SHIM_SO), str(src), "-ldl"],
@@ -63,7 +65,6 @@ def _ensure_shim() -> Path:
     )
     src.unlink()
     return _SHIM_SO
-
 
 
 _SHIM_SOURCE = r"""
@@ -176,8 +177,8 @@ int close(int fd) {
 """
 
 
-
 if __name__ == "__main__":
     import sys
+
     result = run_soffice(sys.argv[1:])
     sys.exit(result.returncode)

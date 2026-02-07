@@ -221,9 +221,7 @@ Installation:
         action="store_true",
         help="Enable watch mode (auto-recompile on file changes)",
     )
-    parser.add_argument(
-        "--list-fonts", action="store_true", help="List available fonts in the system"
-    )
+    parser.add_argument("--list-fonts", action="store_true", help="List available fonts in the system")
     parser.add_argument("--query", "-q", help='Query document metadata (e.g., "<heading>")')
 
     args = parser.parse_args()
@@ -246,11 +244,7 @@ Installation:
     elif args.query:
         sys.exit(compiler.query(args.query))
     else:
-        sys.exit(
-            compiler.compile(
-                output=args.output, format=args.format, font_path=args.font_path, watch=args.watch
-            )
-        )
+        sys.exit(compiler.compile(output=args.output, format=args.format, font_path=args.font_path, watch=args.watch))
 
 
 if __name__ == "__main__":

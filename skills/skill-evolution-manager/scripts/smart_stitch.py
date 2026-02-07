@@ -20,7 +20,7 @@ def stitch_skill(skill_dir):
         return True
 
     try:
-        with open(evolution_json_path, encoding='utf-8') as f:
+        with open(evolution_json_path, encoding="utf-8") as f:
             data = json.load(f)
     except Exception as e:
         print(f"Error parsing evolution.json: {e}", file=sys.stderr)
@@ -29,7 +29,9 @@ def stitch_skill(skill_dir):
     # Prepare the Markdown content block
     evolution_section = []
     evolution_section.append("\n\n## User-Learned Best Practices & Constraints")
-    evolution_section.append("\n> **Auto-Generated Section**: This section is maintained by `skill-evolution-manager`. Do not edit manually.")
+    evolution_section.append(
+        "\n> **Auto-Generated Section**: This section is maintained by `skill-evolution-manager`. Do not edit manually."
+    )
 
     if data.get("preferences"):
         evolution_section.append("\n### User Preferences")
@@ -48,7 +50,7 @@ def stitch_skill(skill_dir):
     evolution_block = "\n".join(evolution_section)
 
     # Read original SKILL.md
-    with open(skill_md_path, encoding='utf-8') as f:
+    with open(skill_md_path, encoding="utf-8") as f:
         content = f.read()
 
     # Regex to find existing User-Learned section and replace it, or append if not found
@@ -61,18 +63,19 @@ def stitch_skill(skill_dir):
     if match:
         # Replace existing section
         print("Updating existing evolution section...", file=sys.stderr)
-        new_content = content[:match.start()] + evolution_block
+        new_content = content[: match.start()] + evolution_block
     else:
         # Append to end
         print("Appending new evolution section...", file=sys.stderr)
         new_content = content + evolution_block
 
     # Write back
-    with open(skill_md_path, 'w', encoding='utf-8') as f:
+    with open(skill_md_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
     print(f"Successfully stitched evolution data into {skill_md_path}")
     return True
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

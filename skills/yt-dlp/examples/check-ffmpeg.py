@@ -12,16 +12,10 @@ import subprocess
 import sys
 
 
-def run_command(cmd):
+def run_command(cmd: list[str]):
     """执行命令并返回输出"""
     try:
-        result = subprocess.run(
-            cmd,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
@@ -31,11 +25,11 @@ def run_command(cmd):
 
 def check_ffmpeg():
     """检测 FFmpeg 是否已安装"""
-    success, stdout, stderr = run_command("ffmpeg -version")
+    success, stdout, stderr = run_command(["ffmpeg", "-version"])
 
     if success:
         # 提取版本信息
-        first_line = stdout.split('\n')[0]
+        first_line = stdout.split("\n")[0]
         return True, first_line
     else:
         return False, None
@@ -44,7 +38,6 @@ def check_ffmpeg():
 def get_install_instructions():
     """根据操作系统返回安装指令"""
     system = platform.system()
-    platform.version()
 
     instructions = {
         "Windows": [
@@ -62,7 +55,7 @@ def get_install_instructions():
             ("Arch/Manjaro", "sudo pacman -S ffmpeg"),
             ("Fedora", "sudo dnf install ffmpeg"),
             ("openSUSE", "sudo zypper install ffmpeg"),
-        ]
+        ],
     }
 
     # Linux 特殊处理：检测发行版
@@ -80,9 +73,7 @@ def get_install_instructions():
         except Exception:
             pass
 
-    return instructions.get(system, [
-        ("通用", "请访问 https://ffmpeg.org/download.html 获取安装指引")
-    ])
+    return instructions.get(system, [("通用", "请访问 https://ffmpeg.org/download.html 获取安装指引")])
 
 
 def main():
@@ -113,7 +104,6 @@ def main():
         print("请根据您的操作系统安装 FFmpeg:")
         print()
 
-        platform.system()
         instructions = get_install_instructions()
 
         for i, (method, command) in enumerate(instructions, 1):

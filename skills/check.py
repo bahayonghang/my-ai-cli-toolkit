@@ -11,8 +11,8 @@ from pathlib import Path
 import yaml
 
 # 确保 stdout 使用 UTF-8 编码，解决 Windows GBK 编码问题
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 
 def extract_yaml_frontmatter(content: str) -> dict | None:
@@ -26,7 +26,7 @@ def extract_yaml_frontmatter(content: str) -> dict | None:
         解析后的 YAML 字典，如果没有 frontmatter 则返回 None
     """
     # 匹配 YAML frontmatter (以 --- 开始和结束)
-    pattern = r'^---\s*\n(.*?)\n---\s*\n'
+    pattern = r"^---\s*\n(.*?)\n---\s*\n"
     match = re.match(pattern, content, re.DOTALL)
 
     if not match:
@@ -50,59 +50,59 @@ def check_skill_metadata(skill_path: Path) -> dict[str, any]:
         检查结果字典
     """
     result = {
-        'name': skill_path.name,
-        'has_skill_md': False,
-        'has_frontmatter': False,
-        'has_category': False,
-        'has_tags': False,
-        'category_value': None,
-        'tags_value': None,
-        'errors': []
+        "name": skill_path.name,
+        "has_skill_md": False,
+        "has_frontmatter": False,
+        "has_category": False,
+        "has_tags": False,
+        "category_value": None,
+        "tags_value": None,
+        "errors": [],
     }
 
     # 检查 SKILL.md 文件 (大小写不敏感)
     skill_md_path = None
-    for candidate in ['SKILL.md', 'skill.md', 'Skill.md']:
+    for candidate in ["SKILL.md", "skill.md", "Skill.md"]:
         candidate_path = skill_path / candidate
         if candidate_path.exists():
             skill_md_path = candidate_path
             break
 
     if not skill_md_path:
-        result['errors'].append('未找到 SKILL.md 文件')
+        result["errors"].append("未找到 SKILL.md 文件")
         return result
 
-    result['has_skill_md'] = True
+    result["has_skill_md"] = True
 
     # 读取文件内容
     try:
-        content = skill_md_path.read_text(encoding='utf-8')
+        content = skill_md_path.read_text(encoding="utf-8")
     except Exception as e:
-        result['errors'].append(f'读取文件失败: {e}')
+        result["errors"].append(f"读取文件失败: {e}")
         return result
 
     # 提取 YAML frontmatter
     metadata = extract_yaml_frontmatter(content)
 
     if metadata is None:
-        result['errors'].append('未找到有效的 YAML frontmatter')
+        result["errors"].append("未找到有效的 YAML frontmatter")
         return result
 
-    result['has_frontmatter'] = True
+    result["has_frontmatter"] = True
 
     # 检查 category 字段
-    if 'category' in metadata:
-        result['has_category'] = True
-        result['category_value'] = metadata['category']
+    if "category" in metadata:
+        result["has_category"] = True
+        result["category_value"] = metadata["category"]
     else:
-        result['errors'].append('缺少 category 字段')
+        result["errors"].append("缺少 category 字段")
 
     # 检查 tags 字段
-    if 'tags' in metadata:
-        result['has_tags'] = True
-        result['tags_value'] = metadata['tags']
+    if "tags" in metadata:
+        result["has_tags"] = True
+        result["tags_value"] = metadata["tags"]
     else:
-        result['errors'].append('缺少 tags 字段')
+        result["errors"].append("缺少 tags 字段")
 
     return result
 
@@ -124,7 +124,7 @@ def scan_skills_directory(skills_dir: Path = None) -> list[dict]:
 
     # 遍历所有子目录
     for item in sorted(skills_dir.iterdir()):
-        if item.is_dir() and not item.name.startswith('.'):
+        if item.is_dir() and not item.name.startswith("."):
             result = check_skill_metadata(item)
             results.append(result)
 
@@ -145,7 +145,7 @@ def print_report(results: list[dict]):
 
     # 统计信息
     total = len(results)
-    complete = sum(1 for r in results if r['has_category'] and r['has_tags'])
+    complete = sum(1 for r in results if r["has_category"] and r["has_tags"])
     incomplete = total - complete
 
     print(f"📊 总计: {total} 个 skills")
@@ -161,21 +161,21 @@ def print_report(results: list[dict]):
         print()
 
         for result in results:
-            if not (result['has_category'] and result['has_tags']):
+            if not (result["has_category"] and result["has_tags"]):
                 print(f"📁 {result['name']}")
 
-                if not result['has_skill_md']:
+                if not result["has_skill_md"]:
                     print("   ⚠️  未找到 SKILL.md 文件")
-                elif not result['has_frontmatter']:
+                elif not result["has_frontmatter"]:
                     print("   ⚠️  未找到 YAML frontmatter")
                 else:
-                    if not result['has_category']:
+                    if not result["has_category"]:
                         print("   ❌ 缺少 category 字段")
-                    if not result['has_tags']:
+                    if not result["has_tags"]:
                         print("   ❌ 缺少 tags 字段")
 
-                if result['errors']:
-                    for error in result['errors']:
+                if result["errors"]:
+                    for error in result["errors"]:
                         print(f"   ⚠️  {error}")
 
                 print()
@@ -190,5 +190,5 @@ def main():
     print_report(results)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -14,7 +14,7 @@ def merge_evolution(skill_dir, new_data_json_str):
     # Load existing or create new
     if os.path.exists(evolution_json_path):
         try:
-            with open(evolution_json_path, encoding='utf-8') as f:
+            with open(evolution_json_path, encoding="utf-8") as f:
                 current_data = json.load(f)
         except Exception:
             current_data = {}
@@ -29,10 +29,10 @@ def merge_evolution(skill_dir, new_data_json_str):
 
     # Merge logic
     # 1. Update timestamp
-    current_data['last_updated'] = datetime.datetime.now().isoformat()
+    current_data["last_updated"] = datetime.datetime.now().isoformat()
 
     # 2. Merge Lists (preferences, fixes, contexts) with deduplication
-    for list_key in ['preferences', 'fixes', 'contexts']:
+    for list_key in ["preferences", "fixes", "contexts"]:
         if list_key in new_data:
             existing_list = current_data.get(list_key, [])
             new_items = new_data[list_key]
@@ -47,19 +47,20 @@ def merge_evolution(skill_dir, new_data_json_str):
     # Decision: Overwrite if provided, as prompts usually need to be coherent.
     # Or, the Agent should have read the old one and combined it before sending here.
     # We assume Agent sends the FINAL desired state for custom_prompts if it wants to merge.
-    if 'custom_prompts' in new_data:
-        current_data['custom_prompts'] = new_data['custom_prompts']
+    if "custom_prompts" in new_data:
+        current_data["custom_prompts"] = new_data["custom_prompts"]
 
     # 4. Update last_evolved_hash if provided
-    if 'last_evolved_hash' in new_data:
-        current_data['last_evolved_hash'] = new_data['last_evolved_hash']
+    if "last_evolved_hash" in new_data:
+        current_data["last_evolved_hash"] = new_data["last_evolved_hash"]
 
     # Save back
-    with open(evolution_json_path, 'w', encoding='utf-8') as f:
+    with open(evolution_json_path, "w", encoding="utf-8") as f:
         json.dump(current_data, f, indent=2, ensure_ascii=False)
 
     print(f"Successfully merged evolution data for {os.path.basename(skill_dir)}")
     return True
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:

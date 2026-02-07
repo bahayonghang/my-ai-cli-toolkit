@@ -22,10 +22,10 @@ from design_system import generate_design_system
 from core import AVAILABLE_STACKS, CSV_CONFIG, MAX_RESULTS, search, search_stack
 
 # Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
-if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
 
 def format_output(result):
@@ -42,7 +42,7 @@ def format_output(result):
         output.append(f"**Domain:** {result['domain']} | **Query:** {result['query']}")
     output.append(f"**Source:** {result['file']} | **Found:** {result['count']} results\n")
 
-    for i, row in enumerate(result['results'], 1):
+    for i, row in enumerate(result["results"], 1):
         output.append(f"### Result {i}")
         for key, value in row.items():
             value_str = str(value)
@@ -64,34 +64,35 @@ if __name__ == "__main__":
     # Design system generation
     parser.add_argument("--design-system", "-ds", action="store_true", help="Generate complete design system recommendation")
     parser.add_argument("--project-name", "-p", type=str, default=None, help="Project name for design system output")
-    parser.add_argument("--format", "-f", choices=["ascii", "markdown"], default="ascii", help="Output format for design system")
+    parser.add_argument(
+        "--format", "-f", choices=["ascii", "markdown"], default="ascii", help="Output format for design system"
+    )
     # Persistence (Master + Overrides pattern)
-    parser.add_argument("--persist", action="store_true", help="Save design system to design-system/MASTER.md (creates hierarchical structure)")
+    parser.add_argument(
+        "--persist", action="store_true", help="Save design system to design-system/MASTER.md (creates hierarchical structure)"
+    )
     parser.add_argument("--page", type=str, default=None, help="Create page-specific override file in design-system/pages/")
-    parser.add_argument("--output-dir", "-o", type=str, default=None, help="Output directory for persisted files (default: current directory)")
+    parser.add_argument(
+        "--output-dir", "-o", type=str, default=None, help="Output directory for persisted files (default: current directory)"
+    )
 
     args = parser.parse_args()
 
     # Design system takes priority
     if args.design_system:
         result = generate_design_system(
-            args.query,
-            args.project_name,
-            args.format,
-            persist=args.persist,
-            page=args.page,
-            output_dir=args.output_dir
+            args.query, args.project_name, args.format, persist=args.persist, page=args.page, output_dir=args.output_dir
         )
         print(result)
 
         # Print persistence confirmation
         if args.persist:
-            project_slug = args.project_name.lower().replace(' ', '-') if args.project_name else "default"
+            project_slug = args.project_name.lower().replace(" ", "-") if args.project_name else "default"
             print("\n" + "=" * 60)
             print(f"✅ Design system persisted to design-system/{project_slug}/")
             print(f"   📄 design-system/{project_slug}/MASTER.md (Global Source of Truth)")
             if args.page:
-                page_filename = args.page.lower().replace(' ', '-')
+                page_filename = args.page.lower().replace(" ", "-")
                 print(f"   📄 design-system/{project_slug}/pages/{page_filename}.md (Page Overrides)")
             print("")
             print(f"📖 Usage: When building a page, check design-system/{project_slug}/pages/[page].md first.")
@@ -102,6 +103,7 @@ if __name__ == "__main__":
         result = search_stack(args.query, args.stack, args.max_results)
         if args.json:
             import json
+
             print(json.dumps(result, indent=2, ensure_ascii=False))
         else:
             print(format_output(result))
@@ -110,6 +112,7 @@ if __name__ == "__main__":
         result = search(args.query, args.domain, args.max_results)
         if args.json:
             import json
+
             print(json.dumps(result, indent=2, ensure_ascii=False))
         else:
             print(format_output(result))

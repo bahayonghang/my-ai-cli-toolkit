@@ -26,9 +26,9 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 DEFAULT_MEMORY_DIR = "memory"
 DEFAULT_DB_NAME = "memory.sqlite"
-CHUNK_MAX_CHARS = 1600       # ~400 tokens
-CHUNK_OVERLAP_CHARS = 320    # ~80 tokens
-EMBEDDING_DIM = 384          # all-MiniLM-L6-v2
+CHUNK_MAX_CHARS = 1600  # ~400 tokens
+CHUNK_OVERLAP_CHARS = 320  # ~80 tokens
+EMBEDDING_DIM = 384  # all-MiniLM-L6-v2
 VECTOR_WEIGHT = 0.7
 TEXT_WEIGHT = 0.3
 DEFAULT_TOP_K = 6
@@ -39,6 +39,7 @@ MODEL_NAME = "all-MiniLM-L6-v2"
 # 嵌入模型（懒加载）
 # ---------------------------------------------------------------------------
 _model = None
+
 
 def get_model():
     global _model
@@ -52,15 +53,18 @@ def get_model():
         _model = SentenceTransformer(MODEL_NAME)
     return _model
 
+
 def embed_texts(texts: list[str]) -> list[list[float]]:
     """批量生成嵌入向量"""
     model = get_model()
     embeddings = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
     return embeddings.tolist()
 
+
 def embed_query(text: str) -> list[float]:
     """生成单个查询的嵌入向量"""
     return embed_texts([text])[0]
+
 
 # ---------------------------------------------------------------------------
 # 向量工具
@@ -69,15 +73,18 @@ def vec_to_blob(vec: list[float]) -> bytes:
     """float list → bytes (little-endian float32)"""
     return struct.pack(f"<{len(vec)}f", *vec)
 
+
 def blob_to_vec(blob: bytes) -> list[float]:
     """bytes → float list"""
     n = len(blob) // 4
     return list(struct.unpack(f"<{n}f", blob))
 
+
 def cosine_similarity(a: list[float], b: list[float]) -> float:
     """纯 Python 余弦相似度（numpy 回退）"""
     try:
         import numpy as np
+
         a, b = np.array(a), np.array(b)
         dot = np.dot(a, b)
         norm = np.linalg.norm(a) * np.linalg.norm(b)
@@ -87,6 +94,7 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
         na = sum(x * x for x in a) ** 0.5
         nb = sum(x * x for x in b) ** 0.5
         return dot / (na * nb) if na * nb > 0 else 0.0
+
 
 # ---------------------------------------------------------------------------
 # SQLite 初始化
@@ -148,16 +156,11 @@ def init_db(db_path: str) -> sqlite3.Connection:
         except sqlite3.OperationalError:
             pass  # FTS5 不可用时静默跳过
     # 元数据
-    conn.execute(
-        "INSERT OR REPLACE INTO meta(key, value) VALUES(?, ?)",
-        ("model", MODEL_NAME)
-    )
-    conn.execute(
-        "INSERT OR REPLACE INTO meta(key, value) VALUES(?, ?)",
-        ("dims", str(EMBEDDING_DIM))
-    )
+    conn.execute("INSERT OR REPLACE INTO meta(key, value) VALUES(?, ?)", ("model", MODEL_NAME))
+    conn.execute("INSERT OR REPLACE INTO meta(key, value) VALUES(?, ?)", ("dims", str(EMBEDDING_DIM)))
     conn.commit()
     return conn
+
 
 def has_fts(conn: sqlite3.Connection) -> bool:
     try:
@@ -165,6 +168,7 @@ def has_fts(conn: sqlite3.Connection) -> bool:
         return True
     except sqlite3.OperationalError:
         return False
+
 
 # ---------------------------------------------------------------------------
 # Markdown 分块
@@ -184,11 +188,13 @@ def chunk_markdown(text: str) -> list[dict]:
         if is_heading and current_chunk_lines:
             chunk_text = "\n".join(current_chunk_lines).strip()
             if chunk_text:
-                chunks.append({
-                    "start_line": current_start,
-                    "end_line": i - 1,
-                    "text": chunk_text,
-                })
+                chunks.append(
+                    {
+                        "start_line": current_start,
+                        "end_line": i - 1,
+                        "text": chunk_text,
+                    }
+                )
             current_chunk_lines = []
             current_start = i
             current_chars = 0
@@ -200,11 +206,13 @@ def chunk_markdown(text: str) -> list[dict]:
         if current_chars >= CHUNK_MAX_CHARS and not is_heading:
             chunk_text = "\n".join(current_chunk_lines).strip()
             if chunk_text:
-                chunks.append({
-                    "start_line": current_start,
-                    "end_line": i,
-                    "text": chunk_text,
-                })
+                chunks.append(
+                    {
+                        "start_line": current_start,
+                        "end_line": i,
+                        "text": chunk_text,
+                    }
+                )
             # 保留重叠部分
             overlap_lines = []
             overlap_chars = 0
@@ -221,13 +229,16 @@ def chunk_markdown(text: str) -> list[dict]:
     if current_chunk_lines:
         chunk_text = "\n".join(current_chunk_lines).strip()
         if chunk_text:
-            chunks.append({
-                "start_line": current_start,
-                "end_line": len(lines),
-                "text": chunk_text,
-            })
+            chunks.append(
+                {
+                    "start_line": current_start,
+                    "end_line": len(lines),
+                    "text": chunk_text,
+                }
+            )
 
     return chunks
+
 
 # ---------------------------------------------------------------------------
 # 文件哈希
@@ -239,8 +250,10 @@ def file_hash(path: str) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+
 def text_hash(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
+
 
 # ---------------------------------------------------------------------------
 # 索引
@@ -258,6 +271,7 @@ def list_md_files(memory_dir: str) -> list[str]:
         for f in sorted(d.rglob("*.md")):
             files.append(str(f))
     return files
+
 
 def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
     """索引单个文件，返回 chunk 数量"""
@@ -283,8 +297,7 @@ def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
         conn.execute(
             """INSERT OR REPLACE INTO chunks(id, path, start_line, end_line, hash, text, embedding)
                VALUES(?, ?, ?, ?, ?, ?, ?)""",
-            (chunk_id, filepath, chunk["start_line"], chunk["end_line"],
-             th, chunk["text"], vec_to_blob(emb))
+            (chunk_id, filepath, chunk["start_line"], chunk["end_line"], th, chunk["text"], vec_to_blob(emb)),
         )
 
     # 同步 FTS
@@ -295,10 +308,11 @@ def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
     stat = os.stat(filepath)
     conn.execute(
         "INSERT OR REPLACE INTO files(path, hash, mtime, size) VALUES(?, ?, ?, ?)",
-        (filepath, fhash, stat.st_mtime, stat.st_size)
+        (filepath, fhash, stat.st_mtime, stat.st_size),
     )
     conn.commit()
     return len(chunks)
+
 
 def cmd_index(args):
     """索引命令"""
@@ -348,6 +362,7 @@ def cmd_index(args):
     print(f"\n完成: 索引 {indexed} 个文件 ({total_chunks} 块)，跳过 {skipped} 个未变化文件")
     print(f"数据库: {db_path}")
 
+
 # ---------------------------------------------------------------------------
 # 搜索
 # ---------------------------------------------------------------------------
@@ -357,13 +372,20 @@ def vector_search(conn: sqlite3.Connection, query_vec: list[float], top_k: int) 
     for row in conn.execute("SELECT id, path, start_line, end_line, text, embedding FROM chunks"):
         chunk_vec = blob_to_vec(row[5])
         score = cosine_similarity(query_vec, chunk_vec)
-        results.append({
-            "id": row[0], "path": row[1],
-            "start_line": row[2], "end_line": row[3],
-            "text": row[4], "score": score, "source": "vector"
-        })
+        results.append(
+            {
+                "id": row[0],
+                "path": row[1],
+                "start_line": row[2],
+                "end_line": row[3],
+                "text": row[4],
+                "score": score,
+                "source": "vector",
+            }
+        )
     results.sort(key=lambda x: x["score"], reverse=True)
-    return results[:top_k * 4]  # 返回候选集
+    return results[: top_k * 4]  # 返回候选集
+
 
 def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
     """FTS5 全文搜索（支持 trigram 和默认 tokenizer）"""
@@ -381,7 +403,7 @@ def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
         rows = conn.execute(
             """SELECT id, path, start_line, end_line, text, rank
                FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY rank LIMIT ?""",
-            (fts_query, top_k * 4)
+            (fts_query, top_k * 4),
         ).fetchall()
 
         if not rows:
@@ -389,7 +411,7 @@ def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
             rows = conn.execute(
                 """SELECT id, path, start_line, end_line, text, rank
                    FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY rank LIMIT ?""",
-                (f'"{fts_query}"', top_k * 4)
+                (f'"{fts_query}"', top_k * 4),
             ).fetchall()
     except sqlite3.OperationalError:
         return []
@@ -402,12 +424,11 @@ def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
     max_rank = max(ranks) if ranks else 1
     for r in rows:
         score = abs(r[5]) / max_rank if max_rank > 0 else 0
-        results.append({
-            "id": r[0], "path": r[1],
-            "start_line": r[2], "end_line": r[3],
-            "text": r[4], "score": score, "source": "fts"
-        })
+        results.append(
+            {"id": r[0], "path": r[1], "start_line": r[2], "end_line": r[3], "text": r[4], "score": score, "source": "fts"}
+        )
     return results
+
 
 def hybrid_search(conn: sqlite3.Connection, query: str, top_k: int, min_score: float) -> list[dict]:
     """混合搜索: 向量 + 全文"""
@@ -436,20 +457,18 @@ def hybrid_search(conn: sqlite3.Connection, query: str, top_k: int, min_score: f
 
     # 加权
     for item in merged.values():
-        item["score"] = (
-            VECTOR_WEIGHT * item["vec_score"] +
-            TEXT_WEIGHT * item["fts_score"]
-        )
+        item["score"] = VECTOR_WEIGHT * item["vec_score"] + TEXT_WEIGHT * item["fts_score"]
 
     results = sorted(merged.values(), key=lambda x: x["score"], reverse=True)
     results = [r for r in results if r["score"] >= min_score]
     return results[:top_k]
 
+
 def cmd_search(args):
     """搜索命令"""
     db_path = args.db
     if not db_path:
-        memory_dir = os.path.abspath(args.dir if hasattr(args, 'dir') and args.dir else DEFAULT_MEMORY_DIR)
+        memory_dir = os.path.abspath(args.dir if hasattr(args, "dir") and args.dir else DEFAULT_MEMORY_DIR)
         db_path = os.path.join(memory_dir, DEFAULT_DB_NAME)
 
     if not os.path.exists(db_path):
@@ -468,13 +487,15 @@ def cmd_search(args):
     if args.json:
         output = []
         for r in results:
-            output.append({
-                "path": r["path"],
-                "start_line": r["start_line"],
-                "end_line": r["end_line"],
-                "score": round(r["score"], 4),
-                "snippet": r["text"][:700],
-            })
+            output.append(
+                {
+                    "path": r["path"],
+                    "start_line": r["start_line"],
+                    "end_line": r["end_line"],
+                    "score": round(r["score"], 4),
+                    "snippet": r["text"][:700],
+                }
+            )
         print(json.dumps(output, ensure_ascii=False, indent=2))
     else:
         for i, r in enumerate(results, 1):
@@ -483,6 +504,7 @@ def cmd_search(args):
             print(f"\n[{i}] {basename}:{r['start_line']}-{r['end_line']}  (分数: {r['score']:.3f})")
             print(f"    {snippet}...")
 
+
 # ---------------------------------------------------------------------------
 # 状态
 # ---------------------------------------------------------------------------
@@ -490,7 +512,7 @@ def cmd_status(args):
     """查看索引状态"""
     db_path = args.db
     if not db_path:
-        memory_dir = os.path.abspath(args.dir if hasattr(args, 'dir') and args.dir else DEFAULT_MEMORY_DIR)
+        memory_dir = os.path.abspath(args.dir if hasattr(args, "dir") and args.dir else DEFAULT_MEMORY_DIR)
         db_path = os.path.join(memory_dir, DEFAULT_DB_NAME)
 
     if not os.path.exists(db_path):
@@ -522,6 +544,7 @@ def cmd_status(args):
             print(f"  {os.path.basename(row[0])} ({row[1]} bytes)")
 
     conn.close()
+
 
 # ---------------------------------------------------------------------------
 # 添加记忆
@@ -557,6 +580,7 @@ def cmd_add(args):
     n = index_file(conn, filepath, fh)
     conn.close()
     print(f"已索引: {n} 块")
+
 
 # ---------------------------------------------------------------------------
 # 清理
@@ -598,13 +622,16 @@ def cmd_cleanup(args):
     db_path = args.db or os.path.join(memory_dir, DEFAULT_DB_NAME)
     if os.path.exists(db_path):
         print("\n重新索引...")
+
         # 模拟 index 命令
         class FakeArgs:
             pass
+
         fake = FakeArgs()
         fake.dir = memory_dir
         fake.db = db_path
         cmd_index(fake)
+
 
 # ---------------------------------------------------------------------------
 # CLI
@@ -664,6 +691,7 @@ def main():
         cmd_cleanup(args)
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

@@ -83,9 +83,7 @@ def main():
                 DOCXSchemaValidator(unpacked_dir, original_file, verbose=args.verbose),
             ]
             if original_file:
-                validators.append(
-                    RedliningValidator(unpacked_dir, original_file, verbose=args.verbose, author=args.author)
-                )
+                validators.append(RedliningValidator(unpacked_dir, original_file, verbose=args.verbose, author=args.author))
         case ".pptx":
             validators = [
                 PPTXSchemaValidator(unpacked_dir, original_file, verbose=args.verbose),

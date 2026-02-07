@@ -110,9 +110,7 @@ class BibChecker:
                 missing = [f for f in required if f not in fields]
 
                 if missing:
-                    self.issues.append(
-                        f"Entry '{key}' ({entry_type}) missing required fields: {', '.join(missing)}"
-                    )
+                    self.issues.append(f"Entry '{key}' ({entry_type}) missing required fields: {', '.join(missing)}")
 
         if not self.issues:
             print(f"  ✓ All {len(self.entries)} entries have required fields")
@@ -126,9 +124,7 @@ class BibChecker:
         for key in self.entries:
             key_lower = key.lower()
             if key_lower in keys_lower:
-                self.issues.append(
-                    f"Duplicate key (case-insensitive): '{keys_lower[key_lower]}' and '{key}'"
-                )
+                self.issues.append(f"Duplicate key (case-insensitive): '{keys_lower[key_lower]}' and '{key}'")
             else:
                 keys_lower[key_lower] = key
 

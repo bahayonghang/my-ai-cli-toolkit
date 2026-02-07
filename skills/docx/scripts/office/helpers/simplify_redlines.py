@@ -47,11 +47,7 @@ def simplify_redlines(input_dir: str) -> tuple[int, str]:
 def _merge_tracked_changes_in(container, tag: str) -> int:
     merge_count = 0
 
-    tracked = [
-        child
-        for child in container.childNodes
-        if child.nodeType == child.ELEMENT_NODE and _is_element(child, tag)
-    ]
+    tracked = [child for child in container.childNodes if child.nodeType == child.ELEMENT_NODE and _is_element(child, tag)]
 
     if len(tracked) < 2:
         return 0
@@ -191,7 +187,4 @@ def infer_author(modified_dir: Path, original_docx: Path, default: str = "Claude
     if len(new_changes) == 1:
         return next(iter(new_changes))
 
-    raise ValueError(
-        f"Multiple authors added new changes: {new_changes}. "
-        "Cannot infer which author to validate."
-    )
+    raise ValueError(f"Multiple authors added new changes: {new_changes}. Cannot infer which author to validate.")

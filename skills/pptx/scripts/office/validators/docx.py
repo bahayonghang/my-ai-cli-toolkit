@@ -14,7 +14,6 @@ from .base import BaseSchemaValidator
 
 
 class DOCXSchemaValidator(BaseSchemaValidator):
-
     WORD_2006_NAMESPACE = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     W14_NAMESPACE = "http://schemas.microsoft.com/office/word/2010/wordml"
     W16CID_NAMESPACE = "http://schemas.microsoft.com/office/word/2016/wordml/cid"
@@ -76,28 +75,17 @@ class DOCXSchemaValidator(BaseSchemaValidator):
                 for elem in root.iter(f"{{{self.WORD_2006_NAMESPACE}}}t"):
                     if elem.text:
                         text = elem.text
-                        if re.search(r"^[ \t\n\r]", text) or re.search(
-                            r"[ \t\n\r]$", text
-                        ):
+                        if re.search(r"^[ \t\n\r]", text) or re.search(r"[ \t\n\r]$", text):
                             xml_space_attr = f"{{{self.XML_NAMESPACE}}}space"
-                            if (
-                                xml_space_attr not in elem.attrib
-                                or elem.attrib[xml_space_attr] != "preserve"
-                            ):
-                                text_preview = (
-                                    repr(text)[:50] + "..."
-                                    if len(repr(text)) > 50
-                                    else repr(text)
-                                )
+                            if xml_space_attr not in elem.attrib or elem.attrib[xml_space_attr] != "preserve":
+                                text_preview = repr(text)[:50] + "..." if len(repr(text)) > 50 else repr(text)
                                 errors.append(
                                     f"  {xml_file.relative_to(self.unpacked_dir)}: "
                                     f"Line {elem.sourceline}: w:t element with whitespace missing xml:space='preserve': {text_preview}"
                                 )
 
             except (lxml.etree.XMLSyntaxError, Exception) as e:
-                errors.append(
-                    f"  {xml_file.relative_to(self.unpacked_dir)}: Error: {e}"
-                )
+                errors.append(f"  {xml_file.relative_to(self.unpacked_dir)}: Error: {e}")
 
         if errors:
             print(f"FAILED - Found {len(errors)} whitespace preservation violations:")
@@ -122,19 +110,13 @@ class DOCXSchemaValidator(BaseSchemaValidator):
 
                 for t_elem in root.xpath(".//w:del//w:t", namespaces=namespaces):
                     if t_elem.text:
-                        text_preview = (
-                            repr(t_elem.text)[:50] + "..."
-                            if len(repr(t_elem.text)) > 50
-                            else repr(t_elem.text)
-                        )
+                        text_preview = repr(t_elem.text)[:50] + "..." if len(repr(t_elem.text)) > 50 else repr(t_elem.text)
                         errors.append(
                             f"  {xml_file.relative_to(self.unpacked_dir)}: "
                             f"Line {t_elem.sourceline}: <w:t> found within <w:del>: {text_preview}"
                         )
 
-                for instr_elem in root.xpath(
-                    ".//w:del//w:instrText", namespaces=namespaces
-                ):
+                for instr_elem in root.xpath(".//w:del//w:instrText", namespaces=namespaces):
                     text_preview = (
                         repr(instr_elem.text or "")[:50] + "..."
                         if len(repr(instr_elem.text or "")) > 50
@@ -146,9 +128,7 @@ class DOCXSchemaValidator(BaseSchemaValidator):
                     )
 
             except (lxml.etree.XMLSyntaxError, Exception) as e:
-                errors.append(
-                    f"  {xml_file.relative_to(self.unpacked_dir)}: Error: {e}"
-                )
+                errors.append(f"  {xml_file.relative_to(self.unpacked_dir)}: Error: {e}")
 
         if errors:
             print(f"FAILED - Found {len(errors)} deletion validation violations:")
@@ -210,15 +190,11 @@ class DOCXSchemaValidator(BaseSchemaValidator):
                 root = lxml.etree.parse(str(xml_file)).getroot()
                 namespaces = {"w": self.WORD_2006_NAMESPACE}
 
-                invalid_elements = root.xpath(
-                    ".//w:ins//w:delText[not(ancestor::w:del)]", namespaces=namespaces
-                )
+                invalid_elements = root.xpath(".//w:ins//w:delText[not(ancestor::w:del)]", namespaces=namespaces)
 
                 for elem in invalid_elements:
                     text_preview = (
-                        repr(elem.text or "")[:50] + "..."
-                        if len(repr(elem.text or "")) > 50
-                        else repr(elem.text or "")
+                        repr(elem.text or "")[:50] + "..." if len(repr(elem.text or "")) > 50 else repr(elem.text or "")
                     )
                     errors.append(
                         f"  {xml_file.relative_to(self.unpacked_dir)}: "
@@ -226,9 +202,7 @@ class DOCXSchemaValidator(BaseSchemaValidator):
                     )
 
             except (lxml.etree.XMLSyntaxError, Exception) as e:
-                errors.append(
-                    f"  {xml_file.relative_to(self.unpacked_dir)}: Error: {e}"
-                )
+                errors.append(f"  {xml_file.relative_to(self.unpacked_dir)}: Error: {e}")
 
         if errors:
             print(f"FAILED - Found {len(errors)} insertion validation violations:")
@@ -261,29 +235,20 @@ class DOCXSchemaValidator(BaseSchemaValidator):
                 for elem in lxml.etree.parse(str(xml_file)).iter():
                     if val := elem.get(para_id_attr):
                         if self._parse_id_value(val, base=16) >= 0x80000000:
-                            errors.append(
-                                f"  {xml_file.name}:{elem.sourceline}: paraId={val} >= 0x80000000"
-                            )
+                            errors.append(f"  {xml_file.name}:{elem.sourceline}: paraId={val} >= 0x80000000")
 
                     if val := elem.get(durable_id_attr):
                         if xml_file.name == "numbering.xml":
                             try:
                                 if self._parse_id_value(val, base=10) >= 0x7FFFFFFF:
-                                    errors.append(
-                                        f"  {xml_file.name}:{elem.sourceline}: "
-                                        f"durableId={val} >= 0x7FFFFFFF"
-                                    )
+                                    errors.append(f"  {xml_file.name}:{elem.sourceline}: durableId={val} >= 0x7FFFFFFF")
                             except ValueError:
                                 errors.append(
-                                    f"  {xml_file.name}:{elem.sourceline}: "
-                                    f"durableId={val} must be decimal in numbering.xml"
+                                    f"  {xml_file.name}:{elem.sourceline}: durableId={val} must be decimal in numbering.xml"
                                 )
                         else:
                             if self._parse_id_value(val, base=16) >= 0x7FFFFFFF:
-                                errors.append(
-                                    f"  {xml_file.name}:{elem.sourceline}: "
-                                    f"durableId={val} >= 0x7FFFFFFF"
-                                )
+                                errors.append(f"  {xml_file.name}:{elem.sourceline}: durableId={val} >= 0x7FFFFFFF")
             except Exception:
                 pass
 
@@ -317,58 +282,38 @@ class DOCXSchemaValidator(BaseSchemaValidator):
 
             range_starts = {
                 elem.get(f"{{{self.WORD_2006_NAMESPACE}}}id")
-                for elem in doc_root.xpath(
-                    ".//w:commentRangeStart", namespaces=namespaces
-                )
+                for elem in doc_root.xpath(".//w:commentRangeStart", namespaces=namespaces)
             }
             range_ends = {
                 elem.get(f"{{{self.WORD_2006_NAMESPACE}}}id")
-                for elem in doc_root.xpath(
-                    ".//w:commentRangeEnd", namespaces=namespaces
-                )
+                for elem in doc_root.xpath(".//w:commentRangeEnd", namespaces=namespaces)
             }
             references = {
                 elem.get(f"{{{self.WORD_2006_NAMESPACE}}}id")
-                for elem in doc_root.xpath(
-                    ".//w:commentReference", namespaces=namespaces
-                )
+                for elem in doc_root.xpath(".//w:commentReference", namespaces=namespaces)
             }
 
             orphaned_ends = range_ends - range_starts
-            for comment_id in sorted(
-                orphaned_ends, key=lambda x: int(x) if x and x.isdigit() else 0
-            ):
-                errors.append(
-                    f'  document.xml: commentRangeEnd id="{comment_id}" has no matching commentRangeStart'
-                )
+            for comment_id in sorted(orphaned_ends, key=lambda x: int(x) if x and x.isdigit() else 0):
+                errors.append(f'  document.xml: commentRangeEnd id="{comment_id}" has no matching commentRangeStart')
 
             orphaned_starts = range_starts - range_ends
-            for comment_id in sorted(
-                orphaned_starts, key=lambda x: int(x) if x and x.isdigit() else 0
-            ):
-                errors.append(
-                    f'  document.xml: commentRangeStart id="{comment_id}" has no matching commentRangeEnd'
-                )
+            for comment_id in sorted(orphaned_starts, key=lambda x: int(x) if x and x.isdigit() else 0):
+                errors.append(f'  document.xml: commentRangeStart id="{comment_id}" has no matching commentRangeEnd')
 
             comment_ids = set()
             if comments_xml and comments_xml.exists():
                 comments_root = lxml.etree.parse(str(comments_xml)).getroot()
                 comment_ids = {
                     elem.get(f"{{{self.WORD_2006_NAMESPACE}}}id")
-                    for elem in comments_root.xpath(
-                        ".//w:comment", namespaces=namespaces
-                    )
+                    for elem in comments_root.xpath(".//w:comment", namespaces=namespaces)
                 }
 
                 marker_ids = range_starts | range_ends | references
                 invalid_refs = marker_ids - comment_ids
-                for comment_id in sorted(
-                    invalid_refs, key=lambda x: int(x) if x and x.isdigit() else 0
-                ):
+                for comment_id in sorted(invalid_refs, key=lambda x: int(x) if x and x.isdigit() else 0):
                     if comment_id:
-                        errors.append(
-                            f'  document.xml: marker id="{comment_id}" references non-existent comment'
-                        )
+                        errors.append(f'  document.xml: marker id="{comment_id}" references non-existent comment')
 
         except (lxml.etree.XMLSyntaxError, Exception) as e:
             errors.append(f"  Error parsing XML: {e}")
@@ -406,16 +351,12 @@ class DOCXSchemaValidator(BaseSchemaValidator):
 
                     if xml_file.name == "numbering.xml":
                         try:
-                            needs_repair = (
-                                self._parse_id_value(durable_id, base=10) >= 0x7FFFFFFF
-                            )
+                            needs_repair = self._parse_id_value(durable_id, base=10) >= 0x7FFFFFFF
                         except ValueError:
                             needs_repair = True
                     else:
                         try:
-                            needs_repair = (
-                                self._parse_id_value(durable_id, base=16) >= 0x7FFFFFFF
-                            )
+                            needs_repair = self._parse_id_value(durable_id, base=16) >= 0x7FFFFFFF
                         except ValueError:
                             needs_repair = True
 
@@ -427,9 +368,7 @@ class DOCXSchemaValidator(BaseSchemaValidator):
                             new_id = f"{value:08X}"
 
                         elem.setAttribute("w16cid:durableId", new_id)
-                        print(
-                            f"  Repaired: {xml_file.name}: durableId {durable_id} → {new_id}"
-                        )
+                        print(f"  Repaired: {xml_file.name}: durableId {durable_id} → {new_id}")
                         repairs += 1
                         modified = True
 

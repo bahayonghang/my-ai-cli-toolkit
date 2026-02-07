@@ -8,8 +8,8 @@ def create_skill(repo_info, output_dir):
     """
     Scaffolds a new skill directory based on GitHub repository info.
     """
-    repo_name = repo_info['name']
-    safe_name = "".join(c if c.isalnum() or c in ('-','_') else '-' for c in repo_name).lower()
+    repo_name = repo_info["name"]
+    safe_name = "".join(c if c.isalnum() or c in ("-", "_") else "-" for c in repo_name).lower()
     skill_path = os.path.join(output_dir, safe_name)
 
     # 1. Create Directory Structure
@@ -20,22 +20,22 @@ def create_skill(repo_info, output_dir):
     # 2. Create SKILL.md with Extended Metadata
     skill_md_content = f"""---
 name: {safe_name}
-description: Skill wrapper for {repo_info['name']}. Generated from {repo_info['url']}.
-github_url: {repo_info['url']}
-github_hash: {repo_info['latest_hash']}
+description: Skill wrapper for {repo_info["name"]}. Generated from {repo_info["url"]}.
+github_url: {repo_info["url"]}
+github_hash: {repo_info["latest_hash"]}
 version: 0.1.0
 created_at: {datetime.datetime.now().isoformat()}
 entry_point: scripts/wrapper.py
 ---
 
-# {repo_info['name']} Skill
+# {repo_info["name"]} Skill
 
-This skill wraps the capabilities of [{repo_info['name']}]({repo_info['url']}).
+This skill wraps the capabilities of [{repo_info["name"]}]({repo_info["url"]}).
 
 ## Overview
 
 (Auto-generated context from README)
-{repo_info['readme'][:500]}...
+{repo_info["readme"][:500]}...
 
 ## Usage
 
@@ -75,6 +75,7 @@ if __name__ == "__main__":
     print("2. Implement the actual logic in scripts/wrapper.py.")
     print(f"3. Run: python package_skill.py {skill_path}")
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python create_github_skill.py <json_info_file> <output_skills_dir>")
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     json_file = sys.argv[1]
     output_dir = sys.argv[2]
 
-    with open(json_file, encoding='utf-8') as f:
+    with open(json_file, encoding="utf-8") as f:
         repo_info = json.load(f)
 
     create_skill(repo_info, output_dir)

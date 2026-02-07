@@ -29,7 +29,9 @@ def fill_pdf_fields(input_pdf_path: str, fields_json_path: str, output_pdf_path:
             print(f"ERROR: `{field['field_id']}` is not a valid field ID")
         elif field["page"] != existing_field["page"]:
             has_error = True
-            print(f"ERROR: Incorrect page number for `{field['field_id']}` (got {field['page']}, expected {existing_field['page']})")
+            print(
+                f"ERROR: Incorrect page number for `{field['field_id']}` (got {field['page']}, expected {existing_field['page']})"
+            )
         else:
             if "value" in field:
                 err = validation_error_for_field_value(existing_field, field["value"])
@@ -60,7 +62,9 @@ def validation_error_for_field_value(field_info, field_value):
     elif field_type == "radio_group":
         option_values = [opt["value"] for opt in field_info["radio_options"]]
         if field_value not in option_values:
-            return f'ERROR: Invalid value "{field_value}" for radio group field "{field_id}". Valid values are: {option_values}'
+            return (
+                f'ERROR: Invalid value "{field_value}" for radio group field "{field_id}". Valid values are: {option_values}'
+            )
     elif field_type == "choice":
         choice_values = [opt["value"] for opt in field_info["choice_options"]]
         if field_value not in choice_values:
@@ -74,7 +78,7 @@ def monkeypatch_pydpf_method():
 
     original_get_inherited = DictionaryObject.get_inherited
 
-    def patched_get_inherited(self, key: str, default = None):
+    def patched_get_inherited(self, key: str, default=None):
         result = original_get_inherited(self, key, default)
         if key == FieldDictionaryAttributes.Opt:
             if isinstance(result, list) and all(isinstance(v, list) and len(v) == 2 for v in result):

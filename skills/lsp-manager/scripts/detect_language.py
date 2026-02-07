@@ -31,10 +31,9 @@ def detect_languages(directory="."):
 
     for _root, dirs, files in os.walk(directory):
         # 跳过常见的忽略目录
-        dirs[:] = [d for d in dirs if d not in {
-            'node_modules', '.git', '__pycache__', 'venv',
-            '.venv', 'dist', 'build', 'target'
-        }]
+        dirs[:] = [
+            d for d in dirs if d not in {"node_modules", ".git", "__pycache__", "venv", ".venv", "dist", "build", "target"}
+        ]
 
         for file in files:
             ext = Path(file).suffix.lower()
@@ -45,16 +44,14 @@ def detect_languages(directory="."):
     # 生成结果
     results = []
     for lang, count in file_counts.most_common():
-        results.append({
-            "language": lang,
-            "file_count": count,
-            "extensions": lang_extensions[lang]
-        })
+        results.append({"language": lang, "file_count": count, "extensions": lang_extensions[lang]})
 
     return results
 
+
 if __name__ == "__main__":
     import sys
+
     directory = sys.argv[1] if len(sys.argv) > 1 else "."
 
     languages = detect_languages(directory)

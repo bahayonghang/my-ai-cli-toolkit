@@ -19,6 +19,7 @@ def delete_skill(skills_root, skill_name):
         print(f"Error deleting skill '{skill_name}': {e}")
         return False
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python delete_skill.py <skill_name> [skills_root]")

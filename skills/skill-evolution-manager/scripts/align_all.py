@@ -25,9 +25,10 @@ def align_all(skills_root):
 
     print(f"\nFinished. Aligned {count} skills.")
 
+
 if __name__ == "__main__":
     # Use standard skills path
-    skills_path = r"C:\Users\20515\.claude\skills"
+    skills_path = os.path.join(os.path.expanduser("~"), ".claude", "skills")
     if len(sys.argv) > 1:
         skills_path = sys.argv[1]
     align_all(skills_path)

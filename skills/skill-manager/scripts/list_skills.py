@@ -5,11 +5,12 @@ import sys
 import yaml
 
 # Force UTF-8 encoding for stdout to handle Chinese characters on Windows
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 else:
     # Fallback for older Python versions
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+
 
 def list_skills(skills_root):
     if not os.path.exists(skills_root):
@@ -41,7 +42,7 @@ def list_skills(skills_root):
                     if "github_url" in meta:
                         skill_type = "GitHub"
                     version = str(meta.get("version", "0.1.0"))
-                    description = meta.get("description", "No description").replace('\n', ' ')
+                    description = meta.get("description", "No description").replace("\n", " ")
             except Exception:
                 pass
 
@@ -55,8 +56,9 @@ def list_skills(skills_root):
         # This is a basic fix, for perfect alignment one would need wcwidth
         print(f"{item:<20} | {skill_type:<12} | {display_desc:<40} | {version:<8}")
 
+
 if __name__ == "__main__":
-    skills_path = r"C:\Users\20515\.claude\skills"
+    skills_path = os.path.join(os.path.expanduser("~"), ".claude", "skills")
     if len(sys.argv) > 1:
         skills_path = sys.argv[1]
     list_skills(skills_path)

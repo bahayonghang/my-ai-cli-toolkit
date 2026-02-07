@@ -109,9 +109,7 @@ class TypstParser(DocumentParser):
         for pattern in self.PRESERVE_PATTERNS:
             matches = list(re.finditer(pattern, temp_line, re.DOTALL))
             for match in reversed(matches):
-                preserved.append(
-                    {"start": match.start(), "end": match.end(), "text": match.group()}
-                )
+                preserved.append({"start": match.start(), "end": match.end(), "text": match.group()})
                 placeholder = " " * (match.end() - match.start())
                 temp_line = temp_line[: match.start()] + placeholder + temp_line[match.end() :]
 

@@ -105,13 +105,9 @@ class AITraceChecker:
                 return True
 
         # 3. "comprehensive" followed by range
-        return bool(
-            "comprehensive" in pattern and "from" in context_after and "to" in context_after
-        )
+        return bool("comprehensive" in pattern and "from" in context_after and "to" in context_after)
 
-    def _find_pattern_in_section(
-        self, pattern: str, suggestion_type: str, section_name: str, category: str
-    ) -> list[dict]:
+    def _find_pattern_in_section(self, pattern: str, suggestion_type: str, section_name: str, category: str) -> list[dict]:
         """Find pattern occurrences in a specific section."""
         if section_name not in self.section_ranges:
             return []
@@ -173,9 +169,7 @@ class AITraceChecker:
 
         for category, patterns_dict in all_patterns:
             for pattern, suggestion_type in patterns_dict.items():
-                matches = self._find_pattern_in_section(
-                    pattern, suggestion_type, section_name, category
-                )
+                matches = self._find_pattern_in_section(pattern, suggestion_type, section_name, category)
                 results["traces"].extend(matches)
 
         results["trace_count"] = len(results["traces"])
@@ -278,9 +272,7 @@ class AITraceChecker:
                 for trace in result["traces"][:10]:
                     report.append(f"  Line {trace['line']} [{trace['category']}]")
                     report.append(f"    {trace['text'][:80]}")
-                    report.append(
-                        f"    -> Suggestion: {self._get_instruction(trace['suggestion_type'])}"
-                    )
+                    report.append(f"    -> Suggestion: {self._get_instruction(trace['suggestion_type'])}")
 
         return "\n".join(report)
 
@@ -291,9 +283,7 @@ def main():
     parser.add_argument("--section", type=str, help="Specific section to check")
     parser.add_argument("--analyze", action="store_true", help="Full document analysis")
     parser.add_argument("--score", action="store_true", help="Output section scores only")
-    parser.add_argument(
-        "--fix-suggestions", action="store_true", help="Generate JSON suggestions for fixing"
-    )
+    parser.add_argument("--fix-suggestions", action="store_true", help="Generate JSON suggestions for fixing")
     parser.add_argument("--output", type=Path, help="Save report/json to file")
 
     args = parser.parse_args()
@@ -330,9 +320,7 @@ def main():
 
         worst_score = 0
         if analysis["sections"]:
-            worst_score = max(
-                checker.calculate_density_score(result) for result in analysis["sections"].values()
-            )
+            worst_score = max(checker.calculate_density_score(result) for result in analysis["sections"].values())
 
         if worst_score > 10:
             sys.exit(2)

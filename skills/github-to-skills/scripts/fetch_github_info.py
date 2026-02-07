@@ -11,21 +11,16 @@ def get_repo_info(url):
     """
 
     # Normalize URL (remove .git suffix if present)
-    clean_url = url.rstrip('/')
-    if clean_url.endswith('.git'):
+    clean_url = url.rstrip("/")
+    if clean_url.endswith(".git"):
         clean_url = clean_url[:-4]
 
-    repo_name = clean_url.split('/')[-1]
+    repo_name = clean_url.split("/")[-1]
 
     # 1. Get Latest Commit Hash (using git ls-remote to avoid full clone)
     try:
         # Use git ls-remote to get HEAD
-        result = subprocess.run(
-            ['git', 'ls-remote', url, 'HEAD'],
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        result = subprocess.run(["git", "ls-remote", url, "HEAD"], capture_output=True, text=True, check=True)
         # Output format: <hash>\tHEAD
         latest_hash = result.stdout.split()[0]
     except Exception as e:
@@ -40,7 +35,7 @@ def get_repo_info(url):
         try:
             readme_url = f"{readme_url_base}/{branch}/README.md"
             with urllib.request.urlopen(readme_url) as response:
-                readme_content = response.read().decode('utf-8')
+                readme_content = response.read().decode("utf-8")
                 break
         except Exception:
             continue
@@ -51,7 +46,7 @@ def get_repo_info(url):
             try:
                 readme_url = f"{readme_url_base}/{branch}/readme.md"
                 with urllib.request.urlopen(readme_url) as response:
-                    readme_content = response.read().decode('utf-8')
+                    readme_content = response.read().decode("utf-8")
                     break
             except Exception:
                 continue
@@ -61,8 +56,9 @@ def get_repo_info(url):
         "name": repo_name,
         "url": url,
         "latest_hash": latest_hash,
-        "readme": readme_content[:10000] # Truncate if too huge to avoid context blowup
+        "readme": readme_content[:10000],  # Truncate if too huge to avoid context blowup
     }
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

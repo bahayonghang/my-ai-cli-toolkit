@@ -32,17 +32,17 @@ def extract_frontmatter(skill_md_path: Path) -> dict:
     """Extract YAML frontmatter from SKILL.md."""
     content = skill_md_path.read_text()
 
-    if not content.startswith('---'):
+    if not content.startswith("---"):
         return {}
 
-    parts = content.split('---', 2)
+    parts = content.split("---", 2)
     if len(parts) < 3:
         return {}
 
     frontmatter = {}
-    for line in parts[1].strip().split('\n'):
-        if ':' in line:
-            key, value = line.split(':', 1)
+    for line in parts[1].strip().split("\n"):
+        if ":" in line:
+            key, value = line.split(":", 1)
             frontmatter[key.strip()] = value.strip()
 
     return frontmatter
@@ -83,7 +83,7 @@ def generate_directory_structure(skill_path: Path, version: str) -> str:
 
     # Extract description token count
     frontmatter = extract_frontmatter(skill_md) if skill_md.exists() else {}
-    desc = frontmatter.get('description', '')
+    desc = frontmatter.get("description", "")
     desc_tokens = len(desc.split())
 
     # Layer 2 tokens
@@ -103,18 +103,18 @@ Token Budget:
 - Layer 2 (resources/): ~{layer2_tokens} tokens (loaded selectively)
 
 Version: {version}
-Created: {datetime.now().strftime('%Y-%m-%d')}
+Created: {datetime.now().strftime("%Y-%m-%d")}
 """
 
 
 def generate_readme(skill_name: str, version: str) -> str:
     """Generate README.md with deployment instructions."""
-    title = skill_name.replace('-', ' ').replace('_', ' ').title()
+    title = skill_name.replace("-", " ").replace("_", " ").title()
 
     return f"""# {title}
 
 **Version:** {version}
-**Created:** {datetime.now().strftime('%Y-%m-%d')}
+**Created:** {datetime.now().strftime("%Y-%m-%d")}
 
 ## Quick Deploy
 
@@ -182,7 +182,7 @@ def package_skill(skill_path: Path, version: str, output_dir: Path = None) -> Pa
     if not skill_md.exists():
         raise FileNotFoundError(f"SKILL.md not found in {skill_path}")
 
-    if not re.match(r'^\d+\.\d+$', version):
+    if not re.match(r"^\d+\.\d+$", version):
         raise ValueError(f"Invalid version format: {version}. Use X.Y (e.g., 1.0, 2.1)")
 
     skill_name = skill_path.name
@@ -210,12 +210,7 @@ def package_skill(skill_path: Path, version: str, output_dir: Path = None) -> Pa
         zip_path.unlink()
 
     # Create zip with skill folder as root
-    shutil.make_archive(
-        str(output_dir / zip_name),
-        'zip',
-        skill_path.parent,
-        skill_name
-    )
+    shutil.make_archive(str(output_dir / zip_name), "zip", skill_path.parent, skill_name)
 
     size_kb = zip_path.stat().st_size / 1024
     print(f"   ✓ Created {zip_path.name} ({size_kb:.1f} KB)")

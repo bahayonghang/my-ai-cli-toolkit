@@ -38,6 +38,7 @@ CONFIG_FILE = Path(__file__).parent / "plugins.toml"
 @dataclass
 class Marketplace:
     """插件市场"""
+
     name: str
     repo: str
     description: str = ""
@@ -46,6 +47,7 @@ class Marketplace:
 @dataclass
 class Plugin:
     """插件定义"""
+
     name: str
     marketplace: str
     description: str = ""
@@ -55,6 +57,7 @@ class Plugin:
 @dataclass
 class PluginConfig:
     """插件配置"""
+
     marketplaces: dict[str, Marketplace] = field(default_factory=dict)
     plugins: dict[str, Plugin] = field(default_factory=dict)
 
@@ -129,9 +132,7 @@ def get_install_commands(
 
 @app.command("list")
 def list_plugins(
-    category: str | None = typer.Option(
-        None, "--category", "-c", help="按分类筛选"
-    ),
+    category: str | None = typer.Option(None, "--category", "-c", help="按分类筛选"),
 ):
     """列出所有可用插件"""
     config = load_config()
@@ -176,18 +177,10 @@ def list_plugins(
 
 @app.command("install")
 def install_plugins(
-    plugins: list[str] = typer.Argument(
-        None, help="要安装的插件名称"
-    ),
-    all_plugins: bool = typer.Option(
-        False, "--all", "-a", help="安装所有插件"
-    ),
-    category: str | None = typer.Option(
-        None, "--category", "-c", help="按分类安装"
-    ),
-    dry_run: bool = typer.Option(
-        False, "--dry-run", "-n", help="只显示命令，不执行"
-    ),
+    plugins: list[str] = typer.Argument(None, help="要安装的插件名称"),
+    all_plugins: bool = typer.Option(False, "--all", "-a", help="安装所有插件"),
+    category: str | None = typer.Option(None, "--category", "-c", help="按分类安装"),
+    dry_run: bool = typer.Option(False, "--dry-run", "-n", help="只显示命令，不执行"),
 ):
     """安装插件"""
     config = load_config()
@@ -198,10 +191,7 @@ def install_plugins(
     if all_plugins:
         target_plugins = list(config.plugins.keys())
     elif category:
-        target_plugins = [
-            p.name for p in config.plugins.values()
-            if p.category == category
-        ]
+        target_plugins = [p.name for p in config.plugins.values() if p.category == category]
     elif plugins:
         target_plugins = list(plugins)
     else:

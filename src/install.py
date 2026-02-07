@@ -2,6 +2,7 @@
 """
 CLI skill manager built with typer.
 """
+
 import datetime
 import shutil
 import sys
@@ -21,49 +22,47 @@ from core.skill_meta import parse_skill_frontmatter
 
 # --- Colors & Styles (Standard ANSI) ---
 class Colors:
-    HEADER = '\033[95m'
-    INFO = '\033[94m'
-    SUCCESS = '\033[92m'
-    WARN = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
+    HEADER = "\033[95m"
+    INFO = "\033[94m"
+    SUCCESS = "\033[92m"
+    WARN = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
 
-def log_info(msg): print(f"{Colors.INFO}[INFO] {Colors.ENDC} {msg}")
-def log_success(msg): print(f"{Colors.SUCCESS}[SUCCESS] {Colors.ENDC} {msg}")
-def log_warn(msg): print(f"{Colors.WARN}[WARN] {Colors.ENDC} {msg}")
-def log_error(msg): print(f"{Colors.FAIL}[ERROR] {Colors.ENDC} {msg}")
+
+def log_info(msg: str) -> None:
+    print(f"{Colors.INFO}[INFO] {Colors.ENDC} {msg}")
+
+
+def log_success(msg: str) -> None:
+    print(f"{Colors.SUCCESS}[SUCCESS] {Colors.ENDC} {msg}")
+
+
+def log_warn(msg: str) -> None:
+    print(f"{Colors.WARN}[WARN] {Colors.ENDC} {msg}")
+
+
+def log_error(msg: str) -> None:
+    print(f"{Colors.FAIL}[ERROR] {Colors.ENDC} {msg}")
+
 
 # --- Error Messages Templates ---
 ERROR_MESSAGES = {
-    "path_not_exist": (
-        "Project path does not exist: {path}\n"
-        "Suggestion: Create the directory first or check the path."
-    ),
-    "path_not_dir": (
-        "Path is not a directory: {path}\n"
-        "Suggestion: Please provide a valid directory path."
-    ),
+    "path_not_exist": ("Project path does not exist: {path}\nSuggestion: Create the directory first or check the path."),
+    "path_not_dir": ("Path is not a directory: {path}\nSuggestion: Please provide a valid directory path."),
     "permission_denied": (
-        "Permission denied: Cannot write to {path}\n"
-        "Suggestion: Check directory permissions or use a different path."
+        "Permission denied: Cannot write to {path}\nSuggestion: Check directory permissions or use a different path."
     ),
-    "skill_not_found": (
-        "Skill not found in repository: {skill}\n"
-        "Available skills: {available}"
-    ),
-    "invalid_target": (
-        "Invalid target platform: {target}\n"
-        "Valid targets: {available}"
-    ),
+    "skill_not_found": ("Skill not found in repository: {skill}\nAvailable skills: {available}"),
+    "invalid_target": ("Invalid target platform: {target}\nValid targets: {available}"),
     "path_access_error": (
         "Cannot access path: {path}\n"
         "Error: {error}\n"
         "Suggestion: Check if the path is accessible and you have proper permissions."
     ),
     "source_dir_not_found": (
-        "Source directory not found: {path}\n"
-        "Suggestion: Ensure the repository is complete and not corrupted."
+        "Source directory not found: {path}\nSuggestion: Ensure the repository is complete and not corrupted."
     ),
     "prompt_update_not_supported": (
         "prompt-update is only supported for 'claude' target.\n"
@@ -71,8 +70,7 @@ ERROR_MESSAGES = {
         "Suggestion: Use --target claude or switch to claude platform."
     ),
     "prompt_file_not_found": (
-        "Local CLAUDE.md not found: {path}\n"
-        "Suggestion: Ensure the prompts directory exists and contains CLAUDE.md."
+        "Local CLAUDE.md not found: {path}\nSuggestion: Ensure the prompts directory exists and contains CLAUDE.md."
     ),
     "kiro_requires_project": ERROR_MSG_KIRO_REQUIRES_PROJECT,
 }
@@ -150,11 +148,7 @@ class SkillManager:
         """
         available_platforms = get_available_platform_names()
         if target not in available_platforms:
-            raise ValueError(format_error(
-                "invalid_target",
-                target=target,
-                available=", ".join(available_platforms)
-            ))
+            raise ValueError(format_error("invalid_target", target=target, available=", ".join(available_platforms)))
 
         if use_kiro and not project_path and target != "kiro":
             raise ValueError(format_error("kiro_requires_project"))
@@ -213,7 +207,11 @@ class SkillManager:
         skills = sorted([d for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
         for i, skill in enumerate(skills, 1):
             desc = self.get_skill_description(skill)
-            status = f"{Colors.SUCCESS}Installed{Colors.ENDC}" if (self.target_skills_dir / skill.name).exists() else f"{Colors.FAIL}Not installed{Colors.ENDC}"
+            status = (
+                f"{Colors.SUCCESS}Installed{Colors.ENDC}"
+                if (self.target_skills_dir / skill.name).exists()
+                else f"{Colors.FAIL}Not installed{Colors.ENDC}"
+            )
             print(f"\n[{i}] {Colors.BOLD}{skill.name}{Colors.ENDC}")
             if desc:
                 print(f"    Description: {desc}")
@@ -239,7 +237,7 @@ class SkillManager:
         if self.project_path:
             valid, error_msg = validate_project_path(self.project_path)
             if not valid:
-                log_error(error_msg)
+                log_error(error_msg or "Validation failed")
                 return False
 
             if not quiet:
@@ -273,7 +271,7 @@ class SkillManager:
         if self.project_path:
             valid, error_msg = validate_project_path(self.project_path)
             if not valid:
-                log_error(error_msg)
+                log_error(error_msg or "Validation failed")
                 return
 
             log_info(f"Installing commands to project: {self.get_install_location_info()}")
@@ -326,7 +324,7 @@ class SkillManager:
         except EOFError:
             return
 
-        if val.lower() == 'all':
+        if val.lower() == "all":
             self.install_all()
             return
 
@@ -357,7 +355,7 @@ class SkillManager:
 
         self.ensure_dirs()
         if global_md.exists():
-            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             backup = global_md.parent / f"CLAUDE.md.backup.{timestamp}"
             log_info(f"Backing up existing CLAUDE.md to {backup.name}")
             shutil.copy2(global_md, backup)
@@ -382,38 +380,28 @@ class SkillManager:
             return
 
         import difflib
-        with open(local_md, encoding='utf-8') as f1, open(global_md, encoding='utf-8') as f2:
-            diff = difflib.unified_diff(
-                f2.readlines(), f1.readlines(),
-                fromfile='Global CLAUDE.md', tofile='Local CLAUDE.md'
-            )
+
+        with open(local_md, encoding="utf-8") as f1, open(global_md, encoding="utf-8") as f2:
+            diff = difflib.unified_diff(f2.readlines(), f1.readlines(), fromfile="Global CLAUDE.md", tofile="Local CLAUDE.md")
             for line in diff:
                 sys.stdout.write(line)
 
+
 # --- Public CLI options ---
-ProjectOption = typer.Option(
-    None,
-    "--project", "-p",
-    help="Project path for local installation (relative or absolute)"
-)
+ProjectOption = typer.Option(None, "--project", "-p", help="Project path for local installation (relative or absolute)")
 
-KiroFlag = typer.Option(
-    False,
-    "--kiro",
-    help="Use Kiro structure (.kiro/skills/ and .kiro/steering/)"
-)
+KiroFlag = typer.Option(False, "--kiro", help="Use Kiro structure (.kiro/skills/ and .kiro/steering/)")
 
-app = typer.Typer(
-    name="skill-installer",
-    help="Unified Skills & Config Manager",
-    epilog="Built with typer"
-)
+app = typer.Typer(name="skill-installer", help="Unified Skills & Config Manager", epilog="Built with typer")
+
 
 @app.command()
 def list_skills(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """List available skills."""
     try:
@@ -423,11 +411,14 @@ def list_skills(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def installed(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """List installed skills."""
     try:
@@ -437,12 +428,15 @@ def installed(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def install(
     skills: list[str] = typer.Argument(..., help="Skill names to install"),
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """Install specific skills."""
     try:
@@ -455,11 +449,14 @@ def install(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def install_all(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """Install all skills."""
     try:
@@ -470,11 +467,14 @@ def install_all(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def install_commands(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """Install commands."""
     try:
@@ -485,11 +485,14 @@ def install_commands(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def interactive(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """Interactive installation."""
     try:
@@ -499,11 +502,14 @@ def interactive(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def prompt_update(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """Update CLAUDE.md prompt file."""
     try:
@@ -513,11 +519,14 @@ def prompt_update(
         log_error(str(e))
         sys.exit(1)
 
+
 @app.command()
 def prompt_diff(
-    target: str = typer.Option("claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"),
+    target: str = typer.Option(
+        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+    ),
     project: str | None = ProjectOption,
-    kiro: bool = KiroFlag
+    kiro: bool = KiroFlag,
 ):
     """Compare local and global CLAUDE.md prompt files."""
     try:
@@ -526,6 +535,7 @@ def prompt_diff(
     except ValueError as e:
         log_error(str(e))
         sys.exit(1)
+
 
 if __name__ == "__main__":
     try:

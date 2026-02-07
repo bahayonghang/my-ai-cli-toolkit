@@ -10,10 +10,7 @@ CONFIGS = {
         "python": {
             "command": "pyright-langserver",
             "args": ["--stdio"],
-            "extensionToLanguage": {
-                ".py": "python",
-                ".pyi": "python"
-            }
+            "extensionToLanguage": {".py": "python", ".pyi": "python"},
         }
     },
     "TypeScript": {
@@ -24,68 +21,26 @@ CONFIGS = {
                 ".ts": "typescript",
                 ".tsx": "typescriptreact",
                 ".js": "javascript",
-                ".jsx": "javascriptreact"
-            }
+                ".jsx": "javascriptreact",
+            },
         }
     },
     "JavaScript": {
         "javascript": {
             "command": "typescript-language-server",
             "args": ["--stdio"],
-            "extensionToLanguage": {
-                ".js": "javascript",
-                ".jsx": "javascriptreact"
-            }
+            "extensionToLanguage": {".js": "javascript", ".jsx": "javascriptreact"},
         }
     },
-    "Go": {
-        "go": {
-            "command": "gopls",
-            "args": ["serve"],
-            "extensionToLanguage": {
-                ".go": "go"
-            }
-        }
-    },
-    "Rust": {
-        "rust": {
-            "command": "rust-analyzer",
-            "extensionToLanguage": {
-                ".rs": "rust"
-            }
-        }
-    },
+    "Go": {"go": {"command": "gopls", "args": ["serve"], "extensionToLanguage": {".go": "go"}}},
+    "Rust": {"rust": {"command": "rust-analyzer", "extensionToLanguage": {".rs": "rust"}}},
     "C/C++": {
-        "cpp": {
-            "command": "clangd",
-            "extensionToLanguage": {
-                ".c": "c",
-                ".cpp": "cpp",
-                ".cc": "cpp",
-                ".h": "c",
-                ".hpp": "cpp"
-            }
-        }
+        "cpp": {"command": "clangd", "extensionToLanguage": {".c": "c", ".cpp": "cpp", ".cc": "cpp", ".h": "c", ".hpp": "cpp"}}
     },
-    "Ruby": {
-        "ruby": {
-            "command": "solargraph",
-            "args": ["stdio"],
-            "extensionToLanguage": {
-                ".rb": "ruby"
-            }
-        }
-    },
-    "PHP": {
-        "php": {
-            "command": "intelephense",
-            "args": ["--stdio"],
-            "extensionToLanguage": {
-                ".php": "php"
-            }
-        }
-    }
+    "Ruby": {"ruby": {"command": "solargraph", "args": ["stdio"], "extensionToLanguage": {".rb": "ruby"}}},
+    "PHP": {"php": {"command": "intelephense", "args": ["--stdio"], "extensionToLanguage": {".php": "php"}}},
 }
+
 
 def generate_lsp_config(languages):
     """根据检测到的语言生成 LSP 配置"""
@@ -97,14 +52,11 @@ def generate_lsp_config(languages):
 
     return config
 
+
 def generate_plugin_manifest(name="auto-lsp"):
     """生成 plugin.json"""
-    return {
-        "name": name,
-        "version": "1.0.0",
-        "description": "Auto-generated LSP configuration",
-        "lspServers": "./.lsp.json"
-    }
+    return {"name": name, "version": "1.0.0", "description": "Auto-generated LSP configuration", "lspServers": "./.lsp.json"}
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -120,9 +72,6 @@ if __name__ == "__main__":
     plugin_manifest = generate_plugin_manifest()
 
     # 输出结果
-    output = {
-        ".lsp.json": lsp_config,
-        "plugin.json": plugin_manifest
-    }
+    output = {".lsp.json": lsp_config, "plugin.json": plugin_manifest}
 
     print(json.dumps(output, indent=2))
