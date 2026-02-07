@@ -30,11 +30,7 @@ ASCII_ALPHANUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
 @st.composite
 def item_info_strategy(draw):
     """生成随机的 ItemInfo，使用 ASCII 字符以符合实际 skill/command 名称"""
-    name = draw(st.text(
-        alphabet=ASCII_ALPHANUM,
-        min_size=1,
-        max_size=20
-    ))
+    name = draw(st.text(alphabet=ASCII_ALPHANUM, min_size=1, max_size=20))
     description = draw(st.one_of(st.none(), st.text(min_size=0, max_size=50)))
     status = draw(st.sampled_from([InstallStatus.INSTALLED, InstallStatus.NOT_INSTALLED]))
     item_type = draw(st.sampled_from([ItemType.SKILL, ItemType.COMMAND]))
@@ -63,6 +59,7 @@ def item_info_list_strategy(draw, min_size=0, max_size=20):
 
 # --- 模拟 SelectableItem 的核心逻辑 ---
 # 由于 Textual 组件需要运行在 App 上下文中，我们测试核心逻辑
+
 
 class MockSelectableItem:
     """模拟 SelectableItem 的核心选择逻辑"""
@@ -121,18 +118,15 @@ class MockItemListView:
     def _get_visible_items(self) -> list[MockSelectableItem]:
         if not self._filter_text:
             return self._all_items
-        return [item for item in self._all_items
-                if self._filter_text in item.item_name.lower()]
+        return [item for item in self._all_items if self._filter_text in item.item_name.lower()]
 
 
 # --- Property 1: Selection Toggle Consistency ---
 # **Validates: Requirements 3.9, 4.8**
 
+
 @settings(max_examples=100)
-@given(
-    item_info=item_info_strategy(),
-    initial_selected=st.booleans()
-)
+@given(item_info=item_info_strategy(), initial_selected=st.booleans())
 def test_property_1_selection_toggle_consistency(item_info: ItemInfo, initial_selected: bool):
     """
     Property 1: Selection Toggle Consistency
@@ -152,13 +146,13 @@ def test_property_1_selection_toggle_consistency(item_info: ItemInfo, initial_se
 
     # Should return to original state
     assert item.selected == original_state, (
-        f"After toggling twice, expected selected={original_state}, "
-        f"got selected={item.selected}"
+        f"After toggling twice, expected selected={original_state}, got selected={item.selected}"
     )
 
 
 # --- Property 2: Select All Sets All Items ---
 # **Validates: Requirements 9.1**
+
 
 @settings(max_examples=100)
 @given(item_infos=item_info_list_strategy(min_size=0, max_size=20))
@@ -180,23 +174,19 @@ def test_property_2_select_all_sets_all_items(item_infos: list[ItemInfo]):
 
     # All items should be selected
     for item in list_view.items:
-        assert item.selected is True, (
-            f"Item {item.item_name} should be selected after select_all()"
-        )
+        assert item.selected is True, f"Item {item.item_name} should be selected after select_all()"
 
 
 # --- Property 3: Deselect All Clears All Items ---
 # **Validates: Requirements 9.2**
 
+
 @settings(max_examples=100)
 @given(
     item_infos=item_info_list_strategy(min_size=0, max_size=20),
-    initial_selections=st.lists(st.booleans(), min_size=0, max_size=20)
+    initial_selections=st.lists(st.booleans(), min_size=0, max_size=20),
 )
-def test_property_3_deselect_all_clears_all_items(
-    item_infos: list[ItemInfo],
-    initial_selections: list[bool]
-):
+def test_property_3_deselect_all_clears_all_items(item_infos: list[ItemInfo], initial_selections: list[bool]):
     """
     Property 3: Deselect All Clears All Items
 
@@ -219,23 +209,19 @@ def test_property_3_deselect_all_clears_all_items(
 
     # All items should be deselected
     for item in list_view.items:
-        assert item.selected is False, (
-            f"Item {item.item_name} should be deselected after deselect_all()"
-        )
+        assert item.selected is False, f"Item {item.item_name} should be deselected after deselect_all()"
 
 
 # --- Property 4: Get Selected Items Returns Only Selected ---
 # **Validates: Requirements 7.1**
 
+
 @settings(max_examples=100)
 @given(
     item_infos=item_info_list_strategy(min_size=0, max_size=20),
-    selection_pattern=st.lists(st.booleans(), min_size=0, max_size=20)
+    selection_pattern=st.lists(st.booleans(), min_size=0, max_size=20),
 )
-def test_property_4_get_selected_items_returns_only_selected(
-    item_infos: list[ItemInfo],
-    selection_pattern: list[bool]
-):
+def test_property_4_get_selected_items_returns_only_selected(item_infos: list[ItemInfo], selection_pattern: list[bool]):
     """
     Property 4: Get Selected Items Returns Only Selected
 
@@ -263,31 +249,24 @@ def test_property_4_get_selected_items_returns_only_selected(
 
     # Verify
     assert actual_selected_names == expected_selected_names, (
-        f"Expected selected items {expected_selected_names}, "
-        f"got {actual_selected_names}"
+        f"Expected selected items {expected_selected_names}, got {actual_selected_names}"
     )
 
     # Also verify all returned items are actually selected
     for item in selected_items:
-        assert item.selected is True, (
-            f"Item {item.item_name} in get_selected_items() result "
-            f"should have selected=True"
-        )
-
+        assert item.selected is True, f"Item {item.item_name} in get_selected_items() result should have selected=True"
 
 
 # --- Property 5: Filter Returns Matching Items Only ---
 # **Validates: Requirements 11.2, 11.4**
 
+
 @settings(max_examples=100)
 @given(
     item_infos=item_info_list_strategy(min_size=1, max_size=20),
-    filter_text=st.text(alphabet=ASCII_ALPHANUM, min_size=0, max_size=10)
+    filter_text=st.text(alphabet=ASCII_ALPHANUM, min_size=0, max_size=10),
 )
-def test_property_5_filter_returns_matching_items_only(
-    item_infos: list[ItemInfo],
-    filter_text: str
-):
+def test_property_5_filter_returns_matching_items_only(item_infos: list[ItemInfo], filter_text: str):
     """
     Property 5: Filter Returns Matching Items Only
 
@@ -308,17 +287,13 @@ def test_property_5_filter_returns_matching_items_only(
 
     # Calculate expected visible items (case-insensitive match)
     filter_lower = filter_text.lower()
-    expected_visible_names = {
-        item.item_name for item in list_view.items
-        if filter_lower in item.item_name.lower()
-    }
+    expected_visible_names = {item.item_name for item in list_view.items if filter_lower in item.item_name.lower()}
 
     actual_visible_names = {item.item_name for item in visible_items}
 
     # Verify all visible items match the filter
     assert actual_visible_names == expected_visible_names, (
-        f"Filter '{filter_text}': Expected visible items {expected_visible_names}, "
-        f"got {actual_visible_names}"
+        f"Filter '{filter_text}': Expected visible items {expected_visible_names}, got {actual_visible_names}"
     )
 
     # Verify each visible item actually contains the filter text (case-insensitive)
@@ -350,20 +325,16 @@ def test_property_5_empty_filter_returns_all_items(item_infos: list[ItemInfo]):
 
     # All items should be visible
     assert len(visible_items) == len(list_view.items), (
-        f"Empty filter should return all {len(list_view.items)} items, "
-        f"got {len(visible_items)}"
+        f"Empty filter should return all {len(list_view.items)} items, got {len(visible_items)}"
     )
 
 
 @settings(max_examples=100)
 @given(
     item_infos=item_info_list_strategy(min_size=1, max_size=20),
-    filter_text=st.text(alphabet=ASCII_ALPHANUM, min_size=1, max_size=10)
+    filter_text=st.text(alphabet=ASCII_ALPHANUM, min_size=1, max_size=10),
 )
-def test_property_5_filter_is_case_insensitive(
-    item_infos: list[ItemInfo],
-    filter_text: str
-):
+def test_property_5_filter_is_case_insensitive(item_infos: list[ItemInfo], filter_text: str):
     """
     Property 5 (Case Insensitivity): Filter is Case Insensitive
 
@@ -389,6 +360,5 @@ def test_property_5_filter_is_case_insensitive(
 
     # All should return the same results
     assert visible_original == visible_upper == visible_lower, (
-        f"Filter should be case-insensitive. "
-        f"Original: {visible_original}, Upper: {visible_upper}, Lower: {visible_lower}"
+        f"Filter should be case-insensitive. Original: {visible_original}, Upper: {visible_upper}, Lower: {visible_lower}"
     )

@@ -2,6 +2,7 @@
 单元测试：项目级别安装功能
 测试 resolve_install_paths() 函数的各种场景
 """
+
 import os
 import sys
 from pathlib import Path

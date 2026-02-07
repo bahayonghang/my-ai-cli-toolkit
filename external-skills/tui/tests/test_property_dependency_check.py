@@ -35,18 +35,21 @@ PLATFORMS = ["claude", "codex", "gemini", "kiro", "windsurf"]
 
 # --- Hypothesis Strategies ---
 
+
 @st.composite
 def dependency_list_strategy(draw):
     """生成随机的依赖列表
 
     生成 0-6 个不重复的依赖项
     """
-    deps = draw(st.lists(
-        st.sampled_from(DEPENDENCIES),
-        min_size=0,
-        max_size=len(DEPENDENCIES),
-        unique=True,
-    ))
+    deps = draw(
+        st.lists(
+            st.sampled_from(DEPENDENCIES),
+            min_size=0,
+            max_size=len(DEPENDENCIES),
+            unique=True,
+        )
+    )
     return deps
 
 
@@ -75,6 +78,7 @@ def dependency_and_environment_strategy(draw):
 
 # --- Helper Functions ---
 
+
 def create_mock_check_command_exists(env_state: dict):
     """创建一个模拟的 _check_command_exists 方法
 
@@ -84,8 +88,10 @@ def create_mock_check_command_exists(env_state: dict):
     Returns:
         模拟函数
     """
+
     def mock_check(cmd: str) -> bool:
         return env_state.get(cmd, False)
+
     return mock_check
 
 
@@ -100,7 +106,7 @@ def create_temp_registry_with_skill(skill_name: str, requires: list[str]) -> Pat
         临时文件路径
     """
     requires_str = ", ".join(f'"{r}"' for r in requires)
-    toml_content = f'''# Generated registry.toml for testing
+    toml_content = f"""# Generated registry.toml for testing
 
 [skills.{skill_name}]
 description = "Test skill"
@@ -110,7 +116,7 @@ requires = [{requires_str}]
 supported_targets = ["all"]
 homepage = "https://example.com"
 license = "MIT"
-'''
+"""
 
     fd, path = tempfile.mkstemp(suffix=".toml", prefix="registry_")
     with open(fd, "w", encoding="utf-8") as f:
@@ -120,6 +126,7 @@ license = "MIT"
 
 
 # --- Property Tests ---
+
 
 class TestDependencyCheckCorrectness:
     """Property 3: 依赖检查正确性
@@ -144,11 +151,7 @@ class TestDependencyCheckCorrectness:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             # Mock _check_command_exists 方法
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
             # 计算期望的 all_satisfied 值
@@ -184,17 +187,11 @@ class TestDependencyCheckCorrectness:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             # Mock _check_command_exists 方法
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
             # 验证返回的依赖数量
-            assert len(result.dependencies) == len(deps), (
-                f"依赖数量不匹配: 期望 {len(deps)}, 实际 {len(result.dependencies)}"
-            )
+            assert len(result.dependencies) == len(deps), f"依赖数量不匹配: 期望 {len(deps)}, 实际 {len(result.dependencies)}"
 
             # 验证每个依赖的状态
             result_dict = {d.name: d.satisfied for d in result.dependencies}
@@ -203,8 +200,7 @@ class TestDependencyCheckCorrectness:
                 assert dep in result_dict, f"依赖 {dep} 未在结果中"
                 expected_satisfied = env_state.get(dep, False)
                 assert result_dict[dep] == expected_satisfied, (
-                    f"依赖 {dep} 状态不正确: "
-                    f"期望 {expected_satisfied}, 实际 {result_dict[dep]}"
+                    f"依赖 {dep} 状态不正确: 期望 {expected_satisfied}, 实际 {result_dict[dep]}"
                 )
         finally:
             registry_file.unlink(missing_ok=True)
@@ -226,18 +222,12 @@ class TestDependencyCheckCorrectness:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             # Mock _check_command_exists 方法
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
             # 验证顺序
             result_names = [d.name for d in result.dependencies]
-            assert result_names == deps, (
-                f"依赖顺序不一致: 期望 {deps}, 实际 {result_names}"
-            )
+            assert result_names == deps, f"依赖顺序不一致: 期望 {deps}, 实际 {result_names}"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -265,20 +255,12 @@ class TestDependencyCheckEdgeCases:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             # Mock _check_command_exists 方法
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
             # 空依赖列表应该全部满足
-            assert result.all_satisfied is True, (
-                f"空依赖列表应返回 all_satisfied=True, 实际 {result.all_satisfied}"
-            )
-            assert len(result.dependencies) == 0, (
-                f"空依赖列表应返回空的 dependencies, 实际 {len(result.dependencies)} 个"
-            )
+            assert result.all_satisfied is True, f"空依赖列表应返回 all_satisfied=True, 实际 {result.all_satisfied}"
+            assert len(result.dependencies) == 0, f"空依赖列表应返回空的 dependencies, 实际 {len(result.dependencies)} 个"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -301,21 +283,13 @@ class TestDependencyCheckEdgeCases:
         try:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
-            assert result.all_satisfied is True, (
-                "所有依赖满足时应返回 all_satisfied=True"
-            )
+            assert result.all_satisfied is True, "所有依赖满足时应返回 all_satisfied=True"
 
             for dep_status in result.dependencies:
-                assert dep_status.satisfied is True, (
-                    f"依赖 {dep_status.name} 应为 satisfied=True"
-                )
+                assert dep_status.satisfied is True, f"依赖 {dep_status.name} 应为 satisfied=True"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -338,21 +312,13 @@ class TestDependencyCheckEdgeCases:
         try:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
-            assert result.all_satisfied is False, (
-                "所有依赖不满足时应返回 all_satisfied=False"
-            )
+            assert result.all_satisfied is False, "所有依赖不满足时应返回 all_satisfied=False"
 
             for dep_status in result.dependencies:
-                assert dep_status.satisfied is False, (
-                    f"依赖 {dep_status.name} 应为 satisfied=False"
-                )
+                assert dep_status.satisfied is False, f"依赖 {dep_status.name} 应为 satisfied=False"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -382,17 +348,11 @@ class TestDependencyCheckEdgeCases:
         try:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
             # 部分满足时 all_satisfied 应为 False
-            assert result.all_satisfied is False, (
-                "部分依赖满足时应返回 all_satisfied=False"
-            )
+            assert result.all_satisfied is False, "部分依赖满足时应返回 all_satisfied=False"
 
             # 验证每个依赖的状态
             result_dict = {d.name: d.satisfied for d in result.dependencies}
@@ -425,11 +385,7 @@ class TestDependencyCheckConsistency:
         try:
             manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.check_dependencies(skill_name)
 
             # 计算 dependencies 列表的 all() 结果
@@ -465,25 +421,19 @@ class TestDependencyCheckConsistency:
 
             mock_fn = create_mock_check_command_exists(env_state)
 
-            with patch.object(manager, '_check_command_exists', side_effect=mock_fn):
+            with patch.object(manager, "_check_command_exists", side_effect=mock_fn):
                 result1 = manager.check_dependencies(skill_name)
 
-            with patch.object(manager, '_check_command_exists', side_effect=mock_fn):
+            with patch.object(manager, "_check_command_exists", side_effect=mock_fn):
                 result2 = manager.check_dependencies(skill_name)
 
             # 验证两次结果一致
-            assert result1.all_satisfied == result2.all_satisfied, (
-                "幂等性检查失败: all_satisfied 不一致"
-            )
+            assert result1.all_satisfied == result2.all_satisfied, "幂等性检查失败: all_satisfied 不一致"
 
-            assert len(result1.dependencies) == len(result2.dependencies), (
-                "幂等性检查失败: dependencies 长度不一致"
-            )
+            assert len(result1.dependencies) == len(result2.dependencies), "幂等性检查失败: dependencies 长度不一致"
 
             for d1, d2 in zip(result1.dependencies, result2.dependencies, strict=False):
                 assert d1.name == d2.name, "幂等性检查失败: 依赖名称不一致"
-                assert d1.satisfied == d2.satisfied, (
-                    f"幂等性检查失败: 依赖 {d1.name} 状态不一致"
-                )
+                assert d1.satisfied == d2.satisfied, f"幂等性检查失败: 依赖 {d1.name} 状态不一致"
         finally:
             registry_file.unlink(missing_ok=True)

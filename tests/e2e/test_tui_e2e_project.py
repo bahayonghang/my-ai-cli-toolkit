@@ -4,7 +4,6 @@
 """
 
 import tempfile
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -29,10 +28,7 @@ def test_tui_project_install_workflow(tmp_path):
     with patch("tui.core.manager.SKILLS_SRC_DIR", skills_src):
         with patch("install.SKILLS_SRC_DIR", skills_src):
             # 初始化 TUIManager
-            manager = TUIManager(
-                platform="claude",
-                project_path=str(project_dir)
-            )
+            manager = TUIManager(platform="claude", project_path=str(project_dir))
 
             # 验证配置
             assert manager.project_path == str(project_dir)
@@ -71,10 +67,7 @@ def test_tui_kiro_install_workflow(tmp_path):
     with patch("tui.core.manager.SKILLS_SRC_DIR", skills_src):
         with patch("install.SKILLS_SRC_DIR", skills_src):
             # 初始化 TUIManager（Kiro 模式）
-            manager = TUIManager(
-                platform="kiro",
-                project_path=str(project_dir)
-            )
+            manager = TUIManager(platform="kiro", project_path=str(project_dir))
 
             # 验证配置
             assert manager.project_path == str(project_dir)
@@ -119,45 +112,37 @@ def test_tui_global_install_backward_compatibility(tmp_path):
             assert manager.project_path is None
 
             # 验证 SkillManager 被正确调用（不带项目路径）
-            mock_skill_manager.assert_called_once_with(
-                "claude",
-                project_path=None
-            )
+            mock_skill_manager.assert_called_once_with("claude", project_path=None)
 
 
 def test_tui_path_validation():
-    """测试 TUI 路径验证"""
+    """测试 TUI 路径验证 - validate_project_path correctly accepts/rejects paths"""
+    from install import validate_project_path
 
-    # 测试不存在的路径
-    nonexistent_path = "./nonexistent-project"
-    path = Path(nonexistent_path)
-    assert not path.exists()
+    # 测试不存在的路径 - validate_project_path should reject it
+    is_valid, error = validate_project_path("./nonexistent-project-xyz-12345")
+    assert is_valid is False
+    assert error is not None
+    assert "does not exist" in error
 
-    # 测试存在的路径
+    # 测试存在的路径 - validate_project_path should accept it
     with tempfile.TemporaryDirectory() as tmpdir:
-        existing_path = Path(tmpdir)
-        assert existing_path.exists()
-        assert existing_path.is_dir()
+        is_valid, error = validate_project_path(tmpdir)
+        assert is_valid is True
+        assert error is None
 
 
-def test_tui_relative_path_handling(tmp_path):
-    """测试 TUI 相对路径处理"""
+def test_tui_header_format():
+    """测试 TUI Header 标题格式化"""
     from tui.components.header import Header
 
-    # 创建测试项目目录
-    project_dir = tmp_path / "test-project"
-    project_dir.mkdir()
-
-    # 测试相对路径显示
-    header = Header(
-        platform="claude",
-        project_path=str(project_dir)
-    )
+    # 测试 Header 标题不包含路径信息（路径已移至 InstallModal）
+    header = Header(platform="claude")
 
     title = header._format_title()
     assert "MyClaude Skills Manager" in title
-    # 应该包含项目路径信息
-    assert "📁" in title
+    # 不再包含项目路径
+    assert "📁" not in title
 
 
 if __name__ == "__main__":

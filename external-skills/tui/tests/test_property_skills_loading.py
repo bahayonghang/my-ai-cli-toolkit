@@ -41,15 +41,17 @@ def skill_name_strategy(draw):
     技能名称应该是 kebab-case 格式，如 "my-skill-name"
     """
     # 生成 1-3 个单词组成的名称
-    words = draw(st.lists(
-        st.text(
-            alphabet="abcdefghijklmnopqrstuvwxyz",
-            min_size=2,
-            max_size=10,
-        ),
-        min_size=1,
-        max_size=3,
-    ))
+    words = draw(
+        st.lists(
+            st.text(
+                alphabet="abcdefghijklmnopqrstuvwxyz",
+                min_size=2,
+                max_size=10,
+            ),
+            min_size=1,
+            max_size=3,
+        )
+    )
     return "-".join(words)
 
 
@@ -62,47 +64,57 @@ def skill_data_strategy(draw):
     assume(len(name) > 0)
 
     # 生成简单的描述（避免特殊字符导致 TOML 解析问题）
-    description = draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyz0123456789 ",
-        min_size=0,
-        max_size=50,
-    ))
+    description = draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyz0123456789 ",
+            min_size=0,
+            max_size=50,
+        )
+    )
 
     skill_type = draw(st.sampled_from(SKILL_TYPES))
 
     # 生成简单的包名（避免特殊字符）
-    package = draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
-        min_size=1,
-        max_size=30,
-    ))
+    package = draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
+            min_size=1,
+            max_size=30,
+        )
+    )
 
     # 生成依赖列表 (0-3 个依赖)
-    requires = draw(st.lists(
-        st.sampled_from(DEPENDENCIES),
-        min_size=0,
-        max_size=3,
-        unique=True,
-    ))
+    requires = draw(
+        st.lists(
+            st.sampled_from(DEPENDENCIES),
+            min_size=0,
+            max_size=3,
+            unique=True,
+        )
+    )
 
     # 生成支持的平台列表 (1-5 个平台，或者 "all")
     use_all = draw(st.booleans())
     if use_all:
         supported_targets = ["all"]
     else:
-        supported_targets = draw(st.lists(
-            st.sampled_from(PLATFORMS),
-            min_size=1,
-            max_size=5,
-            unique=True,
-        ))
+        supported_targets = draw(
+            st.lists(
+                st.sampled_from(PLATFORMS),
+                min_size=1,
+                max_size=5,
+                unique=True,
+            )
+        )
 
     # 生成简单的 homepage URL
-    domain = draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyz",
-        min_size=3,
-        max_size=10,
-    ))
+    domain = draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyz",
+            min_size=3,
+            max_size=10,
+        )
+    )
     homepage = f"https://{domain}.com" if domain else "https://example.com"
 
     license_name = draw(st.sampled_from(["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause", ""]))
@@ -183,6 +195,7 @@ def create_temp_registry(skills_config: dict) -> Path:
 
 # --- Property Tests ---
 
+
 class TestSkillsLoadingCompleteness:
     """Property 1: 技能列表加载完整性
 
@@ -212,9 +225,7 @@ class TestSkillsLoadingCompleteness:
             # 验证: 所有配置的技能名称都在加载结果中
             loaded_names = {s.name for s in loaded_skills}
             config_names = set(skills_config.keys())
-            assert loaded_names == config_names, (
-                f"技能名称不匹配: 期望 {config_names}, 实际 {loaded_names}"
-            )
+            assert loaded_names == config_names, f"技能名称不匹配: 期望 {config_names}, 实际 {loaded_names}"
         finally:
             # 清理临时文件
             registry_file.unlink(missing_ok=True)
@@ -242,9 +253,7 @@ class TestSkillsLoadingCompleteness:
                 skill = loaded_dict[name]
 
                 # 验证名称
-                assert skill.name == name, (
-                    f"技能名称不匹配: 期望 {name}, 实际 {skill.name}"
-                )
+                assert skill.name == name, f"技能名称不匹配: 期望 {name}, 实际 {skill.name}"
 
                 # 验证类型
                 assert skill.skill_type == config["type"], (

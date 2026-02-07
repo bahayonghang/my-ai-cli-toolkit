@@ -66,10 +66,7 @@ def test_property_5_message_level_css_class(level: str):
     result = get_message_css_class(level)
     expected = LEVEL_TO_CSS_CLASS[level]
 
-    assert result == expected, (
-        f"get_message_css_class('{level}') should return '{expected}', "
-        f"got '{result}'"
-    )
+    assert result == expected, f"get_message_css_class('{level}') should return '{expected}', got '{result}'"
 
 
 @settings(max_examples=100)
@@ -87,10 +84,7 @@ def test_property_5_message_level_icon(level: str):
     result = get_message_icon(level)
     expected = LEVEL_TO_ICON[level]
 
-    assert result == expected, (
-        f"get_message_icon('{level}') should return '{expected}', "
-        f"got '{result}'"
-    )
+    assert result == expected, f"get_message_icon('{level}') should return '{expected}', got '{result}'"
 
 
 def test_property_5_invalid_level_defaults_to_info():
@@ -106,10 +100,7 @@ def test_property_5_invalid_level_defaults_to_info():
 
     for level in invalid_levels:
         result = get_message_css_class(level)
-        assert result == "status-info", (
-            f"get_message_css_class('{level}') should default to 'status-info', "
-            f"got '{result}'"
-        )
+        assert result == "status-info", f"get_message_css_class('{level}') should default to 'status-info', got '{result}'"
 
 
 def test_property_5_css_class_format():
@@ -123,16 +114,13 @@ def test_property_5_css_class_format():
     """
     for level in VALID_MESSAGE_LEVELS:
         result = get_message_css_class(level)
-        assert result.startswith("status-"), (
-            f"CSS class '{result}' should start with 'status-'"
-        )
-        assert result == f"status-{level}", (
-            f"CSS class should be 'status-{level}', got '{result}'"
-        )
+        assert result.startswith("status-"), f"CSS class '{result}' should start with 'status-'"
+        assert result == f"status-{level}", f"CSS class should be 'status-{level}', got '{result}'"
 
 
 # --- Property 6: Footer Selection Count Display ---
 # **Validates: Requirements 5.2**
+
 
 @settings(max_examples=100)
 @given(count=st.integers(min_value=1, max_value=10000))
@@ -149,10 +137,7 @@ def test_property_6_positive_selection_count(count: int):
     result = format_selection_count(count)
     expected = f"Selected: {count}"
 
-    assert result == expected, (
-        f"format_selection_count({count}) should return '{expected}', "
-        f"got '{result}'"
-    )
+    assert result == expected, f"format_selection_count({count}) should return '{expected}', got '{result}'"
 
 
 @settings(max_examples=100)
@@ -169,10 +154,7 @@ def test_property_6_zero_or_negative_selection_count(count: int):
     """
     result = format_selection_count(count)
 
-    assert result == "", (
-        f"format_selection_count({count}) should return '', "
-        f"got '{result}'"
-    )
+    assert result == "", f"format_selection_count({count}) should return '', got '{result}'"
 
 
 def test_property_6_selection_count_format():

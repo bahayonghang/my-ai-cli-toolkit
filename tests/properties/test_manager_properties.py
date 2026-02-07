@@ -24,6 +24,7 @@ from tui.core.models import ItemType
 # --- Property 10: Get Skills Returns All Available Skills ---
 # **Validates: Requirements 3.1**
 
+
 @settings(max_examples=100)
 @given(platform=st.sampled_from(["claude", "codex", "gemini"]))
 def test_property_10_get_skills_returns_all_available_skills(platform: str):
@@ -41,35 +42,26 @@ def test_property_10_get_skills_returns_all_available_skills(platform: str):
 
     # 获取源目录中的所有技能目录
     if SKILLS_SRC_DIR.exists():
-        expected_skill_names = sorted([
-            d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()
-        ])
+        expected_skill_names = sorted([d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
     else:
         expected_skill_names = []
 
     # 验证返回的技能数量与源目录中的目录数量一致
     actual_skill_names = sorted([s.name for s in skills])
-    assert actual_skill_names == expected_skill_names, (
-        f"Expected skills {expected_skill_names}, got {actual_skill_names}"
-    )
+    assert actual_skill_names == expected_skill_names, f"Expected skills {expected_skill_names}, got {actual_skill_names}"
 
     # 验证每个返回的技能都有正确的 item_type
     for skill in skills:
-        assert skill.item_type == ItemType.SKILL, (
-            f"Skill {skill.name} has wrong item_type: {skill.item_type}"
-        )
+        assert skill.item_type == ItemType.SKILL, f"Skill {skill.name} has wrong item_type: {skill.item_type}"
 
         # 验证 source_path 存在
-        assert skill.source_path is not None, (
-            f"Skill {skill.name} has no source_path"
-        )
-        assert skill.source_path.exists(), (
-            f"Skill {skill.name} source_path does not exist: {skill.source_path}"
-        )
+        assert skill.source_path is not None, f"Skill {skill.name} has no source_path"
+        assert skill.source_path.exists(), f"Skill {skill.name} source_path does not exist: {skill.source_path}"
 
 
 # --- Property 11: Get Commands Returns Platform-Specific Commands ---
 # **Validates: Requirements 4.1**
+
 
 @settings(max_examples=100)
 @given(platform=st.sampled_from(["claude", "codex", "gemini"]))
@@ -94,35 +86,29 @@ def test_property_11_get_commands_returns_platform_specific_commands(platform: s
 
     # 获取源目录中的所有命令文件
     if expected_src_dir.exists():
-        expected_command_names = sorted([
-            str(f.relative_to(expected_src_dir).with_suffix("")).replace("\\", "/")
-            for f in expected_src_dir.rglob("*")
-            if f.is_file()
-        ])
+        expected_command_names = sorted(
+            [
+                str(f.relative_to(expected_src_dir).with_suffix("")).replace("\\", "/")
+                for f in expected_src_dir.rglob("*")
+                if f.is_file()
+            ]
+        )
     else:
         expected_command_names = []
 
     # 验证返回的命令数量与源目录中的文件数量一致
     actual_command_names = sorted([c.name for c in commands])
     assert actual_command_names == expected_command_names, (
-        f"Platform {platform}: Expected commands {expected_command_names}, "
-        f"got {actual_command_names}"
+        f"Platform {platform}: Expected commands {expected_command_names}, got {actual_command_names}"
     )
 
     # 验证每个返回的命令都有正确的 item_type
     for cmd in commands:
-        assert cmd.item_type == ItemType.COMMAND, (
-            f"Command {cmd.name} has wrong item_type: {cmd.item_type}"
-        )
+        assert cmd.item_type == ItemType.COMMAND, f"Command {cmd.name} has wrong item_type: {cmd.item_type}"
 
         # 验证 source_path 存在且来自正确的目录
-        assert cmd.source_path is not None, (
-            f"Command {cmd.name} has no source_path"
-        )
-        assert cmd.source_path.exists(), (
-            f"Command {cmd.name} source_path does not exist: {cmd.source_path}"
-        )
+        assert cmd.source_path is not None, f"Command {cmd.name} has no source_path"
+        assert cmd.source_path.exists(), f"Command {cmd.name} source_path does not exist: {cmd.source_path}"
         assert cmd.source_path.is_relative_to(expected_src_dir), (
-            f"Command {cmd.name} source_path {cmd.source_path} is not under "
-            f"expected directory {expected_src_dir}"
+            f"Command {cmd.name} source_path {cmd.source_path} is not under expected directory {expected_src_dir}"
         )

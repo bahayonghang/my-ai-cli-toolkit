@@ -35,12 +35,14 @@ skill_names = st.text(
 
 # 依赖列表策略 - 包含不存在的命令
 unsatisfied_dependencies = st.lists(
-    st.sampled_from([
-        "nonexistent-cmd-12345",
-        "fake-tool-67890",
-        "missing-dep-abcde",
-        "unavailable-program",
-    ]),
+    st.sampled_from(
+        [
+            "nonexistent-cmd-12345",
+            "fake-tool-67890",
+            "missing-dep-abcde",
+            "unavailable-program",
+        ]
+    ),
     min_size=1,
     max_size=3,
 )
@@ -50,6 +52,7 @@ platforms = st.sampled_from(["claude", "codex", "gemini", "kiro", "windsurf"])
 
 
 # ==================== Helper Functions ====================
+
 
 def create_test_registry(
     skill_name: str,
@@ -75,6 +78,7 @@ install_command = "echo 'This should not run'"
 
 
 # ==================== Property Tests ====================
+
 
 class TestDependencyBlocksInstall:
     """Property 6: 依赖检查阻止安装测试
@@ -103,9 +107,7 @@ class TestDependencyBlocksInstall:
         # 创建测试配置
         content = create_test_registry(skill_name, deps)
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False, encoding="utf-8") as f:
             f.write(content)
             temp_path = Path(f.name)
 
@@ -143,9 +145,7 @@ class TestDependencyBlocksInstall:
         """
         content = create_test_registry(skill_name, deps)
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False, encoding="utf-8") as f:
             f.write(content)
             temp_path = Path(f.name)
 
@@ -167,8 +167,7 @@ class TestDependencyBlocksInstall:
             assert not result.success
             # 安装命令不应被执行（因为依赖检查失败）
             install_commands = [c for c in command_executed if "echo" in c]
-            assert len(install_commands) == 0, \
-                f"安装命令不应执行，但执行了: {install_commands}"
+            assert len(install_commands) == 0, f"安装命令不应执行，但执行了: {install_commands}"
         finally:
             temp_path.unlink(missing_ok=True)
 
@@ -192,9 +191,7 @@ requires = []
 supported_targets = ["all"]
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False, encoding="utf-8") as f:
             f.write(content)
             temp_path = Path(f.name)
 
@@ -240,9 +237,7 @@ class TestDependencyCheckConsistency:
         """
         content = create_test_registry(skill_name, deps)
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False, encoding="utf-8") as f:
             f.write(content)
             temp_path = Path(f.name)
 
@@ -257,8 +252,7 @@ class TestDependencyCheckConsistency:
 
             # 一致性检查
             if not dep_result.all_satisfied:
-                assert not install_result.success, \
-                    "依赖检查失败时，安装也应该失败"
+                assert not install_result.success, "依赖检查失败时，安装也应该失败"
         finally:
             temp_path.unlink(missing_ok=True)
 
@@ -280,9 +274,7 @@ class TestDependencyCheckConsistency:
         """
         content = create_test_registry(skill_name, deps)
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False, encoding="utf-8") as f:
             f.write(content)
             temp_path = Path(f.name)
 
@@ -295,8 +287,8 @@ class TestDependencyCheckConsistency:
 
             # 错误消息应该提及依赖
             error_lower = result.error.lower()
-            assert "依赖" in result.error or "缺少" in result.error or \
-                   any(d.lower() in error_lower for d in deps), \
-                   f"错误消息应提及依赖: {result.error}"
+            assert "依赖" in result.error or "缺少" in result.error or any(d.lower() in error_lower for d in deps), (
+                f"错误消息应提及依赖: {result.error}"
+            )
         finally:
             temp_path.unlink(missing_ok=True)

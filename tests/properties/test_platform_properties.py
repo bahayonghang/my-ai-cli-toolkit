@@ -47,6 +47,7 @@ def platform_config_strategy(draw):
 # --- Property 7: Platform Option Format ---
 # **Validates: Requirements 2.4**
 
+
 @settings(max_examples=100)
 @given(platform=platform_config_strategy())
 def test_property_7_platform_option_format(platform: PlatformDisplay):
@@ -82,6 +83,7 @@ def test_property_7_real_platforms():
 
 # --- Property 8: Header Platform Badge Format ---
 # **Validates: Requirements 3.2**
+
 
 @settings(max_examples=100)
 @given(platform_name=st.text(alphabet=PLATFORM_NAME_CHARS, min_size=1, max_size=30))

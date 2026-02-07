@@ -18,6 +18,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # --- 辅助函数 ---
 
+
 def load_tcss_content() -> str:
     """加载 styles.tcss 文件内容"""
     tcss_path = PROJECT_ROOT.parent / "src" / "tui" / "styles.tcss"
@@ -27,12 +28,13 @@ def load_tcss_content() -> str:
 def extract_selectors(tcss_content: str) -> list[str]:
     """提取 TCSS 文件中的所有选择器"""
     # 匹配选择器模式：行首非空白字符直到 {
-    pattern = r'^([^\s{][^{]*)\s*\{'
+    pattern = r"^([^\s{][^{]*)\s*\{"
     return re.findall(pattern, tcss_content, re.MULTILINE)
 
 
 # --- Property 5: TCSS File Validity ---
 # **Validates: Requirements 1.1**
+
 
 def test_property_5_tcss_file_exists():
     """
@@ -64,15 +66,13 @@ def test_property_5_tcss_has_valid_structure():
     content = load_tcss_content()
 
     # 移除注释
-    content_no_comments = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+    content_no_comments = re.sub(r"/\*.*?\*/", "", content, flags=re.DOTALL)
 
     # 检查大括号平衡
-    open_braces = content_no_comments.count('{')
-    close_braces = content_no_comments.count('}')
+    open_braces = content_no_comments.count("{")
+    close_braces = content_no_comments.count("}")
 
-    assert open_braces == close_braces, (
-        f"Braces should be balanced: {open_braces} open vs {close_braces} close"
-    )
+    assert open_braces == close_braces, f"Braces should be balanced: {open_braces} open vs {close_braces} close"
 
 
 # --- Property 6: Key Selector Existence ---
@@ -86,9 +86,10 @@ REQUIRED_SELECTORS = [
     "SelectableItem.-selected",
     "SelectableItem.-highlight",
     "Button:hover",
-    "Tab.-active",
+    "CategoryItem.-active",
     "ItemListView",
-    "CategoryButton.-active",
+    "#sidebar",
+    "#two-column",
 ]
 
 
@@ -105,10 +106,8 @@ def test_property_6_key_selectors_exist():
 
     for selector in REQUIRED_SELECTORS:
         # 使用灵活的模式匹配（选择器可能有空格或换行）
-        pattern = re.escape(selector).replace(r'\ ', r'\s*')
-        assert re.search(pattern, content), (
-            f"TCSS should contain selector '{selector}'"
-        )
+        pattern = re.escape(selector).replace(r"\ ", r"\s*")
+        assert re.search(pattern, content), f"TCSS should contain selector '{selector}'"
 
 
 def test_property_6_selection_states_styled():
@@ -129,6 +128,4 @@ def test_property_6_selection_states_styled():
     ]
 
     for pattern in selection_patterns:
-        assert re.search(pattern, content), (
-            f"TCSS should style pattern '{pattern}'"
-        )
+        assert re.search(pattern, content), f"TCSS should style pattern '{pattern}'"

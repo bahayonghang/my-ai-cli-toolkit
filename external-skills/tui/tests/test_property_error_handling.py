@@ -67,6 +67,7 @@ corrupted_toml_content = st.one_of(
 
 # ==================== Property Tests ====================
 
+
 class TestErrorHandlingRobustness:
     """Property 7: 错误处理健壮性测试
 
@@ -75,9 +76,7 @@ class TestErrorHandlingRobustness:
 
     @given(skill_name=invalid_skill_names)
     @settings(max_examples=100)
-    def test_invalid_skill_name_returns_error_not_exception(
-        self, skill_name: str
-    ) -> None:
+    def test_invalid_skill_name_returns_error_not_exception(self, skill_name: str) -> None:
         """无效技能名称应返回错误结果而非抛出异常
 
         **Validates: Requirements 9.4**
@@ -125,9 +124,7 @@ class TestErrorHandlingRobustness:
 
         **Validates: Requirements 9.4**
         """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False, encoding="utf-8") as f:
             f.write(content)
             temp_path = Path(f.name)
 
@@ -174,9 +171,7 @@ class TestErrorHandlingRobustness:
         platform=st.sampled_from(["claude", "codex", "gemini", "kiro", "windsurf"]),
     )
     @settings(max_examples=100)
-    def test_install_always_returns_install_result(
-        self, skill_name: str, platform: str
-    ) -> None:
+    def test_install_always_returns_install_result(self, skill_name: str, platform: str) -> None:
         """安装操作应始终返回 InstallResult 而非抛出异常
 
         **Validates: Requirements 9.4**
@@ -221,9 +216,7 @@ class TestConfigFileErrorHandling:
 
         **Validates: Requirements 9.4**
         """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write("invalid [[[toml syntax")
             temp_path = Path(f.name)
 
@@ -242,9 +235,7 @@ class TestConfigFileErrorHandling:
 
         **Validates: Requirements 9.4**
         """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write("")  # 空文件
             temp_path = Path(f.name)
 
@@ -274,9 +265,7 @@ class TestInstallErrorHandling:
         **Validates: Requirements 9.2**
         """
         # 创建一个只支持特定平台的测试配置
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write("""
 [skills.test-skill]
 description = "Test skill"
@@ -304,9 +293,7 @@ supported_targets = ["claude"]
         **Validates: Requirements 9.2**
         """
         # 创建一个需要不存在依赖的测试配置
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write("""
 [skills.test-skill]
 description = "Test skill"

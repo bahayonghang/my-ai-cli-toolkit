@@ -31,12 +31,7 @@ class TestCLIProjectInstall:
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
 
         # 执行安装
-        result = runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        result = runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--target", "claude"])
 
         # 验证
         assert result.exit_code == 0
@@ -50,12 +45,7 @@ class TestCLIProjectInstall:
 
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
 
-        result = runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--kiro"
-        ])
+        result = runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--kiro"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".kiro" / "skills" / skill_name).exists()
@@ -70,12 +60,7 @@ class TestCLIProjectInstall:
         if len(skills) < 2:
             pytest.skip("Need at least 2 skills")
 
-        result = runner.invoke(app, [
-            "install",
-            *skills,
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        result = runner.invoke(app, ["install", *skills, "--project", str(tmp_path), "--target", "claude"])
 
         assert result.exit_code == 0
         for skill in skills:
@@ -86,11 +71,7 @@ class TestCLIProjectInstall:
         if not SKILLS_SRC_DIR.exists():
             pytest.skip("No skills available")
 
-        result = runner.invoke(app, [
-            "install-all",
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        result = runner.invoke(app, ["install-all", "--project", str(tmp_path), "--target", "claude"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".claude" / "skills").exists()
@@ -98,11 +79,16 @@ class TestCLIProjectInstall:
 
     def test_list_skills_in_project(self, tmp_path):
         """测试列出项目中的技能"""
-        result = runner.invoke(app, [
-            "list-skills",  # 修正命令名
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "list-skills",  # 修正命令名
+                "--project",
+                str(tmp_path),
+                "--target",
+                "claude",
+            ],
+        )
 
         assert result.exit_code == 0
         assert "Available Skills" in result.stdout
@@ -115,19 +101,10 @@ class TestCLIProjectInstall:
             pytest.skip("No skills available")
 
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
-        runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--target", "claude"])
 
         # 列出已安装
-        result = runner.invoke(app, [
-            "installed",
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        result = runner.invoke(app, ["installed", "--project", str(tmp_path), "--target", "claude"])
 
         assert result.exit_code == 0
         assert "Installed Skills" in result.stdout
@@ -139,11 +116,7 @@ class TestCLIKiroMode:
 
     def test_kiro_without_project_fails(self):
         """测试 --kiro 缺少 --project 时失败"""
-        result = runner.invoke(app, [
-            "install",
-            "test-skill",
-            "--kiro"
-        ])
+        result = runner.invoke(app, ["install", "test-skill", "--kiro"])
 
         assert result.exit_code == 1
         assert "requires --project" in result.stdout
@@ -155,12 +128,7 @@ class TestCLIKiroMode:
 
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
 
-        result = runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--kiro"
-        ])
+        result = runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--kiro"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".kiro" / "skills" / skill_name).exists()
@@ -170,11 +138,7 @@ class TestCLIKiroMode:
         if not COMMANDS_SRC_DIR.exists():
             pytest.skip("No commands available")
 
-        result = runner.invoke(app, [
-            "install-commands",
-            "--project", str(tmp_path),
-            "--kiro"
-        ])
+        result = runner.invoke(app, ["install-commands", "--project", str(tmp_path), "--kiro"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".kiro" / "steering").exists()
@@ -185,11 +149,7 @@ class TestCLIErrorHandling:
 
     def test_invalid_project_path(self):
         """测试无效的项目路径"""
-        result = runner.invoke(app, [
-            "install",
-            "test-skill",
-            "--project", "/nonexistent/path/that/does/not/exist"
-        ])
+        result = runner.invoke(app, ["install", "test-skill", "--project", "/nonexistent/path/that/does/not/exist"])
 
         # install_skill 会打印错误但不会导致 CLI 退出码为 1
         # 因为它在内部处理了错误
@@ -197,11 +157,7 @@ class TestCLIErrorHandling:
 
     def test_nonexistent_skill(self, tmp_path):
         """测试安装不存在的技能"""
-        result = runner.invoke(app, [
-            "install",
-            "nonexistent-skill-xyz",
-            "--project", str(tmp_path)
-        ])
+        result = runner.invoke(app, ["install", "nonexistent-skill-xyz", "--project", str(tmp_path)])
 
         assert result.exit_code == 0  # install_skill 返回 False 但不退出
         assert "not found" in result.stdout.lower()
@@ -215,17 +171,13 @@ class TestCLIErrorHandling:
 
         # 使用相对路径
         import os
+
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path.parent)
             rel_path = tmp_path.name
 
-            result = runner.invoke(app, [
-                "install",
-                skill_name,
-                "--project", rel_path,
-                "--target", "claude"
-            ])
+            result = runner.invoke(app, ["install", skill_name, "--project", rel_path, "--target", "claude"])
 
             assert result.exit_code == 0
         finally:
@@ -235,12 +187,15 @@ class TestCLIErrorHandling:
 class TestCLIMultiPlatform:
     """测试 CLI 多平台支持"""
 
-    @pytest.mark.parametrize("target,expected_dir", [
-        ("claude", ".claude"),
-        ("codex", ".codex"),
-        ("gemini", ".gemini"),
-        ("qwen", ".qwen"),
-    ])
+    @pytest.mark.parametrize(
+        "target,expected_dir",
+        [
+            ("claude", ".claude"),
+            ("codex", ".codex"),
+            ("gemini", ".gemini"),
+            ("qwen", ".qwen"),
+        ],
+    )
     def test_install_to_different_platforms(self, tmp_path, target, expected_dir):
         """测试安装到不同平台"""
         if not SKILLS_SRC_DIR.exists() or not list(SKILLS_SRC_DIR.iterdir()):
@@ -248,12 +203,7 @@ class TestCLIMultiPlatform:
 
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
 
-        result = runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--target", target
-        ])
+        result = runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--target", target])
 
         assert result.exit_code == 0
         assert (tmp_path / expected_dir / "skills" / skill_name).exists()
@@ -265,12 +215,7 @@ class TestCLIMultiPlatform:
 
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
 
-        result = runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--target", "antigravity"
-        ])
+        result = runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--target", "antigravity"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".gemini" / "antigravity" / "skills" / skill_name).exists()
@@ -282,12 +227,7 @@ class TestCLIMultiPlatform:
 
         skill_name = next(d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir())
 
-        result = runner.invoke(app, [
-            "install",
-            skill_name,
-            "--project", str(tmp_path),
-            "--target", "windsurf"
-        ])
+        result = runner.invoke(app, ["install", skill_name, "--project", str(tmp_path), "--target", "windsurf"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".codeium" / "windsurf" / "skills" / skill_name).exists()
@@ -301,11 +241,7 @@ class TestCLICommandsInstall:
         if not COMMANDS_SRC_DIR.exists():
             pytest.skip("No commands available")
 
-        result = runner.invoke(app, [
-            "install-commands",
-            "--project", str(tmp_path),
-            "--target", "claude"
-        ])
+        result = runner.invoke(app, ["install-commands", "--project", str(tmp_path), "--target", "claude"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".claude" / "commands").exists()
@@ -315,11 +251,7 @@ class TestCLICommandsInstall:
         if not COMMANDS_SRC_DIR.exists():
             pytest.skip("No commands available")
 
-        result = runner.invoke(app, [
-            "install-commands",
-            "--project", str(tmp_path),
-            "--target", "codex"
-        ])
+        result = runner.invoke(app, ["install-commands", "--project", str(tmp_path), "--target", "codex"])
 
         assert result.exit_code == 0
         assert (tmp_path / ".codex" / "prompts").exists()

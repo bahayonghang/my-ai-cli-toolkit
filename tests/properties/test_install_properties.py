@@ -27,6 +27,7 @@ from tui.core.models import InstallStatus, ItemInfo
 
 # --- 临时目录上下文管理器 ---
 
+
 @contextmanager
 def temp_target_context():
     """创建临时目标目录并修改配置缓存"""
@@ -79,6 +80,7 @@ def temp_target_context():
 
 # --- 模拟批量安装的核心逻辑 ---
 
+
 class MockSelectableItem:
     """模拟 SelectableItem 的核心逻辑"""
 
@@ -124,9 +126,9 @@ class MockItemListView:
             item.selected = False
 
 
-
 # --- Property 6: Skill Installation Creates Target Directory ---
 # **Validates: Requirements 6.1, 6.5**
+
 
 @settings(max_examples=100)
 @given(platform=st.sampled_from(["claude"]))
@@ -195,6 +197,7 @@ def test_property_6_skill_installation_with_real_skills():
 # --- Property 7: Batch Install Processes All Selected Items ---
 # **Validates: Requirements 7.1, 7.6**
 
+
 @settings(max_examples=100, deadline=500)
 @given(selection_pattern=st.lists(st.booleans(), min_size=1, max_size=10))
 def test_property_7_batch_install_processes_all_selected_items(selection_pattern: list[bool]):
@@ -216,7 +219,7 @@ def test_property_7_batch_install_processes_all_selected_items(selection_pattern
 
         # 创建模拟列表视图
         list_view = MockItemListView(item_type="skills")
-        list_view.load_items(skills[:len(selection_pattern)])
+        list_view.load_items(skills[: len(selection_pattern)])
 
         # 设置选择状态
         selected_names = []
@@ -242,8 +245,7 @@ def test_property_7_batch_install_processes_all_selected_items(selection_pattern
 
         # 验证处理了所有选中项
         assert success_count + fail_count == len(selected_items), (
-            f"Should process all {len(selected_items)} selected items, "
-            f"but processed {success_count + fail_count}"
+            f"Should process all {len(selected_items)} selected items, but processed {success_count + fail_count}"
         )
 
         # 验证成功安装的项目目标目录存在
@@ -253,9 +255,9 @@ def test_property_7_batch_install_processes_all_selected_items(selection_pattern
                 assert target_dir.exists(), f"Target directory should exist for {item.item_name}"
 
 
-
 # --- Property 8: Batch Install Clears Selection After Completion ---
 # **Validates: Requirements 7.4**
+
 
 @settings(max_examples=100, deadline=500)
 @given(selection_pattern=st.lists(st.booleans(), min_size=1, max_size=10))
@@ -278,7 +280,7 @@ def test_property_8_batch_install_clears_selection_after_completion(selection_pa
 
         # 创建模拟列表视图
         list_view = MockItemListView(item_type="skills")
-        list_view.load_items(skills[:len(selection_pattern)])
+        list_view.load_items(skills[: len(selection_pattern)])
 
         # 设置选择状态
         for i, item in enumerate(list_view.items):
@@ -299,13 +301,12 @@ def test_property_8_batch_install_clears_selection_after_completion(selection_pa
 
         # 验证所有项目都已取消选择
         for item in list_view.items:
-            assert item.selected is False, (
-                f"Item {item.item_name} should be deselected after batch install"
-            )
+            assert item.selected is False, f"Item {item.item_name} should be deselected after batch install"
 
 
 # --- Property 9: Install All Processes Every Available Item ---
 # **Validates: Requirements 8.1, 8.4**
+
 
 @settings(max_examples=10, deadline=None)
 @given(platform=st.sampled_from(["claude"]))
@@ -331,9 +332,7 @@ def test_property_9_install_all_processes_every_available_item(platform: str):
 
         # 验证处理了所有技能
         total_processed = success_count + fail_count
-        assert total_processed == len(skills), (
-            f"Should process all {len(skills)} skills, but processed {total_processed}"
-        )
+        assert total_processed == len(skills), f"Should process all {len(skills)} skills, but processed {total_processed}"
 
         # 验证成功安装的数量
         assert success_count > 0, "At least some skills should be installed successfully"
@@ -342,9 +341,7 @@ def test_property_9_install_all_processes_every_available_item(platform: str):
         for skill in skills:
             if skill.name not in failures:
                 target_dir = temp_dirs["skills"] / skill.name
-                assert target_dir.exists(), (
-                    f"Target directory should exist for successfully installed skill: {skill.name}"
-                )
+                assert target_dir.exists(), f"Target directory should exist for successfully installed skill: {skill.name}"
 
 
 def test_property_9_install_all_commands():
@@ -377,7 +374,4 @@ def test_property_9_install_all_commands():
             if cmd.name not in failures:
                 # 命令是文件，不是目录
                 target_files = list(temp_dirs["commands"].glob(f"{cmd.name}.*"))
-                assert len(target_files) > 0, (
-                    f"Target file should exist for successfully installed command: {cmd.name}"
-                )
-
+                assert len(target_files) > 0, f"Target file should exist for successfully installed command: {cmd.name}"

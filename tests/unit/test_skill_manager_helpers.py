@@ -2,6 +2,7 @@
 单元测试：SkillManager 辅助方法
 验证任务 2.2 的所有子任务要求
 """
+
 import sys
 from pathlib import Path
 
@@ -91,7 +92,7 @@ class TestGetInstallLocationInfo:
         # 验证信息格式清晰
         assert len(info) > 0
         assert not info.startswith(" ")  # 不以空格开头
-        assert not info.endswith(" ")    # 不以空格结尾
+        assert not info.endswith(" ")  # 不以空格结尾
         # 包含关键信息
         assert any(keyword in info for keyword in ["Global", "Project"])
 

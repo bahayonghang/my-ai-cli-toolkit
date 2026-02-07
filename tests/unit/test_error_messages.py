@@ -2,6 +2,7 @@
 单元测试：错误消息模板
 测试 ERROR_MESSAGES 和 format_error() 函数
 """
+
 import sys
 from pathlib import Path
 
@@ -54,8 +55,7 @@ class TestErrorMessages:
 
         for key in messages_with_suggestions:
             message = ERROR_MESSAGES[key]
-            assert "Suggestion" in message or "suggestion" in message.lower(), \
-                f"{key} should contain a suggestion"
+            assert "Suggestion" in message or "suggestion" in message.lower(), f"{key} should contain a suggestion"
 
 
 class TestFormatError:
@@ -95,11 +95,7 @@ class TestFormatError:
 
     def test_format_skill_not_found(self):
         """测试格式化 skill_not_found 错误"""
-        result = format_error(
-            "skill_not_found",
-            skill="unknown-skill",
-            available="skill1, skill2, skill3"
-        )
+        result = format_error("skill_not_found", skill="unknown-skill", available="skill1, skill2, skill3")
 
         assert "not found" in result
         assert "unknown-skill" in result
@@ -107,11 +103,7 @@ class TestFormatError:
 
     def test_format_invalid_target(self):
         """测试格式化 invalid_target 错误"""
-        result = format_error(
-            "invalid_target",
-            target="invalid",
-            available="claude, codex, gemini, qwen"
-        )
+        result = format_error("invalid_target", target="invalid", available="claude, codex, gemini, qwen")
 
         assert "Invalid target" in result
         assert "invalid" in result
@@ -120,11 +112,7 @@ class TestFormatError:
 
     def test_format_path_access_error(self):
         """测试格式化 path_access_error 错误"""
-        result = format_error(
-            "path_access_error",
-            path="/some/path",
-            error="Some error message"
-        )
+        result = format_error("path_access_error", path="/some/path", error="Some error message")
 
         assert "Cannot access" in result
         assert "/some/path" in result
@@ -146,11 +134,7 @@ class TestFormatError:
 
     def test_format_extra_parameters_ignored(self):
         """测试额外参数被忽略"""
-        result = format_error(
-            "path_not_exist",
-            path="./test",
-            extra_param="ignored"
-        )
+        result = format_error("path_not_exist", path="./test", extra_param="ignored")
 
         # 应该正常格式化，忽略额外参数
         assert "does not exist" in result
@@ -213,8 +197,7 @@ class TestErrorMessageConsistency:
         for key in messages_with_suggestions:
             message = ERROR_MESSAGES[key]
             # 建议应该在新行上
-            assert "\nSuggestion:" in message, \
-                f"{key} should have 'Suggestion:' on a new line"
+            assert "\nSuggestion:" in message, f"{key} should have 'Suggestion:' on a new line"
 
     def test_usage_examples_are_valid(self):
         """测试使用示例的有效性"""

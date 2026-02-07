@@ -23,6 +23,7 @@ from core.models import (
 
 # --- ExternalSkillInfo 测试 ---
 
+
 class TestExternalSkillInfo:
     """ExternalSkillInfo 数据类测试"""
 
@@ -132,6 +133,7 @@ class TestExternalSkillInfo:
 
 # --- DependencyStatus 测试 ---
 
+
 class TestDependencyStatus:
     """DependencyStatus 数据类测试"""
 
@@ -162,6 +164,7 @@ class TestDependencyStatus:
 
 
 # --- DependencyCheckResult 测试 ---
+
 
 class TestDependencyCheckResult:
     """DependencyCheckResult 数据类测试"""
@@ -218,6 +221,7 @@ class TestDependencyCheckResult:
 
 
 # --- InstallResult 测试 ---
+
 
 class TestInstallResult:
     """InstallResult 数据类测试"""

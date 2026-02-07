@@ -19,6 +19,7 @@ from core.manager import ExternalSkillManager
 
 # --- 测试用的 fixture ---
 
+
 @pytest.fixture
 def sample_registry_content():
     """示例 registry.toml 内容"""
@@ -74,6 +75,7 @@ def manager_gemini(temp_registry):
 
 # --- get_skills 测试 ---
 
+
 class TestGetSkills:
     """get_skills 方法测试"""
 
@@ -123,10 +125,7 @@ class TestGetSkills:
 
     def test_file_not_found(self, tmp_path):
         """测试配置文件不存在"""
-        manager = ExternalSkillManager(
-            platform="claude",
-            registry_path=tmp_path / "nonexistent.toml"
-        )
+        manager = ExternalSkillManager(platform="claude", registry_path=tmp_path / "nonexistent.toml")
         with pytest.raises(FileNotFoundError):
             manager.get_skills()
 
@@ -135,10 +134,7 @@ class TestGetSkills:
         invalid_file = tmp_path / "invalid.toml"
         invalid_file.write_text("this is not valid toml [[[")
 
-        manager = ExternalSkillManager(
-            platform="claude",
-            registry_path=invalid_file
-        )
+        manager = ExternalSkillManager(platform="claude", registry_path=invalid_file)
         with pytest.raises(ValueError):
             manager.get_skills()
 
@@ -147,10 +143,7 @@ class TestGetSkills:
         empty_file = tmp_path / "empty.toml"
         empty_file.write_text("[skills]")
 
-        manager = ExternalSkillManager(
-            platform="claude",
-            registry_path=empty_file
-        )
+        manager = ExternalSkillManager(platform="claude", registry_path=empty_file)
         skills = manager.get_skills()
         assert skills == []
 
@@ -171,6 +164,7 @@ class TestGetSkills:
 
 
 # --- get_skill_detail 测试 ---
+
 
 class TestGetSkillDetail:
     """get_skill_detail 方法测试"""
@@ -195,6 +189,7 @@ class TestGetSkillDetail:
 
 # --- check_dependencies 测试 ---
 
+
 class TestCheckDependencies:
     """check_dependencies 方法测试"""
 
@@ -209,7 +204,7 @@ class TestCheckDependencies:
         assert result.all_satisfied is True
         assert result.dependencies == []
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
     def test_all_deps_satisfied(self, mock_check, manager_claude):
         """测试所有依赖都满足"""
         mock_check.return_value = True
@@ -219,7 +214,7 @@ class TestCheckDependencies:
         assert len(result.dependencies) == 2
         assert all(d.satisfied for d in result.dependencies)
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
     def test_some_deps_missing(self, mock_check, manager_claude):
         """测试部分依赖缺失"""
         # node 存在，npm 不存在
@@ -236,6 +231,7 @@ class TestCheckDependencies:
 
 # --- install_skill 测试 ---
 
+
 class TestInstallSkill:
     """install_skill 方法测试"""
 
@@ -251,7 +247,7 @@ class TestInstallSkill:
         assert result.success is False
         assert "不支持平台" in result.error
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
     def test_install_missing_deps(self, mock_check, manager_claude):
         """测试安装时依赖缺失"""
         mock_check.return_value = False
@@ -260,8 +256,8 @@ class TestInstallSkill:
         assert result.success is False
         assert "缺少依赖" in result.error
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
-    @patch.object(ExternalSkillManager, '_run_command')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
+    @patch.object(ExternalSkillManager, "_run_command")
     def test_install_success(self, mock_run, mock_check, manager_claude):
         """测试成功安装"""
         mock_check.return_value = True
@@ -272,8 +268,8 @@ class TestInstallSkill:
         assert result.skill_name == "test-skill"
         assert "安装完成" in result.message
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
-    @patch.object(ExternalSkillManager, '_run_command')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
+    @patch.object(ExternalSkillManager, "_run_command")
     def test_install_command_fails(self, mock_run, mock_check, manager_claude):
         """测试安装命令失败"""
         mock_check.return_value = True
@@ -283,14 +279,15 @@ class TestInstallSkill:
         assert result.success is False
         assert result.error is not None
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
-    @patch.object(ExternalSkillManager, '_run_command')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
+    @patch.object(ExternalSkillManager, "_run_command")
     def test_install_with_output_callback(self, mock_run, mock_check, manager_claude):
         """测试安装时的输出回调"""
         mock_check.return_value = True
         mock_run.return_value = True
 
         outputs = []
+
         def on_output(msg):
             outputs.append(msg)
 
@@ -298,8 +295,8 @@ class TestInstallSkill:
         assert result.success is True
         assert len(outputs) > 0  # 应该有输出
 
-    @patch.object(ExternalSkillManager, '_check_command_exists')
-    @patch.object(ExternalSkillManager, '_run_command')
+    @patch.object(ExternalSkillManager, "_check_command_exists")
+    @patch.object(ExternalSkillManager, "_run_command")
     def test_install_skip_install(self, mock_run, mock_check, manager_claude):
         """测试跳过全局安装"""
         mock_check.return_value = True
@@ -312,6 +309,7 @@ class TestInstallSkill:
 
 
 # --- _build_init_command 测试 ---
+
 
 class TestBuildInitCommand:
     """_build_init_command 方法测试"""
@@ -345,6 +343,7 @@ class TestBuildInitCommand:
 
 
 # --- _is_platform_supported 测试 ---
+
 
 class TestIsPlatformSupported:
     """_is_platform_supported 方法测试"""

@@ -82,15 +82,17 @@ def skill_name_strategy(draw):
 
     技能名称应该是 kebab-case 格式，如 "my-skill-name"
     """
-    words = draw(st.lists(
-        st.text(
-            alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            min_size=2,
-            max_size=10,
-        ),
-        min_size=1,
-        max_size=3,
-    ))
+    words = draw(
+        st.lists(
+            st.text(
+                alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                min_size=2,
+                max_size=10,
+            ),
+            min_size=1,
+            max_size=3,
+        )
+    )
     return "-".join(words)
 
 
@@ -100,11 +102,13 @@ def description_strategy(draw):
 
     描述可以包含大小写字母、数字和空格
     """
-    return draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
-        min_size=1,
-        max_size=100,
-    ))
+    return draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
+            min_size=1,
+            max_size=100,
+        )
+    )
 
 
 @st.composite
@@ -113,11 +117,13 @@ def package_name_strategy(draw):
 
     包名可以是 npm 包名、pip 包名或 git URL
     """
-    return draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyz0123456789-@/",
-        min_size=1,
-        max_size=50,
-    ))
+    return draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyz0123456789-@/",
+            min_size=1,
+            max_size=50,
+        )
+    )
 
 
 @st.composite
@@ -127,23 +133,27 @@ def requires_strategy(draw):
     依赖可以是 node, npm, python3, git 等
     """
     possible_deps = ["node", "npm", "python3", "git", "pip", "npx"]
-    return draw(st.lists(
-        st.sampled_from(possible_deps),
-        min_size=0,
-        max_size=4,
-        unique=True,
-    ))
+    return draw(
+        st.lists(
+            st.sampled_from(possible_deps),
+            min_size=0,
+            max_size=4,
+            unique=True,
+        )
+    )
 
 
 @st.composite
 def platforms_strategy(draw):
     """生成支持平台列表"""
-    return draw(st.lists(
-        st.sampled_from(PLATFORMS),
-        min_size=0,
-        max_size=5,
-        unique=True,
-    ))
+    return draw(
+        st.lists(
+            st.sampled_from(PLATFORMS),
+            min_size=0,
+            max_size=5,
+            unique=True,
+        )
+    )
 
 
 @st.composite
@@ -152,11 +162,13 @@ def homepage_strategy(draw):
     # 可能为空或有效 URL
     has_homepage = draw(st.booleans())
     if has_homepage:
-        domain = draw(st.text(
-            alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
-            min_size=3,
-            max_size=20,
-        ))
+        domain = draw(
+            st.text(
+                alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
+                min_size=3,
+                max_size=20,
+            )
+        )
         return f"https://{domain}.com"
     return ""
 
@@ -198,6 +210,7 @@ def skill_info_strategy(draw):
 
 # --- Property Tests ---
 
+
 class TestSkillDetailRenderingCompleteness:
     """Property 2: 技能详情渲染完整性
 
@@ -215,9 +228,7 @@ class TestSkillDetailRenderingCompleteness:
         """
         rendered = render_skill_detail(skill)
 
-        assert skill.name in rendered, (
-            f"渲染结果未包含技能名称: name='{skill.name}', rendered='{rendered}'"
-        )
+        assert skill.name in rendered, f"渲染结果未包含技能名称: name='{skill.name}', rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -245,9 +256,7 @@ class TestSkillDetailRenderingCompleteness:
         """
         rendered = render_skill_detail(skill)
 
-        assert skill.skill_type in rendered, (
-            f"渲染结果未包含技能类型: skill_type='{skill.skill_type}', rendered='{rendered}'"
-        )
+        assert skill.skill_type in rendered, f"渲染结果未包含技能类型: skill_type='{skill.skill_type}', rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -260,9 +269,7 @@ class TestSkillDetailRenderingCompleteness:
         """
         rendered = render_skill_detail(skill)
 
-        assert skill.package in rendered, (
-            f"渲染结果未包含包名: package='{skill.package}', rendered='{rendered}'"
-        )
+        assert skill.package in rendered, f"渲染结果未包含包名: package='{skill.package}', rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -284,9 +291,7 @@ class TestSkillDetailRenderingCompleteness:
         else:
             # 非空依赖列表应该包含所有依赖
             for dep in skill.requires:
-                assert dep in rendered, (
-                    f"渲染结果未包含依赖 '{dep}': requires={skill.requires}, rendered='{rendered}'"
-                )
+                assert dep in rendered, f"渲染结果未包含依赖 '{dep}': requires={skill.requires}, rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -331,9 +336,7 @@ class TestSkillDetailRenderingCompleteness:
             )
         else:
             # 非空主页应该包含 URL
-            assert skill.homepage in rendered, (
-                f"渲染结果未包含主页链接: homepage='{skill.homepage}', rendered='{rendered}'"
-            )
+            assert skill.homepage in rendered, f"渲染结果未包含主页链接: homepage='{skill.homepage}', rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -354,9 +357,7 @@ class TestSkillDetailRenderingCompleteness:
             )
         else:
             # 非空许可证应该包含许可证名称
-            assert skill.license in rendered, (
-                f"渲染结果未包含许可证: license='{skill.license}', rendered='{rendered}'"
-            )
+            assert skill.license in rendered, f"渲染结果未包含许可证: license='{skill.license}', rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -382,14 +383,10 @@ class TestSkillDetailRenderingCompleteness:
         ]
 
         for label in required_labels:
-            assert label in rendered, (
-                f"渲染结果缺少字段标签 '{label}': rendered='{rendered}'"
-            )
+            assert label in rendered, f"渲染结果缺少字段标签 '{label}': rendered='{rendered}'"
 
         # 验证名称存在（名称在标题行，没有标签）
-        assert skill.name in rendered, (
-            f"渲染结果未包含技能名称: name='{skill.name}', rendered='{rendered}'"
-        )
+        assert skill.name in rendered, f"渲染结果未包含技能名称: name='{skill.name}', rendered='{rendered}'"
 
 
 class TestSkillDetailRenderingFormat:
@@ -410,9 +407,7 @@ class TestSkillDetailRenderingFormat:
         rendered = render_skill_detail(skill)
 
         lines = rendered.split("\n")
-        assert len(lines) > 1, (
-            f"渲染结果应该是多行格式: rendered='{rendered}'"
-        )
+        assert len(lines) > 1, f"渲染结果应该是多行格式: rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -429,9 +424,7 @@ class TestSkillDetailRenderingFormat:
         type_icons = ["📦", "⚡", "🐍", "🔗"]
         has_icon = any(icon in rendered for icon in type_icons)
 
-        assert has_icon, (
-            f"渲染结果应包含类型图标: skill_type='{skill.skill_type}', rendered='{rendered}'"
-        )
+        assert has_icon, f"渲染结果应包含类型图标: skill_type='{skill.skill_type}', rendered='{rendered}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -444,6 +437,4 @@ class TestSkillDetailRenderingFormat:
         """
         rendered = render_skill_detail(skill)
 
-        assert isinstance(rendered, str), (
-            f"渲染结果应该是字符串类型: type={type(rendered)}"
-        )
+        assert isinstance(rendered, str), f"渲染结果应该是字符串类型: type={type(rendered)}"

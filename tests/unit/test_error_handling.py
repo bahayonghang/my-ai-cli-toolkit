@@ -2,6 +2,7 @@
 单元测试：错误处理增强
 测试 SkillManager 中的路径验证和错误处理
 """
+
 import shutil
 import sys
 from pathlib import Path
@@ -114,6 +115,7 @@ class TestUnifiedExceptionHandling:
             raise PermissionError("Mock permission error")
 
         import install
+
         monkeypatch.setattr(install.shutil, "copytree", mock_copytree)
 
         # 尝试安装命令
@@ -180,6 +182,7 @@ class TestPathValidationIntegration:
 
     def test_path_validation_checks_write_permission(self, tmp_path, monkeypatch):
         """测试路径验证检查写权限"""
+
         # 模拟权限错误
         def mock_touch(self):
             raise PermissionError("No write permission")

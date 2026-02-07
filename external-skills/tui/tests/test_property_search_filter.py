@@ -25,6 +25,7 @@ from hypothesis import strategies as st
 # 由于 SkillListView 是 Textual 组件，直接导入会有依赖问题
 # 我们测试其核心过滤逻辑 _matches_filter 的等价实现
 
+
 def matches_filter(skill_name: str, skill_description: str, filter_text: str) -> bool:
     """检查技能是否匹配过滤条件
 
@@ -66,15 +67,17 @@ def skill_name_strategy(draw):
 
     技能名称应该是 kebab-case 格式，如 "my-skill-name"
     """
-    words = draw(st.lists(
-        st.text(
-            alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            min_size=2,
-            max_size=10,
-        ),
-        min_size=1,
-        max_size=3,
-    ))
+    words = draw(
+        st.lists(
+            st.text(
+                alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                min_size=2,
+                max_size=10,
+            ),
+            min_size=1,
+            max_size=3,
+        )
+    )
     return "-".join(words)
 
 
@@ -84,11 +87,13 @@ def description_strategy(draw):
 
     描述可以包含大小写字母、数字和空格
     """
-    return draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
-        min_size=0,
-        max_size=100,
-    ))
+    return draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
+            min_size=0,
+            max_size=100,
+        )
+    )
 
 
 @st.composite
@@ -99,11 +104,13 @@ def skill_info_strategy(draw):
 
     description = draw(description_strategy())
     skill_type = draw(st.sampled_from(SKILL_TYPES))
-    package = draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
-        min_size=1,
-        max_size=30,
-    ))
+    package = draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
+            min_size=1,
+            max_size=30,
+        )
+    )
 
     return ExternalSkillInfo(
         name=name,
@@ -143,14 +150,17 @@ def search_query_strategy(draw):
 
     查询可以是空字符串或包含大小写字母、数字的字符串
     """
-    return draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-        min_size=0,
-        max_size=20,
-    ))
+    return draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            min_size=0,
+            max_size=20,
+        )
+    )
 
 
 # --- Helper Functions ---
+
 
 def matches_filter_reference(skill: ExternalSkillInfo, query: str) -> bool:
     """参考实现: 检查技能是否匹配过滤条件
@@ -205,6 +215,7 @@ def matches_filter_impl(skill: ExternalSkillInfo, query: str) -> bool:
 
 # --- Property Tests ---
 
+
 class TestSearchFilterCorrectness:
     """Property 4: 搜索过滤正确性
 
@@ -247,9 +258,7 @@ class TestSearchFilterCorrectness:
         name_contains_query = query.lower() in skill.name.lower()
 
         if name_contains_query:
-            assert matches_filter_impl(skill, query), (
-                f"名称包含查询但未匹配: skill.name='{skill.name}', query='{query}'"
-            )
+            assert matches_filter_impl(skill, query), f"名称包含查询但未匹配: skill.name='{skill.name}', query='{query}'"
 
     @given(skill=skill_info_strategy(), query=search_query_strategy())
     @settings(max_examples=100, deadline=None)
@@ -334,9 +343,7 @@ class TestSearchFilterCorrectness:
 
         # 验证: 实际匹配的技能都在期望匹配中（没有多余的）
         extra_matches = actual_names - expected_names
-        assert len(extra_matches) == 0, (
-            f"过滤结果包含不匹配的技能: query='{query}', 多余 {extra_matches}"
-        )
+        assert len(extra_matches) == 0, f"过滤结果包含不匹配的技能: query='{query}', 多余 {extra_matches}"
 
 
 class TestSearchFilterEdgeCases:
@@ -354,9 +361,7 @@ class TestSearchFilterEdgeCases:
 
         当查询字符串为空时，所有技能都应该匹配。
         """
-        assert matches_filter_impl(skill, ""), (
-            f"空查询应该匹配所有技能: skill.name='{skill.name}'"
-        )
+        assert matches_filter_impl(skill, ""), f"空查询应该匹配所有技能: skill.name='{skill.name}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -367,9 +372,7 @@ class TestSearchFilterEdgeCases:
 
         使用技能的完整名称作为查询应该匹配该技能。
         """
-        assert matches_filter_impl(skill, skill.name), (
-            f"精确名称匹配失败: skill.name='{skill.name}'"
-        )
+        assert matches_filter_impl(skill, skill.name), f"精确名称匹配失败: skill.name='{skill.name}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -385,9 +388,7 @@ class TestSearchFilterEdgeCases:
         expected = matches_filter_reference(skill, query_upper)
         actual = matches_filter_impl(skill, query_upper)
 
-        assert actual == expected, (
-            f"大小写变体匹配不一致: skill.name='{skill.name}', query='{query_upper}'"
-        )
+        assert actual == expected, f"大小写变体匹配不一致: skill.name='{skill.name}', query='{query_upper}'"
 
     @given(skill=skill_info_strategy())
     @settings(max_examples=100, deadline=None)
@@ -402,7 +403,7 @@ class TestSearchFilterEdgeCases:
             return  # 名称太短，跳过
 
         # 取名称的前半部分作为查询
-        partial_query = skill.name[:len(skill.name) // 2]
+        partial_query = skill.name[: len(skill.name) // 2]
 
         assert matches_filter_impl(skill, partial_query), (
             f"部分名称匹配失败: skill.name='{skill.name}', query='{partial_query}'"

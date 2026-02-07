@@ -26,16 +26,17 @@ from tui.core.theme import (
 
 # --- Helper functions ---
 
+
 def is_valid_hex_color(color: str) -> bool:
     """Validate hex color format."""
-    pattern = r'^#[0-9A-Fa-f]{6}$'
+    pattern = r"^#[0-9A-Fa-f]{6}$"
     return bool(re.match(pattern, color))
 
 
 def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """Convert hex color to RGB tuple."""
-    hex_color = hex_color.lstrip('#')
-    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    hex_color = hex_color.lstrip("#")
+    return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 
 
 def relative_luminance(rgb: tuple[int, int, int]) -> float:
@@ -43,6 +44,7 @@ def relative_luminance(rgb: tuple[int, int, int]) -> float:
 
     Reference: https://www.w3.org/WAI/GL/wiki/Relative_luminance
     """
+
     def adjust(c: int) -> float:
         c_srgb = c / 255
         if c_srgb <= 0.03928:
@@ -70,6 +72,7 @@ def contrast_ratio(color1: str, color2: str) -> float:
 # --- Property 1: Theme Structure Completeness ---
 # **Validates: Requirements 1.1, 1.4**
 
+
 @settings(max_examples=100)
 @given(prop_name=st.sampled_from(REQUIRED_THEME_PROPERTIES))
 def test_property_1_theme_structure_completeness(prop_name: str):
@@ -82,14 +85,10 @@ def test_property_1_theme_structure_completeness(prop_name: str):
     **Feature: tui-beautify, Property 1: Theme Structure Completeness**
     **Validates: Requirements 1.1, 1.4**
     """
-    assert prop_name in THEME_COLORS, (
-        f"THEME_COLORS should contain property '{prop_name}'"
-    )
+    assert prop_name in THEME_COLORS, f"THEME_COLORS should contain property '{prop_name}'"
 
     color_value = THEME_COLORS[prop_name]
-    assert is_valid_hex_color(color_value), (
-        f"Color value for '{prop_name}' should be valid hex: {color_value}"
-    )
+    assert is_valid_hex_color(color_value), f"Color value for '{prop_name}' should be valid hex: {color_value}"
 
 
 def test_property_1_all_required_properties_present():
@@ -100,14 +99,10 @@ def test_property_1_all_required_properties_present():
     **Validates: Requirements 1.1, 1.4**
     """
     for prop_name in REQUIRED_THEME_PROPERTIES:
-        assert prop_name in THEME_COLORS, (
-            f"THEME_COLORS should contain required property '{prop_name}'"
-        )
+        assert prop_name in THEME_COLORS, f"THEME_COLORS should contain required property '{prop_name}'"
 
         color_value = THEME_COLORS[prop_name]
-        assert is_valid_hex_color(color_value), (
-            f"Color value for '{prop_name}' should be valid hex: {color_value}"
-        )
+        assert is_valid_hex_color(color_value), f"Color value for '{prop_name}' should be valid hex: {color_value}"
 
 
 def test_property_1_theme_object_creation():
@@ -129,16 +124,16 @@ def test_property_1_theme_object_creation():
 # Foreground/background color pairs to test (Catppuccin Mocha)
 CONTRAST_PAIRS = [
     ("foreground", "background"),  # Main text on base
-    ("foreground", "surface"),     # Main text on surface
-    ("foreground", "panel"),       # Main text on panel
-    ("primary", "background"),     # Blue on base
-    ("accent", "surface"),         # Mauve on surface
+    ("foreground", "surface"),  # Main text on surface
+    ("foreground", "panel"),  # Main text on panel
+    ("primary", "background"),  # Blue on base
+    ("accent", "surface"),  # Mauve on surface
 ]
 
 # Large text/icon contrast pairs (WCAG AA Large: 3.0:1)
 LARGE_TEXT_CONTRAST_PAIRS = [
-    ("warning", "panel"),          # Peach on panel
-    ("primary", "surface"),        # Blue on surface
+    ("warning", "panel"),  # Peach on panel
+    ("primary", "surface"),  # Blue on surface
 ]
 
 
@@ -190,6 +185,7 @@ def test_property_2_all_contrast_pairs():
 # --- Property 3: Large Text Contrast Ratio Compliance ---
 # **Validates: Requirements 1.2 (WCAG AA Large)**
 
+
 @settings(max_examples=50)
 @given(pair=st.sampled_from(LARGE_TEXT_CONTRAST_PAIRS))
 def test_property_3_large_text_contrast_ratio(pair: tuple[str, str]):
@@ -216,6 +212,7 @@ def test_property_3_large_text_contrast_ratio(pair: tuple[str, str]):
 # --- Property 4: Theme Variable Existence ---
 # **Validates: Requirements 1.4**
 
+
 def test_property_4_theme_variables_exist():
     """
     Property 4: Theme Variable Existence
@@ -233,6 +230,4 @@ def test_property_4_theme_variables_exist():
     ]
 
     for var_name in required_variables:
-        assert var_name in theme.variables, (
-            f"Theme variables should contain '{var_name}'"
-        )
+        assert var_name in theme.variables, f"Theme variables should contain '{var_name}'"

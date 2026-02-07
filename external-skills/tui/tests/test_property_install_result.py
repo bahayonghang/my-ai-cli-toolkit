@@ -33,18 +33,21 @@ DEPENDENCIES = ["node", "npm", "npx", "python3", "pip", "git"]
 
 # --- Hypothesis Strategies ---
 
+
 @st.composite
 def skill_name_strategy(draw):
     """生成有效的技能名称"""
-    words = draw(st.lists(
-        st.text(
-            alphabet="abcdefghijklmnopqrstuvwxyz",
-            min_size=2,
-            max_size=8,
-        ),
-        min_size=1,
-        max_size=3,
-    ))
+    words = draw(
+        st.lists(
+            st.text(
+                alphabet="abcdefghijklmnopqrstuvwxyz",
+                min_size=2,
+                max_size=8,
+            ),
+            min_size=1,
+            max_size=3,
+        )
+    )
     return "-".join(words)
 
 
@@ -55,22 +58,26 @@ def install_result_strategy(draw):
     skill_name = draw(skill_name_strategy())
     assume(len(skill_name) > 0)
 
-    message = draw(st.text(
-        alphabet="abcdefghijklmnopqrstuvwxyz0123456789 ",
-        min_size=1,
-        max_size=50,
-    ))
+    message = draw(
+        st.text(
+            alphabet="abcdefghijklmnopqrstuvwxyz0123456789 ",
+            min_size=1,
+            max_size=50,
+        )
+    )
 
     if success:
         # 成功时 error 可以为 None
         error = None
     else:
         # 失败时 error 应该有值
-        error = draw(st.text(
-            alphabet="abcdefghijklmnopqrstuvwxyz0123456789 :",
-            min_size=1,
-            max_size=100,
-        ))
+        error = draw(
+            st.text(
+                alphabet="abcdefghijklmnopqrstuvwxyz0123456789 :",
+                min_size=1,
+                max_size=100,
+            )
+        )
 
     return InstallResult(
         success=success,
@@ -82,6 +89,7 @@ def install_result_strategy(draw):
 
 # --- Helper Functions ---
 
+
 def create_temp_registry_with_skill(
     skill_name: str,
     requires: list[str],
@@ -91,7 +99,7 @@ def create_temp_registry_with_skill(
     requires_str = ", ".join(f'"{r}"' for r in requires)
     targets_str = ", ".join(f'"{t}"' for t in supported_targets)
 
-    toml_content = f'''# Generated registry.toml for testing
+    toml_content = f"""# Generated registry.toml for testing
 
 [skills.{skill_name}]
 description = "Test skill"
@@ -105,7 +113,7 @@ requires = [{requires_str}]
 supported_targets = [{targets_str}]
 homepage = "https://example.com"
 license = "MIT"
-'''
+"""
 
     fd, path = tempfile.mkstemp(suffix=".toml", prefix="registry_")
     with open(fd, "w", encoding="utf-8") as f:
@@ -116,12 +124,15 @@ license = "MIT"
 
 def create_mock_check_command_exists(env_state: dict):
     """创建模拟的 _check_command_exists 方法"""
+
     def mock_check(cmd: str) -> bool:
         return env_state.get(cmd, False)
+
     return mock_check
 
 
 # --- Property Tests ---
+
 
 class TestInstallResultCompleteness:
     """Property 5: 安装结果完整性
@@ -138,9 +149,7 @@ class TestInstallResultCompleteness:
 
         对于任意 InstallResult，success 字段应该是布尔值。
         """
-        assert isinstance(result.success, bool), (
-            f"success 字段应该是布尔值: type={type(result.success)}"
-        )
+        assert isinstance(result.success, bool), f"success 字段应该是布尔值: type={type(result.success)}"
 
     @given(result=install_result_strategy())
     @settings(max_examples=100, deadline=None)
@@ -151,12 +160,8 @@ class TestInstallResultCompleteness:
 
         对于任意 InstallResult，skill_name 字段应该是非空字符串。
         """
-        assert isinstance(result.skill_name, str), (
-            f"skill_name 字段应该是字符串: type={type(result.skill_name)}"
-        )
-        assert len(result.skill_name) > 0, (
-            "skill_name 字段不应为空"
-        )
+        assert isinstance(result.skill_name, str), f"skill_name 字段应该是字符串: type={type(result.skill_name)}"
+        assert len(result.skill_name) > 0, "skill_name 字段不应为空"
 
     @given(result=install_result_strategy())
     @settings(max_examples=100, deadline=None)
@@ -167,9 +172,7 @@ class TestInstallResultCompleteness:
 
         对于任意 InstallResult，message 字段应该是字符串。
         """
-        assert isinstance(result.message, str), (
-            f"message 字段应该是字符串: type={type(result.message)}"
-        )
+        assert isinstance(result.message, str), f"message 字段应该是字符串: type={type(result.message)}"
 
     @given(result=install_result_strategy())
     @settings(max_examples=100, deadline=None)
@@ -181,12 +184,8 @@ class TestInstallResultCompleteness:
         当 success 为 False 时，error 字段应该包含非空的错误信息。
         """
         if not result.success:
-            assert result.error is not None, (
-                f"失败的安装结果应该包含 error 信息: success={result.success}"
-            )
-            assert len(result.error) > 0, (
-                "失败的安装结果的 error 信息不应为空"
-            )
+            assert result.error is not None, f"失败的安装结果应该包含 error 信息: success={result.success}"
+            assert len(result.error) > 0, "失败的安装结果的 error 信息不应为空"
 
 
 class TestInstallResultFromManager:
@@ -206,30 +205,17 @@ class TestInstallResultFromManager:
         """
         skill_name = "nonexistent-skill-xyz"
 
-        registry_file = create_temp_registry_with_skill(
-            "other-skill", [], ["all"]
-        )
+        registry_file = create_temp_registry_with_skill("other-skill", [], ["all"])
         try:
-            manager = ExternalSkillManager(
-                platform=platform,
-                registry_path=registry_file
-            )
+            manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             result = manager.install_skill(skill_name)
 
             # 验证返回失败结果
-            assert result.success is False, (
-                "安装不存在的技能应该返回 success=False"
-            )
-            assert result.error is not None, (
-                "安装不存在的技能应该返回非空 error"
-            )
-            assert len(result.error) > 0, (
-                "error 信息不应为空"
-            )
-            assert result.skill_name == skill_name, (
-                f"skill_name 应该匹配: 期望 {skill_name}, 实际 {result.skill_name}"
-            )
+            assert result.success is False, "安装不存在的技能应该返回 success=False"
+            assert result.error is not None, "安装不存在的技能应该返回非空 error"
+            assert len(result.error) > 0, "error 信息不应为空"
+            assert result.skill_name == skill_name, f"skill_name 应该匹配: 期望 {skill_name}, 实际 {result.skill_name}"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -247,27 +233,16 @@ class TestInstallResultFromManager:
         other_platforms = [p for p in PLATFORMS if p != platform]
         assume(len(other_platforms) > 0)
 
-        registry_file = create_temp_registry_with_skill(
-            skill_name, [], other_platforms
-        )
+        registry_file = create_temp_registry_with_skill(skill_name, [], other_platforms)
         try:
-            manager = ExternalSkillManager(
-                platform=platform,
-                registry_path=registry_file
-            )
+            manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             result = manager.install_skill(skill_name)
 
             # 验证返回失败结果
-            assert result.success is False, (
-                "安装不支持平台的技能应该返回 success=False"
-            )
-            assert result.error is not None, (
-                "安装不支持平台的技能应该返回非空 error"
-            )
-            assert "不支持平台" in result.error or "不支持" in result.error, (
-                f"error 应该说明平台不支持: {result.error}"
-            )
+            assert result.success is False, "安装不支持平台的技能应该返回 success=False"
+            assert result.error is not None, "安装不支持平台的技能应该返回非空 error"
+            assert "不支持平台" in result.error or "不支持" in result.error, f"error 应该说明平台不支持: {result.error}"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -283,35 +258,20 @@ class TestInstallResultFromManager:
         skill_name = "test-skill"
         requires = ["node", "npm"]
 
-        registry_file = create_temp_registry_with_skill(
-            skill_name, requires, ["all"]
-        )
+        registry_file = create_temp_registry_with_skill(skill_name, requires, ["all"])
         try:
-            manager = ExternalSkillManager(
-                platform=platform,
-                registry_path=registry_file
-            )
+            manager = ExternalSkillManager(platform=platform, registry_path=registry_file)
 
             # 模拟所有依赖都不存在
             env_state = dict.fromkeys(DEPENDENCIES, False)
 
-            with patch.object(
-                manager,
-                '_check_command_exists',
-                side_effect=create_mock_check_command_exists(env_state)
-            ):
+            with patch.object(manager, "_check_command_exists", side_effect=create_mock_check_command_exists(env_state)):
                 result = manager.install_skill(skill_name)
 
             # 验证返回失败结果
-            assert result.success is False, (
-                "安装缺少依赖的技能应该返回 success=False"
-            )
-            assert result.error is not None, (
-                "安装缺少依赖的技能应该返回非空 error"
-            )
-            assert "缺少依赖" in result.error or "依赖" in result.error, (
-                f"error 应该说明缺少依赖: {result.error}"
-            )
+            assert result.success is False, "安装缺少依赖的技能应该返回 success=False"
+            assert result.error is not None, "安装缺少依赖的技能应该返回非空 error"
+            assert "缺少依赖" in result.error or "依赖" in result.error, f"error 应该说明缺少依赖: {result.error}"
         finally:
             registry_file.unlink(missing_ok=True)
 
@@ -337,12 +297,8 @@ class TestInstallResultConsistency:
             pass  # 不做强制要求
         else:
             # 失败时 error 必须非空
-            assert result.error is not None, (
-                "失败时 error 不应为 None"
-            )
-            assert len(result.error) > 0, (
-                "失败时 error 不应为空字符串"
-            )
+            assert result.error is not None, "失败时 error 不应为 None"
+            assert len(result.error) > 0, "失败时 error 不应为空字符串"
 
     @given(result=install_result_strategy())
     @settings(max_examples=100, deadline=None)
@@ -354,10 +310,10 @@ class TestInstallResultConsistency:
         InstallResult 应该包含 success, skill_name, message 字段。
         """
         # 验证必需字段存在
-        assert hasattr(result, 'success'), "缺少 success 字段"
-        assert hasattr(result, 'skill_name'), "缺少 skill_name 字段"
-        assert hasattr(result, 'message'), "缺少 message 字段"
-        assert hasattr(result, 'error'), "缺少 error 字段"
+        assert hasattr(result, "success"), "缺少 success 字段"
+        assert hasattr(result, "skill_name"), "缺少 skill_name 字段"
+        assert hasattr(result, "message"), "缺少 message 字段"
+        assert hasattr(result, "error"), "缺少 error 字段"
 
         # 验证字段类型
         assert isinstance(result.success, bool)
