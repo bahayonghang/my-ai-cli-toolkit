@@ -8,13 +8,13 @@ The most reliable pattern for quality code generation.
 
 ```bash
 # Step 1: Generate code
-gemini "Create [code description]" --yolo -o text
+gemini "Create [code description]" --approval-mode yolo -o text
 
 # Step 2: Have Gemini review its own work
 gemini "Review [generated file] for bugs and security issues" -o text
 
 # Step 3: Fix identified issues
-gemini "Fix these issues in [file]: [list from review]. Apply now." --yolo -o text
+gemini "Fix these issues in [file]: [list from review]. Apply now." --approval-mode yolo -o text
 ```
 
 ### Why It Works
@@ -25,14 +25,14 @@ gemini "Fix these issues in [file]: [list from review]. Apply now." --yolo -o te
 ### Example
 ```bash
 # Generate
-gemini "Create a user authentication module with bcrypt and JWT" --yolo -o text
+gemini "Create a user authentication module with bcrypt and JWT" --approval-mode yolo -o text
 
 # Review
 gemini "Review auth.js for security vulnerabilities" -o text
 # Output: "Found XSS risk, missing input validation, weak JWT secret"
 
 # Fix
-gemini "Fix in auth.js: XSS risk, add input validation, use env var for JWT secret. Apply now." --yolo -o text
+gemini "Fix in auth.js: XSS risk, add input validation, use env var for JWT secret. Apply now." --approval-mode yolo -o text
 ```
 
 ## Pattern 2: JSON Output for Programmatic Processing
@@ -65,7 +65,7 @@ For long-running tasks, execute in background and continue working.
 
 ```bash
 # Start in background
-gemini "[long task]" --yolo -o text 2>&1 &
+gemini "[long task]" --approval-mode yolo -o text 2>&1 &
 
 # Get process ID for later
 echo $!
@@ -81,9 +81,9 @@ echo $!
 ### Parallel Execution
 ```bash
 # Run multiple tasks simultaneously
-gemini "Create frontend" --yolo -o text 2>&1 &
-gemini "Create backend" --yolo -o text 2>&1 &
-gemini "Create tests" --yolo -o text 2>&1 &
+gemini "Create frontend" --approval-mode yolo -o text 2>&1 &
+gemini "Create backend" --approval-mode yolo -o text 2>&1 &
+gemini "Create tests" --approval-mode yolo -o text 2>&1 &
 ```
 
 ## Pattern 4: Model Selection Strategy
@@ -94,24 +94,22 @@ Choose the right model for the task.
 
 ```
 Is the task complex (architecture, multi-file, deep analysis)?
-├── Yes → Use default (Gemini 3 Pro)
+├── Yes → Use gemini-2.5-pro (or auto routing)
 └── No → Is speed critical?
     ├── Yes → Use gemini-2.5-flash
-    └── No → Is it trivial (formatting, simple query)?
-        ├── Yes → Use gemini-2.5-flash-lite
-        └── No → Use gemini-2.5-flash
+    └── No → Use auto (default, smart routing)
 ```
 
 ### Examples
 ```bash
-# Complex: Architecture analysis
+# Complex: Architecture analysis (auto routing handles this)
 gemini "Analyze codebase architecture" -o text
 
 # Quick: Simple formatting
 gemini "Format this JSON" -m gemini-2.5-flash -o text
 
-# Trivial: One-liner
-gemini "What is 2+2?" -m gemini-2.5-flash -o text
+# Explicit Pro for complex reasoning
+gemini "Refactor this module" -m gemini-2.5-pro -o text
 ```
 
 ## Pattern 5: Rate Limit Handling
@@ -124,7 +122,7 @@ Default behavior - CLI retries automatically with backoff.
 ### Approach 2: Use Flash for Lower Priority
 ```bash
 # High priority: Use Pro
-gemini "[important task]" --yolo -o text
+gemini "[important task]" --approval-mode yolo -o text
 
 # Lower priority: Use Flash (different quota)
 gemini "[less critical task]" -m gemini-2.5-flash -o text
@@ -134,20 +132,20 @@ gemini "[less critical task]" -m gemini-2.5-flash -o text
 Combine related operations into single prompts:
 ```bash
 # Instead of multiple calls:
-gemini "Create file A" --yolo
-gemini "Create file B" --yolo
-gemini "Create file C" --yolo
+gemini "Create file A" --approval-mode yolo
+gemini "Create file B" --approval-mode yolo
+gemini "Create file C" --approval-mode yolo
 
 # Single call:
-gemini "Create files A, B, and C with [specs]. Create all now." --yolo
+gemini "Create files A, B, and C with [specs]. Create all now." --approval-mode yolo
 ```
 
 ### Approach 4: Sequential with Delays
 For automated scripts, add delays:
 ```bash
-gemini "[task 1]" --yolo -o text
+gemini "[task 1]" --approval-mode yolo -o text
 sleep 2
-gemini "[task 2]" --yolo -o text
+gemini "[task 2]" --approval-mode yolo -o text
 ```
 
 ## Pattern 6: Context Enrichment
@@ -180,7 +178,7 @@ gemini "Given this context:
 - State management: Zustand
 - Styling: Tailwind CSS
 
-Create a user profile component." --yolo -o text
+Create a user profile component." --approval-mode yolo -o text
 ```
 
 ## Pattern 7: Validation Pipeline
@@ -216,7 +214,7 @@ Always validate Gemini's output before using.
 ### Automated Validation Pattern
 ```bash
 # Generate
-gemini "Create utility functions" --yolo -o text
+gemini "Create utility functions" --approval-mode yolo -o text
 
 # Validate
 node --check utils.js && eslint utils.js && npm test
@@ -228,13 +226,13 @@ Build complex outputs in stages.
 
 ```bash
 # Stage 1: Core structure
-gemini "Create basic Express server with routes for /api/users" --yolo -o text
+gemini "Create basic Express server with routes for /api/users" --approval-mode yolo -o text
 
 # Stage 2: Add feature
-gemini "Add authentication middleware to the Express server in server.js" --yolo -o text
+gemini "Add authentication middleware to the Express server in server.js" --approval-mode yolo -o text
 
 # Stage 3: Add another feature
-gemini "Add rate limiting to the Express server in server.js" --yolo -o text
+gemini "Add rate limiting to the Express server in server.js" --approval-mode yolo -o text
 
 # Stage 4: Review all
 gemini "Review server.js for issues and optimize" -o text
@@ -259,7 +257,7 @@ gemini "Review this code for bugs and security issues: [paste code]" -o text
 ### Gemini Generates, Claude Reviews
 ```bash
 # 1. Gemini generates
-gemini "Create [code]" --yolo -o text
+gemini "Create [code]" --approval-mode yolo -o text
 
 # 2. Claude reviews the output (in conversation)
 # "Review this code that Gemini generated..."
@@ -296,7 +294,7 @@ echo "Focus on the authentication flow" | gemini -r 1 -o text
 ## Anti-Patterns to Avoid
 
 ### Don't: Expect Immediate Execution
-YOLO mode doesn't prevent planning. Gemini may still present plans.
+`--approval-mode yolo` doesn't prevent planning. Gemini may still present plans.
 
 **Do**: Use forceful language ("Apply now", "Start immediately")
 

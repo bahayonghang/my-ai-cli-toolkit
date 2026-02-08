@@ -1,6 +1,6 @@
 # Gemini CLI Command Reference
 
-Complete reference for Gemini CLI v0.16.0+
+Complete reference for Gemini CLI v0.27.0+
 
 ## Installation
 
@@ -26,9 +26,11 @@ gemini  # First run prompts for auth
 
 | Flag | Short | Description |
 |------|-------|-------------|
-| `--yolo` | `-y` | Auto-approve all tool calls |
+| `--approval-mode` | | Approval mode: `default`, `auto_edit`, or `yolo` |
 | `--output-format` | `-o` | Output format: `text`, `json`, `stream-json` |
-| `--model` | `-m` | Model selection (e.g., `gemini-2.5-flash`) |
+| `--model` | `-m` | Model selection (default: `auto`) |
+
+> **Deprecated:** `--yolo` / `-y` and `--prompt` / `-p` are deprecated. Use `--approval-mode yolo` and positional arguments instead.
 
 ### Session Management
 
@@ -43,17 +45,19 @@ gemini  # First run prompts for auth
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--sandbox` | `-s` | Run in isolated sandbox |
-| `--approval-mode` | | `default`, `auto_edit`, or `yolo` |
-| `--timeout` | | Request timeout in ms |
+| `--prompt-interactive` | `-i` | Execute prompt and continue in interactive mode |
 | `--checkpointing` | | Enable file change snapshots |
+| `--experimental-acp` | | Start in ACP (Agent Code Pilot) mode |
+| `--experimental-zed-integration` | | Run in Zed editor integration mode |
 
 ### Context & Tools
 
 | Flag | Description |
 |------|-------------|
 | `--include-directories` | Add directories to workspace |
-| `--allowed-tools` | Restrict available tools |
+| `--allowed-tools` | Tools allowed to run without confirmation |
 | `--allowed-mcp-server-names` | Restrict MCP servers |
+| `--extensions` / `-e` | List of extensions to use |
 
 ### Other Options
 
@@ -63,7 +67,7 @@ gemini  # First run prompts for auth
 | `--version` | `-v` | Show version |
 | `--help` | `-h` | Show help |
 | `--list-extensions` | `-l` | List installed extensions |
-| `--prompt-interactive` | `-i` | Interactive mode with initial prompt |
+| `--screen-reader` | | Enable screen reader mode for accessibility |
 
 ## Output Formats
 
@@ -123,18 +127,28 @@ Real-time newline-delimited JSON events for monitoring long tasks.
 
 ### Available Models
 
-| Model | Use Case | Context |
-|-------|----------|---------|
-| `gemini-3-pro` | Complex tasks (default) | 1M tokens |
-| `gemini-2.5-flash` | Quick tasks, lower latency | Large |
-| `gemini-2.5-flash-lite` | Fastest, simplest tasks | Medium |
+| Model | Use Case | Notes |
+|-------|----------|-------|
+| `auto` (default) | Smart routing | Auto-selects Flash or Pro based on task complexity |
+| `gemini-2.5-pro` | Complex tasks | Stable, 1M token context |
+| `gemini-2.5-flash` | Quick tasks, lower latency | Stable, large context |
+| `gemini-3-pro-preview` | Latest capabilities | Requires Google AI Ultra or paid API key |
+| `gemini-3-flash-preview` | Latest Flash model | Requires Preview Features enabled |
+
+### Auto Routing
+
+Auto mode has two variants:
+- **Auto (Gemini 2.5)** — Routes between `gemini-2.5-pro` and `gemini-2.5-flash`
+- **Auto (Gemini 3)** — Routes between `gemini-3-pro-preview` and `gemini-3-flash-preview` (requires Preview Features)
+
+Use `/model` in interactive mode or `/settings` to switch.
 
 ### Usage
 ```bash
-# Default (Pro)
+# Default (Auto routing)
 gemini "complex analysis" -o text
 
-# Flash for speed
+# Explicit model
 gemini "simple task" -m gemini-2.5-flash -o text
 ```
 
@@ -214,19 +228,16 @@ echo "continue" | gemini -r latest -o text
 
 ## Rate Limits
 
-### Free Tier Limits
-- 60 requests per minute
-- 1000 requests per day
-
 ### Rate Limit Behavior
 - CLI auto-retries with exponential backoff
 - Message: `"quota will reset after Xs"`
 - Typical wait: 1-5 seconds
 
 ### Mitigation
-1. Use `gemini-2.5-flash` for simple tasks
-2. Batch operations into single prompts
-3. Run long tasks in background
+1. Use Auto routing (default) to let the system optimize model selection
+2. Use `gemini-2.5-flash` for simple tasks
+3. Batch operations into single prompts
+4. Run long tasks in background
 
 ## Interactive Commands
 
@@ -234,15 +245,38 @@ In interactive mode, these slash commands are available:
 
 | Command | Purpose |
 |---------|---------|
+| `/about` | Display version information |
+| `/auth` | Modify authentication method |
+| `/bug` | File GitHub issues |
+| `/chat save/resume/list/delete/share` | Manage conversation checkpoints |
+| `/clear` | Clear the terminal screen (Ctrl+L) |
+| `/compress` | Condense chat context to reduce token usage |
+| `/copy` | Copy last output to clipboard |
+| `/directory add/show` | Manage workspace directories |
+| `/docs` | Open documentation in browser |
+| `/editor` | Select preferred text editor |
+| `/extensions` | List active extensions |
 | `/help` | Show available commands |
-| `/tools` | List available tools |
-| `/stats` | Show token usage |
-| `/compress` | Summarize context to save tokens |
-| `/restore` | Restore file checkpoints |
-| `/chat save <tag>` | Save conversation |
-| `/chat resume <tag>` | Resume conversation |
-| `/memory show` | Display GEMINI.md context |
-| `/memory refresh` | Reload context files |
+| `/hooks enable/disable/list` | Manage lifecycle event hooks |
+| `/ide enable/disable/install/status` | Control IDE integration |
+| `/init` | Generate tailored GEMINI.md context file |
+| `/introspect` | Debug session state and active hooks |
+| `/mcp auth/desc/list/refresh/schema` | Manage MCP servers |
+| `/memory add/list/refresh/show` | Manage AI instructional context |
+| `/model` | Select Gemini model version |
+| `/policies list` | Manage policies |
+| `/privacy` | Display privacy notice |
+| `/quit` | Exit CLI (`/exit` alias) |
+| `/restore` | Undo file modifications from tool execution |
+| `/resume` | Browse and restore previous sessions |
+| `/rewind` | Navigate backward through conversation history |
+| `/settings` | Open configuration editor |
+| `/shells` | Toggle background process view (`/bashes` alias) |
+| `/skills enable/disable/list/reload` | Manage Agent Skills |
+| `/stats` | Show token usage and session metrics |
+| `/theme` | Change visual appearance |
+| `/tools desc/nodesc` | List available tools |
+| `/vim` | Toggle vim-mode editing |
 
 ## Piping & Scripting
 
@@ -270,8 +304,8 @@ In interactive mode, prefix with `!`:
 |----------|----------|
 | `Ctrl+L` | Clear screen |
 | `Ctrl+V` | Paste from clipboard |
-| `Ctrl+Y` | Toggle YOLO mode |
 | `Ctrl+X` | Open in external editor |
+| `?` | Toggle shortcuts panel |
 
 ## Troubleshooting
 
@@ -279,9 +313,9 @@ In interactive mode, prefix with `!`:
 
 | Issue | Solution |
 |-------|----------|
-| "API key not found" | Set `GEMINI_API_KEY` env var |
-| "Rate limit exceeded" | Wait for auto-retry or use Flash |
-| "Context too large" | Use `.geminiignore` or be specific |
+| "API key not found" | Set `GEMINI_API_KEY` env var or use `/auth` |
+| "Rate limit exceeded" | Wait for auto-retry or use Flash model |
+| "Context too large" | Use `.geminiignore` or `/compress` |
 | "Tool call failed" | Check JSON stats for details |
 
 ### Debug Mode

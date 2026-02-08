@@ -6,32 +6,32 @@ Reusable prompt templates for common operations.
 
 ### Single-File Application
 ```bash
-gemini "Create a [description] with [features]. Include [requirements]. Output the complete file content." --yolo -o text
+gemini "Create a [description] with [features]. Include [requirements]. Output the complete file content." --approval-mode yolo -o text
 ```
 
 **Example:**
 ```bash
-gemini "Create a single-file HTML/CSS/JS calculator with: basic operations, history display, keyboard support, dark mode toggle, responsive design. Output the complete file content." --yolo -o text
+gemini "Create a single-file HTML/CSS/JS calculator with: basic operations, history display, keyboard support, dark mode toggle, responsive design. Output the complete file content." --approval-mode yolo -o text
 ```
 
 ### Multi-File Project
 ```bash
-gemini "Create a [project type] with [stack]. Include [features]. Create all necessary files and make it runnable. Use modern best practices. START BUILDING NOW." --yolo -o text
+gemini "Create a [project type] with [stack]. Include [features]. Create all necessary files and make it runnable. Use modern best practices. START BUILDING NOW." --approval-mode yolo -o text
 ```
 
 **Example:**
 ```bash
-gemini "Create a REST API with Express, SQLite, and JWT auth. Include user CRUD, input validation, error handling. Create all necessary files and make it runnable. START BUILDING NOW." --yolo -o text
+gemini "Create a REST API with Express, SQLite, and JWT auth. Include user CRUD, input validation, error handling. Create all necessary files and make it runnable. START BUILDING NOW." --approval-mode yolo -o text
 ```
 
 ### Component/Module
 ```bash
-gemini "Create a [component type] that [functionality]. Follow [standards]. Include [requirements]. Output the code." --yolo -o text
+gemini "Create a [component type] that [functionality]. Follow [standards]. Include [requirements]. Output the code." --approval-mode yolo -o text
 ```
 
 **Example:**
 ```bash
-gemini "Create a React hook useLocalStorage that syncs state with localStorage. Follow React 18 best practices. Include TypeScript types. Output the code." --yolo -o text
+gemini "Create a React hook useLocalStorage that syncs state with localStorage. Follow React 18 best practices. Include TypeScript types. Output the code." --approval-mode yolo -o text
 ```
 
 ## Code Review
@@ -75,12 +75,12 @@ gemini "Fix these bugs in [file]:
 1) [Bug description]
 2) [Bug description]
 3) [Bug description]
-Apply fixes now." --yolo -o text
+Apply fixes now." --approval-mode yolo -o text
 ```
 
 ### Auto-Detect and Fix
 ```bash
-gemini "Analyze [file] for bugs, then fix all issues you find. Apply fixes immediately." --yolo -o text
+gemini "Analyze [file] for bugs, then fix all issues you find. Apply fixes immediately." --approval-mode yolo -o text
 ```
 
 ## Test Generation
@@ -92,7 +92,7 @@ gemini "Generate [framework] unit tests for [file]. Cover:
 - Edge cases
 - Error handling
 - [Specific areas]
-Output the complete test file." --yolo -o text
+Output the complete test file." --approval-mode yolo -o text
 ```
 
 **Example:**
@@ -102,7 +102,7 @@ gemini "Generate Jest unit tests for utils.js. Cover:
 - Edge cases (empty input, null, undefined)
 - Error handling
 - Boundary conditions
-Output the complete test file." --yolo -o text
+Output the complete test file." --approval-mode yolo -o text
 ```
 
 ### Integration Tests
@@ -111,7 +111,7 @@ gemini "Generate integration tests for [component/API]. Test:
 - Happy path scenarios
 - Error scenarios
 - Edge cases
-Use [framework]. Output complete test file." --yolo -o text
+Use [framework]. Output complete test file." --approval-mode yolo -o text
 ```
 
 ## Documentation
@@ -123,7 +123,7 @@ gemini "Generate [JSDoc/TSDoc] documentation for all functions in [file]. Includ
 - Parameter types and descriptions
 - Return types and descriptions
 - Usage examples
-Output as [format]." --yolo -o text
+Output as [format]." --approval-mode yolo -o text
 ```
 
 ### README Generation
@@ -134,7 +134,7 @@ gemini "Generate a README.md for this project. Include:
 - Usage examples
 - API reference
 - Contributing guidelines
-Use the codebase to gather accurate information." --yolo -o text
+Use the codebase to gather accurate information." --approval-mode yolo -o text
 ```
 
 ### API Documentation
@@ -145,7 +145,7 @@ gemini "Document all API endpoints in [file/directory]. Include:
 - Request body schema
 - Response schema
 - Example requests/responses
-Output in [Markdown/OpenAPI] format." --yolo -o text
+Output in [Markdown/OpenAPI] format." --approval-mode yolo -o text
 ```
 
 ## Code Transformation
@@ -155,7 +155,7 @@ Output in [Markdown/OpenAPI] format." --yolo -o text
 gemini "Refactor [file] to:
 - [Specific improvement]
 - [Specific improvement]
-Maintain all existing functionality. Apply changes now." --yolo -o text
+Maintain all existing functionality. Apply changes now." --approval-mode yolo -o text
 ```
 
 ### Language Translation
@@ -164,12 +164,12 @@ gemini "Translate [file] from [source language] to [target language]. Maintain:
 - Same functionality
 - Similar code structure
 - Idiomatic patterns for target language
-Output the translated code." --yolo -o text
+Output the translated code." --approval-mode yolo -o text
 ```
 
 ### Framework Migration
 ```bash
-gemini "Convert [file] from [old framework] to [new framework]. Maintain all functionality. Use [new framework] best practices. Output the converted code." --yolo -o text
+gemini "Convert [file] from [old framework] to [new framework]. Maintain all functionality. Use [new framework] best practices. Output the converted code." --approval-mode yolo -o text
 ```
 
 ## Web Research

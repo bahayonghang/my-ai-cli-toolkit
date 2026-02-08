@@ -35,13 +35,16 @@ gemini "What are the latest React 19 features? Use Google Search." -o text
 
 ### codebase_investigator
 
-Specialized tool for deep codebase analysis.
+Specialized agent for deep codebase analysis.
+
+> **Note:** This is an experimental agent feature introduced in late 2025. It may require opt-in via Preview Features in `/settings`. Behavior and availability may change between versions.
 
 **Capabilities:**
 - Architectural mapping
 - Dependency analysis
 - Cross-file relationship detection
 - System-wide pattern identification
+- Multi-file change proposals (approve/reject step by step)
 
 **Usage:**
 ```bash
@@ -272,13 +275,14 @@ When using `-o json`, tool usage is reported:
 |------------|-------------|------------|
 | File listing | LS, Glob | list_directory, glob |
 | File reading | Read | read_file |
-| File writing | Write, Edit | write_file (in YOLO) |
+| File writing | Write, Edit | write_file (in approval-mode yolo) |
 | Code search | Grep | search_file_content |
 | Web fetch | WebFetch | web_fetch |
 | Web search | WebSearch | **google_web_search** |
-| Architecture | Task (Explore) | **codebase_investigator** |
+| Architecture | Task (Explore) | **codebase_investigator** (experimental) |
 | Memory | N/A | **save_memory** |
 | Task tracking | TodoWrite | write_todos |
+| Agent Skills | N/A | **Agent Skills system** |
 
 **Bold** = Gemini's unique advantage
 
@@ -330,12 +334,12 @@ gemini --allowed-tools "read_file,glob" "Find config files" -o text
 
 **Research → Implement:**
 ```bash
-gemini "Use Google Search to find best practices for [topic], then implement them" --yolo -o text
+gemini "Use Google Search to find best practices for [topic], then implement them" --approval-mode yolo -o text
 ```
 
 **Analyze → Report:**
 ```bash
-gemini "Use codebase_investigator to analyze the project, then write a summary report" --yolo -o text
+gemini "Use codebase_investigator to analyze the project, then write a summary report" --approval-mode yolo -o text
 ```
 
 **Search → Read → Modify:**

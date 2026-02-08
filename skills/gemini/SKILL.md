@@ -13,7 +13,7 @@ allowed-tools:
 
 # Gemini CLI Integration Skill
 
-This skill enables Claude Code to effectively orchestrate Gemini CLI (v0.16.0+) with Gemini 3 Pro for code generation, review, analysis, and specialized tasks.
+This skill enables Claude Code to effectively orchestrate Gemini CLI (v0.27.0+) for code generation, review, analysis, and specialized tasks. The default model is Auto routing (automatically selects between Flash and Pro based on task complexity).
 
 ## When to Use This Skill
 
@@ -62,23 +62,26 @@ command -v gemini || which gemini
 ### 2. Basic Command Pattern
 
 ```bash
-gemini "[prompt]" --yolo -o text 2>&1
+gemini "[prompt]" --approval-mode yolo -o text 2>&1
 ```
 
 Key flags:
-- `--yolo` or `-y`: Auto-approve all tool calls
+- `--approval-mode yolo`: Auto-approve all tool calls (replaces deprecated `--yolo`)
 - `-o text`: Human-readable output
 - `-o json`: Structured output with stats
 - `-m gemini-2.5-flash`: Use faster model for simple tasks
+- `-m auto`: Smart routing (default) — auto-selects Flash or Pro based on complexity
 
 ### 3. Critical Behavioral Notes
 
-**YOLO Mode Behavior**: Auto-approves tool calls but does NOT prevent planning prompts. Gemini may still present plans and ask "Does this plan look good?" Use forceful language:
+**Approval Mode Behavior**: `--approval-mode yolo` auto-approves tool calls but does NOT prevent planning prompts. Gemini may still present plans and ask "Does this plan look good?" Use forceful language:
 - "Apply now"
 - "Start immediately"
 - "Do this without asking for confirmation"
 
-**Rate Limits**: Free tier has 60 requests/min, 1000/day. CLI auto-retries with backoff. Expect messages like "quota will reset after Xs".
+> **Note:** `--yolo` / `-y` is deprecated. Use `--approval-mode yolo` instead. Other modes: `default`, `auto_edit`.
+
+**Rate Limits**: Free tier limits apply. CLI auto-retries with exponential backoff. Expect messages like "quota will reset after Xs".
 
 ### 4. Output Processing
 
@@ -97,7 +100,7 @@ For JSON output (`-o json`), parse:
 
 ### Code Generation
 ```bash
-gemini "Create [description] with [features]. Output complete file content." --yolo -o text
+gemini "Create [description] with [features]. Output complete file content." --approval-mode yolo -o text
 ```
 
 ### Code Review
@@ -107,17 +110,17 @@ gemini "Review [file] for: 1) features, 2) bugs/security issues, 3) improvements
 
 ### Bug Fixing
 ```bash
-gemini "Fix these bugs in [file]: [list]. Apply fixes now." --yolo -o text
+gemini "Fix these bugs in [file]: [list]. Apply fixes now." --approval-mode yolo -o text
 ```
 
 ### Test Generation
 ```bash
-gemini "Generate [Jest/pytest] tests for [file]. Focus on [areas]." --yolo -o text
+gemini "Generate [Jest/pytest] tests for [file]. Focus on [areas]." --approval-mode yolo -o text
 ```
 
 ### Documentation
 ```bash
-gemini "Generate JSDoc for all functions in [file]. Output as markdown." --yolo -o text
+gemini "Generate JSDoc for all functions in [file]. Output as markdown." --approval-mode yolo -o text
 ```
 
 ### Architecture Analysis
@@ -138,8 +141,9 @@ gemini "[prompt]" -m gemini-2.5-flash -o text
 ## Error Handling
 
 ### Rate Limit Exceeded
-- CLI auto-retries with backoff
-- Use `-m gemini-2.5-flash` for lower priority tasks
+- CLI auto-retries with exponential backoff
+- Use `-m gemini-2.5-flash` for lower priority tasks (different quota)
+- Use Auto routing (default) to let the system optimize model selection
 - Run in background for long operations
 
 ### Command Failures
@@ -160,20 +164,20 @@ Always verify Gemini's output:
 
 ```bash
 # 1. Generate
-gemini "Create [code]" --yolo -o text
+gemini "Create [code]" --approval-mode yolo -o text
 
 # 2. Review (Gemini reviews its own work)
 gemini "Review [file] for bugs and security issues" -o text
 
 # 3. Fix identified issues
-gemini "Fix [issues] in [file]. Apply now." --yolo -o text
+gemini "Fix [issues] in [file]. Apply now." --approval-mode yolo -o text
 ```
 
 ### Background Execution
 
 For long tasks, run in background and monitor:
 ```bash
-gemini "[long task]" --yolo -o text 2>&1 &
+gemini "[long task]" --approval-mode yolo -o text 2>&1 &
 # Monitor with BashOutput tool
 ```
 
@@ -182,8 +186,18 @@ gemini "[long task]" --yolo -o text 2>&1 &
 These tools are available only through Gemini:
 
 1. **google_web_search** - Real-time internet search via Google
-2. **codebase_investigator** - Deep architectural analysis
+2. **codebase_investigator** - Deep architectural analysis (experimental agent, may require opt-in)
 3. **save_memory** - Cross-session persistent memory
+
+## Model Selection
+
+| Model | Use Case |
+|-------|----------|
+| `auto` (default) | Smart routing — auto-selects Flash or Pro based on task complexity |
+| `gemini-2.5-pro` | Complex reasoning tasks |
+| `gemini-2.5-flash` | Quick tasks, lower latency |
+| `gemini-3-pro-preview` | Latest capabilities (requires Google AI Ultra or paid API key) |
+| `gemini-3-flash-preview` | Latest Flash model (requires Preview Features enabled) |
 
 ## Configuration
 

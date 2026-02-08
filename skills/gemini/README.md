@@ -4,7 +4,7 @@ A Claude Code skill that enables effective use of Google's Gemini CLI as a power
 
 ## What This Skill Does
 
-This skill teaches Claude Code how to wield Gemini CLI for:
+This skill teaches Claude Code how to wield Gemini CLI (v0.27.0+) for:
 
 - **Code Generation** - Create apps, components, and modules
 - **Code Review** - Security audits, bug detection, improvements
@@ -75,20 +75,21 @@ Ready-to-use templates for:
 
 - **Generate-Review-Fix** - Quality assurance cycle
 - **Background Execution** - Parallel task processing
-- **Model Selection** - Pro vs Flash decision tree
-- **Rate Limit Handling** - Strategies for free tier limits
+- **Model Selection** - Auto routing vs explicit model decision tree
+- **Rate Limit Handling** - Strategies for rate limits
 
 ### Gemini's Unique Tools
 
 - `google_web_search` - Real-time internet search
-- `codebase_investigator` - Deep architecture analysis
+- `codebase_investigator` - Deep architecture analysis (experimental agent)
 - `save_memory` - Cross-session persistence
+- **Agent Skills** - Extensible skill system (code-reviewer, docs-writer, etc.)
 
 ## Quick Reference
 
 ```bash
 # Basic generation
-gemini "Create [description]" --yolo -o text
+gemini "Create [description]" --approval-mode yolo -o text
 
 # Code review
 gemini "Review [file] for bugs and security issues" -o text
@@ -101,6 +102,9 @@ gemini "Use codebase_investigator to analyze this project" -o text
 
 # Faster model for simple tasks
 gemini "[prompt]" -m gemini-2.5-flash -o text
+
+# Auto routing (default, recommended)
+gemini "[prompt]" -o text
 ```
 
 ## Why Use Gemini from Claude Code?
