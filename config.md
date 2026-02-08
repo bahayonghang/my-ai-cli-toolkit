@@ -12,7 +12,12 @@ npx zcf
 
 使用 prompts 中的 CLAUDE.md。
 
-## 3. 安装skills
+## 3. 安装 oh my claudecode
 
-### 2. 安装官方插件
+```shell
+/plugin marketplace add https://github.com/Yeachan-Heo/oh-my-claudecode
 
+/plugin install oh-my-claudecode
+
+/oh-my-claudecode:omc-setup
+```
