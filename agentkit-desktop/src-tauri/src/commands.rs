@@ -149,7 +149,10 @@ pub fn get_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, String
 
 /// Get a resource by ID
 #[tauri::command]
-pub fn get_resource_by_id(state: State<AppState>, id: String) -> Result<Option<ResourceItem>, String> {
+pub fn get_resource_by_id(
+    state: State<AppState>,
+    id: String,
+) -> Result<Option<ResourceItem>, String> {
     debug!(id = %id, "Getting resource by ID");
     let db = state.db.lock().map_err(|e| e.to_string())?;
     let repo = ResourceRepository::new(db.conn());

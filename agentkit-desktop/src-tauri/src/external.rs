@@ -9,7 +9,6 @@
 use crate::utils::create_command;
 use anyhow::{anyhow, Result};
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use tracing::{debug, error, info, warn};
 
 /// External skill source types
@@ -134,10 +133,13 @@ impl ExternalHandler for PipHandler {
 
     fn check_prerequisites(&self) -> Result<()> {
         debug!("Checking pip prerequisites");
-        let output = create_command("pip").arg("--version").output().map_err(|e| {
-            error!(error = %e, "pip is not installed or not in PATH");
-            anyhow!("pip is not installed or not in PATH")
-        })?;
+        let output = create_command("pip")
+            .arg("--version")
+            .output()
+            .map_err(|e| {
+                error!(error = %e, "pip is not installed or not in PATH");
+                anyhow!("pip is not installed or not in PATH")
+            })?;
 
         if !output.status.success() {
             error!("pip is not working properly");
@@ -200,10 +202,13 @@ impl ExternalHandler for GitHandler {
 
     fn check_prerequisites(&self) -> Result<()> {
         debug!("Checking git prerequisites");
-        let output = create_command("git").arg("--version").output().map_err(|e| {
-            error!(error = %e, "git is not installed or not in PATH");
-            anyhow!("git is not installed or not in PATH")
-        })?;
+        let output = create_command("git")
+            .arg("--version")
+            .output()
+            .map_err(|e| {
+                error!(error = %e, "git is not installed or not in PATH");
+                anyhow!("git is not installed or not in PATH")
+            })?;
 
         if !output.status.success() {
             error!("git is not working properly");
