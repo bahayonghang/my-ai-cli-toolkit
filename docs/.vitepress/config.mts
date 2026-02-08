@@ -105,7 +105,8 @@ export default defineConfig({
                 { text: 'IEEE-writing-skills', link: '/skills/IEEE-writing-skills' },
                 { text: 'latex-paper-en', link: '/skills/latex-paper-en' },
                 { text: 'latex-thesis-zh', link: '/skills/latex-thesis-zh' },
-                { text: 'typst-paper', link: '/skills/typst-paper' }
+                { text: 'typst-paper', link: '/skills/typst-paper' },
+                { text: 'academic-slides', link: '/skills/academic-slides' }
               ]
             },
             {
@@ -253,7 +254,8 @@ export default defineConfig({
                 { text: 'IEEE-writing-skills', link: '/zh/skills/IEEE-writing-skills' },
                 { text: 'latex-paper-en', link: '/zh/skills/latex-paper-en' },
                 { text: 'latex-thesis-zh', link: '/zh/skills/latex-thesis-zh' },
-                { text: 'typst-paper', link: '/zh/skills/typst-paper' }
+                { text: 'typst-paper', link: '/zh/skills/typst-paper' },
+                { text: 'academic-slides', link: '/zh/skills/academic-slides' }
               ]
             },
             {

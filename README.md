@@ -105,6 +105,7 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [latex-paper-en](skills/latex-paper-en/) | LaTeX academic paper assistant for English conference/journal papers |
 | [latex-thesis-zh](skills/latex-thesis-zh/) | Chinese doctoral/master thesis LaTeX assistant with GB/T 7714 support |
 | [typst-paper](skills/typst-paper/) | Typst academic paper assistant with modular workflow |
+| [academic-slides](skills/academic-slides/) | Academic slide generation with dual engines (Typst Touying & LaTeX Beamer) |
 | [git-commit-cn](skills/git-commit-cn/) | Chinese version of git commit message generator |
 
 ### 🤖 OMO Agents (Multi-Agent System)

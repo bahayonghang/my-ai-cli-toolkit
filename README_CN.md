@@ -98,6 +98,7 @@ uv run python src/install_tui.py
 | [latex-paper-en](skills/latex-paper-en/) | 英文学术论文 LaTeX 助手，支持会议/期刊论文 |
 | [latex-thesis-zh](skills/latex-thesis-zh/) | 中文博士/硕士学位论文 LaTeX 助手，支持 GB/T 7714 |
 | [typst-paper](skills/typst-paper/) | Typst 学术论文助手，支持模块化工作流（编译、格式检查、语法分析、去AI化编辑），适用于中英文论文 |
+| [academic-slides](skills/academic-slides/) | 学术幻灯片生成，支持双引擎（Typst Touying 和 LaTeX Beamer） |
 | [git-commit-cn](skills/git-commit-cn/) | 中文版 git commit 信息生成器 |
 
 ### 🤖 OMO Agents (多代理系统)
