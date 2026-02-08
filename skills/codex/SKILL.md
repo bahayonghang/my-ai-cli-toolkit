@@ -22,13 +22,13 @@ Deep code analysis and generation with maximum reasoning power.
 
 ### Default Configuration
 
-- Model: `gpt-5.2-codex`
+- Model: `gpt-5.3-codex`
 - Reasoning: `xhigh` (maximum thinking depth)
 
 ### Command Pattern
 
 ```bash
-codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   -C <workdir> \
@@ -38,7 +38,7 @@ codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
 ### Parameters
 
 - `<task>` (required): Task description, supports `@file` references
-- `-m <model>`: Override model (e.g., `gpt-5.1-codex`, `gpt-5`)
+- `-m <model>`: Override model (e.g., `gpt-5.3-codex`, `gpt-5`)
 - `-c model_reasoning_effort=<level>`: Override reasoning (low/medium/high/xhigh)
 - `-C <workdir>`: Working directory (default: current)
 
@@ -46,7 +46,7 @@ codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
 
 Basic code analysis:
 ```bash
-codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "explain @src/main.ts"
@@ -54,7 +54,7 @@ codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
 
 Refactoring with custom model:
 ```bash
-codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "refactor @src/utils for performance"
@@ -62,7 +62,7 @@ codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
 
 Multi-file analysis:
 ```bash
-codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   -C /path/to/project \
@@ -85,14 +85,14 @@ Online research with web search and page content fetching.
 
 ### Default Configuration
 
-- Model: `gpt-5.1-codex`
+- Model: `gpt-5.3-codex`
 - Reasoning: `high`
 - Web search: enabled
 
 ### Command Pattern
 
 ```bash
-codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
   --enable web_search_request \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
@@ -118,7 +118,7 @@ web_search_request = true
 
 Fetch GitHub repo:
 ```bash
-codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
   --enable web_search_request \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
@@ -127,7 +127,7 @@ codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
 
 Documentation search:
 ```bash
-codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
   --enable web_search_request \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
@@ -136,7 +136,7 @@ codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
 
 Technology research:
 ```bash
-codex e -m gpt-5.1-codex -c model_reasoning_effort=high \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
   --enable web_search_request \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
@@ -159,7 +159,7 @@ codex e resume <session_id> "<follow-up task>"
 
 ```bash
 # First session (code generation)
-codex e -m gpt-5.2-codex -c model_reasoning_effort=xhigh \
+codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "add comments to @utils.js"
