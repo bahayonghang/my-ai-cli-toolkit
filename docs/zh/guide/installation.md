@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), 或 [Trae](https://www.trae.ai/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), 或 [OpenCode](https://opencode.ai/)
 
 ## 克隆仓库
 
@@ -39,6 +39,9 @@ uv run python src/install.py --target antigravity install-all
 
 # 安装到 Windsurf
 uv run python src/install.py --target windsurf install-all
+
+# 安装到 OpenCode
+uv run python src/install.py --target opencode install-all
 ```
 
 ### 更新全局提示词
@@ -63,7 +66,7 @@ uv run python src/install_tui.py
 
 ### 功能特性
 
-- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf)
+- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf/OpenCode)
 - 📋 Skills 和 Commands/Workflows 双标签页界面
 - ⌨️ 键盘快捷键快速操作
 - 🔍 实时搜索过滤
@@ -113,3 +116,4 @@ uv run python src/install.py installed
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | Trae | `~/.trae/skills/` | `~/.trae/commands/` |
+| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |

@@ -34,6 +34,7 @@ PLATFORM_ICONS = {
     "windsurf": "🏄",
     "cursor": "🖱️",
     "copilot": "🚁",
+    "opencode": "🔓",
 }
 
 
@@ -154,6 +155,7 @@ class PlatformSelectScreen(Screen):
         PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/"),
         PlatformConfig("cursor", "Cursor", "~/.cursor/"),
         PlatformConfig("copilot", "Copilot", "~/.copilot/"),
+        PlatformConfig("opencode", "OpenCode", "~/.config/opencode/"),
     ]
 
     def compose(self) -> ComposeResult:

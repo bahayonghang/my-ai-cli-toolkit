@@ -28,7 +28,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **MyClaude Skills** is a comprehensive collection of Claude Code skills, prompts, and workflows for AI-assisted development. It provides:
 
 - **Unified skill format** (`SKILL.md`) with YAML frontmatter
-- **Cross-platform installation** to multiple targets: Claude Code, Codex CLI, Gemini CLI, Qwen Code, Google Antigravity, Windsurf, and Trae
+- **Cross-platform installation** to multiple targets: Claude Code, Codex CLI, Gemini CLI, Qwen Code, Google Antigravity, Windsurf, Trae, and OpenCode
 - **Interactive TUI** for skill management
 - **Desktop application** (AgentKit Desktop) built with Tauri + React
 - **External skills registry** for community contributions
@@ -137,6 +137,9 @@ uv run python src/install.py --target antigravity install-all
 uv run python src/install.py --target windsurf install-all
 uv run python src/install.py --target trae install-all
 
+# Install to OpenCode
+uv run python src/install.py --target opencode install-all
+
 # List available/installed skills
 uv run python src/install.py list
 uv run python src/install.py installed
@@ -222,6 +225,7 @@ uv run python external-skills/install_tui.py
 | antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | trae | `~/.trae/skills/` | `~/.trae/commands/` |
+| opencode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
 
 ## Skill Definition Format
 
@@ -254,7 +258,7 @@ Detailed instructions and documentation...
 | **Documentation** | `document-writer`, `tech-blog`, `tech-design-doc` |
 | **Academic** | `latex-paper-en`, `latex-thesis-zh`, `typst-paper`, `IEEE-writing-skills` |
 | **Diagrams** | `drawio`, `excalidraw`, `mermaid_expert` |
-| **AI/LLM** | `gemini`, `gemini-image`, `oracle`, `research` |
+| **AI/LLM** | `gemini`, `gemini-image`, `research` |
 | **Code Quality** | `review-code`, `paper-check`, `skill-seekers` |
 | **Git/GitHub** | `git-commit-cn`, `gh-bootstrap`, `github-to-skills` |
 

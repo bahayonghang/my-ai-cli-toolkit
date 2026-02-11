@@ -152,6 +152,16 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
         commands_source="trae",
         fallback_commands_source="claude",
     ),
+    "opencode": PlatformConfig(
+        name="opencode",
+        type="cli",
+        base_dir="~/.config/opencode",
+        skills_subdir="skills",
+        commands_subdir="commands",
+        prompt_file=None,
+        commands_source="opencode",
+        fallback_commands_source="claude",
+    ),
     "antigravity": PlatformConfig(
         name="antigravity",
         type="app",
@@ -180,6 +190,7 @@ DEFAULT_PROJECT_OVERRIDES: dict[str, ProjectInstallOverride] = {
     "antigravity": ProjectInstallOverride(platform_dir=".gemini/antigravity", commands_subdir="workflows"),
     "windsurf": ProjectInstallOverride(platform_dir=".codeium/windsurf", commands_subdir="workflows"),
     "codex": ProjectInstallOverride(platform_dir=".codex", commands_subdir="prompts"),
+    "opencode": ProjectInstallOverride(platform_dir=".opencode", commands_subdir="commands"),
 }
 
 

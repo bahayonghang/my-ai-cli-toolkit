@@ -66,6 +66,15 @@ commands_subdir = "commands"
 commands_source = "trae"
 fallback_commands_source = "claude"
 
+[platforms.opencode]
+type = "cli"
+base_dir = "~/.config/opencode"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = "opencode"
+fallback_commands_source = "claude"
+
 # ============================================================================
 # App 类型平台 - 桌面/GUI 应用
 # ============================================================================
@@ -114,3 +123,7 @@ commands_subdir = "workflows"
 [project_install.overrides.codex]
 platform_dir = ".codex"
 commands_subdir = "prompts"
+
+[project_install.overrides.opencode]
+platform_dir = ".opencode"
+commands_subdir = "commands"

@@ -142,7 +142,7 @@ class SkillManager:
         """Initialize SkillManager.
 
         Args:
-            target: Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)
+            target: Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)
             project_path: Project path (optional)
             use_kiro: Whether to use Kiro structure
         """
@@ -398,7 +398,10 @@ app = typer.Typer(name="skill-installer", help="Unified Skills & Config Manager"
 @app.command()
 def list_skills(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -415,7 +418,10 @@ def list_skills(
 @app.command()
 def installed(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -433,7 +439,10 @@ def installed(
 def install(
     skills: list[str] = typer.Argument(..., help="Skill names to install"),
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -453,7 +462,10 @@ def install(
 @app.command()
 def install_all(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -471,7 +483,10 @@ def install_all(
 @app.command()
 def install_commands(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -489,7 +504,10 @@ def install_commands(
 @app.command()
 def interactive(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -506,7 +524,10 @@ def interactive(
 @app.command()
 def prompt_update(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -523,7 +544,10 @@ def prompt_update(
 @app.command()
 def prompt_diff(
     target: str = typer.Option(
-        "claude", "--target", "-t", help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae)"
+        "claude",
+        "--target",
+        "-t",
+        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, opencode)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,

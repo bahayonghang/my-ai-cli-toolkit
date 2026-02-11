@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), or [Trae](https://www.trae.ai/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), or [OpenCode](https://opencode.ai/)
 
 ## Clone Repository
 
@@ -39,6 +39,9 @@ uv run python src/install.py --target antigravity install-all
 
 # Install to Windsurf
 uv run python src/install.py --target windsurf install-all
+
+# Install to OpenCode
+uv run python src/install.py --target opencode install-all
 ```
 
 ### Update Global Prompt
@@ -63,7 +66,7 @@ uv run python src/install_tui.py
 
 ### Key Features
 
-- 🎯 **Visual Platform Selection**: Choose from Claude/Codex/Gemini/Qwen/Antigravity/Windsurf
+- 🎯 **Visual Platform Selection**: Choose from Claude/Codex/Gemini/Qwen/Antigravity/Windsurf/OpenCode
 - 📊 **Table Layout**: Clean, aligned columns with clear headers
 - 🔄 **Update Detection**: Automatically detects outdated installations
 - 📋 **Tabbed Interface**: Separate tabs for Skills and Commands/Workflows
@@ -142,3 +145,4 @@ uv run python src/install.py installed
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | Trae | `~/.trae/skills/` | `~/.trae/commands/` |
+| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
