@@ -195,38 +195,48 @@ test-coverage:
     pytest --cov=. --cov-report=html --cov-report=term
 
 # 在本地执行完整 CI 流程 (与 GitHub Actions 保持一致)
+# 注意: 本地 CI 无法完全复现 GitHub Actions 的多平台矩阵 (ubuntu/macOS/windows)
+# 使用 `just ci-cross` 可以额外检查跨平台常见问题
 ci:
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  🚀 开始执行 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "🔍 步骤 1/8: Ruff 代码检查..."
+    @echo "🔍 步骤 1/9: Ruff 代码检查..."
     uv run ruff check .
     @echo ""
-    @echo "🔍 步骤 2/8: Ruff 格式检查..."
+    @echo "🔍 步骤 2/9: Ruff 格式检查..."
     uv run ruff format --check .
     @echo ""
-    @echo "🔍 步骤 3/8: Pyright 类型检查..."
+    @echo "🔍 步骤 3/9: Pyright 类型检查..."
     uv run pyright
     @echo ""
-    @echo "🧪 步骤 4/8: 运行测试 (pytest)..."
-    uv run pytest
+    @echo "🧪 步骤 4/9: 运行测试 (pytest, NO_COLOR=1 模拟 CI 环境)..."
+    NO_COLOR=1 uv run pytest
     @echo ""
-    @echo "📘 步骤 5/8: AgentKit Desktop TypeScript 检查..."
+    @echo "📘 步骤 5/9: AgentKit Desktop TypeScript 检查..."
     cd agentkit-desktop && npx tsc --noEmit
     @echo ""
-    @echo "🦀 步骤 6/8: Rust 格式检查..."
+    @echo "🦀 步骤 6/9: Rust 格式检查..."
     cd agentkit-desktop/src-tauri && cargo fmt --check
     @echo ""
-    @echo "🦀 步骤 7/8: Rust Clippy 静态分析..."
+    @echo "🦀 步骤 7/9: Rust Clippy 静态分析..."
     cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
     @echo ""
-    @echo "🦀 步骤 8/8: Rust 单元测试..."
+    @echo "🦀 步骤 8/9: Rust 单元测试..."
     cd agentkit-desktop/src-tauri && cargo test
+    @echo ""
+    @echo "🔎 步骤 9/9: Rust 跨平台 lint 检查..."
+    just _rust-cross-lint
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  ✅ CI 流程执行完成！"
     @echo "════════════════════════════════════════════════════════════════"
+
+# 跨平台 lint 检查: 检测 Rust 代码中未正确使用 #[cfg] 保护的 platform-specific 导入
+# 原理: cargo clippy 只检查当前平台的 #[cfg] 路径，无法发现其他平台上的 unused imports
+_rust-cross-lint:
+    uv run python scripts/rust_cross_lint.py
 
 
 # 清理临时文件和缓存
