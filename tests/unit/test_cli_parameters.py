@@ -8,6 +8,7 @@
 - 3.3 添加参数验证
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -21,6 +22,14 @@ from install import app, format_error
 
 runner = CliRunner()
 
+# ANSI escape code pattern for stripping rich formatting from CLI output
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def strip_ansi(text: str) -> str:
+    """Strip ANSI escape codes from text."""
+    return _ANSI_RE.sub("", text)
+
 
 class TestPublicParameters:
     """测试任务 3.1: 定义公共参数"""
@@ -30,16 +39,18 @@ class TestPublicParameters:
         # 通过运行 help 命令检查参数是否存在
         result = runner.invoke(app, ["install", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "-p" in result.stdout
-        assert "Project path" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "-p" in output
+        assert "Project path" in output
 
     def test_kiro_flag_exists(self):
         """测试 3.1.2: KiroFlag 参数定义存在"""
         result = runner.invoke(app, ["install", "--help"])
         assert result.exit_code == 0
-        assert "--kiro" in result.stdout
-        assert "Kiro structure" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--kiro" in output
+        assert "Kiro structure" in output
 
 
 class TestCommandUpdates:
@@ -49,43 +60,49 @@ class TestCommandUpdates:
         """测试 3.2.1: install 命令支持新参数"""
         result = runner.invoke(app, ["install", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "--kiro" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "--kiro" in output
 
     def test_install_all_command_has_parameters(self):
         """测试 3.2.2: install-all 命令支持新参数"""
         result = runner.invoke(app, ["install-all", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "--kiro" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "--kiro" in output
 
     def test_install_commands_command_has_parameters(self):
         """测试 3.2.3: install-commands 命令支持新参数"""
         result = runner.invoke(app, ["install-commands", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "--kiro" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "--kiro" in output
 
     def test_list_skills_command_has_parameters(self):
         """测试 3.2.4: list-skills 命令支持新参数"""
         result = runner.invoke(app, ["list-skills", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "--kiro" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "--kiro" in output
 
     def test_installed_command_has_parameters(self):
         """测试 3.2.5: installed 命令支持新参数"""
         result = runner.invoke(app, ["installed", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "--kiro" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "--kiro" in output
 
     def test_interactive_command_has_parameters(self):
         """测试 3.2.6: interactive 命令支持新参数"""
         result = runner.invoke(app, ["interactive", "--help"])
         assert result.exit_code == 0
-        assert "--project" in result.stdout
-        assert "--kiro" in result.stdout
+        output = strip_ansi(result.stdout)
+        assert "--project" in output
+        assert "--kiro" in output
 
 
 class TestParameterValidation:
@@ -115,7 +132,7 @@ class TestParameterValidation:
         result = runner.invoke(app, ["list-skills", "--kiro"])
         assert result.exit_code == 1
         # 检查错误消息是否包含有用的建议
-        output = result.stdout
+        output = strip_ansi(result.stdout)
         assert "--kiro" in output
         assert "--project" in output
 
