@@ -63,7 +63,6 @@ uv run python src/install_tui.py
 | [skill-evolution-manager](skills/skill-evolution-manager/) | 基于用户反馈的技能进化管理器 |
 | [github-to-skills](skills/github-to-skills/) | 自动将 GitHub 仓库转换为 AI 技能 |
 | [skill-seekers](skills/skill-seekers/) | 从文档、代码库和 GitHub 仓库生成 LLM 技能，支持 AI 增强分析 |
-| [explore](skills/explore/) | 快速代码搜索代理，定位代码和追踪依赖 |
 | [rust-cli-tui-developer](skills/rust-cli-tui-developer/) | Rust CLI 和 TUI 开发专家指导 |
 | [lib-slint-expert](skills/lib-slint-expert/) | 全面的 Slint GUI 开发专家 |
 | [vue-best-practices](skills/vue-best-practices/) | Vue 3 和 TypeScript 最佳实践，支持 Volar |
@@ -75,8 +74,6 @@ uv run python src/install_tui.py
 | 技能 | 描述 |
 |------|------|
 | [research](skills/research/) | 技术研究，支持网络搜索和引用 |
-| [librarian](skills/librarian/) | 文档研究员，查找外部文档和最佳实践 |
-| [multimodal-looker](skills/multimodal-looker/) | 视觉分析师，分析图片、PDF、图表和图表 |
 
 ### 📝 文档
 | 技能 | 描述 |
@@ -100,13 +97,6 @@ uv run python src/install_tui.py
 | [typst-paper](skills/typst-paper/) | Typst 学术论文助手，支持模块化工作流（编译、格式检查、语法分析、去AI化编辑），适用于中英文论文 |
 | [academic-slides](skills/academic-slides/) | 学术幻灯片生成，支持双引擎（Typst Touying 和 LaTeX Beamer） |
 | [git-commit-cn](skills/git-commit-cn/) | 中文版 git commit 信息生成器 |
-
-### 🤖 OMO Agents (多代理系统)
-| 技能 | 描述 |
-|------|------|
-| [omo-agents](skills/omo-agents/) | 多代理编排系统概览和使用指南 |
-| [sisyphus](skills/sisyphus/) | 主编排代理，用于复杂任务规划和并行执行 |
-| [oracle](skills/oracle/) | 专家架构师，负责设计决策、代码审查和调试指导 |
 
 ### 🧠 知识管理
 | 技能 | 描述 |
@@ -167,21 +157,6 @@ Windsurf IDE 的工作流，在 Cascade 中通过 `/workflow-name` 触发。
 | [export-summary](commands/windsurf/export-summary.md) | 总结会话上下文并导出为 Markdown 文件 |
 | [import-summary](commands/windsurf/import-summary.md) | 从总结文件中恢复会话上下文 |
 | [git-commit](commands/windsurf/git-commit.md) | 分析改动并生成 Conventional Commits 风格的提交信息 |
-
-### OMO Agents (多代理系统)
-
-受 [oh-my-opencode](https://github.com/code-yeongyu/oh-my-opencode) 启发，这些技能实现多代理协作，让专业代理协同处理复杂任务。
-
-| 技能 | 描述 |
-|------|------|
-| [omo-agents](skills/omo-agents/) | 多代理编排系统概览和使用指南 |
-| [sisyphus](skills/sisyphus/) | 主编排代理，用于复杂任务规划和并行执行 |
-| [oracle](skills/oracle/) | 专家架构师，负责设计决策、代码审查和调试指导 |
-| [explore](skills/explore/) | 快速代码搜索代理，定位代码和追踪依赖 |
-| [librarian](skills/librarian/) | 文档研究员，查找外部文档和最佳实践 |
-| [frontend-engineer](skills/frontend-engineer/) | UI/UX 专家，创建精美、精致的界面 |
-| [document-writer](skills/document-writer/) | 技术写手，撰写 README、API 文档和架构文档 |
-| [multimodal-looker](skills/multimodal-looker/) | 视觉分析师，分析图片、PDF、图表和图表 |
 
 ## 安装方法
 

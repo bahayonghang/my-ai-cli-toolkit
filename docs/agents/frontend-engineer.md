@@ -170,5 +170,5 @@ Creates a polished component with:
 
 ## Related
 
-- [omo-agents](/agents/omo-agents) - Multi-agent system overview
-- [sisyphus](/agents/sisyphus) - Main orchestrator
+- [Agents Overview](/agents/) - All available agents
+- [document-writer](/agents/document-writer) - Technical documentation expert

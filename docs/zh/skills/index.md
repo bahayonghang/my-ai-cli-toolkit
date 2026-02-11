@@ -103,15 +103,10 @@ AI Skills Hub 提供了针对不同开发任务的专用 AI 技能集合。
 
 ## 另请参阅：代理
 
-需要多代理协作？请查看 [代理](/zh/agents/) 部分，了解专门处理复杂任务的 AI 代理：
+需要专业 AI 代理？请查看 [代理](/zh/agents/) 部分：
 
-- [@sisyphus](/zh/agents/sisyphus) - 主编排代理，处理复杂任务
-- [@oracle](/zh/agents/oracle) - 架构顾问
-- [@explore](/zh/agents/explore) - 代码搜索专家
-- [@librarian](/zh/agents/librarian) - 文档研究员
 - [@frontend-engineer](/zh/agents/frontend-engineer) - UI/UX 专家
 - [@document-writer](/zh/agents/document-writer) - 技术写手
-- [@multimodal-looker](/zh/agents/multimodal-looker) - 视觉内容分析师
 
 ## 安装
 

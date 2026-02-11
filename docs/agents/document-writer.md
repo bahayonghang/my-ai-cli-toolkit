@@ -211,5 +211,5 @@ Before submitting documentation:
 
 ## Related
 
-- [omo-agents](/agents/omo-agents) - Multi-agent system overview
-- [sisyphus](/agents/sisyphus) - Main orchestrator
+- [Agents Overview](/agents/) - All available agents
+- [frontend-engineer](/agents/frontend-engineer) - UI/UX design expert

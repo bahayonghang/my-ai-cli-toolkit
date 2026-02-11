@@ -103,15 +103,10 @@ Useful tools and utilities:
 
 ## See Also: Agents
 
-Looking for multi-agent collaboration? Check out the [Agents](/agents/) section for specialized AI agents that work together on complex tasks:
+Looking for specialized AI agents? Check out the [Agents](/agents/) section:
 
-- [@sisyphus](/agents/sisyphus) - Main orchestrator for complex tasks
-- [@oracle](/agents/oracle) - Architecture consultant
-- [@explore](/agents/explore) - Code search specialist
-- [@librarian](/agents/librarian) - Documentation researcher
 - [@frontend-engineer](/agents/frontend-engineer) - UI/UX expert
 - [@document-writer](/agents/document-writer) - Technical writer
-- [@multimodal-looker](/agents/multimodal-looker) - Visual content analyst
 
 ## Installation
 

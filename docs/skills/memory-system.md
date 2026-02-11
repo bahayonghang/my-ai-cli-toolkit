@@ -147,7 +147,6 @@ python3 ~/.claude/skills/public/memory-system/scripts/memory.py cleanup \
 ## Related Skills
 
 - [research](./research) - Technical research with web search
-- [librarian](./librarian) - Documentation researcher
 - [planning-with-files](./planning-with-files) - File-based task planning
 
 ## References

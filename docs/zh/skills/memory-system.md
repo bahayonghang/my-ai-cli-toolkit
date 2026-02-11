@@ -147,7 +147,6 @@ python3 ~/.claude/skills/public/memory-system/scripts/memory.py cleanup \
 ## 相关技能
 
 - [research](./research) - 支持网络搜索的技术研究
-- [librarian](./librarian) - 文档研究员
 - [planning-with-files](./planning-with-files) - 基于文件的任务规划
 
 ## 参考资料

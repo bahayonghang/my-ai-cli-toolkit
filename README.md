@@ -69,7 +69,6 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [skill-evolution-manager](skills/skill-evolution-manager/) | Evolve skills based on user feedback and experience |
 | [github-to-skills](skills/github-to-skills/) | Convert GitHub repos into AI skills automatically |
 | [skill-seekers](skills/skill-seekers/) | Generate LLM skills from documentation and codebases |
-| [explore](skills/explore/) | Fast code search agent for locating code and tracing dependencies |
 | [rust-cli-tui-developer](skills/rust-cli-tui-developer/) | Expert guidance for Rust CLI and TUI development |
 | [lib-slint-expert](skills/lib-slint-expert/) | Comprehensive Slint GUI development expert |
 | [vue-best-practices](skills/vue-best-practices/) | Vue 3 and TypeScript best practices with Volar |
@@ -82,8 +81,6 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | Skill | Description |
 |-------|-------------|
 | [research](skills/research/) | Technical research with web search and citation support |
-| [librarian](skills/librarian/) | Documentation researcher for external docs and best practices |
-| [multimodal-looker](skills/multimodal-looker/) | Visual analyst for images, PDFs, charts, and diagrams |
 
 ### 📝 Documentation
 | Skill | Description |
@@ -107,13 +104,6 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [typst-paper](skills/typst-paper/) | Typst academic paper assistant with modular workflow |
 | [academic-slides](skills/academic-slides/) | Academic slide generation with dual engines (Typst Touying & LaTeX Beamer) |
 | [git-commit-cn](skills/git-commit-cn/) | Chinese version of git commit message generator |
-
-### 🤖 OMO Agents (Multi-Agent System)
-| Skill | Description |
-|-------|-------------|
-| [omo-agents](skills/omo-agents/) | Multi-agent orchestration system overview |
-| [sisyphus](skills/sisyphus/) | Main orchestrator for complex task planning and execution |
-| [oracle](skills/oracle/) | Expert architect for design decisions and code review |
 
 ### 🧠 Knowledge Management
 | Skill | Description |

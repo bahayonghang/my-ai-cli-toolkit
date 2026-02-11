@@ -211,5 +211,5 @@ console.log(result)
 
 ## 相关
 
-- [omo-agents](/zh/agents/omo-agents) - 多代理系统概览
-- [sisyphus](/zh/agents/sisyphus) - 主编排代理
+- [代理概览](/zh/agents/) - 所有可用代理
+- [frontend-engineer](/zh/agents/frontend-engineer) - UI/UX 设计专家
