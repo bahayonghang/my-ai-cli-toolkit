@@ -1,0 +1,12 @@
+[project]
+name = "zotero-synth"
+version = "1.0.0"
+description = "Zotero literature management and analysis skill for Claude Code / Codex CLI"
+requires-python = ">=3.11"
+dependencies = [
+    "pyzotero>=1.5.18",
+    "pymupdf>=1.24.0",
+]
+
+[dependency-groups]
+dev = []
