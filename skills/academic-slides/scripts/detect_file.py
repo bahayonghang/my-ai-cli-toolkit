@@ -11,19 +11,16 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Directories to exclude from scanning
 EXCLUDE_DIRS = {"templates", "examples", "output", ".claude", ".git", "node_modules"}
 
 # File extensions to engine mapping
-EXTENSION_TO_ENGINE = {
-    ".typ": "typst",
-    ".tex": "latex"
-}
+EXTENSION_TO_ENGINE = {".typ": "typst", ".tex": "latex"}
 
 
-def scan_slide_files(root_dir: Path) -> List[Dict[str, Any]]:
+def scan_slide_files(root_dir: Path) -> list[dict[str, Any]]:
     """
     Scan directory for slide files (.typ/.tex).
 
@@ -50,13 +47,15 @@ def scan_slide_files(root_dir: Path) -> List[Dict[str, Any]]:
                 # Get relative path from root
                 relative_path = file_path.relative_to(root_dir)
 
-                files.append({
-                    # Use forward slashes for consistency
-                    "path": str(relative_path).replace("\\", "/"),
-                    "mtime": mtime.isoformat(),
-                    "engine": EXTENSION_TO_ENGINE[ext],
-                    "name": file_path.name
-                })
+                files.append(
+                    {
+                        # Use forward slashes for consistency
+                        "path": str(relative_path).replace("\\", "/"),
+                        "mtime": mtime.isoformat(),
+                        "engine": EXTENSION_TO_ENGINE[ext],
+                        "name": file_path.name,
+                    }
+                )
             except (OSError, ValueError) as e:
                 # Skip files that can't be accessed or have invalid timestamps
                 print(f"Warning: Could not process {file_path}: {e}", file=sys.stderr)
@@ -70,14 +69,9 @@ def scan_slide_files(root_dir: Path) -> List[Dict[str, Any]]:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Detect slide files (.typ/.tex) in project root"
-    )
+    parser = argparse.ArgumentParser(description="Detect slide files (.typ/.tex) in project root")
     parser.add_argument(
-        "--root",
-        type=Path,
-        default=Path.cwd(),
-        help="Root directory to scan (default: current working directory)"
+        "--root", type=Path, default=Path.cwd(), help="Root directory to scan (default: current working directory)"
     )
 
     args = parser.parse_args()
