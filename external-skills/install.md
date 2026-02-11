@@ -45,6 +45,11 @@ npx skills add vuejs-ai/skills
 npx skills add supabase/agent-skills
 ```
 
+```shell
+# code review expert 
+npx skills add sanyuan0704/code-review-expert
+```
+
 ## ui ux pro max
 
 ```shell
