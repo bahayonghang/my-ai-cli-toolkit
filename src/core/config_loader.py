@@ -162,6 +162,16 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
         commands_source="opencode",
         fallback_commands_source="claude",
     ),
+    "iflow": PlatformConfig(
+        name="iflow",
+        type="cli",
+        base_dir="~/.iflow",
+        skills_subdir="skills",
+        commands_subdir="commands",
+        prompt_file=None,
+        commands_source="iflow",
+        fallback_commands_source="claude",
+    ),
     "antigravity": PlatformConfig(
         name="antigravity",
         type="app",
@@ -191,6 +201,7 @@ DEFAULT_PROJECT_OVERRIDES: dict[str, ProjectInstallOverride] = {
     "windsurf": ProjectInstallOverride(platform_dir=".codeium/windsurf", commands_subdir="workflows"),
     "codex": ProjectInstallOverride(platform_dir=".codex", commands_subdir="prompts"),
     "opencode": ProjectInstallOverride(platform_dir=".opencode", commands_subdir="commands"),
+    "iflow": ProjectInstallOverride(platform_dir=".iflow", commands_subdir="commands"),
 }
 
 

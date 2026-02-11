@@ -51,6 +51,7 @@ PLATFORM_ICONS = {
     "kiro": "🧭",
     "trae": "🧩",
     "opencode": "🔓",
+    "iflow": "🌊",
 }
 
 
@@ -75,6 +76,7 @@ class PlatformSelectScreen(Screen):
         PlatformDisplay("kiro", "Kiro", "~/.kiro/"),
         PlatformDisplay("trae", "Trae", "~/.trae/"),
         PlatformDisplay("opencode", "OpenCode", "~/.config/opencode/"),
+        PlatformDisplay("iflow", "iFlow", "~/.iflow/"),
     ]
 
     def compose(self) -> ComposeResult:
