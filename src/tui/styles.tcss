@@ -360,8 +360,8 @@ InstallModal {
 }
 
 #install-dialog {
-    width: 56;
-    max-height: 80%;
+    width: 76;
+    max-height: 85%;
     background: $surface;
     border: round $primary;
     padding: 1 2;
@@ -372,23 +372,38 @@ InstallModal {
     text-style: bold;
     color: $primary;
     width: 100%;
-    padding: 0 0 0 0;
+    padding: 1 0;
 }
 
 #dialog-sep {
     width: 100%;
     height: 1;
-    color: $panel;
+    border-bottom: solid $primary 40%;
+}
+
+/* Mode section container */
+#mode-section {
+    height: auto;
+    padding: 0 0;
+    margin: 1 0 0 0;
 }
 
 #mode-label {
-    color: $foreground;
-    padding: 1 0 0 0;
+    color: $accent;
+    text-style: bold;
+    padding: 0 0 0 0;
 }
 
 #install-radio {
-    padding: 0 0 0 1;
+    padding: 0 0 0 2;
     height: auto;
+    border: round $panel;
+    background: $background;
+    margin: 0 1;
+}
+
+#install-radio:focus {
+    border: round $primary;
 }
 
 #install-radio RadioButton {
@@ -400,6 +415,7 @@ InstallModal {
 #path-container {
     height: auto;
     padding: 0 1;
+    margin: 0 1;
 }
 
 #path-container.-hidden {
@@ -418,15 +434,27 @@ InstallModal {
     border: round $primary;
 }
 
+/* Items section container */
+#items-section {
+    height: auto;
+    padding: 0 0;
+    margin: 1 0 0 0;
+}
+
 #items-label {
-    color: $text-muted;
-    padding: 1 0 0 0;
+    color: $accent;
+    text-style: bold;
+    padding: 0;
 }
 
 #items-list {
-    max-height: 10;
+    max-height: 14;
     padding: 0 1;
+    margin: 0 1;
     color: $foreground;
+    background: $background;
+    border: round $panel;
+    overflow-y: auto;
 }
 
 #dialog-buttons {
@@ -436,8 +464,8 @@ InstallModal {
 }
 
 #dialog-buttons Button {
-    min-width: 14;
-    margin: 0 1;
+    min-width: 16;
+    margin: 0 2;
     height: 3;
     border: solid $panel;
     text-style: bold;

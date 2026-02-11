@@ -447,7 +447,7 @@ class ItemListView(ListView):
         current_page = 1
         if self.highlighted_child:
             try:
-                idx = self._all_items.index(self.highlighted_child)
+                idx = self._all_items.index(self.highlighted_child)  # type: ignore[arg-type]
                 current_page = (idx // page_size) + 1
             except (ValueError, AttributeError):
                 pass

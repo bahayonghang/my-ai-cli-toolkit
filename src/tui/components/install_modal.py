@@ -11,6 +11,13 @@ from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, RadioButton, RadioSet, Static
 
+from .header import PLATFORM_ICONS
+
+# Max items to show in preview list before truncating
+_MAX_PREVIEW_ITEMS = 30
+# Number of columns for item list layout
+_ITEM_COLUMNS = 2
+
 
 @dataclass
 class InstallConfig:
@@ -25,6 +32,37 @@ class InstallConfig:
     install_mode: str
     directory_path: str | None
     items: list[str]
+
+
+def _build_items_display(items: list[str], columns: int = _ITEM_COLUMNS) -> str:
+    """Build a compact multi-column item list display.
+
+    Args:
+        items: List of item names
+        columns: Number of columns for layout
+
+    Returns:
+        Formatted multi-column text string
+    """
+    count = len(items)
+    preview = items[:_MAX_PREVIEW_ITEMS]
+
+    # Calculate column width based on longest item name
+    max_len = max((len(name) for name in preview), default=10)
+    col_width = max_len + 3  # padding for bullet + spacing
+
+    lines: list[str] = []
+    for i in range(0, len(preview), columns):
+        row_items = preview[i : i + columns]
+        row = ""
+        for name in row_items:
+            row += f"  • {name:<{col_width}}"
+        lines.append(row.rstrip())
+
+    if count > _MAX_PREVIEW_ITEMS:
+        lines.append(f"  … and {count - _MAX_PREVIEW_ITEMS} more")
+
+    return "\n".join(lines)
 
 
 class InstallModal(ModalScreen[InstallConfig | None]):
@@ -51,26 +89,30 @@ class InstallModal(ModalScreen[InstallConfig | None]):
 
     def compose(self) -> ComposeResult:
         platform_name = self._platform.capitalize()
+        icon = PLATFORM_ICONS.get(self._platform, "📁")
+        count = len(self._items)
 
         with Vertical(id="install-dialog"):
+            # ── Title area ──
             yield Static(
-                f"  Install to {platform_name}",
+                f" {icon}  Install to {platform_name}",
                 id="dialog-title",
             )
-            yield Static("─" * 50, id="dialog-sep")
+            yield Static("", id="dialog-sep")
 
-            # Install mode radio
-            yield Static(" Install Mode:", id="mode-label")
-            with RadioSet(id="install-radio"):
-                yield RadioButton(
-                    f"Global Install (~/.{self._platform}/)",
-                    value=True,
-                    id="radio-global",
-                )
-                yield RadioButton(
-                    "Specify Directory",
-                    id="radio-directory",
-                )
+            # ── Install mode section ──
+            with Vertical(id="mode-section"):
+                yield Static("  Install Mode", id="mode-label")
+                with RadioSet(id="install-radio"):
+                    yield RadioButton(
+                        f" 🌐  Global Install  (~/.{self._platform}/)",
+                        value=True,
+                        id="radio-global",
+                    )
+                    yield RadioButton(
+                        " 📂  Specify Directory",
+                        id="radio-directory",
+                    )
 
             # Conditional path input (hidden by default)
             with Vertical(id="path-container", classes="-hidden"):
@@ -80,18 +122,21 @@ class InstallModal(ModalScreen[InstallConfig | None]):
                     id="path-input",
                 )
 
-            # Items to install
-            count = len(self._items)
-            yield Static(f" Items to install ({count}):", id="items-label")
-            items_text = "\n".join(f"  • {name}" for name in self._items[:15])
-            if count > 15:
-                items_text += f"\n  ... and {count - 15} more"
-            yield Static(items_text, id="items-list")
+            # ── Items section ──
+            with Vertical(id="items-section"):
+                yield Static(
+                    f"  📦  Items to install  ({count})",
+                    id="items-label",
+                )
+                yield Static(
+                    _build_items_display(self._items),
+                    id="items-list",
+                )
 
-            # Action buttons
+            # ── Action buttons ──
             with Horizontal(id="dialog-buttons"):
-                yield Button("Install", variant="primary", id="btn-install")
-                yield Button("Cancel", variant="default", id="btn-cancel")
+                yield Button("✓ Install", variant="primary", id="btn-install")
+                yield Button("✗ Cancel", variant="default", id="btn-cancel")
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """Toggle path input visibility based on radio selection."""

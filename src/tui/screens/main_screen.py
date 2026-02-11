@@ -458,7 +458,9 @@ class MainScreen(Screen):
         if not hasattr(self, "_batch_worker") or event.worker is not self._batch_worker:
             return
         if event.state == WorkerState.SUCCESS:
-            self._on_batch_install_complete(event.worker.result)
+            result = event.worker.result
+            if isinstance(result, dict):
+                self._on_batch_install_complete(result)
         elif event.state == WorkerState.ERROR:
             self._on_batch_install_error()
 
