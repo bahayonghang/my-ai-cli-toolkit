@@ -28,7 +28,9 @@
     "tags": "Tags",
     "installStatus": "Installation Status",
     "notInstalled": "Not installed on any platform",
-    "selectPlatforms": "Select Platforms"
+    "selectPlatforms": "Select Platforms",
+    "noMatchFilters": "No resources match your filters",
+    "clearFilters": "Clear filters"
   },
   "action": {
     "install": "Install",
@@ -47,6 +49,7 @@
   },
   "settings": {
     "title": "Settings",
+    "pageSubtitle": "Configure SkillsLM global settings",
     "theme": "Theme",
     "themeSystem": "System",
     "themeLight": "Light",
@@ -123,5 +126,46 @@
     "other": "Other Platforms",
     "selectAll": "Select all detected",
     "clear": "Clear"
+  },
+  "batch": {
+    "active": "Batch Active",
+    "select": "Batch Select",
+    "selected": "{{count}} selected",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "installAll": "Install All",
+    "uninstallAll": "Uninstall All",
+    "confirmInstall": "Confirm Batch Install",
+    "confirmUninstall": "Confirm Batch Uninstall",
+    "confirmMessage": "Are you sure you want to {{action}} {{count}} resource(s) to {{platforms}}?"
+  },
+  "filter": {
+    "title": "Filters",
+    "categories": "Categories",
+    "tags": "Tags",
+    "searchTags": "Search tags...",
+    "noTagsMatch": "No tags match \"{{query}}\"",
+    "showingTags": "Showing 20 of {{total}} tags. Use search to find more.",
+    "clearAll": "Clear All Filters",
+    "noFilters": "No categories or tags available for filtering",
+    "activeFilters": "Active filters:",
+    "clearAllLink": "Clear all",
+    "showing": "Showing {{filtered}} of {{total}} {{type}}"
+  },
+  "toolStatus": {
+    "title": "Tool Status",
+    "subtitle": "Detect installed AI coding tools",
+    "refreshStatus": "Refresh Status",
+    "installed": "Installed",
+    "notInstalled": "Not Installed"
+  },
+  "about": {
+    "title": "About AgentKit",
+    "subtitle": "Desktop Manager",
+    "appName": "Application Name",
+    "appNameValue": "AgentKit Desktop",
+    "version": "Version",
+    "description": "Description",
+    "author": "Author"
   }
 }

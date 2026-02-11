@@ -1,8 +1,6 @@
 -- AgentKit Desktop Database Schema
 -- SQLite 3
-
--- Enable foreign keys
-PRAGMA foreign_keys = ON;
+-- NOTE: PRAGMA foreign_keys is set per-connection in Database::new()
 
 -- Resources table
 CREATE TABLE IF NOT EXISTS resources (
@@ -121,12 +119,32 @@ CREATE INDEX IF NOT EXISTS idx_resources_name ON resources(name);
 CREATE INDEX IF NOT EXISTS idx_resource_platform_status_status ON resource_platform_status(status);
 CREATE INDEX IF NOT EXISTS idx_resource_tags_tag ON resource_tags(tag_id);
 
--- Trigger to update updated_at on resources
+-- Trigger to auto-update `updated_at` on resource modifications.
+--
+-- Behavior notes:
+--   • Fires on UPDATE to the `resources` table, excluding updates that ONLY
+--     touch the `updated_at` column itself (prevents recursive trigger firing).
+--   • `INSERT OR REPLACE` does NOT fire this trigger because REPLACE is
+--     DELETE + INSERT, not an UPDATE. The DEFAULT value on `updated_at` handles
+--     new inserts; for REPLACE the column resets to `datetime('now')` via DEFAULT.
+--   • Batch UPDATEs will fire the trigger once per row — this is acceptable
+--     for the expected data volume (hundreds of resources, not millions).
+--   • SQLite's `recursive_triggers` PRAGMA is OFF by default, so even without
+--     the WHEN guard the trigger would not recurse. The guard is added for
+--     defensive correctness in case recursive_triggers is enabled.
 CREATE TRIGGER IF NOT EXISTS update_resources_timestamp
 AFTER UPDATE ON resources
 FOR EACH ROW
+WHEN OLD.name != NEW.name
+  OR OLD.type != NEW.type
+  OR OLD.description IS NOT NEW.description
+  OR OLD.source_type != NEW.source_type
+  OR OLD.source_path IS NOT NEW.source_path
+  OR OLD.source_url IS NOT NEW.source_url
+  OR OLD.source_branch IS NOT NEW.source_branch
+  OR OLD.source_package IS NOT NEW.source_package
 BEGIN
-    UPDATE resources SET updated_at = datetime('now') WHERE id = OLD.id;
+    UPDATE resources SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
 
 -- ============================================

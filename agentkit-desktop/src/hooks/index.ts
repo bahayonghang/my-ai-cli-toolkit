@@ -3,3 +3,5 @@
  */
 
 export { useToast } from "./useToast";
+export { useResourceFilters } from "./useResourceFilters";
+export { useBatchOperations } from "./useBatchOperations";

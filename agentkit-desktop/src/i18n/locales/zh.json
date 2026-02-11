@@ -28,7 +28,9 @@
     "tags": "标签",
     "installStatus": "安装状态",
     "notInstalled": "未安装到任何平台",
-    "selectPlatforms": "选择平台"
+    "selectPlatforms": "选择平台",
+    "noMatchFilters": "没有匹配筛选条件的资源",
+    "clearFilters": "清除筛选"
   },
   "action": {
     "install": "安装",
@@ -47,6 +49,7 @@
   },
   "settings": {
     "title": "设置",
+    "pageSubtitle": "配置 SkillsLM 全局设置",
     "theme": "主题",
     "themeSystem": "跟随系统",
     "themeLight": "浅色",
@@ -123,5 +126,46 @@
     "other": "其他平台",
     "selectAll": "选择所有已检测",
     "clear": "清除"
+  },
+  "batch": {
+    "active": "批量模式",
+    "select": "批量选择",
+    "selected": "已选 {{count}} 项",
+    "selectAll": "全选",
+    "clear": "清除",
+    "installAll": "全部安装",
+    "uninstallAll": "全部卸载",
+    "confirmInstall": "确认批量安装",
+    "confirmUninstall": "确认批量卸载",
+    "confirmMessage": "确定要将 {{count}} 个资源{{action}}到 {{platforms}} 吗？"
+  },
+  "filter": {
+    "title": "筛选",
+    "categories": "分类",
+    "tags": "标签",
+    "searchTags": "搜索标签...",
+    "noTagsMatch": "没有匹配 \"{{query}}\" 的标签",
+    "showingTags": "显示 20 / {{total}} 个标签。使用搜索查找更多。",
+    "clearAll": "清除所有筛选",
+    "noFilters": "无可用分类或标签",
+    "activeFilters": "当前筛选：",
+    "clearAllLink": "清除全部",
+    "showing": "显示 {{filtered}} / {{total}} {{type}}"
+  },
+  "toolStatus": {
+    "title": "工具状态",
+    "subtitle": "检测已安装的 AI 编程工具",
+    "refreshStatus": "刷新状态",
+    "installed": "已安装",
+    "notInstalled": "未安装"
+  },
+  "about": {
+    "title": "关于 AgentKit",
+    "subtitle": "桌面管理器",
+    "appName": "应用名称",
+    "appNameValue": "AgentKit Desktop",
+    "version": "版本",
+    "description": "描述",
+    "author": "作者"
   }
 }

@@ -1,17 +1,19 @@
+import { useTranslation } from "react-i18next";
 import { usePlatformStore } from "@/stores";
 import { PLATFORM_DISPLAY_NAMES } from "@/types";
 import { motion } from "framer-motion";
 import { Check, RefreshCw, X } from "lucide-react";
 
 export function ToolStatus() {
+    const { t } = useTranslation();
     const { platforms, loading, detectPlatforms } = usePlatformStore();
 
     return (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-lg font-bold text-white">Tool Status</h3>
-                    <p className="text-sm text-slate-400">Detect installed AI coding tools</p>
+                    <h3 className="text-lg font-bold text-white">{t('toolStatus.title')}</h3>
+                    <p className="text-sm text-slate-400">{t('toolStatus.subtitle')}</p>
                 </div>
                 <button
                     onClick={() => detectPlatforms()}
@@ -19,7 +21,7 @@ export function ToolStatus() {
                     className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-sm font-medium text-slate-300 rounded-lg transition-colors border border-white/10 disabled:opacity-50"
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-                    {loading ? "Refreshing..." : "Refresh Status"}
+                    {loading ? t('resource.refreshing') : t('toolStatus.refreshStatus')}
                 </button>
             </div>
 
@@ -47,12 +49,12 @@ export function ToolStatus() {
                                 {platform.detected ? (
                                     <>
                                         <Check className="w-3.5 h-3.5" />
-                                        Installed
+                                        {t('toolStatus.installed')}
                                     </>
                                 ) : (
                                     <>
                                         <X className="w-3.5 h-3.5" />
-                                        Not Installed
+                                        {t('toolStatus.notInstalled')}
                                     </>
                                 )}
                             </div>

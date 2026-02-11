@@ -13,6 +13,7 @@ import type {
   InstallResult,
   CacheStats,
 } from "@/types";
+import { showErrorToast } from "@/utils/errorUtils";
 
 interface MarketplaceState {
   // Data
@@ -21,7 +22,10 @@ interface MarketplaceState {
   cacheStats: CacheStats | null;
 
   // UI State
+  /** Derived from _loadingCount — true when any async fetch is in flight */
   loading: boolean;
+  /** @internal tracks concurrent async operations */
+  _loadingCount: number;
   installing: string | null; // skill id being installed
   error: string | null;
 
@@ -52,12 +56,25 @@ interface MarketplaceState {
   clearError: () => void;
 }
 
+/** Increment loading counter */
+function startLoading(s: MarketplaceState) {
+  const count = s._loadingCount + 1;
+  return { _loadingCount: count, loading: true, error: null };
+}
+
+/** Decrement loading counter; loading is false when counter reaches 0 */
+function stopLoading(s: MarketplaceState) {
+  const count = Math.max(0, s._loadingCount - 1);
+  return { _loadingCount: count, loading: count > 0 };
+}
+
 export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   // Initial state
   skills: [],
   categories: [],
   cacheStats: null,
   loading: false,
+  _loadingCount: 0,
   installing: null,
   error: null,
   sortBy: "popular",
@@ -67,7 +84,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   nodejsVersion: null,
 
   fetchSkills: async (queryOverride?: Partial<MarketplaceQuery>) => {
-    set({ loading: true, error: null });
+    set(startLoading);
     try {
       const { sortBy, searchQuery, filters } = get();
       const searchValue = queryOverride?.search ?? (searchQuery || undefined);
@@ -85,35 +102,38 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       };
 
       const skills = await invoke<MarketplaceSkill[]>("get_marketplace_skills", { query });
-      set({ skills, loading: false });
-    } catch (error) {
-      set({ error: String(error), loading: false });
+      set(s => ({ skills, ...stopLoading(s) }));
+    } catch (err) {
+      const friendly = showErrorToast(err, "fetching marketplace");
+      set(s => ({ error: friendly.message, ...stopLoading(s) }));
     }
   },
 
   searchSkills: async (keyword: string) => {
-    set({ loading: true, error: null, searchQuery: keyword });
+    set(s => ({ ...startLoading(s), searchQuery: keyword }));
     try {
       const { filters } = get();
       const skills = await invoke<MarketplaceSkill[]>("search_marketplace", {
         keyword,
         filters,
       });
-      set({ skills, loading: false });
-    } catch (error) {
-      set({ error: String(error), loading: false });
+      set(s => ({ skills, ...stopLoading(s) }));
+    } catch (err) {
+      const friendly = showErrorToast(err, "searching marketplace");
+      set(s => ({ error: friendly.message, ...stopLoading(s) }));
     }
   },
 
   refreshCache: async () => {
-    set({ loading: true, error: null });
+    set(startLoading);
     try {
       const skills = await invoke<MarketplaceSkill[]>("refresh_marketplace_cache");
-      set({ skills, loading: false });
+      set(s => ({ skills, ...stopLoading(s) }));
       // Also refresh cache stats
       await get().fetchCacheStats();
-    } catch (error) {
-      set({ error: String(error), loading: false });
+    } catch (err) {
+      const friendly = showErrorToast(err, "refreshing cache");
+      set(s => ({ error: friendly.message, ...stopLoading(s) }));
     }
   },
 
@@ -148,9 +168,10 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
       set({ installing: null });
       return result;
-    } catch (error) {
-      set({ error: String(error), installing: null });
-      throw error;
+    } catch (err) {
+      const friendly = showErrorToast(err, "installing skill");
+      set({ error: friendly.message, installing: null });
+      throw err;
     }
   },
 
@@ -176,9 +197,10 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
       set({ installing: null });
       return result;
-    } catch (error) {
-      set({ error: String(error), installing: null });
-      throw error;
+    } catch (err) {
+      const friendly = showErrorToast(err, "uninstalling skill");
+      set({ error: friendly.message, installing: null });
+      throw err;
     }
   },
 

@@ -387,6 +387,8 @@ impl ExternalSkillsManager {
 
     /// Install an external skill
     pub fn install(&self, source: &ExternalSource, name: &str) -> Result<PathBuf> {
+        crate::utils::sanitize_name(name)
+            .map_err(|e| anyhow::anyhow!("Invalid skill name: {}", e))?;
         info!(name = %name, source = ?source, "Installing external skill");
 
         // Check prerequisites first

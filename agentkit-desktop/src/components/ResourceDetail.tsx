@@ -3,10 +3,12 @@
  */
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ResourceItem, Platform, PlatformInfo } from "@/types";
 import { StatusBadge } from "./StatusBadge";
 import { PlatformSelector } from "./PlatformSelector";
 import { PLATFORM_DISPLAY_NAMES } from "@/types";
+import { getTypeIcon } from "@/utils/resourceUtils";
 
 interface ResourceDetailProps {
   resource: ResourceItem;
@@ -25,6 +27,7 @@ export function ResourceDetail({
   onUpdate,
   onClose,
 }: ResourceDetailProps) {
+  const { t } = useTranslation();
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -110,7 +113,7 @@ export function ResourceDetail({
         {resource.description && (
           <div>
             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Description
+              {t('resource.description')}
             </h3>
             <p className="text-slate-300 leading-relaxed bg-white/5 p-4 rounded-lg border border-white/5">
               {resource.description}
@@ -122,7 +125,7 @@ export function ResourceDetail({
         {resource.tags.length > 0 && (
           <div>
             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
-              Tags
+              {t('resource.tags')}
             </h3>
             <div className="flex flex-wrap gap-2">
               {resource.tags.map((tag) => (
@@ -140,7 +143,7 @@ export function ResourceDetail({
         {/* Installation Status */}
         <div>
           <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
-            Installation Status
+            {t('resource.installStatus')}
           </h3>
           {Object.keys(resource.platformStatus).length > 0 ? (
             <div className="space-y-2 bg-white/5 p-4 rounded-lg border border-white/5">
@@ -158,7 +161,7 @@ export function ResourceDetail({
             </div>
           ) : (
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Not installed on any platform
+              {t('resource.notInstalled')}
             </p>
           )}
         </div>
@@ -166,7 +169,7 @@ export function ResourceDetail({
         {/* Platform Selection */}
         <div>
           <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
-            Select Platforms
+            {t('resource.selectPlatforms')}
           </h3>
           <PlatformSelector
             platforms={platforms}
@@ -186,14 +189,14 @@ export function ResourceDetail({
             disabled={loading || selectedPlatforms.length === 0}
             className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Installing..." : "Install"}
+            {loading ? t('action.installing') : t('action.install')}
           </button>
           <button
             onClick={handleUninstall}
             disabled={loading || selectedPlatforms.length === 0}
             className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Removing..." : "Uninstall"}
+            {loading ? t('action.removing') : t('action.uninstall')}
           </button>
         </div>
         {installedPlatforms.length > 0 && (
@@ -202,7 +205,7 @@ export function ResourceDetail({
             disabled={loading}
             className="w-full px-4 py-3 bg-white/5 text-slate-300 rounded-lg font-medium hover:bg-white/10 hover:text-white border border-white/5 transition-all disabled:opacity-50"
           >
-            {loading ? "Updating..." : "Update All Installed"}
+            {loading ? t('action.updating') : t('action.updateAll')}
           </button>
         )}
       </div>
@@ -210,15 +213,4 @@ export function ResourceDetail({
   );
 }
 
-function getTypeIcon(type: string): string {
-  switch (type) {
-    case "skill":
-      return "📦";
-    case "command":
-      return "⚡";
-    case "agent":
-      return "🤖";
-    default:
-      return "📄";
-  }
-}
+

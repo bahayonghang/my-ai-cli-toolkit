@@ -2,6 +2,8 @@
  * Error Utilities - User-friendly error messages and recovery options
  */
 
+import { useToastStore } from "@/stores/toastStore";
+
 export interface UserFriendlyError {
   title: string;
   message: string;
@@ -152,4 +154,21 @@ export function formatErrorForLog(error: unknown, context?: string): string {
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+/**
+ * Convert an error to a user-friendly message and display it as a toast.
+ * Safe to call outside React components (uses getState).
+ *
+ * @param error - The raw error (Error object, string, or unknown)
+ * @param context - Optional context label (e.g. "installing skill")
+ * @returns The UserFriendlyError for further use if needed
+ */
+export function showErrorToast(error: unknown, context?: string): UserFriendlyError {
+  const friendly = toUserFriendlyError(error, context);
+  const detail = friendly.suggestion
+    ? `${friendly.message} ${friendly.suggestion}`
+    : friendly.message;
+  useToastStore.getState().error(friendly.title, detail);
+  return friendly;
 }

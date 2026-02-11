@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
 import type { Platform, SyncResult } from "@/types";
 import { usePlatformStore } from "@/stores";
@@ -49,6 +50,7 @@ const SOURCE_CONFIGS: SourceConfig[] = [
 ];
 
 export function ExternalPanel() {
+  const { t } = useTranslation();
   const [activeSource, setActiveSource] = useState<SourceType>("npm");
   const [inputValue, setInputValue] = useState("");
   const [branch, setBranch] = useState("main");
@@ -60,6 +62,9 @@ export function ExternalPanel() {
   const { platforms } = usePlatformStore();
   const detectedPlatforms = platforms.filter((p) => p.detected);
 
+  // Local form state: which detected platforms the user wants to install TO.
+  // Intentionally NOT in the platform store — this is ephemeral form selection,
+  // not global platform detection state.
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
 
   const activeConfig = SOURCE_CONFIGS.find((c) => c.type === activeSource)!;
@@ -91,12 +96,12 @@ export function ExternalPanel() {
 
   const handleInstall = async () => {
     if (!inputValue.trim()) {
-      setError("Please enter a package/repository name");
+      setError(t('external.enterPackage'));
       return;
     }
 
     if (selectedPlatforms.length === 0) {
-      setError("Please select at least one platform");
+      setError(t('external.selectPlatform'));
       return;
     }
 
@@ -144,11 +149,10 @@ export function ExternalPanel() {
       {/* Header */}
       <div>
         <h3 className="text-xl font-bold text-white mb-2 tracking-tight">
-          Install External Skills
+          {t('external.title')}
         </h3>
         <p className="text-sm text-slate-400">
-          Install skills from npm, pip, git repositories, or the Vercel skill
-          registry.
+          {t('external.subtitle')}
         </p>
       </div>
 
@@ -204,7 +208,7 @@ export function ExternalPanel() {
         {activeSource === "git" && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Branch
+              {t('external.branch')}
             </label>
             <input
               type="text"
@@ -220,13 +224,13 @@ export function ExternalPanel() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <label className="block text-sm font-bold text-slate-400 uppercase tracking-wider">
-              Target Platforms
+              {t('external.targetPlatforms')}
             </label>
             <button
               onClick={handleSelectAllDetected}
               className="text-xs text-primary-400 hover:text-primary-300 hover:underline transition-colors"
             >
-              Select all detected
+              {t('external.selectAllDetected')}
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -248,7 +252,7 @@ export function ExternalPanel() {
               ))
             ) : (
               <p className="text-sm text-slate-500">
-                No platforms detected. Please check your installation.
+                {t('external.noPlatforms')}
               </p>
             )}
           </div>
@@ -277,12 +281,12 @@ export function ExternalPanel() {
         {loading ? (
           <>
             <span className="animate-spin">⏳</span>
-            <span>Installing...</span>
+            <span>{t('action.installing')}</span>
           </>
         ) : (
           <>
             <span>📥</span>
-            <span>Install Skill</span>
+            <span>{t('external.installSkill')}</span>
           </>
         )}
       </button>
@@ -290,13 +294,13 @@ export function ExternalPanel() {
       {/* Info Section */}
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
         <h4 className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
-          💡 Tips
+          💡 {t('external.tips')}
         </h4>
         <ul className="text-sm text-blue-600 dark:text-blue-400 space-y-1 list-disc list-inside">
-          <li>npm packages should export a SKILL.md file</li>
-          <li>Git repos should have skills in the root or skills/ directory</li>
-          <li>Vercel registry skills are curated and verified</li>
-          <li>pip packages follow the same structure as npm</li>
+          <li>{t('external.tipNpm')}</li>
+          <li>{t('external.tipGit')}</li>
+          <li>{t('external.tipVercel')}</li>
+          <li>{t('external.tipPip')}</li>
         </ul>
       </div>
     </div>

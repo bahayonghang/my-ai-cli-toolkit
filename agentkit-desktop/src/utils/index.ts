@@ -3,3 +3,4 @@
  */
 
 export * from "./errorUtils";
+export * from "./resourceUtils";

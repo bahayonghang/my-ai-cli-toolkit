@@ -28,7 +28,14 @@ fn main() {
         "Source paths configured"
     );
 
-    let app_state = AppState::with_paths(skills_source, commands_source);
+    let app_state = match AppState::with_paths(skills_source, commands_source) {
+        Ok(state) => state,
+        Err(e) => {
+            tracing::error!("Failed to initialize application state: {}", e);
+            eprintln!("Fatal: Failed to initialize application state: {}", e);
+            std::process::exit(1);
+        }
+    };
 
     tracing::info!("Building Tauri application...");
 

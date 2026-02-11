@@ -29,6 +29,67 @@ pub enum ManagerError {
     Sync(#[from] SyncError),
 }
 
+/// Common install logic for syncing a local resource to multiple platforms.
+///
+/// `path_resolver` maps a platform to its target base directory (e.g., skills or commands dir).
+/// `target_name` determines the final directory/file name under the target base.
+fn install_resource(
+    resource: &ResourceItem,
+    platforms: &[Platform],
+    sync_engine: &SyncEngine,
+    path_resolver: fn(Platform) -> Option<PathBuf>,
+    target_name: &std::ffi::OsStr,
+) -> Result<Vec<SyncResult>, ManagerError> {
+    let source_path = match &resource.source {
+        ResourceSource::Local { path } => path.clone(),
+        _ => {
+            return Err(ManagerError::InvalidFormat(
+                "Only local resources can be installed".to_string(),
+            ))
+        }
+    };
+
+    let mut results = Vec::new();
+
+    for platform in platforms {
+        let target_base = match path_resolver(*platform) {
+            Some(p) => p,
+            None => {
+                results.push(SyncResult {
+                    success: false,
+                    platform: *platform,
+                    resource_id: resource.id.clone(),
+                    error: Some("Platform path not found".to_string()),
+                });
+                continue;
+            }
+        };
+
+        let target_path = target_base.join(target_name);
+
+        match sync_engine.sync(&source_path, &target_path, None) {
+            Ok(()) => {
+                results.push(SyncResult {
+                    success: true,
+                    platform: *platform,
+                    resource_id: resource.id.clone(),
+                    error: None,
+                });
+            }
+            Err(e) => {
+                results.push(SyncResult {
+                    success: false,
+                    platform: *platform,
+                    resource_id: resource.id.clone(),
+                    error: Some(e.to_string()),
+                });
+            }
+        }
+    }
+
+    Ok(results)
+}
+
 /// Skill manager for discovering and managing skills
 pub struct SkillManager {
     source_path: PathBuf,
@@ -127,54 +188,8 @@ impl SkillManager {
         platforms: &[Platform],
         sync_engine: &SyncEngine,
     ) -> Result<Vec<SyncResult>, ManagerError> {
-        let source_path = match &skill.source {
-            ResourceSource::Local { path } => path.clone(),
-            _ => {
-                return Err(ManagerError::InvalidFormat(
-                    "Only local skills can be installed".to_string(),
-                ))
-            }
-        };
-
-        let mut results = Vec::new();
-
-        for platform in platforms {
-            let target_base = match get_skills_path(*platform) {
-                Some(p) => p,
-                None => {
-                    results.push(SyncResult {
-                        success: false,
-                        platform: *platform,
-                        resource_id: skill.id.clone(),
-                        error: Some("Platform path not found".to_string()),
-                    });
-                    continue;
-                }
-            };
-
-            let target_path = target_base.join(&skill.id);
-
-            match sync_engine.sync(&source_path, &target_path, None) {
-                Ok(()) => {
-                    results.push(SyncResult {
-                        success: true,
-                        platform: *platform,
-                        resource_id: skill.id.clone(),
-                        error: None,
-                    });
-                }
-                Err(e) => {
-                    results.push(SyncResult {
-                        success: false,
-                        platform: *platform,
-                        resource_id: skill.id.clone(),
-                        error: Some(e.to_string()),
-                    });
-                }
-            }
-        }
-
-        Ok(results)
+        let target_name = std::ffi::OsStr::new(&skill.id);
+        install_resource(skill, platforms, sync_engine, get_skills_path, target_name)
     }
 
     /// Uninstall a skill from specified platforms
@@ -321,117 +336,14 @@ impl CommandManager {
             }
         };
 
-        let mut results = Vec::new();
-
-        for platform in platforms {
-            let target_base = match get_commands_path(*platform) {
-                Some(p) => p,
-                None => {
-                    results.push(SyncResult {
-                        success: false,
-                        platform: *platform,
-                        resource_id: command.id.clone(),
-                        error: Some("Platform path not found".to_string()),
-                    });
-                    continue;
-                }
-            };
-
-            // Preserve directory structure for commands
-            let file_name = source_path.file_name().unwrap_or_default();
-            let target_path = target_base.join(file_name);
-
-            match sync_engine.sync(&source_path, &target_path, None) {
-                Ok(()) => {
-                    results.push(SyncResult {
-                        success: true,
-                        platform: *platform,
-                        resource_id: command.id.clone(),
-                        error: None,
-                    });
-                }
-                Err(e) => {
-                    results.push(SyncResult {
-                        success: false,
-                        platform: *platform,
-                        resource_id: command.id.clone(),
-                        error: Some(e.to_string()),
-                    });
-                }
-            }
-        }
-
-        Ok(results)
-    }
-}
-
-/// Agent manager for discovering and managing agent configurations
-pub struct AgentManager {
-    source_path: PathBuf,
-}
-
-impl AgentManager {
-    pub fn new(source_path: PathBuf) -> Self {
-        Self { source_path }
-    }
-
-    /// Discover all agents in the source directory
-    pub fn discover(&self) -> Result<Vec<ResourceItem>, ManagerError> {
-        let mut agents = Vec::new();
-
-        if !self.source_path.exists() {
-            return Ok(agents);
-        }
-
-        for entry in fs::read_dir(&self.source_path)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            if path.is_dir() {
-                if let Some(agent) = self.parse_agent_dir(&path)? {
-                    agents.push(agent);
-                }
-            }
-        }
-
-        Ok(agents)
-    }
-
-    /// Parse an agent directory
-    fn parse_agent_dir(&self, path: &Path) -> Result<Option<ResourceItem>, ManagerError> {
-        // Look for agent configuration files
-        let config_files = ["agent.toml", "agent.json", "agent.yaml", "AGENT.md"];
-
-        let config_file = config_files
-            .iter()
-            .map(|f| path.join(f))
-            .find(|p| p.exists());
-
-        if config_file.is_none() {
-            return Ok(None);
-        }
-
-        let name = path
-            .file_name()
-            .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or_else(|| "unknown".to_string());
-
-        let id = name.clone();
-
-        Ok(Some(ResourceItem {
-            id,
-            name: name.clone(),
-            resource_type: ResourceType::Agent,
-            description: Some(format!("Agent: {}", name)),
-            source: ResourceSource::Local {
-                path: path.to_path_buf(),
-            },
-            categories: vec!["agent".to_string()],
-            tags: vec![],
-            platform_status: HashMap::new(),
-            created_at: chrono::Utc::now().to_rfc3339(),
-            updated_at: chrono::Utc::now().to_rfc3339(),
-        }))
+        let file_name = source_path.file_name().unwrap_or_default().to_os_string();
+        install_resource(
+            command,
+            platforms,
+            sync_engine,
+            get_commands_path,
+            &file_name,
+        )
     }
 }
 

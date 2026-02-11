@@ -1,58 +1,18 @@
 /**
- * useToast Hook - Toast notification state management
+ * useToast Hook - Backward-compatible wrapper around toastStore
+ *
+ * Components can continue using `useToast()` as before.
+ * State is now managed by a proper Zustand store instead of module-level variables.
  */
 
-import { useEffect, useState } from "react";
-import type { ToastMessage, ToastType } from "../components/Toast";
-
-// Toast store
-let toastId = 0;
-const listeners: Set<(toasts: ToastMessage[]) => void> = new Set();
-let toasts: ToastMessage[] = [];
-
-function notifyListeners() {
-  listeners.forEach((listener) => listener([...toasts]));
-}
+import { useToastStore } from "@/stores/toastStore";
 
 export function useToast() {
-  const [localToasts, setLocalToasts] = useState<ToastMessage[]>(toasts);
-
-  useEffect(() => {
-    listeners.add(setLocalToasts);
-    return () => {
-      listeners.delete(setLocalToasts);
-    };
-  }, []);
-
-  const addToast = (
-    type: ToastType,
-    title: string,
-    message?: string,
-    duration?: number
-  ) => {
-    const id = `toast-${++toastId}`;
-    const newToast: ToastMessage = { id, type, title, message, duration };
-    toasts = [...toasts, newToast];
-    notifyListeners();
-    return id;
-  };
-
-  const removeToast = (id: string) => {
-    toasts = toasts.filter((t) => t.id !== id);
-    notifyListeners();
-  };
-
-  const success = (title: string, message?: string) =>
-    addToast("success", title, message);
-  const error = (title: string, message?: string) =>
-    addToast("error", title, message);
-  const warning = (title: string, message?: string) =>
-    addToast("warning", title, message);
-  const info = (title: string, message?: string) =>
-    addToast("info", title, message);
+  const { toasts, addToast, removeToast, success, error, warning, info } =
+    useToastStore();
 
   return {
-    toasts: localToasts,
+    toasts,
     addToast,
     removeToast,
     success,

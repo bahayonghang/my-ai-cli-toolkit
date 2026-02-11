@@ -72,6 +72,8 @@ impl SkillInstaller {
 
     /// Install a skill using npx skills add
     pub fn install_skill(&self, owner: &str, repo: &str) -> Result<InstallResult> {
+        crate::utils::sanitize_name(owner).map_err(|e| anyhow!("Invalid owner: {}", e))?;
+        crate::utils::sanitize_name(repo).map_err(|e| anyhow!("Invalid repo: {}", e))?;
         let skill_ref = format!("{}/{}", owner, repo);
         info!(skill = %skill_ref, "Installing skill");
 

@@ -5,6 +5,8 @@
 
 use std::path::PathBuf;
 use std::process::Command;
+use thiserror::Error;
+#[cfg(target_os = "windows")]
 use tracing::{debug, warn};
 
 /// Find executable in PATH or common locations (Windows-specific fallback)
@@ -122,6 +124,42 @@ pub fn create_command(name: &str) -> Command {
     }
 }
 
+#[derive(Debug, PartialEq, Error)]
+pub enum ValidationError {
+    #[error("Name contains path traversal sequence: {0}")]
+    PathTraversal(String),
+    #[error("Name contains invalid characters: {0}")]
+    InvalidChars(String),
+    #[error("Name exceeds maximum length of {0}")]
+    TooLong(usize),
+    #[error("Name is empty")]
+    Empty,
+}
+
+/// Sanitize a resource/skill name to prevent path traversal attacks.
+/// Allows: alphanumeric, `@`, `.`, `_`, `-` (for npm scoped packages).
+pub fn sanitize_name(name: &str) -> Result<&str, ValidationError> {
+    if name.is_empty() {
+        return Err(ValidationError::Empty);
+    }
+    if name.len() > 255 {
+        return Err(ValidationError::TooLong(255));
+    }
+    if name.contains("..") || name.contains('\0') {
+        return Err(ValidationError::PathTraversal(name.to_string()));
+    }
+    if name.contains('/') || name.contains('\\') || name.starts_with('.') {
+        return Err(ValidationError::PathTraversal(name.to_string()));
+    }
+    if !name
+        .chars()
+        .all(|c| c.is_alphanumeric() || "@._-".contains(c))
+    {
+        return Err(ValidationError::InvalidChars(name.to_string()));
+    }
+    Ok(name)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -130,7 +168,6 @@ mod tests {
     fn test_find_executable_node() {
         let result = find_executable("node");
         println!("node executable: {:?}", result);
-        // Don't assert - just check it doesn't panic
     }
 
     #[test]
@@ -143,5 +180,32 @@ mod tests {
     fn test_create_command() {
         let cmd = create_command("node");
         println!("Created command for node: {:?}", cmd);
+    }
+
+    #[test]
+    fn test_sanitize_name_valid() {
+        assert_eq!(sanitize_name("my-skill"), Ok("my-skill"));
+        assert_eq!(sanitize_name("@scope_pkg"), Ok("@scope_pkg"));
+        assert_eq!(sanitize_name("skill.v2"), Ok("skill.v2"));
+    }
+
+    #[test]
+    fn test_sanitize_name_rejects_traversal() {
+        assert!(sanitize_name("..").is_err());
+        assert!(sanitize_name(".hidden").is_err());
+        assert!(sanitize_name("a/b").is_err());
+        assert!(sanitize_name("a\\b").is_err());
+    }
+
+    #[test]
+    fn test_sanitize_name_rejects_empty_and_long() {
+        assert!(sanitize_name("").is_err());
+        assert!(sanitize_name(&"a".repeat(256)).is_err());
+    }
+
+    #[test]
+    fn test_sanitize_name_rejects_invalid_chars() {
+        assert!(sanitize_name("skill name").is_err());
+        assert!(sanitize_name("skill;rm").is_err());
     }
 }

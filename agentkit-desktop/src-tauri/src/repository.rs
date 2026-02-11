@@ -5,6 +5,7 @@
 use crate::models::*;
 use rusqlite::{params, Connection, Result, Row};
 use std::collections::HashMap;
+use std::str::FromStr;
 
 /// Platform record tuple: (platform, detected, base_path, link_mode)
 pub type PlatformRecord = (Platform, bool, Option<String>, LinkMode);
@@ -64,19 +65,29 @@ impl<'a> ResourceRepository<'a> {
         }
     }
 
-    /// Insert a new resource
+    /// Insert or replace a resource (upsert)
     pub fn insert(&self, resource: &ResourceItem) -> Result<()> {
         let (source_type, source_path, source_url, source_branch, source_package) =
             self.source_to_columns(&resource.source);
 
+        // Clean up existing tags/categories before upsert (they reference by resource_id)
         self.conn.execute(
-            "INSERT INTO resources (id, name, type, description, source_type, source_path,
+            "DELETE FROM resource_tags WHERE resource_id = ?",
+            params![resource.id],
+        )?;
+        self.conn.execute(
+            "DELETE FROM resource_categories WHERE resource_id = ?",
+            params![resource.id],
+        )?;
+
+        self.conn.execute(
+            "INSERT OR REPLACE INTO resources (id, name, type, description, source_type, source_path,
                                     source_url, source_branch, source_package)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             params![
                 resource.id,
                 resource.name,
-                resource_type_to_str(&resource.resource_type),
+                resource.resource_type.to_string(),
                 resource.description,
                 source_type,
                 source_path,
@@ -111,7 +122,7 @@ impl<'a> ResourceRepository<'a> {
              WHERE id = ?",
             params![
                 resource.name,
-                resource_type_to_str(&resource.resource_type),
+                resource.resource_type.to_string(),
                 resource.description,
                 source_type,
                 source_path,
@@ -140,8 +151,8 @@ impl<'a> ResourceRepository<'a> {
         status: SyncStatus,
         target_path: Option<&str>,
     ) -> Result<()> {
-        let platform_str = platform_to_str(&platform);
-        let status_str = sync_status_to_str(&status);
+        let platform_str = platform.to_string();
+        let status_str = status.to_string();
         let synced_at = if status == SyncStatus::Synced {
             Some(chrono::Utc::now().to_rfc3339())
         } else {
@@ -172,9 +183,9 @@ impl<'a> ResourceRepository<'a> {
 
         for row in rows {
             let (platform_str, status_str) = row?;
-            if let (Some(platform), Some(status)) = (
-                str_to_platform(&platform_str),
-                str_to_sync_status(&status_str),
+            if let (Ok(platform), Ok(status)) = (
+                Platform::from_str(&platform_str),
+                SyncStatus::from_str(&status_str),
             ) {
                 status_map.insert(platform, status);
             }
@@ -265,7 +276,7 @@ impl<'a> ResourceRepository<'a> {
         let created_at: String = row.get(9)?;
         let updated_at: String = row.get(10)?;
 
-        let resource_type = str_to_resource_type(&type_str).unwrap_or(ResourceType::Skill);
+        let resource_type = ResourceType::from_str(&type_str).unwrap_or(ResourceType::Skill);
         let source = self.columns_to_source(
             &source_type,
             source_path,
@@ -364,7 +375,7 @@ impl<'a> PlatformRepository<'a> {
         detected: bool,
         base_path: Option<&str>,
     ) -> Result<()> {
-        let platform_str = platform_to_str(&platform);
+        let platform_str = platform.to_string();
         let now = chrono::Utc::now().to_rfc3339();
 
         self.conn.execute(
@@ -377,8 +388,8 @@ impl<'a> PlatformRepository<'a> {
 
     /// Update platform link mode
     pub fn update_link_mode(&self, platform: Platform, link_mode: LinkMode) -> Result<()> {
-        let platform_str = platform_to_str(&platform);
-        let mode_str = link_mode_to_str(&link_mode);
+        let platform_str = platform.to_string();
+        let mode_str = link_mode.to_string();
 
         self.conn.execute(
             "UPDATE platforms SET link_mode = ? WHERE platform = ?",
@@ -405,8 +416,8 @@ impl<'a> PlatformRepository<'a> {
         let mut result = Vec::new();
         for row in rows {
             let (platform_str, detected, base_path, link_mode_str) = row?;
-            if let Some(platform) = str_to_platform(&platform_str) {
-                let link_mode = str_to_link_mode(&link_mode_str).unwrap_or(LinkMode::Symlink);
+            if let Ok(platform) = Platform::from_str(&platform_str) {
+                let link_mode = LinkMode::from_str(&link_mode_str).unwrap_or(LinkMode::Symlink);
                 result.push((platform, detected, base_path, link_mode));
             }
         }
@@ -494,96 +505,5 @@ impl<'a> SettingsRepository<'a> {
             &serde_json::to_string(&settings.auto_detect_platforms).unwrap(),
         )?;
         Ok(())
-    }
-}
-
-// Helper functions for enum conversion
-fn resource_type_to_str(rt: &ResourceType) -> &'static str {
-    match rt {
-        ResourceType::Skill => "skill",
-        ResourceType::Command => "command",
-        ResourceType::Agent => "agent",
-    }
-}
-
-fn str_to_resource_type(s: &str) -> Option<ResourceType> {
-    match s {
-        "skill" => Some(ResourceType::Skill),
-        "command" => Some(ResourceType::Command),
-        "agent" => Some(ResourceType::Agent),
-        _ => None,
-    }
-}
-
-fn platform_to_str(p: &Platform) -> &'static str {
-    match p {
-        Platform::Claude => "claude",
-        Platform::Codex => "codex",
-        Platform::Gemini => "gemini",
-        Platform::Cursor => "cursor",
-        Platform::Windsurf => "windsurf",
-        Platform::Antigravity => "antigravity",
-        Platform::Qwen => "qwen",
-        Platform::Amp => "amp",
-        Platform::Cline => "cline",
-        Platform::Kiro => "kiro",
-        Platform::Trae => "trae",
-        Platform::OpenCode => "opencode",
-    }
-}
-
-fn str_to_platform(s: &str) -> Option<Platform> {
-    match s {
-        "claude" => Some(Platform::Claude),
-        "codex" => Some(Platform::Codex),
-        "gemini" => Some(Platform::Gemini),
-        "cursor" => Some(Platform::Cursor),
-        "windsurf" => Some(Platform::Windsurf),
-        "antigravity" => Some(Platform::Antigravity),
-        "qwen" => Some(Platform::Qwen),
-        "amp" => Some(Platform::Amp),
-        "cline" => Some(Platform::Cline),
-        "kiro" => Some(Platform::Kiro),
-        "trae" => Some(Platform::Trae),
-        "opencode" => Some(Platform::OpenCode),
-        _ => None,
-    }
-}
-
-fn sync_status_to_str(s: &SyncStatus) -> &'static str {
-    match s {
-        SyncStatus::NotInstalled => "not_installed",
-        SyncStatus::Synced => "synced",
-        SyncStatus::Outdated => "outdated",
-        SyncStatus::Conflict => "conflict",
-        SyncStatus::NotSupported => "not_supported",
-    }
-}
-
-fn str_to_sync_status(s: &str) -> Option<SyncStatus> {
-    match s {
-        "not_installed" => Some(SyncStatus::NotInstalled),
-        "synced" => Some(SyncStatus::Synced),
-        "outdated" => Some(SyncStatus::Outdated),
-        "conflict" => Some(SyncStatus::Conflict),
-        "not_supported" => Some(SyncStatus::NotSupported),
-        _ => None,
-    }
-}
-
-fn link_mode_to_str(m: &LinkMode) -> &'static str {
-    match m {
-        LinkMode::Symlink => "symlink",
-        LinkMode::Junction => "junction",
-        LinkMode::Copy => "copy",
-    }
-}
-
-fn str_to_link_mode(s: &str) -> Option<LinkMode> {
-    match s {
-        "symlink" => Some(LinkMode::Symlink),
-        "junction" => Some(LinkMode::Junction),
-        "copy" => Some(LinkMode::Copy),
-        _ => None,
     }
 }

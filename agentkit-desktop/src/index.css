@@ -2,7 +2,19 @@
 
 @layer base {
   body {
-    @apply antialiased text-slate-100 min-h-screen overflow-hidden;
+    @apply antialiased min-h-screen overflow-hidden;
+  }
+
+  /* Light mode base styles */
+  body {
+    @apply text-slate-800;
+    background-color: #f8fafc;
+    background-image: none;
+  }
+
+  /* Dark mode base styles */
+  .dark body {
+    @apply text-slate-100;
     background-color: #0f172a;
     background-image:
       radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
@@ -22,25 +34,47 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
   }
 
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
   ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
   }
 }
 
+/* Frosted glass — light mode */
 .frosted-glass {
-  @apply backdrop-blur-md bg-white/5 border border-white/10 shadow-xl;
+  @apply backdrop-blur-md bg-white/70 border border-slate-200/60 shadow-lg;
 }
 
 .frosted-glass-heavy {
-  @apply backdrop-blur-xl bg-slate-900/70 border border-white/5 shadow-2xl;
+  @apply backdrop-blur-xl bg-white/80 border border-slate-200/50 shadow-xl;
 }
 
 .frosted-glass-light {
-  @apply backdrop-blur-sm bg-white/10 border border-white/20;
+  @apply backdrop-blur-sm bg-white/50 border border-slate-200/40;
+}
+
+/* Frosted glass — dark mode */
+.dark .frosted-glass {
+  @apply bg-white/5 border-white/10 shadow-xl;
+}
+
+.dark .frosted-glass-heavy {
+  @apply bg-slate-900/70 border-white/5 shadow-2xl;
+}
+
+.dark .frosted-glass-light {
+  @apply bg-white/10 border-white/20;
 }
 
 /* Animations */
@@ -66,10 +100,3 @@
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.5s ease-out forwards;
-}

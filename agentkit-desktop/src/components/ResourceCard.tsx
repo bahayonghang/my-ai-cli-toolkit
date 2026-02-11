@@ -4,6 +4,7 @@
 
 import type { ResourceItem, Platform, SyncStatus } from "@/types";
 import { StatusBadge } from "./StatusBadge";
+import { getTypeIcon } from "@/utils/resourceUtils";
 
 interface ResourceCardProps {
   resource: ResourceItem;
@@ -90,18 +91,6 @@ export function ResourceCard({
   );
 }
 
-function getTypeIcon(type: string): string {
-  switch (type) {
-    case "skill":
-      return "📦";
-    case "command":
-      return "⚡";
-    case "agent":
-      return "🤖";
-    default:
-      return "📄";
-  }
-}
 
 function getStatusCounts(platformStatus: Record<Platform, SyncStatus>) {
   const counts = {

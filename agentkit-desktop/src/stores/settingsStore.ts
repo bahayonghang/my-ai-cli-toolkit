@@ -128,4 +128,42 @@ function applyTheme(theme: Theme, enableTransition = false) {
       root.classList.remove("theme-transition");
     }, 200);
   }
+
+  // Update system theme listener — only active when theme is "system"
+  setupSystemThemeListener(theme);
+}
+
+/** Tracks the current system theme media query listener for cleanup */
+let systemThemeCleanup: (() => void) | null = null;
+
+/**
+ * Listen for OS-level theme changes when the user has selected "system" theme.
+ * Automatically cleans up the previous listener when theme preference changes.
+ */
+function setupSystemThemeListener(theme: Theme) {
+  // Always clean up any existing listener first
+  if (systemThemeCleanup) {
+    systemThemeCleanup();
+    systemThemeCleanup = null;
+  }
+
+  // Only listen when theme is "system"
+  if (theme !== "system") return;
+
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = (e: MediaQueryListEvent) => {
+    const root = document.documentElement;
+    root.classList.add("theme-transition");
+    if (e.matches) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 200);
+  };
+
+  mediaQuery.addEventListener("change", handler);
+  systemThemeCleanup = () => mediaQuery.removeEventListener("change", handler);
 }

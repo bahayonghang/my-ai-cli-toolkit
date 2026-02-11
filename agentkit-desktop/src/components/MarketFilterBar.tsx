@@ -2,9 +2,10 @@
  * MarketFilterBar Component - Search and filter controls for marketplace
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import type { MarketplaceCategory, MarketplaceFilters } from "@/types";
+import { PLATFORM_DISPLAY_NAMES } from "@/types";
 
 interface MarketFilterBarProps {
   categories: MarketplaceCategory[];
@@ -29,16 +30,20 @@ export function MarketFilterBar({
 }: MarketFilterBarProps) {
   const { t } = useTranslation();
   const [localSearch, setLocalSearch] = useState(searchQuery);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounced search
   const handleSearchInput = useCallback(
     (value: string) => {
       setLocalSearch(value);
+      // Clear previous timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
       // Debounce the actual search
-      const timer = setTimeout(() => {
+      debounceTimerRef.current = setTimeout(() => {
         onSearchChange(value);
       }, 300);
-      return () => clearTimeout(timer);
     },
     [onSearchChange]
   );
@@ -135,9 +140,11 @@ export function MarketFilterBar({
           className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="">{t("marketplace.allPlatforms")}</option>
-          <option value="claude">Claude Code</option>
-          <option value="codex">Codex CLI</option>
-          <option value="gemini">Gemini CLI</option>
+          {Object.entries(PLATFORM_DISPLAY_NAMES).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
 
         {/* Clear filters button */}

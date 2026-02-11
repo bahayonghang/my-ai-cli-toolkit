@@ -109,11 +109,9 @@ pub struct MarketplaceClient {
 }
 
 impl MarketplaceClient {
-    /// Create a new marketplace client with browser-like configuration
-    pub fn new() -> Self {
+    /// Build default browser-like HTTP headers shared by all client constructors
+    fn build_default_headers() -> reqwest::header::HeaderMap {
         use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, ACCEPT_LANGUAGE, USER_AGENT as UA};
-
-        debug!("Creating MarketplaceClient with browser-like headers");
 
         let mut headers = HeaderMap::new();
         headers.insert(UA, HeaderValue::from_static(USER_AGENT));
@@ -125,13 +123,23 @@ impl MarketplaceClient {
             ACCEPT_LANGUAGE,
             HeaderValue::from_static("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"),
         );
+        headers
+    }
 
+    /// Build a reqwest::Client with default headers and timeout
+    fn build_client() -> reqwest::Client {
+        reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .default_headers(Self::build_default_headers())
+            .build()
+            .unwrap_or_default()
+    }
+
+    /// Create a new marketplace client with browser-like configuration
+    pub fn new() -> Self {
+        debug!("Creating MarketplaceClient with browser-like headers");
         Self {
-            client: reqwest::Client::builder()
-                .timeout(std::time::Duration::from_secs(30))
-                .default_headers(headers)
-                .build()
-                .unwrap_or_default(),
+            client: Self::build_client(),
             base_url: AGENT_SKILLS_INDEX_BASE_URL.to_string(),
         }
     }
@@ -139,27 +147,9 @@ impl MarketplaceClient {
     /// Create client with custom base URL (for testing)
     #[allow(dead_code)]
     pub fn with_base_url(base_url: String) -> Self {
-        use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, ACCEPT_LANGUAGE, USER_AGENT as UA};
-
         debug!(base_url = %base_url, "Creating MarketplaceClient with custom base URL");
-
-        let mut headers = HeaderMap::new();
-        headers.insert(UA, HeaderValue::from_static(USER_AGENT));
-        headers.insert(
-            ACCEPT,
-            HeaderValue::from_static("application/json, text/plain, */*"),
-        );
-        headers.insert(
-            ACCEPT_LANGUAGE,
-            HeaderValue::from_static("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"),
-        );
-
         Self {
-            client: reqwest::Client::builder()
-                .timeout(std::time::Duration::from_secs(30))
-                .default_headers(headers)
-                .build()
-                .unwrap_or_default(),
+            client: Self::build_client(),
             base_url,
         }
     }

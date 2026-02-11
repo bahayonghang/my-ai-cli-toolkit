@@ -7,8 +7,20 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 /// Resource type classification
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    Hash,
+    strum::Display,
+    strum::EnumString,
+)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum ResourceType {
     Skill,
     Command,
@@ -16,8 +28,11 @@ pub enum ResourceType {
 }
 
 /// Synchronization status for a resource on a specific platform
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, strum::Display, strum::EnumString,
+)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum SyncStatus {
     NotInstalled,
     Synced,
@@ -27,8 +42,20 @@ pub enum SyncStatus {
 }
 
 /// Supported AI coding tool platforms
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    Hash,
+    strum::Display,
+    strum::EnumString,
+)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "lowercase")]
 pub enum Platform {
     Claude,
     Codex,
@@ -41,6 +68,7 @@ pub enum Platform {
     Cline,
     Kiro,
     Trae,
+    #[strum(serialize = "opencode")]
     OpenCode,
 }
 
@@ -170,8 +198,20 @@ impl Platform {
 }
 
 /// Link mode for file synchronization
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    Default,
+    strum::Display,
+    strum::EnumString,
+)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum LinkMode {
     #[default]
     Symlink,

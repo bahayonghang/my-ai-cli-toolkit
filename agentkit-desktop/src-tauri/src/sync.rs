@@ -141,18 +141,7 @@ impl LinkStrategy for JunctionStrategy {
             fs::create_dir_all(parent)?;
         }
 
-        // Use junction crate or cmd /c mklink /J
-        let output = std::process::Command::new("cmd")
-            .args(["/C", "mklink", "/J"])
-            .arg(target)
-            .arg(source)
-            .output()?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-            error!(target = %target.display(), error = %stderr, "Junction creation failed");
-            return Err(SyncError::PermissionDenied(stderr));
-        }
+        junction::create(source, target).map_err(|e| SyncError::PermissionDenied(e.to_string()))?;
 
         debug!(target = %target.display(), "Junction created successfully");
         Ok(())
@@ -245,7 +234,7 @@ impl LinkStrategy for CopyStrategy {
     }
 }
 
-/// Recursively copy a directory
+/// Recursively copy a directory, logging progress for each file
 fn copy_dir_recursive(src: &Path, dst: &Path) -> io::Result<()> {
     fs::create_dir_all(dst)?;
 
@@ -257,6 +246,11 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> io::Result<()> {
         if src_path.is_dir() {
             copy_dir_recursive(&src_path, &dst_path)?;
         } else {
+            debug!(
+                src = %src_path.display(),
+                dst = %dst_path.display(),
+                "Copying file"
+            );
             fs::copy(&src_path, &dst_path)?;
         }
     }

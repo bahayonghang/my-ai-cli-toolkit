@@ -3,6 +3,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface FilterPanelProps {
   categories: string[];
@@ -23,6 +24,7 @@ export function FilterPanel({
   onTagChange,
   onClear,
 }: FilterPanelProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [tagSearch, setTagSearch] = useState("");
 
@@ -68,7 +70,7 @@ export function FilterPanel({
       >
         <div className="flex items-center gap-2">
           <span>🔽</span>
-          <span>Filters</span>
+          <span>{t('filter.title')}</span>
           {hasActiveFilters && (
             <span className="px-1.5 py-0.5 text-xs bg-primary-500 text-white rounded-full">
               {selectedCategories.size + selectedTags.size}
@@ -90,14 +92,14 @@ export function FilterPanel({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                  Categories
+                  {t('filter.categories')}
                 </h4>
                 {selectedCategories.size > 0 && (
                   <button
                     onClick={() => onCategoryChange(new Set())}
                     className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
-                    Clear
+                    {t('platformSelector.clear')}
                   </button>
                 )}
               </div>
@@ -123,14 +125,14 @@ export function FilterPanel({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Tags ({tags.length})
+                  {t('filter.tags')} ({tags.length})
                 </h4>
                 {selectedTags.size > 0 && (
                   <button
                     onClick={() => onTagChange(new Set())}
                     className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
-                    Clear
+                    {t('platformSelector.clear')}
                   </button>
                 )}
               </div>
@@ -139,7 +141,7 @@ export function FilterPanel({
               {tags.length > 10 && (
                 <input
                   type="text"
-                  placeholder="Search tags..."
+                  placeholder={t('filter.searchTags')}
                   value={tagSearch}
                   onChange={(e) => setTagSearch(e.target.value)}
                   className="w-full px-4 py-2 mb-3 text-xs bg-black/30 text-white border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 placeholder-slate-500"
@@ -170,13 +172,13 @@ export function FilterPanel({
                     </button>
                   ))}
                 {filteredTags.length === 0 && tagSearch && (
-                  <span className="text-xs text-gray-400">No tags match "{tagSearch}"</span>
+                  <span className="text-xs text-gray-400">{t('filter.noTagsMatch', { query: tagSearch })}</span>
                 )}
               </div>
 
               {tags.length > 20 && !tagSearch && (
                 <p className="text-xs text-gray-400 mt-2">
-                  Showing 20 of {tags.length} tags. Use search to find more.
+                  {t('filter.showingTags', { total: tags.length })}
                 </p>
               )}
             </div>
@@ -189,7 +191,7 @@ export function FilterPanel({
                 onClick={onClear}
                 className="w-full px-3 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               >
-                Clear All Filters
+                {t('filter.clearAll')}
               </button>
             </div>
           )}
@@ -197,7 +199,7 @@ export function FilterPanel({
           {/* No filters available */}
           {categories.length === 0 && tags.length === 0 && (
             <p className="text-xs text-gray-400 text-center py-2">
-              No categories or tags available for filtering
+              {t('filter.noFilters')}
             </p>
           )}
         </div>

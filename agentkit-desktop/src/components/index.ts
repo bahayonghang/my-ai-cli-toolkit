@@ -18,5 +18,16 @@ export * from "./ExternalPanel";
 export * from "./MarketplacePanel";
 export * from "./FilterPanel";
 
+// Navigation
+export * from "./NavItem";
+
 // Settings
 export * from "./settings/SettingsPage";
+
+// Layout
+export * from "./Sidebar";
+export * from "./ResourceListPanel";
+
+// Dialogs
+export * from "./ConfirmDialog";
+
