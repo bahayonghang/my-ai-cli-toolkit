@@ -50,6 +50,7 @@ PLATFORM_ICONS = {
     "windsurf": "🏄",
     "kiro": "🧭",
     "trae": "🧩",
+    "trae-cn": "🧩",
     "opencode": "🔓",
     "iflow": "🌊",
 }
@@ -64,6 +65,7 @@ class PlatformSelectScreen(Screen):
 
     BINDINGS = [
         Binding("escape", "quit", "Quit", show=True),
+        Binding("d", "show_dashboard", "Dashboard", show=False),
     ]
 
     PLATFORMS = [
@@ -75,6 +77,7 @@ class PlatformSelectScreen(Screen):
         PlatformDisplay("windsurf", "Windsurf", "~/.codeium/windsurf/"),
         PlatformDisplay("kiro", "Kiro", "~/.kiro/"),
         PlatformDisplay("trae", "Trae", "~/.trae/"),
+        PlatformDisplay("trae-cn", "Trae CN", "~/.trae-cn/"),
         PlatformDisplay("opencode", "OpenCode", "~/.config/opencode/"),
         PlatformDisplay("iflow", "iFlow", "~/.iflow/"),
     ]
@@ -102,7 +105,7 @@ class PlatformSelectScreen(Screen):
         # Footer hint
         with Vertical(id="footer-area"):
             with Horizontal(id="footer-row"):
-                yield Static("↑↓ Navigate  ⏎ Select  ⎋ Quit", id="hint")
+                yield Static("↑↓ Navigate  ⏎ Select  d Dashboard  ⎋ Quit", id="hint")
                 yield Static(_APP_VERSION, id="version")
 
     def _format_option(self, platform: PlatformDisplay) -> str:
@@ -132,3 +135,9 @@ class PlatformSelectScreen(Screen):
 
     def action_quit(self) -> None:
         self.app.exit()
+
+    def action_show_dashboard(self) -> None:
+        """Show all-platforms installation overview."""
+        from .dashboard_screen import DashboardScreen
+
+        self.app.push_screen(DashboardScreen())

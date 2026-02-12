@@ -22,11 +22,16 @@ logger = logging.getLogger(__name__)
 DEFAULT_CATEGORY = "general"
 
 from ..components.category_sidebar import CategorySidebar
+from ..components.confirm_modal import ConfirmModal
 from ..components.detail_modal import DetailModal
+from ..components.diff_modal import DiffModal
 from ..components.footer import Footer
 from ..components.header import Header
 from ..components.install_modal import InstallConfig, InstallModal
 from ..components.item_list import ItemListView
+from ..components.multi_platform_modal import MultiPlatformModal
+from ..components.platform_config_modal import PlatformConfigModal
+from ..components.prompt_modal import PromptModal
 from ..core.manager import TUIManager
 from ..core.models import InstallStatus
 
@@ -52,6 +57,17 @@ class MainScreen(Screen):
         Binding("k", "cursor_up", "k Up", show=False),
         Binding("down", "cursor_down", "↓ Down", show=False),
         Binding("up", "cursor_up", "↑ Up", show=False),
+        # P0: Uninstall, Update, Prompt
+        Binding("u", "uninstall_focused", "u Uninstall", show=False),
+        Binding("x", "uninstall_selected", "x Uninstall Sel", show=False),
+        Binding("U", "update_outdated", "U Update", show=False),
+        Binding("p", "prompt_manage", "p Prompt", show=False),
+        # P1: Status filter, Multi-sync
+        Binding("s", "cycle_status_filter", "s Filter", show=False),
+        Binding("S", "multi_sync", "S Sync", show=False),
+        # P2: Platform config, Diff
+        Binding("P", "show_platform_config", "P Config", show=False),
+        Binding("D", "show_diff", "D Diff", show=False),
     ]
 
     def __init__(self, platform: str = "claude") -> None:
@@ -60,6 +76,7 @@ class MainScreen(Screen):
         self._manager: TUIManager | None = None
         self._search_visible = False
         self._installing = False
+        self._status_filter_index = 0  # P1: Cycle through status filters
 
     @property
     def manager(self) -> TUIManager:
@@ -465,7 +482,7 @@ class MainScreen(Screen):
             self._on_batch_install_error()
 
     def _on_batch_install_complete(self, result: dict) -> None:
-        """Batch install finished callback."""
+        """Batch install/uninstall finished callback."""
         self._installing = False
 
         # Hide progress bar
@@ -479,7 +496,8 @@ class MainScreen(Screen):
 
         success = result.get("success", 0)
         total = result.get("total", 0)
-        self._show_message(f"Installed {success}/{total} items", "success")
+        operation = result.get("operation", "Installed")
+        self._show_message(f"{operation} {success}/{total} items", "success")
 
     def _on_batch_install_error(self) -> None:
         """Batch install error callback."""
@@ -522,3 +540,328 @@ class MainScreen(Screen):
 
     def on_item_list_view_selection_count_changed(self, event: ItemListView.SelectionCountChanged) -> None:
         self.query_one(Footer).update_selection_count(event.count)
+
+    # ─── P0: Uninstall Actions ───
+
+    def action_uninstall_focused(self) -> None:
+        """Uninstall the currently focused item (with confirmation)."""
+        if self._installing:
+            self._show_message("Operation in progress...", "warning")
+            return
+
+        active_list = self._get_active_list()
+        focused = active_list.get_focused_item()
+
+        if focused is None:
+            self._show_message("No item focused", "warning")
+            return
+
+        if not focused.installed:
+            self._show_message(f"{focused.item_name} is not installed", "warning")
+            return
+
+        self.app.push_screen(
+            ConfirmModal(
+                title="Uninstall",
+                message=f"Uninstall {focused.item_name}?",
+                items=[focused.item_name],
+                confirm_label="Uninstall",
+                danger=True,
+            ),
+            callback=lambda confirmed: self._on_uninstall_confirmed(confirmed, [focused.item_name]),
+        )
+
+    def action_uninstall_selected(self) -> None:
+        """Uninstall all selected items (with confirmation)."""
+        if self._installing:
+            self._show_message("Operation in progress...", "warning")
+            return
+
+        active_list = self._get_active_list()
+        selected = active_list.get_selected_items()
+
+        # Filter to only installed items
+        installed_selected = [item for item in selected if item.installed]
+
+        if not installed_selected:
+            self._show_message("No installed items selected", "warning")
+            return
+
+        names = [item.item_name for item in installed_selected]
+        self.app.push_screen(
+            ConfirmModal(
+                title="Batch Uninstall",
+                message=f"Uninstall {len(names)} items?",
+                items=names,
+                confirm_label="Uninstall All",
+                danger=True,
+            ),
+            callback=lambda confirmed: self._on_uninstall_confirmed(confirmed, names),
+        )
+
+    def _on_uninstall_confirmed(self, confirmed: bool | None, names: list[str]) -> None:
+        """Handle uninstall confirmation result."""
+        if not confirmed:
+            return
+
+        if len(names) == 1:
+            self._do_single_uninstall(names[0])
+        else:
+            self._do_batch_uninstall(names)
+
+    def _do_single_uninstall(self, item_name: str) -> None:
+        """Uninstall a single item synchronously."""
+        active_list = self._get_active_list()
+        is_skill = active_list.item_type == "skills"
+
+        self._show_message(f"Uninstalling {item_name}...", "info")
+
+        if is_skill:
+            result = self.manager.uninstall_skill(item_name)
+        else:
+            result = self.manager.uninstall_command(item_name)
+
+        if result.success:
+            for item in active_list.items:
+                if item.item_name == item_name:
+                    item.update_install_status(InstallStatus.NOT_INSTALLED)
+                    break
+            self._show_message(f"Uninstalled {item_name}", "success")
+            self._update_installed_count()
+        else:
+            self._show_message(result.message, "error")
+
+    def _do_batch_uninstall(self, item_names: list[str]) -> None:
+        """Start batch uninstall with progress bar."""
+        self._installing = True
+        total = len(item_names)
+
+        # Show progress bar
+        progress_container = self.query_one("#progress-container")
+        progress_container.remove_class("-hidden")
+
+        progress_bar = self.query_one("#progress-bar", ProgressBar)
+        progress_bar.update(total=total, progress=0)
+
+        self.query_one("#progress-count", Static).update(f"0/{total}")
+        self.query_one("#progress-label", Static).update("Uninstalling...")
+
+        active_list = self._get_active_list()
+        is_skill = active_list.item_type == "skills"
+
+        self._batch_worker = self._run_batch_uninstall(item_names, is_skill)
+
+    @work(exclusive=True, thread=True)
+    def _run_batch_uninstall(self, item_names: list[str], is_skill: bool) -> dict:
+        """Execute batch uninstall in background thread."""
+        total = len(item_names)
+        success_count = 0
+
+        for i, name in enumerate(item_names):
+            if is_skill:
+                result = self.manager.uninstall_skill(name)
+            else:
+                result = self.manager.uninstall_command(name)
+
+            if result.success:
+                success_count += 1
+
+            self.app.call_from_thread(
+                self._update_uninstall_progress,
+                i + 1,
+                total,
+                name,
+                result.success,
+            )
+
+        return {"success": success_count, "total": total, "operation": "Uninstalled"}
+
+    def _update_uninstall_progress(
+        self,
+        current: int,
+        total: int,
+        item_name: str,
+        success: bool,
+    ) -> None:
+        """Update uninstall progress (called from main thread)."""
+        try:
+            self.query_one("#progress-bar", ProgressBar).update(progress=current)
+            self.query_one("#progress-count", Static).update(f"{current}/{total}")
+
+            icon = "✓" if success else "✗"
+            self.query_one("#progress-label", Static).update(f"{icon} {item_name}")
+
+            # Update list item status
+            if success:
+                active_list = self._get_active_list()
+                for item in active_list.items:
+                    if item.item_name == item_name:
+                        item.update_install_status(InstallStatus.NOT_INSTALLED)
+                        break
+        except NoMatches:
+            logger.debug("Progress widget not found during update")
+
+    # ─── P0: Update Outdated ───
+
+    def action_update_outdated(self) -> None:
+        """Update all outdated items (reinstall from source)."""
+        if self._installing:
+            self._show_message("Operation in progress...", "warning")
+            return
+
+        active_list = self._get_active_list()
+        outdated = [item for item in active_list.items if item.needs_update]
+
+        if not outdated:
+            self._show_message("All items are up to date", "info")
+            return
+
+        names = [item.item_name for item in outdated]
+        self.app.push_screen(
+            ConfirmModal(
+                title="Update Outdated",
+                message=f"Update {len(names)} outdated items?",
+                items=names,
+                confirm_label="Update All",
+                danger=False,
+            ),
+            callback=lambda confirmed: self._on_update_confirmed(confirmed, names),
+        )
+
+    def _on_update_confirmed(self, confirmed: bool | None, names: list[str]) -> None:
+        """Handle update confirmation — reuses batch install."""
+        if not confirmed:
+            return
+        # Update = reinstall, reuse existing batch install logic
+        self._do_batch_install(names, self.manager)
+
+    # ─── P0: Prompt Management ───
+
+    def action_prompt_manage(self) -> None:
+        """Open prompt management modal (claude only)."""
+        if not self.manager.supports_prompt():
+            self._show_message("Prompt management only available for Claude", "warning")
+            return
+
+        has_diff, diff_text = self.manager.prompt_diff()
+        self.app.push_screen(
+            PromptModal(has_diff=has_diff, diff_text=diff_text),
+            callback=self._on_prompt_result,
+        )
+
+    def _on_prompt_result(self, result: bool | None) -> None:
+        """Handle prompt modal result."""
+        if result is True:
+            update_result = self.manager.prompt_update()
+            if update_result.success:
+                self._show_message("Global CLAUDE.md updated", "success")
+            else:
+                self._show_message(update_result.message, "error")
+
+    # ─── P1: Status Filter ───
+
+    _STATUS_CYCLE = [None, InstallStatus.INSTALLED, InstallStatus.OUTDATED, InstallStatus.NOT_INSTALLED]
+    _STATUS_LABELS = ["All", "Installed", "Outdated", "Not Installed"]
+
+    def action_cycle_status_filter(self) -> None:
+        """Cycle through status filters: All -> Installed -> Outdated -> Not Installed -> All."""
+        self._status_filter_index = (self._status_filter_index + 1) % len(self._STATUS_CYCLE)
+        status = self._STATUS_CYCLE[self._status_filter_index]
+        label = self._STATUS_LABELS[self._status_filter_index]
+
+        active_list = self._get_active_list()
+        active_list.filter_by_status(status)
+        self._show_message(f"Filter: {label}", "info")
+
+    # ─── P1: Multi-Platform Sync ───
+
+    def action_multi_sync(self) -> None:
+        """Open multi-platform sync modal."""
+        self.app.push_screen(
+            MultiPlatformModal(),
+            callback=self._on_multi_sync,
+        )
+
+    def _on_multi_sync(self, platforms: list[str] | None) -> None:
+        """Handle multi-platform sync result."""
+        if not platforms:
+            return
+
+        self._installing = True
+        total_platforms = len(platforms)
+
+        # Show progress bar
+        progress_container = self.query_one("#progress-container")
+        progress_container.remove_class("-hidden")
+
+        progress_bar = self.query_one("#progress-bar", ProgressBar)
+        progress_bar.update(total=total_platforms, progress=0)
+
+        self.query_one("#progress-count", Static).update(f"0/{total_platforms}")
+        self.query_one("#progress-label", Static).update("Syncing platforms...")
+
+        self._batch_worker = self._run_multi_sync(platforms)
+
+    @work(exclusive=True, thread=True)
+    def _run_multi_sync(self, platforms: list[str]) -> dict:
+        """Execute multi-platform sync in background thread."""
+        total = len(platforms)
+        success_count = 0
+
+        for i, platform_id in enumerate(platforms):
+            try:
+                mgr = TUIManager(platform_id)
+                mgr.install_all_skills()
+                mgr.install_all_commands()
+                success_count += 1
+                success = True
+            except Exception:
+                success = False
+
+            self.app.call_from_thread(
+                self._update_sync_progress,
+                i + 1,
+                total,
+                platform_id,
+                success,
+            )
+
+        return {"success": success_count, "total": total, "operation": "Synced"}
+
+    def _update_sync_progress(
+        self,
+        current: int,
+        total: int,
+        platform_id: str,
+        success: bool,
+    ) -> None:
+        """Update sync progress (called from main thread)."""
+        try:
+            self.query_one("#progress-bar", ProgressBar).update(progress=current)
+            self.query_one("#progress-count", Static).update(f"{current}/{total}")
+
+            icon = "✓" if success else "✗"
+            self.query_one("#progress-label", Static).update(f"{icon} {platform_id}")
+        except NoMatches:
+            logger.debug("Progress widget not found during update")
+
+    # ─── P2: Platform Config ───
+
+    def action_show_platform_config(self) -> None:
+        """Show platform configuration modal."""
+        self.app.push_screen(PlatformConfigModal(platform=self._platform))
+
+    # ─── P2: Diff Viewer ───
+
+    def action_show_diff(self) -> None:
+        """Show diff for the currently focused item."""
+        focused = self._get_active_list().get_focused_item()
+        if focused is None:
+            self._show_message("No item focused", "warning")
+            return
+
+        if not focused.installed:
+            self._show_message(f"{focused.item_name} is not installed", "warning")
+            return
+
+        self.app.push_screen(DiffModal(focused.item_info))

@@ -43,13 +43,17 @@ class Footer(Static):
     }
     """
 
-    # 快捷键定义 (key, description)
+    # Key bindings display (key, description)
     KEYS = [
         ("Tab", "Switch"),
         ("↑↓/jk", "Select"),
         ("Space", "Toggle"),
         ("a", "All"),
         ("i", "Install"),
+        ("u", "Uninstall"),
+        ("U", "Update"),
+        ("p", "Prompt"),
+        ("s", "Filter"),
         ("Esc", "Back"),
         ("q", "Quit"),
     ]

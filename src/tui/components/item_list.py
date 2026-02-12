@@ -281,6 +281,7 @@ class ItemListView(ListView):
         self._all_items: list[SelectableItem] = []
         self._filter_text: str = ""
         self._filter_category: str | None = None
+        self._filter_status: InstallStatus | None = None  # P1: Status filter
         self._last_highlighted: SelectableItem | None = None
         self._filter_apply_scheduled = False
 
@@ -339,6 +340,7 @@ class ItemListView(ListView):
     def clear_filter(self) -> None:
         self._filter_text = ""
         self._filter_category = None
+        self._filter_status = None
         self._schedule_filter_apply()
 
     def filter_by_category(self, category: str | None) -> None:
@@ -348,6 +350,15 @@ class ItemListView(ListView):
             category: Category to filter by, or None for all items
         """
         self._filter_category = category
+        self._schedule_filter_apply()
+
+    def filter_by_status(self, status: InstallStatus | None) -> None:
+        """Filter items by installation status.
+
+        Args:
+            status: Status to filter by, or None for all items
+        """
+        self._filter_status = status
         self._schedule_filter_apply()
 
     def _schedule_filter_apply(self) -> None:
@@ -387,6 +398,18 @@ class ItemListView(ListView):
         Returns:
             True if item matches all active filters
         """
+        # Check status filter (P1)
+        if self._filter_status is not None:
+            if self._filter_status == InstallStatus.INSTALLED:
+                if not item.installed:
+                    return False
+            elif self._filter_status == InstallStatus.OUTDATED:
+                if not item.needs_update:
+                    return False
+            elif self._filter_status == InstallStatus.NOT_INSTALLED:
+                if item.installed:
+                    return False
+
         # Check category filter
         if self._filter_category is not None:
             item_category = item.item_info.category
@@ -401,7 +424,7 @@ class ItemListView(ListView):
         return True
 
     def _get_visible_items(self) -> list[SelectableItem]:
-        if not self._filter_text and self._filter_category is None:
+        if not self._filter_text and self._filter_category is None and self._filter_status is None:
             return self._all_items
         return [item for item in self._all_items if self._matches_filter(item)]
 

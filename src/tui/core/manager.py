@@ -12,7 +12,7 @@ from pathlib import Path
 
 # No more sys.path hack needed - pythonpath=["src"] handles module resolution
 from core.config_loader import get_commands_source_dir
-from core.paths import COMMANDS_SRC_DIR, SKILLS_SRC_DIR
+from core.paths import COMMANDS_SRC_DIR, PROMPTS_SRC_DIR, SKILLS_SRC_DIR
 from core.skill_meta import parse_skill_frontmatter
 from install import SkillManager
 
@@ -383,3 +383,291 @@ class TUIManager:
                 callback(cmd.name, result.success)
 
         return success_count, fail_count, failures
+
+    # ─── Uninstall Operations ───
+
+    def uninstall_skill(self, name: str) -> InstallResult:
+        """Uninstall a single skill.
+
+        Args:
+            name: Skill name
+
+        Returns:
+            Uninstall result
+        """
+        import shutil
+
+        target_path = self._manager.target_skills_dir / name
+
+        if not target_path.exists():
+            return InstallResult(
+                success=False,
+                item_name=name,
+                message=f"Skill not installed: {name}",
+                error=f"Target directory does not exist: {target_path}",
+            )
+
+        try:
+            shutil.rmtree(target_path)
+            return InstallResult(
+                success=True,
+                item_name=name,
+                message=f"Successfully uninstalled {name}",
+            )
+        except PermissionError as e:
+            return InstallResult(
+                success=False,
+                item_name=name,
+                message=f"Permission denied: {name}",
+                error=str(e),
+            )
+        except Exception as e:
+            return InstallResult(
+                success=False,
+                item_name=name,
+                message=f"Failed to uninstall {name}",
+                error=str(e),
+            )
+
+    def uninstall_command(self, name: str) -> InstallResult:
+        """Uninstall a single command.
+
+        Args:
+            name: Command name (may include path like "zcf/git-commit")
+
+        Returns:
+            Uninstall result
+        """
+        target_dir = self._manager.target_commands_dir
+        name_path = Path(name.replace("/", os.sep))
+
+        # Find target file matching the command name
+        target_file = None
+        if target_dir.exists():
+            for f in target_dir.rglob("*"):
+                if f.is_file():
+                    rel_path = f.relative_to(target_dir)
+                    if rel_path.with_suffix("") == name_path:
+                        target_file = f
+                        break
+
+        if target_file is None:
+            return InstallResult(
+                success=False,
+                item_name=name,
+                message=f"Command not installed: {name}",
+                error=f"No installed file matching '{name}' in {target_dir}",
+            )
+
+        try:
+            target_file.unlink()
+
+            # Clean empty parent directories up to target_commands_dir
+            parent = target_file.parent
+            while parent != target_dir and parent.exists():
+                try:
+                    parent.rmdir()  # Only removes if empty
+                    parent = parent.parent
+                except OSError:
+                    break  # Directory not empty, stop
+
+            return InstallResult(
+                success=True,
+                item_name=name,
+                message=f"Successfully uninstalled {name}",
+            )
+        except PermissionError as e:
+            return InstallResult(
+                success=False,
+                item_name=name,
+                message=f"Permission denied: {name}",
+                error=str(e),
+            )
+        except Exception as e:
+            return InstallResult(
+                success=False,
+                item_name=name,
+                message=f"Failed to uninstall {name}",
+                error=str(e),
+            )
+
+    # ─── Prompt Operations ───
+
+    def supports_prompt(self) -> bool:
+        """Check if current platform supports prompt management.
+
+        Returns:
+            True if platform is claude
+        """
+        return self.platform == "claude"
+
+    def prompt_update(self) -> InstallResult:
+        """Update global CLAUDE.md from local source.
+
+        Returns:
+            Update result
+        """
+        if not self.supports_prompt():
+            return InstallResult(
+                success=False,
+                item_name="CLAUDE.md",
+                message="Prompt management only available for Claude platform",
+                error=f"Current platform: {self.platform}",
+            )
+
+        try:
+            self._manager.prompt_update()
+            return InstallResult(
+                success=True,
+                item_name="CLAUDE.md",
+                message="Global CLAUDE.md updated successfully",
+            )
+        except Exception as e:
+            return InstallResult(
+                success=False,
+                item_name="CLAUDE.md",
+                message="Failed to update CLAUDE.md",
+                error=str(e),
+            )
+
+    def prompt_diff(self) -> tuple[bool, str]:
+        """Get diff between local and global CLAUDE.md.
+
+        Returns:
+            (has_diff, diff_text) tuple
+        """
+        import difflib
+
+        local_md = PROMPTS_SRC_DIR / "CLAUDE.md"
+        global_md = self._manager.config.get("prompt")
+
+        if not local_md.exists():
+            return False, "Local CLAUDE.md not found"
+
+        if global_md is None or not Path(global_md).exists():
+            return True, "Global CLAUDE.md does not exist (will be created)"
+
+        global_path = Path(global_md)
+
+        try:
+            local_lines = local_md.read_text(encoding="utf-8").splitlines(keepends=True)
+            global_lines = global_path.read_text(encoding="utf-8").splitlines(keepends=True)
+
+            diff = list(
+                difflib.unified_diff(
+                    global_lines,
+                    local_lines,
+                    fromfile="Global CLAUDE.md",
+                    tofile="Local CLAUDE.md",
+                )
+            )
+
+            if not diff:
+                return False, ""
+
+            return True, "".join(diff)
+        except Exception as e:
+            return False, f"Error reading files: {e}"
+
+    # ─── Backup/Restore Operations ───
+
+    def backup_platform(self) -> InstallResult:
+        """Backup current platform installation.
+
+        Returns:
+            Backup result
+        """
+        import shutil
+
+        base_dir = self._manager.target_skills_dir.parent
+
+        if not base_dir.exists():
+            return InstallResult(
+                success=False,
+                item_name=self.platform,
+                message=f"Platform directory not found: {base_dir}",
+                error="Nothing to backup",
+            )
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_dir = base_dir / f"backup_{timestamp}"
+
+        try:
+            shutil.copytree(base_dir, backup_dir, dirs_exist_ok=False)
+            return InstallResult(
+                success=True,
+                item_name=self.platform,
+                message=f"Backup created: {backup_dir.name}",
+            )
+        except Exception as e:
+            return InstallResult(
+                success=False,
+                item_name=self.platform,
+                message="Backup failed",
+                error=str(e),
+            )
+
+    def list_backups(self) -> list[Path]:
+        """List available backups.
+
+        Returns:
+            Sorted list of backup directories (newest first)
+        """
+        base_dir = self._manager.target_skills_dir.parent
+
+        if not base_dir.exists():
+            return []
+
+        backups = sorted(
+            [d for d in base_dir.iterdir() if d.is_dir() and d.name.startswith("backup_")],
+            reverse=True,
+        )
+        return backups
+
+    def restore_backup(self, backup_path: Path) -> InstallResult:
+        """Restore platform from backup.
+
+        Args:
+            backup_path: Path to backup directory
+
+        Returns:
+            Restore result
+        """
+        import shutil
+
+        if not backup_path.exists():
+            return InstallResult(
+                success=False,
+                item_name=self.platform,
+                message="Backup not found",
+                error=str(backup_path),
+            )
+
+        try:
+            # Remove current installation
+            if self._manager.target_skills_dir.exists():
+                shutil.rmtree(self._manager.target_skills_dir)
+            if self._manager.target_commands_dir.exists():
+                shutil.rmtree(self._manager.target_commands_dir)
+
+            # Copy backup contents
+            base_dir = self._manager.target_skills_dir.parent
+            for child in backup_path.iterdir():
+                target = base_dir / child.name
+                if child.is_dir():
+                    shutil.copytree(child, target, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(child, target)
+
+            return InstallResult(
+                success=True,
+                item_name=self.platform,
+                message=f"Restored from {backup_path.name}",
+            )
+        except Exception as e:
+            return InstallResult(
+                success=False,
+                item_name=self.platform,
+                message="Restore failed",
+                error=str(e),
+            )
