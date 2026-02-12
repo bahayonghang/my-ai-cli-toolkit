@@ -37,12 +37,12 @@ describe("StatusBadge", () => {
   it("applies correct styling for synced status", () => {
     const { container } = render(<StatusBadge status="synced" />);
     const badge = container.firstChild;
-    expect(badge).toHaveClass("bg-green-100");
+    expect(badge).toHaveClass("bg-green-500/20");
   });
 
   it("applies correct styling for outdated status", () => {
     const { container } = render(<StatusBadge status="outdated" />);
     const badge = container.firstChild;
-    expect(badge).toHaveClass("bg-yellow-100");
+    expect(badge).toHaveClass("bg-yellow-500/20");
   });
 });

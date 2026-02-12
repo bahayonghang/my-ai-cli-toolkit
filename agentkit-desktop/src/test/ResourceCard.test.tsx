@@ -79,7 +79,7 @@ describe("ResourceCard", () => {
   it("applies selected styling when selected", () => {
     const { container } = render(<ResourceCard resource={mockResource} selected />);
     const card = container.firstChild;
-    expect(card).toHaveClass("border-primary-500");
+    expect(card).toHaveClass("border-primary-500/50");
   });
 
   it("shows checkbox when showCheckbox is true", () => {
