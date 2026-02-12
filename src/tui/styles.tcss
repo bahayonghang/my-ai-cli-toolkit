@@ -360,11 +360,11 @@ InstallModal {
 }
 
 #install-dialog {
-    width: 76;
+    width: 90;
     max-height: 85%;
     background: $surface;
     border: round $primary;
-    padding: 1 2;
+    padding: 2 4;
 }
 
 #dialog-title {
@@ -372,7 +372,7 @@ InstallModal {
     text-style: bold;
     color: $primary;
     width: 100%;
-    padding: 1 0;
+    padding: 1 0 2 0;
 }
 
 #dialog-sep {
@@ -385,7 +385,7 @@ InstallModal {
 #mode-section {
     height: auto;
     padding: 0 0;
-    margin: 1 0 0 0;
+    margin: 2 0 0 0;
 }
 
 #mode-label {
@@ -438,7 +438,7 @@ InstallModal {
 #items-section {
     height: auto;
     padding: 0 0;
-    margin: 1 0 0 0;
+    margin: 2 0 0 0;
 }
 
 #items-label {
@@ -459,7 +459,7 @@ InstallModal {
 
 #dialog-buttons {
     align: center middle;
-    padding: 1 0 0 0;
+    padding: 2 0 0 0;
     height: auto;
 }
 
