@@ -129,3 +129,12 @@ uipro init --ai trae        # Trae   # All assistants
 
 /plugin install planning-with-files@planning-with-files
 ```
+
+## superpowers  optimized
+
+```shell
+/plugin marketplace add FradSer/dotclaude
+
+/plugin install superpowers@frad-dotclaude
+```
+
