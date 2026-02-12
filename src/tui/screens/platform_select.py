@@ -51,7 +51,7 @@ PLATFORM_ICONS = {
     "kiro": "🧭",
     "trae": "🧩",
     "trae-cn": "🧩",
-    "opencode": "🔓",
+    "opencode": "👾",
     "iflow": "🌊",
 }
 

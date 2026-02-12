@@ -74,6 +74,7 @@ class InstallModal(ModalScreen[InstallConfig | None]):
 
     BINDINGS = [
         ("escape", "cancel", "Cancel"),
+        ("enter", "submit_install", "Install"),
     ]
 
     def __init__(
@@ -179,3 +180,7 @@ class InstallModal(ModalScreen[InstallConfig | None]):
 
     def action_cancel(self) -> None:
         self.dismiss(None)
+
+    def action_submit_install(self) -> None:
+        """Trigger install on Enter."""
+        self._do_install()

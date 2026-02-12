@@ -17,6 +17,8 @@ PLATFORM_ICONS = {
     "windsurf": "🏄",
     "kiro": "🧭",
     "trae": "🧩",
+    "trae-cn": "🧩",
+    "opencode": "👾",
     "iflow": "🌊",
 }
 
