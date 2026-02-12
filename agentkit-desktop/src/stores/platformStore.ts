@@ -40,9 +40,11 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
   detectPlatforms: async () => {
     set({ loading: true, error: null });
     try {
-      const detected = await invoke<string[]>("detect_platforms");
-      // Also refresh full platform info
-      await get().fetchPlatforms();
+      const platforms = await invoke<PlatformInfo[]>("refresh_platforms");
+      const detected = platforms
+        .filter((platform) => platform.detected)
+        .map((platform) => platform.platform);
+      set({ platforms });
       set({ loading: false });
       return detected;
     } catch (error) {

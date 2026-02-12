@@ -2,28 +2,20 @@
  * MarketFilterBar Component - Search and filter controls for marketplace
  */
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import type { MarketplaceCategory, MarketplaceFilters } from "@/types";
-import { PLATFORM_DISPLAY_NAMES } from "@/types";
 
 interface MarketFilterBarProps {
-  categories: MarketplaceCategory[];
-  filters: MarketplaceFilters;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onFiltersChange: (filters: Partial<MarketplaceFilters>) => void;
   onClearFilters: () => void;
   onRefresh: () => void;
   loading?: boolean;
 }
 
 export function MarketFilterBar({
-  categories,
-  filters,
   searchQuery,
   onSearchChange,
-  onFiltersChange,
   onClearFilters,
   onRefresh,
   loading,
@@ -31,6 +23,10 @@ export function MarketFilterBar({
   const { t } = useTranslation();
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
 
   // Debounced search
   const handleSearchInput = useCallback(
@@ -53,8 +49,15 @@ export function MarketFilterBar({
     onSearchChange(localSearch);
   };
 
-  const hasActiveFilters =
-    filters.category || filters.source || filters.platform || searchQuery;
+  const hasActiveFilters = localSearch.trim().length > 0;
+
+  const handleClear = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    setLocalSearch("");
+    onClearFilters();
+  };
 
   return (
     <div className="space-y-3">
@@ -105,52 +108,11 @@ export function MarketFilterBar({
         </button>
       </form>
 
-      {/* Filter dropdowns */}
+      {/* Actions */}
       <div className="flex flex-wrap gap-2">
-        {/* Category filter */}
-        <select
-          value={filters.category || ""}
-          onChange={(e) => onFiltersChange(e.target.value ? { category: e.target.value } : {})}
-          className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-        >
-          <option value="">{t("marketplace.allCategories")}</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name} ({cat.count})
-            </option>
-          ))}
-        </select>
-
-        {/* Source filter */}
-        <select
-          value={filters.source || ""}
-          onChange={(e) => onFiltersChange(e.target.value ? { source: e.target.value } : {})}
-          className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-        >
-          <option value="">{t("marketplace.allSources")}</option>
-          <option value="vercel-labs">Vercel Labs</option>
-          <option value="community">{t("marketplace.community")}</option>
-          <option value="official">{t("marketplace.official")}</option>
-        </select>
-
-        {/* Platform filter */}
-        <select
-          value={filters.platform || ""}
-          onChange={(e) => onFiltersChange(e.target.value ? { platform: e.target.value } : {})}
-          className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-        >
-          <option value="">{t("marketplace.allPlatforms")}</option>
-          {Object.entries(PLATFORM_DISPLAY_NAMES).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-
-        {/* Clear filters button */}
         {hasActiveFilters && (
           <button
-            onClick={onClearFilters}
+            onClick={handleClear}
             className="px-3 py-1.5 rounded-lg text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
           >
             {t("marketplace.clearFilters")}

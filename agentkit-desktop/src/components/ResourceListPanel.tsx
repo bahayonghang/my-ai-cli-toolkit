@@ -5,10 +5,11 @@
  * list is large (>50 items), falling back to plain .map() for small lists.
  */
 
-import React, { useRef } from "react";
+import React, { Suspense, lazy, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
-import { FilterPanel, ResourceCard, ExternalPanel, MarketplacePanel, SettingsPage } from "@/components";
+import { FilterPanel } from "@/components/FilterPanel";
+import { ResourceCard } from "@/components/ResourceCard";
 import type { ResourceItem, Platform } from "@/types";
 import type { TabType } from "./Sidebar";
 
@@ -16,6 +17,15 @@ import type { TabType } from "./Sidebar";
 const VIRTUALIZATION_THRESHOLD = 50;
 /** Estimated card height in px (used as initial estimate, dynamic measurement overrides) */
 const ESTIMATED_CARD_HEIGHT = 120;
+const TAB_LAZY_FALLBACK = (
+  <div className="flex items-center justify-center h-64 text-sm text-gray-500 dark:text-gray-400">
+    Loading...
+  </div>
+);
+
+const ExternalPanelLazy = lazy(async () => import("./ExternalPanel").then((module) => ({ default: module.ExternalPanel })));
+const MarketplacePanelLazy = lazy(async () => import("./MarketplacePanel").then((module) => ({ default: module.MarketplacePanel })));
+const SettingsPageLazy = lazy(async () => import("./settings/SettingsPage").then((module) => ({ default: module.SettingsPage })));
 
 interface ResourceListPanelProps {
   activeTab: TabType;
@@ -107,14 +117,16 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
                 {batch.batchMode ? "✓ " + t('batch.active') : "☐ " + t('batch.select')}
               </button>
             )}
-            <button
-              onClick={() => onRefresh()}
-              disabled={resourcesLoading}
-              className="px-4 py-2 text-sm font-medium bg-white/5 text-slate-300 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <span className={resourcesLoading ? "animate-spin" : ""}>↻</span>
-              {resourcesLoading ? t('resource.refreshing') : t('resource.refresh')}
-            </button>
+            {isResourceTab && (
+              <button
+                onClick={() => onRefresh()}
+                disabled={resourcesLoading}
+                className="px-4 py-2 text-sm font-medium bg-white/5 text-slate-300 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <span className={resourcesLoading ? "animate-spin" : ""}>↻</span>
+                {resourcesLoading ? t('resource.refreshing') : t('resource.refresh')}
+              </button>
+            )}
           </div>
         </div>
 
@@ -190,10 +202,20 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
       )}
 
       {/* Resource Grid */}
-      <div className="flex-1 overflow-y-auto p-4" ref={scrollContainerRef}>
-        {activeTab === "settings" ? <SettingsPage />
-          : activeTab === "external" ? <ExternalPanel />
-          : activeTab === "marketplace" ? <MarketplacePanel />
+      <div id="resource-list-scroll-container" className="flex-1 overflow-y-auto p-4" ref={scrollContainerRef}>
+        {activeTab === "settings" ? (
+          <Suspense fallback={TAB_LAZY_FALLBACK}>
+            <SettingsPageLazy />
+          </Suspense>
+        ) : activeTab === "external" ? (
+          <Suspense fallback={TAB_LAZY_FALLBACK}>
+            <ExternalPanelLazy />
+          </Suspense>
+        ) : activeTab === "marketplace" ? (
+          <Suspense fallback={TAB_LAZY_FALLBACK}>
+            <MarketplacePanelLazy />
+          </Suspense>
+        )
           : resourcesLoading ? (
             <div className="flex items-center justify-center h-64">
               <p className="text-gray-500 dark:text-gray-400">{t('resource.loading')}</p>

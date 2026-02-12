@@ -20,6 +20,27 @@ pub struct InstallResult {
 pub struct SkillInstaller;
 
 impl SkillInstaller {
+    fn build_marketplace_install_args(github_ref: &str, skill: &str) -> Vec<String> {
+        vec![
+            "skills".to_string(),
+            "add".to_string(),
+            github_ref.to_string(),
+            "--skill".to_string(),
+            skill.to_string(),
+            "-y".to_string(),
+        ]
+    }
+
+    fn build_marketplace_uninstall_args(skill: &str) -> Vec<String> {
+        vec![
+            "skills".to_string(),
+            "remove".to_string(),
+            "--skill".to_string(),
+            skill.to_string(),
+            "-y".to_string(),
+        ]
+    }
+
     /// Create a new skill installer
     pub fn new() -> Self {
         debug!("Creating SkillInstaller");
@@ -70,7 +91,8 @@ impl SkillInstaller {
         }
     }
 
-    /// Install a skill using npx skills add
+    /// Install all skills in a repository.
+    /// Prefer `install_skill_by_name` for skill-granular installs.
     pub fn install_skill(&self, owner: &str, repo: &str) -> Result<InstallResult> {
         crate::utils::sanitize_name(owner).map_err(|e| anyhow!("Invalid owner: {}", e))?;
         crate::utils::sanitize_name(repo).map_err(|e| anyhow!("Invalid repo: {}", e))?;
@@ -88,10 +110,10 @@ impl SkillInstaller {
             });
         }
 
-        // Run npx skills add owner/repo
+        // Run npx skills add owner/repo -y
         debug!(skill = %skill_ref, "Running npx skills add");
         let output = create_command("npx")
-            .args(["skills", "add", &skill_ref])
+            .args(["skills", "add", &skill_ref, "-y"])
             .output()
             .map_err(|e| {
                 error!(error = %e, "Failed to execute npx skills");
@@ -115,6 +137,72 @@ impl SkillInstaller {
             })
         } else {
             error!(skill = %skill_ref, error = %stderr, "Skill installation failed");
+            Ok(InstallResult {
+                success: false,
+                skill_id: skill_ref,
+                message: None,
+                error: Some(if stderr.is_empty() {
+                    "Installation failed with unknown error".to_string()
+                } else {
+                    stderr
+                }),
+            })
+        }
+    }
+
+    /// Install one specific skill from a repository:
+    /// npx skills add https://github.com/{owner}/{repo} --skill {skill} -y
+    pub fn install_skill_by_name(
+        &self,
+        owner: &str,
+        repo: &str,
+        skill: &str,
+    ) -> Result<InstallResult> {
+        crate::utils::sanitize_name(owner).map_err(|e| anyhow!("Invalid owner: {}", e))?;
+        crate::utils::sanitize_name(repo).map_err(|e| anyhow!("Invalid repo: {}", e))?;
+        crate::utils::sanitize_name(skill).map_err(|e| anyhow!("Invalid skill: {}", e))?;
+
+        let github_ref = format!("https://github.com/{}/{}", owner, repo);
+        let skill_ref = format!("{}/{}/{}", owner, repo, skill);
+        info!(skill = %skill_ref, "Installing marketplace skill by name");
+
+        if !Self::check_nodejs_available()? {
+            error!(skill = %skill_ref, "Node.js is not available");
+            return Ok(InstallResult {
+                success: false,
+                skill_id: skill_ref,
+                message: None,
+                error: Some("Node.js is not installed or not in PATH".to_string()),
+            });
+        }
+
+        debug!(repo = %github_ref, skill = %skill, "Running npx skills add with --skill");
+        let args = Self::build_marketplace_install_args(&github_ref, skill);
+        let output = create_command("npx")
+            .args(args.iter().map(String::as_str))
+            .output()
+            .map_err(|e| {
+                error!(error = %e, "Failed to execute npx skills");
+                anyhow!("Failed to execute npx skills: {}", e)
+            })?;
+
+        let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+        if output.status.success() {
+            info!(skill = %skill_ref, "Marketplace skill installed successfully");
+            Ok(InstallResult {
+                success: true,
+                skill_id: skill_ref,
+                message: Some(if stdout.is_empty() {
+                    "Skill installed successfully".to_string()
+                } else {
+                    stdout
+                }),
+                error: None,
+            })
+        } else {
+            error!(skill = %skill_ref, error = %stderr, "Marketplace skill installation failed");
             Ok(InstallResult {
                 success: false,
                 skill_id: skill_ref,
@@ -153,7 +241,7 @@ impl SkillInstaller {
         debug!(target = %target_dir.display(), "Creating target directory");
         std::fs::create_dir_all(target_dir)?;
 
-        // Run npx skills add owner/repo --dir target_dir
+        // Run npx skills add owner/repo --dir target_dir -y
         debug!(skill = %skill_ref, target = %target_dir.display(), "Running npx skills add with --dir");
         let output = create_command("npx")
             .args([
@@ -162,6 +250,7 @@ impl SkillInstaller {
                 &skill_ref,
                 "--dir",
                 &target_dir.to_string_lossy(),
+                "-y",
             ])
             .output()
             .map_err(|e| {
@@ -235,7 +324,8 @@ impl SkillInstaller {
         false
     }
 
-    /// Uninstall a skill
+    /// Uninstall all skills in a repository.
+    /// Prefer `uninstall_skill_by_name` for skill-granular uninstalls.
     pub fn uninstall_skill(&self, owner: &str, repo: &str) -> Result<InstallResult> {
         let skill_ref = format!("{}/{}", owner, repo);
         info!(skill = %skill_ref, "Uninstalling skill");
@@ -251,10 +341,10 @@ impl SkillInstaller {
             });
         }
 
-        // Run npx skills remove owner/repo
+        // Run npx skills remove owner/repo -y
         debug!(skill = %skill_ref, "Running npx skills remove");
         let output = create_command("npx")
-            .args(["skills", "remove", &skill_ref])
+            .args(["skills", "remove", &skill_ref, "-y"])
             .output()
             .map_err(|e| {
                 error!(error = %e, "Failed to execute npx skills");
@@ -278,6 +368,70 @@ impl SkillInstaller {
             })
         } else {
             error!(skill = %skill_ref, error = %stderr, "Skill uninstallation failed");
+            Ok(InstallResult {
+                success: false,
+                skill_id: skill_ref,
+                message: None,
+                error: Some(if stderr.is_empty() {
+                    "Uninstallation failed with unknown error".to_string()
+                } else {
+                    stderr
+                }),
+            })
+        }
+    }
+
+    /// Uninstall one specific skill:
+    /// npx skills remove --skill {skill} -y
+    pub fn uninstall_skill_by_name(
+        &self,
+        owner: &str,
+        repo: &str,
+        skill: &str,
+    ) -> Result<InstallResult> {
+        crate::utils::sanitize_name(owner).map_err(|e| anyhow!("Invalid owner: {}", e))?;
+        crate::utils::sanitize_name(repo).map_err(|e| anyhow!("Invalid repo: {}", e))?;
+        crate::utils::sanitize_name(skill).map_err(|e| anyhow!("Invalid skill: {}", e))?;
+
+        let skill_ref = format!("{}/{}/{}", owner, repo, skill);
+        info!(skill = %skill_ref, "Uninstalling marketplace skill by name");
+
+        if !Self::check_nodejs_available()? {
+            error!(skill = %skill_ref, "Node.js is not available");
+            return Ok(InstallResult {
+                success: false,
+                skill_id: skill_ref,
+                message: None,
+                error: Some("Node.js is not installed or not in PATH".to_string()),
+            });
+        }
+
+        let args = Self::build_marketplace_uninstall_args(skill);
+        let output = create_command("npx")
+            .args(args.iter().map(String::as_str))
+            .output()
+            .map_err(|e| {
+                error!(error = %e, "Failed to execute npx skills");
+                anyhow!("Failed to execute npx skills: {}", e)
+            })?;
+
+        let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+        if output.status.success() {
+            info!(skill = %skill_ref, "Marketplace skill uninstalled successfully");
+            Ok(InstallResult {
+                success: true,
+                skill_id: skill_ref,
+                message: Some(if stdout.is_empty() {
+                    "Skill uninstalled successfully".to_string()
+                } else {
+                    stdout
+                }),
+                error: None,
+            })
+        } else {
+            error!(skill = %skill_ref, error = %stderr, "Marketplace skill uninstall failed");
             Ok(InstallResult {
                 success: false,
                 skill_id: skill_ref,
@@ -328,5 +482,39 @@ mod tests {
         let json = serde_json::to_string(&result).unwrap();
         assert!(json.contains("owner/repo"));
         assert!(json.contains("true"));
+    }
+
+    #[test]
+    fn test_marketplace_install_args_contains_skill_flag() {
+        let args = SkillInstaller::build_marketplace_install_args(
+            "https://github.com/vercel-labs/skills",
+            "find-skills",
+        );
+        assert_eq!(
+            args,
+            vec![
+                "skills".to_string(),
+                "add".to_string(),
+                "https://github.com/vercel-labs/skills".to_string(),
+                "--skill".to_string(),
+                "find-skills".to_string(),
+                "-y".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_marketplace_uninstall_args_contains_skill_flag() {
+        let args = SkillInstaller::build_marketplace_uninstall_args("find-skills");
+        assert_eq!(
+            args,
+            vec![
+                "skills".to_string(),
+                "remove".to_string(),
+                "--skill".to_string(),
+                "find-skills".to_string(),
+                "-y".to_string(),
+            ]
+        );
     }
 }

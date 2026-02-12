@@ -90,7 +90,7 @@
     "refresh": "刷新",
     "loading": "加载技能中...",
     "noSkills": "暂无可用技能",
-    "noMatch": "没有匹配的技能",
+    "noMatch": "没有匹配搜索的技能",
     "clearFilters": "清除筛选",
     "allCategories": "所有分类",
     "allSources": "所有来源",
@@ -107,11 +107,11 @@
     "nodejsRequired": "需要 Node.js",
     "nodejsRequiredDesc": "技能市场需要 Node.js 来安装技能。请先安装 Node.js。",
     "downloadNodejs": "下载 Node.js",
+    "openSkill": "打开技能详情",
     "sort": {
-      "popular": "热门",
+      "hot": "热门",
       "trending": "趋势",
-      "latest": "最新",
-      "top": "精选"
+      "all_time": "总榜"
     }
   },
   "error": {

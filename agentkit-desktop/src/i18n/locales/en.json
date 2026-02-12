@@ -90,7 +90,7 @@
     "refresh": "Refresh",
     "loading": "Loading skills...",
     "noSkills": "No skills available",
-    "noMatch": "No skills match your filters",
+    "noMatch": "No skills match your search",
     "clearFilters": "Clear filters",
     "allCategories": "All Categories",
     "allSources": "All Sources",
@@ -107,11 +107,11 @@
     "nodejsRequired": "Node.js Required",
     "nodejsRequiredDesc": "The skill marketplace requires Node.js to install skills. Please install Node.js to continue.",
     "downloadNodejs": "Download Node.js",
+    "openSkill": "Open skill details",
     "sort": {
-      "popular": "Popular",
+      "hot": "Hot",
       "trending": "Trending",
-      "latest": "Latest",
-      "top": "Top"
+      "all_time": "All Time"
     }
   },
   "error": {

@@ -46,6 +46,7 @@ fn main() {
             // Platform commands
             commands::detect_platforms,
             commands::get_platforms,
+            commands::refresh_platforms,
             commands::get_platform_info,
             // Resource commands
             commands::get_resources,

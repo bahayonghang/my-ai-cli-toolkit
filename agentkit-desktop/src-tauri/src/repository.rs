@@ -7,8 +7,8 @@ use rusqlite::{params, Connection, Result, Row};
 use std::collections::HashMap;
 use std::str::FromStr;
 
-/// Platform record tuple: (platform, detected, base_path, link_mode)
-pub type PlatformRecord = (Platform, bool, Option<String>, LinkMode);
+/// Platform record tuple: (platform, detected, base_path, link_mode, last_detected_at)
+pub type PlatformRecord = (Platform, bool, Option<String>, LinkMode, Option<String>);
 
 /// Resource repository for CRUD operations
 pub struct ResourceRepository<'a> {
@@ -28,20 +28,31 @@ impl<'a> ResourceRepository<'a> {
              FROM resources ORDER BY name",
         )?;
 
-        let resources = stmt
+        let mut resources = stmt
             .query_map([], |row| self.row_to_resource(row))?
             .collect::<Result<Vec<_>>>()?;
 
-        // Load platform status for each resource
-        let mut result = Vec::new();
-        for mut resource in resources {
-            resource.platform_status = self.get_platform_status(&resource.id)?;
-            resource.tags = self.get_resource_tags(&resource.id)?;
-            resource.categories = self.get_resource_categories(&resource.id)?;
-            result.push(resource);
+        if resources.is_empty() {
+            return Ok(resources);
         }
 
-        Ok(result)
+        let platform_status_map = self.get_all_platform_status_map()?;
+        let tags_map = self.get_all_resource_tags_map()?;
+        let categories_map = self.get_all_resource_categories_map()?;
+
+        for resource in &mut resources {
+            resource.platform_status = platform_status_map
+                .get(&resource.id)
+                .cloned()
+                .unwrap_or_default();
+            resource.tags = tags_map.get(&resource.id).cloned().unwrap_or_default();
+            resource.categories = categories_map
+                .get(&resource.id)
+                .cloned()
+                .unwrap_or_default();
+        }
+
+        Ok(resources)
     }
 
     /// Get resource by ID
@@ -194,6 +205,37 @@ impl<'a> ResourceRepository<'a> {
         Ok(status_map)
     }
 
+    fn get_all_platform_status_map(
+        &self,
+    ) -> Result<HashMap<String, HashMap<Platform, SyncStatus>>> {
+        let mut stmt = self
+            .conn
+            .prepare("SELECT resource_id, platform, status FROM resource_platform_status")?;
+
+        let rows = stmt.query_map([], |row| {
+            let resource_id: String = row.get(0)?;
+            let platform_str: String = row.get(1)?;
+            let status_str: String = row.get(2)?;
+            Ok((resource_id, platform_str, status_str))
+        })?;
+
+        let mut status_map: HashMap<String, HashMap<Platform, SyncStatus>> = HashMap::new();
+        for row in rows {
+            let (resource_id, platform_str, status_str) = row?;
+            if let (Ok(platform), Ok(status)) = (
+                Platform::from_str(&platform_str),
+                SyncStatus::from_str(&status_str),
+            ) {
+                status_map
+                    .entry(resource_id)
+                    .or_default()
+                    .insert(platform, status);
+            }
+        }
+
+        Ok(status_map)
+    }
+
     /// Get tags for a resource
     fn get_resource_tags(&self, resource_id: &str) -> Result<Vec<String>> {
         let mut stmt = self.conn.prepare(
@@ -209,6 +251,28 @@ impl<'a> ResourceRepository<'a> {
         Ok(tags)
     }
 
+    fn get_all_resource_tags_map(&self) -> Result<HashMap<String, Vec<String>>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT rt.resource_id, t.name
+             FROM resource_tags rt
+             JOIN tags t ON t.id = rt.tag_id",
+        )?;
+
+        let rows = stmt.query_map([], |row| {
+            let resource_id: String = row.get(0)?;
+            let tag: String = row.get(1)?;
+            Ok((resource_id, tag))
+        })?;
+
+        let mut tags_map: HashMap<String, Vec<String>> = HashMap::new();
+        for row in rows {
+            let (resource_id, tag) = row?;
+            tags_map.entry(resource_id).or_default().push(tag);
+        }
+
+        Ok(tags_map)
+    }
+
     /// Get categories for a resource
     fn get_resource_categories(&self, resource_id: &str) -> Result<Vec<String>> {
         let mut stmt = self.conn.prepare(
@@ -222,6 +286,31 @@ impl<'a> ResourceRepository<'a> {
             .collect::<Result<Vec<String>>>()?;
 
         Ok(categories)
+    }
+
+    fn get_all_resource_categories_map(&self) -> Result<HashMap<String, Vec<String>>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT rc.resource_id, c.name
+             FROM resource_categories rc
+             JOIN categories c ON c.id = rc.category_id",
+        )?;
+
+        let rows = stmt.query_map([], |row| {
+            let resource_id: String = row.get(0)?;
+            let category: String = row.get(1)?;
+            Ok((resource_id, category))
+        })?;
+
+        let mut categories_map: HashMap<String, Vec<String>> = HashMap::new();
+        for row in rows {
+            let (resource_id, category) = row?;
+            categories_map
+                .entry(resource_id)
+                .or_default()
+                .push(category);
+        }
+
+        Ok(categories_map)
     }
 
     /// Add a tag to a resource
@@ -401,24 +490,31 @@ impl<'a> PlatformRepository<'a> {
 
     /// Get all platforms
     pub fn get_all(&self) -> Result<Vec<PlatformRecord>> {
-        let mut stmt = self
-            .conn
-            .prepare("SELECT platform, detected, base_path, link_mode FROM platforms")?;
+        let mut stmt = self.conn.prepare(
+            "SELECT platform, detected, base_path, link_mode, last_detected_at FROM platforms",
+        )?;
 
         let rows = stmt.query_map([], |row| {
             let platform_str: String = row.get(0)?;
             let detected: i32 = row.get(1)?;
             let base_path: Option<String> = row.get(2)?;
             let link_mode_str: String = row.get(3)?;
-            Ok((platform_str, detected != 0, base_path, link_mode_str))
+            let last_detected_at: Option<String> = row.get(4)?;
+            Ok((
+                platform_str,
+                detected != 0,
+                base_path,
+                link_mode_str,
+                last_detected_at,
+            ))
         })?;
 
         let mut result = Vec::new();
         for row in rows {
-            let (platform_str, detected, base_path, link_mode_str) = row?;
+            let (platform_str, detected, base_path, link_mode_str, last_detected_at) = row?;
             if let Ok(platform) = Platform::from_str(&platform_str) {
                 let link_mode = LinkMode::from_str(&link_mode_str).unwrap_or(LinkMode::Symlink);
-                result.push((platform, detected, base_path, link_mode));
+                result.push((platform, detected, base_path, link_mode, last_detected_at));
             }
         }
 

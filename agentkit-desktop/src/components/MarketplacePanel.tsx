@@ -2,19 +2,26 @@
  * MarketplacePanel Component - Main panel for skill marketplace
  */
 
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
 import { useMarketplaceStore } from "@/stores";
+import type { MarketplaceSkill } from "@/types";
 import { SkillCard } from "./SkillCard";
 import { MarketFilterBar } from "./MarketFilterBar";
 import { SortTabs } from "./SortTabs";
+
+const VIRTUALIZATION_THRESHOLD = 60;
+const ESTIMATED_CARD_HEIGHT = 168;
+const SCROLL_CONTAINER_ID = "resource-list-scroll-container";
+
+let marketplaceInitPromise: Promise<void> | null = null;
 
 export function MarketplacePanel() {
   const { t } = useTranslation();
 
   const {
     skills,
-    categories,
     loading,
     installing,
     error,
@@ -25,7 +32,6 @@ export function MarketplacePanel() {
     nodejsVersion,
     cacheStats,
     fetchSkills,
-    fetchCategories,
     refreshCache,
     installSkill,
     uninstallSkill,
@@ -33,26 +39,54 @@ export function MarketplacePanel() {
     fetchCacheStats,
     setSortBy,
     setSearchQuery,
-    setFilters,
     clearFilters,
     clearError,
   } = useMarketplaceStore();
 
   // Initialize on mount
   const initialize = useCallback(() => {
-    checkNodejs();
-    fetchCategories();
-    fetchSkills();
-    fetchCacheStats();
-  }, [checkNodejs, fetchCategories, fetchSkills, fetchCacheStats]);
+    if (marketplaceInitPromise) {
+      return marketplaceInitPromise;
+    }
+
+    const tasks: Promise<unknown>[] = [];
+    if (nodejsAvailable === null || !nodejsVersion) {
+      tasks.push(checkNodejs());
+    }
+    if (!cacheStats) {
+      tasks.push(fetchCacheStats());
+    }
+    if (skills.length === 0) {
+      tasks.push(fetchSkills());
+    }
+
+    if (tasks.length === 0) {
+      return Promise.resolve();
+    }
+
+    marketplaceInitPromise = Promise.allSettled(tasks)
+      .then(() => undefined)
+      .finally(() => {
+        marketplaceInitPromise = null;
+      });
+    return marketplaceInitPromise;
+  }, [
+    cacheStats,
+    checkNodejs,
+    fetchCacheStats,
+    fetchSkills,
+    nodejsAvailable,
+    nodejsVersion,
+    skills.length,
+  ]);
 
   useEffect(() => {
-    initialize();
+    void initialize();
   }, [initialize]);
 
-  const handleInstall = async (owner: string, repo: string) => {
+  const handleInstall = async (owner: string, repo: string, skill: string) => {
     try {
-      const result = await installSkill(owner, repo);
+      const result = await installSkill(owner, repo, skill);
       if (!result.success) {
         console.error("Install failed:", result.error);
       }
@@ -61,9 +95,9 @@ export function MarketplacePanel() {
     }
   };
 
-  const handleUninstall = async (owner: string, repo: string) => {
+  const handleUninstall = async (owner: string, repo: string, skill: string) => {
     try {
-      const result = await uninstallSkill(owner, repo);
+      const result = await uninstallSkill(owner, repo, skill);
       if (!result.success) {
         console.error("Uninstall failed:", result.error);
       }
@@ -142,11 +176,8 @@ export function MarketplacePanel() {
 
         {/* Filter Bar */}
         <MarketFilterBar
-          categories={categories}
-          filters={filters}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onFiltersChange={setFilters}
           onClearFilters={clearFilters}
           onRefresh={refreshCache}
           loading={loading}
@@ -178,18 +209,28 @@ export function MarketplacePanel() {
             </p>
           </div>
         ) : skills.length > 0 ? (
-          <div className="grid gap-3">
-            {skills.map((skill) => (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                installing={installing === `${skill.owner}/${skill.repo}`}
-                disabled={!canInstall}
-                onInstall={() => handleInstall(skill.owner, skill.repo)}
-                onUninstall={() => handleUninstall(skill.owner, skill.repo)}
-              />
-            ))}
-          </div>
+          skills.length > VIRTUALIZATION_THRESHOLD ? (
+            <VirtualizedMarketplaceList
+              items={skills}
+              canInstall={canInstall}
+              installing={installing}
+              onInstall={handleInstall}
+              onUninstall={handleUninstall}
+            />
+          ) : (
+            <div className="grid gap-3">
+              {skills.map((skill) => (
+                <SkillCard
+                  key={skill.id}
+                  skill={skill}
+                  installing={installing === skill.id}
+                  disabled={!canInstall}
+                  onInstall={() => handleInstall(skill.owner, skill.repo, skill.skill ?? skill.name)}
+                  onUninstall={() => handleUninstall(skill.owner, skill.repo, skill.skill ?? skill.name)}
+                />
+              ))}
+            </div>
+          )
         ) : (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <span className="text-4xl mb-3">📭</span>
@@ -218,6 +259,64 @@ export function MarketplacePanel() {
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+interface VirtualizedMarketplaceListProps {
+  items: MarketplaceSkill[];
+  canInstall: boolean;
+  installing: string | null;
+  onInstall: (owner: string, repo: string, skill: string) => Promise<void>;
+  onUninstall: (owner: string, repo: string, skill: string) => Promise<void>;
+}
+
+function VirtualizedMarketplaceList({
+  items,
+  canInstall,
+  installing,
+  onInstall,
+  onUninstall,
+}: VirtualizedMarketplaceListProps) {
+  const rowVirtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => document.getElementById(SCROLL_CONTAINER_ID),
+    estimateSize: () => ESTIMATED_CARD_HEIGHT,
+    overscan: 6,
+    gap: 12,
+  });
+
+  return (
+    <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: "100%", position: "relative" }}>
+      {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+        const skill = items[virtualItem.index];
+        if (!skill) {
+          return null;
+        }
+        const skillName = skill.skill ?? skill.name;
+        return (
+          <div
+            key={skill.id}
+            ref={rowVirtualizer.measureElement}
+            data-index={virtualItem.index}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            <SkillCard
+              skill={skill}
+              installing={installing === skill.id}
+              disabled={!canInstall}
+              onInstall={() => onInstall(skill.owner, skill.repo, skillName)}
+              onUninstall={() => onUninstall(skill.owner, skill.repo, skillName)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

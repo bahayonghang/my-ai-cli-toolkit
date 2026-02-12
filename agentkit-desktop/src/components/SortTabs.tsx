@@ -10,7 +10,7 @@ interface SortTabsProps {
   onChange: (value: MarketplaceSortBy) => void;
 }
 
-const SORT_OPTIONS: MarketplaceSortBy[] = ["popular", "trending", "latest", "top"];
+const SORT_OPTIONS: MarketplaceSortBy[] = ["hot", "trending", "all_time"];
 
 export function SortTabs({ value, onChange }: SortTabsProps) {
   const { t } = useTranslation();

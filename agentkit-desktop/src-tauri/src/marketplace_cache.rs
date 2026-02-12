@@ -9,6 +9,7 @@ use tracing::{debug, info};
 
 /// Default cache TTL in seconds (1 hour)
 const DEFAULT_CACHE_TTL: i64 = 3600;
+const SKILLS_SH_SNAPSHOT_PREFIX: &str = "skills_sh_snapshot";
 
 /// Marketplace cache manager
 pub struct MarketplaceCache<'a> {
@@ -52,6 +53,12 @@ impl<'a> MarketplaceCache<'a> {
                     source: row.get(9)?,
                     updated_at: row.get(10)?,
                     installed: row.get::<_, i32>(11)? != 0,
+                    skill: parse_skill_from_id(&row.get::<_, String>(0)?),
+                    metric_label: row
+                        .get::<_, Option<u32>>(6)?
+                        .map(|_| "Installs".to_string()),
+                    metric_value: row.get::<_, Option<u32>>(6)?.map(format_compact_number),
+                    metric_delta: None,
                 })
             })?
             .filter_map(|r| r.ok())
@@ -114,10 +121,13 @@ impl<'a> MarketplaceCache<'a> {
         }
 
         let order_by = match sort_by {
-            "trending" => "stars DESC, updated_at DESC",
+            "hot" => "updated_at DESC, stars DESC",
+            "trending" => "updated_at DESC, stars DESC",
+            "all_time" => "stars DESC",
+            // Backward-compatible sort values (legacy clients/cache reads)
             "latest" => "updated_at DESC",
-            "top" => "stars DESC",
-            _ => "stars DESC", // popular (default)
+            "top" | "popular" => "stars DESC",
+            _ => "stars DESC",
         };
 
         let sql = format!(
@@ -155,6 +165,12 @@ impl<'a> MarketplaceCache<'a> {
                     source: row.get(9)?,
                     updated_at: row.get(10)?,
                     installed: row.get::<_, i32>(11)? != 0,
+                    skill: parse_skill_from_id(&row.get::<_, String>(0)?),
+                    metric_label: row
+                        .get::<_, Option<u32>>(6)?
+                        .map(|_| "Installs".to_string()),
+                    metric_value: row.get::<_, Option<u32>>(6)?.map(format_compact_number),
+                    metric_delta: None,
                 })
             })?
             .filter_map(|r| r.ok())
@@ -211,6 +227,96 @@ impl<'a> MarketplaceCache<'a> {
             count = skills.len(),
             "Marketplace cache updated successfully"
         );
+        Ok(())
+    }
+
+    pub fn get_skills_sh_snapshot(
+        &self,
+        sort_by: &str,
+        ttl_seconds: i64,
+    ) -> Result<Option<Vec<MarketplaceSkill>>> {
+        let key = skills_sh_snapshot_key(sort_by);
+        let json: Option<String> = self
+            .conn
+            .query_row(
+                r#"
+                SELECT value
+                FROM marketplace_cache_meta
+                WHERE key = ?
+                  AND value IS NOT NULL
+                  AND (julianday('now') - julianday(updated_at)) * 86400 <= ?
+                "#,
+                params![key, ttl_seconds],
+                |row| row.get(0),
+            )
+            .ok();
+
+        let Some(json) = json else {
+            return Ok(None);
+        };
+
+        let parsed = serde_json::from_str::<Vec<MarketplaceSkill>>(&json)
+            .map(Some)
+            .unwrap_or(None);
+        Ok(parsed)
+    }
+
+    pub fn get_skills_sh_snapshot_stale(
+        &self,
+        sort_by: &str,
+    ) -> Result<Option<Vec<MarketplaceSkill>>> {
+        let key = skills_sh_snapshot_key(sort_by);
+        let json: Option<String> = self
+            .conn
+            .query_row(
+                "SELECT value FROM marketplace_cache_meta WHERE key = ? AND value IS NOT NULL",
+                params![key],
+                |row| row.get(0),
+            )
+            .ok();
+
+        let Some(json) = json else {
+            return Ok(None);
+        };
+
+        let parsed = serde_json::from_str::<Vec<MarketplaceSkill>>(&json)
+            .map(Some)
+            .unwrap_or(None);
+        Ok(parsed)
+    }
+
+    pub fn set_skills_sh_snapshot(&self, sort_by: &str, skills: &[MarketplaceSkill]) -> Result<()> {
+        let key = skills_sh_snapshot_key(sort_by);
+        let json = serde_json::to_string(skills)?;
+        self.conn.execute(
+            r#"
+            INSERT INTO marketplace_cache_meta (key, value, updated_at)
+            VALUES (?, ?, datetime('now'))
+            ON CONFLICT(key) DO UPDATE SET
+                value = excluded.value,
+                updated_at = datetime('now')
+            "#,
+            params![key, json],
+        )?;
+        Ok(())
+    }
+
+    pub fn invalidate_skills_sh_snapshot(&self, sort_by: Option<&str>) -> Result<()> {
+        match sort_by {
+            Some(sort_by) => {
+                let key = skills_sh_snapshot_key(sort_by);
+                self.conn.execute(
+                    "UPDATE marketplace_cache_meta SET value = NULL, updated_at = datetime('now') WHERE key = ?",
+                    params![key],
+                )?;
+            }
+            None => {
+                self.conn.execute(
+                    "UPDATE marketplace_cache_meta SET value = NULL, updated_at = datetime('now') WHERE key LIKE ?",
+                    params![format!("{SKILLS_SH_SNAPSHOT_PREFIX}:%")],
+                )?;
+            }
+        }
         Ok(())
     }
 
@@ -361,6 +467,31 @@ pub struct CacheStats {
     pub is_valid: bool,
 }
 
+fn parse_skill_from_id(id: &str) -> Option<String> {
+    let mut parts = id.trim_matches('/').split('/');
+    let _owner = parts.next()?;
+    let _repo = parts.next()?;
+    parts
+        .next()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+}
+
+fn format_compact_number(value: u32) -> String {
+    if value >= 1_000_000 {
+        format!("{:.1}M", value as f64 / 1_000_000_f64)
+    } else if value >= 1_000 {
+        format!("{:.1}K", value as f64 / 1_000_f64)
+    } else {
+        value.to_string()
+    }
+}
+
+fn skills_sh_snapshot_key(sort_by: &str) -> String {
+    format!("{SKILLS_SH_SNAPSHOT_PREFIX}:{sort_by}")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -399,6 +530,10 @@ mod tests {
             source: "community".to_string(),
             updated_at: "2024-01-01".to_string(),
             installed: false,
+            skill: Some("test-skill".to_string()),
+            metric_label: Some("Installs".to_string()),
+            metric_value: Some("50".to_string()),
+            metric_delta: None,
         }];
 
         cache.update_cache(&skills).unwrap();
@@ -420,5 +555,34 @@ mod tests {
         // Invalidate
         cache.invalidate_cache().unwrap();
         assert!(!cache.is_cache_valid().unwrap());
+    }
+
+    #[test]
+    fn test_skills_sh_snapshot_roundtrip() {
+        let conn = setup_test_db();
+        let cache = MarketplaceCache::new(&conn);
+        let skills = vec![MarketplaceSkill {
+            id: "owner/repo/skill".to_string(),
+            name: "skill".to_string(),
+            description: None,
+            owner: "owner".to_string(),
+            repo: "repo".to_string(),
+            stars: 10,
+            downloads: Some(30),
+            categories: vec![],
+            platforms: vec![],
+            source: "owner/repo".to_string(),
+            updated_at: "2024-01-01".to_string(),
+            installed: false,
+            skill: Some("skill".to_string()),
+            metric_label: Some("Installs".to_string()),
+            metric_value: Some("30".to_string()),
+            metric_delta: None,
+        }];
+
+        cache.set_skills_sh_snapshot("hot", &skills).unwrap();
+        let cached = cache.get_skills_sh_snapshot("hot", 900).unwrap();
+        assert!(cached.is_some());
+        assert_eq!(cached.unwrap()[0].id, "owner/repo/skill");
     }
 }

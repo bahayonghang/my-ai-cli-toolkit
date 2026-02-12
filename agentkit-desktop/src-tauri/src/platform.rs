@@ -8,20 +8,25 @@ use std::process::Command;
 
 /// Detect all supported platforms
 pub fn detect_all_platforms() -> Vec<PlatformInfo> {
-    Platform::all().into_iter().map(detect_platform).collect()
+    let link_mode = determine_link_mode();
+    Platform::all()
+        .into_iter()
+        .map(|platform| detect_platform_with_link_mode(platform, link_mode))
+        .collect()
 }
 
 /// Detect a single platform
 pub fn detect_platform(platform: Platform) -> PlatformInfo {
+    detect_platform_with_link_mode(platform, determine_link_mode())
+}
+
+fn detect_platform_with_link_mode(platform: Platform, link_mode: LinkMode) -> PlatformInfo {
     let home_dir = dirs::home_dir();
     let base_path = home_dir.as_ref().map(|h| h.join(platform.base_path()));
 
     let detected = base_path.as_ref().map(|p| p.exists()).unwrap_or(false);
 
     let has_cli = check_cli_available(platform);
-
-    // Determine link mode based on OS
-    let link_mode = determine_link_mode();
 
     PlatformInfo {
         platform,

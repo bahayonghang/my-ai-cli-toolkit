@@ -6,19 +6,26 @@ use crate::manager::{CommandManager, SkillManager};
 use crate::models::{LinkMode, Platform, ResourceItem, SyncResult};
 use crate::repository::ResourceRepository;
 use crate::sync::SyncEngine;
+use std::time::Instant;
 use tauri::State;
 use tracing::{debug, error, info, warn};
 
 /// Get all resources (skills, commands, agents)
 #[tauri::command]
 pub fn get_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, CommandError> {
+    let started = Instant::now();
     debug!("Getting all resources");
     let db = state.db.lock()?;
     let repo = ResourceRepository::new(db.conn());
 
     if let Ok(resources) = repo.get_all() {
         if !resources.is_empty() {
-            info!(count = resources.len(), "Retrieved resources from database");
+            info!(
+                count = resources.len(),
+                source = "database",
+                duration_ms = started.elapsed().as_millis() as u64,
+                "Retrieved resources from database"
+            );
             return Ok(resources);
         }
     }
@@ -42,20 +49,33 @@ pub fn get_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, Comman
 
     // Persist discovered resources so subsequent calls hit the DB cache
     if !resources.is_empty() {
-        let db = state.db.lock()?;
-        let repo = ResourceRepository::new(db.conn());
-        for resource in &resources {
-            if let Err(e) = repo.insert(resource) {
-                warn!(id = %resource.id, error = %e, "Failed to persist discovered resource");
+        let mut db = state.db.lock()?;
+        let tx = db
+            .conn_mut()
+            .transaction()
+            .map_err(|e| CommandError::Database(e.to_string()))?;
+        {
+            let repo = ResourceRepository::new(&tx);
+            for resource in &resources {
+                if let Err(e) = repo.insert(resource) {
+                    warn!(id = %resource.id, error = %e, "Failed to persist discovered resource");
+                }
             }
         }
+        tx.commit()
+            .map_err(|e| CommandError::Database(e.to_string()))?;
         debug!(
             count = resources.len(),
             "Persisted discovered resources to database"
         );
     }
 
-    info!(count = resources.len(), "Total resources discovered");
+    info!(
+        count = resources.len(),
+        source = "filesystem",
+        duration_ms = started.elapsed().as_millis() as u64,
+        "Total resources discovered"
+    );
     Ok(resources)
 }
 
@@ -360,6 +380,7 @@ pub async fn sync_resource(
 /// Refresh resources by re-scanning the filesystem
 #[tauri::command]
 pub fn refresh_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, CommandError> {
+    let started = Instant::now();
     info!("Refreshing resources from filesystem");
     let mut resources = Vec::new();
 
@@ -376,17 +397,28 @@ pub fn refresh_resources(state: State<AppState>) -> Result<Vec<ResourceItem>, Co
     }
 
     {
-        let db = state.db.lock()?;
-        let repo = ResourceRepository::new(db.conn());
-
-        for resource in &resources {
-            if let Err(e) = repo.insert(resource) {
-                warn!(id = %resource.id, error = %e, "Failed to insert resource into database");
+        let mut db = state.db.lock()?;
+        let tx = db
+            .conn_mut()
+            .transaction()
+            .map_err(|e| CommandError::Database(e.to_string()))?;
+        {
+            let repo = ResourceRepository::new(&tx);
+            for resource in &resources {
+                if let Err(e) = repo.insert(resource) {
+                    warn!(id = %resource.id, error = %e, "Failed to insert resource into database");
+                }
             }
         }
+        tx.commit()
+            .map_err(|e| CommandError::Database(e.to_string()))?;
         debug!(count = resources.len(), "Saved resources to database");
     }
 
-    info!(count = resources.len(), "Resources refreshed successfully");
+    info!(
+        count = resources.len(),
+        duration_ms = started.elapsed().as_millis() as u64,
+        "Resources refreshed successfully"
+    );
     Ok(resources)
 }

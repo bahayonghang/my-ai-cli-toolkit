@@ -43,8 +43,8 @@ interface MarketplaceState {
   searchSkills: (keyword: string) => Promise<void>;
   refreshCache: () => Promise<void>;
   fetchCategories: () => Promise<void>;
-  installSkill: (owner: string, repo: string) => Promise<InstallResult>;
-  uninstallSkill: (owner: string, repo: string) => Promise<InstallResult>;
+  installSkill: (owner: string, repo: string, skill: string) => Promise<InstallResult>;
+  uninstallSkill: (owner: string, repo: string, skill: string) => Promise<InstallResult>;
   checkNodejs: () => Promise<void>;
   fetchCacheStats: () => Promise<void>;
 
@@ -77,7 +77,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   _loadingCount: 0,
   installing: null,
   error: null,
-  sortBy: "popular",
+  sortBy: "hot",
   searchQuery: "",
   filters: {},
   nodejsAvailable: null,
@@ -87,7 +87,9 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     set(startLoading);
     try {
       const { sortBy, searchQuery, filters } = get();
-      const searchValue = queryOverride?.search ?? (searchQuery || undefined);
+      const normalizedSearch = searchQuery.trim();
+      const searchValue = queryOverride?.search
+        ?? (normalizedSearch.length >= 2 ? normalizedSearch : undefined);
       const categoryValue = queryOverride?.category ?? filters.category;
       const sourceValue = queryOverride?.source ?? filters.source;
       const platformValue = queryOverride?.platform ?? filters.platform;
@@ -112,6 +114,10 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   searchSkills: async (keyword: string) => {
     set(s => ({ ...startLoading(s), searchQuery: keyword }));
     try {
+      if (keyword.trim().length < 2) {
+        set(s => ({ ...stopLoading(s) }));
+        return;
+      }
       const { filters } = get();
       const skills = await invoke<MarketplaceSkill[]>("search_marketplace", {
         keyword,
@@ -146,20 +152,21 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     }
   },
 
-  installSkill: async (owner: string, repo: string) => {
-    const skillId = `${owner}/${repo}`;
+  installSkill: async (owner: string, repo: string, skill: string) => {
+    const skillId = `${owner}/${repo}/${skill}`;
     set({ installing: skillId, error: null });
     try {
       const result = await invoke<InstallResult>("install_marketplace_skill", {
         owner,
         repo,
+        skill,
       });
 
       if (result.success) {
         // Update local state to mark skill as installed
         const { skills } = get();
         const updatedSkills = skills.map((skill) =>
-          skill.id === skillId || `${skill.owner}/${skill.repo}` === skillId
+          skill.id === skillId || `${skill.owner}/${skill.repo}/${skill.skill ?? skill.name}` === skillId
             ? { ...skill, installed: true }
             : skill
         );
@@ -175,20 +182,21 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     }
   },
 
-  uninstallSkill: async (owner: string, repo: string) => {
-    const skillId = `${owner}/${repo}`;
+  uninstallSkill: async (owner: string, repo: string, skill: string) => {
+    const skillId = `${owner}/${repo}/${skill}`;
     set({ installing: skillId, error: null });
     try {
       const result = await invoke<InstallResult>("uninstall_marketplace_skill", {
         owner,
         repo,
+        skill,
       });
 
       if (result.success) {
         // Update local state to mark skill as uninstalled
         const { skills } = get();
         const updatedSkills = skills.map((skill) =>
-          skill.id === skillId || `${skill.owner}/${skill.repo}` === skillId
+          skill.id === skillId || `${skill.owner}/${skill.repo}/${skill.skill ?? skill.name}` === skillId
             ? { ...skill, installed: false }
             : skill
         );
@@ -211,7 +219,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         invoke<string | null>("get_nodejs_version"),
       ]);
       set({ nodejsAvailable: available, nodejsVersion: version });
-    } catch (error) {
+    } catch {
       set({ nodejsAvailable: false, nodejsVersion: null });
     }
   },
@@ -233,9 +241,10 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
   setSearchQuery: (query: string) => {
     set({ searchQuery: query });
-    if (query.trim()) {
+    const normalized = query.trim();
+    if (normalized.length >= 2) {
       get().searchSkills(query);
-    } else {
+    } else if (normalized.length === 0) {
       get().fetchSkills();
     }
   },

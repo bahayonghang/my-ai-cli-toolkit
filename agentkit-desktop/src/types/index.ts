@@ -135,27 +135,31 @@ export const PLATFORM_DISPLAY_NAMES: Record<Platform, string> = {
 export type MarketplaceSource = "vercel-labs" | "community" | "official";
 
 /** Marketplace sort options */
-export type MarketplaceSortBy = "popular" | "trending" | "latest" | "top";
+export type MarketplaceSortBy = "hot" | "trending" | "all_time";
 
-/** Marketplace skill from SkillsMP API */
+/** Marketplace skill normalized from skills.sh / skillsmp */
 export interface MarketplaceSkill {
   id: string;
   name: string;
   description?: string;
   owner: string;
   repo: string;
+  skill?: string;
   stars: number;
   downloads?: number;
   categories: string[];
   platforms: string[];
   source: string;
-  updatedAt: string;
+  updatedAt?: string;
+  metricLabel?: string;
+  metricValue?: string;
+  metricDelta?: string;
   installed: boolean;
 }
 
 /** Query parameters for marketplace API */
 export interface MarketplaceQuery {
-  sortBy: string;
+  sortBy: MarketplaceSortBy;
   search?: string;
   category?: string;
   source?: string;
@@ -197,15 +201,14 @@ export interface CacheStats {
 
 /** Default marketplace query */
 export const DEFAULT_MARKETPLACE_QUERY: MarketplaceQuery = {
-  sortBy: "popular",
+  sortBy: "hot",
   page: 1,
   perPage: 50,
 };
 
 /** Marketplace sort options with display names */
 export const MARKETPLACE_SORT_OPTIONS: { value: MarketplaceSortBy; label: string }[] = [
-  { value: "popular", label: "Popular" },
+  { value: "hot", label: "Hot" },
   { value: "trending", label: "Trending" },
-  { value: "latest", label: "Latest" },
-  { value: "top", label: "Top" },
+  { value: "all_time", label: "All Time" },
 ];
