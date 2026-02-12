@@ -144,8 +144,9 @@ ruff-fix:
 
 # ============ Rust 代码检查 (AgentKit Desktop) ============
 
-# 运行 Rust 格式检查
+# 运行 Rust 格式检查 (先自动修复再检查)
 rust-format-check:
+    cd agentkit-desktop/src-tauri && cargo fmt
     cd agentkit-desktop/src-tauri && cargo fmt --check
 
 # 自动格式化 Rust 代码
@@ -217,7 +218,8 @@ ci:
     @echo "📘 步骤 5/9: AgentKit Desktop TypeScript 检查..."
     cd agentkit-desktop && npx tsc --noEmit
     @echo ""
-    @echo "🦀 步骤 6/9: Rust 格式检查..."
+    @echo "🦀 步骤 6/9: Rust 格式自动修复 + 检查..."
+    cd agentkit-desktop/src-tauri && cargo fmt
     cd agentkit-desktop/src-tauri && cargo fmt --check
     @echo ""
     @echo "🦀 步骤 7/9: Rust Clippy 静态分析..."
