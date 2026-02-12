@@ -66,6 +66,15 @@ commands_subdir = "commands"
 commands_source = "trae"
 fallback_commands_source = "claude"
 
+[platforms.trae-cn]
+type = "cli"
+base_dir = "~/.trae-cn"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = "trae"  # reuse trae commands (same IDE, different region)
+fallback_commands_source = "claude"
+
 [platforms.opencode]
 type = "cli"
 base_dir = "~/.config/opencode"
@@ -119,6 +128,10 @@ commands_subdir = "steering"
 
 [project_install.overrides.trae]
 platform_dir = ".trae"
+commands_subdir = "commands"
+
+[project_install.overrides.trae-cn]
+platform_dir = ".trae-cn"
 commands_subdir = "commands"
 
 [project_install.overrides.antigravity]

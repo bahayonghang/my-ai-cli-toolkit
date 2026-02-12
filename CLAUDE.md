@@ -136,6 +136,7 @@ uv run python src/install.py --target qwen install-all
 uv run python src/install.py --target antigravity install-all
 uv run python src/install.py --target windsurf install-all
 uv run python src/install.py --target trae install-all
+uv run python src/install.py --target trae-cn install-all
 
 # Install to OpenCode
 uv run python src/install.py --target opencode install-all
@@ -225,6 +226,7 @@ uv run python external-skills/install_tui.py
 | antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | trae | `~/.trae/skills/` | `~/.trae/commands/` |
+| trae-cn | `~/.trae-cn/skills/` | `~/.trae-cn/commands/` |
 | opencode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
 
 ## Skill Definition Format

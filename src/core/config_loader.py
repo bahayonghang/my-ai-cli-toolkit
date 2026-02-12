@@ -152,6 +152,16 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
         commands_source="trae",
         fallback_commands_source="claude",
     ),
+    "trae-cn": PlatformConfig(
+        name="trae-cn",
+        type="cli",
+        base_dir="~/.trae-cn",
+        skills_subdir="skills",
+        commands_subdir="commands",
+        prompt_file=None,
+        commands_source="trae",
+        fallback_commands_source="claude",
+    ),
     "opencode": PlatformConfig(
         name="opencode",
         type="cli",
@@ -197,6 +207,7 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
 DEFAULT_PROJECT_OVERRIDES: dict[str, ProjectInstallOverride] = {
     "kiro": ProjectInstallOverride(platform_dir=".kiro", commands_subdir="steering"),
     "trae": ProjectInstallOverride(platform_dir=".trae", commands_subdir="commands"),
+    "trae-cn": ProjectInstallOverride(platform_dir=".trae-cn", commands_subdir="commands"),
     "antigravity": ProjectInstallOverride(platform_dir=".gemini/antigravity", commands_subdir="workflows"),
     "windsurf": ProjectInstallOverride(platform_dir=".codeium/windsurf", commands_subdir="workflows"),
     "codex": ProjectInstallOverride(platform_dir=".codex", commands_subdir="prompts"),
