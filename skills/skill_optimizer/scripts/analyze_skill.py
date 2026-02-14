@@ -9,16 +9,9 @@ import sys
 from pathlib import Path
 
 OFFICIAL_FIELDS = {
-    "name",
-    "description",
-    "argument-hint",
-    "disable-model-invocation",
-    "user-invocable",
-    "allowed-tools",
-    "model",
-    "context",
-    "agent",
-    "hooks",
+    "name", "description", "argument-hint", "disable-model-invocation",
+    "user-invocable", "allowed-tools", "model", "context", "agent", "hooks",
+    "category", "tags",
 }
 
 FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
@@ -27,7 +20,7 @@ CJK_PATTERN = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff]")
 
 def estimate_tokens(text: str) -> int:
     """Estimate tokens with CJK-aware weighting (~4 chars/token English, ~2 chars/token CJK)."""
-    cjk = sum(1 for c in text if "一" <= c <= "鿿" or "　" <= c <= "ヿ")
+    cjk = sum(1 for c in text if '一' <= c <= '鿿' or '　' <= c <= 'ヿ')
     ascii_chars = len(text) - cjk
     return ascii_chars // 4 + cjk // 2
 
@@ -38,7 +31,7 @@ def parse_frontmatter(content: str):
     if not m:
         return {}, content.strip()
     fm_text = m.group(1)
-    body = content[m.end() :].strip()
+    body = content[m.end():].strip()
     fields = {}
     current_key = None
     for line in fm_text.split("\n"):
@@ -75,14 +68,12 @@ def analyze(skill_path: str) -> dict:
     }
 
     if not skill_md.exists():
-        report["issues"].append(
-            {
-                "severity": "critical",
-                "category": "structure",
-                "message": "SKILL.md not found",
-                "fix": "Create SKILL.md with frontmatter and instructions.",
-            }
-        )
+        report["issues"].append({
+            "severity": "critical",
+            "category": "structure",
+            "message": "SKILL.md not found",
+            "fix": "Create SKILL.md with frontmatter and instructions.",
+        })
         print(json.dumps(report, indent=2))
         return report
 
@@ -104,42 +95,34 @@ def analyze(skill_path: str) -> dict:
     }
 
     if not has_frontmatter:
-        report["issues"].append(
-            {
-                "severity": "critical",
-                "category": "frontmatter",
-                "message": "Frontmatter block not found",
-                "fix": "Add YAML frontmatter with at least name and description.",
-            }
-        )
+        report["issues"].append({
+            "severity": "critical",
+            "category": "frontmatter",
+            "message": "Frontmatter block not found",
+            "fix": "Add YAML frontmatter with at least name and description.",
+        })
 
     for f in non_standard:
-        report["issues"].append(
-            {
-                "severity": "critical",
-                "category": "frontmatter",
-                "message": f"Non-standard field: '{f}'",
-                "fix": f"Remove '{f}' from frontmatter. Move to body or resources/ if needed.",
-            }
-        )
+        report["issues"].append({
+            "severity": "critical",
+            "category": "frontmatter",
+            "message": f"Non-standard field: '{f}'",
+            "fix": f"Remove '{f}' from frontmatter. Move to body or resources/ if needed.",
+        })
     for f in missing:
-        report["issues"].append(
-            {
-                "severity": "critical",
-                "category": "frontmatter",
-                "message": f"Missing required field: '{f}'",
-                "fix": f"Add '{f}' to frontmatter.",
-            }
-        )
+        report["issues"].append({
+            "severity": "critical",
+            "category": "frontmatter",
+            "message": f"Missing required field: '{f}'",
+            "fix": f"Add '{f}' to frontmatter.",
+        })
     for f in missing_recommended:
-        report["issues"].append(
-            {
-                "severity": "recommended",
-                "category": "frontmatter",
-                "message": f"Missing recommended field: '{f}'",
-                "fix": f"Add '{f}' to frontmatter.",
-            }
-        )
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "frontmatter",
+            "message": f"Missing recommended field: '{f}'",
+            "fix": f"Add '{f}' to frontmatter.",
+        })
 
     # Description analysis
     desc = fields.get("description", "")
@@ -153,23 +136,19 @@ def analyze(skill_path: str) -> dict:
             unit = "words"
 
         if desc_length > 40:
-            report["issues"].append(
-                {
-                    "severity": "critical",
-                    "category": "description",
-                    "message": f"Description too long ({desc_length} {unit}, target 10-30)",
-                    "fix": "Rewrite using: <Action> <Object>. Use when <Trigger>.",
-                }
-            )
+            report["issues"].append({
+                "severity": "critical",
+                "category": "description",
+                "message": f"Description too long ({desc_length} {unit}, target 10-30)",
+                "fix": "Rewrite using: <Action> <Object>. Use when <Trigger>.",
+            })
         elif desc_length > 30:
-            report["issues"].append(
-                {
-                    "severity": "recommended",
-                    "category": "description",
-                    "message": f"Description slightly long ({desc_length} {unit}, target 10-30)",
-                    "fix": "Consider trimming to under 30 words.",
-                }
-            )
+            report["issues"].append({
+                "severity": "recommended",
+                "category": "description",
+                "message": f"Description slightly long ({desc_length} {unit}, target 10-30)",
+                "fix": "Consider trimming to under 30 words.",
+            })
 
     # Token analysis
     tokens_skill_md = estimate_tokens(content)
@@ -192,23 +171,19 @@ def analyze(skill_path: str) -> dict:
     }
 
     if tokens_body > 500:
-        report["issues"].append(
-            {
-                "severity": "critical",
-                "category": "tokens",
-                "message": f"SKILL.md body too large ({tokens_body} tokens, target < 300)",
-                "fix": "Move reference content to resources/. Keep only imperative steps.",
-            }
-        )
+        report["issues"].append({
+            "severity": "critical",
+            "category": "tokens",
+            "message": f"SKILL.md body too large ({tokens_body} tokens, target < 300)",
+            "fix": "Move reference content to resources/. Keep only imperative steps.",
+        })
     elif tokens_body > 300:
-        report["issues"].append(
-            {
-                "severity": "recommended",
-                "category": "tokens",
-                "message": f"SKILL.md body could be trimmed ({tokens_body} tokens, target < 300)",
-                "fix": "Review for content that could move to resources/.",
-            }
-        )
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "tokens",
+            "message": f"SKILL.md body could be trimmed ({tokens_body} tokens, target < 300)",
+            "fix": "Review for content that could move to resources/.",
+        })
 
     # Feature utilization
     context_value = fields.get("context", "")
@@ -226,62 +201,53 @@ def analyze(skill_path: str) -> dict:
     check_feats = ("arguments", "allowed_tools", "argument_hint")
     unused = [k for k, v in report["features"].items() if not v and k in check_feats]
     for feat in unused:
-        report["issues"].append(
-            {
-                "severity": "recommended",
-                "category": "features",
-                "message": f"Unused official feature: {feat}",
-                "fix": f"Consider adding {feat} support.",
-            }
-        )
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "features",
+            "message": f"Unused official feature: {feat}",
+            "fix": f"Consider adding {feat} support.",
+        })
 
     if not report["structure"]["has_openai_yaml"]:
-        report["issues"].append(
-            {
-                "severity": "recommended",
-                "category": "structure",
-                "message": "Missing recommended metadata file: 'agents/openai.yaml'",
-                "fix": "Add agents/openai.yaml with interface.display_name, interface.short_description, and interface.default_prompt.",
-            }
-        )
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "structure",
+            "message": "Missing recommended metadata file: 'agents/openai.yaml'",
+            "fix": "Add agents/openai.yaml with interface.display_name, interface.short_description, and interface.default_prompt.",
+        })
 
     # Voice quality checks
     first_person = [r"\bI\'ll\b", r"\bI will\b", r"\bwe should\b"]
     passive_voice = [r"\bis\s+\w+ed\b", r"\bare\s+\w+ed\b", r"\bshould be\b", r"\bit would\b"]
     for pat in first_person:
         if re.search(pat, body, re.IGNORECASE):
-            report["issues"].append(
-                {
-                    "severity": "recommended",
-                    "category": "clarity",
-                    "message": f"First-person voice detected: pattern {pat!r}",
-                    "fix": "Rewrite as imperative: Do X instead of I'll do X.",
-                }
-            )
+            report["issues"].append({
+                "severity": "recommended",
+                "category": "clarity",
+                'message': f'First-person voice detected: pattern {pat!r}',
+                'fix': 'Rewrite as imperative: Do X instead of I\'ll do X.',
+            })
             break
     for pat in passive_voice:
         if re.search(pat, body, re.IGNORECASE):
-            report["issues"].append(
-                {
-                    "severity": "recommended",
-                    "category": "clarity",
-                    "message": f"Passive voice detected: pattern {pat!r}",
-                    "fix": "Rewrite as imperative: Analyze X instead of X is analyzed.",
-                }
-            )
+            report["issues"].append({
+                "severity": "recommended",
+                "category": "clarity",
+                'message': f'Passive voice detected: pattern {pat!r}',
+                'fix': 'Rewrite as imperative: Analyze X instead of X is analyzed.',
+            })
             break
+
 
     edu_patterns = [r"##\s*(Why|Background|Understanding|Introduction)", r"(?i)\bwhy\s+\w+\s+fail"]
     for pat in edu_patterns:
         if re.search(pat, body):
-            report["issues"].append(
-                {
-                    "severity": "recommended",
-                    "category": "layering",
-                    "message": "Educational/background content detected in SKILL.md",
-                    "fix": "Move to resources/BACKGROUND.md.",
-                }
-            )
+            report["issues"].append({
+                "severity": "recommended",
+                "category": "layering",
+                "message": "Educational/background content detected in SKILL.md",
+                "fix": "Move to resources/BACKGROUND.md.",
+            })
             break
 
     # Sort issues by severity

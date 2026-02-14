@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill Optimizer"
-  short_description: "Analyze and optimize Claude Code skills for compliance."
-  default_prompt: "Use $skill-optimizer to analyze this skill folder and propose an optimized SKILL.md."

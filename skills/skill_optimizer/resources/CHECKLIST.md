@@ -2,8 +2,8 @@
 
 ## 1. Frontmatter Compliance
 
-- **Check**: All fields are in the official set: `name`, `description`, `argument-hint`, `disable-model-invocation`, `user-invocable`, `allowed-tools`, `model`, `context`, `agent`, `hooks`.
-- **Fail**: Any field not in the list (e.g., `version`, `category`, `tags`).
+- **Check**: All fields are in the official set: `name`, `description`, `argument-hint`, `disable-model-invocation`, `user-invocable`, `allowed-tools`, `model`, `context`, `agent`, `hooks`, `category`, `tags`.
+- **Fail**: Any field not in the list (e.g., `version`, `author`, `license`).
 - **Fix**: Remove non-standard fields. Migrate useful metadata into SKILL.md body or resources/.
 
 ## 2. Description Quality

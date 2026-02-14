@@ -27,6 +27,6 @@ Report issues by severity, then a token budget table (Before/After/Δ), then the
 
 ## Rules
 
-- Only official frontmatter fields: name, description, argument-hint, disable-model-invocation, user-invocable, allowed-tools, model, context, agent, hooks.
+- Only official frontmatter fields: name, description, argument-hint, disable-model-invocation, user-invocable, allowed-tools, model, context, agent, hooks, category, tags.
 - Optimized SKILL.md: < 300 tokens body, imperative voice, no educational content inline.
 - Preserve original intent. Move reference content to resources/.
