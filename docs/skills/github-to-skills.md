@@ -1,83 +1,50 @@
-# GitHub to Skills
+# GitHub to Skills Factory
 
-Automated factory for converting GitHub repositories into specialized AI skills.
+This skill automates the conversion of GitHub repositories into fully functional AI skills.
 
-## Overview
+## Core Functionality
 
-GitHub to Skills is an automation tool that transforms any GitHub repository into a fully functional AI skill. It fetches repository metadata, generates standardized skill structures, and creates wrapper scripts for seamless integration.
-
-## Features
-
-- 🔍 **Auto Analysis** - Fetches repository metadata (README, latest commit hash)
-- 📦 **Standardized Structure** - Creates consistent skill directory layout
-- 🏷️ **Enhanced Metadata** - Generates SKILL.md with extended frontmatter for lifecycle management
-- 🔧 **Wrapper Generation** - Creates interface scripts for tool invocation
-- 🔄 **Version Tracking** - Records commit hashes for future update detection
+1. **Analysis**: Fetches repository metadata (Description, README, Latest Commit Hash).
+2. **Scaffolding**: Creates a standardized skill directory structure.
+3. **Metadata Injection**: Generates `SKILL.md` with extended frontmatter (tracking source, version, hash) for future automated management.
+4. **Wrapper Generation**: Creates a `scripts/wrapper.py` (or similar) to interface with the tool.
 
 ## Usage
 
-Trigger the skill with a GitHub URL:
+**Trigger**: `/GitHub-to-skills <github_url>` or "Package this repo into a skill: <url>"
 
-```
-/github-to-skills https://github.com/yt-dlp/yt-dlp
-```
+### Required Metadata Schema
 
-Or use natural language:
+Every skill created by this factory MUST include the following extended YAML frontmatter in its `SKILL.md`. This is critical for the `skill-manager` to function later.
 
-```
-Package this repo into a skill: https://github.com/username/repo
+```yaml
+---
+name: <kebab-case-repo-name>
+description: <concise-description-for-agent-triggering>
+# EXTENDED METADATA (MANDATORY)
+github_url: <original-repo-url>
+github_hash: <latest-commit-hash-at-time-of-creation>
+version: <tag-or-0.1.0>
+created_at: <ISO-8601-date>
+entry_point: scripts/wrapper.py # or main script
+dependencies: # List main dependencies if known, e.g., ["yt-dlp", "ffmpeg"]
+---
 ```
 
 ## Workflow
 
-1. **Fetch Info** - Retrieves repository details (description, README, latest commit)
-2. **Plan** - Analyzes README to understand tool invocation patterns
-3. **Generate** - Creates SKILL.md and wrapper scripts with extended metadata
-4. **Verify** - Confirms commit hash was correctly captured
+1. **Fetch Info**: The agent first runs `scripts/fetch_github_info.py` to get the raw data from the repo.
+2. **Plan**: The agent analyzes the README to understand how to invoke the tool (CLI args, Python API, etc.).
+3. **Generate**: The agent uses the `skill-creator` patterns to write the `SKILL.md` and wrapper scripts, ensuring the **extended metadata** is present.
+4. **Verify**: Checks if the commit hash was correctly captured.
 
-## Generated Metadata Schema
+## Resources
 
-Every skill created includes this extended YAML frontmatter:
+- `scripts/fetch_github_info.py`: Utility to scrape/API fetch repo details (README, Hash, Tags).
+- `scripts/create_github_skill.py`: Orchestrator to scaffold the folder and write the initial files.
 
-```yaml
----
-name: repo-name
-description: Concise description for agent triggering
-github_url: https://github.com/user/repo
-github_hash: abc123def456...
-version: 1.0.0
-created_at: 2024-01-15T10:30:00Z
-entry_point: scripts/wrapper.py
-dependencies:
-  - package1
-  - package2
----
-```
+## Best Practices for Generated Skills
 
-## Best Practices
-
-- **Isolation** - Generated skills should manage their own dependencies
-- **Progressive Disclosure** - Include only necessary wrapper code, reference original repo for details
-- **Idempotency** - The `github_hash` field enables future update detection via `skill-manager`
-
-## Integration with Skill Manager
-
-Skills created by this factory are designed to work seamlessly with [skill-manager](./skill-manager.md) for:
-- Update detection (comparing local vs remote commit hashes)
-- Guided upgrade workflows
-- Version management
-
-## Requirements
-
-- Python 3.8+
-- Git
-- Internet connection
-
-## Scripts
-
-- `scripts/fetch_github_info.py` - Fetches repository metadata
-- `scripts/create_github_skill.py` - Orchestrates skill scaffolding
-
-## License
-
-MIT
+- **Isolation**: The generated skill should install its own dependencies (e.g., in a venv or via `uv`/`pip`) if possible, or clearly state them.
+- **Progressive Disclosure**: Do not dump the entire repo into the skill. Only include the necessary wrapper code and reference the original repo for deep dives.
+- **Idempotency**: The `github_hash` field allows the future `skill-manager` to check `if remote_hash != local_hash` to trigger updates.

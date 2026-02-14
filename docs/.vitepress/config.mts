@@ -59,7 +59,7 @@ export default defineConfig({
                 { text: 'article-cover', link: '/skills/article-cover' },
                 { text: 'drawio', link: '/skills/drawio' },
                 { text: 'excalidraw', link: '/skills/excalidraw' },
-                { text: 'frontend-design', link: '/skills/frontend-design' },
+                { text: 'frontend-engineer', link: '/skills/frontend-engineer' },
                 { text: 'gemini-image', link: '/skills/gemini-image' }
               ]
             },
@@ -68,45 +68,54 @@ export default defineConfig({
               collapsed: false,
               items: [
                 { text: 'codex', link: '/skills/codex' },
-                { text: 'paper-replication', link: '/skills/paper-replication' },
+                { text: 'gemini', link: '/skills/gemini' },
+                { text: 'gh-address-comments', link: '/skills/gh-address-comments' },
+                { text: 'gh-bootstrap', link: '/skills/gh-bootstrap' },
+                { text: 'gh-fix-ci', link: '/skills/gh-fix-ci' },
+                { text: 'git-commit-cn', link: '/skills/git-commit-cn' },
+                { text: 'karpathy-guidelines', link: '/skills/karpathy-guidelines' },
+                { text: 'lib-slint-expert', link: '/skills/lib-slint-expert' },
+                { text: 'lsp-manager', link: '/skills/lsp-manager' },
                 { text: 'review-code', link: '/skills/review-code' },
                 { text: 'rust-cli-tui-developer', link: '/skills/rust-cli-tui-developer' },
-                { text: 'lib-slint-expert', link: '/skills/lib-slint-expert' },
-                { text: 'vue-best-practices', link: '/skills/vue-best-practices' },
                 { text: 'uv-expert', link: '/skills/uv-expert' },
-                { text: 'gh-bootstrap', link: '/skills/gh-bootstrap' }
+                { text: 'vue-best-practices', link: '/skills/vue-best-practices' }
               ]
             },
             {
               text: 'Research',
               collapsed: false,
               items: [
-                { text: 'research', link: '/skills/research' }
+                { text: 'paper-check', link: '/skills/paper-check' },
+                { text: 'research', link: '/skills/research' },
+                { text: 'xray-paper-skill', link: '/skills/xray-paper-skill' },
+                { text: 'zoterosynth', link: '/skills/zoterosynth' }
               ]
             },
             {
               text: 'Documentation',
               collapsed: false,
               items: [
+                { text: 'document-writer', link: '/skills/document-writer' },
                 { text: 'docx', link: '/skills/docx' },
-                { text: 'xlsx', link: '/skills/xlsx' },
-                { text: 'pptx', link: '/skills/pptx' },
+                { text: 'mermaid_expert', link: '/skills/mermaid_expert' },
                 { text: 'pdf', link: '/skills/pdf' },
+                { text: 'pptx', link: '/skills/pptx' },
+                { text: 'spec-interview', link: '/skills/spec-interview' },
                 { text: 'tech-blog', link: '/skills/tech-blog' },
                 { text: 'tech-design-doc', link: '/skills/tech-design-doc' },
-                { text: 'spec-interview', link: '/skills/spec-interview' },
-                { text: 'mermaid-expert', link: '/skills/mermaid-expert' }
+                { text: 'xlsx', link: '/skills/xlsx' }
               ]
             },
             {
               text: 'Academic',
               collapsed: false,
               items: [
+                { text: 'academic-slides', link: '/skills/academic-slides' },
                 { text: 'IEEE-writing-skills', link: '/skills/IEEE-writing-skills' },
                 { text: 'latex-paper-en', link: '/skills/latex-paper-en' },
                 { text: 'latex-thesis-zh', link: '/skills/latex-thesis-zh' },
-                { text: 'typst-paper', link: '/skills/typst-paper' },
-                { text: 'academic-slides', link: '/skills/academic-slides' }
+                { text: 'typst-paper', link: '/skills/typst-paper' }
               ]
             },
             {
@@ -114,20 +123,22 @@ export default defineConfig({
               collapsed: false,
               items: [
                 { text: 'claude-expert-skill-creator', link: '/skills/claude-expert-skill-creator' },
-                { text: 'mcp-to-skill', link: '/skills/mcp-to-skill' },
-                { text: 'skill-manager', link: '/skills/skill-manager' },
-                { text: 'skill-evolution-manager', link: '/skills/skill-evolution-manager' },
                 { text: 'github-to-skills', link: '/skills/github-to-skills' },
-                { text: 'skill-seekers', link: '/skills/skill-seekers' }
+                { text: 'mcp-to-skill', link: '/skills/mcp-to-skill' },
+                { text: 'skill-evolution-manager', link: '/skills/skill-evolution-manager' },
+                { text: 'skill-manager', link: '/skills/skill-manager' },
+                { text: 'skill-seekers', link: '/skills/skill-seekers' },
+                { text: 'skill_optimizer', link: '/skills/skill_optimizer' }
               ]
             },
             {
               text: 'Utilities',
               collapsed: false,
               items: [
-                { text: 'yt-dlp', link: '/skills/yt-dlp' },
+                { text: 'external-skills-tui', link: '/skills/external-skills-tui' },
+                { text: 'memory-system', link: '/skills/memory-system' },
                 { text: 'planning-with-files', link: '/skills/planning-with-files' },
-                { text: 'external-skills-tui', link: '/skills/external-skills-tui' }
+                { text: 'yt-dlp', link: '/skills/yt-dlp' }
               ]
             }
           ],
@@ -208,7 +219,7 @@ export default defineConfig({
                 { text: 'article-cover', link: '/zh/skills/article-cover' },
                 { text: 'drawio', link: '/zh/skills/drawio' },
                 { text: 'excalidraw', link: '/zh/skills/excalidraw' },
-                { text: 'frontend-design', link: '/zh/skills/frontend-design' },
+                { text: 'frontend-engineer', link: '/zh/skills/frontend-engineer' },
                 { text: 'gemini-image', link: '/zh/skills/gemini-image' }
               ]
             },
@@ -217,45 +228,54 @@ export default defineConfig({
               collapsed: false,
               items: [
                 { text: 'codex', link: '/zh/skills/codex' },
-                { text: 'paper-replication', link: '/zh/skills/paper-replication' },
+                { text: 'gemini', link: '/zh/skills/gemini' },
+                { text: 'gh-address-comments', link: '/zh/skills/gh-address-comments' },
+                { text: 'gh-bootstrap', link: '/zh/skills/gh-bootstrap' },
+                { text: 'gh-fix-ci', link: '/zh/skills/gh-fix-ci' },
+                { text: 'git-commit-cn', link: '/zh/skills/git-commit-cn' },
+                { text: 'karpathy-guidelines', link: '/zh/skills/karpathy-guidelines' },
+                { text: 'lib-slint-expert', link: '/zh/skills/lib-slint-expert' },
+                { text: 'lsp-manager', link: '/zh/skills/lsp-manager' },
                 { text: 'review-code', link: '/zh/skills/review-code' },
                 { text: 'rust-cli-tui-developer', link: '/zh/skills/rust-cli-tui-developer' },
-                { text: 'lib-slint-expert', link: '/zh/skills/lib-slint-expert' },
-                { text: 'vue-best-practices', link: '/zh/skills/vue-best-practices' },
                 { text: 'uv-expert', link: '/zh/skills/uv-expert' },
-                { text: 'gh-bootstrap', link: '/zh/skills/gh-bootstrap' }
+                { text: 'vue-best-practices', link: '/zh/skills/vue-best-practices' }
               ]
             },
             {
               text: '研究',
               collapsed: false,
               items: [
-                { text: 'research', link: '/zh/skills/research' }
+                { text: 'paper-check', link: '/zh/skills/paper-check' },
+                { text: 'research', link: '/zh/skills/research' },
+                { text: 'xray-paper-skill', link: '/zh/skills/xray-paper-skill' },
+                { text: 'zoterosynth', link: '/zh/skills/zoterosynth' }
               ]
             },
             {
               text: '文档',
               collapsed: false,
               items: [
+                { text: 'document-writer', link: '/zh/skills/document-writer' },
                 { text: 'docx', link: '/zh/skills/docx' },
-                { text: 'xlsx', link: '/zh/skills/xlsx' },
-                { text: 'pptx', link: '/zh/skills/pptx' },
+                { text: 'mermaid_expert', link: '/zh/skills/mermaid_expert' },
                 { text: 'pdf', link: '/zh/skills/pdf' },
+                { text: 'pptx', link: '/zh/skills/pptx' },
+                { text: 'spec-interview', link: '/zh/skills/spec-interview' },
                 { text: 'tech-blog', link: '/zh/skills/tech-blog' },
                 { text: 'tech-design-doc', link: '/zh/skills/tech-design-doc' },
-                { text: 'spec-interview', link: '/zh/skills/spec-interview' },
-                { text: 'mermaid-expert', link: '/zh/skills/mermaid-expert' }
+                { text: 'xlsx', link: '/zh/skills/xlsx' }
               ]
             },
             {
               text: '学术',
               collapsed: false,
               items: [
+                { text: 'academic-slides', link: '/zh/skills/academic-slides' },
                 { text: 'IEEE-writing-skills', link: '/zh/skills/IEEE-writing-skills' },
                 { text: 'latex-paper-en', link: '/zh/skills/latex-paper-en' },
                 { text: 'latex-thesis-zh', link: '/zh/skills/latex-thesis-zh' },
-                { text: 'typst-paper', link: '/zh/skills/typst-paper' },
-                { text: 'academic-slides', link: '/zh/skills/academic-slides' }
+                { text: 'typst-paper', link: '/zh/skills/typst-paper' }
               ]
             },
             {
@@ -263,20 +283,22 @@ export default defineConfig({
               collapsed: false,
               items: [
                 { text: 'claude-expert-skill-creator', link: '/zh/skills/claude-expert-skill-creator' },
-                { text: 'mcp-to-skill', link: '/zh/skills/mcp-to-skill' },
-                { text: 'skill-manager', link: '/zh/skills/skill-manager' },
-                { text: 'skill-evolution-manager', link: '/zh/skills/skill-evolution-manager' },
                 { text: 'github-to-skills', link: '/zh/skills/github-to-skills' },
-                { text: 'skill-seekers', link: '/zh/skills/skill-seekers' }
+                { text: 'mcp-to-skill', link: '/zh/skills/mcp-to-skill' },
+                { text: 'skill-evolution-manager', link: '/zh/skills/skill-evolution-manager' },
+                { text: 'skill-manager', link: '/zh/skills/skill-manager' },
+                { text: 'skill-seekers', link: '/zh/skills/skill-seekers' },
+                { text: 'skill_optimizer', link: '/zh/skills/skill_optimizer' }
               ]
             },
             {
               text: '工具',
               collapsed: false,
               items: [
-                { text: 'yt-dlp', link: '/zh/skills/yt-dlp' },
+                { text: 'external-skills-tui', link: '/zh/skills/external-skills-tui' },
+                { text: 'memory-system', link: '/zh/skills/memory-system' },
                 { text: 'planning-with-files', link: '/zh/skills/planning-with-files' },
-                { text: 'external-skills-tui', link: '/zh/skills/external-skills-tui' }
+                { text: 'yt-dlp', link: '/zh/skills/yt-dlp' }
               ]
             }
           ],

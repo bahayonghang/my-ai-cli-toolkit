@@ -1,112 +1,57 @@
 # Skills Overview
 
-AI Skills Hub provides a collection of specialized AI skills for different development tasks.
+A comprehensive collection of specialized AI skills for development, research, documentation, and academic writing.
 
 ## Available Skills
 
-| Skill | Category | Description | Status |
-|-------|----------|-------------|--------|
-| [article-cover](./article-cover) | Design | Generate professional SVG cover images | ✅ |
-| [drawio](./drawio) | Design | AI-powered Draw.io diagram generation with real-time preview | ✅ |
-| [excalidraw](./excalidraw) | Design | Create hand-drawn style diagrams | ✅ |
-| [frontend-design](./frontend-design) | Design | Build distinctive frontend interfaces | ✅ |
-| [gemini-image](./gemini-image) | Design | AI image generation via Gemini API | ✅ |
-| [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | Design | Advanced UI/UX design intelligence (External) | 🔗 |
-| [codex](./codex) | Development | Code analysis and web search via Codex CLI | ✅ |
-| [paper-replication](./paper-replication) | Development | Replicate deep learning papers to PyTorch | ✅ |
-| [review-code](./review-code) | Development | Multi-dimensional code review with structured reports | ✅ |
-| [rust-cli-tui-developer](./rust-cli-tui-developer) | Development | Expert guidance for Rust CLI and TUI development | ✅ |
-| [lib-slint-expert](./lib-slint-expert) | Development | Comprehensive Slint GUI development expert | ✅ |
-| [vue-best-practices](./vue-best-practices) | Development | Vue 3 and TypeScript best practices | ✅ |
-| [uv-expert](./uv-expert) | Development | Expert guidance for uv Python package manager | ✅ |
-| [gh-bootstrap](./gh-bootstrap) | Development | One-stop GitHub repository configuration tool | ✅ |
-| [agent-browser](https://github.com/vercel-labs/agent-browser) | Development | Browser automation skill from Vercel Labs (External) | 🔗 |
-| [research](./research) | Research | Technical research with citations | ✅ |
-| [tech-blog](./tech-blog) | Documentation | Write technical blog posts | ✅ |
-| [tech-design-doc](./tech-design-doc) | Documentation | Generate technical design documents | ✅ |
-| [spec-interview](./spec-interview) | Documentation | Refine specs through systematic questioning | ✅ |
-| [mermaid-expert](./mermaid-expert) | Documentation | Expert guidance for Mermaid.js diagramming | ✅ |
-| [IEEE-writing-skills](./IEEE-writing-skills) | Academic | Translate, polish, and validate IEEE papers | ✅ |
-| [latex-paper-en](./latex-paper-en) | Academic | LaTeX assistant for English academic papers | ✅ |
-| [latex-thesis-zh](./latex-thesis-zh) | Academic | Chinese thesis LaTeX assistant | ✅ |
-| [typst-paper](./typst-paper) | Academic | Typst academic paper assistant | ✅ |
-| [claude-expert-skill-creator](./claude-expert-skill-creator) | Skill Development | Create production-ready skills from expert knowledge | ✅ |
-| [mcp-to-skill](./mcp-to-skill) | Skill Development | Convert MCP servers to Claude Code Skills | ✅ |
-| [skill-manager](./skill-manager) | Skill Development | Lifecycle manager for GitHub-based skills | ✅ |
-| [skill-evolution-manager](./skill-evolution-manager) | Skill Development | Evolve skills based on user feedback | ✅ |
-| [github-to-skills](./github-to-skills) | Skill Development | Convert GitHub repos into AI skills | ✅ |
-| [skill-seekers](./skill-seekers) | Skill Development | Generate LLM skills from documentation and codebases | ✅ |
-| [memory-system](./memory-system) | Knowledge Management | Local memory system with semantic search for Markdown files | ✅ |
-| [yt-dlp](./yt-dlp) | Utilities | Video downloader for YouTube, Bilibili, and 1000+ sites | ✅ |
-| [planning-with-files](./planning-with-files) | Utilities | File-based planning for complex multi-step tasks | ✅ |
-| [external-skills-tui](./external-skills-tui) | Utilities | TUI for managing external npm/pip/git skills | ✅ |
-
-## Skill Categories
-
-### Design Skills
-Skills for creating visual assets and interfaces:
-- **article-cover** - SVG cover images for articles
-- **drawio** - AI-powered Draw.io diagrams with real-time browser preview
-- **excalidraw** - Hand-drawn diagrams
-- **frontend-design** - Production-grade UI
-- **gemini-image** - AI-generated images
-- **ui-ux-pro-max** - Advanced UI/UX design intelligence (External)
-
-### Development Skills
-Skills for code analysis and generation:
-- **codex** - Deep code analysis with Codex CLI
-- **paper-replication** - Deep learning paper to PyTorch code
-- **review-code** - Multi-dimensional code review with structured reports
-- **rust-cli-tui-developer** - Expert guidance for Rust CLI and TUI development
-- **lib-slint-expert** - Comprehensive Slint GUI development expert
-- **vue-best-practices** - Vue 3 and TypeScript best practices
-- **uv-expert** - Expert guidance for uv Python package manager
-- **gh-bootstrap** - One-stop GitHub repository configuration tool
-- **agent-browser** - Browser automation (External)
-
-### Research Skills
-Skills for gathering and organizing information:
-- **research** - Web research with citations
-
-### Documentation Skills
-Skills for creating technical documents:
-- **tech-blog** - Technical blog posts
-- **tech-design-doc** - Design documents
-- **spec-interview** - Specification refinement
-- **mermaid-expert** - Expert guidance for Mermaid.js diagramming
-
-### Academic Writing Skills
-Skills for academic paper and thesis writing:
-- **IEEE-writing-skills** - IEEE paper translation and polishing
-- **latex-paper-en** - English academic paper LaTeX assistant
-- **latex-thesis-zh** - Chinese thesis LaTeX assistant
-- **typst-paper** - Typst academic paper assistant
-
-### Skill Development
-Skills for creating and managing skills:
-- **claude-expert-skill-creator** - Create production-ready skills
-- **mcp-to-skill** - Convert MCP servers to skills
-- **skill-manager** - Lifecycle manager for GitHub-based skills
-- **skill-evolution-manager** - Evolve skills based on user feedback
-- **github-to-skills** - Convert GitHub repos into AI skills
-- **skill-seekers** - Generate skills from docs
-
-### Knowledge Management
-Skills for managing and searching knowledge:
-- **memory-system** - Local memory system with semantic search for Markdown files
-
-### Utilities
-Useful tools and utilities:
-- **yt-dlp** - Video downloader
-- **planning-with-files** - File-based planning for complex tasks
-- **external-skills-tui** - Manage external skills
-
-## See Also: Agents
-
-Looking for specialized AI agents? Check out the [Agents](/agents/) section:
-
-- [@frontend-engineer](/agents/frontend-engineer) - UI/UX expert
-- [@document-writer](/agents/document-writer) - Technical writer
+| Skill | Category | Description |
+|-------|----------|-------------|
+| [article-cover](./article-cover) | 🎨 Design | Generate professional article cover images as SVG files |
+| [drawio](./drawio) | 🎨 Design | AI-powered Draw.io diagram generation with Design System |
+| [excalidraw](./excalidraw) | 🎨 Design | Generate hand-drawn style diagrams as .excalidraw.json files |
+| [frontend-engineer](./frontend-engineer) | 🎨 Design | 前端 UI/UX 设计开发专家代理 |
+| [gemini-image](./gemini-image) | 🎨 Design | Generate images using AI for pictures, drawing, painting, or artwork |
+| [codex](./codex) | 💻 Development | Execute Codex CLI for code generation, analysis, web search and web fetch |
+| [gemini](./gemini) | 💻 Development | Wield Google's Gemini CLI for code generation, review, analysis, and web research |
+| [gh-address-comments](./gh-address-comments) | 💻 Development | Help address review/issue comments on open GitHub PR |
+| [gh-bootstrap](./gh-bootstrap) | 💻 Development | 一站式 GitHub 仓库配置初始化工具 |
+| [gh-fix-ci](./gh-fix-ci) | 💻 Development | Debug or fix failing GitHub PR checks in GitHub Actions |
+| [git-commit-cn](./git-commit-cn) | 💻 Development | 生成符合约定式提交规范的中文 Git 提交信息 |
+| [karpathy-guidelines](./karpathy-guidelines) | 💻 Development | Behavioral guidelines to reduce common LLM coding mistakes |
+| [lib-slint-expert](./lib-slint-expert) | 💻 Development | Comprehensive Slint GUI development expert |
+| [lsp-manager](./lsp-manager) | 💻 Development | Automatically detect programming languages and configure Language Servers |
+| [review-code](./review-code) | 💻 Development | Multi-dimensional code review with structured reports |
+| [rust-cli-tui-developer](./rust-cli-tui-developer) | 💻 Development | Expert guidance for Rust CLI and TUI development |
+| [uv-expert](./uv-expert) | 💻 Development | Expert guidance for uv Python package and project manager |
+| [vue-best-practices](./vue-best-practices) | 💻 Development | Vue 3 and Vue.js best practices for TypeScript and Volar |
+| [paper-check](./paper-check) | 🔬 Research | 学术论文全流程质检工具 |
+| [research](./research) | 🔬 Research | Use codex web search for technical research with citation links |
+| [xray-paper-skill](./xray-paper-skill) | 🔬 Research | Deconstruct academic papers into core contributions and insights |
+| [zoterosynth](./zoterosynth) | 🔬 Research | Search, browse, and analyze Zotero libraries via zotero-mcp |
+| [document-writer](./document-writer) | 📝 Documentation | 技术文档撰写专家代理 |
+| [docx](./docx) | 📝 Documentation | Create, read, edit, or manipulate Word documents (.docx files) |
+| [mermaid_expert](./mermaid_expert) | 📝 Documentation | Create Mermaid diagrams with expert guidance |
+| [pdf](./pdf) | 📝 Documentation | Create, read, edit, or manipulate PDF files |
+| [pptx](./pptx) | 📝 Documentation | Create, read, edit, or manipulate PowerPoint presentations (.pptx files) |
+| [spec-interview](./spec-interview) | 📝 Documentation | 通过系统性访谈完善技术规格文档 |
+| [tech-blog](./tech-blog) | 📝 Documentation | Write technical blog posts with source code analysis or doc-driven research |
+| [tech-design-doc](./tech-design-doc) | 📝 Documentation | Generate technical design documents with proper structure and diagrams |
+| [xlsx](./xlsx) | 📝 Documentation | Create, read, edit, or manipulate spreadsheet files (.xlsx, .csv, .tsv) |
+| [academic-slides](./academic-slides) | 🎓 Academic | Academic slide generation with dual engines |
+| [IEEE-writing-skills](./IEEE-writing-skills) | 🎓 Academic | Translate, polish, restructure, and validate academic papers for IEEE publications |
+| [latex-paper-en](./latex-paper-en) | 🎓 Academic | LaTeX academic paper assistant for English papers (IEEE, ACM, Springer, NeurIPS, ICML) |
+| [latex-thesis-zh](./latex-thesis-zh) | 🎓 Academic | 中文学位论文 LaTeX 助手（博士/硕士论文） |
+| [typst-paper](./typst-paper) | 🎓 Academic | Typst 学术论文助手（支持中英文论文、会议/期刊投稿） |
+| [claude-expert-skill-creator](./claude-expert-skill-creator) | 🧩 Skill Development | Create production-ready skills from expert knowledge |
+| [github-to-skills](./github-to-skills) | 🧩 Skill Development | Automated factory for converting GitHub repositories into specialized AI skills |
+| [mcp-to-skill](./mcp-to-skill) | 🧩 Skill Development | Convert MCP servers into Claude Code skills |
+| [skill-evolution-manager](./skill-evolution-manager) | 🧩 Skill Development | Optimize and iterate existing Skills based on user feedback |
+| [skill-manager](./skill-manager) | 🧩 Skill Development | Lifecycle manager for GitHub-based skills |
+| [skill-seekers](./skill-seekers) | 🧩 Skill Development | Generate LLM skills from documentation, codebases, and GitHub repositories |
+| [skill_optimizer](./skill_optimizer) | 🧩 Skill Development | Analyze Claude Code skills for compliance and token efficiency |
+| [memory-system](./memory-system) | 🔧 Utilities | Persistent memory system with automatic session recovery |
+| [planning-with-files](./planning-with-files) | 🔧 Utilities | Plan complex projects using file-based workflows |
+| [yt-dlp](./yt-dlp) | 🔧 Utilities | 强大的视频下载工具，支持 YouTube 和 1000+ 网站 |
 
 ## Installation
 

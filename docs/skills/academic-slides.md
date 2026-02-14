@@ -1,23 +1,19 @@
-# academic-slides
+# Academic Slides
 
-Academic slide generation with dual engines. Supports **Typst Touying** and **LaTeX Beamer**.
-
-## Overview
-
-Academic Slides helps you generate, edit, compile, and review academic presentation slides. It provides a complete workflow from topic/outline to polished PDF output, with support for both Typst and LaTeX ecosystems.
+Generate/edit/compile/review academic slides. Supports **Typst Touying** and **LaTeX Beamer**.
 
 ## Workflows
 
 | Workflow | Trigger | Action |
 |----------|---------|--------|
-| create | "create slides" | Generate from topic/outline |
-| from-paper | "paper to slides" | Extract from paper |
-| edit | "edit slides" | Modify pages |
-| theme | "switch theme" | Switch theme/font |
-| compile | "compile" | Build PDF |
-| review | "review" | Quality check |
+| create | "创建幻灯片" | Generate from topic/outline |
+| from-paper | "论文转幻灯片" | Extract from paper |
+| edit | "编辑幻灯片" | Modify pages |
+| theme | "切换主题" | Switch theme/font |
+| compile | "编译" | Build PDF |
+| review | "审查" | Quality check |
 
-## Scripts
+## Scripts (Layer 0)
 
 Run `python scripts/<name>.py`:
 
@@ -27,21 +23,17 @@ Run `python scripts/<name>.py`:
 - `analyze_structure.py <file>` — Parse structure
 - `review_metrics.py <file>` — Quality scores
 
-## Resources
+## Resources (Layer 2)
+
+Load via `Read resources/<name>.md`:
 
 - `WORKFLOWS.md` — Workflow steps
-- `THEME_REFERENCE.md` — Theme configuration
+- `THEME_REFERENCE.md` — Theme config
 - `REVIEW_CRITERIA.md` — Review standards
-- `TYPST_SYNTAX.md` — Typst syntax reference
-- `LATEX_SYNTAX.md` — LaTeX syntax reference
-- `ERROR_PATTERNS.md` — Common error fixes
+- `TYPST_SYNTAX.md` — Typst syntax
+- `LATEX_SYNTAX.md` — LaTeX syntax
+- `ERROR_PATTERNS.md` — Error fixes
 
 ## Defaults
 
-| Setting | Default |
-|---------|---------|
-| Engine | Typst |
-| Theme | university |
-| Language | zh |
-| Aspect Ratio | 16:9 |
-| Output | `output/` |
+Engine: Typst | Theme: university | Lang: zh | Aspect: 16:9 | Output: `output/`

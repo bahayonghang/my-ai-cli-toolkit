@@ -1,43 +1,23 @@
-# gemini-image
+# Gemini Image Generation
 
-Generate images using Gemini API for text-to-image and image-to-image generation.
+Use this skill when user expresses intent to generate images (e.g., "draw a...", "generate an image...", "create a picture...").
 
-## Use Cases
+## Steps
 
-- Create pictures and artwork
-- Generate illustrations
-- Image style transfer
-- Multi-image composition
+### 1. Read Configuration
+- Read `config/secrets.md` to get API Key
 
-## Modes
+### 2. Construct Prompt
 
-### Text-to-Image
-Generate images from text descriptions.
+| Mode | Prompt Format | Example |
+|------|---------------|---------|
+| Text-to-Image | `description text` | `a cute orange cat` |
+| Image-to-Image | `image_URL description` | `https://xxx.jpg draw similar style` |
+| Multi-Image Reference | `URL1 URL2 description` | `https://a.jpg https://b.jpg merge these two` |
 
-```
-Prompt: "a cute orange cat"
-```
+For image-to-image, upload local images first. See `tips/image-upload.md`.
 
-### Image-to-Image
-Transform or reference existing images.
-
-```
-Prompt: "https://example.com/image.jpg draw similar style"
-```
-
-### Multi-Image Reference
-Combine multiple images.
-
-```
-Prompt: "https://a.jpg https://b.jpg merge these two"
-```
-
-## Setup
-
-1. Configure API key in `config/secrets.md`
-2. For local images, upload first (see tips)
-
-## API Call
+### 3. Call API
 
 ```bash
 curl -s -X POST "https://api.apicore.ai/v1/images/generations" \
@@ -51,14 +31,11 @@ curl -s -X POST "https://api.apicore.ai/v1/images/generations" \
   }'
 ```
 
-## Tips
+### 4. Return Result
 
-### Chinese Text
-See `tips/chinese-text.md` for handling Chinese text in prompts.
+Extract `data[0].url` from response and return to user.
 
-### Image Upload
-See `tips/image-upload.md` for uploading local images.
+## Reference Docs
 
-## Output
-
-Returns image URL from `data[0].url` in API response.
+- `tips/image-upload.md` - Image upload methods
+- `tips/chinese-text.md` - Chinese text handling tips
