@@ -299,22 +299,13 @@ class ItemListView(ListView):
 
     def load_items(self, item_infos: list[ItemInfo]) -> None:
         """加载项目列表"""
-        self.clear()
         self._all_items = []
-
-        # 添加表头
-        self.append(self._create_header())
-
-        if not item_infos:
-            empty = ListItem(Static("  📭 No items found", classes="text-muted"))
-            empty.can_focus = False
-            self.append(empty)
-            return
 
         for info in item_infos:
             item = SelectableItem(item_info=info)
             self._all_items.append(item)
-            self.append(item)
+
+        self._schedule_filter_apply()
 
     def get_selected_items(self) -> list[SelectableItem]:
         return [item for item in self._all_items if item.selected]
@@ -373,7 +364,20 @@ class ItemListView(ListView):
     def _apply_filter(self) -> None:
         """应用过滤"""
         self._filter_apply_scheduled = False
-        self.clear()
+        self.run_worker(
+            self._render_filtered_items(),
+            name=f"item-list-filter-{self.id or 'default'}",
+            group="item-list-filter",
+            exclusive=True,
+        )
+
+    async def _render_filtered_items(self) -> None:
+        """Rebuild visible rows after filters are updated.
+
+        ListView.clear() returns an awaitable; we must wait for removal to finish
+        before appending rows, otherwise first filter interaction may show empty results.
+        """
+        await self.clear()
 
         # 添加表头
         self.append(self._create_header())
@@ -381,7 +385,9 @@ class ItemListView(ListView):
         visible = [item for item in self._all_items if self._matches_filter(item)]
 
         if not visible:
-            empty = ListItem(Static("  🔍 No matches found", classes="text-muted"))
+            has_active_filter = bool(self._filter_text or self._filter_category is not None or self._filter_status is not None)
+            empty_text = "  🔍 No matches found" if has_active_filter else "  📭 No items found"
+            empty = ListItem(Static(empty_text, classes="text-muted"))
             empty.can_focus = False
             self.append(empty)
             return

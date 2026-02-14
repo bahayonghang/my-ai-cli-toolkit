@@ -11,6 +11,8 @@ from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, RadioButton, RadioSet, Static
 
+from core.config_loader import get_platform_config
+
 from .header import PLATFORM_ICONS
 
 # Max items to show in preview list before truncating
@@ -56,7 +58,7 @@ def _build_items_display(items: list[str], columns: int = _ITEM_COLUMNS) -> str:
         row_items = preview[i : i + columns]
         row = ""
         for name in row_items:
-            row += f"  • {name:<{col_width}}"
+            row += f"  ‣ {name:<{col_width}}"
         lines.append(row.rstrip())
 
     if count > _MAX_PREVIEW_ITEMS:
@@ -70,11 +72,15 @@ class InstallModal(ModalScreen[InstallConfig | None]):
 
     Displays target platform name, radio toggle for install mode,
     conditional path input, items to install, and confirm/cancel buttons.
+
+    Key design: avoids ``on_key`` override entirely to prevent Textual's
+    ModalScreen key dispatch from intercepting events meant for the Input
+    widget. Uses ``disabled`` property instead of ``can_focus`` toggling
+    for reliable focus cycle management.
     """
 
     BINDINGS = [
         ("escape", "cancel", "Cancel"),
-        ("enter", "submit_install", "Install"),
     ]
 
     def __init__(
@@ -99,14 +105,13 @@ class InstallModal(ModalScreen[InstallConfig | None]):
                 f" {icon}  Install to {platform_name}",
                 id="dialog-title",
             )
-            yield Static("", id="dialog-sep")
 
             # ── Install mode section ──
             with Vertical(id="mode-section"):
-                yield Static("  Install Mode", id="mode-label")
+                yield Static("Install Mode", id="mode-label")
                 with RadioSet(id="install-radio"):
                     yield RadioButton(
-                        f" 🌐  Global Install  (~/.{self._platform}/)",
+                        f" 🌐  Global Install  ({get_platform_config(self._platform).base_dir}/)",
                         value=True,
                         id="radio-global",
                     )
@@ -115,12 +120,21 @@ class InstallModal(ModalScreen[InstallConfig | None]):
                         id="radio-directory",
                     )
 
-            # Conditional path input (hidden by default)
-            with Vertical(id="path-container", classes="-hidden"):
+            # Path input — always present, disabled by default.
+            # Using disabled instead of display:none avoids Textual focus
+            # cycle issues that prevent the Input from receiving keystrokes.
+            with Vertical(id="path-section"):
+                yield Static(
+                    "  📍  Target Path",
+                    id="path-label",
+                    classes="-hidden",
+                )
                 yield Input(
-                    placeholder="Enter directory path...",
+                    placeholder="Enter project directory path, e.g. ./my-project",
                     value=self._default_path,
                     id="path-input",
+                    disabled=True,
+                    classes="-hidden",
                 )
 
             # ── Items section ──
@@ -136,17 +150,34 @@ class InstallModal(ModalScreen[InstallConfig | None]):
 
             # ── Action buttons ──
             with Horizontal(id="dialog-buttons"):
-                yield Button("✓ Install", variant="primary", id="btn-install")
-                yield Button("✗ Cancel", variant="default", id="btn-cancel")
+                yield Button(
+                    "✓ Install", variant="primary", id="btn-install"
+                )
+                yield Button(
+                    "✗ Cancel", variant="default", id="btn-cancel"
+                )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """Toggle path input visibility based on radio selection."""
-        path_container = self.query_one("#path-container")
-        if event.index == 1:  # Specify Directory
-            path_container.remove_class("-hidden")
-            self.query_one("#path-input", Input).focus()
+        is_directory = event.index == 1
+        path_input = self.query_one("#path-input", Input)
+        path_label = self.query_one("#path-label", Static)
+
+        if is_directory:
+            path_label.remove_class("-hidden")
+            path_input.remove_class("-hidden")
+            path_input.disabled = False
+            # Use set_timer for reliable post-layout focus
+            self.set_timer(0.05, path_input.focus)
         else:
-            path_container.add_class("-hidden")
+            path_label.add_class("-hidden")
+            path_input.add_class("-hidden")
+            path_input.disabled = True
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """When user presses Enter inside the path input, trigger install."""
+        if event.input.id == "path-input":
+            self._do_install()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-install":
@@ -162,7 +193,11 @@ class InstallModal(ModalScreen[InstallConfig | None]):
             path_input = self.query_one("#path-input", Input)
             path = path_input.value.strip()
             if not path:
-                self.notify("Please enter a directory path", severity="warning")
+                self.notify(
+                    "⚠ Please enter a directory path",
+                    severity="warning",
+                )
+                path_input.focus()
                 return
             config = InstallConfig(
                 install_mode="directory",
@@ -180,7 +215,3 @@ class InstallModal(ModalScreen[InstallConfig | None]):
 
     def action_cancel(self) -> None:
         self.dismiss(None)
-
-    def action_submit_install(self) -> None:
-        """Trigger install on Enter."""
-        self._do_install()

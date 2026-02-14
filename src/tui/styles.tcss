@@ -372,26 +372,20 @@ InstallModal {
     text-style: bold;
     color: $primary;
     width: 100%;
-    padding: 1 0 2 0;
-}
-
-#dialog-sep {
-    width: 100%;
-    height: 1;
-    border-bottom: solid $primary 40%;
+    padding: 1 0 1 0;
 }
 
 /* Mode section container */
 #mode-section {
     height: auto;
     padding: 0 0;
-    margin: 2 0 0 0;
+    margin: 1 0 0 0;
 }
 
 #mode-label {
     color: $accent;
     text-style: bold;
-    padding: 0 0 0 0;
+    padding: 0 0 0 1;
 }
 
 #install-radio {
@@ -412,39 +406,57 @@ InstallModal {
     background: transparent;
 }
 
-#path-container {
+/* Path section — shown when directory mode is selected */
+#path-section {
     height: auto;
-    padding: 0 1;
-    margin: 0 1;
+    padding: 0 0;
+    margin: 1 0 0 0;
 }
 
-#path-container.-hidden {
+#path-label {
+    color: $accent;
+    text-style: bold;
+    padding: 0 0 0 1;
+}
+
+#path-label.-hidden {
     display: none;
 }
 
 #path-input {
     width: 100%;
-    height: 1;
+    height: 3;
     border: round $panel;
     background: $background;
     padding: 0 1;
+    margin: 0 1;
+}
+
+#path-input.-hidden {
+    display: none;
 }
 
 #path-input:focus {
-    border: round $primary;
+    border: round $accent;
+    background: $background;
+}
+
+#path-input.-disabled {
+    color: $text-muted;
+    background: $panel;
 }
 
 /* Items section container */
 #items-section {
     height: auto;
     padding: 0 0;
-    margin: 2 0 0 0;
+    margin: 1 0 0 0;
 }
 
 #items-label {
     color: $accent;
     text-style: bold;
-    padding: 0;
+    padding: 0 0 0 1;
 }
 
 #items-list {
@@ -459,7 +471,7 @@ InstallModal {
 
 #dialog-buttons {
     align: center middle;
-    padding: 2 0 0 0;
+    padding: 2 0 1 0;
     height: auto;
 }
 
