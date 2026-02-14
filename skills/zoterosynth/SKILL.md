@@ -1,20 +1,8 @@
 ---
 name: zotero-synth
-description: >
-  Searches, browses, and analyzes Zotero libraries via zotero-mcp MCP tools.
-  Summarizes individual papers, generates multi-paper literature reviews,
-  synthesizes cross-paper evidence with citation backlinks, and exports BibTeX.
-  Use when the user mentions Zotero, literature review, paper analysis,
-  research synthesis, academic references, citation management, reading notes,
-  PDF annotations, or systematic review.
-category: research
-tags:
-  - zotero
-  - literature-review
-  - paper-analysis
-  - research-synthesis
-  - citation-management
-  - mcp
+description: Search, browse, and analyze Zotero libraries via zotero-mcp to summarize papers, generate topic or collection literature reviews, synthesize evidence with backlinks, and export BibTeX. Use when tasks involve Zotero collection browsing, collection-based review writing, paper summary, or evidence synthesis.
+category: knowledge-management
+tags: [zotero, literature-review, academic, research, synthesis, bibtex]
 ---
 
 # ZoteroSynth
@@ -34,11 +22,17 @@ Arguments: `<task> [query-or-item]`
 
 - `check` → verify MCP and Zotero connectivity. Follow `references/ERRORS.md` on failure.
 - `summarize <query|key>` → single-paper flow. Read `references/WORKFLOWS.md` § 1, output per `assets/prompts/summarize.md`.
-- `review <topic|collection>` → multi-paper review (Map-Reduce). Read `references/WORKFLOWS.md` § 2, output per `assets/prompts/review.md`.
+- `review <topic|collection_key|collection_name>` → multi-paper review (Map-Reduce). For collection-based review, follow `references/WORKFLOWS.md` § 2 and output strictly per `assets/prompts/review.md`.
 - `synthesize <question>` → evidence synthesis. Read `references/WORKFLOWS.md` § 3, output per `assets/prompts/synthesize.md`.
+- `extract <query|collection>` → Extract papers to `papers.json` using `scripts/extract_papers.py`.
 - `bibtex <query|keys>` → export citations via `zotero-mcp:zotero_get_item_metadata` with `format="bibtex"`.
 
 ## 3) Output Rules
+- **Literature Review**:
+    - Use `assets/prompts/review.md` as the canonical output contract.
+    - Must cover at least 50 papers (if topic specified) or 80 papers (if no topic, broad review), when available.
+    - Must include: `itemType`, `year`, `itemLink` (unchanged), `dataSource`, `dataSource url`.
+    - Must include both detailed per-paper analysis and a final summary table.
 - Add a backlink for each claim: `[Author, Year, item_key]`.
 - Mark missing evidence as `[需确认]`; do not fabricate content.
 - For >10 papers, use Map-Reduce and keep per-paper traceability.

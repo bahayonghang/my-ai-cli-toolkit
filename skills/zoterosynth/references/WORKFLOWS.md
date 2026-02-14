@@ -54,17 +54,20 @@ Review Progress:
 ```
 
 ### Inputs
-- 主题查询词或 collection 标识
+- 主题查询词，或 collection 标识（`collection_key` / `collection_name`）
 - 可选：时间范围/子主题
 
 ### Steps
-1. 用 `zotero-mcp:zotero_search_items` / `zotero-mcp:zotero_get_collection_items` 收集文献。
-2. 超过 10 篇时，先按批次做 Map：逐篇摘要（300-600 tokens）。
-3. 用 `assets/prompts/review.md` 做 Reduce，形成主题分组、方法对比与 gap。
-4. 用 `zotero-mcp:zotero_semantic_search` 补检可能遗漏文献。
+1. 若输入为 collection 名称，先用 `zotero-mcp:zotero_get_collections` 定位 collection，再用 `zotero-mcp:zotero_get_collection_items` 获取条目；若输入为主题则用 `zotero-mcp:zotero_search_items` 起步。
+2. 对收集到的每篇文献，至少获取一次 `zotero-mcp:zotero_get_item_metadata`，确保后续可输出 `itemType`、`year`、`itemLink`。
+3. 超过 10 篇时，先按批次做 Map：逐篇摘要（300-600 tokens，可结合 fulltext/annotations）。
+4. 用 `assets/prompts/review.md` 做 Reduce，输出逐篇详述 + 主题综合 + 总表。
+5. 用 `zotero-mcp:zotero_semantic_search` 补检可能遗漏文献（语义索引可用时）。
 
 ### Output
-- 结构化综述：背景、分类、共识、分歧、研究空白、方向。
+- 必须遵循 `assets/prompts/review.md` 的完整结构和约束。
+- 开头必须包含 `dataSource` 与 `dataSource url`（与输入 JSON 完全一致）。
+- 逐篇详述必须包含 `itemType`、`year`、`itemLink`（原样）。
 - 每段包含文献回链。
 
 ### Fallback
@@ -73,10 +76,12 @@ Review Progress:
 ### Feedback Loop
 After generating the review:
 1. Verify every paragraph has at least one `[Author, Year, item_key]` backlink.
-2. Verify review covers: 背景、分类、共识、分歧、研究空白、方向。
+2. Verify review covers required sections in `assets/prompts/review.md`.
 3. Verify review length ≥ 1500 字.
-4. Run `zotero-mcp:zotero_semantic_search` with key terms to check for missed papers.
-5. If gaps found → add to literature set and re-reduce.
+4. Verify detailed paper count: topic mode ≥ 50, broad mode ≥ 80 (or explicitly explain shortfall).
+5. Verify every `itemLink` is copied unchanged from source metadata.
+6. Run `zotero-mcp:zotero_semantic_search` with key terms to check for missed papers.
+7. If gaps found → add to literature set and re-reduce.
 
 ## 3) Evidence Synthesis
 
