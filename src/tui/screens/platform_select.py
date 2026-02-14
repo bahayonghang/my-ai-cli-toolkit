@@ -53,6 +53,7 @@ PLATFORM_ICONS = {
     "trae-cn": "🧩",
     "opencode": "👾",
     "iflow": "🌊",
+    "qoder": "🧠",
 }
 
 
@@ -71,7 +72,7 @@ class PlatformSelectScreen(Screen):
     PLATFORMS = [
         PlatformDisplay("claude", "Claude", "~/.claude/"),
         PlatformDisplay("codex", "Codex", "~/.codex/"),
-        PlatformDisplay("gemini", "Gemini", "~/.gemini/"),
+        PlatformDisplay("gemini", "Gemini", "~/.agents/"),
         PlatformDisplay("qwen", "Qwen", "~/.qwen/"),
         PlatformDisplay("antigravity", "Antigravity", "~/.gemini/antigravity/"),
         PlatformDisplay("windsurf", "Windsurf", "~/.codeium/windsurf/"),
@@ -80,6 +81,7 @@ class PlatformSelectScreen(Screen):
         PlatformDisplay("trae-cn", "Trae CN", "~/.trae-cn/"),
         PlatformDisplay("opencode", "OpenCode", "~/.config/opencode/"),
         PlatformDisplay("iflow", "iFlow", "~/.iflow/"),
+        PlatformDisplay("qoder", "Qoder", "~/.qoder/"),
     ]
 
     def compose(self) -> ComposeResult:

@@ -138,6 +138,9 @@ uv run python src/install.py --target windsurf install-all
 uv run python src/install.py --target trae install-all
 uv run python src/install.py --target trae-cn install-all
 
+# Install to Qoder
+uv run python src/install.py --target qoder install-all
+
 # Install to OpenCode
 uv run python src/install.py --target opencode install-all
 
@@ -223,6 +226,7 @@ uv run python external-skills/install_tui.py
 | codex | `~/.codex/skills/` | `~/.codex/prompts/` |
 | gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
 | qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
+| qoder | `~/.qoder/skills/` | `~/.qoder/commands/` |
 | antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | trae | `~/.trae/skills/` | `~/.trae/commands/` |

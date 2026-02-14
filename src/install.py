@@ -142,7 +142,7 @@ class SkillManager:
         """Initialize SkillManager.
 
         Args:
-            target: Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)
+            target: Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)
             project_path: Project path (optional)
             use_kiro: Whether to use Kiro structure
         """
@@ -401,7 +401,7 @@ def list_skills(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -421,7 +421,7 @@ def installed(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -442,7 +442,7 @@ def install(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -465,7 +465,7 @@ def install_all(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -486,7 +486,7 @@ def install_commands(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -507,7 +507,7 @@ def interactive(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -527,7 +527,7 @@ def prompt_update(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
@@ -547,7 +547,7 @@ def prompt_diff(
         "claude",
         "--target",
         "-t",
-        help="Target platform (claude, codex, gemini, qwen, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
+        help="Target platform (claude, codex, gemini, qwen, qoder, antigravity, windsurf, kiro, trae, trae-cn, opencode, iflow)",
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,

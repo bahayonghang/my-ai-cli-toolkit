@@ -115,7 +115,7 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
     "gemini": PlatformConfig(
         name="gemini",
         type="cli",
-        base_dir="~/.gemini",
+        base_dir="~/.agents",
         skills_subdir="skills",
         commands_subdir="commands",
         prompt_file=None,
@@ -130,6 +130,16 @@ DEFAULT_PLATFORMS: dict[str, PlatformConfig] = {
         commands_subdir="commands",
         prompt_file=None,
         commands_source="qwen",
+        fallback_commands_source="claude",
+    ),
+    "qoder": PlatformConfig(
+        name="qoder",
+        type="cli",
+        base_dir="~/.qoder",
+        skills_subdir="skills",
+        commands_subdir="commands",
+        prompt_file=None,
+        commands_source="qoder",
         fallback_commands_source="claude",
     ),
     "kiro": PlatformConfig(
@@ -213,6 +223,7 @@ DEFAULT_PROJECT_OVERRIDES: dict[str, ProjectInstallOverride] = {
     "codex": ProjectInstallOverride(platform_dir=".codex", commands_subdir="prompts"),
     "opencode": ProjectInstallOverride(platform_dir=".opencode", commands_subdir="commands"),
     "iflow": ProjectInstallOverride(platform_dir=".iflow", commands_subdir="commands"),
+    "qoder": ProjectInstallOverride(platform_dir=".qoder", commands_subdir="commands"),
 }
 
 

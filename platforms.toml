@@ -32,7 +32,7 @@ fallback_commands_source = "claude"
 
 [platforms.gemini]
 type = "cli"
-base_dir = "~/.gemini"
+base_dir = "~/.agents"
 skills_subdir = "skills"
 commands_subdir = "commands"
 # prompt_file = null
@@ -55,6 +55,15 @@ skills_subdir = "skills"
 commands_subdir = "steering"  # kiro 使用 steering 目录
 # prompt_file = null
 commands_source = "kiro"
+fallback_commands_source = "claude"
+
+[platforms.qoder]
+type = "cli"
+base_dir = "~/.qoder"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = "qoder"
 fallback_commands_source = "claude"
 
 [platforms.trae]
@@ -152,4 +161,8 @@ commands_subdir = "commands"
 
 [project_install.overrides.iflow]
 platform_dir = ".iflow"
+commands_subdir = "commands"
+
+[project_install.overrides.qoder]
+platform_dir = ".qoder"
 commands_subdir = "commands"
