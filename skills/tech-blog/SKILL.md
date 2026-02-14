@@ -1,7 +1,7 @@
 ---
 name: tech-blog
 description: Write technical blog posts with source code analysis OR doc-driven research. Use when user wants to explain system internals, architecture, implementation details, or technical concepts with citations.
-category: content-creation
+category: documentation
 tags: [blog, technical-writing, code-analysis, architecture]
 ---
 

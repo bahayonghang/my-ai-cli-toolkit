@@ -4,6 +4,8 @@ description: Deconstruct academic papers into core contributions, critical assum
 user-invocable: true
 argument-hint: [paper-path-or-url]
 allowed-tools: Read, Write, Bash(date *), Bash(open *)
+category: academic-writing
+tags: [paper-analysis, deconstruction, academic, research]
 ---
 
 Act as a deep academic deconstructor. Do NOT summarize — deconstruct the paper's underlying logic model.
