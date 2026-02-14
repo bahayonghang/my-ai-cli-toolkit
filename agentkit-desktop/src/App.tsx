@@ -124,7 +124,7 @@ function App() {
   const isResourceTab = ["skills", "commands", "agents"].includes(activeTab);
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex text-slate-100 font-sans selection:bg-primary-500/30">
+    <div className="h-screen w-screen overflow-hidden flex text-[color:var(--ak-text-primary)] selection:bg-primary-500/30">
       <ComponentErrorBoundary componentName="Sidebar">
         <Sidebar
           activeTab={activeTab}

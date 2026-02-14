@@ -5,11 +5,13 @@
 import { useCallback, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
+import { AlertTriangle, Inbox, X } from "lucide-react";
 import { useMarketplaceStore } from "@/stores";
 import type { MarketplaceSkill } from "@/types";
 import { SkillCard } from "./SkillCard";
 import { MarketFilterBar } from "./MarketFilterBar";
 import { SortTabs } from "./SortTabs";
+import { IconButton } from "./ui/IconButton";
 
 const VIRTUALIZATION_THRESHOLD = 60;
 const ESTIMATED_CARD_HEIGHT = 168;
@@ -115,7 +117,7 @@ export function MarketplacePanel() {
       {nodejsAvailable === false && (
         <div className="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">⚠️</span>
+            <AlertTriangle className="text-amber-500 h-6 w-6 shrink-0" aria-hidden="true" />
             <div className="flex-1">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                 {t("marketplace.nodejsRequired")}
@@ -189,12 +191,13 @@ export function MarketplacePanel() {
         <div className="px-4 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
           <div className="flex items-center justify-between">
             <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-            <button
+            <IconButton
               onClick={clearError}
+              ariaLabel={t("a11y.closeError")}
+              icon={<X className="h-4 w-4" />}
+              size="sm"
               className="text-red-500 hover:text-red-700 dark:hover:text-red-300"
-            >
-              ✕
-            </button>
+            />
           </div>
         </div>
       )}
@@ -233,7 +236,7 @@ export function MarketplacePanel() {
           )
         ) : (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <span className="text-4xl mb-3">📭</span>
+            <Inbox className="h-10 w-10 text-slate-400 mb-3" aria-hidden="true" />
             <p className="text-gray-500 dark:text-gray-400">
               {searchQuery || filters.category || filters.source || filters.platform
                 ? t("marketplace.noMatch")
@@ -278,6 +281,7 @@ function VirtualizedMarketplaceList({
   onInstall,
   onUninstall,
 }: VirtualizedMarketplaceListProps) {
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => document.getElementById(SCROLL_CONTAINER_ID),

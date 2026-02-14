@@ -4,11 +4,14 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 import type { ResourceItem, Platform, PlatformInfo } from "@/types";
 import { StatusBadge } from "./StatusBadge";
 import { PlatformSelector } from "./PlatformSelector";
+import { Button } from "./ui/Button";
+import { IconButton } from "./ui/IconButton";
+import { ResourceTypeIcon } from "./icons/ResourceTypeIcon";
 import { PLATFORM_DISPLAY_NAMES } from "@/types";
-import { getTypeIcon } from "@/utils/resourceUtils";
 
 interface ResourceDetailProps {
   resource: ResourceItem;
@@ -30,8 +33,6 @@ export function ResourceDetail({
   const { t } = useTranslation();
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const typeIcon = getTypeIcon(resource.resourceType);
 
   const handleTogglePlatform = (platform: Platform) => {
     setSelectedPlatforms((prev) =>
@@ -88,7 +89,9 @@ export function ResourceDetail({
       <div className="p-6 border-b border-white/10 bg-white/5 backdrop-blur-md">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-4xl filter drop-shadow-md">{typeIcon}</span>
+            <span className="rounded-xl p-2.5 bg-white/5 border border-white/10 text-primary-300">
+              <ResourceTypeIcon type={resource.resourceType} className="w-8 h-8" />
+            </span>
             <div>
               <h2 className="text-2xl font-bold text-white tracking-tight">
                 {resource.name}
@@ -98,12 +101,12 @@ export function ResourceDetail({
               </p>
             </div>
           </div>
-          <button
+          <IconButton
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
-          >
-            ✕
-          </button>
+            ariaLabel={t("a11y.closeDetails")}
+            icon={<X className="h-4 w-4" />}
+            variant="ghost"
+          />
         </div>
       </div>
 
@@ -184,33 +187,36 @@ export function ResourceDetail({
       {/* Actions */}
       <div className="p-6 border-t border-white/10 bg-black/20 backdrop-blur-md mt-auto space-y-3">
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={handleInstall}
             disabled={loading || selectedPlatforms.length === 0}
-            className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1"
+            variant="primary"
           >
             {loading ? t('action.installing') : t('action.install')}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleUninstall}
             disabled={loading || selectedPlatforms.length === 0}
-            className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1"
+            variant="danger"
           >
             {loading ? t('action.removing') : t('action.uninstall')}
-          </button>
+          </Button>
         </div>
         {installedPlatforms.length > 0 && (
-          <button
+          <Button
             onClick={handleUpdate}
             disabled={loading}
-            className="w-full px-4 py-3 bg-white/5 text-slate-300 rounded-lg font-medium hover:bg-white/10 hover:text-white border border-white/5 transition-all disabled:opacity-50"
+            className="w-full"
+            variant="secondary"
+            size="lg"
           >
             {loading ? t('action.updating') : t('action.updateAll')}
-          </button>
+          </Button>
         )}
       </div>
     </div>
   );
 }
-
 

@@ -6,6 +6,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Package, Zap, Bot, Globe, ShoppingCart, Settings } from "lucide-react";
 import { NavItem } from "@/components";
+import { AgentKitLogo } from "@/components/icons/AgentKitLogo";
 import type { PlatformInfo } from "@/types";
 
 export type TabType = "skills" | "commands" | "agents" | "external" | "marketplace" | "settings";
@@ -31,9 +32,9 @@ export const Sidebar = React.memo(function Sidebar({
   return (
     <aside className="w-64 flex flex-col frosted-glass-heavy border-r-0 z-20">
       <div className="p-6 border-b border-white/5">
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 flex items-center gap-2 filter drop-shadow-sm">
-          <span className="text-3xl">🤖</span>
-          <span>AgentKit</span>
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-primary-300 flex items-center gap-2 filter drop-shadow-sm">
+          <AgentKitLogo className="w-9 h-9" />
+          <span>{t("app.title")}</span>
         </h1>
         <p className="text-xs text-slate-400 mt-2 font-medium tracking-wide">{t('app.subtitle')}</p>
       </div>
@@ -44,7 +45,7 @@ export const Sidebar = React.memo(function Sidebar({
         <NavItem icon={Bot} label={t('nav.agents')} count={counts.agent ?? 0} active={activeTab === "agents"} onClick={() => onTabChange("agents")} />
         <NavItem icon={Globe} label={t('nav.external')} active={activeTab === "external"} onClick={() => onTabChange("external")} />
         <NavItem icon={ShoppingCart} label={t('nav.marketplace')} active={activeTab === "marketplace"} onClick={() => onTabChange("marketplace")} />
-        <div className="border-t border-gray-200 dark:border-gray-700 my-3" />
+        <div className="border-t border-white/10 my-3" />
         <NavItem icon={Settings} label={t('nav.settings')} active={activeTab === "settings"} onClick={() => onTabChange("settings")} />
       </nav>
 

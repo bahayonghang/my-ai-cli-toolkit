@@ -2,18 +2,22 @@
  * Shared resource utility functions
  */
 
+import type { LucideIcon } from "lucide-react";
+import { Bot, FileCode2, FileText, Package } from "lucide-react";
+import type { ResourceType } from "@/types";
+
 /**
- * Returns an emoji icon based on resource type.
+ * Returns a resource icon component based on resource type.
  */
-export function getTypeIcon(type: string): string {
+export function getTypeIcon(type: ResourceType): LucideIcon {
   switch (type) {
     case "skill":
-      return "📦";
+      return Package;
     case "command":
-      return "⚡";
+      return FileCode2;
     case "agent":
-      return "🤖";
+      return Bot;
     default:
-      return "📄";
+      return FileText;
   }
 }

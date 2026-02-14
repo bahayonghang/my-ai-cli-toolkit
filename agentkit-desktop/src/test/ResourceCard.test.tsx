@@ -53,19 +53,19 @@ describe("ResourceCard", () => {
 
   it("renders skill icon for skill type", () => {
     render(<ResourceCard resource={mockResource} />);
-    expect(screen.getByText("📦")).toBeInTheDocument();
+    expect(screen.getByTestId("resource-type-icon-skill")).toBeInTheDocument();
   });
 
   it("renders command icon for command type", () => {
     const commandResource = { ...mockResource, resourceType: "command" as const };
     render(<ResourceCard resource={commandResource} />);
-    expect(screen.getByText("⚡")).toBeInTheDocument();
+    expect(screen.getByTestId("resource-type-icon-command")).toBeInTheDocument();
   });
 
   it("renders agent icon for agent type", () => {
     const agentResource = { ...mockResource, resourceType: "agent" as const };
     render(<ResourceCard resource={agentResource} />);
-    expect(screen.getByText("🤖")).toBeInTheDocument();
+    expect(screen.getByTestId("resource-type-icon-agent")).toBeInTheDocument();
   });
 
   it("calls onClick when clicked", () => {

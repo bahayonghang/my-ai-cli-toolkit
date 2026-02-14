@@ -1,20 +1,22 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
 
 @layer base {
   body {
     @apply antialiased min-h-screen overflow-hidden;
+    font-family: var(--ak-font-body);
   }
 
   /* Light mode base styles */
   body {
-    @apply text-slate-800;
+    color: var(--ak-text-primary);
     background-color: #f8fafc;
     background-image: none;
   }
 
   /* Dark mode base styles */
   .dark body {
-    @apply text-slate-100;
+    color: var(--ak-text-primary);
     background-color: #0f172a;
     background-image:
       radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
@@ -75,6 +77,12 @@
 
 .dark .frosted-glass-light {
   @apply bg-white/10 border-white/20;
+}
+
+/* Shared semantic card style */
+.ak-card {
+  background: var(--ak-card);
+  border: 1px solid var(--ak-border);
 }
 
 /* Animations */

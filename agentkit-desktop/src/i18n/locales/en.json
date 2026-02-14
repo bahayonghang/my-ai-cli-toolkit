@@ -45,7 +45,8 @@
     "notInstalled": "Not Installed",
     "outdated": "Outdated",
     "conflict": "Conflict",
-    "notSupported": "Not Supported"
+    "notSupported": "Not Supported",
+    "unknown": "Unknown"
   },
   "settings": {
     "title": "Settings",
@@ -76,6 +77,11 @@
     "noPlatforms": "No platforms detected. Please check your installation.",
     "enterPackage": "Please enter a package/repository name",
     "selectPlatform": "Please select at least one platform",
+    "sourceAria": "Select source: {{source}}",
+    "handlerUnavailable": "{{type}} is not available (not installed)",
+    "installSuccess": "Successfully installed \"{{source}}\" to {{count}} platform(s)",
+    "installFailed": "Installation failed: {{errors}}",
+    "installPartial": "Some platforms failed: {{errors}}",
     "installSkill": "Install Skill",
     "tips": "Tips",
     "tipNpm": "npm packages should export a SKILL.md file",
@@ -125,7 +131,8 @@
     "detected": "Detected",
     "other": "Other Platforms",
     "selectAll": "Select all detected",
-    "clear": "Clear"
+    "clear": "Clear",
+    "cliAvailable": "CLI available"
   },
   "batch": {
     "active": "Batch Active",
@@ -167,5 +174,24 @@
     "version": "Version",
     "description": "Description",
     "author": "Author"
+  },
+  "a11y": {
+    "toggleBatchMode": "Toggle batch mode",
+    "refreshResources": "Refresh resources",
+    "searchResources": "Search resources",
+    "clearSearch": "Clear search",
+    "removeCategoryFilter": "Remove category filter {{category}}",
+    "removeTagFilter": "Remove tag filter {{tag}}",
+    "toggleFilters": "Toggle filters panel",
+    "searchTags": "Search tags",
+    "closeDetails": "Close details panel",
+    "searchMarketplace": "Search marketplace skills",
+    "refreshMarketplace": "Refresh marketplace",
+    "closeError": "Close error message",
+    "openSkillDetails": "Open details for {{name}}",
+    "closeToast": "Close notification",
+    "externalSourceInput": "External skill source",
+    "externalBranchInput": "Git branch",
+    "installExternalSkill": "Install external skill"
   }
 }

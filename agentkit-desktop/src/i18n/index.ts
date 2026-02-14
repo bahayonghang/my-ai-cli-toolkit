@@ -14,6 +14,12 @@ const resources = {
   zh: { translation: zh },
 };
 
+function applyDocumentLanguage(langCode: "en" | "zh") {
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = langCode;
+  }
+}
+
 // Initialize i18next
 i18n.use(initReactI18next).init({
   resources,
@@ -24,12 +30,15 @@ i18n.use(initReactI18next).init({
   },
 });
 
+applyDocumentLanguage("en");
+
 /**
  * Change the current language
  */
 export function changeLanguage(lang: "english" | "chinese") {
-  const langCode = lang === "chinese" ? "zh" : "en";
+  const langCode: "en" | "zh" = lang === "chinese" ? "zh" : "en";
   i18n.changeLanguage(langCode);
+  applyDocumentLanguage(langCode);
 }
 
 /**

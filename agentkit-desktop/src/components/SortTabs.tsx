@@ -16,15 +16,15 @@ export function SortTabs({ value, onChange }: SortTabsProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <div className="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-lg">
       {SORT_OPTIONS.map((option) => (
         <button
           key={option}
           onClick={() => onChange(option)}
-          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+          className={`ak-focus-ring px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
             value === option
-              ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-              : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              ? "bg-primary-500/20 text-primary-200 border border-primary-400/30"
+              : "text-slate-300 hover:text-white hover:bg-white/10 border border-transparent"
           }`}
         >
           {t(`marketplace.sort.${option}`)}

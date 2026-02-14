@@ -3,6 +3,7 @@
  */
 
 import { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -51,7 +52,7 @@ export class ComponentErrorBoundary extends Component<Props, State> {
       return (
         <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <div className="flex items-start gap-3">
-            <span className="text-xl">⚠️</span>
+            <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5" aria-hidden="true" />
             <div className="flex-1">
               <h4 className="font-medium text-red-800 dark:text-red-200">
                 {this.props.componentName
@@ -80,6 +81,7 @@ export class ComponentErrorBoundary extends Component<Props, State> {
 /**
  * withErrorBoundary HOC - Wrap a component with error boundary
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   componentName?: string

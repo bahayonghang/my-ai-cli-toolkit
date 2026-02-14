@@ -5,15 +5,29 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
+import type { LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  Download,
+  FlaskConical,
+  GitBranch,
+  Lightbulb,
+  Loader2,
+  Package,
+  Triangle,
+} from "lucide-react";
 import type { Platform, SyncResult } from "@/types";
 import { usePlatformStore } from "@/stores";
+import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
 
 type SourceType = "npm" | "pip" | "git" | "vercel";
 
 interface SourceConfig {
   type: SourceType;
-  icon: string;
-  label: string;
+  icon: LucideIcon;
+  labelKey: "external.npm" | "external.pip" | "external.git" | "external.vercel";
   placeholder: string;
   example: string;
 }
@@ -21,29 +35,29 @@ interface SourceConfig {
 const SOURCE_CONFIGS: SourceConfig[] = [
   {
     type: "npm",
-    icon: "📦",
-    label: "npm Package",
+    icon: Package,
+    labelKey: "external.npm",
     placeholder: "package-name or @scope/package",
     example: "e.g., @anthropic/claude-skills",
   },
   {
     type: "pip",
-    icon: "🐍",
-    label: "pip Package",
+    icon: FlaskConical,
+    labelKey: "external.pip",
     placeholder: "package-name",
     example: "e.g., claude-code-skills",
   },
   {
     type: "git",
-    icon: "🔗",
-    label: "Git Repository",
+    icon: GitBranch,
+    labelKey: "external.git",
     placeholder: "https://github.com/user/repo.git",
     example: "e.g., https://github.com/anthropics/skills.git",
   },
   {
     type: "vercel",
-    icon: "▲",
-    label: "Vercel Registry",
+    icon: Triangle,
+    labelKey: "external.vercel",
     placeholder: "skill-name",
     example: "e.g., code-review",
   },
@@ -122,7 +136,7 @@ export function ExternalPanel() {
 
       if (successCount > 0) {
         setSuccess(
-          `Successfully installed "${inputValue}" to ${successCount} platform(s)`
+          t("external.installSuccess", { source: inputValue, count: successCount })
         );
         setInputValue("");
       }
@@ -132,9 +146,9 @@ export function ExternalPanel() {
           .map((r) => `${r.platform}: ${r.error}`)
           .join("; ");
         if (successCount === 0) {
-          setError(`Installation failed: ${errors}`);
+          setError(t("external.installFailed", { errors }));
         } else {
-          setError(`Some platforms failed: ${errors}`);
+          setError(t("external.installPartial", { errors }));
         }
       }
     } catch (err) {
@@ -160,6 +174,7 @@ export function ExternalPanel() {
       <div className="flex flex-wrap gap-3">
         {SOURCE_CONFIGS.map((config) => {
           const isAvailable = handlers[config.type] !== false;
+          const SourceIcon = config.icon;
           return (
             <button
               key={config.type}
@@ -170,17 +185,18 @@ export function ExternalPanel() {
                 setSuccess(null);
               }}
               disabled={!isAvailable}
+              aria-label={t("external.sourceAria", { source: t(config.labelKey) })}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activeSource === config.type
                   ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20 scale-105"
                   : !isAvailable
                     ? "bg-white/5 text-slate-600 cursor-not-allowed border border-white/5"
                     : "bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20"
                 }`}
-              title={!isAvailable ? `${config.type} is not available (not installed)` : undefined}
+              title={!isAvailable ? t("external.handlerUnavailable", { type: config.type }) : undefined}
             >
-              <span className="text-lg">{config.icon}</span>
-              <span>{config.label}</span>
-              {!isAvailable && <span className="text-xs opacity-50">⚠️</span>}
+              <SourceIcon className="h-4 w-4" aria-hidden="true" />
+              <span>{t(config.labelKey)}</span>
+              {!isAvailable && <AlertTriangle className="text-xs opacity-60 h-3.5 w-3.5" aria-hidden="true" />}
             </button>
           );
         })}
@@ -189,15 +205,18 @@ export function ExternalPanel() {
       {/* Input Form */}
       <div className="space-y-5 p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
         <div>
-          <label className="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">
-            {activeConfig.label}
+          <label className="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-2" htmlFor="external-source-input">
+            {t(activeConfig.labelKey)}
           </label>
-          <input
+          <Input
             type="text"
+            id="external-source-input"
+            aria-label={t("a11y.externalSourceInput")}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={activeConfig.placeholder}
-            className="w-full px-5 py-3 bg-black/30 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            containerClassName="space-y-0"
+            className="w-full px-5 py-3 bg-black/30 border-white/10 text-white placeholder-slate-600"
           />
           <p className="mt-2 text-xs text-slate-500">
             {activeConfig.example}
@@ -207,15 +226,18 @@ export function ExternalPanel() {
         {/* Git branch input */}
         {activeSource === "git" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" htmlFor="external-branch-input">
               {t('external.branch')}
             </label>
-            <input
+            <Input
               type="text"
+              id="external-branch-input"
+              aria-label={t("a11y.externalBranchInput")}
               value={branch}
               onChange={(e) => setBranch(e.target.value)}
               placeholder="main"
-              className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              containerClassName="space-y-0"
+              className="w-full px-4 py-2 bg-white/5 border-white/10 text-white placeholder-slate-500"
             />
           </div>
         )}
@@ -245,7 +267,7 @@ export function ExternalPanel() {
                     }`}
                 >
                   {selectedPlatforms.includes(p.platform) && (
-                    <span className="mr-1">✓</span>
+                    <Check className="mr-1 h-3.5 w-3.5 inline-block" aria-hidden="true" />
                   )}
                   {p.platform}
                 </button>
@@ -273,28 +295,33 @@ export function ExternalPanel() {
       )}
 
       {/* Install Button */}
-      <button
+      <Button
         onClick={handleInstall}
         disabled={loading || !inputValue.trim() || selectedPlatforms.length === 0}
-        className="w-full px-4 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full"
+        variant="primary"
+        size="lg"
+        aria-label={t("a11y.installExternalSkill")}
       >
         {loading ? (
           <>
-            <span className="animate-spin">⏳</span>
+            <Loader2 className="animate-spin h-4 w-4" aria-hidden="true" />
             <span>{t('action.installing')}</span>
           </>
         ) : (
           <>
-            <span>📥</span>
+            <Download className="h-4 w-4" aria-hidden="true" />
             <span>{t('external.installSkill')}</span>
           </>
         )}
-      </button>
+      </Button>
 
       {/* Info Section */}
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
         <h4 className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
-          💡 {t('external.tips')}
+          <span className="inline-flex items-center gap-1.5">
+            <Lightbulb className="h-4 w-4" aria-hidden="true" /> {t('external.tips')}
+          </span>
         </h4>
         <ul className="text-sm text-blue-600 dark:text-blue-400 space-y-1 list-disc list-inside">
           <li>{t('external.tipNpm')}</li>

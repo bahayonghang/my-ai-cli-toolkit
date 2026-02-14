@@ -4,6 +4,8 @@
 
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { Input } from "./ui/Input";
 
 interface FilterPanelProps {
   categories: string[];
@@ -63,13 +65,16 @@ export function FilterPanel({
       {/* Filter Toggle Button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`w-full flex items-center justify-between px-6 py-3 text-sm transition-colors border-b border-white/5 ${hasActiveFilters
+        aria-expanded={isExpanded}
+        aria-controls="resource-filter-panel"
+        aria-label={t("a11y.toggleFilters")}
+        className={`ak-focus-ring w-full flex items-center justify-between px-6 py-3 text-sm transition-colors border-b border-white/5 ${hasActiveFilters
           ? "bg-primary-500/10 text-primary-300"
           : "text-slate-400 hover:text-white hover:bg-white/5"
           }`}
       >
         <div className="flex items-center gap-2">
-          <span>🔽</span>
+          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
           <span>{t('filter.title')}</span>
           {hasActiveFilters && (
             <span className="px-1.5 py-0.5 text-xs bg-primary-500 text-white rounded-full">
@@ -77,16 +82,15 @@ export function FilterPanel({
             </span>
           )}
         </div>
-        <span
-          className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
-        >
-          ▼
-        </span>
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
       </button>
 
       {/* Filter Content */}
       {isExpanded && (
-        <div className="px-6 py-4 space-y-5 bg-black/20 backdrop-blur-sm shadow-inner">
+        <div id="resource-filter-panel" className="px-6 py-4 space-y-5 bg-black/20 backdrop-blur-sm shadow-inner">
           {/* Categories */}
           {categories.length > 0 && (
             <div>
@@ -139,12 +143,14 @@ export function FilterPanel({
 
               {/* Tag Search */}
               {tags.length > 10 && (
-                <input
+                <Input
                   type="text"
+                  aria-label={t("a11y.searchTags")}
                   placeholder={t('filter.searchTags')}
                   value={tagSearch}
                   onChange={(e) => setTagSearch(e.target.value)}
-                  className="w-full px-4 py-2 mb-3 text-xs bg-black/30 text-white border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 placeholder-slate-500"
+                  containerClassName="space-y-0 mb-3"
+                  className="w-full py-2 text-xs bg-black/30 text-white border-white/10 placeholder-slate-500"
                 />
               )}
 
@@ -156,7 +162,10 @@ export function FilterPanel({
                     onClick={() => handleTagToggle(tag)}
                     className="px-3 py-1 text-xs rounded-full bg-primary-500/20 text-primary-300 border border-primary-500/30 hover:bg-primary-500/30 transition-colors"
                   >
-                    {tag} ✕
+                    <span className="inline-flex items-center gap-1">
+                      {tag}
+                      <X className="h-3 w-3" aria-hidden="true" />
+                    </span>
                   </button>
                 ))}
                 {/* Then show filtered tags (excluding already selected) */}

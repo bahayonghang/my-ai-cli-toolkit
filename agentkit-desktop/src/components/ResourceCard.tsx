@@ -4,7 +4,7 @@
 
 import type { ResourceItem, Platform, SyncStatus } from "@/types";
 import { StatusBadge } from "./StatusBadge";
-import { getTypeIcon } from "@/utils/resourceUtils";
+import { ResourceTypeIcon } from "./icons/ResourceTypeIcon";
 
 interface ResourceCardProps {
   resource: ResourceItem;
@@ -23,7 +23,6 @@ export function ResourceCard({
   onClick,
   onCheckChange,
 }: ResourceCardProps) {
-  const typeIcon = getTypeIcon(resource.resourceType);
   const statusCounts = getStatusCounts(resource.platformStatus);
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
@@ -54,7 +53,12 @@ export function ResourceCard({
             />
           </div>
         )}
-        <span className="text-3xl filter drop-shadow-md">{typeIcon}</span>
+        <span
+          className="rounded-lg p-2 bg-white/5 border border-white/10 text-primary-300 shadow-sm"
+          data-testid={`resource-type-icon-${resource.resourceType}`}
+        >
+          <ResourceTypeIcon type={resource.resourceType} className="w-6 h-6" />
+        </span>
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-lg text-white truncate tracking-tight group-hover:text-primary-200 transition-colors">
             {resource.name}

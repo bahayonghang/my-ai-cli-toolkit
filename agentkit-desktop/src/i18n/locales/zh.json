@@ -45,7 +45,8 @@
     "notInstalled": "未安装",
     "outdated": "需更新",
     "conflict": "冲突",
-    "notSupported": "不支持"
+    "notSupported": "不支持",
+    "unknown": "未知"
   },
   "settings": {
     "title": "设置",
@@ -76,6 +77,11 @@
     "noPlatforms": "未检测到平台，请检查安装。",
     "enterPackage": "请输入包名或仓库地址",
     "selectPlatform": "请至少选择一个平台",
+    "sourceAria": "选择来源：{{source}}",
+    "handlerUnavailable": "{{type}} 不可用（未安装）",
+    "installSuccess": "已将 \"{{source}}\" 安装到 {{count}} 个平台",
+    "installFailed": "安装失败：{{errors}}",
+    "installPartial": "部分平台安装失败：{{errors}}",
     "installSkill": "安装技能",
     "tips": "提示",
     "tipNpm": "npm 包应导出 SKILL.md 文件",
@@ -125,7 +131,8 @@
     "detected": "已检测",
     "other": "其他平台",
     "selectAll": "选择所有已检测",
-    "clear": "清除"
+    "clear": "清除",
+    "cliAvailable": "CLI 可用"
   },
   "batch": {
     "active": "批量模式",
@@ -167,5 +174,24 @@
     "version": "版本",
     "description": "描述",
     "author": "作者"
+  },
+  "a11y": {
+    "toggleBatchMode": "切换批量模式",
+    "refreshResources": "刷新资源",
+    "searchResources": "搜索资源",
+    "clearSearch": "清空搜索",
+    "removeCategoryFilter": "移除分类筛选 {{category}}",
+    "removeTagFilter": "移除标签筛选 {{tag}}",
+    "toggleFilters": "展开或收起筛选面板",
+    "searchTags": "搜索标签",
+    "closeDetails": "关闭详情面板",
+    "searchMarketplace": "搜索技能市场",
+    "refreshMarketplace": "刷新技能市场",
+    "closeError": "关闭错误提示",
+    "openSkillDetails": "打开 {{name}} 的详情页",
+    "closeToast": "关闭通知",
+    "externalSourceInput": "外部技能来源",
+    "externalBranchInput": "Git 分支",
+    "installExternalSkill": "安装外部技能"
   }
 }

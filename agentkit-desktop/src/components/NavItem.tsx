@@ -15,7 +15,7 @@ interface NavItemProps {
 export function NavItem({ icon: Icon, label, count, active, onClick }: NavItemProps) {
   return (
     <button onClick={onClick}
-      className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-200 group relative overflow-hidden ${active
+      className={`ak-focus-ring w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-200 group relative overflow-hidden ${active
         ? "bg-gradient-to-r from-primary-500/20 to-primary-600/10 text-white shadow-lg border border-primary-500/20"
         : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"}`}>
       {active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-500 rounded-full shadow-[0_0_10px_#0ea5e9]" />}

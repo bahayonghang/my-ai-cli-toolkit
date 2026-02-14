@@ -51,10 +51,7 @@ describe("ToastContainer", () => {
     };
     render(<ToastContainer toasts={[firstToast]} onClose={handleClose} />);
 
-    const closeButtons = screen.getAllByText("✕");
-    if (closeButtons[0]) {
-      fireEvent.click(closeButtons[0]);
-    }
+    fireEvent.click(screen.getByRole("button", { name: /close notification/i }));
 
     // Wait for animation
     setTimeout(() => {
@@ -69,7 +66,7 @@ describe("ToastContainer", () => {
         onClose={() => {}}
       />
     );
-    expect(screen.getByText("✅")).toBeInTheDocument();
+    expect(screen.getByTestId("toast-icon-success")).toBeInTheDocument();
   });
 
   it("renders correct icon for error type", () => {
@@ -79,7 +76,7 @@ describe("ToastContainer", () => {
         onClose={() => {}}
       />
     );
-    expect(screen.getByText("❌")).toBeInTheDocument();
+    expect(screen.getByTestId("toast-icon-error")).toBeInTheDocument();
   });
 
   it("renders correct icon for warning type", () => {
@@ -89,7 +86,7 @@ describe("ToastContainer", () => {
         onClose={() => {}}
       />
     );
-    expect(screen.getByText("⚠️")).toBeInTheDocument();
+    expect(screen.getByTestId("toast-icon-warning")).toBeInTheDocument();
   });
 
   it("renders correct icon for info type", () => {
@@ -99,7 +96,7 @@ describe("ToastContainer", () => {
         onClose={() => {}}
       />
     );
-    expect(screen.getByText("ℹ️")).toBeInTheDocument();
+    expect(screen.getByTestId("toast-icon-info")).toBeInTheDocument();
   });
 });
 

@@ -8,8 +8,21 @@
 import React, { Suspense, lazy, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
+import {
+  CheckSquare,
+  Folder,
+  Inbox,
+  RefreshCw,
+  Search,
+  Square,
+  Tag,
+  X,
+} from "lucide-react";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ResourceCard } from "@/components/ResourceCard";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Input } from "@/components/ui/Input";
 import type { ResourceItem, Platform } from "@/types";
 import type { TabType } from "./Sidebar";
 
@@ -108,24 +121,36 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
           </h2>
           <div className="flex items-center gap-3 ml-auto">
             {isResourceTab && (
-              <button
+              <Button
                 onClick={() => batch.batchMode ? batch.exitBatchMode() : batch.setBatchMode(true)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 border ${batch.batchMode
-                  ? "bg-primary-500 text-white border-primary-400 shadow-[0_0_15px_rgba(14,165,233,0.5)]"
-                  : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 hover:border-white/20"}`}
+                aria-label={t("a11y.toggleBatchMode")}
+                variant={batch.batchMode ? "primary" : "secondary"}
+                leadingIcon={
+                  batch.batchMode ? (
+                    <CheckSquare className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <Square className="h-4 w-4" aria-hidden="true" />
+                  )
+                }
               >
-                {batch.batchMode ? "✓ " + t('batch.active') : "☐ " + t('batch.select')}
-              </button>
+                {batch.batchMode ? t('batch.active') : t('batch.select')}
+              </Button>
             )}
             {isResourceTab && (
-              <button
+              <Button
                 onClick={() => onRefresh()}
                 disabled={resourcesLoading}
-                className="px-4 py-2 text-sm font-medium bg-white/5 text-slate-300 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                variant="secondary"
+                aria-label={t("a11y.refreshResources")}
+                leadingIcon={
+                  <RefreshCw
+                    className={`h-4 w-4 ${resourcesLoading ? "animate-spin" : ""}`}
+                    aria-hidden="true"
+                  />
+                }
               >
-                <span className={resourcesLoading ? "animate-spin" : ""}>↻</span>
                 {resourcesLoading ? t('resource.refreshing') : t('resource.refresh')}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -134,23 +159,25 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
         {batch.batchMode && (
           <div className="flex items-center gap-2 mb-3 p-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
             <span className="text-sm text-primary-700 dark:text-primary-300">{t('batch.selected', { count: batch.checkedIds.size })}</span>
-            <button onClick={() => batch.selectAll(filtered.map(r => r.id))} className="text-xs text-primary-600 dark:text-primary-400 hover:underline">{t('batch.selectAll')}</button>
-            <button onClick={batch.deselectAll} className="text-xs text-gray-500 dark:text-gray-400 hover:underline">{t('batch.clear')}</button>
+            <button onClick={() => batch.selectAll(filtered.map(r => r.id))} className="ak-focus-ring text-xs text-primary-600 dark:text-primary-400 hover:underline rounded-sm">{t('batch.selectAll')}</button>
+            <button onClick={batch.deselectAll} className="ak-focus-ring text-xs text-gray-500 dark:text-gray-400 hover:underline rounded-sm">{t('batch.clear')}</button>
             <div className="flex-1" />
-            <button 
+            <Button
               onClick={() => batch.requestBatchInstall ? batch.requestBatchInstall(targetPlatforms) : batch.batchInstall(targetPlatforms)} 
               disabled={batch.checkedIds.size === 0} 
-              className="px-3 py-1 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 disabled:opacity-50"
+              size="sm"
+              variant="primary"
             >
               {t('batch.installAll')}
-            </button>
-            <button 
+            </Button>
+            <Button
               onClick={() => batch.requestBatchUninstall ? batch.requestBatchUninstall(targetPlatforms) : batch.batchUninstall(targetPlatforms)} 
               disabled={batch.checkedIds.size === 0} 
-              className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+              size="sm"
+              variant="danger"
             >
               {t('batch.uninstallAll')}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -158,11 +185,24 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-purple-600 rounded-xl opacity-30 group-hover:opacity-75 transition duration-500 blur"></div>
           <div className="relative flex items-center bg-slate-900 rounded-xl border border-white/10">
-            <input type="text" placeholder={t('resource.search')} value={searchQuery} onChange={e => onSearchChange(e.target.value)}
-              className="w-full px-5 py-3 pl-12 bg-transparent text-white placeholder-slate-500 focus:outline-none" />
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-400 transition-colors">🔍</span>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-400 transition-colors h-4 w-4" aria-hidden="true" />
+            <Input
+              type="text"
+              aria-label={t("a11y.searchResources")}
+              placeholder={t('resource.search')}
+              value={searchQuery}
+              onChange={e => onSearchChange(e.target.value)}
+              containerClassName="space-y-0 w-full"
+              className="w-full pl-12 pr-12 py-3 bg-transparent text-white placeholder-slate-500 border-transparent hover:border-white/10"
+            />
             {searchQuery && (
-              <button onClick={() => onSearchChange("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">✕</button>
+              <IconButton
+                onClick={() => onSearchChange("")}
+                ariaLabel={t("a11y.clearSearch")}
+                icon={<X className="h-4 w-4" />}
+                size="sm"
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              />
             )}
           </div>
         </div>
@@ -185,14 +225,26 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
             <span className="text-xs text-gray-500 dark:text-gray-400">{t('filter.activeFilters')}</span>
             {Array.from(selectedCategories).map(cat => (
               <span key={`cat-${cat}`} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full">
-                📁 {cat}
-                <button onClick={() => { const n = new Set(selectedCategories); n.delete(cat); onCategoryChange(n); }} className="hover:text-blue-900 dark:hover:text-blue-100">✕</button>
+                <Folder className="h-3 w-3" aria-hidden="true" /> {cat}
+                <button
+                  onClick={() => { const n = new Set(selectedCategories); n.delete(cat); onCategoryChange(n); }}
+                  aria-label={t("a11y.removeCategoryFilter", { category: cat })}
+                  className="ak-focus-ring hover:text-blue-900 dark:hover:text-blue-100 rounded-full"
+                >
+                  <X className="h-3 w-3" aria-hidden="true" />
+                </button>
               </span>
             ))}
             {Array.from(selectedTags).map(tag => (
               <span key={`tag-${tag}`} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
-                🏷️ {tag}
-                <button onClick={() => { const n = new Set(selectedTags); n.delete(tag); onTagChange(n); }} className="hover:text-green-900 dark:hover:text-green-100">✕</button>
+                <Tag className="h-3 w-3" aria-hidden="true" /> {tag}
+                <button
+                  onClick={() => { const n = new Set(selectedTags); n.delete(tag); onTagChange(n); }}
+                  aria-label={t("a11y.removeTagFilter", { tag })}
+                  className="ak-focus-ring hover:text-green-900 dark:hover:text-green-100 rounded-full"
+                >
+                  <X className="h-3 w-3" aria-hidden="true" />
+                </button>
               </span>
             ))}
             <button onClick={onClearFilters} className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 ml-2">{t('filter.clearAllLink')}</button>
@@ -245,7 +297,7 @@ export const ResourceListPanel = React.memo(function ResourceListPanel({
             )
           ) : (
             <div className="flex flex-col items-center justify-center h-64 text-center">
-              <span className="text-4xl mb-3">📭</span>
+              <Inbox className="text-slate-400 h-10 w-10 mb-3" aria-hidden="true" />
               <p className="text-gray-500 dark:text-gray-400">
                 {searchQuery || hasActiveFilters ? t('resource.noMatchFilters') : t('resource.noFound', { type: activeTab })}
               </p>
@@ -283,6 +335,7 @@ function VirtualizedResourceList({
   onSelectResource,
   scrollContainerRef,
 }: VirtualizedResourceListProps) {
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => scrollContainerRef.current,

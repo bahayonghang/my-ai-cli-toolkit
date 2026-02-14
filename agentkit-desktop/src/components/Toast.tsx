@@ -3,6 +3,10 @@
  */
 
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
+import { IconButton } from "./ui/IconButton";
 
 export type ToastType = "success" | "error" | "warning" | "info";
 
@@ -20,6 +24,7 @@ interface ToastProps {
 }
 
 function Toast({ toast, onClose }: ToastProps) {
+  const { t } = useTranslation();
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
@@ -37,11 +42,11 @@ function Toast({ toast, onClose }: ToastProps) {
     setTimeout(() => onClose(toast.id), 300);
   };
 
-  const icons: Record<ToastType, string> = {
-    success: "✅",
-    error: "❌",
-    warning: "⚠️",
-    info: "ℹ️",
+  const icons: Record<ToastType, ReactNode> = {
+    success: <CheckCircle2 className="h-5 w-5" aria-hidden="true" />,
+    error: <XCircle className="h-5 w-5" aria-hidden="true" />,
+    warning: <AlertTriangle className="h-5 w-5" aria-hidden="true" />,
+    info: <Info className="h-5 w-5" aria-hidden="true" />,
   };
 
   const colors: Record<ToastType, string> = {
@@ -64,7 +69,12 @@ function Toast({ toast, onClose }: ToastProps) {
         colors[toast.type]
       } ${isExiting ? "opacity-0 translate-x-4" : "opacity-100 translate-x-0"}`}
     >
-      <span className="text-xl">{icons[toast.type]}</span>
+      <span
+        className={`shrink-0 ${textColors[toast.type]}`}
+        data-testid={`toast-icon-${toast.type}`}
+      >
+        {icons[toast.type]}
+      </span>
       <div className="flex-1 min-w-0">
         <p className={`font-medium ${textColors[toast.type]}`}>{toast.title}</p>
         {toast.message && (
@@ -73,12 +83,13 @@ function Toast({ toast, onClose }: ToastProps) {
           </p>
         )}
       </div>
-      <button
+      <IconButton
         onClick={handleClose}
-        className={`p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 ${textColors[toast.type]}`}
-      >
-        ✕
-      </button>
+        ariaLabel={t("a11y.closeToast")}
+        icon={<X className="h-4 w-4" />}
+        size="sm"
+        className={textColors[toast.type]}
+      />
     </div>
   );
 }

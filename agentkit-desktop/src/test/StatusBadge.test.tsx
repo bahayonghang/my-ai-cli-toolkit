@@ -2,11 +2,28 @@
  * StatusBadge Component Tests
  */
 
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { StatusBadge } from "../components/StatusBadge";
+import i18n from "../i18n";
 
 describe("StatusBadge", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders translated status in English by default", async () => {
+    await i18n.changeLanguage("en");
+    render(<StatusBadge status="synced" />);
+    expect(screen.getByText("Synced")).toBeInTheDocument();
+  });
+
+  it("renders translated status in Chinese", async () => {
+    await i18n.changeLanguage("zh");
+    render(<StatusBadge status="outdated" />);
+    expect(screen.getByText("需更新")).toBeInTheDocument();
+  });
+
   it("renders synced status correctly", () => {
     render(<StatusBadge status="synced" />);
     expect(screen.getByText("Synced")).toBeInTheDocument();
@@ -37,12 +54,12 @@ describe("StatusBadge", () => {
   it("applies correct styling for synced status", () => {
     const { container } = render(<StatusBadge status="synced" />);
     const badge = container.firstChild;
-    expect(badge).toHaveClass("bg-green-500/20");
+    expect(badge).toHaveClass("bg-emerald-500/15");
   });
 
   it("applies correct styling for outdated status", () => {
     const { container } = render(<StatusBadge status="outdated" />);
     const badge = container.firstChild;
-    expect(badge).toHaveClass("bg-yellow-500/20");
+    expect(badge).toHaveClass("bg-amber-500/15");
   });
 });

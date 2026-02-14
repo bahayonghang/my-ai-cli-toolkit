@@ -1,0 +1,170 @@
+:root {
+  --ak-bg: #f8fafc;
+  --ak-surface: #ffffff;
+  --ak-surface-strong: #ffffff;
+  --ak-card: rgba(255, 255, 255, 0.72);
+  --ak-border: rgba(148, 163, 184, 0.28);
+  --ak-border-strong: rgba(100, 116, 139, 0.35);
+  --ak-text-primary: #0f172a;
+  --ak-text-secondary: #334155;
+  --ak-text-muted: #64748b;
+
+  --ak-success: #10b981;
+  --ak-warning: #f59e0b;
+  --ak-error: #ef4444;
+  --ak-info: #3b82f6;
+
+  --ak-space-1: 0.25rem;
+  --ak-space-2: 0.5rem;
+  --ak-space-3: 0.75rem;
+  --ak-space-4: 1rem;
+  --ak-space-6: 1.5rem;
+  --ak-space-8: 2rem;
+
+  --ak-duration-fast: 150ms;
+  --ak-duration-normal: 250ms;
+  --ak-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --ak-focus-ring: 0 0 0 3px color-mix(in srgb, #0ea5e9 35%, transparent);
+
+  --ak-font-display:
+    "Segoe UI Variable Display", "PingFang SC", "Microsoft YaHei UI",
+    "Noto Sans CJK SC", "Inter", sans-serif;
+  --ak-font-body:
+    "Segoe UI Variable Text", "PingFang SC", "Microsoft YaHei UI",
+    "Noto Sans CJK SC", "Inter", sans-serif;
+}
+
+.dark {
+  --ak-bg: #0b1020;
+  --ak-surface: #11192d;
+  --ak-surface-strong: #0f172a;
+  --ak-card: rgba(15, 23, 42, 0.72);
+  --ak-border: rgba(148, 163, 184, 0.18);
+  --ak-border-strong: rgba(148, 163, 184, 0.3);
+  --ak-text-primary: #f1f5f9;
+  --ak-text-secondary: #cbd5e1;
+  --ak-text-muted: #94a3b8;
+}
+
+.ak-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--ak-focus-ring);
+}
+
+.ak-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ak-space-2);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition:
+    transform var(--ak-duration-fast) var(--ak-ease-out),
+    border-color var(--ak-duration-fast) var(--ak-ease-out),
+    background-color var(--ak-duration-fast) var(--ak-ease-out),
+    color var(--ak-duration-fast) var(--ak-ease-out),
+    box-shadow var(--ak-duration-fast) var(--ak-ease-out);
+}
+
+.ak-btn:hover {
+  transform: translateY(-1px);
+}
+
+.ak-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.ak-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ak-btn-primary {
+  color: #f8fafc;
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  background: linear-gradient(120deg, #0284c7 0%, #0ea5e9 70%, #38bdf8 100%);
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.25);
+}
+
+.ak-btn-primary:hover {
+  box-shadow: 0 10px 24px rgba(14, 165, 233, 0.3);
+}
+
+.ak-btn-secondary {
+  color: var(--ak-text-primary);
+  border: 1px solid var(--ak-border);
+  background: color-mix(in srgb, var(--ak-surface) 85%, transparent);
+}
+
+.ak-btn-secondary:hover {
+  border-color: var(--ak-border-strong);
+}
+
+.ak-btn-ghost {
+  color: var(--ak-text-secondary);
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.ak-btn-ghost:hover {
+  color: var(--ak-text-primary);
+  background: color-mix(in srgb, var(--ak-surface) 35%, transparent);
+  border-color: var(--ak-border);
+}
+
+.ak-btn-danger {
+  color: #fee2e2;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  background: color-mix(in srgb, #ef4444 45%, transparent);
+}
+
+.ak-btn-danger:hover {
+  background: color-mix(in srgb, #ef4444 52%, transparent);
+}
+
+.ak-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--ak-border);
+  background: color-mix(in srgb, var(--ak-surface) 85%, transparent);
+  color: var(--ak-text-primary);
+  transition:
+    border-color var(--ak-duration-fast) var(--ak-ease-out),
+    box-shadow var(--ak-duration-fast) var(--ak-ease-out),
+    background-color var(--ak-duration-fast) var(--ak-ease-out);
+}
+
+.ak-input::placeholder {
+  color: var(--ak-text-muted);
+}
+
+.ak-input:hover {
+  border-color: var(--ak-border-strong);
+}
+
+.ak-input:focus-visible {
+  border-color: color-mix(in srgb, #0ea5e9 70%, var(--ak-border));
+}
+
+.ak-input-error {
+  border-color: color-mix(in srgb, #ef4444 55%, var(--ak-border));
+}
+
+.ak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+}
+
+.ak-surface-card {
+  background: var(--ak-card);
+  border: 1px solid var(--ak-border);
+}
+

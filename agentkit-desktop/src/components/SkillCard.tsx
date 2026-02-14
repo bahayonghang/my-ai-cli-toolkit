@@ -3,6 +3,7 @@
  */
 
 import { useTranslation } from "react-i18next";
+import { ExternalLink } from "lucide-react";
 import type { MarketplaceSkill } from "@/types";
 
 interface SkillCardProps {
@@ -101,16 +102,17 @@ export function SkillCard({ skill, installing, disabled, onInstall, onUninstall 
                 target="_blank"
                 rel="noopener noreferrer"
                 title={t("marketplace.openSkill")}
-                className="px-2.5 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                aria-label={t("a11y.openSkillDetails", { name: skill.name })}
+                className="inline-flex items-center justify-center px-2.5 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                ↗
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
               </a>
 
               {/* Install/Uninstall button */}
               <button
                 onClick={handleAction}
                 disabled={installing || disabled}
-                title={disabled ? "Node.js required" : undefined}
+                title={disabled ? t("marketplace.nodejsRequired") : undefined}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   skill.installed
                     ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"

@@ -4,6 +4,9 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { RefreshCw, Search } from "lucide-react";
+import { IconButton } from "./ui/IconButton";
+import { Input } from "./ui/Input";
 
 interface MarketFilterBarProps {
   searchQuery: string;
@@ -64,48 +67,29 @@ export function MarketFilterBar({
       {/* Search bar */}
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
         <div className="relative flex-1">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <input
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[color:var(--ak-text-muted)]"
+            aria-hidden="true"
+          />
+          <Input
             type="text"
+            aria-label={t("a11y.searchMarketplace")}
             value={localSearch}
             onChange={(e) => handleSearchInput(e.target.value)}
             placeholder={t("marketplace.searchPlaceholder")}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            containerClassName="space-y-0"
+            className="pl-10 pr-4 py-2 bg-white/5 border-white/10 text-white placeholder-slate-500"
           />
         </div>
-        <button
+        <IconButton
           type="button"
           onClick={onRefresh}
           disabled={loading}
-          className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+          ariaLabel={t("a11y.refreshMarketplace")}
+          icon={<RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />}
           title={t("marketplace.refresh")}
-        >
-          <svg
-            className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-        </button>
+          variant="soft"
+        />
       </form>
 
       {/* Actions */}
