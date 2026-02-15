@@ -34,7 +34,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
             let desc = truncate_to_width(desc, desc_w);
 
             let line = Line::from(vec![
-                Span::raw(if is_cursor { "▶ " } else { "  " }),
+                Span::raw(if is_cursor { "▸ " } else { "  " }),
                 Span::raw(format!("{check} ")),
                 status_icon,
                 Span::raw(" "),

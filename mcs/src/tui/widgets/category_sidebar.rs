@@ -60,7 +60,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
     let total = state.active_items().len();
     let mut items = vec![{
         let style = if state.category_cursor == 0 && focused {
-            Style::default().fg(theme::BG).bg(theme::ACCENT)
+            Style::default().fg(theme::PRIMARY).bg(theme::SURFACE)
         } else if state.selected_category.is_none() {
             Style::default().fg(theme::FG).add_modifier(Modifier::BOLD)
         } else {
@@ -73,7 +73,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
         let is_selected = state.selected_category.as_deref() == Some(cat.as_str());
         let is_cursor = state.category_cursor == i + 1 && focused;
         let style = if is_cursor {
-            Style::default().fg(theme::BG).bg(theme::ACCENT)
+            Style::default().fg(theme::PRIMARY).bg(theme::SURFACE)
         } else if is_selected {
             Style::default().fg(theme::FG).add_modifier(Modifier::BOLD)
         } else {

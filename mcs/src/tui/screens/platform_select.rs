@@ -5,84 +5,109 @@ use crate::config::platform::platform_displays;
 use crate::tui::state::AppState;
 use crate::tui::theme;
 
-const LOGO: &str = r#"
-  __  __        ____ _                 _
- |  \/  |_   _ / ___| | __ _ _   _  __| | ___
- | |\/| | | | | |   | |/ _` | | | |/ _` |/ _ \
- | |  | | |_| | |___| | (_| | |_| | (_| |  __/
- |_|  |_|\__, |\____|_|\__,_|\__,_|\__,_|\___|
-         |___/        Skills Installer (Rust)
-"#;
-
 pub fn draw(frame: &mut Frame, state: &AppState) {
     let area = frame.area();
-
-    // Center the card
-    let card_w = 60.min(area.width);
-    let card_h = 24.min(area.height);
-    let x = (area.width.saturating_sub(card_w)) / 2;
-    let y = (area.height.saturating_sub(card_h)) / 2;
-    let card = Rect::new(x, y, card_w, card_h);
-
     frame.render_widget(Block::default().style(Style::default().bg(theme::BG)), area);
 
+    // Full-screen layout with horizontal padding
+    let padded = Rect {
+        x: area.x + 2,
+        y: area.y,
+        width: area.width.saturating_sub(4),
+        height: area.height,
+    };
+
     let chunks = Layout::vertical([
-        Constraint::Length(7), // logo
-        Constraint::Length(1), // title
+        Constraint::Length(3), // title area
+        Constraint::Length(1), // gap
         Constraint::Min(1),    // list
-        Constraint::Length(2), // footer
+        Constraint::Length(1), // footer
     ])
-    .split(card);
+    .split(padded);
 
-    // Logo
-    let logo = Paragraph::new(LOGO)
-        .style(Style::default().fg(theme::PRIMARY))
-        .alignment(Alignment::Center);
-    frame.render_widget(logo, chunks[0]);
-
-    // Title
-    let title = Paragraph::new("  Select Target Platform").style(
-        Style::default()
-            .fg(theme::ACCENT)
-            .add_modifier(Modifier::BOLD),
+    // Title — centered with badge
+    let title = Line::from(vec![
+        Span::styled(
+            "MyClaude Skills Installer ",
+            Style::default()
+                .fg(theme::PRIMARY)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            " Select Platform ",
+            Style::default()
+                .fg(theme::BG)
+                .bg(theme::ACCENT)
+                .add_modifier(Modifier::BOLD),
+        ),
+    ]);
+    frame.render_widget(
+        Paragraph::new(vec![Line::default(), title, Line::default()])
+            .alignment(Alignment::Center)
+            .style(Style::default().bg(theme::SURFACE)),
+        chunks[0],
     );
-    frame.render_widget(title, chunks[1]);
 
     // Platform list
     let displays = platform_displays();
+    let w = padded.width as usize;
     let items: Vec<ListItem> = displays
         .iter()
         .enumerate()
         .map(|(i, d)| {
-            let (fg, bg, mods) = if i == state.platform_cursor {
-                (theme::BG, theme::PRIMARY, Modifier::BOLD)
-            } else {
-                (theme::FG, theme::BG, Modifier::empty())
-            };
-            let muted = if i == state.platform_cursor {
-                theme::BG
+            let selected = i == state.platform_cursor;
+            let bg = if selected { theme::SURFACE } else { theme::BG };
+            let fg = if selected { theme::PRIMARY } else { theme::FG };
+            let muted = if selected {
+                theme::SECONDARY
             } else {
                 theme::MUTED
             };
+            let indicator = if selected { "  ▸ " } else { "    " };
+
+            let name_part = format!("{} {:<16}", d.icon, d.name);
+            let path_part = format!("  {}", d.base_dir);
+            let used = indicator.len() + name_part.chars().count() + path_part.len();
+            let pad = w.saturating_sub(used);
+
             ListItem::new(Line::from(vec![
                 Span::styled(
-                    format!("  {} {:<14}", d.icon, d.name),
-                    Style::default().fg(fg).bg(bg).add_modifier(mods),
+                    indicator,
+                    Style::default().fg(fg).bg(bg).add_modifier(if selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
                 ),
-                Span::styled(d.base_dir.to_string(), Style::default().fg(muted).bg(bg)),
+                Span::styled(
+                    name_part,
+                    Style::default().fg(fg).bg(bg).add_modifier(if selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
+                ),
+                Span::styled(path_part, Style::default().fg(muted).bg(bg)),
+                Span::styled(" ".repeat(pad), Style::default().bg(bg)),
             ]))
         })
         .collect();
 
-    let list = List::new(items).block(
-        Block::default()
-            .borders(Borders::TOP)
-            .border_style(Style::default().fg(theme::PANEL)),
-    );
-    frame.render_widget(list, chunks[2]);
+    frame.render_widget(List::new(items), chunks[2]);
 
     // Footer
-    let footer = Paragraph::new("  ↑↓/jk Navigate  ⏎ Select  q Quit")
-        .style(Style::default().fg(theme::MUTED));
-    frame.render_widget(footer, chunks[3]);
+    let footer = Line::from(vec![
+        Span::styled("[↑↓]", Style::default().fg(theme::PRIMARY)),
+        Span::styled(" Navigate  ", Style::default().fg(theme::MUTED)),
+        Span::styled("[⏎]", Style::default().fg(theme::PRIMARY)),
+        Span::styled(" Select  ", Style::default().fg(theme::MUTED)),
+        Span::styled("[d]", Style::default().fg(theme::PRIMARY)),
+        Span::styled(" Dashboard  ", Style::default().fg(theme::MUTED)),
+        Span::styled("[q]", Style::default().fg(theme::PRIMARY)),
+        Span::styled(" Quit", Style::default().fg(theme::MUTED)),
+    ]);
+    frame.render_widget(
+        Paragraph::new(footer).style(Style::default().bg(theme::SURFACE)),
+        chunks[3],
+    );
 }

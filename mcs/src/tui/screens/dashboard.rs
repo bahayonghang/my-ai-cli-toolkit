@@ -10,20 +10,42 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
     let area = frame.area();
     frame.render_widget(Block::default().style(Style::default().bg(theme::BG)), area);
 
+    let padded = Rect {
+        x: area.x + 2,
+        y: area.y,
+        width: area.width.saturating_sub(4),
+        height: area.height,
+    };
+
     let chunks = Layout::vertical([
-        Constraint::Length(2),
+        Constraint::Length(3),
         Constraint::Min(1),
         Constraint::Length(1),
     ])
-    .split(area);
+    .split(padded);
 
-    // Title
-    let title = Paragraph::new(" 📊 Platform Dashboard").style(
-        Style::default()
-            .fg(theme::PRIMARY)
-            .add_modifier(Modifier::BOLD),
+    // Title — centered with badge
+    let title = Line::from(vec![
+        Span::styled(
+            "MyClaude Skills ",
+            Style::default()
+                .fg(theme::PRIMARY)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            " Dashboard ",
+            Style::default()
+                .fg(theme::BG)
+                .bg(theme::ACCENT)
+                .add_modifier(Modifier::BOLD),
+        ),
+    ]);
+    frame.render_widget(
+        Paragraph::new(vec![Line::default(), title, Line::default()])
+            .alignment(Alignment::Center)
+            .style(Style::default().bg(theme::SURFACE)),
+        chunks[0],
     );
-    frame.render_widget(title, chunks[0]);
 
     // Table
     let platforms = load_platforms(&state.project_root);
@@ -84,6 +106,14 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
 
     frame.render_widget(table, chunks[1]);
 
-    let footer = Paragraph::new(" Esc Back  q Quit").style(Style::default().fg(theme::MUTED));
-    frame.render_widget(footer, chunks[2]);
+    let footer = Line::from(vec![
+        Span::styled(" [Esc]", Style::default().fg(theme::PRIMARY)),
+        Span::styled(" Back ", Style::default().fg(theme::MUTED)),
+        Span::styled("[q]", Style::default().fg(theme::PRIMARY)),
+        Span::styled(" Quit", Style::default().fg(theme::MUTED)),
+    ]);
+    frame.render_widget(
+        Paragraph::new(footer).style(Style::default().bg(theme::SURFACE)),
+        chunks[2],
+    );
 }
