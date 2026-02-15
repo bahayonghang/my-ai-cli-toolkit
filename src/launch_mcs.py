@@ -1,8 +1,8 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
-import shutil
 
 
 def _read_cargo_version(mcs_dir: str) -> str:
@@ -32,6 +32,15 @@ def _build_and_copy(mcs_dir: str, exe_path: str, exe_name: str) -> None:
     if not os.path.exists(build_path):
         print(f"❌ Error: Build artifact not found at {build_path}")
         sys.exit(1)
+    # On Windows, the exe may be locked by a previous run; rename it out first
+    if sys.platform == "win32" and os.path.exists(exe_path):
+        old = exe_path + ".old"
+        try:
+            if os.path.exists(old):
+                os.remove(old)
+            os.rename(exe_path, old)
+        except OSError:
+            pass
     shutil.copy2(build_path, exe_path)
     print(f"✅ Built and copied to {exe_path}")
 
