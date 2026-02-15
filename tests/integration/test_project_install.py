@@ -154,9 +154,9 @@ class TestGetTargetConfigGlobal:
         """测试 Gemini 平台全局配置"""
         config = resolve_install_paths("gemini")
 
-        assert config["base"] == HOME_DIR / ".gemini"
-        assert config["skills"] == HOME_DIR / ".gemini" / "skills"
-        assert config["commands"] == HOME_DIR / ".gemini" / "commands"
+        assert config["base"] == HOME_DIR / ".agents"
+        assert config["skills"] == HOME_DIR / ".agents" / "skills"
+        assert config["commands"] == HOME_DIR / ".agents" / "commands"
         assert config["prompt"] is None
 
     def test_qwen_global_config(self):

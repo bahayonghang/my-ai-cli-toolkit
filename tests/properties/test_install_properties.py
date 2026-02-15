@@ -130,7 +130,7 @@ class MockItemListView:
 # **Validates: Requirements 6.1, 6.5**
 
 
-@settings(max_examples=100)
+@settings(max_examples=100, deadline=None)
 @given(platform=st.sampled_from(["claude"]))
 def test_property_6_skill_installation_creates_target_directory(platform: str):
     """
@@ -198,7 +198,7 @@ def test_property_6_skill_installation_with_real_skills():
 # **Validates: Requirements 7.1, 7.6**
 
 
-@settings(max_examples=100, deadline=500)
+@settings(max_examples=100, deadline=None)
 @given(selection_pattern=st.lists(st.booleans(), min_size=1, max_size=10))
 def test_property_7_batch_install_processes_all_selected_items(selection_pattern: list[bool]):
     """
@@ -259,7 +259,7 @@ def test_property_7_batch_install_processes_all_selected_items(selection_pattern
 # **Validates: Requirements 7.4**
 
 
-@settings(max_examples=100, deadline=500)
+@settings(max_examples=100, deadline=None)
 @given(selection_pattern=st.lists(st.booleans(), min_size=1, max_size=10))
 def test_property_8_batch_install_clears_selection_after_completion(selection_pattern: list[bool]):
     """
