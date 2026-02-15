@@ -127,6 +127,9 @@ mcs:
 mcs-rebuild:
     uv run python src/launch_mcs.py --rebuild
 
+# 强制重新编译并启动 MCS TUI (短别名)
+mcs-re: mcs-rebuild
+
 # ============ 提示词管理 ============
 
 # 将本地 CLAUDE.md 同步到全局配置 (~/.claude/CLAUDE.md)
