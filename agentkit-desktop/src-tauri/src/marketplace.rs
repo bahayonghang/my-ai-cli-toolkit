@@ -1364,6 +1364,9 @@ mod tests {
             while handled < 2 && started_at.elapsed() < Duration::from_secs(3) {
                 match listener.accept() {
                     Ok((mut stream, _)) => {
+                        stream
+                            .set_nonblocking(false)
+                            .expect("set blocking stream");
                         let mut buffer = [0u8; 4096];
                         let size = stream.read(&mut buffer).unwrap_or(0);
                         let request = String::from_utf8_lossy(&buffer[..size]);
