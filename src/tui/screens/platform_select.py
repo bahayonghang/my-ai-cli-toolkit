@@ -85,36 +85,41 @@ class PlatformSelectScreen(Screen):
     ]
 
     def compose(self) -> ComposeResult:
-        # Title bar
-        with Vertical(id="header-area"):
-            yield Static(
-                "🚀  M y C l a u d e   S k i l l s   M a n a g e r  🚀",
-                id="brand-text",
-            )
-            yield Static(
-                "Unified skill installer for AI coding agents",
-                id="brand-sub",
-            )
+        with Vertical(id="main-container"):
+            # Header
+            with Vertical(id="header-area"):
+                yield Static(
+                    r"""
+   __  __      _   __               __
+  / / / /_  __/ | / /_  ___________/ /___ _
+ / /_/ / / / /  |/ / / / / ___/ __  / __ `/
+/ __  / /_/ / /|  / /_/ / /__/ /_/ / /_/ /
+/_/ /_/\__,_/_/ |_/\__,_/\___/\__,_/\__,_/
+                    """,
+                    id="brand-output",
+                )
+                yield Static(
+                    "Unified Skill Installer for AI Agents",
+                    id="brand-sub",
+                )
 
-        # Main content: platform list fills available space
-        with Vertical(id="main-area"):
-            yield Static(" Select your target platform", id="subtitle")
-            yield OptionList(
-                *[Option(self._format_option(p), id=p.id) for p in self.PLATFORMS],
-                id="platform-list",
-            )
+            # Content
+            with Vertical(id="content-area"):
+                yield Static("Select Target Platform", id="subtitle")
+                yield OptionList(
+                    *[Option(self._format_option(p), id=p.id) for p in self.PLATFORMS],
+                    id="platform-list",
+                )
 
-        # Footer hint
-        with Vertical(id="footer-area"):
-            with Horizontal(id="footer-row"):
-                yield Static("↑↓ Navigate  ⏎ Select  d Dashboard  ⎋ Quit", id="hint")
+            # Footer
+            with Horizontal(id="footer-area"):
+                yield Static("↑↓ Navigate  ⏎ Select  ⎋ Quit", id="hint")
                 yield Static(_APP_VERSION, id="version")
 
     def _format_option(self, platform: PlatformDisplay) -> str:
-        """Format platform option display with spacing line."""
+        """Format platform option."""
         icon = PLATFORM_ICONS.get(platform.id, "📁")
-        name = platform.name.ljust(14)
-        return f"{icon}  {name} →  {platform.path}\n"
+        return f"{icon}  {platform.name}"
 
     def on_mount(self) -> None:
         self.query_one("#platform-list", OptionList).focus()

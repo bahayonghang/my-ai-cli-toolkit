@@ -1,100 +1,111 @@
-/* MyClaude Skills TUI - Catppuccin Mocha Theme
- * Two-column layout with sidebar + content panel
- */
+/* MyClaude Skills TUI - Catppuccin Mocha Theme (Optimized) */
 
 /* === Global === */
 Screen {
     background: $background;
+    color: $foreground;
 }
 
 /* === Platform Selection Screen === */
 PlatformSelectScreen {
+    align: center middle;
     background: $background;
+}
+
+PlatformSelectScreen #main-container {
+    width: 80;
+    height: auto;
+    max-height: 90%;
+    background: $surface;
+    border: thick $primary; /* Thicker border for card look */
+    padding: 1 2;
     layout: vertical;
 }
 
 PlatformSelectScreen #header-area {
     width: 100%;
-    dock: top;
-    height: 7;
-    background: $surface;
-    border-bottom: solid $panel;
-    padding: 2 2;
+    height: auto;
+    padding: 1 0;
     align: center middle;
 }
 
-PlatformSelectScreen #brand-text {
+PlatformSelectScreen #brand-output {
     color: $primary;
-    text-style: bold;
-    width: 100%;
-    text-align: center;
+    width: auto;
+    height: auto;
+    padding: 0 0 1 0;
 }
 
 PlatformSelectScreen #brand-sub {
     color: $text-muted;
     text-style: italic;
-    width: 100%;
     text-align: center;
+    width: 100%;
+    padding-bottom: 1;
 }
 
-PlatformSelectScreen #main-area {
+PlatformSelectScreen #content-area {
     width: 100%;
-    height: 1fr;
-    padding: 0 3;
+    height: auto;
+    max-height: 20;
+    border-top: solid $panel;
+    border-bottom: solid $panel;
+    padding: 1 0;
 }
 
 PlatformSelectScreen #subtitle {
-    color: $foreground;
-    padding: 1 0 0 1;
+    color: $accent;
     text-style: bold;
+    text-align: center;
+    padding-bottom: 1;
 }
 
 PlatformSelectScreen #platform-list {
-    width: 100%;
-    height: 1fr;
-    padding: 0 1;
-    border: round $panel;
-    background: $background;
-    color: $foreground;
+    height: auto;
+    max-height: 14;
+    background: $surface;
+    border: none;
     scrollbar-size: 1 1;
 }
 
-PlatformSelectScreen #platform-list:focus {
-    border: round $primary;
+PlatformSelectScreen OptionList {
+    background: $surface;
+    border: none;
+}
+
+PlatformSelectScreen OptionList:focus {
+    border: none;
+}
+
+PlatformSelectScreen OptionList > .option-list--option {
+    padding: 0 2;
+    background: $surface;
+    color: $foreground;
 }
 
 PlatformSelectScreen OptionList > .option-list--option-highlighted {
-    background: $primary 30%;
-    color: $foreground;
+    background: $primary 20%;
+    color: $primary;
     text-style: bold;
+    border-left: thick $primary;
 }
 
 PlatformSelectScreen #footer-area {
-    dock: bottom;
-    height: 1;
-    background: $surface;
-    color: $text-muted;
-    padding: 0 2;
-    border-top: solid $panel;
-}
-
-PlatformSelectScreen #footer-row {
     width: 100%;
-    height: 100%;
-    align: left middle;
+    height: auto;
+    padding-top: 1;
 }
 
 PlatformSelectScreen #hint {
-    width: 1fr;
     color: $text-muted;
+    text-align: center;
 }
 
 PlatformSelectScreen #version {
-    width: 8;
+    color: $panel;
     text-align: right;
-    color: $primary;
+    dock: right;
 }
-
 
 /* === Main Screen === */
 MainScreen {
@@ -102,81 +113,130 @@ MainScreen {
 }
 
 MainScreen #main-container {
-    width: 100%;
-    height: 100%;
-}
-
-/* === Two-Column Layout === */
-#two-column {
-    width: 100%;
     height: 1fr;
-}
-
-/* === Left Sidebar === */
-#sidebar {
-    width: 22;
-    height: 100%;
-    background: #181825;
-    border-right: tall $panel;
-    padding: 0;
-}
-
-/* Sidebar toggle buttons (Skills/Commands) */
-#sidebar-toggle {
     width: 100%;
-    height: auto;
-    padding: 1 0 0 0;
 }
 
-#sidebar-toggle Button {
+MainScreen #two-column {
+    height: 1fr;
+    width: 100%;
+}
+
+MainScreen #sidebar {
+    width: 24;
+    height: 100%;
+    background: $surface;
+    border-right: solid $panel;
+    dock: left;
+}
+
+MainScreen #content-panel {
+    background: $background;
+    padding: 0 1;
+    height: 100%;
+    width: 1fr;
+}
+
+/* === Header Component === */
+Header {
+    dock: top;
+    height: 1;
+    background: $surface;
+    color: $primary;
+    text-style: bold;
+    padding: 0 1;
+    border-bottom: solid $panel;
+}
+
+Header #header-row {
     width: 100%;
     height: 1;
-    min-width: 10;
-    border: none;
-    padding: 0 1;
-    margin: 0;
-    background: transparent;
-    color: $text-muted;
 }
 
-#sidebar-toggle Button.-active {
-    background: $accent 20%;
-    color: $accent;
+Header #app-title {
+    width: 1fr;
     text-style: bold;
 }
 
-#sidebar-toggle Button:hover {
-    background: $surface;
-    color: $primary;
+Header #platform-badge {
+    width: auto;
+    min-width: 10;
+    background: $accent;
+    color: $background;
+    text-style: bold;
+    padding: 0 2;
+    border-radius: 1; /* Slight rounding if terminal supports it */
 }
 
-#sidebar-toggle Button:focus {
-    background: $primary 30%;
+/* === Footer Component === */
+Footer {
+    dock: bottom;
+    height: 1;
+    background: $surface;
+    padding: 0 1;
+    border-top: solid $panel;
+}
+
+Footer #footer-row {
+    width: 100%;
+    height: 1;
+}
+
+Footer #keys-hint {
+    width: 1fr;
+    color: $text-muted;
+}
+
+Footer #status-info {
+    width: auto;
     color: $foreground;
 }
 
-/* Sidebar separator */
-#sidebar-sep {
-    width: 100%;
-    height: 1;
-    color: $panel;
-    padding: 0 1;
+/* === Sidebar Component === */
+CategorySidebar {
+    height: 100%;
+    layout: vertical;
 }
 
-/* Sidebar category list */
-#category-list {
+CategorySidebar #sidebar-toggle {
+    height: 1;
+    width: 100%;
+    background: $surface;
+    padding: 0;
+    border-bottom: solid $panel;
+}
+
+CategorySidebar Button {
+    width: 1fr;
+    height: 1;
+    border: none;
+    background: $surface;
+    color: $text-muted;
+}
+
+CategorySidebar Button.-active {
+    background: $surface;
+    color: $accent;
+    text-style: bold;
+    border-bottom: solid $accent; /* Underline indicator */
+}
+
+CategorySidebar Button:hover {
+    background: $surface 80%;
+    color: $primary;
+}
+
+CategorySidebar #sidebar-sep {
+    display: none; /* Removed separator, using border instead */
+}
+
+CategorySidebar ListView {
     height: 1fr;
     border: none;
     background: transparent;
-    padding: 0;
-    scrollbar-size: 1 1;
+    padding: 1 0; /* Vertical padding for list */
 }
 
-#category-list:focus {
-    border: none;
-}
-
-/* Category items */
 CategoryItem {
     height: 1;
     padding: 0 1;
@@ -184,743 +244,302 @@ CategoryItem {
 }
 
 CategoryItem:hover {
-    background: $surface;
+    background: $surface 80%;
 }
 
 CategoryItem.-active {
-    background: $accent 25%;
-}
-
-CategoryItem.-active .cat-text {
-    color: $accent;
+    background: $primary 15%;
+    color: $primary;
     text-style: bold;
+    border-left: thick $primary; /* Left border indicator */
 }
 
 CategoryItem .cat-text {
     width: 100%;
-    color: $text-muted;
 }
 
-/* === Right Content Panel === */
-#content-panel {
-    width: 1fr;
-    height: 100%;
-    padding: 0 1;
-}
-
-/* === Search Box === */
-MainScreen #search-container {
-    width: 100%;
-    height: 3;
-    padding: 0 1;
-}
-
-MainScreen #search-container.-hidden {
-    display: none;
-}
-
-MainScreen #search-input {
-    width: 100%;
-    height: 1;
-    border: none;
-    background: $surface;
-    padding: 0 1;
-}
-
-MainScreen #search-input:focus {
-    background: $panel;
-}
-
-/* === List View === */
+/* === Item List Component === */
 ItemListView {
     height: 1fr;
-    border: solid $panel;
-    padding: 0 1;
+    border: none; /* Removed border for cleaner look */
+    padding: 0;
     scrollbar-size: 1 1;
+    background: $background;
 }
 
 ItemListView:focus {
-    border: solid $primary;
+    border: none; /* No border on focus, rely on item highlight */
 }
 
-ItemListView.-hidden {
-    display: none;
+ItemListView .list-header {
+    background: $surface;
+    color: $text-muted;
+    text-style: bold;
+    height: 1;
+    padding: 0 1;
+    border-bottom: solid $panel;
 }
 
-/* === List Items === */
 SelectableItem {
     height: 1;
     padding: 0 1;
     background: transparent;
-    transition: background 100ms;
+    border-bottom: solid $surface; /* Subtle separator */
 }
 
 SelectableItem:hover {
     background: $surface;
 }
 
-/* Selection state (Space) - accent */
 SelectableItem.-selected {
-    background: $accent 20%;
-}
-
-SelectableItem.-selected #content {
     color: $accent;
     text-style: bold;
 }
 
-/* Keyboard highlight - primary */
+SelectableItem.-selected #content {
+    text-style: bold;
+}
+
 SelectableItem.-highlight {
-    background: $primary 30%;
+    background: $surface; /* Subtle highlight background */
+    border-left: thick $accent; /* Accent indicator */
 }
 
 SelectableItem.-highlight #content {
-    color: $foreground;
     text-style: bold;
 }
 
-/* Selected + highlighted */
 SelectableItem.-selected.-highlight {
-    background: $primary 30%;
+    background: $surface;
+    color: $accent;
 }
 
-SelectableItem.-selected.-highlight #content {
-    color: $foreground;
-    text-style: bold;
-}
-
-SelectableItem #content {
-    width: 100%;
-    color: $foreground;
-}
-
-/* Outdated items */
 SelectableItem.-outdated #content {
     color: $warning;
 }
 
-/* === Utility Classes === */
-.text-muted {
-    color: $text-muted;
-}
-
-.-hidden {
-    display: none;
-}
-
-/* === Progress Bar Area === */
-#progress-container {
-    width: 100%;
-    height: 3;
-    padding: 0 1;
-    background: $surface;
-    border-top: solid $panel;
-}
-
-#progress-container.-hidden {
-    display: none;
-}
-
-#progress-row {
-    width: 100%;
-    height: 3;
-    align: center middle;
-    padding: 1 0;
-}
-
-#progress-label {
-    width: 30;
-    padding: 0 1;
-    color: $foreground;
-}
-
-#progress-bar {
-    width: 1fr;
-    height: 1;
-}
-
-#progress-bar Bar {
-    width: 1fr;
-}
-
-#progress-bar Bar > .bar--bar {
-    color: $success;
-}
-
-#progress-count {
-    width: 10;
-    text-align: right;
-    padding: 0 1;
-    color: $primary;
-}
-
-/* === Install Modal === */
+/* === Install Modal (Optimized) === */
 InstallModal {
     align: center middle;
+    background: $background 80%;
 }
 
-#install-dialog {
-    width: 90;
-    max-height: 85%;
+InstallModal #dialog {
+    width: 64; /* Wider dialog */
+    height: auto;
     background: $surface;
-    border: round $primary;
-    padding: 2 4;
-}
-
-#dialog-title {
-    text-align: center;
-    text-style: bold;
-    color: $primary;
-    width: 100%;
-    padding: 1 0 1 0;
-}
-
-/* Mode section container */
-#mode-section {
-    height: auto;
-    padding: 0 0;
-    margin: 1 0 0 0;
-}
-
-#mode-label {
-    color: $accent;
-    text-style: bold;
-    padding: 0 0 0 1;
-}
-
-#install-radio {
-    padding: 0 0 0 2;
-    height: auto;
-    border: round $panel;
-    background: $background;
-    margin: 0 1;
-}
-
-#install-radio:focus {
-    border: round $primary;
-}
-
-#install-radio RadioButton {
-    height: 1;
-    padding: 0 1;
-    background: transparent;
-}
-
-/* Path section — shown when directory mode is selected */
-#path-section {
-    height: auto;
-    padding: 0 0;
-    margin: 1 0 0 0;
-}
-
-#path-label {
-    color: $accent;
-    text-style: bold;
-    padding: 0 0 0 1;
-}
-
-#path-label.-hidden {
-    display: none;
-}
-
-#path-input {
-    width: 100%;
-    height: 3;
-    border: round $panel;
-    background: $background;
-    padding: 0 1;
-    margin: 0 1;
-}
-
-#path-input.-hidden {
-    display: none;
-}
-
-#path-input:focus {
-    border: round $accent;
-    background: $background;
-}
-
-#path-input.-disabled {
-    color: $text-muted;
-    background: $panel;
-}
-
-/* Items section container */
-#items-section {
-    height: auto;
-    padding: 0 0;
-    margin: 1 0 0 0;
-}
-
-#items-label {
-    color: $accent;
-    text-style: bold;
-    padding: 0 0 0 1;
-}
-
-#items-list {
-    max-height: 14;
-    padding: 0 1;
-    margin: 0 1;
-    color: $foreground;
-    background: $background;
-    border: round $panel;
-    overflow-y: auto;
-}
-
-#dialog-buttons {
-    align: center middle;
-    padding: 2 0 1 0;
-    height: auto;
-}
-
-#dialog-buttons Button {
-    min-width: 16;
-    margin: 0 2;
-    height: 3;
-    border: solid $panel;
-    text-style: bold;
-}
-
-#btn-install {
-    background: $primary;
-    color: $background;
-}
-
-#btn-install:hover {
-    background: $accent;
-    color: $background;
-}
-
-#btn-install:focus {
-    background: $accent;
-    color: $background;
-}
-
-#btn-cancel {
-    background: $panel;
-    color: $foreground;
-}
-
-#btn-cancel:hover {
-    background: $error 30%;
-    color: $error;
-}
-
-/* === Detail Modal === */
-DetailModal {
-    align: center middle;
-}
-
-#detail-dialog {
-    width: 70;
-    max-height: 85%;
-    background: $surface;
-    border: round $accent;
+    border: thick $primary; /* Thick border */
     padding: 1 2;
+    box-shadow: 0 0 1 1 $primary 30%; /* Simulate glow if possible/fallback */
 }
 
-#detail-title {
+InstallModal #title {
     text-align: center;
+    color: $primary;
     text-style: bold;
-    color: $accent;
-    width: 100%;
+    padding-bottom: 1;
+    border-bottom: solid $panel;
+    margin-bottom: 1;
 }
 
-#detail-sep {
-    width: 100%;
+InstallModal #form {
+    padding: 0 0;
+}
+
+InstallModal .label {
+    color: $text-muted;
+    text-style: bold;
+    padding: 1 0 0 0;
+    margin-bottom: 0;
+}
+
+InstallModal RadioSet {
+    background: transparent;
+    border: none;
+    padding: 0 0;
+    margin-bottom: 1;
+}
+
+InstallModal RadioButton {
+    background: transparent;
+    color: $foreground;
+    padding: 0 0;
     height: 1;
-    color: $panel;
 }
 
-#detail-scroll {
+InstallModal RadioButton.-selected {
+    color: $accent;
+    text-style: bold;
+}
+
+InstallModal Input {
+    border: round $panel;
+    background: $background;
+    height: 3;
+    padding: 0 1;
+    margin-bottom: 1;
+}
+
+InstallModal Input:focus {
+    border: round $accent;
+}
+
+InstallModal Input:disabled {
+    border: round $panel 50%;
+    color: $text-muted;
+    background: $surface;
+}
+
+/* Improved Items Display */
+InstallModal #items-preview {
     height: auto;
-    max-height: 40;
-    padding: 1 1;
+    max-height: 10;
+    background: $background;
+    border: solid $panel;
+    padding: 0 1;
+    margin-top: 0;
+    margin-bottom: 1;
+    color: $text-muted;
     scrollbar-size: 1 1;
 }
 
-#detail-meta {
-    color: $foreground;
-    padding: 0 0 0 0;
-}
-
-#detail-desc-label {
-    color: $primary;
-    padding: 0;
-}
-
-#detail-desc {
-    color: $foreground;
-    padding: 0 0 0 2;
-}
-
-#detail-body-label {
-    color: $primary;
-    padding: 0;
-}
-
-#detail-body {
-    color: $foreground;
-    padding: 0 0 0 2;
-}
-
-#detail-files-label {
-    color: $primary;
-    padding: 0;
-}
-
-#detail-files {
-    color: $foreground;
-    padding: 0 0 0 2;
-}
-
-/* === Confirm Modal (P0) === */
-ConfirmModal {
+InstallModal #buttons {
     align: center middle;
-}
-
-#confirm-dialog {
-    width: 64;
-    max-height: 80%;
-    background: $surface;
-    border: round $warning;
-    padding: 1 2;
-}
-
-#confirm-title {
-    text-align: center;
-    text-style: bold;
-    color: $warning;
-    width: 100%;
-    padding: 1 0;
-}
-
-#confirm-sep {
-    width: 100%;
-    height: 1;
-    border-bottom: solid $warning 40%;
-}
-
-#confirm-message {
-    color: $foreground;
-    padding: 1 0;
-}
-
-#confirm-items {
-    max-height: 14;
-    padding: 0 1;
-    margin: 0 1;
-    color: $foreground;
-    background: $background;
-    border: round $panel;
-    overflow-y: auto;
-}
-
-#confirm-buttons {
-    align: center middle;
-    padding: 1 0 0 0;
-    height: auto;
-}
-
-#confirm-buttons Button {
-    min-width: 16;
-    margin: 0 2;
+    padding-top: 1;
     height: 3;
-    border: solid $panel;
+}
+
+InstallModal Button {
+    margin: 0 2;
+    min-width: 16;
+    height: 3;
+    border: none;
     text-style: bold;
 }
 
-#btn-confirm {
-    background: $primary;
+InstallModal #btn-install {
+    background: $success; /* Green for success action */
     color: $background;
 }
 
-#btn-confirm:hover {
-    background: $accent;
+InstallModal #btn-install:hover {
+    background: $success 80%;
     color: $background;
 }
 
-#btn-confirm-danger {
+InstallModal #btn-install:focus {
+    background: $success 80%;
+    color: $background;
+    border: thick $surface;
+}
+
+InstallModal #btn-cancel {
+    background: $panel;
+    color: $foreground;
+}
+
+InstallModal #btn-cancel:hover {
     background: $error;
     color: $background;
 }
 
-#btn-confirm-danger:hover {
-    background: $error 80%;
-    color: $background;
-}
-
-#btn-confirm-cancel {
-    background: $panel;
-    color: $foreground;
-}
-
-#btn-confirm-cancel:hover {
-    background: $error 30%;
-    color: $error;
-}
-
-/* === Prompt Modal (P0) === */
-PromptModal {
+/* === Confirm Modal === */
+ConfirmModal {
     align: center middle;
+    background: $background 80%;
 }
 
-#prompt-dialog {
-    width: 80;
-    max-height: 85%;
+ConfirmModal #confirm-dialog {
+    width: 50;
+    height: auto;
     background: $surface;
-    border: round $primary;
+    border: thick $warning; /* Thick warning border */
     padding: 1 2;
 }
 
-#prompt-title {
+ConfirmModal #confirm-title {
     text-align: center;
+    color: $warning;
     text-style: bold;
-    color: $primary;
-    width: 100%;
+    padding-bottom: 1;
+    border-bottom: solid $warning 50%;
+    margin-bottom: 1;
+}
+
+ConfirmModal #confirm-message {
     padding: 1 0;
-}
-
-#prompt-sep {
-    width: 100%;
-    height: 1;
-    color: $panel;
-}
-
-#prompt-status {
-    color: $foreground;
-    padding: 1 0;
-}
-
-#prompt-scroll {
-    max-height: 30;
-    padding: 1 1;
-    scrollbar-size: 1 1;
-    background: $background;
-    border: round $panel;
-    margin: 0 1;
-}
-
-#prompt-diff-content {
+    text-align: center;
     color: $foreground;
 }
 
-#prompt-buttons {
+ConfirmModal #confirm-buttons {
     align: center middle;
-    padding: 1 0 0 0;
-    height: auto;
-}
-
-#prompt-buttons Button {
-    min-width: 16;
-    margin: 0 2;
+    padding-top: 1;
     height: 3;
-    border: solid $panel;
-    text-style: bold;
 }
 
-#btn-prompt-update {
-    background: $primary;
-    color: $background;
-}
-
-#btn-prompt-update:hover {
-    background: $accent;
-    color: $background;
-}
-
-#btn-prompt-close {
-    background: $panel;
-    color: $foreground;
-}
-
-/* === Dashboard Screen (P1) === */
-DashboardScreen {
-    background: $background;
-    layout: vertical;
-}
-
-#dashboard-container {
-    width: 100%;
-    height: 100%;
-    padding: 1 2;
-}
-
-#dashboard-title {
-    color: $primary;
-    text-style: bold;
-    width: 100%;
-    padding: 1 0;
-}
-
-#dashboard-sep {
-    width: 100%;
-    height: 1;
-    color: $panel;
-}
-
-#dashboard-table {
-    width: 100%;
-    height: 1fr;
-    margin: 1 0;
-}
-
-#dashboard-footer-info {
-    color: $text-muted;
-    height: 1;
-    dock: bottom;
-}
-
-/* === Multi-Platform Modal (P1) === */
-MultiPlatformModal {
-    align: center middle;
-}
-
-#multi-platform-dialog {
-    width: 64;
-    max-height: 85%;
-    background: $surface;
-    border: round $primary;
-    padding: 1 2;
-}
-
-#multi-platform-title {
-    text-align: center;
-    text-style: bold;
-    color: $primary;
-    width: 100%;
-    padding: 1 0;
-}
-
-#multi-platform-sep {
-    width: 100%;
-    height: 1;
-    color: $panel;
-}
-
-#multi-platform-hint {
-    color: $text-muted;
-    padding: 1 0;
-}
-
-#multi-platform-scroll {
-    max-height: 20;
-    padding: 0 1;
-    scrollbar-size: 1 1;
-}
-
-#multi-platform-scroll Checkbox {
-    height: 1;
-    padding: 0 1;
-    background: transparent;
-}
-
-#multi-platform-buttons {
-    align: center middle;
-    padding: 1 0 0 0;
-    height: auto;
-}
-
-#multi-platform-buttons Button {
-    min-width: 16;
-    margin: 0 2;
-    height: 3;
-    border: solid $panel;
-    text-style: bold;
-}
-
-#btn-multi-sync {
-    background: $primary;
-    color: $background;
-}
-
-#btn-multi-sync:hover {
-    background: $accent;
-    color: $background;
-}
-
-#btn-multi-cancel {
-    background: $panel;
-    color: $foreground;
-}
-
-/* === Platform Config Modal (P2) === */
-PlatformConfigModal {
-    align: center middle;
-}
-
-#config-dialog {
-    width: 70;
-    max-height: 85%;
-    background: $surface;
-    border: round $accent;
-    padding: 1 2;
-}
-
-#config-title {
-    text-align: center;
-    text-style: bold;
-    color: $accent;
-    width: 100%;
-    padding: 1 0;
-}
-
-#config-sep {
-    width: 100%;
-    height: 1;
-    color: $panel;
-}
-
-#config-scroll {
-    height: auto;
-    max-height: 30;
-    padding: 1 1;
-    scrollbar-size: 1 1;
-}
-
-#config-content {
-    color: $foreground;
-}
-
-/* === Diff Modal (P2) === */
-DiffModal {
-    align: center middle;
-}
-
-#diff-dialog {
-    width: 80;
-    max-height: 85%;
-    background: $surface;
-    border: round $accent;
-    padding: 1 2;
-}
-
-#diff-title {
-    text-align: center;
-    text-style: bold;
-    color: $accent;
-    width: 100%;
-    padding: 1 0;
-}
-
-#diff-sep {
-    width: 100%;
-    height: 1;
-    color: $panel;
-}
-
-#diff-scroll {
-    height: auto;
-    max-height: 40;
-    padding: 1 1;
-    scrollbar-size: 1 1;
-    background: $background;
-    border: round $panel;
+ConfirmModal Button {
     margin: 0 1;
+    min-width: 14;
+    height: 3;
+    text-style: bold;
 }
 
-#diff-content {
+/* === Progress Bar === */
+ProgressBar {
+    height: 1;
+    background: $surface;
+    color: $success;
+}
+
+ProgressBar > .bar--complete {
+    color: $success;
+}
+
+ProgressBar > .bar--bar {
+    color: $success 50%;
+}
+
+#progress-container {
+    height: auto;
+    padding: 1 1;
+    background: $surface;
+    border-top: solid $panel;
+}
+
+#progress-bar {
+    width: 1fr;
+}
+
+#progress-label {
+    width: auto;
+    padding-right: 1;
     color: $foreground;
+    text-style: bold;
+}
+
+#progress-count {
+    width: auto;
+    padding-left: 1;
+    color: $primary;
+}
+
+#search-container {
+    height: 3;
+    padding: 0 1 1 1;
+    background: $background; /* Match content background */
+}
+
+#search-input {
+    border: round $panel;
+    background: $surface;
+}
+
+#search-input:focus {
+    border: round $primary;
+}
+
+/* Utility */
+.-hidden {
+    display: none;
 }
