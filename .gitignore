@@ -5,6 +5,8 @@ ref/
 .serena/
 openspec/
 
+mcs.exe
+mcs/target/
 
 *.pyc
 .hypothesis/

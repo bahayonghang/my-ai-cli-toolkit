@@ -18,6 +18,9 @@ help:
     @echo "  just docs-preview      - 预览构建后的文档"
     @echo "  just docs              - 一键安装依赖并启动开发服务器"
     @echo ""
+    @echo "🦀 MCS (Rust TUI)："
+    @echo "  just mcs               - 启动 MCS TUI (首次自动构建 release)"
+    @echo ""
     @echo "🎯 技能管理命令："
     @echo "  just list              - 列出所有可用技能"
     @echo "  just install-all       - 安装所有技能到 Claude"
@@ -36,7 +39,7 @@ help:
     @echo "  just ruff-format       - 自动格式化代码"
     @echo "  just ruff-fix          - 自动修复可修复的问题"
     @echo ""
-    @echo "🦀 代码质量检查 (Rust - AgentKit Desktop)："
+    @echo "🦀 代码质量检查 (Rust - AgentKit Desktop + MCS)："
     @echo "  just rust-format-check - 检查 Rust 代码格式"
     @echo "  just rust-format       - 自动格式化 Rust 代码"
     @echo "  just rust-clippy       - 运行 Clippy 静态分析"
@@ -114,6 +117,16 @@ interactive:
 tui:
     uv run python src/install_tui.py
 
+# ============ MCS (Rust TUI) ============
+
+# 启动 MCS TUI (如果不存在则自动构建 release 版本)
+mcs:
+    uv run python src/launch_mcs.py
+
+# 强制重新编译并启动 MCS TUI
+mcs-rebuild:
+    uv run python src/launch_mcs.py --rebuild
+
 # ============ 提示词管理 ============
 
 # 将本地 CLAUDE.md 同步到全局配置 (~/.claude/CLAUDE.md)
@@ -142,24 +155,29 @@ ruff-format:
 ruff-fix:
     uvx ruff check --fix .
 
-# ============ Rust 代码检查 (AgentKit Desktop) ============
+# ============ Rust 代码检查 (AgentKit Desktop + MCS) ============
 
 # 运行 Rust 格式检查 (先自动修复再检查)
 rust-format-check:
     cd agentkit-desktop/src-tauri && cargo fmt
     cd agentkit-desktop/src-tauri && cargo fmt --check
+    cd mcs && cargo fmt
+    cd mcs && cargo fmt --check
 
 # 自动格式化 Rust 代码
 rust-format:
     cd agentkit-desktop/src-tauri && cargo fmt
+    cd mcs && cargo fmt
 
 # 运行 Clippy 静态分析 (严格模式)
 rust-clippy:
     cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+    cd mcs && cargo clippy --all-targets --all-features -- -D warnings
 
 # 运行 Rust 单元测试
 rust-test:
     cd agentkit-desktop/src-tauri && cargo test
+    cd mcs && cargo test
 
 # 运行所有 Rust 检查 (格式 + Clippy + 测试)
 rust-check-all: rust-format-check rust-clippy rust-test
@@ -221,12 +239,16 @@ ci:
     @echo "🦀 步骤 6/9: Rust 格式自动修复 + 检查..."
     cd agentkit-desktop/src-tauri && cargo fmt
     cd agentkit-desktop/src-tauri && cargo fmt --check
+    cd mcs && cargo fmt
+    cd mcs && cargo fmt --check
     @echo ""
     @echo "🦀 步骤 7/9: Rust Clippy 静态分析..."
     cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+    cd mcs && cargo clippy --all-targets --all-features -- -D warnings
     @echo ""
     @echo "🦀 步骤 8/9: Rust 单元测试..."
     cd agentkit-desktop/src-tauri && cargo test
+    cd mcs && cargo test
     @echo ""
     @echo "🔎 步骤 9/9: Rust 跨平台 lint 检查..."
     just _rust-cross-lint

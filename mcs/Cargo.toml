@@ -1,0 +1,27 @@
+[package]
+name = "myclaude-installer"
+version = "0.1.1"
+edition = "2024"
+rust-version = "1.85"
+description = "TUI skill installer for AI coding agents"
+
+[[bin]]
+name = "mcs"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = "0.30.0"
+crossterm = "0.29.0"
+unicode-width = "0.2.2"
+serde = { version = "1", features = ["derive"] }
+toml = "0.9.8"
+thiserror = "2"
+dirs = "6"
+fs_extra = "1.3"
+similar = "2"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+codegen-units = 1
