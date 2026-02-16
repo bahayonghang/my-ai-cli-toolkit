@@ -1,0 +1,10 @@
+# Default skill categories
+# Skills in these category directories are marked as "default" and installed by `install-all`.
+# Edit this list to customize which skills are installed by default.
+
+categories = [
+    "skill-meta-skills",
+    "development-skills",
+    "devtools-skills",
+    "git-github-skills",
+]
