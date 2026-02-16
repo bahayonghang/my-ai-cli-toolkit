@@ -44,78 +44,102 @@ uv run python src/install.py prompt-update
 
 ## Skills
 
-Skills are specialized capabilities that can be added to your AI assistant. They are categorized by domain.
+Skills are specialized capabilities that can be added to your AI assistant. They are organized into category folders under `skills/`.
 
-### 🎨 Design
+### 🎓 Academic (`academic-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [article-cover](skills/article-cover/) | Generate professional SVG cover images for blog posts and articles |
-| [drawio](skills/drawio/) | AI-powered Draw.io diagram generation with real-time browser preview |
-| [excalidraw](skills/excalidraw/) | Create hand-drawn style diagrams as Excalidraw JSON files |
-| [frontend-design](skills/frontend-design/) | Build distinctive, production-grade frontend interfaces |
-| [gemini-image](skills/gemini-image/) | AI image generation via Gemini API (text-to-image, image-to-image) |
-| [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | Advanced UI/UX design intelligence (External Skill) |
+| [academic-slides](skills/academic-skills/academic-slides/) | Academic slide generation with dual engines (Typst Touying & LaTeX Beamer) |
+| [IEEE-writing-skills](skills/academic-skills/IEEE-writing-skills/) | Translate, polish, and validate academic papers for IEEE publications |
+| [latex-paper-en](skills/academic-skills/latex-paper-en/) | LaTeX academic paper assistant for English conference/journal papers |
+| [latex-thesis-zh](skills/academic-skills/latex-thesis-zh/) | Chinese doctoral/master thesis LaTeX assistant with GB/T 7714 support |
+| [paper-check](skills/academic-skills/paper-check/) | Academic paper quality inspection tool |
+| [paper-replication](skills/academic-skills/paper-replication/) | Replicate deep learning papers into industrial-grade PyTorch code |
+| [typst-paper](skills/academic-skills/typst-paper/) | Typst academic paper assistant with modular workflow |
+| [xray-paper-skill](skills/academic-skills/xray-paper-skill/) | Deconstruct academic papers into core contributions and insights |
+| [zoterosynth](skills/academic-skills/zoterosynth/) | Search, browse, and analyze Zotero libraries via zotero-mcp |
 
-### 💻 Development
+### 🤖 AI & LLM (`ai-llm-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [codex](skills/codex/) | Codex CLI integration for deep code analysis and web search |
-| [paper-replication](skills/paper-replication/) | Replicate deep learning papers into industrial-grade PyTorch code |
-| [paper-check](skills/paper-check/) | Code review and validation assistant |
-| [review-code](skills/review-code/) | Multi-dimensional code review with structured reports |
-| [claude-expert-skill-creator](skills/claude-expert-skill-creator/) | Create production-ready skills from expert knowledge |
-| [mcp-to-skill](skills/mcp-to-skill/) | Convert MCP servers to Claude Code Skills |
-| [skill-manager](skills/skill-manager/) | Lifecycle manager for GitHub-based skills |
-| [skill-evolution-manager](skills/skill-evolution-manager/) | Evolve skills based on user feedback and experience |
-| [github-to-skills](skills/github-to-skills/) | Convert GitHub repos into AI skills automatically |
-| [skill-seekers](skills/skill-seekers/) | Generate LLM skills from documentation and codebases |
-| [rust-cli-tui-developer](skills/rust-cli-tui-developer/) | Expert guidance for Rust CLI and TUI development |
-| [lib-slint-expert](skills/lib-slint-expert/) | Comprehensive Slint GUI development expert |
-| [vue-best-practices](skills/vue-best-practices/) | Vue 3 and TypeScript best practices with Volar |
-| [uv-expert](skills/uv-expert/) | Expert guidance for uv Python package manager |
-| [gh-bootstrap](skills/gh-bootstrap/) | One-stop GitHub repository configuration tool |
-| [agent-browser](https://github.com/vercel-labs/agent-browser) | Browser automation skill from Vercel Labs (External Skill) |
-| [gemini](skills/gemini/) | Gemini integration for enhanced reasoning |
+| [codex](skills/ai-llm-skills/codex/) | Codex CLI integration for deep code analysis and web search |
+| [gemini](skills/ai-llm-skills/gemini/) | Gemini integration for enhanced reasoning |
+| [gemini-image](skills/ai-llm-skills/gemini-image/) | AI image generation via Gemini API (text-to-image, image-to-image) |
+| [research](skills/ai-llm-skills/research/) | Technical research with web search and citation support |
 
-### 🔍 Research
+### 💻 Development (`development-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [research](skills/research/) | Technical research with web search and citation support |
+| [frontend-engineer](skills/development-skills/frontend-engineer/) | Build distinctive, production-grade frontend interfaces |
+| [lib-slint-expert](skills/development-skills/lib-slint-expert/) | Comprehensive Slint GUI development expert |
+| [lsp-manager](skills/development-skills/lsp-manager/) | Auto-detect languages and configure LSP servers for code intelligence |
+| [rust-cli-tui-developer](skills/development-skills/rust-cli-tui-developer/) | Expert guidance for Rust CLI and TUI development |
+| [uv-expert](skills/development-skills/uv-expert/) | Expert guidance for uv Python package manager |
+| [vue-best-practices](skills/development-skills/vue-best-practices/) | Vue 3 and TypeScript best practices with Volar |
 
-### 📝 Documentation
+### 🔧 Dev Tools (`devtools-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [docx](skills/docx/) | Create, read, edit, and manipulate Word documents (.docx files) with tracked changes and comments |
-| [xlsx](skills/xlsx/) | Create, read, edit, and analyze Excel spreadsheets (.xlsx files) with formulas and formatting |
-| [pptx](skills/pptx/) | Create, read, edit, and design PowerPoint presentations (.pptx files) with professional layouts |
-| [pdf](skills/pdf/) | Process PDF files: merge, split, extract text/tables, OCR, watermark, and create new PDFs |
-| [tech-blog](skills/tech-blog/) | Write technical blog posts with source code analysis |
-| [tech-design-doc](skills/tech-design-doc/) | Generate structured technical design documents |
-| [spec-interview](skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration |
-| [document-writer](skills/document-writer/) | Technical writer for README, API docs, and architecture docs |
-| [mermaid-expert](skills/mermaid_expert/) | Expert guidance for Mermaid.js diagramming library |
+| [karpathy-guidelines](skills/devtools-skills/karpathy-guidelines/) | Behavioral guidelines to reduce common LLM coding mistakes |
+| [memory-system](skills/devtools-skills/memory-system/) | Local memory system with SQLite for cross-session semantic search |
+| [planning-with-files](skills/devtools-skills/planning-with-files/) | File-based planning for complex multi-step tasks |
+| [review-code](skills/devtools-skills/review-code/) | Multi-dimensional code review with structured reports |
+| [spec-interview](skills/devtools-skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration |
 
-### 🎓 Academic
+### 📊 Diagrams (`diagram-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [IEEE-writing-skills](skills/IEEE-writing-skills/) | Translate, polish, and validate academic papers for IEEE publications |
-| [latex-paper-en](skills/latex-paper-en/) | LaTeX academic paper assistant for English conference/journal papers |
-| [latex-thesis-zh](skills/latex-thesis-zh/) | Chinese doctoral/master thesis LaTeX assistant with GB/T 7714 support |
-| [typst-paper](skills/typst-paper/) | Typst academic paper assistant with modular workflow |
-| [academic-slides](skills/academic-slides/) | Academic slide generation with dual engines (Typst Touying & LaTeX Beamer) |
-| [git-commit-cn](skills/git-commit-cn/) | Chinese version of git commit message generator |
+| [drawio](skills/diagram-skills/drawio/) | AI-powered Draw.io diagram generation with real-time browser preview |
+| [excalidraw](skills/diagram-skills/excalidraw/) | Create hand-drawn style diagrams as Excalidraw JSON files |
+| [mermaid_expert](skills/diagram-skills/mermaid_expert/) | Expert guidance for Mermaid.js diagramming library |
 
-### 🧠 Knowledge Management
+### 📝 Documentation (`document-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [memory-system](skills/memory-system/) | Local memory system that indexes Markdown files to SQLite for cross-session semantic search with vector and full-text search |
+| [document-writer](skills/document-skills/document-writer/) | Technical writer for README, API docs, and architecture docs |
+| [docx](skills/document-skills/docx/) | Create, read, edit, and manipulate Word documents (.docx files) |
+| [pdf](skills/document-skills/pdf/) | Process PDF files: merge, split, extract text/tables, OCR, watermark |
+| [pptx](skills/document-skills/pptx/) | Create, read, edit, and design PowerPoint presentations (.pptx files) |
+| [tech-blog](skills/document-skills/tech-blog/) | Write technical blog posts with source code analysis |
+| [tech-design-doc](skills/document-skills/tech-design-doc/) | Generate structured technical design documents |
+| [xlsx](skills/document-skills/xlsx/) | Create, read, edit, and analyze Excel spreadsheets (.xlsx files) |
 
-### 🛠️ Utilities
+### 🐙 Git & GitHub (`git-github-skills/`)
 | Skill | Description |
 |-------|-------------|
-| [lsp-manager](skills/lsp-manager/) | Auto-detect languages and configure LSP servers for code intelligence |
-| [planning-with-files](skills/planning-with-files/) | File-based planning for complex multi-step tasks |
-| [yt-dlp](skills/yt-dlp/) | Video downloader for YouTube, Bilibili, and 1000+ sites |
+| [gh-address-comments](skills/git-github-skills/gh-address-comments/) | Help address review/issue comments on open GitHub PR |
+| [gh-bootstrap](skills/git-github-skills/gh-bootstrap/) | One-stop GitHub repository configuration tool |
+| [gh-fix-ci](skills/git-github-skills/gh-fix-ci/) | Debug or fix failing GitHub PR checks in GitHub Actions |
+| [git-commit-cn](skills/git-github-skills/git-commit-cn/) | Chinese version of git commit message generator |
+
+### 🎨 Media (`media-skills/`)
+| Skill | Description |
+|-------|-------------|
+| [article-cover](skills/media-skills/article-cover/) | Generate professional SVG cover images for blog posts and articles |
+| [yt-dlp](skills/media-skills/yt-dlp/) | Video downloader for YouTube, Bilibili, and 1000+ sites |
+
+### 🗃️ Obsidian (`obsidian-skills/`)
+| Skill | Description |
+|-------|-------------|
+| [defuddle](skills/obsidian-skills/defuddle/) | Web content extraction and cleanup |
+| [excalidraw-diagram](skills/obsidian-skills/excalidraw-diagram/) | Excalidraw diagrams for Obsidian |
+| [json-canvas](skills/obsidian-skills/json-canvas/) | JSON Canvas file creation and editing |
+| [mermaid-visualizer](skills/obsidian-skills/mermaid-visualizer/) | Mermaid diagram visualization for Obsidian |
+| [obsidian-bases](skills/obsidian-skills/obsidian-bases/) | Obsidian Bases database views |
+| [obsidian-canvas-creator](skills/obsidian-skills/obsidian-canvas-creator/) | Obsidian Canvas creation tool |
+| [obsidian-cli](skills/obsidian-skills/obsidian-cli/) | Obsidian vault CLI operations |
+| [obsidian-markdown](skills/obsidian-skills/obsidian-markdown/) | Obsidian-flavored Markdown writing |
+
+### 🧩 Skill Development (`skill-meta-skills/`)
+| Skill | Description |
+|-------|-------------|
+| [claude-expert-skill-creator](skills/skill-meta-skills/claude-expert-skill-creator/) | Create production-ready skills from expert knowledge |
+| [github-to-skills](skills/skill-meta-skills/github-to-skills/) | Convert GitHub repos into AI skills automatically |
+| [mcp-to-skill](skills/skill-meta-skills/mcp-to-skill/) | Convert MCP servers to Claude Code Skills |
+| [skill_optimizer](skills/skill-meta-skills/skill_optimizer/) | Analyze Claude Code skills for compliance and token efficiency |
+| [skill-evolution-manager](skills/skill-meta-skills/skill-evolution-manager/) | Evolve skills based on user feedback and experience |
+| [skill-manager](skills/skill-meta-skills/skill-manager/) | Lifecycle manager for GitHub-based skills |
+| [skill-seekers](skills/skill-meta-skills/skill-seekers/) | Generate LLM skills from documentation and codebases |
 
 ## Commands
 
@@ -197,8 +221,18 @@ uv run python src/install_tui.py
 │   ├── antigravity/        # Antigravity workflows
 │   ├── windsurf/           # Windsurf workflows
 │   └── trae/               # Trae workflows
-├── skills/                 # Local skills directory
-│   └── <skill-name>/       # Individual skill modules
+├── skills/                 # Skills directory (categorized)
+│   ├── academic-skills/    # Academic writing & research
+│   ├── ai-llm-skills/     # AI & LLM integrations
+│   ├── development-skills/ # Development frameworks & languages
+│   ├── devtools-skills/    # Developer tools & workflows
+│   ├── diagram-skills/     # Diagram generation
+│   ├── document-skills/    # Document processing & writing
+│   ├── git-github-skills/  # Git & GitHub utilities
+│   ├── media-skills/       # Media & visual content
+│   ├── obsidian-skills/    # Obsidian knowledge management
+│   ├── skill-meta-skills/  # Skill creation & management
+│   └── default.toml        # Default category config
 └── external-skills/        # External skill configurations
     └── registry.toml       # Registry for npm/pip/git skills
 ```
