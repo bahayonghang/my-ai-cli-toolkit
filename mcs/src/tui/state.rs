@@ -167,7 +167,11 @@ impl AppState {
             }
         }
         if let Some(ref cat) = self.selected_category {
-            if item.category.as_deref() != Some(cat.as_str()) {
+            if cat == "default" {
+                if !item.is_default {
+                    return false;
+                }
+            } else if item.category.as_deref() != Some(cat.as_str()) {
                 return false;
             }
         }
@@ -183,13 +187,25 @@ impl AppState {
     /// Get unique categories with counts from active items
     pub fn categories(&self) -> Vec<(String, usize)> {
         let mut map: HashMap<String, usize> = HashMap::new();
+        // Add virtual "default" category for skills
+        if matches!(self.active_tab, ContentTab::Skills) {
+            let default_count = self.active_items().iter().filter(|i| i.is_default).count();
+            if default_count > 0 {
+                map.insert("default".into(), default_count);
+            }
+        }
         for item in self.active_items() {
             if let Some(ref cat) = item.category {
                 *map.entry(cat.clone()).or_default() += 1;
             }
         }
+        // Partition: "default" first, then rest sorted
+        let default_entry = map.remove("default");
         let mut cats: Vec<_> = map.into_iter().collect();
         cats.sort_by(|a, b| a.0.cmp(&b.0));
+        if let Some(count) = default_entry {
+            cats.insert(0, ("default".into(), count));
+        }
         cats
     }
 

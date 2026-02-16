@@ -24,6 +24,22 @@ fn determine_status(
     }
 }
 
+/// Load default category names from skills/default.toml
+fn load_default_categories(project_root: &Path) -> Vec<String> {
+    let toml_path = skills_src_dir(project_root).join("default.toml");
+    let Ok(content) = std::fs::read_to_string(&toml_path) else {
+        return Vec::new();
+    };
+    #[derive(serde::Deserialize)]
+    struct DefaultConfig {
+        #[serde(default)]
+        categories: Vec<String>,
+    }
+    toml::from_str::<DefaultConfig>(&content)
+        .map(|c| c.categories)
+        .unwrap_or_default()
+}
+
 /// Scan all skills from source directory
 pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
     let src_dir = skills_src_dir(project_root);
@@ -31,23 +47,34 @@ pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<It
         return Vec::new();
     }
 
-    let mut skills: Vec<ItemInfo> = Vec::new();
-    let mut entries: Vec<_> = std::fs::read_dir(&src_dir)
-        .into_iter()
-        .flatten()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().is_dir())
-        .collect();
-    entries.sort_by_key(|e| e.file_name());
+    let mut skill_dirs = find_skill_dirs(&src_dir);
+    skill_dirs.sort();
 
-    for entry in entries {
-        let path = entry.path();
-        let name = entry.file_name().to_string_lossy().into_owned();
+    let default_cats = load_default_categories(project_root);
+
+    let mut skills: Vec<ItemInfo> = Vec::new();
+    for path in skill_dirs {
+        let name = path.file_name().unwrap().to_string_lossy().into_owned();
         let target = platform.skills_path().join(&name);
         let src_mtime = file_mtime(&path);
         let tgt_mtime = file_mtime(&target);
         let status = determine_status(&target, src_mtime, tgt_mtime);
         let meta = parse_skill_frontmatter(&path);
+
+        let parent_cat = path
+            .parent()
+            .filter(|p| *p != src_dir)
+            .map(|p| p.file_name().unwrap().to_string_lossy().into_owned());
+
+        let is_default = if default_cats.is_empty() {
+            true
+        } else if let Some(ref cat) = parent_cat {
+            default_cats.iter().any(|c| c == cat)
+        } else {
+            true // top-level skills are always default
+        };
+
+        let category = parent_cat.or(meta.category);
 
         skills.push(ItemInfo {
             name,
@@ -58,8 +85,9 @@ pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<It
             target_path: target,
             source_mtime: src_mtime,
             target_mtime: tgt_mtime,
-            category: meta.category,
+            category,
             tags: meta.tags,
+            is_default,
         });
     }
     skills
@@ -104,9 +132,28 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
             target_mtime: tgt_mtime,
             category,
             tags: Vec::new(),
+            is_default: false,
         });
     }
     commands
+}
+
+/// Recursively find directories containing SKILL.md
+pub(crate) fn find_skill_dirs(dir: &Path) -> Vec<std::path::PathBuf> {
+    let mut result = Vec::new();
+    if let Ok(entries) = std::fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                if path.join("SKILL.md").exists() {
+                    result.push(path);
+                } else {
+                    result.extend(find_skill_dirs(&path));
+                }
+            }
+        }
+    }
+    result
 }
 
 /// Recursively collect all files under a directory

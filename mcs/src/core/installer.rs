@@ -3,6 +3,7 @@ use std::path::Path;
 
 use crate::config::paths::{commands_src_dir, skills_src_dir};
 use crate::config::platform::{PlatformConfig, commands_source_dir};
+use crate::core::discovery::find_skill_dirs;
 use crate::model::{InstallResult, ItemType};
 
 /// Ensure target directories exist
@@ -12,8 +13,15 @@ fn ensure_dirs(platform: &PlatformConfig) -> std::io::Result<()> {
     Ok(())
 }
 
+fn find_skill_src(project_root: &Path, name: &str) -> Option<std::path::PathBuf> {
+    find_skill_dirs(&skills_src_dir(project_root))
+        .into_iter()
+        .find(|p| p.file_name().map(|f| f == name).unwrap_or(false))
+}
+
 pub fn install_skill(project_root: &Path, platform: &PlatformConfig, name: &str) -> InstallResult {
-    let src = skills_src_dir(project_root).join(name);
+    let src = find_skill_src(project_root, name)
+        .unwrap_or_else(|| skills_src_dir(project_root).join(name));
     if !src.exists() {
         return InstallResult {
             success: false,

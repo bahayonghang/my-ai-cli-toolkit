@@ -27,6 +27,7 @@ pub struct ItemInfo {
     pub target_mtime: Option<SystemTime>,
     pub category: Option<String>,
     pub tags: Vec<String>,
+    pub is_default: bool,
 }
 
 impl ItemInfo {
