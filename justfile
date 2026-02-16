@@ -160,12 +160,10 @@ ruff-fix:
 
 # ============ Rust 代码检查 (AgentKit Desktop + MCS) ============
 
-# 运行 Rust 格式检查 (先自动修复再检查)
+# 运行 Rust 格式检查 (不符则自动修复并报错)
 rust-format-check:
-    cd agentkit-desktop/src-tauri && cargo fmt
-    cd agentkit-desktop/src-tauri && cargo fmt --check
-    cd mcs && cargo fmt
-    cd mcs && cargo fmt --check
+    cd agentkit-desktop/src-tauri && cargo fmt --check || (cargo fmt && false)
+    cd mcs && cargo fmt --check || (cargo fmt && false)
 
 # 自动格式化 Rust 代码
 rust-format:
@@ -239,11 +237,9 @@ ci:
     @echo "📘 步骤 5/9: AgentKit Desktop TypeScript 检查..."
     cd agentkit-desktop && npx tsc --noEmit
     @echo ""
-    @echo "🦀 步骤 6/9: Rust 格式自动修复 + 检查..."
-    cd agentkit-desktop/src-tauri && cargo fmt
-    cd agentkit-desktop/src-tauri && cargo fmt --check
-    cd mcs && cargo fmt
-    cd mcs && cargo fmt --check
+    @echo "🦀 步骤 6/9: Rust 格式检查 + 自动修复..."
+    cd agentkit-desktop/src-tauri && cargo fmt --check && echo "  ✓ agentkit-desktop 格式正确" || (echo "  ⚠️ agentkit-desktop 格式不符，自动修复中..." && cargo fmt && false)
+    cd mcs && cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && false)
     @echo ""
     @echo "🦀 步骤 7/9: Rust Clippy 静态分析..."
     cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
