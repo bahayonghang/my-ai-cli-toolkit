@@ -1,21 +1,45 @@
 # Skills 目录说明
 
-本目录包含所有 Claude Code 技能定义。
+本目录包含所有 Claude Code 技能定义，按分类组织在子文件夹中。
 
 ## 目录结构
 
 ```
 skills/
-├── CLAUDE.md           # 本说明文档
-├── check.py            # SKILL.md frontmatter 完整性检查工具
-├── README.md           # 技能列表概览
-└── <skill-name>/       # 各技能目录
-    ├── SKILL.md        # 技能定义文件（必需）
-    ├── config/         # 配置模板（可选）
-    ├── tips/           # 使用提示（可选）
-    ├── references/     # 参考文档（可选）
-    ├── scripts/        # 辅助脚本（可选）
-    └── cookbook/       # 代码示例（可选）
+├── CLAUDE.md              # 本说明文档
+├── check.py               # SKILL.md frontmatter 完整性检查工具
+├── default.toml            # 默认安装分类配置
+├── README.md              # 技能列表概览
+├── academic-skills/       # 🎓 学术写作与研究
+├── ai-llm-skills/        # 🤖 AI 与 LLM 集成
+├── development-skills/    # 💻 开发框架与语言
+├── devtools-skills/       # 🔧 开发工具与工作流
+├── diagram-skills/        # 📊 图表生成
+├── document-skills/       # 📝 文档处理与写作
+├── git-github-skills/     # 🐙 Git 与 GitHub 工具
+├── media-skills/          # 🎨 媒体与视觉内容
+├── obsidian-skills/       # 🗃️ Obsidian 知识管理
+└── skill-meta-skills/     # 🧩 技能创建与管理
+    └── <skill-name>/      # 各技能目录
+        ├── SKILL.md       # 技能定义文件（必需）
+        ├── config/        # 配置模板（可选）
+        ├── tips/          # 使用提示（可选）
+        ├── references/    # 参考文档（可选）
+        ├── scripts/       # 辅助脚本（可选）
+        └── cookbook/       # 代码示例（可选）
+```
+
+## default.toml
+
+`default.toml` 控制 `install-all` 命令默认安装哪些分类：
+
+```toml
+categories = [
+    "skill-meta-skills",
+    "development-skills",
+    "devtools-skills",
+    "git-github-skills",
+]
 ```
 
 ## SKILL.md 格式规范

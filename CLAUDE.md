@@ -47,7 +47,8 @@ graph TB
         core_mod["core/<br/>paths, config_loader, skill_meta"]
     end
 
-    subgraph Skills["📁 skills/ (40+ skills)"]
+    subgraph Skills["📁 skills/ (categorized)"]
+        skill_cats["academic-skills/ ai-llm-skills/<br/>development-skills/ devtools-skills/<br/>diagram-skills/ document-skills/<br/>git-github-skills/ media-skills/<br/>obsidian-skills/ skill-meta-skills/"]
         skill_md["SKILL.md format"]
         skill_dirs["config/ tips/ references/<br/>scripts/ cookbook/"]
     end
@@ -114,7 +115,7 @@ graph TB
 | **Core Installer** | `src/install.py` | CLI skill manager with SkillManager class | - |
 | **Core Modules** | `src/core/` | Shared paths, config_loader, skill_meta | - |
 | **TUI** | `src/tui/` | Textual-based interactive installer | ✅ |
-| **Skills** | `skills/` | 40+ skill definitions | - |
+| **Skills** | `skills/` | Categorized skill definitions (10 categories) | - |
 | **Commands** | `commands/` | Platform-specific slash commands | - |
 | **Agents** | `agents/` | AI agent definitions (CCW + Specialist) | ✅ |
 | **AgentKit Desktop** | `agentkit-desktop/` | Tauri + React desktop app | ✅ |
@@ -208,7 +209,7 @@ uv run python external-skills/install_tui.py
 
 ### Content Structure
 
-- **`skills/<name>/SKILL.md`**: Skill definitions with YAML frontmatter (`name`, `description`, optional `license`). May include subdirectories: `config/`, `tips/`, `references/`, `scripts/`, `cookbook/`
+- **`skills/<category>/<name>/SKILL.md`**: Skill definitions organized in category folders (`academic-skills/`, `ai-llm-skills/`, `development-skills/`, `devtools-skills/`, `diagram-skills/`, `document-skills/`, `git-github-skills/`, `media-skills/`, `obsidian-skills/`, `skill-meta-skills/`). Each skill has YAML frontmatter (`name`, `description`, optional `license`). May include subdirectories: `config/`, `tips/`, `references/`, `scripts/`, `cookbook/`. `default.toml` controls which categories are installed by `install-all`.
 
 - **`commands/<platform>/`**: Slash commands per platform
   - `claude/` - Markdown files (`.md`) with nested directories (cc/, cli/, gh/, issue/, kiro/, memory/, task/, workflow/, zcf/)
@@ -258,15 +259,18 @@ Detailed instructions and documentation...
 
 ## Key Skills (Highlights)
 
-| Category | Skills |
-|----------|--------|
-| **Development** | `codex`, `explore`, `frontend-engineer`, `rust-cli-tui-developer` |
-| **Documentation** | `document-writer`, `tech-blog`, `tech-design-doc` |
-| **Academic** | `latex-paper-en`, `latex-thesis-zh`, `typst-paper`, `IEEE-writing-skills` |
-| **Diagrams** | `drawio`, `excalidraw`, `mermaid_expert` |
-| **AI/LLM** | `gemini`, `gemini-image`, `research` |
-| **Code Quality** | `review-code`, `paper-check`, `skill-seekers` |
-| **Git/GitHub** | `git-commit-cn`, `gh-bootstrap`, `github-to-skills` |
+| Category | Folder | Skills |
+|----------|--------|--------|
+| **Academic** | `academic-skills/` | `latex-paper-en`, `latex-thesis-zh`, `typst-paper`, `IEEE-writing-skills` |
+| **AI & LLM** | `ai-llm-skills/` | `codex`, `gemini`, `gemini-image`, `research` |
+| **Development** | `development-skills/` | `frontend-engineer`, `rust-cli-tui-developer`, `lib-slint-expert` |
+| **Dev Tools** | `devtools-skills/` | `review-code`, `memory-system`, `planning-with-files` |
+| **Diagrams** | `diagram-skills/` | `drawio`, `excalidraw`, `mermaid_expert` |
+| **Documentation** | `document-skills/` | `document-writer`, `tech-blog`, `docx`, `pdf` |
+| **Git & GitHub** | `git-github-skills/` | `git-commit-cn`, `gh-bootstrap`, `gh-fix-ci` |
+| **Media** | `media-skills/` | `article-cover`, `yt-dlp` |
+| **Obsidian** | `obsidian-skills/` | `obsidian-cli`, `obsidian-markdown`, `json-canvas` |
+| **Skill Dev** | `skill-meta-skills/` | `skill-seekers`, `github-to-skills`, `mcp-to-skill` |
 
 ## Testing Strategy
 
