@@ -27,14 +27,14 @@ Skills are reusable AI instruction modules that enhance Claude Code's capabiliti
 Modern terminal interface with visual feedback and update detection:
 
 ```bash
-uv run python src/install_tui.py
+just mcs
 ```
 
 Features:
-- 📊 Table layout with clear columns
-- 🔄 Automatic update detection
-- ⌨️ Keyboard shortcuts
-- 🌏 Chinese character support
+- 🧭 Platform select + two-column main layout
+- 🔄 Outdated detection (skills + commands)
+- ⌨️ Keyboard-first workflow with popup navigation
+- 🔁 Compatibility wrapper for legacy `install_tui.py`
 
 [Learn more about TUI →](/guide/tui)
 

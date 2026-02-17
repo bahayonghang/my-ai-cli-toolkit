@@ -31,8 +31,8 @@ uv run python src/install.py install-all
 # 更新全局提示词配置
 uv run python src/install.py prompt-update
 
-# 或使用 TUI 进行交互式管理
-uv run python src/install_tui.py
+# 或使用 Rust MCS TUI 进行交互式管理（需已安装 Rust/cargo）
+just mcs
 ```
 
 运行 `uv run python src/install.py --help` 查看更多选项。
@@ -229,10 +229,10 @@ uv run python src/install.py prompt-update
 
 ### TUI 模式 (推荐)
 
-如需更友好的交互体验，可使用 TUI (终端用户界面)：
+如需更友好的交互体验，可使用 MCS TUI (终端用户界面)：
 
 ```bash
-uv run python src/install_tui.py
+just mcs
 ```
 
 TUI 提供以下功能：
@@ -242,6 +242,7 @@ TUI 提供以下功能：
 - 🔍 实时搜索过滤
 - ✅ 多选批量安装
 - 📁 支持嵌套目录的命令（如 `zcf/git-commit`）
+- 🔁 兼容旧入口：`uv run python src/install_tui.py` 会自动转发到 MCS
 
 **TUI 键盘快捷键：**
 
@@ -266,9 +267,11 @@ TUI 提供以下功能：
 .
 ├── src/                    # Python 源代码
 │   ├── install.py          # 统一 Python 安装脚本
-│   ├── install_tui.py      # 终端用户界面
+│   ├── install_tui.py      # 旧入口兼容壳（转发到 MCS）
+│   ├── launch_mcs.py       # MCS 启动包装脚本
 │   ├── core/               # 共享模块 (paths, config, skill_meta)
 │   └── tui/                # TUI 组件和屏幕
+├── mcs/                    # Rust MCS TUI（ratatui + crossterm）
 ├── prompts/
 │   ├── CLAUDE.md           # 全局工作流配置
 │   └── TRANSLATE.md        # 翻译指南

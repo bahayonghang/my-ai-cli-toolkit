@@ -58,44 +58,49 @@ uv run python src/install.py interactive
 
 ## TUI 模式 (推荐)
 
-如需现代化的可视化体验，可使用 TUI (终端用户界面)：
+如需现代化可视化体验，推荐使用 Rust MCS TUI：
 
 ```bash
-uv run python src/install_tui.py
+just mcs
 ```
 
 ### 功能特性
 
 - 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf/OpenCode)
-- 📋 Skills 和 Commands/Workflows 双标签页界面
-- ⌨️ 键盘快捷键快速操作
-- 🔍 实时搜索过滤
-- ✅ 多选批量安装
-- 📁 支持嵌套目录的命令（如 `zcf/git-commit`）
+- 🧱 双栏主界面（侧栏分类 + 列表）
+- 🔄 递归目录级更新检测
+- ✅ 批量任务队列（含进度与通知）
+- 🔍 实时搜索与状态过滤
+- 📁 支持嵌套目录命令（如 `zcf/git-commit`）
 
 ### 键盘快捷键
 
 | 按键 | 功能 |
 |------|------|
-| `Tab` | 切换 Skills/Commands 标签页 |
-| `i` / `Enter` | 安装当前聚焦项 |
+| `1` / `2` | 切换 Skills/Commands |
+| `Tab` | 在侧栏和列表之间切换焦点 |
+| `i` / `Enter` | 安装选中项 / 当前聚焦项 |
+| `u` / `x` | 卸载当前项 / 选中项 |
+| `U` | 更新当前标签页过期项 |
+| `S` | 打开多平台同步弹窗 |
 | `Space` | 切换选择状态 |
-| `s` | 安装选中项 |
-| `a` | 安装全部 |
-| `Ctrl+A` | 全选 |
-| `Ctrl+D` | 取消全选 |
+| `a` | 全选/清空 |
 | `/` | 搜索 |
-| `t` | 切换平台 |
-| `q` | 退出 |
+| `Esc` | 返回/关闭弹窗 |
+| `q` | 退出程序 |
+
+兼容旧命令：
+
+```bash
+uv run python src/install_tui.py
+```
+
+上述命令现会自动转发到 MCS。
 
 ### 依赖要求
 
-- Python 3.10+
-- `requirements.txt` 中列出的依赖
-
-```bash
-uv sync
-```
+- 需要 Rust 工具链（`cargo`）
+- Python 仍用于 CLI 安装脚本（`src/install.py`）
 
 ## 验证安装
 

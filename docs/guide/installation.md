@@ -58,73 +58,61 @@ uv run python src/install.py interactive
 
 ## TUI Mode (Recommended)
 
-For a modern, visual experience with update detection, use the TUI (Terminal User Interface):
+For a modern, visual experience with update detection, use the Rust MCS TUI:
 
 ```bash
-uv run python src/install_tui.py
+just mcs
 ```
 
 ### Key Features
 
-- 🎯 **Visual Platform Selection**: Choose from Claude/Codex/Gemini/Qwen/Antigravity/Windsurf/OpenCode
-- 📊 **Table Layout**: Clean, aligned columns with clear headers
-- 🔄 **Update Detection**: Automatically detects outdated installations
-- 📋 **Tabbed Interface**: Separate tabs for Skills and Commands/Workflows
-- ⌨️ **Keyboard Shortcuts**: Quick operations with intuitive keys
-- 🔍 **Real-time Search**: Filter items as you type
-- ✅ **Batch Operations**: Multi-select and install multiple items
-- 🌏 **Chinese Support**: Full support for Chinese characters with proper alignment
-- 📁 **Nested Directories**: Support for nested command structures (e.g., `zcf/git-commit`)
-
-### Table Layout
-
-```
-  ☐ ✓ Name                     Description                                      Src Time     Tgt Time
---------------------------------------------------------------------------------------------------------
-  ☐ ✓ article-cover            Generate professional article cover images as SV 01-02 15:43 01-02 15:43
-  ☑ ⚠ document-writer          Write technical documents with proper structure, 01-21 14:30 01-07 12:36
-  ☐ ○ paper-check              学术论文全流程检查工具，支持格式检查和内容分析（ 01-19 22:34 N/A        
-```
-
-**Column Meanings**:
-- **☐/☑**: Selection status (unselected / selected)
-- **✓/⚠/○**: Installation status (installed / needs update / not installed)
-- **Src Time**: Source file modification time
-- **Tgt Time**: Target file modification time (N/A if not installed)
+- 🎯 **Visual Platform Selection**: Claude/Codex/Gemini/Qwen/Antigravity/Windsurf/OpenCode/etc.
+- 🧱 **Two-Column Main View**: sidebar categories + item list
+- 🔄 **Update Detection**: recursive, directory-aware status for skills
+- ✅ **Batch Queue**: install/uninstall/sync with progress + notifications
+- 🔍 **Search + Filters**: category/status/search combination
+- 🌏 **Unicode Support**: better alignment for emoji/CJK text
 
 ### Quick Start
 
-1. Launch TUI: `uv run python src/install_tui.py`
+1. Launch TUI: `just mcs`
 2. Select your platform
-3. Browse items with ↑↓ or jk keys
+3. Browse items with `↑↓` or `j/k`
 4. Press `Space` to select items
 5. Press `i` to install selected items
-6. Items with ⚠ status need updates
+6. Use `U` to update outdated items in current tab
 
 ### Essential Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
-| `↑↓` / `jk` | Navigate items |
-| `Tab` | Switch Skills/Commands tabs |
+| `↑↓` / `jk` | Navigate |
+| `1` / `2` | Switch Skills/Commands |
+| `Tab` | Switch focus (sidebar/list) |
 | `Space` | Toggle selection |
 | `i` | Install selected items |
 | `Enter` | Install focused item |
+| `u` / `x` | Uninstall focused / selected |
+| `S` | Open multi-platform sync |
 | `a` | Select all |
 | `/` | Search |
-| `Esc` | Clear search / Back |
+| `Esc` | Back / close popup |
 | `q` | Quit |
+
+Legacy compatibility:
+
+```bash
+uv run python src/install_tui.py
+```
+
+The command above now forwards to MCS.
 
 For detailed TUI documentation, see [TUI Guide](./tui.md).
 
 ### Requirements
 
-- Python 3.10+
-- Dependencies listed in `requirements.txt`
-
-```bash
-uv sync
-```
+- Rust toolchain (`cargo`)
+- Python remains required for CLI commands (`src/install.py`)
 
 ## Verify Installation
 

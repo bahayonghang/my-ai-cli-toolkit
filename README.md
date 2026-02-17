@@ -28,8 +28,9 @@ A curated collection of Claude Code skills, prompts, and workflows for enhanced 
 git clone https://github.com/anthropics/my-claude-skills.git
 cd my-claude-skills
 
-# Run the interactive TUI (Recommended)
-uv run python src/install_tui.py
+# Run the interactive Rust MCS TUI (Recommended)
+# Requires Rust toolchain (`cargo`)
+just mcs
 ```
 
 Or use the command line:
@@ -195,7 +196,7 @@ uv run python src/install.py install skill-name --project ./my-kiro-project --ki
 For a user-friendly experience, use the Terminal User Interface:
 
 ```bash
-uv run python src/install_tui.py
+just mcs
 ```
 
 **TUI Features:**
@@ -204,6 +205,7 @@ uv run python src/install_tui.py
 - 🔍 Real-time search and filtering
 - ✅ Multi-select batch installation
 - ⌨️ Keyboard shortcuts (`/` to search, `Space` to select, `i` to install)
+- 🔁 Legacy compatibility: `uv run python src/install_tui.py` now forwards to MCS
 
 ## Project Structure
 
@@ -211,9 +213,11 @@ uv run python src/install_tui.py
 .
 ├── src/                    # Python source code
 │   ├── install.py          # Unified Python installer
-│   ├── install_tui.py      # Terminal User Interface
+│   ├── install_tui.py      # Legacy compatibility wrapper (forwards to MCS)
+│   ├── launch_mcs.py       # MCS launcher wrapper
 │   ├── core/               # Shared modules (paths, config, skill_meta)
 │   └── tui/                # TUI components and screens
+├── mcs/                    # Rust MCS TUI implementation (ratatui + crossterm)
 ├── prompts/                # Global prompts (CLAUDE.md)
 ├── commands/               # Slash commands
 │   ├── claude/             # Claude-specific commands
