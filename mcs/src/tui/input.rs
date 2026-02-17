@@ -52,6 +52,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
             if state.focus == FocusTarget::Sidebar {
                 if state.category_cursor > 0 {
                     state.category_cursor -= 1;
+                    apply_category_from_cursor(state);
                 }
             } else if state.cursor > 0 {
                 state.cursor -= 1;
@@ -62,6 +63,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 let cat_count = state.categories().len() + 1; // +1 for "All"
                 if state.category_cursor + 1 < cat_count {
                     state.category_cursor += 1;
+                    apply_category_from_cursor(state);
                 }
             } else if state.cursor + 1 < filtered_len {
                 state.cursor += 1;
@@ -74,17 +76,9 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 FocusTarget::SearchInput => FocusTarget::ItemList,
             };
         }
-        // Sidebar: select category
+        // Sidebar: select category (Enter is now redundant but kept for UX)
         KeyCode::Enter if state.focus == FocusTarget::Sidebar => {
-            if state.category_cursor == 0 {
-                state.selected_category = None;
-            } else {
-                let cats = state.categories();
-                if let Some((cat, _)) = cats.get(state.category_cursor - 1) {
-                    state.selected_category = Some(cat.clone());
-                }
-            }
-            state.cursor = 0;
+            apply_category_from_cursor(state);
         }
         // Toggle Skills/Commands
         KeyCode::Char('1') => switch_tab(state, ContentTab::Skills),
@@ -239,6 +233,18 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         KeyCode::Char('q') => state.quit = true,
         _ => {}
     }
+}
+
+fn apply_category_from_cursor(state: &mut AppState) {
+    if state.category_cursor == 0 {
+        state.selected_category = None;
+    } else {
+        let cats = state.categories();
+        if let Some((cat, _)) = cats.get(state.category_cursor - 1) {
+            state.selected_category = Some(cat.clone());
+        }
+    }
+    state.cursor = 0;
 }
 
 fn switch_tab(state: &mut AppState, tab: ContentTab) {

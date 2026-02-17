@@ -192,18 +192,29 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
                     state.selected_category = None;
                     state.selected_indices.clear();
                 } else if sidebar_row >= 3 {
-                    let cat_idx = sidebar_row - 3;
-                    let cat_count = state.categories().len() + 1;
+                    // Map visual row to logical category index.
+                    // The sidebar renders: All, then for each category an item
+                    // (plus a separator line after "default"). We need to skip
+                    // separator lines when translating click position.
+                    let cats = state.categories();
+                    let has_default = cats.first().is_some_and(|(c, _)| c == "default");
+                    let visual_row = sidebar_row - 3; // 0-based within category list
+                    // "default" separator sits right after the default entry (visual index 1 → sep at 2)
+                    let cat_idx = if has_default && visual_row >= 2 {
+                        if visual_row == 2 {
+                            return; // clicked on separator line
+                        }
+                        visual_row - 1 // shift by 1 to account for separator
+                    } else {
+                        visual_row
+                    };
+                    let cat_count = cats.len() + 1; // +1 for "All"
                     if cat_idx < cat_count {
                         state.category_cursor = cat_idx;
-                        // Apply category selection
                         if cat_idx == 0 {
                             state.selected_category = None;
-                        } else {
-                            let cats = state.categories();
-                            if let Some((cat, _)) = cats.get(cat_idx - 1) {
-                                state.selected_category = Some(cat.clone());
-                            }
+                        } else if let Some((cat, _)) = cats.get(cat_idx - 1) {
+                            state.selected_category = Some(cat.clone());
                         }
                         state.cursor = 0;
                     }
