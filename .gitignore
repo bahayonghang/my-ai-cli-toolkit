@@ -5,8 +5,7 @@ ref/
 .serena/
 openspec/
 
-mcs.exe
-mcs.exe.old
+
 mcs/target/
 
 *.pyc
