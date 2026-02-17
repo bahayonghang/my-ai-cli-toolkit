@@ -52,6 +52,7 @@ class ItemInfo:
     target_mtime: datetime | None = None
     category: str | None = None
     tags: list[str] = field(default_factory=list)
+    is_default: bool = False
 
     @property
     def is_installed(self) -> bool:

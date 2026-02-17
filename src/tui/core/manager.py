@@ -14,7 +14,7 @@ from pathlib import Path
 from core.config_loader import get_commands_source_dir
 from core.paths import COMMANDS_SRC_DIR, PROMPTS_SRC_DIR, SKILLS_SRC_DIR
 from core.skill_meta import parse_skill_frontmatter
-from install import SkillManager
+from install import SkillManager, _is_default_skill
 
 from .models import InstallResult, InstallStatus, ItemInfo, ItemType
 
@@ -127,32 +127,32 @@ class TUIManager:
         if not SKILLS_SRC_DIR.exists():
             return skills
 
-        for skill_dir in sorted(SKILLS_SRC_DIR.iterdir()):
-            if skill_dir.is_dir():
-                target_path = self._manager.target_skills_dir / skill_dir.name
+        for skill_dir in sorted(p.parent for p in SKILLS_SRC_DIR.rglob("SKILL.md")):
+            target_path = self._manager.target_skills_dir / skill_dir.name
 
-                source_mtime = self._get_file_mtime(skill_dir)
-                target_mtime = self._get_file_mtime(target_path)
+            source_mtime = self._get_file_mtime(skill_dir)
+            target_mtime = self._get_file_mtime(target_path)
 
-                status = self._determine_install_status(target_path, source_mtime, target_mtime)
+            status = self._determine_install_status(target_path, source_mtime, target_mtime)
 
-                # Use shared frontmatter parser from core.skill_meta
-                metadata = parse_skill_frontmatter(skill_dir)
+            # Use shared frontmatter parser from core.skill_meta
+            metadata = parse_skill_frontmatter(skill_dir)
 
-                skills.append(
-                    ItemInfo(
-                        name=skill_dir.name,
-                        item_type=ItemType.SKILL,
-                        description=metadata.get("description"),
-                        status=status,
-                        source_path=skill_dir,
-                        target_path=target_path,
-                        source_mtime=source_mtime,
-                        target_mtime=target_mtime,
-                        category=metadata.get("category"),
-                        tags=metadata.get("tags", []),
-                    )
+            skills.append(
+                ItemInfo(
+                    name=skill_dir.name,
+                    item_type=ItemType.SKILL,
+                    description=metadata.get("description"),
+                    status=status,
+                    source_path=skill_dir,
+                    target_path=target_path,
+                    source_mtime=source_mtime,
+                    target_mtime=target_mtime,
+                    category=metadata.get("category"),
+                    tags=metadata.get("tags", []),
+                    is_default=_is_default_skill(skill_dir, SKILLS_SRC_DIR),
                 )
+            )
 
         return skills
 
@@ -220,8 +220,8 @@ class TUIManager:
                 error=f"Source directory does not exist: {SKILLS_SRC_DIR}",
             )
 
-        skill_src = SKILLS_SRC_DIR / name
-        if not skill_src.exists():
+        skill_src = next((p.parent for p in SKILLS_SRC_DIR.rglob("SKILL.md") if p.parent.name == name), None)
+        if skill_src is None:
             return InstallResult(
                 success=False,
                 item_name=name,
