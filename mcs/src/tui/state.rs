@@ -1,8 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 use crate::config::platform::PlatformConfig;
-use crate::model::{InstallStatus, ItemInfo};
+use crate::model::{InstallStatus, ItemInfo, ItemType};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContentTab {
@@ -11,7 +11,6 @@ pub enum ContentTab {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[allow(dead_code)]
 pub enum Screen {
     PlatformSelect,
     Main,
@@ -58,6 +57,7 @@ pub enum PopupKind {
     PlatformConfig,
     MultiSync {
         selected_platforms: HashSet<String>,
+        cursor: usize,
     },
 }
 
@@ -69,11 +69,69 @@ pub enum ConfirmAction {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub struct ProgressState {
     pub current: usize,
     pub total: usize,
     pub label: String,
+    pub success: usize,
+    pub failed: usize,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NotificationLevel {
+    Info,
+    Success,
+    Warning,
+    Error,
+}
+
+#[derive(Debug, Clone)]
+pub struct Notification {
+    pub level: NotificationLevel,
+    pub message: String,
+}
+
+#[derive(Debug, Clone)]
+pub enum BatchTaskKind {
+    Install {
+        platform: PlatformConfig,
+        name: String,
+        item_type: ItemType,
+    },
+    Uninstall {
+        platform: PlatformConfig,
+        name: String,
+        item_type: ItemType,
+    },
+    PromptUpdate {
+        platform: PlatformConfig,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub struct BatchTask {
+    pub label: String,
+    pub kind: BatchTaskKind,
+}
+
+#[derive(Debug, Clone)]
+pub struct PendingBatch {
+    pub label: String,
+    pub tasks: Vec<BatchTask>,
+    pub current: usize,
+    pub success: usize,
+    pub failures: Vec<String>,
+    pub reload_after: bool,
+}
+
+pub struct DashboardStats {
+    pub platform_name: String,
+    pub skills_installed: usize,
+    pub skills_total: usize,
+    pub commands_installed: usize,
+    pub commands_total: usize,
+    pub outdated: usize,
+    pub has_prompt: bool,
 }
 
 pub struct AppState {
@@ -100,16 +158,22 @@ pub struct AppState {
     // UI mode
     pub screen: Screen,
     pub popup: Option<PopupKind>,
+    pub popup_scroll: u16,
     pub focus: FocusTarget,
 
-    // Progress
+    // Batch execution state
+    pub pending_batch: Option<PendingBatch>,
     pub progress: Option<ProgressState>,
+    pub notifications: VecDeque<Notification>,
 
     // Platform select cursor
     pub platform_cursor: usize,
 
     // Sidebar category cursor
     pub category_cursor: usize,
+
+    // Dashboard cache
+    pub dashboard_cache: Option<Vec<DashboardStats>>,
 
     // Should quit
     pub quit: bool,
@@ -131,10 +195,14 @@ impl AppState {
             cursor: 0,
             screen: Screen::PlatformSelect,
             popup: None,
+            popup_scroll: 0,
             focus: FocusTarget::Sidebar,
+            pending_batch: None,
             progress: None,
+            notifications: VecDeque::new(),
             platform_cursor: 0,
             category_cursor: 0,
+            dashboard_cache: None,
             quit: false,
         }
     }
@@ -226,5 +294,59 @@ impl AppState {
     /// Reload items (after install/uninstall)
     pub fn reload_items(&mut self) {
         self.load_items();
+    }
+
+    pub fn push_notification(&mut self, level: NotificationLevel, message: impl Into<String>) {
+        if self.notifications.len() >= 5 {
+            self.notifications.pop_front();
+        }
+        self.notifications.push_back(Notification {
+            level,
+            message: message.into(),
+        });
+    }
+
+    pub fn latest_notification(&self) -> Option<&Notification> {
+        self.notifications.back()
+    }
+
+    pub fn selected_names(&self) -> Vec<String> {
+        let items = self.active_items();
+        let mut names: Vec<String> = self
+            .selected_indices
+            .iter()
+            .filter_map(|&i| items.get(i).map(|item| item.name.clone()))
+            .collect();
+        names.sort_unstable();
+        names
+    }
+
+    pub fn focused_name(&self) -> Option<String> {
+        let filtered = self.filtered_indices();
+        filtered
+            .get(self.cursor)
+            .and_then(|&i| self.active_items().get(i).map(|item| item.name.clone()))
+    }
+
+    /// Refresh dashboard cache by running discovery once for all platforms
+    pub fn refresh_dashboard(&mut self) {
+        let mut stats = Vec::new();
+        let mut names: Vec<_> = self.platforms.keys().cloned().collect();
+        names.sort();
+        for name in names {
+            let p = &self.platforms[&name];
+            let skills = crate::core::discovery::discover_skills(&self.project_root, p);
+            let commands = crate::core::discovery::discover_commands(&self.project_root, p);
+            stats.push(DashboardStats {
+                platform_name: name,
+                skills_installed: skills.iter().filter(|i| i.is_installed()).count(),
+                skills_total: skills.len(),
+                commands_installed: commands.iter().filter(|i| i.is_installed()).count(),
+                commands_total: commands.len(),
+                outdated: skills.iter().filter(|i| i.needs_update()).count(),
+                has_prompt: p.prompt_file.is_some(),
+            });
+        }
+        self.dashboard_cache = Some(stats);
     }
 }
