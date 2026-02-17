@@ -132,6 +132,49 @@ def normalize_project_path(path: str) -> Path:
     return Path(path).expanduser().resolve()
 
 
+def _load_default_categories(base: Path) -> list[str]:
+    """Load default category list from default.toml."""
+    toml_path = base / "default.toml"
+    if not toml_path.exists():
+        return []
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        try:
+            import tomli as tomllib  # type: ignore[no-redef]
+        except ModuleNotFoundError:
+            return []
+    try:
+        data = tomllib.loads(toml_path.read_text(encoding="utf-8"))
+        return data.get("categories", [])
+    except Exception:
+        return []
+
+
+def _discover_skill_dirs(base: Path) -> list[Path]:
+    """Find all directories containing SKILL.md under base."""
+    return sorted(p.parent for p in base.rglob("SKILL.md"))
+
+
+def _find_skill_by_name(base: Path, name: str) -> Path | None:
+    """Find a skill directory by leaf name."""
+    for skill_dir in _discover_skill_dirs(base):
+        if skill_dir.name == name:
+            return skill_dir
+    return None
+
+
+def _is_default_skill(skill_dir: Path, base: Path) -> bool:
+    """Check if a skill belongs to a default category."""
+    default_cats = _load_default_categories(base)
+    if not default_cats:
+        return True  # no config = all are default
+    parent = skill_dir.parent
+    if parent == base:
+        return True  # top-level skills are always default
+    return parent.name in default_cats
+
+
 class SkillManager:
     def __init__(
         self,
@@ -204,7 +247,7 @@ class SkillManager:
             log_error(format_error("path_not_exist", path=str(SKILLS_SRC_DIR)))
             return
 
-        skills = sorted([d for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
+        skills = _discover_skill_dirs(SKILLS_SRC_DIR)
         for i, skill in enumerate(skills, 1):
             desc = self.get_skill_description(skill)
             status = (
@@ -230,7 +273,7 @@ class SkillManager:
             return
 
         for skill in installed:
-            source = "This repository" if (SKILLS_SRC_DIR / skill.name).exists() else "External"
+            source = "This repository" if _find_skill_by_name(SKILLS_SRC_DIR, skill.name) else "External"
             print(f" - {Colors.SUCCESS}{skill.name}{Colors.ENDC} ({source})")
 
     def install_skill(self, skill_name, quiet=False):
@@ -243,7 +286,7 @@ class SkillManager:
             if not quiet:
                 log_info(f"Installing to project: {self.get_install_location_info()}")
 
-        src = SKILLS_SRC_DIR / skill_name
+        src = _find_skill_by_name(SKILLS_SRC_DIR, skill_name) or SKILLS_SRC_DIR / skill_name
         dst = self.target_skills_dir / skill_name
 
         if not src.exists():
@@ -252,7 +295,7 @@ class SkillManager:
                 src = alt_src
 
         if not src.exists():
-            available_skills = ", ".join([d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
+            available_skills = ", ".join([d.name for d in _discover_skill_dirs(SKILLS_SRC_DIR)])
             log_error(format_error("skill_not_found", skill=skill_name, available=available_skills))
             return False
 
@@ -304,9 +347,13 @@ class SkillManager:
         except Exception as e:
             log_error(format_error("path_access_error", path=str(self.target_commands_dir), error=str(e)))
 
-    def install_all(self):
-        log_info(f"Installing all skills to {self.target}...")
-        skills = sorted([d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
+    def install_all(self, only_default: bool = True):
+        if only_default:
+            log_info(f"Installing default skills to {self.target}...")
+            skills = [d.name for d in _discover_skill_dirs(SKILLS_SRC_DIR) if _is_default_skill(d, SKILLS_SRC_DIR)]
+        else:
+            log_info(f"Installing all skills to {self.target}...")
+            skills = [d.name for d in _discover_skill_dirs(SKILLS_SRC_DIR)]
         count = 0
         for name in skills:
             if self.install_skill(name, quiet=True):
@@ -318,7 +365,7 @@ class SkillManager:
 
     def interactive(self):
         self.list_available()
-        skills = sorted([d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
+        skills = [d.name for d in _discover_skill_dirs(SKILLS_SRC_DIR)]
         try:
             val = input(f"\n{Colors.INFO}Select numbers to install (space-separated, or 'all'):{Colors.ENDC} ").strip()
         except EOFError:
@@ -469,12 +516,13 @@ def install_all(
     ),
     project: str | None = ProjectOption,
     kiro: bool = KiroFlag,
+    all_skills: bool = typer.Option(False, "--all", help="Install all skills, not just default category"),
 ):
-    """Install all skills."""
+    """Install all skills (default category only, use --all for everything)."""
     try:
         mgr = SkillManager(target, project_path=project, use_kiro=kiro)
         log_info(f"Installing to: {mgr.get_install_location_info()}")
-        mgr.install_all()
+        mgr.install_all(only_default=not all_skills)
     except ValueError as e:
         log_error(str(e))
         sys.exit(1)
