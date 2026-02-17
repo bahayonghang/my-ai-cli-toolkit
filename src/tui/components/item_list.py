@@ -418,8 +418,10 @@ class ItemListView(ListView):
 
         # Check category filter
         if self._filter_category is not None:
-            item_category = item.item_info.category
-            if item_category != self._filter_category:
+            if self._filter_category == "default":
+                if not item.item_info.is_default:
+                    return False
+            elif item.item_info.category != self._filter_category:
                 return False
 
         # Check text filter

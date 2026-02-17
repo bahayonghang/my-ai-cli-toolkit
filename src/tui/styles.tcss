@@ -258,6 +258,13 @@ CategoryItem .cat-text {
     width: 100%;
 }
 
+.cat-sep {
+    height: 1;
+    padding: 0 1;
+    color: $panel;
+    background: transparent;
+}
+
 /* === Item List Component === */
 ItemListView {
     height: 1fr;

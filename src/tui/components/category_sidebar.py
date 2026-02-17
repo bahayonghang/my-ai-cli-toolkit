@@ -136,8 +136,25 @@ class CategorySidebar(Vertical):
             all_item.set_active(True)
             cat_list.append(all_item)
 
-            # Individual categories
+            # Separate "default" from regular categories
+            default_entry = None
+            regular = []
             for name, count in categories:
+                if name == "default":
+                    default_entry = (name, count)
+                else:
+                    regular.append((name, count))
+
+            # "Default" pinned after All with ★
+            if default_entry is not None:
+                cat_list.append(CategoryItem(default_entry[0], "★ Default", default_entry[1]))
+                # Visual separator
+                sep = ListItem(Static("─" * 20, classes="cat-sep"))
+                sep.can_focus = False
+                cat_list.append(sep)
+
+            # Regular categories
+            for name, count in regular:
                 label = get_category_label(name)
                 cat_list.append(CategoryItem(name, label, count))
         except NoMatches:
