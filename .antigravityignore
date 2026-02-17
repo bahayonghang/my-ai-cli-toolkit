@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+.venv
+
+# Build outputs
+dist
+build
+.out
+.next
+target
+mcs.exe
+mcs/target
+
+# Test & cache
+coverage
+.hypothesis
+.pytest_cache
+.ruff_cache
+__pycache__
+*.pyc
+
+# VCS
+.git
+
+# IDE & editor
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI agent configs (avoid cross-contamination)
+.claude
+.kiro
+.trae
+.serena
+.omc
+.agent
+
+# Lock files (large, low value for context)
+uv.lock
+package-lock.json
+
+# Tauri build artifacts
+agentkit-desktop/src-tauri/target
+
+# Reference / vendored code
+ref
