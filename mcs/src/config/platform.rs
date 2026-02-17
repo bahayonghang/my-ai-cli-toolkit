@@ -43,81 +43,84 @@ pub struct PlatformDisplay {
     pub base_dir: &'static str,
 }
 
-pub fn platform_displays() -> Vec<PlatformDisplay> {
-    vec![
-        PlatformDisplay {
-            id: "claude",
-            name: "Claude",
-            icon: "🤖",
-            base_dir: "~/.claude/",
-        },
-        PlatformDisplay {
-            id: "codex",
-            name: "Codex",
-            icon: "📦",
-            base_dir: "~/.codex/",
-        },
-        PlatformDisplay {
-            id: "gemini",
-            name: "Gemini",
-            icon: "✨",
-            base_dir: "~/.agents/",
-        },
-        PlatformDisplay {
-            id: "qwen",
-            name: "Qwen",
-            icon: "🔮",
-            base_dir: "~/.qwen/",
-        },
-        PlatformDisplay {
-            id: "qoder",
-            name: "Qoder",
-            icon: "⚡",
-            base_dir: "~/.qoder/",
-        },
-        PlatformDisplay {
-            id: "kiro",
-            name: "Kiro",
-            icon: "🎯",
-            base_dir: "~/.kiro/",
-        },
-        PlatformDisplay {
-            id: "trae",
-            name: "Trae",
-            icon: "🌊",
-            base_dir: "~/.trae/",
-        },
-        PlatformDisplay {
-            id: "trae-cn",
-            name: "Trae CN",
-            icon: "🌊",
-            base_dir: "~/.trae-cn/",
-        },
-        PlatformDisplay {
-            id: "opencode",
-            name: "OpenCode",
-            icon: "🔓",
-            base_dir: "~/.config/opencode/",
-        },
-        PlatformDisplay {
-            id: "iflow",
-            name: "iFlow",
-            icon: "🌀",
-            base_dir: "~/.iflow/",
-        },
-        PlatformDisplay {
-            id: "antigravity",
-            name: "Antigravity",
-            icon: "🚀",
-            base_dir: "~/.gemini/antigravity/",
-        },
-        PlatformDisplay {
-            id: "windsurf",
-            name: "Windsurf",
-            icon: "🏄",
-            base_dir: "~/.codeium/windsurf/",
-        },
-    ]
+pub fn platform_displays() -> &'static [PlatformDisplay] {
+    static DISPLAYS: std::sync::LazyLock<Vec<PlatformDisplay>> = std::sync::LazyLock::new(|| {
+        vec![
+            PlatformDisplay {
+                id: "claude",
+                name: "Claude",
+                icon: "🤖",
+                base_dir: "~/.claude/",
+            },
+            PlatformDisplay {
+                id: "codex",
+                name: "Codex",
+                icon: "📦",
+                base_dir: "~/.codex/",
+            },
+            PlatformDisplay {
+                id: "gemini",
+                name: "Gemini",
+                icon: "✨",
+                base_dir: "~/.agents/",
+            },
+            PlatformDisplay {
+                id: "qwen",
+                name: "Qwen",
+                icon: "🔮",
+                base_dir: "~/.qwen/",
+            },
+            PlatformDisplay {
+                id: "qoder",
+                name: "Qoder",
+                icon: "⚡",
+                base_dir: "~/.qoder/",
+            },
+            PlatformDisplay {
+                id: "kiro",
+                name: "Kiro",
+                icon: "🎯",
+                base_dir: "~/.kiro/",
+            },
+            PlatformDisplay {
+                id: "trae",
+                name: "Trae",
+                icon: "🌊",
+                base_dir: "~/.trae/",
+            },
+            PlatformDisplay {
+                id: "trae-cn",
+                name: "Trae CN",
+                icon: "🌊",
+                base_dir: "~/.trae-cn/",
+            },
+            PlatformDisplay {
+                id: "opencode",
+                name: "OpenCode",
+                icon: "🔓",
+                base_dir: "~/.config/opencode/",
+            },
+            PlatformDisplay {
+                id: "iflow",
+                name: "iFlow",
+                icon: "🌀",
+                base_dir: "~/.iflow/",
+            },
+            PlatformDisplay {
+                id: "antigravity",
+                name: "Antigravity",
+                icon: "🚀",
+                base_dir: "~/.gemini/antigravity/",
+            },
+            PlatformDisplay {
+                id: "windsurf",
+                name: "Windsurf",
+                icon: "🏄",
+                base_dir: "~/.codeium/windsurf/",
+            },
+        ]
+    });
+    &DISPLAYS
 }
 
 fn p(

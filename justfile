@@ -19,7 +19,8 @@ help:
     @echo "  just docs              - 一键安装依赖并启动开发服务器"
     @echo ""
     @echo "🦀 MCS (Rust TUI)："
-    @echo "  just mcs               - 启动 MCS TUI (首次自动构建 release)"
+    @echo "  just mcs               - 启动 MCS TUI (由 cargo 自动判定是否重编译)"
+    @echo "  just tui               - 兼容旧入口（转发到 just mcs）"
     @echo ""
     @echo "🎯 技能管理命令："
     @echo "  just list              - 列出所有可用技能"
@@ -113,19 +114,24 @@ installed:
 interactive:
     uv run python src/install.py interactive
 
-# 启动 TUI (终端用户界面) 进行技能管理
+# 兼容旧入口（已迁移到 MCS）
 tui:
-    uv run python src/install_tui.py
+    @echo "⚠️  `just tui` 已迁移为 `just mcs`，正在转发..."
+    just mcs
 
 # ============ MCS (Rust TUI) ============
 
-# 启动 MCS TUI (如果不存在则自动构建 release 版本)
+# 启动 MCS TUI（由 cargo 自动决定是否重编译）
 mcs:
-    uv run python src/launch_mcs.py
+    cd mcs && cargo run --release --bin mcs --
+
+# 开发模式启动 MCS TUI（debug 编译，更快）
+mcs-dev:
+    cd mcs && cargo run --bin mcs --
 
 # 强制重新编译并启动 MCS TUI
 mcs-rebuild:
-    uv run python src/launch_mcs.py --rebuild
+    cd mcs && cargo clean && cargo run --release --bin mcs --
 
 # 强制重新编译并启动 MCS TUI (短别名)
 mcs-re: mcs-rebuild
@@ -276,7 +282,7 @@ check-deps:
     @echo "检查 Python 依赖..."
     @uv run python -c "import yaml" 2>/dev/null || echo "⚠️  缺少 PyYAML，请运行: uv add pyyaml"
     @uv run python -c "import pytest" 2>/dev/null || echo "⚠️  缺少 pytest，请运行: uv add pytest"
-    @uv run python -c "import textual" 2>/dev/null || echo "⚠️  缺少 textual，请运行: uv add textual"
+    @cargo --version >/dev/null 2>&1 || echo "⚠️  缺少 cargo，请安装 Rust 工具链 (rustup)"
     @echo "✓ 依赖检查完成"
 
 # 显示项目信息
