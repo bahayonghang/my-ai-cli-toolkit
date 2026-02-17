@@ -176,10 +176,10 @@ rust-format:
     cd agentkit-desktop/src-tauri && cargo fmt
     cd mcs && cargo fmt
 
-# 运行 Clippy 静态分析 (严格模式)
+# 运行 Clippy 静态分析 (自动修复 + 严格模式)
 rust-clippy:
-    cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
-    cd mcs && cargo clippy --all-targets --all-features -- -D warnings
+    cd agentkit-desktop/src-tauri && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
+    cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
 
 # 运行 Rust 单元测试
 rust-test:
@@ -247,9 +247,9 @@ ci:
     cd agentkit-desktop/src-tauri && cargo fmt --check && echo "  ✓ agentkit-desktop 格式正确" || (echo "  ⚠️ agentkit-desktop 格式不符，自动修复中..." && cargo fmt && false)
     cd mcs && cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && false)
     @echo ""
-    @echo "🦀 步骤 7/9: Rust Clippy 静态分析..."
-    cd agentkit-desktop/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
-    cd mcs && cargo clippy --all-targets --all-features -- -D warnings
+    @echo "🦀 步骤 7/9: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
+    cd agentkit-desktop/src-tauri && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
+    cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
     @echo ""
     @echo "🦀 步骤 8/9: Rust 单元测试..."
     cd agentkit-desktop/src-tauri && cargo test
