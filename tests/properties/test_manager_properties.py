@@ -42,7 +42,7 @@ def test_property_10_get_skills_returns_all_available_skills(platform: str):
 
     # 获取源目录中的所有技能目录
     if SKILLS_SRC_DIR.exists():
-        expected_skill_names = sorted([d.name for d in SKILLS_SRC_DIR.iterdir() if d.is_dir()])
+        expected_skill_names = sorted(p.parent.name for p in SKILLS_SRC_DIR.rglob("SKILL.md"))
     else:
         expected_skill_names = []
 
