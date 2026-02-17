@@ -4,8 +4,8 @@ use std::path::Path;
 use crate::config::paths::{commands_src_dir, skills_src_dir};
 use crate::config::platform::{PlatformConfig, commands_source_dir};
 use crate::core::discovery::find_skill_dirs;
+use crate::core::fs_utils::walkdir_files;
 use crate::model::{InstallResult, ItemType};
-
 /// Ensure target directories exist
 fn ensure_dirs(platform: &PlatformConfig) -> std::io::Result<()> {
     fs::create_dir_all(platform.skills_path())?;
@@ -208,21 +208,6 @@ fn find_file_by_stem(dir: &Path, name: &str) -> Option<std::path::PathBuf> {
             .map(|rel| rel.with_extension("") == name_path)
             .unwrap_or(false)
     })
-}
-
-fn walkdir_files(dir: &Path) -> Vec<std::path::PathBuf> {
-    let mut result = Vec::new();
-    if let Ok(entries) = fs::read_dir(dir) {
-        for entry in entries.flatten() {
-            let path = entry.path();
-            if path.is_dir() {
-                result.extend(walkdir_files(&path));
-            } else if path.is_file() {
-                result.push(path);
-            }
-        }
-    }
-    result
 }
 
 fn prune_empty_parents(file: &Path, stop_at: &Path) {

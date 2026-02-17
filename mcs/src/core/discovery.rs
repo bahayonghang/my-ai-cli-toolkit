@@ -1,8 +1,13 @@
 use std::path::Path;
 use std::time::SystemTime;
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+};
 
 use crate::config::paths::{commands_src_dir, skills_src_dir};
 use crate::config::platform::{PlatformConfig, commands_source_dir};
+use crate::core::fs_utils::walkdir_files;
 use crate::core::skill_meta::parse_skill_frontmatter;
 use crate::model::{InstallStatus, ItemInfo, ItemType};
 
@@ -10,18 +15,85 @@ fn file_mtime(path: &Path) -> Option<SystemTime> {
     path.metadata().ok().and_then(|m| m.modified().ok())
 }
 
+fn update_latest(latest: &mut Option<SystemTime>, candidate: Option<SystemTime>) {
+    if let Some(c) = candidate {
+        match latest {
+            Some(curr) if *curr >= c => {}
+            _ => *latest = Some(c),
+        }
+    }
+}
+
+fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
+    if !path.exists() {
+        return (None, None);
+    }
+
+    if path.is_file() {
+        let mut hasher = DefaultHasher::new();
+        path.file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_default()
+            .hash(&mut hasher);
+        if let Ok(bytes) = std::fs::read(path) {
+            bytes.hash(&mut hasher);
+        }
+        return (file_mtime(path), Some(hasher.finish()));
+    }
+
+    let mut files = walkdir_files(path);
+    files.sort();
+
+    let mut hasher = DefaultHasher::new();
+    let mut latest = None;
+
+    for file in files {
+        let rel = file
+            .strip_prefix(path)
+            .ok()
+            .unwrap_or(file.as_path())
+            .to_string_lossy()
+            .to_string();
+        rel.hash(&mut hasher);
+
+        if let Ok(meta) = file.metadata() {
+            if let Ok(m) = meta.modified() {
+                update_latest(&mut latest, Some(m));
+            }
+        }
+        if let Ok(bytes) = std::fs::read(&file) {
+            bytes.hash(&mut hasher);
+        }
+    }
+
+    if latest.is_none() {
+        latest = file_mtime(path);
+    }
+
+    (latest, Some(hasher.finish()))
+}
+
 fn determine_status(
     target: &Path,
     src_mtime: Option<SystemTime>,
     tgt_mtime: Option<SystemTime>,
+    src_sig: Option<u64>,
+    tgt_sig: Option<u64>,
 ) -> InstallStatus {
     if !target.exists() {
         return InstallStatus::NotInstalled;
     }
-    match (src_mtime, tgt_mtime) {
-        (Some(s), Some(t)) if s > t => InstallStatus::Outdated,
-        _ => InstallStatus::Installed,
+    if let (Some(s), Some(t)) = (src_mtime, tgt_mtime) {
+        if s > t {
+            return InstallStatus::Outdated;
+        }
     }
+    if let (Some(s), Some(t)) = (src_sig, tgt_sig) {
+        if s != t {
+            return InstallStatus::Outdated;
+        }
+    }
+    InstallStatus::Installed
 }
 
 /// Load default category names from skills/default.toml
@@ -56,9 +128,9 @@ pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<It
     for path in skill_dirs {
         let name = path.file_name().unwrap().to_string_lossy().into_owned();
         let target = platform.skills_path().join(&name);
-        let src_mtime = file_mtime(&path);
-        let tgt_mtime = file_mtime(&target);
-        let status = determine_status(&target, src_mtime, tgt_mtime);
+        let (src_mtime, src_sig) = path_signature(&path);
+        let (tgt_mtime, tgt_sig) = path_signature(&target);
+        let status = determine_status(&target, src_mtime, tgt_mtime, src_sig, tgt_sig);
         let meta = parse_skill_frontmatter(&path);
 
         let parent_cat = path
@@ -102,7 +174,7 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
     }
 
     let mut commands: Vec<ItemInfo> = Vec::new();
-    let mut files: Vec<_> = walkdir(&src_dir);
+    let mut files: Vec<_> = walkdir_files(&src_dir);
     files.sort();
 
     for file_path in files {
@@ -111,7 +183,7 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
         let target = platform.commands_path().join(rel);
         let src_mtime = file_mtime(&file_path);
         let tgt_mtime = file_mtime(&target);
-        let status = determine_status(&target, src_mtime, tgt_mtime);
+        let status = determine_status(&target, src_mtime, tgt_mtime, None, None);
 
         let category = if rel.components().count() > 1 {
             rel.components()
@@ -156,18 +228,81 @@ pub(crate) fn find_skill_dirs(dir: &Path) -> Vec<std::path::PathBuf> {
     result
 }
 
-/// Recursively collect all files under a directory
-fn walkdir(dir: &Path) -> Vec<std::path::PathBuf> {
-    let mut result = Vec::new();
-    if let Ok(entries) = std::fs::read_dir(dir) {
-        for entry in entries.flatten() {
-            let path = entry.path();
-            if path.is_dir() {
-                result.extend(walkdir(&path));
-            } else if path.is_file() {
-                result.push(path);
-            }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::platform::PlatformConfig;
+    use std::path::PathBuf;
+
+    fn temp_dir(name: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "mcs_discovery_{}_{}_{}",
+            name,
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or_default()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    fn test_platform(base_dir: &Path) -> PlatformConfig {
+        PlatformConfig {
+            name: "claude".into(),
+            base_dir: base_dir.to_string_lossy().to_string(),
+            skills_subdir: "skills".into(),
+            commands_subdir: "commands".into(),
+            prompt_file: Some("CLAUDE.md".into()),
+            commands_source: "claude".into(),
+            fallback_commands_source: None,
         }
     }
-    result
+
+    #[test]
+    fn skill_changes_inside_directory_mark_outdated() {
+        let project_root = temp_dir("project");
+        let source_skill = project_root.join("skills").join("demo-skill");
+        std::fs::create_dir_all(source_skill.join("scripts")).unwrap();
+        std::fs::write(
+            source_skill.join("SKILL.md"),
+            "---\nname: demo-skill\n---\n",
+        )
+        .unwrap();
+        std::fs::write(source_skill.join("scripts").join("run.sh"), "echo v1").unwrap();
+
+        let install_root = temp_dir("install");
+        let target_skill = install_root.join("skills").join("demo-skill");
+        std::fs::create_dir_all(target_skill.join("scripts")).unwrap();
+        std::fs::write(
+            target_skill.join("SKILL.md"),
+            "---\nname: demo-skill\n---\n",
+        )
+        .unwrap();
+        std::fs::write(target_skill.join("scripts").join("run.sh"), "echo v1").unwrap();
+
+        let platform = test_platform(&install_root);
+        let first = discover_skills(&project_root, &platform);
+        let status_first = first
+            .iter()
+            .find(|i| i.name == "demo-skill")
+            .map(|i| i.status)
+            .unwrap();
+        assert_eq!(status_first, InstallStatus::Installed);
+
+        std::thread::sleep(std::time::Duration::from_millis(5));
+        std::fs::write(source_skill.join("scripts").join("run.sh"), "echo v2").unwrap();
+
+        let second = discover_skills(&project_root, &platform);
+        let status_second = second
+            .iter()
+            .find(|i| i.name == "demo-skill")
+            .map(|i| i.status)
+            .unwrap();
+        assert_eq!(status_second, InstallStatus::Outdated);
+
+        let _ = std::fs::remove_dir_all(project_root);
+        let _ = std::fs::remove_dir_all(install_root);
+    }
 }
