@@ -1,13 +1,10 @@
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::StyleRole;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
-pub fn draw(frame: &mut Frame, area: Rect, has_diff: bool, diff_text: &str) {
-    let block = Block::default()
-        .title(" CLAUDE.md ")
-        .borders(Borders::ALL)
-        .border_style(Style::default().fg(theme::PRIMARY))
-        .style(Style::default().bg(theme::BG));
+pub fn draw(frame: &mut Frame, area: Rect, has_diff: bool, diff_text: &str, scroll: u16) {
+    let block = style_system::modal_block("CLAUDE.md");
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
@@ -15,7 +12,7 @@ pub fn draw(frame: &mut Frame, area: Rect, has_diff: bool, diff_text: &str) {
 
     if !has_diff {
         frame.render_widget(
-            Paragraph::new(" No differences").style(Style::default().fg(theme::SUCCESS)),
+            Paragraph::new(" No differences").style(style_system::style(StyleRole::StatusSuccess)),
             chunks[0],
         );
     } else {
@@ -23,25 +20,25 @@ pub fn draw(frame: &mut Frame, area: Rect, has_diff: bool, diff_text: &str) {
             .lines()
             .map(|l| {
                 let style = if l.starts_with('+') {
-                    Style::default().fg(theme::SUCCESS)
+                    style_system::style(StyleRole::StatusSuccess)
                 } else if l.starts_with('-') {
-                    Style::default().fg(theme::ERROR)
+                    style_system::style(StyleRole::StatusError)
                 } else {
-                    Style::default().fg(theme::FG)
+                    style_system::style(StyleRole::TextPrimary)
                 };
                 Line::styled(l, style)
             })
             .collect();
-        frame.render_widget(Paragraph::new(lines), chunks[0]);
+        frame.render_widget(Paragraph::new(lines).scroll((scroll, 0)), chunks[0]);
     }
 
     let hint = if has_diff {
-        " ⏎ Update  Esc Close"
+        " ⏎ Update  j/k Scroll  PgUp/PgDn Page  Esc Close"
     } else {
-        " Esc Close"
+        " j/k Scroll  PgUp/PgDn Page  Esc Close"
     };
     frame.render_widget(
-        Paragraph::new(hint).style(Style::default().fg(theme::MUTED)),
+        Paragraph::new(hint).style(style_system::style(StyleRole::HintText)),
         chunks[1],
     );
 }

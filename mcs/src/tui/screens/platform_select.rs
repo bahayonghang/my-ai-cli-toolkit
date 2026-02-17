@@ -1,19 +1,26 @@
 use ratatui::prelude::*;
 use ratatui::widgets::*;
+use unicode_width::UnicodeWidthStr;
 
 use crate::config::platform::platform_displays;
 use crate::tui::state::AppState;
-use crate::tui::theme;
+use crate::tui::style_system::{self, layout_metrics};
+use crate::tui::theme::{self, StyleRole};
+use crate::tui::widgets::footer;
 
 pub fn draw(frame: &mut Frame, state: &AppState) {
+    let metrics = layout_metrics();
     let area = frame.area();
-    frame.render_widget(Block::default().style(Style::default().bg(theme::BG)), area);
+    frame.render_widget(
+        Block::default().style(style_system::style(StyleRole::ScreenBg)),
+        area,
+    );
 
     // Full-screen layout with horizontal padding
     let padded = Rect {
-        x: area.x + 2,
+        x: area.x + metrics.popup_padding,
         y: area.y,
-        width: area.width.saturating_sub(4),
+        width: area.width.saturating_sub(metrics.popup_padding * 2),
         height: area.height,
     };
 
@@ -29,26 +36,22 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
     let title = Line::from(vec![
         Span::styled(
             "MyClaude Skills Installer ",
-            Style::default()
-                .fg(theme::PRIMARY)
-                .add_modifier(Modifier::BOLD),
+            style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD),
         ),
         Span::styled(
             " Select Platform ",
-            Style::default()
-                .fg(theme::BG)
-                .bg(theme::ACCENT)
-                .add_modifier(Modifier::BOLD),
+            style_system::style(StyleRole::BadgeAccent),
         ),
     ]);
     frame.render_widget(
         Paragraph::new(vec![Line::default(), title, Line::default()])
             .alignment(Alignment::Center)
-            .style(Style::default().bg(theme::SURFACE)),
+            .style(style_system::style(StyleRole::PanelBg)),
         chunks[0],
     );
 
     // Platform list
+    let icons = style_system::icons();
     let displays = platform_displays();
     let w = padded.width as usize;
     let items: Vec<ListItem> = displays
@@ -56,18 +59,32 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
         .enumerate()
         .map(|(i, d)| {
             let selected = i == state.platform_cursor;
-            let bg = if selected { theme::SURFACE } else { theme::BG };
-            let fg = if selected { theme::PRIMARY } else { theme::FG };
-            let muted = if selected {
-                theme::SECONDARY
+            let bg = if selected {
+                theme::color(StyleRole::SelectionBg)
             } else {
-                theme::MUTED
+                theme::color(StyleRole::ScreenBg)
             };
-            let indicator = if selected { "  ▸ " } else { "    " };
+            let fg = if selected {
+                theme::color(StyleRole::HintKey)
+            } else {
+                theme::color(StyleRole::TextPrimary)
+            };
+            let muted = if selected {
+                theme::color(StyleRole::NotificationInfo)
+            } else {
+                theme::color(StyleRole::TextMuted)
+            };
+            let indicator = if selected {
+                format!("  {}", icons.cursor)
+            } else {
+                "    ".into()
+            };
 
             let name_part = format!("{} {:<16}", d.icon, d.name);
             let path_part = format!("  {}", d.base_dir);
-            let used = indicator.len() + name_part.chars().count() + path_part.len();
+            let used = UnicodeWidthStr::width(indicator.as_str())
+                + UnicodeWidthStr::width(name_part.as_str())
+                + UnicodeWidthStr::width(path_part.as_str());
             let pad = w.saturating_sub(used);
 
             ListItem::new(Line::from(vec![
@@ -96,18 +113,15 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
     frame.render_widget(List::new(items), chunks[2]);
 
     // Footer
-    let footer = Line::from(vec![
-        Span::styled("[↑↓]", Style::default().fg(theme::PRIMARY)),
-        Span::styled(" Navigate  ", Style::default().fg(theme::MUTED)),
-        Span::styled("[⏎]", Style::default().fg(theme::PRIMARY)),
-        Span::styled(" Select  ", Style::default().fg(theme::MUTED)),
-        Span::styled("[d]", Style::default().fg(theme::PRIMARY)),
-        Span::styled(" Dashboard  ", Style::default().fg(theme::MUTED)),
-        Span::styled("[q]", Style::default().fg(theme::PRIMARY)),
-        Span::styled(" Quit", Style::default().fg(theme::MUTED)),
-    ]);
+    let mut tokens = footer::help_tokens_for_state(state);
+    for token in &mut tokens {
+        if token.key == "[Enter]" {
+            token.key = format!("[{}]", icons.enter_key);
+        }
+    }
+    let footer = style_system::footer_line(&tokens);
     frame.render_widget(
-        Paragraph::new(footer).style(Style::default().bg(theme::SURFACE)),
+        Paragraph::new(footer).style(style_system::style(StyleRole::PanelBg)),
         chunks[3],
     );
 }

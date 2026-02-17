@@ -1,19 +1,20 @@
 use crate::tui::state::{AppState, ContentTab, FocusTarget};
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::{self, StyleRole};
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
     let focused = state.focus == FocusTarget::Sidebar;
     let border_color = if focused {
-        theme::PRIMARY
+        StyleRole::PanelBorderFocus
     } else {
-        theme::PANEL
+        StyleRole::PanelBorder
     };
 
     let block = Block::default()
         .borders(Borders::RIGHT)
-        .border_style(Style::default().fg(border_color));
+        .border_style(style_system::style(border_color));
 
     let inner = block.inner(area);
     frame.render_widget(block, area);
@@ -26,32 +27,45 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
     .split(inner);
 
     // Skills/Commands toggle
-    let skills_style = if state.active_tab == ContentTab::Skills {
-        Style::default()
-            .fg(theme::BG)
-            .bg(theme::PRIMARY)
-            .add_modifier(Modifier::BOLD)
-    } else {
-        Style::default().fg(theme::MUTED)
-    };
-    let cmds_style = if state.active_tab == ContentTab::Commands {
-        Style::default()
-            .fg(theme::BG)
-            .bg(theme::PRIMARY)
-            .add_modifier(Modifier::BOLD)
-    } else {
-        Style::default().fg(theme::MUTED)
+    let icons = style_system::icons();
+    let tab_style = |active: bool| {
+        if active {
+            style_system::style(StyleRole::BadgeAccent)
+        } else {
+            style_system::style(StyleRole::TextMuted)
+        }
     };
 
     let tabs = vec![
-        Line::from(Span::styled(" ◉ Skills  ", skills_style)),
-        Line::from(Span::styled(" ○ Commands ", cmds_style)),
+        Line::from(Span::styled(
+            format!(
+                " {} Skills   ",
+                if state.active_tab == ContentTab::Skills {
+                    icons.tab_selected
+                } else {
+                    icons.tab_unselected
+                }
+            ),
+            tab_style(state.active_tab == ContentTab::Skills),
+        )),
+        Line::from(Span::styled(
+            format!(
+                " {} Commands ",
+                if state.active_tab == ContentTab::Commands {
+                    icons.tab_selected
+                } else {
+                    icons.tab_unselected
+                }
+            ),
+            tab_style(state.active_tab == ContentTab::Commands),
+        )),
     ];
     frame.render_widget(Paragraph::new(tabs), chunks[0]);
 
     // Separator
     frame.render_widget(
-        Paragraph::new("─".repeat(inner.width as usize)).style(Style::default().fg(theme::PANEL)),
+        Paragraph::new("─".repeat(inner.width as usize))
+            .style(style_system::style(StyleRole::PanelBorder)),
         chunks[1],
     );
 
@@ -63,13 +77,18 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
     // "All" entry (cursor index 0)
     {
         let style = if state.category_cursor == 0 && focused {
-            Style::default().fg(theme::PRIMARY).bg(theme::SURFACE)
+            style_system::style(StyleRole::HintKey).bg(theme::color(StyleRole::SelectionBg))
         } else if state.selected_category.is_none() {
-            Style::default().fg(theme::FG).add_modifier(Modifier::BOLD)
+            style_system::style(StyleRole::TextPrimary).add_modifier(Modifier::BOLD)
         } else {
-            Style::default().fg(theme::MUTED)
+            style_system::style(StyleRole::TextMuted)
         };
-        items.push(ListItem::new(format!(" ▸ All ({total})")).style(style));
+        let prefix = if state.category_cursor == 0 && focused {
+            icons.cursor
+        } else {
+            "  "
+        };
+        items.push(ListItem::new(format!(" {prefix}All ({total})")).style(style));
     }
 
     for (i, (cat, count)) in cats.iter().enumerate() {
@@ -79,21 +98,28 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
         let is_cursor = state.category_cursor == cursor_i && focused;
 
         let style = if is_cursor {
-            Style::default().fg(theme::PRIMARY).bg(theme::SURFACE)
+            style_system::style(StyleRole::HintKey).bg(theme::color(StyleRole::SelectionBg))
         } else if is_selected {
-            Style::default()
-                .fg(if is_default { theme::ACCENT } else { theme::FG })
-                .add_modifier(Modifier::BOLD)
+            style_system::style(if is_default {
+                StyleRole::HintKey
+            } else {
+                StyleRole::TextPrimary
+            })
+            .add_modifier(Modifier::BOLD)
         } else if is_default {
-            Style::default().fg(theme::ACCENT)
+            style_system::style(StyleRole::HintKey)
         } else {
-            Style::default().fg(theme::MUTED)
+            style_system::style(StyleRole::TextMuted)
         };
 
+        let cursor_prefix = if is_cursor { icons.cursor } else { "  " };
         let label = if is_default {
-            format!(" ★ Default ({count})")
+            format!(
+                " {cursor_prefix}{} Default ({count})",
+                icons.default_category
+            )
         } else {
-            format!("   {cat} ({count})")
+            format!(" {cursor_prefix}{cat} ({count})")
         };
         items.push(ListItem::new(label).style(style));
 
@@ -101,7 +127,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
         if is_default {
             items.push(
                 ListItem::new("─".repeat(inner.width.saturating_sub(1) as usize))
-                    .style(Style::default().fg(theme::PANEL)),
+                    .style(style_system::style(StyleRole::PanelBorder)),
             );
         }
     }

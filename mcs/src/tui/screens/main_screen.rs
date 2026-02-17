@@ -2,17 +2,28 @@ use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 use crate::tui::state::AppState;
-use crate::tui::theme;
-use crate::tui::widgets::{category_sidebar, footer, header, item_list, search_bar};
+use crate::tui::style_system::{self, layout_metrics};
+use crate::tui::theme::StyleRole;
+use crate::tui::widgets::{category_sidebar, footer, header, item_list, progress_bar, search_bar};
 
 pub fn draw(frame: &mut Frame, state: &AppState) {
     let area = frame.area();
-    frame.render_widget(Block::default().style(Style::default().bg(theme::BG)), area);
+    frame.render_widget(
+        Block::default().style(style_system::style(StyleRole::ScreenBg)),
+        area,
+    );
+    let metrics = layout_metrics();
+    let progress_height = if state.progress.is_some() {
+        metrics.progress_height
+    } else {
+        0
+    };
 
     let chunks = Layout::vertical([
-        Constraint::Length(1), // header
-        Constraint::Min(1),    // body
-        Constraint::Length(1), // footer
+        Constraint::Length(metrics.header_height), // header
+        Constraint::Min(1),                        // body
+        Constraint::Length(progress_height),       // progress
+        Constraint::Length(metrics.footer_height), // footer
     ])
     .split(area);
 
@@ -20,8 +31,8 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
 
     // Two-column layout
     let body = Layout::horizontal([
-        Constraint::Length(24), // sidebar
-        Constraint::Min(1),     // content
+        Constraint::Length(metrics.sidebar_width), // sidebar
+        Constraint::Min(1),                        // content
     ])
     .split(chunks[1]);
 
@@ -37,5 +48,8 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
         item_list::draw(frame, body[1], state);
     }
 
-    footer::draw(frame, chunks[2], state);
+    if state.progress.is_some() {
+        progress_bar::draw(frame, chunks[2], state);
+    }
+    footer::draw(frame, chunks[3], state);
 }

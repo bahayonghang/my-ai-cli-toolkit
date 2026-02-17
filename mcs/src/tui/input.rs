@@ -1,8 +1,8 @@
-use std::path::PathBuf;
-
 use crate::config::platform::platform_displays;
+use crate::tui::actions::{self, AppAction};
 use crate::tui::state::{
-    AppState, ConfirmAction, ContentTab, FocusTarget, InstallMode, PopupKind, Screen,
+    AppState, ConfirmAction, ContentTab, FocusTarget, InstallMode, NotificationLevel, PopupKind,
+    Screen,
 };
 use crossterm::event::{KeyCode, KeyEvent};
 
@@ -27,6 +27,10 @@ pub fn handle_platform_select_key(state: &mut AppState, key: KeyEvent) {
                 state.screen = Screen::Main;
                 state.focus = FocusTarget::ItemList;
             }
+        }
+        KeyCode::Char('d') => {
+            state.refresh_dashboard();
+            state.screen = Screen::Dashboard;
         }
         KeyCode::Char('q') | KeyCode::Esc => state.quit = true,
         _ => {}
@@ -83,18 +87,8 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
             state.cursor = 0;
         }
         // Toggle Skills/Commands
-        KeyCode::Char('1') => {
-            state.active_tab = ContentTab::Skills;
-            state.cursor = 0;
-            state.category_cursor = 0;
-            state.selected_category = None;
-        }
-        KeyCode::Char('2') => {
-            state.active_tab = ContentTab::Commands;
-            state.cursor = 0;
-            state.category_cursor = 0;
-            state.selected_category = None;
-        }
+        KeyCode::Char('1') => switch_tab(state, ContentTab::Skills),
+        KeyCode::Char('2') => switch_tab(state, ContentTab::Commands),
         // Selection
         KeyCode::Char(' ') if state.focus == FocusTarget::ItemList => {
             if let Some(&idx) = filtered.get(state.cursor) {
@@ -112,7 +106,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         }
         // Install
         KeyCode::Char('i') => {
-            let items = selected_names(state);
+            let items = state.selected_names();
             if !items.is_empty() {
                 state.popup = Some(PopupKind::Install {
                     items,
@@ -122,7 +116,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
             }
         }
         KeyCode::Enter if state.focus == FocusTarget::ItemList => {
-            if let Some(name) = focused_name(state) {
+            if let Some(name) = state.focused_name() {
                 state.popup = Some(PopupKind::Install {
                     items: vec![name],
                     mode: InstallMode::Global,
@@ -132,7 +126,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         }
         // Uninstall
         KeyCode::Char('u') => {
-            if let Some(name) = focused_name(state) {
+            if let Some(name) = state.focused_name() {
                 state.popup = Some(PopupKind::Confirm {
                     title: "Uninstall".into(),
                     message: format!("Uninstall {name}?"),
@@ -143,7 +137,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
             }
         }
         KeyCode::Char('x') => {
-            let items = selected_names(state);
+            let items = state.selected_names();
             if !items.is_empty() {
                 state.popup = Some(PopupKind::Confirm {
                     title: "Batch Uninstall".into(),
@@ -170,12 +164,15 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                     danger: false,
                     action: ConfirmAction::UpdateOutdated,
                 });
+            } else {
+                state.push_notification(NotificationLevel::Info, "No outdated items");
             }
         }
         // Detail
         KeyCode::Char('d') => {
             let filtered = state.filtered_indices();
             if let Some(&idx) = filtered.get(state.cursor) {
+                state.popup_scroll = 0;
                 state.popup = Some(PopupKind::Detail { item_index: idx });
             }
         }
@@ -183,6 +180,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         KeyCode::Char('D') => {
             let filtered = state.filtered_indices();
             if let Some(&idx) = filtered.get(state.cursor) {
+                state.popup_scroll = 0;
                 state.popup = Some(PopupKind::Diff { item_index: idx });
             }
         }
@@ -210,10 +208,16 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 if crate::core::prompt::supports_prompt(platform) {
                     let (has_diff, diff_text) =
                         crate::core::prompt::prompt_diff(&state.project_root, platform);
+                    state.popup_scroll = 0;
                     state.popup = Some(PopupKind::Prompt {
                         has_diff,
                         diff_text,
                     });
+                } else {
+                    state.push_notification(
+                        NotificationLevel::Warning,
+                        "Prompt management only supports Claude",
+                    );
                 }
             }
         }
@@ -225,6 +229,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         KeyCode::Char('S') => {
             state.popup = Some(PopupKind::MultiSync {
                 selected_platforms: std::collections::HashSet::new(),
+                cursor: 0,
             });
         }
         // Back to platform select
@@ -234,6 +239,17 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         KeyCode::Char('q') => state.quit = true,
         _ => {}
     }
+}
+
+fn switch_tab(state: &mut AppState, tab: ContentTab) {
+    if state.active_tab == tab {
+        return;
+    }
+    state.active_tab = tab;
+    state.cursor = 0;
+    state.category_cursor = 0;
+    state.selected_category = None;
+    state.selected_indices.clear();
 }
 
 fn handle_search_key(state: &mut AppState, key: KeyEvent) {
@@ -255,139 +271,212 @@ fn handle_search_key(state: &mut AppState, key: KeyEvent) {
 
 pub fn handle_dashboard_key(state: &mut AppState, key: KeyEvent) {
     match key.code {
-        KeyCode::Esc | KeyCode::Char('q') => state.screen = Screen::PlatformSelect,
+        KeyCode::Esc => state.screen = Screen::PlatformSelect,
+        KeyCode::Char('q') => state.quit = true,
         _ => {}
     }
 }
 
 pub fn handle_popup_key(state: &mut AppState, key: KeyEvent) {
-    let popup = state.popup.clone();
-    let Some(popup) = popup else { return };
+    let Some(ref popup) = state.popup else { return };
+
+    // Unified scroll handling for scrollable popups
+    if matches!(
+        popup,
+        PopupKind::Detail { .. } | PopupKind::Diff { .. } | PopupKind::Prompt { .. }
+    ) {
+        match key.code {
+            KeyCode::Char('j') | KeyCode::Down => {
+                state.popup_scroll = state.popup_scroll.saturating_add(1);
+                return;
+            }
+            KeyCode::Char('k') | KeyCode::Up => {
+                state.popup_scroll = state.popup_scroll.saturating_sub(1);
+                return;
+            }
+            KeyCode::PageDown => {
+                state.popup_scroll = state.popup_scroll.saturating_add(10);
+                return;
+            }
+            KeyCode::PageUp => {
+                state.popup_scroll = state.popup_scroll.saturating_sub(10);
+                return;
+            }
+            _ => {}
+        }
+    }
 
     match popup {
         PopupKind::Install {
-            ref items,
-            ref mode,
-            ref path_input,
+            items,
+            mode,
+            path_input,
         } => {
+            let items = items.clone();
+            let mode = *mode;
+            let path_input = path_input.clone();
             match key.code {
                 KeyCode::Esc => state.popup = None,
                 KeyCode::Enter => {
-                    if *mode == InstallMode::Directory && path_input.trim().is_empty() {
-                        // Keep popup open until a project path is provided.
-                        return;
-                    }
-                    // Execute install
-                    let items_clone = items.clone();
-                    let item_type = state.active_tab;
-                    let install_mode = *mode;
-                    let path_input_clone = path_input.clone();
-                    state.popup = None;
-                    execute_batch_install(
+                    let accepted = dispatch_and_notify(
                         state,
-                        &items_clone,
-                        item_type,
-                        install_mode,
-                        &path_input_clone,
+                        AppAction::InstallBatch {
+                            names: items,
+                            tab: state.active_tab,
+                            mode,
+                            path_input,
+                        },
                     );
+                    if accepted {
+                        state.popup = None;
+                    }
                 }
                 KeyCode::Up => {
-                    set_install_popup(
-                        state,
-                        items.clone(),
-                        InstallMode::Global,
-                        path_input.clone(),
-                    );
+                    set_install_popup(state, items, InstallMode::Global, path_input);
                 }
                 KeyCode::Down => {
-                    set_install_popup(
-                        state,
-                        items.clone(),
-                        InstallMode::Directory,
-                        path_input.clone(),
-                    );
+                    set_install_popup(state, items, InstallMode::Directory, path_input);
                 }
                 KeyCode::Tab => {
                     let new_mode = match mode {
                         InstallMode::Global => InstallMode::Directory,
                         InstallMode::Directory => InstallMode::Global,
                     };
-                    set_install_popup(state, items.clone(), new_mode, path_input.clone());
+                    set_install_popup(state, items, new_mode, path_input);
                 }
-                KeyCode::Char(c) if *mode == InstallMode::Directory => {
-                    let mut p = path_input.clone();
+                KeyCode::Char(c) if mode == InstallMode::Directory => {
+                    let mut p = path_input;
                     p.push(c);
-                    set_install_popup(state, items.clone(), *mode, p);
+                    set_install_popup(state, items, mode, p);
                 }
-                KeyCode::Backspace if *mode == InstallMode::Directory => {
-                    let mut p = path_input.clone();
+                KeyCode::Backspace if mode == InstallMode::Directory => {
+                    let mut p = path_input;
                     p.pop();
-                    set_install_popup(state, items.clone(), *mode, p);
+                    set_install_popup(state, items, mode, p);
                 }
                 _ => {}
             }
         }
-        PopupKind::Confirm {
-            ref items,
-            ref action,
-            ..
-        } => match key.code {
-            KeyCode::Esc | KeyCode::Char('n') => state.popup = None,
-            KeyCode::Enter | KeyCode::Char('y') => {
-                let items_clone = items.clone();
-                let action = *action;
-                let item_type = state.active_tab;
-                state.popup = None;
-                match action {
-                    ConfirmAction::Uninstall | ConfirmAction::BatchUninstall => {
-                        execute_batch_uninstall(state, &items_clone, item_type)
+        PopupKind::Confirm { items, action, .. } => {
+            let items = items.clone();
+            let action = *action;
+            match key.code {
+                KeyCode::Esc | KeyCode::Char('n') => state.popup = None,
+                KeyCode::Enter | KeyCode::Char('y') => {
+                    let accepted = match action {
+                        ConfirmAction::Uninstall | ConfirmAction::BatchUninstall => {
+                            dispatch_and_notify(
+                                state,
+                                AppAction::UninstallBatch {
+                                    names: items,
+                                    tab: state.active_tab,
+                                },
+                            )
+                        }
+                        ConfirmAction::UpdateOutdated => dispatch_and_notify(
+                            state,
+                            AppAction::InstallBatch {
+                                names: items,
+                                tab: state.active_tab,
+                                mode: InstallMode::Global,
+                                path_input: String::new(),
+                            },
+                        ),
+                    };
+                    if accepted {
+                        state.popup = None;
                     }
-                    ConfirmAction::UpdateOutdated => execute_batch_install(
-                        state,
-                        &items_clone,
-                        item_type,
-                        InstallMode::Global,
-                        "",
-                    ),
                 }
+                _ => {}
             }
-            _ => {}
-        },
-        PopupKind::Prompt { has_diff, .. } => match key.code {
-            KeyCode::Esc => state.popup = None,
-            KeyCode::Enter if has_diff => {
-                if let Some(platform) = state.current_platform().cloned() {
-                    crate::core::prompt::prompt_update(&state.project_root, &platform);
-                }
-                state.popup = None;
-            }
-            _ => {}
-        },
-        PopupKind::MultiSync {
-            ref selected_platforms,
-        } => {
+        }
+        PopupKind::Prompt { has_diff, .. } => {
+            let has_diff = *has_diff;
             match key.code {
                 KeyCode::Esc => state.popup = None,
-                KeyCode::Char(' ') => {
-                    // Toggle platform at cursor - simplified
+                KeyCode::Enter if has_diff => {
+                    let accepted = dispatch_and_notify(state, AppAction::PromptUpdate);
+                    if accepted {
+                        state.popup = None;
+                    }
+                }
+                _ => {}
+            }
+        }
+        PopupKind::MultiSync {
+            selected_platforms,
+            cursor,
+        } => {
+            let selected_platforms = selected_platforms.clone();
+            let cursor = *cursor;
+            let mut names: Vec<String> = state.platforms.keys().cloned().collect();
+            names.sort();
+            match key.code {
+                KeyCode::Esc => state.popup = None,
+                KeyCode::Up | KeyCode::Char('k') => {
                     state.popup = Some(PopupKind::MultiSync {
-                        selected_platforms: selected_platforms.clone(),
+                        selected_platforms,
+                        cursor: cursor.saturating_sub(1),
+                    });
+                }
+                KeyCode::Down | KeyCode::Char('j') => {
+                    let max_idx = names.len().saturating_sub(1);
+                    state.popup = Some(PopupKind::MultiSync {
+                        selected_platforms,
+                        cursor: if cursor < max_idx { cursor + 1 } else { cursor },
+                    });
+                }
+                KeyCode::Char(' ') => {
+                    let mut selected = selected_platforms;
+                    if let Some(name) = names.get(cursor) {
+                        if !selected.remove(name) {
+                            selected.insert(name.clone());
+                        }
+                    }
+                    state.popup = Some(PopupKind::MultiSync {
+                        selected_platforms: selected,
+                        cursor,
                     });
                 }
                 KeyCode::Enter => {
-                    // Execute multi-sync
-                    state.popup = None;
+                    let mut items = state.selected_names();
+                    if items.is_empty() {
+                        if let Some(name) = state.focused_name() {
+                            items.push(name);
+                        }
+                    }
+                    let accepted = dispatch_and_notify(
+                        state,
+                        AppAction::MultiSync {
+                            platform_names: selected_platforms,
+                            items,
+                            tab: state.active_tab,
+                        },
+                    );
+                    if accepted {
+                        state.popup = None;
+                    }
                 }
                 _ => {}
             }
         }
-        _ => {
-            // Detail, Diff, PlatformConfig: Esc to close
+        PopupKind::Detail { .. } | PopupKind::Diff { .. } => {
+            if key.code == KeyCode::Esc {
+                state.popup = None;
+            }
+        }
+        PopupKind::PlatformConfig => {
             if key.code == KeyCode::Esc {
                 state.popup = None;
             }
         }
     }
+}
+
+fn dispatch_and_notify(state: &mut AppState, action: AppAction) -> bool {
+    let result = actions::dispatch(state, action);
+    state.push_notification(result.level, result.message);
+    result.accepted
 }
 
 fn set_install_popup(
@@ -403,83 +492,74 @@ fn set_install_popup(
     });
 }
 
-fn selected_names(state: &AppState) -> Vec<String> {
-    let items = state.active_items();
-    let mut names: Vec<String> = state
-        .selected_indices
-        .iter()
-        .filter_map(|&i| items.get(i).map(|item| item.name.clone()))
-        .collect();
-    names.sort_unstable();
-    names
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::platform::default_platforms;
+    use crate::model::{InstallStatus, ItemInfo, ItemType};
+    use std::path::PathBuf;
 
-fn focused_name(state: &AppState) -> Option<String> {
-    let filtered = state.filtered_indices();
-    filtered
-        .get(state.cursor)
-        .and_then(|&i| state.active_items().get(i).map(|item| item.name.clone()))
-}
+    fn make_state() -> AppState {
+        let mut state = AppState::new(PathBuf::from("."), default_platforms());
+        state.screen = Screen::Main;
+        state.platform = Some("claude".into());
+        state.skills = vec![ItemInfo {
+            name: "demo".into(),
+            item_type: ItemType::Skill,
+            description: Some("demo".into()),
+            status: InstallStatus::NotInstalled,
+            source_path: PathBuf::from("skills/demo"),
+            target_path: PathBuf::from("~/.claude/skills/demo"),
+            source_mtime: None,
+            target_mtime: None,
+            category: Some("general".into()),
+            tags: vec![],
+            is_default: true,
+        }];
+        state.focus = FocusTarget::ItemList;
+        state
+    }
 
-fn execute_batch_install(
-    state: &mut AppState,
-    names: &[String],
-    tab: ContentTab,
-    mode: InstallMode,
-    path_input: &str,
-) {
-    let item_type = match tab {
-        ContentTab::Skills => crate::model::ItemType::Skill,
-        ContentTab::Commands => crate::model::ItemType::Command,
-    };
-    let mut platform = match state.current_platform().cloned() {
-        Some(p) => p,
-        None => return,
-    };
-    if mode == InstallMode::Directory {
-        let project_path = path_input.trim();
-        if project_path.is_empty() {
-            return;
+    #[test]
+    fn platform_select_d_opens_dashboard() {
+        let mut state = AppState::new(PathBuf::from("."), default_platforms());
+        handle_platform_select_key(
+            &mut state,
+            KeyEvent::from(crossterm::event::KeyCode::Char('d')),
+        );
+        assert_eq!(state.screen, Screen::Dashboard);
+    }
+
+    #[test]
+    fn switch_tab_clears_selected_indices() {
+        let mut state = make_state();
+        state.selected_indices.insert(0);
+        handle_main_key(
+            &mut state,
+            KeyEvent::from(crossterm::event::KeyCode::Char('2')),
+        );
+        assert!(state.selected_indices.is_empty());
+        assert_eq!(state.active_tab, ContentTab::Commands);
+    }
+
+    #[test]
+    fn multisync_space_toggles_current_platform() {
+        let mut state = make_state();
+        state.popup = Some(PopupKind::MultiSync {
+            selected_platforms: std::collections::HashSet::new(),
+            cursor: 0,
+        });
+        handle_popup_key(
+            &mut state,
+            KeyEvent::from(crossterm::event::KeyCode::Char(' ')),
+        );
+        if let Some(PopupKind::MultiSync {
+            selected_platforms, ..
+        }) = &state.popup
+        {
+            assert_eq!(selected_platforms.len(), 1);
+        } else {
+            panic!("expected multisync popup");
         }
-        platform = project_platform_for_directory(&platform, project_path);
-    }
-    for name in names {
-        crate::core::installer::install_item(&state.project_root, &platform, name, item_type);
-    }
-    state.reload_items();
-}
-
-fn execute_batch_uninstall(state: &mut AppState, names: &[String], tab: ContentTab) {
-    let item_type = match tab {
-        ContentTab::Skills => crate::model::ItemType::Skill,
-        ContentTab::Commands => crate::model::ItemType::Command,
-    };
-    let platform = match state.current_platform().cloned() {
-        Some(p) => p,
-        None => return,
-    };
-    for name in names {
-        crate::core::installer::uninstall_item(&state.project_root, &platform, name, item_type);
-    }
-    state.reload_items();
-}
-
-fn project_platform_for_directory(
-    platform: &crate::config::platform::PlatformConfig,
-    project_path: &str,
-) -> crate::config::platform::PlatformConfig {
-    let mut project_platform = platform.clone();
-    let platform_dir = project_platform_dir(&platform.name);
-    let base_dir = PathBuf::from(project_path).join(platform_dir);
-    project_platform.base_dir = base_dir.to_string_lossy().to_string();
-    project_platform
-}
-
-fn project_platform_dir(platform_name: &str) -> String {
-    match platform_name {
-        "opencode" => ".opencode".to_string(),
-        "antigravity" => ".gemini/antigravity".to_string(),
-        "windsurf" => ".codeium/windsurf".to_string(),
-        _ => format!(".{platform_name}"),
     }
 }

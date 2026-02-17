@@ -1,5 +1,6 @@
 use crate::tui::state::AppState;
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::StyleRole;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
@@ -7,21 +8,16 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
     let name = state.platform.as_deref().unwrap_or("---");
     let line = Line::from(vec![
         Span::styled(
-            " 🚀 MyClaude Skills ",
-            Style::default()
-                .fg(theme::PRIMARY)
-                .add_modifier(Modifier::BOLD),
+            " MyClaude Skills ",
+            style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD),
         ),
         Span::styled(
             format!(" [{name}] "),
-            Style::default()
-                .fg(theme::BG)
-                .bg(theme::ACCENT)
-                .add_modifier(Modifier::BOLD),
+            style_system::style(StyleRole::BadgeAccent),
         ),
     ]);
     frame.render_widget(
-        Paragraph::new(line).style(Style::default().bg(theme::SURFACE)),
+        Paragraph::new(line).style(style_system::style(StyleRole::PanelBg)),
         area,
     );
 }

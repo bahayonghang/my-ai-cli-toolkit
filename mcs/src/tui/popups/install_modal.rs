@@ -1,14 +1,11 @@
 use crate::tui::state::InstallMode;
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::StyleRole;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode, path_input: &str) {
-    let block = Block::default()
-        .title(" Install ")
-        .borders(Borders::ALL)
-        .border_style(Style::default().fg(theme::PRIMARY))
-        .style(Style::default().bg(theme::BG));
+    let block = style_system::modal_block("Install");
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
@@ -21,25 +18,22 @@ pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode,
     ])
     .split(inner);
 
+    let icons = style_system::icons();
     let (g_mark, d_mark) = if *mode == InstallMode::Global {
-        ("◉", "○")
+        (icons.tab_selected, icons.tab_unselected)
     } else {
-        ("○", "◉")
+        (icons.tab_unselected, icons.tab_selected)
     };
 
     let g_style = if *mode == InstallMode::Global {
-        Style::default()
-            .fg(theme::PRIMARY)
-            .add_modifier(Modifier::BOLD)
+        style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD)
     } else {
-        Style::default().fg(theme::MUTED)
+        style_system::style(StyleRole::TextMuted)
     };
     let d_style = if *mode == InstallMode::Directory {
-        Style::default()
-            .fg(theme::PRIMARY)
-            .add_modifier(Modifier::BOLD)
+        style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD)
     } else {
-        Style::default().fg(theme::MUTED)
+        style_system::style(StyleRole::TextMuted)
     };
     frame.render_widget(
         Paragraph::new(vec![
@@ -56,27 +50,32 @@ pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode,
             path_input
         };
         frame.render_widget(
-            Paragraph::new(format!("   Path: {path}▏")).style(Style::default().fg(theme::FG)),
+            Paragraph::new(format!("   Path: {path}▏"))
+                .style(style_system::style(StyleRole::TextPrimary)),
             chunks[1],
         );
     } else {
         frame.render_widget(
-            Paragraph::new("   Path: <project-path>").style(Style::default().fg(theme::MUTED)),
+            Paragraph::new("   Path: <project-path>")
+                .style(style_system::style(StyleRole::TextMuted)),
             chunks[1],
         );
     }
 
     frame.render_widget(
         Paragraph::new(format!("   Items: {}", items.len()))
-            .style(Style::default().fg(theme::MUTED)),
+            .style(style_system::style(StyleRole::TextMuted)),
         chunks[2],
     );
 
     let list = build_items_lines(items, chunks[3].width, chunks[3].height);
     frame.render_widget(Paragraph::new(list), chunks[3]);
     frame.render_widget(
-        Paragraph::new(" ⏎ Install  ↑↓ Mode  Tab Toggle  Esc Cancel")
-            .style(Style::default().fg(theme::MUTED)),
+        Paragraph::new(format!(
+            " {} Install  ↑↓ Mode  Tab Toggle  Esc Cancel",
+            icons.enter_key
+        ))
+        .style(style_system::style(StyleRole::HintText)),
         chunks[4],
     );
 }
@@ -111,18 +110,15 @@ fn build_items_lines(items: &[String], width: u16, height: u16) -> Vec<Line<'sta
             }
             line.push_str(&format_column_item(&items[idx], col_width));
         }
-        lines.push(Line::from(line).style(Style::default().fg(theme::FG)));
+        lines.push(Line::from(line).style(style_system::style(StyleRole::TextPrimary)));
     }
 
     if has_overflow {
         let visible_count = render_rows * columns;
         let hidden = items.len().saturating_sub(visible_count);
         lines.push(
-            Line::from(format!(" … and {hidden} more")).style(
-                Style::default()
-                    .fg(theme::MUTED)
-                    .add_modifier(Modifier::ITALIC),
-            ),
+            Line::from(format!(" … and {hidden} more"))
+                .style(style_system::style(StyleRole::TextMuted).add_modifier(Modifier::ITALIC)),
         );
     }
 

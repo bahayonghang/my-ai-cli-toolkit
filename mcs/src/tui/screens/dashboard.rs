@@ -1,19 +1,23 @@
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
-use crate::config::platform::load_platforms;
-use crate::core::discovery;
 use crate::tui::state::AppState;
-use crate::tui::theme;
+use crate::tui::style_system::{self, layout_metrics};
+use crate::tui::theme::StyleRole;
+use crate::tui::widgets::footer;
 
 pub fn draw(frame: &mut Frame, state: &AppState) {
+    let metrics = layout_metrics();
     let area = frame.area();
-    frame.render_widget(Block::default().style(Style::default().bg(theme::BG)), area);
+    frame.render_widget(
+        Block::default().style(style_system::style(StyleRole::ScreenBg)),
+        area,
+    );
 
     let padded = Rect {
-        x: area.x + 2,
+        x: area.x + metrics.popup_padding,
         y: area.y,
-        width: area.width.saturating_sub(4),
+        width: area.width.saturating_sub(metrics.popup_padding * 2),
         height: area.height,
     };
 
@@ -28,63 +32,44 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
     let title = Line::from(vec![
         Span::styled(
             "MyClaude Skills ",
-            Style::default()
-                .fg(theme::PRIMARY)
-                .add_modifier(Modifier::BOLD),
+            style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD),
         ),
-        Span::styled(
-            " Dashboard ",
-            Style::default()
-                .fg(theme::BG)
-                .bg(theme::ACCENT)
-                .add_modifier(Modifier::BOLD),
-        ),
+        Span::styled(" Dashboard ", style_system::style(StyleRole::BadgeAccent)),
     ]);
     frame.render_widget(
         Paragraph::new(vec![Line::default(), title, Line::default()])
             .alignment(Alignment::Center)
-            .style(Style::default().bg(theme::SURFACE)),
+            .style(style_system::style(StyleRole::PanelBg)),
         chunks[0],
     );
 
-    // Table
-    let platforms = load_platforms(&state.project_root);
-    let mut sorted: Vec<_> = platforms.keys().collect();
-    sorted.sort();
+    // Table from cache (zero I/O)
+    let empty = Vec::new();
+    let stats = state.dashboard_cache.as_ref().unwrap_or(&empty);
 
-    let rows: Vec<Row> = sorted
+    let rows: Vec<Row> = stats
         .iter()
-        .map(|name| {
-            let p = &platforms[*name];
-            let skills = discovery::discover_skills(&state.project_root, p);
-            let commands = discovery::discover_commands(&state.project_root, p);
-            let installed_s = skills.iter().filter(|i| i.is_installed()).count();
-            let outdated_s = skills.iter().filter(|i| i.needs_update()).count();
-            let installed_c = commands.iter().filter(|i| i.is_installed()).count();
-
+        .map(|s| {
             Row::new(vec![
-                Cell::from(name.as_str()).style(Style::default().fg(theme::FG)),
-                Cell::from(format!("{}/{}", installed_s, skills.len()))
-                    .style(Style::default().fg(theme::SUCCESS)),
-                Cell::from(format!("{}/{}", installed_c, commands.len()))
-                    .style(Style::default().fg(theme::SECONDARY)),
-                Cell::from(format!("{}", outdated_s)).style(if outdated_s > 0 {
-                    Style::default().fg(theme::WARNING)
+                Cell::from(s.platform_name.as_str())
+                    .style(style_system::style(StyleRole::TextPrimary)),
+                Cell::from(format!("{}/{}", s.skills_installed, s.skills_total))
+                    .style(style_system::style(StyleRole::StatusSuccess)),
+                Cell::from(format!("{}/{}", s.commands_installed, s.commands_total))
+                    .style(style_system::style(StyleRole::NotificationInfo)),
+                Cell::from(format!("{}", s.outdated)).style(if s.outdated > 0 {
+                    style_system::style(StyleRole::StatusWarning)
                 } else {
-                    Style::default().fg(theme::MUTED)
+                    style_system::style(StyleRole::TextMuted)
                 }),
-                Cell::from(if p.prompt_file.is_some() { "✓" } else { "-" })
-                    .style(Style::default().fg(theme::MUTED)),
+                Cell::from(if s.has_prompt { "✓" } else { "-" })
+                    .style(style_system::style(StyleRole::TextMuted)),
             ])
         })
         .collect();
 
     let header = Row::new(["Platform", "Skills", "Commands", "Outdated", "Prompt"])
-        .style(
-            Style::default()
-                .fg(theme::ACCENT)
-                .add_modifier(Modifier::BOLD),
-        )
+        .style(style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD))
         .bottom_margin(1);
 
     let table = Table::new(
@@ -101,19 +86,14 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
     .block(
         Block::default()
             .borders(Borders::ALL)
-            .border_style(Style::default().fg(theme::PANEL)),
+            .border_style(style_system::style(StyleRole::PanelBorder)),
     );
 
     frame.render_widget(table, chunks[1]);
 
-    let footer = Line::from(vec![
-        Span::styled(" [Esc]", Style::default().fg(theme::PRIMARY)),
-        Span::styled(" Back ", Style::default().fg(theme::MUTED)),
-        Span::styled("[q]", Style::default().fg(theme::PRIMARY)),
-        Span::styled(" Quit", Style::default().fg(theme::MUTED)),
-    ]);
+    let footer = style_system::footer_line(&footer::help_tokens_for_state(state));
     frame.render_widget(
-        Paragraph::new(footer).style(Style::default().bg(theme::SURFACE)),
+        Paragraph::new(footer).style(style_system::style(StyleRole::PanelBg)),
         chunks[2],
     );
 }

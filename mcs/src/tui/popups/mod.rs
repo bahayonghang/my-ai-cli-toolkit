@@ -10,12 +10,22 @@ use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 use crate::tui::state::{AppState, PopupKind};
+use crate::tui::style_system;
 
 pub fn draw(frame: &mut Frame, popup: &PopupKind, state: &AppState) {
-    let area = match popup {
+    let mut area = match popup {
         PopupKind::Install { .. } => centered_rect(80, 80, frame.area()),
         _ => centered_rect(60, 60, frame.area()),
     };
+    let metrics = style_system::layout_metrics();
+    let pad = metrics
+        .popup_padding
+        .min(area.width / 8)
+        .min(area.height / 8);
+    area.x += pad;
+    area.y += pad;
+    area.width = area.width.saturating_sub(pad * 2);
+    area.height = area.height.saturating_sub(pad * 2);
     frame.render_widget(Clear, area);
 
     match popup {
@@ -31,16 +41,21 @@ pub fn draw(frame: &mut Frame, popup: &PopupKind, state: &AppState) {
             danger,
             ..
         } => confirm_modal::draw(frame, area, title, message, items, *danger),
-        PopupKind::Detail { item_index } => detail_modal::draw(frame, area, state, *item_index),
-        PopupKind::Diff { item_index } => diff_modal::draw(frame, area, state, *item_index),
+        PopupKind::Detail { item_index } => {
+            detail_modal::draw(frame, area, state, *item_index, state.popup_scroll)
+        }
+        PopupKind::Diff { item_index } => {
+            diff_modal::draw(frame, area, state, *item_index, state.popup_scroll)
+        }
         PopupKind::Prompt {
             has_diff,
             diff_text,
-        } => prompt_modal::draw(frame, area, *has_diff, diff_text),
+        } => prompt_modal::draw(frame, area, *has_diff, diff_text, state.popup_scroll),
         PopupKind::PlatformConfig => platform_config::draw(frame, area, state),
-        PopupKind::MultiSync { selected_platforms } => {
-            multi_sync::draw(frame, area, state, selected_platforms)
-        }
+        PopupKind::MultiSync {
+            selected_platforms,
+            cursor,
+        } => multi_sync::draw(frame, area, state, selected_platforms, *cursor),
     }
 }
 

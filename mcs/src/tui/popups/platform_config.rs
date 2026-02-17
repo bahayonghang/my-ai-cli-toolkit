@@ -1,20 +1,18 @@
 use crate::tui::state::AppState;
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::StyleRole;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
-    let block = Block::default()
-        .title(" Platform Config ")
-        .borders(Borders::ALL)
-        .border_style(Style::default().fg(theme::PRIMARY))
-        .style(Style::default().bg(theme::BG));
+    let block = style_system::modal_block("Platform Config");
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
     let Some(p) = state.current_platform() else {
         frame.render_widget(
-            Paragraph::new(" No platform selected").style(Style::default().fg(theme::MUTED)),
+            Paragraph::new(" No platform selected")
+                .style(style_system::style(StyleRole::TextMuted)),
             inner,
         );
         return;
@@ -22,23 +20,23 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
 
     let lines = vec![
         Line::from(vec![
-            Span::styled("Platform: ", Style::default().fg(theme::ACCENT)),
+            Span::styled("Platform: ", style_system::style(StyleRole::HintKey)),
             Span::raw(&p.name),
         ]),
         Line::from(vec![
-            Span::styled("Base: ", Style::default().fg(theme::ACCENT)),
+            Span::styled("Base: ", style_system::style(StyleRole::HintKey)),
             Span::raw(&p.base_dir),
         ]),
         Line::from(vec![
-            Span::styled("Skills: ", Style::default().fg(theme::ACCENT)),
+            Span::styled("Skills: ", style_system::style(StyleRole::HintKey)),
             Span::raw(p.skills_path().display().to_string()),
         ]),
         Line::from(vec![
-            Span::styled("Commands: ", Style::default().fg(theme::ACCENT)),
+            Span::styled("Commands: ", style_system::style(StyleRole::HintKey)),
             Span::raw(p.commands_path().display().to_string()),
         ]),
         Line::from(vec![
-            Span::styled("Prompt: ", Style::default().fg(theme::ACCENT)),
+            Span::styled("Prompt: ", style_system::style(StyleRole::HintKey)),
             Span::raw(
                 p.prompt_path()
                     .map(|p| p.display().to_string())
@@ -46,10 +44,10 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
             ),
         ]),
         Line::default(),
-        Line::from(" Esc Close").style(Style::default().fg(theme::MUTED)),
+        Line::from(" Esc Close").style(style_system::style(StyleRole::HintText)),
     ];
     frame.render_widget(
-        Paragraph::new(lines).style(Style::default().fg(theme::FG)),
+        Paragraph::new(lines).style(style_system::style(StyleRole::TextPrimary)),
         inner,
     );
 }

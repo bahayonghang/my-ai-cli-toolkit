@@ -1,5 +1,6 @@
 use crate::tui::state::AppState;
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::{self, StyleRole};
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
@@ -12,7 +13,9 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
             0.0
         };
         let gauge = Gauge::default()
-            .gauge_style(Style::default().fg(theme::PRIMARY).bg(theme::SURFACE))
+            .gauge_style(
+                style_system::style(StyleRole::HintKey).bg(theme::color(StyleRole::PanelBg)),
+            )
             .ratio(pct)
             .label(format!(
                 "{} ({}/{})",

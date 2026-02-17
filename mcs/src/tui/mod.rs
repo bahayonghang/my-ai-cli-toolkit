@@ -1,7 +1,9 @@
+pub mod actions;
 pub mod input;
 pub mod popups;
 pub mod screens;
 pub mod state;
+pub mod style_system;
 pub mod theme;
 pub mod widgets;
 
@@ -25,6 +27,10 @@ use state::AppState;
 pub fn run(project_root: PathBuf) -> Result<()> {
     let platforms = load_platforms(&project_root);
     let mut state = AppState::new(project_root, platforms);
+    for msg in theme::palette_contrast_warnings() {
+        eprintln!("Warning: {msg}");
+        state.push_notification(state::NotificationLevel::Warning, msg.clone());
+    }
 
     // Terminal setup
     enable_raw_mode()?;
@@ -68,13 +74,7 @@ fn main_loop(
     state: &mut AppState,
 ) -> Result<()> {
     loop {
-        // Handle batch progress: install one item per tick
-        if let Some(ref progress) = state.progress {
-            if progress.current >= progress.total {
-                state.progress = None;
-                state.reload_items();
-            }
-        }
+        actions::process_next_batch_task(state);
 
         terminal.draw(|frame| {
             match state.screen {
@@ -91,33 +91,37 @@ fn main_loop(
             break;
         }
 
-        match event::read()? {
-            Event::Key(key) => {
-                if !is_actionable_key_event(&key) {
-                    continue;
-                }
-                // Ctrl+C always quits
-                if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
-                    break;
-                }
-                if state.popup.is_some() {
-                    input::handle_popup_key(state, key);
-                } else {
-                    match state.screen {
-                        state::Screen::PlatformSelect => {
-                            input::handle_platform_select_key(state, key)
+        if event::poll(Duration::from_millis(30))? {
+            match event::read()? {
+                Event::Key(key) => {
+                    if !is_actionable_key_event(&key) {
+                        continue;
+                    }
+                    // Ctrl+C always quits
+                    if key.modifiers.contains(KeyModifiers::CONTROL)
+                        && key.code == KeyCode::Char('c')
+                    {
+                        break;
+                    }
+                    if state.popup.is_some() {
+                        input::handle_popup_key(state, key);
+                    } else {
+                        match state.screen {
+                            state::Screen::PlatformSelect => {
+                                input::handle_platform_select_key(state, key)
+                            }
+                            state::Screen::Main => input::handle_main_key(state, key),
+                            state::Screen::Dashboard => input::handle_dashboard_key(state, key),
                         }
-                        state::Screen::Main => input::handle_main_key(state, key),
-                        state::Screen::Dashboard => input::handle_dashboard_key(state, key),
                     }
                 }
-            }
-            Event::Mouse(mouse) => {
-                if state.popup.is_none() {
-                    handle_mouse(state, mouse, terminal.size()?.into());
+                Event::Mouse(mouse) => {
+                    if state.popup.is_none() {
+                        handle_mouse(state, mouse, terminal.size()?.into());
+                    }
                 }
+                _ => {}
             }
-            _ => {}
         }
     }
     Ok(())
@@ -160,25 +164,33 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
             }
         }
         state::Screen::Main => {
-            // Header(1) + body, sidebar width = 24
-            if row == 0 || row >= area.height.saturating_sub(1) {
-                return; // header or footer
+            let metrics = style_system::layout_metrics();
+            let progress_height = if state.progress.is_some() {
+                metrics.progress_height
+            } else {
+                0
+            };
+            let reserved_bottom = metrics.footer_height + progress_height;
+            if row < metrics.header_height || row >= area.height.saturating_sub(reserved_bottom) {
+                return; // header or footer/progress
             }
-            if col < 24 {
+            if col < metrics.sidebar_width {
                 // Sidebar click
                 state.focus = state::FocusTarget::Sidebar;
-                let sidebar_row = (row - 1) as usize; // -1 for header
+                let sidebar_row = (row - metrics.header_height) as usize;
                 // Row 0 = Skills tab, Row 1 = Commands tab
                 if sidebar_row == 0 {
                     state.active_tab = state::ContentTab::Skills;
                     state.cursor = 0;
                     state.category_cursor = 0;
                     state.selected_category = None;
+                    state.selected_indices.clear();
                 } else if sidebar_row == 1 {
                     state.active_tab = state::ContentTab::Commands;
                     state.cursor = 0;
                     state.category_cursor = 0;
                     state.selected_category = None;
+                    state.selected_indices.clear();
                 } else if sidebar_row >= 3 {
                     let cat_idx = sidebar_row - 3;
                     let cat_count = state.categories().len() + 1;
@@ -198,8 +210,14 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
                 }
             } else {
                 // Item list click
+                let has_search = matches!(state.focus, state::FocusTarget::SearchInput)
+                    || !state.search_query.is_empty();
                 state.focus = state::FocusTarget::ItemList;
-                let list_row = (row - 1) as usize; // -1 for header
+                let list_start = metrics.header_height + if has_search { 1 } else { 0 };
+                if row < list_start {
+                    return;
+                }
+                let list_row = (row - list_start) as usize;
                 let filtered_len = state.filtered_indices().len();
                 if list_row < filtered_len {
                     state.cursor = list_row;
@@ -213,6 +231,11 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::platform::default_platforms;
+    use crate::model::{InstallStatus, ItemInfo, ItemType};
+    use crate::tui::state::{ContentTab, PopupKind, Screen};
+    use ratatui::backend::TestBackend;
+    use std::path::PathBuf;
 
     #[test]
     fn key_release_is_not_actionable() {
@@ -223,5 +246,99 @@ mod tests {
     fn key_press_and_repeat_are_actionable() {
         assert!(is_actionable_key_kind(KeyEventKind::Press));
         assert!(is_actionable_key_kind(KeyEventKind::Repeat));
+    }
+
+    fn render_state_for_smoke() -> AppState {
+        let mut state = AppState::new(PathBuf::from("."), default_platforms());
+        state.platform = Some("claude".into());
+        state.active_tab = ContentTab::Skills;
+        state.focus = state::FocusTarget::ItemList;
+        state.skills.push(ItemInfo {
+            name: "demo".into(),
+            item_type: ItemType::Skill,
+            description: Some("demo item for render test".into()),
+            status: InstallStatus::NotInstalled,
+            source_path: PathBuf::from("skills/demo"),
+            target_path: PathBuf::from("~/.claude/skills/demo"),
+            source_mtime: None,
+            target_mtime: None,
+            category: Some("default".into()),
+            tags: vec!["test".into()],
+            is_default: true,
+        });
+        state
+    }
+
+    fn backend_text(terminal: &Terminal<TestBackend>) -> String {
+        let buffer = terminal.backend().buffer();
+        let mut lines = Vec::new();
+        for y in 0..buffer.area.height {
+            let mut line = String::new();
+            for x in 0..buffer.area.width {
+                line.push_str(buffer[(x, y)].symbol());
+            }
+            lines.push(line);
+        }
+        lines.join("\n")
+    }
+
+    #[test]
+    fn render_smoke_for_multiple_terminal_sizes() {
+        for (w, h) in [(80, 24), (100, 30), (140, 40)] {
+            let backend = TestBackend::new(w, h);
+            let mut terminal = Terminal::new(backend).expect("terminal");
+            let mut state = render_state_for_smoke();
+
+            state.screen = Screen::PlatformSelect;
+            terminal
+                .draw(|frame| {
+                    screens::platform_select::draw(frame, &state);
+                })
+                .expect("platform-select render");
+            assert!(backend_text(&terminal).contains("Select Platform"));
+
+            state.screen = Screen::Main;
+            terminal
+                .draw(|frame| {
+                    screens::main_screen::draw(frame, &state);
+                })
+                .expect("main render");
+            assert!(backend_text(&terminal).contains("MyClaude Skills"));
+
+            state.screen = Screen::Dashboard;
+            terminal
+                .draw(|frame| {
+                    screens::dashboard::draw(frame, &state);
+                })
+                .expect("dashboard render");
+            assert!(backend_text(&terminal).contains("Dashboard"));
+
+            state.screen = Screen::Main;
+            state.popup_scroll = 0;
+            state.popup = Some(PopupKind::Diff { item_index: 0 });
+            terminal
+                .draw(|frame| {
+                    screens::main_screen::draw(frame, &state);
+                    if let Some(ref popup) = state.popup {
+                        popups::draw(frame, popup, &state);
+                    }
+                })
+                .expect("diff popup render");
+            assert!(backend_text(&terminal).contains("Diff"));
+
+            state.popup = Some(PopupKind::MultiSync {
+                selected_platforms: std::collections::HashSet::new(),
+                cursor: 0,
+            });
+            terminal
+                .draw(|frame| {
+                    screens::main_screen::draw(frame, &state);
+                    if let Some(ref popup) = state.popup {
+                        popups::draw(frame, popup, &state);
+                    }
+                })
+                .expect("multi-sync popup render");
+            assert!(backend_text(&terminal).contains("Multi-Platform Sync"));
+        }
     }
 }

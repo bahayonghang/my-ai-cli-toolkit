@@ -1,4 +1,5 @@
-use crate::tui::theme;
+use crate::tui::style_system;
+use crate::tui::theme::StyleRole;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
@@ -10,12 +11,12 @@ pub fn draw(
     items: &[String],
     danger: bool,
 ) {
-    let border_color = if danger { theme::ERROR } else { theme::PRIMARY };
-    let block = Block::default()
-        .title(format!(" {title} "))
-        .borders(Borders::ALL)
-        .border_style(Style::default().fg(border_color))
-        .style(Style::default().bg(theme::BG));
+    let border_color = if danger {
+        StyleRole::StatusError
+    } else {
+        StyleRole::PanelBorderFocus
+    };
+    let block = style_system::modal_block(title).border_style(style_system::style(border_color));
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
@@ -27,24 +28,28 @@ pub fn draw(
     .split(inner);
 
     frame.render_widget(
-        Paragraph::new(format!(" {message}")).style(Style::default().fg(theme::FG)),
+        Paragraph::new(format!(" {message}")).style(style_system::style(StyleRole::TextPrimary)),
         chunks[0],
     );
 
+    let icons = style_system::icons();
     let list: Vec<Line> = items
         .iter()
         .take(15)
-        .map(|n| Line::from(format!("  • {n}")).style(Style::default().fg(theme::MUTED)))
+        .map(|n| {
+            Line::from(format!("  {} {n}", icons.bullet))
+                .style(style_system::style(StyleRole::TextMuted))
+        })
         .collect();
     frame.render_widget(Paragraph::new(list), chunks[1]);
 
     let hint_style = if danger {
-        Style::default().fg(theme::ERROR)
+        style_system::style(StyleRole::StatusError)
     } else {
-        Style::default().fg(theme::MUTED)
+        style_system::style(StyleRole::HintText)
     };
     frame.render_widget(
-        Paragraph::new(" y/⏎ Confirm  n/Esc Cancel").style(hint_style),
+        Paragraph::new(" y/Enter Confirm  n/Esc Cancel").style(hint_style),
         chunks[2],
     );
 }
