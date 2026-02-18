@@ -50,6 +50,11 @@ npx skills add supabase/agent-skills
 npx skills add sanyuan0704/code-review-expert
 ```
 
+```shell
+# scientific skills 
+npx skills add K-Dense-AI/claude-scientific-skills
+```
+
 ## ui ux pro max
 
 ```shell

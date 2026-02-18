@@ -107,7 +107,7 @@ uv run python src/install_tui.py
 
 The command above now forwards to MCS.
 
-For detailed TUI documentation, see [TUI Guide](./tui.md).
+For detailed TUI documentation, see [MCS Guide](./mcs.md).
 
 ### Requirements
 

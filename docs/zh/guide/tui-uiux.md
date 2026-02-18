@@ -9,5 +9,5 @@
 
 ## 请参考
 
-- 最新使用说明：[`docs/zh/guide/tui.md`](./tui.md)
+- 最新使用说明：[`docs/zh/guide/mcs.md`](./mcs.md)
 - 命令入口：`just mcs` / `just mcs-rebuild`
