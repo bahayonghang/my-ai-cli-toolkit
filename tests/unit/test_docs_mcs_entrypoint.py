@@ -13,8 +13,8 @@ def test_primary_docs_reference_just_mcs() -> None:
     paths = [
         "README.md",
         "README_CN.md",
-        "docs/guide/tui.md",
-        "docs/zh/guide/tui.md",
+        "docs/guide/mcs.md",
+        "docs/zh/guide/mcs.md",
         "docs/guide/installation.md",
         "docs/zh/guide/installation.md",
     ]
@@ -27,8 +27,8 @@ def test_legacy_install_tui_mentions_are_compatibility_only() -> None:
     paths = [
         "README.md",
         "README_CN.md",
-        "docs/guide/tui.md",
-        "docs/zh/guide/tui.md",
+        "docs/guide/mcs.md",
+        "docs/zh/guide/mcs.md",
         "docs/zh/guide/tui-uiux.md",
     ]
     for path in paths:
