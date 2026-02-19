@@ -12,8 +12,8 @@ skills/
 ├── README.md              # 技能列表概览
 ├── academic-skills/       # 🎓 学术写作与研究
 ├── ai-llm-skills/        # 🤖 AI 与 LLM 集成
-├── development-skills/    # 💻 开发框架与语言
-├── devtools-skills/       # 🔧 开发工具与工作流
+├── tech-stack-skills/    # 💻 开发框架与语言
+├── workflow-skills/       # 🔧 开发工具与工作流
 ├── diagram-skills/        # 📊 图表生成
 ├── document-skills/       # 📝 文档处理与写作
 ├── git-github-skills/     # 🐙 Git 与 GitHub 工具
@@ -36,8 +36,8 @@ skills/
 ```toml
 categories = [
     "skill-meta-skills",
-    "development-skills",
-    "devtools-skills",
+    "tech-stack-skills",
+    "workflow-skills",
     "git-github-skills",
 ]
 ```
