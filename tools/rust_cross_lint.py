@@ -91,7 +91,7 @@ def check_cross_platform_imports(rust_dir: Path) -> list[str]:
 
 
 def main() -> int:
-    errors = check_cross_platform_imports(Path("agentkit-desktop/src-tauri/src"))
+    errors = check_cross_platform_imports(Path("tools/agentkit-desktop/src-tauri/src"))
     if errors:
         print("⚠️  Cross-platform lint issues found:")
         for e in errors:

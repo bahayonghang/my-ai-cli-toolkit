@@ -44,7 +44,7 @@ uv.lock
 package-lock.json
 
 # Tauri build artifacts
-agentkit-desktop/src-tauri/target
+tools/agentkit-desktop/src-tauri/target
 
 # Reference / vendored code
 ref
