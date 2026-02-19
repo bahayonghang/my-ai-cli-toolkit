@@ -263,7 +263,10 @@ mod tests {
     #[test]
     fn skill_changes_inside_directory_mark_outdated() {
         let project_root = temp_dir("project");
-        let source_skill = project_root.join("skills").join("demo-skill");
+        let source_skill = project_root
+            .join("content")
+            .join("skills")
+            .join("demo-skill");
         std::fs::create_dir_all(source_skill.join("scripts")).unwrap();
         std::fs::write(
             source_skill.join("SKILL.md"),
