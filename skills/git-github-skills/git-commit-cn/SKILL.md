@@ -15,7 +15,8 @@ tags: [git, commit-message, conventional-commits, chinese]
 
 1. ✅ **使用 emoji**：每个提交类型必须包含对应的 emoji 图标
 2. ✅ **拆分提交**：将不同类型或不同模块的变更拆分为多个独立提交
-3. ❌ **禁用 Co-Authored-By**：不添加 `Co-Authored-By: Claude Sonnet 4.5` 署名
+3. ✅ **自动推送**：所有提交完成后自动推送到远程仓库
+4. ❌ **禁用 Co-Authored-By**：不添加 `Co-Authored-By: Claude Sonnet 4.5` 署名
 
 ## 核心工作流程
 
@@ -96,6 +97,40 @@ feat: ✨ 添加用户管理功能
 集成角色权限管理
 EOF
 )"
+```
+
+### 5. 推送到远程仓库
+
+**所有提交完成后，自动推送到远程仓库**（默认行为）:
+
+```bash
+# 检查当前分支是否有跟踪的远程分支
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
+
+# 推送到远程
+git push
+```
+
+**推送前安全检查**:
+
+1. **确认远程分支存在**: 如果当前分支没有跟踪的远程分支，使用 `git push -u origin <branch>` 设置上游
+2. **检查是否有冲突**: 如果推送失败（远程有新提交），提示用户先拉取合并
+3. **保护主分支**: 如果当前分支是 `main` 或 `master`，推送前需要用户确认
+
+```bash
+# 首次推送新分支（设置上游跟踪）
+git push -u origin $(git branch --show-current)
+
+# 后续推送
+git push
+```
+
+**推送失败处理**:
+
+```bash
+# 如果远程有新提交导致推送失败
+# 提示: "远程分支有更新，建议先执行 git pull --rebase 后再推送"
+git pull --rebase && git push
 ```
 
 ## 最佳实践
@@ -197,9 +232,11 @@ git commit -m "build: 📦 升级 React 到 18.3.0"
 2. **必须拆分提交**: 不同类型或不同模块的变更必须分开提交（默认行为）
 3. **必须使用 emoji**: 每个提交信息必须包含对应的 emoji 图标（默认行为）
 4. **禁用 Co-Author**: 不添加 `Co-Authored-By` 署名（默认行为）
-5. **清晰描述**: 让其他人看到 commit 信息就知道做了什么
-6. **避免通用描述**: 不使用"修复 bug"、"更新代码"等模糊描述
-7. **使用 HEREDOC**: 多行提交信息使用 HEREDOC 格式确保正确
+5. **自动推送**: 所有提交完成后自动推送到远程仓库（默认行为）
+6. **保护主分支**: 推送到 `main`/`master` 分支前需要用户确认
+7. **清晰描述**: 让其他人看到 commit 信息就知道做了什么
+8. **避免通用描述**: 不使用"修复 bug"、"更新代码"等模糊描述
+9. **使用 HEREDOC**: 多行提交信息使用 HEREDOC 格式确保正确
 
 ## 参考资源
 
