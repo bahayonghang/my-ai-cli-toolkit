@@ -166,5 +166,5 @@ Skills Metadata 完整性检查报告
 
 4. 安装测试：
    ```bash
-   uv run python src/install.py install my-new-skill
+   just mcs
    ```

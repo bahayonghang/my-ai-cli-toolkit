@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Unified skill format** (`SKILL.md`) with YAML frontmatter
 - **Cross-platform installation** to multiple targets: Claude Code, Codex CLI, Gemini CLI, Qwen Code, Google Antigravity, Windsurf, Trae, and OpenCode
-- **Interactive TUI** for skill management
+- **Interactive Rust TUI** (`mcs/`) for skill management
 - **Desktop application** (AgentKit Desktop) built with Tauri + React
 - **External skills registry** for community contributions
 
@@ -38,47 +38,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```mermaid
 graph TB
     subgraph Root["📁 my-claude-code-settings"]
-        pyproject["pyproject.toml"]
+        direction TB
     end
 
-    subgraph Src["📁 src/"]
-        install["install.py<br/>Main CLI installer"]
-        install_tui["install_tui.py<br/>TUI entry point"]
-        core_mod["core/<br/>paths, config_loader, skill_meta"]
+    subgraph ContentDir["📁 content/"]
+        subgraph Skills["skills/ (categorized)"]
+            skill_cats["academic-skills/ ai-llm-skills/<br/>development-skills/ devtools-skills/<br/>diagram-skills/ document-skills/<br/>git-github-skills/ media-skills/<br/>obsidian-skills/ skill-meta-skills/"]
+            skill_md["SKILL.md format"]
+            skill_dirs["config/ tips/ references/<br/>scripts/ cookbook/"]
+        end
+
+        subgraph Commands["commands/"]
+            claude_cmd["claude/ (.md)"]
+            gemini_cmd["gemini/ (.toml)"]
+            other_cmd["antigravity/ windsurf/<br/>trae/ qwen/"]
+        end
+
+        subgraph Agents["agents/"]
+            ccw["ccw/<br/>Claude Code Workflow agents"]
+            specialist["specialist/<br/>Domain expert agents"]
+        end
+
+        prompts_dir["prompts/CLAUDE.md"]
     end
 
-    subgraph Skills["📁 skills/ (categorized)"]
-        skill_cats["academic-skills/ ai-llm-skills/<br/>development-skills/ devtools-skills/<br/>diagram-skills/ document-skills/<br/>git-github-skills/ media-skills/<br/>obsidian-skills/ skill-meta-skills/"]
-        skill_md["SKILL.md format"]
-        skill_dirs["config/ tips/ references/<br/>scripts/ cookbook/"]
+    subgraph ToolsDir["📁 tools/"]
+        subgraph AgentKit["agentkit-desktop/"]
+            ak_src["src/<br/>React + TypeScript"]
+            ak_tauri["src-tauri/<br/>Rust backend"]
+        end
+
+        subgraph External["external-skills/"]
+            ext_registry["registry.toml"]
+            ext_tui["tui/<br/>External skill installer"]
+        end
+
+        plugin_scripts["plugin-scripts/"]
     end
 
-    subgraph Commands["📁 commands/"]
-        claude_cmd["claude/ (.md)"]
-        gemini_cmd["gemini/ (.toml)"]
-        other_cmd["antigravity/ windsurf/<br/>trae/ qwen/"]
-    end
-
-    subgraph TUI["📁 src/tui/"]
-        tui_app["app.py"]
-        tui_core["core/<br/>manager, models, formatters"]
-        tui_comp["components/<br/>header, footer, item_list"]
-        tui_screens["screens/<br/>main_screen, platform_select"]
-    end
-
-    subgraph Agents["📁 agents/"]
-        ccw["ccw/<br/>Claude Code Workflow agents"]
-        specialist["specialist/<br/>Domain expert agents"]
-    end
-
-    subgraph AgentKit["📁 agentkit-desktop/"]
-        ak_src["src/<br/>React + TypeScript"]
-        ak_tauri["src-tauri/<br/>Rust backend"]
-    end
-
-    subgraph External["📁 external-skills/"]
-        ext_registry["registry.toml"]
-        ext_tui["tui/<br/>External skill installer"]
+    subgraph MCS["📁 mcs/"]
+        mcs_rust["Rust TUI (ratatui)"]
     end
 
     subgraph OpenSpec["📁 openspec/"]
@@ -86,138 +85,79 @@ graph TB
         os_changes["changes/<br/>Proposals & specs"]
     end
 
-    subgraph Tests["📁 tests/"]
-        test_unit["unit/"]
-        test_int["integration/"]
-        test_e2e["e2e/"]
-        test_prop["properties/"]
-    end
-
-    Root --> Src
-    Src --> Skills
-    Src --> Commands
-    Src --> TUI
-    Root --> Agents
-    Root --> AgentKit
-    Root --> External
+    Root --> ContentDir
+    Root --> ToolsDir
+    Root --> MCS
     Root --> OpenSpec
-    Root --> Tests
-
-    install --> Skills
-    install --> Commands
-    install_tui --> TUI
 ```
 
 ## Module Index
 
 | Module | Path | Description | Local CLAUDE.md |
 |--------|------|-------------|-----------------|
-| **Core Installer** | `src/install.py` | CLI skill manager with SkillManager class | - |
-| **Core Modules** | `src/core/` | Shared paths, config_loader, skill_meta | - |
-| **TUI** | `src/tui/` | Textual-based interactive installer | ✅ |
-| **Skills** | `skills/` | Categorized skill definitions (10 categories) | - |
-| **Commands** | `commands/` | Platform-specific slash commands | - |
-| **Agents** | `agents/` | AI agent definitions (CCW + Specialist) | ✅ |
-| **AgentKit Desktop** | `agentkit-desktop/` | Tauri + React desktop app | ✅ |
-| **External Skills** | `external-skills/` | External skill registry & installer | ✅ |
+| **Rust TUI** | `mcs/` | Rust-based interactive installer (ratatui) | ✅ |
+| **Skills** | `content/skills/` | Categorized skill definitions (10 categories) | - |
+| **Commands** | `content/commands/` | Platform-specific slash commands | - |
+| **Agents** | `content/agents/` | AI agent definitions (CCW + Specialist) | ✅ |
+| **Prompts** | `content/prompts/` | Global prompt configuration | - |
+| **AgentKit Desktop** | `tools/agentkit-desktop/` | Tauri + React desktop app | ✅ |
+| **External Skills** | `tools/external-skills/` | External skill registry & installer | ✅ |
+| **Plugin Scripts** | `tools/plugin-scripts/` | Claude plugin installer scripts | - |
 | **OpenSpec** | `openspec/` | Change proposal system | - |
-| **Tests** | `tests/` | pytest test suite | - |
 | **Docs** | `docs/` | VitePress documentation site | - |
 
 ## Common Commands
 
 ```bash
-# Install all skills (default target: Claude)
-uv run python src/install.py install-all
-
-# Install to specific target
-uv run python src/install.py --target gemini install-all
-uv run python src/install.py --target codex install-all
-uv run python src/install.py --target qwen install-all
-uv run python src/install.py --target antigravity install-all
-uv run python src/install.py --target windsurf install-all
-uv run python src/install.py --target trae install-all
-uv run python src/install.py --target trae-cn install-all
-
-# Install to Qoder
-uv run python src/install.py --target qoder install-all
-
-# Install to OpenCode
-uv run python src/install.py --target opencode install-all
-
-# List available/installed skills
-uv run python src/install.py list
-uv run python src/install.py installed
-
-# Install specific skill(s)
-uv run python src/install.py install <skill-name> [skill2...]
-
-# Sync prompts/CLAUDE.md to global config
-uv run python src/install.py prompt-update
-uv run python src/install.py prompt-diff
-
-# TUI mode (requires Python 3.10+ and textual)
-uv run python src/install_tui.py
-
-# Run tests
-uv run pytest tests/
-uv run pytest tests/properties/test_install_properties.py -v
+# TUI mode (Rust MCS) - skill browsing and installation
+just mcs
 
 # Documentation (VitePress)
 cd docs && npm install && npm run dev
 
 # AgentKit Desktop (Tauri)
-cd agentkit-desktop && npm install && npm run tauri dev
+cd tools/agentkit-desktop && npm install && npm run tauri dev
 
 # External Skills TUI
-uv run python external-skills/install_tui.py
+uv run python tools/external-skills/install_tui.py
+
+# CI checks (TypeScript + Rust)
+just ci
 ```
 
 ## Architecture
 
 ### Core Components
 
-- **`src/install.py`**: Main installer with `SkillManager` class handling skill discovery, installation, and prompt management. Target configs define installation paths for each platform.
+- **`mcs/`**: Rust TUI application (ratatui + crossterm)
+  - Interactive skill browser with keyboard navigation
+  - Detects project root via `walk_up_for_content()`
 
-- **`src/core/`**: Shared modules
-  - `paths.py` - Unified path constants (PROJECT_ROOT, HOME_DIR, *_SRC_DIR)
-  - `config_loader.py` - Platform configuration loading from `platforms.toml`
-  - `skill_meta.py` - SKILL.md frontmatter parser
-
-- **`src/tui/`**: Textual-based TUI application
-  - `app.py` - Main app entry
-  - `core/manager.py` - Installation manager with async progress support
-  - `core/formatters.py` - Display formatting utilities
-  - `core/models.py` - Data models (Item, Platform)
-  - `components/` - UI components (header, footer, item_list, category_filter)
-  - `screens/` - Screen definitions (main_screen, platform_select)
-  - `styles.tcss` - Textual CSS styles
-
-- **`agentkit-desktop/`**: Tauri v2 desktop application
+- **`tools/agentkit-desktop/`**: Tauri v2 desktop application
   - `src/` - React + TypeScript frontend with Zustand stores
   - `src-tauri/` - Rust backend with SQLite database
   - Features: i18n (en/zh), platform management, resource sync
 
-- **`agents/`**: AI agent definitions
+- **`content/agents/`**: AI agent definitions
   - `ccw/` - Claude Code Workflow agents (planning, execution, debugging)
   - `specialist/` - Domain expert agents (Python, TypeScript, CSS, etc.)
 
-- **`external-skills/`**: External skill management
+- **`tools/external-skills/`**: External skill management
   - `registry.toml` - Skill registry with GitHub sources
   - `install.py` - CLI installer
   - `tui/` - Interactive TUI installer
 
 ### Content Structure
 
-- **`skills/<category>/<name>/SKILL.md`**: Skill definitions organized in category folders (`academic-skills/`, `ai-llm-skills/`, `development-skills/`, `devtools-skills/`, `diagram-skills/`, `document-skills/`, `git-github-skills/`, `media-skills/`, `obsidian-skills/`, `skill-meta-skills/`). Each skill has YAML frontmatter (`name`, `description`, optional `license`). May include subdirectories: `config/`, `tips/`, `references/`, `scripts/`, `cookbook/`. `default.toml` controls which categories are installed by `install-all`.
+- **`content/skills/<category>/<name>/SKILL.md`**: Skill definitions organized in category folders (`academic-skills/`, `ai-llm-skills/`, `development-skills/`, `devtools-skills/`, `diagram-skills/`, `document-skills/`, `git-github-skills/`, `media-skills/`, `obsidian-skills/`, `skill-meta-skills/`). Each skill has YAML frontmatter (`name`, `description`, optional `license`). May include subdirectories: `config/`, `tips/`, `references/`, `scripts/`, `cookbook/`. `default.toml` controls which categories are installed by `install-all`.
 
-- **`commands/<platform>/`**: Slash commands per platform
+- **`content/commands/<platform>/`**: Slash commands per platform
   - `claude/` - Markdown files (`.md`) with nested directories (cc/, cli/, gh/, issue/, kiro/, memory/, task/, workflow/, zcf/)
   - `gemini/` - TOML files (`.toml`)
   - `antigravity/`, `windsurf/`, `trae/` - Markdown workflows
   - `qwen/` - Qwen-specific commands
 
-- **`prompts/CLAUDE.md`**: Global workflow configuration synced via `prompt-update`
+- **`content/prompts/CLAUDE.md`**: Global workflow configuration synced via `prompt-update`
 
 ### Installation Targets
 
@@ -250,12 +190,10 @@ Detailed instructions and documentation...
 
 ## Code Conventions
 
-- Python 3.10+ required for TUI (Textual library)
-- Tests use pytest with hypothesis for property-based testing
 - Comments in English
-- Follow existing patterns in `src/install.py` and `src/tui/` modules
-- Rust code follows standard Rust conventions (src-tauri)
-- TypeScript/React follows ESLint config in agentkit-desktop
+- Rust code follows standard Rust conventions (`mcs/`, `tools/agentkit-desktop/src-tauri/`)
+- TypeScript/React follows ESLint config in `tools/agentkit-desktop`
+- Follow existing patterns in `mcs/` modules
 
 ## Key Skills (Highlights)
 
@@ -272,21 +210,9 @@ Detailed instructions and documentation...
 | **Obsidian** | `obsidian-skills/` | `obsidian-cli`, `obsidian-markdown`, `json-canvas` |
 | **Skill Dev** | `skill-meta-skills/` | `skill-seekers`, `github-to-skills`, `mcp-to-skill` |
 
-## Testing Strategy
-
-```
-tests/
-├── unit/           # Unit tests for individual functions
-├── integration/    # Integration tests for module interactions
-├── e2e/            # End-to-end CLI/TUI tests
-├── properties/     # Property-based tests (hypothesis)
-├── manual/         # Manual test scripts
-└── fixtures/       # Test fixtures and mock data
-```
-
 ## Related Documentation
 
 - `openspec/AGENTS.md` - Change proposal workflow
-- `agentkit-desktop/DEVELOPER.md` - Desktop app development guide
-- `external-skills/README.md` - External skills installation guide
+- `tools/agentkit-desktop/DEVELOPER.md` - Desktop app development guide
+- `tools/external-skills/README.md` - External skills installation guide
 - `docs/` - VitePress documentation site
