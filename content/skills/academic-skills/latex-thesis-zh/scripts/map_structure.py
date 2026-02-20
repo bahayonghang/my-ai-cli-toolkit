@@ -12,6 +12,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 class ThesisStructureMapper:
@@ -65,7 +66,7 @@ class ThesisStructureMapper:
         self.root_dir = self.main_file.parent
         self.visited: set[Path] = set()
         self.structure: list[dict] = []
-        self.template: str | None = None
+        self.template: Optional[str] = None
 
     def map(self) -> list[dict]:
         """Map the thesis structure starting from main file."""
@@ -154,14 +155,14 @@ class ThesisStructureMapper:
 
         return "other"
 
-    def _detect_template(self, content: str) -> str | None:
+    def _detect_template(self, content: str) -> Optional[str]:
         """Detect university template from document class."""
         for template_id, info in self.TEMPLATES.items():
             if re.search(info["pattern"], content):
                 return template_id
         return None
 
-    def get_template_info(self) -> dict | None:
+    def get_template_info(self) -> Optional[dict]:
         """Get information about detected template."""
         if self.template and self.template in self.TEMPLATES:
             return self.TEMPLATES[self.template]
@@ -213,8 +214,12 @@ class ThesisStructureMapper:
         required = ["cover", "abstract", "bibliography", "acknowledgment"]
         recommended = ["declaration", "symbol", "resume"]
 
-        missing_required = [t for t in required if not any(ft.startswith(t) or ft == t for ft in found_types)]
-        missing_recommended = [t for t in recommended if not any(ft.startswith(t) or ft == t for ft in found_types)]
+        missing_required = [
+            t for t in required if not any(ft.startswith(t) or ft == t for ft in found_types)
+        ]
+        missing_recommended = [
+            t for t in recommended if not any(ft.startswith(t) or ft == t for ft in found_types)
+        ]
 
         # Check for chapters
         chapters = [item for item in self.structure if item["type"].startswith("第")]
@@ -277,7 +282,9 @@ def main():
     parser = argparse.ArgumentParser(description="Thesis Structure Mapper")
     parser.add_argument("tex_file", help="Main .tex file")
     parser.add_argument("--json", "-j", action="store_true", help="Output in JSON format")
-    parser.add_argument("--detect-template", "-d", action="store_true", help="Only detect and report template type")
+    parser.add_argument(
+        "--detect-template", "-d", action="store_true", help="Only detect and report template type"
+    )
     parser.add_argument("--order", "-o", action="store_true", help="Output processing order")
 
     args = parser.parse_args()

@@ -13,8 +13,12 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
-from PIL import Image
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover - runtime fallback
+    Image = None
 
 try:
     from parsers import get_parser
@@ -51,7 +55,7 @@ class FigureChecker:
         lines = self.content.split("\n")
 
         # LaTeX pattern: \includegraphics[options]{path}
-        latex_pattern = r"\\includegraphics(?:\\[.*?\])?\{([^}]+)\}"
+        latex_pattern = r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}"
         # Typst pattern: #figure(image("path", ...)) or image("path")
         typst_pattern = r'image\("([^"]+)"'
 
@@ -76,7 +80,7 @@ class FigureChecker:
                 )
         return figures
 
-    def _resolve_path(self, rel_path: str) -> Path | None:
+    def _resolve_path(self, rel_path: str) -> Optional[Path]:
         """Resolve image path using graphics_paths."""
         # Clean path extensions if missing (common in LaTeX)
         extensions = ["", ".pdf", ".png", ".jpg", ".jpeg", ".eps"]
@@ -110,6 +114,12 @@ class FigureChecker:
             issues.append(f"Raster format ({ext}) used. Prefer Vector (PDF/EPS).")
 
             # DPI check for raster images
+            if Image is None:
+                issues.append(
+                    "Pillow not installed; skipped DPI analysis (install Pillow for DPI checks)."
+                )
+                return issues
+
             try:
                 with Image.open(path) as img:
                     width, height = img.size
@@ -122,7 +132,9 @@ class FigureChecker:
                     if "dpi" in info:
                         dpi_x, dpi_y = info["dpi"]
                         if dpi_x < self.min_dpi or dpi_y < self.min_dpi:
-                            issues.append(f"Low DPI: {int(dpi_x)}x{int(dpi_y)} (Min: {self.min_dpi})")
+                            issues.append(
+                                f"Low DPI: {int(dpi_x)}x{int(dpi_y)} (Min: {self.min_dpi})"
+                            )
                     else:
                         # Fallback heuristic
                         if width < 1000:  # Arbitrary threshold for "likely low res"

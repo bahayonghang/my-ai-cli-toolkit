@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 class FormatChecker:
@@ -37,7 +38,7 @@ class FormatChecker:
         },
     }
 
-    def __init__(self, tex_file: str, config: str | None = None):
+    def __init__(self, tex_file: str, config: Optional[str] = None):
         self.tex_file = Path(tex_file).resolve()
         self.work_dir = self.tex_file.parent
         self.config = config

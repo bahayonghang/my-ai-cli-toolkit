@@ -10,6 +10,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 # Import parsers from the same directory
 try:
@@ -187,7 +188,9 @@ def score_title(title: str) -> dict[str, any]:
     return {"total": total_score, "breakdown": scores, "issues": issues}
 
 
-def generate_title_candidates(keywords: dict[str, list[str]], current_title: str | None = None) -> list[tuple[str, str]]:
+def generate_title_candidates(
+    keywords: dict[str, list[str]], current_title: Optional[str] = None
+) -> list[tuple[str, str]]:
     """根据提取的关键词生成标题候选"""
     candidates = []
 
@@ -290,9 +293,15 @@ def format_report(title: str, score_data: dict, candidates: list[tuple[str, str]
             cand_score = score_title(candidate)
             char_count = count_chinese_chars(candidate)
             report.append(f"% {i}. 「{candidate}」 [评分: {cand_score['total']}/100]")
-            report.append(f"%    - 简洁性：{'✅' if cand_score['breakdown']['conciseness'] >= 20 else '⚠️'}")
-            report.append(f"%    - 可搜索性：{'✅' if cand_score['breakdown']['searchability'] >= 20 else '⚠️'}")
-            report.append(f"%    - 长度：{'✅' if cand_score['breakdown']['length'] >= 10 else '⚠️'} ({char_count}字)")
+            report.append(
+                f"%    - 简洁性：{'✅' if cand_score['breakdown']['conciseness'] >= 20 else '⚠️'}"
+            )
+            report.append(
+                f"%    - 可搜索性：{'✅' if cand_score['breakdown']['searchability'] >= 20 else '⚠️'}"
+            )
+            report.append(
+                f"%    - 长度：{'✅' if cand_score['breakdown']['length'] >= 10 else '⚠️'} ({char_count}字)"
+            )
 
             # 生成对应英文标题
             english = generate_english_title(candidate)

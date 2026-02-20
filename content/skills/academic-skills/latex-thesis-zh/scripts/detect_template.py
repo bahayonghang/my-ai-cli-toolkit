@@ -12,8 +12,13 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
-from map_structure import ThesisStructureMapper
+try:
+    from map_structure import ThesisStructureMapper
+except ImportError:
+    sys.path.append(str(Path(__file__).parent))
+    from map_structure import ThesisStructureMapper
 
 TEMPLATE_REFERENCE_FILES = {
     "thuthesis": "tsinghua.md",
@@ -28,7 +33,7 @@ def _reference_dir() -> Path:
     return Path(__file__).resolve().parent.parent / "references" / "UNIVERSITIES"
 
 
-def _reference_file(template_id: str | None) -> Path | None:
+def _reference_file(template_id: Optional[str]) -> Optional[Path]:
     if not template_id:
         template_id = "ctexbook"
     file_name = TEMPLATE_REFERENCE_FILES.get(template_id)

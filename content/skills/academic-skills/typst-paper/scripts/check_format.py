@@ -47,7 +47,7 @@ class FormatChecker:
         print("\n[CHECK] Page Settings")
 
         # Check paper size
-        paper_match = re.search(r'#set\s+page\([^)]*paper:\s*"([^"]+)"', self.content)
+        paper_match = re.search(r'#set\s+page\([\s\S]*?paper:\s*"([^"]+)"', self.content)
         if paper_match:
             paper = paper_match.group(1)
             print(f"  ✓ Paper size: {paper}")
@@ -57,7 +57,7 @@ class FormatChecker:
             self.warnings.append("Paper size not explicitly set")
 
         # Check margins
-        margin_match = re.search(r"#set\s+page\([^)]*margin:\s*([^,)]+)", self.content)
+        margin_match = re.search(r"#set\s+page\([\s\S]*?margin:\s*([^,)]+)", self.content)
         if margin_match:
             margin = margin_match.group(1)
             print(f"  ✓ Margins: {margin}")
@@ -65,7 +65,7 @@ class FormatChecker:
             self.warnings.append("Margins not explicitly set")
 
         # Check columns
-        columns_match = re.search(r"#set\s+page\([^)]*columns:\s*(\d+)", self.content)
+        columns_match = re.search(r"#set\s+page\([\s\S]*?columns:\s*(\d+)", self.content)
         if columns_match:
             columns = columns_match.group(1)
             print(f"  ✓ Columns: {columns}")
@@ -80,7 +80,7 @@ class FormatChecker:
         print("\n[CHECK] Text Settings")
 
         # Check font
-        font_match = re.search(r'#set\s+text\([^)]*font:\s*"([^"]+)"', self.content)
+        font_match = re.search(r'#set\s+text\([\s\S]*?font:\s*"([^"]+)"', self.content)
         if font_match:
             font = font_match.group(1)
             print(f"  ✓ Font: {font}")
@@ -90,7 +90,7 @@ class FormatChecker:
             self.warnings.append("Font not explicitly set")
 
         # Check font size
-        size_match = re.search(r"#set\s+text\([^)]*size:\s*(\d+(?:\.\d+)?pt)", self.content)
+        size_match = re.search(r"#set\s+text\([\s\S]*?size:\s*(\d+(?:\.\d+)?pt)", self.content)
         if size_match:
             size = size_match.group(1)
             print(f"  ✓ Font size: {size}")
@@ -98,7 +98,7 @@ class FormatChecker:
             self.warnings.append("Font size not explicitly set")
 
         # Check language
-        lang_match = re.search(r'#set\s+text\([^)]*lang:\s*"([^"]+)"', self.content)
+        lang_match = re.search(r'#set\s+text\([\s\S]*?lang:\s*"([^"]+)"', self.content)
         if lang_match:
             lang = lang_match.group(1)
             print(f"  ✓ Language: {lang}")
@@ -110,7 +110,7 @@ class FormatChecker:
         print("\n[CHECK] Headings")
 
         # Check numbering
-        numbering_match = re.search(r'#set\s+heading\([^)]*numbering:\s*"([^"]+)"', self.content)
+        numbering_match = re.search(r'#set\s+heading\([\s\S]*?numbering:\s*"([^"]+)"', self.content)
         if numbering_match:
             numbering = numbering_match.group(1)
             print(f"  ✓ Heading numbering: {numbering}")
@@ -140,13 +140,17 @@ class FormatChecker:
             labeled_figures = re.findall(r"#figure\([^)]+\)\s*<([^>]+)>", self.content)
             print(f"  ✓ Labeled figures/tables: {len(labeled_figures)}")
             if len(labeled_figures) < len(figures):
-                self.warnings.append(f"{len(figures) - len(labeled_figures)} figures/tables without labels")
+                self.warnings.append(
+                    f"{len(figures) - len(labeled_figures)} figures/tables without labels"
+                )
 
             # Check for captions
             captioned_figures = re.findall(r"caption:\s*\[", self.content)
             print(f"  ✓ Figures/tables with captions: {len(captioned_figures)}")
             if len(captioned_figures) < len(figures):
-                self.warnings.append(f"{len(figures) - len(captioned_figures)} figures/tables without captions")
+                self.warnings.append(
+                    f"{len(figures) - len(captioned_figures)} figures/tables without captions"
+                )
         else:
             print("  ℹ No figures or tables found")
 
@@ -173,13 +177,18 @@ class FormatChecker:
         """Check math equation formatting."""
         print("\n[CHECK] Math Equations")
 
-        # Count inline math
-        inline_math = re.findall(r"\$[^$]+\$", self.content)
-        if inline_math:
-            print(f"  ✓ Found {len(inline_math)} inline math expressions")
+        # Count all math expressions
+        all_math = re.findall(r"\$[^$]+\$", self.content)
 
-        # Count display math
+        # Count display math (has whitespace after opening $ and before closing $)
         display_math = re.findall(r"\$\s+[^$]+\s+\$", self.content)
+
+        # Inline math = total - display
+        inline_count = len(all_math) - len(display_math)
+
+        if inline_count > 0:
+            print(f"  ✓ Found {inline_count} inline math expressions")
+
         if display_math:
             print(f"  ✓ Found {len(display_math)} display math expressions")
 
@@ -187,9 +196,11 @@ class FormatChecker:
             labeled_equations = re.findall(r"\$\s+[^$]+\s+\$\s*<([^>]+)>", self.content)
             print(f"  ✓ Labeled equations: {len(labeled_equations)}")
             if len(labeled_equations) < len(display_math):
-                self.warnings.append(f"{len(display_math) - len(labeled_equations)} display equations without labels")
+                self.warnings.append(
+                    f"{len(display_math) - len(labeled_equations)} display equations without labels"
+                )
 
-        if not inline_math and not display_math:
+        if not all_math:
             print("  ℹ No math expressions found")
 
     def check_venue_specific(self):

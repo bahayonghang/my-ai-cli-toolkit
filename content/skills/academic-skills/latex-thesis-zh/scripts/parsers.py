@@ -84,7 +84,9 @@ class LatexParser(DocumentParser):
         for pattern in self.PRESERVE_PATTERNS:
             matches = list(re.finditer(pattern, temp_line, re.DOTALL))
             for match in reversed(matches):
-                preserved.append({"start": match.start(), "end": match.end(), "text": match.group()})
+                preserved.append(
+                    {"start": match.start(), "end": match.end(), "text": match.group()}
+                )
                 placeholder = " " * (match.end() - match.start())
                 temp_line = temp_line[: match.start()] + placeholder + temp_line[match.end() :]
 
@@ -168,7 +170,9 @@ class TypstParser(DocumentParser):
         for pattern in self.PRESERVE_PATTERNS:
             matches = list(re.finditer(pattern, temp_line, re.DOTALL))
             for match in reversed(matches):
-                preserved.append({"start": match.start(), "end": match.end(), "text": match.group()})
+                preserved.append(
+                    {"start": match.start(), "end": match.end(), "text": match.group()}
+                )
                 placeholder = " " * (match.end() - match.start())
                 temp_line = temp_line[: match.start()] + placeholder + temp_line[match.end() :]
 
@@ -192,3 +196,61 @@ def get_parser(file_path: Any) -> DocumentParser:
     if path_str.endswith(".typ"):
         return TypstParser()
     return LatexParser()
+
+
+def _normalize_whitespace(text: str) -> str:
+    """Collapse whitespace to single spaces."""
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _strip_latex_markup(text: str) -> str:
+    """Remove LaTeX commands from text, keeping content."""
+    text = re.sub(r"\\[a-zA-Z]+\*?(?:\[[^\]]*\])*\{([^}]*)\}", r"\1", text)
+    text = re.sub(r"\\[a-zA-Z]+\*?", "", text)
+    text = re.sub(r"[{}]", "", text)
+    return _normalize_whitespace(text)
+
+
+def extract_title(content: str) -> str:
+    """Extract document title from Chinese LaTeX thesis source.
+
+    Supports \\ctitle, \\title commands commonly used in Chinese thesis templates.
+    """
+    # Chinese title: \ctitle{...}
+    ctitle = re.search(r"\\ctitle\{(.+?)\}", content, re.DOTALL)
+    if ctitle:
+        return _strip_latex_markup(ctitle.group(1))
+
+    # Standard: \title{...}
+    title = re.search(r"\\title(?:\[[^\]]*\])?\{(.+?)\}", content, re.DOTALL)
+    if title:
+        return _strip_latex_markup(title.group(1))
+
+    return ""
+
+
+def extract_abstract(content: str) -> str:
+    """Extract abstract text from Chinese LaTeX thesis source.
+
+    Supports \\cabstract, \\begin{cabstract}, \\begin{abstract} environments.
+    """
+    # Chinese abstract environment: \begin{cabstract}...\end{cabstract}
+    cab = re.search(r"\\begin{cabstract}(.*?)\\end{cabstract}", content, re.DOTALL)
+    if cab:
+        return _strip_latex_markup(cab.group(1))
+
+    # Standard abstract environment
+    ab = re.search(r"\\begin{abstract}(.*?)\\end{abstract}", content, re.DOTALL)
+    if ab:
+        return _strip_latex_markup(ab.group(1))
+
+    # Section-based: \chapter{摘要} or \section{摘要}
+    sec = re.search(
+        r"\\(?:chapter|section)\{摘要\}(.*?)(?=\\(?:chapter|section)\{|\\end\{document\}|\Z)",
+        content,
+        re.DOTALL,
+    )
+    if sec:
+        return _strip_latex_markup(sec.group(1))
+
+    return ""

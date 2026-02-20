@@ -23,6 +23,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Optional
 
 
 class TypstCompiler:
@@ -48,9 +49,9 @@ class TypstCompiler:
 
     def compile(
         self,
-        output: str | None = None,
+        output: Optional[str] = None,
         format: str = "pdf",
-        font_path: str | None = None,
+        font_path: Optional[str] = None,
         watch: bool = False,
     ) -> int:
         """
@@ -221,7 +222,9 @@ Installation:
         action="store_true",
         help="Enable watch mode (auto-recompile on file changes)",
     )
-    parser.add_argument("--list-fonts", action="store_true", help="List available fonts in the system")
+    parser.add_argument(
+        "--list-fonts", action="store_true", help="List available fonts in the system"
+    )
     parser.add_argument("--query", "-q", help='Query document metadata (e.g., "<heading>")')
 
     args = parser.parse_args()
@@ -244,7 +247,11 @@ Installation:
     elif args.query:
         sys.exit(compiler.query(args.query))
     else:
-        sys.exit(compiler.compile(output=args.output, format=args.format, font_path=args.font_path, watch=args.watch))
+        sys.exit(
+            compiler.compile(
+                output=args.output, format=args.format, font_path=args.font_path, watch=args.watch
+            )
+        )
 
 
 if __name__ == "__main__":

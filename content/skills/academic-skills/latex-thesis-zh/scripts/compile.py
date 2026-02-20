@@ -30,6 +30,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 class LaTeXCompiler:
@@ -76,8 +77,8 @@ class LaTeXCompiler:
     def __init__(
         self,
         tex_file: str,
-        compiler: str | None = None,
-        recipe: str | None = None,
+        compiler: Optional[str] = None,
+        recipe: Optional[str] = None,
         shell_escape: bool = False,
     ):
         self.tex_file = Path(tex_file).resolve()
@@ -162,7 +163,9 @@ class LaTeXCompiler:
         if self.shell_escape:
             print("[WARNING] Shell escape enabled. Only use with trusted sources.")
 
-    def compile(self, watch: bool = False, biber: bool = False, outdir: str | None = None) -> int:
+    def compile(
+        self, watch: bool = False, biber: bool = False, outdir: Optional[str] = None
+    ) -> int:
         """
         Compile the LaTeX document.
 
@@ -239,7 +242,7 @@ class LaTeXCompiler:
             print(f"[ERROR] {e}")
             return 1
 
-    def _compile_with_recipe(self, outdir: str | None = None) -> int:
+    def _compile_with_recipe(self, outdir: Optional[str] = None) -> int:
         """Compile using a predefined recipe (VS Code LaTeX Workshop style)."""
         if self.recipe not in self.RECIPES:
             print(f"[ERROR] Unknown recipe: {self.recipe}")

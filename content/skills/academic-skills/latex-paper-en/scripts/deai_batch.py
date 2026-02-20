@@ -229,7 +229,9 @@ class DeAIBatchProcessor:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Batch process LaTeX/Typst documents for de-AI editing")
+    parser = argparse.ArgumentParser(
+        description="Batch process LaTeX/Typst documents for de-AI editing"
+    )
 
     parser.add_argument("file", type=Path, help="Main file (.tex or .typ)")
     parser.add_argument("--chapter", type=Path, help="Process specific chapter file")

@@ -58,7 +58,9 @@ def main():
         action="store_true",
         help="Preserve paragraph and section structure",
     )
-    parser.add_argument("--sentences", "-s", action="store_true", help="Output as list of sentences")
+    parser.add_argument(
+        "--sentences", "-s", action="store_true", help="Output as list of sentences"
+    )
 
     args = parser.parse_args()
 

@@ -66,11 +66,11 @@ class ChineseAITraceChecker:
     TEMPLATE_EXPRESSIONS = {
         r"近年来": "specific_time",
         r"越来越多的": "increasingly",
-        r"发挥(?:?:着)?重要(?:?:的)?作用": "specific_impact",
-        r"随着(?:?:?:科技|技术)(?:?:的)?(?:?:快速|飞速)?发展": "context_direct",
-        r"被广泛(?:?:?:应用|使用)": "cite_examples",
-        r"引起了(?:?:?:广泛|众多)关注": "cite_examples",
-        r"蓬勃(?:?:?:发展|兴起)": "growth_data",
+        r"发挥(?:着)?重要(?:的)?作用": "specific_impact",
+        r"随着(?:科技|技术)(?:的)?(?:快速|飞速)?发展": "context_direct",
+        r"被广泛(?:应用|使用)": "cite_examples",
+        r"引起了(?:广泛|众多)关注": "cite_examples",
+        r"蓬勃(?:发展|兴起)": "growth_data",
     }
 
     def __init__(self, file_path: Path):
@@ -100,7 +100,9 @@ class ChineseAITraceChecker:
         # 2. "大幅" followed by number
         return bool("大幅" in pattern and re.search(r"\d+(?:\.\d+)?%", context_after))
 
-    def _find_pattern_in_section(self, pattern: str, suggestion_type: str, section_name: str, category: str) -> list[dict]:
+    def _find_pattern_in_section(
+        self, pattern: str, suggestion_type: str, section_name: str, category: str
+    ) -> list[dict]:
         if section_name not in self.section_ranges:
             return []
 
@@ -158,7 +160,9 @@ class ChineseAITraceChecker:
 
         for category, patterns_dict in all_patterns:
             for pattern, suggestion_type in patterns_dict.items():
-                matches = self._find_pattern_in_section(pattern, suggestion_type, section_name, category)
+                matches = self._find_pattern_in_section(
+                    pattern, suggestion_type, section_name, category
+                )
                 results["traces"].extend(matches)
 
         results["trace_count"] = len(results["traces"])
@@ -303,7 +307,9 @@ def main():
 
         worst_score = 0
         if analysis["sections"]:
-            worst_score = max(checker.calculate_density_score(result) for result in analysis["sections"].values())
+            worst_score = max(
+                checker.calculate_density_score(result) for result in analysis["sections"].values()
+            )
 
         if worst_score > 10:
             sys.exit(2)

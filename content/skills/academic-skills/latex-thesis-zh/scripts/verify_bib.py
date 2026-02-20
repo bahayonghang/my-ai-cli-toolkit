@@ -126,7 +126,11 @@ class BibTeXVerifier:
                     )
 
         # Title case check (simplified)
-        if "title" in fields and re.search(r"\b[A-Z]{2,}\b", fields["title"]) and "{" not in fields["title"]:
+        if (
+            "title" in fields
+            and re.search(r"\b[A-Z]{2,}\b", fields["title"])
+            and "{" not in fields["title"]
+        ):
             issues.append(
                 {
                     "key": entry_key,
@@ -160,7 +164,9 @@ def main():
     parser = argparse.ArgumentParser(description="BibTeX Verification")
     parser.add_argument("bib_file", help=".bib file")
     parser.add_argument("--standard", choices=["default", "gb7714"], default="default")
-    parser.add_argument("--online-check", action="store_true", help="Generate list for online verification")
+    parser.add_argument(
+        "--online-check", action="store_true", help="Generate list for online verification"
+    )
     parser.add_argument("--output", help="Output file for online check JSON")
 
     args = parser.parse_args()
