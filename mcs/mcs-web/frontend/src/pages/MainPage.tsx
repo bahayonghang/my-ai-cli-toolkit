@@ -27,6 +27,7 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
+  Card,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
@@ -50,6 +51,7 @@ import { DiffDialog } from "@/components/dialogs/DiffDialog";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { PromptDialog } from "@/components/dialogs/PromptDialog";
 import { MultiSyncDialog } from "@/components/dialogs/MultiSyncDialog";
+import AnimatedBackground from "@/components/common/AnimatedBackground";
 
 const DRAWER_WIDTH = 240;
 
@@ -130,7 +132,12 @@ export default function MainPage() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{
+      display: "flex",
+      minHeight: "100vh",
+      position: "relative",
+    }}>
+      <AnimatedBackground />
       {/* AppBar */}
       <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
         <Toolbar>
@@ -205,7 +212,7 @@ export default function MainPage() {
       </Drawer>
 
       {/* Main content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, position: "relative", zIndex: 1 }}>
         {/* Toolbar */}
         <Box sx={{ display: "flex", gap: 1, mb: 2, alignItems: "center" }}>
           <TextField
@@ -264,85 +271,92 @@ export default function MainPage() {
           </Box>
         ) : (
           /* Item table */
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox" />
-                  <TableCell>Name</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {items.map((item) => (
-                  <TableRow
-                    key={item.name}
-                    hover
-                    selected={selectedNames.has(item.name)}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell padding="checkbox" onClick={() => toggleSelection(item.name)}>
-                      <Checkbox checked={selectedNames.has(item.name)} />
-                    </TableCell>
-                    <TableCell onClick={() => toggleSelection(item.name)}>
-                      <Typography variant="body2" fontWeight={500}>
-                        {item.name}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <StatusChip status={item.status} />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption" color="text.secondary">
-                        {item.category ?? "—"}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 300, display: "block" }}>
-                        {item.description ?? ""}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Box sx={{ display: "flex", gap: 0.5, justifyContent: "flex-end" }}>
-                        {activeTab === "skills" && (
-                          <Tooltip title="Detail">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => { e.stopPropagation(); setDetailName(item.name); }}
-                            >
-                              <InfoOutlinedIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                        {(item.status === "installed" || item.status === "outdated") && (
-                          <Tooltip title="Diff">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => { e.stopPropagation(); setDiffName(item.name); }}
-                            >
-                              <CompareArrowsIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {items.length === 0 && (
+          <Card elevation={0} sx={{ overflow: "hidden" }}>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <Typography color="text.secondary" py={4}>
-                        No items found
-                      </Typography>
-                    </TableCell>
+                    <TableCell padding="checkbox" />
+                    <TableCell>Name</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {items.map((item, index) => (
+                    <TableRow
+                      key={item.name}
+                      hover
+                      selected={selectedNames.has(item.name)}
+                      sx={{
+                        cursor: "pointer",
+                        animation: `fadeIn 0.3s ease-out ${index * 0.02}s both`,
+                        "@keyframes fadeIn": {
+                          "0%": { opacity: 0, transform: "translateY(10px)" },
+                          "100%": { opacity: 1, transform: "translateY(0)" }
+                        }
+                      }}
+                    >
+                      <TableCell padding="checkbox" onClick={() => toggleSelection(item.name)}>
+                        <Checkbox checked={selectedNames.has(item.name)} />
+                      </TableCell>
+                      <TableCell onClick={() => toggleSelection(item.name)}>
+                        <Typography variant="body2" fontWeight={600} color="primary.main">
+                          {item.name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell onClick={() => toggleSelection(item.name)}>
+                        <StatusChip status={item.status} />
+                      </TableCell>
+                      <TableCell onClick={() => toggleSelection(item.name)}>
+                        <Chip size="small" label={item.category ?? "—"} variant="outlined" sx={{ borderRadius: 1 }} />
+                      </TableCell>
+                      <TableCell onClick={() => toggleSelection(item.name)}>
+                        <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 300, display: "block" }}>
+                          {item.description ?? ""}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "flex-end" }}>
+                          {activeTab === "skills" && (
+                            <Tooltip title="Detail">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => { e.stopPropagation(); setDetailName(item.name); }}
+                              >
+                                <InfoOutlinedIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {(item.status === "installed" || item.status === "outdated") && (
+                            <Tooltip title="Diff">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => { e.stopPropagation(); setDiffName(item.name); }}
+                              >
+                                <CompareArrowsIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {items.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        <Typography color="text.secondary" py={4}>
+                          No items found
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
         )}
       </Box>
 
