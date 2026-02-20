@@ -5,11 +5,27 @@
 default:
     @just --choose
 
+# ============ 快捷启动 ============
+
+# 启动 TUI 技能管理器
+tui: mcs
+
+# 启动 Web 版技能管理器 (构建并启动 localhost:3142)
+web: mcs-web
+
+# 启动文档开发服务器
+doc: docs
+
 # 显示所有可用命令的帮助信息
 help:
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  MyClaude Skills - 任务管理工具"
     @echo "════════════════════════════════════════════════════════════════"
+    @echo ""
+    @echo "⚡ 快捷启动："
+    @echo "  just tui               - 启动 TUI 技能管理器"
+    @echo "  just web               - 启动 Web 版技能管理器 (localhost:3142)"
+    @echo "  just doc               - 启动文档开发服务器"
     @echo ""
     @echo "📚 文档相关命令："
     @echo "  just docs-install      - 安装文档站点依赖"
@@ -22,6 +38,13 @@ help:
     @echo "  just mcs               - 启动 MCS TUI (由 cargo 自动判定是否重编译)"
     @echo "  just mcs-dev           - 开发模式 (debug 编译，更快)"
     @echo "  just mcs-rebuild       - 强制重新编译并启动"
+    @echo ""
+    @echo "🌐 MCS Web（Web 版技能管理）："
+    @echo "  just mcs-web-install   - 安装前端依赖"
+    @echo "  just mcs-web-server    - 启动后端服务器 (port 3142)"
+    @echo "  just mcs-web-dev       - 启动前端开发服务器 (port 5173)"
+    @echo "  just mcs-web-build     - 构建生产版本 (前端+后端)"
+    @echo "  just mcs-web           - 一键构建并启动生产版本"
     @echo ""
     @echo "🦀 代码质量检查 (Rust - AgentKit Desktop + MCS)："
     @echo "  just rust-format-check - 检查 Rust 代码格式"
@@ -41,8 +64,9 @@ help:
     @echo "  just info              - 显示项目信息"
     @echo ""
     @echo "💡 使用示例："
-    @echo "  just mcs                            # 启动技能管理 TUI"
-    @echo "  just docs                           # 快速启动文档开发"
+    @echo "  just tui                            # 启动技能管理 TUI"
+    @echo "  just web                            # 启动 Web 版技能管理"
+    @echo "  just doc                            # 快速启动文档开发"
     @echo "  just rust-fix                       # 修复 Rust 代码格式"
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
@@ -85,6 +109,32 @@ mcs-rebuild:
 # 强制重新编译并启动 MCS TUI (短别名)
 mcs-re: mcs-rebuild
 
+# ============ MCS Web ============
+
+# 安装 MCS Web 前端依赖
+mcs-web-install:
+    cd mcs/mcs-web/frontend && npm install
+
+# 启动 MCS Web 后端开发服务器 (port 3142)
+mcs-web-server:
+    cd mcs && cargo run --bin mcs-web
+
+# 启动 MCS Web 前端开发服务器 (port 5173, 代理到 3142)
+mcs-web-dev:
+    cd mcs/mcs-web/frontend && npm run dev
+
+# 构建 MCS Web 前端生产版本
+mcs-web-build-frontend:
+    cd mcs/mcs-web/frontend && npm run build
+
+# 构建 MCS Web 生产版本 (前端 + 后端)
+mcs-web-build: mcs-web-build-frontend
+    cd mcs && cargo build --release --bin mcs-web
+
+# 启动 MCS Web 生产版本 (构建并启动，port 3142)
+mcs-web: mcs-web-build
+    cd mcs && ./target/release/mcs-web
+
 # ============ Rust 代码检查 (AgentKit Desktop + MCS) ============
 
 # 运行 Rust 格式检查 (不符则自动修复并报错)
@@ -113,11 +163,12 @@ rust-check-all: rust-format-check rust-clippy rust-test
 # 修复 Rust 代码格式并运行检查
 rust-fix: rust-format rust-clippy
 
-# ============ TypeScript 检查 (AgentKit Desktop) ============
+# ============ TypeScript 检查 (AgentKit Desktop + MCS Web) ============
 
 # 运行 TypeScript 类型检查
 ts-check:
     cd tools/agentkit-desktop && npx tsc --noEmit
+    cd mcs/mcs-web/frontend && npx tsc --noEmit
 
 # ============ CI ============
 
@@ -128,22 +179,25 @@ ci:
     @echo "  🚀 开始执行 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📘 步骤 1/5: AgentKit Desktop TypeScript 检查..."
+    @echo "📘 步骤 1/6: AgentKit Desktop TypeScript 检查..."
     cd tools/agentkit-desktop && npx tsc --noEmit
     @echo ""
-    @echo "🦀 步骤 2/5: Rust 格式检查 + 自动修复..."
+    @echo "📘 步骤 2/6: MCS Web Frontend TypeScript 检查..."
+    cd mcs/mcs-web/frontend && npx tsc --noEmit
+    @echo ""
+    @echo "🦀 步骤 3/6: Rust 格式检查 + 自动修复..."
     cd tools/agentkit-desktop/src-tauri && cargo fmt --check && echo "  ✓ agentkit-desktop 格式正确" || (echo "  ⚠️ agentkit-desktop 格式不符，自动修复中..." && cargo fmt && false)
     cd mcs && cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && false)
     @echo ""
-    @echo "🦀 步骤 3/5: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
+    @echo "🦀 步骤 4/6: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
     cd tools/agentkit-desktop/src-tauri && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
     cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
     @echo ""
-    @echo "🦀 步骤 4/5: Rust 单元测试..."
+    @echo "🦀 步骤 5/6: Rust 单元测试..."
     cd tools/agentkit-desktop/src-tauri && cargo test
     cd mcs && cargo test
     @echo ""
-    @echo "🔎 步骤 5/5: Rust 跨平台 lint 检查..."
+    @echo "🔎 步骤 6/6: Rust 跨平台 lint 检查..."
     just _rust-cross-lint
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
