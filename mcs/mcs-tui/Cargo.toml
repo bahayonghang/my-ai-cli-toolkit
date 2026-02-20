@@ -1,0 +1,15 @@
+[package]
+name = "mcs-tui"
+version = "0.1.4"
+edition.workspace = true
+
+[[bin]]
+name = "mcs"
+path = "src/main.rs"
+
+[dependencies]
+mcs-core = { path = "../mcs-core" }
+ratatui = "0.30.0"
+crossterm = "0.29.0"
+unicode-width = "0.2.2"
+similar = { workspace = true }

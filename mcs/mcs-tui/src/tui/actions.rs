@@ -1,0 +1,432 @@
+use std::collections::HashSet;
+use std::fs::OpenOptions;
+use std::path::{Path, PathBuf};
+
+use crate::tui::state::{
+    AppState, BatchTask, BatchTaskKind, ContentTab, InstallMode, NotificationLevel, PendingBatch,
+};
+use mcs_core::config::platform::PlatformConfig;
+use mcs_core::model::ItemType;
+
+#[derive(Debug, Clone)]
+pub enum AppAction {
+    InstallBatch {
+        names: Vec<String>,
+        tab: ContentTab,
+        mode: InstallMode,
+        path_input: String,
+    },
+    UninstallBatch {
+        names: Vec<String>,
+        tab: ContentTab,
+    },
+    PromptUpdate,
+    MultiSync {
+        platform_names: HashSet<String>,
+        items: Vec<String>,
+        tab: ContentTab,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub struct ActionResult {
+    pub accepted: bool,
+    pub level: NotificationLevel,
+    pub message: String,
+}
+
+pub fn dispatch(state: &mut AppState, action: AppAction) -> ActionResult {
+    match action {
+        AppAction::InstallBatch {
+            names,
+            tab,
+            mode,
+            path_input,
+        } => dispatch_install_batch(state, names, tab, mode, &path_input),
+        AppAction::UninstallBatch { names, tab } => dispatch_uninstall_batch(state, names, tab),
+        AppAction::PromptUpdate => dispatch_prompt_update(state),
+        AppAction::MultiSync {
+            platform_names,
+            items,
+            tab,
+        } => dispatch_multi_sync(state, platform_names, items, tab),
+    }
+}
+
+fn dispatch_install_batch(
+    state: &mut AppState,
+    names: Vec<String>,
+    tab: ContentTab,
+    mode: InstallMode,
+    path_input: &str,
+) -> ActionResult {
+    if names.is_empty() {
+        return ActionResult {
+            accepted: false,
+            level: NotificationLevel::Warning,
+            message: "No items selected".into(),
+        };
+    }
+    let item_type = item_type_for_tab(tab);
+
+    let mut platform = match state.current_platform().cloned() {
+        Some(p) => p,
+        None => {
+            return ActionResult {
+                accepted: false,
+                level: NotificationLevel::Error,
+                message: "No platform selected".into(),
+            };
+        }
+    };
+
+    if mode == InstallMode::Directory {
+        let project_path = match normalize_project_path(path_input) {
+            Ok(p) => p,
+            Err(msg) => {
+                return ActionResult {
+                    accepted: false,
+                    level: NotificationLevel::Error,
+                    message: msg,
+                };
+            }
+        };
+        platform = project_platform_for_directory(&platform, &project_path);
+    }
+
+    let mut tasks = Vec::with_capacity(names.len());
+    for name in names {
+        tasks.push(BatchTask {
+            label: format!("Install {name}"),
+            kind: BatchTaskKind::Install {
+                platform: platform.clone(),
+                name,
+                item_type,
+            },
+        });
+    }
+
+    enqueue_batch(state, "Install", tasks, true)
+}
+
+fn dispatch_uninstall_batch(
+    state: &mut AppState,
+    names: Vec<String>,
+    tab: ContentTab,
+) -> ActionResult {
+    if names.is_empty() {
+        return ActionResult {
+            accepted: false,
+            level: NotificationLevel::Warning,
+            message: "No items selected".into(),
+        };
+    }
+    let item_type = item_type_for_tab(tab);
+    let platform = match state.current_platform().cloned() {
+        Some(p) => p,
+        None => {
+            return ActionResult {
+                accepted: false,
+                level: NotificationLevel::Error,
+                message: "No platform selected".into(),
+            };
+        }
+    };
+
+    let mut tasks = Vec::with_capacity(names.len());
+    for name in names {
+        tasks.push(BatchTask {
+            label: format!("Uninstall {name}"),
+            kind: BatchTaskKind::Uninstall {
+                platform: platform.clone(),
+                name,
+                item_type,
+            },
+        });
+    }
+    enqueue_batch(state, "Uninstall", tasks, true)
+}
+
+fn dispatch_prompt_update(state: &mut AppState) -> ActionResult {
+    let platform = match state.current_platform().cloned() {
+        Some(p) => p,
+        None => {
+            return ActionResult {
+                accepted: false,
+                level: NotificationLevel::Error,
+                message: "No platform selected".into(),
+            };
+        }
+    };
+    if !mcs_core::core::prompt::supports_prompt(&platform) {
+        return ActionResult {
+            accepted: false,
+            level: NotificationLevel::Warning,
+            message: "Prompt management only supports Claude".into(),
+        };
+    }
+
+    let task = BatchTask {
+        label: "Update CLAUDE.md".into(),
+        kind: BatchTaskKind::PromptUpdate { platform },
+    };
+    enqueue_batch(state, "Prompt Update", vec![task], false)
+}
+
+fn dispatch_multi_sync(
+    state: &mut AppState,
+    platform_names: HashSet<String>,
+    items: Vec<String>,
+    tab: ContentTab,
+) -> ActionResult {
+    if platform_names.is_empty() {
+        return ActionResult {
+            accepted: false,
+            level: NotificationLevel::Warning,
+            message: "No target platforms selected".into(),
+        };
+    }
+    if items.is_empty() {
+        return ActionResult {
+            accepted: false,
+            level: NotificationLevel::Warning,
+            message: "No items selected for multi-sync".into(),
+        };
+    }
+
+    let item_type = item_type_for_tab(tab);
+    let mut names: Vec<String> = platform_names.into_iter().collect();
+    names.sort();
+
+    let mut tasks = Vec::new();
+    for platform_name in names {
+        let Some(platform) = state.platforms.get(&platform_name).cloned() else {
+            continue;
+        };
+        for item in &items {
+            tasks.push(BatchTask {
+                label: format!("Sync {item} → {platform_name}"),
+                kind: BatchTaskKind::Install {
+                    platform: platform.clone(),
+                    name: item.clone(),
+                    item_type,
+                },
+            });
+        }
+    }
+
+    if tasks.is_empty() {
+        return ActionResult {
+            accepted: false,
+            level: NotificationLevel::Error,
+            message: "No valid sync tasks generated".into(),
+        };
+    }
+
+    enqueue_batch(state, "Multi-Sync", tasks, true)
+}
+
+fn enqueue_batch(
+    state: &mut AppState,
+    label: &str,
+    tasks: Vec<BatchTask>,
+    reload_after: bool,
+) -> ActionResult {
+    let total = tasks.len();
+    state.pending_batch = Some(PendingBatch {
+        label: label.into(),
+        tasks,
+        current: 0,
+        success: 0,
+        failures: Vec::new(),
+        reload_after,
+    });
+    state.progress = Some(crate::tui::state::ProgressState {
+        current: 0,
+        total,
+        label: label.into(),
+        success: 0,
+        failed: 0,
+    });
+    ActionResult {
+        accepted: true,
+        level: NotificationLevel::Info,
+        message: format!("{label} queued: {total} task(s)"),
+    }
+}
+
+pub fn process_next_batch_task(state: &mut AppState) {
+    let Some(mut batch) = state.pending_batch.take() else {
+        return;
+    };
+    if batch.current >= batch.tasks.len() {
+        finalize_batch(state, batch);
+        return;
+    }
+
+    let task = batch.tasks[batch.current].clone();
+    let result = execute_task(state, &task);
+    if result.success {
+        batch.success += 1;
+    } else {
+        let error = result
+            .error
+            .unwrap_or_else(|| String::from("unknown error"));
+        batch
+            .failures
+            .push(format!("{}: {}", task.label, error.trim()));
+    }
+    batch.current += 1;
+
+    state.progress = Some(crate::tui::state::ProgressState {
+        current: batch.current,
+        total: batch.tasks.len(),
+        label: batch.label.clone(),
+        success: batch.success,
+        failed: batch.failures.len(),
+    });
+
+    if batch.current >= batch.tasks.len() {
+        finalize_batch(state, batch);
+    } else {
+        state.pending_batch = Some(batch);
+    }
+}
+
+fn finalize_batch(state: &mut AppState, batch: PendingBatch) {
+    let total = batch.tasks.len();
+    let failed = batch.failures.len();
+    let success = batch.success;
+
+    let level = if failed == 0 {
+        NotificationLevel::Success
+    } else if success == 0 {
+        NotificationLevel::Error
+    } else {
+        NotificationLevel::Warning
+    };
+
+    state.push_notification(
+        level,
+        format!("{} finished: {success}/{total} succeeded", batch.label),
+    );
+
+    if !batch.failures.is_empty() {
+        for fail in batch.failures.iter().take(3) {
+            state.push_notification(NotificationLevel::Error, fail.clone());
+        }
+        if batch.failures.len() > 3 {
+            state.push_notification(
+                NotificationLevel::Warning,
+                format!("... and {} more failures", batch.failures.len() - 3),
+            );
+        }
+    }
+
+    if batch.reload_after {
+        state.reload_items();
+    }
+    state.pending_batch = None;
+    state.progress = None;
+}
+
+fn execute_task(state: &AppState, task: &BatchTask) -> mcs_core::model::InstallResult {
+    match &task.kind {
+        BatchTaskKind::Install {
+            platform,
+            name,
+            item_type,
+        } => {
+            mcs_core::core::installer::install_item(&state.project_root, platform, name, *item_type)
+        }
+        BatchTaskKind::Uninstall {
+            platform,
+            name,
+            item_type,
+        } => mcs_core::core::installer::uninstall_item(
+            &state.project_root,
+            platform,
+            name,
+            *item_type,
+        ),
+        BatchTaskKind::PromptUpdate { platform } => {
+            mcs_core::core::prompt::prompt_update(&state.project_root, platform)
+        }
+    }
+}
+
+fn item_type_for_tab(tab: ContentTab) -> ItemType {
+    match tab {
+        ContentTab::Skills => ItemType::Skill,
+        ContentTab::Commands => ItemType::Command,
+    }
+}
+
+fn normalize_project_path(raw_path: &str) -> Result<PathBuf, String> {
+    let trimmed = raw_path.trim();
+    if trimmed.is_empty() {
+        return Err("Project path is required in directory install mode".into());
+    }
+
+    let input = PathBuf::from(trimmed);
+    let abs_path = if input.is_absolute() {
+        input
+    } else {
+        std::env::current_dir()
+            .map_err(|e| format!("Cannot resolve current directory: {e}"))?
+            .join(input)
+    };
+
+    let normalized = abs_path.canonicalize().unwrap_or(abs_path);
+    if !normalized.exists() {
+        return Err(format!(
+            "Project path does not exist: {}",
+            normalized.display()
+        ));
+    }
+    if !normalized.is_dir() {
+        return Err(format!(
+            "Project path is not a directory: {}",
+            normalized.display()
+        ));
+    }
+
+    let probe_name = format!(
+        ".mcs_write_probe_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_micros())
+            .unwrap_or_default()
+    );
+    let probe = normalized.join(probe_name);
+    match OpenOptions::new().create_new(true).write(true).open(&probe) {
+        Ok(_) => {
+            let _ = std::fs::remove_file(probe);
+            Ok(normalized)
+        }
+        Err(e) => Err(format!(
+            "Project path is not writable: {} ({e})",
+            normalized.display()
+        )),
+    }
+}
+
+fn project_platform_for_directory(
+    platform: &PlatformConfig,
+    project_path: &Path,
+) -> PlatformConfig {
+    let mut project_platform = platform.clone();
+    let platform_dir = project_platform_dir(&platform.name);
+    let base_dir = project_path.join(platform_dir);
+    project_platform.base_dir = base_dir.to_string_lossy().to_string();
+    project_platform
+}
+
+fn project_platform_dir(platform_name: &str) -> String {
+    match platform_name {
+        "opencode" => ".opencode".to_string(),
+        "antigravity" => ".gemini/antigravity".to_string(),
+        "windsurf" => ".codeium/windsurf".to_string(),
+        _ => format!(".{platform_name}"),
+    }
+}
