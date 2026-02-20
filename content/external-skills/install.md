@@ -40,36 +40,30 @@ npx skills add https://github.com/remotion-dev/skills --skill remotion-best-prac
 # Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）
 npx skills add vuejs-ai/skills
 ```
+
 ```shell
-# Postgres 
+# 官方 Supabase Agent Skills - 提供针对 PostgreSQL 的最佳实践。涵盖查询性能提升、连接管理、模式设计、并发与锁定、安全与 RLS（行级安全）、数据访问模式等，从源头指导大语言模型编写高效的 PostgreSQL 代码。
 npx skills add supabase/agent-skills
 ```
 
 ```shell
-# code review expert 
+# 资深工程师代码审查专家 - 为 AI 提供全方位、结构化的代码审查能力。自动进行如 SOLID 原则等多维度的代码设计评审。重点评估架构设计、代码安全性风险、运行时性能优化和整体代码维护性，并根据影响评级 (P0-P3) 生成结构化报告。
 npx skills add sanyuan0704/code-review-expert
 ```
 
 ```shell
-# scientific skills 
+# AI 科学家技能库 - 强大的科研领域集成包，内含 140 多个开箱即用的大学科研级通用 AI 技能。广泛覆盖如生信与基因、图谱与分子研发等核心医药研究方向，原生无缝集成 PubMed 等科研文献和主流计算处理工具（比如 PyTorch）的使用方式。
 npx skills add K-Dense-AI/claude-scientific-skills
 ```
 
-## ui ux pro max
+```shell
+# 全栈开发专家级结对编程助手 - 为全栈开发者设计，提供内置 66 个专用技能的超级编程全家桶。无缝提供各类前端或后端主流框架的开发规范指导、配套集成测试、安全及 DevOps 等系统最佳实践指南。通过低 token 载入方式保证高效协作。
+npx skills add jeffallan/claude-skills
+```
 
 ```shell
-# Install CLI globally
-npm install -g uipro-cli
-
-# Go to your project
-cd /path/to/your/project
-
-# Install for your AI assistant
-uipro init --ai claude      # Claude Code
-uipro init --ai antigravity # Antigravity    # Kiro
-uipro init --ai codex       # Codex CLI # Roo Code
-uipro init --ai gemini      # Gemini CLI
-uipro init --ai trae        # Trae   # All assistants
+# UI/UX Pro Max 设计专家 - 把前沿和标准设计智能带入大模型中，不再局限于冰冷的开发思维。默认集成 60 多种经典和现代 UI 审美风格（拟物、磨砂毛半透等），以及将近上百套精选的行业配色板系统和排版指引进其中。甚至内含完整的企业级系统页面设计向导。
+npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
 ```
 
 # plugin
