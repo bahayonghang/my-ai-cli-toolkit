@@ -2,7 +2,7 @@
 
 ## Pattern 1: Non-Standard Frontmatter Fields
 
-**Detect**: Fields like `version`, `category`, `tags`, `author` in frontmatter.
+**Detect**: Fields like `version`, `author`, `license`, `priority` in frontmatter.
 **Problem**: Claude Code ignores unknown fields; they waste tokens.
 **Fix**: Remove them. If the info is useful, put it in a comment or resources/.
 
@@ -11,8 +11,8 @@
 ---
 name: my-skill
 version: 2.2
-category: development
-tags: [code, review]
+author: someone
+license: MIT
 ---
 
 # Good
