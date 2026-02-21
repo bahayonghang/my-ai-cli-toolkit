@@ -71,11 +71,13 @@ async fn main() {
     // Start server
     let addr = SocketAddr::from(([127, 0, 0, 1], 3142));
 
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap_or_else(|e| {
-        tracing::error!("Failed to bind to {addr}: {e}");
-        tracing::error!("Hint: is another mcs-web instance already running on port 3142?");
-        std::process::exit(1);
-    });
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .unwrap_or_else(|e| {
+            tracing::error!("Failed to bind to {addr}: {e}");
+            tracing::error!("Hint: is another mcs-web instance already running on port 3142?");
+            std::process::exit(1);
+        });
     tracing::info!("MCS Web server listening on http://{addr}");
 
     // Auto-open browser

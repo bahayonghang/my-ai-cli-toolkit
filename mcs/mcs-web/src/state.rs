@@ -6,7 +6,7 @@ use tokio::sync::RwLock;
 
 use mcs_core::config::platform::PlatformConfig;
 use mcs_core::core::discovery::{
-    discover_commands, discover_skill_sources, resolve_skills_for_platform, SkillSource,
+    SkillSource, discover_commands, discover_skill_sources, resolve_skills_for_platform,
 };
 use mcs_core::model::ItemInfo;
 
@@ -108,7 +108,10 @@ impl AppState {
         let mut skills_map = HashMap::new();
         let mut commands_map = HashMap::new();
         for (id, platform) in &platforms {
-            skills_map.insert(id.clone(), resolve_skills_for_platform(&skill_sources, platform));
+            skills_map.insert(
+                id.clone(),
+                resolve_skills_for_platform(&skill_sources, platform),
+            );
             commands_map.insert(id.clone(), discover_commands(&root, platform));
         }
 

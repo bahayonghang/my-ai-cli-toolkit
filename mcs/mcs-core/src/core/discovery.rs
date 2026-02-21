@@ -188,8 +188,7 @@ pub fn resolve_skills_for_platform(
         .map(|src| {
             let target = platform.skills_path().join(&src.name);
             let (tgt_mtime, tgt_sig) = path_signature(&target);
-            let status =
-                determine_status(&target, src.src_mtime, tgt_mtime, src.src_sig, tgt_sig);
+            let status = determine_status(&target, src.src_mtime, tgt_mtime, src.src_sig, tgt_sig);
 
             ItemInfo {
                 name: src.name.clone(),
