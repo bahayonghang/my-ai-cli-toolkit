@@ -21,3 +21,9 @@ npx zcf
 
 /oh-my-claudecode:omc-setup
 ```
+
+## 4. 配置Hook
+
+设置 Hook，当 Tool Calls > 8 次时，强制 Claude 输出一条优化建议（可复用 skill、记忆模式、工作流修复）
+
+设置 Hook，当提示词 > 50 字时，让 Claude 检查期望结果是否清晰

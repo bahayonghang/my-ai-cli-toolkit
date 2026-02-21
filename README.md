@@ -72,10 +72,10 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | Skill | Description |
 |-------|-------------|
 | [karpathy-guidelines](content/skills/devtools-skills/karpathy-guidelines/) | Behavioral guidelines to reduce common LLM coding mistakes |
-| [memory-system](content/skills/devtools-skills/memory-system/) | Local memory system with SQLite for cross-session semantic search |
+| [memory-system](content/skills/workflow-skills/memory-system/) | Local memory system: Markdown → SQLite hybrid search (vector + FTS5), incremental indexing, atomic transactions |
 | [planning-with-files](content/skills/devtools-skills/planning-with-files/) | File-based planning for complex multi-step tasks |
 | [review-code](content/skills/devtools-skills/review-code/) | Multi-dimensional code review with structured reports |
-| [spec-interview](content/skills/devtools-skills/spec-interview/) | Systematic interview to refine technical specs with OpenSpec integration |
+| [interview-plan](content/skills/workflow-skills/interview-plan/) | Socratic interview to refine requirements, then generate executable plan via native Plan mode |
 
 ### 📊 Diagrams (`diagram-skills/`)
 | Skill | Description |

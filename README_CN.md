@@ -68,10 +68,10 @@ just mcs
 | 技能 | 描述 |
 |------|------|
 | [karpathy-guidelines](content/skills/devtools-skills/karpathy-guidelines/) | 减少常见 LLM 编码错误的行为准则 |
-| [memory-system](content/skills/devtools-skills/memory-system/) | 本地记忆系统，将 Markdown 文件索引到 SQLite 实现跨会话语义搜索 |
+| [memory-system](content/skills/workflow-skills/memory-system/) | 本地记忆系统：Markdown → SQLite 混合搜索（向量 + FTS5），增量索引，事务原子保护 |
 | [planning-with-files](content/skills/devtools-skills/planning-with-files/) | 基于文件的复杂多步骤任务规划 |
 | [review-code](content/skills/devtools-skills/review-code/) | 多维度代码审查，生成结构化报告 |
-| [spec-interview](content/skills/devtools-skills/spec-interview/) | 通过系统性访谈完善技术规格，集成 OpenSpec |
+| [interview-plan](content/skills/workflow-skills/interview-plan/) | 通过苏格拉底式访谈细化需求，直接调用原生 Plan 模式生成可执行计划 |
 
 ### 📊 图表 (`diagram-skills/`)
 | 技能 | 描述 |

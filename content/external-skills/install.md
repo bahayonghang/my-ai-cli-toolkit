@@ -66,6 +66,11 @@ npx skills add jeffallan/claude-skills
 npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
 ```
 
+```shell
+# 技能发现工具（帮助查找和安装 agent skills 生态系统中的可用技能包）⭐⭐⭐⭐⭐
+npx skills add https://github.com/sickn33/antigravity-awesome-skills --skill skill-seekers
+```
+
 # plugin
 
 ## claude-plugins-official

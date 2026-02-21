@@ -165,6 +165,7 @@ just ci
 |--------|-------------|---------------|
 | claude | `~/.claude/skills/` | `~/.claude/commands/` |
 | codex | `~/.codex/skills/` | `~/.codex/prompts/` |
+| cursor | `~/.cursor/skills/` | `~/.cursor/commands/` |
 | gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
 | qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
 | qoder | `~/.qoder/skills/` | `~/.qoder/commands/` |

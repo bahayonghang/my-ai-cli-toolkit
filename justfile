@@ -29,7 +29,7 @@ help:
     @echo ""
     @echo "📚 文档相关命令："
     @echo "  just docs-install      - 安装文档站点依赖"
-    @echo "  just docs-dev          - 启动文档开发服务器 (http://localhost:5173)"
+    @echo "  just docs-dev          - 启动文档开发服务器 (http://localhost:4000)"
     @echo "  just docs-build        - 构建生产版本文档"
     @echo "  just docs-preview      - 预览构建后的文档"
     @echo "  just docs              - 一键安装依赖并启动开发服务器"
