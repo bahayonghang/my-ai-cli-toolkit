@@ -42,7 +42,7 @@ A comprehensive collection of specialized AI skills organized into category fold
 | [memory-system](./memory-system) | Persistent memory system with automatic session recovery |
 | [planning-with-files](./planning-with-files) | Plan complex projects using file-based workflows |
 | [review-code](./review-code) | Multi-dimensional code review with structured reports |
-| [spec-interview](./spec-interview) | 通过系统性访谈完善技术规格文档 |
+| [interview-plan](./interview-plan) | Socratic interview to refine requirements and generate executable plan |
 
 ### 📊 Diagrams (`diagram-skills/`)
 | Skill | Description |

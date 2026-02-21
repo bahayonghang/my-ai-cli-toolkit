@@ -58,7 +58,7 @@ uv run python src/install.py install-all
 | frontend-design | Build production-grade frontend interfaces |
 | gemini-image | AI image generation via Gemini API |
 | research | Technical research with citations |
-| spec-interview | Refine technical specs through questioning |
+| interview-plan | Socratic interview to refine requirements and generate executable plan |
 | tech-blog | Write technical blog posts |
 | tech-design-doc | Generate technical design documents |
 

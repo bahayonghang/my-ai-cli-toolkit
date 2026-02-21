@@ -1,60 +1,120 @@
 # Memory System
 
-脚本路径: `~/.claude/skills/public/memory-system/scripts/memory.py`
+A local memory system that indexes Markdown files into SQLite for cross-session semantic search.
 
-## 自动行为
+**Script path:** `~/.claude/skills/public/memory-system/scripts/memory.py`
+**Version:** 1.1.0
 
-### 当用户说"搜索记忆"或"在记忆中查找 X"
+## Overview
+
+Memory System provides a persistent local knowledge base for AI assistants:
+
+- Indexes Markdown files into SQLite with vector embeddings
+- Hybrid search: vector similarity (70%) + full-text BM25 (30%)
+- Incremental indexing via SHA-256 — unchanged files are skipped
+- Cross-session memory persistence
+- Atomic indexing with savepoint transactions (no partial state on failure)
+
+## Requirements
+
+Install Python dependencies before first use:
 
 ```bash
-python3 ~/.claude/skills/public/memory-system/scripts/memory.py search "用户的查询" \
+pip3 install sentence-transformers numpy
+```
+
+- **Embedding model**: `all-MiniLM-L6-v2` (~80 MB, auto-downloaded on first run)
+- **Python**: 3.10+
+- **SQLite**: built-in; FTS5 optional (enhances full-text search, supports CJK via trigram tokenizer)
+
+## Automatic Behaviors
+
+### When user says "search memory" or "find X in memory"
+
+```bash
+python3 ~/.claude/skills/public/memory-system/scripts/memory.py search "user query" \
   --db ./memory/memory.sqlite --json --top 6
 ```
 
-读取 JSON 结果后，用搜索到的上下文回答用户问题。如果数据库不存在，先执行索引。
+Parse the JSON output and answer the user using the retrieved context. If the database does not exist, run `index` first.
 
-### 当用户说"记住这个"或"添加到记忆"
+### When user says "remember this" or "add to memory"
 
-将内容写入 `memory/` 目录的 .md 文件：
+Write content to a `.md` file in the `memory/` directory:
 
 ```bash
-python3 ~/.claude/skills/public/memory-system/scripts/memory.py add "内容" \
-  --file 合适的文件名.md --dir ./memory --db ./memory/memory.sqlite
+python3 ~/.claude/skills/public/memory-system/scripts/memory.py add "content" \
+  --file suitable-filename.md --dir ./memory --db ./memory/memory.sqlite
 ```
 
-### 当用户说"索引记忆"或"更新记忆索引"
+### When user says "index memory" or "update memory index"
 
 ```bash
 python3 ~/.claude/skills/public/memory-system/scripts/memory.py index \
   --dir ./memory --db ./memory/memory.sqlite
 ```
 
-### 当用户说"记忆状态"或"memory status"
+To also index a top-level `MEMORY.md` file (or any extra file):
+
+```bash
+python3 ~/.claude/skills/public/memory-system/scripts/memory.py index \
+  --dir ./memory --db ./memory/memory.sqlite --memory-file ./MEMORY.md
+```
+
+### When user says "memory status"
 
 ```bash
 python3 ~/.claude/skills/public/memory-system/scripts/memory.py status \
   --db ./memory/memory.sqlite -v
 ```
 
-### 当用户说"清理记忆"
+### When user says "clean up memory"
 
 ```bash
 python3 ~/.claude/skills/public/memory-system/scripts/memory.py cleanup \
   --days 90 --dir ./memory --force
 ```
 
-## 首次使用
+## Options Reference
 
-如果运行脚本报 `ModuleNotFoundError`，安装依赖：
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--db` | `./memory/memory.sqlite` | SQLite database path |
+| `--dir` | `./memory` | Directory containing Markdown files |
+| `--top` | `6` | Number of search results to return |
+| `--min-score` | `0.35` | Minimum relevance score threshold |
+| `--json` | off | Machine-readable JSON output |
+| `--memory-file` | *(none)* | Extra file to index (e.g. a top-level `MEMORY.md`) |
+| `--days` | `90` | Age threshold for `cleanup` |
+| `--force` | off | Skip confirmation prompt in `cleanup` |
+| `-v` / `--verbose` | off | Show per-file list in `status` |
 
-```bash
-pip3 install sentence-transformers numpy
-```
+## How It Works
 
-## 注意事项
+1. **Index**: Scans Markdown files, splits them into overlapping chunks (~400 tokens each), generates vector embeddings via `sentence-transformers/all-MiniLM-L6-v2`, stores everything in SQLite
+2. **Store**: Chunks, embeddings (float32 blob), file hashes, and FTS content are stored atomically — an embedding failure rolls back via `SAVEPOINT`, leaving existing data intact
+3. **Search**: Query is embedded; a single numpy matrix multiply scores all chunks; FTS5 BM25 scores are computed separately; results are merged with weighted scores (vector 70% + text 30%). Pure keyword matches receive a score boost to avoid being filtered by `min_score`
+4. **Increment**: On re-index, only files whose SHA-256 hash changed are reprocessed; FTS is rebuilt once after all files are processed (not per-file)
 
-- `./memory/` 和 `--db` 路径相对于项目工作目录
-- 索引是增量的（SHA256 哈希比对），重复运行不会重新处理未变化的文件
-- 搜索只查 SQLite，不读源文件
-- `--json` 输出适合程序解析，不加则人类可读
-- 详细配置参考: [references/config.md](references/config.md)
+## Notes
+
+- `./memory/` and `--db` paths are relative to the project working directory
+- Search queries only SQLite — source `.md` files are not re-read at search time
+- `--json` output is suitable for programmatic parsing; omit for human-readable output
+- For detailed configuration options see: [references/config.md](../../content/skills/workflow-skills/memory-system/references/config.md)
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `ModuleNotFoundError: sentence_transformers` | Run `pip3 install sentence-transformers numpy` |
+| `ModuleNotFoundError: numpy` | Run `pip3 install numpy` |
+| No results returned | Run `index` first to build the database |
+| FTS5 not available | No action needed — vector search still works; full-text search degrades gracefully |
+| Database corrupted after indexing | Delete the `.sqlite` file and re-run `index` |
+| Search returns irrelevant results | Try lowering `--min-score` (e.g. `--min-score 0.2`) |
+
+## Related Skills
+
+- [planning-with-files](./planning-with-files) — File-based task planning workflow
+- [research](./research) — Technical research with web search support

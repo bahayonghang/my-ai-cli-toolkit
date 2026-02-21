@@ -1,0 +1,205 @@
+# Gemini CLI Integration Skill
+
+This skill enables Claude Code to effectively orchestrate Gemini CLI (v0.27.0+) for code generation, review, analysis, and specialized tasks. The default model is Auto routing (automatically selects between Flash and Pro based on task complexity).
+
+## When to Use This Skill
+
+### Ideal Use Cases
+
+1. **Second Opinion / Cross-Validation**
+   - Code review after writing code (different AI perspective)
+   - Security audit with alternative analysis
+   - Finding bugs Claude might have missed
+
+2. **Google Search Grounding**
+   - Questions requiring current internet information
+   - Latest library versions, API changes, documentation updates
+   - Current events or recent releases
+
+3. **Codebase Architecture Analysis**
+   - Use Gemini's `codebase_investigator` tool
+   - Understanding unfamiliar codebases
+   - Mapping cross-file dependencies
+
+4. **Parallel Processing**
+   - Offload tasks while continuing other work
+   - Run multiple code generations simultaneously
+   - Background documentation generation
+
+5. **Specialized Generation**
+   - Test suite generation
+   - JSDoc/documentation generation
+   - Code translation between languages
+
+### When NOT to Use
+
+- Simple, quick tasks (overhead not worth it)
+- Tasks requiring immediate response (rate limits cause delays)
+- When context is already loaded and understood
+- Interactive refinement requiring conversation
+
+## Core Instructions
+
+### 1. Verify Installation
+
+```bash
+command -v gemini || which gemini
+```
+
+### 2. Basic Command Pattern
+
+```bash
+gemini "[prompt]" --approval-mode yolo -o text 2>&1
+```
+
+Key flags:
+- `--approval-mode yolo`: Auto-approve all tool calls (replaces deprecated `--yolo`)
+- `-o text`: Human-readable output
+- `-o json`: Structured output with stats
+- `-m gemini-2.5-flash`: Use faster model for simple tasks
+- `-m auto`: Smart routing (default) — auto-selects Flash or Pro based on complexity
+
+### 3. Critical Behavioral Notes
+
+**Approval Mode Behavior**: `--approval-mode yolo` auto-approves tool calls but does NOT prevent planning prompts. Gemini may still present plans and ask "Does this plan look good?" Use forceful language:
+- "Apply now"
+- "Start immediately"
+- "Do this without asking for confirmation"
+
+> **Note:** `--yolo` / `-y` is deprecated. Use `--approval-mode yolo` instead. Other modes: `default`, `auto_edit`.
+
+**Rate Limits**: Free tier limits apply. CLI auto-retries with exponential backoff. Expect messages like "quota will reset after Xs".
+
+### 4. Output Processing
+
+For JSON output (`-o json`), parse:
+```json
+{
+  "response": "actual content",
+  "stats": {
+    "models": { "tokens": {...} },
+    "tools": { "byName": {...} }
+  }
+}
+```
+
+## Quick Reference Commands
+
+### Code Generation
+```bash
+gemini "Create [description] with [features]. Output complete file content." --approval-mode yolo -o text
+```
+
+### Code Review
+```bash
+gemini "Review [file] for: 1) features, 2) bugs/security issues, 3) improvements" -o text
+```
+
+### Bug Fixing
+```bash
+gemini "Fix these bugs in [file]: [list]. Apply fixes now." --approval-mode yolo -o text
+```
+
+### Test Generation
+```bash
+gemini "Generate [Jest/pytest] tests for [file]. Focus on [areas]." --approval-mode yolo -o text
+```
+
+### Documentation
+```bash
+gemini "Generate JSDoc for all functions in [file]. Output as markdown." --approval-mode yolo -o text
+```
+
+### Architecture Analysis
+```bash
+gemini "Use codebase_investigator to analyze this project" -o text
+```
+
+### Web Research
+```bash
+gemini "What are the latest [topic]? Use Google Search." -o text
+```
+
+### Faster Model (Simple Tasks)
+```bash
+gemini "[prompt]" -m gemini-2.5-flash -o text
+```
+
+## Error Handling
+
+### Rate Limit Exceeded
+- CLI auto-retries with exponential backoff
+- Use `-m gemini-2.5-flash` for lower priority tasks (different quota)
+- Use Auto routing (default) to let the system optimize model selection
+- Run in background for long operations
+
+### Command Failures
+- Check JSON output for detailed error stats
+- Verify Gemini is authenticated: `gemini --version`
+- Check `~/.gemini/settings.json` for config issues
+
+### Validation After Generation
+Always verify Gemini's output:
+- Check for security vulnerabilities (XSS, injection)
+- Test functionality matches requirements
+- Review code style consistency
+- Verify dependencies are appropriate
+
+## Integration Workflow
+
+### Standard Generate-Review-Fix Cycle
+
+```bash
+# 1. Generate
+gemini "Create [code]" --approval-mode yolo -o text
+
+# 2. Review (Gemini reviews its own work)
+gemini "Review [file] for bugs and security issues" -o text
+
+# 3. Fix identified issues
+gemini "Fix [issues] in [file]. Apply now." --approval-mode yolo -o text
+```
+
+### Background Execution
+
+For long tasks, run in background and monitor:
+```bash
+gemini "[long task]" --approval-mode yolo -o text 2>&1 &
+# Monitor with BashOutput tool
+```
+
+## Gemini's Unique Capabilities
+
+These tools are available only through Gemini:
+
+1. **google_web_search** - Real-time internet search via Google
+2. **codebase_investigator** - Deep architectural analysis (experimental agent, may require opt-in)
+3. **save_memory** - Cross-session persistent memory
+
+## Model Selection
+
+| Model | Use Case |
+|-------|----------|
+| `auto` (default) | Smart routing — auto-selects Flash or Pro based on task complexity |
+| `gemini-2.5-pro` | Complex reasoning tasks |
+| `gemini-2.5-flash` | Quick tasks, lower latency |
+| `gemini-3-pro-preview` | Latest capabilities (requires Google AI Ultra or paid API key) |
+| `gemini-3-flash-preview` | Latest Flash model (requires Preview Features enabled) |
+
+## Configuration
+
+### Project Context (Optional)
+
+Create `.gemini/GEMINI.md` in project root for persistent context that Gemini will automatically read.
+
+### Session Management
+
+List sessions: `gemini --list-sessions`
+Resume session: `echo "follow-up" | gemini -r [index] -o text`
+
+## See Also
+
+- `reference.md` - Complete command and flag reference
+- `templates.md` - Prompt templates for common operations
+- `patterns.md` - Advanced integration patterns
+- `tools.md` - Gemini's built-in tools documentation

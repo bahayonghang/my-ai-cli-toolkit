@@ -77,7 +77,7 @@ Best for: Process explanations, architecture overviews
 
 ## SVG Template
 
-```svg
+```xml
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
   <defs>
     <!-- Background gradient -->
@@ -140,7 +140,7 @@ Best for: Process explanations, architecture overviews
 ## Element Templates
 
 ### Comparison Box (with status icon)
-```svg
+```xml
 <g transform="translate(X, Y)">
   <rect x="0" y="0" width="300" height="180" rx="10"
         fill="#1c2128" stroke="#COLOR" stroke-width="2"/>
@@ -153,7 +153,7 @@ Best for: Process explanations, architecture overviews
 Status icons: `❌` (negative), `⚠` (warning), `✓` (positive)
 
 ### Performance Badge
-```svg
+```xml
 <g transform="translate(X, Y)">
   <rect x="-60" y="-25" width="140" height="50" rx="25"
         fill="#00f2fe" opacity="0.15" stroke="#00f2fe" stroke-width="2"/>
@@ -163,7 +163,7 @@ Status icons: `❌` (negative), `⚠` (warning), `✓` (positive)
 ```
 
 ### Tag Pill
-```svg
+```xml
 <rect x="X" y="-22" width="100" height="36" rx="18"
       fill="transparent" stroke="#COLOR" stroke-width="2"/>
 <text x="X+50" y="4" fill="#COLOR" font-size="14"
@@ -171,7 +171,7 @@ Status icons: `❌` (negative), `⚠` (warning), `✓` (positive)
 ```
 
 ### Arrow (with label)
-```svg
+```xml
 <g transform="translate(X, Y)">
   <path d="M 0 0 L 35 0" stroke="#COLOR" stroke-width="3" fill="none"/>
   <polygon points="35,0 25,-6 25,6" fill="#COLOR"/>
@@ -179,7 +179,7 @@ Status icons: `❌` (negative), `⚠` (warning), `✓` (positive)
 ```
 
 ### Data Bar (for showing proportions)
-```svg
+```xml
 <rect x="X" y="Y" width="WIDTH" height="12" rx="2"
       fill="#COLOR" opacity="0.8"/>
 ```

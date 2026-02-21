@@ -64,7 +64,7 @@ my-slint-app/
 ### 1. Component Architecture
 
 **Component Definition**
-```slint
+```rust
 // Define reusable components
 export component Button inherits Rectangle {
     // Properties
@@ -126,7 +126,7 @@ fn main() -> Result<(), slint::PlatformError> {
 ### 2. Layout Systems
 
 **VerticalLayout**
-```slint
+```rust
 export component LoginScreen inherits Window {
     VerticalLayout {
         spacing: 20px;
@@ -158,7 +158,7 @@ export component LoginScreen inherits Window {
 ```
 
 **GridLayout**
-```slint
+```rust
 export component Dashboard inherits Window {
     GridLayout {
         spacing: 10px;
@@ -187,7 +187,7 @@ export component Dashboard inherits Window {
 ### 3. Data Binding and State Management
 
 **Properties and Bindings**
-```slint
+```rust
 export component Counter inherits Window {
     property <int> count: 0;
     property <string> status: count > 10 ? "High" : "Low";
@@ -257,7 +257,7 @@ fn main() -> Result<(), slint::PlatformError> {
 ### 4. Styling and Themes
 
 **Custom Styling**
-```slint
+```rust
 import { Button, StyleMetrics } from "std-widgets.slint";
 
 export component ThemedApp inherits Window {
@@ -321,7 +321,7 @@ fn main() -> Result<(), slint::PlatformError> {
 ### 5. Animations and Transitions
 
 **Property Animations**
-```slint
+```rust
 export component AnimatedButton inherits Rectangle {
     property <color> hover-color: #3498db;
     property <length> scale: 1.0;
@@ -349,7 +349,7 @@ export component AnimatedButton inherits Rectangle {
 ```
 
 **Complex Animations**
-```slint
+```rust
 export component LoadingSpinner inherits Rectangle {
     property <float> rotation: 0deg;
 
@@ -394,7 +394,7 @@ export component LoadingSpinner inherits Rectangle {
 ### 1. Custom Components Library
 
 **Component Library Structure**
-```slint
+```rust
 // components/button.slint
 export component PrimaryButton inherits Rectangle {
     property <string> text;
@@ -450,7 +450,7 @@ export component Card inherits Rectangle {
 ### 2. Performance Optimization
 
 **Efficient Rendering**
-```slint
+```rust
 export component OptimizedList inherits Window {
     property <[ListItem]> items;
 
@@ -694,7 +694,7 @@ mod tests {
 
 ### 1. Form Handling
 
-```slint
+```rust
 export component LoginForm inherits Window {
     callback login(string, string);
 
@@ -739,7 +739,7 @@ export component LoginForm inherits Window {
 
 ### 2. Navigation Pattern
 
-```slint
+```rust
 export component NavigationContainer inherits Window {
     property <int> current-screen: 0;
 

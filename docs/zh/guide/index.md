@@ -30,7 +30,7 @@ AI Skills Hub 是一个跨平台的 AI CLI 资源管理器，为 Claude Code、C
 | frontend-design | 构建生产级前端界面 |
 | gemini-image | 通过 Gemini API 生成图像 |
 | research | 技术研究，支持引用 |
-| spec-interview | 通过系统性提问完善规格说明 |
+| interview-plan | 苏格拉底式访谈细化需求，生成可执行计划 |
 | tech-blog | 撰写技术博客 |
 | tech-design-doc | 生成技术设计文档 |
 
