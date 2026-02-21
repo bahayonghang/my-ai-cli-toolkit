@@ -16,10 +16,11 @@ import json
 import os
 import re
 import sqlite3
-import struct
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
+import numpy as np
 
 # ---------------------------------------------------------------------------
 # 配置常量
@@ -34,6 +35,7 @@ TEXT_WEIGHT = 0.3
 DEFAULT_TOP_K = 6
 DEFAULT_MIN_SCORE = 0.35
 MODEL_NAME = "all-MiniLM-L6-v2"
+CHUNK_ID_SEP = "||"  # chunk ID 分隔符（避免 Windows 路径冒号歧义）
 
 # ---------------------------------------------------------------------------
 # 嵌入模型（懒加载）
@@ -48,52 +50,35 @@ def get_model():
             from sentence_transformers import SentenceTransformer
         except ImportError:
             print("错误: 需要安装 sentence-transformers", file=sys.stderr)
-            print("运行: pip3 install sentence-transformers", file=sys.stderr)
+            print("运行: pip3 install sentence-transformers numpy", file=sys.stderr)
             sys.exit(1)
         _model = SentenceTransformer(MODEL_NAME)
     return _model
 
 
-def embed_texts(texts: list[str]) -> list[list[float]]:
-    """批量生成嵌入向量"""
+def embed_texts(texts: list[str]) -> np.ndarray:
+    """批量生成嵌入向量，返回 ndarray (shape: [n, EMBEDDING_DIM])"""
     model = get_model()
-    embeddings = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-    return embeddings.tolist()
+    return model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
 
 
-def embed_query(text: str) -> list[float]:
-    """生成单个查询的嵌入向量"""
-    return embed_texts([text])[0]
+def embed_query(text: str) -> np.ndarray:
+    """生成单个查询的嵌入向量，返回 ndarray (shape: [EMBEDDING_DIM])"""
+    model = get_model()
+    return model.encode([text], normalize_embeddings=True, show_progress_bar=False)[0]
 
 
 # ---------------------------------------------------------------------------
 # 向量工具
 # ---------------------------------------------------------------------------
-def vec_to_blob(vec: list[float]) -> bytes:
-    """float list → bytes (little-endian float32)"""
-    return struct.pack(f"<{len(vec)}f", *vec)
+def vec_to_blob(vec: np.ndarray) -> bytes:
+    """ndarray → bytes (little-endian float32)"""
+    return np.asarray(vec, dtype=np.float32).tobytes()
 
 
-def blob_to_vec(blob: bytes) -> list[float]:
-    """bytes → float list"""
-    n = len(blob) // 4
-    return list(struct.unpack(f"<{n}f", blob))
-
-
-def cosine_similarity(a: list[float], b: list[float]) -> float:
-    """纯 Python 余弦相似度（numpy 回退）"""
-    try:
-        import numpy as np
-
-        a, b = np.array(a), np.array(b)
-        dot = np.dot(a, b)
-        norm = np.linalg.norm(a) * np.linalg.norm(b)
-        return float(dot / norm) if norm > 0 else 0.0
-    except ImportError:
-        dot = sum(x * y for x, y in zip(a, b, strict=False))
-        na = sum(x * x for x in a) ** 0.5
-        nb = sum(x * x for x in b) ** 0.5
-        return dot / (na * nb) if na * nb > 0 else 0.0
+def blob_to_vec(blob: bytes) -> np.ndarray:
+    """bytes → ndarray (float32)"""
+    return np.frombuffer(blob, dtype=np.float32).copy()
 
 
 # ---------------------------------------------------------------------------
@@ -221,9 +206,12 @@ def chunk_markdown(text: str) -> list[dict]:
                 if overlap_chars > CHUNK_OVERLAP_CHARS:
                     break
                 overlap_lines.insert(0, ol)
+            # 确保至少保留当前行，避免单行超长时丢失数据
+            if not overlap_lines:
+                overlap_lines = [current_chunk_lines[-1]]
             current_chunk_lines = overlap_lines
             current_start = i - len(overlap_lines) + 1
-            current_chars = sum(len(line) + 1 for line in overlap_lines)
+            current_chars = sum(len(ol) + 1 for ol in overlap_lines)
 
     # 最后一块
     if current_chunk_lines:
@@ -258,14 +246,21 @@ def text_hash(text: str) -> str:
 # ---------------------------------------------------------------------------
 # 索引
 # ---------------------------------------------------------------------------
-def list_md_files(memory_dir: str) -> list[str]:
-    """列出记忆目录中的所有 .md 文件"""
+def list_md_files(memory_dir: str, extra_files: list[str] | None = None) -> list[str]:
+    """列出记忆目录中的所有 .md 文件
+
+    Args:
+        memory_dir: 记忆目录路径
+        extra_files: 额外的文件路径列表（如 MEMORY.md）
+    """
     d = Path(memory_dir)
     files = []
-    # 顶层 MEMORY.md
-    memory_md = d.parent / "MEMORY.md"
-    if memory_md.exists():
-        files.append(str(memory_md))
+    # 添加额外指定的文件
+    if extra_files:
+        for ef in extra_files:
+            ef_path = Path(ef)
+            if ef_path.exists():
+                files.append(str(ef_path))
     # memory/ 目录下的 .md
     if d.exists():
         for f in sorted(d.rglob("*.md")):
@@ -274,7 +269,7 @@ def list_md_files(memory_dir: str) -> list[str]:
 
 
 def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
-    """索引单个文件，返回 chunk 数量"""
+    """索引单个文件，返回 chunk 数量。使用 savepoint 保证原子性。"""
     with open(filepath, encoding="utf-8") as f:
         content = f.read()
 
@@ -282,83 +277,103 @@ def index_file(conn: sqlite3.Connection, filepath: str, fhash: str) -> int:
     if not chunks:
         return 0
 
-    # 删除旧数据
-    conn.execute("DELETE FROM chunks WHERE path = ?", (filepath,))
-    if has_fts(conn):
-        # 重建 FTS 对应行
-        pass  # content sync table 会自动处理
-
     texts = [c["text"] for c in chunks]
+    # 先生成 embeddings（可能失败），成功后再修改数据库
     embeddings = embed_texts(texts)
 
-    for chunk, emb in zip(chunks, embeddings, strict=False):
-        chunk_id = f"{filepath}:{chunk['start_line']}-{chunk['end_line']}"
-        th = text_hash(chunk["text"])
+    # 使用 savepoint 保证原子性：embed 成功后才删除旧数据
+    conn.execute("SAVEPOINT sp_index_file")
+    try:
+        conn.execute("DELETE FROM chunks WHERE path = ?", (filepath,))
+
+        for chunk, emb in zip(chunks, embeddings, strict=False):
+            chunk_id = f"{filepath}{CHUNK_ID_SEP}{chunk['start_line']}-{chunk['end_line']}"
+            th = text_hash(chunk["text"])
+            conn.execute(
+                """INSERT OR REPLACE INTO chunks(id, path, start_line, end_line, hash, text, embedding)
+                   VALUES(?, ?, ?, ?, ?, ?, ?)""",
+                (chunk_id, filepath, chunk["start_line"], chunk["end_line"], th, chunk["text"], vec_to_blob(emb)),
+            )
+
+        # 更新文件记录
+        stat = os.stat(filepath)
         conn.execute(
-            """INSERT OR REPLACE INTO chunks(id, path, start_line, end_line, hash, text, embedding)
-               VALUES(?, ?, ?, ?, ?, ?, ?)""",
-            (chunk_id, filepath, chunk["start_line"], chunk["end_line"], th, chunk["text"], vec_to_blob(emb)),
+            "INSERT OR REPLACE INTO files(path, hash, mtime, size) VALUES(?, ?, ?, ?)",
+            (filepath, fhash, stat.st_mtime, stat.st_size),
         )
+        conn.execute("RELEASE sp_index_file")
+    except Exception:
+        conn.execute("ROLLBACK TO sp_index_file")
+        raise
 
-    # 同步 FTS
-    if has_fts(conn):
-        conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
-
-    # 更新文件记录
-    stat = os.stat(filepath)
-    conn.execute(
-        "INSERT OR REPLACE INTO files(path, hash, mtime, size) VALUES(?, ?, ?, ?)",
-        (filepath, fhash, stat.st_mtime, stat.st_size),
-    )
     conn.commit()
     return len(chunks)
 
 
-def cmd_index(args):
+def _do_index(memory_dir: str, db_path: str, extra_files: list[str] | None = None) -> tuple[int, int, int]:
+    """核心索引逻辑，返回 (indexed, skipped, total_chunks)"""
+    md_files = list_md_files(memory_dir, extra_files=extra_files)
+    if not md_files:
+        print(f"没有找到 .md 文件 (目录: {memory_dir})")
+        return 0, 0, 0
+
+    conn = init_db(db_path)
+    try:
+        # 获取已索引的文件哈希
+        existing = {}
+        for row in conn.execute("SELECT path, hash FROM files"):
+            existing[row[0]] = row[1]
+
+        indexed = 0
+        skipped = 0
+        total_chunks = 0
+
+        for fp in md_files:
+            fh = file_hash(fp)
+            if fp in existing and existing[fp] == fh:
+                skipped += 1
+                continue
+            n = index_file(conn, fp, fh)
+            total_chunks += n
+            indexed += 1
+            print(f"  已索引: {os.path.basename(fp)} ({n} 块)")
+
+        # 清理已删除的文件
+        current_set = set(md_files)
+        for old_path in list(existing.keys()):
+            if old_path not in current_set:
+                conn.execute("DELETE FROM chunks WHERE path = ?", (old_path,))
+                conn.execute("DELETE FROM files WHERE path = ?", (old_path,))
+                print(f"  已移除: {os.path.basename(old_path)}")
+        conn.commit()
+
+        # FTS 重建：仅在所有文件处理完成后执行一次
+        if has_fts(conn) and indexed > 0:
+            conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
+            conn.commit()
+    finally:
+        conn.close()
+
+    return indexed, skipped, total_chunks
+
+
+def cmd_index(args: argparse.Namespace) -> None:
     """索引命令"""
     memory_dir = os.path.abspath(args.dir)
     db_path = args.db or os.path.join(memory_dir, DEFAULT_DB_NAME)
 
-    md_files = list_md_files(memory_dir)
-    if not md_files:
-        print(f"没有找到 .md 文件 (目录: {memory_dir})")
-        return
+    # 收集额外文件
+    extra_files = []
+    if hasattr(args, "memory_file") and args.memory_file:
+        extra_files.append(args.memory_file)
+    else:
+        # 默认查找 memory 目录同级的 MEMORY.md（保持向后兼容）
+        candidate = Path(memory_dir).parent / "MEMORY.md"
+        if candidate.exists():
+            extra_files.append(str(candidate))
 
-    conn = init_db(db_path)
+    indexed, skipped, total_chunks = _do_index(memory_dir, db_path, extra_files=extra_files)
 
-    # 获取已索引的文件哈希
-    existing = {}
-    for row in conn.execute("SELECT path, hash FROM files"):
-        existing[row[0]] = row[1]
-
-    indexed = 0
-    skipped = 0
-    total_chunks = 0
-
-    for fp in md_files:
-        fh = file_hash(fp)
-        if fp in existing and existing[fp] == fh:
-            skipped += 1
-            continue
-        n = index_file(conn, fp, fh)
-        total_chunks += n
-        indexed += 1
-        print(f"  已索引: {os.path.basename(fp)} ({n} 块)")
-
-    # 清理已删除的文件
-    current_set = set(md_files)
-    for old_path in list(existing.keys()):
-        if old_path not in current_set:
-            conn.execute("DELETE FROM chunks WHERE path = ?", (old_path,))
-            conn.execute("DELETE FROM files WHERE path = ?", (old_path,))
-            print(f"  已移除: {os.path.basename(old_path)}")
-    conn.commit()
-
-    if has_fts(conn) and indexed > 0:
-        conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
-        conn.commit()
-
-    conn.close()
     print(f"\n完成: 索引 {indexed} 个文件 ({total_chunks} 块)，跳过 {skipped} 个未变化文件")
     print(f"数据库: {db_path}")
 
@@ -366,25 +381,35 @@ def cmd_index(args):
 # ---------------------------------------------------------------------------
 # 搜索
 # ---------------------------------------------------------------------------
-def vector_search(conn: sqlite3.Connection, query_vec: list[float], top_k: int) -> list[dict]:
-    """纯 Python 向量搜索"""
+def vector_search(conn: sqlite3.Connection, query_vec: np.ndarray, top_k: int) -> list[dict]:
+    """numpy 批量向量搜索（点积 = 余弦相似度，因向量已归一化）"""
+    rows = conn.execute("SELECT id, path, start_line, end_line, text, embedding FROM chunks").fetchall()
+    if not rows:
+        return []
+
+    # 批量构建嵌入矩阵，单次矩阵乘法计算所有相似度
+    matrix = np.array([blob_to_vec(r[5]) for r in rows])  # shape: (n, dim)
+    scores = matrix @ query_vec  # shape: (n,)
+
+    # 取 top_k * 4 候选
+    candidate_count = min(top_k * 4, len(rows))
+    top_indices = np.argsort(scores)[::-1][:candidate_count]
+
     results = []
-    for row in conn.execute("SELECT id, path, start_line, end_line, text, embedding FROM chunks"):
-        chunk_vec = blob_to_vec(row[5])
-        score = cosine_similarity(query_vec, chunk_vec)
+    for idx in top_indices:
+        r = rows[idx]
         results.append(
             {
-                "id": row[0],
-                "path": row[1],
-                "start_line": row[2],
-                "end_line": row[3],
-                "text": row[4],
-                "score": score,
+                "id": r[0],
+                "path": r[1],
+                "start_line": r[2],
+                "end_line": r[3],
+                "text": r[4],
+                "score": float(scores[idx]),
                 "source": "vector",
             }
         )
-    results.sort(key=lambda x: x["score"], reverse=True)
-    return results[: top_k * 4]  # 返回候选集
+    return results
 
 
 def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
@@ -394,8 +419,6 @@ def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
 
     results = []
     try:
-        # trigram tokenizer: 直接用查询字符串做子串匹配
-        # 默认 tokenizer: 用空格分词做 OR 搜索
         fts_query = query.strip()
         if not fts_query:
             return []
@@ -413,17 +436,26 @@ def fts_search(conn: sqlite3.Connection, query: str, top_k: int) -> list[dict]:
                    FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY rank LIMIT ?""",
                 (f'"{fts_query}"', top_k * 4),
             ).fetchall()
-    except sqlite3.OperationalError:
+    except sqlite3.OperationalError as e:
+        print(f"FTS 搜索错误: {e}", file=sys.stderr)
         return []
 
     if not rows:
         return []
 
-    # rank 分数转 0-1（rank 越小越好，取绝对值后归一化）
-    ranks = [abs(r[5]) for r in rows]
-    max_rank = max(ranks) if ranks else 1
+    # rank 归一化: FTS5 rank 越负越好（绝对值越大 = 越相关）
+    # 转换为 0-1 分数: 最相关 → 1.0，最不相关 → 接近 0
+    abs_ranks = [abs(r[5]) for r in rows]
+    min_rank = min(abs_ranks)
+    max_rank = max(abs_ranks)
+    spread = max_rank - min_rank
+
     for r in rows:
-        score = abs(r[5]) / max_rank if max_rank > 0 else 0
+        if spread > 0:
+            # 绝对值最大（最相关）→ 分数最高
+            score = (abs(r[5]) - min_rank) / (spread + 1e-9)
+        else:
+            score = 1.0  # 只有一个结果时给满分
         results.append(
             {"id": r[0], "path": r[1], "start_line": r[2], "end_line": r[3], "text": r[4], "score": score, "source": "fts"}
         )
@@ -455,20 +487,25 @@ def hybrid_search(conn: sqlite3.Connection, query: str, top_k: int, min_score: f
                 "fts_score": r["score"],
             }
 
-    # 加权
+    # 加权 + FTS-only 结果补偿
     for item in merged.values():
-        item["score"] = VECTOR_WEIGHT * item["vec_score"] + TEXT_WEIGHT * item["fts_score"]
+        weighted = VECTOR_WEIGHT * item["vec_score"] + TEXT_WEIGHT * item["fts_score"]
+        # FTS-only 命中补偿：避免纯关键词匹配被 min_score 过滤
+        if item["vec_score"] == 0.0 and item["fts_score"] > 0:
+            item["score"] = max(weighted, item["fts_score"] * 0.8)
+        else:
+            item["score"] = weighted
 
     results = sorted(merged.values(), key=lambda x: x["score"], reverse=True)
     results = [r for r in results if r["score"] >= min_score]
     return results[:top_k]
 
 
-def cmd_search(args):
+def cmd_search(args: argparse.Namespace) -> None:
     """搜索命令"""
     db_path = args.db
     if not db_path:
-        memory_dir = os.path.abspath(args.dir if hasattr(args, "dir") and args.dir else DEFAULT_MEMORY_DIR)
+        memory_dir = os.path.abspath(getattr(args, "dir", DEFAULT_MEMORY_DIR) or DEFAULT_MEMORY_DIR)
         db_path = os.path.join(memory_dir, DEFAULT_DB_NAME)
 
     if not os.path.exists(db_path):
@@ -477,8 +514,10 @@ def cmd_search(args):
         sys.exit(1)
 
     conn = init_db(db_path)
-    results = hybrid_search(conn, args.query, args.top, args.min_score)
-    conn.close()
+    try:
+        results = hybrid_search(conn, args.query, args.top, args.min_score)
+    finally:
+        conn.close()
 
     if not results:
         print("没有找到相关结果")
@@ -508,11 +547,11 @@ def cmd_search(args):
 # ---------------------------------------------------------------------------
 # 状态
 # ---------------------------------------------------------------------------
-def cmd_status(args):
+def cmd_status(args: argparse.Namespace) -> None:
     """查看索引状态"""
     db_path = args.db
     if not db_path:
-        memory_dir = os.path.abspath(args.dir if hasattr(args, "dir") and args.dir else DEFAULT_MEMORY_DIR)
+        memory_dir = os.path.abspath(getattr(args, "dir", DEFAULT_MEMORY_DIR) or DEFAULT_MEMORY_DIR)
         db_path = os.path.join(memory_dir, DEFAULT_DB_NAME)
 
     if not os.path.exists(db_path):
@@ -521,35 +560,35 @@ def cmd_status(args):
         return
 
     conn = init_db(db_path)
+    try:
+        file_count = conn.execute("SELECT COUNT(*) FROM files").fetchone()[0]
+        chunk_count = conn.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
+        model = conn.execute("SELECT value FROM meta WHERE key='model'").fetchone()
+        dims = conn.execute("SELECT value FROM meta WHERE key='dims'").fetchone()
+        db_size = os.path.getsize(db_path)
 
-    file_count = conn.execute("SELECT COUNT(*) FROM files").fetchone()[0]
-    chunk_count = conn.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
-    model = conn.execute("SELECT value FROM meta WHERE key='model'").fetchone()
-    dims = conn.execute("SELECT value FROM meta WHERE key='dims'").fetchone()
-    db_size = os.path.getsize(db_path)
+        fts_ok = has_fts(conn)
 
-    fts_ok = has_fts(conn)
+        print(f"数据库:    {db_path}")
+        print(f"大小:      {db_size / 1024 / 1024:.2f} MB")
+        print(f"文件数:    {file_count}")
+        print(f"分块数:    {chunk_count}")
+        print(f"嵌入模型:  {model[0] if model else 'N/A'}")
+        print(f"向量维度:  {dims[0] if dims else 'N/A'}")
+        print(f"全文索引:  {'可用' if fts_ok else '不可用'}")
 
-    print(f"数据库:    {db_path}")
-    print(f"大小:      {db_size / 1024 / 1024:.2f} MB")
-    print(f"文件数:    {file_count}")
-    print(f"分块数:    {chunk_count}")
-    print(f"嵌入模型:  {model[0] if model else 'N/A'}")
-    print(f"向量维度:  {dims[0] if dims else 'N/A'}")
-    print(f"全文索引:  {'可用' if fts_ok else '不可用'}")
-
-    if args.verbose:
-        print("\n--- 已索引文件 ---")
-        for row in conn.execute("SELECT path, size FROM files ORDER BY path"):
-            print(f"  {os.path.basename(row[0])} ({row[1]} bytes)")
-
-    conn.close()
+        if args.verbose:
+            print("\n--- 已索引文件 ---")
+            for row in conn.execute("SELECT path, size FROM files ORDER BY path"):
+                print(f"  {os.path.basename(row[0])} ({row[1]} bytes)")
+    finally:
+        conn.close()
 
 
 # ---------------------------------------------------------------------------
 # 添加记忆
 # ---------------------------------------------------------------------------
-def cmd_add(args):
+def cmd_add(args: argparse.Namespace) -> None:
     """添加记忆内容"""
     memory_dir = os.path.abspath(args.dir)
     os.makedirs(memory_dir, exist_ok=True)
@@ -576,16 +615,22 @@ def cmd_add(args):
     # 自动索引
     db_path = args.db or os.path.join(memory_dir, DEFAULT_DB_NAME)
     conn = init_db(db_path)
-    fh = file_hash(filepath)
-    n = index_file(conn, filepath, fh)
-    conn.close()
+    try:
+        fh = file_hash(filepath)
+        n = index_file(conn, filepath, fh)
+        # 单文件索引后重建 FTS
+        if has_fts(conn):
+            conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
+            conn.commit()
+    finally:
+        conn.close()
     print(f"已索引: {n} 块")
 
 
 # ---------------------------------------------------------------------------
 # 清理
 # ---------------------------------------------------------------------------
-def cmd_cleanup(args):
+def cmd_cleanup(args: argparse.Namespace) -> None:
     """清理旧记忆文件"""
     memory_dir = os.path.abspath(args.dir)
     cutoff = datetime.now() - timedelta(days=args.days)
@@ -618,19 +663,11 @@ def cmd_cleanup(args):
         f.unlink()
         print(f"  已删除: {f.name}")
 
-    # 重新索引以清理 SQLite
+    # 重新索引以清理 SQLite（使用共享函数，不再需要 FakeArgs）
     db_path = args.db or os.path.join(memory_dir, DEFAULT_DB_NAME)
     if os.path.exists(db_path):
         print("\n重新索引...")
-
-        # 模拟 index 命令
-        class FakeArgs:
-            pass
-
-        fake = FakeArgs()
-        fake.dir = memory_dir
-        fake.db = db_path
-        cmd_index(fake)
+        _do_index(memory_dir, db_path)
 
 
 # ---------------------------------------------------------------------------
@@ -647,6 +684,7 @@ def main():
     p_index = sub.add_parser("index", help="索引 .md 文件")
     p_index.add_argument("--dir", default=DEFAULT_MEMORY_DIR, help="记忆目录 (默认: memory/)")
     p_index.add_argument("--db", default=None, help="数据库路径")
+    p_index.add_argument("--memory-file", default=None, help="额外索引的文件路径 (如 MEMORY.md)")
 
     # search
     p_search = sub.add_parser("search", help="语义搜索")
