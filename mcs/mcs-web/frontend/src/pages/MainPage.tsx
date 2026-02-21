@@ -42,7 +42,7 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { useItemStore } from "@/stores/itemStore";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
-import { installSkills, uninstallSkills, installCommands, uninstallCommands } from "@/api/client";
+import { uninstallSkills, uninstallCommands } from "@/api/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { StatusChip } from "@/components/common/StatusChip";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
@@ -51,6 +51,7 @@ import { DiffDialog } from "@/components/dialogs/DiffDialog";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { PromptDialog } from "@/components/dialogs/PromptDialog";
 import { MultiSyncDialog } from "@/components/dialogs/MultiSyncDialog";
+import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 
 export default function MainPage() {
@@ -100,7 +101,8 @@ export default function MainPage() {
   // Dialog state
   const [detailName, setDetailName] = useState<string | null>(null);
   const [diffName, setDiffName] = useState<string | null>(null);
-  const [confirmAction, setConfirmAction] = useState<"install" | "uninstall" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"uninstall" | null>(null);
+  const [installOpen, setInstallOpen] = useState(false);
   const [promptOpen, setPromptOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
 
@@ -119,25 +121,6 @@ export default function MainPage() {
       fetchItems(platformId);
     }
   }, [platformId, activeTab, debouncedSearch, selectedCategory, fetchItems]);
-
-  const handleInstall = async () => {
-    if (!platformId || selectedNames.size === 0) return;
-    setConfirmAction(null);
-    const names = Array.from(selectedNames);
-    try {
-      const result = activeTab === "skills"
-        ? await installSkills(platformId, names)
-        : await installCommands(platformId, names);
-      showNotification(
-        `Installed ${result.success_count} items${result.failure_count > 0 ? `, ${result.failure_count} failed` : ""}`,
-        result.failure_count > 0 ? "warning" : "success"
-      );
-      clearSelection();
-      await refresh(platformId);
-    } catch (e) {
-      showNotification((e as Error).message, "error");
-    }
-  };
 
   const handleUninstall = async () => {
     if (!platformId || selectedNames.size === 0) return;
@@ -306,7 +289,7 @@ export default function MainPage() {
                 <Button
                   variant="contained"
                   startIcon={<InstallDesktopIcon />}
-                  onClick={() => setConfirmAction("install")}
+                  onClick={() => setInstallOpen(true)}
                 >
                   Install
                 </Button>
@@ -449,15 +432,30 @@ export default function MainPage() {
         />
       )}
 
-      {/* Confirm Install */}
-      <ConfirmDialog
-        open={confirmAction === "install"}
-        title="Install Items"
-        message={`Install ${selectedNames.size} ${activeTab} to ${platform?.name ?? platformId}?`}
-        confirmLabel="Install"
-        onConfirm={handleInstall}
-        onCancel={() => setConfirmAction(null)}
-      />
+      {/* Install Dialog */}
+      {platformId && (
+        <InstallDialog
+          open={installOpen}
+          platformId={platformId}
+          platform={platform}
+          itemNames={Array.from(selectedNames)}
+          itemCategories={Object.fromEntries(
+            items
+              .filter((item) => selectedNames.has(item.name))
+              .map((item) => [item.name, item.category])
+          )}
+          itemType={activeTab}
+          onClose={() => setInstallOpen(false)}
+          onCompleted={(successCount, failureCount) => {
+            showNotification(
+              `Installed ${successCount} items${failureCount > 0 ? `, ${failureCount} failed` : ""}`,
+              failureCount > 0 ? "warning" : "success"
+            );
+            clearSelection();
+            refresh(platformId);
+          }}
+        />
+      )}
 
       {/* Confirm Uninstall */}
       <ConfirmDialog
