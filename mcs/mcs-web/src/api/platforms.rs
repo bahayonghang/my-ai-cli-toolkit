@@ -58,19 +58,40 @@ pub async fn categories(
     let skills = state.skills(&id).await;
     let commands = state.commands(&id).await;
 
-    let mut cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
-    for item in skills.iter().chain(commands.iter()) {
+    let mut skill_cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    for item in skills.iter() {
         let cat = item
             .category
             .clone()
             .unwrap_or_else(|| "uncategorized".into());
-        *cats.entry(cat).or_default() += 1;
+        *skill_cats.entry(cat).or_default() += 1;
     }
 
-    let mut result: Vec<CategoryDto> = cats
-        .into_iter()
-        .map(|(name, count)| CategoryDto { name, count })
-        .collect();
+    let mut cmd_cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    for item in commands.iter() {
+        let cat = item
+            .category
+            .clone()
+            .unwrap_or_else(|| "uncategorized".into());
+        *cmd_cats.entry(cat).or_default() += 1;
+    }
+
+    let mut result: Vec<CategoryDto> = Vec::new();
+    for (name, count) in skill_cats {
+        result.push(CategoryDto {
+            name,
+            count,
+            item_type: mcs_core::model::ItemType::Skill,
+        });
+    }
+    for (name, count) in cmd_cats {
+        result.push(CategoryDto {
+            name,
+            count,
+            item_type: mcs_core::model::ItemType::Command,
+        });
+    }
+
     result.sort_by(|a, b| a.name.cmp(&b.name));
 
     Ok(Json(ApiResponse::ok(result)))

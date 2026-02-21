@@ -86,6 +86,7 @@ pub struct DiffDto {
 pub struct CategoryDto {
     pub name: String,
     pub count: usize,
+    pub item_type: ItemType,
 }
 
 #[derive(Serialize)]

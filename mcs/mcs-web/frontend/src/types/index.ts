@@ -68,6 +68,7 @@ export interface DiffDto {
 export interface CategoryDto {
   name: string;
   count: number;
+  item_type: ItemType;
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────
