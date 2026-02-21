@@ -68,6 +68,12 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
                 base_dir: "~/.codex/",
             },
             PlatformDisplay {
+                id: "cursor",
+                name: "Cursor",
+                icon: "🖱️",
+                base_dir: "~/.cursor/",
+            },
+            PlatformDisplay {
                 id: "gemini",
                 name: "Gemini",
                 icon: "✨",
@@ -188,6 +194,18 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "prompts",
                 None,
                 "codex",
+                Some("claude"),
+            ),
+        ),
+        (
+            "cursor".into(),
+            p(
+                "cursor",
+                "~/.cursor",
+                "skills",
+                "commands",
+                None,
+                "cursor",
                 Some("claude"),
             ),
         ),
