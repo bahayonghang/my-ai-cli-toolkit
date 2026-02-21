@@ -1,8 +1,8 @@
 ---
 name: zotero-synth
 description: Search, browse, and analyze Zotero libraries via zotero-mcp to summarize papers, generate topic or collection literature reviews, synthesize evidence with backlinks, and export BibTeX. Use when tasks involve Zotero collection browsing, collection-based review writing, paper summary, or evidence synthesis.
-category: knowledge-management
-tags: [zotero, literature-review, academic, research, synthesis, bibtex]
+category: Research
+tags: [zotero, synthesis, research, academic, mcp]
 ---
 
 # ZoteroSynth
@@ -28,14 +28,17 @@ Arguments: `<task> [query-or-item]`
 - `bibtex <query|keys>` → export citations via `zotero-mcp:zotero_get_item_metadata` with `format="bibtex"`.
 
 ## 3) Output Rules
-- **Literature Review**:
-    - Use `assets/prompts/review.md` as the canonical output contract.
-    - Must cover at least 50 papers (if topic specified) or 80 papers (if no topic, broad review), when available.
-    - Must include: `itemType`, `year`, `itemLink` (unchanged), `dataSource`, `dataSource url`.
-    - Must include both detailed per-paper analysis and a final summary table.
-- Add a backlink for each claim: `[Author, Year, item_key]`.
-- Mark missing evidence as `[需确认]`; do not fabricate content.
-- For >10 papers, use Map-Reduce and keep per-paper traceability.
+- **文献综述 (AI & Control 交叉学科核心约束)**:
+    - 强制应用 `assets/prompts/review.md` 为规范输出契约。
+    - **严厉禁止单篇流水账罗列**：必须按"AI算法/控制策略"或"被控对象特征"进行主题聚合综合（Thematic Synthesis）。
+    - **交叉聚类引用**：每段论述必须涵盖 3-8 篇交叉文献以验证控制策略的有效性，使用聚类格式（如 `[Author1, Year1, key1; Author2, Year2, key2]`）。
+    - 综述不仅提供信息抽取，必须在最后推导出明确的**方法论空白（Methodological Gap）与新架构构想**。
+    - 至少覆盖 50 篇（指定主题）或 80 篇（广泛综述）文献（当数据可用时）。
+    - 必须包含元素：`itemType`, `year`, `itemLink` (不可改写), `dataSource`, `dataSource url`。
+    - 必须输出一张专门针对控制领域的结构化综合对比总表。
+- **引用回链**：所有涉及机制、性能结论的主张必须有清晰可追溯的文献回链：`[Author, Year, item_key]`。
+- 标注信息缺失点：用 `[需确认]` 标记，不可凭空推导控制参数或环境设定。
+- 对于超过 10 篇的综述任务，必须采用 Map-Reduce 架构，在 Reduce 阶段执行交叉审查。
 
 ## 4) Error Handling
 - Follow `references/ERRORS.md` for user-facing error responses.

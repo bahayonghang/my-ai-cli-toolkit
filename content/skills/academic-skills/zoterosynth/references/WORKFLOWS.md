@@ -73,15 +73,19 @@ Review Progress:
 ### Fallback
 - 语义索引不可用时，显式说明"仅基于关键词/合集结果"。
 
-### Feedback Loop
+### Feedback Loop (Quality Check Protocol)
 After generating the review:
-1. Verify every paragraph has at least one `[Author, Year, item_key]` backlink.
-2. Verify review covers required sections in `assets/prompts/review.md`.
-3. Verify review length ≥ 1500 字.
-4. Verify detailed paper count: topic mode ≥ 50, broad mode ≥ 80 (or explicitly explain shortfall).
-5. Verify every `itemLink` is copied unchanged from source metadata.
-6. Run `zotero-mcp:zotero_semantic_search` with key terms to check for missed papers.
-7. If gaps found → add to literature set and re-reduce.
+1. Verify NO sequential single-paper listings exist (Must use Thematic Synthesis).
+2. Verify every analytical paragraph includes 3-8 CROSS-CITATIONS in clustered format `(Author1, Year1; Author2, Year2)`.
+3. Verify every mechanism/performance claim has an `[Author, Year, item_key]` backlink.
+4. Verify the analysis explicitly targets AI methodologies, system plant characteristics, and control metrics.
+5. Verify the conclusion deduces a specific Methodological Gap and new theoretical Model/Hypothesis.
+6. Verify review covers required sections in `assets/prompts/review.md`.
+7. Verify review length ≥ 1500 字.
+8. Verify detailed paper count: topic mode ≥ 50, broad mode ≥ 80 (or explicitly explain shortfall).
+9. Verify every `itemLink` is copied unchanged from source metadata.
+10. Run `zotero-mcp:zotero_semantic_search` with key terms to check for missed papers.
+11. If gaps found → add to literature set and re-reduce.
 
 ## 3) Evidence Synthesis
 
