@@ -46,7 +46,7 @@ help:
     @echo "  just mcs-web-build     - 构建生产版本 (前端+后端)"
     @echo "  just mcs-web           - 一键构建并启动生产版本"
     @echo ""
-    @echo "🦀 代码质量检查 (Rust - AgentKit Desktop + MCS)："
+    @echo "🦀 代码质量检查 (Rust - MCS)："
     @echo "  just rust-format-check - 检查 Rust 代码格式"
     @echo "  just rust-format       - 自动格式化 Rust 代码"
     @echo "  just rust-clippy       - 运行 Clippy 静态分析"
@@ -54,7 +54,7 @@ help:
     @echo "  just rust-check-all    - 运行所有 Rust 检查"
     @echo "  just rust-fix          - 格式化并运行检查"
     @echo ""
-    @echo "📘 代码质量检查 (TypeScript - AgentKit Desktop)："
+    @echo "📘 代码质量检查 (TypeScript - MCS Web)："
     @echo "  just ts-check          - 运行 TypeScript 类型检查"
     @echo ""
     @echo "🔧 其他命令："
@@ -135,26 +135,22 @@ mcs-web-build: mcs-web-build-frontend
 mcs-web: mcs-web-build
     cd mcs && ./target/release/mcs-web
 
-# ============ Rust 代码检查 (AgentKit Desktop + MCS) ============
+# ============ Rust 代码检查 (MCS) ============
 
 # 运行 Rust 格式检查 (不符则自动修复并报错)
 rust-format-check:
-    cd tools/agentkit-desktop/src-tauri && cargo fmt --check || (cargo fmt && false)
     cd mcs && cargo fmt --check || (cargo fmt && false)
 
 # 自动格式化 Rust 代码
 rust-format:
-    cd tools/agentkit-desktop/src-tauri && cargo fmt
     cd mcs && cargo fmt
 
 # 运行 Clippy 静态分析 (自动修复 + 严格模式)
 rust-clippy:
-    cd tools/agentkit-desktop/src-tauri && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
     cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
 
 # 运行 Rust 单元测试
 rust-test:
-    cd tools/agentkit-desktop/src-tauri && cargo test
     cd mcs && cargo test
 
 # 运行所有 Rust 检查 (格式 + Clippy + 测试)
@@ -163,11 +159,10 @@ rust-check-all: rust-format-check rust-clippy rust-test
 # 修复 Rust 代码格式并运行检查
 rust-fix: rust-format rust-clippy
 
-# ============ TypeScript 检查 (AgentKit Desktop + MCS Web) ============
+# ============ TypeScript 检查 (MCS Web) ============
 
 # 运行 TypeScript 类型检查
 ts-check:
-    cd tools/agentkit-desktop && npx tsc --noEmit
     cd mcs/mcs-web/frontend && npx tsc --noEmit
 
 # ============ CI ============
@@ -179,42 +174,27 @@ ci:
     @echo "  🚀 开始执行 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📘 步骤 1/6: AgentKit Desktop TypeScript 检查..."
-    cd tools/agentkit-desktop && npx tsc --noEmit
-    @echo ""
-    @echo "📘 步骤 2/6: MCS Web Frontend TypeScript 检查..."
+    @echo "📘 步骤 1/4: MCS Web Frontend TypeScript 检查..."
     cd mcs/mcs-web/frontend && npx tsc --noEmit
     @echo ""
-    @echo "🦀 步骤 3/6: Rust 格式检查 + 自动修复..."
-    cd tools/agentkit-desktop/src-tauri && cargo fmt --check && echo "  ✓ agentkit-desktop 格式正确" || (echo "  ⚠️ agentkit-desktop 格式不符，自动修复中..." && cargo fmt && false)
+    @echo "🦀 步骤 2/4: Rust 格式检查 + 自动修复..."
     cd mcs && cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && false)
     @echo ""
-    @echo "🦀 步骤 4/6: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
-    cd tools/agentkit-desktop/src-tauri && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
+    @echo "🦀 步骤 3/4: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
     cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
     @echo ""
-    @echo "🦀 步骤 5/6: Rust 单元测试..."
-    cd tools/agentkit-desktop/src-tauri && cargo test
+    @echo "🦀 步骤 4/4: Rust 单元测试..."
     cd mcs && cargo test
-    @echo ""
-    @echo "🔎 步骤 6/6: Rust 跨平台 lint 检查..."
-    just _rust-cross-lint
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  ✅ CI 流程执行完成！"
     @echo "════════════════════════════════════════════════════════════════"
-
-# 跨平台 lint 检查: 检测 Rust 代码中未正确使用 #[cfg] 保护的 platform-specific 导入
-# 原理: cargo clippy 只检查当前平台的 #[cfg] 路径，无法发现其他平台上的 unused imports
-_rust-cross-lint:
-    python tools/rust_cross_lint.py
 
 # ============ 工具 ============
 
 # 清理构建缓存
 clean:
     cd mcs && cargo clean 2>/dev/null || true
-    cd tools/agentkit-desktop/src-tauri && cargo clean 2>/dev/null || true
     @echo "✓ 清理完成"
 
 # 检查项目依赖是否已安装
