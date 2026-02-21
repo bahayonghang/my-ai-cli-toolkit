@@ -18,8 +18,20 @@ pub struct PlatformConfig {
 
 impl PlatformConfig {
     pub fn base_path(&self) -> PathBuf {
-        let expanded = self.base_dir.replace("~", &home_dir().to_string_lossy());
-        PathBuf::from(expanded)
+        // Only expand a leading `~` (Unix-style home shorthand).
+        // A bare `replace("~", home)` would corrupt Windows paths that contain
+        // `~` mid-string (e.g. 8.3 short names like `RUNNER~1`).
+        if let Some(rest) = self.base_dir.strip_prefix('~') {
+            let rest = rest.strip_prefix('/').unwrap_or(rest);
+            let rest = rest.strip_prefix('\\').unwrap_or(rest);
+            if rest.is_empty() {
+                home_dir()
+            } else {
+                home_dir().join(rest)
+            }
+        } else {
+            PathBuf::from(&self.base_dir)
+        }
     }
 
     pub fn skills_path(&self) -> PathBuf {
