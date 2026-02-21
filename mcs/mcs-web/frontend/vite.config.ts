@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+const targetPort = process.env.MCS_WEB_PORT || "13142";
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -12,7 +14,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:3142",
+      "/api": `http://localhost:${targetPort}`,
     },
   },
   build: {

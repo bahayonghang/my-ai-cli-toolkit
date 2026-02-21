@@ -10,7 +10,7 @@ default:
 # 启动 TUI 技能管理器
 tui: mcs
 
-# 启动 Web 版技能管理器 (构建并启动 localhost:3142)
+# 启动 Web 版技能管理器 (构建并启动 localhost:13142)
 web: mcs-web
 
 # 启动文档开发服务器
@@ -24,7 +24,7 @@ help:
     @echo ""
     @echo "⚡ 快捷启动："
     @echo "  just tui               - 启动 TUI 技能管理器"
-    @echo "  just web               - 启动 Web 版技能管理器 (localhost:3142)"
+    @echo "  just web               - 启动 Web 版技能管理器 (localhost:13142)"
     @echo "  just doc               - 启动文档开发服务器"
     @echo ""
     @echo "📚 文档相关命令："
@@ -41,7 +41,7 @@ help:
     @echo ""
     @echo "🌐 MCS Web（Web 版技能管理）："
     @echo "  just mcs-web-install   - 安装前端依赖"
-    @echo "  just mcs-web-server    - 启动后端服务器 (port 3142)"
+    @echo "  just mcs-web-server    - 启动后端服务器 (port 13142)"
     @echo "  just mcs-web-dev       - 启动前端开发服务器 (port 5173)"
     @echo "  just mcs-web-build     - 构建生产版本 (前端+后端)"
     @echo "  just mcs-web           - 一键构建并启动生产版本"
@@ -115,11 +115,11 @@ mcs-re: mcs-rebuild
 mcs-web-install:
     cd mcs/mcs-web/frontend && npm install
 
-# 启动 MCS Web 后端开发服务器 (port 3142)
+# 启动 MCS Web 后端开发服务器 (port 13142)
 mcs-web-server:
     cd mcs && cargo run --bin mcs-web
 
-# 启动 MCS Web 前端开发服务器 (port 5173, 代理到 3142)
+# 启动 MCS Web 前端开发服务器 (port 5173, 代理到 13142)
 mcs-web-dev: mcs-web-install
     cd mcs/mcs-web/frontend && npm run dev
 
@@ -131,7 +131,7 @@ mcs-web-build-frontend: mcs-web-install
 mcs-web-build: mcs-web-build-frontend
     cd mcs && cargo build --release --bin mcs-web
 
-# 启动 MCS Web 生产版本 (构建并启动，port 3142)
+# 启动 MCS Web 生产版本 (构建并启动，port 13142)
 mcs-web: mcs-web-build
     cd mcs && ./target/release/mcs-web
 
