@@ -22,8 +22,9 @@ def _parse_frontmatter_fields(content: str) -> dict[str, str | list[str]]:
     for line in m.group(1).split("\n"):
         if re.match(r"^\S.*:", line):
             key, val = line.split(":", 1)
-            current_key = key.strip()
-            fields[current_key] = val.strip()
+            k = key.strip()
+            current_key = k
+            fields[k] = val.strip()
         elif current_key and line.startswith(("  ", "\t")):
             stripped = line.strip()
             if stripped.startswith("- "):
@@ -33,8 +34,10 @@ def _parse_frontmatter_fields(content: str) -> dict[str, str | list[str]]:
                     existing.append(item)
                 else:
                     fields[current_key] = [item]
-            elif isinstance(fields[current_key], str):
-                fields[current_key] = fields[current_key] + " " + stripped
+            else:
+                existing = fields[current_key]
+                if isinstance(existing, str):
+                    fields[current_key] = existing + " " + stripped
     return fields
 
 
@@ -155,7 +158,10 @@ def detect_overlaps(
                     "type": "description_similarity",
                     "severity": "critical" if desc_sim >= 0.6 else "recommended",
                     "score": round(desc_sim, 3),
-                    "detail": f"Description similarity {desc_sim:.1%} ≥ {desc_threshold:.0%} threshold",
+                    "detail": (
+                        f"Description similarity {desc_sim:.1%}"
+                        f" ≥ {desc_threshold:.0%} threshold"
+                    ),
                     "fix": "Differentiate descriptions with distinct trigger conditions and scope.",
                 })
 
@@ -172,17 +178,27 @@ def detect_overlaps(
 
             # 3. Description keyword overlap (unigram overlap ratio)
             # Filter out stop words for meaningful comparison
-            stop = {"a", "an", "the", "is", "are", "to", "for", "and", "or", "of", "in", "on", "use", "when", "with", "this", "that"}
+            stop = {
+                "a", "an", "the", "is", "are", "to", "for", "and",
+                "or", "of", "in", "on", "use", "when", "with",
+                "this", "that",
+            }
             kw_a = {t for t in a["desc_tokens"] if t not in stop and len(t) > 1}
             kw_b = {t for t in b["desc_tokens"] if t not in stop and len(t) > 1}
             kw_overlap = _jaccard(kw_a, kw_b)
-            if kw_overlap >= 0.5 and not any(x["type"] == "description_similarity" for x in pair_issues):
+            has_desc_sim = any(
+                x["type"] == "description_similarity" for x in pair_issues
+            )
+            if kw_overlap >= 0.5 and not has_desc_sim:
                 pair_issues.append({
                     "type": "keyword_overlap",
                     "severity": "recommended",
                     "score": round(kw_overlap, 3),
                     "shared_keywords": sorted(kw_a & kw_b),
-                    "detail": f"Keyword overlap {kw_overlap:.1%} — skills may serve similar purposes",
+                    "detail": (
+                        f"Keyword overlap {kw_overlap:.1%}"
+                        " — skills may serve similar purposes"
+                    ),
                     "fix": "Clarify scope boundaries in descriptions.",
                 })
 
@@ -214,7 +230,11 @@ def detect_overlaps(
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print("Usage: python detect_overlap.py <skills-root-dir> [--target <skill-name>]", file=sys.stderr)
+        print(
+            "Usage: python detect_overlap.py <skills-root-dir>"
+            " [--target <skill-name>]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     skills_root = Path(sys.argv[1])

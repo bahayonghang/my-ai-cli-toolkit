@@ -2,20 +2,25 @@
 
 ## Pattern 1: Non-Standard Frontmatter Fields
 
-**Detect**: Fields like `version`, `author`, `license`, `priority` in frontmatter.
-**Problem**: Claude Code ignores unknown fields; they waste tokens.
-**Fix**: Remove them. If the info is useful, put it in a comment or resources/.
+**Detect**: Fields like `version` or `author` inside `metadata`, or unsupported top-level fields like `priority`, `category`, `tags`.
+**Problem**: Claude Code ignores unknown top-level fields; they waste tokens. Fields like `category` and `tags` belong inside the `metadata` block.
+**Fix**: Use standard fields or put custom key-value pairs inside `metadata`.
 
 ```yaml
 # Bad
 ---
 name: my-skill
-version: 2.2
-author: someone
-license: MIT
+priority: high
 ---
 
 # Good
+---
+name: my-skill
+description: Review code for quality issues. Use when submitting PRs.
+metadata:
+  version: 2.2
+  author: someone
+license: MIT
 ---
 name: my-skill
 description: Review code for quality issues. Use when submitting PRs.
@@ -24,7 +29,7 @@ description: Review code for quality issues. Use when submitting PRs.
 
 ## Pattern 2: Description Too Long
 
-**Detect**: Description exceeds 30 words or lacks trigger context.
+**Detect**: Description exceeds 30 words, over 1024 characters, or lacks trigger context.
 **Problem**: Long descriptions waste tokens and reduce discoverability.
 **Fix**: Follow `<Action> <Object>. Use when <Trigger>.`
 
@@ -108,3 +113,21 @@ If `$ARGUMENTS` is empty or the path does not contain SKILL.md, report:
 # skill-a: "Run automated lint checks on staged files. Use when preparing PRs."
 # skill-b: "Deep architecture review with design pattern analysis. Use when refactoring modules."
 ```
+
+## Pattern 12: XML Injection Risk in Description
+
+**Detect**: XML angle brackets (`<` or `>`) in any frontmatter field.
+**Problem**: Frontmatter is included in Claude's system prompt. XML brackets could be interpreted as prompt injection or cause parsing errors.
+**Fix**: Remove all `<` and `>` characters from the description. Rewrite instructions using standard punctuation.
+
+## Pattern 13: Improper Skill Naming
+
+**Detect**: Skill `name` contains uppercase letters, spaces, underscores, or the reserved words `claude` or `anthropic`. Folder name does not match the `name` field.
+**Problem**: Claude Code requires skill names to be strictly kebab-case (e.g., `my-cool-skill`), forbids reserved prefixes, and expects the folder name to match.
+**Fix**: Convert the name to lowercase, replace spaces and underscores with hyphens (`-`), remove reserved words, and align the folder name.
+
+## Pattern 14: Conflicting README.md
+
+**Detect**: A `README.md` or `README_CN.md` file exists in the skill's root directory (alongside `SKILL.md`).
+**Problem**: Redundant documentation wastes tokens and creates conflict with `SKILL.md`. Humans should read the repository-level README, while Claude reads `SKILL.md` or files inside `references/`.
+**Fix**: Delete the `README.md` from the skill folder. Move any essential documentation to `SKILL.md` or a file within the `references/` directory.

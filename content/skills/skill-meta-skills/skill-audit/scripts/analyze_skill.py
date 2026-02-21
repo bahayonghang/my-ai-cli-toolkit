@@ -11,8 +11,11 @@ from pathlib import Path
 OFFICIAL_FIELDS = {
     "name", "description", "argument-hint", "disable-model-invocation",
     "user-invocable", "allowed-tools", "model", "context", "agent", "hooks",
-    "category", "tags",
+    "license", "compatibility", "metadata",
 }
+
+# Fields that belong inside `metadata:` block per the official spec.
+METADATA_SUBFIELDS = {"category", "tags"}
 
 FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 CJK_PATTERN = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]")
@@ -85,16 +88,37 @@ def analyze(skill_path: str) -> dict:
 
     # Structure scan
     skill_md = skill_dir / "SKILL.md"
+    readme_md = skill_dir / "README.md"
+    readme_cn = skill_dir / "README_CN.md"
+
+    has_resources = (skill_dir / "resources").is_dir()
+    has_references = (skill_dir / "references").is_dir()
+    has_assets = (skill_dir / "assets").is_dir()
+
     report["structure"] = {
         "has_skill_md": skill_md.exists(),
         "has_scripts": (skill_dir / "scripts").is_dir(),
-        "has_resources": (skill_dir / "resources").is_dir(),
+        "has_resources": has_resources,
+        "has_references": has_references,
+        "has_assets": has_assets,
         "files": [
             str(p.relative_to(skill_dir))
             for p in skill_dir.rglob("*")
             if p.is_file() and "__pycache__" not in p.parts
         ],
     }
+
+    if readme_md.exists() or readme_cn.exists():
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "structure",
+            "message": "README.md found in skill directory",
+            "fix": (
+                "Remove README.md from the skill folder. "
+                "Documentation should be in SKILL.md or references/."
+            ),
+            "pattern_id": "P14",
+        })
 
     if not skill_md.exists():
         report["issues"].append({
@@ -111,14 +135,46 @@ def analyze(skill_path: str) -> dict:
     # Frontmatter analysis
     fields, body = parse_frontmatter(content)
     has_frontmatter = bool(FRONTMATTER_PATTERN.match(content))
-    report["skill_name"] = fields.get("name", "unknown")
-    non_standard = [k for k in fields if k not in OFFICIAL_FIELDS]
+    skill_name = fields.get("name", "unknown")
+    report["skill_name"] = skill_name
+
+    # Check skill name validity
+    if isinstance(skill_name, str):
+        if not re.match(r"^[a-z0-9-]+$", skill_name):
+            report["issues"].append({
+                "severity": "critical",
+                "category": "name",
+                "message": f"Invalid skill name format: '{skill_name}'",
+                "fix": "Use kebab-case only. No spaces, underscores, or uppercase letters.",
+                "pattern_id": "P13",
+            })
+        if "claude" in skill_name or "anthropic" in skill_name:
+            report["issues"].append({
+                "severity": "critical",
+                "category": "name",
+                "message": f"Skill name contains reserved word: '{skill_name}'",
+                "fix": "Remove 'claude' or 'anthropic' from the name as they are reserved.",
+                "pattern_id": "P13",
+            })
+        folder_name = skill_dir.name
+        if skill_name != folder_name:
+            report["issues"].append({
+                "severity": "recommended",
+                "category": "name",
+                "message": f"Folder name '{folder_name}' does not match skill name '{skill_name}'",
+                "fix": f"Rename folder to '{skill_name}' or update name field to '{folder_name}'.",
+                "pattern_id": "P13",
+            })
+
+    non_standard = [k for k in fields if k not in OFFICIAL_FIELDS and k not in METADATA_SUBFIELDS]
+    misplaced_metadata = [k for k in fields if k in METADATA_SUBFIELDS]
     missing = [f for f in ["name", "description"] if f not in fields]
     missing_recommended = [f for f in ["argument-hint", "allowed-tools"] if f not in fields]
 
     report["frontmatter"] = {
         "fields": fields,
         "non_standard": non_standard,
+        "misplaced_metadata": misplaced_metadata,
         "missing_required": missing,
         "missing_recommended": missing_recommended,
     }
@@ -137,6 +193,14 @@ def analyze(skill_path: str) -> dict:
             "category": "frontmatter",
             "message": f"Non-standard field: '{f}'",
             "fix": f"Remove '{f}' from frontmatter. Move to body or resources/ if needed.",
+            "pattern_id": "P1",
+        })
+    for f in misplaced_metadata:
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "frontmatter",
+            "message": f"Field '{f}' should be inside 'metadata' block",
+            "fix": f"Move '{f}' into the 'metadata:' section of frontmatter.",
             "pattern_id": "P1",
         })
     for f in missing:
@@ -161,7 +225,40 @@ def analyze(skill_path: str) -> dict:
     # Description analysis
     desc = _str_field(fields, "description")
     desc_is_cjk_no_space = bool(CJK_PATTERN.search(desc)) and not bool(re.search(r"\s", desc))
+
+    # Security: XML brackets in any frontmatter field
+    for field_name, field_val in fields.items():
+        if field_name == "description":
+            continue  # checked separately with specific message
+        val_str = field_val if isinstance(field_val, str) else str(field_val)
+        if "<" in val_str or ">" in val_str:
+            report["issues"].append({
+                "severity": "critical",
+                "category": "security",
+                "message": f"XML brackets in frontmatter field '{field_name}'",
+                "fix": f"Remove < > from '{field_name}'. Frontmatter is included in system prompt.",
+                "pattern_id": "P12",
+            })
+
     if desc:
+        if "<" in desc or ">" in desc:
+            report["issues"].append({
+                "severity": "critical",
+                "category": "description",
+                "message": "XML brackets (< >) found in description",
+                "fix": "Remove XML brackets from description due to security injection risks.",
+                "pattern_id": "P12",
+            })
+
+        if len(desc) > 1024:
+            report["issues"].append({
+                "severity": "critical",
+                "category": "description",
+                "message": f"Description exceeds 1024 character limit ({len(desc)} chars)",
+                "fix": "Shorten description to under 1024 characters.",
+                "pattern_id": "P2",
+            })
+
         if desc_is_cjk_no_space:
             desc_length = estimate_tokens(desc)
             unit = "tokens"
@@ -197,17 +294,29 @@ def analyze(skill_path: str) -> dict:
                 "pattern_id": "P2",
             })
 
+    # Compatibility field validation (1-500 chars per official spec)
+    compat = _str_field(fields, "compatibility")
+    if compat and len(compat) > 500:
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "frontmatter",
+            "message": f"compatibility field too long ({len(compat)} chars, max 500)",
+            "fix": "Shorten compatibility to under 500 characters.",
+        })
+
     # Token analysis
     tokens_skill_md = estimate_tokens(content)
     tokens_body = estimate_tokens(body)
     tokens_desc = estimate_tokens(desc)
     tokens_resources = 0
-    res_dir = skill_dir / "resources"
-    if res_dir.is_dir():
-        for f in res_dir.rglob("*"):
-            if f.is_file():
-                with contextlib.suppress(Exception):
-                    tokens_resources += estimate_tokens(f.read_text(encoding="utf-8"))
+    
+    resource_dirs = [skill_dir / "resources", skill_dir / "references", skill_dir / "assets"]
+    for rd in resource_dirs:
+        if rd.is_dir():
+            for f in rd.rglob("*"):
+                if f.is_file():
+                    with contextlib.suppress(Exception):
+                        tokens_resources += estimate_tokens(f.read_text(encoding="utf-8"))
 
     report["tokens"] = {
         "description": tokens_desc,
@@ -365,6 +474,33 @@ def analyze(skill_path: str) -> dict:
             "fix": "Add precondition checks and error messages for invalid inputs.",
             "pattern_id": "P10",
         })
+
+    # Dimension 9: Recommended sections (examples + troubleshooting)
+    if tokens_body > 100:
+        has_examples = bool(re.search(
+            r"^#{1,3}\s*(Examples?|Usage)", body, re.MULTILINE | re.IGNORECASE,
+        ))
+        if not has_examples:
+            report["issues"].append({
+                "severity": "optional",
+                "category": "workflow",
+                "message": "No examples section found in SKILL.md body",
+                "fix": "Add an ## Examples section with common usage scenarios.",
+                "pattern_id": "P9",
+            })
+
+        has_troubleshooting = bool(re.search(
+            r"^#{1,3}\s*(Troubleshoot|Common\s+Issues?|Error\s+Handling)",
+            body, re.MULTILINE | re.IGNORECASE,
+        ))
+        if not has_troubleshooting:
+            report["issues"].append({
+                "severity": "optional",
+                "category": "workflow",
+                "message": "No troubleshooting section found in SKILL.md body",
+                "fix": "Add a ## Troubleshooting section for common error cases.",
+                "pattern_id": "P10",
+            })
 
     # Sort issues by severity
     severity_order = {"critical": 0, "recommended": 1, "optional": 2}

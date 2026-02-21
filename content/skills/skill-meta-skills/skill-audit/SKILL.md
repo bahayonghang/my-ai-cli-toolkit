@@ -1,11 +1,12 @@
 ---
 name: skill-audit
 description: Analyze Claude Code skills for compliance and token efficiency. Use when reviewing skills.
-category: skill-management
-tags:
-  - optimization
-  - analysis
-  - skill-authoring
+metadata:
+  category: skill-management
+  tags:
+    - optimization
+    - analysis
+    - skill-authoring
 argument-hint: [skill-directory-path]
 allowed-tools: Read, Glob, Grep, Bash(python *)
 ---
