@@ -120,11 +120,11 @@ mcs-web-server:
     cd mcs && cargo run --bin mcs-web
 
 # 启动 MCS Web 前端开发服务器 (port 5173, 代理到 3142)
-mcs-web-dev:
+mcs-web-dev: mcs-web-install
     cd mcs/mcs-web/frontend && npm run dev
 
 # 构建 MCS Web 前端生产版本
-mcs-web-build-frontend:
+mcs-web-build-frontend: mcs-web-install
     cd mcs/mcs-web/frontend && npm run build
 
 # 构建 MCS Web 生产版本 (前端 + 后端)
