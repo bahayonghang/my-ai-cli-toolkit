@@ -336,8 +336,15 @@ mod tests {
             .unwrap();
         assert_eq!(status_first, InstallStatus::Installed);
 
-        std::thread::sleep(std::time::Duration::from_millis(5));
-        std::fs::write(source_skill.join("scripts").join("run.sh"), "echo v2").unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        // Write content with a different size (not just different content) so the
+        // directory signature (which hashes relative paths + file sizes) detects
+        // the change even if mtime resolution is too coarse on the CI filesystem.
+        std::fs::write(
+            source_skill.join("scripts").join("run.sh"),
+            "echo v2 updated",
+        )
+        .unwrap();
 
         let second = discover_skills(&project_root, &platform);
         let status_second = second
