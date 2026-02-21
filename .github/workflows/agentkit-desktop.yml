@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: tools/agentkit-desktop/package-lock.json
+          cache-dependency-path: mcs/mcs-web/frontend/package-lock.json
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -35,111 +35,24 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: tools/agentkit-desktop/src-tauri
-
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          workspaces: mcs
 
       - name: Install npm dependencies
-        working-directory: tools/agentkit-desktop
+        working-directory: mcs/mcs-web/frontend
         run: npm ci
 
       - name: TypeScript check
-        working-directory: tools/agentkit-desktop
+        working-directory: mcs/mcs-web/frontend
         run: npx tsc --noEmit
 
-      - name: Rust tests
-        working-directory: tools/agentkit-desktop/src-tauri
-        run: cargo test
-
-      - name: Clippy
-        working-directory: tools/agentkit-desktop/src-tauri
-        run: cargo clippy --all-targets --all-features -- -D warnings
-
       - name: Rust format check
-        working-directory: tools/agentkit-desktop/src-tauri
+        working-directory: mcs
         run: cargo fmt --check
 
-  build:
-    needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-          - os: macos-latest
-            target: x86_64-apple-darwin
-          - os: macos-latest
-            target: aarch64-apple-darwin
+      - name: Rust Clippy
+        working-directory: mcs
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: tools/agentkit-desktop/package-lock.json
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: tools/agentkit-desktop/src-tauri
-
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      - name: Install npm dependencies
-        working-directory: tools/agentkit-desktop
-        run: npm ci
-
-      - name: Build Tauri app
-        working-directory: tools/agentkit-desktop
-        run: npm run tauri build -- --target ${{ matrix.target }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: agentkit-desktop-${{ matrix.target }}
-          path: |
-            tools/agentkit-desktop/src-tauri/target/${{ matrix.target }}/release/bundle/
-            tools/agentkit-desktop/src-tauri/target/${{ matrix.target }}/release/*.exe
-            tools/agentkit-desktop/src-tauri/target/${{ matrix.target }}/release/agentkit-desktop
-          if-no-files-found: ignore
-
-  release:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: artifacts/**/*
-          generate_release_notes: true
+      - name: Rust tests
+        working-directory: mcs
+        run: cargo test
