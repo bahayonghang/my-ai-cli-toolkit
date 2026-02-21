@@ -53,8 +53,6 @@ import { PromptDialog } from "@/components/dialogs/PromptDialog";
 import { MultiSyncDialog } from "@/components/dialogs/MultiSyncDialog";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 
-const DRAWER_WIDTH = 240;
-
 export default function MainPage() {
   const { platformId } = useParams<{ platformId: string }>();
   const navigate = useNavigate();
@@ -69,6 +67,35 @@ export default function MainPage() {
   const { colorMode, toggleColorMode, showNotification } = useUiStore();
 
   const debouncedSearch = useDebounce(search, 300);
+
+  // Resizable drawer state
+  const [drawerWidth, setDrawerWidth] = useState(() => {
+    const saved = localStorage.getItem("mcsDrawerWidth");
+    return saved ? parseInt(saved, 10) : 240;
+  });
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("mcsDrawerWidth", drawerWidth.toString());
+  }, [drawerWidth]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      let newWidth = e.clientX;
+      if (newWidth < 200) newWidth = 200;
+      if (newWidth > 800) newWidth = 800;
+      setDrawerWidth(newWidth);
+    };
+    const handleMouseUp = () => setIsResizing(false);
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
 
   // Dialog state
   const [detailName, setDetailName] = useState<string | null>(null);
@@ -173,13 +200,20 @@ export default function MainPage() {
       <Drawer
         variant="permanent"
         sx={{
-          width: DRAWER_WIDTH,
+          width: drawerWidth,
           flexShrink: 0,
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box" },
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            overflow: "visible",
+            transition: isResizing ? "none" : "width 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            borderRight: "1px solid",
+            borderColor: "divider",
+          },
         }}
       >
         <Toolbar />
-        <Box sx={{ overflow: "auto" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
           <Tabs
             value={activeTab}
             onChange={(_, v) => setTab(v)}
@@ -189,26 +223,59 @@ export default function MainPage() {
             <Tab label="Skills" value="skills" />
             <Tab label="Commands" value="commands" />
           </Tabs>
-          <List dense>
-            <ListItemButton
-              selected={selectedCategory === null}
-              onClick={() => setCategory(null)}
-            >
-              <ListItemText primary="All" />
-              <Badge badgeContent={items.length} color="primary" max={999} />
-            </ListItemButton>
-            {categories.map((cat) => (
+
+          <Box sx={{ flexGrow: 1, overflow: "auto", pb: 2, pt: 1 }}>
+            <List dense disablePadding>
               <ListItemButton
-                key={cat.name}
-                selected={selectedCategory === cat.name}
-                onClick={() => setCategory(cat.name)}
+                selected={selectedCategory === null}
+                onClick={() => setCategory(null)}
               >
-                <ListItemText primary={cat.name} />
-                <Badge badgeContent={cat.count} color="default" max={999} />
+                <ListItemText primary={`All ${activeTab === "skills" ? "Skills" : "Commands"}`} />
+                <Badge
+                  badgeContent={categories.filter(c => c.item_type === (activeTab === "skills" ? "skill" : "command")).reduce((sum, c) => sum + c.count, 0)}
+                  color={selectedCategory === null ? "primary" : "default"}
+                  max={999}
+                />
               </ListItemButton>
-            ))}
-          </List>
+              {categories.filter(c => c.item_type === (activeTab === "skills" ? "skill" : "command")).map((cat) => (
+                <ListItemButton
+                  key={`${activeTab}-${cat.name}`}
+                  selected={selectedCategory === cat.name}
+                  onClick={() => setCategory(cat.name)}
+                >
+                  <ListItemText primary={cat.name} sx={{ pl: 2 }} />
+                  <Badge
+                    badgeContent={cat.count}
+                    color={selectedCategory === cat.name ? "primary" : "default"}
+                    max={999}
+                  />
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
         </Box>
+
+        {/* Drag Handle */}
+        <Box
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setIsResizing(true);
+          }}
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: -2,
+            width: 5,
+            height: "100%",
+            cursor: "col-resize",
+            backgroundColor: isResizing ? "primary.main" : "transparent",
+            zIndex: 10,
+            "&:hover": {
+              backgroundColor: "primary.main",
+            },
+            transition: "background-color 0.2s ease",
+          }}
+        />
       </Drawer>
 
       {/* Main content */}
