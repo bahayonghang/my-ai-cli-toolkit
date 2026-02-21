@@ -71,6 +71,21 @@ npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill u
 npx skills add https://github.com/sickn33/antigravity-awesome-skills --skill skill-seekers
 ```
 
+```shell
+# 代码审查专家
+npx skills add sanyuan0704/code-review-expert -g -y
+```
+
+## python代码质量分析与重构
+
+```shell
+npx skills add laurigates/claude-plugins@python-code-quality -g -y
+
+npx skills add acaprino/alfio-claude-plugins@python-refactor -g -y
+
+npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
+```
+
 # plugin
 
 ## claude-plugins-official
