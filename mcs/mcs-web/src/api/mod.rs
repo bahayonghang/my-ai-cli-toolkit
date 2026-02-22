@@ -43,6 +43,14 @@ pub fn router() -> Router<AppState> {
             "/api/platforms/{id}/skills/uninstall",
             axum::routing::post(skills::uninstall),
         )
+        .route(
+            "/api/platforms/{id}/skills/{name}/content",
+            axum::routing::put(skills::edit_content),
+        )
+        .route(
+            "/api/platforms/{id}/skills/external-install",
+            axum::routing::post(skills::external_install),
+        )
         // Commands
         .route(
             "/api/platforms/{id}/commands",

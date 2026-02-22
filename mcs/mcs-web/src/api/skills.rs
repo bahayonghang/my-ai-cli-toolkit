@@ -5,7 +5,9 @@ use mcs_core::core::installer::{install_skill, uninstall_skill};
 
 use crate::api::error::AppError;
 use crate::dto::{
-    ApiResponse, BatchResultDto, DiffDto, InstallRequest, ItemDetailDto, ItemDto, ItemQuery,
+    ApiResponse, BatchResultDto, DiffDto, EditContentRequest, ExternalInstallMethod,
+    ExternalInstallRequest, ExternalInstallResult, InstallRequest, ItemDetailDto, ItemDto,
+    ItemQuery, SimpleSuccess,
 };
 use crate::state::AppState;
 
@@ -197,4 +199,82 @@ fn build_skill_diff(source_dir: &std::path::Path, target_dir: &std::path::Path) 
         .unified_diff()
         .header("installed/SKILL.md", "source/SKILL.md")
         .to_string()
+}
+
+/// PUT /api/platforms/:id/skills/:name/content — overwrite SKILL.md content
+pub async fn edit_content(
+    State(state): State<AppState>,
+    Path((id, name)): Path<(String, String)>,
+    Json(body): Json<EditContentRequest>,
+) -> Result<Json<ApiResponse<SimpleSuccess>>, AppError> {
+    if state.platform(&id).await.is_none() {
+        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
+    }
+
+    let skills = state.skills(&id).await;
+    let item = skills
+        .into_iter()
+        .find(|s| s.name == name)
+        .ok_or_else(|| AppError::NotFound(format!("Skill '{name}' not found")))?;
+
+    let skill_md_path = item.source_path.join("SKILL.md");
+    std::fs::write(&skill_md_path, &body.content)
+        .map_err(|e| AppError::Internal(format!("Failed to write SKILL.md: {e}")))?;
+
+    // Invalidate cache so next request reflects updated content
+    state.invalidate_platform(&id).await;
+
+    Ok(Json(ApiResponse::ok(SimpleSuccess { success: true })))
+}
+
+/// POST /api/platforms/:id/skills/external-install — install via npx CLI
+pub async fn external_install(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(body): Json<ExternalInstallRequest>,
+) -> Result<Json<ApiResponse<ExternalInstallResult>>, AppError> {
+    if state.platform(&id).await.is_none() {
+        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
+    }
+
+    let args: Vec<String> = match body.method {
+        ExternalInstallMethod::Vercel => {
+            vec![
+                "skills".to_string(),
+                "add".to_string(),
+                body.skill_name.clone(),
+            ]
+        }
+        ExternalInstallMethod::Playbooks => {
+            vec![
+                "playbooks".to_string(),
+                "add".to_string(),
+                "skill".to_string(),
+                body.skill_name.clone(),
+            ]
+        }
+    };
+
+    let output = std::process::Command::new("npx")
+        .args(&args)
+        .output()
+        .map_err(|e| AppError::Internal(format!("Failed to execute npx: {e}")))?;
+
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+    let combined = if stderr.is_empty() {
+        stdout
+    } else {
+        format!("{stdout}\n{stderr}")
+    };
+    let success = output.status.success();
+
+    if success {
+        state.invalidate_platform(&id).await;
+    }
+
+    Ok(Json(ApiResponse::ok(ExternalInstallResult {
+        success,
+        output: combined,
+    })))
 }

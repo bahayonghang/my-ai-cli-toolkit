@@ -119,3 +119,32 @@ pub struct PromptDiffDto {
     pub diff_text: String,
     pub supports_prompt: bool,
 }
+
+#[derive(Deserialize)]
+pub struct EditContentRequest {
+    pub content: String,
+}
+
+#[derive(Deserialize)]
+pub struct ExternalInstallRequest {
+    pub skill_name: String,
+    pub method: ExternalInstallMethod,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ExternalInstallMethod {
+    Vercel,
+    Playbooks,
+}
+
+#[derive(Serialize)]
+pub struct ExternalInstallResult {
+    pub success: bool,
+    pub output: String,
+}
+
+#[derive(Serialize)]
+pub struct SimpleSuccess {
+    pub success: bool,
+}
