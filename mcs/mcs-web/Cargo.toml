@@ -1,6 +1,6 @@
 [package]
 name = "mcs-web"
-version = "0.1.1"
+version.workspace = true
 edition.workspace = true
 
 [[bin]]
