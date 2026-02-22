@@ -117,6 +117,7 @@ mcs-web-install:
 
 # 启动 MCS Web 后端开发服务器 (port 13142)
 mcs-web-server:
+    -taskkill /F /IM mcs-web.exe 2>nul || true
     cd mcs && cargo run --bin mcs-web
 
 # 启动 MCS Web 前端开发服务器 (port 5173, 代理到 13142)
@@ -133,6 +134,7 @@ mcs-web-build: mcs-web-build-frontend
 
 # 启动 MCS Web 生产版本 (构建并启动，port 13142)
 mcs-web: mcs-web-build
+    -taskkill /F /IM mcs-web.exe 2>nul || true
     cd mcs && ./target/release/mcs-web
 
 # ============ Rust 代码检查 (MCS) ============
