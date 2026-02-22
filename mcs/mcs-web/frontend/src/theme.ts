@@ -14,6 +14,28 @@ const shared: ThemeOptions = {
     borderRadius: 12,
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => `
+        body {
+          scrollbar-width: thin;
+          scrollbar-color: ${theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.2) transparent" : "rgba(0, 0, 0, 0.2) transparent"};
+        }
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: ${theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)"};
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background-color: ${theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)"};
+        }
+      `,
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -25,16 +47,16 @@ const shared: ThemeOptions = {
     MuiCard: {
       styleOverrides: {
         root: ({ theme }) => ({
-          borderRadius: 24,
+          borderRadius: 20, // 稍微收紧圆角以适应小体积卡片
           backgroundImage: "none",
-          backgroundColor: theme.palette.mode === "dark" ? "rgba(20, 20, 25, 0.4)" : "rgba(255, 255, 255, 0.7)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(20, 20, 25, 0.45)" : "rgba(255, 255, 255, 0.75)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           border: theme.palette.mode === "dark"
-            ? "1px solid rgba(255, 255, 255, 0.05)"
+            ? "1px solid rgba(255, 255, 255, 0.08)"
             : "1px solid rgba(0, 0, 0, 0.05)",
           boxShadow: theme.palette.mode === "dark"
-            ? "0 4px 30px rgba(0, 0, 0, 0.5)"
+            ? "0 4px 30px rgba(0, 0, 0, 0.4)"
             : "0 4px 30px rgba(0, 0, 0, 0.05)",
         }),
       },
@@ -129,7 +151,7 @@ export const darkTheme = createTheme({
     primary: { main: "#A78BFA" }, // Glowing Violet
     secondary: { main: "#60A5FA" }, // Glowing Blue
     background: {
-      default: "#050505", // Deepest black
+      default: "#09090b", // Deepest black, a bit more neutral
       paper: "rgba(20, 20, 25, 0.4)", // Translucent dark
     },
     success: { main: "#66BB6A" },
@@ -137,3 +159,4 @@ export const darkTheme = createTheme({
     error: { main: "#EF5350" },
   },
 });
+

@@ -34,6 +34,14 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
   });
 }
 
+async function putJson<T>(url: string, body: unknown): Promise<T> {
+  return fetchJson<T>(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 // ── Platforms ──────────────────────────────────────────────────────
 
 export async function getPlatforms(): Promise<PlatformDisplay[]> {
@@ -159,4 +167,29 @@ export async function multiSync(body: {
   item_type: "skill" | "command";
 }): Promise<BatchResultDto> {
   return postJson(`${BASE}/sync`, body);
+}
+
+// ── Skill Content Edit ────────────────────────────────────────────
+
+export async function updateSkillContent(
+  platformId: string,
+  name: string,
+  content: string
+): Promise<{ success: boolean }> {
+  return putJson(`${BASE}/platforms/${platformId}/skills/${name}/content`, {
+    content,
+  });
+}
+
+// ── External Skill Install ────────────────────────────────────────
+
+export async function externalInstallSkill(
+  platformId: string,
+  skillName: string,
+  method: "vercel" | "playbooks"
+): Promise<{ success: boolean; output: string }> {
+  return postJson(`${BASE}/platforms/${platformId}/skills/external-install`, {
+    skill_name: skillName,
+    method,
+  });
 }

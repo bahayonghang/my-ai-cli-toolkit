@@ -9,7 +9,9 @@ import {
   Grid,
   CircularProgress,
   Alert,
+  Tooltip,
 } from "@mui/material";
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 
@@ -44,13 +46,15 @@ export default function PlatformSelectPage() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        p: 4,
+        justifyContent: "flex-start", // 让内容偏上，便于显示多内容
+        pt: { xs: 8, md: 12 },
+        pb: 12, // 为吸底按钮留出空间
+        px: { xs: 2, sm: 4, md: 6 },
         position: "relative",
       }}
     >
       <AnimatedBackground />
-      <Box sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+      <Box sx={{ position: "relative", zIndex: 1, textAlign: "center", mb: 4, width: '100%' }}>
         <Typography
           variant="h2"
           fontWeight={800}
@@ -61,7 +65,8 @@ export default function PlatformSelectPage() {
               : "linear-gradient(135deg, #000 0%, #8B5CF6 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            mb: 1,
+            mb: 0.5,
+            fontSize: { xs: '2.5rem', sm: '3rem', md: '3.75rem' },
             animation: "fadeInDown 0.4s ease-out",
             "@keyframes fadeInDown": {
               "0%": { opacity: 0, transform: "translateY(-20px)" },
@@ -72,10 +77,10 @@ export default function PlatformSelectPage() {
           MyClaude Skills
         </Typography>
         <Typography
-          variant="h6"
+          variant="subtitle1"
           color="text.secondary"
           sx={{
-            mb: 6,
+            fontWeight: 500,
             animation: "fadeIn 0.6s ease-out 0.15s both",
             "@keyframes fadeIn": {
               "0%": { opacity: 0 },
@@ -87,51 +92,61 @@ export default function PlatformSelectPage() {
         </Typography>
       </Box>
 
-      <Grid container spacing={3} maxWidth={1000} justifyContent="center" sx={{ position: "relative", zIndex: 1 }}>
+      {/* 调整为更紧凑的自适应网格 */}
+      <Grid container spacing={2.5} sx={{ maxWidth: 1200, position: "relative", zIndex: 1, width: "100%" }}>
         {platforms.map((p, index) => (
-          <Grid key={p.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+          <Grid key={p.id} size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
             <Card
               elevation={0}
               sx={{
                 height: "100%",
                 transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                animation: `slideUp 0.4s ease-out ${0.05 * index}s both`,
+                animation: `slideUp 0.4s ease-out ${0.03 * index}s both`,
                 "@keyframes slideUp": {
-                  "0%": { opacity: 0, transform: "translateY(40px)" },
+                  "0%": { opacity: 0, transform: "translateY(30px)" },
                   "100%": { opacity: 1, transform: "translateY(0)" }
                 },
                 "&:hover": {
-                  transform: "translateY(-8px) scale(1.02)",
+                  transform: "translateY(-6px) scale(1.03)",
                   boxShadow: (theme) => theme.palette.mode === 'dark'
-                    ? "0 20px 40px -10px rgba(167, 139, 250, 0.2), 0 0 20px rgba(167, 139, 250, 0.1) inset"
+                    ? "0 20px 40px -10px rgba(167, 139, 250, 0.25), 0 0 20px rgba(167, 139, 250, 0.1) inset"
                     : "0 20px 40px -10px rgba(139, 92, 246, 0.15), 0 0 20px rgba(139, 92, 246, 0.05) inset",
-                  borderColor: (theme) => theme.palette.mode === 'dark' ? "rgba(167, 139, 250, 0.3)" : "rgba(139, 92, 246, 0.2)",
+                  borderColor: (theme) => theme.palette.mode === 'dark' ? "rgba(167, 139, 250, 0.4)" : "rgba(139, 92, 246, 0.3)",
                   "& .platform-icon": {
-                    transform: "scale(1.1) rotate(5deg)",
+                    transform: "scale(1.15) translateY(-2px)",
                   }
                 },
               }}
             >
               <CardActionArea
                 onClick={() => navigate(`/platform/${p.id}`)}
-                sx={{ p: 4, textAlign: "center", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}
+                sx={{
+                  p: { xs: 2, sm: 2.5 },
+                  pt: { xs: 3, sm: 3.5 },
+                  textAlign: "center",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start"
+                }}
               >
                 <Typography
-                  variant="h2"
+                  variant="h3"
                   className="platform-icon"
                   sx={{
-                    mb: 2,
-                    transition: "transform 0.3s ease",
-                    display: "inline-block"
+                    mb: 1.5,
+                    transition: "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    display: "inline-block",
+                    lineHeight: 1,
                   }}
                 >
                   {p.icon}
                 </Typography>
-                <CardContent sx={{ p: 0, flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <Typography variant="h6" fontWeight={700} sx={{ mb: 0.5 }}>
+                <CardContent sx={{ p: 0, width: '100%' }}>
+                  <Typography variant="body1" fontWeight={700} sx={{ mb: 0.25, lineHeight: 1.2, wordBreak: 'break-word' }}>
                     {p.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontFamily: '"JetBrains Mono", monospace' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: "0.65rem", opacity: 0.8, display: 'block', wordBreak: 'break-all' }}>
                     {p.base_dir}
                   </Typography>
                 </CardContent>
@@ -141,38 +156,75 @@ export default function PlatformSelectPage() {
         ))}
       </Grid>
 
-      <Box sx={{ mt: 8, position: "relative", zIndex: 1 }}>
-        <Typography
-          variant="body1"
-          fontWeight={500}
-          color="primary"
-          sx={{
-            cursor: "pointer",
-            position: "relative",
-            display: "inline-block",
-            transition: "all 0.3s",
-            "&::after": {
-              content: '""',
-              position: "absolute",
-              width: "0%",
-              height: "2px",
-              bottom: "-4px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: "currentColor",
-              transition: "width 0.3s ease"
-            },
-            "&:hover": {
-              color: (theme) => theme.palette.mode === 'dark' ? "#fff" : "#000",
-              "&::after": { width: "100%" }
-            },
-            animation: "fadeIn 0.6s ease-out 0.5s both",
-          }}
-          onClick={() => navigate("/dashboard")}
-        >
-          View Dashboard →
-        </Typography>
+      {/* 常驻吸底的流光按钮 */}
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 32,
+          zIndex: 10,
+          animation: "fadeInUp 0.6s ease-out 0.5s both",
+          "@keyframes fadeInUp": {
+            "0%": { opacity: 0, transform: "translateY(20px)" },
+            "100%": { opacity: 1, transform: "translateY(0)" }
+          }
+        }}
+      >
+        <Tooltip title="View Global Dashboard" arrow placement="top">
+          <Box
+            onClick={() => navigate("/dashboard")}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              px: 4,
+              py: 1.5,
+              borderRadius: 8,
+              cursor: "pointer",
+              background: (theme) => theme.palette.mode === 'dark'
+                ? "rgba(20, 20, 25, 0.8)"
+                : "rgba(255, 255, 255, 0.9)",
+              backdropFilter: "blur(20px)",
+              border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.3)'}`,
+              boxShadow: (theme) => theme.palette.mode === 'dark'
+                ? "0 10px 40px -10px rgba(167, 139, 250, 0.5)"
+                : "0 10px 40px -10px rgba(139, 92, 246, 0.4)",
+              transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2)",
+              "&:hover": {
+                transform: "translateY(-4px) scale(1.05)",
+                background: (theme) => theme.palette.mode === 'dark'
+                  ? "rgba(30, 30, 35, 0.9)"
+                  : "#fff",
+                border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(167, 139, 250, 0.6)' : 'rgba(139, 92, 246, 0.6)'}`,
+                boxShadow: (theme) => theme.palette.mode === 'dark'
+                  ? "0 15px 50px -10px rgba(167, 139, 250, 0.8)"
+                  : "0 15px 50px -10px rgba(139, 92, 246, 0.6)",
+                "& .glow": { opacity: 1 },
+                "& .icon": { color: (theme) => theme.palette.primary.main }
+              }
+            }}
+          >
+            {/* 呼吸灯渐变边框效果 */}
+            <Box
+              className="glow"
+              sx={{
+                position: "absolute",
+                inset: -1,
+                borderRadius: 8,
+                background: "linear-gradient(45deg, #8B5CF6, #3B82F6, #A78BFA)",
+                opacity: 0,
+                zIndex: -1,
+                transition: "opacity 0.3s",
+                filter: "blur(8px)",
+              }}
+            />
+            <DashboardCustomizeIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />
+            <Typography variant="body2" fontWeight={700} sx={{ letterSpacing: '0.02em' }}>
+              Dashboard
+            </Typography>
+          </Box>
+        </Tooltip>
       </Box>
     </Box>
   );
 }
+
