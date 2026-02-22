@@ -49,6 +49,8 @@ pub async fn list(
             is_default: item.is_default,
             source_path: item.source_path.to_string_lossy().into_owned(),
             target_path: item.target_path.to_string_lossy().into_owned(),
+            source_mtime_ms: item.source_mtime_ms,
+            target_mtime_ms: item.target_mtime_ms,
         })
         .collect();
 

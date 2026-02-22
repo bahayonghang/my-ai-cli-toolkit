@@ -62,6 +62,8 @@ pub struct ItemDto {
     pub is_default: bool,
     pub source_path: String,
     pub target_path: String,
+    pub source_mtime_ms: Option<u64>,
+    pub target_mtime_ms: Option<u64>,
 }
 
 #[derive(Serialize)]
