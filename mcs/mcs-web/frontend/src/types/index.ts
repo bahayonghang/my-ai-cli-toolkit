@@ -47,6 +47,8 @@ export interface ItemDto {
   is_default: boolean;
   source_path: string;
   target_path: string;
+  source_mtime_ms: number | null;
+  target_mtime_ms: number | null;
 }
 
 export interface ItemDetailDto {

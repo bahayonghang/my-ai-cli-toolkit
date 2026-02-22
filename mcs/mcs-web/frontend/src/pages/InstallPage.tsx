@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -29,19 +29,70 @@ import {
   FormLabel,
   Stack,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
-import { getSkills, externalInstallSkill } from "@/api/client";
+import { getSkills, installSkills, externalInstallSkill } from "@/api/client";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
-import type { ItemDto } from "@/types";
+import type { ItemDto, InstallStatus } from "@/types";
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
+function formatDate(epochMs: number | null): string {
+  if (!epochMs) return "—";
+  const d = new Date(epochMs);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function statusLabel(status: InstallStatus): string {
+  switch (status) {
+    case "installed":
+      return "Installed";
+    case "outdated":
+      return "Outdated";
+    case "not_installed":
+      return "Not Installed";
+    default:
+      return status;
+  }
+}
+
+function statusColor(status: InstallStatus): "success" | "warning" | "default" {
+  switch (status) {
+    case "installed":
+      return "success";
+    case "outdated":
+      return "warning";
+    default:
+      return "default";
+  }
+}
+
+function StatusIcon({ status }: { status: InstallStatus }) {
+  switch (status) {
+    case "installed":
+      return <CheckCircleOutlineIcon fontSize="small" color="success" />;
+    case "outdated":
+      return <WarningAmberIcon fontSize="small" color="warning" />;
+    default:
+      return <RadioButtonUncheckedIcon fontSize="small" color="disabled" />;
+  }
+}
+
+// ── Main Component ──────────────────────────────────────────────────
 
 export default function InstallPage() {
   const { platformId } = useParams<{ platformId: string }>();
@@ -54,16 +105,17 @@ export default function InstallPage() {
 
   const [activeTab, setActiveTab] = useState(0);
 
-  // Tab 1: Local repository
+  // Tab 0: Local repository (ALL skills)
   const [skills, setSkills] = useState<ItemDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<InstallStatus | null>(null);
   const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
   const [installOpen, setInstallOpen] = useState(false);
 
-  // Tab 2: External install
+  // Tab 1: External install
   const [extSkillName, setExtSkillName] = useState("");
   const [extMethod, setExtMethod] = useState<"vercel" | "playbooks">("vercel");
   const [extLoading, setExtLoading] = useState(false);
@@ -79,8 +131,8 @@ export default function InstallPage() {
     setLoading(true);
     setError(null);
     try {
+      // No status filter here — fetch ALL skills
       const data = await getSkills(platformId, {
-        status: "not_installed",
         search: search || undefined,
         category: selectedCategory ?? undefined,
       });
@@ -97,6 +149,15 @@ export default function InstallPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [platformId, search, selectedCategory, activeTab]);
 
+  // Client-side status filtering
+  const filteredSkills = useMemo(
+    () =>
+      statusFilter
+        ? skills.filter((s) => s.status === statusFilter)
+        : skills,
+    [skills, statusFilter]
+  );
+
   const toggleSelection = (name: string) => {
     setSelectedNames((prev) => {
       const next = new Set(prev);
@@ -109,6 +170,43 @@ export default function InstallPage() {
   const categories = Array.from(
     new Set(skills.map((s) => s.category).filter(Boolean))
   ) as string[];
+
+  // Summary counts
+  const statusCounts = useMemo(() => {
+    const counts = { installed: 0, outdated: 0, not_installed: 0 };
+    for (const s of skills) {
+      if (s.status in counts) counts[s.status as keyof typeof counts]++;
+    }
+    return counts;
+  }, [skills]);
+
+  // Selected items that can be installed or updated
+  const selectedInstallable = useMemo(() => {
+    return skills.filter(
+      (s) =>
+        selectedNames.has(s.name) &&
+        (s.status === "not_installed" || s.status === "outdated")
+    );
+  }, [skills, selectedNames]);
+
+  const handleBatchUpdate = async () => {
+    if (!platformId) return;
+    const outdated = skills.filter((s) => s.status === "outdated");
+    if (outdated.length === 0) return;
+    try {
+      const result = await installSkills(
+        platformId,
+        outdated.map((s) => s.name)
+      );
+      showNotification(
+        `Updated ${result.success_count} skills${result.failure_count > 0 ? `, ${result.failure_count} failed` : ""}`,
+        result.failure_count > 0 ? "warning" : "success"
+      );
+      fetchSkills();
+    } catch (e) {
+      showNotification((e as Error).message, "error");
+    }
+  };
 
   const handleExternalInstall = async () => {
     if (!platformId || !extSkillName.trim()) return;
@@ -163,8 +261,20 @@ export default function InstallPage() {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-            Install Skills — {platform?.icon} {platform?.name ?? platformId}
+            Skills Library — {platform?.icon} {platform?.name ?? platformId}
           </Typography>
+          {statusCounts.outdated > 0 && (
+            <Button
+              variant="contained"
+              color="warning"
+              size="small"
+              startIcon={<SystemUpdateAltIcon />}
+              onClick={handleBatchUpdate}
+              sx={{ mr: 1, borderRadius: 2 }}
+            >
+              Update All ({statusCounts.outdated})
+            </Button>
+          )}
           <IconButton color="inherit" onClick={toggleColorMode}>
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
@@ -186,10 +296,10 @@ export default function InstallPage() {
           </Tabs>
 
           <Box sx={{ p: 2 }}>
-            {/* ── Tab 0: Local repository ── */}
+            {/* ── Tab 0: Local repository (ALL skills) ── */}
             {activeTab === 0 && (
               <Box>
-                {/* Search + Category Chips + Install button */}
+                {/* Search + Category Chips + Status Chips + Batch button */}
                 <Box
                   sx={{
                     display: "flex",
@@ -201,7 +311,7 @@ export default function InstallPage() {
                 >
                   <TextField
                     size="small"
-                    placeholder="Search available skills..."
+                    placeholder="Search skills..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     slotProps={{
@@ -215,6 +325,8 @@ export default function InstallPage() {
                     }}
                     sx={{ minWidth: 240 }}
                   />
+
+                  {/* Category filter */}
                   <Chip
                     label="All"
                     color={selectedCategory === null ? "primary" : "default"}
@@ -234,17 +346,68 @@ export default function InstallPage() {
                       sx={{ cursor: "pointer" }}
                     />
                   ))}
+
+                  {/* Spacer */}
                   <Box sx={{ flexGrow: 1 }} />
-                  {selectedNames.size > 0 && (
+
+                  {/* Status filter chips */}
+                  <Stack direction="row" spacing={0.5}>
+                    <Chip
+                      icon={<CheckCircleOutlineIcon />}
+                      label={`${statusCounts.installed}`}
+                      color={statusFilter === "installed" ? "success" : "default"}
+                      variant={statusFilter === "installed" ? "filled" : "outlined"}
+                      size="small"
+                      onClick={() =>
+                        setStatusFilter(
+                          statusFilter === "installed" ? null : "installed"
+                        )
+                      }
+                      sx={{ cursor: "pointer" }}
+                    />
+                    <Chip
+                      icon={<WarningAmberIcon />}
+                      label={`${statusCounts.outdated}`}
+                      color={statusFilter === "outdated" ? "warning" : "default"}
+                      variant={statusFilter === "outdated" ? "filled" : "outlined"}
+                      size="small"
+                      onClick={() =>
+                        setStatusFilter(
+                          statusFilter === "outdated" ? null : "outdated"
+                        )
+                      }
+                      sx={{ cursor: "pointer" }}
+                    />
+                    <Chip
+                      icon={<RadioButtonUncheckedIcon />}
+                      label={`${statusCounts.not_installed}`}
+                      color={statusFilter === "not_installed" ? "primary" : "default"}
+                      variant={statusFilter === "not_installed" ? "filled" : "outlined"}
+                      size="small"
+                      onClick={() =>
+                        setStatusFilter(
+                          statusFilter === "not_installed"
+                            ? null
+                            : "not_installed"
+                        )
+                      }
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </Stack>
+                </Box>
+
+                {/* Batch install/update button */}
+                {selectedInstallable.length > 0 && (
+                  <Box sx={{ mb: 2 }}>
                     <Button
                       variant="contained"
                       startIcon={<InstallDesktopIcon />}
                       onClick={() => setInstallOpen(true)}
                     >
-                      Install Selected ({selectedNames.size})
+                      Install / Update Selected ({selectedInstallable.length})
                     </Button>
-                  )}
-                </Box>
+                  </Box>
+                )}
 
                 {error && (
                   <Alert severity="error" sx={{ mb: 2 }}>
@@ -263,73 +426,120 @@ export default function InstallPage() {
                         <TableRow>
                           <TableCell padding="checkbox" />
                           <TableCell>Name</TableCell>
+                          <TableCell>Status</TableCell>
                           <TableCell>Category</TableCell>
                           <TableCell>Description</TableCell>
+                          <TableCell>Source Date</TableCell>
+                          <TableCell>Installed Date</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {skills.map((item, index) => (
-                          <TableRow
-                            key={item.name}
-                            hover
-                            selected={selectedNames.has(item.name)}
-                            onClick={() => toggleSelection(item.name)}
-                            sx={{
-                              cursor: "pointer",
-                              animation: `fadeIn 0.3s ease-out ${index * 0.02}s both`,
-                              "@keyframes fadeIn": {
-                                "0%": {
-                                  opacity: 0,
-                                  transform: "translateY(8px)",
+                        {filteredSkills.map((item, index) => {
+                          const isOutdated = item.status === "outdated";
+                          const isInstalled = item.status === "installed";
+                          return (
+                            <TableRow
+                              key={item.name}
+                              hover
+                              selected={selectedNames.has(item.name)}
+                              onClick={() => toggleSelection(item.name)}
+                              sx={{
+                                cursor: "pointer",
+                                animation: `fadeIn 0.3s ease-out ${index * 0.02}s both`,
+                                "@keyframes fadeIn": {
+                                  "0%": {
+                                    opacity: 0,
+                                    transform: "translateY(8px)",
+                                  },
+                                  "100%": {
+                                    opacity: 1,
+                                    transform: "translateY(0)",
+                                  },
                                 },
-                                "100%": {
-                                  opacity: 1,
-                                  transform: "translateY(0)",
-                                },
-                              },
-                            }}
-                          >
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                checked={selectedNames.has(item.name)}
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={() => toggleSelection(item.name)}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Typography
-                                variant="body2"
-                                fontWeight={600}
-                                color="primary.main"
-                              >
-                                {item.name}
-                              </Typography>
-                            </TableCell>
-                            <TableCell>
-                              <Chip
-                                size="small"
-                                label={item.category ?? "—"}
-                                variant="outlined"
-                                sx={{ borderRadius: 1 }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                noWrap
-                                sx={{ maxWidth: 400, display: "block" }}
-                              >
-                                {item.description ?? ""}
-                              </Typography>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        {skills.length === 0 && (
+                                ...(isOutdated && {
+                                  backgroundColor: (theme) =>
+                                    theme.palette.mode === "dark"
+                                      ? "rgba(255, 152, 0, 0.08)"
+                                      : "rgba(255, 152, 0, 0.05)",
+                                }),
+                              }}
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  checked={selectedNames.has(item.name)}
+                                  disabled={isInstalled}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={() => toggleSelection(item.name)}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight={600}
+                                  color="primary.main"
+                                >
+                                  {item.name}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Tooltip title={statusLabel(item.status)}>
+                                  <Chip
+                                    icon={<StatusIcon status={item.status} />}
+                                    label={statusLabel(item.status)}
+                                    color={statusColor(item.status)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{ borderRadius: 1 }}
+                                  />
+                                </Tooltip>
+                              </TableCell>
+                              <TableCell>
+                                <Chip
+                                  size="small"
+                                  label={item.category ?? "—"}
+                                  variant="outlined"
+                                  sx={{ borderRadius: 1 }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  noWrap
+                                  sx={{ maxWidth: 300, display: "block" }}
+                                >
+                                  {item.description ?? ""}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="caption" color="text.secondary" noWrap>
+                                  {formatDate(item.source_mtime_ms)}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="caption"
+                                  noWrap
+                                  color={
+                                    isOutdated
+                                      ? "warning.main"
+                                      : "text.secondary"
+                                  }
+                                  fontWeight={isOutdated ? 700 : 400}
+                                >
+                                  {formatDate(item.target_mtime_ms)}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                        {filteredSkills.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={4} align="center">
+                            <TableCell colSpan={7} align="center">
                               <Typography color="text.secondary" py={4}>
-                                All skills are already installed
+                                {statusFilter
+                                  ? `No ${statusLabel(statusFilter).toLowerCase()} skills`
+                                  : "No skills found"}
                               </Typography>
                             </TableCell>
                           </TableRow>
@@ -458,11 +668,9 @@ export default function InstallPage() {
           open={installOpen}
           platformId={platformId}
           platform={platform}
-          itemNames={Array.from(selectedNames)}
+          itemNames={selectedInstallable.map((s) => s.name)}
           itemCategories={Object.fromEntries(
-            skills
-              .filter((s) => selectedNames.has(s.name))
-              .map((s) => [s.name, s.category])
+            selectedInstallable.map((s) => [s.name, s.category])
           )}
           itemType="skills"
           onClose={() => setInstallOpen(false)}
