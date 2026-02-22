@@ -30,6 +30,10 @@ pub struct ItemInfo {
     pub source_mtime: Option<SystemTime>,
     #[serde(skip)]
     pub target_mtime: Option<SystemTime>,
+    /// Source mtime as epoch milliseconds (JSON-friendly)
+    pub source_mtime_ms: Option<u64>,
+    /// Target (installed) mtime as epoch milliseconds (JSON-friendly)
+    pub target_mtime_ms: Option<u64>,
     pub category: Option<String>,
     pub tags: Vec<String>,
     pub is_default: bool,

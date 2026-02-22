@@ -39,6 +39,14 @@ fn update_latest(latest: &mut Option<SystemTime>, candidate: Option<SystemTime>)
     }
 }
 
+fn systemtime_to_epoch_ms(t: Option<SystemTime>) -> Option<u64> {
+    t.and_then(|t| {
+        t.duration_since(std::time::UNIX_EPOCH)
+            .ok()
+            .map(|d| d.as_millis() as u64)
+    })
+}
+
 fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
     if !path.exists() {
         return (None, None);
@@ -199,6 +207,8 @@ pub fn resolve_skills_for_platform(
                 target_path: target,
                 source_mtime: src.src_mtime,
                 target_mtime: tgt_mtime,
+                source_mtime_ms: systemtime_to_epoch_ms(src.src_mtime),
+                target_mtime_ms: systemtime_to_epoch_ms(tgt_mtime),
                 category: src.category.clone(),
                 tags: src.tags.clone(),
                 is_default: src.is_default,
@@ -244,6 +254,8 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
             target_path: target,
             source_mtime: src_mtime,
             target_mtime: tgt_mtime,
+            source_mtime_ms: systemtime_to_epoch_ms(src_mtime),
+            target_mtime_ms: systemtime_to_epoch_ms(tgt_mtime),
             category,
             tags: Vec::new(),
             is_default: false,

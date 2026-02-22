@@ -518,6 +518,8 @@ mod tests {
             target_path: PathBuf::from("~/.claude/skills/demo"),
             source_mtime: None,
             target_mtime: None,
+            source_mtime_ms: None,
+            target_mtime_ms: None,
             category: Some("general".into()),
             tags: vec![],
             is_default: true,
