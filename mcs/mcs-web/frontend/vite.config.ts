@@ -18,11 +18,18 @@ export default defineConfig({
     },
   },
   build: {
+    chunkSizeWarningLimit: 650,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
           mui: ["@mui/material"],
+          "mui-icons": ["@mui/icons-material"],
+          codemirror: [
+            "codemirror",
+            "@codemirror/lang-markdown",
+            "@codemirror/theme-one-dark",
+          ],
           markdown: ["react-markdown"],
         },
       },
