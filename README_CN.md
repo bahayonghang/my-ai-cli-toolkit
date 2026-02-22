@@ -178,6 +178,13 @@ Windsurf IDE 的工作流，在 Cascade 中通过 `/workflow-name` 触发。
 
 ## 安装方法
 
+### 快速安装 (Claude Code)
+将所有技能直接安装到 Claude Code 最快的方法是使用 `npx`：
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
 ### TUI 模式 (推荐)
 
 使用 MCS TUI (终端用户界面) 进行交互式管理：

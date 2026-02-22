@@ -159,6 +159,13 @@ Slash commands provide quick access to common workflows. Available for Claude, G
 
 ## Installation Guide
 
+### Quick Install (Claude Code)
+The fastest way to install all skills directly into Claude Code is using `npx`:
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
 ### TUI Mode (Recommended)
 For a user-friendly experience, use the Terminal User Interface:
 

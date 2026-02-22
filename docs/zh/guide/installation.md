@@ -56,6 +56,14 @@ uv run python src/install.py prompt-update
 uv run python src/install.py interactive
 ```
 
+## 快速安装 (Claude Code)
+
+将所有技能直接安装到 Claude Code 最快的方法是使用 `npx`：
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
 ## TUI 模式 (推荐)
 
 如需现代化可视化体验，推荐使用 Rust MCS TUI：
