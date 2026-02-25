@@ -13,3 +13,4 @@ mcs/target/
 .gemini/
 .vscode/
 .omc/
+.cursor/
