@@ -112,6 +112,7 @@ export default function InstallPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<InstallStatus | null>(null);
+  const [showDefaultOnly, setShowDefaultOnly] = useState(false);
   const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
   const [installOpen, setInstallOpen] = useState(false);
 
@@ -149,14 +150,12 @@ export default function InstallPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [platformId, search, selectedCategory, activeTab]);
 
-  // Client-side status filtering
-  const filteredSkills = useMemo(
-    () =>
-      statusFilter
-        ? skills.filter((s) => s.status === statusFilter)
-        : skills,
-    [skills, statusFilter]
-  );
+  // Client-side status + default filtering
+  const filteredSkills = useMemo(() => {
+    let result = statusFilter ? skills.filter((s) => s.status === statusFilter) : skills;
+    if (showDefaultOnly) result = result.filter((s) => s.is_default);
+    return result;
+  }, [skills, statusFilter, showDefaultOnly]);
 
   const toggleSelection = (name: string) => {
     setSelectedNames((prev) => {
@@ -334,6 +333,23 @@ export default function InstallPage() {
                     onClick={() => setSelectedCategory(null)}
                     sx={{ cursor: "pointer" }}
                   />
+                  <Chip
+                    label="Default"
+                    color={showDefaultOnly ? "secondary" : "default"}
+                    variant={showDefaultOnly ? "filled" : "outlined"}
+                    onClick={() => setShowDefaultOnly((v) => !v)}
+                    sx={{ cursor: "pointer" }}
+                  />
+                  {showDefaultOnly && (
+                    <Button size="small" variant="outlined" onClick={() => {
+                      const names = filteredSkills
+                        .filter((s) => s.status !== "installed")
+                        .map((s) => s.name);
+                      setSelectedNames(new Set(names));
+                    }}>
+                      Select All
+                    </Button>
+                  )}
                   {categories.map((cat) => (
                     <Chip
                       key={cat}
