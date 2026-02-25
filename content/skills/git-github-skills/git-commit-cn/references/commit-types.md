@@ -130,15 +130,3 @@ refactor: 重构用户权限检查逻辑
 refactor(api): 统一 API 错误处理格式
 refactor: 提取公共组件到 components 目录
 ```
-
-## Co-Authored-By 署名
-
-当使用 AI 辅助编写代码时,应添加 Co-Authored-By 署名:
-
-```
-feat: 添加用户管理后台
-
-实现了用户列表、添加、编辑、删除功能
-
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
-```
