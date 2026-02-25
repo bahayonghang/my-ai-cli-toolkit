@@ -22,8 +22,8 @@ Claude Code 技能和提示词集合，用于增强 AI 辅助开发工作流。
 
 ```bash
 # 克隆仓库
-git clone https://github.com/anthropics/my-claude-skills.git
-cd my-claude-skills
+git clone https://github.com/bahayonghang/my-claude-code-settings.git
+cd my-claude-code-settings
 
 # 使用 Rust MCS TUI 进行交互式管理（推荐）
 just mcs
@@ -54,15 +54,15 @@ just mcs
 | [gemini-image](content/skills/ai-llm-skills/gemini-image/) | 通过 Gemini API 生成图像（文生图、图生图） |
 | [research](content/skills/ai-llm-skills/research/) | 技术研究，支持网络搜索和引用 |
 
-### 💻 开发 (`development-skills/`)
+### 💻 技术栈 (`tech-stack-skills/`)
 | 技能 | 描述 |
 |------|------|
 | [frontend-engineer](content/skills/development-skills/frontend-engineer/) | 构建独特的生产级前端界面 |
-| [lib-slint-expert](content/skills/development-skills/lib-slint-expert/) | 全面的 Slint GUI 开发专家 |
-| [lsp-manager](content/skills/development-skills/lsp-manager/) | 自动检测编程语言并配置 LSP 服务器 |
-| [rust-cli-tui-developer](content/skills/development-skills/rust-cli-tui-developer/) | Rust CLI 和 TUI 开发专家指导 |
-| [uv-expert](content/skills/development-skills/uv-expert/) | uv Python 包管理器专家指导 |
-| [vue-best-practices](content/skills/development-skills/vue-best-practices/) | Vue 3 和 TypeScript 最佳实践，支持 Volar |
+| [lib-slint-expert](content/skills/tech-stack-skills/lib-slint-expert/) | 全面的 Slint GUI 开发专家 |
+| [lsp-manager](content/skills/tech-stack-skills/lsp-manager/) | 自动检测编程语言并配置 LSP 服务器 |
+| [rust-cli-tui-developer](content/skills/tech-stack-skills/rust-cli-tui-developer/) | Rust CLI 和 TUI 开发专家指导 |
+| [uv-expert](content/skills/tech-stack-skills/uv-expert/) | uv Python 包管理器专家指导 |
+| [vue-best-practices](content/skills/tech-stack-skills/vue-best-practices/) | Vue 3 和 TypeScript 最佳实践，支持 Volar |
 
 ### 🔧 开发工具 (`devtools-skills/`)
 | 技能 | 描述 |
@@ -71,7 +71,6 @@ just mcs
 | [memory-system](content/skills/workflow-skills/memory-system/) | 本地记忆系统：Markdown → SQLite 混合搜索（向量 + FTS5），增量索引，事务原子保护 |
 | [planning-with-files](content/skills/devtools-skills/planning-with-files/) | 基于文件的复杂多步骤任务规划 |
 | [review-code](content/skills/devtools-skills/review-code/) | 多维度代码审查，生成结构化报告 |
-| [interview-plan](content/skills/workflow-skills/interview-plan/) | 通过苏格拉底式访谈细化需求，直接调用原生 Plan 模式生成可执行计划 |
 
 ### 📊 图表 (`diagram-skills/`)
 | 技能 | 描述 |
@@ -149,7 +148,7 @@ just mcs
 | 命令 | 描述 |
 |------|------|
 | [export-summary](content/commands/gemini/export-summary.toml) | 总结会话上下文并导出为 Markdown 文件 |
-| [import-summary](content/commands/gemini/import- summary.toml) | 从总结文件中恢复会话上下文 |
+| [import-summary](content/commands/gemini/import-summary.toml) | 从总结文件中恢复会话上下文 |
 | [git-commit](content/commands/gemini/zcf/git-commit.toml) | 分析改动并生成 Conventional Commits 风格的提交信息（可选 emoji） |
 | [git-cleanBranches](content/commands/gemini/zcf/git-cleanBranches.toml) | 安全查找并清理已合并或过期的 Git 分支，支持 dry-run 模式 |
 | [git-rollback](content/commands/gemini/zcf/git-rollback.toml) | 交互式回滚 Git 分支到历史版本 |
@@ -249,7 +248,7 @@ TUI 提供以下功能：
     └── plugin-scripts/     # Claude 插件安装脚本
 ```
 
-Each skill directory:
+每个技能目录结构：
 ```
 content/skills/<skill-name>/
 ├── SKILL.md        # 技能定义（必需）

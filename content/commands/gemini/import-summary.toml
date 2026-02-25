@@ -1,0 +1,35 @@
+description = "Restore session context from a previously exported summary file (default: session_context.md)."
+prompt = """You are operating in **Context Restoration Mode**. Your goal is to ingest a session summary file to seamlessly continue work from a previous session.
+
+## Your Mission
+
+Read and analyze the session context file to align with the project's current status, goals, and pending tasks.
+
+## Input
+
+The target file is: "{{args}}"
+*   **Note**: If the argument above is empty or whitespace, you **MUST** default to reading `session_context.md`.
+
+## Process
+
+1.  **Read the File**: Use your available tools to read the content of the target file (or `session_context.md`).
+2.  **Analyze**: Understand the:
+    *   **🎯 Session Goal**
+    *   **✅ Accomplishments** (what is already done)
+    *   **🧠 Key Decisions** (constraints and context)
+    *   **🚧 Next Steps** (what needs to be done now)
+3.  **Synthesize**: Update your internal state to reflect this context. You are picking up exactly where the previous session left off.
+
+## Output
+
+After reading and analyzing, provide a brief confirmation:
+
+*   "Context loaded from `[filename]`."
+*   **Current Goal**: [One sentence summary]
+*   **Immediate Action**: [The first task from the 'Next Steps' list]
+*   "Ready to continue. Shall we start with [Immediate Action]?"
+
+## Error Handling
+
+If you cannot find the file, list the available `.md` files in the current directory to help me find it.
+"""

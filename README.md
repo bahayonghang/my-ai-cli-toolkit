@@ -25,8 +25,8 @@ A curated collection of Claude Code skills, prompts, and workflows for enhanced 
 
 ```bash
 # Clone the repository
-git clone https://github.com/anthropics/my-claude-skills.git
-cd my-claude-skills
+git clone https://github.com/bahayonghang/my-claude-code-settings.git
+cd my-claude-code-settings
 
 # Run the interactive Rust MCS TUI (Recommended)
 # Requires Rust toolchain (`cargo`)
@@ -58,15 +58,15 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [gemini-image](content/skills/ai-llm-skills/gemini-image/) | AI image generation via Gemini API (text-to-image, image-to-image) |
 | [research](content/skills/ai-llm-skills/research/) | Technical research with web search and citation support |
 
-### 💻 Development (`development-skills/`)
+### 💻 Tech Stack (`tech-stack-skills/`)
 | Skill | Description |
 |-------|-------------|
 | [frontend-engineer](content/skills/development-skills/frontend-engineer/) | Build distinctive, production-grade frontend interfaces |
-| [lib-slint-expert](content/skills/development-skills/lib-slint-expert/) | Comprehensive Slint GUI development expert |
-| [lsp-manager](content/skills/development-skills/lsp-manager/) | Auto-detect languages and configure LSP servers for code intelligence |
-| [rust-cli-tui-developer](content/skills/development-skills/rust-cli-tui-developer/) | Expert guidance for Rust CLI and TUI development |
-| [uv-expert](content/skills/development-skills/uv-expert/) | Expert guidance for uv Python package manager |
-| [vue-best-practices](content/skills/development-skills/vue-best-practices/) | Vue 3 and TypeScript best practices with Volar |
+| [lib-slint-expert](content/skills/tech-stack-skills/lib-slint-expert/) | Comprehensive Slint GUI development expert |
+| [lsp-manager](content/skills/tech-stack-skills/lsp-manager/) | Auto-detect languages and configure LSP servers for code intelligence |
+| [rust-cli-tui-developer](content/skills/tech-stack-skills/rust-cli-tui-developer/) | Expert guidance for Rust CLI and TUI development |
+| [uv-expert](content/skills/tech-stack-skills/uv-expert/) | Expert guidance for uv Python package manager |
+| [vue-best-practices](content/skills/tech-stack-skills/vue-best-practices/) | Vue 3 and TypeScript best practices with Volar |
 
 ### 🔧 Dev Tools (`devtools-skills/`)
 | Skill | Description |
@@ -75,7 +75,6 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [memory-system](content/skills/workflow-skills/memory-system/) | Local memory system: Markdown → SQLite hybrid search (vector + FTS5), incremental indexing, atomic transactions |
 | [planning-with-files](content/skills/devtools-skills/planning-with-files/) | File-based planning for complex multi-step tasks |
 | [review-code](content/skills/devtools-skills/review-code/) | Multi-dimensional code review with structured reports |
-| [interview-plan](content/skills/workflow-skills/interview-plan/) | Socratic interview to refine requirements, then generate executable plan via native Plan mode |
 
 ### 📊 Diagrams (`diagram-skills/`)
 | Skill | Description |
