@@ -30,6 +30,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
+import HomeIcon from "@mui/icons-material/Home";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import { getSkills, uninstallSkills } from "@/api/client";
@@ -120,6 +121,11 @@ export default function InstalledSkillsPage() {
           <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
             <ArrowBackIcon />
           </IconButton>
+          <Tooltip title="Home">
+            <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+              <HomeIcon />
+            </IconButton>
+          </Tooltip>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             {platform?.icon} {platform?.name ?? platformId}
           </Typography>

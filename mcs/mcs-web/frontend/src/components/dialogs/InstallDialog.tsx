@@ -99,10 +99,10 @@ export function InstallDialog({
           prev.map((r) =>
             r.name === name
               ? {
-                  ...r,
-                  status: itemResult?.success !== false ? "success" : "error",
-                  errorMessage: itemResult?.error ?? undefined,
-                }
+                ...r,
+                status: itemResult?.success !== false ? "success" : "error",
+                errorMessage: itemResult?.error ?? undefined,
+              }
               : r
           )
         );
@@ -200,32 +200,54 @@ function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: Conf
           />
         </Box>
 
-        <List dense disablePadding sx={{ maxHeight: 240, overflow: "auto" }}>
-          {results.map((item) => (
-            <ListItem key={item.name} disablePadding sx={{ py: 0.25 }}>
-              <ListItemIcon sx={{ minWidth: 28 }}>
-                <RadioButtonUncheckedIcon
-                  sx={{ fontSize: 14, color: "text.disabled" }}
+        <Paper
+          variant="outlined"
+          sx={{
+            maxHeight: 240,
+            overflow: "auto",
+            borderRadius: 2,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+          }}
+        >
+          <List dense disablePadding>
+            {results.map((item, index) => (
+              <ListItem
+                key={item.name}
+                disablePadding
+                sx={{
+                  py: 0.5,
+                  px: 1,
+                  backgroundColor:
+                    index % 2 === 0 ? "transparent" : "action.hover",
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 32 }}>
+                  <RadioButtonUncheckedIcon
+                    sx={{ fontSize: 16, color: "text.disabled" }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="body2" fontWeight={500}>
+                        {item.name}
+                      </Typography>
+                      {item.category && (
+                        <Chip
+                          label={item.category}
+                          size="small"
+                          variant="outlined"
+                          sx={{ height: 20, fontSize: "0.7rem", borderRadius: 1 }}
+                        />
+                      )}
+                    </Box>
+                  }
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography variant="body2">{item.name}</Typography>
-                    {item.category && (
-                      <Chip
-                        label={item.category}
-                        size="small"
-                        variant="outlined"
-                        sx={{ height: 18, fontSize: "0.65rem", borderRadius: 1 }}
-                      />
-                    )}
-                  </Box>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: "space-between", px: 3 }}>
@@ -302,46 +324,67 @@ function InstallingPhase({
           </Typography>
         )}
 
-        <List dense disablePadding sx={{ maxHeight: 260, overflow: "auto" }}>
-          {results.map((item) => (
-            <ListItem key={item.name} disablePadding sx={{ py: 0.25 }}>
-              <ListItemIcon sx={{ minWidth: 28 }}>
-                {item.status === "success" && (
-                  <CheckCircleIcon sx={{ fontSize: 16, color: "success.main" }} />
-                )}
-                {item.status === "error" && (
-                  <CancelIcon sx={{ fontSize: 16, color: "error.main" }} />
-                )}
-                {item.status === "installing" && (
-                  <CircularProgress size={14} thickness={4} />
-                )}
-                {item.status === "pending" && (
-                  <RadioButtonUncheckedIcon
-                    sx={{ fontSize: 14, color: "text.disabled" }}
-                  />
-                )}
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography
-                    variant="body2"
-                    color={
-                      item.status === "success"
-                        ? "success.main"
-                        : item.status === "error"
-                        ? "error.main"
-                        : item.status === "installing"
-                        ? "primary.main"
-                        : "text.secondary"
-                    }
-                  >
-                    {item.name}
-                  </Typography>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
+        <Paper
+          variant="outlined"
+          sx={{
+            maxHeight: 260,
+            overflow: "auto",
+            borderRadius: 2,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+          }}
+        >
+          <List dense disablePadding>
+            {results.map((item, index) => (
+              <ListItem
+                key={item.name}
+                disablePadding
+                sx={{
+                  py: 0.5,
+                  px: 1,
+                  backgroundColor:
+                    index % 2 === 0 ? "transparent" : "action.hover",
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 32 }}>
+                  {item.status === "success" && (
+                    <CheckCircleIcon sx={{ fontSize: 18, color: "success.main" }} />
+                  )}
+                  {item.status === "error" && (
+                    <CancelIcon sx={{ fontSize: 18, color: "error.main" }} />
+                  )}
+                  {item.status === "installing" && (
+                    <CircularProgress size={16} thickness={4} />
+                  )}
+                  {item.status === "pending" && (
+                    <RadioButtonUncheckedIcon
+                      sx={{ fontSize: 16, color: "text.disabled" }}
+                    />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="body2"
+                      fontWeight={item.status === "installing" ? 600 : 500}
+                      color={
+                        item.status === "success"
+                          ? "success.main"
+                          : item.status === "error"
+                            ? "error.main"
+                            : item.status === "installing"
+                              ? "primary.main"
+                              : "text.primary"
+                      }
+                    >
+                      {item.name}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
       </DialogContent>
     </>
   );
@@ -413,64 +456,103 @@ function CompletedPhase({
           )}
         </Box>
 
-        <List dense disablePadding sx={{ maxHeight: 260, overflow: "auto" }}>
-          {results.map((item) => (
-            <Box key={item.name}>
-              <ListItem
-                disablePadding
+        <Paper
+          variant="outlined"
+          sx={{
+            maxHeight: 260,
+            overflow: "auto",
+            borderRadius: 2,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+          }}
+        >
+          <List dense disablePadding>
+            {results.map((item, index) => (
+              <Box
+                key={item.name}
                 sx={{
-                  py: 0.25,
-                  cursor: item.status === "error" ? "pointer" : "default",
+                  backgroundColor:
+                    index % 2 === 0 ? "transparent" : "action.hover",
                 }}
-                onClick={() => item.status === "error" && onToggleError(item.name)}
               >
-                <ListItemIcon sx={{ minWidth: 28 }}>
-                  {item.status === "success" ? (
-                    <CheckCircleIcon sx={{ fontSize: 16, color: "success.main" }} />
-                  ) : (
-                    <CancelIcon sx={{ fontSize: 16, color: "error.main" }} />
-                  )}
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography
-                      variant="body2"
-                      color={
-                        item.status === "success" ? "success.main" : "error.main"
-                      }
-                    >
-                      {item.name}
-                    </Typography>
-                  }
-                />
-                {item.status === "error" &&
-                  (expandedErrors.has(item.name) ? (
-                    <ExpandLessIcon fontSize="small" color="action" />
-                  ) : (
-                    <ExpandMoreIcon fontSize="small" color="action" />
-                  ))}
-              </ListItem>
+                <ListItem
+                  disablePadding
+                  sx={{
+                    py: 0.5,
+                    px: 1,
+                    cursor: item.status === "error" ? "pointer" : "default",
+                  }}
+                  onClick={() => item.status === "error" && onToggleError(item.name)}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    {item.status === "success" ? (
+                      <CheckCircleIcon sx={{ fontSize: 18, color: "success.main" }} />
+                    ) : (
+                      <CancelIcon sx={{ fontSize: 18, color: "error.main" }} />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography
+                        variant="body2"
+                        fontWeight={500}
+                        color={
+                          item.status === "success" ? "success.main" : "error.main"
+                        }
+                      >
+                        {item.name}
+                      </Typography>
+                    }
+                  />
+                  {item.status === "error" &&
+                    (expandedErrors.has(item.name) ? (
+                      <ExpandLessIcon fontSize="small" color="action" />
+                    ) : (
+                      <ExpandMoreIcon fontSize="small" color="action" />
+                    ))}
+                </ListItem>
 
-              {item.status === "error" && item.errorMessage && (
-                <Collapse in={expandedErrors.has(item.name)}>
-                  <Box
-                    sx={{
-                      ml: 4,
-                      mb: 1,
-                      p: 1,
-                      borderRadius: 1,
-                      backgroundColor: "rgba(239, 83, 80, 0.12)",
-                    }}
-                  >
-                    <Typography variant="caption" color="error.main">
-                      {item.errorMessage}
-                    </Typography>
-                  </Box>
-                </Collapse>
-              )}
-            </Box>
-          ))}
-        </List>
+                {item.status === "error" && item.errorMessage && (
+                  <Collapse in={expandedErrors.has(item.name)}>
+                    <Box
+                      sx={{
+                        ml: 5,
+                        mr: 1,
+                        mb: 1,
+                        p: 1.5,
+                        borderRadius: 1,
+                        backgroundColor: (theme) =>
+                          theme.palette.mode === "dark"
+                            ? "rgba(239, 83, 80, 0.15)"
+                            : "rgba(254, 226, 226, 0.8)",
+                        border: "1px solid",
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark"
+                            ? "rgba(239, 83, 80, 0.3)"
+                            : "rgba(239, 83, 80, 0.2)",
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "#ffb4ab"
+                              : "error.dark",
+                          fontFamily: "monospace",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {item.errorMessage}
+                      </Typography>
+                    </Box>
+                  </Collapse>
+                )}
+              </Box>
+            ))}
+          </List>
+        </Paper>
       </DialogContent>
 
       <DialogActions>

@@ -40,6 +40,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import HomeIcon from "@mui/icons-material/Home";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import { getSkills, installSkills, externalInstallSkill } from "@/api/client";
@@ -259,6 +260,11 @@ export default function InstallPage() {
           >
             <ArrowBackIcon />
           </IconButton>
+          <Tooltip title="Home">
+            <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+              <HomeIcon />
+            </IconButton>
+          </Tooltip>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Skills Library — {platform?.icon} {platform?.name ?? platformId}
           </Typography>

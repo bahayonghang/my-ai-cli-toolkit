@@ -39,6 +39,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import SyncIcon from "@mui/icons-material/Sync";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import HomeIcon from "@mui/icons-material/Home";
 import { useItemStore } from "@/stores/itemStore";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
@@ -154,6 +155,11 @@ export default function MainPage() {
           <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
             <ArrowBackIcon />
           </IconButton>
+          <Tooltip title="Home">
+            <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+              <HomeIcon />
+            </IconButton>
+          </Tooltip>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             {platform?.icon} {platform?.name ?? platformId}
           </Typography>

@@ -19,6 +19,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import HomeIcon from "@mui/icons-material/Home";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useUiStore } from "@/stores/uiStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
@@ -317,8 +318,8 @@ export default function DashboardPage() {
               : "rgba(248, 249, 250, 0.7)",
           backdropFilter: "blur(20px)",
           borderBottom: `1px solid ${theme.palette.mode === "dark"
-              ? "rgba(255,255,255,0.06)"
-              : "rgba(0,0,0,0.06)"
+            ? "rgba(255,255,255,0.06)"
+            : "rgba(0,0,0,0.06)"
             }`,
           color: theme.palette.text.primary,
         }}
@@ -326,6 +327,9 @@ export default function DashboardPage() {
         <Toolbar>
           <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
             <ArrowBackIcon />
+          </IconButton>
+          <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }} title="Home">
+            <HomeIcon />
           </IconButton>
           <Typography
             variant="h6"
