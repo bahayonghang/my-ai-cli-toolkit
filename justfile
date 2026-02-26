@@ -10,8 +10,8 @@ default:
 # 启动 TUI 技能管理器
 tui: mcs
 
-# 启动 Web 版技能管理器 (构建并启动 localhost:13142)
-web: mcs-web
+# 启动 Web 版技能管理器 (支持前端热重载，Vite proxy 到后端 13142)
+web: mcs-web-dev-all
 
 # 启动文档开发服务器
 doc: docs
@@ -24,7 +24,7 @@ help:
     @echo ""
     @echo "⚡ 快捷启动："
     @echo "  just tui               - 启动 TUI 技能管理器"
-    @echo "  just web               - 启动 Web 版技能管理器 (localhost:13142)"
+    @echo "  just web               - 启动 Web 版技能管理器 (前端热重载模式)"
     @echo "  just doc               - 启动文档开发服务器"
     @echo ""
     @echo "📚 文档相关命令："
@@ -43,6 +43,7 @@ help:
     @echo "  just mcs-web-install   - 安装前端依赖"
     @echo "  just mcs-web-server    - 启动后端服务器 (port 13142)"
     @echo "  just mcs-web-dev       - 启动前端开发服务器 (port 5173)"
+    @echo "  just mcs-web-dev-all   - 启动前后端并支持热重载 (port 5173, proxy port 13142)"
     @echo "  just mcs-web-build     - 构建生产版本 (前端+后端)"
     @echo "  just mcs-web           - 一键构建并启动生产版本"
     @echo ""
@@ -123,6 +124,11 @@ mcs-web-server:
 # 启动 MCS Web 前端开发服务器 (port 5173, 代理到 13142)
 mcs-web-dev: mcs-web-install
     cd mcs/mcs-web/frontend && npm run dev
+
+# 启动 MCS Web 前端和后端 (支持热重载)
+mcs-web-dev-all: mcs-web-install
+    -taskkill /F /IM mcs-web.exe 2>nul || true
+    cd mcs/mcs-web/frontend && npx concurrently -k -n "backend,frontend" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && cargo run --bin mcs-web" "npm run dev"
 
 # 构建 MCS Web 前端生产版本
 mcs-web-build-frontend: mcs-web-install
