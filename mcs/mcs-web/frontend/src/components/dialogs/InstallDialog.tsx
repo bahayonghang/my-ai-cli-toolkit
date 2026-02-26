@@ -3,8 +3,9 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, IconButton, Typography, Box, LinearProgress,
   List, ListItem, ListItemIcon, ListItemText,
-  Chip, Collapse, CircularProgress,
+  Chip, Collapse, CircularProgress, Paper,
 } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -206,7 +207,7 @@ function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: Conf
             maxHeight: 240,
             overflow: "auto",
             borderRadius: 2,
-            backgroundColor: (theme) =>
+            backgroundColor: (theme: Theme) =>
               theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
           }}
         >
@@ -330,7 +331,7 @@ function InstallingPhase({
             maxHeight: 260,
             overflow: "auto",
             borderRadius: 2,
-            backgroundColor: (theme) =>
+            backgroundColor: (theme: Theme) =>
               theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
           }}
         >
@@ -462,7 +463,7 @@ function CompletedPhase({
             maxHeight: 260,
             overflow: "auto",
             borderRadius: 2,
-            backgroundColor: (theme) =>
+            backgroundColor: (theme: Theme) =>
               theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
           }}
         >
@@ -521,12 +522,12 @@ function CompletedPhase({
                         mb: 1,
                         p: 1.5,
                         borderRadius: 1,
-                        backgroundColor: (theme) =>
+                        backgroundColor: (theme: Theme) =>
                           theme.palette.mode === "dark"
                             ? "rgba(239, 83, 80, 0.15)"
                             : "rgba(254, 226, 226, 0.8)",
                         border: "1px solid",
-                        borderColor: (theme) =>
+                        borderColor: (theme: Theme) =>
                           theme.palette.mode === "dark"
                             ? "rgba(239, 83, 80, 0.3)"
                             : "rgba(239, 83, 80, 0.2)",
@@ -535,7 +536,7 @@ function CompletedPhase({
                       <Typography
                         variant="caption"
                         sx={{
-                          color: (theme) =>
+                          color: (theme: Theme) =>
                             theme.palette.mode === "dark"
                               ? "#ffb4ab"
                               : "error.dark",
