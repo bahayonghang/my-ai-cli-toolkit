@@ -1,4 +1,4 @@
-# MyClaude Skills
+# My AI Platform Settings
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
