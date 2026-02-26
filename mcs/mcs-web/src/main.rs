@@ -85,14 +85,19 @@ async fn main() {
         });
     tracing::info!("MCS Web server listening on http://{addr}");
 
-    // Auto-open browser
-    let url = format!("http://{addr}");
-    tokio::spawn(async move {
-        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
-        if open::that(&url).is_err() {
-            tracing::warn!("Failed to open browser automatically");
-        }
-    });
+    // Auto-open browser (only in production mode when frontend is built)
+    if frontend_dir.exists() {
+        let url = format!("http://{addr}");
+        tokio::spawn(async move {
+            tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+            if open::that(&url).is_err() {
+                tracing::warn!("Failed to open browser automatically");
+            }
+        });
+    } else {
+        tracing::info!("Frontend not built (dev mode) - not opening browser automatically");
+        tracing::info!("Please open http://localhost:5173/ manually to access the frontend");
+    }
 
     axum::serve(listener, app).await.unwrap();
 }
