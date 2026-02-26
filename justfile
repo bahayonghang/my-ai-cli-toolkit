@@ -128,7 +128,19 @@ mcs-web-dev: mcs-web-install
 # 启动 MCS Web 前端和后端 (支持热重载)
 mcs-web-dev-all: mcs-web-install
     -taskkill /F /IM mcs-web.exe 2>nul || true
-    cd mcs/mcs-web/frontend && npx concurrently -k -n "backend,frontend" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && cargo run --bin mcs-web" "npm run dev"
+    @echo ""
+    @echo "════════════════════════════════════════════════════════════════"
+    @echo "  🚀 启动 MCS Web 开发服务器"
+    @echo "════════════════════════════════════════════════════════════════"
+    @echo ""
+    @echo "  📋 服务信息:"
+    @echo "     • 前端页面: http://localhost:5173/"
+    @echo "     • 后端 API:  http://127.0.0.1:13142"
+    @echo ""
+    @echo "  💡 提示: 启动完成后请打开 http://localhost:5173/ 访问技能管理器"
+    @echo "════════════════════════════════════════════════════════════════"
+    @echo ""
+    cd mcs/mcs-web/frontend && npx concurrently -k -n "backend,frontend" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && cargo run --bin mcs-web" "npx wait-on http://127.0.0.1:13142 --timeout 60000 && npm run dev"
 
 # 构建 MCS Web 前端生产版本
 mcs-web-build-frontend: mcs-web-install
