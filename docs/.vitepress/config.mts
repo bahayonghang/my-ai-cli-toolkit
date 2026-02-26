@@ -97,7 +97,8 @@ export default defineConfig({
                 { text: 'memory-system', link: '/skills/memory-system' },
                 { text: 'planning-with-files', link: '/skills/planning-with-files' },
                 { text: 'review-code', link: '/skills/review-code' },
-                { text: 'interview-plan', link: '/skills/interview-plan' }
+                { text: 'interview-plan', link: '/skills/interview-plan' },
+                { text: 'interview-openspec', link: '/skills/interview-openspec' }
               ]
             },
             {
@@ -291,7 +292,8 @@ export default defineConfig({
                 { text: 'memory-system', link: '/zh/skills/memory-system' },
                 { text: 'planning-with-files', link: '/zh/skills/planning-with-files' },
                 { text: 'review-code', link: '/zh/skills/review-code' },
-                { text: 'interview-plan', link: '/zh/skills/interview-plan' }
+                { text: 'interview-plan', link: '/zh/skills/interview-plan' },
+                { text: 'interview-openspec', link: '/zh/skills/interview-openspec' }
               ]
             },
             {

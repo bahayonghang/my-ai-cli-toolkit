@@ -71,6 +71,7 @@ just mcs
 | [memory-system](content/skills/workflow-skills/memory-system/) | 本地记忆系统：Markdown → SQLite 混合搜索（向量 + FTS5），增量索引，事务原子保护 |
 | [planning-with-files](content/skills/devtools-skills/planning-with-files/) | 基于文件的复杂多步骤任务规划 |
 | [review-code](content/skills/devtools-skills/review-code/) | 多维度代码审查，生成结构化报告 |
+| [interview-openspec](content/skills/workflow-skills/interview-openspec/) | 通过苏格拉底式访谈创建 OpenSpec artifacts（proposal → specs → design → tasks） |
 
 ### 📊 图表 (`diagram-skills/`)
 | 技能 | 描述 |

@@ -75,6 +75,7 @@ Skills are specialized capabilities that can be added to your AI assistant. They
 | [memory-system](content/skills/workflow-skills/memory-system/) | Local memory system: Markdown → SQLite hybrid search (vector + FTS5), incremental indexing, atomic transactions |
 | [planning-with-files](content/skills/devtools-skills/planning-with-files/) | File-based planning for complex multi-step tasks |
 | [review-code](content/skills/devtools-skills/review-code/) | Multi-dimensional code review with structured reports |
+| [interview-openspec](content/skills/workflow-skills/interview-openspec/) | Create OpenSpec artifacts through Socratic interview (proposal → specs → design → tasks) |
 
 ### 📊 Diagrams (`diagram-skills/`)
 | Skill | Description |

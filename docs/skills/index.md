@@ -43,6 +43,7 @@ A comprehensive collection of specialized AI skills organized into category fold
 | [planning-with-files](./planning-with-files) | Plan complex projects using file-based workflows |
 | [review-code](./review-code) | Multi-dimensional code review with structured reports |
 | [interview-plan](./interview-plan) | Socratic interview to refine requirements and generate executable plan |
+| [interview-openspec](./interview-openspec) | Create OpenSpec artifacts through Socratic interview (proposal → specs → design → tasks) |
 
 ### 📊 Diagrams (`diagram-skills/`)
 | Skill | Description |
