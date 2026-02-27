@@ -107,6 +107,50 @@ const shared: ThemeOptions = {
         },
       },
     },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: ({ theme }) => ({
+          borderRadius: 20,
+          backgroundImage: "none",
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(22, 22, 28, 0.88)" : "rgba(255, 255, 255, 0.92)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: theme.palette.mode === "dark"
+            ? "1px solid rgba(255, 255, 255, 0.1)"
+            : "1px solid rgba(0, 0, 0, 0.06)",
+          boxShadow: theme.palette.mode === "dark"
+            ? "0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 92, 246, 0.08)"
+            : "0 24px 80px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(139, 92, 246, 0.06)",
+        }),
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderBottom: theme.palette.mode === "dark"
+            ? "1px solid rgba(255, 255, 255, 0.06)"
+            : "1px solid rgba(0, 0, 0, 0.06)",
+        }),
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderTop: theme.palette.mode === "dark"
+            ? "1px solid rgba(255, 255, 255, 0.06)"
+            : "1px solid rgba(0, 0, 0, 0.06)",
+        }),
+      },
+    },
     MuiListItemButton: {
       styleOverrides: {
         root: ({ theme }) => ({
