@@ -1,9 +1,11 @@
 # 查找skills的网站
+
 1. https://claudemarketplaces.com/
 2. https://skillsmp.com/
 3. https://skills.sh/
 
 # npx
+
 ## skills plugin
 
 ```shell
@@ -23,7 +25,7 @@ npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browse
 
 ```shell
 # 技能发现工具（帮助查找和安装 agent skills 生态系统中的可用技能包）⭐⭐⭐⭐⭐
-npx skills add https://github.com/vercel-labs/skills --skill find-skills
+
 ```
 
 ```shell
@@ -96,6 +98,7 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
 ## everything  Claude code
+
 ```shell
 # Add this repo as a marketplace
 /plugin marketplace add affaan-m/everything-claude-code
@@ -105,6 +108,7 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
 ## claude-scientific-skills
+
 ```shell
 /plugin marketplace add K-Dense-AI/claude-scientific-skills
 
@@ -112,12 +116,15 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
 ## ui ux pro max
+
 ```shell
 /plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
 
 /plugin install ui-ux-pro-max@ui-ux-pro-max-skill
 ```
+
 ## mgrep
+
 ```shell
 /plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
@@ -125,6 +132,7 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
 ## rust skills
+
 ```shell
 # 步骤 1: 添加 marketplace
 /plugin marketplace add ZhangHanDong/rust-skills
@@ -134,6 +142,7 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
 ## oh-my-claudecode
+
 ```shell
 /plugin marketplace add https://github.com/Yeachan-Heo/oh-my-claudecode
 
@@ -143,6 +152,7 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
 ## planning-with-files
+
 ```shell
 /plugin marketplace add OthmanAdi/planning-with-files
 
@@ -156,4 +166,3 @@ npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 
 /plugin install superpowers@frad-dotclaude
 ```
-
