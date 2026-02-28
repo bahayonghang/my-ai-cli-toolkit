@@ -192,7 +192,7 @@ def analyze(skill_path: str) -> dict:
             "severity": "critical",
             "category": "frontmatter",
             "message": f"Non-standard field: '{f}'",
-            "fix": f"Remove '{f}' from frontmatter. Move to body or resources/ if needed.",
+            "fix": f"Remove '{f}' from frontmatter. Move to body or references/ if needed.",
             "pattern_id": "P1",
         })
     for f in misplaced_metadata:
@@ -331,7 +331,7 @@ def analyze(skill_path: str) -> dict:
             "severity": "critical",
             "category": "tokens",
             "message": f"SKILL.md body too large ({tokens_body} tokens, target < 300)",
-            "fix": "Move reference content to resources/. Keep only imperative steps.",
+            "fix": "Move reference content to references/. Keep only imperative steps.",
             "pattern_id": "P3",
         })
     elif tokens_body > 300:
@@ -339,25 +339,25 @@ def analyze(skill_path: str) -> dict:
             "severity": "recommended",
             "category": "tokens",
             "message": f"SKILL.md body could be trimmed ({tokens_body} tokens, target < 300)",
-            "fix": "Review for content that could move to resources/.",
+            "fix": "Review for content that could move to references/.",
             "pattern_id": "P3",
         })
 
     total_tokens = tokens_skill_md + tokens_resources
-    if total_tokens > 3000:
+    if tokens_skill_md > 3000:
         report["issues"].append({
             "severity": "critical",
             "category": "tokens",
-            "message": f"Total token budget exceeded ({total_tokens} tokens, limit 3000)",
-            "fix": "Reduce SKILL.md body and resources content.",
+            "message": f"SKILL.md token budget exceeded ({tokens_skill_md} tokens, limit 3000)",
+            "fix": "Reduce SKILL.md content. Move reference materials to references/.",
             "pattern_id": "P3",
         })
-    elif total_tokens > 2500:
+    elif tokens_skill_md > 2500:
         report["issues"].append({
             "severity": "recommended",
             "category": "tokens",
-            "message": f"Total tokens approaching limit ({total_tokens} tokens, limit 3000)",
-            "fix": "Consider trimming resources or body to stay under budget.",
+            "message": f"SKILL.md tokens approaching limit ({tokens_skill_md} tokens, limit 3000)",
+            "fix": "Consider trimming SKILL.md to stay under budget.",
             "pattern_id": "P3",
         })
 
@@ -430,7 +430,7 @@ def analyze(skill_path: str) -> dict:
                 "severity": "recommended",
                 "category": "layering",
                 "message": "Educational/background content detected in SKILL.md",
-                "fix": "Move to resources/BACKGROUND.md.",
+                "fix": "Move to references/BACKGROUND.md.",
                 "pattern_id": "P4",
             })
             break

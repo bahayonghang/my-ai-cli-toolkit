@@ -17,7 +17,7 @@ Audit the skill at `$ARGUMENTS`.
 
 1. If `$ARGUMENTS` empty or no SKILL.md found, report error.
 2. Run: `python "$SKILL_DIR/scripts/analyze_skill.py" "$ARGUMENTS"`
-3. Read `$SKILL_DIR/resources/CHECKLIST.md` and `$SKILL_DIR/resources/PATTERNS.md`.
+3. Read `$SKILL_DIR/references/CHECKLIST.md` and `$SKILL_DIR/references/PATTERNS.md`.
 4. Cross-reference JSON with CHECKLIST and PATTERNS.
 5. If parent directory has sibling skills, run: `python "$SKILL_DIR/scripts/detect_overlap.py" "<parent>" --target "<name>"`
 6. Present: **Critical → Recommended → Optional**, each with before/after fix.
@@ -31,4 +31,4 @@ Issues by severity, token budget table (Before/After/Δ), overlap report (if any
 
 - Official frontmatter fields only.
 - Body < 300 tokens, imperative voice, no educational content.
-- Preserve intent. Move reference content to resources/.
+- Preserve intent. Move reference content to references/.
