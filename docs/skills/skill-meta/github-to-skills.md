@@ -11,7 +11,7 @@ This skill automates the conversion of GitHub repositories into fully functional
 
 ## Usage
 
-**Trigger**: `/GitHub-to-skills <github_url>` or "Package this repo into a skill: <url>"
+**Trigger**: `/GitHub-to-skills <github_url>` or "Package this repo into a skill: `<url>`"
 
 ### Required Metadata Schema
 

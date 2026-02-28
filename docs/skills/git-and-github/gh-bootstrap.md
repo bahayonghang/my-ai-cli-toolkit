@@ -1,3 +1,5 @@
+<div v-pre>
+
 # gh-bootstrap
 
 一站式 GitHub 仓库配置初始化工具，将项目配置时间从数小时缩短到几分钟。
@@ -130,3 +132,5 @@ Read specs/template-catalog.md → git clone 模板仓库 → Read 模板文件 
 | [specs/detection-rules.md](specs/detection-rules.md) | 检测规则定义 |
 | [specs/presets.md](specs/presets.md) | 预设配置定义 |
 | [specs/template-catalog.md](specs/template-catalog.md) | 推荐模板仓库目录 |
+
+</div>

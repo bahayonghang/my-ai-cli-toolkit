@@ -134,4 +134,4 @@ external-skills/tui/
 ## Related
 
 - [External Skills CLI](/guide/installation#external-skills) - Command-line interface
-- [Skill Manager](/skills/skill-manager) - Community skills browser
+- [Skill Manager](/skills/skill-meta/skill-manager) - Community skills browser
