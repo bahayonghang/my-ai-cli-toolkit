@@ -88,6 +88,16 @@ npx skills add acaprino/alfio-claude-plugins@python-refactor -g -y
 npx skills add existential-birds/beagle@agent-architecture-analysis -g -y
 ```
 
+## scientific skills
+
+```shell
+npx skills add K-Dense-AI/claude-scientific-skills -g -y
+
+npx skills add K-Dense-AI/claude-scientific-skills -g -y
+
+npx skills add luwill/research-skills -g -y
+```
+
 # plugin
 
 ## claude-plugins-official
