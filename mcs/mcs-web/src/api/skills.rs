@@ -1,5 +1,7 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
+use std::path::PathBuf;
+use std::time::Duration;
 
 use mcs_core::core::installer::{install_skill, uninstall_skill};
 
@@ -10,6 +12,8 @@ use crate::dto::{
     ItemQuery, SimpleSuccess,
 };
 use crate::state::AppState;
+
+const EXTERNAL_INSTALL_TIMEOUT_SECS: u64 = 120;
 
 /// GET /api/platforms/:id/skills — list skills with optional filters
 pub async fn list(
@@ -43,7 +47,8 @@ pub async fn detail(
         .find(|s| s.name == name)
         .ok_or_else(|| AppError::NotFound(format!("Skill '{name}' not found")))?;
 
-    let content = std::fs::read_to_string(item.source_path.join("SKILL.md")).ok();
+    let skill_md_path = item.source_path.join("SKILL.md");
+    let content = read_file_text(skill_md_path, "Failed to read SKILL.md").await?;
 
     Ok(Json(ApiResponse::ok(ItemDetailDto {
         name: item.name,
@@ -53,7 +58,7 @@ pub async fn detail(
         category: item.category,
         tags: item.tags,
         is_default: item.is_default,
-        content,
+        content: Some(content),
     })))
 }
 
@@ -79,7 +84,8 @@ pub async fn diff(
         })));
     }
 
-    let diff_text = build_skill_diff(&item.source_path, &item.target_path);
+    let diff_text =
+        build_skill_diff_async(item.source_path.clone(), item.target_path.clone()).await?;
     let has_diff = !diff_text.is_empty();
 
     Ok(Json(ApiResponse::ok(DiffDto {
@@ -94,11 +100,11 @@ pub async fn install(
     Path(id): Path<String>,
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
     let root = state.project_root().await;
-    let platform = state.platform(&id).await.unwrap();
+    let platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
 
     let mut results = Vec::new();
     for name in &body.names {
@@ -124,10 +130,10 @@ pub async fn uninstall(
     Path(id): Path<String>,
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
-    let platform = state.platform(&id).await.unwrap();
+    let platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
 
     let mut results = Vec::new();
     for name in &body.names {
@@ -192,15 +198,45 @@ fn filter_items(items: Vec<mcs_core::model::ItemInfo>, query: &ItemQuery) -> Vec
         .collect()
 }
 
-fn build_skill_diff(source_dir: &std::path::Path, target_dir: &std::path::Path) -> String {
+fn build_skill_diff_text(
+    source_dir: &std::path::Path,
+    target_dir: &std::path::Path,
+) -> Result<String, std::io::Error> {
     use similar::TextDiff;
 
-    let src_skill_md = std::fs::read_to_string(source_dir.join("SKILL.md")).unwrap_or_default();
-    let tgt_skill_md = std::fs::read_to_string(target_dir.join("SKILL.md")).unwrap_or_default();
-    TextDiff::from_lines(&tgt_skill_md, &src_skill_md)
+    let src_skill_md = std::fs::read_to_string(source_dir.join("SKILL.md"))?;
+    let tgt_skill_md = std::fs::read_to_string(target_dir.join("SKILL.md"))?;
+    let diff = TextDiff::from_lines(&tgt_skill_md, &src_skill_md)
         .unified_diff()
         .header("installed/SKILL.md", "source/SKILL.md")
-        .to_string()
+        .to_string();
+    Ok(diff)
+}
+
+async fn build_skill_diff_async(
+    source_dir: PathBuf,
+    target_dir: PathBuf,
+) -> Result<String, AppError> {
+    tokio::task::spawn_blocking(move || build_skill_diff_text(&source_dir, &target_dir))
+        .await
+        .map_err(|e| AppError::Internal(format!("Failed to execute diff task: {e}")))?
+        .map_err(|e| AppError::Internal(format!("Failed to build skill diff: {e}")))
+}
+
+async fn read_file_text(path: PathBuf, label: &'static str) -> Result<String, AppError> {
+    let display = path.display().to_string();
+    tokio::task::spawn_blocking(move || std::fs::read_to_string(&path))
+        .await
+        .map_err(|e| AppError::Internal(format!("{label} ({display}): {e}")))?
+        .map_err(|e| AppError::Internal(format!("{label} ({display}): {e}")))
+}
+
+async fn write_file_text(path: PathBuf, content: String) -> Result<(), AppError> {
+    let display = path.display().to_string();
+    tokio::task::spawn_blocking(move || std::fs::write(&path, content))
+        .await
+        .map_err(|e| AppError::Internal(format!("Failed to execute write task: {e}")))?
+        .map_err(|e| AppError::Internal(format!("Failed to write file {display}: {e}")))
 }
 
 /// PUT /api/platforms/:id/skills/:name/content — overwrite SKILL.md content
@@ -220,8 +256,7 @@ pub async fn edit_content(
         .ok_or_else(|| AppError::NotFound(format!("Skill '{name}' not found")))?;
 
     let skill_md_path = item.source_path.join("SKILL.md");
-    std::fs::write(&skill_md_path, &body.content)
-        .map_err(|e| AppError::Internal(format!("Failed to write SKILL.md: {e}")))?;
+    write_file_text(skill_md_path, body.content).await?;
 
     // Invalidate cache so next request reflects updated content
     state.invalidate_platform(&id).await;
@@ -257,10 +292,21 @@ pub async fn external_install(
         }
     };
 
-    let output = std::process::Command::new("npx")
-        .args(&args)
-        .output()
-        .map_err(|e| AppError::Internal(format!("Failed to execute npx: {e}")))?;
+    let mut command = tokio::process::Command::new("npx");
+    command.args(&args);
+    command.kill_on_drop(true);
+
+    let output = tokio::time::timeout(
+        Duration::from_secs(EXTERNAL_INSTALL_TIMEOUT_SECS),
+        command.output(),
+    )
+    .await
+    .map_err(|_| {
+        AppError::Internal(format!(
+            "External install timed out after {EXTERNAL_INSTALL_TIMEOUT_SECS}s"
+        ))
+    })?
+    .map_err(|e| AppError::Internal(format!("Failed to execute npx: {e}")))?;
 
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();

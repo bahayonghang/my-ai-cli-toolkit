@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 use mcs_core::model::{InstallResult, InstallStatus, ItemType};
 
@@ -18,6 +19,8 @@ pub struct ApiError {
 pub struct ErrorDetail {
     pub code: String,
     pub message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub details: Option<Value>,
 }
 
 impl<T: Serialize> ApiResponse<T> {

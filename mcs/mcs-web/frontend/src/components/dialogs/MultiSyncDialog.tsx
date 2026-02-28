@@ -18,6 +18,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import type { PlatformDisplay, ItemType } from "@/types";
 import { getPlatforms, multiSync } from "@/api/client";
+import { extractInvalidPlatforms } from "@/utils/errorDetails";
 
 interface Props {
   open: boolean;
@@ -77,7 +78,16 @@ export function MultiSyncDialog({
       );
       onClose();
     } catch (e) {
-      onSynced((e as Error).message, "error");
+      const error = e as Error & { details?: unknown };
+      const invalidPlatforms = extractInvalidPlatforms(error.details);
+      if (invalidPlatforms.length > 0) {
+        onSynced(
+          `Sync failed. Invalid platforms: ${invalidPlatforms.join(", ")}`,
+          "error"
+        );
+        return;
+      }
+      onSynced(error.message, "error");
     } finally {
       setSyncing(false);
     }

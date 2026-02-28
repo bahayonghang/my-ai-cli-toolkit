@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use serde_json::Value;
 
 use crate::dto::{ApiError, ErrorDetail};
 
@@ -8,17 +9,29 @@ use crate::dto::{ApiError, ErrorDetail};
 pub enum AppError {
     NotFound(String),
     BadRequest(String),
+    BadRequestWithDetails { message: String, details: Value },
     Internal(String),
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let (status, code, message) = match self {
-            AppError::NotFound(msg) => (StatusCode::NOT_FOUND, "not_found", msg),
-            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, "bad_request", msg),
+        let (status, code, message, details) = match self {
+            AppError::NotFound(msg) => (StatusCode::NOT_FOUND, "not_found", msg, None),
+            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, "bad_request", msg, None),
+            AppError::BadRequestWithDetails { message, details } => (
+                StatusCode::BAD_REQUEST,
+                "bad_request",
+                message,
+                Some(details),
+            ),
             AppError::Internal(msg) => {
                 tracing::error!("Internal error: {msg}");
-                (StatusCode::INTERNAL_SERVER_ERROR, "internal_error", msg)
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "internal_error",
+                    msg,
+                    None,
+                )
             }
         };
 
@@ -26,6 +39,7 @@ impl IntoResponse for AppError {
             error: ErrorDetail {
                 code: code.into(),
                 message,
+                details,
             },
         };
 

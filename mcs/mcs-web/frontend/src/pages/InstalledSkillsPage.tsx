@@ -33,12 +33,12 @@ import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
 import HomeIcon from "@mui/icons-material/Home";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
-import { getSkills, uninstallSkills } from "@/api/client";
+import { useItemStore } from "@/stores/itemStore";
+import { uninstallSkills } from "@/api/client";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { SkillEditorDrawer } from "@/components/dialogs/SkillEditorDrawer";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
-import type { ItemDto } from "@/types";
 
 export default function InstalledSkillsPage() {
   const { platformId } = useParams<{ platformId: string }>();
@@ -48,12 +48,21 @@ export default function InstalledSkillsPage() {
   );
   const { fetchPlatforms } = usePlatformStore();
   const { colorMode, toggleColorMode, showNotification } = useUiStore();
-
-  const [skills, setSkills] = useState<ItemDto[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const {
+    items,
+    categories,
+    search,
+    selectedCategory,
+    loading,
+    error,
+    setTab,
+    setSearch,
+    setCategory,
+    setStatusFilter,
+    fetchItems,
+    fetchCategories,
+    refresh,
+  } = useItemStore();
 
   // Dialog state
   const [editName, setEditName] = useState<string | null>(null);
@@ -63,28 +72,29 @@ export default function InstalledSkillsPage() {
     fetchPlatforms();
   }, [fetchPlatforms]);
 
-  const fetchSkills = async () => {
-    if (!platformId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getSkills(platformId, {
-        status: "installed",
-        search: search || undefined,
-        category: selectedCategory ?? undefined,
-      });
-      setSkills(data);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    setTab("skills");
+    setStatusFilter("installed");
+  }, [setTab, setStatusFilter]);
 
   useEffect(() => {
-    fetchSkills();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [platformId, search, selectedCategory]);
+    setSearch("");
+    setCategory(null);
+  }, [platformId, setSearch, setCategory]);
+
+  useEffect(() => {
+    if (!platformId) {
+      return;
+    }
+    fetchItems(platformId);
+    fetchCategories(platformId);
+  }, [
+    platformId,
+    search,
+    selectedCategory,
+    fetchItems,
+    fetchCategories,
+  ]);
 
   const handleDelete = async () => {
     if (!platformId || !deleteName) return;
@@ -93,16 +103,14 @@ export default function InstalledSkillsPage() {
     try {
       await uninstallSkills(platformId, [nameToDelete]);
       showNotification(`Uninstalled "${nameToDelete}"`, "success");
-      fetchSkills();
+      await refresh(platformId);
     } catch (e) {
       showNotification((e as Error).message, "error");
     }
   };
-
-  // Get unique categories from current skills list
-  const categories = Array.from(
-    new Set(skills.map((s) => s.category).filter(Boolean))
-  ) as string[];
+  const skillCategories = categories
+    .filter((category) => category.item_type === "skill")
+    .map((category) => category.name);
 
   return (
     <Box
@@ -174,17 +182,17 @@ export default function InstalledSkillsPage() {
           <Button
             variant={selectedCategory === null ? "contained" : "text"}
             color={selectedCategory === null ? "primary" : "inherit"}
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => setCategory(null)}
             sx={{ justifyContent: "flex-start", borderRadius: 2 }}
           >
             All Skills
           </Button>
-          {categories.map((cat) => (
+          {skillCategories.map((cat) => (
             <Button
               key={cat}
               variant={selectedCategory === cat ? "contained" : "text"}
               color={selectedCategory === cat ? "primary" : "inherit"}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => setCategory(cat)}
               sx={{ justifyContent: "flex-start", borderRadius: 2 }}
             >
               {cat}
@@ -225,7 +233,7 @@ export default function InstalledSkillsPage() {
             <Box display="flex" justifyContent="center" py={8}>
               <CircularProgress />
             </Box>
-          ) : skills.length === 0 ? (
+          ) : items.length === 0 ? (
             /* Empty state */
             <Box
               sx={{
@@ -262,7 +270,7 @@ export default function InstalledSkillsPage() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {skills.map((item, index) => (
+                    {items.map((item, index) => (
                       <TableRow
                         key={item.name}
                         hover
@@ -347,7 +355,7 @@ export default function InstalledSkillsPage() {
           onSaved={() => {
             showNotification(`Saved "${editName}"`, "success");
             setEditName(null);
-            fetchSkills();
+            refresh(platformId);
           }}
         />
       )}

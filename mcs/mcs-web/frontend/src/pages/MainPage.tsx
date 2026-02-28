@@ -118,6 +118,12 @@ export default function MainPage() {
   }, [platformId, fetchCategories]);
 
   useEffect(() => {
+    clearSelection();
+    setCategory(null);
+    setSearch("");
+  }, [platformId, clearSelection, setCategory, setSearch]);
+
+  useEffect(() => {
     if (platformId) {
       fetchItems(platformId);
     }

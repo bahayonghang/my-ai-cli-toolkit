@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  ApiError,
   PlatformDisplay,
   PlatformConfig,
   ItemDto,
@@ -17,10 +18,14 @@ const BASE = "/api";
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init);
   if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(
+    const body = (await res.json().catch(() => null)) as ApiError | null;
+    const error = new Error(
       body?.error?.message ?? `HTTP ${res.status}: ${res.statusText}`
-    );
+    ) as Error & { code?: string; details?: unknown; status?: number };
+    error.code = body?.error?.code;
+    error.details = body?.error?.details;
+    error.status = res.status;
+    throw error;
   }
   const json: ApiResponse<T> = await res.json();
   return json.data;

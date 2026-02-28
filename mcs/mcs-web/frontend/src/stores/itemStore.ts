@@ -86,8 +86,8 @@ export const useItemStore = create<ItemState>((set, get) => ({
     try {
       const categories = await getCategories(platformId);
       set({ categories });
-    } catch {
-      // non-critical
+    } catch (e) {
+      set({ error: (e as Error).message });
     }
   },
 

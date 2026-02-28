@@ -1,5 +1,6 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
+use std::path::PathBuf;
 
 use mcs_core::core::installer::{install_command, uninstall_command};
 
@@ -79,12 +80,8 @@ pub async fn diff(
         })));
     }
 
-    let src = std::fs::read_to_string(&item.source_path).unwrap_or_default();
-    let tgt = std::fs::read_to_string(&item.target_path).unwrap_or_default();
-    let diff_text = similar::TextDiff::from_lines(&tgt, &src)
-        .unified_diff()
-        .header("installed", "source")
-        .to_string();
+    let diff_text =
+        build_command_diff_async(item.source_path.clone(), item.target_path.clone()).await?;
     let has_diff = !diff_text.is_empty();
 
     Ok(Json(ApiResponse::ok(DiffDto {
@@ -99,11 +96,11 @@ pub async fn install(
     Path(id): Path<String>,
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
     let root = state.project_root().await;
-    let platform = state.platform(&id).await.unwrap();
+    let platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
 
     let mut results = Vec::new();
     for name in &body.names {
@@ -129,10 +126,10 @@ pub async fn uninstall(
     Path(id): Path<String>,
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
-    let platform = state.platform(&id).await.unwrap();
+    let platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
 
     let mut results = Vec::new();
     for name in &body.names {
@@ -150,4 +147,24 @@ pub async fn uninstall(
         success_count,
         failure_count,
     })))
+}
+
+fn build_command_diff_text(
+    source: &std::path::Path,
+    target: &std::path::Path,
+) -> Result<String, std::io::Error> {
+    let src = std::fs::read_to_string(source)?;
+    let tgt = std::fs::read_to_string(target)?;
+    let diff = similar::TextDiff::from_lines(&tgt, &src)
+        .unified_diff()
+        .header("installed", "source")
+        .to_string();
+    Ok(diff)
+}
+
+async fn build_command_diff_async(source: PathBuf, target: PathBuf) -> Result<String, AppError> {
+    tokio::task::spawn_blocking(move || build_command_diff_text(&source, &target))
+        .await
+        .map_err(|e| AppError::Internal(format!("Failed to execute command diff task: {e}")))?
+        .map_err(|e| AppError::Internal(format!("Failed to build command diff: {e}")))
 }
