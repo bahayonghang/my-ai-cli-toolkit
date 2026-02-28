@@ -9,7 +9,7 @@ use crate::model::InstallResult;
 
 /// Check if platform supports prompt management (Claude only)
 pub fn supports_prompt(platform: &PlatformConfig) -> bool {
-    platform.name == "claude"
+    platform.prompt_file.is_some()
 }
 
 /// Get diff between local and global CLAUDE.md
@@ -56,7 +56,7 @@ pub fn prompt_update(project_root: &Path, platform: &PlatformConfig) -> InstallR
         return InstallResult {
             success: false,
             item_name: "CLAUDE.md".into(),
-            message: "Only Claude platform".into(),
+            message: "Prompt management not configured for this platform".into(),
             error: None,
         };
     }
@@ -77,7 +77,14 @@ pub fn prompt_update(project_root: &Path, platform: &PlatformConfig) -> InstallR
     if global.exists() {
         let ts = chrono_timestamp();
         let backup = global.with_file_name(format!("CLAUDE.md.backup_{ts}"));
-        let _ = fs::copy(&global, &backup);
+        if let Err(e) = fs::copy(&global, &backup) {
+            return InstallResult {
+                success: false,
+                item_name: "CLAUDE.md".into(),
+                message: "Failed to create backup".into(),
+                error: Some(e.to_string()),
+            };
+        }
     }
 
     match fs::copy(&local, &global) {

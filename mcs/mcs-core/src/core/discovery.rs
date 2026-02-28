@@ -60,6 +60,9 @@ fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
             .hash(&mut hasher);
         if let Ok(meta) = path.metadata() {
             meta.len().hash(&mut hasher);
+            if let Ok(bytes) = std::fs::read(path) {
+                bytes.hash(&mut hasher);
+            }
         }
         return (file_mtime(path), Some(hasher.finish()));
     }
@@ -84,6 +87,9 @@ fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
                 update_latest(&mut latest, Some(m));
             }
             meta.len().hash(&mut hasher);
+        }
+        if let Ok(bytes) = std::fs::read(&file) {
+            bytes.hash(&mut hasher);
         }
     }
 
@@ -349,14 +355,62 @@ mod tests {
         assert_eq!(status_first, InstallStatus::Installed);
 
         std::thread::sleep(std::time::Duration::from_millis(50));
-        // Write content with a different size (not just different content) so the
-        // directory signature (which hashes relative paths + file sizes) detects
-        // the change even if mtime resolution is too coarse on the CI filesystem.
+        // Use a different payload to force signature change.
         std::fs::write(
             source_skill.join("scripts").join("run.sh"),
             "echo v2 updated",
         )
         .unwrap();
+
+        let second = discover_skills(&project_root, &platform);
+        let status_second = second
+            .iter()
+            .find(|i| i.name == "demo-skill")
+            .map(|i| i.status)
+            .unwrap();
+        assert_eq!(status_second, InstallStatus::Outdated);
+
+        let _ = std::fs::remove_dir_all(project_root);
+        let _ = std::fs::remove_dir_all(install_root);
+    }
+
+    #[test]
+    fn skill_same_size_content_change_marks_outdated() {
+        let project_root = temp_dir("project_same_size");
+        let source_skill = project_root
+            .join("content")
+            .join("skills")
+            .join("demo-skill");
+        std::fs::create_dir_all(source_skill.join("scripts")).unwrap();
+        std::fs::write(
+            source_skill.join("SKILL.md"),
+            "---\nname: demo-skill\n---\n",
+        )
+        .unwrap();
+        std::fs::write(source_skill.join("scripts").join("run.sh"), "echo v1").unwrap();
+
+        let install_root = temp_dir("install_same_size");
+        let target_skill = install_root.join("skills").join("demo-skill");
+        std::fs::create_dir_all(target_skill.join("scripts")).unwrap();
+        std::fs::write(
+            target_skill.join("SKILL.md"),
+            "---\nname: demo-skill\n---\n",
+        )
+        .unwrap();
+        std::fs::write(target_skill.join("scripts").join("run.sh"), "echo v1").unwrap();
+
+        let platform = test_platform(&install_root);
+        let first = discover_skills(&project_root, &platform);
+        let status_first = first
+            .iter()
+            .find(|i| i.name == "demo-skill")
+            .map(|i| i.status)
+            .unwrap();
+        assert_eq!(status_first, InstallStatus::Installed);
+
+        std::thread::sleep(std::time::Duration::from_millis(1200));
+        // Same size, different content.
+        std::fs::write(source_skill.join("scripts").join("run.sh"), "echo v2").unwrap();
 
         let second = discover_skills(&project_root, &platform);
         let status_second = second
