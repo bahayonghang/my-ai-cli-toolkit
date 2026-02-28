@@ -17,3 +17,4 @@ mcs/target/
 .agent/
 .codex/
 .omcodex/
+.agents/
