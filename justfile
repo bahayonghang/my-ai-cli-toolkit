@@ -10,7 +10,7 @@ default:
 # 启动 TUI 技能管理器
 tui: mcs
 
-# 启动 Web 版技能管理器 (支持前端热重载，Vite proxy 到后端 13142)
+# 启动 Web 版技能管理器 (支持前端热重载，Vite proxy 到后端 13242)
 web: mcs-web-dev-all
 
 # 启动文档开发服务器
@@ -41,9 +41,9 @@ help:
     @echo ""
     @echo "🌐 MCS Web（Web 版技能管理）："
     @echo "  just mcs-web-install   - 安装前端依赖"
-    @echo "  just mcs-web-server    - 启动后端服务器 (port 13142)"
+    @echo "  just mcs-web-server    - 启动后端服务器 (port 13242)"
     @echo "  just mcs-web-dev       - 启动前端开发服务器 (port 5173)"
-    @echo "  just mcs-web-dev-all   - 启动前后端并支持热重载 (port 5173, proxy port 13142)"
+    @echo "  just mcs-web-dev-all   - 启动前后端并支持热重载 (port 5173, proxy port 13242)"
     @echo "  just mcs-web-build     - 构建生产版本 (前端+后端)"
     @echo "  just mcs-web           - 一键构建并启动生产版本"
     @echo ""
@@ -116,18 +116,20 @@ mcs-re: mcs-rebuild
 mcs-web-install:
     cd mcs/mcs-web/frontend && npm install
 
-# 启动 MCS Web 后端开发服务器 (port 13142)
+# 启动 MCS Web 后端开发服务器 (port 13242)
 mcs-web-server:
-    -taskkill /F /IM mcs-web.exe 2>nul || true
+    -taskkill /F /IM mcs-web.exe 2>/dev/null || true
     cd mcs && cargo run --bin mcs-web
 
-# 启动 MCS Web 前端开发服务器 (port 5173, 代理到 13142)
+# 启动 MCS Web 前端开发服务器 (port 5173, 代理到 13242)
 mcs-web-dev: mcs-web-install
     cd mcs/mcs-web/frontend && npm run dev
 
 # 启动 MCS Web 前端和后端 (支持热重载)
 mcs-web-dev-all: mcs-web-install
-    -taskkill /F /IM mcs-web.exe 2>nul || true
+    @-taskkill /F /IM mcs-web.exe 2>/dev/null || true
+    @echo "Checking if port 13242 is occupied by mcs-web..."
+    @-powershell -Command '$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { $proc = Get-Process -Id $p.OwningProcess -ErrorAction SilentlyContinue; if ($proc.ProcessName -eq "mcs-web") { Write-Host "Cleaning mcs-web on port 13242..."; Stop-Process -Id $proc.Id -Force } }' 2>/dev/null || true
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  🚀 启动 MCS Web 开发服务器"
@@ -135,12 +137,12 @@ mcs-web-dev-all: mcs-web-install
     @echo ""
     @echo "  📋 服务信息:"
     @echo "     • 前端页面: http://localhost:5173/"
-    @echo "     • 后端 API:  http://127.0.0.1:13142"
+    @echo "     • 后端 API:  http://127.0.0.1:13242"
     @echo ""
     @echo "  💡 提示: 启动完成后请打开 http://localhost:5173/ 访问技能管理器"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    cd mcs/mcs-web/frontend && npx concurrently -k -n "backend,frontend" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && cargo run --bin mcs-web" "npx wait-on http://127.0.0.1:13142 --timeout 60000 && npm run dev"
+    cd mcs/mcs-web/frontend && npx concurrently -k -n "backend,frontend" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && cargo run --bin mcs-web" "npx wait-on http://127.0.0.1:13242 --timeout 60000 && npm run dev"
 
 # 构建 MCS Web 前端生产版本
 mcs-web-build-frontend: mcs-web-install
@@ -150,7 +152,7 @@ mcs-web-build-frontend: mcs-web-install
 mcs-web-build: mcs-web-build-frontend
     cd mcs && cargo build --release --bin mcs-web
 
-# 启动 MCS Web 生产版本 (构建并启动，port 13142)
+# 启动 MCS Web 生产版本 (构建并启动，port 13242)
 mcs-web: mcs-web-build
     -taskkill /F /IM mcs-web.exe 2>nul || true
     cd mcs && ./target/release/mcs-web

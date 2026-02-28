@@ -70,9 +70,9 @@ async fn main() {
 
     // Start server
     let port: u16 = std::env::var("MCS_WEB_PORT")
-        .unwrap_or_else(|_| "13142".to_string())
+        .unwrap_or_else(|_| "13242".to_string())
         .parse()
-        .unwrap_or(13142);
+        .unwrap_or(13242);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
