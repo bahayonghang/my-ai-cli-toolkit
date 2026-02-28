@@ -192,24 +192,8 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
                     state.selected_category = None;
                     state.selected_indices.clear();
                 } else if sidebar_row >= 3 {
-                    // Map visual row to logical category index.
-                    // The sidebar renders: All, then for each category an item
-                    // (plus a separator line after "default"). We need to skip
-                    // separator lines when translating click position.
                     let cats = state.categories();
-                    let has_default = cats.first().is_some_and(|(c, _)| c == "default");
-                    let visual_row = sidebar_row - 3; // 0-based within category list
-                    // "default" separator sits right after the default entry (visual index 1 → sep at 2)
-                    let cat_idx = if has_default && visual_row >= 2 {
-                        if visual_row == 2 {
-                            return; // clicked on separator line
-                        }
-                        visual_row - 1 // shift by 1 to account for separator
-                    } else {
-                        visual_row
-                    };
-                    let cat_count = cats.len() + 1; // +1 for "All"
-                    if cat_idx < cat_count {
+                    if let Some(cat_idx) = sidebar_category_cursor_from_row(sidebar_row, &cats) {
                         state.category_cursor = cat_idx;
                         if cat_idx == 0 {
                             state.selected_category = None;
@@ -237,6 +221,27 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
         }
         state::Screen::Dashboard => {} // no mouse interaction needed
     }
+}
+
+fn sidebar_category_cursor_from_row(
+    sidebar_row: usize,
+    categories: &[(String, usize)],
+) -> Option<usize> {
+    let visual_row = sidebar_row.checked_sub(3)?;
+    let has_default = categories
+        .first()
+        .is_some_and(|(name, _)| name == "default");
+    let logical_row = if has_default && visual_row >= 2 {
+        if visual_row == 2 {
+            return None; // separator row under default category
+        }
+        visual_row - 1
+    } else {
+        visual_row
+    };
+
+    let category_count = categories.len() + 1; // +1 for "All"
+    (logical_row < category_count).then_some(logical_row)
 }
 
 #[cfg(test)]
@@ -328,7 +333,12 @@ mod tests {
 
             state.screen = Screen::Main;
             state.popup_scroll = 0;
-            state.popup = Some(PopupKind::Diff { item_index: 0 });
+            state.popup = Some(PopupKind::Diff {
+                item_index: 0,
+                installed: false,
+                diff_text: String::new(),
+                load_error: None,
+            });
             terminal
                 .draw(|frame| {
                     screens::main_screen::draw(frame, &state);
@@ -353,5 +363,30 @@ mod tests {
                 .expect("multi-sync popup render");
             assert!(backend_text(&terminal).contains("Multi-Platform Sync"));
         }
+    }
+
+    #[test]
+    fn sidebar_row_mapping_skips_default_separator() {
+        let categories = vec![("default".to_string(), 1), ("custom".to_string(), 2)];
+        assert_eq!(
+            sidebar_category_cursor_from_row(3, &categories),
+            Some(0),
+            "row for All category"
+        );
+        assert_eq!(
+            sidebar_category_cursor_from_row(4, &categories),
+            Some(1),
+            "row for default category"
+        );
+        assert_eq!(
+            sidebar_category_cursor_from_row(5, &categories),
+            None,
+            "separator row"
+        );
+        assert_eq!(
+            sidebar_category_cursor_from_row(6, &categories),
+            Some(2),
+            "row for first non-default category"
+        );
     }
 }

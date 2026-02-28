@@ -49,6 +49,9 @@ pub enum PopupKind {
     },
     Diff {
         item_index: usize,
+        installed: bool,
+        diff_text: String,
+        load_error: Option<String>,
     },
     Prompt {
         has_diff: bool,

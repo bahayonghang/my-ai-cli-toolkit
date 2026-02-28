@@ -175,7 +175,23 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
             let filtered = state.filtered_indices();
             if let Some(&idx) = filtered.get(state.cursor) {
                 state.popup_scroll = 0;
-                state.popup = Some(PopupKind::Diff { item_index: idx });
+                if let Some(item) = state.active_items().get(idx) {
+                    let installed = item.is_installed();
+                    let (diff_text, load_error) = if installed {
+                        match crate::tui::popups::diff_modal::compute_diff_for_item(item) {
+                            Ok(text) => (text, None),
+                            Err(e) => (String::new(), Some(e)),
+                        }
+                    } else {
+                        (String::new(), None)
+                    };
+                    state.popup = Some(PopupKind::Diff {
+                        item_index: idx,
+                        installed,
+                        diff_text,
+                        load_error,
+                    });
+                }
             }
         }
         // Search

@@ -44,8 +44,19 @@ pub fn draw(frame: &mut Frame, popup: &PopupKind, state: &AppState) {
         PopupKind::Detail { item_index } => {
             detail_modal::draw(frame, area, state, *item_index, state.popup_scroll)
         }
-        PopupKind::Diff { item_index } => {
-            diff_modal::draw(frame, area, state, *item_index, state.popup_scroll)
+        PopupKind::Diff {
+            item_index,
+            installed,
+            diff_text,
+            load_error,
+        } => {
+            let data = diff_modal::DiffRenderData {
+                item_index: *item_index,
+                installed: *installed,
+                diff_text,
+                load_error: load_error.as_deref(),
+            };
+            diff_modal::draw(frame, area, state, data, state.popup_scroll)
         }
         PopupKind::Prompt {
             has_diff,
