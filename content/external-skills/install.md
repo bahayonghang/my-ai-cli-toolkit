@@ -98,6 +98,16 @@ npx skills add K-Dense-AI/claude-scientific-skills -g -y
 npx skills add luwill/research-skills -g -y
 ```
 
+## Obsidian skills  ⭐⭐⭐⭐⭐
+
+```shell
+# 都是project级别安装到obsidian笔记根目录下
+npx skills add kepano/obsidian-skills
+
+npx skills add axtonliu/axton-obsidian-visual-skills
+```
+
+
 # plugin
 
 ## claude-plugins-official
