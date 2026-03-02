@@ -15,14 +15,14 @@ export default function AnimatedBackground() {
                 pointerEvents: "none",
                 background: (theme) =>
                     theme.palette.mode === "dark"
-                        ? "radial-gradient(ellipse at 50% 0%, rgba(30,10,60,0.6) 0%, transparent 60%), #050505"
-                        : "radial-gradient(ellipse at 50% 0%, rgba(139,92,246,0.08) 0%, transparent 60%), #F8F9FA",
+                        ? "radial-gradient(ellipse at 50% 0%, rgba(0,70,140,0.6) 0%, transparent 60%), #050505"
+                        : "radial-gradient(ellipse at 50% 0%, rgba(0,70,140,0.08) 0%, transparent 60%), #F8F9FA",
 
                 "&::before, &::after": {
                     content: '""',
                     position: "absolute",
                     borderRadius: "50%",
-                    filter: "blur(100px)",
+                    filter: "blur(120px)",
                     opacity: 0.5,
                 },
 
@@ -33,9 +33,9 @@ export default function AnimatedBackground() {
                     left: "-5%",
                     background: (theme) =>
                         theme.palette.mode === "dark"
-                            ? "radial-gradient(circle, rgba(167,139,250,0.35) 0%, transparent 70%)"
-                            : "radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)",
-                    animation: "orbFloat 18s ease-in-out infinite alternate",
+                            ? "radial-gradient(circle, rgba(0,70,140,0.45) 0%, transparent 70%)"
+                            : "radial-gradient(circle, rgba(0,70,140,0.18) 0%, transparent 70%)",
+                    animation: "orbFloat 22s ease-in-out infinite alternate",
                 },
 
                 "&::after": {
@@ -45,15 +45,15 @@ export default function AnimatedBackground() {
                     right: "-5%",
                     background: (theme) =>
                         theme.palette.mode === "dark"
-                            ? "radial-gradient(circle, rgba(96,165,250,0.30) 0%, transparent 70%)"
-                            : "radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)",
-                    animation: "orbFloat 22s ease-in-out infinite alternate-reverse",
+                            ? "radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)"
+                            : "radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)",
+                    animation: "orbFloat 28s ease-in-out infinite alternate-reverse",
                 },
 
                 "@keyframes orbFloat": {
                     "0%": { transform: "translate(0, 0) scale(1)" },
-                    "50%": { transform: "translate(40px, 30px) scale(1.08)" },
-                    "100%": { transform: "translate(-30px, 50px) scale(0.95)" },
+                    "50%": { transform: "translate(30px, 20px) scale(1.05)" },
+                    "100%": { transform: "translate(-20px, 40px) scale(0.96)" },
                 },
             }}
         />

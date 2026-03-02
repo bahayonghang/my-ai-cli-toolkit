@@ -23,9 +23,10 @@ interface Props {
   skillName: string | null;
   onClose: () => void;
   onShowDiff: (name: string) => void;
+  onReinstall?: (name: string) => void;
 }
 
-export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff }: Props) {
+export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff, onReinstall }: Props) {
   const [detail, setDetail] = useState<ItemDetailDto | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -85,17 +86,28 @@ export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff 
             </Stack>
 
             {/* Actions */}
-            {(detail.status === "installed" || detail.status === "outdated") && (
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<CompareArrowsIcon />}
-                onClick={() => skillName && onShowDiff(skillName)}
-                sx={{ mb: 2 }}
-              >
-                View Diff
-              </Button>
-            )}
+            <Box display="flex" gap={1} mb={2}>
+              {(detail.status === "installed" || detail.status === "outdated") && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<CompareArrowsIcon />}
+                  onClick={() => skillName && onShowDiff(skillName)}
+                >
+                  View Diff
+                </Button>
+              )}
+              {(detail.status === "installed" || detail.status === "outdated") && onReinstall && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  onClick={() => skillName && onReinstall(skillName)}
+                >
+                  Reinstall
+                </Button>
+              )}
+            </Box>
 
             <Divider sx={{ mb: 2 }} />
 

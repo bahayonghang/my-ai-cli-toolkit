@@ -4,7 +4,7 @@ use axum::extract::{Path, State};
 use mcs_core::config::platform::platform_displays_owned;
 
 use crate::api::error::AppError;
-use crate::dto::{ApiResponse, CategoryDto};
+use crate::dto::{ApiResponse, CategoryDto, SimpleSuccess};
 use crate::state::AppState;
 
 /// GET /api/platforms — list all platforms with display info
@@ -32,6 +32,12 @@ pub async fn list(
         .collect();
 
     Json(ApiResponse::ok(displays))
+}
+
+/// POST /api/refresh — force re-scan content and rebuild discovery cache
+pub async fn refresh(State(state): State<AppState>) -> Json<ApiResponse<SimpleSuccess>> {
+    state.warm_cache().await;
+    Json(ApiResponse::ok(SimpleSuccess { success: true }))
 }
 
 /// GET /api/platforms/:id — get single platform config

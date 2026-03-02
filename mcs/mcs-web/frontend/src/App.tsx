@@ -9,6 +9,7 @@ const MainPage = lazy(() => import("@/pages/MainPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const InstalledSkillsPage = lazy(() => import("@/pages/InstalledSkillsPage"));
 const InstallPage = lazy(() => import("@/pages/InstallPage"));
+const UnifiedInstallHubPage = lazy(() => import("@/pages/UnifiedInstallHubPage"));
 
 const Fallback = () => (
   <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="/platform/:platformId/install" element={<InstallPage />} />
             <Route path="/platform/:platformId/legacy" element={<MainPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/install-hub" element={<UnifiedInstallHubPage />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

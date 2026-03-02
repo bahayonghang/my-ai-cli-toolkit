@@ -52,6 +52,14 @@ export interface ItemDto {
   target_mtime_ms: number | null;
 }
 
+export interface SkillCatalogDto {
+  name: string;
+  description: string | null;
+  category: string | null;
+  tags: string[];
+  is_default: boolean;
+}
+
 export interface ItemDetailDto {
   name: string;
   item_type: ItemType;

@@ -55,6 +55,24 @@ impl AppState {
         self.inner.read().await.platforms.get(id).cloned()
     }
 
+    /// Get source skill catalog (platform-independent).
+    pub async fn skill_catalog(&self) -> Vec<SkillSource> {
+        {
+            let cache = self.cache.read().await;
+            if !cache.skill_sources.is_empty() {
+                return cache.skill_sources.clone();
+            }
+        }
+
+        let root = self.project_root().await;
+        let sources = discover_skill_sources(&root);
+        let mut cache = self.cache.write().await;
+        if cache.skill_sources.is_empty() {
+            cache.skill_sources = sources.clone();
+        }
+        sources
+    }
+
     /// Get cached skills for a platform
     pub async fn skills(&self, platform_id: &str) -> Vec<ItemInfo> {
         {

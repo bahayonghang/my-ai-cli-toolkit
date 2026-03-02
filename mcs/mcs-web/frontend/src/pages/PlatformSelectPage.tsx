@@ -10,13 +10,17 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
+  Button,
 } from "@mui/material";
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
+import RefreshIcon from "@mui/icons-material/Refresh";
+import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 
 export default function PlatformSelectPage() {
-  const { platforms, loading, error, fetchPlatforms } = usePlatformStore();
+  const { platforms, loading, error, fetchPlatforms, refreshPlatforms } =
+    usePlatformStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,12 +61,13 @@ export default function PlatformSelectPage() {
       <Box sx={{ position: "relative", zIndex: 1, textAlign: "center", mb: 4, width: '100%' }}>
         <Typography
           variant="h2"
-          fontWeight={800}
           gutterBottom
           sx={{
+            fontFamily: '"Fira Code", monospace',
+            fontWeight: 700,
             background: (theme) => theme.palette.mode === 'dark'
-              ? "linear-gradient(135deg, #fff 0%, #A78BFA 100%)"
-              : "linear-gradient(135deg, #000 0%, #8B5CF6 100%)",
+              ? "linear-gradient(135deg, #E0E7FF 0%, #38BDF8 100%)"
+              : "linear-gradient(135deg, #001F3F 0%, #00468C 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             mb: 0.5,
@@ -80,6 +85,7 @@ export default function PlatformSelectPage() {
           variant="subtitle1"
           color="text.secondary"
           sx={{
+            fontFamily: '"Fira Sans", sans-serif',
             fontWeight: 500,
             animation: "fadeIn 0.6s ease-out 0.15s both",
             "@keyframes fadeIn": {
@@ -90,6 +96,33 @@ export default function PlatformSelectPage() {
         >
           Select a platform to manage
         </Typography>
+        <Box sx={{ mt: 1.5, display: "flex", gap: 1, justifyContent: "center" }}>
+          <Tooltip title="Refresh content and platform list" arrow placement="top">
+            <span>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => void refreshPlatforms()}
+                disabled={loading}
+                startIcon={
+                  loading ? (
+                    <CircularProgress size={14} color="inherit" />
+                  ) : (
+                    <RefreshIcon fontSize="small" />
+                  )
+                }
+                sx={{
+                  borderRadius: 999,
+                  px: 2,
+                  textTransform: "none",
+                  fontWeight: 700,
+                }}
+              >
+                Refresh
+              </Button>
+            </span>
+          </Tooltip>
+        </Box>
       </Box>
 
       {/* 调整为更紧凑的自适应网格 */}
@@ -100,20 +133,30 @@ export default function PlatformSelectPage() {
               elevation={0}
               sx={{
                 height: "100%",
-                transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                background: (theme) => theme.palette.mode === 'dark'
+                  ? "rgba(15, 23, 42, 0.4)"
+                  : "rgba(255, 255, 255, 0.6)",
+                backdropFilter: "blur(16px)",
+                border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 70, 140, 0.1)'}`,
+                transition: "all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.2)",
                 animation: `slideUp 0.4s ease-out ${0.03 * index}s both`,
                 "@keyframes slideUp": {
                   "0%": { opacity: 0, transform: "translateY(30px)" },
                   "100%": { opacity: 1, transform: "translateY(0)" }
                 },
                 "&:hover": {
-                  transform: "translateY(-6px) scale(1.03)",
+                  cursor: "pointer",
+                  transform: "translateY(-4px)",
+                  background: (theme) => theme.palette.mode === 'dark'
+                    ? "rgba(30, 41, 59, 0.6)"
+                    : "rgba(255, 255, 255, 0.9)",
                   boxShadow: (theme) => theme.palette.mode === 'dark'
-                    ? "0 20px 40px -10px rgba(167, 139, 250, 0.25), 0 0 20px rgba(167, 139, 250, 0.1) inset"
-                    : "0 20px 40px -10px rgba(139, 92, 246, 0.15), 0 0 20px rgba(139, 92, 246, 0.05) inset",
-                  borderColor: (theme) => theme.palette.mode === 'dark' ? "rgba(167, 139, 250, 0.4)" : "rgba(139, 92, 246, 0.3)",
+                    ? "0 20px 40px -10px rgba(0, 70, 140, 0.4), 0 0 20px rgba(0, 70, 140, 0.2) inset"
+                    : "0 20px 40px -10px rgba(0, 70, 140, 0.15), 0 0 20px rgba(0, 70, 140, 0.05) inset",
+                  borderColor: (theme) => theme.palette.mode === 'dark' ? "rgba(56, 189, 248, 0.3)" : "rgba(0, 70, 140, 0.3)",
                   "& .platform-icon": {
-                    transform: "scale(1.15) translateY(-2px)",
+                    transform: "scale(1.1) translateY(-2px)",
+                    color: (theme) => theme.palette.mode === 'dark' ? "#38BDF8" : "#00468C"
                   }
                 },
               }}
@@ -143,10 +186,10 @@ export default function PlatformSelectPage() {
                   {p.icon}
                 </Typography>
                 <CardContent sx={{ p: 0, width: '100%' }}>
-                  <Typography variant="body1" fontWeight={700} sx={{ mb: 0.25, lineHeight: 1.2, wordBreak: 'break-word' }}>
+                  <Typography variant="body1" sx={{ fontFamily: '"Fira Sans", sans-serif', fontWeight: 600, mb: 0.25, lineHeight: 1.2, wordBreak: 'break-word' }}>
                     {p.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: "0.65rem", opacity: 0.8, display: 'block', wordBreak: 'break-all' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontFamily: '"Fira Code", monospace', fontSize: "0.65rem", opacity: 0.8, display: 'block', wordBreak: 'break-all' }}>
                     {p.base_dir}
                   </Typography>
                 </CardContent>
@@ -162,6 +205,8 @@ export default function PlatformSelectPage() {
           position: "fixed",
           bottom: 32,
           zIndex: 10,
+          display: "flex",
+          gap: 1.5,
           animation: "fadeInUp 0.6s ease-out 0.5s both",
           "@keyframes fadeInUp": {
             "0%": { opacity: 0, transform: "translateY(20px)" },
@@ -169,62 +214,95 @@ export default function PlatformSelectPage() {
           }
         }}
       >
-        <Tooltip title="View Global Dashboard" arrow placement="top">
-          <Box
-            onClick={() => navigate("/dashboard")}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              px: 4,
-              py: 1.5,
-              borderRadius: 8,
-              cursor: "pointer",
-              background: (theme) => theme.palette.mode === 'dark'
-                ? "rgba(20, 20, 25, 0.8)"
-                : "rgba(255, 255, 255, 0.9)",
-              backdropFilter: "blur(20px)",
-              border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.3)'}`,
-              boxShadow: (theme) => theme.palette.mode === 'dark'
-                ? "0 10px 40px -10px rgba(167, 139, 250, 0.5)"
-                : "0 10px 40px -10px rgba(139, 92, 246, 0.4)",
-              transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2)",
-              "&:hover": {
-                transform: "translateY(-4px) scale(1.05)",
-                background: (theme) => theme.palette.mode === 'dark'
-                  ? "rgba(30, 30, 35, 0.9)"
-                  : "#fff",
-                border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(167, 139, 250, 0.6)' : 'rgba(139, 92, 246, 0.6)'}`,
-                boxShadow: (theme) => theme.palette.mode === 'dark'
-                  ? "0 15px 50px -10px rgba(167, 139, 250, 0.8)"
-                  : "0 15px 50px -10px rgba(139, 92, 246, 0.6)",
-                "& .glow": { opacity: 1 },
-                "& .icon": { color: (theme) => theme.palette.primary.main }
-              }
-            }}
-          >
-            {/* 呼吸灯渐变边框效果 */}
-            <Box
-              className="glow"
-              sx={{
-                position: "absolute",
-                inset: -1,
-                borderRadius: 8,
-                background: "linear-gradient(45deg, #8B5CF6, #3B82F6, #A78BFA)",
-                opacity: 0,
-                zIndex: -1,
-                transition: "opacity 0.3s",
-                filter: "blur(8px)",
-              }}
-            />
-            <DashboardCustomizeIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />
-            <Typography variant="body2" fontWeight={700} sx={{ letterSpacing: '0.02em' }}>
-              Dashboard
-            </Typography>
-          </Box>
-        </Tooltip>
+        <FloatingQuickAction
+          title="Open Unified Install Hub"
+          label="Unified Install"
+          icon={<InstallDesktopIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />}
+          onClick={() => navigate("/install-hub")}
+        />
+
+        <FloatingQuickAction
+          title="View Global Dashboard"
+          label="Dashboard"
+          icon={<DashboardCustomizeIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />}
+          onClick={() => navigate("/dashboard")}
+        />
       </Box>
     </Box>
+  );
+}
+
+interface FloatingQuickActionProps {
+  title: string;
+  label: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+}
+
+function FloatingQuickAction({ title, label, icon, onClick }: FloatingQuickActionProps) {
+  return (
+    <Tooltip title={title} arrow placement="top">
+      <Box
+        onClick={onClick}
+        sx={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          px: 4,
+          py: 1.5,
+          borderRadius: 8,
+          cursor: "pointer",
+          background: (theme) => theme.palette.mode === 'dark'
+            ? "rgba(15, 23, 42, 0.6)"
+            : "rgba(255, 255, 255, 0.8)",
+          backdropFilter: "blur(20px)",
+          border: (theme) => theme.palette.mode === 'dark'
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(0, 70, 140, 0.1)',
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? "0 10px 30px -10px rgba(0, 0, 0, 0.5)"
+            : "0 10px 30px -10px rgba(0, 70, 140, 0.2)",
+          transition: "all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.2)",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            background: (theme) => theme.palette.mode === 'dark'
+              ? "rgba(30, 41, 59, 0.8)"
+              : "#fff",
+            border: (theme) => theme.palette.mode === 'dark'
+              ? '1px solid rgba(56, 189, 248, 0.4)'
+              : '1px solid rgba(0, 70, 140, 0.4)',
+            boxShadow: (theme) => theme.palette.mode === 'dark'
+              ? "0 15px 40px -10px rgba(0, 70, 140, 0.6)"
+              : "0 15px 40px -10px rgba(0, 70, 140, 0.3)",
+            "& .glow": { opacity: 1 },
+            "& .icon": { color: (theme) => theme.palette.mode === 'dark' ? "#38BDF8" : "#00468C" }
+          },
+          "&:focus-visible": {
+            outline: "2px solid #00468C",
+            outlineOffset: 2,
+          }
+        }}
+      >
+        <Box
+          className="glow"
+          sx={{
+            position: "absolute",
+            inset: -1,
+            borderRadius: 8,
+            background: "linear-gradient(45deg, #00468C, #0ea5e9)",
+            opacity: 0,
+            zIndex: -1,
+            transition: "opacity 0.25s",
+            filter: "blur(8px)",
+          }}
+        />
+        {icon}
+        <Typography variant="body2" sx={{ fontFamily: '"Fira Sans", sans-serif', fontWeight: 600, letterSpacing: '0.02em' }}>
+          {label}
+        </Typography>
+      </Box>
+    </Tooltip>
   );
 }
 

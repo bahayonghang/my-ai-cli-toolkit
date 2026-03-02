@@ -70,6 +70,15 @@ pub struct ItemDto {
 }
 
 #[derive(Serialize)]
+pub struct SkillCatalogDto {
+    pub name: String,
+    pub description: Option<String>,
+    pub category: Option<String>,
+    pub tags: Vec<String>,
+    pub is_default: bool,
+}
+
+#[derive(Serialize)]
 pub struct ItemDetailDto {
     pub name: String,
     pub item_type: ItemType,

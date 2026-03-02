@@ -8,13 +8,20 @@ pub mod error;
 pub mod platforms;
 pub mod prompt;
 pub mod skills;
+pub mod skills_catalog;
 pub mod sync;
 
 /// Assemble the complete API router
 pub fn router() -> Router<AppState> {
     Router::new()
+        // Global skills catalog
+        .route(
+            "/api/skills/catalog",
+            axum::routing::get(skills_catalog::catalog),
+        )
         // Platform routes
         .route("/api/platforms", axum::routing::get(platforms::list))
+        .route("/api/refresh", axum::routing::post(platforms::refresh))
         .route("/api/platforms/{id}", axum::routing::get(platforms::get))
         .route(
             "/api/platforms/{id}/categories",

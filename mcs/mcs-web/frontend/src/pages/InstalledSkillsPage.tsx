@@ -27,6 +27,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
+import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
@@ -34,7 +35,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import { useItemStore } from "@/stores/itemStore";
-import { uninstallSkills } from "@/api/client";
+import { uninstallSkills, installSkills } from "@/api/client";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { SkillEditorDrawer } from "@/components/dialogs/SkillEditorDrawer";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
@@ -106,6 +107,17 @@ export default function InstalledSkillsPage() {
       await refresh(platformId);
     } catch (e) {
       showNotification((e as Error).message, "error");
+    }
+  };
+
+  const handleReinstall = async (name: string) => {
+    if (!platformId) return;
+    try {
+      await installSkills(platformId, [name]);
+      showNotification(`Reinstalled "${name}" successfully`, "success");
+      await refresh(platformId);
+    } catch (e) {
+      showNotification(`Failed to reinstall: ${(e as Error).message}`, "error");
     }
   };
   const skillCategories = categories
@@ -322,6 +334,15 @@ export default function InstalledSkillsPage() {
                                 onClick={() => setEditName(item.name)}
                               >
                                 <EditIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Reinstall">
+                              <IconButton
+                                size="small"
+                                color="warning"
+                                onClick={() => handleReinstall(item.name)}
+                              >
+                                <SystemUpdateAltIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
                             <Tooltip title="Uninstall">

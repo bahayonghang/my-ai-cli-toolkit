@@ -432,11 +432,11 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
 
   return (
     <Card
-      onClick={isInstalled ? undefined : onToggle}
+      onClick={onToggle}
       sx={{
         position: "relative",
         overflow: "hidden",
-        cursor: isInstalled ? "default" : "pointer",
+        cursor: "pointer",
         transition:
           "transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s",
         animation: `skillFadeIn 0.3s ease-out ${index * 0.03}s both`,
@@ -453,14 +453,12 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
         ...(isInstalled && {
           opacity: 0.7,
         }),
-        "&:hover": isInstalled
-          ? {}
-          : {
-              transform: "translateY(-4px)",
-              boxShadow: selected
-                ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.5)}, 0 12px 40px ${alpha(theme.palette.primary.main, 0.2)}`
-                : `0 12px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
-            },
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: selected
+            ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.5)}, 0 12px 40px ${alpha(theme.palette.primary.main, 0.2)}`
+            : `0 12px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
+        },
       }}
     >
       <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
@@ -474,12 +472,11 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
           <Checkbox
             size="small"
             checked={selected}
-            disabled={isInstalled}
             onClick={(e) => e.stopPropagation()}
             onChange={onToggle}
             sx={{
               p: 0.5,
-              opacity: selected || isInstalled ? 1 : 0.4,
+              opacity: selected ? 1 : 0.4,
               "&:hover": { opacity: 1 },
             }}
           />
@@ -763,7 +760,7 @@ function FloatingActionBar({
           onClick={onInstall}
           sx={{ borderRadius: 2, textTransform: "none" }}
         >
-          Install Selected
+          Install / Reinstall
         </Button>
         <IconButton size="small" onClick={onClear}>
           <CloseIcon fontSize="small" />
@@ -824,11 +821,10 @@ function SkillDetailDialog({
           justifyContent: "space-between",
           px: 3,
           py: 2,
-          borderBottom: `1px solid ${
-            theme.palette.mode === "dark"
-              ? "rgba(255, 255, 255, 0.06)"
-              : "rgba(0, 0, 0, 0.06)"
-          }`,
+          borderBottom: `1px solid ${theme.palette.mode === "dark"
+            ? "rgba(255, 255, 255, 0.06)"
+            : "rgba(0, 0, 0, 0.06)"
+            }`,
           flexShrink: 0,
         }}
       >
@@ -935,11 +931,10 @@ function SkillDetailDialog({
                   mb: 2.5,
                   lineHeight: 1.7,
                   pb: 2,
-                  borderBottom: `1px solid ${
-                    theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.06)"
-                      : "rgba(0,0,0,0.06)"
-                  }`,
+                  borderBottom: `1px solid ${theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,0.06)"
+                    : "rgba(0,0,0,0.06)"
+                    }`,
                 }}
               >
                 {detail.description}
@@ -993,11 +988,10 @@ function SkillDetailDialog({
                       theme.palette.mode === "dark"
                         ? "rgba(0, 0, 0, 0.4)"
                         : "rgba(0, 0, 0, 0.03)",
-                    border: `1px solid ${
-                      theme.palette.mode === "dark"
-                        ? "rgba(255,255,255,0.06)"
-                        : "rgba(0,0,0,0.06)"
-                    }`,
+                    border: `1px solid ${theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.06)"
+                      : "rgba(0,0,0,0.06)"
+                      }`,
                     p: 2,
                     borderRadius: 3,
                     overflow: "auto",
@@ -1026,11 +1020,10 @@ function SkillDetailDialog({
                   },
                   "& hr": {
                     border: "none",
-                    borderTop: `1px solid ${
-                      theme.palette.mode === "dark"
-                        ? "rgba(255,255,255,0.08)"
-                        : "rgba(0,0,0,0.08)"
-                    }`,
+                    borderTop: `1px solid ${theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.08)"
+                      : "rgba(0,0,0,0.08)"
+                      }`,
                     my: 2,
                   },
                   "& table": {
@@ -1040,11 +1033,10 @@ function SkillDetailDialog({
                     fontSize: "0.85rem",
                   },
                   "& th, & td": {
-                    border: `1px solid ${
-                      theme.palette.mode === "dark"
-                        ? "rgba(255,255,255,0.1)"
-                        : "rgba(0,0,0,0.1)"
-                    }`,
+                    border: `1px solid ${theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.1)"
+                      : "rgba(0,0,0,0.1)"
+                      }`,
                     px: 1.5,
                     py: 1,
                     textAlign: "left",
@@ -1388,12 +1380,10 @@ export default function InstallPage() {
     return counts;
   }, [skills]);
 
-  // Selected installable items
+  // Selected items (all selected can be installed/reinstalled)
   const selectedInstallable = useMemo(() => {
     return skills.filter(
-      (s) =>
-        selectedNames.has(s.name) &&
-        (s.status === "not_installed" || s.status === "outdated")
+      (s) => selectedNames.has(s.name)
     );
   }, [skills, selectedNames]);
 
@@ -1408,14 +1398,13 @@ export default function InstallPage() {
 
   const handleSelectAll = () => {
     const names = filteredSkills
-      .filter((s) => s.status !== "installed")
       .map((s) => s.name);
     setSelectedNames(new Set(names));
   };
 
   const handleSelectAllDefault = () => {
     const names = filteredSkills
-      .filter((s) => s.is_default && s.status !== "installed")
+      .filter((s) => s.is_default)
       .map((s) => s.name);
     setSelectedNames(new Set(names));
   };

@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import type { PlatformDisplay } from "@/types";
-import { getPlatforms } from "@/api/client";
+import {
+  getPlatforms,
+  refreshContent as refreshContentApi,
+} from "@/api/client";
 
 interface PlatformState {
   platforms: PlatformDisplay[];
@@ -8,6 +11,7 @@ interface PlatformState {
   loading: boolean;
   error: string | null;
   fetchPlatforms: () => Promise<void>;
+  refreshPlatforms: () => Promise<void>;
   selectPlatform: (id: string) => void;
 }
 
@@ -20,6 +24,17 @@ export const usePlatformStore = create<PlatformState>((set) => ({
   fetchPlatforms: async () => {
     set({ loading: true, error: null });
     try {
+      const platforms = await getPlatforms();
+      set({ platforms, loading: false });
+    } catch (e) {
+      set({ error: (e as Error).message, loading: false });
+    }
+  },
+
+  refreshPlatforms: async () => {
+    set({ loading: true, error: null });
+    try {
+      await refreshContentApi();
       const platforms = await getPlatforms();
       set({ platforms, loading: false });
     } catch (e) {

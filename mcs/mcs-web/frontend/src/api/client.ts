@@ -4,6 +4,7 @@ import type {
   PlatformDisplay,
   PlatformConfig,
   ItemDto,
+  SkillCatalogDto,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
@@ -53,6 +54,10 @@ export async function getPlatforms(): Promise<PlatformDisplay[]> {
   return fetchJson(`${BASE}/platforms`);
 }
 
+export async function refreshContent(): Promise<{ success: boolean }> {
+  return postJson(`${BASE}/refresh`, {});
+}
+
 export async function getPlatform(id: string): Promise<PlatformConfig> {
   return fetchJson(`${BASE}/platforms/${id}`);
 }
@@ -67,6 +72,10 @@ export async function getCategories(
 
 export async function getDashboard(): Promise<DashboardDto> {
   return fetchJson(`${BASE}/dashboard`);
+}
+
+export async function getSkillCatalog(): Promise<SkillCatalogDto[]> {
+  return fetchJson(`${BASE}/skills/catalog`);
 }
 
 // ── Skills ─────────────────────────────────────────────────────────
