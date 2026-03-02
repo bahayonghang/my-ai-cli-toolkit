@@ -131,3 +131,23 @@ If `$ARGUMENTS` is empty or the path does not contain SKILL.md, report:
 **Detect**: A `README.md` or `README_CN.md` file exists in the skill's root directory (alongside `SKILL.md`).
 **Problem**: Redundant documentation wastes tokens and creates conflict with `SKILL.md`. Humans should read the repository-level README, while Claude reads `SKILL.md` or files inside `references/`.
 **Fix**: Delete the `README.md` from the skill folder. Move any essential documentation to `SKILL.md` or a file within the `references/` directory.
+
+## Pattern 15: Directory Naming Convention Violation
+
+**Detect**: A `resources/` directory exists in the skill folder.
+**Problem**: Per the official spec, `references/` content is auto-loaded into Agent context; `assets/` stores static files (path-only). The name `resources/` is ambiguous legacy naming — Claude Code will treat it as static assets and NOT load its content into context, silently breaking any skill that relies on those files being available in context.
+**Fix**: Rename `resources/` to `references/` if the content should be auto-loaded into context, or to `assets/` if the files are static templates/binaries referenced by path only.
+
+```
+# Bad
+resources/
+  CHECKLIST.md   ← will NOT be loaded into context
+
+# Good — context-loaded reference material
+references/
+  CHECKLIST.md   ← auto-loaded into Agent context
+
+# Also Good — static files referenced by path
+assets/
+  template.json  ← referenced by $SKILL_DIR/assets/template.json, not read into context
+```

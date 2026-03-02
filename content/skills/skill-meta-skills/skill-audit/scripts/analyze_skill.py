@@ -120,6 +120,18 @@ def analyze(skill_path: str) -> dict:
             "pattern_id": "P14",
         })
 
+    if has_resources:
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "structure",
+            "message": "Directory 'resources/' found; should be renamed per official spec",
+            "fix": (
+                "Rename to 'references/' if content should be auto-loaded into Agent context, "
+                "or 'assets/' if files are static templates referenced by path only."
+            ),
+            "pattern_id": "P15",
+        })
+
     if not skill_md.exists():
         report["issues"].append({
             "severity": "critical",
@@ -309,14 +321,12 @@ def analyze(skill_path: str) -> dict:
     tokens_body = estimate_tokens(body)
     tokens_desc = estimate_tokens(desc)
     tokens_resources = 0
-    
-    resource_dirs = [skill_dir / "resources", skill_dir / "references", skill_dir / "assets"]
-    for rd in resource_dirs:
-        if rd.is_dir():
-            for f in rd.rglob("*"):
-                if f.is_file():
-                    with contextlib.suppress(Exception):
-                        tokens_resources += estimate_tokens(f.read_text(encoding="utf-8"))
+    ref_dir = skill_dir / "references"
+    if ref_dir.is_dir():
+        for f in ref_dir.rglob("*"):
+            if f.is_file():
+                with contextlib.suppress(Exception):
+                    tokens_resources += estimate_tokens(f.read_text(encoding="utf-8"))
 
     report["tokens"] = {
         "description": tokens_desc,
@@ -343,7 +353,6 @@ def analyze(skill_path: str) -> dict:
             "pattern_id": "P3",
         })
 
-    total_tokens = tokens_skill_md + tokens_resources
     if tokens_skill_md > 3000:
         report["issues"].append({
             "severity": "critical",

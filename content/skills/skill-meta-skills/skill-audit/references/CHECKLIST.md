@@ -20,15 +20,15 @@
 
 ## 4. Token Efficiency
 
-- **Check**: SKILL.md body < 300 tokens. SKILL.md internal total < 3000 tokens. (External references are lazily loaded and not subject to this strict limit).
+- **Check**: SKILL.md body < 300 tokens. SKILL.md internal total < 3000 tokens. Only content in `references/` counts toward the context token budget; `assets/` and `resources/` are path-only and are not loaded into context.
 - **Fail**: Body > 500 tokens, or contains reference material inline.
-- **Fix**: Move reference content to `references/` or `assets/`. Keep only executable instructions.
+- **Fix**: Move reference content to `references/`. Keep only executable instructions. Do not use `assets/` or `resources/` for content that must be available in Agent context.
 
 ## 5. Content Layering
 
-- **Check**: SKILL.md contains only execution instructions. Background knowledge and reference tables are in `references/`, `assets/`, or `scripts/`.
-- **Fail**: Educational sections ("Why X fails", "Background on Y") in SKILL.md.
-- **Fix**: Extract to `references/BACKGROUND.md` or similar.
+- **Check**: SKILL.md contains only execution instructions. Background knowledge and reference tables are in `references/` or `scripts/`. The skill folder uses correct directory naming: `references/` for context-loaded material, `assets/` for static path-only files — never `resources/` (ambiguous legacy name).
+- **Fail**: Educational sections ("Why X fails", "Background on Y") in SKILL.md, or reference content placed in `resources/` instead of `references/`.
+- **Fix**: Extract to `references/BACKGROUND.md` (not `assets/` or `resources/`, as only `references/` content is auto-loaded into Agent context).
 
 ## 6. Instruction Clarity
 
