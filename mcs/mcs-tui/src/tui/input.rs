@@ -98,8 +98,8 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 state.selected_indices = filtered.into_iter().collect();
             }
         }
-        // Install
-        KeyCode::Char('i') => {
+        // Install / Reinstall
+        KeyCode::Char('i') | KeyCode::Char('r') => {
             let items = state.selected_names();
             if !items.is_empty() {
                 state.popup = Some(PopupKind::Install {
