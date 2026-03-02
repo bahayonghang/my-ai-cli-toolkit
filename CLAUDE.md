@@ -1,201 +1,88 @@
-
 # CLAUDE.md
-
-> **Last Updated:** 2026-01-31 09:01:58
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-**MyClaude Skills** is a comprehensive collection of Claude Code skills, prompts, and workflows for AI-assisted development. It provides:
+A curated collection of AI skills, commands, and prompts installable across multiple AI coding platforms (Claude, Codex, Gemini, Qwen, Kiro, Trae, Windsurf, etc.). The repository also ships **MCS** (My Claude Settings) — a Rust-based management tool available as both a TUI and a web app — for browsing, installing, and updating skills.
 
-- **Unified skill format** (`SKILL.md`) with YAML frontmatter
-- **Cross-platform installation** to multiple targets: Claude Code, Codex CLI, Gemini CLI, Qwen Code, Google Antigravity, Windsurf, Trae, and OpenCode
-- **Interactive Rust TUI** (`mcs/`) for skill management
-- **Desktop application** (AgentKit Desktop) built with Tauri + React
-- **External skills registry** for community contributions
+## Build & Dev Commands
 
-## Project Structure (Mermaid)
+All common tasks are managed via [`just`](https://github.com/casey/just). Run `just help` for the full list.
 
-```mermaid
-graph TB
-    subgraph Root["📁 my-claude-code-settings"]
-        direction TB
-    end
-
-    subgraph ContentDir["📁 content/"]
-        subgraph Skills["skills/ (categorized)"]
-            skill_cats["academic-skills/ ai-llm-skills/<br/>development-skills/ devtools-skills/<br/>diagram-skills/ document-skills/<br/>git-github-skills/ media-skills/<br/>obsidian-skills/ skill-meta-skills/"]
-            skill_md["SKILL.md format"]
-            skill_dirs["config/ tips/ references/<br/>scripts/ cookbook/"]
-        end
-
-        subgraph Commands["commands/"]
-            claude_cmd["claude/ (.md)"]
-            gemini_cmd["gemini/ (.toml)"]
-            other_cmd["antigravity/ windsurf/<br/>trae/ qwen/"]
-        end
-
-        subgraph Agents["agents/"]
-            ccw["ccw/<br/>Claude Code Workflow agents"]
-            specialist["specialist/<br/>Domain expert agents"]
-        end
-
-        prompts_dir["prompts/CLAUDE.md"]
-    end
-
-    subgraph ToolsDir["📁 tools/"]
-        subgraph AgentKit["agentkit-desktop/"]
-            ak_src["src/<br/>React + TypeScript"]
-            ak_tauri["src-tauri/<br/>Rust backend"]
-        end
-
-        subgraph External["external-skills/"]
-            ext_registry["registry.toml"]
-            ext_tui["tui/<br/>External skill installer"]
-        end
-
-        plugin_scripts["plugin-scripts/"]
-    end
-
-    subgraph MCS["📁 mcs/"]
-        mcs_rust["Rust TUI (ratatui)"]
-    end
-
-    subgraph OpenSpec["📁 openspec/"]
-        os_agents["AGENTS.md"]
-        os_changes["changes/<br/>Proposals & specs"]
-    end
-
-    Root --> ContentDir
-    Root --> ToolsDir
-    Root --> MCS
-    Root --> OpenSpec
+### MCS TUI (Rust)
+```bash
+just mcs          # Build (release) and run the TUI skill manager
+just mcs-dev      # Dev mode (debug build, faster compile)
+just mcs-rebuild  # Force clean + rebuild
 ```
 
-## Module Index
-
-| Module | Path | Description | Local CLAUDE.md |
-|--------|------|-------------|-----------------|
-| **Rust TUI** | `mcs/` | Rust-based interactive installer (ratatui) | ✅ |
-| **Skills** | `content/skills/` | Categorized skill definitions (10 categories) | - |
-| **Commands** | `content/commands/` | Platform-specific slash commands | - |
-| **Agents** | `content/agents/` | AI agent definitions (CCW + Specialist) | ✅ |
-| **Prompts** | `content/prompts/` | Global prompt configuration | - |
-| **AgentKit Desktop** | `tools/agentkit-desktop/` | Tauri + React desktop app | ✅ |
-| **External Skills** | `tools/external-skills/` | External skill registry & installer | ✅ |
-| **Plugin Scripts** | `tools/plugin-scripts/` | Claude plugin installer scripts | - |
-| **OpenSpec** | `openspec/` | Change proposal system | - |
-| **Docs** | `docs/` | VitePress documentation site | - |
-
-## Common Commands
-
+### MCS Web (Rust backend + React frontend)
 ```bash
-# TUI mode (Rust MCS) - skill browsing and installation
-just mcs
+just web                # Start both backend (port 13242) and frontend (port 5173) with hot-reload
+just mcs-web-server     # Backend only
+just mcs-web-dev        # Frontend only (requires backend running)
+just mcs-web            # Build production bundle and run
+```
 
-# Documentation (VitePress)
-cd docs && npm install && npm run dev
+### Documentation Site (VitePress)
+```bash
+just doc    # Install deps and start dev server (http://localhost:4000)
+just docs-build   # Build for production
+```
 
-# AgentKit Desktop (Tauri)
-cd tools/agentkit-desktop && npm install && npm run tauri dev
-
-# External Skills TUI
-uv run python tools/external-skills/install_tui.py
-
-# CI checks (TypeScript + Rust)
-just ci
+### Code Quality
+```bash
+just ci                 # Full CI: tsc + cargo fmt + cargo clippy + cargo test
+just rust-check-all     # cargo fmt --check + clippy + test
+just rust-fix           # cargo fmt + clippy --fix
+just rust-test          # cargo test (runs from mcs/)
+just ts-check           # TypeScript type check (mcs-web frontend)
 ```
 
 ## Architecture
 
-### Core Components
+### Content (`content/`)
+The installable content, organized by type:
+- **`content/skills/<category>/<skill-name>/`** — Each skill is a directory with a `SKILL.md` definition. Categories: `academic-skills`, `ai-llm-skills`, `devtools-skills`, `diagram-skills`, `document-skills`, `git-github-skills`, `media-skills`, `obsidian-skills`, `skill-meta-skills`, `tech-stack-skills`, `development-skills`, `workflow-skills`.
+- **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
+- **`content/agents/`** — AI agent definitions (CCW and specialist agents).
+- **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).
+- **`content/external-skills/`** — Registry and installer for npm/pip/git-sourced skills.
 
-- **`mcs/`**: Rust TUI application (ratatui + crossterm)
-  - Interactive skill browser with keyboard navigation
-  - Detects project root via `walk_up_for_content()`
+### MCS Rust Workspace (`mcs/`)
+Cargo workspace with three crates:
 
-- **`tools/agentkit-desktop/`**: Tauri v2 desktop application
-  - `src/` - React + TypeScript frontend with Zustand stores
-  - `src-tauri/` - Rust backend with SQLite database
-  - Features: i18n (en/zh), platform management, resource sync
+**`mcs-core`** (library crate) — Shared business logic:
+- `config/platform.rs` — `PlatformConfig` struct + 3-tier config loading: `defaults → platforms.toml → ~/.config/myclaude/platforms.toml`. Each platform defines `base_dir`, `skills_subdir`, `commands_subdir`, and an optional `prompt_file`.
+- `core/discovery.rs` — Scans the content directory for skills and commands, computes `InstallStatus` (Installed / NotInstalled / Outdated via mtime comparison).
+- `core/installer.rs` — Copies/removes skills and commands to platform directories.
+- `core/skill_meta.rs` — Parses `SKILL.md` metadata (name, description, tags, category).
+- `model.rs` — Core types: `ItemInfo`, `ItemType`, `InstallStatus`, `InstallResult`.
 
-- **`content/agents/`**: AI agent definitions
-  - `ccw/` - Claude Code Workflow agents (planning, execution, debugging)
-  - `specialist/` - Domain expert agents (Python, TypeScript, CSS, etc.)
+**`mcs-tui`** (binary) — Terminal UI built with `ratatui`/`crossterm`:
+- `tui/screens/` — Screen state machines (platform select, skill list, install, etc.)
+- `tui/widgets/` — Reusable TUI widgets (header, footer, lists)
+- `tui/popups/` — Modal overlays (confirm, detail, diff)
+- `tui/input.rs`, `tui/actions.rs` — Input event → action dispatch
 
-- **`tools/external-skills/`**: External skill management
-  - `registry.toml` - Skill registry with GitHub sources
-  - `install.py` - CLI installer
-  - `tui/` - Interactive TUI installer
+**`mcs-web`** (binary) — HTTP server + embedded SPA:
+- Backend: Axum on port 13242. REST routes in `src/api/mod.rs`: platforms, skills, commands, prompt, dashboard, sync, diff.
+- Frontend: React + TypeScript + MUI (Material UI v6) in `mcs-web/frontend/`. Vite dev server on port 5173 proxies API calls to 13242.
+- State: Zustand stores per domain (platformStore, dashboardStore, uiStore).
 
-### Content Structure
+### Platform Configuration (`platforms.toml`)
+Defines install paths for each supported platform. Priority order:
+1. Hardcoded defaults in `mcs-core/src/config/platform.rs`
+2. `platforms.toml` in the project root
+3. `~/.config/myclaude/platforms.toml` (user overrides, highest priority)
 
-- **`content/skills/<category>/<name>/SKILL.md`**: Skill definitions organized in category folders (`academic-skills/`, `ai-llm-skills/`, `development-skills/`, `devtools-skills/`, `diagram-skills/`, `document-skills/`, `git-github-skills/`, `media-skills/`, `obsidian-skills/`, `skill-meta-skills/`). Each skill has YAML frontmatter (`name`, `description`, optional `license`). May include subdirectories: `config/`, `tips/`, `references/`, `scripts/`, `cookbook/`. `default.toml` controls which categories are installed by `install-all`.
+### Skill Format
+A skill is a directory containing at minimum a `SKILL.md` file. The file's YAML front-matter or heading structure is parsed by `skill_meta.rs` for name, description, category, and tags. Optional subdirectories: `scripts/`, `config/`, `references/`, `docs/`, `examples/`.
 
-- **`content/commands/<platform>/`**: Slash commands per platform
-  - `claude/` - Markdown files (`.md`) with nested directories (cc/, cli/, gh/, issue/, kiro/, memory/, task/, workflow/, zcf/)
-  - `gemini/` - TOML files (`.toml`)
-  - `antigravity/`, `windsurf/`, `trae/` - Markdown workflows
-  - `qwen/` - Qwen-specific commands
+## Key Conventions
 
-- **`content/prompts/CLAUDE.md`**: Global workflow configuration synced via `prompt-update`
-
-### Installation Targets
-
-| Target | Skills Path | Commands Path |
-|--------|-------------|---------------|
-| claude | `~/.claude/skills/` | `~/.claude/commands/` |
-| codex | `~/.codex/skills/` | `~/.codex/prompts/` |
-| cursor | `~/.cursor/skills/` | `~/.cursor/commands/` |
-| gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
-| qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
-| qoder | `~/.qoder/skills/` | `~/.qoder/commands/` |
-| antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
-| windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
-| trae | `~/.trae/skills/` | `~/.trae/commands/` |
-| trae-cn | `~/.trae-cn/skills/` | `~/.trae-cn/commands/` |
-| opencode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
-
-## Skill Definition Format
-
-```yaml
----
-name: skill-name
-description: Brief description for listing
-license: MIT  # optional
----
-
-# Skill Title
-
-Detailed instructions and documentation...
-```
-
-## Code Conventions
-
-- Comments in English
-- Rust code follows standard Rust conventions (`mcs/`, `tools/agentkit-desktop/src-tauri/`)
-- TypeScript/React follows ESLint config in `tools/agentkit-desktop`
-- Follow existing patterns in `mcs/` modules
-
-## Key Skills (Highlights)
-
-| Category | Folder | Skills |
-|----------|--------|--------|
-| **Academic** | `academic-skills/` | `latex-paper-en`, `latex-thesis-zh`, `typst-paper`, `IEEE-writing-skills` |
-| **AI & LLM** | `ai-llm-skills/` | `codex`, `gemini`, `gemini-image`, `research` |
-| **Development** | `development-skills/` | `frontend-engineer`, `rust-cli-tui-developer`, `lib-slint-expert` |
-| **Dev Tools** | `devtools-skills/` | `review-code`, `memory-system`, `planning-with-files` |
-| **Diagrams** | `diagram-skills/` | `drawio`, `excalidraw`, `mermaid_expert` |
-| **Documentation** | `document-skills/` | `document-writer`, `tech-blog`, `docx`, `pdf` |
-| **Git & GitHub** | `git-github-skills/` | `git-commit-cn`, `gh-bootstrap`, `gh-fix-ci` |
-| **Media** | `media-skills/` | `article-cover`, `yt-dlp` |
-| **Obsidian** | `obsidian-skills/` | `obsidian-cli`, `obsidian-markdown`, `json-canvas` |
-| **Skill Dev** | `skill-meta-skills/` | `skill-seekers`, `github-to-skills`, `mcp-to-skill` |
-
-## Related Documentation
-
-- `openspec/AGENTS.md` - Change proposal workflow
-- `tools/agentkit-desktop/DEVELOPER.md` - Desktop app development guide
-- `tools/external-skills/README.md` - External skills installation guide
-- `docs/` - VitePress documentation site
+- **Rust edition 2024**, minimum toolchain `1.85`. Release builds use `opt-level = "z"`, `lto = true`, `strip = true`.
+- **Frontend**: React + TypeScript strict mode, MUI v6 (Grid v2 API with `size` prop). No CSS files — all styling via MUI `sx` prop.
+- **Commands source fallback**: Platforms can declare a `fallback_commands_source` (e.g., `codex` falls back to `claude` commands if no codex-specific commands exist).
+- **No root `CLAUDE.md` for OMC config**: The OMC multi-agent orchestration config lives in `.claude/CLAUDE.md`, not the project root.

@@ -1,27 +1,42 @@
-
 # Repository Guidelines
 
-## 项目结构与模块组织
-本仓库用于管理跨平台 AI 技能与命令。核心目录：`content/skills/`（本地技能模块，每个技能一个子目录含 `SKILL.md`）、`content/commands/`（各平台斜杠命令）、`content/prompts/`（全局提示词）、`tools/external-skills/`（外部技能注册），文档站点位于 `docs/`。技能管理通过 `mcs/`（Rust TUI）进行。工具类子项目位于 `tools/`（agentkit-desktop、external-skills、plugin-scripts）。
+## Project Structure & Module Organization
+- `content/` holds installable assets: skills in `content/skills/`, slash commands in `content/commands/`, shared prompts in `content/prompts/`, and agent definitions in `content/agents/`.
+- Each skill lives in a dedicated kebab-case folder (for example `content/skills/diagram-skills/drawio/`) with a required `SKILL.md` and optional `scripts/`, `references/`, and `assets/`.
+- `mcs/` is the Rust workspace (`mcs-core`, `mcs-tui`, `mcs-web`).
+- `mcs/mcs-web/frontend/` is the React + TypeScript UI.
+- `docs/` is the VitePress documentation site (`docs/` + `docs/zh/`).
+- `content/external-skills/` contains the Python-based external skill installer and its Textual TUI.
 
-## 构建、测试与开发命令
-常用命令如下：
-```bash
-just mcs                           # 启动交互式 Rust TUI（推荐）
-just ci                            # 运行完整 CI 流程 (TypeScript + Rust)
-just docs-dev                      # 文档站点开发
-just rust-check-all                # Rust 格式 + Clippy + 测试
-```
-`just` 任务定义于 `justfile`，文档构建使用 `docs/` 内的 npm 脚本。
+## Build, Test, and Development Commands
+- `just mcs`: run the Rust TUI manager (`cargo run --release --bin mcs`).
+- `just web`: run MCS Web backend + frontend with hot reload (API `:13242`, UI `:5173`).
+- `just doc`: install docs dependencies and start VitePress dev server.
+- `just ci`: run local CI pipeline (TypeScript check + Rust fmt/clippy/test).
+- `just rust-check-all`: run Rust format check, clippy, and tests.
+- `cd mcs/mcs-web/frontend && npm run test`: run Vitest suites.
 
-## 编码风格与命名规范
-模块目录与技能名使用 `kebab-case`（如 `content/skills/latex-paper-en/`）。Rust 代码使用标准 Rust 格式化 (`cargo fmt`)，静态分析使用 Clippy。TypeScript/React 遵循 ESLint 配置。
+## Coding Style & Naming Conventions
+- Rust: enforce `cargo fmt` and zero-clippy-warning policy (`-D warnings`).
+- TypeScript/React: follow existing style (2-space indent, semicolons, double quotes) and keep type checks clean with `npx tsc --noEmit`.
+- Test names: `*.test.ts` (frontend) and `test_*.py` (Python).
+- Keep new files and folders descriptive, lowercase/kebab-case unless language conventions require otherwise.
 
-## 测试指南
-Rust 测试通过 `cargo test` 运行（mcs/ 和 tools/agentkit-desktop/src-tauri/）。TypeScript 类型检查使用 `npx tsc --noEmit`。
+## Testing Guidelines
+- Add or update tests for any behavior change in touched modules.
+- Rust changes: run `just rust-test` (or `cd mcs && cargo test`).
+- Web changes: run `npm run test` in `mcs/mcs-web/frontend`.
+- No global coverage gate is enforced; reviewers expect meaningful regression coverage for fixes/features.
 
-## 提交与 PR 规范
-提交信息遵循 Conventional Commits：`feat(scope): 描述`、`fix(docs): 描述`、`refactor(...)` 等。请保持 scope 与变更模块一致（例如 `feat(drawio): ...`）。PR 建议包含：变更摘要、关联问题/需求、影响范围（如具体技能目录）、已运行的测试命令，若涉及 TUI 或文档，请附截图或预览说明。
+## Commit & Pull Request Guidelines
+- Follow Conventional Commits with optional emoji, consistent with history:
+  - `feat(mcs-web): ✨ ...`
+  - `fix(mcs-core): 🐛 ...`
+  - `docs: 📝 ...`
+- Keep commits scoped to one concern.
+- PRs should include: purpose, impacted paths, verification commands run, and screenshots/GIFs for UI changes.
+- Link related issues/spec docs when applicable.
 
-## 安装与配置提示
-默认通过 Rust TUI 管理技能：`just mcs`。跨平台目标在 TUI 中选择。
+## Security & Configuration Tips
+- Never commit API keys, tokens, or local machine paths.
+- Use example config files (for example `secrets.example.md`) as templates, not as secret storage.
