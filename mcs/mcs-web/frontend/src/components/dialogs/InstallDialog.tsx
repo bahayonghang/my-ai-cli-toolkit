@@ -17,6 +17,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { installSkills, installCommands } from "@/api/client";
 import type { PlatformDisplay } from "@/types";
+import { useI18n } from "@/i18n";
 
 type Phase = "confirm" | "installing" | "completed";
 
@@ -176,12 +177,18 @@ interface ConfirmPhaseProps {
 }
 
 function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: ConfirmPhaseProps) {
+  const { t } = useI18n();
+  const itemTypeLabel =
+    itemType === "skills"
+      ? t("dialogs.itemTypeSkills")
+      : t("dialogs.itemTypeCommands");
+
   return (
     <>
       <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <InstallDesktopIcon color="primary" />
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
-          Install Items
+          {t("dialogs.installItemsTitle")}
         </Typography>
         <IconButton size="small" onClick={onCancel}>
           <CloseIcon />
@@ -191,10 +198,10 @@ function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: Conf
       <DialogContent dividers>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
           <Typography variant="body2" color="text.secondary">
-            Platform:
+            {t("dialogs.platformLabel")}
           </Typography>
           <Chip
-            label={platform ? `${platform.icon} ${platform.name}` : "Unknown"}
+            label={platform ? `${platform.icon} ${platform.name}` : t("common.unknown")}
             color="primary"
             size="small"
             variant="outlined"
@@ -253,16 +260,19 @@ function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: Conf
 
       <DialogActions sx={{ justifyContent: "space-between", px: 3 }}>
         <Typography variant="caption" color="text.secondary">
-          {results.length} {itemType} will be installed
+          {t("dialogs.willInstallItems", {
+            count: results.length,
+            itemType: itemTypeLabel,
+          })}
         </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>{t("common.cancel")}</Button>
           <Button
             variant="contained"
             onClick={onInstall}
             startIcon={<InstallDesktopIcon />}
           >
-            Install
+            {t("common.install")}
           </Button>
         </Box>
       </DialogActions>
@@ -285,6 +295,7 @@ function InstallingPhase({
   successCount,
   failureCount,
 }: InstallingPhaseProps) {
+  const { t } = useI18n();
   const total = results.length;
   const done = successCount + failureCount;
   const currentItem = results[currentIndex];
@@ -294,7 +305,7 @@ function InstallingPhase({
       <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <CircularProgress size={20} thickness={4} />
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
-          Installing...
+          {t("dialogs.installingTitle")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {done} / {total}
@@ -409,6 +420,7 @@ function CompletedPhase({
   onToggleError,
   onClose,
 }: CompletedPhaseProps) {
+  const { t } = useI18n();
   const hasErrors = failureCount > 0;
 
   return (
@@ -420,7 +432,9 @@ function CompletedPhase({
           <CheckCircleOutlineIcon color="success" />
         )}
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
-          {hasErrors ? "Completed with errors" : "Installation Complete"}
+          {hasErrors
+            ? t("dialogs.completedWithErrors")
+            : t("dialogs.installationComplete")}
         </Typography>
       </DialogTitle>
 
@@ -441,7 +455,7 @@ function CompletedPhase({
         <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
           <Chip
             icon={<CheckCircleIcon />}
-            label={`${successCount} installed`}
+            label={t("installHub.successCount", { count: successCount })}
             color="success"
             size="small"
             variant="outlined"
@@ -449,7 +463,7 @@ function CompletedPhase({
           {hasErrors && (
             <Chip
               icon={<CancelIcon />}
-              label={`${failureCount} failed`}
+              label={t("installHub.failedCount", { count: failureCount })}
               color="error"
               size="small"
               variant="outlined"
@@ -558,7 +572,7 @@ function CompletedPhase({
 
       <DialogActions>
         <Button variant="contained" onClick={onClose}>
-          Close
+          {t("common.close")}
         </Button>
       </DialogActions>
     </>

@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import { useI18n } from "@/i18n";
 
 interface Props {
   open: boolean;
@@ -21,11 +22,13 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = "Confirm",
+  confirmLabel,
   confirmColor = "primary",
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useI18n();
+
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
       <DialogTitle>{title}</DialogTitle>
@@ -33,9 +36,9 @@ export function ConfirmDialog({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onCancel}>{t("common.cancel")}</Button>
         <Button onClick={onConfirm} variant="contained" color={confirmColor}>
-          {confirmLabel}
+          {confirmLabel ?? t("common.confirm")}
         </Button>
       </DialogActions>
     </Dialog>

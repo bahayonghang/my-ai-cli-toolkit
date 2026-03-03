@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSkillCatalog, installSkills } from "@/api/client";
+import { useI18n } from "@/i18n";
+import type { TranslateFn } from "@/i18n";
 import type {
   ExecutionState,
   PlatformInstallResult,
@@ -30,6 +32,7 @@ interface RunnerDependencies {
   selectedSkills: SkillSelection;
   setExecution: (state: ExecutionState) => void;
   setResults: (results: PlatformInstallResult[]) => void;
+  t: TranslateFn;
 }
 
 export function useUnifiedInstallHub({
@@ -38,6 +41,7 @@ export function useUnifiedInstallHub({
   refreshPlatforms,
   notify,
 }: Dependencies) {
+  const { t } = useI18n();
   const catalogState = useCatalogState(fetchPlatforms);
   const selectionState = useSelectionState(platforms);
   const [execution, setExecution] = useState<ExecutionState>(INITIAL_EXECUTION);
@@ -50,6 +54,7 @@ export function useUnifiedInstallHub({
     selectedSkills: selectionState.selectedSkills,
     setExecution,
     setResults,
+    t,
   });
 
   return {
@@ -118,19 +123,25 @@ function useInstallRunner({
   selectedSkills,
   setExecution,
   setResults,
+  t,
 }: RunnerDependencies) {
   return useCallback(async () => {
     const selection = resolveInstallSelection(platforms, selectedPlatforms, selectedSkills);
     if (!selection) return;
 
-    const runResults = await installAcrossPlatforms(selection, setExecution, setResults);
+    const runResults = await installAcrossPlatforms(
+      selection,
+      setExecution,
+      setResults,
+      t
+    );
     setExecution({
       running: false,
       currentStep: selection.platforms.length,
       totalSteps: selection.platforms.length,
     });
     await refreshPlatforms();
-    notifySummary(runResults, notify);
+    notifySummary(runResults, notify, t);
   }, [
     platforms,
     refreshPlatforms,
@@ -139,6 +150,7 @@ function useInstallRunner({
     selectedSkills,
     setExecution,
     setResults,
+    t,
   ]);
 }
 
@@ -173,7 +185,8 @@ function resolveInstallSelection(
 async function installAcrossPlatforms(
   selection: { platforms: PlatformDisplay[]; skills: string[] },
   setExecution: (state: ExecutionState) => void,
-  setResults: (results: PlatformInstallResult[]) => void
+  setResults: (results: PlatformInstallResult[]) => void,
+  t: TranslateFn
 ): Promise<PlatformInstallResult[]> {
   const runResults: PlatformInstallResult[] = [];
   setResults([]);
@@ -182,7 +195,7 @@ async function installAcrossPlatforms(
   for (let index = 0; index < selection.platforms.length; index++) {
     const platform = selection.platforms[index];
     setExecution({ running: true, currentStep: index + 1, totalSteps: selection.platforms.length });
-    runResults.push(await installOnPlatform(platform, selection.skills));
+    runResults.push(await installOnPlatform(platform, selection.skills, t));
     setResults([...runResults]);
   }
 
@@ -191,7 +204,8 @@ async function installAcrossPlatforms(
 
 async function installOnPlatform(
   platform: PlatformDisplay,
-  names: string[]
+  names: string[],
+  t: TranslateFn
 ): Promise<PlatformInstallResult> {
   try {
     const response = await installSkills(platform.id, names);
@@ -208,32 +222,39 @@ async function installOnPlatform(
       platform,
       successCount: 0,
       failureCount: names.length,
-      results: names.map((name) => buildInstallError(name, message)),
+      results: names.map((name) => buildInstallError(name, message, t)),
       requestError: message,
     };
   }
 }
 
-function buildInstallError(name: string, error: string) {
+function buildInstallError(name: string, error: string, t: TranslateFn) {
   return {
     success: false,
     item_name: name,
-    message: `Failed to install ${name}`,
+    message: t("installHub.failedToInstallItem", { name }),
     error,
   };
 }
 
 function notifySummary(
   results: PlatformInstallResult[],
-  notify: (message: string, severity?: "success" | "error" | "info" | "warning") => void
+  notify: (message: string, severity?: "success" | "error" | "info" | "warning") => void,
+  t: TranslateFn
 ) {
   const summary = summarizeInstallResults(results);
   const suffix =
     summary.failedPlatforms.length > 0
-      ? `; failed platforms: ${summary.failedPlatforms.join(", ")}`
+      ? t("installHub.failedPlatformsSuffix", {
+          platforms: summary.failedPlatforms.join(", "),
+        })
       : "";
   notify(
-    `Install finished: ${summary.totalSuccess} success, ${summary.totalFailure} failed${suffix}`,
+    t("installHub.installFinished", {
+      success: summary.totalSuccess,
+      failed: summary.totalFailure,
+      suffix,
+    }),
     summary.totalFailure > 0 ? "warning" : "success"
   );
 }

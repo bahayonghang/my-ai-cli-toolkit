@@ -32,16 +32,19 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
 import HomeIcon from "@mui/icons-material/Home";
+import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import { useItemStore } from "@/stores/itemStore";
 import { uninstallSkills, installSkills } from "@/api/client";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { SkillEditorDrawer } from "@/components/dialogs/SkillEditorDrawer";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 
 export default function InstalledSkillsPage() {
+  const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
   const navigate = useNavigate();
   const platform = usePlatformStore((s) =>
@@ -103,7 +106,10 @@ export default function InstalledSkillsPage() {
     setDeleteName(null);
     try {
       await uninstallSkills(platformId, [nameToDelete]);
-      showNotification(`Uninstalled "${nameToDelete}"`, "success");
+      showNotification(
+        t("installed.uninstalledNotification", { name: nameToDelete }),
+        "success"
+      );
       await refresh(platformId);
     } catch (e) {
       showNotification((e as Error).message, "error");
@@ -114,10 +120,16 @@ export default function InstalledSkillsPage() {
     if (!platformId) return;
     try {
       await installSkills(platformId, [name]);
-      showNotification(`Reinstalled "${name}" successfully`, "success");
+      showNotification(
+        t("installed.reinstalledNotification", { name }),
+        "success"
+      );
       await refresh(platformId);
     } catch (e) {
-      showNotification(`Failed to reinstall: ${(e as Error).message}`, "error");
+      showNotification(
+        t("installed.reinstallFailed", { error: (e as Error).message }),
+        "error"
+      );
     }
   };
   const skillCategories = categories
@@ -141,7 +153,7 @@ export default function InstalledSkillsPage() {
           <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
             <ArrowBackIcon />
           </IconButton>
-          <Tooltip title="Home">
+          <Tooltip title={t("common.home")}>
             <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
               <HomeIcon />
             </IconButton>
@@ -155,8 +167,9 @@ export default function InstalledSkillsPage() {
             onClick={() => navigate(`/platform/${platformId}/install`)}
             sx={{ mr: 1, borderRadius: 2 }}
           >
-            Install Skills
+            {t("installed.installSkills")}
           </Button>
+          <LanguageToggle sx={{ mr: 1 }} />
           <IconButton color="inherit" onClick={toggleColorMode}>
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
@@ -189,7 +202,7 @@ export default function InstalledSkillsPage() {
           }}
         >
           <Typography variant="overline" color="text.secondary" sx={{ px: 1, mb: 0.5, letterSpacing: 1 }}>
-            CATEGORIES
+            {t("installed.categories")}
           </Typography>
           <Button
             variant={selectedCategory === null ? "contained" : "text"}
@@ -197,7 +210,7 @@ export default function InstalledSkillsPage() {
             onClick={() => setCategory(null)}
             sx={{ justifyContent: "flex-start", borderRadius: 2 }}
           >
-            All Skills
+            {t("installed.allSkills")}
           </Button>
           {skillCategories.map((cat) => (
             <Button
@@ -219,7 +232,7 @@ export default function InstalledSkillsPage() {
           <Box sx={{ mb: 3 }}>
             <TextField
               size="small"
-              placeholder="Search installed skills..."
+              placeholder={t("installed.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               slotProps={{
@@ -259,14 +272,14 @@ export default function InstalledSkillsPage() {
             >
               <ExtensionOffIcon sx={{ fontSize: 64, color: "text.disabled" }} />
               <Typography variant="h6" color="text.secondary">
-                No installed skills found
+                {t("installed.emptyTitle")}
               </Typography>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={() => navigate(`/platform/${platformId}/install`)}
               >
-                Install Skills
+                {t("installed.installSkills")}
               </Button>
             </Box>
           ) : (
@@ -275,10 +288,10 @@ export default function InstalledSkillsPage() {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Category</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      <TableCell>{t("common.name")}</TableCell>
+                      <TableCell>{t("common.category")}</TableCell>
+                      <TableCell>{t("common.description")}</TableCell>
+                      <TableCell align="right">{t("common.actions")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -327,7 +340,7 @@ export default function InstalledSkillsPage() {
                             spacing={0.5}
                             justifyContent="flex-end"
                           >
-                            <Tooltip title="Edit SKILL.md">
+                            <Tooltip title={t("installed.editSkillMd")}>
                               <IconButton
                                 size="small"
                                 color="primary"
@@ -336,7 +349,7 @@ export default function InstalledSkillsPage() {
                                 <EditIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
-                            <Tooltip title="Reinstall">
+                            <Tooltip title={t("common.reinstall")}>
                               <IconButton
                                 size="small"
                                 color="warning"
@@ -345,7 +358,7 @@ export default function InstalledSkillsPage() {
                                 <SystemUpdateAltIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
-                            <Tooltip title="Uninstall">
+                            <Tooltip title={t("common.uninstall")}>
                               <IconButton
                                 size="small"
                                 color="error"
@@ -374,7 +387,10 @@ export default function InstalledSkillsPage() {
           skillName={editName}
           onClose={() => setEditName(null)}
           onSaved={() => {
-            showNotification(`Saved "${editName}"`, "success");
+            showNotification(
+              t("installed.savedNotification", { name: editName }),
+              "success"
+            );
             setEditName(null);
             refresh(platformId);
           }}
@@ -384,9 +400,12 @@ export default function InstalledSkillsPage() {
       {/* Delete Confirm Dialog */}
       <ConfirmDialog
         open={deleteName !== null}
-        title="Uninstall Skill"
-        message={`Uninstall "${deleteName}" from ${platform?.name ?? platformId}? This cannot be undone.`}
-        confirmLabel="Uninstall"
+        title={t("installed.uninstallSkillTitle")}
+        message={t("installed.uninstallSkillMessage", {
+          name: deleteName ?? "",
+          platform: platform?.name ?? platformId ?? "",
+        })}
+        confirmLabel={t("common.uninstall")}
         confirmColor="error"
         onConfirm={handleDelete}
         onCancel={() => setDeleteName(null)}

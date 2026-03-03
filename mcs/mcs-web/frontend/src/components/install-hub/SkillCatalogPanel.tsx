@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import type { SkillCatalogDto } from "@/types";
 import type { SkillSelection } from "./types";
+import { useI18n } from "@/i18n";
 
 interface Props {
   skills: SkillCatalogDto[];
@@ -53,15 +54,19 @@ export function SkillCatalogPanel({
   onSelectAllFiltered,
   onClearSelection,
 }: Props) {
+  const { t } = useI18n();
   return (
     <Card sx={{ height: "100%" }}>
       <CardHeader
-        title="Skill Catalog"
-        subheader={`Filtered ${skills.length} / Total ${totalCount}`}
+        title={t("installHub.skillCatalog")}
+        subheader={t("installHub.filteredTotal", {
+          filtered: skills.length,
+          total: totalCount,
+        })}
         action={
           <Chip
             color="primary"
-            label={`${selectedSkills.size} selected`}
+            label={t("common.selectedCount", { count: selectedSkills.size })}
             variant="outlined"
           />
         }
@@ -113,23 +118,24 @@ function FilterControls({
   onSelectAllFiltered,
   onClearSelection,
 }: FilterControlsProps) {
+  const { t } = useI18n();
   return (
     <Stack spacing={2}>
       <TextField
-        label="Search skills"
+        label={t("installHub.searchSkills")}
         size="small"
         value={search}
         onChange={(event) => onSearchChange(event.target.value)}
       />
       <FormControl size="small">
-        <InputLabel id="install-hub-category-label">Category</InputLabel>
+        <InputLabel id="install-hub-category-label">{t("installHub.category")}</InputLabel>
         <Select
-          label="Category"
+          label={t("installHub.category")}
           labelId="install-hub-category-label"
           value={selectedCategory ?? ""}
           onChange={(event) => onCategoryChange(event.target.value || null)}
         >
-          <MenuItem value="">All categories</MenuItem>
+          <MenuItem value="">{t("installHub.allCategories")}</MenuItem>
           {categories.map((category) => (
             <MenuItem key={category} value={category}>
               {category}
@@ -139,14 +145,14 @@ function FilterControls({
       </FormControl>
       <FormControlLabel
         control={<Checkbox checked={defaultOnly} onChange={(_, checked) => onDefaultOnlyChange(checked)} />}
-        label="Only default skills"
+        label={t("installHub.onlyDefaultSkills")}
       />
       <Stack direction="row" spacing={1} mb={2}>
         <Button size="small" variant="outlined" onClick={onSelectAllFiltered} disabled={skillsCount === 0}>
-          Select All Filtered
+          {t("installHub.selectAllFiltered")}
         </Button>
         <Button size="small" variant="text" onClick={onClearSelection} disabled={selectedCount === 0}>
-          Clear Selection
+          {t("installHub.clearSelection")}
         </Button>
       </Stack>
     </Stack>
@@ -160,6 +166,7 @@ interface SkillListBoxProps {
 }
 
 function SkillListBox({ skills, selectedSkills, onToggleSkill }: SkillListBoxProps) {
+  const { t } = useI18n();
   return (
     <Box
       sx={{
@@ -172,7 +179,7 @@ function SkillListBox({ skills, selectedSkills, onToggleSkill }: SkillListBoxPro
     >
       {skills.length === 0 ? (
         <Box sx={{ p: 3 }}>
-          <Typography color="text.secondary">No skills found.</Typography>
+          <Typography color="text.secondary">{t("installHub.noSkillsFound")}</Typography>
         </Box>
       ) : (
         <List dense disablePadding>
@@ -197,6 +204,7 @@ interface SkillRowProps {
 }
 
 function SkillRow({ skill, selected, onToggle }: SkillRowProps) {
+  const { t } = useI18n();
   return (
     <ListItem disablePadding divider>
       <ListItemButton selected={selected} onClick={onToggle}>
@@ -208,14 +216,19 @@ function SkillRow({ skill, selected, onToggle }: SkillRowProps) {
                 {skill.name}
               </Typography>
               {skill.is_default && (
-                <Chip label="default" size="small" color="primary" variant="outlined" />
+                <Chip
+                  label={t("installHub.defaultTag")}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
               )}
               {skill.category && (
                 <Chip label={skill.category} size="small" variant="outlined" />
               )}
             </Stack>
           }
-          secondary={skill.description ?? "No description"}
+          secondary={skill.description ?? t("installHub.noDescription")}
         />
       </ListItemButton>
     </ListItem>

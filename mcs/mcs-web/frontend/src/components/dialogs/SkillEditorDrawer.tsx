@@ -14,6 +14,7 @@ import { EditorView, basicSetup } from "codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { getSkillDetail, updateSkillContent } from "@/api/client";
+import { useI18n } from "@/i18n";
 
 interface Props {
   open: boolean;
@@ -30,6 +31,7 @@ export function SkillEditorDrawer({
   onClose,
   onSaved,
 }: Props) {
+  const { t } = useI18n();
   const theme = useTheme();
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -112,7 +114,7 @@ export function SkillEditorDrawer({
   };
 
   const handleClose = () => {
-    if (isDirty && !window.confirm("You have unsaved changes. Close anyway?")) {
+    if (isDirty && !window.confirm(t("dialogs.unsavedChangesConfirm"))) {
       return;
     }
     onClose();
@@ -163,7 +165,7 @@ export function SkillEditorDrawer({
           onClick={handleSave}
           disabled={!isDirty || saving}
         >
-          Save
+          {t("dialogs.save")}
         </Button>
       </Box>
 

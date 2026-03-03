@@ -15,10 +15,13 @@ import {
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 
 export default function PlatformSelectPage() {
+  const { t } = useI18n();
   const { platforms, loading, error, fetchPlatforms, refreshPlatforms } =
     usePlatformStore();
   const navigate = useNavigate();
@@ -58,6 +61,9 @@ export default function PlatformSelectPage() {
       }}
     >
       <AnimatedBackground />
+      <Box sx={{ position: "fixed", top: 16, right: 16, zIndex: 20 }}>
+        <LanguageToggle />
+      </Box>
       <Box sx={{ position: "relative", zIndex: 1, textAlign: "center", mb: 4, width: '100%' }}>
         <Typography
           variant="h2"
@@ -94,10 +100,10 @@ export default function PlatformSelectPage() {
             }
           }}
         >
-          Select a platform to manage
+          {t("platformSelect.subtitle")}
         </Typography>
         <Box sx={{ mt: 1.5, display: "flex", gap: 1, justifyContent: "center" }}>
-          <Tooltip title="Refresh content and platform list" arrow placement="top">
+          <Tooltip title={t("platformSelect.refreshTooltip")} arrow placement="top">
             <span>
               <Button
                 variant="outlined"
@@ -118,7 +124,7 @@ export default function PlatformSelectPage() {
                   fontWeight: 700,
                 }}
               >
-                Refresh
+                {t("platformSelect.refreshButton")}
               </Button>
             </span>
           </Tooltip>
@@ -215,15 +221,15 @@ export default function PlatformSelectPage() {
         }}
       >
         <FloatingQuickAction
-          title="Open Unified Install Hub"
-          label="Unified Install"
+          title={t("platformSelect.unifiedInstallTitle")}
+          label={t("platformSelect.unifiedInstallLabel")}
           icon={<InstallDesktopIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />}
           onClick={() => navigate("/install-hub")}
         />
 
         <FloatingQuickAction
-          title="View Global Dashboard"
-          label="Dashboard"
+          title={t("platformSelect.dashboardTitle")}
+          label={t("platformSelect.dashboardLabel")}
           icon={<DashboardCustomizeIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />}
           onClick={() => navigate("/dashboard")}
         />
@@ -305,4 +311,3 @@ function FloatingQuickAction({ title, label, icon, onClick }: FloatingQuickActio
     </Tooltip>
   );
 }
-

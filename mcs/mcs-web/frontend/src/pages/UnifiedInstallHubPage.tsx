@@ -16,9 +16,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { InstallExecutionPanel } from "@/components/install-hub/InstallExecutionPanel";
 import { PlatformTargetPanel } from "@/components/install-hub/PlatformTargetPanel";
 import { SkillCatalogPanel } from "@/components/install-hub/SkillCatalogPanel";
+import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
@@ -42,7 +44,11 @@ export default function UnifiedInstallHubPage() {
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
       <AnimatedBackground />
-      <PageToolbar colorMode={colorMode} onHome={() => navigate("/")} onToggleTheme={toggleColorMode} />
+      <PageToolbar
+        colorMode={colorMode}
+        onHome={() => navigate("/")}
+        onToggleTheme={toggleColorMode}
+      />
       <PageBody model={model} platforms={platforms} />
       <NotificationSnackbar />
     </Box>
@@ -66,20 +72,22 @@ function PageToolbar({
   onHome: () => void;
   onToggleTheme: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <AppBar position="fixed">
       <Toolbar>
         <IconButton color="inherit" onClick={onHome}>
           <ArrowBackIcon />
         </IconButton>
-        <Tooltip title="Home">
+        <Tooltip title={t("common.home")}>
           <IconButton color="inherit" onClick={onHome}>
             <HomeIcon />
           </IconButton>
         </Tooltip>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Unified Skill Install Hub
+          {t("installHub.pageTitle")}
         </Typography>
+        <LanguageToggle sx={{ mr: 1 }} />
         <IconButton color="inherit" onClick={onToggleTheme}>
           {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>

@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { ExecutionState, PlatformInstallResult } from "./types";
+import { useI18n } from "@/i18n";
 
 interface Props {
   selectedSkillCount: number;
@@ -33,6 +34,7 @@ export function InstallExecutionPanel({
   onInstall,
   onClearResults,
 }: Props) {
+  const { t } = useI18n();
   const totalTasks = selectedSkillCount * selectedPlatformCount;
   const canInstall =
     !execution.running && selectedSkillCount > 0 && selectedPlatformCount > 0;
@@ -40,18 +42,32 @@ export function InstallExecutionPanel({
 
   return (
     <Card sx={{ height: "100%" }}>
-      <CardHeader title="Execution" subheader={`Will run ${totalTasks} install actions`} />
+      <CardHeader
+        title={t("installHub.execution")}
+        subheader={t("installHub.willRunActions", { count: totalTasks })}
+      />
       <CardContent sx={{ pt: 0 }}>
         <Stack spacing={2}>
           <Stack direction="row" spacing={1}>
-            <Chip label={`${selectedSkillCount} skills`} color="primary" variant="outlined" />
-            <Chip label={`${selectedPlatformCount} platforms`} color="secondary" variant="outlined" />
+            <Chip
+              label={t("installHub.skillsChip", { count: selectedSkillCount })}
+              color="primary"
+              variant="outlined"
+            />
+            <Chip
+              label={t("installHub.platformsChip", { count: selectedPlatformCount })}
+              color="secondary"
+              variant="outlined"
+            />
           </Stack>
 
           {execution.running && (
             <Box>
               <Typography variant="body2" color="text.secondary" mb={1}>
-                Installing on platform {execution.currentStep} / {execution.totalSteps}
+                {t("installHub.installingOnPlatform", {
+                  current: execution.currentStep,
+                  total: execution.totalSteps,
+                })}
               </Typography>
               <LinearProgress variant="determinate" value={progressValue} />
             </Box>
@@ -59,10 +75,10 @@ export function InstallExecutionPanel({
 
           <Stack direction="row" spacing={1}>
             <Button variant="contained" onClick={onInstall} disabled={!canInstall}>
-              Start Install
+              {t("installHub.startInstall")}
             </Button>
             <Button variant="text" onClick={onClearResults} disabled={execution.running || results.length === 0}>
-              Clear Results
+              {t("installHub.clearResults")}
             </Button>
           </Stack>
 
@@ -83,8 +99,9 @@ interface ResultsViewProps {
 }
 
 function ResultsView({ results }: ResultsViewProps) {
+  const { t } = useI18n();
   if (results.length === 0) {
-    return <Alert severity="info">No execution results yet.</Alert>;
+    return <Alert severity="info">{t("installHub.noExecutionResults")}</Alert>;
   }
 
   return (
@@ -101,6 +118,7 @@ interface PlatformResultAccordionProps {
 }
 
 function PlatformResultAccordion({ result }: PlatformResultAccordionProps) {
+  const { t } = useI18n();
   const severity = resolveSeverity(result);
 
   return (
@@ -108,15 +126,25 @@ function PlatformResultAccordion({ result }: PlatformResultAccordionProps) {
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack direction="row" spacing={1} alignItems="center" sx={{ width: "100%" }}>
           <Typography fontWeight={600}>{`${result.platform.icon} ${result.platform.name}`}</Typography>
-          <Chip label={`${result.successCount} success`} size="small" color="success" variant="outlined" />
-          <Chip label={`${result.failureCount} failed`} size="small" color="error" variant="outlined" />
+          <Chip
+            label={t("installHub.successCount", { count: result.successCount })}
+            size="small"
+            color="success"
+            variant="outlined"
+          />
+          <Chip
+            label={t("installHub.failedCount", { count: result.failureCount })}
+            size="small"
+            color="error"
+            variant="outlined"
+          />
           <Chip label={severity.toUpperCase()} size="small" color={severity} />
         </Stack>
       </AccordionSummary>
       <AccordionDetails>
         {result.requestError && <Alert severity="error" sx={{ mb: 1 }}>{result.requestError}</Alert>}
         {result.results.length === 0 ? (
-          <Typography color="text.secondary">No item-level results.</Typography>
+          <Typography color="text.secondary">{t("installHub.noItemLevelResults")}</Typography>
         ) : (
           <Stack spacing={0.5}>
             {result.results
@@ -127,7 +155,7 @@ function PlatformResultAccordion({ result }: PlatformResultAccordionProps) {
                 </Alert>
               ))}
             {result.failureCount === 0 && (
-              <Alert severity="success">All selected skills installed successfully.</Alert>
+              <Alert severity="success">{t("installHub.allSelectedInstalled")}</Alert>
             )}
           </Stack>
         )}

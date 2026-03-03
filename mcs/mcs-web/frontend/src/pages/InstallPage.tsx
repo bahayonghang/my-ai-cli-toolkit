@@ -56,6 +56,8 @@ import SelectAllIcon from "@mui/icons-material/SelectAll";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ExtensionIcon from "@mui/icons-material/Extension";
+import { useI18n } from "@/i18n";
+import type { TranslateFn } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import {
@@ -66,6 +68,7 @@ import {
   externalInstallSkill,
 } from "@/api/client";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import ReactMarkdown from "react-markdown";
@@ -78,14 +81,14 @@ const SIDEBAR_WIDTH = 260;
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-function statusLabel(status: InstallStatus): string {
+function statusLabel(status: InstallStatus, t: TranslateFn): string {
   switch (status) {
     case "installed":
-      return "Installed";
+      return t("status.installed");
     case "outdated":
-      return "Outdated";
+      return t("status.outdated");
     case "not_installed":
-      return "Not Installed";
+      return t("status.notInstalled");
     default:
       return status;
   }
@@ -144,6 +147,7 @@ function SidebarContent({
   categories,
   totalSkills,
 }: SidebarProps) {
+  const { t } = useI18n();
   const theme = useTheme();
 
   return (
@@ -161,7 +165,7 @@ function SidebarContent({
         color="text.secondary"
         sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
       >
-        SOURCE
+        {t("install.source")}
       </Typography>
       <List dense disablePadding>
         <ListItemButton
@@ -172,7 +176,7 @@ function SidebarContent({
             <FolderIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary="Local Repo"
+            primary={t("install.sourceLocalRepo")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
           />
         </ListItemButton>
@@ -184,7 +188,7 @@ function SidebarContent({
             <CloudDownloadIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary="Vercel"
+            primary={t("install.sourceVercel")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
           />
         </ListItemButton>
@@ -196,7 +200,7 @@ function SidebarContent({
             <MenuBookIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary="Playbooks"
+            primary={t("install.sourcePlaybooks")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
           />
         </ListItemButton>
@@ -210,7 +214,7 @@ function SidebarContent({
         color="text.secondary"
         sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
       >
-        STATUS
+        {t("install.status")}
       </Typography>
       <List dense disablePadding>
         <ListItemButton
@@ -228,7 +232,7 @@ function SidebarContent({
             />
           </ListItemIcon>
           <ListItemText
-            primary={`Installed`}
+            primary={t("status.installed")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
           />
           <Chip
@@ -259,7 +263,7 @@ function SidebarContent({
             />
           </ListItemIcon>
           <ListItemText
-            primary={`Outdated`}
+            primary={t("status.outdated")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
           />
           <Chip
@@ -290,7 +294,7 @@ function SidebarContent({
             />
           </ListItemIcon>
           <ListItemText
-            primary={`Not Installed`}
+            primary={t("status.notInstalled")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
           />
           <Chip
@@ -316,7 +320,7 @@ function SidebarContent({
         color="text.secondary"
         sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
       >
-        DEFAULT
+        {t("install.defaultSection")}
       </Typography>
       <Box sx={{ px: 2, display: "flex", alignItems: "center", gap: 1 }}>
         <Switch
@@ -326,7 +330,7 @@ function SidebarContent({
           color="primary"
         />
         <Typography variant="body2" fontWeight={500}>
-          Default Only
+          {t("install.onlyDefaultSkills")}
         </Typography>
       </Box>
       {showDefaultOnly && (
@@ -339,7 +343,7 @@ function SidebarContent({
             fullWidth
             sx={{ borderRadius: 2, textTransform: "none" }}
           >
-            Select All Default
+            {t("install.selectDefaultOnly")}
           </Button>
         </Box>
       )}
@@ -352,7 +356,7 @@ function SidebarContent({
         color="text.secondary"
         sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
       >
-        CATEGORIES
+        {t("install.categories")}
       </Typography>
       <List dense disablePadding>
         <ListItemButton
@@ -360,7 +364,7 @@ function SidebarContent({
           onClick={() => onCategoryChange(null)}
         >
           <ListItemText
-            primary="All Skills"
+            primary={t("install.totalSkills")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 600 }}
           />
           <Chip
@@ -426,6 +430,7 @@ interface SkillCardProps {
 }
 
 function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardProps) {
+  const { t } = useI18n();
   const theme = useTheme();
   const isInstalled = item.status === "installed";
   const isOutdated = item.status === "outdated";
@@ -481,7 +486,7 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
             }}
           />
           <Box display="flex" alignItems="center" gap={0.5}>
-            <Tooltip title="View detail">
+            <Tooltip title={t("common.viewDetail")}>
               <IconButton
                 size="small"
                 onClick={(e) => {
@@ -499,7 +504,7 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
             </Tooltip>
             <Chip
               icon={<StatusIcon status={item.status} />}
-              label={statusLabel(item.status)}
+              label={statusLabel(item.status, t)}
               color={statusColor(item.status)}
               variant="outlined"
               size="small"
@@ -532,7 +537,7 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
             minHeight: "2.8em",
           }}
         >
-          {item.description ?? "No description"}
+          {item.description ?? t("installHub.noDescription")}
         </Typography>
 
         {/* Bottom: Category + Default badge */}
@@ -552,7 +557,7 @@ function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardP
           )}
           {item.is_default && (
             <Chip
-              label="Default"
+              label={t("common.default")}
               size="small"
               sx={{
                 height: 20,
@@ -584,6 +589,7 @@ function SkillCardGrid({
   onToggle: (name: string) => void;
   onShowDetail: (name: string) => void;
 }) {
+  const { t } = useI18n();
   if (skills.length === 0) {
     return (
       <Box
@@ -598,10 +604,10 @@ function SkillCardGrid({
       >
         <ExtensionIcon sx={{ fontSize: 64, color: "text.disabled" }} />
         <Typography variant="h6" color="text.secondary">
-          No skills found
+          {t("install.noSkillsFound")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Try adjusting your filters or search query
+          {t("install.adjustFilters")}
         </Typography>
       </Box>
     );
@@ -643,6 +649,7 @@ function SearchToolbar({
   outdatedCount: number;
   onUpdateAll: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <Box
       sx={{
@@ -655,7 +662,7 @@ function SearchToolbar({
     >
       <TextField
         size="small"
-        placeholder="Search skills..."
+        placeholder={t("install.searchPlaceholder")}
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         slotProps={{
@@ -677,7 +684,7 @@ function SearchToolbar({
         onClick={onSelectAll}
         sx={{ borderRadius: 2, textTransform: "none" }}
       >
-        Select All
+        {t("install.selectAll")}
       </Button>
 
       {selectedCount > 0 && (
@@ -687,7 +694,7 @@ function SearchToolbar({
           onClick={onClearSelection}
           sx={{ borderRadius: 2, textTransform: "none" }}
         >
-          Clear
+          {t("install.clear")}
         </Button>
       )}
 
@@ -702,7 +709,7 @@ function SearchToolbar({
           onClick={onUpdateAll}
           sx={{ borderRadius: 2 }}
         >
-          Update All ({outdatedCount})
+          {t("install.updateAll", { count: outdatedCount })}
         </Button>
       )}
     </Box>
@@ -720,6 +727,7 @@ function FloatingActionBar({
   onInstall: () => void;
   onClear: () => void;
 }) {
+  const { t } = useI18n();
   const theme = useTheme();
 
   return (
@@ -749,7 +757,7 @@ function FloatingActionBar({
         }}
       >
         <Chip
-          label={`${count} selected`}
+          label={t("common.selectedCount", { count })}
           color="primary"
           size="small"
           sx={{ fontWeight: 600 }}
@@ -760,7 +768,7 @@ function FloatingActionBar({
           onClick={onInstall}
           sx={{ borderRadius: 2, textTransform: "none" }}
         >
-          Install / Reinstall
+          {`${t("common.install")} / ${t("common.reinstall")}`}
         </Button>
         <IconButton size="small" onClick={onClear}>
           <CloseIcon fontSize="small" />
@@ -783,6 +791,7 @@ function SkillDetailDialog({
   skillName: string | null;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const theme = useTheme();
   const [detail, setDetail] = useState<ItemDetailDto | null>(null);
   const [loading, setLoading] = useState(false);
@@ -844,7 +853,7 @@ function SkillDetailDialog({
           </Box>
           <Box>
             <Typography variant="h6" fontWeight={700} lineHeight={1.2}>
-              {skillName ?? "Skill Detail"}
+              {skillName ?? t("dialogs.detailFallbackTitle")}
             </Typography>
             {detail?.category && (
               <Typography variant="caption" color="text.secondary">
@@ -892,7 +901,7 @@ function SkillDetailDialog({
             <Box display="flex" gap={1} flexWrap="wrap" alignItems="center" mb={2}>
               <Chip
                 icon={<StatusIcon status={detail.status} />}
-                label={statusLabel(detail.status)}
+                label={statusLabel(detail.status, t)}
                 color={statusColor(detail.status)}
                 variant="outlined"
                 size="small"
@@ -900,7 +909,7 @@ function SkillDetailDialog({
               />
               {detail.is_default && (
                 <Chip
-                  label="Default"
+                  label={t("common.default")}
                   size="small"
                   sx={{
                     fontWeight: 600,
@@ -1066,7 +1075,7 @@ function SkillDetailDialog({
                   sx={{ fontSize: 48, color: "text.disabled" }}
                 />
                 <Typography color="text.secondary" fontStyle="italic">
-                  No SKILL.md content available
+                  {t("dialogs.noSkillContent")}
                 </Typography>
               </Box>
             )}
@@ -1082,7 +1091,7 @@ function SkillDetailDialog({
             }}
           >
             <Typography color="text.secondary">
-              Failed to load detail
+              {t("dialogs.failedLoadDetail")}
             </Typography>
           </Box>
         )}
@@ -1102,6 +1111,7 @@ function ExternalInstallPanel({
   sourceMode: "vercel" | "playbooks";
   showNotification: (msg: string, sev: "success" | "error" | "warning") => void;
 }) {
+  const { t } = useI18n();
   const theme = useTheme();
   const [extSkillName, setExtSkillName] = useState("");
   const [extMethod, setExtMethod] = useState<"vercel" | "playbooks">(sourceMode);
@@ -1129,11 +1139,13 @@ function ExternalInstallPanel({
       setExtSuccess(result.success);
       if (result.success) {
         showNotification(
-          `Installed "${extSkillName.trim()}" successfully`,
+          t("install.installSuccessNotification", {
+            name: extSkillName.trim(),
+          }),
           "success"
         );
       } else {
-        showNotification("Installation failed", "error");
+        showNotification(t("install.installationFailed"), "error");
       }
     } catch (e) {
       const msg = (e as Error).message;
@@ -1170,18 +1182,20 @@ function ExternalInstallPanel({
             </Box>
             <Box>
               <Typography variant="h6" fontWeight={700}>
-                External Install
+                {t("install.externalInstallTitle")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Install skills from {sourceMode === "vercel" ? "Vercel registry" : "Playbooks registry"}
+                {sourceMode === "vercel"
+                  ? t("install.externalInstallSubVercel")
+                  : t("install.externalInstallSubPlaybooks")}
               </Typography>
             </Box>
           </Box>
 
           <Stack spacing={2.5}>
             <TextField
-              label="Skill Name"
-              placeholder="e.g. find-skills"
+              label={t("install.skillNameLabel")}
+              placeholder={t("install.skillNamePlaceholder")}
               value={extSkillName}
               onChange={(e) => setExtSkillName(e.target.value)}
               fullWidth
@@ -1191,7 +1205,7 @@ function ExternalInstallPanel({
 
             <FormControl>
               <FormLabel sx={{ fontSize: "0.85rem" }}>
-                Installation Method
+                {t("install.installMethod")}
               </FormLabel>
               <RadioGroup
                 value={extMethod}
@@ -1211,7 +1225,7 @@ function ExternalInstallPanel({
                         fontSize: "0.8rem",
                       }}
                     >
-                      npx skills add
+                      {t("install.installMethodVercel")}
                     </Typography>
                   }
                 />
@@ -1226,7 +1240,7 @@ function ExternalInstallPanel({
                         fontSize: "0.8rem",
                       }}
                     >
-                      npx playbooks add skill
+                      {t("install.installMethodPlaybooks")}
                     </Typography>
                   }
                 />
@@ -1246,7 +1260,7 @@ function ExternalInstallPanel({
               disabled={!extSkillName.trim() || extLoading}
               sx={{ alignSelf: "flex-start", borderRadius: 2 }}
             >
-              Install
+              {t("common.install")}
             </Button>
 
             {extOutput !== null && (
@@ -1291,6 +1305,7 @@ function ExternalInstallPanel({
 // ── Main Component ──────────────────────────────────────────────────
 
 export default function InstallPage() {
+  const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -1419,7 +1434,13 @@ export default function InstallPage() {
         outdated.map((s) => s.name)
       );
       showNotification(
-        `Updated ${result.success_count} skills${result.failure_count > 0 ? `, ${result.failure_count} failed` : ""}`,
+        t("install.updatedSkillsNotification", {
+          success: result.success_count,
+          failedSuffix:
+            result.failure_count > 0
+              ? `, ${t("installHub.failedCount", { count: result.failure_count })}`
+              : "",
+        }),
         result.failure_count > 0 ? "warning" : "success"
       );
       fetchSkills();
@@ -1474,7 +1495,7 @@ export default function InstallPage() {
           >
             <ArrowBackIcon />
           </IconButton>
-          <Tooltip title="Home">
+          <Tooltip title={t("common.home")}>
             <IconButton
               color="inherit"
               onClick={() => navigate("/")}
@@ -1492,8 +1513,11 @@ export default function InstallPage() {
               letterSpacing: "-0.02em",
             }}
           >
-            Skills Library — {platform?.icon} {platform?.name ?? platformId}
+            {t("install.pageTitle", {
+              platform: `${platform?.icon ?? ""} ${platform?.name ?? platformId}`,
+            })}
           </Typography>
+          <LanguageToggle sx={{ mr: 1 }} />
           <IconButton color="inherit" onClick={toggleColorMode}>
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
@@ -1612,7 +1636,13 @@ export default function InstallPage() {
           onClose={() => setInstallOpen(false)}
           onCompleted={(successCount, failureCount) => {
             showNotification(
-              `Installed ${successCount} skills${failureCount > 0 ? `, ${failureCount} failed` : ""}`,
+              t("install.installedSkillsNotification", {
+                success: successCount,
+                failedSuffix:
+                  failureCount > 0
+                    ? `, ${t("installHub.failedCount", { count: failureCount })}`
+                    : "",
+              }),
               failureCount > 0 ? "warning" : "success"
             );
             setSelectedNames(new Set());

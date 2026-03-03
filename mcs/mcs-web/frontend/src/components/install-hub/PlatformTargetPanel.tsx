@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import type { PlatformDisplay } from "@/types";
 import type { PlatformSelection } from "./types";
+import { useI18n } from "@/i18n";
 
 interface Props {
   platforms: PlatformDisplay[];
@@ -33,15 +34,16 @@ export function PlatformTargetPanel({
   onSelectAll,
   onClearSelection,
 }: Props) {
+  const { t } = useI18n();
   return (
     <Card sx={{ height: "100%" }}>
       <CardHeader
-        title="Target Platforms"
-        subheader={`Available ${platforms.length}`}
+        title={t("installHub.targetPlatforms")}
+        subheader={t("installHub.availableCount", { count: platforms.length })}
         action={
           <Chip
             color="primary"
-            label={`${selectedPlatforms.size} selected`}
+            label={t("common.selectedCount", { count: selectedPlatforms.size })}
             variant="outlined"
           />
         }
@@ -49,10 +51,10 @@ export function PlatformTargetPanel({
       <CardContent sx={{ pt: 0 }}>
         <Stack direction="row" spacing={1} mb={2}>
           <Button size="small" variant="outlined" onClick={onSelectAll} disabled={disabled || platforms.length === 0}>
-            Select All
+            {t("installHub.selectAll")}
           </Button>
           <Button size="small" variant="text" onClick={onClearSelection} disabled={disabled || selectedPlatforms.size === 0}>
-            Clear Selection
+            {t("installHub.clearSelection")}
           </Button>
         </Stack>
         <PlatformList
@@ -79,6 +81,7 @@ function PlatformList({
   disabled,
   onTogglePlatform,
 }: PlatformListProps) {
+  const { t } = useI18n();
   return (
     <Box
       sx={{
@@ -91,7 +94,7 @@ function PlatformList({
     >
       {platforms.length === 0 ? (
         <Box sx={{ p: 3 }}>
-          <Typography color="text.secondary">No platforms found.</Typography>
+          <Typography color="text.secondary">{t("installHub.noPlatformsFound")}</Typography>
         </Box>
       ) : (
         <List dense disablePadding>

@@ -19,6 +19,8 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { useI18n } from "@/i18n";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useUiStore } from "@/stores/uiStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
@@ -179,6 +181,7 @@ function ModernPlatformCard({
   };
   onClick: () => void;
 }) {
+  const { t } = useI18n();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const p = platform;
@@ -237,7 +240,7 @@ function ModernPlatformCard({
 
           {/* Outdated Badge */}
           {p.outdated_skills > 0 && (
-            <Tooltip title={`${p.outdated_skills} updates available`}>
+            <Tooltip title={t("dashboard.updatesAvailable", { count: p.outdated_skills })}>
               <Box sx={{
                 px: 1, py: 0.25, borderRadius: 1.5,
                 bgcolor: alpha(theme.palette.warning.main, 0.15),
@@ -247,7 +250,7 @@ function ModernPlatformCard({
                 fontSize: "0.65rem", fontWeight: 700
               }}>
                 <Box sx={{ width: 4, height: 4, borderRadius: "50%", bgcolor: "currentColor" }} />
-                UPDATE
+                {t("dashboard.updateBadge")}
               </Box>
             </Tooltip>
           )}
@@ -265,7 +268,7 @@ function ModernPlatformCard({
             }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.6rem" }}>
-                  Skills
+                  {t("dashboard.skillsShort")}
                 </Typography>
                 <Typography variant="caption" sx={{ fontWeight: 700, fontFamily: '"Outfit", sans-serif' }}>
                   {p.installed_skills}<Box component="span" sx={{ color: "text.secondary", opacity: 0.6 }}>/{p.total_skills}</Box>
@@ -287,7 +290,7 @@ function ModernPlatformCard({
             }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.6rem" }}>
-                  Cmds
+                  {t("dashboard.commandsShort")}
                 </Typography>
                 <Typography variant="caption" sx={{ fontWeight: 700, fontFamily: '"Outfit", sans-serif' }}>
                   {p.installed_commands}<Box component="span" sx={{ color: "text.secondary", opacity: 0.6 }}>/{p.total_commands}</Box>
@@ -306,6 +309,7 @@ function ModernPlatformCard({
 
 // ── Main Dashboard Page ────────────────────────────────────────────
 export default function DashboardPage() {
+  const { t } = useI18n();
   const { data, loading, error, fetchDashboard } = useDashboardStore();
   const { colorMode, toggleColorMode } = useUiStore();
   const navigate = useNavigate();
@@ -364,7 +368,13 @@ export default function DashboardPage() {
             <IconButton size="small" color="inherit" onClick={() => navigate("/")} sx={{ mr: 0.5 }}>
               <ArrowBackIcon fontSize="small" />
             </IconButton>
-            <IconButton size="small" color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }} title="Home">
+            <IconButton
+              size="small"
+              color="inherit"
+              onClick={() => navigate("/")}
+              sx={{ mr: 1 }}
+              title={t("common.home")}
+            >
               <HomeIcon fontSize="small" />
             </IconButton>
             <Typography
@@ -379,13 +389,14 @@ export default function DashboardPage() {
                 mr: 2
               }}
             >
-              System Dashboard
+              {t("dashboard.systemTitle")}
             </Typography>
-            <Tooltip title="Unified Install Hub">
+            <Tooltip title={t("dashboard.unifiedInstallHub")}>
               <IconButton size="small" color="inherit" onClick={() => navigate("/install-hub")} sx={{ mr: 0.5 }}>
                 <InstallDesktopIcon fontSize="small" />
               </IconButton>
             </Tooltip>
+            <LanguageToggle sx={{ mr: 0.5 }} />
             <IconButton size="small" color="inherit" onClick={toggleColorMode}>
               {colorMode === "dark" ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
             </IconButton>
@@ -414,68 +425,78 @@ export default function DashboardPage() {
                 <Grid container spacing={2.5}>
                   <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <ModernStatCard
-                      label="Platforms"
+                      label={t("dashboard.platforms")}
                       value={`${stats.activePlatforms}`}
-                      sub={`out of ${stats.totalPlatforms} total environments`}
+                      sub={t("dashboard.platformsSub", { count: stats.totalPlatforms })}
                       colorHex="#8B5CF6"
                       icon="🖥️"
-                      tooltipText="已配置或安装技能的活跃平台数量"
+                      tooltipText={t("dashboard.tooltipActivePlatforms")}
                       chartType="wave"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <ModernStatCard
-                      label="Installed Skills"
+                      label={t("dashboard.installedSkills")}
                       value={stats.installedSkills}
-                      sub={`from ${stats.totalSkills} available repository`}
+                      sub={t("dashboard.installedSkillsSub", { count: stats.totalSkills })}
                       colorHex="#3B82F6"
                       icon="🧩"
-                      tooltipText="用户已本地安装的技能总量"
+                      tooltipText={t("dashboard.tooltipInstalledSkills")}
                       chartType="bar"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <ModernStatCard
-                      label="CLI Commands"
+                      label={t("dashboard.cliCommands")}
                       value={stats.installedCommands}
-                      sub={`connected across active skills`}
+                      sub={t("dashboard.cliCommandsSub")}
                       colorHex="#06B6D4"
                       icon="⚡"
-                      tooltipText="已挂载到系统的终端命令总数"
+                      tooltipText={t("dashboard.tooltipCommands")}
                       chartType="wave"
                     />
                   </Grid>
 
                   <Grid size={{ xs: 12, sm: 4 }}>
                     <ModernStatCard
-                      label="Outdated"
+                      label={t("dashboard.outdated")}
                       value={stats.outdatedSkills}
-                      sub="require updates"
+                      sub={t("dashboard.outdatedSub")}
                       colorHex={stats.outdatedSkills > 0 ? "#F59E0B" : "#10B981"}
                       icon={stats.outdatedSkills > 0 ? "⚠️" : "✨"}
-                      tooltipText="检测到有远程更新的技能数目"
+                      tooltipText={t("dashboard.tooltipOutdated")}
                       chartType="none"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 4 }}>
                     <ModernStatCard
-                      label="Coverage"
+                      label={t("dashboard.coverage")}
                       value={stats.totalSkills > 0 ? `${Math.round((stats.installedSkills / stats.totalSkills) * 100)}%` : "–"}
-                      sub="global installation rate"
+                      sub={t("dashboard.coverageSub")}
                       colorHex="#EC4899"
                       icon="📊"
-                      tooltipText="技能库的整体安装覆盖比值"
+                      tooltipText={t("dashboard.tooltipCoverage")}
                       chartType="none"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 4 }}>
                     <ModernStatCard
-                      label="Health Status"
-                      value={stats.outdatedSkills === 0 ? "Optimal" : stats.outdatedSkills <= 5 ? "Normal" : "Warning"}
-                      sub={stats.outdatedSkills === 0 ? "all systems operational" : "maintenance suggested"}
+                      label={t("dashboard.healthStatus")}
+                      value={
+                        stats.outdatedSkills === 0
+                          ? t("dashboard.healthOptimal")
+                          : stats.outdatedSkills <= 5
+                            ? t("dashboard.healthNormal")
+                            : t("dashboard.healthWarning")
+                      }
+                      sub={
+                        stats.outdatedSkills === 0
+                          ? t("dashboard.healthSubOptimal")
+                          : t("dashboard.healthSubMaintain")
+                      }
                       colorHex={stats.outdatedSkills === 0 ? "#10B981" : stats.outdatedSkills <= 5 ? "#F59E0B" : "#EF4444"}
                       icon={stats.outdatedSkills === 0 ? "💚" : stats.outdatedSkills <= 5 ? "💛" : "❤️"}
-                      tooltipText="系统版本整齐度评估评级"
+                      tooltipText={t("dashboard.tooltipHealth")}
                       chartType="bar"
                     />
                   </Grid>
@@ -504,7 +525,7 @@ export default function DashboardPage() {
                 }
               }}
             >
-              Integration Hub
+              {t("dashboard.integrationHub")}
             </Typography>
 
             {/* ── Platform Grid ──────────────────────────────── */}
