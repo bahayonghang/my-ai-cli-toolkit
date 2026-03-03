@@ -3,9 +3,9 @@ resolver = "2"
 members = ["mcs-core", "mcs-tui", "mcs-web"]
 
 [workspace.package]
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }

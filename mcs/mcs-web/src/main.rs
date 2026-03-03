@@ -11,6 +11,7 @@ use tracing_subscriber::EnvFilter;
 
 use mcs_core::config::paths::detect_project_root;
 use mcs_core::config::platform::load_platforms;
+use mcs_core::core::skill_migration::run_one_time_skill_migration;
 
 use crate::state::AppState;
 
@@ -33,6 +34,31 @@ async fn main() {
     // Load platform configurations
     let platforms = load_platforms(&project_root);
     tracing::info!("Loaded {} platforms", platforms.len());
+    match run_one_time_skill_migration(&project_root, &platforms) {
+        Ok(summary) if summary.skipped => {
+            tracing::info!(
+                "Skill migration skipped: {}",
+                summary.reason.unwrap_or_else(|| "already done".into())
+            );
+        }
+        Ok(summary) => {
+            tracing::info!(
+                "Skill migration done: migrated={}, relinked={}, copy_fallbacks={}, errors={}",
+                summary.migrated_skills,
+                summary.relinked_targets,
+                summary.copy_fallbacks,
+                summary.errors.len()
+            );
+            if !summary.errors.is_empty() {
+                for err in summary.errors.iter().take(3) {
+                    tracing::warn!("Migration issue: {err}");
+                }
+            }
+        }
+        Err(err) => {
+            tracing::error!("Skill migration failed: {err}");
+        }
+    }
 
     // Build shared state and pre-warm discovery cache
     let app_state = AppState::new(project_root, platforms);

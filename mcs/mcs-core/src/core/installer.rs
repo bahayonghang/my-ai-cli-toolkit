@@ -5,14 +5,10 @@ use crate::config::paths::{commands_src_dir, skills_src_dir};
 use crate::config::platform::{PlatformConfig, commands_source_dir};
 use crate::core::discovery::find_skill_dirs;
 use crate::core::fs_utils::walkdir_files;
+use crate::core::skill_store::{
+    SkillInstallMode, canonical_skill_path, copy_dir_replace, link_or_copy_dir, remove_path_any,
+};
 use crate::model::{InstallResult, ItemType};
-
-/// Ensure target directories exist
-fn ensure_dirs(platform: &PlatformConfig) -> std::io::Result<()> {
-    fs::create_dir_all(platform.skills_path())?;
-    fs::create_dir_all(platform.commands_path())?;
-    Ok(())
-}
 
 fn validate_item_name(name: &str) -> Result<(), String> {
     if name.trim().is_empty() {
@@ -40,13 +36,10 @@ fn validate_item_name(name: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn normalized_path(name: &str) -> PathBuf {
-    PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR))
-}
-
 fn safe_join_under(base: &Path, name: &str) -> Result<PathBuf, String> {
     validate_item_name(name)?;
-    Ok(base.join(normalized_path(name)))
+    let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
+    Ok(base.join(normalized))
 }
 
 fn install_result_error(item_name: &str, message: String, error: String) -> InstallResult {
@@ -58,10 +51,10 @@ fn install_result_error(item_name: &str, message: String, error: String) -> Inst
     }
 }
 
-fn find_skill_src(project_root: &Path, name: &str) -> Option<std::path::PathBuf> {
+fn find_skill_src(project_root: &Path, name: &str) -> Option<PathBuf> {
     find_skill_dirs(&skills_src_dir(project_root))
         .into_iter()
-        .find(|p| p.file_name().map(|f| f == name).unwrap_or(false))
+        .find(|path| path.file_name().map(|file| file == name).unwrap_or(false))
 }
 
 pub fn install_skill(project_root: &Path, platform: &PlatformConfig, name: &str) -> InstallResult {
@@ -69,47 +62,45 @@ pub fn install_skill(project_root: &Path, platform: &PlatformConfig, name: &str)
         return install_result_error(name, format!("Invalid skill name: {name}"), e);
     }
 
-    let fallback_src = match safe_join_under(&skills_src_dir(project_root), name) {
-        Ok(path) => path,
+    let src = match safe_join_under(&skills_src_dir(project_root), name) {
+        Ok(path) => find_skill_src(project_root, name).unwrap_or(path),
         Err(e) => return install_result_error(name, format!("Invalid skill name: {name}"), e),
     };
-    let src = find_skill_src(project_root, name).unwrap_or(fallback_src);
     if !src.exists() {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Skill not found: {name}"),
-            error: Some(format!("{} does not exist", src.display())),
-        };
+        return install_result_error(
+            name,
+            format!("Skill not found: {name}"),
+            format!("{} does not exist", src.display()),
+        );
     }
-    if let Err(e) = ensure_dirs(platform) {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: "Failed to create dirs".into(),
-            error: Some(e.to_string()),
-        };
+    if let Err(e) = fs::create_dir_all(platform.skills_path()) {
+        return install_result_error(name, "Failed to create skill dir".into(), e.to_string());
     }
+
     let target = match safe_join_under(&platform.skills_path(), name) {
         Ok(path) => path,
         Err(e) => return install_result_error(name, format!("Invalid skill name: {name}"), e),
     };
-    // Remove old if exists
-    if target.exists()
-        && let Err(e) = fs::remove_dir_all(&target)
-    {
+    let canonical = canonical_skill_path(name);
+    if let Err(e) = copy_dir_replace(&src, &canonical) {
         return install_result_error(
             name,
-            format!("Failed to replace existing install: {name}"),
+            format!("Failed to update canonical skill: {name}"),
             e.to_string(),
         );
     }
-    let opts = fs_extra::dir::CopyOptions::new();
-    match fs_extra::dir::copy(&src, platform.skills_path(), &opts) {
-        Ok(_) => InstallResult {
+
+    match link_or_copy_dir(&canonical, &target) {
+        Ok(SkillInstallMode::Symlink) => InstallResult {
             success: true,
             item_name: name.into(),
-            message: format!("Installed {name}"),
+            message: format!("Installed {name} (symlink)"),
+            error: None,
+        },
+        Ok(SkillInstallMode::CopyFallback) => InstallResult {
+            success: true,
+            item_name: name.into(),
+            message: format!("Installed {name} (copy fallback: symlink unavailable)"),
             error: None,
         },
         Err(e) => InstallResult {
@@ -140,17 +131,12 @@ pub fn install_command(
             error: None,
         };
     }
-    if let Err(e) = ensure_dirs(platform) {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: "Failed to create dirs".into(),
-            error: Some(e.to_string()),
-        };
+    if let Err(e) = fs::create_dir_all(platform.commands_path()) {
+        return install_result_error(name, "Failed to create command dir".into(), e.to_string());
     }
 
-    // Find source file matching name (without extension)
-    let name_normalized = normalized_path(name).to_string_lossy().to_string();
+    let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
+    let name_normalized = normalized.to_string_lossy().to_string();
     let src_file = find_file_by_stem(&src_dir, &name_normalized);
     let Some(src_file) = src_file else {
         return InstallResult {
@@ -161,7 +147,16 @@ pub fn install_command(
         };
     };
 
-    let rel = src_file.strip_prefix(&src_dir).unwrap();
+    let rel = match src_file.strip_prefix(&src_dir) {
+        Ok(path) => path,
+        Err(e) => {
+            return install_result_error(
+                name,
+                format!("Failed to install {name}"),
+                format!("Invalid command source path: {e}"),
+            );
+        }
+    };
     let target = platform.commands_path().join(rel);
     if let Some(parent) = target.parent()
         && let Err(e) = fs::create_dir_all(parent)
@@ -172,6 +167,7 @@ pub fn install_command(
             e.to_string(),
         );
     }
+
     match fs::copy(&src_file, &target) {
         Ok(_) => InstallResult {
             success: true,
@@ -193,7 +189,7 @@ pub fn uninstall_skill(platform: &PlatformConfig, name: &str) -> InstallResult {
         Ok(path) => path,
         Err(e) => return install_result_error(name, format!("Invalid skill name: {name}"), e),
     };
-    if !target.exists() {
+    if !target.exists() && fs::symlink_metadata(&target).is_err() {
         return InstallResult {
             success: false,
             item_name: name.into(),
@@ -201,7 +197,8 @@ pub fn uninstall_skill(platform: &PlatformConfig, name: &str) -> InstallResult {
             error: None,
         };
     }
-    match fs::remove_dir_all(&target) {
+
+    match remove_path_any(&target) {
         Ok(_) => InstallResult {
             success: true,
             item_name: name.into(),
@@ -223,7 +220,8 @@ pub fn uninstall_command(platform: &PlatformConfig, name: &str) -> InstallResult
     }
 
     let target_dir = platform.commands_path();
-    let name_normalized = normalized_path(name).to_string_lossy().to_string();
+    let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
+    let name_normalized = normalized.to_string_lossy().to_string();
     let target_file = find_file_by_stem(&target_dir, &name_normalized);
     let Some(target_file) = target_file else {
         return InstallResult {
@@ -233,9 +231,9 @@ pub fn uninstall_command(platform: &PlatformConfig, name: &str) -> InstallResult
             error: None,
         };
     };
+
     match fs::remove_file(&target_file) {
         Ok(_) => {
-            // Prune empty parent dirs up to commands_path
             prune_empty_parents(&target_file, &target_dir);
             InstallResult {
                 success: true,
@@ -277,10 +275,10 @@ pub fn uninstall_item(
     }
 }
 
-fn find_file_by_stem(dir: &Path, name: &str) -> Option<std::path::PathBuf> {
-    let name_path = std::path::Path::new(name);
-    walkdir_files(dir).into_iter().find(|f| {
-        f.strip_prefix(dir)
+fn find_file_by_stem(dir: &Path, name: &str) -> Option<PathBuf> {
+    let name_path = Path::new(name);
+    walkdir_files(dir).into_iter().find(|file| {
+        file.strip_prefix(dir)
             .ok()
             .map(|rel| rel.with_extension("") == name_path)
             .unwrap_or(false)
@@ -289,41 +287,14 @@ fn find_file_by_stem(dir: &Path, name: &str) -> Option<std::path::PathBuf> {
 
 fn prune_empty_parents(file: &Path, stop_at: &Path) {
     let mut parent = file.parent();
-    while let Some(p) = parent {
-        if p == stop_at {
+    while let Some(path) = parent {
+        if path == stop_at || fs::remove_dir(path).is_err() {
             break;
         }
-        if fs::remove_dir(p).is_err() {
-            break;
-        } // non-empty → stop
-        parent = p.parent();
+        parent = path.parent();
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn validate_item_name_rejects_parent_dir() {
-        let result = validate_item_name("../escape");
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn validate_item_name_rejects_absolute_path() {
-        #[cfg(windows)]
-        let candidate = "C:/absolute/path";
-        #[cfg(not(windows))]
-        let candidate = "/absolute/path";
-
-        let result = validate_item_name(candidate);
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn validate_item_name_accepts_nested_relative_path() {
-        let result = validate_item_name("nested/command/name");
-        assert!(result.is_ok());
-    }
-}
+#[path = "installer_tests.rs"]
+mod installer_tests;

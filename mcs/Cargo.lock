@@ -876,7 +876,7 @@ checksum = "47e1ffaa40ddd1f3ed91f717a33c8c0ee23fff369e3aa8772b9605cc1d22f4c3"
 
 [[package]]
 name = "mcs-core"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "dirs",
  "fs_extra",
@@ -889,7 +889,7 @@ dependencies = [
 
 [[package]]
 name = "mcs-tui"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "crossterm",
  "mcs-core",
@@ -900,7 +900,7 @@ dependencies = [
 
 [[package]]
 name = "mcs-web"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "axum",
  "mcs-core",
