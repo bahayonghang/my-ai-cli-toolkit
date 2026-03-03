@@ -142,3 +142,16 @@ uv run python src/install.py installed
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | Trae | `~/.trae/skills/` | `~/.trae/commands/` |
 | OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
+
+### MCS Skill Storage Model
+
+- MCS now stores a canonical copy of each installed skill in `~/.mcs/skills/`.
+- Default behavior is symlink install: platform skills directories point to the canonical copy.
+- If symlink creation is unavailable (for example Windows privilege limitations), MCS falls back to copy mode automatically.
+
+### One-Time Migration
+
+- On first startup after upgrade, MCS runs a one-time migration that converts existing direct-copy installs to the canonical + symlink model.
+- Migration marker files are written under `~/.mcs/migrations/`:
+  - `skills-symlink-v1.done`
+  - `skills-symlink-v1.lock`

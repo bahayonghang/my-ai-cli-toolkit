@@ -128,6 +128,20 @@ The main interface is divided into two columns: **Sidebar** (Categories) and **I
 
 ## Advanced Features
 
+### Skill Install Storage
+
+- MCS keeps a canonical skill store at `~/.mcs/skills/`.
+- Skill installation to each platform uses symlink by default.
+- When symlink is unavailable, MCS automatically falls back to copy mode.
+
+### One-Time Skill Migration
+
+- On first startup after upgrade, MCS runs a one-time migration for existing installed skills.
+- Migration converts previous direct copies into canonical + symlink layout.
+- Marker files are written to `~/.mcs/migrations/`:
+  - `skills-symlink-v1.done`
+  - `skills-symlink-v1.lock`
+
 ### Multi-Platform Sync (`S`)
 
 The **Multi-Sync** feature allows you to install selected skills to multiple agents simultaneously.

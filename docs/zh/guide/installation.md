@@ -130,3 +130,16 @@ uv run python src/install.py installed
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | Trae | `~/.trae/skills/` | `~/.trae/commands/` |
 | OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
+
+### MCS 技能存储模型
+
+- MCS 会将每个已安装技能的 canonical 副本存储在 `~/.mcs/skills/`。
+- 默认采用 symlink 安装：平台目录中的 skills 指向 canonical 副本。
+- 若 symlink 创建不可用（例如 Windows 权限限制），MCS 会自动回退为 copy 安装。
+
+### 一次性迁移
+
+- 升级后首次启动，MCS 会执行一次性迁移：将历史“直接复制安装”转换为“canonical + symlink”模型。
+- 迁移标记文件位于 `~/.mcs/migrations/`：
+  - `skills-symlink-v1.done`
+  - `skills-symlink-v1.lock`
