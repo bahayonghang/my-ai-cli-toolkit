@@ -1,20 +1,3 @@
----
-name: rust-cli-tui-developer
-description: Expert guidance for Rust CLI and TUI development with clap, inquire, and ratatui. Use when building terminal apps.
-argument-hint: [prompt]
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: rust-development
-  tags:
-    - rust
-    - cli
-    - tui
-    - terminal
-    - clap
-    - ratatui
-    - console
----
-
 Execute the Rust CLI/TUI development task described in `$ARGUMENTS`.
 
 ## Steps

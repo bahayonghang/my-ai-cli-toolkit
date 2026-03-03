@@ -1,18 +1,4 @@
----
-name: review-code
-description: Multi-dimensional code review with structured reports. Analyzes correctness, readability, performance, security, testing, and architecture. Triggers on "review code", "code review", "审查代码", "代码审查".
-category: code-quality
-tags:
-  - code-review
-  - quality-assurance
-  - security
-  - performance
-  - best-practices
-  - testing
-allowed-tools: Task, AskUserQuestion, Read, Write, Glob, Grep, Bash, mcp__ace-tool__search_context, mcp__ide__getDiagnostics
----
-
-# Review Code
+# Review Code Skill Background & Architecture
 
 Multi-dimensional code review skill that analyzes code across 6 key dimensions and generates structured review reports with actionable recommendations.
 
@@ -55,29 +41,6 @@ Multi-dimensional code review skill that analyzes code across 6 key dimensions a
 3. **结构化报告**: 按严重程度分类，提供文件位置和修复建议
 4. **状态驱动**: 自主模式，根据审查进度动态选择下一步动作
 
----
-
-## ⚠️ Mandatory Prerequisites (强制前置条件)
-
-> **⛔ 禁止跳过**: 在执行任何审查操作之前，**必须**完整阅读以下文档。
-
-### 规范文档 (必读)
-
-| Document | Purpose | Priority |
-|----------|---------|----------|
-| [specs/review-dimensions.md](specs/review-dimensions.md) | 审查维度定义和检查点 | **P0 - 最高** |
-| [specs/issue-classification.md](specs/issue-classification.md) | 问题分类和严重程度标准 | **P0 - 最高** |
-| [specs/quality-standards.md](specs/quality-standards.md) | 审查质量标准 | P1 |
-
-### 模板文件 (生成前必读)
-
-| Document | Purpose |
-|----------|---------|
-| [templates/review-report.md](templates/review-report.md) | 审查报告模板 |
-| [templates/issue-template.md](templates/issue-template.md) | 问题记录模板 |
-
----
-
 ## Execution Flow
 
 ```
@@ -111,16 +74,6 @@ Multi-dimensional code review skill that analyzes code across 6 key dimensions a
 │  → 保存最终状态                                                    │
 │  → 输出审查摘要                                                    │
 └─────────────────────────────────────────────────────────────────┘
-```
-
-## Directory Setup
-
-```javascript
-const timestamp = new Date().toISOString().slice(0,19).replace(/[-:T]/g, '');
-const workDir = `.workflow/.scratchpad/review-code-${timestamp}`;
-
-Bash(`mkdir -p "${workDir}"`);
-Bash(`mkdir -p "${workDir}/findings"`);
 ```
 
 ## Output Structure
@@ -160,19 +113,13 @@ Bash(`mkdir -p "${workDir}/findings"`);
 | **Low** | [L] | 可选优化 | Nice to have |
 | **Info** | [I] | 信息性建议 | For reference |
 
-## Reference Documents
+## Reference Documents Catalog
 
-| Document | Purpose |
-|----------|---------|
-| [phases/orchestrator.md](phases/orchestrator.md) | 审查编排器 |
-| [phases/state-schema.md](phases/state-schema.md) | 状态结构定义 |
-| [phases/actions/action-collect-context.md](phases/actions/action-collect-context.md) | 收集上下文 |
-| [phases/actions/action-quick-scan.md](phases/actions/action-quick-scan.md) | 快速扫描 |
-| [phases/actions/action-deep-review.md](phases/actions/action-deep-review.md) | 深入审查 |
-| [phases/actions/action-generate-report.md](phases/actions/action-generate-report.md) | 生成报告 |
-| [phases/actions/action-complete.md](phases/actions/action-complete.md) | 完成审查 |
-| [specs/review-dimensions.md](specs/review-dimensions.md) | 审查维度规范 |
-| [specs/issue-classification.md](specs/issue-classification.md) | 问题分类标准 |
-| [specs/quality-standards.md](specs/quality-standards.md) | 质量标准 |
-| [templates/review-report.md](templates/review-report.md) | 报告模板 |
-| [templates/issue-template.md](templates/issue-template.md) | 问题模板 |
+- `phases/orchestrator.md`: 审查编排器
+- `phases/state-schema.md`: 状态结构定义
+- `phases/actions/*`: 预定义的审查动作
+- `specs/review-dimensions.md`: 审查维度规范
+- `specs/issue-classification.md`: 问题分类标准
+- `specs/quality-standards.md`: 质量标准
+- `templates/review-report.md`: 报告模板
+- `templates/issue-template.md`: 问题模板

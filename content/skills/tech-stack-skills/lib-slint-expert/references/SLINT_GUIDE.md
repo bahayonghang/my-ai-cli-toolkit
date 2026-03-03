@@ -1,19 +1,3 @@
----
-name: lib-slint-expert
-description: Develop modern GUI applications using Slint with Rust. Use when creating native UI, cross-platform apps, or component libraries.
-argument-hint: [prompt]
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: gui-development
-  tags:
-    - slint
-    - rust
-    - gui
-    - ui-toolkit
-    - cross-platform
-    - native-ui
----
-
 Execute the Slint GUI development task described in `$ARGUMENTS`.
 
 ## Steps

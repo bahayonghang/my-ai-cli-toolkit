@@ -1,22 +1,3 @@
----
-name: vue-best-practices
-description: Vue 3 and Vue.js best practices for TypeScript and Volar. Use when writing, reviewing, or refactoring Vue components to ensure correct typing.
-argument-hint: [prompt]
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: frontend-development
-  tags:
-    - vue
-    - vue3
-    - typescript
-    - best-practices
-    - volar
-    - component-design
-  author: hyf0
-  version: "8.0.0"
-  license: MIT
----
-
 Execute the Vue 3 / TypeScript task described in `$ARGUMENTS`.
 
 ## Steps
@@ -39,3 +20,4 @@ Modified or reviewed Vue code applying the specific best practices, along with a
 ## Troubleshooting
 
 - If type errors persist after applying a rule, refer to `rules/volar-3-breaking-changes.md` to ensure compatibility with recent Volar updates.
+

@@ -1,19 +1,3 @@
----
-name: lsp-manager
-description: Detect programming languages to configure LSP servers and troubleshoot integration issues. Use when users request to set up language servers or diagnostics.
-argument-hint: [prompt]
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: development-tools
-  tags:
-    - lsp
-    - language-server
-    - code-intelligence
-    - diagnostics
-    - configuration
-    - troubleshooting
----
-
 Execute the LSP configuration or troubleshooting task described in `$ARGUMENTS`.
 
 ## Steps
@@ -32,3 +16,4 @@ Information about the detected languages, recommended LSP plugins, or instructio
 ## Error Handling
 
 - If scripts return an error, consult `$SKILL_DIR/references/troubleshooting.md` for guidance on how to fix common problems before presenting them to the user.
+

@@ -153,7 +153,7 @@ return "conservative";
 **Tool Details**:
 1. **Gemini** (primary): `gemini-2.5-pro`
 2. **Qwen** (fallback): `coder-model`
-3. **Codex** (fallback): `gpt-5.1-codex`
+3. **Codex** (fallback): `gpt-5.3-codex`
 
 **When to Fallback**: HTTP 429, timeout, analysis quality degraded
 

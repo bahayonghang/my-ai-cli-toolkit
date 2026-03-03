@@ -19,7 +19,7 @@ Note: `<tag>` blocks are execution steps for the assistant, not content to inclu
 When online research or web content fetching is needed (documentation lookup, current information, API references, technology comparisons, fetching specific URLs):
 - Prefer codex skill (Web Search & Fetch capability) over built-in WebSearch/WebFetch
 - Invoke via: `Skill: codex` then use Web Search & Fetch capability
-- Fallback command if skill unavailable: `codex e -m gpt-5.1-codex -c model_reasoning_effort=high --enable web_search_request --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check "<query or URL>"`
+- Fallback command if skill unavailable: `codex e -m gpt-5.3-codex -c model_reasoning_effort=high --enable web_search_request --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check "<query or URL>"`
 </online_search>
 
 <context_gathering>

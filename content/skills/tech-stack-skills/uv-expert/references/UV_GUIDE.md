@@ -1,19 +1,3 @@
----
-name: uv-expert
-description: Provide expert guidance for the uv Python package manager. Use when handling Python dependency management, virtual environments, or project setup.
-argument-hint: [prompt]
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: python-tooling
-  tags:
-    - python
-    - uv
-    - package-manager
-    - dependency-management
-    - virtual-env
-    - pip-alternative
----
-
 Execute the `uv` related task described in `$ARGUMENTS`.
 
 ## Steps
