@@ -32,13 +32,29 @@ export function generateSidebarByDir(dir: string, basePath = '/skills/') {
             if (subItems.length > 0) {
                 // format title nicely: "ai-and-llm" -> "AI & LLM" or "Ai And Llm"
                 const formatTitle = (str: string) => {
-                    let formatted = str.split('-')
+                    // Remove '-skills' suffix if present
+                    const baseName = str.replace(/-skills$/, '');
+
+                    const mappings: Record<string, string> = {
+                        'academic': 'Academic',
+                        'ai-llm': 'AI & LLM',
+                        'diagram': 'Diagram',
+                        'document': 'Document',
+                        'git-github': 'Git & GitHub',
+                        'media': 'Media',
+                        'skill-meta': 'Skill Meta',
+                        'tech-stack': 'Tech Stack',
+                        'workflow': 'Workflow'
+                    };
+
+                    if (mappings[baseName]) {
+                        return mappings[baseName];
+                    }
+
+                    // Fallback
+                    return str.split('-')
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ');
-
-                    if (formatted === 'Ai And Llm') return 'AI & LLM';
-                    if (formatted === 'Devtools') return 'DevTools';
-                    return formatted;
                 }
 
                 items.push({

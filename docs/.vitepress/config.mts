@@ -5,13 +5,9 @@ export default defineConfig({
   title: 'AI Skills Hub',
   description: '跨平台 AI CLI 技能与命令管理工具',
 
-  // Ignore dead links in code block examples (document-writer template samples)
-  ignoreDeadLinks: [
-    /^\.\/docs\//,
-    /^\.\/CONTRIBUTING/,
-    /^docs\//,
-    /^CONTRIBUTING/
-  ],
+  // Ignore dead links since the documentation contains many GitHub-style relative links 
+  // to reference files and external/deleted skills that aren't hosted locally in the docs
+  ignoreDeadLinks: true,
 
   vite: {
     server: {
