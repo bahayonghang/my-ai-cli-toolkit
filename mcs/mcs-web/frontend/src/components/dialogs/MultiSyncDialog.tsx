@@ -72,8 +72,12 @@ export function MultiSyncDialog({
         items: itemNames,
         item_type: itemType,
       });
+      const reusedCount = result.results.filter((item) =>
+        item.message.includes("Reused shared-path")
+      ).length;
+      const reusedSuffix = reusedCount > 0 ? `, ${reusedCount} reused` : "";
       onSynced(
-        `Synced to ${selected.size} platforms: ${result.success_count} ok, ${result.failure_count} failed`,
+        `Synced to ${selected.size} platforms: ${result.success_count} ok, ${result.failure_count} failed${reusedSuffix}`,
         result.failure_count > 0 ? "warning" : "success"
       );
       onClose();
@@ -128,7 +132,9 @@ export function MultiSyncDialog({
                 </ListItemIcon>
                 <ListItemText
                   primary={`${p.icon} ${p.name}`}
-                  secondary={p.id === currentPlatformId ? "(current)" : p.base_dir}
+                  secondary={
+                    p.id === currentPlatformId ? `(current) ${p.skills_path}` : p.skills_path
+                  }
                 />
               </ListItemButton>
             ))}

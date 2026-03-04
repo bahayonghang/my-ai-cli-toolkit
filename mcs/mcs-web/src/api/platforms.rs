@@ -1,35 +1,61 @@
 use axum::Json;
 use axum::extract::{Path, State};
 
-use mcs_core::config::platform::platform_displays_owned;
+use mcs_core::config::platform::{
+    PlatformDisplayOwned, is_universal_shared_skills_platform, platform_displays,
+    universal_shared_skills_display_path,
+};
 
 use crate::api::error::AppError;
 use crate::dto::{ApiResponse, CategoryDto, SimpleSuccess};
 use crate::state::AppState;
 
 /// GET /api/platforms — list all platforms with display info
-pub async fn list(
-    State(state): State<AppState>,
-) -> Json<ApiResponse<Vec<mcs_core::config::platform::PlatformDisplayOwned>>> {
-    let mut displays = platform_displays_owned();
-    // Sort by display order (matching the static list order)
-    let order: Vec<String> = mcs_core::config::platform::platform_displays()
-        .iter()
-        .map(|d| d.id.to_string())
-        .collect();
-    displays.sort_by_key(|d| {
-        order
-            .iter()
-            .position(|id| *id == d.id)
-            .unwrap_or(usize::MAX)
-    });
-
-    // Mark which platforms are configured
+pub async fn list(State(state): State<AppState>) -> Json<ApiResponse<Vec<PlatformDisplayOwned>>> {
     let platforms = state.platforms().await;
-    let displays: Vec<_> = displays
-        .into_iter()
-        .filter(|d| platforms.contains_key(&d.id))
-        .collect();
+    let mut displays: Vec<PlatformDisplayOwned> = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+
+    for display in platform_displays() {
+        if let Some(platform) = platforms.get(display.id) {
+            let skills_path = if is_universal_shared_skills_platform(display.id) {
+                universal_shared_skills_display_path().to_string()
+            } else {
+                platform.skills_display_path()
+            };
+            displays.push(PlatformDisplayOwned {
+                id: display.id.to_string(),
+                name: display.name.to_string(),
+                icon: display.icon.to_string(),
+                base_dir: platform.base_dir.clone(),
+                skills_path,
+            });
+            seen.insert(display.id.to_string());
+        }
+    }
+
+    // Include dynamically configured platforms not in the static display table.
+    let mut dynamic_ids: Vec<String> = platforms.keys().cloned().collect();
+    dynamic_ids.sort();
+    for id in dynamic_ids {
+        if seen.contains(&id) {
+            continue;
+        }
+        if let Some(platform) = platforms.get(&id) {
+            let skills_path = if is_universal_shared_skills_platform(&id) {
+                universal_shared_skills_display_path().to_string()
+            } else {
+                platform.skills_display_path()
+            };
+            displays.push(PlatformDisplayOwned {
+                id: id.clone(),
+                name: id.clone(),
+                icon: "📁".to_string(),
+                base_dir: platform.base_dir.clone(),
+                skills_path,
+            });
+        }
+    }
 
     Json(ApiResponse::ok(displays))
 }

@@ -24,11 +24,13 @@ export interface PlatformDisplay {
   name: string;
   icon: string;
   base_dir: string;
+  skills_path: string;
 }
 
 export interface PlatformConfig {
   name: string;
   base_dir: string;
+  skills_base_dir: string | null;
   skills_subdir: string;
   commands_subdir: string;
   prompt_file: string | null;

@@ -114,8 +114,8 @@ pub async fn install(
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 
-    // Invalidate cache so next request reflects new install state
-    state.invalidate_platform(&id).await;
+    // Invalidate cache (including platforms sharing the same skills path)
+    invalidate_platform_and_shared_skills(&state, &id).await;
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
         results,
@@ -143,8 +143,8 @@ pub async fn uninstall(
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 
-    // Invalidate cache so next request reflects new uninstall state
-    state.invalidate_platform(&id).await;
+    // Invalidate cache (including platforms sharing the same skills path)
+    invalidate_platform_and_shared_skills(&state, &id).await;
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
         results,
@@ -239,6 +239,15 @@ async fn write_file_text(path: PathBuf, content: String) -> Result<(), AppError>
         .map_err(|e| AppError::Internal(format!("Failed to write file {display}: {e}")))
 }
 
+async fn invalidate_platform_and_shared_skills(state: &AppState, platform_id: &str) {
+    let related = state.related_platform_ids_by_skills_path(platform_id).await;
+    if related.is_empty() {
+        state.invalidate_platform(platform_id).await;
+        return;
+    }
+    state.invalidate_platforms(&related).await;
+}
+
 /// PUT /api/platforms/:id/skills/:name/content — overwrite SKILL.md content
 pub async fn edit_content(
     State(state): State<AppState>,
@@ -318,7 +327,7 @@ pub async fn external_install(
     let success = output.status.success();
 
     if success {
-        state.invalidate_platform(&id).await;
+        invalidate_platform_and_shared_skills(&state, &id).await;
     }
 
     Ok(Json(ApiResponse::ok(ExternalInstallResult {

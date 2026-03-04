@@ -20,6 +20,7 @@ import { useI18n } from "@/i18n";
 interface Props {
   selectedSkillCount: number;
   selectedPlatformCount: number;
+  plannedActionCount: number;
   execution: ExecutionState;
   results: PlatformInstallResult[];
   onInstall: () => void;
@@ -29,13 +30,14 @@ interface Props {
 export function InstallExecutionPanel({
   selectedSkillCount,
   selectedPlatformCount,
+  plannedActionCount,
   execution,
   results,
   onInstall,
   onClearResults,
 }: Props) {
   const { t } = useI18n();
-  const totalTasks = selectedSkillCount * selectedPlatformCount;
+  const totalTasks = plannedActionCount;
   const canInstall =
     !execution.running && selectedSkillCount > 0 && selectedPlatformCount > 0;
   const progressValue = progressPercent(execution.currentStep, execution.totalSteps);
@@ -120,6 +122,10 @@ interface PlatformResultAccordionProps {
 function PlatformResultAccordion({ result }: PlatformResultAccordionProps) {
   const { t } = useI18n();
   const severity = resolveSeverity(result);
+  const failedItems = result.results.filter((item) => !item.success);
+  const reusedItems = result.results.filter((item) =>
+    item.message.includes("Reused shared-path")
+  );
 
   return (
     <Accordion>
@@ -147,14 +153,17 @@ function PlatformResultAccordion({ result }: PlatformResultAccordionProps) {
           <Typography color="text.secondary">{t("installHub.noItemLevelResults")}</Typography>
         ) : (
           <Stack spacing={0.5}>
-            {result.results
-              .filter((item) => !item.success)
-              .map((item) => (
-                <Alert key={`${result.platform.id}-${item.item_name}`} severity="error">
-                  {item.item_name}: {item.error ?? item.message}
-                </Alert>
-              ))}
-            {result.failureCount === 0 && (
+            {failedItems.map((item) => (
+              <Alert key={`${result.platform.id}-${item.item_name}`} severity="error">
+                {item.item_name}: {item.error ?? item.message}
+              </Alert>
+            ))}
+            {reusedItems.map((item, index) => (
+              <Alert key={`${result.platform.id}-reused-${item.item_name}-${index}`} severity="info">
+                {item.item_name}: {item.message}
+              </Alert>
+            ))}
+            {result.failureCount === 0 && reusedItems.length === 0 && (
               <Alert severity="success">{t("installHub.allSelectedInstalled")}</Alert>
             )}
           </Stack>

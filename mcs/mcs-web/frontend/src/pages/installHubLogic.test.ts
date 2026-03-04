@@ -46,14 +46,26 @@ describe("summarizeInstallResults", () => {
   it("sums success/failure and captures failed platforms", () => {
     const input: PlatformInstallResult[] = [
       {
-        platform: { id: "claude", name: "Claude", icon: "🤖", base_dir: "~/.claude" },
+        platform: {
+          id: "claude",
+          name: "Claude",
+          icon: "🤖",
+          base_dir: "~/.claude",
+          skills_path: "~/.claude/skills",
+        },
         successCount: 2,
         failureCount: 0,
         results: [],
         requestError: null,
       },
       {
-        platform: { id: "codex", name: "Codex", icon: "📦", base_dir: "~/.codex" },
+        platform: {
+          id: "codex",
+          name: "Codex",
+          icon: "📦",
+          base_dir: "~/.codex",
+          skills_path: "~/.agents/skills",
+        },
         successCount: 1,
         failureCount: 1,
         results: [],

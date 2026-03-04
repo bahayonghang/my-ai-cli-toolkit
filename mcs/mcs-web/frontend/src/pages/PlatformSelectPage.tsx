@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -19,12 +19,51 @@ import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+import type { PlatformDisplay } from "@/types";
+
+const UNIVERSAL_SHARED_IDS = new Set([
+  "amp",
+  "cline",
+  "codex",
+  "cursor",
+  "gemini",
+  "copilot",
+  "kimi",
+  "opencode",
+]);
+
+const UNIVERSAL_CARD_PLATFORM: PlatformDisplay = {
+  id: "gemini",
+  name: "Agents",
+  icon: "🧩",
+  base_dir: "~/.agents",
+  skills_path: "~/.agents/skills",
+};
+
+function buildPlatformCards(platforms: PlatformDisplay[]): PlatformDisplay[] {
+  const cards = platforms.filter((p) => !UNIVERSAL_SHARED_IDS.has(p.id));
+
+  const hasUniversal = platforms.some((p) => UNIVERSAL_SHARED_IDS.has(p.id));
+  if (!hasUniversal) {
+    return cards;
+  }
+
+  const firstUniversalIndex = platforms.findIndex((p) => UNIVERSAL_SHARED_IDS.has(p.id));
+  const insertIndex = platforms
+    .slice(0, Math.max(firstUniversalIndex, 0))
+    .filter((p) => !UNIVERSAL_SHARED_IDS.has(p.id)).length;
+
+  cards.splice(insertIndex, 0, UNIVERSAL_CARD_PLATFORM);
+
+  return cards;
+}
 
 export default function PlatformSelectPage() {
   const { t } = useI18n();
   const { platforms, loading, error, fetchPlatforms, refreshPlatforms } =
     usePlatformStore();
   const navigate = useNavigate();
+  const platformCards = useMemo(() => buildPlatformCards(platforms), [platforms]);
 
   useEffect(() => {
     fetchPlatforms();
@@ -133,8 +172,11 @@ export default function PlatformSelectPage() {
 
       {/* 调整为更紧凑的自适应网格 */}
       <Grid container spacing={2.5} sx={{ maxWidth: 1200, position: "relative", zIndex: 1, width: "100%" }}>
-        {platforms.map((p, index) => (
-          <Grid key={p.id} size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
+        {platformCards.map((card, index) => (
+          <Grid
+            key={card.id}
+            size={{ xs: 6, sm: 4, md: 3, lg: 2 }}
+          >
             <Card
               elevation={0}
               sx={{
@@ -168,7 +210,7 @@ export default function PlatformSelectPage() {
               }}
             >
               <CardActionArea
-                onClick={() => navigate(`/platform/${p.id}`)}
+                onClick={() => navigate(`/platform/${card.id}`)}
                 sx={{
                   p: { xs: 2, sm: 2.5 },
                   pt: { xs: 3, sm: 3.5 },
@@ -189,14 +231,14 @@ export default function PlatformSelectPage() {
                     lineHeight: 1,
                   }}
                 >
-                  {p.icon}
+                  {card.icon}
                 </Typography>
                 <CardContent sx={{ p: 0, width: '100%' }}>
                   <Typography variant="body1" sx={{ fontFamily: '"Fira Sans", sans-serif', fontWeight: 600, mb: 0.25, lineHeight: 1.2, wordBreak: 'break-word' }}>
-                    {p.name}
+                    {card === UNIVERSAL_CARD_PLATFORM ? t("platformSelect.universalGroupTitle") : card.name}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: '"Fira Code", monospace', fontSize: "0.65rem", opacity: 0.8, display: 'block', wordBreak: 'break-all' }}>
-                    {p.base_dir}
+                    {card.skills_path}
                   </Typography>
                 </CardContent>
               </CardActionArea>

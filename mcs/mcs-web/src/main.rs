@@ -34,6 +34,7 @@ async fn main() {
     // Load platform configurations
     let platforms = load_platforms(&project_root);
     tracing::info!("Loaded {} platforms", platforms.len());
+    report_legacy_skill_dirs(&platforms);
     match run_one_time_skill_migration(&project_root, &platforms) {
         Ok(summary) if summary.skipped => {
             tracing::info!(
@@ -126,6 +127,31 @@ async fn main() {
     }
 
     axum::serve(listener, app).await.unwrap();
+}
+
+fn report_legacy_skill_dirs(
+    platforms: &std::collections::HashMap<String, mcs_core::config::platform::PlatformConfig>,
+) {
+    let legacy_dirs = mcs_core::config::platform::detect_legacy_skill_dirs(platforms);
+    if legacy_dirs.is_empty() {
+        return;
+    }
+
+    tracing::warn!(
+        "Detected {} legacy skill directory/directories. Manual migration is required.",
+        legacy_dirs.len()
+    );
+    for item in legacy_dirs {
+        tracing::warn!(
+            "[{}] legacy={} -> shared={}",
+            item.platform_id,
+            item.legacy_path.display(),
+            item.shared_path.display()
+        );
+    }
+    tracing::warn!(
+        "Copy skill folders containing SKILL.md to the shared directory and then re-open MCS."
+    );
 }
 
 /// Fallback when frontend is not built yet

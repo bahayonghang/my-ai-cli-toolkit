@@ -189,6 +189,7 @@ function ExecutionColumn({
     <InstallExecutionPanel
       execution={model.execution}
       results={model.results}
+      plannedActionCount={model.plannedActionCount}
       selectedPlatformCount={model.selectedPlatforms.size}
       selectedSkillCount={model.selectedSkills.size}
       onClearResults={() => model.setResults([])}

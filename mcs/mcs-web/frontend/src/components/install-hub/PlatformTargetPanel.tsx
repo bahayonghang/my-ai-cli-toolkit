@@ -108,7 +108,7 @@ function PlatformList({
                 <Checkbox checked={selectedPlatforms.has(platform.id)} tabIndex={-1} />
                 <ListItemText
                   primary={`${platform.icon} ${platform.name}`}
-                  secondary={platform.base_dir}
+                  secondary={platform.skills_path}
                 />
               </ListItemButton>
             </ListItem>

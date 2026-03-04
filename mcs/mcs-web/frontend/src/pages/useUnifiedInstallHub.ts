@@ -35,6 +35,11 @@ interface RunnerDependencies {
   t: TranslateFn;
 }
 
+interface SkillsPathGroup {
+  pathKey: string;
+  platforms: PlatformDisplay[];
+}
+
 export function useUnifiedInstallHub({
   platforms,
   fetchPlatforms,
@@ -46,6 +51,14 @@ export function useUnifiedInstallHub({
   const selectionState = useSelectionState(platforms);
   const [execution, setExecution] = useState<ExecutionState>(INITIAL_EXECUTION);
   const [results, setResults] = useState<PlatformInstallResult[]>([]);
+  const selectedPlatformList = useMemo(
+    () => platforms.filter((platform) => selectionState.selectedPlatforms.has(platform.id)),
+    [platforms, selectionState.selectedPlatforms]
+  );
+  const plannedActionCount = useMemo(
+    () => countSkillsPathGroups(selectedPlatformList) * selectionState.selectedSkills.size,
+    [selectedPlatformList, selectionState.selectedSkills]
+  );
   const runInstall = useInstallRunner({
     platforms,
     refreshPlatforms,
@@ -63,6 +76,7 @@ export function useUnifiedInstallHub({
     execution,
     results,
     setResults,
+    plannedActionCount,
     runInstall,
   };
 }
@@ -128,6 +142,7 @@ function useInstallRunner({
   return useCallback(async () => {
     const selection = resolveInstallSelection(platforms, selectedPlatforms, selectedSkills);
     if (!selection) return;
+    const totalGroups = countSkillsPathGroups(selection.platforms);
 
     const runResults = await installAcrossPlatforms(
       selection,
@@ -137,8 +152,8 @@ function useInstallRunner({
     );
     setExecution({
       running: false,
-      currentStep: selection.platforms.length,
-      totalSteps: selection.platforms.length,
+      currentStep: totalGroups,
+      totalSteps: totalGroups,
     });
     await refreshPlatforms();
     notifySummary(runResults, notify, t);
@@ -188,18 +203,29 @@ async function installAcrossPlatforms(
   setResults: (results: PlatformInstallResult[]) => void,
   t: TranslateFn
 ): Promise<PlatformInstallResult[]> {
-  const runResults: PlatformInstallResult[] = [];
+  const groups = groupPlatformsBySkillsPath(selection.platforms);
+  const runResultsByPlatform = new Map<string, PlatformInstallResult>();
   setResults([]);
-  setExecution({ running: true, currentStep: 0, totalSteps: selection.platforms.length });
+  setExecution({ running: true, currentStep: 0, totalSteps: groups.length });
 
-  for (let index = 0; index < selection.platforms.length; index++) {
-    const platform = selection.platforms[index];
-    setExecution({ running: true, currentStep: index + 1, totalSteps: selection.platforms.length });
-    runResults.push(await installOnPlatform(platform, selection.skills, t));
-    setResults([...runResults]);
+  for (let index = 0; index < groups.length; index++) {
+    const group = groups[index];
+    const sourcePlatform = group.platforms[0];
+    setExecution({ running: true, currentStep: index + 1, totalSteps: groups.length });
+
+    const sourceResult = await installOnPlatform(sourcePlatform, selection.skills, t);
+    runResultsByPlatform.set(sourcePlatform.id, sourceResult);
+    for (const platform of group.platforms.slice(1)) {
+      runResultsByPlatform.set(
+        platform.id,
+        buildReusedPlatformResult(platform, sourcePlatform, sourceResult)
+      );
+    }
+
+    setResults(resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform));
   }
 
-  return runResults;
+  return resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform);
 }
 
 async function installOnPlatform(
@@ -235,6 +261,60 @@ function buildInstallError(name: string, error: string, t: TranslateFn) {
     message: t("installHub.failedToInstallItem", { name }),
     error,
   };
+}
+
+function countSkillsPathGroups(platforms: PlatformDisplay[]): number {
+  return groupPlatformsBySkillsPath(platforms).length;
+}
+
+function groupPlatformsBySkillsPath(platforms: PlatformDisplay[]): SkillsPathGroup[] {
+  const groups: SkillsPathGroup[] = [];
+  const groupIndexByPath = new Map<string, number>();
+
+  for (const platform of platforms) {
+    const pathKey = normalizeSkillsPath(platform.skills_path);
+    const existingIndex = groupIndexByPath.get(pathKey);
+    if (existingIndex === undefined) {
+      groupIndexByPath.set(pathKey, groups.length);
+      groups.push({ pathKey, platforms: [platform] });
+      continue;
+    }
+    groups[existingIndex].platforms.push(platform);
+  }
+
+  return groups;
+}
+
+function normalizeSkillsPath(path: string): string {
+  return path.replace(/\\/g, "/").replace(/\/+$/, "");
+}
+
+function buildReusedPlatformResult(
+  platform: PlatformDisplay,
+  sourcePlatform: PlatformDisplay,
+  sourceResult: PlatformInstallResult
+): PlatformInstallResult {
+  return {
+    platform,
+    successCount: sourceResult.successCount,
+    failureCount: sourceResult.failureCount,
+    results: sourceResult.results.map((itemResult) => ({
+      ...itemResult,
+      message: `Reused shared-path result from ${sourcePlatform.id}: ${itemResult.message}`,
+    })),
+    requestError: sourceResult.requestError
+      ? `Reused shared-path result from ${sourcePlatform.id}: ${sourceResult.requestError}`
+      : null,
+  };
+}
+
+function resolveResultsInSelectionOrder(
+  selectionPlatforms: PlatformDisplay[],
+  resultsByPlatform: Map<string, PlatformInstallResult>
+): PlatformInstallResult[] {
+  return selectionPlatforms
+    .map((platform) => resultsByPlatform.get(platform.id))
+    .filter((result): result is PlatformInstallResult => result !== undefined);
 }
 
 function notifySummary(

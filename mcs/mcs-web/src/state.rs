@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -53,6 +54,25 @@ impl AppState {
 
     pub async fn platform(&self, id: &str) -> Option<PlatformConfig> {
         self.inner.read().await.platforms.get(id).cloned()
+    }
+
+    pub async fn related_platform_ids_by_skills_path(&self, platform_id: &str) -> Vec<String> {
+        let platforms = self.platforms().await;
+        shared_skill_path_group_for(&platforms, platform_id)
+    }
+
+    pub async fn related_platform_ids_for_platforms_by_skills_path(
+        &self,
+        platform_ids: &[String],
+    ) -> Vec<String> {
+        let platforms = self.platforms().await;
+        let mut related = std::collections::BTreeSet::new();
+        for platform_id in platform_ids {
+            for id in shared_skill_path_group_for(&platforms, platform_id) {
+                related.insert(id);
+            }
+        }
+        related.into_iter().collect()
     }
 
     /// Get source skill catalog (platform-independent).
@@ -215,5 +235,34 @@ impl AppState {
             cache.skills.insert(platform_id.to_string(), skills);
             cache.commands.insert(platform_id.to_string(), commands);
         }
+    }
+}
+
+fn shared_skill_path_group_for(
+    platforms: &HashMap<String, PlatformConfig>,
+    platform_id: &str,
+) -> Vec<String> {
+    let Some(current) = platforms.get(platform_id) else {
+        return vec![platform_id.to_string()];
+    };
+    let current_key = normalize_path_key(&current.skills_path());
+
+    let mut related = Vec::new();
+    for (id, platform) in platforms {
+        if normalize_path_key(&platform.skills_path()) == current_key {
+            related.push(id.clone());
+        }
+    }
+    related.sort();
+    related
+}
+
+fn normalize_path_key(path: &Path) -> String {
+    let normalized = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
+    let raw = normalized.to_string_lossy().replace('\\', "/");
+    if cfg!(windows) {
+        raw.to_lowercase()
+    } else {
+        raw
     }
 }
