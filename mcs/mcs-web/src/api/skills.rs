@@ -108,7 +108,7 @@ pub async fn install(
 
     let mut results = Vec::new();
     for name in &body.names {
-        results.push(install_skill(&root, &platform, name));
+        results.push(install_skill(&root, &platform, name, body.link_mode));
     }
 
     let success_count = results.iter().filter(|r| r.success).count();

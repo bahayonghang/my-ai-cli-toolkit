@@ -4,7 +4,7 @@ use serde_json::json;
 use std::collections::HashSet;
 
 use mcs_core::core::installer::{install_command, install_skill};
-use mcs_core::model::ItemType;
+use mcs_core::model::{ItemType, LinkMode};
 
 use crate::api::error::AppError;
 use crate::dto::{ApiResponse, BatchResultDto, MultiSyncRequest};
@@ -33,7 +33,7 @@ pub async fn multi_sync(
 
         for item_name in &body.items {
             let result = match body.item_type {
-                ItemType::Skill => install_skill(&root, platform, item_name),
+                ItemType::Skill => install_skill(&root, platform, item_name, LinkMode::Auto),
                 ItemType::Command => install_command(&root, platform, item_name),
             };
             results.push(result);

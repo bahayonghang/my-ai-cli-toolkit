@@ -4,6 +4,7 @@ import {
   Button, IconButton, Typography, Box, LinearProgress,
   List, ListItem, ListItemIcon, ListItemText,
   Chip, Collapse, CircularProgress, Paper,
+  ToggleButton, ToggleButtonGroup,
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
@@ -20,6 +21,7 @@ import type { PlatformDisplay } from "@/types";
 import { useI18n } from "@/i18n";
 
 type Phase = "confirm" | "installing" | "completed";
+type LinkMode = "auto" | "symlink" | "copy";
 
 type ItemResult = {
   name: string;
@@ -50,12 +52,14 @@ export function InstallDialog({
   onCompleted,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("confirm");
+  const [linkMode, setLinkMode] = useState<LinkMode>("auto");
   const [results, setResults] = useState<ItemResult[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
 
   const handleEnter = () => {
     setPhase("confirm");
+    setLinkMode("auto");
     setResults(
       itemNames.map((name) => ({
         name,
@@ -85,7 +89,6 @@ export function InstallDialog({
 
   const handleInstall = async () => {
     setPhase("installing");
-    const fn = itemType === "skills" ? installSkills : installCommands;
 
     for (let i = 0; i < itemNames.length; i++) {
       const name = itemNames[i];
@@ -95,7 +98,9 @@ export function InstallDialog({
       );
 
       try {
-        const result = await fn(platformId, [name]);
+        const result = itemType === "skills"
+          ? await installSkills(platformId, [name], linkMode)
+          : await installCommands(platformId, [name]);
         const itemResult = result.results[0];
         setResults((prev) =>
           prev.map((r) =>
@@ -135,6 +140,8 @@ export function InstallDialog({
           platform={platform}
           results={results}
           itemType={itemType}
+          linkMode={linkMode}
+          onLinkModeChange={setLinkMode}
           onCancel={onClose}
           onInstall={handleInstall}
         />
@@ -172,11 +179,13 @@ interface ConfirmPhaseProps {
   platform?: PlatformDisplay;
   results: ItemResult[];
   itemType: "skills" | "commands";
+  linkMode: LinkMode;
+  onLinkModeChange: (mode: LinkMode) => void;
   onCancel: () => void;
   onInstall: () => void;
 }
 
-function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: ConfirmPhaseProps) {
+function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange, onCancel, onInstall }: ConfirmPhaseProps) {
   const { t } = useI18n();
   const itemTypeLabel =
     itemType === "skills"
@@ -207,6 +216,24 @@ function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: Conf
             variant="outlined"
           />
         </Box>
+
+        {itemType === "skills" && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Link Mode:
+            </Typography>
+            <ToggleButtonGroup
+              value={linkMode}
+              exclusive
+              onChange={(_, v) => v && onLinkModeChange(v as LinkMode)}
+              size="small"
+            >
+              <ToggleButton value="auto">Auto</ToggleButton>
+              <ToggleButton value="symlink">Symlink</ToggleButton>
+              <ToggleButton value="copy">Copy</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        )}
 
         <Paper
           variant="outlined"

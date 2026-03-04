@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use mcs_core::model::{InstallResult, InstallStatus, ItemType};
+use mcs_core::model::{InstallResult, InstallStatus, ItemType, LinkMode};
 
 // ── Response envelope ──────────────────────────────────────────────
 
@@ -34,6 +34,8 @@ impl<T: Serialize> ApiResponse<T> {
 #[derive(Deserialize)]
 pub struct InstallRequest {
     pub names: Vec<String>,
+    #[serde(default)]
+    pub link_mode: LinkMode,
 }
 
 #[derive(Deserialize)]

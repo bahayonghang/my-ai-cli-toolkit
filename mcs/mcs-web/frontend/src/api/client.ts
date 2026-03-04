@@ -108,9 +108,10 @@ export async function getSkillDiff(
 
 export async function installSkills(
   platformId: string,
-  names: string[]
+  names: string[],
+  linkMode: "auto" | "symlink" | "copy" = "auto"
 ): Promise<BatchResultDto> {
-  return postJson(`${BASE}/platforms/${platformId}/skills/install`, { names });
+  return postJson(`${BASE}/platforms/${platformId}/skills/install`, { names, link_mode: linkMode });
 }
 
 export async function uninstallSkills(
