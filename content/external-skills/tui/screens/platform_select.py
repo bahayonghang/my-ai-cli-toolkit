@@ -28,13 +28,16 @@ class PlatformConfig:
 # 平台图标映射
 PLATFORM_ICONS = {
     "claude": "🤖",
+    "amp": "⚙️",
+    "cline": "🧠",
     "codex": "📦",
+    "cursor": "🖱️",
     "gemini": "✨",
+    "copilot": "🚁",
+    "kimi": "🌙",
+    "opencode": "🔓",
     "kiro": "🔮",
     "windsurf": "🏄",
-    "cursor": "🖱️",
-    "copilot": "🚁",
-    "opencode": "🔓",
 }
 
 
@@ -148,14 +151,17 @@ class PlatformSelectScreen(Screen):
 
     # 平台配置 - 支持所有目标平台
     PLATFORMS = [
-        PlatformConfig("claude", "Claude", "~/.claude/"),
-        PlatformConfig("codex", "Codex", "~/.codex/"),
-        PlatformConfig("gemini", "Gemini", "~/.gemini/"),
-        PlatformConfig("kiro", "Kiro", "~/.kiro/"),
-        PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/"),
-        PlatformConfig("cursor", "Cursor", "~/.cursor/"),
-        PlatformConfig("copilot", "Copilot", "~/.copilot/"),
-        PlatformConfig("opencode", "OpenCode", "~/.config/opencode/"),
+        PlatformConfig("claude", "Claude", "~/.claude/skills"),
+        PlatformConfig("amp", "Amp", "~/.agents/skills"),
+        PlatformConfig("cline", "Cline", "~/.agents/skills"),
+        PlatformConfig("codex", "Codex", "~/.agents/skills"),
+        PlatformConfig("cursor", "Cursor", "~/.agents/skills"),
+        PlatformConfig("gemini", "Gemini", "~/.agents/skills"),
+        PlatformConfig("copilot", "Copilot", "~/.agents/skills"),
+        PlatformConfig("kimi", "Kimi", "~/.agents/skills"),
+        PlatformConfig("opencode", "OpenCode", "~/.agents/skills"),
+        PlatformConfig("kiro", "Kiro", "~/.kiro/skills"),
+        PlatformConfig("windsurf", "Windsurf", "~/.codeium/windsurf/skills"),
     ]
 
     def compose(self) -> ComposeResult:

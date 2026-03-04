@@ -43,6 +43,16 @@ app = typer.Typer(
 console = Console()
 
 CONFIG_FILE = Path(__file__).parent / "registry.toml"
+UNIVERSAL_SHARED_SKILLS_AGENTS = {
+    "amp",
+    "cline",
+    "codex",
+    "cursor",
+    "gemini",
+    "copilot",
+    "kimi",
+    "opencode",
+}
 
 # ASCII Art Banner
 BANNER = r"""
@@ -149,13 +159,26 @@ def get_home_dir() -> Path:
     return Path.home()
 
 
+def get_agent_base_dir(agent: str) -> Path:
+    """获取 agent 根目录（用于检测和路径展示）"""
+    home = get_home_dir()
+    if agent == "opencode":
+        return home / ".config" / "opencode"
+    if agent == "antigravity":
+        return home / ".gemini" / "antigravity"
+    if agent == "windsurf":
+        return home / ".codeium" / "windsurf"
+    if agent == "gemini":
+        return home / ".agents"
+    return home / f".{agent}"
+
+
 def detect_installed_agents(config: RegistryConfig) -> list[str]:
     """检测已安装的 AI agent 平台"""
-    home = get_home_dir()
     detected: list[str] = []
 
     for agent in config.known_agents:
-        agent_dir = home / f".{agent}"
+        agent_dir = get_agent_base_dir(agent)
         if agent_dir.exists():
             detected.append(agent)
 
@@ -165,9 +188,23 @@ def detect_installed_agents(config: RegistryConfig) -> list[str]:
 def get_agent_skills_dir(agent: str, scope: str = "global") -> Path:
     """获取 agent 的 skills 目录"""
     if scope == "global":
-        return get_home_dir() / f".{agent}" / "skills"
+        if agent in UNIVERSAL_SHARED_SKILLS_AGENTS:
+            return get_home_dir() / ".agents" / "skills"
+        return get_agent_base_dir(agent) / "skills"
     else:
         return Path.cwd() / f".{agent}" / "skills"
+
+
+def count_installed_skills(skills_dir: Path) -> int:
+    """统计技能数量（目录下包含 SKILL.md 的子目录）"""
+    if not skills_dir.exists():
+        return 0
+
+    count = 0
+    for child in skills_dir.iterdir():
+        if child.is_dir() and (child / "SKILL.md").exists():
+            count += 1
+    return count
 
 
 def check_command_exists(cmd: str) -> bool:
@@ -378,10 +415,22 @@ def list_agents():
     rprint(f"\n[bold cyan]🤖 检测到 {len(detected)} 个已安装的 AI Agent:[/bold cyan]\n")
 
     tree = Tree("AI Agents")
-    for agent in detected:
+    universal_agents = sorted([a for a in detected if a in UNIVERSAL_SHARED_SKILLS_AGENTS])
+    standalone_agents = sorted([a for a in detected if a not in UNIVERSAL_SHARED_SKILLS_AGENTS])
+
+    if universal_agents:
+        shared_dir = get_home_dir() / ".agents" / "skills"
+        shared_count = count_installed_skills(shared_dir)
+        group = tree.add(
+            f"[bold magenta]Universal[/bold magenta] - {shared_count} skills @ {shared_dir}"
+        )
+        for agent in universal_agents:
+            group.add(f"[cyan]{agent}[/cyan] - uses shared skills directory")
+
+    for agent in standalone_agents:
         skills_dir = get_agent_skills_dir(agent)
-        skill_count = len(list(skills_dir.iterdir())) if skills_dir.exists() else 0
-        tree.add(f"[cyan]{agent}[/cyan] - {skill_count} skills installed")
+        skill_count = count_installed_skills(skills_dir)
+        tree.add(f"[cyan]{agent}[/cyan] - {skill_count} skills installed @ {skills_dir}")
 
     if not detected:
         rprint("[yellow]未检测到任何已安装的 AI agent[/yellow]")

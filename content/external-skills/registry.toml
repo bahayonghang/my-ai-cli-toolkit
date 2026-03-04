@@ -21,7 +21,7 @@ auto_detect_agents = true
 # 支持的所有 agent 平台
 known_agents = [
     "amp", "antigravity", "claude", "clawdbot", "cline", "codex", 
-    "codebuddy", "copilot", "cursor", "droid", "gemini", "kiro",
+    "codebuddy", "copilot", "cursor", "droid", "gemini", "kimi", "kiro",
     "neovate", "opencode", "qoder", "trae", "windsurf"
 ]
 
@@ -54,7 +54,7 @@ repo = "https://github.com/vercel-labs/agent-browser"
 skill_name = "agent-browser"
 install_method = "symlink"
 scope = "global"
-supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
+supported_targets = ["amp", "antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kimi", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
 requires = ["node"]
 homepage = "https://github.com/vercel-labs/agent-browser"
 license = "MIT"
@@ -83,7 +83,7 @@ repo = "https://github.com/remotion-dev/skills"
 skill_name = "remotion-best-practices"
 install_method = "symlink"
 scope = "global"
-supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
+supported_targets = ["amp", "antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kimi", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
 requires = ["node"]
 homepage = "https://github.com/remotion-dev/skills"
 license = "MIT"
@@ -99,7 +99,7 @@ repo = "https://github.com/vercel-labs/agent-skills"
 skill_name = "vercel-react-best-practices"
 install_method = "symlink"  # symlink | copy
 scope = "global"  # global | project
-supported_targets = ["antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
+supported_targets = ["amp", "antigravity", "claude", "cline", "codex", "cursor", "droid", "gemini", "copilot", "kimi", "kiro", "opencode", "qoder", "trae", "windsurf", "neovate"]
 requires = ["node"]
 homepage = "https://github.com/vercel-labs/agent-skills"
 license = "MIT"
