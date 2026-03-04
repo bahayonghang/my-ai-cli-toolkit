@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 
@@ -203,11 +203,23 @@ fn dispatch_multi_sync(
     names.sort();
 
     let mut tasks = Vec::new();
+    let mut dedupe_keys: HashMap<String, String> = HashMap::new();
+    let mut reused_messages = Vec::new();
     for platform_name in names {
         let Some(platform) = state.platforms.get(&platform_name).cloned() else {
             continue;
         };
         for item in &items {
+            if item_type == ItemType::Skill {
+                let key = dedupe_skill_install_key(&platform, item);
+                if let Some(source_platform) = dedupe_keys.get(&key) {
+                    reused_messages.push(format!(
+                        "{item} → {platform_name} (reused from {source_platform})"
+                    ));
+                    continue;
+                }
+                dedupe_keys.insert(key, platform_name.clone());
+            }
             tasks.push(BatchTask {
                 label: format!("Sync {item} → {platform_name}"),
                 kind: BatchTaskKind::Install {
@@ -228,7 +240,21 @@ fn dispatch_multi_sync(
         };
     }
 
-    enqueue_batch(state, "Multi-Sync", tasks, true)
+    let mut result = enqueue_batch(state, "Multi-Sync", tasks, true);
+    if result.accepted && !reused_messages.is_empty() {
+        state.push_notification(
+            NotificationLevel::Info,
+            format!(
+                "Reused {} shared-path install(s) in this multi-sync run",
+                reused_messages.len()
+            ),
+        );
+        for msg in reused_messages.iter().take(3) {
+            state.push_notification(NotificationLevel::Info, format!("Reused: {msg}"));
+        }
+        result.message = format!("{} ({} reused)", result.message, reused_messages.len());
+    }
+    result
 }
 
 fn enqueue_batch(
@@ -429,6 +455,7 @@ fn project_platform_for_directory(
     let platform_dir = project_platform_dir(&platform.name);
     let base_dir = project_path.join(platform_dir);
     project_platform.base_dir = base_dir.to_string_lossy().to_string();
+    project_platform.skills_base_dir = None;
     project_platform
 }
 
@@ -438,5 +465,21 @@ fn project_platform_dir(platform_name: &str) -> String {
         "antigravity" => ".gemini/antigravity".to_string(),
         "windsurf" => ".codeium/windsurf".to_string(),
         _ => format!(".{platform_name}"),
+    }
+}
+
+fn dedupe_skill_install_key(platform: &PlatformConfig, item_name: &str) -> String {
+    let item_path = PathBuf::from(item_name.replace('/', std::path::MAIN_SEPARATOR_STR));
+    let target = platform.skills_path().join(item_path);
+    normalize_path_key(&target)
+}
+
+fn normalize_path_key(path: &Path) -> String {
+    let normalized = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
+    let raw = normalized.to_string_lossy().replace('\\', "/");
+    if cfg!(windows) {
+        raw.to_lowercase()
+    } else {
+        raw
     }
 }

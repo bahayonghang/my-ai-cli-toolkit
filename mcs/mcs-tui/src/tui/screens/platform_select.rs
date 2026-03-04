@@ -81,7 +81,7 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
             };
 
             let name_part = format!("{} {:<16}", d.icon, d.name);
-            let path_part = format!("  {}", d.base_dir);
+            let path_part = format!("  skills: {}", d.skills_dir);
             let used = UnicodeWidthStr::width(indicator.as_str())
                 + UnicodeWidthStr::width(name_part.as_str())
                 + UnicodeWidthStr::width(path_part.as_str());

@@ -13,6 +13,7 @@ fn main() {
     });
     let platforms = mcs_core::config::platform::load_platforms(&project_root);
     report_skill_migration(&project_root, &platforms);
+    report_legacy_skill_dirs(&platforms);
 
     if let Err(e) = tui::run(project_root) {
         eprintln!("Error: {e}");
@@ -42,4 +43,29 @@ fn report_skill_migration(
         }
         Err(err) => eprintln!("MCS: skill migration failed: {err}"),
     }
+}
+
+fn report_legacy_skill_dirs(
+    platforms: &std::collections::HashMap<String, mcs_core::config::platform::PlatformConfig>,
+) {
+    let legacy_dirs = mcs_core::config::platform::detect_legacy_skill_dirs(platforms);
+    if legacy_dirs.is_empty() {
+        return;
+    }
+
+    eprintln!(
+        "MCS: detected {} legacy skill directory/directories. Manual migration is recommended:",
+        legacy_dirs.len()
+    );
+    for item in legacy_dirs {
+        eprintln!(
+            "  - [{}] legacy: {}  -> shared: {}",
+            item.platform_id,
+            item.legacy_path.display(),
+            item.shared_path.display()
+        );
+    }
+    eprintln!(
+        "  Tip: copy skill folders containing SKILL.md into the shared directory, then verify in MCS."
+    );
 }
