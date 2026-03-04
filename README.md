@@ -11,8 +11,9 @@ A curated collection of Claude Code skills, prompts, and workflows for enhanced 
 - 🔄 **Cross-Platform**: Rust TUI (`mcs/`) for interactive skill management across Windows, Linux, and macOS.
 - 🎛️ **Multi-Target Support**:
   - **Claude Code** (`~/.claude/`)
-  - **Codex CLI** (`~/.codex/`)
-  - **Gemini CLI** (`~/.gemini/`)
+  - **Universal shared skills dir** (`~/.agents/skills/`) for:
+    - Amp, Cline, Codex CLI, Cursor, Gemini CLI, GitHub Copilot, Kimi Code CLI, OpenCode
+  - **Commands/workflows stay platform-specific** (for example Codex `~/.codex/prompts/`, OpenCode `~/.config/opencode/commands/`)
   - **Qwen Code** (`~/.qwen/`)
   - **Google Antigravity** (`~/.gemini/antigravity/`)
   - **Windsurf** (`~/.codeium/windsurf/`)
@@ -179,6 +180,10 @@ just mcs
 - 🔍 Real-time search and filtering
 - ✅ Multi-select batch installation
 - ⌨️ Keyboard shortcuts (`/` to search, `Space` to select, `i` to install)
+
+### Legacy Universal Skills Dirs
+- MCS only warns when legacy per-platform skill dirs are detected (`~/.codex/skills`, `~/.cursor/skills`, `~/.config/opencode/skills`, etc.).
+- MCS does not auto-migrate legacy dirs into `~/.agents/skills`.
 
 ## Project Structure
 

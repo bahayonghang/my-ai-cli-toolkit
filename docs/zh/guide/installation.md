@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), 或 [OpenCode](https://opencode.ai/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Amp](https://ampcode.com/), [Cline](https://cline.bot/), [Codex CLI](https://github.com/openai/codex), [Cursor](https://cursor.com/), [Gemini CLI](https://geminicli.com), [GitHub Copilot](https://github.com/features/copilot), [Kimi Code](https://www.moonshot.cn/), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), 或 [OpenCode](https://opencode.ai/)
 
 ## 克隆仓库
 
@@ -123,13 +123,39 @@ uv run python src/install.py installed
 | 目标 | Skills 路径 | Commands/Workflows 路径 |
 |------|-------------|-------------------------|
 | Claude | `~/.claude/skills/` | `~/.claude/commands/` |
-| Codex | `~/.codex/skills/` | `~/.codex/prompts/` |
-| Gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
+| Amp | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
+| Cline | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
+| Codex | `~/.agents/skills/` | `~/.codex/prompts/` |
+| Cursor | `~/.agents/skills/` | `~/.cursor/commands/` |
+| Gemini | `~/.agents/skills/` | `~/.agents/commands/` |
+| GitHub Copilot | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
+| Kimi Code CLI | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
+| OpenCode | `~/.agents/skills/` | `~/.config/opencode/commands/` |
 | Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | Trae | `~/.trae/skills/` | `~/.trae/commands/` |
-| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
+
+### Universal 旧目录（仅告警，不自动迁移）
+
+- MCS 启动时会检测 Universal 平台的历史 skills 目录并告警。
+- MCS 不会自动迁移这些历史目录。
+- 常见历史目录：
+  - `~/.codex/skills/`
+  - `~/.cursor/skills/`
+  - `~/.copilot/skills/`
+  - `~/.kimi/skills/`
+  - `~/.amp/skills/`
+  - `~/.cline/skills/`
+  - `~/.config/opencode/skills/`
+
+手动迁移示例：
+
+```bash
+mkdir -p ~/.agents/skills
+cp -R ~/.codex/skills/* ~/.agents/skills/
+cp -R ~/.cursor/skills/* ~/.agents/skills/
+```
 
 ### MCS 技能存储模型
 

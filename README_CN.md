@@ -9,7 +9,11 @@ Claude Code 技能和提示词集合，用于增强 AI 辅助开发工作流。
 - 🎯 可复用的 AI 技能模块，覆盖前端设计、技术研究、文档生成等场景
 - 📦 统一的技能定义格式（`SKILL.md`），便于扩展和维护
 - 🔄 Rust TUI (`mcs/`) 交互式技能管理，跨平台支持
-- 🎛️ 多目标支持：Claude Code (`~/.claude/`), Codex CLI (`~/.codex/`), Gemini CLI (`~/.gemini/`), Qwen Code (`~/.qwen/`), Google Antigravity (`~/.gemini/antigravity/`) 和 Windsurf (`~/.codeium/windsurf/`)
+- 🎛️ 多目标支持：
+  - Claude Code (`~/.claude/`)
+  - Universal 共享 Skills 目录：`~/.agents/skills/`（Amp/Cline/Codex/Cursor/Gemini CLI/GitHub Copilot/Kimi Code CLI/OpenCode）
+  - Commands/Workflows 仍保持平台原路径（例如 Codex `~/.codex/prompts/`、OpenCode `~/.config/opencode/commands/`）
+  - Qwen Code (`~/.qwen/`)、Google Antigravity (`~/.gemini/antigravity/`)、Windsurf (`~/.codeium/windsurf/`)
 - ⚡ 斜杠命令，用于常见工作流（git commit 等）
 
 ## 前置要求
@@ -320,12 +324,15 @@ content/skills/<skill-name>/
 
 ## 常见问题
 
-**Q: Claude, Codex, Gemini, Qwen, Antigravity 和 Windsurf 目标有什么区别？**
+**Q: Claude、Universal 平台（Amp/Cline/Codex/Cursor/Gemini/Copilot/Kimi/OpenCode）、Qwen、Antigravity 和 Windsurf 目标有什么区别？**
 
 A: 目标决定了技能和命令安装的目录：
 - Claude: `~/.claude/skills/` 和 `~/.claude/commands/` (默认)
-- Codex: `~/.codex/skills/` 和 `~/.codex/prompts/`
-- Gemini: `~/.gemini/skills/` 和 `~/.gemini/commands/`
+- Amp/Cline/Codex/Cursor/Gemini/Copilot/Kimi/OpenCode: Skills 统一为 `~/.agents/skills/`
+- Codex: Commands `~/.codex/prompts/`
+- Cursor: Commands `~/.cursor/commands/`
+- Gemini: Commands `~/.agents/commands/`
+- OpenCode: Commands `~/.config/opencode/commands/`
 - Qwen: `~/.qwen/skills/` 和 `~/.qwen/commands/`
 - Antigravity: `~/.gemini/antigravity/skills/` 和 `~/.gemini/antigravity/workflows/`
 - Windsurf: `~/.codeium/windsurf/skills/` 和 `~/.codeium/windsurf/workflows/`

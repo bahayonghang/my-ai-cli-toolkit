@@ -4,7 +4,7 @@
 
 - Git
 - Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Codex CLI](https://github.com/openai/codex), [Gemini CLI](https://geminicli.com), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), or [OpenCode](https://opencode.ai/)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Amp](https://ampcode.com/), [Cline](https://cline.bot/), [Codex CLI](https://github.com/openai/codex), [Cursor](https://cursor.com/), [Gemini CLI](https://geminicli.com), [GitHub Copilot](https://github.com/features/copilot), [Kimi Code](https://www.moonshot.cn/), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), or [OpenCode](https://opencode.ai/)
 
 ## Clone Repository
 
@@ -135,13 +135,39 @@ uv run python src/install.py installed
 | Target | Skills Path | Commands/Workflows Path |
 |--------|-------------|-------------------------|
 | Claude | `~/.claude/skills/` | `~/.claude/commands/` |
-| Codex | `~/.codex/skills/` | `~/.codex/prompts/` |
-| Gemini | `~/.gemini/skills/` | `~/.gemini/commands/` |
+| Amp | `~/.agents/skills/` | N/A (skills-only in MCS) |
+| Cline | `~/.agents/skills/` | N/A (skills-only in MCS) |
+| Codex | `~/.agents/skills/` | `~/.codex/prompts/` |
+| Cursor | `~/.agents/skills/` | `~/.cursor/commands/` |
+| Gemini | `~/.agents/skills/` | `~/.agents/commands/` |
+| GitHub Copilot | `~/.agents/skills/` | N/A (skills-only in MCS) |
+| Kimi Code CLI | `~/.agents/skills/` | N/A (skills-only in MCS) |
+| OpenCode | `~/.agents/skills/` | `~/.config/opencode/commands/` |
 | Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
 | Trae | `~/.trae/skills/` | `~/.trae/commands/` |
-| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` |
+
+### Legacy Universal Skills Dirs (Manual Migration Only)
+
+- MCS only warns when it detects legacy per-platform skills dirs for Universal platforms.
+- MCS does **not** auto-migrate these directories.
+- Typical legacy directories:
+  - `~/.codex/skills/`
+  - `~/.cursor/skills/`
+  - `~/.copilot/skills/`
+  - `~/.kimi/skills/`
+  - `~/.amp/skills/`
+  - `~/.cline/skills/`
+  - `~/.config/opencode/skills/`
+
+Manual migration example:
+
+```bash
+mkdir -p ~/.agents/skills
+cp -R ~/.codex/skills/* ~/.agents/skills/
+cp -R ~/.cursor/skills/* ~/.agents/skills/
+```
 
 ### MCS Skill Storage Model
 
