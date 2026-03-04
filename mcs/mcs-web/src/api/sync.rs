@@ -27,37 +27,102 @@ pub async fn multi_sync(
         });
     }
 
-    let mut results = Vec::new();
-    let mut dedupe_cache: HashMap<String, CachedSkillInstall> = HashMap::new();
+    // 第一阶段：收集去重后的实际安装任务和复用映射
+    // (index, platform_name, item_name) → 需实际执行安装的任务
+    // (index) → 复用某个已安装结果的任务
+    struct InstallTask {
+        index: usize,
+        platform: PlatformConfig,
+        item_name: String,
+    }
+    struct ReusedTask {
+        index: usize,
+        item_name: String,
+        platform_name: String,
+        source_index: usize,
+    }
+
+    let mut install_tasks: Vec<InstallTask> = Vec::new();
+    let mut reused_tasks: Vec<ReusedTask> = Vec::new();
+    // skill 去重：相同 target_key 只安装一次
+    let mut dedupe_map: HashMap<String, usize> = HashMap::new();
+    let total_count = body.platform_names.len() * body.items.len();
+    let mut result_index = 0;
+
     for platform_name in &body.platform_names {
         let platform = platforms
             .get(platform_name)
             .ok_or_else(|| AppError::NotFound(format!("Platform '{platform_name}' not found")))?;
 
         for item_name in &body.items {
-            let result = match body.item_type {
+            match body.item_type {
                 ItemType::Skill => {
                     let key = skill_target_key(platform, item_name);
-                    if let Some(cached) = dedupe_cache.get(&key) {
-                        cached.reused_result(item_name, platform_name)
+                    if let Some(&source_idx) = dedupe_map.get(&key) {
+                        reused_tasks.push(ReusedTask {
+                            index: result_index,
+                            item_name: item_name.clone(),
+                            platform_name: platform_name.clone(),
+                            source_index: source_idx,
+                        });
                     } else {
-                        let installed = install_skill(&root, platform, item_name, LinkMode::Auto);
-                        dedupe_cache.insert(
-                            key,
-                            CachedSkillInstall {
-                                source_platform: platform_name.clone(),
-                                result: installed.clone(),
-                            },
-                        );
-                        installed
+                        dedupe_map.insert(key, result_index);
+                        install_tasks.push(InstallTask {
+                            index: result_index,
+                            platform: platform.clone(),
+                            item_name: item_name.clone(),
+                        });
                     }
                 }
-                ItemType::Command => install_command(&root, platform, item_name),
-            };
-            results.push(result);
+                ItemType::Command => {
+                    install_tasks.push(InstallTask {
+                        index: result_index,
+                        platform: platform.clone(),
+                        item_name: item_name.clone(),
+                    });
+                }
+            }
+            result_index += 1;
         }
     }
 
+    // 第二阶段：并行执行所有实际安装任务
+    let item_type = body.item_type;
+    let mut set = tokio::task::JoinSet::new();
+    for task in install_tasks {
+        let root = root.clone();
+        set.spawn_blocking(move || {
+            let result = match item_type {
+                ItemType::Skill => {
+                    install_skill(&root, &task.platform, &task.item_name, LinkMode::Auto)
+                }
+                ItemType::Command => install_command(&root, &task.platform, &task.item_name),
+            };
+            (task.index, result)
+        });
+    }
+
+    // 收集并行执行的结果
+    let mut results: Vec<Option<InstallResult>> = vec![None; total_count];
+    while let Some(res) = set.join_next().await {
+        let (idx, install_result) =
+            res.map_err(|e| AppError::Internal(format!("Sync task failed: {e}")))?;
+        results[idx] = Some(install_result);
+    }
+
+    // 第三阶段：填充复用结果
+    for reused in &reused_tasks {
+        if let Some(source_result) = results[reused.source_index].as_ref() {
+            let cached = CachedSkillInstall {
+                source_platform: String::new(), // 不需要 source_platform 因为下面直接用了
+                result: source_result.clone(),
+            };
+            results[reused.index] =
+                Some(cached.reused_result(&reused.item_name, &reused.platform_name));
+        }
+    }
+
+    let results: Vec<InstallResult> = results.into_iter().flatten().collect();
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 

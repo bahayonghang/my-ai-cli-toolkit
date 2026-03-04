@@ -1,13 +1,17 @@
 use axum::Json;
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 
 use mcs_core::config::platform::{
     PlatformDisplayOwned, is_universal_shared_skills_platform, platform_displays,
     universal_shared_skills_display_path,
 };
+use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 
 use crate::api::error::AppError;
-use crate::dto::{ApiResponse, CategoryDto, SimpleSuccess};
+use crate::dto::{
+    ApiResponse, CategoryDto, InstallTargetQuery, InstallTargetScopeDto, ResolvedInstallTargetDto,
+    SimpleSuccess,
+};
 use crate::state::AppState;
 
 /// GET /api/platforms — list all platforms with display info
@@ -41,12 +45,14 @@ pub async fn list(State(state): State<AppState>) -> Json<ApiResponse<Vec<Platfor
         if seen.contains(&id) {
             continue;
         }
+        // Filter out any platforms that belong to the universal shared group
+        // since they are now unified under the "gemini" / "Universal Agents" static card.
+        if is_universal_shared_skills_platform(&id) {
+            continue;
+        }
+
         if let Some(platform) = platforms.get(&id) {
-            let skills_path = if is_universal_shared_skills_platform(&id) {
-                universal_shared_skills_display_path().to_string()
-            } else {
-                platform.skills_display_path()
-            };
+            let skills_path = platform.skills_display_path();
             displays.push(PlatformDisplayOwned {
                 id: id.clone(),
                 name: id.clone(),
@@ -78,17 +84,74 @@ pub async fn get(
     Ok(Json(ApiResponse::ok(platform)))
 }
 
+/// POST /api/platforms/:id/install-target/resolve — validate + normalize install target
+pub async fn resolve_install_target(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(install_target): Json<crate::dto::InstallTargetDto>,
+) -> Result<Json<ApiResponse<ResolvedInstallTargetDto>>, AppError> {
+    let platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+
+    let access_mode = if matches!(install_target.scope, InstallTargetScopeDto::Project) {
+        InstallTargetAccessMode::Write
+    } else {
+        InstallTargetAccessMode::Read
+    };
+
+    let resolved = resolve_target_platform(&platform, &install_target.to_core(), access_mode)
+        .map_err(AppError::BadRequest)?;
+
+    let project_path = resolved
+        .normalized_project_path
+        .as_ref()
+        .map(|p| p.to_string_lossy().into_owned());
+
+    Ok(Json(ApiResponse::ok(ResolvedInstallTargetDto {
+        scope: InstallTargetScopeDto::from_core(resolved.scope),
+        project_path,
+        base_dir: resolved.platform.base_path().to_string_lossy().into_owned(),
+        skills_path: resolved
+            .platform
+            .skills_path()
+            .to_string_lossy()
+            .into_owned(),
+        commands_path: resolved
+            .platform
+            .commands_path()
+            .to_string_lossy()
+            .into_owned(),
+    })))
+}
+
 /// GET /api/platforms/:id/categories — categories with item counts
 pub async fn categories(
     State(state): State<AppState>,
     Path(id): Path<String>,
+    Query(target_query): Query<InstallTargetQuery>,
 ) -> Result<Json<ApiResponse<Vec<CategoryDto>>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
 
-    let skills = state.skills(&id).await;
-    let commands = state.commands(&id).await;
+    let install_target = target_query.to_install_target();
+    let (skills, commands) = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        (state.skills(&id).await, state.commands(&id).await)
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        (
+            state.skills_for_platform_config(&resolved.platform).await,
+            state.commands_for_platform_config(&resolved.platform).await,
+        )
+    };
 
     let mut skill_cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
     for item in skills.iter() {

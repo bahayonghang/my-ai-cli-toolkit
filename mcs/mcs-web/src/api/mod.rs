@@ -24,6 +24,10 @@ pub fn router() -> Router<AppState> {
         .route("/api/refresh", axum::routing::post(platforms::refresh))
         .route("/api/platforms/{id}", axum::routing::get(platforms::get))
         .route(
+            "/api/platforms/{id}/install-target/resolve",
+            axum::routing::post(platforms::resolve_install_target),
+        )
+        .route(
             "/api/platforms/{id}/categories",
             axum::routing::get(platforms::categories),
         )

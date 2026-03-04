@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use mcs_core::core::install_target::{InstallTarget, InstallTargetScope};
 use mcs_core::model::{InstallResult, InstallStatus, ItemType, LinkMode};
 
 // ── Response envelope ──────────────────────────────────────────────
@@ -36,6 +37,69 @@ pub struct InstallRequest {
     pub names: Vec<String>,
     #[serde(default)]
     pub link_mode: LinkMode,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+}
+
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum InstallTargetScopeDto {
+    #[default]
+    Global,
+    Project,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct InstallTargetDto {
+    #[serde(default)]
+    pub scope: InstallTargetScopeDto,
+    #[serde(default)]
+    pub project_path: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct InstallTargetQuery {
+    pub target_scope: Option<InstallTargetScopeDto>,
+    pub project_path: Option<String>,
+}
+
+impl InstallTargetQuery {
+    pub fn to_install_target(&self) -> InstallTargetDto {
+        let scope = match self.target_scope {
+            Some(scope) => scope,
+            None if self.project_path.is_some() => InstallTargetScopeDto::Project,
+            None => InstallTargetScopeDto::Global,
+        };
+        InstallTargetDto {
+            scope,
+            project_path: self.project_path.clone(),
+        }
+    }
+}
+
+impl InstallTargetDto {
+    pub fn to_core(&self) -> InstallTarget {
+        InstallTarget {
+            scope: self.scope.to_core(),
+            project_path: self.project_path.clone(),
+        }
+    }
+}
+
+impl InstallTargetScopeDto {
+    pub fn to_core(self) -> InstallTargetScope {
+        match self {
+            InstallTargetScopeDto::Global => InstallTargetScope::Global,
+            InstallTargetScopeDto::Project => InstallTargetScope::Project,
+        }
+    }
+
+    pub fn from_core(scope: InstallTargetScope) -> Self {
+        match scope {
+            InstallTargetScope::Global => InstallTargetScopeDto::Global,
+            InstallTargetScope::Project => InstallTargetScopeDto::Project,
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -52,6 +116,8 @@ pub struct ItemQuery {
     pub search: Option<String>,
     pub category: Option<String>,
     pub status: Option<InstallStatus>,
+    #[serde(flatten)]
+    pub install_target: InstallTargetQuery,
 }
 
 // ── Response DTOs ──────────────────────────────────────────────────
@@ -145,6 +211,8 @@ pub struct EditContentRequest {
 pub struct ExternalInstallRequest {
     pub skill_name: String,
     pub method: ExternalInstallMethod,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
 }
 
 #[derive(Deserialize)]
@@ -158,6 +226,15 @@ pub enum ExternalInstallMethod {
 pub struct ExternalInstallResult {
     pub success: bool,
     pub output: String,
+}
+
+#[derive(Serialize)]
+pub struct ResolvedInstallTargetDto {
+    pub scope: InstallTargetScopeDto,
+    pub project_path: Option<String>,
+    pub base_dir: String,
+    pub skills_path: String,
+    pub commands_path: String,
 }
 
 #[derive(Serialize)]

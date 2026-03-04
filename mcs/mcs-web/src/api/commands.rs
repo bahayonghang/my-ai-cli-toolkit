@@ -2,10 +2,13 @@ use axum::Json;
 use axum::extract::{Path, Query, State};
 use std::path::PathBuf;
 
+use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 use mcs_core::core::installer::{install_command, uninstall_command};
 
 use crate::api::error::AppError;
-use crate::dto::{ApiResponse, BatchResultDto, DiffDto, InstallRequest, ItemDto, ItemQuery};
+use crate::dto::{
+    ApiResponse, BatchResultDto, DiffDto, InstallRequest, InstallTargetScopeDto, ItemDto, ItemQuery,
+};
 use crate::state::AppState;
 
 /// GET /api/platforms/:id/commands — list commands with optional filters
@@ -14,11 +17,23 @@ pub async fn list(
     Path(id): Path<String>,
     Query(query): Query<ItemQuery>,
 ) -> Result<Json<ApiResponse<Vec<ItemDto>>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.install_target.to_install_target();
 
-    let commands = state.commands(&id).await;
+    let commands = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        state.commands(&id).await
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        state.commands_for_platform_config(&resolved.platform).await
+    };
     let filtered: Vec<ItemDto> = commands
         .into_iter()
         .filter(|item| {
@@ -97,21 +112,39 @@ pub async fn install(
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
     let root = state.project_root().await;
-    let platform = state
+    let base_platform = state
         .platform(&id)
         .await
         .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = body.install_target.clone();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Write,
+    )
+    .map_err(AppError::BadRequest)?;
+    let platform = resolved.platform;
+    let should_invalidate_global = matches!(install_target.scope, InstallTargetScopeDto::Global);
 
-    let mut results = Vec::new();
-    for name in &body.names {
-        results.push(install_command(&root, &platform, name));
+    // 并行安装
+    let mut set = tokio::task::JoinSet::new();
+    for name in body.names.clone() {
+        let root = root.clone();
+        let platform = platform.clone();
+        set.spawn_blocking(move || install_command(&root, &platform, &name));
+    }
+    let mut results = Vec::with_capacity(body.names.len());
+    while let Some(res) = set.join_next().await {
+        results.push(res.map_err(|e| AppError::Internal(format!("Install task failed: {e}")))?);
     }
 
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 
     // Invalidate cache after mutation
-    state.invalidate_platform(&id).await;
+    if should_invalidate_global {
+        state.invalidate_platform(&id).await;
+    }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
         results,
@@ -126,21 +159,38 @@ pub async fn uninstall(
     Path(id): Path<String>,
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
-    let platform = state
+    let base_platform = state
         .platform(&id)
         .await
         .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = body.install_target.clone();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Write,
+    )
+    .map_err(AppError::BadRequest)?;
+    let platform = resolved.platform;
+    let should_invalidate_global = matches!(install_target.scope, InstallTargetScopeDto::Global);
 
-    let mut results = Vec::new();
-    for name in &body.names {
-        results.push(uninstall_command(&platform, name));
+    // 并行卸载
+    let mut set = tokio::task::JoinSet::new();
+    for name in body.names.clone() {
+        let platform = platform.clone();
+        set.spawn_blocking(move || uninstall_command(&platform, &name));
+    }
+    let mut results = Vec::with_capacity(body.names.len());
+    while let Some(res) = set.join_next().await {
+        results.push(res.map_err(|e| AppError::Internal(format!("Uninstall task failed: {e}")))?);
     }
 
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 
     // Invalidate cache after mutation
-    state.invalidate_platform(&id).await;
+    if should_invalidate_global {
+        state.invalidate_platform(&id).await;
+    }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
         results,

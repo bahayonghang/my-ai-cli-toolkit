@@ -130,6 +130,33 @@ impl AppState {
             .unwrap_or_default()
     }
 
+    /// Resolve skills using an ad-hoc platform config without binding to platform-id cache.
+    pub async fn skills_for_platform_config(&self, platform: &PlatformConfig) -> Vec<ItemInfo> {
+        let root = self.project_root().await;
+        let sources = {
+            let cache_read = self.cache.read().await;
+            if !cache_read.skill_sources.is_empty() {
+                cache_read.skill_sources.clone()
+            } else {
+                drop(cache_read);
+                discover_skill_sources(&root)
+            }
+        };
+        let skills = resolve_skills_for_platform(&sources, platform);
+
+        let mut cache = self.cache.write().await;
+        if cache.skill_sources.is_empty() {
+            cache.skill_sources = sources;
+        }
+        skills
+    }
+
+    /// Resolve commands using an ad-hoc platform config without binding to platform-id cache.
+    pub async fn commands_for_platform_config(&self, platform: &PlatformConfig) -> Vec<ItemInfo> {
+        let root = self.project_root().await;
+        discover_commands(&root, platform)
+    }
+
     /// Pre-warm cache for all platforms (call at startup).
     ///
     /// Scans source skills ONCE and resolves per-platform status efficiently.
@@ -142,15 +169,25 @@ impl AppState {
         // Scan source skills once (the expensive part — directory walking + frontmatter parsing)
         let skill_sources = discover_skill_sources(&root);
 
-        // Resolve per-platform status (fast — only checks target directories)
+        // 并行 resolve 每个平台的 skills 和 commands 状态
+        let mut set = tokio::task::JoinSet::new();
+        for (id, platform) in platforms {
+            let sources = skill_sources.clone();
+            let root = root.clone();
+            set.spawn_blocking(move || {
+                let skills = resolve_skills_for_platform(&sources, &platform);
+                let commands = discover_commands(&root, &platform);
+                (id, skills, commands)
+            });
+        }
+
         let mut skills_map = HashMap::new();
         let mut commands_map = HashMap::new();
-        for (id, platform) in &platforms {
-            skills_map.insert(
-                id.clone(),
-                resolve_skills_for_platform(&skill_sources, platform),
-            );
-            commands_map.insert(id.clone(), discover_commands(&root, platform));
+        while let Some(res) = set.join_next().await {
+            if let Ok((id, skills, commands)) = res {
+                skills_map.insert(id.clone(), skills);
+                commands_map.insert(id, commands);
+            }
         }
 
         let mut cache = self.cache.write().await;
@@ -193,15 +230,27 @@ impl AppState {
         let sources = cache_read.skill_sources.clone();
         drop(cache_read);
 
-        let mut cache = self.cache.write().await;
+        // 并行 resolve 所有受影响平台的状态
+        let mut set = tokio::task::JoinSet::new();
         for pid in platform_ids {
             if let Some(platform) = all_platforms.get(pid) {
-                cache
-                    .skills
-                    .insert(pid.clone(), resolve_skills_for_platform(&sources, platform));
-                cache
-                    .commands
-                    .insert(pid.clone(), discover_commands(&root, platform));
+                let pid = pid.clone();
+                let sources = sources.clone();
+                let root = root.clone();
+                let platform = platform.clone();
+                set.spawn_blocking(move || {
+                    let skills = resolve_skills_for_platform(&sources, &platform);
+                    let commands = discover_commands(&root, &platform);
+                    (pid, skills, commands)
+                });
+            }
+        }
+
+        let mut cache = self.cache.write().await;
+        while let Some(res) = set.join_next().await {
+            if let Ok((pid, skills, commands)) = res {
+                cache.skills.insert(pid.clone(), skills);
+                cache.commands.insert(pid, commands);
             }
         }
     }

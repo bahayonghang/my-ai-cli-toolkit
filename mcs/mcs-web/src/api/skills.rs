@@ -3,13 +3,14 @@ use axum::extract::{Path, Query, State};
 use std::path::PathBuf;
 use std::time::Duration;
 
+use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 use mcs_core::core::installer::{install_skill, uninstall_skill};
 
 use crate::api::error::AppError;
 use crate::dto::{
     ApiResponse, BatchResultDto, DiffDto, EditContentRequest, ExternalInstallMethod,
-    ExternalInstallRequest, ExternalInstallResult, InstallRequest, ItemDetailDto, ItemDto,
-    ItemQuery, SimpleSuccess,
+    ExternalInstallRequest, ExternalInstallResult, InstallRequest, InstallTargetScopeDto,
+    ItemDetailDto, ItemDto, ItemQuery, SimpleSuccess,
 };
 use crate::state::AppState;
 
@@ -21,12 +22,23 @@ pub async fn list(
     Path(id): Path<String>,
     Query(query): Query<ItemQuery>,
 ) -> Result<Json<ApiResponse<Vec<ItemDto>>>, AppError> {
-    // Validate platform exists
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.install_target.to_install_target();
 
-    let skills = state.skills(&id).await;
+    let skills = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        state.skills(&id).await
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        state.skills_for_platform_config(&resolved.platform).await
+    };
     let filtered = filter_items(skills, &query);
 
     Ok(Json(ApiResponse::ok(filtered)))
@@ -101,21 +113,40 @@ pub async fn install(
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
     let root = state.project_root().await;
-    let platform = state
+    let base_platform = state
         .platform(&id)
         .await
         .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = body.install_target.clone();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Write,
+    )
+    .map_err(AppError::BadRequest)?;
+    let platform = resolved.platform;
+    let should_invalidate_global = matches!(install_target.scope, InstallTargetScopeDto::Global);
 
-    let mut results = Vec::new();
-    for name in &body.names {
-        results.push(install_skill(&root, &platform, name, body.link_mode));
+    // 并行安装：每个 skill 使用独立的 spawn_blocking 任务
+    let mut set = tokio::task::JoinSet::new();
+    for name in body.names.clone() {
+        let root = root.clone();
+        let platform = platform.clone();
+        let link_mode = body.link_mode;
+        set.spawn_blocking(move || install_skill(&root, &platform, &name, link_mode));
+    }
+    let mut results = Vec::with_capacity(body.names.len());
+    while let Some(res) = set.join_next().await {
+        results.push(res.map_err(|e| AppError::Internal(format!("Install task failed: {e}")))?);
     }
 
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 
     // Invalidate cache (including platforms sharing the same skills path)
-    invalidate_platform_and_shared_skills(&state, &id).await;
+    if should_invalidate_global {
+        invalidate_platform_and_shared_skills(&state, &id).await;
+    }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
         results,
@@ -130,21 +161,38 @@ pub async fn uninstall(
     Path(id): Path<String>,
     Json(body): Json<InstallRequest>,
 ) -> Result<Json<ApiResponse<BatchResultDto>>, AppError> {
-    let platform = state
+    let base_platform = state
         .platform(&id)
         .await
         .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = body.install_target.clone();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Write,
+    )
+    .map_err(AppError::BadRequest)?;
+    let platform = resolved.platform;
+    let should_invalidate_global = matches!(install_target.scope, InstallTargetScopeDto::Global);
 
-    let mut results = Vec::new();
-    for name in &body.names {
-        results.push(uninstall_skill(&platform, name));
+    // 并行卸载
+    let mut set = tokio::task::JoinSet::new();
+    for name in body.names.clone() {
+        let platform = platform.clone();
+        set.spawn_blocking(move || uninstall_skill(&platform, &name));
+    }
+    let mut results = Vec::with_capacity(body.names.len());
+    while let Some(res) = set.join_next().await {
+        results.push(res.map_err(|e| AppError::Internal(format!("Uninstall task failed: {e}")))?);
     }
 
     let success_count = results.iter().filter(|r| r.success).count();
     let failure_count = results.len() - success_count;
 
     // Invalidate cache (including platforms sharing the same skills path)
-    invalidate_platform_and_shared_skills(&state, &id).await;
+    if should_invalidate_global {
+        invalidate_platform_and_shared_skills(&state, &id).await;
+    }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
         results,
@@ -281,6 +329,12 @@ pub async fn external_install(
 ) -> Result<Json<ApiResponse<ExternalInstallResult>>, AppError> {
     if state.platform(&id).await.is_none() {
         return Err(AppError::NotFound(format!("Platform '{id}' not found")));
+    }
+
+    if matches!(body.install_target.scope, InstallTargetScopeDto::Project) {
+        return Err(AppError::BadRequest(
+            "External install is disabled in project install mode".into(),
+        ));
     }
 
     let args: Vec<String> = match body.method {
