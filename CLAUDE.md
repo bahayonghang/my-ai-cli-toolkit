@@ -40,6 +40,12 @@ just rust-test          # cargo test (runs from mcs/)
 just ts-check           # TypeScript type check (mcs-web frontend)
 ```
 
+To run a single Rust test:
+```bash
+cd mcs && cargo test <test_name>           # e.g. cargo test resolve_global_returns_original_platform
+cd mcs && cargo test -p mcs-core <name>   # target a specific crate
+```
+
 ## Architecture
 
 ### Content (`content/`)
@@ -48,7 +54,7 @@ The installable content, organized by type:
 - **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
 - **`content/agents/`** — AI agent definitions (CCW and specialist agents).
 - **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).
-- **`content/external-skills/`** — Registry and installer for npm/pip/git-sourced skills.
+- **`content/external-skills/`** — Registry (`registry.toml`) and Python installer (`install.py`) for npm/npx/pip/git/vercel-sourced skills. Usage: `python install.py list | agents | install <skill> --target <platform> | check <skill> | info <skill>`.
 
 ### MCS Rust Workspace (`mcs/`)
 Cargo workspace with three crates:
@@ -57,8 +63,11 @@ Cargo workspace with three crates:
 - `config/platform.rs` — `PlatformConfig` struct + 3-tier config loading: `defaults → platforms.toml → ~/.config/myclaude/platforms.toml`. Each platform defines `base_dir`, `skills_subdir`, `commands_subdir`, and an optional `prompt_file`.
 - `core/discovery.rs` — Scans the content directory for skills and commands, computes `InstallStatus` (Installed / NotInstalled / Outdated via mtime comparison).
 - `core/installer.rs` — Copies/removes skills and commands to platform directories.
+- `core/install_target.rs` — `InstallTarget` with `scope: Global | Project`. Global installs go to the platform's `base_dir`; Project installs resolve to `<project_path>/.<platform>` (with special mappings: `opencode` → `.opencode`, `antigravity` → `.gemini/antigravity`, `windsurf` → `.codeium/windsurf`).
+- `core/skill_store.rs` — Local skill cache at `~/.mcs/skills/`. Installs via symlink (preferred) with copy fallback (`SkillInstallMode`). Used by the migration and external skill systems.
+- `core/skill_migration.rs` — One-shot migration (`skills-symlink-v1`) that converts skills previously copied into the store to symlinks for deduplication.
 - `core/skill_meta.rs` — Parses `SKILL.md` metadata (name, description, tags, category).
-- `model.rs` — Core types: `ItemInfo`, `ItemType`, `InstallStatus`, `InstallResult`.
+- `model.rs` — Core types: `ItemInfo`, `ItemType`, `InstallStatus`, `InstallResult`, `LinkMode`.
 
 **`mcs-tui`** (binary) — Terminal UI built with `ratatui`/`crossterm`:
 - `tui/screens/` — Screen state machines (platform select, skill list, install, etc.)
