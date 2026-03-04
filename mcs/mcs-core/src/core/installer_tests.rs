@@ -6,6 +6,7 @@ use crate::core::installer::{install_skill, uninstall_skill, validate_item_name}
 use crate::core::skill_store::{
     TEST_SERIAL_MUTEX, canonical_skill_path, set_force_symlink_failure, set_test_mcs_root,
 };
+use crate::model::LinkMode;
 
 struct TestEnv {
     root: PathBuf,
@@ -79,7 +80,7 @@ fn install_skill_uses_symlink_by_default() {
     let platform = env.platform();
     env.add_source_skill("demo-skill", "demo");
 
-    let result = install_skill(&env.project_root(), &platform, "demo-skill");
+    let result = install_skill(&env.project_root(), &platform, "demo-skill", LinkMode::Auto);
 
     assert!(result.success, "{result:?}");
     assert!(result.message.contains("(symlink)"));
@@ -101,7 +102,7 @@ fn install_skill_falls_back_to_copy_when_symlink_unavailable() {
     env.add_source_skill("copy-skill", "copy");
     set_force_symlink_failure(true);
 
-    let result = install_skill(&env.project_root(), &platform, "copy-skill");
+    let result = install_skill(&env.project_root(), &platform, "copy-skill", LinkMode::Auto);
     let installed = platform.skills_path().join("copy-skill").join("SKILL.md");
 
     assert!(result.success, "{result:?}");
@@ -117,7 +118,12 @@ fn uninstall_skill_removes_target_but_keeps_canonical_copy() {
     let env = TestEnv::new("uninstall");
     let platform = env.platform();
     env.add_source_skill("keep-canonical", "keep");
-    let _ = install_skill(&env.project_root(), &platform, "keep-canonical");
+    let _ = install_skill(
+        &env.project_root(),
+        &platform,
+        "keep-canonical",
+        LinkMode::Auto,
+    );
 
     let result = uninstall_skill(&platform, "keep-canonical");
 

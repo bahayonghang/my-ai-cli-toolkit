@@ -3,6 +3,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use crate::config::paths::home_dir;
+use crate::model::LinkMode;
 
 const MCS_DIR: &str = ".mcs";
 const SKILLS_DIR: &str = "skills";
@@ -111,14 +112,29 @@ pub fn try_symlink_dir(src: &Path, dst: &Path) -> io::Result<()> {
     symlink_dir(src, dst)
 }
 
-pub fn link_or_copy_dir(canonical: &Path, target: &Path) -> io::Result<SkillInstallMode> {
+pub fn link_or_copy_dir(
+    canonical: &Path,
+    target: &Path,
+    mode: LinkMode,
+) -> io::Result<SkillInstallMode> {
     remove_path_any(target)?;
-    match try_symlink_dir(canonical, target) {
-        Ok(()) => Ok(SkillInstallMode::Symlink),
-        Err(_) => {
+    match mode {
+        LinkMode::Copy => {
             copy_dir_replace(canonical, target)?;
             Ok(SkillInstallMode::CopyFallback)
         }
+        LinkMode::Symlink => {
+            // Force symlink — propagate error directly, no silent fallback.
+            try_symlink_dir(canonical, target)?;
+            Ok(SkillInstallMode::Symlink)
+        }
+        LinkMode::Auto => match try_symlink_dir(canonical, target) {
+            Ok(()) => Ok(SkillInstallMode::Symlink),
+            Err(_) => {
+                copy_dir_replace(canonical, target)?;
+                Ok(SkillInstallMode::CopyFallback)
+            }
+        },
     }
 }
 

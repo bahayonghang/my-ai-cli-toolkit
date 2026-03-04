@@ -8,7 +8,7 @@ use crate::core::fs_utils::walkdir_files;
 use crate::core::skill_store::{
     SkillInstallMode, canonical_skill_path, copy_dir_replace, link_or_copy_dir, remove_path_any,
 };
-use crate::model::{InstallResult, ItemType};
+use crate::model::{InstallResult, ItemType, LinkMode};
 
 fn validate_item_name(name: &str) -> Result<(), String> {
     if name.trim().is_empty() {
@@ -57,7 +57,12 @@ fn find_skill_src(project_root: &Path, name: &str) -> Option<PathBuf> {
         .find(|path| path.file_name().map(|file| file == name).unwrap_or(false))
 }
 
-pub fn install_skill(project_root: &Path, platform: &PlatformConfig, name: &str) -> InstallResult {
+pub fn install_skill(
+    project_root: &Path,
+    platform: &PlatformConfig,
+    name: &str,
+    link_mode: LinkMode,
+) -> InstallResult {
     if let Err(e) = validate_item_name(name) {
         return install_result_error(name, format!("Invalid skill name: {name}"), e);
     }
@@ -90,7 +95,7 @@ pub fn install_skill(project_root: &Path, platform: &PlatformConfig, name: &str)
         );
     }
 
-    match link_or_copy_dir(&canonical, &target) {
+    match link_or_copy_dir(&canonical, &target, link_mode) {
         Ok(SkillInstallMode::Symlink) => InstallResult {
             success: true,
             item_name: name.into(),
@@ -100,7 +105,10 @@ pub fn install_skill(project_root: &Path, platform: &PlatformConfig, name: &str)
         Ok(SkillInstallMode::CopyFallback) => InstallResult {
             success: true,
             item_name: name.into(),
-            message: format!("Installed {name} (copy fallback: symlink unavailable)"),
+            message: match link_mode {
+                LinkMode::Copy => format!("Installed {name} (copy)"),
+                _ => format!("Installed {name} (copy fallback)"),
+            },
             error: None,
         },
         Err(e) => InstallResult {
@@ -256,9 +264,10 @@ pub fn install_item(
     platform: &PlatformConfig,
     name: &str,
     item_type: ItemType,
+    link_mode: LinkMode,
 ) -> InstallResult {
     match item_type {
-        ItemType::Skill => install_skill(project_root, platform, name),
+        ItemType::Skill => install_skill(project_root, platform, name, link_mode),
         ItemType::Command => install_command(project_root, platform, name),
     }
 }

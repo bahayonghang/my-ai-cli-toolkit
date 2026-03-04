@@ -8,6 +8,7 @@ use crate::config::platform::PlatformConfig;
 use crate::core::skill_store::{
     SkillInstallMode, canonical_meta_root, canonical_skill_path, copy_dir_replace, link_or_copy_dir,
 };
+use crate::model::LinkMode;
 
 const MIGRATION_ID: &str = "skills-symlink-v1";
 const SKILL_FILE: &str = "SKILL.md";
@@ -113,7 +114,7 @@ fn migrate_single_skill(
     summary.migrated_skills += 1;
 
     for install in installs {
-        match link_or_copy_dir(&canonical_path, &install.installed_path)? {
+        match link_or_copy_dir(&canonical_path, &install.installed_path, LinkMode::Auto)? {
             SkillInstallMode::Symlink => {}
             SkillInstallMode::CopyFallback => summary.copy_fallbacks += 1,
         }

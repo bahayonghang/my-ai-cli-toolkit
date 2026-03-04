@@ -3,6 +3,20 @@ use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
 
+/// User-facing preference for how a skill directory is linked to the platform target.
+/// Distinct from `SkillInstallMode` which records the *result* of an install operation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum LinkMode {
+    /// Try symlink first; fall back to copy if symlink is unsupported (default / backward-compatible).
+    #[default]
+    Auto,
+    /// Force symlink; return an error if symlinks are unsupported — no silent fallback.
+    Symlink,
+    /// Always copy the directory; never create a symlink.
+    Copy,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ItemType {
