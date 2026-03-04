@@ -32,16 +32,19 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
 import HomeIcon from "@mui/icons-material/Home";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import { useItemStore } from "@/stores/itemStore";
 import { uninstallSkills, installSkills } from "@/api/client";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
+import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { SkillEditorDrawer } from "@/components/dialogs/SkillEditorDrawer";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+import { useInstallTarget } from "@/hooks/useInstallTarget";
 
 export default function InstalledSkillsPage() {
   const { t } = useI18n();
@@ -71,6 +74,16 @@ export default function InstalledSkillsPage() {
   // Dialog state
   const [editName, setEditName] = useState<string | null>(null);
   const [deleteName, setDeleteName] = useState<string | null>(null);
+  const {
+    loading: installTargetLoading,
+    dialogOpen: installTargetDialogOpen,
+    target: installTarget,
+    resolvedTarget,
+    recentProjects,
+    openDialog: openInstallTargetDialog,
+    closeDialog: closeInstallTargetDialog,
+    applyTarget: applyInstallTarget,
+  } = useInstallTarget(platformId);
 
   useEffect(() => {
     fetchPlatforms();
@@ -87,13 +100,15 @@ export default function InstalledSkillsPage() {
   }, [platformId, setSearch, setCategory]);
 
   useEffect(() => {
-    if (!platformId) {
+    if (!platformId || !resolvedTarget) {
       return;
     }
-    fetchItems(platformId);
-    fetchCategories(platformId);
+    fetchItems(platformId, installTarget);
+    fetchCategories(platformId, installTarget);
   }, [
     platformId,
+    resolvedTarget,
+    installTarget,
     search,
     selectedCategory,
     fetchItems,
@@ -105,12 +120,12 @@ export default function InstalledSkillsPage() {
     const nameToDelete = deleteName;
     setDeleteName(null);
     try {
-      await uninstallSkills(platformId, [nameToDelete]);
+      await uninstallSkills(platformId, [nameToDelete], installTarget);
       showNotification(
         t("installed.uninstalledNotification", { name: nameToDelete }),
         "success"
       );
-      await refresh(platformId);
+      await refresh(platformId, installTarget);
     } catch (e) {
       showNotification((e as Error).message, "error");
     }
@@ -119,12 +134,12 @@ export default function InstalledSkillsPage() {
   const handleReinstall = async (name: string) => {
     if (!platformId) return;
     try {
-      await installSkills(platformId, [name]);
+      await installSkills(platformId, [name], "auto", installTarget);
       showNotification(
         t("installed.reinstalledNotification", { name }),
         "success"
       );
-      await refresh(platformId);
+      await refresh(platformId, installTarget);
     } catch (e) {
       showNotification(
         t("installed.reinstallFailed", { error: (e as Error).message }),
@@ -135,6 +150,7 @@ export default function InstalledSkillsPage() {
   const skillCategories = categories
     .filter((category) => category.item_type === "skill")
     .map((category) => category.name);
+  const pageLoading = loading || installTargetLoading || !resolvedTarget;
 
   return (
     <Box
@@ -158,9 +174,36 @@ export default function InstalledSkillsPage() {
               <HomeIcon />
             </IconButton>
           </Tooltip>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-            {platform?.icon} {platform?.name ?? platformId}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1, minWidth: 0 }}>
+            <Typography variant="h6" noWrap>
+              {platform?.icon} {platform?.name ?? platformId}
+            </Typography>
+            <Tooltip
+              title={
+                resolvedTarget?.skills_path ??
+                t("installed.installTargetLoading")
+              }
+            >
+              <Chip
+                icon={<FolderOpenOutlinedIcon />}
+                variant="outlined"
+                size="small"
+                color="info"
+                clickable
+                onClick={openInstallTargetDialog}
+                label={t("installed.installTargetChip", {
+                  mode:
+                    installTarget.scope === "project"
+                      ? t("installed.installTargetProject")
+                      : t("installed.installTargetGlobal"),
+                  path:
+                    resolvedTarget?.skills_path ??
+                    t("installed.installTargetLoading"),
+                })}
+                sx={{ "& .MuiChip-label": { whiteSpace: "nowrap" } }}
+              />
+            </Tooltip>
+          </Box>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -254,7 +297,7 @@ export default function InstalledSkillsPage() {
             </Alert>
           )}
 
-          {loading ? (
+          {pageLoading ? (
             <Box display="flex" justifyContent="center" py={8}>
               <CircularProgress />
             </Box>
@@ -392,10 +435,19 @@ export default function InstalledSkillsPage() {
               "success"
             );
             setEditName(null);
-            refresh(platformId);
+            refresh(platformId, installTarget);
           }}
         />
       )}
+
+      <InstallTargetDialog
+        open={installTargetDialogOpen}
+        loading={installTargetLoading}
+        currentTarget={installTarget}
+        recentProjects={recentProjects}
+        onClose={closeInstallTargetDialog}
+        onApply={applyInstallTarget}
+      />
 
       {/* Delete Confirm Dialog */}
       <ConfirmDialog

@@ -1,6 +1,7 @@
 export const enCommonMessages = {
   "common.home": "Home",
   "common.cancel": "Cancel",
+  "common.apply": "Apply",
   "common.close": "Close",
   "common.confirm": "Confirm",
   "common.search": "Search",
@@ -38,6 +39,7 @@ export const zhCommonMessages: Record<
 > = {
   "common.home": "首页",
   "common.cancel": "取消",
+  "common.apply": "应用",
   "common.close": "关闭",
   "common.confirm": "确认",
   "common.search": "搜索",

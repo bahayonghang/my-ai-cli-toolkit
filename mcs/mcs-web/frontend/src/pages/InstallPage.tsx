@@ -48,6 +48,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import HomeIcon from "@mui/icons-material/Home";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import FolderIcon from "@mui/icons-material/Folder";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -68,11 +69,13 @@ import {
   externalInstallSkill,
 } from "@/api/client";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
+import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+import { useInstallTarget } from "@/hooks/useInstallTarget";
 import ReactMarkdown from "react-markdown";
-import type { ItemDto, InstallStatus, CategoryDto, ItemDetailDto } from "@/types";
+import type { ItemDto, InstallStatus, CategoryDto, ItemDetailDto, InstallTarget } from "@/types";
 
 // ── Types & Constants ────────────────────────────────────────────────
 
@@ -1105,10 +1108,14 @@ function SkillDetailDialog({
 function ExternalInstallPanel({
   platformId,
   sourceMode,
+  installTarget,
+  disabledInProject,
   showNotification,
 }: {
   platformId: string;
   sourceMode: "vercel" | "playbooks";
+  installTarget: InstallTarget;
+  disabledInProject: boolean;
   showNotification: (msg: string, sev: "success" | "error" | "warning") => void;
 }) {
   const { t } = useI18n();
@@ -1133,7 +1140,8 @@ function ExternalInstallPanel({
       const result = await externalInstallSkill(
         platformId,
         extSkillName.trim(),
-        extMethod
+        extMethod,
+        installTarget
       );
       setExtOutput(result.output);
       setExtSuccess(result.success);
@@ -1193,6 +1201,12 @@ function ExternalInstallPanel({
           </Box>
 
           <Stack spacing={2.5}>
+            {disabledInProject && (
+              <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                {t("install.externalInstallDisabledInProject")}
+              </Alert>
+            )}
+
             <TextField
               label={t("install.skillNameLabel")}
               placeholder={t("install.skillNamePlaceholder")}
@@ -1200,6 +1214,7 @@ function ExternalInstallPanel({
               onChange={(e) => setExtSkillName(e.target.value)}
               fullWidth
               size="small"
+              disabled={disabledInProject}
               onKeyDown={(e) => e.key === "Enter" && handleExternalInstall()}
             />
 
@@ -1213,6 +1228,7 @@ function ExternalInstallPanel({
                   setExtMethod(e.target.value as "vercel" | "playbooks")
                 }
                 row
+                sx={{ opacity: disabledInProject ? 0.6 : 1 }}
               >
                 <FormControlLabel
                   value="vercel"
@@ -1257,7 +1273,7 @@ function ExternalInstallPanel({
                 )
               }
               onClick={handleExternalInstall}
-              disabled={!extSkillName.trim() || extLoading}
+              disabled={!extSkillName.trim() || extLoading || disabledInProject}
               sx={{ alignSelf: "flex-start", borderRadius: 2 }}
             >
               {t("common.install")}
@@ -1316,6 +1332,16 @@ export default function InstallPage() {
   );
   const { fetchPlatforms } = usePlatformStore();
   const { colorMode, toggleColorMode, showNotification } = useUiStore();
+  const {
+    loading: installTargetLoading,
+    dialogOpen: installTargetDialogOpen,
+    target: installTarget,
+    resolvedTarget,
+    recentProjects,
+    openDialog: openInstallTargetDialog,
+    closeDialog: closeInstallTargetDialog,
+    applyTarget: applyInstallTarget,
+  } = useInstallTarget(platformId);
 
   // Source mode (replaces tabs)
   const [sourceMode, setSourceMode] = useState<SourceMode>("local");
@@ -1339,13 +1365,14 @@ export default function InstallPage() {
   }, [fetchPlatforms]);
 
   const fetchSkills = useCallback(async () => {
-    if (!platformId) return;
+    if (!platformId || !resolvedTarget) return;
     setLoading(true);
     setError(null);
     try {
       const data = await getSkills(platformId, {
         search: search || undefined,
         category: selectedCategory ?? undefined,
+        installTarget,
       });
       setSkills(data);
     } catch (e) {
@@ -1353,29 +1380,34 @@ export default function InstallPage() {
     } finally {
       setLoading(false);
     }
-  }, [platformId, search, selectedCategory]);
+  }, [platformId, resolvedTarget, installTarget, search, selectedCategory]);
 
   const fetchCats = useCallback(async () => {
-    if (!platformId) return;
+    if (!platformId || !resolvedTarget) return;
     try {
-      const cats = await getCategories(platformId);
+      const cats = await getCategories(platformId, installTarget);
       setCategories(cats.filter((c) => c.item_type === "skill"));
     } catch {
       // non-critical
     }
-  }, [platformId]);
+  }, [platformId, resolvedTarget, installTarget]);
 
   useEffect(() => {
-    if (sourceMode === "local") {
+    if (sourceMode === "local" && resolvedTarget) {
       fetchSkills();
       fetchCats();
     }
-  }, [sourceMode, fetchSkills, fetchCats]);
+  }, [sourceMode, resolvedTarget, fetchSkills, fetchCats]);
 
   // Clear selection when source changes
   useEffect(() => {
     setSelectedNames(new Set());
   }, [sourceMode]);
+
+  // Clear selection when install target changes.
+  useEffect(() => {
+    setSelectedNames(new Set());
+  }, [installTarget.scope, installTarget.project_path]);
 
   // Client-side filtering
   const filteredSkills = useMemo(() => {
@@ -1431,7 +1463,9 @@ export default function InstallPage() {
     try {
       const result = await installSkills(
         platformId,
-        outdated.map((s) => s.name)
+        outdated.map((s) => s.name),
+        "auto",
+        installTarget
       );
       showNotification(
         t("install.updatedSkillsNotification", {
@@ -1504,19 +1538,45 @@ export default function InstallPage() {
               <HomeIcon />
             </IconButton>
           </Tooltip>
-          <Typography
-            variant="h6"
-            noWrap
-            sx={{
-              flexGrow: 1,
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {t("install.pageTitle", {
-              platform: `${platform?.icon ?? ""} ${platform?.name ?? platformId}`,
-            })}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1, minWidth: 0 }}>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {t("install.pageTitle", {
+                platform: `${platform?.icon ?? ""} ${platform?.name ?? platformId}`,
+              })}
+            </Typography>
+            <Tooltip
+              title={
+                resolvedTarget?.skills_path ??
+                t("install.installTargetLoading")
+              }
+            >
+              <Chip
+                icon={<FolderOpenOutlinedIcon />}
+                variant="outlined"
+                size="small"
+                color="info"
+                clickable
+                onClick={openInstallTargetDialog}
+                label={t("install.installTargetChip", {
+                  mode:
+                    installTarget.scope === "project"
+                      ? t("install.installTargetProject")
+                      : t("install.installTargetGlobal"),
+                  path:
+                    resolvedTarget?.skills_path ??
+                    t("install.installTargetLoading"),
+                })}
+                sx={{ "& .MuiChip-label": { whiteSpace: "nowrap" } }}
+              />
+            </Tooltip>
+          </Box>
           <LanguageToggle sx={{ mr: 1 }} />
           <IconButton color="inherit" onClick={toggleColorMode}>
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
@@ -1573,33 +1633,41 @@ export default function InstallPage() {
           {/* Local source: skill grid */}
           {sourceMode === "local" && (
             <>
-              <SearchToolbar
-                search={search}
-                onSearchChange={setSearch}
-                onSelectAll={handleSelectAll}
-                onClearSelection={() => setSelectedNames(new Set())}
-                selectedCount={selectedNames.size}
-                outdatedCount={statusCounts.outdated}
-                onUpdateAll={handleBatchUpdate}
-              />
-
-              {error && (
-                <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
-                  {error}
-                </Alert>
-              )}
-
-              {loading ? (
+              {!resolvedTarget ? (
                 <Box display="flex" justifyContent="center" py={8}>
                   <CircularProgress />
                 </Box>
               ) : (
-                <SkillCardGrid
-                  skills={filteredSkills}
-                  selectedNames={selectedNames}
-                  onToggle={toggleSelection}
-                  onShowDetail={setDetailName}
-                />
+                <>
+                  <SearchToolbar
+                    search={search}
+                    onSearchChange={setSearch}
+                    onSelectAll={handleSelectAll}
+                    onClearSelection={() => setSelectedNames(new Set())}
+                    selectedCount={selectedNames.size}
+                    outdatedCount={statusCounts.outdated}
+                    onUpdateAll={handleBatchUpdate}
+                  />
+
+                  {error && (
+                    <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
+                      {error}
+                    </Alert>
+                  )}
+
+                  {loading ? (
+                    <Box display="flex" justifyContent="center" py={8}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <SkillCardGrid
+                      skills={filteredSkills}
+                      selectedNames={selectedNames}
+                      onToggle={toggleSelection}
+                      onShowDetail={setDetailName}
+                    />
+                  )}
+                </>
               )}
             </>
           )}
@@ -1609,6 +1677,8 @@ export default function InstallPage() {
             <ExternalInstallPanel
               platformId={platformId}
               sourceMode={sourceMode}
+              installTarget={installTarget}
+              disabledInProject={installTarget.scope === "project"}
               showNotification={showNotification}
             />
           )}
@@ -1633,6 +1703,7 @@ export default function InstallPage() {
             selectedInstallable.map((s) => [s.name, s.category])
           )}
           itemType="skills"
+          installTarget={installTarget}
           onClose={() => setInstallOpen(false)}
           onCompleted={(successCount, failureCount) => {
             showNotification(
@@ -1660,6 +1731,15 @@ export default function InstallPage() {
           onClose={() => setDetailName(null)}
         />
       )}
+
+      <InstallTargetDialog
+        open={installTargetDialogOpen}
+        loading={installTargetLoading}
+        currentTarget={installTarget}
+        recentProjects={recentProjects}
+        onClose={closeInstallTargetDialog}
+        onApply={applyInstallTarget}
+      />
 
       <NotificationSnackbar />
     </Box>

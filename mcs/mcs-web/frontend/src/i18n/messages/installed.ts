@@ -12,6 +12,10 @@ export const enInstalledMessages = {
   "installed.reinstalledNotification": "Reinstalled \"{name}\" successfully",
   "installed.reinstallFailed": "Failed to reinstall: {error}",
   "installed.savedNotification": "Saved \"{name}\"",
+  "installed.installTargetChip": "{mode} · {path}",
+  "installed.installTargetGlobal": "Global",
+  "installed.installTargetProject": "Project",
+  "installed.installTargetLoading": "Resolving install target...",
 } as const;
 
 export const zhInstalledMessages: Record<
@@ -31,4 +35,8 @@ export const zhInstalledMessages: Record<
   "installed.reinstalledNotification": "已成功重装“{name}”",
   "installed.reinstallFailed": "重装失败：{error}",
   "installed.savedNotification": "已保存“{name}”",
+  "installed.installTargetChip": "{mode} · {path}",
+  "installed.installTargetGlobal": "全局",
+  "installed.installTargetProject": "项目",
+  "installed.installTargetLoading": "正在解析安装目录...",
 };

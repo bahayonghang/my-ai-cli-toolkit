@@ -1,0 +1,130 @@
+import { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
+import type { InstallTarget, InstallTargetScope } from "@/types";
+import { useI18n } from "@/i18n";
+
+interface Props {
+  open: boolean;
+  loading?: boolean;
+  currentTarget: InstallTarget;
+  recentProjects: string[];
+  onClose: () => void;
+  onApply: (target: InstallTarget) => Promise<boolean>;
+}
+
+export function InstallTargetDialog({
+  open,
+  loading = false,
+  currentTarget,
+  recentProjects,
+  onClose,
+  onApply,
+}: Props) {
+  const { t } = useI18n();
+  const [scope, setScope] = useState<InstallTargetScope>("global");
+  const [projectPath, setProjectPath] = useState("");
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    setScope(currentTarget.scope);
+    setProjectPath(currentTarget.project_path ?? "");
+  }, [currentTarget.project_path, currentTarget.scope, open]);
+
+  const handleApply = async () => {
+    const nextTarget: InstallTarget =
+      scope === "project"
+        ? { scope, project_path: projectPath.trim() }
+        : { scope: "global" };
+    const ok = await onApply(nextTarget);
+    if (ok) {
+      onClose();
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{t("dialogs.installTargetTitle")}</DialogTitle>
+      <DialogContent dividers>
+        <Stack spacing={2}>
+          <ToggleButtonGroup
+            value={scope}
+            exclusive
+            onChange={(_, value) => {
+              if (value) {
+                setScope(value as InstallTargetScope);
+              }
+            }}
+            size="small"
+          >
+            <ToggleButton value="global">{t("dialogs.installTargetGlobal")}</ToggleButton>
+            <ToggleButton value="project">{t("dialogs.installTargetProject")}</ToggleButton>
+          </ToggleButtonGroup>
+
+          {scope === "project" && (
+            <>
+              <TextField
+                label={t("dialogs.projectPathLabel")}
+                value={projectPath}
+                onChange={(e) => setProjectPath(e.target.value)}
+                placeholder={t("dialogs.projectPathPlaceholder")}
+                fullWidth
+                size="small"
+                disabled={loading}
+              />
+
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  {t("dialogs.recentProjects")}
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 1, rowGap: 1 }}>
+                  {recentProjects.length === 0 ? (
+                    <Typography variant="caption" color="text.secondary">
+                      {t("dialogs.noRecentProjects")}
+                    </Typography>
+                  ) : (
+                    recentProjects.map((path) => (
+                      <Chip
+                        key={path}
+                        label={path}
+                        variant="outlined"
+                        size="small"
+                        onClick={() => setProjectPath(path)}
+                      />
+                    ))
+                  )}
+                </Stack>
+              </Box>
+            </>
+          )}
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={loading}>
+          {t("common.cancel")}
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleApply}
+          disabled={loading || (scope === "project" && !projectPath.trim())}
+        >
+          {t("common.apply")}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}

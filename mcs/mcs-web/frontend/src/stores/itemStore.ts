@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ItemDto, CategoryDto, InstallStatus } from "@/types";
+import type { ItemDto, CategoryDto, InstallStatus, InstallTarget } from "@/types";
 import { getSkills, getCommands, getCategories } from "@/api/client";
 
 type Tab = "skills" | "commands";
@@ -22,9 +22,9 @@ interface ItemState {
   toggleSelection: (name: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  fetchItems: (platformId: string) => Promise<void>;
-  fetchCategories: (platformId: string) => Promise<void>;
-  refresh: (platformId: string) => Promise<void>;
+  fetchItems: (platformId: string, installTarget?: InstallTarget) => Promise<void>;
+  fetchCategories: (platformId: string, installTarget?: InstallTarget) => Promise<void>;
+  refresh: (platformId: string, installTarget?: InstallTarget) => Promise<void>;
 }
 
 export const useItemStore = create<ItemState>((set, get) => ({
@@ -63,7 +63,7 @@ export const useItemStore = create<ItemState>((set, get) => ({
 
   clearSelection: () => set({ selectedNames: new Set() }),
 
-  fetchItems: async (platformId) => {
+  fetchItems: async (platformId, installTarget) => {
     const { activeTab, search, selectedCategory, statusFilter } = get();
     set({ loading: true, error: null });
     try {
@@ -71,6 +71,7 @@ export const useItemStore = create<ItemState>((set, get) => ({
         search: search || undefined,
         category: selectedCategory ?? undefined,
         status: statusFilter ?? undefined,
+        installTarget,
       };
       const items =
         activeTab === "skills"
@@ -82,19 +83,19 @@ export const useItemStore = create<ItemState>((set, get) => ({
     }
   },
 
-  fetchCategories: async (platformId) => {
+  fetchCategories: async (platformId, installTarget) => {
     try {
-      const categories = await getCategories(platformId);
+      const categories = await getCategories(platformId, installTarget);
       set({ categories });
     } catch (e) {
       set({ error: (e as Error).message });
     }
   },
 
-  refresh: async (platformId) => {
+  refresh: async (platformId, installTarget) => {
     await Promise.all([
-      get().fetchItems(platformId),
-      get().fetchCategories(platformId),
+      get().fetchItems(platformId, installTarget),
+      get().fetchCategories(platformId, installTarget),
     ]);
   },
 }));

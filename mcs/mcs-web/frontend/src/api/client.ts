@@ -12,6 +12,8 @@ import type {
   BatchResultDto,
   PromptDiffDto,
   InstallStatus,
+  InstallTarget,
+  ResolvedInstallTarget,
 } from "@/types";
 
 const BASE = "/api";
@@ -48,6 +50,26 @@ async function putJson<T>(url: string, body: unknown): Promise<T> {
   });
 }
 
+function applyInstallTargetQuery(query: URLSearchParams, installTarget?: InstallTarget) {
+  if (!installTarget) {
+    return;
+  }
+  query.set("target_scope", installTarget.scope);
+  if (installTarget.project_path && installTarget.project_path.trim()) {
+    query.set("project_path", installTarget.project_path);
+  }
+}
+
+function withInstallTargetBody<T extends Record<string, unknown>>(
+  body: T,
+  installTarget?: InstallTarget
+): T | (T & { install_target: InstallTarget }) {
+  if (!installTarget) {
+    return body;
+  }
+  return { ...body, install_target: installTarget };
+}
+
 // ── Platforms ──────────────────────────────────────────────────────
 
 export async function getPlatforms(): Promise<PlatformDisplay[]> {
@@ -63,9 +85,23 @@ export async function getPlatform(id: string): Promise<PlatformConfig> {
 }
 
 export async function getCategories(
-  platformId: string
+  platformId: string,
+  installTarget?: InstallTarget
 ): Promise<CategoryDto[]> {
-  return fetchJson(`${BASE}/platforms/${platformId}/categories`);
+  const query = new URLSearchParams();
+  applyInstallTargetQuery(query, installTarget);
+  const qs = query.toString();
+  return fetchJson(`${BASE}/platforms/${platformId}/categories${qs ? `?${qs}` : ""}`);
+}
+
+export async function resolveInstallTarget(
+  platformId: string,
+  installTarget: InstallTarget
+): Promise<ResolvedInstallTarget> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/install-target/resolve`,
+    installTarget
+  );
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────
@@ -82,12 +118,18 @@ export async function getSkillCatalog(): Promise<SkillCatalogDto[]> {
 
 export async function getSkills(
   platformId: string,
-  params?: { search?: string; category?: string; status?: InstallStatus }
+  params?: {
+    search?: string;
+    category?: string;
+    status?: InstallStatus;
+    installTarget?: InstallTarget;
+  }
 ): Promise<ItemDto[]> {
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
   if (params?.category) query.set("category", params.category);
   if (params?.status) query.set("status", params.status);
+  applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
   return fetchJson(`${BASE}/platforms/${platformId}/skills${qs ? `?${qs}` : ""}`);
 }
@@ -109,28 +151,42 @@ export async function getSkillDiff(
 export async function installSkills(
   platformId: string,
   names: string[],
-  linkMode: "auto" | "symlink" | "copy" = "auto"
+  linkMode: "auto" | "symlink" | "copy" = "auto",
+  installTarget?: InstallTarget
 ): Promise<BatchResultDto> {
-  return postJson(`${BASE}/platforms/${platformId}/skills/install`, { names, link_mode: linkMode });
+  return postJson(
+    `${BASE}/platforms/${platformId}/skills/install`,
+    withInstallTargetBody({ names, link_mode: linkMode }, installTarget)
+  );
 }
 
 export async function uninstallSkills(
   platformId: string,
-  names: string[]
+  names: string[],
+  installTarget?: InstallTarget
 ): Promise<BatchResultDto> {
-  return postJson(`${BASE}/platforms/${platformId}/skills/uninstall`, { names });
+  return postJson(
+    `${BASE}/platforms/${platformId}/skills/uninstall`,
+    withInstallTargetBody({ names }, installTarget)
+  );
 }
 
 // ── Commands ──────────────────────────────────────────────────────
 
 export async function getCommands(
   platformId: string,
-  params?: { search?: string; category?: string; status?: InstallStatus }
+  params?: {
+    search?: string;
+    category?: string;
+    status?: InstallStatus;
+    installTarget?: InstallTarget;
+  }
 ): Promise<ItemDto[]> {
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
   if (params?.category) query.set("category", params.category);
   if (params?.status) query.set("status", params.status);
+  applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
   return fetchJson(
     `${BASE}/platforms/${platformId}/commands${qs ? `?${qs}` : ""}`
@@ -146,18 +202,24 @@ export async function getCommandDiff(
 
 export async function installCommands(
   platformId: string,
-  names: string[]
+  names: string[],
+  installTarget?: InstallTarget
 ): Promise<BatchResultDto> {
-  return postJson(`${BASE}/platforms/${platformId}/commands/install`, { names });
+  return postJson(
+    `${BASE}/platforms/${platformId}/commands/install`,
+    withInstallTargetBody({ names }, installTarget)
+  );
 }
 
 export async function uninstallCommands(
   platformId: string,
-  names: string[]
+  names: string[],
+  installTarget?: InstallTarget
 ): Promise<BatchResultDto> {
-  return postJson(`${BASE}/platforms/${platformId}/commands/uninstall`, {
-    names,
-  });
+  return postJson(
+    `${BASE}/platforms/${platformId}/commands/uninstall`,
+    withInstallTargetBody({ names }, installTarget)
+  );
 }
 
 // ── Prompt ─────────────────────────────────────────────────────────
@@ -201,10 +263,17 @@ export async function updateSkillContent(
 export async function externalInstallSkill(
   platformId: string,
   skillName: string,
-  method: "vercel" | "playbooks"
+  method: "vercel" | "playbooks",
+  installTarget?: InstallTarget
 ): Promise<{ success: boolean; output: string }> {
-  return postJson(`${BASE}/platforms/${platformId}/skills/external-install`, {
-    skill_name: skillName,
-    method,
-  });
+  return postJson(
+    `${BASE}/platforms/${platformId}/skills/external-install`,
+    withInstallTargetBody(
+      {
+        skill_name: skillName,
+        method,
+      },
+      installTarget
+    )
+  );
 }

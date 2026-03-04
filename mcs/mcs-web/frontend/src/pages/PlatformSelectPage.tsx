@@ -19,51 +19,16 @@ import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
-import type { PlatformDisplay } from "@/types";
 
-const UNIVERSAL_SHARED_IDS = new Set([
-  "amp",
-  "cline",
-  "codex",
-  "cursor",
-  "gemini",
-  "copilot",
-  "kimi",
-  "opencode",
-]);
 
-const UNIVERSAL_CARD_PLATFORM: PlatformDisplay = {
-  id: "gemini",
-  name: "Agents",
-  icon: "🧩",
-  base_dir: "~/.agents",
-  skills_path: "~/.agents/skills",
-};
-
-function buildPlatformCards(platforms: PlatformDisplay[]): PlatformDisplay[] {
-  const cards = platforms.filter((p) => !UNIVERSAL_SHARED_IDS.has(p.id));
-
-  const hasUniversal = platforms.some((p) => UNIVERSAL_SHARED_IDS.has(p.id));
-  if (!hasUniversal) {
-    return cards;
-  }
-
-  const firstUniversalIndex = platforms.findIndex((p) => UNIVERSAL_SHARED_IDS.has(p.id));
-  const insertIndex = platforms
-    .slice(0, Math.max(firstUniversalIndex, 0))
-    .filter((p) => !UNIVERSAL_SHARED_IDS.has(p.id)).length;
-
-  cards.splice(insertIndex, 0, UNIVERSAL_CARD_PLATFORM);
-
-  return cards;
-}
 
 export default function PlatformSelectPage() {
   const { t } = useI18n();
   const { platforms, loading, error, fetchPlatforms, refreshPlatforms } =
     usePlatformStore();
   const navigate = useNavigate();
-  const platformCards = useMemo(() => buildPlatformCards(platforms), [platforms]);
+  // 不再需要前端特殊的过滤逻辑，因为后端直接合并了
+  const platformCards = useMemo(() => platforms, [platforms]);
 
   useEffect(() => {
     fetchPlatforms();
@@ -170,7 +135,12 @@ export default function PlatformSelectPage() {
         </Box>
       </Box>
 
-      {/* 调整为更紧凑的自适应网格 */}
+      {/* 动态网格 */}
+      <Box sx={{ width: "100%", maxWidth: 1200, mb: 1, position: "relative", zIndex: 1 }}>
+        <Typography variant="h6" sx={{ mb: 2, fontFamily: '"Fira Sans", sans-serif', fontWeight: 600, color: 'text.secondary', pl: 1 }}>
+          Available Platforms
+        </Typography>
+      </Box>
       <Grid container spacing={2.5} sx={{ maxWidth: 1200, position: "relative", zIndex: 1, width: "100%" }}>
         {platformCards.map((card, index) => (
           <Grid
@@ -235,7 +205,7 @@ export default function PlatformSelectPage() {
                 </Typography>
                 <CardContent sx={{ p: 0, width: '100%' }}>
                   <Typography variant="body1" sx={{ fontFamily: '"Fira Sans", sans-serif', fontWeight: 600, mb: 0.25, lineHeight: 1.2, wordBreak: 'break-word' }}>
-                    {card === UNIVERSAL_CARD_PLATFORM ? t("platformSelect.universalGroupTitle") : card.name}
+                    {card.name}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: '"Fira Code", monospace', fontSize: "0.65rem", opacity: 0.8, display: 'block', wordBreak: 'break-all' }}>
                     {card.skills_path}

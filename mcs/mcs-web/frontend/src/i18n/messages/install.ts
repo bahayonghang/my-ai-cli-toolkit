@@ -31,6 +31,14 @@ export const enInstallMessages = {
     "Updated {success} skills{failedSuffix}",
   "install.installedSkillsNotification":
     "Installed {success} skills{failedSuffix}",
+  "install.currentInstallDir": "Current install directory: {path}",
+  "install.unknownInstallDir": "unknown",
+  "install.installTargetChip": "{mode} · {path}",
+  "install.installTargetGlobal": "Global",
+  "install.installTargetProject": "Project",
+  "install.installTargetLoading": "Resolving install target...",
+  "install.externalInstallDisabledInProject":
+    "External install is disabled in project install mode.",
   "install.detailIncludedDefault": "Included by default",
   "install.failedLoadDetail": "Failed to load detail",
 } as const;
@@ -68,6 +76,13 @@ export const zhInstallMessages: Record<
   "install.installSuccessNotification": "已成功安装“{name}”",
   "install.updatedSkillsNotification": "已更新 {success} 个技能{failedSuffix}",
   "install.installedSkillsNotification": "已安装 {success} 个技能{failedSuffix}",
+  "install.currentInstallDir": "当前安装目录：{path}",
+  "install.unknownInstallDir": "未知",
+  "install.installTargetChip": "{mode} · {path}",
+  "install.installTargetGlobal": "全局",
+  "install.installTargetProject": "项目",
+  "install.installTargetLoading": "正在解析安装目录...",
+  "install.externalInstallDisabledInProject": "Project 模式下禁用外部安装。",
   "install.detailIncludedDefault": "默认包含",
   "install.failedLoadDetail": "加载详情失败",
 };

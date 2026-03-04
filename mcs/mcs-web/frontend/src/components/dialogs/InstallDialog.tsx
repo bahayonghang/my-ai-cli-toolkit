@@ -17,7 +17,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { installSkills, installCommands } from "@/api/client";
-import type { PlatformDisplay } from "@/types";
+import type { InstallTarget, PlatformDisplay } from "@/types";
 import { useI18n } from "@/i18n";
 
 type Phase = "confirm" | "installing" | "completed";
@@ -37,6 +37,7 @@ interface Props {
   itemNames: string[];
   itemCategories?: Record<string, string | null>;
   itemType: "skills" | "commands";
+  installTarget?: InstallTarget;
   onClose: () => void;
   onCompleted: (successCount: number, failureCount: number) => void;
 }
@@ -48,6 +49,7 @@ export function InstallDialog({
   itemNames,
   itemCategories = {},
   itemType,
+  installTarget,
   onClose,
   onCompleted,
 }: Props) {
@@ -99,8 +101,8 @@ export function InstallDialog({
 
       try {
         const result = itemType === "skills"
-          ? await installSkills(platformId, [name], linkMode)
-          : await installCommands(platformId, [name]);
+          ? await installSkills(platformId, [name], linkMode, installTarget)
+          : await installCommands(platformId, [name], installTarget);
         const itemResult = result.results[0];
         setResults((prev) =>
           prev.map((r) =>

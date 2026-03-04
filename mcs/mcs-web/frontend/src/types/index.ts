@@ -2,6 +2,20 @@
 
 export type ItemType = "skill" | "command";
 export type InstallStatus = "installed" | "not_installed" | "outdated";
+export type InstallTargetScope = "global" | "project";
+
+export interface InstallTarget {
+  scope: InstallTargetScope;
+  project_path?: string | null;
+}
+
+export interface ResolvedInstallTarget {
+  scope: InstallTargetScope;
+  project_path: string | null;
+  base_dir: string;
+  skills_path: string;
+  commands_path: string;
+}
 
 // ── API Response Types ─────────────────────────────────────────────
 
