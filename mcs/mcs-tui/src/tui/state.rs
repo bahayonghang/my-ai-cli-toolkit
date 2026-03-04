@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 use mcs_core::config::platform::PlatformConfig;
-use mcs_core::model::{InstallStatus, ItemInfo, ItemType};
+use mcs_core::model::{InstallStatus, ItemInfo, ItemType, LinkMode};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContentTab {
@@ -35,6 +35,7 @@ pub enum PopupKind {
     Install {
         items: Vec<String>,
         mode: InstallMode,
+        link_mode: LinkMode,
         path_input: String,
     },
     Confirm {
@@ -100,6 +101,7 @@ pub enum BatchTaskKind {
         platform: PlatformConfig,
         name: String,
         item_type: ItemType,
+        link_mode: mcs_core::model::LinkMode,
     },
     Uninstall {
         platform: PlatformConfig,

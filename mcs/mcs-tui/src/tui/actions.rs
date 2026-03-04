@@ -6,7 +6,7 @@ use crate::tui::state::{
     AppState, BatchTask, BatchTaskKind, ContentTab, InstallMode, NotificationLevel, PendingBatch,
 };
 use mcs_core::config::platform::PlatformConfig;
-use mcs_core::model::ItemType;
+use mcs_core::model::{ItemType, LinkMode};
 
 #[derive(Debug, Clone)]
 pub enum AppAction {
@@ -14,6 +14,7 @@ pub enum AppAction {
         names: Vec<String>,
         tab: ContentTab,
         mode: InstallMode,
+        link_mode: LinkMode,
         path_input: String,
     },
     UninstallBatch {
@@ -41,8 +42,9 @@ pub fn dispatch(state: &mut AppState, action: AppAction) -> ActionResult {
             names,
             tab,
             mode,
+            link_mode,
             path_input,
-        } => dispatch_install_batch(state, names, tab, mode, &path_input),
+        } => dispatch_install_batch(state, names, tab, mode, link_mode, &path_input),
         AppAction::UninstallBatch { names, tab } => dispatch_uninstall_batch(state, names, tab),
         AppAction::PromptUpdate => dispatch_prompt_update(state),
         AppAction::MultiSync {
@@ -58,6 +60,7 @@ fn dispatch_install_batch(
     names: Vec<String>,
     tab: ContentTab,
     mode: InstallMode,
+    link_mode: LinkMode,
     path_input: &str,
 ) -> ActionResult {
     if names.is_empty() {
@@ -102,6 +105,7 @@ fn dispatch_install_batch(
                 platform: platform.clone(),
                 name,
                 item_type,
+                link_mode,
             },
         });
     }
@@ -210,6 +214,7 @@ fn dispatch_multi_sync(
                     platform: platform.clone(),
                     name: item.clone(),
                     item_type,
+                    link_mode: LinkMode::Auto,
                 },
             });
         }
@@ -336,9 +341,14 @@ fn execute_task(state: &AppState, task: &BatchTask) -> mcs_core::model::InstallR
             platform,
             name,
             item_type,
-        } => {
-            mcs_core::core::installer::install_item(&state.project_root, platform, name, *item_type)
-        }
+            link_mode,
+        } => mcs_core::core::installer::install_item(
+            &state.project_root,
+            platform,
+            name,
+            *item_type,
+            *link_mode,
+        ),
         BatchTaskKind::Uninstall {
             platform,
             name,

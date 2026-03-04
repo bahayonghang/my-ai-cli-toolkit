@@ -1,16 +1,25 @@
 use crate::tui::state::InstallMode;
 use crate::tui::style_system;
 use crate::tui::theme::StyleRole;
+use mcs_core::model::LinkMode;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
-pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode, path_input: &str) {
+pub fn draw(
+    frame: &mut Frame,
+    area: Rect,
+    items: &[String],
+    mode: &InstallMode,
+    link_mode: &LinkMode,
+    path_input: &str,
+) {
     let block = style_system::modal_block("Install");
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
     let chunks = Layout::vertical([
-        Constraint::Length(2), // mode
+        Constraint::Length(2), // location mode (Global / Directory)
+        Constraint::Length(1), // link mode (Auto / Symlink / Copy)
         Constraint::Length(1), // path
         Constraint::Length(1), // sep
         Constraint::Min(1),    // items
@@ -19,12 +28,13 @@ pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode,
     .split(inner);
 
     let icons = style_system::icons();
+
+    // ── Location row ────────────────────────────────────────────────
     let (g_mark, d_mark) = if *mode == InstallMode::Global {
         (icons.tab_selected, icons.tab_unselected)
     } else {
         (icons.tab_unselected, icons.tab_selected)
     };
-
     let g_style = if *mode == InstallMode::Global {
         style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD)
     } else {
@@ -43,6 +53,26 @@ pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode,
         chunks[0],
     );
 
+    // ── Link mode row ───────────────────────────────────────────────
+    let link_label = |lm: LinkMode, label: &str| -> Span<'static> {
+        let (mark, role) = if *link_mode == lm {
+            (icons.tab_selected, StyleRole::HintKey)
+        } else {
+            (icons.tab_unselected, StyleRole::TextMuted)
+        };
+        let style = style_system::style(role);
+        Span::styled(format!(" {mark} {label}"), style)
+    };
+    frame.render_widget(
+        Paragraph::new(Line::from(vec![
+            link_label(LinkMode::Auto, "Auto"),
+            link_label(LinkMode::Symlink, "Symlink"),
+            link_label(LinkMode::Copy, "Copy"),
+        ])),
+        chunks[1],
+    );
+
+    // ── Path row ────────────────────────────────────────────────────
     if *mode == InstallMode::Directory {
         let path = if path_input.is_empty() {
             "<project-path>"
@@ -52,31 +82,31 @@ pub fn draw(frame: &mut Frame, area: Rect, items: &[String], mode: &InstallMode,
         frame.render_widget(
             Paragraph::new(format!("   Path: {path}▏"))
                 .style(style_system::style(StyleRole::TextPrimary)),
-            chunks[1],
+            chunks[2],
         );
     } else {
         frame.render_widget(
             Paragraph::new("   Path: <project-path>")
                 .style(style_system::style(StyleRole::TextMuted)),
-            chunks[1],
+            chunks[2],
         );
     }
 
     frame.render_widget(
         Paragraph::new(format!("   Items: {}", items.len()))
             .style(style_system::style(StyleRole::TextMuted)),
-        chunks[2],
+        chunks[3],
     );
 
-    let list = build_items_lines(items, chunks[3].width, chunks[3].height);
-    frame.render_widget(Paragraph::new(list), chunks[3]);
+    let list = build_items_lines(items, chunks[4].width, chunks[4].height);
+    frame.render_widget(Paragraph::new(list), chunks[4]);
     frame.render_widget(
         Paragraph::new(format!(
-            " {} Install  ↑↓ Mode  Tab Toggle  Esc Cancel",
+            " {} Install  ↑↓ Location  L Link  Tab Toggle  Esc Cancel",
             icons.enter_key
         ))
         .style(style_system::style(StyleRole::HintText)),
-        chunks[4],
+        chunks[5],
     );
 }
 

@@ -105,6 +105,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 state.popup = Some(PopupKind::Install {
                     items,
                     mode: InstallMode::Global,
+                    link_mode: mcs_core::model::LinkMode::Auto,
                     path_input: String::new(),
                 });
             }
@@ -114,6 +115,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 state.popup = Some(PopupKind::Install {
                     items: vec![name],
                     mode: InstallMode::Global,
+                    link_mode: mcs_core::model::LinkMode::Auto,
                     path_input: String::new(),
                 });
             }
@@ -332,10 +334,12 @@ pub fn handle_popup_key(state: &mut AppState, key: KeyEvent) {
         PopupKind::Install {
             items,
             mode,
+            link_mode,
             path_input,
         } => {
             let items = items.clone();
             let mode = *mode;
+            let link_mode = *link_mode;
             let path_input = path_input.clone();
             match key.code {
                 KeyCode::Esc => state.popup = None,
@@ -346,6 +350,7 @@ pub fn handle_popup_key(state: &mut AppState, key: KeyEvent) {
                             names: items,
                             tab: state.active_tab,
                             mode,
+                            link_mode,
                             path_input,
                         },
                     );
@@ -354,27 +359,35 @@ pub fn handle_popup_key(state: &mut AppState, key: KeyEvent) {
                     }
                 }
                 KeyCode::Up => {
-                    set_install_popup(state, items, InstallMode::Global, path_input);
+                    set_install_popup(state, items, InstallMode::Global, link_mode, path_input);
                 }
                 KeyCode::Down => {
-                    set_install_popup(state, items, InstallMode::Directory, path_input);
+                    set_install_popup(state, items, InstallMode::Directory, link_mode, path_input);
                 }
                 KeyCode::Tab => {
                     let new_mode = match mode {
                         InstallMode::Global => InstallMode::Directory,
                         InstallMode::Directory => InstallMode::Global,
                     };
-                    set_install_popup(state, items, new_mode, path_input);
+                    set_install_popup(state, items, new_mode, link_mode, path_input);
+                }
+                KeyCode::Char('l') | KeyCode::Char('L') => {
+                    let new_link_mode = match link_mode {
+                        mcs_core::model::LinkMode::Auto => mcs_core::model::LinkMode::Symlink,
+                        mcs_core::model::LinkMode::Symlink => mcs_core::model::LinkMode::Copy,
+                        mcs_core::model::LinkMode::Copy => mcs_core::model::LinkMode::Auto,
+                    };
+                    set_install_popup(state, items, mode, new_link_mode, path_input);
                 }
                 KeyCode::Char(c) if mode == InstallMode::Directory => {
                     let mut p = path_input;
                     p.push(c);
-                    set_install_popup(state, items, mode, p);
+                    set_install_popup(state, items, mode, link_mode, p);
                 }
                 KeyCode::Backspace if mode == InstallMode::Directory => {
                     let mut p = path_input;
                     p.pop();
-                    set_install_popup(state, items, mode, p);
+                    set_install_popup(state, items, mode, link_mode, p);
                 }
                 _ => {}
             }
@@ -401,6 +414,7 @@ pub fn handle_popup_key(state: &mut AppState, key: KeyEvent) {
                                 names: items,
                                 tab: state.active_tab,
                                 mode: InstallMode::Global,
+                                link_mode: mcs_core::model::LinkMode::Auto,
                                 path_input: String::new(),
                             },
                         ),
@@ -505,11 +519,13 @@ fn set_install_popup(
     state: &mut AppState,
     items: Vec<String>,
     mode: InstallMode,
+    link_mode: mcs_core::model::LinkMode,
     path_input: String,
 ) {
     state.popup = Some(PopupKind::Install {
         items,
         mode,
+        link_mode,
         path_input,
     });
 }

@@ -32,8 +32,9 @@ pub fn draw(frame: &mut Frame, popup: &PopupKind, state: &AppState) {
         PopupKind::Install {
             items,
             mode,
+            link_mode,
             path_input,
-        } => install_modal::draw(frame, area, items, mode, path_input),
+        } => install_modal::draw(frame, area, items, mode, link_mode, path_input),
         PopupKind::Confirm {
             title,
             message,
