@@ -102,9 +102,7 @@ pub fn universal_shared_skills_display_path() -> &'static str {
 }
 
 pub fn is_universal_shared_skills_platform(platform_id: &str) -> bool {
-    universal_shared_skills_platform_ids()
-        .iter()
-        .any(|id| *id == platform_id)
+    universal_shared_skills_platform_ids().contains(&platform_id)
 }
 
 pub fn detect_legacy_skill_dirs(
@@ -189,59 +187,10 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
                 skills_dir: "~/.claude/skills/",
             },
             PlatformDisplay {
-                id: "amp",
-                name: "Amp",
-                icon: "🧩",
-                base_dir: "~/.amp/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "cline",
-                name: "Cline",
-                icon: "🧩",
-                base_dir: "~/.cline/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "codex",
-                name: "Codex",
-                icon: "🧩",
-                base_dir: "~/.codex/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "cursor",
-                name: "Cursor",
-                icon: "🧩",
-                base_dir: "~/.cursor/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
                 id: "gemini",
-                name: "Gemini",
-                icon: "🧩",
+                name: "Universal Agents",
+                icon: "🌌",
                 base_dir: "~/.agents/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "copilot",
-                name: "GitHub Copilot",
-                icon: "🧩",
-                base_dir: "~/.copilot/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "kimi",
-                name: "Kimi Code CLI",
-                icon: "🧩",
-                base_dir: "~/.kimi/",
-                skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "opencode",
-                name: "OpenCode",
-                icon: "🧩",
-                base_dir: "~/.config/opencode/",
                 skills_dir: "~/.agents/skills/",
             },
             PlatformDisplay {
@@ -326,8 +275,7 @@ fn p(
     skills: &str,
     cmds: &str,
     prompt: Option<&str>,
-    src: &str,
-    fallback: Option<&str>,
+    sources: (&str, Option<&str>),
 ) -> PlatformConfig {
     PlatformConfig {
         name: name.into(),
@@ -336,8 +284,8 @@ fn p(
         skills_subdir: skills.into(),
         commands_subdir: cmds.into(),
         prompt_file: prompt.map(Into::into),
-        commands_source: src.into(),
-        fallback_commands_source: fallback.map(Into::into),
+        commands_source: sources.0.into(),
+        fallback_commands_source: sources.1.map(Into::into),
     }
 }
 
@@ -352,8 +300,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 Some("CLAUDE.md"),
-                "claude",
-                None,
+                ("claude", None),
             ),
         ),
         (
@@ -365,8 +312,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "",
-                None,
+                ("", None),
             ),
         ),
         (
@@ -378,8 +324,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "",
-                None,
+                ("", None),
             ),
         ),
         (
@@ -391,8 +336,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "prompts",
                 None,
-                "codex",
-                Some("claude"),
+                ("codex", Some("claude")),
             ),
         ),
         (
@@ -404,8 +348,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "cursor",
-                Some("claude"),
+                ("cursor", Some("claude")),
             ),
         ),
         (
@@ -417,8 +360,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "gemini",
-                None,
+                ("gemini", None),
             ),
         ),
         (
@@ -430,8 +372,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "",
-                None,
+                ("", None),
             ),
         ),
         (
@@ -443,8 +384,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "",
-                None,
+                ("", None),
             ),
         ),
         (
@@ -456,8 +396,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "qwen",
-                Some("claude"),
+                ("qwen", Some("claude")),
             ),
         ),
         (
@@ -469,8 +408,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "qoder",
-                Some("claude"),
+                ("qoder", Some("claude")),
             ),
         ),
         (
@@ -482,8 +420,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "steering",
                 None,
-                "kiro",
-                Some("claude"),
+                ("kiro", Some("claude")),
             ),
         ),
         (
@@ -495,8 +432,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "trae",
-                Some("claude"),
+                ("trae", Some("claude")),
             ),
         ),
         (
@@ -508,8 +444,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "trae",
-                Some("claude"),
+                ("trae", Some("claude")),
             ),
         ),
         (
@@ -521,8 +456,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "opencode",
-                Some("claude"),
+                ("opencode", Some("claude")),
             ),
         ),
         (
@@ -534,8 +468,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "commands",
                 None,
-                "iflow",
-                Some("claude"),
+                ("iflow", Some("claude")),
             ),
         ),
         (
@@ -547,8 +480,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "workflows",
                 None,
-                "antigravity",
-                None,
+                ("antigravity", None),
             ),
         ),
         (
@@ -560,8 +492,7 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "skills",
                 "workflows",
                 None,
-                "windsurf",
-                None,
+                ("windsurf", None),
             ),
         ),
     ])
@@ -622,8 +553,7 @@ fn apply_toml_overrides(platforms: &mut HashMap<String, PlatformConfig>, path: &
                 "skills",
                 "commands",
                 None,
-                &name,
-                None,
+                (&name, None),
             )
         });
         if let Some(v) = tp.base_dir {
