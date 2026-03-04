@@ -35,6 +35,7 @@ impl TestEnv {
         PlatformConfig {
             name: id.to_string(),
             base_dir: base.to_string_lossy().to_string(),
+            skills_base_dir: None,
             skills_subdir: "skills".into(),
             commands_subdir: "commands".into(),
             prompt_file: None,

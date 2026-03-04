@@ -225,6 +225,10 @@ pub fn resolve_skills_for_platform(
 
 /// Scan all commands from platform-specific source directory
 pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
+    if !platform.supports_commands() {
+        return Vec::new();
+    }
+
     let commands_base = commands_src_dir(project_root);
     let src_dir = commands_source_dir(platform, &commands_base);
     if !src_dir.exists() {
@@ -312,6 +316,7 @@ mod tests {
         PlatformConfig {
             name: "claude".into(),
             base_dir: base_dir.to_string_lossy().to_string(),
+            skills_base_dir: None,
             skills_subdir: "skills".into(),
             commands_subdir: "commands".into(),
             prompt_file: Some("CLAUDE.md".into()),

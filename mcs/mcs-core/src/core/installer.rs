@@ -125,6 +125,15 @@ pub fn install_command(
     platform: &PlatformConfig,
     name: &str,
 ) -> InstallResult {
+    if !platform.supports_commands() {
+        return InstallResult {
+            success: false,
+            item_name: name.into(),
+            message: format!("Commands are not managed for platform '{}'", platform.name),
+            error: None,
+        };
+    }
+
     if let Err(e) = validate_item_name(name) {
         return install_result_error(name, format!("Invalid command name: {name}"), e);
     }
@@ -223,6 +232,15 @@ pub fn uninstall_skill(platform: &PlatformConfig, name: &str) -> InstallResult {
 }
 
 pub fn uninstall_command(platform: &PlatformConfig, name: &str) -> InstallResult {
+    if !platform.supports_commands() {
+        return InstallResult {
+            success: false,
+            item_name: name.into(),
+            message: format!("Commands are not managed for platform '{}'", platform.name),
+            error: None,
+        };
+    }
+
     if let Err(e) = validate_item_name(name) {
         return install_result_error(name, format!("Invalid command name: {name}"), e);
     }

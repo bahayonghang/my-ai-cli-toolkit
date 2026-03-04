@@ -66,7 +66,7 @@ impl ItemInfo {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct InstallResult {
     pub success: bool,
     pub item_name: String,
