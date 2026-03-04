@@ -21,22 +21,74 @@ prompt_file = "CLAUDE.md"
 commands_source = "claude"
 # fallback_commands_source = null  # 无 fallback
 
+[platforms.amp]
+type = "cli"
+base_dir = "~/.amp"
+skills_base_dir = "~/.agents"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = ""  # skills-only 平台，不管理 commands
+# fallback_commands_source = null
+
+[platforms.cline]
+type = "cli"
+base_dir = "~/.cline"
+skills_base_dir = "~/.agents"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = ""  # skills-only 平台，不管理 commands
+# fallback_commands_source = null
+
 [platforms.codex]
 type = "cli"
 base_dir = "~/.codex"
+skills_base_dir = "~/.agents"
 skills_subdir = "skills"
 commands_subdir = "prompts"  # codex 使用 prompts 目录
 # prompt_file = null
 commands_source = "codex"
 fallback_commands_source = "claude"
 
+[platforms.cursor]
+type = "cli"
+base_dir = "~/.cursor"
+skills_base_dir = "~/.agents"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = "cursor"
+fallback_commands_source = "claude"
+
 [platforms.gemini]
 type = "cli"
 base_dir = "~/.agents"
+skills_base_dir = "~/.agents"
 skills_subdir = "skills"
 commands_subdir = "commands"
 # prompt_file = null
 commands_source = "gemini"
+# fallback_commands_source = null
+
+[platforms.copilot]
+type = "cli"
+base_dir = "~/.copilot"
+skills_base_dir = "~/.agents"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = ""  # skills-only 平台，不管理 commands
+# fallback_commands_source = null
+
+[platforms.kimi]
+type = "cli"
+base_dir = "~/.kimi"
+skills_base_dir = "~/.agents"
+skills_subdir = "skills"
+commands_subdir = "commands"
+# prompt_file = null
+commands_source = ""  # skills-only 平台，不管理 commands
 # fallback_commands_source = null
 
 [platforms.qwen]
@@ -87,6 +139,7 @@ fallback_commands_source = "claude"
 [platforms.opencode]
 type = "cli"
 base_dir = "~/.config/opencode"
+skills_base_dir = "~/.agents"
 skills_subdir = "skills"
 commands_subdir = "commands"
 # prompt_file = null
