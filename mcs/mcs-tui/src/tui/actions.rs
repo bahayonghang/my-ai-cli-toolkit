@@ -1,11 +1,13 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 
 use crate::tui::state::{
     AppState, BatchTask, BatchTaskKind, ContentTab, InstallMode, NotificationLevel, PendingBatch,
 };
 use mcs_core::config::platform::PlatformConfig;
+use mcs_core::core::install_target::{
+    InstallTarget, InstallTargetAccessMode, InstallTargetScope, resolve_target_platform,
+};
 use mcs_core::model::{ItemType, LinkMode};
 
 #[derive(Debug, Clone)]
@@ -84,8 +86,15 @@ fn dispatch_install_batch(
     };
 
     if mode == InstallMode::Directory {
-        let project_path = match normalize_project_path(path_input) {
-            Ok(p) => p,
+        let resolved = match resolve_target_platform(
+            &platform,
+            &InstallTarget {
+                scope: InstallTargetScope::Project,
+                project_path: Some(path_input.to_string()),
+            },
+            InstallTargetAccessMode::Write,
+        ) {
+            Ok(result) => result,
             Err(msg) => {
                 return ActionResult {
                     accepted: false,
@@ -94,7 +103,7 @@ fn dispatch_install_batch(
                 };
             }
         };
-        platform = project_platform_for_directory(&platform, &project_path);
+        platform = resolved.platform;
     }
 
     let mut tasks = Vec::with_capacity(names.len());
@@ -395,76 +404,6 @@ fn item_type_for_tab(tab: ContentTab) -> ItemType {
     match tab {
         ContentTab::Skills => ItemType::Skill,
         ContentTab::Commands => ItemType::Command,
-    }
-}
-
-fn normalize_project_path(raw_path: &str) -> Result<PathBuf, String> {
-    let trimmed = raw_path.trim();
-    if trimmed.is_empty() {
-        return Err("Project path is required in directory install mode".into());
-    }
-
-    let input = PathBuf::from(trimmed);
-    let abs_path = if input.is_absolute() {
-        input
-    } else {
-        std::env::current_dir()
-            .map_err(|e| format!("Cannot resolve current directory: {e}"))?
-            .join(input)
-    };
-
-    let normalized = abs_path.canonicalize().unwrap_or(abs_path);
-    if !normalized.exists() {
-        return Err(format!(
-            "Project path does not exist: {}",
-            normalized.display()
-        ));
-    }
-    if !normalized.is_dir() {
-        return Err(format!(
-            "Project path is not a directory: {}",
-            normalized.display()
-        ));
-    }
-
-    let probe_name = format!(
-        ".mcs_write_probe_{}",
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_micros())
-            .unwrap_or_default()
-    );
-    let probe = normalized.join(probe_name);
-    match OpenOptions::new().create_new(true).write(true).open(&probe) {
-        Ok(_) => {
-            let _ = std::fs::remove_file(probe);
-            Ok(normalized)
-        }
-        Err(e) => Err(format!(
-            "Project path is not writable: {} ({e})",
-            normalized.display()
-        )),
-    }
-}
-
-fn project_platform_for_directory(
-    platform: &PlatformConfig,
-    project_path: &Path,
-) -> PlatformConfig {
-    let mut project_platform = platform.clone();
-    let platform_dir = project_platform_dir(&platform.name);
-    let base_dir = project_path.join(platform_dir);
-    project_platform.base_dir = base_dir.to_string_lossy().to_string();
-    project_platform.skills_base_dir = None;
-    project_platform
-}
-
-fn project_platform_dir(platform_name: &str) -> String {
-    match platform_name {
-        "opencode" => ".opencode".to_string(),
-        "antigravity" => ".gemini/antigravity".to_string(),
-        "windsurf" => ".codeium/windsurf".to_string(),
-        _ => format!(".{platform_name}"),
     }
 }
 
