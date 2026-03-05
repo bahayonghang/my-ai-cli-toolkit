@@ -5,6 +5,9 @@ import type {
   PlatformConfig,
   ItemDto,
   SkillCatalogDto,
+  ExternalSkillCatalogDto,
+  ExternalInstallBatchItemDto,
+  ExternalInstallJobStartDto,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
@@ -14,6 +17,9 @@ import type {
   InstallStatus,
   InstallTarget,
   ResolvedInstallTarget,
+  PickedFolderDto,
+  LegacyDirDto,
+  CleanupResultDto,
 } from "@/types";
 
 const BASE = "/api";
@@ -112,6 +118,10 @@ export async function getDashboard(): Promise<DashboardDto> {
 
 export async function getSkillCatalog(): Promise<SkillCatalogDto[]> {
   return fetchJson(`${BASE}/skills/catalog`);
+}
+
+export async function getExternalSkillCatalog(): Promise<ExternalSkillCatalogDto[]> {
+  return fetchJson(`${BASE}/external-skills/catalog`);
 }
 
 // ── Skills ─────────────────────────────────────────────────────────
@@ -276,4 +286,31 @@ export async function externalInstallSkill(
       installTarget
     )
   );
+}
+
+export async function startExternalInstallJob(
+  platformId: string,
+  items: ExternalInstallBatchItemDto[],
+  installTarget?: InstallTarget
+): Promise<ExternalInstallJobStartDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/skills/external-install/jobs`,
+    withInstallTargetBody({ items }, installTarget)
+  );
+}
+
+// ── System ─────────────────────────────────────────────────────────
+
+export async function pickFolder(): Promise<PickedFolderDto> {
+  return fetchJson(`${BASE}/system/pick-folder`);
+}
+
+export async function getLegacyDirs(): Promise<LegacyDirDto[]> {
+  return fetchJson(`${BASE}/system/legacy-dirs`);
+}
+
+export async function cleanupLegacyDirs(
+  paths: string[]
+): Promise<CleanupResultDto> {
+  return postJson(`${BASE}/system/legacy-dirs/cleanup`, { paths });
 }

@@ -1,0 +1,182 @@
+# 外部技能注册表 — 供 mcs 读取的结构化数据
+# 每个 [[skills]] 条目对应一个可通过 npx 安装的外部技能
+#
+# 字段说明：
+#   name        - 技能唯一标识 / 显示名
+#   repo        - GitHub 仓库 URL 或 shorthand
+#   skill_flag  - --skill 参数（可选，为空时不传）
+#   method      - 安装方式：vercel | playbooks
+#   category    - 分类标签
+#   description - 技能描述
+#   stars       - 推荐星级 1-5（可选）
+#   project_only - 是否仅支持 project 级别安装（可选，默认 false）
+
+# ── Skills Plugin ──────────────────────────────────────────────────
+
+[[skills]]
+name = "vercel-react-best-practices"
+repo = "https://github.com/vercel-labs/agent-skills"
+skill_flag = "vercel-react-best-practices"
+method = "vercel"
+category = "frontend"
+description = "Vercel React 和 Next.js 性能优化最佳实践（57 条规则, 8 大类别）"
+stars = 4
+
+[[skills]]
+name = "skill-creator"
+repo = "https://github.com/anthropics/skills"
+skill_flag = "skill-creator"
+method = "vercel"
+category = "dev-tools"
+description = "Claude 技能创建器（交互式引导创建新 Claude Code 技能）"
+stars = 4
+
+[[skills]]
+name = "agent-browser"
+repo = "https://github.com/vercel-labs/agent-browser"
+skill_flag = "agent-browser"
+method = "vercel"
+category = "dev-tools"
+description = "AI Agent 浏览器自动化工具（Rust 无头浏览器, 支持测试/截图/数据提取）"
+stars = 4
+
+[[skills]]
+name = "find-skills"
+repo = "https://github.com/vercel-labs/skills"
+skill_flag = "find-skills"
+method = "vercel"
+category = "dev-tools"
+description = "技能发现工具（查找和安装 agent skills 生态中的可用技能包）"
+stars = 5
+
+[[skills]]
+name = "vue-best-practices"
+repo = "https://github.com/hyf0/vue-skills"
+skill_flag = "vue-best-practices"
+method = "vercel"
+category = "frontend"
+description = "Vue 3 开发最佳实践（Composition API / 响应式 / 组件设计指南）"
+stars = 3
+
+[[skills]]
+name = "remotion-best-practices"
+repo = "https://github.com/remotion-dev/skills"
+skill_flag = "remotion-best-practices"
+method = "vercel"
+category = "media"
+description = "Remotion 视频创建最佳实践（React 编程视频的动画/音频/资源管理）"
+stars = 3
+
+[[skills]]
+name = "vuejs-ai-skills"
+repo = "vuejs-ai/skills"
+method = "vercel"
+category = "frontend"
+description = "Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）"
+stars = 4
+
+[[skills]]
+name = "supabase-agent-skills"
+repo = "supabase/agent-skills"
+method = "vercel"
+category = "database"
+description = "Supabase Agent Skills — PostgreSQL 最佳实践（查询/连接/模式/RLS）"
+stars = 4
+
+[[skills]]
+name = "code-review-expert"
+repo = "sanyuan0704/code-review-expert"
+method = "vercel"
+category = "dev-tools"
+description = "代码审查专家 — 多维度结构化审查（SOLID/安全/性能, P0-P3 评级报告）"
+stars = 4
+
+[[skills]]
+name = "claude-scientific-skills"
+repo = "K-Dense-AI/claude-scientific-skills"
+method = "vercel"
+category = "scientific"
+description = "AI 科学家技能库 — 140+ 科研通用技能（生信/基因/分子研发, PubMed 集成）"
+stars = 5
+
+[[skills]]
+name = "claude-skills-fullstack"
+repo = "jeffallan/claude-skills"
+method = "vercel"
+category = "dev-tools"
+description = "全栈开发结对编程助手 — 66 个专用技能（前后端框架/测试/DevOps）"
+stars = 4
+
+[[skills]]
+name = "ui-ux-pro-max"
+repo = "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
+skill_flag = "ui-ux-pro-max"
+method = "vercel"
+category = "ui-ux"
+description = "UI/UX Pro Max 设计专家 — 60+ 审美风格 / 百套配色 / 企业页面向导"
+stars = 5
+
+[[skills]]
+name = "skill-seekers"
+repo = "https://github.com/sickn33/antigravity-awesome-skills"
+skill_flag = "skill-seekers"
+method = "vercel"
+category = "dev-tools"
+description = "技能发现工具 — 查找和安装 agent skills 生态中的可用技能包"
+stars = 5
+
+# ── Python 代码质量 ────────────────────────────────────────────────
+
+[[skills]]
+name = "python-code-quality"
+repo = "laurigates/claude-plugins@python-code-quality"
+method = "vercel"
+category = "python"
+description = "Python 代码质量分析（静态分析/代码规范/最佳实践）"
+stars = 3
+
+[[skills]]
+name = "python-refactor"
+repo = "acaprino/alfio-claude-plugins@python-refactor"
+method = "vercel"
+category = "python"
+description = "Python 代码重构工具（自动化重构建议/代码简化）"
+stars = 3
+
+[[skills]]
+name = "agent-architecture-analysis"
+repo = "existential-birds/beagle@agent-architecture-analysis"
+method = "vercel"
+category = "dev-tools"
+description = "Agent 架构分析工具（代码架构审查/设计模式识别）"
+stars = 3
+
+# ── Scientific Skills ─────────────────────────────────────────────
+
+[[skills]]
+name = "research-skills"
+repo = "luwill/research-skills"
+method = "vercel"
+category = "scientific"
+description = "学术研究技能包（文献综述/实验设计/论文撰写辅助）"
+stars = 3
+
+# ── Obsidian Skills ───────────────────────────────────────────────
+
+[[skills]]
+name = "obsidian-skills"
+repo = "kepano/obsidian-skills"
+method = "vercel"
+category = "obsidian"
+description = "Obsidian 笔记技能（官方, Kepano 维护）"
+stars = 5
+project_only = true
+
+[[skills]]
+name = "obsidian-visual-skills"
+repo = "axtonliu/axton-obsidian-visual-skills"
+method = "vercel"
+category = "obsidian"
+description = "Obsidian 可视化技能（图表/看板/时间线等视觉笔记）"
+stars = 4
+project_only = true

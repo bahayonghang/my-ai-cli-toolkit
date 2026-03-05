@@ -1,4 +1,5 @@
 pub mod discovery;
+pub mod external_skills;
 pub mod fs_utils;
 pub mod install_target;
 pub mod installer;

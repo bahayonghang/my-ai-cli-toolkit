@@ -12,9 +12,14 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  InputAdornment,
+  IconButton,
+  CircularProgress,
 } from "@mui/material";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import type { InstallTarget, InstallTargetScope } from "@/types";
 import { useI18n } from "@/i18n";
+import { pickFolder } from "@/api/client";
 
 interface Props {
   open: boolean;
@@ -36,6 +41,7 @@ export function InstallTargetDialog({
   const { t } = useI18n();
   const [scope, setScope] = useState<InstallTargetScope>("global");
   const [projectPath, setProjectPath] = useState("");
+  const [pickingFolder, setPickingFolder] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -53,6 +59,20 @@ export function InstallTargetDialog({
     const ok = await onApply(nextTarget);
     if (ok) {
       onClose();
+    }
+  };
+
+  const handlePickFolder = async () => {
+    try {
+      setPickingFolder(true);
+      const res = await pickFolder();
+      if (res.path) {
+        setProjectPath(res.path);
+      }
+    } catch (e) {
+      console.error("Failed to pick folder", e);
+    } finally {
+      setPickingFolder(false);
     }
   };
 
@@ -84,7 +104,16 @@ export function InstallTargetDialog({
                 placeholder={t("dialogs.projectPathPlaceholder")}
                 fullWidth
                 size="small"
-                disabled={loading}
+                disabled={loading || pickingFolder}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handlePickFolder} disabled={loading || pickingFolder} size="small" title="Choose local folder">
+                        {pickingFolder ? <CircularProgress size={20} /> : <FolderOpenIcon fontSize="small" />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
 
               <Box>

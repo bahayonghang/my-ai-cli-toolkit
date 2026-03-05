@@ -1,5 +1,5 @@
 export const enInstallMessages = {
-  "install.pageTitle": "Skills Library — {platform}",
+  "install.pageTitle": "Skills Library - {platform}",
   "install.source": "SOURCE",
   "install.sourceLocalRepo": "Local Repo",
   "install.sourceVercel": "Vercel",
@@ -20,6 +20,22 @@ export const enInstallMessages = {
   "install.externalInstallSubVercel": "Install skills from Vercel registry",
   "install.externalInstallSubPlaybooks":
     "Install skills from Playbooks registry",
+  "install.externalBatchRecommended": "Recommended skills",
+  "install.externalBatchCustomInput": "Custom batch input",
+  "install.externalBatchCustomHint":
+    "One entry per line. Supports: owner/repo or owner/repo --skill name",
+  "install.externalBatchSelectionCount": "{count} selected",
+  "install.externalBatchQueueCount": "{count} items queued",
+  "install.externalBatchNoQueue": "No items queued yet.",
+  "install.externalBatchStart": "Start Batch Install",
+  "install.externalBatchInProgress": "Batch install in progress...",
+  "install.externalBatchCurrent": "{completed}/{total} completed",
+  "install.externalBatchConnectionLost":
+    "Progress stream disconnected. The task may still be running.",
+  "install.externalBatchCompleted":
+    "Batch install finished: {success} success, {failed} failed",
+  "install.externalBatchFailed": "Batch install failed: {message}",
+  "install.externalBatchClear": "Clear selection",
   "install.skillNameLabel": "Skill Name",
   "install.skillNamePlaceholder": "e.g. find-skills",
   "install.installMethod": "Installation Method",
@@ -47,7 +63,7 @@ export const zhInstallMessages: Record<
   keyof typeof enInstallMessages,
   string
 > = {
-  "install.pageTitle": "技能库 — {platform}",
+  "install.pageTitle": "技能库 - {platform}",
   "install.source": "来源",
   "install.sourceLocalRepo": "本地仓库",
   "install.sourceVercel": "Vercel",
@@ -67,6 +83,21 @@ export const zhInstallMessages: Record<
   "install.externalInstallTitle": "外部安装",
   "install.externalInstallSubVercel": "从 Vercel 仓库安装技能",
   "install.externalInstallSubPlaybooks": "从 Playbooks 仓库安装技能",
+  "install.externalBatchRecommended": "推荐技能",
+  "install.externalBatchCustomInput": "自定义批量输入",
+  "install.externalBatchCustomHint":
+    "每行一项，支持 owner/repo 或 owner/repo --skill name",
+  "install.externalBatchSelectionCount": "已选 {count} 项",
+  "install.externalBatchQueueCount": "待安装 {count} 项",
+  "install.externalBatchNoQueue": "暂无待安装项。",
+  "install.externalBatchStart": "开始批量安装",
+  "install.externalBatchInProgress": "正在批量安装...",
+  "install.externalBatchCurrent": "已完成 {completed}/{total}",
+  "install.externalBatchConnectionLost":
+    "进度连接已断开，任务可能仍在运行。",
+  "install.externalBatchCompleted": "批量安装完成：成功 {success}，失败 {failed}",
+  "install.externalBatchFailed": "批量安装失败：{message}",
+  "install.externalBatchClear": "清空选择",
   "install.skillNameLabel": "技能名",
   "install.skillNamePlaceholder": "例如：find-skills",
   "install.installMethod": "安装方式",

@@ -1,20 +1,119 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
+use axum::response::sse::{Event, KeepAlive, Sse};
+use serde::Serialize;
+use serde_json::json;
+use std::collections::HashMap;
+use std::convert::Infallible;
 use std::path::PathBuf;
-use std::time::Duration;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, OnceLock};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use tokio::sync::{RwLock, Semaphore, broadcast};
+use tokio_stream::{StreamExt as TokioStreamExt, wrappers::BroadcastStream};
 
 use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 use mcs_core::core::installer::{install_skill, uninstall_skill};
 
 use crate::api::error::AppError;
 use crate::dto::{
-    ApiResponse, BatchResultDto, DiffDto, EditContentRequest, ExternalInstallMethod,
+    ApiResponse, BatchResultDto, DiffDto, EditContentRequest, ExternalInstallBatchItem,
+    ExternalInstallJobRequest, ExternalInstallJobStartResult, ExternalInstallMethod,
     ExternalInstallRequest, ExternalInstallResult, InstallRequest, InstallTargetScopeDto,
     ItemDetailDto, ItemDto, ItemQuery, SimpleSuccess,
 };
 use crate::state::AppState;
 
 const EXTERNAL_INSTALL_TIMEOUT_SECS: u64 = 120;
+const EXTERNAL_INSTALL_MAX_ITEMS: usize = 100;
+const EXTERNAL_INSTALL_MAX_CONCURRENCY: usize = 3;
+const EXTERNAL_INSTALL_OUTPUT_MAX_BYTES: usize = 8 * 1024;
+const EXTERNAL_INSTALL_JOB_RETENTION_SECS: u64 = 30 * 60;
+const EXTERNAL_INSTALL_JOB_HISTORY_MAX_EVENTS: usize = 2_048;
+
+type ExternalInstallJobMap = HashMap<String, Arc<RwLock<ExternalInstallJob>>>;
+
+static EXTERNAL_INSTALL_JOBS: OnceLock<Arc<RwLock<ExternalInstallJobMap>>> = OnceLock::new();
+static EXTERNAL_INSTALL_JOB_COUNTER: AtomicU64 = AtomicU64::new(1);
+
+#[derive(Clone)]
+struct ExternalInstallSseEnvelope {
+    event: String,
+    data: String,
+}
+
+struct ExternalInstallJob {
+    platform_id: String,
+    total: usize,
+    success_count: usize,
+    failure_count: usize,
+    completed: bool,
+    history: Vec<ExternalInstallSseEnvelope>,
+    sender: broadcast::Sender<ExternalInstallSseEnvelope>,
+}
+
+impl ExternalInstallJob {
+    fn push_event(&mut self, event: ExternalInstallSseEnvelope) {
+        if self.history.len() >= EXTERNAL_INSTALL_JOB_HISTORY_MAX_EVENTS {
+            self.history.remove(0);
+        }
+        self.history.push(event.clone());
+        let _ = self.sender.send(event);
+    }
+}
+
+#[derive(Serialize)]
+struct JobStartedPayload {
+    job_id: String,
+    total: usize,
+    max_concurrency: usize,
+    started_at_ms: u128,
+}
+
+#[derive(Serialize)]
+struct ItemStartedPayload {
+    job_id: String,
+    item_id: String,
+    skill_name: String,
+    method: String,
+}
+
+#[derive(Serialize)]
+struct ItemFinishedPayload {
+    job_id: String,
+    item_id: String,
+    skill_name: String,
+    method: String,
+    success: bool,
+    output: String,
+    error: Option<String>,
+    duration_ms: u128,
+}
+
+#[derive(Serialize)]
+struct JobProgressPayload {
+    job_id: String,
+    completed: usize,
+    total: usize,
+    success_count: usize,
+    failure_count: usize,
+    percent: f64,
+}
+
+#[derive(Serialize)]
+struct JobCompletedPayload {
+    job_id: String,
+    total: usize,
+    success_count: usize,
+    failure_count: usize,
+    completed_at_ms: u128,
+}
+
+#[derive(Serialize)]
+struct JobFailedPayload {
+    job_id: String,
+    message: String,
+}
 
 /// GET /api/platforms/:id/skills — list skills with optional filters
 pub async fn list(
@@ -331,30 +430,394 @@ pub async fn external_install(
         return Err(AppError::NotFound(format!("Platform '{id}' not found")));
     }
 
-    if matches!(body.install_target.scope, InstallTargetScopeDto::Project) {
+    ensure_external_install_allowed(body.install_target.scope)?;
+    let result = execute_external_install(body.method, &body.skill_name).await?;
+
+    if result.success {
+        invalidate_platform_and_shared_skills(&state, &id).await;
+    }
+
+    Ok(Json(ApiResponse::ok(result)))
+}
+
+/// POST /api/platforms/:id/skills/external-install/jobs — start batch external install job
+pub async fn external_install_jobs_start(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(body): Json<ExternalInstallJobRequest>,
+) -> Result<Json<ApiResponse<ExternalInstallJobStartResult>>, AppError> {
+    if state.platform(&id).await.is_none() {
+        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
+    }
+
+    ensure_external_install_allowed(body.install_target.scope)?;
+    if body.items.is_empty() {
+        return Err(AppError::BadRequest(
+            "At least one item is required for batch external install".into(),
+        ));
+    }
+    if body.items.len() > EXTERNAL_INSTALL_MAX_ITEMS {
+        return Err(AppError::BadRequest(format!(
+            "Too many items ({}) for batch external install; max allowed is {EXTERNAL_INSTALL_MAX_ITEMS}",
+            body.items.len()
+        )));
+    }
+
+    let items = normalize_batch_items(body.items)?;
+    let total = items.len();
+    let job_id = generate_external_install_job_id();
+    let (sender, _) = broadcast::channel(512);
+    let job = Arc::new(RwLock::new(ExternalInstallJob {
+        platform_id: id.clone(),
+        total: items.len(),
+        success_count: 0,
+        failure_count: 0,
+        completed: false,
+        history: Vec::new(),
+        sender,
+    }));
+
+    {
+        let jobs = external_install_jobs();
+        jobs.write().await.insert(job_id.clone(), job);
+    }
+
+    let state_for_job = state.clone();
+    let platform_id_for_job = id.clone();
+    let job_id_for_job = job_id.clone();
+    tokio::spawn(async move {
+        run_external_install_job(state_for_job, platform_id_for_job, job_id_for_job, items).await;
+    });
+
+    Ok(Json(ApiResponse::ok(ExternalInstallJobStartResult {
+        job_id,
+        total,
+        status: "running".to_string(),
+    })))
+}
+
+/// GET /api/platforms/:id/skills/external-install/jobs/:job_id/stream — stream batch progress via SSE
+pub async fn external_install_jobs_stream(
+    State(state): State<AppState>,
+    Path((id, job_id)): Path<(String, String)>,
+) -> Result<Sse<impl tokio_stream::Stream<Item = Result<Event, Infallible>>>, AppError> {
+    if state.platform(&id).await.is_none() {
+        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
+    }
+
+    let job = {
+        let jobs = external_install_jobs();
+        jobs.read().await.get(&job_id).cloned().ok_or_else(|| {
+            AppError::NotFound(format!("External install job '{job_id}' not found"))
+        })?
+    };
+
+    let (history, receiver) = {
+        let job_guard = job.read().await;
+        if job_guard.platform_id != id {
+            return Err(AppError::NotFound(format!(
+                "External install job '{job_id}' not found for platform '{id}'"
+            )));
+        }
+        (job_guard.history.clone(), job_guard.sender.subscribe())
+    };
+
+    let history_stream = tokio_stream::iter(history.into_iter().map(envelope_to_sse_result));
+    let live_stream = BroadcastStream::new(receiver).filter_map(|message| match message {
+        Ok(envelope) => Some(envelope_to_sse_result(envelope)),
+        Err(_) => None,
+    });
+
+    let combined = history_stream.chain(live_stream);
+    Ok(Sse::new(combined).keep_alive(
+        KeepAlive::new()
+            .interval(Duration::from_secs(15))
+            .text("keep-alive"),
+    ))
+}
+
+async fn run_external_install_job(
+    state: AppState,
+    platform_id: String,
+    job_id: String,
+    items: Vec<ExternalInstallBatchItem>,
+) {
+    let Some(job) = get_external_install_job(&job_id).await else {
+        return;
+    };
+
+    let _ = emit_job_event(
+        &job,
+        "job_started",
+        &JobStartedPayload {
+            job_id: job_id.clone(),
+            total: items.len(),
+            max_concurrency: EXTERNAL_INSTALL_MAX_CONCURRENCY,
+            started_at_ms: unix_time_ms(),
+        },
+    )
+    .await;
+
+    let semaphore = Arc::new(Semaphore::new(EXTERNAL_INSTALL_MAX_CONCURRENCY));
+    let mut set = tokio::task::JoinSet::new();
+
+    for (index, item) in items.into_iter().enumerate() {
+        let job = job.clone();
+        let job_id = job_id.clone();
+        let semaphore = semaphore.clone();
+        set.spawn(async move {
+            run_external_install_job_item(job, job_id, index, item, semaphore).await;
+        });
+    }
+
+    while let Some(joined) = set.join_next().await {
+        if let Err(error) = joined {
+            let _ = emit_job_event(
+                &job,
+                "job_failed",
+                &JobFailedPayload {
+                    job_id: job_id.clone(),
+                    message: format!("A worker task failed: {error}"),
+                },
+            )
+            .await;
+        }
+    }
+
+    let (success_count, failure_count, total) = {
+        let mut job_guard = job.write().await;
+        job_guard.completed = true;
+        let success_count = job_guard.success_count;
+        let failure_count = job_guard.failure_count;
+        let total = job_guard.total;
+        job_guard.push_event(build_sse_envelope(
+            "job_completed",
+            &JobCompletedPayload {
+                job_id: job_id.clone(),
+                total,
+                success_count,
+                failure_count,
+                completed_at_ms: unix_time_ms(),
+            },
+        ));
+        (success_count, failure_count, total)
+    };
+
+    if success_count > 0 {
+        invalidate_platform_and_shared_skills(&state, &platform_id).await;
+    }
+
+    tracing::info!(
+        "External install job completed: job_id={job_id} platform={platform_id} total={total} success={success_count} failure={failure_count}"
+    );
+    schedule_external_install_job_cleanup(job_id);
+}
+
+async fn run_external_install_job_item(
+    job: Arc<RwLock<ExternalInstallJob>>,
+    job_id: String,
+    index: usize,
+    item: ExternalInstallBatchItem,
+    semaphore: Arc<Semaphore>,
+) {
+    let Ok(_permit) = semaphore.acquire_owned().await else {
+        let _ = emit_job_event(
+            &job,
+            "job_failed",
+            &JobFailedPayload {
+                job_id,
+                message: "Semaphore was closed unexpectedly".to_string(),
+            },
+        )
+        .await;
+        return;
+    };
+
+    let item_id = format!("{index}");
+    let method = external_install_method_name(item.method).to_string();
+
+    let _ = emit_job_event(
+        &job,
+        "item_started",
+        &ItemStartedPayload {
+            job_id: job_id.clone(),
+            item_id: item_id.clone(),
+            skill_name: item.skill_name.clone(),
+            method: method.clone(),
+        },
+    )
+    .await;
+
+    let started = tokio::time::Instant::now();
+    let result = execute_external_install(item.method, &item.skill_name).await;
+    let duration_ms = started.elapsed().as_millis();
+
+    let payload = match result {
+        Ok(result) => {
+            let success = result.success;
+            let output = result.output;
+            ItemFinishedPayload {
+                job_id: job_id.clone(),
+                item_id: item_id.clone(),
+                skill_name: item.skill_name.clone(),
+                method: method.clone(),
+                success,
+                output: truncate_utf8(output.clone(), EXTERNAL_INSTALL_OUTPUT_MAX_BYTES),
+                error: if success {
+                    None
+                } else {
+                    extract_failure_message(&output)
+                },
+                duration_ms,
+            }
+        }
+        Err(error) => ItemFinishedPayload {
+            job_id: job_id.clone(),
+            item_id: item_id.clone(),
+            skill_name: item.skill_name.clone(),
+            method: method.clone(),
+            success: false,
+            output: String::new(),
+            error: Some(app_error_message(&error)),
+            duration_ms,
+        },
+    };
+
+    let mut job_guard = job.write().await;
+    job_guard.push_event(build_sse_envelope("item_finished", &payload));
+    if payload.success {
+        job_guard.success_count += 1;
+    } else {
+        job_guard.failure_count += 1;
+    }
+
+    let completed = job_guard.success_count + job_guard.failure_count;
+    let progress = JobProgressPayload {
+        job_id,
+        completed,
+        total: job_guard.total,
+        success_count: job_guard.success_count,
+        failure_count: job_guard.failure_count,
+        percent: if job_guard.total == 0 {
+            0.0
+        } else {
+            (completed as f64 / job_guard.total as f64) * 100.0
+        },
+    };
+    job_guard.push_event(build_sse_envelope("job_progress", &progress));
+}
+
+fn external_install_jobs() -> &'static Arc<RwLock<ExternalInstallJobMap>> {
+    EXTERNAL_INSTALL_JOBS.get_or_init(|| Arc::new(RwLock::new(HashMap::new())))
+}
+
+async fn get_external_install_job(job_id: &str) -> Option<Arc<RwLock<ExternalInstallJob>>> {
+    let jobs = external_install_jobs();
+    jobs.read().await.get(job_id).cloned()
+}
+
+fn generate_external_install_job_id() -> String {
+    let seq = EXTERNAL_INSTALL_JOB_COUNTER.fetch_add(1, Ordering::Relaxed);
+    format!("external-{seq}-{}", unix_time_ms())
+}
+
+fn unix_time_ms() -> u128 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_millis())
+        .unwrap_or(0)
+}
+
+fn build_sse_envelope<T: Serialize>(event: &str, payload: &T) -> ExternalInstallSseEnvelope {
+    let data = serde_json::to_string(payload)
+        .unwrap_or_else(|_| json!({ "message": "Failed to serialize SSE payload" }).to_string());
+    ExternalInstallSseEnvelope {
+        event: event.to_string(),
+        data,
+    }
+}
+
+fn envelope_to_sse_result(envelope: ExternalInstallSseEnvelope) -> Result<Event, Infallible> {
+    Ok(Event::default().event(envelope.event).data(envelope.data))
+}
+
+async fn emit_job_event<T: Serialize>(
+    job: &Arc<RwLock<ExternalInstallJob>>,
+    event: &str,
+    payload: &T,
+) -> Result<(), AppError> {
+    let mut job_guard = job.write().await;
+    job_guard.push_event(build_sse_envelope(event, payload));
+    Ok(())
+}
+
+fn schedule_external_install_job_cleanup(job_id: String) {
+    let jobs = external_install_jobs().clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_secs(EXTERNAL_INSTALL_JOB_RETENTION_SECS)).await;
+        jobs.write().await.remove(&job_id);
+    });
+}
+
+fn normalize_batch_items(
+    items: Vec<ExternalInstallBatchItem>,
+) -> Result<Vec<ExternalInstallBatchItem>, AppError> {
+    let mut normalized = Vec::with_capacity(items.len());
+    for item in items {
+        let skill_name = item.skill_name.trim();
+        if skill_name.is_empty() {
+            continue;
+        }
+        normalized.push(ExternalInstallBatchItem {
+            skill_name: skill_name.to_string(),
+            method: item.method,
+        });
+    }
+    if normalized.is_empty() {
+        return Err(AppError::BadRequest(
+            "No valid skill names found in batch request".into(),
+        ));
+    }
+    Ok(normalized)
+}
+
+fn ensure_external_install_allowed(scope: InstallTargetScopeDto) -> Result<(), AppError> {
+    if matches!(scope, InstallTargetScopeDto::Project) {
         return Err(AppError::BadRequest(
             "External install is disabled in project install mode".into(),
         ));
     }
+    Ok(())
+}
 
-    let args: Vec<String> = match body.method {
-        ExternalInstallMethod::Vercel => {
-            vec![
-                "skills".to_string(),
-                "add".to_string(),
-                body.skill_name.clone(),
-            ]
-        }
-        ExternalInstallMethod::Playbooks => {
-            vec![
-                "playbooks".to_string(),
-                "add".to_string(),
-                "skill".to_string(),
-                body.skill_name.clone(),
-            ]
-        }
-    };
+fn external_install_method_name(method: ExternalInstallMethod) -> &'static str {
+    match method {
+        ExternalInstallMethod::Vercel => "vercel",
+        ExternalInstallMethod::Playbooks => "playbooks",
+    }
+}
 
+fn build_external_install_args(method: ExternalInstallMethod, skill_name: &str) -> Vec<String> {
+    match method {
+        ExternalInstallMethod::Vercel => vec![
+            "skills".to_string(),
+            "add".to_string(),
+            skill_name.to_string(),
+        ],
+        ExternalInstallMethod::Playbooks => vec![
+            "playbooks".to_string(),
+            "add".to_string(),
+            "skill".to_string(),
+            skill_name.to_string(),
+        ],
+    }
+}
+
+async fn execute_external_install(
+    method: ExternalInstallMethod,
+    skill_name: &str,
+) -> Result<ExternalInstallResult, AppError> {
+    let args = build_external_install_args(method, skill_name);
     let mut command = tokio::process::Command::new("npx");
     command.args(&args);
     command.kill_on_drop(true);
@@ -375,17 +838,42 @@ pub async fn external_install(
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
     let combined = if stderr.is_empty() {
         stdout
+    } else if stdout.is_empty() {
+        stderr
     } else {
         format!("{stdout}\n{stderr}")
     };
-    let success = output.status.success();
 
-    if success {
-        invalidate_platform_and_shared_skills(&state, &id).await;
-    }
-
-    Ok(Json(ApiResponse::ok(ExternalInstallResult {
-        success,
+    Ok(ExternalInstallResult {
+        success: output.status.success(),
         output: combined,
-    })))
+    })
+}
+
+fn truncate_utf8(input: String, max_bytes: usize) -> String {
+    if input.len() <= max_bytes {
+        return input;
+    }
+    let mut end = max_bytes;
+    while end > 0 && !input.is_char_boundary(end) {
+        end -= 1;
+    }
+    format!("{}...[truncated]", &input[..end])
+}
+
+fn extract_failure_message(output: &str) -> Option<String> {
+    output
+        .lines()
+        .rev()
+        .find(|line| !line.trim().is_empty())
+        .map(|line| line.trim().to_string())
+}
+
+fn app_error_message(error: &AppError) -> String {
+    match error {
+        AppError::NotFound(message) => message.clone(),
+        AppError::BadRequest(message) => message.clone(),
+        AppError::BadRequestWithDetails { message, .. } => message.clone(),
+        AppError::Internal(message) => message.clone(),
+    }
 }

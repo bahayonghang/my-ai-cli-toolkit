@@ -9,6 +9,8 @@ export const enPlatformSelectMessages = {
   "platformSelect.unifiedInstallLabel": "Unified Install",
   "platformSelect.dashboardTitle": "View Global Dashboard",
   "platformSelect.dashboardLabel": "Dashboard",
+  "platformSelect.legacyCleanupTooltip": "Detected legacy skill directories. Click to clean up",
+  "platformSelect.legacyCleanupLabel": "{count} legacy dirs",
 } as const;
 
 export const zhPlatformSelectMessages: Record<
@@ -25,4 +27,6 @@ export const zhPlatformSelectMessages: Record<
   "platformSelect.unifiedInstallLabel": "统一安装",
   "platformSelect.dashboardTitle": "查看全局仪表盘",
   "platformSelect.dashboardLabel": "仪表盘",
+  "platformSelect.legacyCleanupTooltip": "检测到旧版技能目录，点击打开清理",
+  "platformSelect.legacyCleanupLabel": "{count} 个待清理旧目录",
 };

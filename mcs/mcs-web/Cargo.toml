@@ -11,6 +11,7 @@ path = "src/main.rs"
 mcs-core = { path = "../mcs-core" }
 axum = { version = "0.8" }
 tokio = { version = "1", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
 tower = "0.5"
 tower-http = { version = "0.6", features = ["cors", "fs"] }
 serde = { workspace = true }
@@ -19,3 +20,4 @@ similar = { workspace = true }
 open = "5"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rfd = "0.17.2"

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   InputAdornment,
   Button,
   CircularProgress,
+  LinearProgress,
   Alert,
   Card,
   CardContent,
@@ -66,7 +67,8 @@ import {
   getCategories,
   getSkillDetail,
   installSkills,
-  externalInstallSkill,
+  startExternalInstallJob,
+  getExternalSkillCatalog,
 } from "@/api/client";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
@@ -75,7 +77,20 @@ import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import ReactMarkdown from "react-markdown";
-import type { ItemDto, InstallStatus, CategoryDto, ItemDetailDto, InstallTarget } from "@/types";
+import type {
+  CategoryDto,
+  ExternalInstallBatchItemDto,
+  ExternalInstallItemFinishedPayload,
+  ExternalInstallItemStartedPayload,
+  ExternalInstallJobCompletedPayload,
+  ExternalInstallJobProgressPayload,
+  ExternalInstallMethod,
+  ExternalSkillCatalogDto,
+  InstallStatus,
+  InstallTarget,
+  ItemDetailDto,
+  ItemDto,
+} from "@/types";
 
 // ── Types & Constants ────────────────────────────────────────────────
 
@@ -1120,79 +1135,294 @@ function ExternalInstallPanel({
 }) {
   const { t } = useI18n();
   const theme = useTheme();
-  const [extSkillName, setExtSkillName] = useState("");
-  const [extMethod, setExtMethod] = useState<"vercel" | "playbooks">(sourceMode);
-  const [extLoading, setExtLoading] = useState(false);
-  const [extOutput, setExtOutput] = useState<string | null>(null);
-  const [extSuccess, setExtSuccess] = useState<boolean | null>(null);
+  const [extMethod, setExtMethod] = useState<ExternalInstallMethod>(sourceMode);
+  const [customBatchInput, setCustomBatchInput] = useState("");
+  const [selectedCatalogKeys, setSelectedCatalogKeys] = useState<Set<string>>(new Set());
 
-  // Sync method when source mode changes
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [jobRunning, setJobRunning] = useState(false);
+  const [jobCompleted, setJobCompleted] = useState(0);
+  const [jobTotal, setJobTotal] = useState(0);
+  const [jobPercent, setJobPercent] = useState(0);
+  const [jobSuccessCount, setJobSuccessCount] = useState(0);
+  const [jobFailureCount, setJobFailureCount] = useState(0);
+  const [streamDisconnected, setStreamDisconnected] = useState(false);
+
+  const [catalogItems, setCatalogItems] = useState<ExternalSkillCatalogDto[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [itemStates, setItemStates] = useState<
+    Array<{
+      key: string;
+      skillName: string;
+      method: ExternalInstallMethod;
+      status: "pending" | "running" | "success" | "error";
+      output: string;
+      error: string | null;
+      durationMs: number | null;
+    }>
+  >([]);
+
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const streamWarnedRef = useRef(false);
+
   useEffect(() => {
     setExtMethod(sourceMode);
+    setSelectedCatalogKeys(new Set());
   }, [sourceMode]);
 
-  const handleExternalInstall = async () => {
-    if (!extSkillName.trim()) return;
-    setExtLoading(true);
-    setExtOutput(null);
-    setExtSuccess(null);
-    try {
-      const result = await externalInstallSkill(
-        platformId,
-        extSkillName.trim(),
-        extMethod,
-        installTarget
-      );
-      setExtOutput(result.output);
-      setExtSuccess(result.success);
-      if (result.success) {
-        showNotification(
-          t("install.installSuccessNotification", {
-            name: extSkillName.trim(),
-          }),
-          "success"
-        );
-      } else {
-        showNotification(t("install.installationFailed"), "error");
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
       }
-    } catch (e) {
-      const msg = (e as Error).message;
-      setExtOutput(msg);
-      setExtSuccess(false);
-      showNotification(msg, "error");
-    } finally {
-      setExtLoading(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchCatalog = async () => {
+      try {
+        setCatalogLoading(true);
+        const data = await getExternalSkillCatalog();
+        setCatalogItems(data);
+      } catch (e) {
+        console.error("Failed to load external skills catalog", e);
+      } finally {
+        setCatalogLoading(false);
+      }
+    };
+    fetchCatalog();
+  }, []);
+
+  const visibleCatalogItems = useMemo(
+    () => catalogItems.filter((item) => item.method === sourceMode),
+    [catalogItems, sourceMode]
+  );
+
+  const toSkillName = useCallback((item: ExternalSkillCatalogDto) => {
+    return item.skill_flag ? `${item.repo} --skill ${item.skill_flag}` : item.repo;
+  }, []);
+
+  const itemKey = useCallback((method: ExternalInstallMethod, skillName: string) => {
+    return `${method}::${skillName.trim()}`;
+  }, []);
+
+  const parseCustomInput = useCallback((): ExternalInstallBatchItemDto[] => {
+    const lines = customBatchInput
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    return lines.map((skillName) => ({
+      skill_name: skillName,
+      method: extMethod,
+    }));
+  }, [customBatchInput, extMethod]);
+
+  const queuedItems = useMemo(() => {
+    const dedup = new Map<string, ExternalInstallBatchItemDto>();
+
+    for (const item of visibleCatalogItems) {
+      const skillName = toSkillName(item);
+      const key = itemKey(item.method as ExternalInstallMethod, skillName);
+      if (!selectedCatalogKeys.has(key)) continue;
+      dedup.set(key, {
+        skill_name: skillName,
+        method: item.method as ExternalInstallMethod,
+      });
     }
+
+    for (const item of parseCustomInput()) {
+      dedup.set(itemKey(item.method, item.skill_name), item);
+    }
+
+    return Array.from(dedup.values());
+  }, [visibleCatalogItems, toSkillName, selectedCatalogKeys, parseCustomInput, itemKey]);
+
+  const closeEventStream = useCallback(() => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+  }, []);
+
+  const initializePendingItems = useCallback(
+    (items: ExternalInstallBatchItemDto[]) => {
+      setItemStates(
+        items.map((item) => ({
+          key: itemKey(item.method, item.skill_name),
+          skillName: item.skill_name,
+          method: item.method,
+          status: "pending" as const,
+          output: "",
+          error: null,
+          durationMs: null,
+        }))
+      );
+    },
+    [itemKey]
+  );
+
+  const handleExternalBatchInstall = async () => {
+    if (disabledInProject || queuedItems.length === 0 || jobRunning) return;
+
+    streamWarnedRef.current = false;
+    setStreamDisconnected(false);
+    setJobId(null);
+    setJobRunning(true);
+    setJobCompleted(0);
+    setJobTotal(queuedItems.length);
+    setJobPercent(0);
+    setJobSuccessCount(0);
+    setJobFailureCount(0);
+    initializePendingItems(queuedItems);
+
+    closeEventStream();
+
+    try {
+      const started = await startExternalInstallJob(platformId, queuedItems, installTarget);
+      setJobId(started.job_id);
+      setJobTotal(started.total);
+
+      const streamUrl = `/api/platforms/${encodeURIComponent(
+        platformId
+      )}/skills/external-install/jobs/${encodeURIComponent(started.job_id)}/stream`;
+
+      const source = new EventSource(streamUrl);
+      eventSourceRef.current = source;
+
+      source.addEventListener("item_started", (event) => {
+        const payload = safeParseEvent<ExternalInstallItemStartedPayload>(event);
+        if (!payload) return;
+        const key = itemKey(payload.method, payload.skill_name);
+        setItemStates((prev) =>
+          prev.map((item) => (item.key === key ? { ...item, status: "running" } : item))
+        );
+      });
+
+      source.addEventListener("item_finished", (event) => {
+        const payload = safeParseEvent<ExternalInstallItemFinishedPayload>(event);
+        if (!payload) return;
+        const key = itemKey(payload.method, payload.skill_name);
+        setItemStates((prev) =>
+          prev.map((item) =>
+            item.key === key
+              ? {
+                  ...item,
+                  status: payload.success ? "success" : "error",
+                  output: payload.output ?? "",
+                  error: payload.error,
+                  durationMs: payload.duration_ms,
+                }
+              : item
+          )
+        );
+      });
+
+      source.addEventListener("job_progress", (event) => {
+        const payload = safeParseEvent<ExternalInstallJobProgressPayload>(event);
+        if (!payload) return;
+        setJobCompleted(payload.completed);
+        setJobTotal(payload.total);
+        setJobSuccessCount(payload.success_count);
+        setJobFailureCount(payload.failure_count);
+        setJobPercent(payload.percent);
+      });
+
+      source.addEventListener("job_completed", (event) => {
+        const payload = safeParseEvent<ExternalInstallJobCompletedPayload>(event);
+        if (!payload) return;
+
+        setJobRunning(false);
+        setJobCompleted(payload.total);
+        setJobTotal(payload.total);
+        setJobSuccessCount(payload.success_count);
+        setJobFailureCount(payload.failure_count);
+        setJobPercent(100);
+        closeEventStream();
+
+        showNotification(
+          t("install.externalBatchCompleted", {
+            success: payload.success_count,
+            failed: payload.failure_count,
+          }),
+          payload.failure_count > 0 ? "warning" : "success"
+        );
+      });
+
+      source.addEventListener("job_failed", (event) => {
+        const payload = safeParseEvent<{ message: string }>(event);
+        const message = payload?.message ?? t("install.installationFailed");
+        setJobRunning(false);
+        closeEventStream();
+        showNotification(t("install.externalBatchFailed", { message }), "error");
+      });
+
+      source.onerror = () => {
+        setStreamDisconnected(true);
+        if (!streamWarnedRef.current) {
+          streamWarnedRef.current = true;
+          showNotification(t("install.externalBatchConnectionLost"), "warning");
+        }
+      };
+    } catch (e) {
+      setJobRunning(false);
+      closeEventStream();
+      showNotification((e as Error).message, "error");
+    }
+  };
+
+  const toggleCatalogSelection = (item: ExternalSkillCatalogDto) => {
+    if (disabledInProject || jobRunning) return;
+    const skillName = toSkillName(item);
+    const key = itemKey(item.method as ExternalInstallMethod, skillName);
+    setSelectedCatalogKeys((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const clearBatchSelection = () => {
+    if (jobRunning) return;
+    setSelectedCatalogKeys(new Set());
+    setCustomBatchInput("");
   };
 
   return (
     <Fade in>
       <Card
         sx={{
-          maxWidth: 640,
+          width: "100%",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
           overflow: "visible",
         }}
+        elevation={0}
       >
-        <CardContent sx={{ p: 3 }}>
-          <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+        <CardContent sx={{ p: { xs: 2, md: 3 }, flex: 1, display: "flex", flexDirection: "column" }}>
+          <Box display="flex" alignItems="center" gap={1.5} mb={4}>
             <Box
               sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
+                width: 44,
+                height: 44,
+                borderRadius: 2.5,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
               }}
             >
-              <CloudDownloadIcon sx={{ color: "#fff", fontSize: 20 }} />
+              <CloudDownloadIcon sx={{ color: "#fff", fontSize: 24 }} />
             </Box>
             <Box>
-              <Typography variant="h6" fontWeight={700}>
+              <Typography variant="h6" fontWeight={800} sx={{ letterSpacing: "-0.01em" }}>
                 {t("install.externalInstallTitle")}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="body2" color="text.secondary">
                 {sourceMode === "vercel"
                   ? t("install.externalInstallSubVercel")
                   : t("install.externalInstallSubPlaybooks")}
@@ -1200,126 +1430,376 @@ function ExternalInstallPanel({
             </Box>
           </Box>
 
-          <Stack spacing={2.5}>
-            {disabledInProject && (
-              <Alert severity="warning" sx={{ borderRadius: 2 }}>
-                {t("install.externalInstallDisabledInProject")}
-              </Alert>
-            )}
+          <Grid container spacing={4} sx={{ flex: 1 }}>
+            <Grid size={{ xs: 12, md: 7, lg: 8 }} sx={{ display: "flex", flexDirection: "column" }}>
+              <Stack spacing={3} sx={{ flex: 1 }}>
+                {disabledInProject && (
+                  <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                    {t("install.externalInstallDisabledInProject")}
+                  </Alert>
+                )}
 
-            <TextField
-              label={t("install.skillNameLabel")}
-              placeholder={t("install.skillNamePlaceholder")}
-              value={extSkillName}
-              onChange={(e) => setExtSkillName(e.target.value)}
-              fullWidth
-              size="small"
-              disabled={disabledInProject}
-              onKeyDown={(e) => e.key === "Enter" && handleExternalInstall()}
-            />
-
-            <FormControl>
-              <FormLabel sx={{ fontSize: "0.85rem" }}>
-                {t("install.installMethod")}
-              </FormLabel>
-              <RadioGroup
-                value={extMethod}
-                onChange={(e) =>
-                  setExtMethod(e.target.value as "vercel" | "playbooks")
-                }
-                row
-                sx={{ opacity: disabledInProject ? 0.6 : 1 }}
-              >
-                <FormControlLabel
-                  value="vercel"
-                  control={<Radio size="small" />}
-                  label={
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontFamily: '"JetBrains Mono", monospace',
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {t("install.installMethodVercel")}
+                {!catalogLoading && catalogItems.length > 0 && (
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="subtitle1" gutterBottom fontWeight={700}>
+                      {t("install.externalBatchRecommended")}
                     </Typography>
-                  }
-                />
-                <FormControlLabel
-                  value="playbooks"
-                  control={<Radio size="small" />}
-                  label={
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontFamily: '"JetBrains Mono", monospace',
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {t("install.installMethodPlaybooks")}
-                    </Typography>
-                  }
-                />
-              </RadioGroup>
-            </FormControl>
+                    <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+                      <Chip
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        label={t("install.externalBatchSelectionCount", {
+                          count: selectedCatalogKeys.size,
+                        })}
+                      />
+                    </Box>
+                    <Grid container spacing={2} sx={{ mb: 2 }}>
+                      {visibleCatalogItems.map((item) => {
+                        const disabled = disabledInProject && item.project_only;
+                        const skillName = toSkillName(item);
+                        const key = itemKey(item.method as ExternalInstallMethod, skillName);
+                        const isSelected = selectedCatalogKeys.has(key);
 
-            <Button
-              variant="contained"
-              startIcon={
-                extLoading ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : (
-                  <InstallDesktopIcon />
-                )
-              }
-              onClick={handleExternalInstall}
-              disabled={!extSkillName.trim() || extLoading || disabledInProject}
-              sx={{ alignSelf: "flex-start", borderRadius: 2 }}
-            >
-              {t("common.install")}
-            </Button>
+                        return (
+                          <Grid size={{ xs: 12, sm: 6, lg: 6 }} key={item.name}>
+                            <Card
+                              variant="outlined"
+                              sx={{
+                                cursor: disabled ? "not-allowed" : "pointer",
+                                borderColor: isSelected ? "primary.main" : "divider",
+                                bgcolor: isSelected ? alpha(theme.palette.primary.main, 0.08) : "background.paper",
+                                opacity: disabled ? 0.6 : 1,
+                                height: "100%",
+                                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                                boxShadow: isSelected ? `0 4px 12px ${alpha(theme.palette.primary.main, 0.15)}` : "none",
+                                "&:hover": {
+                                  borderColor: disabled ? "divider" : "primary.main",
+                                  transform: disabled ? "none" : "translateY(-2px)",
+                                  boxShadow: disabled ? "none" : `0 6px 16px ${alpha(theme.palette.primary.main, 0.1)}`,
+                                },
+                              }}
+                              onClick={() => {
+                                if (disabled) return;
+                                toggleCatalogSelection(item);
+                              }}
+                            >
+                              <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column" }}>
+                                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
+                                  <Typography variant="subtitle2" fontWeight={700} noWrap sx={{ flex: 1, mr: 1 }}>
+                                    {item.name}
+                                  </Typography>
+                                  {item.category && (
+                                    <Chip
+                                      label={item.category}
+                                      size="small"
+                                      color={isSelected ? "primary" : "default"}
+                                      variant={isSelected ? "filled" : "outlined"}
+                                      sx={{ height: 20, fontSize: "0.65rem", fontWeight: 600 }}
+                                    />
+                                  )}
+                                </Box>
+                                <Typography variant="caption" color="text.secondary" sx={{ flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
+                                  {item.description || item.repo}
+                                </Typography>
+                                <Box sx={{ mt: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontFamily: '"JetBrains Mono", monospace', color: "text.secondary", mr: 1 }}
+                                  >
+                                    {skillName}
+                                  </Typography>
+                                  <Checkbox size="small" checked={isSelected} />
+                                </Box>
+                                {disabled && (
+                                  <Typography variant="caption" color="error" sx={{ display: "block", mt: 1, fontWeight: 500 }}>
+                                    * only supports global install
+                                  </Typography>
+                                )}
+                              </Box>
+                            </Card>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </Box>
+                )}
+              </Stack>
+            </Grid>
 
-            {extOutput !== null && (
+            <Grid size={{ xs: 12, md: 5, lg: 4 }} sx={{ display: "flex", flexDirection: "column" }}>
               <Paper
-                elevation={0}
+                variant="outlined"
                 sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  backgroundColor:
-                    theme.palette.mode === "dark"
-                      ? "rgba(0, 0, 0, 0.6)"
-                      : "rgba(0, 0, 0, 0.04)",
-                  border: "1px solid",
-                  borderColor: extSuccess ? "success.main" : "error.main",
-                  overflow: "auto",
-                  maxHeight: 320,
+                  p: 3,
+                  borderRadius: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  flex: 1,
+                  bgcolor: theme.palette.mode === "dark" ? alpha("#000", 0.2) : alpha("#000", 0.02)
                 }}
               >
-                <Typography
-                  component="pre"
-                  variant="caption"
-                  sx={{
-                    fontFamily: '"JetBrains Mono", monospace',
-                    color: extSuccess ? "success.main" : "error.main",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-all",
-                    m: 0,
-                    display: "block",
-                  }}
-                >
-                  {extOutput}
+                <Typography variant="subtitle1" fontWeight={700} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <span>{t("install.externalBatchCustomInput")}</span>
+                  <Chip size="small" label="CLI" sx={{ height: 18, fontSize: "0.6rem" }} />
                 </Typography>
+
+                <TextField
+                  label={t("install.externalBatchCustomInput")}
+                  placeholder={t("install.externalBatchCustomHint")}
+                  value={customBatchInput}
+                  onChange={(e) => setCustomBatchInput(e.target.value)}
+                  fullWidth
+                  size="small"
+                  multiline
+                  minRows={4}
+                  disabled={disabledInProject || jobRunning}
+                />
+
+                <FormControl>
+                  <FormLabel sx={{ fontSize: "0.85rem", fontWeight: 600, mb: 1 }}>
+                    {t("install.installMethod")}
+                  </FormLabel>
+                  <RadioGroup
+                    value={extMethod}
+                    onChange={(e) => setExtMethod(e.target.value as ExternalInstallMethod)}
+                    row
+                    sx={{ opacity: disabledInProject || jobRunning ? 0.6 : 1 }}
+                  >
+                    <FormControlLabel
+                      value="vercel"
+                      control={<Radio size="small" />}
+                      label={
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {t("install.installMethodVercel")}
+                        </Typography>
+                      }
+                    />
+                    <FormControlLabel
+                      value="playbooks"
+                      control={<Radio size="small" />}
+                      label={
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {t("install.installMethodPlaybooks")}
+                        </Typography>
+                      }
+                    />
+                  </RadioGroup>
+                </FormControl>
+
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={
+                    jobRunning ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <InstallDesktopIcon />
+                    )
+                  }
+                  onClick={handleExternalBatchInstall}
+                  disabled={queuedItems.length === 0 || jobRunning || disabledInProject}
+                  sx={{ borderRadius: 2, fontWeight: 700 }}
+                  fullWidth
+                >
+                  {jobRunning ? t("install.externalBatchInProgress") : t("install.externalBatchStart")}
+                </Button>
+
+                <Stack direction="row" spacing={1}>
+                  <Chip
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                    label={t("install.externalBatchQueueCount", { count: queuedItems.length })}
+                  />
+                  <Chip
+                    size="small"
+                    color={jobFailureCount > 0 ? "warning" : "success"}
+                    variant="outlined"
+                    label={t("install.externalBatchCurrent", {
+                      completed: jobCompleted,
+                      total: jobTotal,
+                    })}
+                  />
+                  <Chip
+                    size="small"
+                    color="success"
+                    variant="outlined"
+                    label={t("installHub.successCount", { count: jobSuccessCount })}
+                  />
+                  <Chip
+                    size="small"
+                    color="error"
+                    variant="outlined"
+                    label={t("installHub.failedCount", { count: jobFailureCount })}
+                  />
+                </Stack>
+
+                {(jobRunning || jobTotal > 0) && (
+                  <Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.max(0, Math.min(100, jobPercent))}
+                      sx={{
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                        "& .MuiLinearProgress-bar": {
+                          borderRadius: 4,
+                          transition: "transform 220ms cubic-bezier(0.16, 1, 0.3, 1)",
+                        },
+                      }}
+                    />
+                    {jobId && (
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: "block" }}>
+                        Job: {jobId}
+                      </Typography>
+                    )}
+                    {streamDisconnected && (
+                      <Alert severity="warning" sx={{ mt: 1, py: 0 }}>
+                        {t("install.externalBatchConnectionLost")}
+                      </Alert>
+                    )}
+                  </Box>
+                )}
+
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    size="small"
+                    variant="text"
+                    onClick={clearBatchSelection}
+                    disabled={jobRunning}
+                  >
+                    {t("install.externalBatchClear")}
+                  </Button>
+                </Stack>
+
+                {itemStates.length > 0 ? (
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2.5,
+                      borderRadius: 2,
+                      backgroundColor: theme.palette.mode === "dark" ? "#0d1117" : "#f6f8fa",
+                      border: "1px solid",
+                      borderColor: alpha(theme.palette.divider, 0.8),
+                      overflow: "auto",
+                      flex: 1,
+                      minHeight: 220,
+                    }}
+                  >
+                    <Stack spacing={0.75}>
+                      {itemStates.map((item) => (
+                        <Box
+                          key={item.key}
+                          sx={{
+                            px: 1,
+                            py: 0.75,
+                            borderRadius: 1.5,
+                            border: "1px solid",
+                            borderColor: alpha(theme.palette.divider, 0.8),
+                            transition: "all 180ms cubic-bezier(0.16, 1, 0.3, 1)",
+                            backgroundColor:
+                              item.status === "running"
+                                ? alpha(theme.palette.info.main, 0.08)
+                                : item.status === "success"
+                                ? alpha(theme.palette.success.main, 0.08)
+                                : item.status === "error"
+                                ? alpha(theme.palette.error.main, 0.08)
+                                : "transparent",
+                          }}
+                        >
+                          <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
+                            <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                              {item.skillName}
+                            </Typography>
+                            <Chip
+                              size="small"
+                              color={
+                                item.status === "success"
+                                  ? "success"
+                                  : item.status === "error"
+                                  ? "error"
+                                  : item.status === "running"
+                                  ? "info"
+                                  : "default"
+                              }
+                              label={item.status}
+                              sx={{
+                                height: 20,
+                                fontSize: "0.65rem",
+                                textTransform: "uppercase",
+                                "& .MuiChip-label": { px: 1 },
+                              }}
+                            />
+                          </Box>
+                          <Typography
+                            variant="caption"
+                            sx={{ display: "block", color: "text.secondary", fontFamily: '"JetBrains Mono", monospace' }}
+                          >
+                            {item.method}
+                            {item.durationMs !== null ? ` - ${item.durationMs}ms` : ""}
+                          </Typography>
+                          {item.error && (
+                            <Typography variant="caption" color="error" sx={{ display: "block", mt: 0.5 }}>
+                              {item.error}
+                            </Typography>
+                          )}
+                          {item.output && (
+                            <Typography
+                              component="pre"
+                              variant="caption"
+                              sx={{
+                                mt: 0.5,
+                                mb: 0,
+                                whiteSpace: "pre-wrap",
+                                wordBreak: "break-word",
+                                fontFamily: '"JetBrains Mono", monospace',
+                                fontSize: "0.65rem",
+                                color: "text.secondary",
+                              }}
+                            >
+                              {item.output}
+                            </Typography>
+                          )}
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Paper>
+                ) : (
+                  <Alert severity="info">{t("install.externalBatchNoQueue")}</Alert>
+                )}
               </Paper>
-            )}
-          </Stack>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
     </Fade>
   );
 }
 
-// ── Main Component ──────────────────────────────────────────────────
-
+function safeParseEvent<T>(event: Event): T | null {
+  const payload = event as MessageEvent<string>;
+  if (!payload?.data) return null;
+  try {
+    return JSON.parse(payload.data) as T;
+  } catch {
+    return null;
+  }
+}
 export default function InstallPage() {
   const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
@@ -1745,3 +2225,5 @@ export default function InstallPage() {
     </Box>
   );
 }
+
+

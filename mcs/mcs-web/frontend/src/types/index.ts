@@ -137,3 +137,95 @@ export interface PromptDiffDto {
   diff_text: string;
   supports_prompt: boolean;
 }
+
+// ── External Skill Catalog ────────────────────────────────────────
+
+export interface ExternalSkillCatalogDto {
+  name: string;
+  repo: string;
+  skill_flag: string | null;
+  method: "vercel" | "playbooks";
+  category: string | null;
+  description: string | null;
+  stars: number | null;
+  project_only: boolean;
+}
+
+export type ExternalInstallMethod = "vercel" | "playbooks";
+
+export interface ExternalInstallBatchItemDto {
+  skill_name: string;
+  method: ExternalInstallMethod;
+}
+
+export interface ExternalInstallJobStartDto {
+  job_id: string;
+  total: number;
+  status: string;
+}
+
+export interface ExternalInstallJobStartedPayload {
+  job_id: string;
+  total: number;
+  max_concurrency: number;
+  started_at_ms: number;
+}
+
+export interface ExternalInstallItemStartedPayload {
+  job_id: string;
+  item_id: string;
+  skill_name: string;
+  method: ExternalInstallMethod;
+}
+
+export interface ExternalInstallItemFinishedPayload {
+  job_id: string;
+  item_id: string;
+  skill_name: string;
+  method: ExternalInstallMethod;
+  success: boolean;
+  output: string;
+  error: string | null;
+  duration_ms: number;
+}
+
+export interface ExternalInstallJobProgressPayload {
+  job_id: string;
+  completed: number;
+  total: number;
+  success_count: number;
+  failure_count: number;
+  percent: number;
+}
+
+export interface ExternalInstallJobCompletedPayload {
+  job_id: string;
+  total: number;
+  success_count: number;
+  failure_count: number;
+  completed_at_ms: number;
+}
+
+export interface ExternalInstallJobFailedPayload {
+  job_id: string;
+  message: string;
+}
+
+// ── System Operations ──────────────────────────────────────────────
+
+export interface PickedFolderDto {
+  path: string | null;
+}
+
+// ── Legacy Skill Directory Cleanup ────────────────────────────────
+
+export interface LegacyDirDto {
+  platform_id: string;
+  legacy_path: string;
+  shared_path: string;
+}
+
+export interface CleanupResultDto {
+  removed: string[];
+  failed: { path: string; error: string }[];
+}

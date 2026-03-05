@@ -215,7 +215,7 @@ pub struct ExternalInstallRequest {
     pub install_target: InstallTargetDto,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ExternalInstallMethod {
     Vercel,
@@ -226,6 +226,26 @@ pub enum ExternalInstallMethod {
 pub struct ExternalInstallResult {
     pub success: bool,
     pub output: String,
+}
+
+#[derive(Clone, Deserialize)]
+pub struct ExternalInstallBatchItem {
+    pub skill_name: String,
+    pub method: ExternalInstallMethod,
+}
+
+#[derive(Deserialize)]
+pub struct ExternalInstallJobRequest {
+    pub items: Vec<ExternalInstallBatchItem>,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+}
+
+#[derive(Serialize)]
+pub struct ExternalInstallJobStartResult {
+    pub job_id: String,
+    pub total: usize,
+    pub status: String,
 }
 
 #[derive(Serialize)]
@@ -240,4 +260,49 @@ pub struct ResolvedInstallTargetDto {
 #[derive(Serialize)]
 pub struct SimpleSuccess {
     pub success: bool,
+}
+
+#[derive(Serialize)]
+pub struct PickedFolderDto {
+    pub path: Option<String>,
+}
+
+// ── Legacy Skill Directory Cleanup ────────────────────────────────
+
+#[derive(Serialize)]
+pub struct LegacyDirDto {
+    pub platform_id: String,
+    pub legacy_path: String,
+    pub shared_path: String,
+}
+
+#[derive(Deserialize)]
+pub struct CleanupRequest {
+    pub paths: Vec<String>,
+}
+
+#[derive(Serialize)]
+pub struct CleanupResultDto {
+    pub removed: Vec<String>,
+    pub failed: Vec<CleanupFailureDto>,
+}
+
+#[derive(Serialize)]
+pub struct CleanupFailureDto {
+    pub path: String,
+    pub error: String,
+}
+
+// ── External Skill Catalog ────────────────────────────────────────
+
+#[derive(Serialize)]
+pub struct ExternalSkillCatalogDto {
+    pub name: String,
+    pub repo: String,
+    pub skill_flag: Option<String>,
+    pub method: String,
+    pub category: Option<String>,
+    pub description: Option<String>,
+    pub stars: Option<u8>,
+    pub project_only: bool,
 }

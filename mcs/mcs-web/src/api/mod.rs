@@ -5,11 +5,14 @@ use crate::state::AppState;
 pub mod commands;
 pub mod dashboard;
 pub mod error;
+pub mod external_skills;
+pub mod legacy;
 pub mod platforms;
 pub mod prompt;
 pub mod skills;
 pub mod skills_catalog;
 pub mod sync;
+pub mod system;
 
 /// Assemble the complete API router
 pub fn router() -> Router<AppState> {
@@ -18,6 +21,11 @@ pub fn router() -> Router<AppState> {
         .route(
             "/api/skills/catalog",
             axum::routing::get(skills_catalog::catalog),
+        )
+        // External skills catalog
+        .route(
+            "/api/external-skills/catalog",
+            axum::routing::get(external_skills::catalog),
         )
         // Platform routes
         .route("/api/platforms", axum::routing::get(platforms::list))
@@ -62,6 +70,14 @@ pub fn router() -> Router<AppState> {
             "/api/platforms/{id}/skills/external-install",
             axum::routing::post(skills::external_install),
         )
+        .route(
+            "/api/platforms/{id}/skills/external-install/jobs",
+            axum::routing::post(skills::external_install_jobs_start),
+        )
+        .route(
+            "/api/platforms/{id}/skills/external-install/jobs/{job_id}/stream",
+            axum::routing::get(skills::external_install_jobs_stream),
+        )
         // Commands
         .route(
             "/api/platforms/{id}/commands",
@@ -90,4 +106,14 @@ pub fn router() -> Router<AppState> {
         )
         // Multi-platform sync
         .route("/api/sync", axum::routing::post(sync::multi_sync))
+        // System operations
+        .route(
+            "/api/system/pick-folder",
+            axum::routing::get(system::pick_folder),
+        )
+        .route("/api/system/legacy-dirs", axum::routing::get(legacy::list))
+        .route(
+            "/api/system/legacy-dirs/cleanup",
+            axum::routing::post(legacy::cleanup),
+        )
 }

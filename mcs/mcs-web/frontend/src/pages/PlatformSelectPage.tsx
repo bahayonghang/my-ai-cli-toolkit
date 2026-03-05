@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -11,14 +11,18 @@ import {
   Alert,
   Tooltip,
   Button,
+  Chip,
 } from "@mui/material";
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+import { getLegacyDirs } from "@/api/client";
+import { LegacyCleanupDialog } from "@/components/dialogs/LegacyCleanupDialog";
 
 
 
@@ -27,11 +31,20 @@ export default function PlatformSelectPage() {
   const { platforms, loading, error, fetchPlatforms, refreshPlatforms } =
     usePlatformStore();
   const navigate = useNavigate();
+  const [legacyCount, setLegacyCount] = useState(0);
+  const [legacyOpen, setLegacyOpen] = useState(false);
   // 不再需要前端特殊的过滤逻辑，因为后端直接合并了
   const platformCards = useMemo(() => platforms, [platforms]);
 
+  const refreshLegacyCount = () => {
+    getLegacyDirs()
+      .then((dirs) => setLegacyCount(dirs.length))
+      .catch(() => setLegacyCount(0));
+  };
+
   useEffect(() => {
     fetchPlatforms();
+    refreshLegacyCount();
   }, [fetchPlatforms]);
 
   if (loading) {
@@ -65,8 +78,41 @@ export default function PlatformSelectPage() {
       }}
     >
       <AnimatedBackground />
-      <Box sx={{ position: "fixed", top: 16, right: 16, zIndex: 20 }}>
+      <Box
+        sx={{
+          position: "fixed",
+          top: 16,
+          right: 16,
+          zIndex: 20,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: 1,
+        }}
+      >
         <LanguageToggle />
+        {legacyCount > 0 && (
+          <Tooltip title={t("platformSelect.legacyCleanupTooltip")} arrow placement="left">
+            <Chip
+              icon={<WarningAmberIcon sx={{ fontSize: 16 }} />}
+              label={t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
+              color="warning"
+              variant="outlined"
+              onClick={() => setLegacyOpen(true)}
+              sx={{
+                cursor: "pointer",
+                fontWeight: 700,
+                borderRadius: 3,
+                animation: "pulse 2s infinite",
+                "@keyframes pulse": {
+                  "0%": { boxShadow: "0 0 0 0 rgba(245,158,11,0.3)" },
+                  "70%": { boxShadow: "0 0 0 6px rgba(245,158,11,0)" },
+                  "100%": { boxShadow: "0 0 0 0 rgba(245,158,11,0)" },
+                },
+              }}
+            />
+          </Tooltip>
+        )}
       </Box>
       <Box sx={{ position: "relative", zIndex: 1, textAlign: "center", mb: 4, width: '100%' }}>
         <Typography
@@ -112,7 +158,10 @@ export default function PlatformSelectPage() {
               <Button
                 variant="outlined"
                 size="small"
-                onClick={() => void refreshPlatforms()}
+                onClick={() => {
+                  void refreshPlatforms();
+                  refreshLegacyCount();
+                }}
                 disabled={loading}
                 startIcon={
                   loading ? (
@@ -246,6 +295,13 @@ export default function PlatformSelectPage() {
           onClick={() => navigate("/dashboard")}
         />
       </Box>
+      <LegacyCleanupDialog
+        open={legacyOpen}
+        onClose={() => {
+          setLegacyOpen(false);
+          refreshLegacyCount();
+        }}
+      />
     </Box>
   );
 }

@@ -9,7 +9,10 @@ use mcs_core::config::platform::PlatformConfig;
 use mcs_core::core::discovery::{
     SkillSource, discover_commands, discover_skill_sources, resolve_skills_for_platform,
 };
+use mcs_core::core::external_skills::{ExternalSkillEntry, load_external_skills};
 use mcs_core::model::ItemInfo;
+
+use crate::dto::ExternalSkillCatalogDto;
 
 /// Shared application state accessible by all handlers
 #[derive(Clone)]
@@ -31,6 +34,8 @@ struct DiscoveryCache {
     skills: HashMap<String, Vec<ItemInfo>>,
     /// Discovered commands per platform
     commands: HashMap<String, Vec<ItemInfo>>,
+    /// External skills from TOML registry
+    external_skills: Option<Vec<ExternalSkillEntry>>,
 }
 
 impl AppState {
@@ -91,6 +96,25 @@ impl AppState {
             cache.skill_sources = sources.clone();
         }
         sources
+    }
+
+    /// Get external skill catalog from TOML registry.
+    pub async fn external_skill_catalog(&self) -> Vec<ExternalSkillCatalogDto> {
+        {
+            let cache = self.cache.read().await;
+            if let Some(ref entries) = cache.external_skills {
+                return entries.iter().map(to_external_dto).collect();
+            }
+        }
+
+        let root = self.project_root().await;
+        let entries = load_external_skills(&root);
+        let dtos: Vec<ExternalSkillCatalogDto> = entries.iter().map(to_external_dto).collect();
+        let mut cache = self.cache.write().await;
+        if cache.external_skills.is_none() {
+            cache.external_skills = Some(entries);
+        }
+        dtos
     }
 
     /// Get cached skills for a platform
@@ -313,5 +337,18 @@ fn normalize_path_key(path: &Path) -> String {
         raw.to_lowercase()
     } else {
         raw
+    }
+}
+
+fn to_external_dto(entry: &ExternalSkillEntry) -> ExternalSkillCatalogDto {
+    ExternalSkillCatalogDto {
+        name: entry.name.clone(),
+        repo: entry.repo.clone(),
+        skill_flag: entry.skill_flag.clone(),
+        method: entry.method.clone(),
+        category: entry.category.clone(),
+        description: entry.description.clone(),
+        stars: entry.stars,
+        project_only: entry.project_only,
     }
 }

@@ -5,6 +5,7 @@ import {
   getSkills,
   installCommands,
   resolveInstallTarget,
+  startExternalInstallJob,
 } from "./client";
 
 type MockResponseData = {
@@ -128,6 +129,36 @@ describe("api/client install target", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(String(url)).toBe("/api/platforms/claude/skills/external-install");
     const body = JSON.parse(String(init.body));
+    expect(body.install_target).toEqual({
+      scope: "project",
+      project_path: "/tmp/project",
+    });
+  });
+
+  it("starts external install batch job and forwards target when provided", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({ job_id: "external-1-1", total: 2, status: "running" })
+    );
+
+    await startExternalInstallJob(
+      "claude",
+      [
+        { skill_name: "owner/repo-a", method: "vercel" },
+        { skill_name: "owner/repo-b --skill b", method: "playbooks" },
+      ],
+      {
+        scope: "project",
+        project_path: "/tmp/project",
+      }
+    );
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe("/api/platforms/claude/skills/external-install/jobs");
+    const body = JSON.parse(String(init.body));
+    expect(body.items).toEqual([
+      { skill_name: "owner/repo-a", method: "vercel" },
+      { skill_name: "owner/repo-b --skill b", method: "playbooks" },
+    ]);
     expect(body.install_target).toEqual({
       scope: "project",
       project_path: "/tmp/project",

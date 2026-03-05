@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -12,6 +12,7 @@ import {
   alpha,
   useTheme,
   Tooltip,
+  Chip,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -19,11 +20,14 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { useI18n } from "@/i18n";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useUiStore } from "@/stores/uiStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+import { getLegacyDirs } from "@/api/client";
+import { LegacyCleanupDialog } from "@/components/dialogs/LegacyCleanupDialog";
 
 // ── Pure SVG Graphics for Stat Cards ──────────────────────────────────
 function MiniWave() {
@@ -319,6 +323,16 @@ export default function DashboardPage() {
     fetchDashboard();
   }, [fetchDashboard]);
 
+  // Legacy directory detection
+  const [legacyCount, setLegacyCount] = useState(0);
+  const [legacyOpen, setLegacyOpen] = useState(false);
+
+  useEffect(() => {
+    getLegacyDirs()
+      .then((dirs) => setLegacyCount(dirs.length))
+      .catch(() => { });
+  }, []);
+
   // Aggregated stats
   const stats = useMemo(() => {
     if (!data) return null;
@@ -400,6 +414,29 @@ export default function DashboardPage() {
             <IconButton size="small" color="inherit" onClick={toggleColorMode}>
               {colorMode === "dark" ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
             </IconButton>
+            {legacyCount > 0 && (
+              <Chip
+                icon={<WarningAmberIcon sx={{ fontSize: 16 }} />}
+                label={`${legacyCount} 个旧目录待清理`}
+                color="warning"
+                variant="outlined"
+                size="small"
+                onClick={() => setLegacyOpen(true)}
+                sx={{
+                  ml: 1,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.7rem",
+                  borderRadius: 3,
+                  animation: "pulse 2s infinite",
+                  "@keyframes pulse": {
+                    "0%": { boxShadow: "0 0 0 0 rgba(245,158,11,0.3)" },
+                    "70%": { boxShadow: "0 0 0 6px rgba(245,158,11,0)" },
+                    "100%": { boxShadow: "0 0 0 0 rgba(245,158,11,0)" },
+                  },
+                }}
+              />
+            )}
           </Box>
         </Toolbar>
       </AppBar>
@@ -542,6 +579,16 @@ export default function DashboardPage() {
           </>
         )}
       </Box>
+
+      <LegacyCleanupDialog
+        open={legacyOpen}
+        onClose={() => {
+          setLegacyOpen(false);
+          getLegacyDirs()
+            .then((dirs) => setLegacyCount(dirs.length))
+            .catch(() => { });
+        }}
+      />
     </Box>
   );
 }
