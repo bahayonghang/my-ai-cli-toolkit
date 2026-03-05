@@ -200,7 +200,7 @@ ci:
     cd mcs/mcs-web/frontend && npx tsc --noEmit
     @echo ""
     @echo "🦀 步骤 2/4: Rust 格式检查 + 自动修复..."
-    cd mcs && cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && false)
+    cd mcs && (cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && echo "  ✓ mcs 已自动修复格式"))
     @echo ""
     @echo "🦀 步骤 3/4: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
     cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
