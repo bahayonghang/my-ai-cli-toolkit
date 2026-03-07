@@ -4,6 +4,7 @@
 ref/
 .serena/
 openspec/
+.worktrees/
 
 
 mcs/target/
