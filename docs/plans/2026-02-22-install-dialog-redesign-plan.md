@@ -16,11 +16,11 @@
 
 | File | Role |
 |------|------|
-| `mcs/mcs-web/frontend/src/components/dialogs/InstallDialog.tsx` | **CREATE** — new three-phase dialog |
-| `mcs/mcs-web/frontend/src/pages/MainPage.tsx` | **MODIFY** — swap ConfirmDialog install → InstallDialog |
-| `mcs/mcs-web/frontend/src/api/client.ts` | Read-only reference — `installSkills`, `installCommands` |
-| `mcs/mcs-web/frontend/src/types/index.ts` | Read-only reference — `BatchResultDto`, `InstallResult`, `PlatformDisplay`, `ItemType` |
-| `mcs/mcs-web/frontend/src/theme.ts` | Read-only reference — primary `#8B5CF6`, borderRadius 12, glass-morphism |
+| `mcs/mcs-web/ui/src/components/dialogs/InstallDialog.tsx` | **CREATE** — new three-phase dialog |
+| `mcs/mcs-web/ui/src/pages/MainPage.tsx` | **MODIFY** — swap ConfirmDialog install → InstallDialog |
+| `mcs/mcs-web/ui/src/api/client.ts` | Read-only reference — `installSkills`, `installCommands` |
+| `mcs/mcs-web/ui/src/types/index.ts` | Read-only reference — `BatchResultDto`, `InstallResult`, `PlatformDisplay`, `ItemType` |
+| `mcs/mcs-web/ui/src/theme.ts` | Read-only reference — primary `#8B5CF6`, borderRadius 12, glass-morphism |
 
 ### Key types (from `src/types/index.ts`)
 
@@ -57,7 +57,7 @@ Calling these with a single-element `names` array gives per-item real-time progr
 ## Task 1: Create `InstallDialog.tsx` — scaffold + Phase 1 (Confirm)
 
 **Files:**
-- Create: `mcs/mcs-web/frontend/src/components/dialogs/InstallDialog.tsx`
+- Create: `mcs/mcs-web/ui/src/components/dialogs/InstallDialog.tsx`
 
 **Step 1: Create the file with imports and type definitions**
 
@@ -242,7 +242,7 @@ const handleInstall = async () => {
 
 Run from the frontend directory:
 ```bash
-cd mcs/mcs-web/frontend && npx tsc --noEmit 2>&1 | head -30
+cd mcs/mcs-web/ui && npx tsc --noEmit 2>&1 | head -30
 ```
 Expected: errors about missing `ConfirmPhase`, `InstallingPhase`, `CompletedPhase` — that's fine for now.
 
@@ -251,7 +251,7 @@ Expected: errors about missing `ConfirmPhase`, `InstallingPhase`, `CompletedPhas
 ## Task 2: Add `ConfirmPhase` sub-component
 
 **Files:**
-- Modify: `mcs/mcs-web/frontend/src/components/dialogs/InstallDialog.tsx` (append before export)
+- Modify: `mcs/mcs-web/ui/src/components/dialogs/InstallDialog.tsx` (append before export)
 
 **Step 1: Add ConfirmPhase component**
 
@@ -343,7 +343,7 @@ function ConfirmPhase({ platform, results, itemType, onCancel, onInstall }: Conf
 **Step 2: Verify TypeScript compiles**
 
 ```bash
-cd mcs/mcs-web/frontend && npx tsc --noEmit 2>&1 | head -30
+cd mcs/mcs-web/ui && npx tsc --noEmit 2>&1 | head -30
 ```
 Expected: errors still for `InstallingPhase` and `CompletedPhase`.
 
@@ -352,7 +352,7 @@ Expected: errors still for `InstallingPhase` and `CompletedPhase`.
 ## Task 3: Add `InstallingPhase` sub-component
 
 **Files:**
-- Modify: `mcs/mcs-web/frontend/src/components/dialogs/InstallDialog.tsx` (append)
+- Modify: `mcs/mcs-web/ui/src/components/dialogs/InstallDialog.tsx` (append)
 
 **Step 1: Add InstallingPhase component**
 
@@ -452,7 +452,7 @@ function InstallingPhase({ results, currentIndex, progress, successCount, failur
 **Step 2: Verify TypeScript**
 
 ```bash
-cd mcs/mcs-web/frontend && npx tsc --noEmit 2>&1 | head -30
+cd mcs/mcs-web/ui && npx tsc --noEmit 2>&1 | head -30
 ```
 Expected: only `CompletedPhase` error remaining.
 
@@ -461,7 +461,7 @@ Expected: only `CompletedPhase` error remaining.
 ## Task 4: Add `CompletedPhase` sub-component
 
 **Files:**
-- Modify: `mcs/mcs-web/frontend/src/components/dialogs/InstallDialog.tsx` (append)
+- Modify: `mcs/mcs-web/ui/src/components/dialogs/InstallDialog.tsx` (append)
 
 **Step 1: Add CompletedPhase component**
 
@@ -594,7 +594,7 @@ function CompletedPhase({
 **Step 2: Verify entire file compiles clean**
 
 ```bash
-cd mcs/mcs-web/frontend && npx tsc --noEmit 2>&1
+cd mcs/mcs-web/ui && npx tsc --noEmit 2>&1
 ```
 Expected: **zero errors**.
 
@@ -603,7 +603,7 @@ Expected: **zero errors**.
 ## Task 5: Update `MainPage.tsx` to use `InstallDialog`
 
 **Files:**
-- Modify: `mcs/mcs-web/frontend/src/pages/MainPage.tsx`
+- Modify: `mcs/mcs-web/ui/src/pages/MainPage.tsx`
 
 **Step 1: Add import for InstallDialog, remove ConfirmDialog import if only used for install**
 
@@ -700,7 +700,7 @@ Find and replace the install `ConfirmDialog` block (around lines 452–460):
 **Step 7: Verify full TypeScript compilation**
 
 ```bash
-cd mcs/mcs-web/frontend && npx tsc --noEmit 2>&1
+cd mcs/mcs-web/ui && npx tsc --noEmit 2>&1
 ```
 Expected: **zero errors**.
 
@@ -712,7 +712,7 @@ Expected: **zero errors**.
 
 ```bash
 cd mcs/mcs-web && cargo run &
-cd mcs/mcs-web/frontend && npm run dev
+cd mcs/mcs-web/ui && npm run dev
 ```
 
 **Step 2: Verify Phase 1 — Confirm**
@@ -754,7 +754,7 @@ cd mcs/mcs-web/frontend && npm run dev
 ## Summary of File Changes
 
 ```
-mcs/mcs-web/frontend/src/
+mcs/mcs-web/ui/src/
 ├── components/dialogs/
 │   └── InstallDialog.tsx          ← CREATE (Tasks 1–4)
 └── pages/

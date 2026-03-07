@@ -17,11 +17,11 @@ just mcs-dev      # Dev mode (debug build, faster compile)
 just mcs-rebuild  # Force clean + rebuild
 ```
 
-### MCS Web (Rust backend + React frontend)
+### MCS Web (Rust backend + React UI)
 ```bash
-just web                # Start both backend (port 13242) and frontend (port 5173) with hot-reload
+just web                # Start both backend (port 13242) and UI (port 5173) with hot-reload
 just mcs-web-server     # Backend only
-just mcs-web-dev        # Frontend only (requires backend running)
+just mcs-web-dev        # UI only (requires backend running)
 just mcs-web            # Build production bundle and run
 ```
 
@@ -37,7 +37,7 @@ just ci                 # Full CI: tsc + cargo fmt + cargo clippy + cargo test
 just rust-check-all     # cargo fmt --check + clippy + test
 just rust-fix           # cargo fmt + clippy --fix
 just rust-test          # cargo test (runs from mcs/)
-just ts-check           # TypeScript type check (mcs-web frontend)
+just ts-check           # TypeScript type check (mcs-web UI)
 ```
 
 To run a single Rust test:
@@ -77,7 +77,7 @@ Cargo workspace with three crates:
 
 **`mcs-web`** (binary) — HTTP server + embedded SPA:
 - Backend: Axum on port 13242. REST routes in `src/api/mod.rs`: platforms, skills, commands, prompt, dashboard, sync, diff.
-- Frontend: React + TypeScript + MUI (Material UI v6) in `mcs-web/frontend/`. Vite dev server on port 5173 proxies API calls to 13242.
+- UI: React + TypeScript + MUI (Material UI v6) in `mcs-web/ui/`. Vite dev server on port 5173 proxies API calls to 13242.
 - State: Zustand stores per domain (platformStore, dashboardStore, uiStore).
 
 ### Platform Configuration (`platforms.toml`)
@@ -92,6 +92,6 @@ A skill is a directory containing at minimum a `SKILL.md` file. The file's YAML 
 ## Key Conventions
 
 - **Rust edition 2024**, minimum toolchain `1.85`. Release builds use `opt-level = "z"`, `lto = true`, `strip = true`.
-- **Frontend**: React + TypeScript strict mode, MUI v6 (Grid v2 API with `size` prop). No CSS files — all styling via MUI `sx` prop.
+- **UI**: React + TypeScript strict mode, MUI v6 (Grid v2 API with `size` prop). No CSS files — all styling via MUI `sx` prop.
 - **Commands source fallback**: Platforms can declare a `fallback_commands_source` (e.g., `codex` falls back to `claude` commands if no codex-specific commands exist).
 - **No root `CLAUDE.md` for OMC config**: The OMC multi-agent orchestration config lives in `.claude/CLAUDE.md`, not the project root.

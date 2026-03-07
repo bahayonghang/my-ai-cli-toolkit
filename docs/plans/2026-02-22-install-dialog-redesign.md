@@ -2,7 +2,7 @@
 
 **Date:** 2026-02-22
 **Status:** Approved
-**Scope:** `mcs/mcs-web/frontend/src/`
+**Scope:** `mcs/mcs-web/ui/src/`
 
 ---
 
