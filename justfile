@@ -1,234 +1,280 @@
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
 # MyClaude Skills Justfile
 # 使用 just 命令管理项目任务
 
-# 默认任务：显示帮助信息
+docs_dir := "docs"
+mcs_dir := "mcs"
+mcs_web_ui_dir := "mcs/mcs-web/ui"
+docs_npm_cache_dir := ".npm-cache"
+mcs_web_npm_cache_dir := ".npm-cache"
+npm_cmd := "npm"
+npx_cmd := "npx"
+just_cmd := "just"
+node_cmd := "node"
+cargo_cmd := "cargo"
+rustc_cmd := "rustc"
+
+# ============ 跨平台执行指令 ============
+
+kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue\"" } else { "pkill -x mcs-web || true" }
+kill_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { Stop-Process -Id $p.OwningProcess -Force -ErrorAction SilentlyContinue }\"" } else { "lsof -t -i:13242 | xargs kill -9 || true" }
+
+# 默认任务：交互式选择
 default:
-    @just --choose
+    @{{ just_cmd }} --choose
 
 # ============ 快捷启动 ============
 
 # 启动 TUI 技能管理器
 tui: mcs
 
-# 启动 Web 版技能管理器 (支持前端热重载，Vite proxy 到后端 13242)
+# 启动 Web 版技能管理器
 web: mcs-web-dev-all
 
 # 启动文档开发服务器
 doc: docs
 
-# 显示所有可用命令的帮助信息
+# 显示帮助信息
 help:
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  MyClaude Skills - 任务管理工具"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
     @echo "⚡ 快捷启动："
-    @echo "  just tui               - 启动 TUI 技能管理器"
-    @echo "  just web               - 启动 Web 版技能管理器 (前端热重载模式)"
-    @echo "  just doc               - 启动文档开发服务器"
+    @echo "  just tui                    - 启动 TUI 技能管理器"
+    @echo "  just web                    - 启动 Web 版技能管理器"
+    @echo "  just doc                    - 启动文档开发服务器"
     @echo ""
-    @echo "📚 文档相关命令："
-    @echo "  just docs-install      - 安装文档站点依赖"
-    @echo "  just docs-dev          - 启动文档开发服务器 (http://localhost:4000)"
-    @echo "  just docs-build        - 构建生产版本文档"
-    @echo "  just docs-preview      - 预览构建后的文档"
-    @echo "  just docs              - 一键安装依赖并启动开发服务器"
+    @echo "📚 文档相关："
+    @echo "  just docs-install           - 安装文档站点依赖"
+    @echo "  just docs-dev               - 启动文档开发服务器 (http://localhost:4000)"
+    @echo "  just docs-build             - 构建生产版本文档"
+    @echo "  just docs-preview           - 预览构建后的文档"
+    @echo "  just docs                   - 安装依赖并启动文档开发"
     @echo ""
     @echo "🦀 MCS (Rust TUI)："
-    @echo "  just mcs               - 启动 MCS TUI (由 cargo 自动判定是否重编译)"
-    @echo "  just mcs-dev           - 开发模式 (debug 编译，更快)"
-    @echo "  just mcs-rebuild       - 强制重新编译并启动"
+    @echo "  just mcs                    - 启动 MCS TUI (release)"
+    @echo "  just mcs-dev                - 启动 MCS TUI (debug)"
+    @echo "  just mcs-rebuild            - 清理后重新编译并启动"
     @echo ""
-    @echo "🌐 MCS Web（Web 版技能管理）："
-    @echo "  just mcs-web-install   - 安装前端依赖"
-    @echo "  just mcs-web-server    - 启动后端服务器 (port 13242)"
-    @echo "  just mcs-web-dev       - 启动前端开发服务器 (port 5173)"
-    @echo "  just mcs-web-dev-all   - 启动前后端并支持热重载 (port 5173, proxy port 13242)"
-    @echo "  just mcs-web-build     - 构建生产版本 (前端+后端)"
-    @echo "  just mcs-web           - 一键构建并启动生产版本"
+    @echo "🌐 MCS Web："
+    @echo "  just mcs-web-install        - 安装 MCS Web UI 依赖"
+    @echo "  just mcs-web-server         - 启动后端服务器 (port 13242)"
+    @echo "  just mcs-web-dev            - 启动 UI 开发服务器 (port 5173)"
+    @echo "  just mcs-web-dev-all        - 启动 UI + 后端开发服务器"
+    @echo "  just mcs-web-build          - 构建生产版本 (UI + 后端)"
+    @echo "  just mcs-web-build-ui       - 构建 UI 静态资源"
+    @echo "  just mcs-web-build-frontend - 兼容旧别名，等同 mcs-web-build-ui"
+    @echo "  just mcs-web-preview        - 预览 UI 构建结果"
+    @echo "  just mcs-web                - 启动生产版本服务"
+    @echo "  just mcs-web-test           - 运行 UI 测试"
+    @echo "  just mcs-web-test-watch     - 监听模式运行 UI 测试"
     @echo ""
-    @echo "🦀 代码质量检查 (Rust - MCS)："
-    @echo "  just rust-format-check - 检查 Rust 代码格式"
-    @echo "  just rust-format       - 自动格式化 Rust 代码"
-    @echo "  just rust-clippy       - 运行 Clippy 静态分析"
-    @echo "  just rust-test         - 运行 Rust 单元测试"
-    @echo "  just rust-check-all    - 运行所有 Rust 检查"
-    @echo "  just rust-fix          - 格式化并运行检查"
+    @echo "✅ 代码检查："
+    @echo "  just ts-check               - 运行 TypeScript 类型检查"
+    @echo "  just rust-format-check      - 检查 Rust 代码格式"
+    @echo "  just rust-format            - 自动格式化 Rust 代码"
+    @echo "  just rust-clippy            - 运行 Clippy 静态分析"
+    @echo "  just rust-test              - 运行 Rust 单元测试"
+    @echo "  just rust-check-all         - 运行所有 Rust 检查"
+    @echo "  just rust-fix               - 格式化并尝试自动修复 Clippy 问题"
+    @echo "  just ci                     - 执行本地 CI 流程"
     @echo ""
-    @echo "📘 代码质量检查 (TypeScript - MCS Web)："
-    @echo "  just ts-check          - 运行 TypeScript 类型检查"
-    @echo ""
-    @echo "🔧 其他命令："
-    @echo "  just ci                - 在本地执行完整 CI 流程 (tsc + cargo)"
-    @echo "  just clean             - 清理构建缓存"
-    @echo "  just check-deps        - 检查项目依赖"
-    @echo "  just info              - 显示项目信息"
-    @echo ""
-    @echo "💡 使用示例："
-    @echo "  just tui                            # 启动技能管理 TUI"
-    @echo "  just web                            # 启动 Web 版技能管理"
-    @echo "  just doc                            # 快速启动文档开发"
-    @echo "  just rust-fix                       # 修复 Rust 代码格式"
+    @echo "🔧 其他："
+    @echo "  just clean                  - 清理构建缓存"
+    @echo "  just check-deps             - 检查运行依赖"
+    @echo "  just info                   - 显示项目信息"
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
 
 # ============ 文档相关 ============
 
-# 安装文档站点的 npm 依赖包
+# 安装文档站点依赖
 docs-install:
-    cd docs && npm install
+    cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} install
 
-# 启动文档开发服务器 (支持热重载)
+# 启动文档开发服务器
 docs-dev:
-    cd docs && npm run dev
+    cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} run dev
 
-# 构建生产版本的文档站点
+# 构建生产版本文档
 docs-build:
-    cd docs && npm run build
+    cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} run build
 
-# 预览已构建的文档站点
+# 预览构建后的文档
 docs-preview:
-    cd docs && npm run preview
+    cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} run preview
 
-# 一键启动文档开发 (安装依赖 + 启动服务器)
+# 一键启动文档开发
 docs: docs-install docs-dev
 
 # ============ MCS (Rust TUI) ============
 
-# 启动 MCS TUI（由 cargo 自动决定是否重编译）
+# 启动 MCS TUI（release）
 mcs:
-    cd mcs && cargo run --release --bin mcs --
+    cd {{ mcs_dir }}; {{ cargo_cmd }} run --release --bin mcs --
 
-# 开发模式启动 MCS TUI（debug 编译，更快）
+# 启动 MCS TUI（debug）
 mcs-dev:
-    cd mcs && cargo run --bin mcs --
+    cd {{ mcs_dir }}; {{ cargo_cmd }} run --bin mcs --
 
-# 强制重新编译并启动 MCS TUI
+# 清理后重新编译并启动 MCS TUI
 mcs-rebuild:
-    cd mcs && cargo clean && cargo run --release --bin mcs --
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clean; {{ cargo_cmd }} run --release --bin mcs --
 
-# 强制重新编译并启动 MCS TUI (短别名)
+# 短别名
 mcs-re: mcs-rebuild
 
 # ============ MCS Web ============
 
-# 安装 MCS Web 前端依赖
+# 安装 MCS Web UI 依赖（开发场景）
 mcs-web-install:
-    cd mcs/mcs-web/frontend && npm install
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} install
 
-# 启动 MCS Web 后端开发服务器 (port 13242)
+# 安装 MCS Web UI 依赖（CI 场景）
+mcs-web-ci-install:
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} ci
+
+# 启动 MCS Web 后端开发服务器
 mcs-web-server:
-    -taskkill /F /IM mcs-web.exe 2>/dev/null || true
-    cd mcs && cargo run --bin mcs-web
+    {{ kill_backend_cmd }}
+    cd {{ mcs_dir }}; {{ cargo_cmd }} run --bin mcs-web
 
-# 启动 MCS Web 前端开发服务器 (port 5173, 代理到 13242)
+# 启动 MCS Web UI 开发服务器
 mcs-web-dev: mcs-web-install
-    cd mcs/mcs-web/frontend && npm run dev
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev
 
-# 启动 MCS Web 前端和后端 (支持热重载)
+# 同时启动 MCS Web UI 和后端开发服务器
 mcs-web-dev-all: mcs-web-install
-    @-taskkill /F /IM mcs-web.exe 2>/dev/null || true
-    @echo "Checking if port 13242 is occupied by mcs-web..."
-    @-powershell -Command '$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { $proc = Get-Process -Id $p.OwningProcess -ErrorAction SilentlyContinue; if ($proc.ProcessName -eq "mcs-web") { Write-Host "Cleaning mcs-web on port 13242..."; Stop-Process -Id $proc.Id -Force } }' 2>/dev/null || true
+    @{{ kill_backend_cmd }}
+    @echo "Checking whether port 13242 is occupied by mcs-web..."
+    @{{ kill_port_cmd }}
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  🚀 启动 MCS Web 开发服务器"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "  📋 服务信息:"
-    @echo "     • 前端页面: http://localhost:5173/"
-    @echo "     • 后端 API:  http://127.0.0.1:13242"
+    @echo "  UI 页面: http://localhost:5173/"
+    @echo "  后端 API: http://127.0.0.1:13242"
     @echo ""
-    @echo "  💡 提示: 启动完成后请打开 http://localhost:5173/ 访问技能管理器"
+    @echo "  提示: 启动完成后请打开 http://localhost:5173/ 访问技能管理器"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    cd mcs/mcs-web/frontend && npx concurrently -k -n "backend,frontend" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && cargo run --bin mcs-web" "npx wait-on http://127.0.0.1:13242 --timeout 60000 && npm run dev"
+    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} concurrently -k -n "backend,ui" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && {{ cargo_cmd }} run --bin mcs-web" "{{ npx_cmd }} wait-on http://127.0.0.1:13242 --timeout 60000 && {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev"
 
-# 构建 MCS Web 前端生产版本
-mcs-web-build-frontend: mcs-web-install
-    cd mcs/mcs-web/frontend && npm run build
+# 构建 MCS Web UI 静态资源
+mcs-web-build-ui: mcs-web-install
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run build
 
-# 构建 MCS Web 生产版本 (前端 + 后端)
-mcs-web-build: mcs-web-build-frontend
-    cd mcs && cargo build --release --bin mcs-web
+# 兼容旧命名：frontend = ui
+mcs-web-build-frontend: mcs-web-build-ui
 
-# 启动 MCS Web 生产版本 (构建并启动，port 13242)
+# 预览 MCS Web UI 构建结果
+mcs-web-preview: mcs-web-build-ui
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run preview
+
+# 运行 MCS Web UI 测试
+mcs-web-test: mcs-web-install
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
+
+# 监听模式运行 MCS Web UI 测试
+mcs-web-test-watch: mcs-web-install
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run test:watch
+
+# 构建 MCS Web 生产版本
+mcs-web-build: mcs-web-build-ui
+    cd {{ mcs_dir }}; {{ cargo_cmd }} build --release --bin mcs-web
+
+# 启动 MCS Web 生产版本
 mcs-web: mcs-web-build
-    -taskkill /F /IM mcs-web.exe 2>nul || true
-    cd mcs && ./target/release/mcs-web
+    {{ kill_backend_cmd }}
+    cd {{ mcs_dir }}; {{ cargo_cmd }} run --release --bin mcs-web
 
-# ============ Rust 代码检查 (MCS) ============
+# ============ Rust 代码检查 ============
 
-# 运行 Rust 格式检查 (不符则自动修复并报错)
+# 检查 Rust 代码格式
 rust-format-check:
-    cd mcs && cargo fmt --check || (cargo fmt && false)
+    cd {{ mcs_dir }}; {{ cargo_cmd }} fmt --check
 
 # 自动格式化 Rust 代码
 rust-format:
-    cd mcs && cargo fmt
+    cd {{ mcs_dir }}; {{ cargo_cmd }} fmt
 
-# 运行 Clippy 静态分析 (自动修复 + 严格模式)
+# 运行 Clippy 静态分析
 rust-clippy:
-    cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --all-targets --all-features -- -D warnings
 
 # 运行 Rust 单元测试
 rust-test:
-    cd mcs && cargo test
+    cd {{ mcs_dir }}; {{ cargo_cmd }} test
 
-# 运行所有 Rust 检查 (格式 + Clippy + 测试)
+# 运行所有 Rust 检查
 rust-check-all: rust-format-check rust-clippy rust-test
 
-# 修复 Rust 代码格式并运行检查
-rust-fix: rust-format rust-clippy
+# 自动格式化并尝试修复 Clippy 问题
+rust-fix:
+    cd {{ mcs_dir }}; {{ cargo_cmd }} fmt
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --all-targets --all-features -- -D warnings
 
-# ============ TypeScript 检查 (MCS Web) ============
+# ============ TypeScript 检查 ============
 
 # 运行 TypeScript 类型检查
 ts-check:
-    cd mcs/mcs-web/frontend && npx tsc --noEmit
+    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
 
 # ============ CI ============
+# 在本地执行完整 CI 流程
 
-# 在本地执行完整 CI 流程 (与 GitHub Actions 保持一致)
-# 注意: 本地 CI 无法完全复现 GitHub Actions 的多平台矩阵 (ubuntu/macOS/windows)
+# 注意：本地流程无法完全复现 GitHub Actions 的多平台矩阵 (ubuntu/macOS/windows)
 ci:
     @echo "════════════════════════════════════════════════════════════════"
-    @echo "  🚀 开始执行 CI 流程"
+    @echo "  🚀 开始执行本地 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📘 步骤 1/4: MCS Web Frontend TypeScript 检查..."
-    cd mcs/mcs-web/frontend && npx tsc --noEmit
+    @echo "📦 步骤 1/6: 安装 MCS Web UI 依赖 (npm ci)..."
+    {{ just_cmd }} mcs-web-ci-install
     @echo ""
-    @echo "🦀 步骤 2/4: Rust 格式检查 + 自动修复..."
-    cd mcs && (cargo fmt --check && echo "  ✓ mcs 格式正确" || (echo "  ⚠️ mcs 格式不符，自动修复中..." && cargo fmt && echo "  ✓ mcs 已自动修复格式"))
+    @echo "📘 步骤 2/6: MCS Web UI TypeScript 检查..."
+    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
     @echo ""
-    @echo "🦀 步骤 3/4: Rust Clippy 静态分析 (自动修复 + 严格检查)..."
-    cd mcs && cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features 2>/dev/null; cargo clippy --all-targets --all-features -- -D warnings
+    @echo "🧪 步骤 3/6: MCS Web UI 测试..."
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
     @echo ""
-    @echo "🦀 步骤 4/4: Rust 单元测试..."
-    cd mcs && cargo test
+    @echo "🦀 步骤 4/6: Rust 格式检查..."
+    {{ just_cmd }} rust-format-check
+    @echo ""
+    @echo "🦀 步骤 5/6: Rust Clippy 静态分析..."
+    {{ just_cmd }} rust-clippy
+    @echo ""
+    @echo "🦀 步骤 6/6: Rust 单元测试..."
+    {{ just_cmd }} rust-test
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
-    @echo "  ✅ CI 流程执行完成！"
+    @echo "  ✅ 本地 CI 流程执行完成！"
     @echo "════════════════════════════════════════════════════════════════"
 
 # ============ 工具 ============
 
 # 清理构建缓存
 clean:
-    cd mcs && cargo clean 2>/dev/null || true
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clean
     @echo "✓ 清理完成"
 
 # 检查项目依赖是否已安装
 check-deps:
-    @cargo --version >/dev/null 2>&1 || echo "⚠️  缺少 cargo，请安装 Rust 工具链 (rustup)"
-    @node --version >/dev/null 2>&1 || echo "⚠️  缺少 node，请安装 Node.js"
+    @{{ just_cmd }} --version
+    @{{ cargo_cmd }} --version
+    @{{ node_cmd }} --version
+    @{{ npm_cmd }} --version
     @echo "✓ 依赖检查完成"
 
 # 显示项目信息
 info:
     @echo "项目: MyClaude Skills"
-    @echo "Rust 版本: $(rustc --version)"
+    @echo "Rust 版本: $({{ rustc_cmd }} --version)"
     @echo "技能路径: content/skills/"
-    @echo "文档路径: docs/"
-    @echo "TUI: mcs/ (Rust + ratatui)"
+    @echo "文档路径: {{ docs_dir }}/"
+    @echo "TUI: {{ mcs_dir }}/ (Rust + ratatui)"
+    @echo "MCS Web UI: {{ mcs_web_ui_dir }}/"

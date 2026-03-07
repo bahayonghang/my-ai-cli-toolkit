@@ -31,34 +31,20 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: mcs/mcs-web/frontend/package-lock.json
+          cache-dependency-path: mcs/mcs-web/ui/package-lock.json
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
+      - name: Setup just
+        uses: taiki-e/install-action@just
+
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: mcs
 
-      - name: Install npm dependencies
-        working-directory: mcs/mcs-web/frontend
-        run: npm ci
-
-      - name: TypeScript check
-        working-directory: mcs/mcs-web/frontend
-        run: npx tsc --noEmit
-
-      - name: Rust format check
-        working-directory: mcs
-        run: cargo fmt --check
-
-      - name: Rust Clippy
-        working-directory: mcs
-        run: cargo clippy --all-targets --all-features -- -D warnings
-
-      - name: Rust tests
-        working-directory: mcs
-        run: cargo test
+      - name: Run repo CI via just
+        run: just ci
