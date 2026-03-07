@@ -67,32 +67,32 @@ async fn main() {
     app_state.warm_cache().await;
     tracing::info!("Discovery cache ready");
 
-    // CORS layer (permissive for dev — frontend on :5173)
+    // CORS layer (permissive for dev UI on :5173)
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
 
-    // Static file serving (frontend/dist/)
-    let frontend_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("frontend")
+    // Static file serving (ui/dist/)
+    let ui_dist_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("ui")
         .join("dist");
 
-    let app = if frontend_dir.exists() {
-        // Production: serve frontend + SPA fallback to index.html
-        let index_path = frontend_dir.join("index.html");
-        let serve_dir = ServeDir::new(&frontend_dir).not_found_service(ServeFile::new(&index_path));
+    let app = if ui_dist_dir.exists() {
+        // Production: serve UI + SPA fallback to index.html
+        let index_path = ui_dist_dir.join("index.html");
+        let serve_dir = ServeDir::new(&ui_dist_dir).not_found_service(ServeFile::new(&index_path));
 
         api::router()
             .with_state(app_state)
             .layer(cors)
             .fallback_service(serve_dir)
     } else {
-        // Dev: no frontend built, return helpful JSON on non-API routes
+        // Dev: no UI built, return helpful JSON on non-API routes
         api::router()
             .with_state(app_state)
             .layer(cors)
-            .fallback(fallback_no_frontend)
+            .fallback(fallback_no_ui)
     };
 
     // Start server
@@ -112,8 +112,8 @@ async fn main() {
         });
     tracing::info!("MCS Web server listening on http://{addr}");
 
-    // Auto-open browser (only in production mode when frontend is built)
-    if frontend_dir.exists() {
+    // Auto-open browser (only in production mode when UI is built)
+    if ui_dist_dir.exists() {
         let url = format!("http://{addr}");
         tokio::spawn(async move {
             tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
@@ -122,8 +122,8 @@ async fn main() {
             }
         });
     } else {
-        tracing::info!("Frontend not built (dev mode) - not opening browser automatically");
-        tracing::info!("Please open http://localhost:5173/ manually to access the frontend");
+        tracing::info!("UI not built (dev mode) - not opening browser automatically");
+        tracing::info!("Please open http://localhost:5173/ manually to access the UI");
     }
 
     axum::serve(listener, app).await.unwrap();
@@ -154,11 +154,11 @@ fn report_legacy_skill_dirs(
     );
 }
 
-/// Fallback when frontend is not built yet
-async fn fallback_no_frontend() -> impl IntoResponse {
+/// Fallback when UI is not built yet
+async fn fallback_no_ui() -> impl IntoResponse {
     axum::response::Json(serde_json::json!({
-        "message": "MCS Web API is running. Frontend not built yet.",
-        "hint": "Run: cd mcs/mcs-web/frontend && npm install && npm run build",
+        "message": "MCS Web API is running. UI not built yet.",
+        "hint": "Run: cd mcs/mcs-web/ui && npm install && npm run build",
         "api_docs": {
             "platforms": "GET /api/platforms",
             "dashboard": "GET /api/dashboard",

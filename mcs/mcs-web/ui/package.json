@@ -1,5 +1,5 @@
 {
-  "name": "mcs-web-frontend",
+  "name": "mcs-web-ui",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -36,3 +36,4 @@
     "wait-on": "^8.0.0"
   }
 }
+
