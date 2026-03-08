@@ -11,3 +11,5 @@ thiserror = { workspace = true }
 dirs = { workspace = true }
 fs_extra = { workspace = true }
 similar = { workspace = true }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

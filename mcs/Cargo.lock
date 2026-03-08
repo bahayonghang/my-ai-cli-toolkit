@@ -947,6 +947,8 @@ dependencies = [
  "similar",
  "thiserror 2.0.18",
  "toml",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -957,6 +959,7 @@ dependencies = [
  "mcs-core",
  "ratatui",
  "similar",
+ "tracing",
  "unicode-width",
 ]
 

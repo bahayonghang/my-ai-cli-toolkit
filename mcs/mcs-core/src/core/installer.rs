@@ -63,61 +63,95 @@ pub fn install_skill(
     name: &str,
     link_mode: LinkMode,
 ) -> InstallResult {
-    if let Err(e) = validate_item_name(name) {
-        return install_result_error(name, format!("Invalid skill name: {name}"), e);
-    }
+    tracing::info!(
+        platform = platform.name.as_str(),
+        item = name,
+        operation = "install_skill",
+        "Starting install operation"
+    );
 
-    let src = match safe_join_under(&skills_src_dir(project_root), name) {
-        Ok(path) => find_skill_src(project_root, name).unwrap_or(path),
-        Err(e) => return install_result_error(name, format!("Invalid skill name: {name}"), e),
-    };
-    if !src.exists() {
-        return install_result_error(
-            name,
-            format!("Skill not found: {name}"),
-            format!("{} does not exist", src.display()),
-        );
-    }
-    if let Err(e) = fs::create_dir_all(platform.skills_path()) {
-        return install_result_error(name, "Failed to create skill dir".into(), e.to_string());
-    }
+    let result = (|| {
+        if let Err(e) = validate_item_name(name) {
+            return install_result_error(name, format!("Invalid skill name: {name}"), e);
+        }
 
-    let target = match safe_join_under(&platform.skills_path(), name) {
-        Ok(path) => path,
-        Err(e) => return install_result_error(name, format!("Invalid skill name: {name}"), e),
-    };
-    let canonical = canonical_skill_path(name);
-    if let Err(e) = copy_dir_replace(&src, &canonical) {
-        return install_result_error(
-            name,
-            format!("Failed to update canonical skill: {name}"),
-            e.to_string(),
-        );
-    }
+        let src = match safe_join_under(&skills_src_dir(project_root), name) {
+            Ok(path) => find_skill_src(project_root, name).unwrap_or(path),
+            Err(e) => {
+                return install_result_error(name, format!("Invalid skill name: {name}"), e);
+            }
+        };
+        if !src.exists() {
+            return install_result_error(
+                name,
+                format!("Skill not found: {name}"),
+                format!("{} does not exist", src.display()),
+            );
+        }
+        if let Err(e) = fs::create_dir_all(platform.skills_path()) {
+            return install_result_error(name, "Failed to create skill dir".into(), e.to_string());
+        }
 
-    match link_or_copy_dir(&canonical, &target, link_mode) {
-        Ok(SkillInstallMode::Symlink) => InstallResult {
-            success: true,
-            item_name: name.into(),
-            message: format!("Installed {name} (symlink)"),
-            error: None,
-        },
-        Ok(SkillInstallMode::CopyFallback) => InstallResult {
-            success: true,
-            item_name: name.into(),
-            message: match link_mode {
-                LinkMode::Copy => format!("Installed {name} (copy)"),
-                _ => format!("Installed {name} (copy fallback)"),
+        let target = match safe_join_under(&platform.skills_path(), name) {
+            Ok(path) => path,
+            Err(e) => {
+                return install_result_error(name, format!("Invalid skill name: {name}"), e);
+            }
+        };
+        let canonical = canonical_skill_path(name);
+        if let Err(e) = copy_dir_replace(&src, &canonical) {
+            return install_result_error(
+                name,
+                format!("Failed to update canonical skill: {name}"),
+                e.to_string(),
+            );
+        }
+
+        match link_or_copy_dir(&canonical, &target, link_mode) {
+            Ok(SkillInstallMode::Symlink) => InstallResult {
+                success: true,
+                item_name: name.into(),
+                message: format!("Installed {name} (symlink)"),
+                error: None,
             },
-            error: None,
-        },
-        Err(e) => InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Failed to install {name}"),
-            error: Some(e.to_string()),
-        },
+            Ok(SkillInstallMode::CopyFallback) => InstallResult {
+                success: true,
+                item_name: name.into(),
+                message: match link_mode {
+                    LinkMode::Copy => format!("Installed {name} (copy)"),
+                    _ => format!("Installed {name} (copy fallback)"),
+                },
+                error: None,
+            },
+            Err(e) => InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Failed to install {name}"),
+                error: Some(e.to_string()),
+            },
+        }
+    })();
+
+    if result.success {
+        tracing::info!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "install_skill",
+            message = result.message.as_str(),
+            "Install operation completed"
+        );
+    } else {
+        tracing::warn!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "install_skill",
+            message = result.message.as_str(),
+            error = result.error.as_deref().unwrap_or(""),
+            "Install operation failed"
+        );
     }
+
+    result
 }
 
 pub fn install_command(
@@ -125,156 +159,252 @@ pub fn install_command(
     platform: &PlatformConfig,
     name: &str,
 ) -> InstallResult {
-    if !platform.supports_commands() {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Commands are not managed for platform '{}'", platform.name),
-            error: None,
-        };
-    }
+    tracing::info!(
+        platform = platform.name.as_str(),
+        item = name,
+        operation = "install_command",
+        "Starting install operation"
+    );
 
-    if let Err(e) = validate_item_name(name) {
-        return install_result_error(name, format!("Invalid command name: {name}"), e);
-    }
+    let result = (|| {
+        if !platform.supports_commands() {
+            return InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Commands are not managed for platform '{}'", platform.name),
+                error: None,
+            };
+        }
 
-    let commands_base = commands_src_dir(project_root);
-    let src_dir = commands_source_dir(platform, &commands_base);
-    if !src_dir.exists() {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: "Commands dir not found".into(),
-            error: None,
-        };
-    }
-    if let Err(e) = fs::create_dir_all(platform.commands_path()) {
-        return install_result_error(name, "Failed to create command dir".into(), e.to_string());
-    }
+        if let Err(e) = validate_item_name(name) {
+            return install_result_error(name, format!("Invalid command name: {name}"), e);
+        }
 
-    let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
-    let name_normalized = normalized.to_string_lossy().to_string();
-    let src_file = find_file_by_stem(&src_dir, &name_normalized);
-    let Some(src_file) = src_file else {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Command not found: {name}"),
-            error: None,
-        };
-    };
-
-    let rel = match src_file.strip_prefix(&src_dir) {
-        Ok(path) => path,
-        Err(e) => {
+        let commands_base = commands_src_dir(project_root);
+        let src_dir = commands_source_dir(platform, &commands_base);
+        if !src_dir.exists() {
+            return InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: "Commands dir not found".into(),
+                error: None,
+            };
+        }
+        if let Err(e) = fs::create_dir_all(platform.commands_path()) {
             return install_result_error(
                 name,
-                format!("Failed to install {name}"),
-                format!("Invalid command source path: {e}"),
+                "Failed to create command dir".into(),
+                e.to_string(),
             );
         }
-    };
-    let target = platform.commands_path().join(rel);
-    if let Some(parent) = target.parent()
-        && let Err(e) = fs::create_dir_all(parent)
-    {
-        return install_result_error(
-            name,
-            format!("Failed to prepare install target: {name}"),
-            e.to_string(),
+
+        let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
+        let name_normalized = normalized.to_string_lossy().to_string();
+        let src_file = find_file_by_stem(&src_dir, &name_normalized);
+        let Some(src_file) = src_file else {
+            return InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Command not found: {name}"),
+                error: None,
+            };
+        };
+
+        let rel = match src_file.strip_prefix(&src_dir) {
+            Ok(path) => path,
+            Err(e) => {
+                return install_result_error(
+                    name,
+                    format!("Failed to install {name}"),
+                    format!("Invalid command source path: {e}"),
+                );
+            }
+        };
+        let target = platform.commands_path().join(rel);
+        if let Some(parent) = target.parent()
+            && let Err(e) = fs::create_dir_all(parent)
+        {
+            return install_result_error(
+                name,
+                format!("Failed to prepare install target: {name}"),
+                e.to_string(),
+            );
+        }
+
+        match fs::copy(&src_file, &target) {
+            Ok(_) => InstallResult {
+                success: true,
+                item_name: name.into(),
+                message: format!("Installed {name}"),
+                error: None,
+            },
+            Err(e) => InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Failed to install {name}"),
+                error: Some(e.to_string()),
+            },
+        }
+    })();
+
+    if result.success {
+        tracing::info!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "install_command",
+            message = result.message.as_str(),
+            "Install operation completed"
+        );
+    } else {
+        tracing::warn!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "install_command",
+            message = result.message.as_str(),
+            error = result.error.as_deref().unwrap_or(""),
+            "Install operation failed"
         );
     }
 
-    match fs::copy(&src_file, &target) {
-        Ok(_) => InstallResult {
-            success: true,
-            item_name: name.into(),
-            message: format!("Installed {name}"),
-            error: None,
-        },
-        Err(e) => InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Failed to install {name}"),
-            error: Some(e.to_string()),
-        },
-    }
+    result
 }
 
 pub fn uninstall_skill(platform: &PlatformConfig, name: &str) -> InstallResult {
-    let target = match safe_join_under(&platform.skills_path(), name) {
-        Ok(path) => path,
-        Err(e) => return install_result_error(name, format!("Invalid skill name: {name}"), e),
-    };
-    if !target.exists() && fs::symlink_metadata(&target).is_err() {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Not installed: {name}"),
-            error: None,
+    tracing::info!(
+        platform = platform.name.as_str(),
+        item = name,
+        operation = "uninstall_skill",
+        "Starting uninstall operation"
+    );
+
+    let result = (|| {
+        let target = match safe_join_under(&platform.skills_path(), name) {
+            Ok(path) => path,
+            Err(e) => {
+                return install_result_error(name, format!("Invalid skill name: {name}"), e);
+            }
         };
-    }
+        if !target.exists() && fs::symlink_metadata(&target).is_err() {
+            return InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Not installed: {name}"),
+                error: None,
+            };
+        }
 
-    match remove_path_any(&target) {
-        Ok(_) => InstallResult {
-            success: true,
-            item_name: name.into(),
-            message: format!("Uninstalled {name}"),
-            error: None,
-        },
-        Err(e) => InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Failed: {name}"),
-            error: Some(e.to_string()),
-        },
-    }
-}
-
-pub fn uninstall_command(platform: &PlatformConfig, name: &str) -> InstallResult {
-    if !platform.supports_commands() {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Commands are not managed for platform '{}'", platform.name),
-            error: None,
-        };
-    }
-
-    if let Err(e) = validate_item_name(name) {
-        return install_result_error(name, format!("Invalid command name: {name}"), e);
-    }
-
-    let target_dir = platform.commands_path();
-    let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
-    let name_normalized = normalized.to_string_lossy().to_string();
-    let target_file = find_file_by_stem(&target_dir, &name_normalized);
-    let Some(target_file) = target_file else {
-        return InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Not installed: {name}"),
-            error: None,
-        };
-    };
-
-    match fs::remove_file(&target_file) {
-        Ok(_) => {
-            prune_empty_parents(&target_file, &target_dir);
-            InstallResult {
+        match remove_path_any(&target) {
+            Ok(_) => InstallResult {
                 success: true,
                 item_name: name.into(),
                 message: format!("Uninstalled {name}"),
                 error: None,
-            }
+            },
+            Err(e) => InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Failed: {name}"),
+                error: Some(e.to_string()),
+            },
         }
-        Err(e) => InstallResult {
-            success: false,
-            item_name: name.into(),
-            message: format!("Failed: {name}"),
-            error: Some(e.to_string()),
-        },
+    })();
+
+    if result.success {
+        tracing::info!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "uninstall_skill",
+            message = result.message.as_str(),
+            "Uninstall operation completed"
+        );
+    } else {
+        tracing::warn!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "uninstall_skill",
+            message = result.message.as_str(),
+            error = result.error.as_deref().unwrap_or(""),
+            "Uninstall operation failed"
+        );
     }
+
+    result
+}
+
+pub fn uninstall_command(platform: &PlatformConfig, name: &str) -> InstallResult {
+    tracing::info!(
+        platform = platform.name.as_str(),
+        item = name,
+        operation = "uninstall_command",
+        "Starting uninstall operation"
+    );
+
+    let result = (|| {
+        if !platform.supports_commands() {
+            return InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Commands are not managed for platform '{}'", platform.name),
+                error: None,
+            };
+        }
+
+        if let Err(e) = validate_item_name(name) {
+            return install_result_error(name, format!("Invalid command name: {name}"), e);
+        }
+
+        let target_dir = platform.commands_path();
+        let normalized = PathBuf::from(name.replace('/', std::path::MAIN_SEPARATOR_STR));
+        let name_normalized = normalized.to_string_lossy().to_string();
+        let target_file = find_file_by_stem(&target_dir, &name_normalized);
+        let Some(target_file) = target_file else {
+            return InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Not installed: {name}"),
+                error: None,
+            };
+        };
+
+        match fs::remove_file(&target_file) {
+            Ok(_) => {
+                prune_empty_parents(&target_file, &target_dir);
+                InstallResult {
+                    success: true,
+                    item_name: name.into(),
+                    message: format!("Uninstalled {name}"),
+                    error: None,
+                }
+            }
+            Err(e) => InstallResult {
+                success: false,
+                item_name: name.into(),
+                message: format!("Failed: {name}"),
+                error: Some(e.to_string()),
+            },
+        }
+    })();
+
+    if result.success {
+        tracing::info!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "uninstall_command",
+            message = result.message.as_str(),
+            "Uninstall operation completed"
+        );
+    } else {
+        tracing::warn!(
+            platform = platform.name.as_str(),
+            item = name,
+            operation = "uninstall_command",
+            message = result.message.as_str(),
+            error = result.error.as_deref().unwrap_or(""),
+            "Uninstall operation failed"
+        );
+    }
+
+    result
 }
 
 pub fn install_item(

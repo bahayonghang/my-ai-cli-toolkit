@@ -141,14 +141,26 @@ fn load_default_categories(project_root: &Path) -> Vec<String> {
 
 /// Scan all skills from source directory
 pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
+    tracing::info!(
+        platform = platform.name.as_str(),
+        "Starting skills discovery"
+    );
     let sources = discover_skill_sources(project_root);
-    resolve_skills_for_platform(&sources, platform)
+    let skills = resolve_skills_for_platform(&sources, platform);
+    tracing::info!(
+        platform = platform.name.as_str(),
+        source_count = sources.len(),
+        resolved_count = skills.len(),
+        "Completed skills discovery"
+    );
+    skills
 }
 
 /// Scan source skills once (platform-independent, shared across all platforms)
 pub fn discover_skill_sources(project_root: &Path) -> Vec<SkillSource> {
     let src_dir = skills_src_dir(project_root);
     if !src_dir.exists() {
+        tracing::info!(source_count = 0usize, "Completed skill source discovery");
         return Vec::new();
     }
 
@@ -189,6 +201,10 @@ pub fn discover_skill_sources(project_root: &Path) -> Vec<SkillSource> {
             is_default,
         });
     }
+    tracing::info!(
+        source_count = sources.len(),
+        "Completed skill source discovery"
+    );
     sources
 }
 
@@ -225,13 +241,27 @@ pub fn resolve_skills_for_platform(
 
 /// Scan all commands from platform-specific source directory
 pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
+    tracing::info!(
+        platform = platform.name.as_str(),
+        "Starting commands discovery"
+    );
     if !platform.supports_commands() {
+        tracing::info!(
+            platform = platform.name.as_str(),
+            command_count = 0usize,
+            "Completed commands discovery"
+        );
         return Vec::new();
     }
 
     let commands_base = commands_src_dir(project_root);
     let src_dir = commands_source_dir(platform, &commands_base);
     if !src_dir.exists() {
+        tracing::info!(
+            platform = platform.name.as_str(),
+            command_count = 0usize,
+            "Completed commands discovery"
+        );
         return Vec::new();
     }
 
@@ -271,6 +301,11 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
             is_default: false,
         });
     }
+    tracing::info!(
+        platform = platform.name.as_str(),
+        command_count = commands.len(),
+        "Completed commands discovery"
+    );
     commands
 }
 

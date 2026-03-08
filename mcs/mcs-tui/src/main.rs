@@ -1,10 +1,18 @@
 mod tui;
 
+use mcs_core::logging::{AppLogKind, init_logging};
+
 fn main() {
     if std::env::args().any(|a| a == "--version" || a == "-V") {
         println!("mcs {}", env!("CARGO_PKG_VERSION"));
         return;
     }
+
+    init_logging(AppLogKind::Tui).unwrap_or_else(|err| {
+        eprintln!("Failed to initialize logging: {err}");
+        std::process::exit(1);
+    });
+    tracing::info!("mcs-tui startup");
 
     let project_root = mcs_core::config::paths::detect_project_root().unwrap_or_else(|| {
         eprintln!("Error: Could not detect project root (no skills/ directory found).");

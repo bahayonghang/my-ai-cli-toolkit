@@ -3,26 +3,28 @@ mod dto;
 mod state;
 
 use std::net::SocketAddr;
+use std::time::Duration;
 
+use axum::extract::MatchedPath;
 use axum::response::IntoResponse;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::{ServeDir, ServeFile};
-use tracing_subscriber::EnvFilter;
+use tower_http::trace::TraceLayer;
 
 use mcs_core::config::paths::detect_project_root;
 use mcs_core::config::platform::load_platforms;
 use mcs_core::core::skill_migration::run_one_time_skill_migration;
+use mcs_core::logging::{AppLogKind, init_logging};
 
 use crate::state::AppState;
 
 #[tokio::main]
 async fn main() {
     // Initialize tracing
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
-        )
-        .init();
+    init_logging(AppLogKind::Web).unwrap_or_else(|err| {
+        eprintln!("Failed to initialize logging: {err}");
+        std::process::exit(1);
+    });
 
     // Detect project root
     let project_root = detect_project_root().unwrap_or_else(|| {
@@ -72,6 +74,27 @@ async fn main() {
         .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
+    let trace = TraceLayer::new_for_http()
+        .make_span_with(|request: &axum::http::Request<_>| {
+            let matched_path = request
+                .extensions()
+                .get::<MatchedPath>()
+                .map(MatchedPath::as_str);
+
+            tracing::info_span!(
+                "http_request",
+                method = %request.method(),
+                path = matched_path.unwrap_or(request.uri().path()),
+            )
+        })
+        .on_response(
+            |response: &axum::http::Response<_>, latency: Duration, _span: &tracing::Span| {
+                tracing::info!(
+                    status = response.status().as_u16(),
+                    latency_ms = latency.as_millis()
+                );
+            },
+        );
 
     // Static file serving (ui/dist/)
     let ui_dist_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -86,12 +109,14 @@ async fn main() {
         api::router()
             .with_state(app_state)
             .layer(cors)
+            .layer(trace)
             .fallback_service(serve_dir)
     } else {
         // Dev: no UI built, return helpful JSON on non-API routes
         api::router()
             .with_state(app_state)
             .layer(cors)
+            .layer(trace)
             .fallback(fallback_no_ui)
     };
 

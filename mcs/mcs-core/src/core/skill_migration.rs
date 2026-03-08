@@ -36,7 +36,9 @@ pub fn run_one_time_skill_migration(
     platforms: &HashMap<String, PlatformConfig>,
 ) -> io::Result<MigrationSummary> {
     let done_marker = done_marker_path();
+    tracing::info!(path = %done_marker.display(), "Starting one-time skill migration");
     if done_marker.exists() {
+        tracing::info!(path = %done_marker.display(), reason = "done marker already exists", "Skipping one-time skill migration");
         return Ok(MigrationSummary::skipped(
             done_marker,
             "done marker already exists",
@@ -48,6 +50,7 @@ pub fn run_one_time_skill_migration(
     let _lock = match acquire_lock(&lock_path)? {
         Some(guard) => guard,
         None => {
+            tracing::info!(path = %lock_path.display(), reason = "migration lock already exists", "Skipping one-time skill migration");
             return Ok(MigrationSummary::skipped(
                 done_marker,
                 "migration lock already exists",
@@ -59,6 +62,22 @@ pub fn run_one_time_skill_migration(
     let candidates = collect_skill_candidates(platforms)?;
     migrate_all_skills(&candidates, &mut summary)?;
     write_done_marker(&summary)?;
+    if summary.errors.is_empty() {
+        tracing::info!(
+            migrated_skills = summary.migrated_skills,
+            relinked_targets = summary.relinked_targets,
+            copy_fallbacks = summary.copy_fallbacks,
+            "Completed one-time skill migration"
+        );
+    } else {
+        tracing::warn!(
+            migrated_skills = summary.migrated_skills,
+            relinked_targets = summary.relinked_targets,
+            copy_fallbacks = summary.copy_fallbacks,
+            error_count = summary.errors.len(),
+            "Completed one-time skill migration with errors"
+        );
+    }
     Ok(summary)
 }
 
@@ -97,6 +116,7 @@ fn migrate_all_skills(
             continue;
         }
         if let Err(err) = migrate_single_skill(skill_name, installs, summary) {
+            tracing::warn!(skill = skill_name, error = %err, "Failed to migrate skill");
             summary.errors.push(format!("{skill_name}: {err}"));
         }
     }
