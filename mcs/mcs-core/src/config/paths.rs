@@ -16,10 +16,12 @@ pub fn detect_project_root() -> Option<PathBuf> {
     {
         return Some(root);
     }
+    tracing::warn!("Failed to detect project root containing content/skills");
     None
 }
 
 fn walk_up_for_content(start: &Path) -> Option<PathBuf> {
+    tracing::info!(start = %start.display(), "Searching for project root containing content/skills");
     let mut dir = if start.is_file() {
         start.parent()?.to_path_buf()
     } else {
@@ -27,6 +29,7 @@ fn walk_up_for_content(start: &Path) -> Option<PathBuf> {
     };
     for _ in 0..10 {
         if dir.join("content").join("skills").is_dir() {
+            tracing::info!(root = %dir.display(), "Detected project root containing content/skills");
             return Some(dir);
         }
         dir = dir.parent()?.to_path_buf();

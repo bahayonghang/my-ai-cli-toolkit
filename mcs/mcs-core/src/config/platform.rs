@@ -517,33 +517,57 @@ struct TomlConfig {
 /// Load platforms with 3-tier priority: defaults → project TOML → user TOML
 pub fn load_platforms(project_root: &Path) -> HashMap<String, PlatformConfig> {
     let mut platforms = default_platforms();
+    tracing::info!(
+        count = platforms.len(),
+        "Loaded default platform configuration"
+    );
 
     // Project-level override
-    apply_toml_overrides(&mut platforms, &project_root.join("platforms.toml"));
+    apply_toml_overrides(
+        &mut platforms,
+        &project_root.join("platforms.toml"),
+        "project",
+    );
 
     // User-level override (highest priority)
     let user_config = home_dir()
         .join(".config")
         .join("myclaude")
         .join("platforms.toml");
-    apply_toml_overrides(&mut platforms, &user_config);
+    apply_toml_overrides(&mut platforms, &user_config, "user");
 
     platforms
 }
 
-fn apply_toml_overrides(platforms: &mut HashMap<String, PlatformConfig>, path: &Path) {
+fn apply_toml_overrides(
+    platforms: &mut HashMap<String, PlatformConfig>,
+    path: &Path,
+    source: &str,
+) {
     let content = match std::fs::read_to_string(path) {
         Ok(c) => c,
-        Err(_) => return,
+        Err(err) if err.kind() == std::io::ErrorKind::NotFound => {
+            tracing::info!(source, path = %path.display(), "Skipped platform override file");
+            return;
+        }
+        Err(err) => {
+            tracing::warn!(source, path = %path.display(), error = %err, "Failed to read platform override file");
+            return;
+        }
     };
     let config: TomlConfig = match toml::from_str(&content) {
         Ok(c) => c,
-        Err(_) => return,
+        Err(err) => {
+            tracing::warn!(source, path = %path.display(), error = %err, "Failed to parse platform override file");
+            return;
+        }
     };
     let Some(toml_platforms) = config.platforms else {
+        tracing::debug!(source, path = %path.display(), "Platform override file did not contain a [platforms] section");
         return;
     };
 
+    let override_count = toml_platforms.len();
     for (name, tp) in toml_platforms {
         let entry = platforms.entry(name.clone()).or_insert_with(|| {
             p(
@@ -578,6 +602,7 @@ fn apply_toml_overrides(platforms: &mut HashMap<String, PlatformConfig>, path: &
             entry.fallback_commands_source = Some(v);
         }
     }
+    tracing::info!(source, path = %path.display(), count = override_count, "Applied platform override file");
 }
 
 /// Get commands source directory with fallback logic
