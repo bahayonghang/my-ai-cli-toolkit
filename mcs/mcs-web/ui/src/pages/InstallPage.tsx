@@ -1207,6 +1207,11 @@ function ExternalInstallPanel({
     return `${method}::${skillName.trim()}`;
   }, []);
 
+  const catalogItemKey = useCallback(
+    (item: ExternalSkillCatalogDto) => itemKey(item.method as ExternalInstallMethod, toSkillName(item)),
+    [itemKey, toSkillName]
+  );
+
   const parseCustomInput = useCallback((): ExternalInstallBatchItemDto[] => {
     const lines = customBatchInput
       .split(/\r?\n/)
@@ -1223,11 +1228,10 @@ function ExternalInstallPanel({
     const dedup = new Map<string, ExternalInstallBatchItemDto>();
 
     for (const item of visibleCatalogItems) {
-      const skillName = toSkillName(item);
-      const key = itemKey(item.method as ExternalInstallMethod, skillName);
+      const key = catalogItemKey(item);
       if (!selectedCatalogKeys.has(key)) continue;
       dedup.set(key, {
-        skill_name: skillName,
+        skill_name: toSkillName(item),
         method: item.method as ExternalInstallMethod,
       });
     }
@@ -1384,6 +1388,17 @@ function ExternalInstallPanel({
     });
   };
 
+  const handleSelectAll = () => {
+    if (disabledInProject || jobRunning) return;
+    setSelectedCatalogKeys((previous) => {
+      const next = new Set(previous);
+      visibleCatalogItems.forEach((item) => {
+        next.add(catalogItemKey(item));
+      });
+      return next;
+    });
+  };
+
   const clearBatchSelection = () => {
     if (jobRunning) return;
     setSelectedCatalogKeys(new Set());
@@ -1453,6 +1468,14 @@ function ExternalInstallPanel({
                           count: selectedCatalogKeys.size,
                         })}
                       />
+                      <Button
+                        size="small"
+                        variant="text"
+                        onClick={handleSelectAll}
+                        sx={{ textTransform: "none", borderRadius: 2 }}
+                      >
+                        {t("install.selectAll")}
+                      </Button>
                     </Box>
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                       {visibleCatalogItems.map((item) => {
