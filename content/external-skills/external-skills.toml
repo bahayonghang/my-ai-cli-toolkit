@@ -10,6 +10,7 @@
 #   description - 技能描述
 #   stars       - 推荐星级 1-5（可选）
 #   project_only - 是否仅支持 project 级别安装（可选，默认 false）
+#   usage       - 安装后的使用说明（可选，1-2 句话描述如何触发/使用）
 
 # ── Skills Plugin ──────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ method = "vercel"
 category = "frontend"
 description = "Vercel React 和 Next.js 性能优化最佳实践（57 条规则, 8 大类别）"
 stars = 4
+usage = "安装后在 React/Next.js 项目中自动生效，提供组件设计与性能优化指导"
 
 [[skills]]
 name = "skill-creator"
@@ -30,6 +32,7 @@ method = "vercel"
 category = "dev-tools"
 description = "Claude 技能创建器（交互式引导创建新 Claude Code 技能）"
 stars = 4
+usage = "安装后使用 /skill-creator 命令交互式创建新技能"
 
 [[skills]]
 name = "agent-browser"
@@ -39,6 +42,7 @@ method = "vercel"
 category = "dev-tools"
 description = "AI Agent 浏览器自动化工具（Rust 无头浏览器, 支持测试/截图/数据提取）"
 stars = 4
+usage = "安装后通过自然语言指令控制浏览器执行自动化任务"
 
 [[skills]]
 name = "find-skills"
@@ -48,6 +52,7 @@ method = "vercel"
 category = "dev-tools"
 description = "技能发现工具（查找和安装 agent skills 生态中的可用技能包）"
 stars = 5
+usage = "安装后使用 /find-skills 命令搜索和发现可用技能"
 
 [[skills]]
 name = "vue-best-practices"
@@ -57,6 +62,7 @@ method = "vercel"
 category = "frontend"
 description = "Vue 3 开发最佳实践（Composition API / 响应式 / 组件设计指南）"
 stars = 3
+usage = "安装后在 Vue 3 项目中自动生效，提供 Composition API 开发指导"
 
 [[skills]]
 name = "remotion-best-practices"
@@ -66,6 +72,7 @@ method = "vercel"
 category = "media"
 description = "Remotion 视频创建最佳实践（React 编程视频的动画/音频/资源管理）"
 stars = 3
+usage = "安装后在 Remotion 项目中自动生效，指导视频编程开发"
 
 [[skills]]
 name = "vuejs-ai-skills"
@@ -74,6 +81,7 @@ method = "vercel"
 category = "frontend"
 description = "Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）"
 stars = 4
+usage = "安装后在 Vue.js 项目中自动生效，提供官方推荐的开发实践"
 
 [[skills]]
 name = "supabase-agent-skills"
@@ -82,6 +90,7 @@ method = "vercel"
 category = "database"
 description = "Supabase Agent Skills — PostgreSQL 最佳实践（查询/连接/模式/RLS）"
 stars = 4
+usage = "安装后在使用 Supabase 的项目中自动生效，指导数据库设计与查询优化"
 
 [[skills]]
 name = "code-review-expert"
@@ -90,6 +99,7 @@ method = "vercel"
 category = "dev-tools"
 description = "代码审查专家 — 多维度结构化审查（SOLID/安全/性能, P0-P3 评级报告）"
 stars = 4
+usage = "安装后使用 /code-review 命令进行多维度结构化代码审查"
 
 [[skills]]
 name = "claude-scientific-skills"
@@ -98,6 +108,7 @@ method = "vercel"
 category = "scientific"
 description = "AI 科学家技能库 — 140+ 科研通用技能（生信/基因/分子研发, PubMed 集成）"
 stars = 5
+usage = "安装后使用 /find-skills 命令发现 140+ 科研技能并按需安装"
 
 [[skills]]
 name = "claude-skills-fullstack"
@@ -106,6 +117,7 @@ method = "vercel"
 category = "dev-tools"
 description = "全栈开发结对编程助手 — 66 个专用技能（前后端框架/测试/DevOps）"
 stars = 4
+usage = "安装后使用 /find-skills 命令发现 66 个专用开发技能并按需安装"
 
 [[skills]]
 name = "ui-ux-pro-max"
@@ -115,6 +127,16 @@ method = "vercel"
 category = "ui-ux"
 description = "UI/UX Pro Max 设计专家 — 60+ 审美风格 / 百套配色 / 企业页面向导"
 stars = 5
+usage = "安装后使用 /ui-ux-pro-max 命令启动高级 UI/UX 设计向导"
+
+[[skills]]
+name = "impeccable"
+repo = "pbakaus/impeccable"
+method = "vercel"
+category = "ui-ux"
+description = "Impeccable — Paul Bakaus 开发的高级设计语言集，提供 17 条专项指令、设计防错模式与专业词汇表"
+stars = 5
+usage = "安装后使用 /teach-impeccable 命令学习设计规则，自动提升 UI 品质"
 
 [[skills]]
 name = "skill-seekers"
@@ -124,6 +146,7 @@ method = "vercel"
 category = "dev-tools"
 description = "技能发现工具 — 查找和安装 agent skills 生态中的可用技能包"
 stars = 5
+usage = "安装后使用 /skill-seekers 命令搜索并安装社区技能"
 
 # ── Python 代码质量 ────────────────────────────────────────────────
 
@@ -134,6 +157,7 @@ method = "vercel"
 category = "python"
 description = "Python 代码质量分析（静态分析/代码规范/最佳实践）"
 stars = 3
+usage = "安装后在 Python 项目中自动生效，提供代码质量分析与改进建议"
 
 [[skills]]
 name = "python-refactor"
@@ -142,6 +166,7 @@ method = "vercel"
 category = "python"
 description = "Python 代码重构工具（自动化重构建议/代码简化）"
 stars = 3
+usage = "安装后在 Python 项目中自动生效，提供自动化重构建议"
 
 [[skills]]
 name = "agent-architecture-analysis"
@@ -150,6 +175,7 @@ method = "vercel"
 category = "dev-tools"
 description = "Agent 架构分析工具（代码架构审查/设计模式识别）"
 stars = 3
+usage = "安装后自动分析项目架构，识别设计模式并给出改进建议"
 
 # ── Scientific Skills ─────────────────────────────────────────────
 
@@ -160,6 +186,7 @@ method = "vercel"
 category = "scientific"
 description = "学术研究技能包（文献综述/实验设计/论文撰写辅助）"
 stars = 3
+usage = "安装后使用 /find-skills 命令发现可用的学术研究辅助技能"
 
 # ── Obsidian Skills ───────────────────────────────────────────────
 
@@ -171,6 +198,7 @@ category = "obsidian"
 description = "Obsidian 笔记技能（官方, Kepano 维护）"
 stars = 5
 project_only = true
+usage = "在 Obsidian vault 项目中安装后自动生效（仅支持 project 级别）"
 
 [[skills]]
 name = "obsidian-visual-skills"
@@ -180,6 +208,7 @@ category = "obsidian"
 description = "Obsidian 可视化技能（图表/看板/时间线等视觉笔记）"
 stars = 4
 project_only = true
+usage = "在 Obsidian vault 项目中安装后自动生效，提供可视化笔记能力（仅支持 project 级别）"
 
 # ── Translation Skills ────────────────────────────────────────────
 
@@ -191,6 +220,7 @@ method = "vercel"
 category = "translate"
 description = "宝玉翻译技能 (baoyu-translate)"
 stars = 5
+usage = "安装后使用 /baoyu-translate 命令进行高质量中英翻译"
 
 # ── Writing / Documentation Skills ────────────────────────────────
 
@@ -202,6 +232,7 @@ method = "vercel"
 category = "writing"
 description = "通用型 VitePress 写作/站点维护 skill (skills.sh/antfu/skills/vitepress)"
 stars = 5
+usage = "安装后在 VitePress 项目中自动生效，辅助文档站点开发与维护"
 
 # ── Productivity / AI Tools ──────────────────────────────────────────
 
@@ -213,3 +244,4 @@ method = "vercel"
 category = "productivity"
 description = "Best Minds (多种专家 AI 思维模型与分析能力)"
 stars = 5
+usage = "安装后使用 /best-minds 命令召唤多种专家思维模型进行分析"
