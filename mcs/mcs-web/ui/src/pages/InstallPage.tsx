@@ -112,9 +112,10 @@ const COMMON_AGENTS = [
   "kiro",
   "opencode",
   "cline",
-  "amp",
   "augment",
   "trae",
+  "trae_cn",
+  "antigravity",
 ];
 const DEFAULT_AGENTS = ["claude-code", "codex"];
 const DEFAULT_CLI_MODE: ExternalInstallCliMode = "auto";
@@ -1457,6 +1458,21 @@ function ExternalInstallPanel({
     });
   };
 
+  const selectAllCatalog = () => {
+    if (jobRunning) return;
+    const allKeys = new Set(
+      visibleCatalogItems.map((item) =>
+        itemKey(item.method as ExternalInstallMethod, toSkillName(item))
+      )
+    );
+    setSelectedCatalogKeys(allKeys);
+  };
+
+  const deselectAllCatalog = () => {
+    if (jobRunning) return;
+    setSelectedCatalogKeys(new Set());
+  };
+
   const clearBatchSelection = () => {
     if (jobRunning) return;
     setSelectedCatalogKeys(new Set());
@@ -1520,6 +1536,27 @@ function ExternalInstallPanel({
                           count: selectedCatalogKeys.size,
                         })}
                       />
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<SelectAllIcon />}
+                        disabled={jobRunning || visibleCatalogItems.length === 0}
+                        onClick={selectAllCatalog}
+                        sx={{ borderRadius: 2, textTransform: "none" }}
+                      >
+                        {t("install.selectAll")}
+                      </Button>
+                      {selectedCatalogKeys.size > 0 && (
+                        <Button
+                          size="small"
+                          variant="text"
+                          disabled={jobRunning}
+                          onClick={deselectAllCatalog}
+                          sx={{ borderRadius: 2, textTransform: "none" }}
+                        >
+                          {t("install.deselectAll")}
+                        </Button>
+                      )}
                     </Box>
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                       {visibleCatalogItems.map((item) => {
@@ -1633,6 +1670,10 @@ function ExternalInstallPanel({
                     value={agents}
                     onChange={(_e, newValue) => updateAgents(newValue)}
                     disabled={jobRunning}
+                    slotProps={{
+                      popper: { sx: { zIndex: 1500 } },
+                      listbox: { sx: { maxHeight: 240 } },
+                    }}
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => {
                         const { key, ...rest } = getTagProps({ index });
