@@ -8,8 +8,8 @@ mcs_dir := "mcs"
 mcs_web_ui_dir := "mcs/mcs-web/ui"
 docs_npm_cache_dir := ".npm-cache"
 mcs_web_npm_cache_dir := ".npm-cache"
-npm_cmd := "npm"
-npx_cmd := "npx"
+npm_cmd := if os_family() == "windows" { "npm.cmd" } else { "npm" }
+npx_cmd := if os_family() == "windows" { "npx.cmd" } else { "npx" }
 just_cmd := "just"
 node_cmd := "node"
 cargo_cmd := "cargo"
@@ -17,8 +17,8 @@ rustc_cmd := "rustc"
 
 # ============ 跨平台执行指令 ============
 
-kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue\"" } else { "pkill -x mcs-web || true" }
-kill_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { Stop-Process -Id $p.OwningProcess -Force -ErrorAction SilentlyContinue }\"" } else { "lsof -t -i:13242 | xargs kill -9 || true" }
+kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; exit 0\"" } else { "pkill -x mcs-web || true" }
+kill_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { Stop-Process -Id $p.OwningProcess -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "lsof -t -i:13242 | xargs kill -9 || true" }
 
 # 默认任务：交互式选择
 default:
@@ -60,6 +60,7 @@ help:
     @echo ""
     @echo "🌐 MCS Web："
     @echo "  just mcs-web-install        - 安装 MCS Web UI 依赖"
+    @echo "  just mcs-web-ci-install     - 强制执行 npm ci"
     @echo "  just mcs-web-server         - 启动后端服务器 (port 13242)"
     @echo "  just mcs-web-dev            - 启动 UI 开发服务器 (port 5173)"
     @echo "  just mcs-web-dev-all        - 启动 UI + 后端开发服务器"
@@ -205,6 +206,11 @@ rust-format:
 rust-clippy:
     cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --all-targets --all-features -- -D warnings
 
+# 自动修复可机器修复的 Clippy 问题
+rust-clippy-fix:
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+    cd {{ mcs_dir }}; {{ cargo_cmd }} fmt
+
 # 运行 Rust 单元测试
 rust-test:
     cd {{ mcs_dir }}; {{ cargo_cmd }} test
@@ -215,7 +221,7 @@ rust-check-all: rust-format-check rust-clippy rust-test
 # 自动格式化并尝试修复 Clippy 问题
 rust-fix:
     cd {{ mcs_dir }}; {{ cargo_cmd }} fmt
-    cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+    {{ just_cmd }} rust-clippy-fix
     cd {{ mcs_dir }}; {{ cargo_cmd }} clippy --all-targets --all-features -- -D warnings
 
 # ============ TypeScript 检查 ============
@@ -242,10 +248,12 @@ ci:
     @echo "🧪 步骤 3/6: MCS Web UI 测试..."
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
     @echo ""
-    @echo "🦀 步骤 4/6: Rust 格式检查..."
+    @echo "🦀 步骤 4/6: Rust 格式检查（必要时自动修复）..."
+    {{ just_cmd }} rust-format
     {{ just_cmd }} rust-format-check
     @echo ""
-    @echo "🦀 步骤 5/6: Rust Clippy 静态分析..."
+    @echo "🦀 步骤 5/6: Rust Clippy 自动修复并严格校验..."
+    {{ just_cmd }} rust-clippy-fix
     {{ just_cmd }} rust-clippy
     @echo ""
     @echo "🦀 步骤 6/6: Rust 单元测试..."
