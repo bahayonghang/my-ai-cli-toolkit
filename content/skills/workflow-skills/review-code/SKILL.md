@@ -1,8 +1,8 @@
 ---
 name: review-code
-description: Analyze code across multiple dimensions and generate structured reports. Use when the user requests a code review, "review code", or "审查代码".
+description: "Review code across 6 quality dimensions with language-specific rules. Use when reviewing PRs, auditing code quality, or preparing for merge."
 argument-hint: [target-files-or-directory]
-allowed-tools: Task, AskUserQuestion, Read, Write, Glob, Grep, Bash, mcp__ace-tool__search_context, mcp__ide__getDiagnostics
+allowed-tools: Read, Write, Glob, Grep, Bash
 metadata:
   category: code-quality
   tags:
@@ -12,32 +12,25 @@ metadata:
     - performance
     - best-practices
     - testing
+    - multi-language
 ---
 
-Perform a multi-dimensional code review on `$ARGUMENTS` (defaults to current directory if not provided).
-
-## Prerequisites (Mandatory)
-1. Read the following specifications from `$SKILL_DIR/specs/` to understand dimensions and classification standards:
-   - `review-dimensions.md`
-   - `issue-classification.md`
-   - `quality-standards.md`
-2. Read the templates from `$SKILL_DIR/templates/`:
-   - `review-report.md`
-   - `issue-template.md`
+Review code at `$ARGUMENTS` across 6 dimensions (Correctness, Security, Performance, Readability, Testing, Architecture).
 
 ## Steps
 
-1. **Setup**: Create a scratchpad directory for outputs:
-   ```bash
-   mkdir -p ".workflow/.scratchpad/review-code-$(date +%Y%m%d%H%M%S)/findings"
-   ```
-2. **Collect Context**: Analyze the target `$ARGUMENTS` to identify the technology stack, language, and core files. Write findings to `context.json` in the scratchpad.
-3. **Quick Scan**: Perform a quick structural scan to identify high-risk areas. Save summary to `state.json`.
-4. **Deep Review**: Conduct an in-depth review for each dimension (Correctness, Readability, Performance, Security, Testing, Architecture). Log structured findings into the `findings/` directory. Use tools like `mcp__ide__getDiagnostics` if applicable.
-5. **Generate Report**: Compile all findings. Use the `review-report.md` template to generate the final structured review report at `<scratchpad>/review-report.md`.
-6. **Complete**: Complete the review by outputting a brief summary to the user (in Chinese or English), highlighting Critical and High severity issues.
+1. If `$ARGUMENTS` empty, default to current git changes or working directory.
+2. Read `$SKILL_DIR/references/review-dimensions.md` and `$SKILL_DIR/references/issue-classification.md`.
+3. Detect languages in target. Load matching guides from `$SKILL_DIR/references/languages/`.
+4. Read `$SKILL_DIR/references/workflow-guide.md` for phased review procedure.
+5. Execute 4-phase workflow: Collect Context, Quick Scan, Deep Review (per dimension), Generate Report.
+6. For each dimension, apply rules from `$SKILL_DIR/references/rules/`.
+7. Classify issues by severity: Critical, High, Medium, Low, Info.
+8. Generate report using `$SKILL_DIR/assets/review-report-template.md`.
+9. Present summary with severity counts, top findings, and actionable recommendations.
 
 ## Error Handling
 
-- If `$ARGUMENTS` is empty or invalid, try to run a review on the current workspace. If the workspace is too large, ask the user to specify a target directory or file.
-- If necessary specification files are missing from `$SKILL_DIR/specs/`, warn the user and attempt to infer standard review dimensions.
+- Empty target: review current git changes or prompt user for path.
+- Workspace too large (>200 files): prompt user to narrow scope.
+- Missing language guide: apply general best practices.

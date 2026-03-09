@@ -6,14 +6,14 @@ Multi-dimensional code review skill that analyzes code across 6 key dimensions a
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  ⚠️ Phase 0: Specification Study (强制前置)                       │
-│              → 阅读 specs/review-dimensions.md                   │
-│              → 理解审查维度和问题分类标准                          │
+│  Phase 0: Specification Study (mandatory prerequisite)            │
+│              → Read references/review-dimensions.md              │
+│              → Understand review dimensions and issue criteria    │
 └───────────────┬─────────────────────────────────────────────────┘
                 ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│           Orchestrator (状态驱动决策)                             │
-│           → 读取状态 → 选择审查动作 → 执行 → 更新状态              │
+│           Orchestrator (state-driven decisions)                   │
+│           → Read state → Select action → Execute → Update state  │
 └───────────────┬─────────────────────────────────────────────────┘
                 │
     ┌───────────┼───────────┬───────────┬───────────┐
@@ -36,43 +36,43 @@ Multi-dimensional code review skill that analyzes code across 6 key dimensions a
 
 ## Key Design Principles
 
-1. **多维度审查**: 覆盖正确性、可读性、性能、安全性、测试覆盖、架构一致性六大维度
-2. **分层执行**: 快速扫描识别高风险区域，深入审查聚焦关键问题
-3. **结构化报告**: 按严重程度分类，提供文件位置和修复建议
-4. **状态驱动**: 自主模式，根据审查进度动态选择下一步动作
+1. **Multi-dimensional review**: Covers 6 dimensions — Correctness, Readability, Performance, Security, Testing, Architecture
+2. **Layered execution**: Quick scan identifies high-risk areas; deep review focuses on critical issues
+3. **Structured reporting**: Classified by severity, with file locations and fix recommendations
+4. **State-driven**: Autonomous mode, dynamically selects next action based on review progress
 
 ## Execution Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Phase 0: Specification Study (强制前置 - 禁止跳过)               │
-│  → Read: specs/review-dimensions.md                              │
-│  → Read: specs/issue-classification.md                           │
-│  → 理解审查标准和问题分类                                          │
+│  Phase 0: Specification Study (mandatory - do not skip)           │
+│  → Read: references/review-dimensions.md                         │
+│  → Read: references/issue-classification.md                      │
+│  → Understand review standards and issue classification          │
 ├─────────────────────────────────────────────────────────────────┤
 │  Action: collect-context                                         │
-│  → 收集目标文件/目录                                               │
-│  → 识别技术栈和语言                                                │
+│  → Collect target files/directories                              │
+│  → Identify tech stack and languages                             │
 │  → Output: state.context (files, language, framework)            │
 ├─────────────────────────────────────────────────────────────────┤
 │  Action: quick-scan                                              │
-│  → 快速扫描整体结构                                                │
-│  → 识别高风险区域                                                  │
+│  → Quick scan overall structure                                  │
+│  → Identify high-risk areas                                      │
 │  → Output: state.risk_areas, state.scan_summary                  │
 ├─────────────────────────────────────────────────────────────────┤
 │  Action: deep-review (per dimension)                             │
-│  → 逐维度深入审查                                                  │
-│  → 记录发现的问题                                                  │
+│  → Deep review per dimension                                     │
+│  → Record discovered issues                                      │
 │  → Output: state.findings[]                                      │
 ├─────────────────────────────────────────────────────────────────┤
 │  Action: generate-report                                         │
-│  → 汇总所有发现                                                    │
-│  → 生成结构化报告                                                  │
+│  → Aggregate all findings                                        │
+│  → Generate structured report                                    │
 │  → Output: review-report.md                                      │
 ├─────────────────────────────────────────────────────────────────┤
 │  Action: complete                                                │
-│  → 保存最终状态                                                    │
-│  → 输出审查摘要                                                    │
+│  → Save final state                                              │
+│  → Output review summary                                         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -80,46 +80,50 @@ Multi-dimensional code review skill that analyzes code across 6 key dimensions a
 
 ```
 .workflow/.scratchpad/review-code-{timestamp}/
-├── state.json                    # 审查状态
-├── context.json                  # 目标上下文
-├── findings/                     # 问题发现
+├── state.json                    # Review state
+├── context.json                  # Target context
+├── findings/                     # Issue findings
 │   ├── correctness.json
 │   ├── readability.json
 │   ├── performance.json
 │   ├── security.json
 │   ├── testing.json
 │   └── architecture.json
-└── review-report.md              # 最终审查报告
+└── review-report.md              # Final review report
 ```
 
 ## Review Dimensions
 
 | Dimension | Focus Areas | Key Checks |
 |-----------|-------------|------------|
-| **Correctness** | 逻辑正确性 | 边界条件、错误处理、null 检查 |
-| **Readability** | 代码可读性 | 命名规范、函数长度、注释质量 |
-| **Performance** | 性能效率 | 算法复杂度、I/O 优化、资源使用 |
-| **Security** | 安全性 | 注入风险、敏感信息、权限控制 |
-| **Testing** | 测试覆盖 | 测试充分性、边界覆盖、可维护性 |
-| **Architecture** | 架构一致性 | 设计模式、分层结构、依赖管理 |
+| **Correctness** | Functional correctness | Boundary conditions, error handling, null checks |
+| **Readability** | Code readability | Naming conventions, function length, comment quality |
+| **Performance** | Execution efficiency | Algorithm complexity, I/O optimization, resource usage |
+| **Security** | Security | Injection risks, sensitive data, access control |
+| **Testing** | Test coverage | Test adequacy, boundary coverage, maintainability |
+| **Architecture** | Architectural consistency | Design patterns, layering, dependency management |
 
 ## Issue Severity Levels
 
 | Level | Prefix | Description | Action Required |
 |-------|--------|-------------|-----------------|
-| **Critical** | [C] | 阻塞性问题，必须立即修复 | Must fix before merge |
-| **High** | [H] | 重要问题，需要修复 | Should fix |
-| **Medium** | [M] | 建议改进 | Consider fixing |
-| **Low** | [L] | 可选优化 | Nice to have |
-| **Info** | [I] | 信息性建议 | For reference |
+| **Critical** | [C] | Blocking issue, must fix immediately | Must fix before merge |
+| **High** | [H] | Important issue, needs fixing | Should fix |
+| **Medium** | [M] | Recommended improvement | Consider fixing |
+| **Low** | [L] | Optional optimization | Nice to have |
+| **Info** | [I] | Informational suggestion | For reference |
 
 ## Reference Documents Catalog
 
-- `phases/orchestrator.md`: 审查编排器
-- `phases/state-schema.md`: 状态结构定义
-- `phases/actions/*`: 预定义的审查动作
-- `specs/review-dimensions.md`: 审查维度规范
-- `specs/issue-classification.md`: 问题分类标准
-- `specs/quality-standards.md`: 质量标准
-- `templates/review-report.md`: 报告模板
-- `templates/issue-template.md`: 问题模板
+- `references/workflow-guide.md`: Review workflow procedure (4 phases)
+- `references/review-dimensions.md`: Review dimension specifications
+- `references/issue-classification.md`: Issue classification standards
+- `references/quality-standards.md`: Quality standards and thresholds
+- `references/rules/`: Dimension-specific detection rules (6 JSON files)
+- `references/languages/`: Language-specific review guides (9 languages)
+- `references/communication-guide.md`: Team communication guide
+- `assets/review-report-template.md`: Report template
+- `assets/issue-template.md`: Issue template
+- `assets/quick-checklist.md`: Quick review checklist
+- `assets/pr-comment-template.md`: PR comment template
+- `scripts/`: Automation scripts (pr-analyzer, issue-aggregator, rule-tester)
