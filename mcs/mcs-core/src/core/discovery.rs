@@ -47,6 +47,14 @@ fn systemtime_to_epoch_ms(t: Option<SystemTime>) -> Option<u64> {
     })
 }
 
+fn hash_metadata(hasher: &mut DefaultHasher, path: &Path, meta: &std::fs::Metadata) {
+    path.file_name()
+        .map(|n| n.to_string_lossy().to_string())
+        .unwrap_or_default()
+        .hash(hasher);
+    meta.len().hash(hasher);
+}
+
 fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
     if !path.exists() {
         return (None, None);
@@ -54,15 +62,8 @@ fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
 
     if path.is_file() {
         let mut hasher = DefaultHasher::new();
-        path.file_name()
-            .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or_default()
-            .hash(&mut hasher);
         if let Ok(meta) = path.metadata() {
-            meta.len().hash(&mut hasher);
-            if let Ok(bytes) = std::fs::read(path) {
-                bytes.hash(&mut hasher);
-            }
+            hash_metadata(&mut hasher, path, &meta);
         }
         return (file_mtime(path), Some(hasher.finish()));
     }
@@ -88,9 +89,6 @@ fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
             }
             meta.len().hash(&mut hasher);
         }
-        if let Ok(bytes) = std::fs::read(&file) {
-            bytes.hash(&mut hasher);
-        }
     }
 
     if latest.is_none() {
@@ -99,7 +97,6 @@ fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
 
     (latest, Some(hasher.finish()))
 }
-
 fn determine_status(
     target: &Path,
     src_mtime: Option<SystemTime>,
@@ -217,6 +214,7 @@ pub fn resolve_skills_for_platform(
         .iter()
         .map(|src| {
             let target = platform.skills_path().join(&src.name);
+            // Exclude mtimes from the signature so copied-but-identical trees stay "Installed".
             let (tgt_mtime, tgt_sig) = path_signature(&target);
             let status = determine_status(&target, src.src_mtime, tgt_mtime, src.src_sig, tgt_sig);
 

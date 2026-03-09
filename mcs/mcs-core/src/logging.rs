@@ -34,7 +34,7 @@ fn default_log_dir() -> PathBuf {
 }
 
 fn init_web_logging() -> Result<(), AppError> {
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
 
     tracing_subscriber::fmt()
         .with_env_filter(filter)
@@ -52,7 +52,7 @@ fn init_tui_logging() -> Result<(), AppError> {
         .append(true)
         .open(&log_file)?;
 
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
 
     tracing_subscriber::fmt()
         .with_env_filter(filter)

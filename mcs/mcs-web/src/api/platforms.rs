@@ -9,7 +9,7 @@ use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_pla
 
 use crate::api::error::AppError;
 use crate::dto::{
-    ApiResponse, CategoryDto, InstallTargetQuery, InstallTargetScopeDto, ResolvedInstallTargetDto,
+    ApiResponse, CategoryDto, CategoryQuery, InstallTargetScopeDto, ResolvedInstallTargetDto,
     SimpleSuccess,
 };
 use crate::state::AppState;
@@ -130,16 +130,33 @@ pub async fn resolve_install_target(
 pub async fn categories(
     State(state): State<AppState>,
     Path(id): Path<String>,
-    Query(target_query): Query<InstallTargetQuery>,
+    Query(query): Query<CategoryQuery>,
 ) -> Result<Json<ApiResponse<Vec<CategoryDto>>>, AppError> {
     let base_platform = state
         .platform(&id)
         .await
         .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
 
-    let install_target = target_query.to_install_target();
+    let install_target = query.install_target.to_install_target();
+    let wants_skills = query
+        .item_type
+        .is_none_or(|item_type| item_type == mcs_core::model::ItemType::Skill);
+    let wants_commands = query
+        .item_type
+        .is_none_or(|item_type| item_type == mcs_core::model::ItemType::Command);
+
     let (skills, commands) = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
-        (state.skills(&id).await, state.commands(&id).await)
+        let skills = if wants_skills {
+            state.skills(&id).await
+        } else {
+            Vec::new()
+        };
+        let commands = if wants_commands {
+            state.commands(&id).await
+        } else {
+            Vec::new()
+        };
+        (skills, commands)
     } else {
         let resolved = resolve_target_platform(
             &base_platform,
@@ -147,10 +164,17 @@ pub async fn categories(
             InstallTargetAccessMode::Read,
         )
         .map_err(AppError::BadRequest)?;
-        (
-            state.skills_for_platform_config(&resolved.platform).await,
-            state.commands_for_platform_config(&resolved.platform).await,
-        )
+        let skills = if wants_skills {
+            state.skills_for_platform_config(&resolved.platform).await
+        } else {
+            Vec::new()
+        };
+        let commands = if wants_commands {
+            state.commands_for_platform_config(&resolved.platform).await
+        } else {
+            Vec::new()
+        };
+        (skills, commands)
     };
 
     let mut skill_cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();

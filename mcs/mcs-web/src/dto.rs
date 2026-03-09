@@ -120,6 +120,13 @@ pub struct ItemQuery {
     pub install_target: InstallTargetQuery,
 }
 
+#[derive(Deserialize, Default)]
+pub struct CategoryQuery {
+    #[serde(flatten)]
+    pub install_target: InstallTargetQuery,
+    pub item_type: Option<ItemType>,
+}
+
 // ── Response DTOs ──────────────────────────────────────────────────
 
 #[derive(Serialize)]
@@ -131,10 +138,6 @@ pub struct ItemDto {
     pub category: Option<String>,
     pub tags: Vec<String>,
     pub is_default: bool,
-    pub source_path: String,
-    pub target_path: String,
-    pub source_mtime_ms: Option<u64>,
-    pub target_mtime_ms: Option<u64>,
 }
 
 #[derive(Serialize)]
@@ -156,6 +159,10 @@ pub struct ItemDetailDto {
     pub tags: Vec<String>,
     pub is_default: bool,
     pub content: Option<String>,
+    pub source_path: String,
+    pub target_path: String,
+    pub source_mtime_ms: Option<u64>,
+    pub target_mtime_ms: Option<u64>,
 }
 
 #[derive(Serialize)]
@@ -213,6 +220,8 @@ pub struct ExternalInstallRequest {
     pub method: ExternalInstallMethod,
     #[serde(default)]
     pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: ExternalInstallConfigDto,
 }
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
@@ -220,6 +229,22 @@ pub struct ExternalInstallRequest {
 pub enum ExternalInstallMethod {
     Vercel,
     Playbooks,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ExternalInstallCliMode {
+    #[default]
+    Auto,
+    Npx,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct ExternalInstallConfigDto {
+    #[serde(default)]
+    pub agents: Vec<String>,
+    #[serde(default)]
+    pub cli_mode: ExternalInstallCliMode,
 }
 
 #[derive(Serialize)]
@@ -239,6 +264,8 @@ pub struct ExternalInstallJobRequest {
     pub items: Vec<ExternalInstallBatchItem>,
     #[serde(default)]
     pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: ExternalInstallConfigDto,
 }
 
 #[derive(Serialize)]
@@ -305,4 +332,5 @@ pub struct ExternalSkillCatalogDto {
     pub description: Option<String>,
     pub stars: Option<u8>,
     pub project_only: bool,
+    pub usage: Option<String>,
 }

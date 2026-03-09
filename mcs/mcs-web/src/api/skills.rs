@@ -18,9 +18,10 @@ use mcs_core::core::installer::{install_skill, uninstall_skill};
 use crate::api::error::AppError;
 use crate::dto::{
     ApiResponse, BatchResultDto, DiffDto, EditContentRequest, ExternalInstallBatchItem,
-    ExternalInstallJobRequest, ExternalInstallJobStartResult, ExternalInstallMethod,
-    ExternalInstallRequest, ExternalInstallResult, InstallRequest, InstallTargetScopeDto,
-    ItemDetailDto, ItemDto, ItemQuery, SimpleSuccess,
+    ExternalInstallCliMode, ExternalInstallConfigDto, ExternalInstallJobRequest,
+    ExternalInstallJobStartResult, ExternalInstallMethod, ExternalInstallRequest,
+    ExternalInstallResult, InstallRequest, InstallTargetDto, InstallTargetScopeDto, ItemDetailDto,
+    ItemDto, ItemQuery, SimpleSuccess,
 };
 use crate::state::AppState;
 
@@ -170,6 +171,10 @@ pub async fn detail(
         tags: item.tags,
         is_default: item.is_default,
         content: Some(content),
+        source_path: item.source_path.to_string_lossy().into_owned(),
+        target_path: item.target_path.to_string_lossy().into_owned(),
+        source_mtime_ms: item.source_mtime_ms,
+        target_mtime_ms: item.target_mtime_ms,
     })))
 }
 
@@ -245,6 +250,8 @@ pub async fn install(
     // Invalidate cache (including platforms sharing the same skills path)
     if should_invalidate_global {
         invalidate_platform_and_shared_skills(&state, &id).await;
+    } else {
+        state.invalidate_platform_config(&platform).await;
     }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
@@ -291,6 +298,8 @@ pub async fn uninstall(
     // Invalidate cache (including platforms sharing the same skills path)
     if should_invalidate_global {
         invalidate_platform_and_shared_skills(&state, &id).await;
+    } else {
+        state.invalidate_platform_config(&platform).await;
     }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
@@ -337,10 +346,6 @@ fn filter_items(items: Vec<mcs_core::model::ItemInfo>, query: &ItemQuery) -> Vec
             category: item.category,
             tags: item.tags,
             is_default: item.is_default,
-            source_path: item.source_path.to_string_lossy().into_owned(),
-            target_path: item.target_path.to_string_lossy().into_owned(),
-            source_mtime_ms: item.source_mtime_ms,
-            target_mtime_ms: item.target_mtime_ms,
         })
         .collect()
 }
@@ -430,8 +435,13 @@ pub async fn external_install(
         return Err(AppError::NotFound(format!("Platform '{id}' not found")));
     }
 
-    ensure_external_install_allowed(body.install_target.scope)?;
-    let result = execute_external_install(body.method, &body.skill_name).await?;
+    let result = execute_external_install(
+        body.method,
+        &body.skill_name,
+        &body.config,
+        &body.install_target,
+    )
+    .await?;
 
     if result.success {
         invalidate_platform_and_shared_skills(&state, &id).await;
@@ -450,7 +460,6 @@ pub async fn external_install_jobs_start(
         return Err(AppError::NotFound(format!("Platform '{id}' not found")));
     }
 
-    ensure_external_install_allowed(body.install_target.scope)?;
     if body.items.is_empty() {
         return Err(AppError::BadRequest(
             "At least one item is required for batch external install".into(),
@@ -465,6 +474,8 @@ pub async fn external_install_jobs_start(
 
     let items = normalize_batch_items(body.items)?;
     let total = items.len();
+    let config = Arc::new(body.config);
+    let install_target = Arc::new(body.install_target);
     let job_id = generate_external_install_job_id();
     let (sender, _) = broadcast::channel(512);
     let job = Arc::new(RwLock::new(ExternalInstallJob {
@@ -486,7 +497,15 @@ pub async fn external_install_jobs_start(
     let platform_id_for_job = id.clone();
     let job_id_for_job = job_id.clone();
     tokio::spawn(async move {
-        run_external_install_job(state_for_job, platform_id_for_job, job_id_for_job, items).await;
+        run_external_install_job(
+            state_for_job,
+            platform_id_for_job,
+            job_id_for_job,
+            items,
+            config,
+            install_target,
+        )
+        .await;
     });
 
     Ok(Json(ApiResponse::ok(ExternalInstallJobStartResult {
@@ -541,6 +560,8 @@ async fn run_external_install_job(
     platform_id: String,
     job_id: String,
     items: Vec<ExternalInstallBatchItem>,
+    config: Arc<ExternalInstallConfigDto>,
+    install_target: Arc<InstallTargetDto>,
 ) {
     let Some(job) = get_external_install_job(&job_id).await else {
         return;
@@ -565,8 +586,19 @@ async fn run_external_install_job(
         let job = job.clone();
         let job_id = job_id.clone();
         let semaphore = semaphore.clone();
+        let config = config.clone();
+        let install_target = install_target.clone();
         set.spawn(async move {
-            run_external_install_job_item(job, job_id, index, item, semaphore).await;
+            run_external_install_job_item(
+                job,
+                job_id,
+                index,
+                item,
+                semaphore,
+                config,
+                install_target,
+            )
+            .await;
         });
     }
 
@@ -619,6 +651,8 @@ async fn run_external_install_job_item(
     index: usize,
     item: ExternalInstallBatchItem,
     semaphore: Arc<Semaphore>,
+    config: Arc<ExternalInstallConfigDto>,
+    install_target: Arc<InstallTargetDto>,
 ) {
     let Ok(_permit) = semaphore.acquire_owned().await else {
         let _ = emit_job_event(
@@ -649,7 +683,8 @@ async fn run_external_install_job_item(
     .await;
 
     let started = tokio::time::Instant::now();
-    let result = execute_external_install(item.method, &item.skill_name).await;
+    let result =
+        execute_external_install(item.method, &item.skill_name, &config, &install_target).await;
     let duration_ms = started.elapsed().as_millis();
 
     let payload = match result {
@@ -781,15 +816,6 @@ fn normalize_batch_items(
     Ok(normalized)
 }
 
-fn ensure_external_install_allowed(scope: InstallTargetScopeDto) -> Result<(), AppError> {
-    if matches!(scope, InstallTargetScopeDto::Project) {
-        return Err(AppError::BadRequest(
-            "External install is disabled in project install mode".into(),
-        ));
-    }
-    Ok(())
-}
-
 fn external_install_method_name(method: ExternalInstallMethod) -> &'static str {
     match method {
         ExternalInstallMethod::Vercel => "vercel",
@@ -797,30 +823,126 @@ fn external_install_method_name(method: ExternalInstallMethod) -> &'static str {
     }
 }
 
-fn build_external_install_args(method: ExternalInstallMethod, skill_name: &str) -> Vec<String> {
+fn external_install_cli_name(method: ExternalInstallMethod) -> &'static str {
     match method {
-        ExternalInstallMethod::Vercel => vec![
-            "skills".to_string(),
-            "add".to_string(),
-            skill_name.to_string(),
-        ],
-        ExternalInstallMethod::Playbooks => vec![
-            "playbooks".to_string(),
-            "add".to_string(),
-            "skill".to_string(),
-            skill_name.to_string(),
-        ],
+        ExternalInstallMethod::Vercel => "skills",
+        ExternalInstallMethod::Playbooks => "playbooks",
     }
+}
+
+fn build_external_install_args(
+    method: ExternalInstallMethod,
+    skill_name: &str,
+    agents: &[String],
+    is_global: bool,
+) -> Vec<String> {
+    // skill_name may contain extra flags (e.g. "vercel-labs/agent-skills --skill pr-review"),
+    // so we split it into separate tokens for proper argument passing.
+    let tokens: Vec<String> = skill_name.split_whitespace().map(String::from).collect();
+
+    let mut args = match method {
+        ExternalInstallMethod::Vercel => {
+            let mut a = vec!["add".to_string()];
+            a.extend(tokens);
+            a
+        }
+        ExternalInstallMethod::Playbooks => {
+            let mut a = vec!["add".to_string(), "skill".to_string()];
+            a.extend(tokens);
+            a
+        }
+    };
+
+    // Add --agent flags for targeting specific agents
+    for agent in agents {
+        args.push("--agent".to_string());
+        args.push(agent.clone());
+    }
+
+    // Add -g for global scope
+    if is_global {
+        args.push("-g".to_string());
+    }
+
+    // Always skip interactive prompts in the CLI
+    if !args.iter().any(|a| a == "-y" || a == "--yes") {
+        args.push("-y".to_string());
+    }
+
+    args
+}
+
+/// Resolve which CLI program to use: local CLI binary or npx fallback.
+/// Returns (program, extra_prefix_args).
+/// - Local CLI: ("skills", []) — args go directly after the binary
+/// - npx: ("npx.cmd"/"npx", ["-y", "skills"]) — npx needs -y and the package name
+fn resolve_cli_program(
+    method: ExternalInstallMethod,
+    cli_mode: &ExternalInstallCliMode,
+) -> (String, Vec<String>) {
+    let cli_name = external_install_cli_name(method);
+
+    match cli_mode {
+        ExternalInstallCliMode::Npx => {
+            let npx = if cfg!(windows) { "npx.cmd" } else { "npx" };
+            (
+                npx.to_string(),
+                vec!["-y".to_string(), cli_name.to_string()],
+            )
+        }
+        ExternalInstallCliMode::Auto => {
+            // Try local CLI first
+            let local_cmd = if cfg!(windows) {
+                format!("{cli_name}.cmd")
+            } else {
+                cli_name.to_string()
+            };
+
+            if which_exists(&local_cmd) {
+                (local_cmd, vec![])
+            } else {
+                let npx = if cfg!(windows) { "npx.cmd" } else { "npx" };
+                (
+                    npx.to_string(),
+                    vec!["-y".to_string(), cli_name.to_string()],
+                )
+            }
+        }
+    }
+}
+
+fn which_exists(cmd: &str) -> bool {
+    let checker = if cfg!(windows) { "where" } else { "which" };
+    std::process::Command::new(checker)
+        .arg(cmd)
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false)
 }
 
 async fn execute_external_install(
     method: ExternalInstallMethod,
     skill_name: &str,
+    config: &ExternalInstallConfigDto,
+    install_target: &InstallTargetDto,
 ) -> Result<ExternalInstallResult, AppError> {
-    let args = build_external_install_args(method, skill_name);
-    let mut command = tokio::process::Command::new("npx");
-    command.args(&args);
+    let is_global = !matches!(install_target.scope, InstallTargetScopeDto::Project);
+    let args = build_external_install_args(method, skill_name, &config.agents, is_global);
+
+    let (program, prefix_args) = resolve_cli_program(method, &config.cli_mode);
+
+    let mut command = tokio::process::Command::new(&program);
+    command.args(&prefix_args).args(&args);
     command.kill_on_drop(true);
+
+    // Set working directory for project scope
+    if let (InstallTargetScopeDto::Project, Some(path)) =
+        (&install_target.scope, &install_target.project_path)
+    {
+        command.current_dir(path);
+    }
 
     let output = tokio::time::timeout(
         Duration::from_secs(EXTERNAL_INSTALL_TIMEOUT_SECS),
@@ -832,7 +954,7 @@ async fn execute_external_install(
             "External install timed out after {EXTERNAL_INSTALL_TIMEOUT_SECS}s"
         ))
     })?
-    .map_err(|e| AppError::Internal(format!("Failed to execute npx: {e}")))?;
+    .map_err(|e| AppError::Internal(format!("Failed to execute {program}: {e}")))?;
 
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();

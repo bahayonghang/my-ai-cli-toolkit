@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { lazy, startTransition, Suspense, useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -35,6 +35,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Autocomplete,
   alpha,
   useTheme,
   useMediaQuery,
@@ -58,6 +59,8 @@ import SelectAllIcon from "@mui/icons-material/SelectAll";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ExtensionIcon from "@mui/icons-material/Extension";
+import SettingsIcon from "@mui/icons-material/Settings";
+import SpeedIcon from "@mui/icons-material/Speed";
 import { useI18n } from "@/i18n";
 import type { TranslateFn } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
@@ -76,10 +79,12 @@ import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
-import ReactMarkdown from "react-markdown";
+import { useDebounce } from "@/hooks/useDebounce";
 import type {
   CategoryDto,
   ExternalInstallBatchItemDto,
+  ExternalInstallCliMode,
+  ExternalInstallConfig,
   ExternalInstallItemFinishedPayload,
   ExternalInstallItemStartedPayload,
   ExternalInstallJobCompletedPayload,
@@ -96,6 +101,42 @@ import type {
 
 type SourceMode = "local" | "vercel" | "playbooks";
 const SIDEBAR_WIDTH = 260;
+
+const COMMON_AGENTS = [
+  "claude-code",
+  "codex",
+  "cursor",
+  "gemini",
+  "copilot",
+  "windsurf",
+  "kiro",
+  "opencode",
+  "cline",
+  "amp",
+  "augment",
+  "trae",
+];
+const DEFAULT_AGENTS = ["claude-code", "codex"];
+const DEFAULT_CLI_MODE: ExternalInstallCliMode = "auto";
+const LS_KEY_AGENTS = "mcs-external-install-agents";
+const LS_KEY_CLI_MODE = "mcs-external-install-cli-mode";
+const Markdown = lazy(() => import("react-markdown"));
+
+function loadAgents(): string[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY_AGENTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch { /* ignore */ }
+  return DEFAULT_AGENTS;
+}
+
+function loadCliMode(): ExternalInstallCliMode {
+  const raw = localStorage.getItem(LS_KEY_CLI_MODE);
+  return raw === "npx" ? "npx" : DEFAULT_CLI_MODE;
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -1077,7 +1118,9 @@ function SkillDetailDialog({
                   },
                 }}
               >
-                <ReactMarkdown>{detail.content}</ReactMarkdown>
+                <Suspense fallback={<CircularProgress size={20} />}>
+                  <Markdown>{detail.content}</Markdown>
+                </Suspense>
               </Box>
             ) : (
               <Box
@@ -1124,13 +1167,11 @@ function ExternalInstallPanel({
   platformId,
   sourceMode,
   installTarget,
-  disabledInProject,
   showNotification,
 }: {
   platformId: string;
   sourceMode: "vercel" | "playbooks";
   installTarget: InstallTarget;
-  disabledInProject: boolean;
   showNotification: (msg: string, sev: "success" | "error" | "warning") => void;
 }) {
   const { t } = useI18n();
@@ -1138,6 +1179,25 @@ function ExternalInstallPanel({
   const [extMethod, setExtMethod] = useState<ExternalInstallMethod>(sourceMode);
   const [customBatchInput, setCustomBatchInput] = useState("");
   const [selectedCatalogKeys, setSelectedCatalogKeys] = useState<Set<string>>(new Set());
+
+  // ── Agent & CLI mode config (persisted in localStorage) ──
+  const [agents, setAgents] = useState<string[]>(loadAgents);
+  const [cliMode, setCliMode] = useState<ExternalInstallCliMode>(loadCliMode);
+
+  const updateAgents = useCallback((newAgents: string[]) => {
+    setAgents(newAgents);
+    localStorage.setItem(LS_KEY_AGENTS, JSON.stringify(newAgents));
+  }, []);
+
+  const updateCliMode = useCallback((mode: ExternalInstallCliMode) => {
+    setCliMode(mode);
+    localStorage.setItem(LS_KEY_CLI_MODE, mode);
+  }, []);
+
+  const externalInstallConfig = useMemo(
+    (): ExternalInstallConfig => ({ agents, cli_mode: cliMode }),
+    [agents, cliMode]
+  );
 
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobRunning, setJobRunning] = useState(false);
@@ -1164,6 +1224,7 @@ function ExternalInstallPanel({
 
   const eventSourceRef = useRef<EventSource | null>(null);
   const streamWarnedRef = useRef(false);
+  const catalogLoadedRef = useRef(false);
 
   useEffect(() => {
     setExtMethod(sourceMode);
@@ -1180,19 +1241,31 @@ function ExternalInstallPanel({
   }, []);
 
   useEffect(() => {
+    if (catalogLoadedRef.current) {
+      return;
+    }
+    const controller = new AbortController();
+
     const fetchCatalog = async () => {
       try {
         setCatalogLoading(true);
-        const data = await getExternalSkillCatalog();
+        const data = await getExternalSkillCatalog(controller.signal);
         setCatalogItems(data);
+        catalogLoadedRef.current = true;
       } catch (e) {
+        if ((e as Error).name === "AbortError") {
+          return;
+        }
         console.error("Failed to load external skills catalog", e);
       } finally {
-        setCatalogLoading(false);
+        if (!controller.signal.aborted) {
+          setCatalogLoading(false);
+        }
       }
     };
-    fetchCatalog();
-  }, []);
+    void fetchCatalog();
+    return () => controller.abort();
+  }, [sourceMode]);
 
   const visibleCatalogItems = useMemo(
     () => catalogItems.filter((item) => item.method === sourceMode),
@@ -1264,7 +1337,7 @@ function ExternalInstallPanel({
   );
 
   const handleExternalBatchInstall = async () => {
-    if (disabledInProject || queuedItems.length === 0 || jobRunning) return;
+    if (queuedItems.length === 0 || jobRunning) return;
 
     streamWarnedRef.current = false;
     setStreamDisconnected(false);
@@ -1280,7 +1353,7 @@ function ExternalInstallPanel({
     closeEventStream();
 
     try {
-      const started = await startExternalInstallJob(platformId, queuedItems, installTarget);
+      const started = await startExternalInstallJob(platformId, queuedItems, installTarget, externalInstallConfig);
       setJobId(started.job_id);
       setJobTotal(started.total);
 
@@ -1373,7 +1446,7 @@ function ExternalInstallPanel({
   };
 
   const toggleCatalogSelection = (item: ExternalSkillCatalogDto) => {
-    if (disabledInProject || jobRunning) return;
+    if (jobRunning) return;
     const skillName = toSkillName(item);
     const key = itemKey(item.method as ExternalInstallMethod, skillName);
     setSelectedCatalogKeys((previous) => {
@@ -1433,12 +1506,6 @@ function ExternalInstallPanel({
           <Grid container spacing={4} sx={{ flex: 1 }}>
             <Grid size={{ xs: 12, md: 7, lg: 8 }} sx={{ display: "flex", flexDirection: "column" }}>
               <Stack spacing={3} sx={{ flex: 1 }}>
-                {disabledInProject && (
-                  <Alert severity="warning" sx={{ borderRadius: 2 }}>
-                    {t("install.externalInstallDisabledInProject")}
-                  </Alert>
-                )}
-
                 {!catalogLoading && catalogItems.length > 0 && (
                   <Box sx={{ flex: 1 }}>
                     <Typography variant="subtitle1" gutterBottom fontWeight={700}>
@@ -1456,7 +1523,6 @@ function ExternalInstallPanel({
                     </Box>
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                       {visibleCatalogItems.map((item) => {
-                        const disabled = disabledInProject && item.project_only;
                         const skillName = toSkillName(item);
                         const key = itemKey(item.method as ExternalInstallMethod, skillName);
                         const isSelected = selectedCatalogKeys.has(key);
@@ -1466,21 +1532,19 @@ function ExternalInstallPanel({
                             <Card
                               variant="outlined"
                               sx={{
-                                cursor: disabled ? "not-allowed" : "pointer",
+                                cursor: "pointer",
                                 borderColor: isSelected ? "primary.main" : "divider",
                                 bgcolor: isSelected ? alpha(theme.palette.primary.main, 0.08) : "background.paper",
-                                opacity: disabled ? 0.6 : 1,
                                 height: "100%",
                                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                                 boxShadow: isSelected ? `0 4px 12px ${alpha(theme.palette.primary.main, 0.15)}` : "none",
                                 "&:hover": {
-                                  borderColor: disabled ? "divider" : "primary.main",
-                                  transform: disabled ? "none" : "translateY(-2px)",
-                                  boxShadow: disabled ? "none" : `0 6px 16px ${alpha(theme.palette.primary.main, 0.1)}`,
+                                  borderColor: "primary.main",
+                                  transform: "translateY(-2px)",
+                                  boxShadow: `0 6px 16px ${alpha(theme.palette.primary.main, 0.1)}`,
                                 },
                               }}
                               onClick={() => {
-                                if (disabled) return;
                                 toggleCatalogSelection(item);
                               }}
                             >
@@ -1502,6 +1566,24 @@ function ExternalInstallPanel({
                                 <Typography variant="caption" color="text.secondary" sx={{ flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
                                   {item.description || item.repo}
                                 </Typography>
+                                {item.usage && (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      mt: 0.5,
+                                      color: "info.main",
+                                      fontStyle: "italic",
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: 1,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                      lineHeight: 1.4,
+                                      fontSize: "0.7rem",
+                                    }}
+                                  >
+                                    {item.usage}
+                                  </Typography>
+                                )}
                                 <Box sx={{ mt: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                                   <Typography
                                     variant="caption"
@@ -1511,11 +1593,6 @@ function ExternalInstallPanel({
                                   </Typography>
                                   <Checkbox size="small" checked={isSelected} />
                                 </Box>
-                                {disabled && (
-                                  <Typography variant="caption" color="error" sx={{ display: "block", mt: 1, fontWeight: 500 }}>
-                                    * only supports global install
-                                  </Typography>
-                                )}
                               </Box>
                             </Card>
                           </Grid>
@@ -1540,6 +1617,75 @@ function ExternalInstallPanel({
                   bgcolor: theme.palette.mode === "dark" ? alpha("#000", 0.2) : alpha("#000", 0.02)
                 }}
               >
+                {/* ── Configuration: Agent Selection & CLI Mode ── */}
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={700} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                    <SettingsIcon fontSize="small" />
+                    <span>Configuration</span>
+                  </Typography>
+
+                  {/* Agent selection */}
+                  <Autocomplete
+                    multiple
+                    freeSolo
+                    size="small"
+                    options={COMMON_AGENTS}
+                    value={agents}
+                    onChange={(_e, newValue) => updateAgents(newValue)}
+                    disabled={jobRunning}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => {
+                        const { key, ...rest } = getTagProps({ index });
+                        return (
+                          <Chip
+                            key={key}
+                            label={option}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                            sx={{ height: 24, fontSize: "0.75rem" }}
+                            {...rest}
+                          />
+                        );
+                      })
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Target Agents"
+                        placeholder="Add agent..."
+                        helperText="Skills will be installed only for these agents"
+                      />
+                    )}
+                    sx={{ mb: 2 }}
+                  />
+
+                  {/* CLI mode toggle */}
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <SpeedIcon fontSize="small" color={cliMode === "auto" ? "primary" : "disabled"} />
+                      <Box>
+                        <Typography variant="body2" fontWeight={600}>
+                          {cliMode === "auto" ? "Auto (prefer local CLI)" : "npx (always download)"}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {cliMode === "auto"
+                            ? "Falls back to npx if local CLI not found"
+                            : "Install locally: npm i -g skills"}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Switch
+                      checked={cliMode === "auto"}
+                      onChange={(_e, checked) => updateCliMode(checked ? "auto" : "npx")}
+                      disabled={jobRunning}
+                      size="small"
+                    />
+                  </Box>
+                </Box>
+
+                <Divider />
+
                 <Typography variant="subtitle1" fontWeight={700} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <span>{t("install.externalBatchCustomInput")}</span>
                   <Chip size="small" label="CLI" sx={{ height: 18, fontSize: "0.6rem" }} />
@@ -1554,7 +1700,7 @@ function ExternalInstallPanel({
                   size="small"
                   multiline
                   minRows={4}
-                  disabled={disabledInProject || jobRunning}
+                  disabled={jobRunning}
                 />
 
                 <FormControl>
@@ -1565,7 +1711,7 @@ function ExternalInstallPanel({
                     value={extMethod}
                     onChange={(e) => setExtMethod(e.target.value as ExternalInstallMethod)}
                     row
-                    sx={{ opacity: disabledInProject || jobRunning ? 0.6 : 1 }}
+                    sx={{ opacity: jobRunning ? 0.6 : 1 }}
                   >
                     <FormControlLabel
                       value="vercel"
@@ -1611,7 +1757,7 @@ function ExternalInstallPanel({
                     )
                   }
                   onClick={handleExternalBatchInstall}
-                  disabled={queuedItems.length === 0 || jobRunning || disabledInProject}
+                  disabled={queuedItems.length === 0 || jobRunning}
                   sx={{ borderRadius: 2, fontWeight: 700 }}
                   fullWidth
                 >
@@ -1758,21 +1904,13 @@ function ExternalInstallPanel({
                               {item.error}
                             </Typography>
                           )}
-                          {item.output && (
+                          {item.status === "error" && item.output && !item.error && (
                             <Typography
-                              component="pre"
                               variant="caption"
-                              sx={{
-                                mt: 0.5,
-                                mb: 0,
-                                whiteSpace: "pre-wrap",
-                                wordBreak: "break-word",
-                                fontFamily: '"JetBrains Mono", monospace',
-                                fontSize: "0.65rem",
-                                color: "text.secondary",
-                              }}
+                              color="error"
+                              sx={{ display: "block", mt: 0.5 }}
                             >
-                              {item.output}
+                              {item.output.replace(/\x1b\[[0-9;]*[a-zA-Z]|\x1b\[\?[0-9]*[a-zA-Z]|\x1b\][^\x07]*\x07/g, "").replace(/\[999D\[J/g, "").trim().split("\n").filter((l: string) => l.trim()).slice(-3).join("\n")}
                             </Typography>
                           )}
                         </Box>
@@ -1806,6 +1944,7 @@ export default function InstallPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
 
   const platform = usePlatformStore((s) =>
     s.platforms.find((p) => p.id === platformId)
@@ -1839,45 +1978,78 @@ export default function InstallPage() {
   const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
   const [installOpen, setInstallOpen] = useState(false);
   const [detailName, setDetailName] = useState<string | null>(null);
+  const debouncedSearch = useDebounce(search, 300);
+  const skillsAbortRef = useRef<AbortController | null>(null);
+  const categoriesAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     fetchPlatforms();
   }, [fetchPlatforms]);
 
+  useEffect(() => {
+    return () => {
+      skillsAbortRef.current?.abort();
+      categoriesAbortRef.current?.abort();
+    };
+  }, []);
+
   const fetchSkills = useCallback(async () => {
-    if (!platformId || !resolvedTarget) return;
+    if (!platformId) return;
+    skillsAbortRef.current?.abort();
+    const controller = new AbortController();
+    skillsAbortRef.current = controller;
     setLoading(true);
     setError(null);
     try {
       const data = await getSkills(platformId, {
-        search: search || undefined,
+        search: debouncedSearch || undefined,
         category: selectedCategory ?? undefined,
         installTarget,
-      });
+      }, controller.signal);
       setSkills(data);
     } catch (e) {
+      if ((e as Error).name === "AbortError") {
+        return;
+      }
       setError((e as Error).message);
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
     }
-  }, [platformId, resolvedTarget, installTarget, search, selectedCategory]);
+  }, [platformId, installTarget, debouncedSearch, selectedCategory]);
 
   const fetchCats = useCallback(async () => {
-    if (!platformId || !resolvedTarget) return;
+    if (!platformId) return;
+    categoriesAbortRef.current?.abort();
+    const controller = new AbortController();
+    categoriesAbortRef.current = controller;
     try {
-      const cats = await getCategories(platformId, installTarget);
-      setCategories(cats.filter((c) => c.item_type === "skill"));
+      const cats = await getCategories(
+        platformId,
+        installTarget,
+        "skill",
+        controller.signal
+      );
+      setCategories(cats);
     } catch {
       // non-critical
     }
-  }, [platformId, resolvedTarget, installTarget]);
+  }, [platformId, installTarget]);
 
   useEffect(() => {
-    if (sourceMode === "local" && resolvedTarget) {
-      fetchSkills();
-      fetchCats();
+    if (sourceMode !== "local") {
+      return;
     }
-  }, [sourceMode, resolvedTarget, fetchSkills, fetchCats]);
+    fetchCats();
+  }, [sourceMode, fetchCats]);
+
+  useEffect(() => {
+    if (sourceMode !== "local") {
+      return;
+    }
+    fetchSkills();
+  }, [sourceMode, fetchSkills]);
 
   // Clear selection when source changes
   useEffect(() => {
@@ -1978,6 +2150,8 @@ export default function InstallPage() {
     categories,
     totalSkills: skills.length,
   };
+  const showLocalLoading = loading && skills.length === 0;
+  const showLocalInlineProgress = loading && skills.length > 0;
 
   return (
     <Box
@@ -2004,7 +2178,7 @@ export default function InstallPage() {
           )}
           <IconButton
             color="inherit"
-            onClick={() => navigate(`/platform/${platformId}`)}
+            onClick={() => navigateDeferred(`/platform/${platformId}`)}
             sx={{ mr: 0.5 }}
           >
             <ArrowBackIcon />
@@ -2012,7 +2186,7 @@ export default function InstallPage() {
           <Tooltip title={t("common.home")}>
             <IconButton
               color="inherit"
-              onClick={() => navigate("/")}
+              onClick={() => navigateDeferred("/")}
               sx={{ mr: 1 }}
             >
               <HomeIcon />
@@ -2113,41 +2287,37 @@ export default function InstallPage() {
           {/* Local source: skill grid */}
           {sourceMode === "local" && (
             <>
-              {!resolvedTarget ? (
+              <SearchToolbar
+                search={search}
+                onSearchChange={setSearch}
+                onSelectAll={handleSelectAll}
+                onClearSelection={() => setSelectedNames(new Set())}
+                selectedCount={selectedNames.size}
+                outdatedCount={statusCounts.outdated}
+                onUpdateAll={handleBatchUpdate}
+              />
+
+              {error && (
+                <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
+                  {error}
+                </Alert>
+              )}
+
+              {(showLocalInlineProgress || installTargetLoading) && (
+                <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
+              )}
+
+              {showLocalLoading ? (
                 <Box display="flex" justifyContent="center" py={8}>
                   <CircularProgress />
                 </Box>
               ) : (
-                <>
-                  <SearchToolbar
-                    search={search}
-                    onSearchChange={setSearch}
-                    onSelectAll={handleSelectAll}
-                    onClearSelection={() => setSelectedNames(new Set())}
-                    selectedCount={selectedNames.size}
-                    outdatedCount={statusCounts.outdated}
-                    onUpdateAll={handleBatchUpdate}
-                  />
-
-                  {error && (
-                    <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
-                      {error}
-                    </Alert>
-                  )}
-
-                  {loading ? (
-                    <Box display="flex" justifyContent="center" py={8}>
-                      <CircularProgress />
-                    </Box>
-                  ) : (
-                    <SkillCardGrid
-                      skills={filteredSkills}
-                      selectedNames={selectedNames}
-                      onToggle={toggleSelection}
-                      onShowDetail={setDetailName}
-                    />
-                  )}
-                </>
+                <SkillCardGrid
+                  skills={filteredSkills}
+                  selectedNames={selectedNames}
+                  onToggle={toggleSelection}
+                  onShowDetail={setDetailName}
+                />
               )}
             </>
           )}
@@ -2158,7 +2328,6 @@ export default function InstallPage() {
               platformId={platformId}
               sourceMode={sourceMode}
               installTarget={installTarget}
-              disabledInProject={installTarget.scope === "project"}
               showNotification={showNotification}
             />
           )}

@@ -7,10 +7,12 @@ import type { InstallTarget, ResolvedInstallTarget } from "@/types";
 
 const INSTALL_TARGET_STORAGE_KEY = "mcs-install-target-by-platform";
 const INSTALL_TARGET_RECENT_STORAGE_KEY = "mcs-install-target-recents-by-platform";
+const INSTALL_TARGET_RESOLVED_STORAGE_KEY = "mcs-install-target-resolved-by-platform";
 const MAX_RECENT_PROJECTS = 8;
 
 type InstallTargetMap = Record<string, InstallTarget>;
 type RecentProjectMap = Record<string, string[]>;
+type ResolvedTargetMap = Record<string, ResolvedInstallTarget>;
 
 const GLOBAL_INSTALL_TARGET: InstallTarget = { scope: "global" };
 
@@ -59,6 +61,20 @@ function saveStoredTarget(platformId: string, target: InstallTarget) {
   const all = readJson<InstallTargetMap>(INSTALL_TARGET_STORAGE_KEY, {});
   all[platformId] = normalizeInstallTarget(target);
   writeJson(INSTALL_TARGET_STORAGE_KEY, all);
+}
+
+function loadStoredResolvedTarget(platformId: string): ResolvedInstallTarget | null {
+  const all = readJson<ResolvedTargetMap>(INSTALL_TARGET_RESOLVED_STORAGE_KEY, {});
+  return all[platformId] ?? null;
+}
+
+function saveStoredResolvedTarget(
+  platformId: string,
+  resolvedTarget: ResolvedInstallTarget
+) {
+  const all = readJson<ResolvedTargetMap>(INSTALL_TARGET_RESOLVED_STORAGE_KEY, {});
+  all[platformId] = resolvedTarget;
+  writeJson(INSTALL_TARGET_RESOLVED_STORAGE_KEY, all);
 }
 
 function loadRecentProjects(platformId: string): string[] {
@@ -118,10 +134,16 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
 
       setLoading(true);
       try {
-        const resolved = await resolveInstallTarget(platformId, normalized);
+        const controller = new AbortController();
+        const resolved = await resolveInstallTarget(
+          platformId,
+          normalized,
+          controller.signal
+        );
         setTarget(normalized);
         setResolvedTarget(resolved);
         saveStoredTarget(platformId, normalized);
+        saveStoredResolvedTarget(platformId, resolved);
         if (normalized.scope === "project" && normalized.project_path) {
           setRecentProjects(addRecentProject(platformId, normalized.project_path));
         }
@@ -147,30 +169,42 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
 
     const stored = loadStoredTarget(platformId);
     setTarget(stored);
+    setResolvedTarget(loadStoredResolvedTarget(platformId));
     setRecentProjects(loadRecentProjects(platformId));
 
     let cancelled = false;
+    const controller = new AbortController();
     (async () => {
       setLoading(true);
       try {
-        const resolved = await resolveInstallTarget(platformId, stored);
+        const resolved = await resolveInstallTarget(
+          platformId,
+          stored,
+          controller.signal
+        );
         if (cancelled) {
           return;
         }
         setResolvedTarget(resolved);
+        saveStoredResolvedTarget(platformId, resolved);
       } catch (e) {
         if (cancelled) {
           return;
         }
         if (stored.scope === "project") {
           try {
-            const fallback = await resolveInstallTarget(platformId, GLOBAL_INSTALL_TARGET);
+            const fallback = await resolveInstallTarget(
+              platformId,
+              GLOBAL_INSTALL_TARGET,
+              controller.signal
+            );
             if (cancelled) {
               return;
             }
             setTarget(GLOBAL_INSTALL_TARGET);
             setResolvedTarget(fallback);
             saveStoredTarget(platformId, GLOBAL_INSTALL_TARGET);
+            saveStoredResolvedTarget(platformId, fallback);
             showNotification("Project install target is invalid. Switched back to Global.", "warning");
           } catch {
             setResolvedTarget(null);
@@ -188,6 +222,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [platformId, showNotification]);
 

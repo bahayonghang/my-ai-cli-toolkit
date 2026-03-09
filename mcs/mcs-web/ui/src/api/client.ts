@@ -8,12 +8,14 @@ import type {
   ExternalSkillCatalogDto,
   ExternalInstallBatchItemDto,
   ExternalInstallJobStartDto,
+  ExternalInstallConfig,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
   DashboardDto,
   BatchResultDto,
   PromptDiffDto,
+  ItemType,
   InstallStatus,
   InstallTarget,
   ResolvedInstallTarget,
@@ -40,10 +42,18 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   return json.data;
 }
 
-async function postJson<T>(url: string, body: unknown): Promise<T> {
+async function postJson<T>(
+  url: string,
+  body: unknown,
+  init?: RequestInit
+): Promise<T> {
   return fetchJson<T>(url, {
+    ...init,
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
     body: JSON.stringify(body),
   });
 }
@@ -78,8 +88,8 @@ function withInstallTargetBody<T extends Record<string, unknown>>(
 
 // ── Platforms ──────────────────────────────────────────────────────
 
-export async function getPlatforms(): Promise<PlatformDisplay[]> {
-  return fetchJson(`${BASE}/platforms`);
+export async function getPlatforms(signal?: AbortSignal): Promise<PlatformDisplay[]> {
+  return fetchJson(`${BASE}/platforms`, { signal });
 }
 
 export async function refreshContent(): Promise<{ success: boolean }> {
@@ -92,36 +102,45 @@ export async function getPlatform(id: string): Promise<PlatformConfig> {
 
 export async function getCategories(
   platformId: string,
-  installTarget?: InstallTarget
+  installTarget?: InstallTarget,
+  itemType?: ItemType,
+  signal?: AbortSignal
 ): Promise<CategoryDto[]> {
   const query = new URLSearchParams();
   applyInstallTargetQuery(query, installTarget);
+  if (itemType) query.set("item_type", itemType);
   const qs = query.toString();
-  return fetchJson(`${BASE}/platforms/${platformId}/categories${qs ? `?${qs}` : ""}`);
+  return fetchJson(`${BASE}/platforms/${platformId}/categories${qs ? `?${qs}` : ""}`, {
+    signal,
+  });
 }
 
 export async function resolveInstallTarget(
   platformId: string,
-  installTarget: InstallTarget
+  installTarget: InstallTarget,
+  signal?: AbortSignal
 ): Promise<ResolvedInstallTarget> {
   return postJson(
     `${BASE}/platforms/${platformId}/install-target/resolve`,
-    installTarget
+    installTarget,
+    { signal }
   );
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────
 
-export async function getDashboard(): Promise<DashboardDto> {
-  return fetchJson(`${BASE}/dashboard`);
+export async function getDashboard(signal?: AbortSignal): Promise<DashboardDto> {
+  return fetchJson(`${BASE}/dashboard`, { signal });
 }
 
 export async function getSkillCatalog(): Promise<SkillCatalogDto[]> {
   return fetchJson(`${BASE}/skills/catalog`);
 }
 
-export async function getExternalSkillCatalog(): Promise<ExternalSkillCatalogDto[]> {
-  return fetchJson(`${BASE}/external-skills/catalog`);
+export async function getExternalSkillCatalog(
+  signal?: AbortSignal
+): Promise<ExternalSkillCatalogDto[]> {
+  return fetchJson(`${BASE}/external-skills/catalog`, { signal });
 }
 
 // ── Skills ─────────────────────────────────────────────────────────
@@ -133,7 +152,8 @@ export async function getSkills(
     category?: string;
     status?: InstallStatus;
     installTarget?: InstallTarget;
-  }
+  },
+  signal?: AbortSignal
 ): Promise<ItemDto[]> {
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
@@ -141,7 +161,9 @@ export async function getSkills(
   if (params?.status) query.set("status", params.status);
   applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
-  return fetchJson(`${BASE}/platforms/${platformId}/skills${qs ? `?${qs}` : ""}`);
+  return fetchJson(`${BASE}/platforms/${platformId}/skills${qs ? `?${qs}` : ""}`, {
+    signal,
+  });
 }
 
 export async function getSkillDetail(
@@ -190,7 +212,8 @@ export async function getCommands(
     category?: string;
     status?: InstallStatus;
     installTarget?: InstallTarget;
-  }
+  },
+  signal?: AbortSignal
 ): Promise<ItemDto[]> {
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
@@ -199,7 +222,8 @@ export async function getCommands(
   applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
   return fetchJson(
-    `${BASE}/platforms/${platformId}/commands${qs ? `?${qs}` : ""}`
+    `${BASE}/platforms/${platformId}/commands${qs ? `?${qs}` : ""}`,
+    { signal }
   );
 }
 
@@ -274,7 +298,8 @@ export async function externalInstallSkill(
   platformId: string,
   skillName: string,
   method: "vercel" | "playbooks",
-  installTarget?: InstallTarget
+  installTarget?: InstallTarget,
+  config?: ExternalInstallConfig
 ): Promise<{ success: boolean; output: string }> {
   return postJson(
     `${BASE}/platforms/${platformId}/skills/external-install`,
@@ -282,6 +307,7 @@ export async function externalInstallSkill(
       {
         skill_name: skillName,
         method,
+        ...(config ? { config } : {}),
       },
       installTarget
     )
@@ -291,11 +317,18 @@ export async function externalInstallSkill(
 export async function startExternalInstallJob(
   platformId: string,
   items: ExternalInstallBatchItemDto[],
-  installTarget?: InstallTarget
+  installTarget?: InstallTarget,
+  config?: ExternalInstallConfig
 ): Promise<ExternalInstallJobStartDto> {
   return postJson(
     `${BASE}/platforms/${platformId}/skills/external-install/jobs`,
-    withInstallTargetBody({ items }, installTarget)
+    withInstallTargetBody(
+      {
+        items,
+        ...(config ? { config } : {}),
+      },
+      installTarget
+    )
   );
 }
 
@@ -305,8 +338,8 @@ export async function pickFolder(): Promise<PickedFolderDto> {
   return fetchJson(`${BASE}/system/pick-folder`);
 }
 
-export async function getLegacyDirs(): Promise<LegacyDirDto[]> {
-  return fetchJson(`${BASE}/system/legacy-dirs`);
+export async function getLegacyDirs(signal?: AbortSignal): Promise<LegacyDirDto[]> {
+  return fetchJson(`${BASE}/system/legacy-dirs`, { signal });
 }
 
 export async function cleanupLegacyDirs(

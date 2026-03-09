@@ -62,10 +62,6 @@ export interface ItemDto {
   category: string | null;
   tags: string[];
   is_default: boolean;
-  source_path: string;
-  target_path: string;
-  source_mtime_ms: number | null;
-  target_mtime_ms: number | null;
 }
 
 export interface SkillCatalogDto {
@@ -85,6 +81,10 @@ export interface ItemDetailDto {
   tags: string[];
   is_default: boolean;
   content: string | null;
+  source_path: string;
+  target_path: string;
+  source_mtime_ms: number | null;
+  target_mtime_ms: number | null;
 }
 
 export interface DiffDto {
@@ -149,9 +149,16 @@ export interface ExternalSkillCatalogDto {
   description: string | null;
   stars: number | null;
   project_only: boolean;
+  usage: string | null;
 }
 
 export type ExternalInstallMethod = "vercel" | "playbooks";
+export type ExternalInstallCliMode = "auto" | "npx";
+
+export interface ExternalInstallConfig {
+  agents: string[];
+  cli_mode: ExternalInstallCliMode;
+}
 
 export interface ExternalInstallBatchItemDto {
   skill_name: string;

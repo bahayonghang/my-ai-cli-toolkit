@@ -47,10 +47,6 @@ describe("api/client install target", () => {
           category: null,
           tags: [],
           is_default: false,
-          source_path: "/tmp/source",
-          target_path: "/tmp/target",
-          source_mtime_ms: null,
-          target_mtime_ms: null,
         },
       ])
     );
@@ -74,10 +70,11 @@ describe("api/client install target", () => {
   it("adds install target query params for getCategories", async () => {
     fetchMock.mockResolvedValue(mockSuccess([]));
 
-    await getCategories("claude", { scope: "global" });
+    await getCategories("claude", { scope: "global" }, "skill");
 
     const [url] = fetchMock.mock.calls[0];
     expect(String(url)).toContain("/api/platforms/claude/categories?target_scope=global");
+    expect(String(url)).toContain("item_type=skill");
   });
 
   it("sends install_target in install body", async () => {

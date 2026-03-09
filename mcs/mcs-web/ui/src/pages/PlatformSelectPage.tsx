@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -22,7 +22,12 @@ import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { getLegacyDirs } from "@/api/client";
-import { LegacyCleanupDialog } from "@/components/dialogs/LegacyCleanupDialog";
+
+const LegacyCleanupDialog = lazy(() =>
+  import("@/components/dialogs/LegacyCleanupDialog").then((module) => ({
+    default: module.LegacyCleanupDialog,
+  }))
+);
 
 
 
@@ -33,6 +38,7 @@ export default function PlatformSelectPage() {
   const navigate = useNavigate();
   const [legacyCount, setLegacyCount] = useState(0);
   const [legacyOpen, setLegacyOpen] = useState(false);
+  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
   // 不再需要前端特殊的过滤逻辑，因为后端直接合并了
   const platformCards = useMemo(() => platforms, [platforms]);
 
@@ -47,7 +53,7 @@ export default function PlatformSelectPage() {
     refreshLegacyCount();
   }, [fetchPlatforms]);
 
-  if (loading) {
+  if (loading && platformCards.length === 0) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
@@ -229,7 +235,7 @@ export default function PlatformSelectPage() {
               }}
             >
               <CardActionArea
-                onClick={() => navigate(`/platform/${card.id}`)}
+                onClick={() => navigateDeferred(`/platform/${card.id}`)}
                 sx={{
                   p: { xs: 2, sm: 2.5 },
                   pt: { xs: 3, sm: 3.5 },
@@ -285,23 +291,25 @@ export default function PlatformSelectPage() {
           title={t("platformSelect.unifiedInstallTitle")}
           label={t("platformSelect.unifiedInstallLabel")}
           icon={<InstallDesktopIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />}
-          onClick={() => navigate("/install-hub")}
+          onClick={() => navigateDeferred("/install-hub")}
         />
 
         <FloatingQuickAction
           title={t("platformSelect.dashboardTitle")}
           label={t("platformSelect.dashboardLabel")}
           icon={<DashboardCustomizeIcon className="icon" sx={{ fontSize: '1.2rem', transition: "color 0.3s" }} />}
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigateDeferred("/dashboard")}
         />
       </Box>
-      <LegacyCleanupDialog
-        open={legacyOpen}
-        onClose={() => {
-          setLegacyOpen(false);
-          refreshLegacyCount();
-        }}
-      />
+      <Suspense fallback={null}>
+        <LegacyCleanupDialog
+          open={legacyOpen}
+          onClose={() => {
+            setLegacyOpen(false);
+            refreshLegacyCount();
+          }}
+        />
+      </Suspense>
     </Box>
   );
 }

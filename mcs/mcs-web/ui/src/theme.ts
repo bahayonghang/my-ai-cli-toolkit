@@ -50,8 +50,8 @@ const shared: ThemeOptions = {
           borderRadius: 20, // 稍微收紧圆角以适应小体积卡片
           backgroundImage: "none",
           backgroundColor: theme.palette.mode === "dark" ? "rgba(20, 20, 25, 0.45)" : "rgba(255, 255, 255, 0.75)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           border: theme.palette.mode === "dark"
             ? "1px solid rgba(255, 255, 255, 0.08)"
             : "1px solid rgba(0, 0, 0, 0.05)",
@@ -72,8 +72,8 @@ const shared: ThemeOptions = {
       styleOverrides: {
         paper: ({ theme }) => ({
           backgroundColor: theme.palette.mode === "dark" ? "rgba(20, 20, 25, 0.4)" : "rgba(255, 255, 255, 0.7)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderRight: theme.palette.mode === "dark" ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(0, 0, 0, 0.05)",
         }),
       },
@@ -82,8 +82,8 @@ const shared: ThemeOptions = {
       styleOverrides: {
         root: ({ theme }) => ({
           backgroundColor: theme.palette.mode === "dark" ? "rgba(5, 5, 5, 0.6)" : "rgba(248, 249, 250, 0.6)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderBottom: theme.palette.mode === "dark" ? "1px solid rgba(255, 255, 255, 0.05)" : "1px solid rgba(0, 0, 0, 0.05)",
           boxShadow: "none",
           color: theme.palette.text.primary,
@@ -111,8 +111,8 @@ const shared: ThemeOptions = {
       styleOverrides: {
         root: {
           backgroundColor: "rgba(0, 0, 0, 0.4)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
         },
       },
     },
@@ -122,8 +122,8 @@ const shared: ThemeOptions = {
           borderRadius: 20,
           backgroundImage: "none",
           backgroundColor: theme.palette.mode === "dark" ? "rgba(22, 22, 28, 0.88)" : "rgba(255, 255, 255, 0.92)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           border: theme.palette.mode === "dark"
             ? "1px solid rgba(255, 255, 255, 0.1)"
             : "1px solid rgba(0, 0, 0, 0.06)",

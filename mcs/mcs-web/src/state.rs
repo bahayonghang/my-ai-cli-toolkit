@@ -34,6 +34,10 @@ struct DiscoveryCache {
     skills: HashMap<String, Vec<ItemInfo>>,
     /// Discovered commands per platform
     commands: HashMap<String, Vec<ItemInfo>>,
+    /// Resolved skills for ad-hoc project targets, keyed by normalized skills path
+    scoped_skills: HashMap<String, Vec<ItemInfo>>,
+    /// Discovered commands for ad-hoc project targets, keyed by normalized commands path
+    scoped_commands: HashMap<String, Vec<ItemInfo>>,
     /// External skills from TOML registry
     external_skills: Option<Vec<ExternalSkillEntry>>,
 }
@@ -90,7 +94,7 @@ impl AppState {
         }
 
         let root = self.project_root().await;
-        let sources = discover_skill_sources(&root);
+        let sources = discover_skill_sources_async(root).await;
         let mut cache = self.cache.write().await;
         if cache.skill_sources.is_empty() {
             cache.skill_sources = sources.clone();
@@ -156,29 +160,51 @@ impl AppState {
 
     /// Resolve skills using an ad-hoc platform config without binding to platform-id cache.
     pub async fn skills_for_platform_config(&self, platform: &PlatformConfig) -> Vec<ItemInfo> {
-        let root = self.project_root().await;
+        let cache_key = normalize_path_key(&platform.skills_path());
+        {
+            let cache_read = self.cache.read().await;
+            if let Some(cached) = cache_read.scoped_skills.get(&cache_key) {
+                return cached.clone();
+            }
+        }
+
         let sources = {
             let cache_read = self.cache.read().await;
             if !cache_read.skill_sources.is_empty() {
                 cache_read.skill_sources.clone()
             } else {
                 drop(cache_read);
-                discover_skill_sources(&root)
+                let root = self.project_root().await;
+                discover_skill_sources_async(root).await
             }
         };
-        let skills = resolve_skills_for_platform(&sources, platform);
+        let skills = resolve_skills_for_platform_async(sources.clone(), platform.clone()).await;
 
         let mut cache = self.cache.write().await;
         if cache.skill_sources.is_empty() {
             cache.skill_sources = sources;
         }
+        cache.scoped_skills.insert(cache_key, skills.clone());
         skills
     }
 
     /// Resolve commands using an ad-hoc platform config without binding to platform-id cache.
     pub async fn commands_for_platform_config(&self, platform: &PlatformConfig) -> Vec<ItemInfo> {
+        let cache_key = normalize_path_key(&platform.commands_path());
+        {
+            let cache = self.cache.read().await;
+            if let Some(cached) = cache.scoped_commands.get(&cache_key) {
+                return cached.clone();
+            }
+        }
         let root = self.project_root().await;
-        discover_commands(&root, platform)
+        let commands = discover_commands_async(root, platform.clone()).await;
+        self.cache
+            .write()
+            .await
+            .scoped_commands
+            .insert(cache_key, commands.clone());
+        commands
     }
 
     /// Pre-warm cache for all platforms (call at startup).
@@ -191,25 +217,50 @@ impl AppState {
         drop(inner);
 
         // Scan source skills once (the expensive part — directory walking + frontmatter parsing)
-        let skill_sources = discover_skill_sources(&root);
+        let skill_sources = discover_skill_sources_async(root.clone()).await;
 
-        // 并行 resolve 每个平台的 skills 和 commands 状态
-        let mut set = tokio::task::JoinSet::new();
-        for (id, platform) in platforms {
+        let mut grouped_platforms: HashMap<String, Vec<(String, PlatformConfig)>> = HashMap::new();
+        for (id, platform) in &platforms {
+            grouped_platforms
+                .entry(normalize_path_key(&platform.skills_path()))
+                .or_default()
+                .push((id.clone(), platform.clone()));
+        }
+
+        let mut skill_set = tokio::task::JoinSet::new();
+        for (_, grouped) in grouped_platforms {
             let sources = skill_sources.clone();
+            skill_set.spawn_blocking(move || {
+                let (first_id, representative) = grouped
+                    .first()
+                    .cloned()
+                    .expect("skill cache group should never be empty");
+                let ids = grouped.into_iter().map(|(id, _)| id).collect::<Vec<_>>();
+                let skills = resolve_skills_for_platform(&sources, &representative);
+                (first_id, ids, skills)
+            });
+        }
+
+        let mut command_set = tokio::task::JoinSet::new();
+        for (id, platform) in platforms {
             let root = root.clone();
-            set.spawn_blocking(move || {
-                let skills = resolve_skills_for_platform(&sources, &platform);
+            command_set.spawn_blocking(move || {
                 let commands = discover_commands(&root, &platform);
-                (id, skills, commands)
+                (id, commands)
             });
         }
 
         let mut skills_map = HashMap::new();
         let mut commands_map = HashMap::new();
-        while let Some(res) = set.join_next().await {
-            if let Ok((id, skills, commands)) = res {
-                skills_map.insert(id.clone(), skills);
+        while let Some(res) = skill_set.join_next().await {
+            if let Ok((_first_id, ids, skills)) = res {
+                for id in ids {
+                    skills_map.insert(id, skills.clone());
+                }
+            }
+        }
+        while let Some(res) = command_set.join_next().await {
+            if let Ok((id, commands)) = res {
                 commands_map.insert(id, commands);
             }
         }
@@ -218,6 +269,8 @@ impl AppState {
         cache.skill_sources = skill_sources;
         cache.skills = skills_map;
         cache.commands = commands_map;
+        cache.scoped_skills.clear();
+        cache.scoped_commands.clear();
     }
 
     /// Invalidate and re-discover for a specific platform (after install/uninstall).
@@ -230,12 +283,9 @@ impl AppState {
         drop(inner);
 
         if let Some(platform) = platform {
-            let cache_read = self.cache.read().await;
-            let sources = cache_read.skill_sources.clone();
-            drop(cache_read);
-
-            let skills = resolve_skills_for_platform(&sources, &platform);
-            let commands = discover_commands(&root, &platform);
+            let sources = self.cached_or_discovered_sources(root.clone()).await;
+            let skills = resolve_skills_for_platform_async(sources.clone(), platform.clone()).await;
+            let commands = discover_commands_async(root, platform.clone()).await;
 
             let mut cache = self.cache.write().await;
             cache.skills.insert(platform_id.to_string(), skills);
@@ -250,33 +300,68 @@ impl AppState {
         let all_platforms = inner.platforms.clone();
         drop(inner);
 
-        let cache_read = self.cache.read().await;
-        let sources = cache_read.skill_sources.clone();
-        drop(cache_read);
+        let sources = self.cached_or_discovered_sources(root.clone()).await;
 
-        // 并行 resolve 所有受影响平台的状态
-        let mut set = tokio::task::JoinSet::new();
+        let mut skill_groups: HashMap<String, Vec<(String, PlatformConfig)>> = HashMap::new();
+        let mut command_set = tokio::task::JoinSet::new();
         for pid in platform_ids {
             if let Some(platform) = all_platforms.get(pid) {
-                let pid = pid.clone();
-                let sources = sources.clone();
+                skill_groups
+                    .entry(normalize_path_key(&platform.skills_path()))
+                    .or_default()
+                    .push((pid.clone(), platform.clone()));
                 let root = root.clone();
                 let platform = platform.clone();
-                set.spawn_blocking(move || {
-                    let skills = resolve_skills_for_platform(&sources, &platform);
+                let pid = pid.clone();
+                command_set.spawn_blocking(move || {
                     let commands = discover_commands(&root, &platform);
-                    (pid, skills, commands)
+                    (pid, commands)
                 });
             }
         }
 
+        let mut skill_set = tokio::task::JoinSet::new();
+        for (_, grouped) in skill_groups {
+            let sources = sources.clone();
+            skill_set.spawn_blocking(move || {
+                let representative = grouped
+                    .first()
+                    .map(|(_, platform)| platform.clone())
+                    .expect("invalidate skill group should never be empty");
+                let ids = grouped.into_iter().map(|(id, _)| id).collect::<Vec<_>>();
+                let skills = resolve_skills_for_platform(&sources, &representative);
+                (ids, skills)
+            });
+        }
+
         let mut cache = self.cache.write().await;
-        while let Some(res) = set.join_next().await {
-            if let Ok((pid, skills, commands)) = res {
-                cache.skills.insert(pid.clone(), skills);
+        while let Some(res) = skill_set.join_next().await {
+            if let Ok((ids, skills)) = res {
+                for id in ids {
+                    cache.skills.insert(id, skills.clone());
+                }
+            }
+        }
+        while let Some(res) = command_set.join_next().await {
+            if let Ok((pid, commands)) = res {
                 cache.commands.insert(pid, commands);
             }
         }
+    }
+
+    /// Invalidate cache for an ad-hoc platform config such as a project-scoped install target.
+    pub async fn invalidate_platform_config(&self, platform: &PlatformConfig) {
+        let root = self.project_root().await;
+        let sources = self.cached_or_discovered_sources(root.clone()).await;
+        let skills = resolve_skills_for_platform_async(sources, platform.clone()).await;
+        let commands = discover_commands_async(root, platform.clone()).await;
+        let mut cache = self.cache.write().await;
+        cache
+            .scoped_skills
+            .insert(normalize_path_key(&platform.skills_path()), skills);
+        cache
+            .scoped_commands
+            .insert(normalize_path_key(&platform.commands_path()), commands);
     }
 
     /// Re-discover a single platform and update cache
@@ -287,19 +372,9 @@ impl AppState {
         drop(inner);
 
         if let Some(platform) = platform {
-            // Check if we have cached sources; if not, scan fresh
-            let sources = {
-                let cache_read = self.cache.read().await;
-                if !cache_read.skill_sources.is_empty() {
-                    cache_read.skill_sources.clone()
-                } else {
-                    drop(cache_read);
-                    discover_skill_sources(&root)
-                }
-            };
-
-            let skills = resolve_skills_for_platform(&sources, &platform);
-            let commands = discover_commands(&root, &platform);
+            let sources = self.cached_or_discovered_sources(root.clone()).await;
+            let skills = resolve_skills_for_platform_async(sources.clone(), platform.clone()).await;
+            let commands = discover_commands_async(root, platform.clone()).await;
 
             let mut cache = self.cache.write().await;
             if cache.skill_sources.is_empty() {
@@ -309,6 +384,61 @@ impl AppState {
             cache.commands.insert(platform_id.to_string(), commands);
         }
     }
+
+    async fn cached_or_discovered_sources(&self, root: PathBuf) -> Vec<SkillSource> {
+        let cached = {
+            let cache = self.cache.read().await;
+            cache.skill_sources.clone()
+        };
+        if !cached.is_empty() {
+            return cached;
+        }
+
+        let sources = discover_skill_sources_async(root).await;
+        let mut cache = self.cache.write().await;
+        if cache.skill_sources.is_empty() {
+            cache.skill_sources = sources.clone();
+        }
+        sources
+    }
+}
+
+async fn discover_skill_sources_async(root: PathBuf) -> Vec<SkillSource> {
+    tokio::task::spawn_blocking(move || discover_skill_sources(&root))
+        .await
+        .unwrap_or_else(|error| {
+            tracing::error!("Failed to join skill discovery task: {error}");
+            Vec::new()
+        })
+}
+
+async fn resolve_skills_for_platform_async(
+    sources: Vec<SkillSource>,
+    platform: PlatformConfig,
+) -> Vec<ItemInfo> {
+    let platform_name = platform.name.clone();
+    tokio::task::spawn_blocking(move || resolve_skills_for_platform(&sources, &platform))
+        .await
+        .unwrap_or_else(|error| {
+            tracing::error!(
+                platform = platform_name.as_str(),
+                "Failed to join skill resolution task: {error}"
+            );
+            Vec::new()
+        })
+}
+
+async fn discover_commands_async(root: PathBuf, platform: PlatformConfig) -> Vec<ItemInfo> {
+    let platform_name = platform.name.clone();
+    tokio::task::spawn_blocking(move || discover_commands(&root, &platform))
+        .await
+        .unwrap_or_else(|error| {
+            tracing::error!(
+                platform = platform_name.as_str(),
+                "Failed to join command discovery task: {error}"
+            );
+            Vec::new()
+        })
 }
 
 fn shared_skill_path_group_for(
@@ -350,5 +480,6 @@ fn to_external_dto(entry: &ExternalSkillEntry) -> ExternalSkillCatalogDto {
         description: entry.description.clone(),
         stars: entry.stars,
         project_only: entry.project_only,
+        usage: entry.usage.clone(),
     }
 }

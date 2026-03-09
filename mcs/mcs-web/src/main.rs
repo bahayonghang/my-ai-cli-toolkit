@@ -63,11 +63,8 @@ async fn main() {
         }
     }
 
-    // Build shared state and pre-warm discovery cache
+    // Build shared state
     let app_state = AppState::new(project_root, platforms);
-    tracing::info!("Pre-warming discovery cache...");
-    app_state.warm_cache().await;
-    tracing::info!("Discovery cache ready");
 
     // CORS layer (permissive for dev UI on :5173)
     let cors = CorsLayer::new()
@@ -107,14 +104,14 @@ async fn main() {
         let serve_dir = ServeDir::new(&ui_dist_dir).not_found_service(ServeFile::new(&index_path));
 
         api::router()
-            .with_state(app_state)
+            .with_state(app_state.clone())
             .layer(cors)
             .layer(trace)
             .fallback_service(serve_dir)
     } else {
         // Dev: no UI built, return helpful JSON on non-API routes
         api::router()
-            .with_state(app_state)
+            .with_state(app_state.clone())
             .layer(cors)
             .layer(trace)
             .fallback(fallback_no_ui)
@@ -136,6 +133,13 @@ async fn main() {
             std::process::exit(1);
         });
     tracing::info!("MCS Web server listening on http://{addr}");
+
+    tracing::info!("Pre-warming discovery cache in background...");
+    let warm_state = app_state.clone();
+    tokio::spawn(async move {
+        warm_state.warm_cache().await;
+        tracing::info!("Discovery cache ready");
+    });
 
     // Auto-open browser (only in production mode when UI is built)
     if ui_dist_dir.exists() {

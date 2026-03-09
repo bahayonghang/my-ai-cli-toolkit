@@ -63,10 +63,6 @@ pub async fn list(
             category: item.category,
             tags: item.tags,
             is_default: item.is_default,
-            source_path: item.source_path.to_string_lossy().into_owned(),
-            target_path: item.target_path.to_string_lossy().into_owned(),
-            source_mtime_ms: item.source_mtime_ms,
-            target_mtime_ms: item.target_mtime_ms,
         })
         .collect();
 
@@ -144,6 +140,8 @@ pub async fn install(
     // Invalidate cache after mutation
     if should_invalidate_global {
         state.invalidate_platform(&id).await;
+    } else {
+        state.invalidate_platform_config(&platform).await;
     }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
@@ -190,6 +188,8 @@ pub async fn uninstall(
     // Invalidate cache after mutation
     if should_invalidate_global {
         state.invalidate_platform(&id).await;
+    } else {
+        state.invalidate_platform_config(&platform).await;
     }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {

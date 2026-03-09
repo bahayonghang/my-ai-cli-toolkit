@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   useTheme,
   Tooltip,
   Chip,
+  LinearProgress,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -27,7 +28,12 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 import { useUiStore } from "@/stores/uiStore";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { getLegacyDirs } from "@/api/client";
-import { LegacyCleanupDialog } from "@/components/dialogs/LegacyCleanupDialog";
+
+const LegacyCleanupDialog = lazy(() =>
+  import("@/components/dialogs/LegacyCleanupDialog").then((module) => ({
+    default: module.LegacyCleanupDialog,
+  }))
+);
 
 // ── Pure SVG Graphics for Stat Cards ──────────────────────────────────
 function MiniWave() {
@@ -318,6 +324,7 @@ export default function DashboardPage() {
   const { colorMode, toggleColorMode } = useUiStore();
   const navigate = useNavigate();
   const theme = useTheme();
+  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
 
   useEffect(() => {
     fetchDashboard();
@@ -379,13 +386,13 @@ export default function DashboardPage() {
             backdropFilter: "blur(20px)", border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`,
             mx: { xs: 1, sm: 2 }
           }}>
-            <IconButton size="small" color="inherit" onClick={() => navigate("/")} sx={{ mr: 0.5 }}>
+            <IconButton size="small" color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 0.5 }}>
               <ArrowBackIcon fontSize="small" />
             </IconButton>
             <IconButton
               size="small"
               color="inherit"
-              onClick={() => navigate("/")}
+              onClick={() => navigateDeferred("/")}
               sx={{ mr: 1 }}
               title={t("common.home")}
             >
@@ -406,7 +413,7 @@ export default function DashboardPage() {
               {t("dashboard.systemTitle")}
             </Typography>
             <Tooltip title={t("dashboard.unifiedInstallHub")}>
-              <IconButton size="small" color="inherit" onClick={() => navigate("/install-hub")} sx={{ mr: 0.5 }}>
+              <IconButton size="small" color="inherit" onClick={() => navigateDeferred("/install-hub")} sx={{ mr: 0.5 }}>
                 <InstallDesktopIcon fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -448,8 +455,9 @@ export default function DashboardPage() {
             {error}
           </Alert>
         )}
+        {loading && data && <LinearProgress sx={{ mb: 4, borderRadius: 999 }} />}
 
-        {loading ? (
+        {loading && !data ? (
           <Box display="flex" justifyContent="center" py={12}>
             <CircularProgress />
           </Box>
@@ -571,7 +579,7 @@ export default function DashboardPage() {
                 <Grid key={p.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                   <ModernPlatformCard
                     platform={p}
-                    onClick={() => navigate(`/platform/${p.id}`)}
+                    onClick={() => navigateDeferred(`/platform/${p.id}`)}
                   />
                 </Grid>
               ))}
@@ -580,15 +588,17 @@ export default function DashboardPage() {
         )}
       </Box>
 
-      <LegacyCleanupDialog
-        open={legacyOpen}
-        onClose={() => {
-          setLegacyOpen(false);
-          getLegacyDirs()
-            .then((dirs) => setLegacyCount(dirs.length))
-            .catch(() => { });
-        }}
-      />
+      <Suspense fallback={null}>
+        <LegacyCleanupDialog
+          open={legacyOpen}
+          onClose={() => {
+            setLegacyOpen(false);
+            getLegacyDirs()
+              .then((dirs) => setLegacyCount(dirs.length))
+              .catch(() => { });
+          }}
+        />
+      </Suspense>
     </Box>
   );
 }

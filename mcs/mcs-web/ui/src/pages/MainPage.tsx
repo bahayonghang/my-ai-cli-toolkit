@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -28,6 +28,7 @@ import {
   Alert,
   Tooltip,
   Card,
+  LinearProgress,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
@@ -47,13 +48,30 @@ import { uninstallSkills, uninstallCommands } from "@/api/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { StatusChip } from "@/components/common/StatusChip";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { DetailDrawer } from "@/components/dialogs/DetailDrawer";
-import { DiffDialog } from "@/components/dialogs/DiffDialog";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
-import { PromptDialog } from "@/components/dialogs/PromptDialog";
-import { MultiSyncDialog } from "@/components/dialogs/MultiSyncDialog";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
+
+const DetailDrawer = lazy(() =>
+  import("@/components/dialogs/DetailDrawer").then((module) => ({
+    default: module.DetailDrawer,
+  }))
+);
+const DiffDialog = lazy(() =>
+  import("@/components/dialogs/DiffDialog").then((module) => ({
+    default: module.DiffDialog,
+  }))
+);
+const PromptDialog = lazy(() =>
+  import("@/components/dialogs/PromptDialog").then((module) => ({
+    default: module.PromptDialog,
+  }))
+);
+const MultiSyncDialog = lazy(() =>
+  import("@/components/dialogs/MultiSyncDialog").then((module) => ({
+    default: module.MultiSyncDialog,
+  }))
+);
 
 export default function MainPage() {
   const { platformId } = useParams<{ platformId: string }>();
@@ -69,6 +87,7 @@ export default function MainPage() {
   const { colorMode, toggleColorMode, showNotification } = useUiStore();
 
   const debouncedSearch = useDebounce(search, 300);
+  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
 
   // Resizable drawer state
   const [drawerWidth, setDrawerWidth] = useState(() => {
@@ -113,9 +132,13 @@ export default function MainPage() {
 
   useEffect(() => {
     if (platformId) {
-      fetchCategories(platformId);
+      fetchCategories(
+        platformId,
+        undefined,
+        activeTab === "skills" ? "skill" : "command"
+      );
     }
-  }, [platformId, fetchCategories]);
+  }, [platformId, activeTab, fetchCategories]);
 
   useEffect(() => {
     clearSelection();
@@ -147,6 +170,8 @@ export default function MainPage() {
       showNotification((e as Error).message, "error");
     }
   };
+  const showTableLoading = loading && items.length === 0;
+  const showInlineProgress = loading && items.length > 0;
 
   return (
     <Box sx={{
@@ -158,11 +183,11 @@ export default function MainPage() {
       {/* AppBar */}
       <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
         <Toolbar>
-          <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+          <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
             <ArrowBackIcon />
           </IconButton>
           <Tooltip title="Home">
-            <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+            <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
               <HomeIcon />
             </IconButton>
           </Tooltip>
@@ -325,9 +350,10 @@ export default function MainPage() {
 
         {/* Error */}
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {showInlineProgress && <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />}
 
         {/* Loading */}
-        {loading ? (
+        {showTableLoading ? (
           <Box display="flex" justifyContent="center" py={8}>
             <CircularProgress />
           </Box>
@@ -424,24 +450,28 @@ export default function MainPage() {
 
       {/* Detail Drawer */}
       {platformId && (
-        <DetailDrawer
-          open={detailName !== null}
-          platformId={platformId}
-          skillName={detailName}
-          onClose={() => setDetailName(null)}
-          onShowDiff={(name) => { setDetailName(null); setDiffName(name); }}
-        />
+        <Suspense fallback={null}>
+          <DetailDrawer
+            open={detailName !== null}
+            platformId={platformId}
+            skillName={detailName}
+            onClose={() => setDetailName(null)}
+            onShowDiff={(name) => { setDetailName(null); setDiffName(name); }}
+          />
+        </Suspense>
       )}
 
       {/* Diff Dialog */}
       {platformId && (
-        <DiffDialog
-          open={diffName !== null}
-          platformId={platformId}
-          itemName={diffName}
-          itemType={activeTab === "skills" ? "skill" : "command"}
-          onClose={() => setDiffName(null)}
-        />
+        <Suspense fallback={null}>
+          <DiffDialog
+            open={diffName !== null}
+            platformId={platformId}
+            itemName={diffName}
+            itemType={activeTab === "skills" ? "skill" : "command"}
+            onClose={() => setDiffName(null)}
+          />
+        </Suspense>
       )}
 
       {/* Install Dialog */}
@@ -482,27 +512,31 @@ export default function MainPage() {
 
       {/* Prompt Dialog */}
       {platformId && (
-        <PromptDialog
-          open={promptOpen}
-          platformId={platformId}
-          onClose={() => setPromptOpen(false)}
-          onUpdated={() => showNotification("CLAUDE.md updated successfully", "success")}
-        />
+        <Suspense fallback={null}>
+          <PromptDialog
+            open={promptOpen}
+            platformId={platformId}
+            onClose={() => setPromptOpen(false)}
+            onUpdated={() => showNotification("CLAUDE.md updated successfully", "success")}
+          />
+        </Suspense>
       )}
 
       {/* Multi-Sync Dialog */}
       {platformId && (
-        <MultiSyncDialog
-          open={syncOpen}
-          itemNames={Array.from(selectedNames)}
-          itemType={activeTab === "skills" ? "skill" : "command"}
-          currentPlatformId={platformId}
-          onClose={() => setSyncOpen(false)}
-          onSynced={(message, severity) => {
-            showNotification(message, severity);
-            clearSelection();
-          }}
-        />
+        <Suspense fallback={null}>
+          <MultiSyncDialog
+            open={syncOpen}
+            itemNames={Array.from(selectedNames)}
+            itemType={activeTab === "skills" ? "skill" : "command"}
+            currentPlatformId={platformId}
+            onClose={() => setSyncOpen(false)}
+            onSynced={(message, severity) => {
+              showNotification(message, severity);
+              clearSelection();
+            }}
+          />
+        </Suspense>
       )}
 
       <NotificationSnackbar />

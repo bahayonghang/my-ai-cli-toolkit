@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -20,6 +20,7 @@ import {
   Alert,
   Tooltip,
   Card,
+  LinearProgress,
   Stack,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -40,11 +41,17 @@ import { useItemStore } from "@/stores/itemStore";
 import { uninstallSkills, installSkills } from "@/api/client";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
-import { SkillEditorDrawer } from "@/components/dialogs/SkillEditorDrawer";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
+import { useDebounce } from "@/hooks/useDebounce";
+
+const SkillEditorDrawer = lazy(() =>
+  import("@/components/dialogs/SkillEditorDrawer").then((module) => ({
+    default: module.SkillEditorDrawer,
+  }))
+);
 
 export default function InstalledSkillsPage() {
   const { t } = useI18n();
@@ -74,6 +81,8 @@ export default function InstalledSkillsPage() {
   // Dialog state
   const [editName, setEditName] = useState<string | null>(null);
   const [deleteName, setDeleteName] = useState<string | null>(null);
+  const debouncedSearch = useDebounce(search, 300);
+  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
   const {
     loading: installTargetLoading,
     dialogOpen: installTargetDialogOpen,
@@ -100,19 +109,29 @@ export default function InstalledSkillsPage() {
   }, [platformId, setSearch, setCategory]);
 
   useEffect(() => {
-    if (!platformId || !resolvedTarget) {
+    if (!platformId) {
+      return;
+    }
+    fetchCategories(platformId, installTarget, "skill");
+  }, [
+    platformId,
+    installTarget.scope,
+    installTarget.project_path,
+    fetchCategories,
+  ]);
+
+  useEffect(() => {
+    if (!platformId) {
       return;
     }
     fetchItems(platformId, installTarget);
-    fetchCategories(platformId, installTarget);
   }, [
     platformId,
-    resolvedTarget,
-    installTarget,
-    search,
+    installTarget.scope,
+    installTarget.project_path,
+    debouncedSearch,
     selectedCategory,
     fetchItems,
-    fetchCategories,
   ]);
 
   const handleDelete = async () => {
@@ -150,7 +169,8 @@ export default function InstalledSkillsPage() {
   const skillCategories = categories
     .filter((category) => category.item_type === "skill")
     .map((category) => category.name);
-  const pageLoading = loading || installTargetLoading || !resolvedTarget;
+  const pageLoading = loading && items.length === 0;
+  const showInlineProgress = (loading && items.length > 0) || installTargetLoading;
 
   return (
     <Box
@@ -166,11 +186,11 @@ export default function InstalledSkillsPage() {
       {/* AppBar */}
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+          <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
             <ArrowBackIcon />
           </IconButton>
           <Tooltip title={t("common.home")}>
-            <IconButton color="inherit" onClick={() => navigate("/")} sx={{ mr: 1 }}>
+            <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
               <HomeIcon />
             </IconButton>
           </Tooltip>
@@ -207,7 +227,7 @@ export default function InstalledSkillsPage() {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => navigate(`/platform/${platformId}/install`)}
+            onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
             sx={{ mr: 1, borderRadius: 2 }}
           >
             {t("installed.installSkills")}
@@ -297,6 +317,8 @@ export default function InstalledSkillsPage() {
             </Alert>
           )}
 
+          {showInlineProgress && <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />}
+
           {pageLoading ? (
             <Box display="flex" justifyContent="center" py={8}>
               <CircularProgress />
@@ -320,7 +342,7 @@ export default function InstalledSkillsPage() {
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={() => navigate(`/platform/${platformId}/install`)}
+                onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
               >
                 {t("installed.installSkills")}
               </Button>
@@ -424,20 +446,22 @@ export default function InstalledSkillsPage() {
 
       {/* Skill Editor Drawer */}
       {platformId && editName && (
-        <SkillEditorDrawer
-          open={true}
-          platformId={platformId}
-          skillName={editName}
-          onClose={() => setEditName(null)}
-          onSaved={() => {
-            showNotification(
-              t("installed.savedNotification", { name: editName }),
-              "success"
-            );
-            setEditName(null);
-            refresh(platformId, installTarget);
-          }}
-        />
+        <Suspense fallback={null}>
+          <SkillEditorDrawer
+            open={true}
+            platformId={platformId}
+            skillName={editName}
+            onClose={() => setEditName(null)}
+            onSaved={() => {
+              showNotification(
+                t("installed.savedNotification", { name: editName }),
+                "success"
+              );
+              setEditName(null);
+              refresh(platformId, installTarget);
+            }}
+          />
+        </Suspense>
       )}
 
       <InstallTargetDialog

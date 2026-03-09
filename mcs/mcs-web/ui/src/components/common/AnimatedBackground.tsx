@@ -22,7 +22,7 @@ export default function AnimatedBackground() {
                     content: '""',
                     position: "absolute",
                     borderRadius: "50%",
-                    filter: "blur(120px)",
+                    filter: "blur(96px)",
                     opacity: 0.5,
                 },
 
@@ -48,6 +48,14 @@ export default function AnimatedBackground() {
                             ? "radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)"
                             : "radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)",
                     animation: "orbFloat 28s ease-in-out infinite alternate-reverse",
+                },
+
+                "@media (prefers-reduced-motion: reduce)": {
+                    "&::before, &::after": {
+                        animation: "none",
+                        transform: "none",
+                        filter: "blur(72px)",
+                    },
                 },
 
                 "@keyframes orbFloat": {

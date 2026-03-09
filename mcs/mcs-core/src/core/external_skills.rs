@@ -18,6 +18,8 @@ pub struct ExternalSkillEntry {
     pub stars: Option<u8>,
     #[serde(default)]
     pub project_only: bool,
+    #[serde(default)]
+    pub usage: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -63,6 +65,7 @@ method = "vercel"
 category = "dev-tools"
 description = "A test skill"
 stars = 5
+usage = "Install and use /test command"
 
 [[skills]]
 name = "another"
@@ -82,6 +85,10 @@ project_only = true
         assert_eq!(first.category.as_deref(), Some("dev-tools"));
         assert_eq!(first.stars, Some(5));
         assert!(!first.project_only);
+        assert_eq!(
+            first.usage.as_deref(),
+            Some("Install and use /test command")
+        );
 
         let second = &parsed.skills[1];
         assert_eq!(second.name, "another");
@@ -89,6 +96,7 @@ project_only = true
         assert_eq!(second.method, "playbooks");
         assert!(second.project_only);
         assert!(second.description.is_none());
+        assert!(second.usage.is_none());
     }
 
     #[test]
