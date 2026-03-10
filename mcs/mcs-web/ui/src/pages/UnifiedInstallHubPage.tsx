@@ -6,16 +6,15 @@ import {
   Alert,
   AppBar,
   Box,
+  Button,
   CircularProgress,
   Grid,
   IconButton,
   Toolbar,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { InstallExecutionPanel } from "@/components/install-hub/InstallExecutionPanel";
 import { PlatformTargetPanel } from "@/components/install-hub/PlatformTargetPanel";
@@ -28,8 +27,12 @@ import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 
 export default function UnifiedInstallHubPage() {
   const navigate = useNavigate();
-  const { platforms, fetchPlatforms, refreshPlatforms } = usePlatformStore();
-  const { colorMode, toggleColorMode, showNotification } = useUiStore();
+  const platforms = usePlatformStore((state) => state.platforms);
+  const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
+  const refreshPlatforms = usePlatformStore((state) => state.refreshPlatforms);
+  const colorMode = useUiStore((state) => state.colorMode);
+  const toggleColorMode = useUiStore((state) => state.toggleColorMode);
+  const showNotification = useUiStore((state) => state.showNotification);
   const model = useUnifiedInstallHub({
     platforms,
     fetchPlatforms,
@@ -42,8 +45,7 @@ export default function UnifiedInstallHubPage() {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", position: "relative" }}>
-      <AnimatedBackground />
+    <Box sx={{ minHeight: "100vh" }}>
       <PageToolbar
         colorMode={colorMode}
         onHome={() => navigate("/")}
@@ -76,19 +78,33 @@ function PageToolbar({
   return (
     <AppBar position="fixed">
       <Toolbar>
-        <IconButton color="inherit" onClick={onHome}>
+        <IconButton color="inherit" aria-label={t("common.back")} onClick={onHome}>
           <ArrowBackIcon />
         </IconButton>
-        <Tooltip title={t("common.home")}>
-          <IconButton color="inherit" onClick={onHome}>
-            <HomeIcon />
-          </IconButton>
-        </Tooltip>
+        <IconButton color="inherit" aria-label={t("common.home")} onClick={onHome}>
+          <HomeIcon />
+        </IconButton>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           {t("installHub.pageTitle")}
         </Typography>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={onHome}
+          sx={{ display: { xs: "none", sm: "inline-flex" }, mr: 1 }}
+        >
+          {t("common.home")}
+        </Button>
         <LanguageToggle sx={{ mr: 1 }} />
-        <IconButton color="inherit" onClick={onToggleTheme}>
+        <IconButton
+          color="inherit"
+          aria-label={
+            colorMode === "dark"
+              ? t("common.toggleThemeToLight")
+              : t("common.toggleThemeToDark")
+          }
+          onClick={onToggleTheme}
+        >
           {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
       </Toolbar>
@@ -104,7 +120,7 @@ function PageBody({
   platforms: PlatformDisplay[];
 }) {
   return (
-    <Box sx={{ pt: 10, px: 3, pb: 3, position: "relative", zIndex: 1 }}>
+    <Box sx={{ pt: 10, px: { xs: 2, sm: 3 }, pb: 3 }}>
       {model.catalogError && <Alert severity="error" sx={{ mb: 2 }}>{model.catalogError}</Alert>}
       <InstallHubGrid model={model} platforms={platforms} />
     </Box>

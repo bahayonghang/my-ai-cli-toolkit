@@ -108,7 +108,13 @@ export function InstallTargetDialog({
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={handlePickFolder} disabled={loading || pickingFolder} size="small" title="Choose local folder">
+                      <IconButton
+                        onClick={handlePickFolder}
+                        disabled={loading || pickingFolder}
+                        size="small"
+                        title={t("dialogs.chooseLocalFolder")}
+                        aria-label={t("dialogs.chooseLocalFolder")}
+                      >
                         {pickingFolder ? <CircularProgress size={20} /> : <FolderOpenIcon fontSize="small" />}
                       </IconButton>
                     </InputAdornment>

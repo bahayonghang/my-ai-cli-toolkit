@@ -1,51 +1,58 @@
-import { lazy, startTransition, Suspense, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { lazy, startTransition, Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box,
+  Alert,
   AppBar,
-  Toolbar,
-  Typography,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Divider,
+  Drawer,
   IconButton,
+  InputAdornment,
+  LinearProgress,
+  List,
+  ListItemButton,
+  ListItemText,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
   TextField,
-  InputAdornment,
-  Button,
-  CircularProgress,
-  Alert,
-  Tooltip,
-  Card,
-  LinearProgress,
-  Stack,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SearchIcon from "@mui/icons-material/Search";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
-import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditIcon from "@mui/icons-material/Edit";
 import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
-import HomeIcon from "@mui/icons-material/Home";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import { useI18n } from "@/i18n";
-import { usePlatformStore } from "@/stores/platformStore";
-import { useUiStore } from "@/stores/uiStore";
-import { useItemStore } from "@/stores/itemStore";
-import { uninstallSkills, installSkills } from "@/api/client";
+import HomeIcon from "@mui/icons-material/Home";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import SearchIcon from "@mui/icons-material/Search";
+import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
+import TuneIcon from "@mui/icons-material/Tune";
+import { installSkills, uninstallSkills } from "@/api/client";
+import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
-import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useI18n } from "@/i18n";
+import { useInstallTarget } from "@/hooks/useInstallTarget";
+import { useItemStore } from "@/stores/itemStore";
+import { usePlatformStore } from "@/stores/platformStore";
+import { useUiStore } from "@/stores/uiStore";
 
 const SkillEditorDrawer = lazy(() =>
   import("@/components/dialogs/SkillEditorDrawer").then((module) => ({
@@ -57,32 +64,33 @@ export default function InstalledSkillsPage() {
   const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
   const navigate = useNavigate();
-  const platform = usePlatformStore((s) =>
-    s.platforms.find((p) => p.id === platformId)
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const platform = usePlatformStore((state) =>
+    state.platforms.find((entry) => entry.id === platformId)
   );
-  const { fetchPlatforms } = usePlatformStore();
-  const { colorMode, toggleColorMode, showNotification } = useUiStore();
-  const {
-    items,
-    categories,
-    search,
-    selectedCategory,
-    loading,
-    error,
-    setTab,
-    setSearch,
-    setCategory,
-    setStatusFilter,
-    fetchItems,
-    fetchCategories,
-    refresh,
-  } = useItemStore();
-
-  // Dialog state
-  const [editName, setEditName] = useState<string | null>(null);
-  const [deleteName, setDeleteName] = useState<string | null>(null);
+  const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
+  const items = useItemStore((state) => state.items);
+  const categories = useItemStore((state) => state.categories);
+  const search = useItemStore((state) => state.search);
+  const selectedCategory = useItemStore((state) => state.selectedCategory);
+  const loading = useItemStore((state) => state.loading);
+  const error = useItemStore((state) => state.error);
+  const setTab = useItemStore((state) => state.setTab);
+  const setSearch = useItemStore((state) => state.setSearch);
+  const setCategory = useItemStore((state) => state.setCategory);
+  const setStatusFilter = useItemStore((state) => state.setStatusFilter);
+  const fetchItems = useItemStore((state) => state.fetchItems);
+  const fetchCategories = useItemStore((state) => state.fetchCategories);
+  const refresh = useItemStore((state) => state.refresh);
+  const colorMode = useUiStore((state) => state.colorMode);
+  const toggleColorMode = useUiStore((state) => state.toggleColorMode);
+  const showNotification = useUiStore((state) => state.showNotification);
   const debouncedSearch = useDebounce(search, 300);
   const navigateDeferred = (to: string) => startTransition(() => navigate(to));
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [editName, setEditName] = useState<string | null>(null);
+  const [deleteName, setDeleteName] = useState<string | null>(null);
   const {
     loading: installTargetLoading,
     dialogOpen: installTargetDialogOpen,
@@ -95,7 +103,7 @@ export default function InstalledSkillsPage() {
   } = useInstallTarget(platformId);
 
   useEffect(() => {
-    fetchPlatforms();
+    void fetchPlatforms();
   }, [fetchPlatforms]);
 
   useEffect(() => {
@@ -103,7 +111,7 @@ export default function InstalledSkillsPage() {
     setStatusFilter("installed");
   }, [setTab, setStatusFilter]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setSearch("");
     setCategory(null);
   }, [platformId, setSearch, setCategory]);
@@ -112,7 +120,7 @@ export default function InstalledSkillsPage() {
     if (!platformId) {
       return;
     }
-    fetchCategories(platformId, installTarget, "skill");
+    void fetchCategories(platformId, installTarget, "skill");
   }, [
     platformId,
     installTarget.scope,
@@ -124,7 +132,7 @@ export default function InstalledSkillsPage() {
     if (!platformId) {
       return;
     }
-    fetchItems(platformId, installTarget);
+    void fetchItems(platformId, installTarget);
   }, [
     platformId,
     installTarget.scope,
@@ -134,10 +142,20 @@ export default function InstalledSkillsPage() {
     fetchItems,
   ]);
 
+  useEffect(() => {
+    if (!isMobile) {
+      setFilterDrawerOpen(false);
+    }
+  }, [isMobile]);
+
   const handleDelete = async () => {
-    if (!platformId || !deleteName) return;
+    if (!platformId || !deleteName) {
+      return;
+    }
+
     const nameToDelete = deleteName;
     setDeleteName(null);
+
     try {
       await uninstallSkills(platformId, [nameToDelete], installTarget);
       showNotification(
@@ -145,13 +163,16 @@ export default function InstalledSkillsPage() {
         "success"
       );
       await refresh(platformId, installTarget);
-    } catch (e) {
-      showNotification((e as Error).message, "error");
+    } catch (errorValue) {
+      showNotification((errorValue as Error).message, "error");
     }
   };
 
   const handleReinstall = async (name: string) => {
-    if (!platformId) return;
+    if (!platformId) {
+      return;
+    }
+
     try {
       await installSkills(platformId, [name], "auto", installTarget);
       showNotification(
@@ -159,145 +180,155 @@ export default function InstalledSkillsPage() {
         "success"
       );
       await refresh(platformId, installTarget);
-    } catch (e) {
+    } catch (errorValue) {
       showNotification(
-        t("installed.reinstallFailed", { error: (e as Error).message }),
+        t("installed.reinstallFailed", { error: (errorValue as Error).message }),
         "error"
       );
     }
   };
-  const skillCategories = categories
-    .filter((category) => category.item_type === "skill")
-    .map((category) => category.name);
+
+  const skillCategories = useMemo(
+    () =>
+      categories
+        .filter((category) => category.item_type === "skill")
+        .map((category) => category.name),
+    [categories]
+  );
+
   const pageLoading = loading && items.length === 0;
   const showInlineProgress = (loading && items.length > 0) || installTargetLoading;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        position: "relative",
-      }}
-    >
-      <AnimatedBackground />
-
-      {/* AppBar */}
+    <Box sx={{ minHeight: "100vh" }}>
       <AppBar position="fixed">
-        <Toolbar>
-          <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
+        <Toolbar sx={{ gap: 0.5, flexWrap: { xs: "wrap", lg: "nowrap" }, alignItems: "center" }}>
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              aria-label={t("common.openFilters")}
+              onClick={() => setFilterDrawerOpen(true)}
+            >
+              <TuneIcon />
+            </IconButton>
+          )}
+          <IconButton
+            color="inherit"
+            aria-label={t("common.back")}
+            onClick={() => navigateDeferred("/")}
+          >
             <ArrowBackIcon />
           </IconButton>
-          <Tooltip title={t("common.home")}>
-            <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
-              <HomeIcon />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            color="inherit"
+            aria-label={t("common.home")}
+            onClick={() => navigateDeferred("/")}
+          >
+            <HomeIcon />
+          </IconButton>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1, minWidth: 0 }}>
             <Typography variant="h6" noWrap>
               {platform?.icon} {platform?.name ?? platformId}
             </Typography>
-            <Tooltip
-              title={
-                resolvedTarget?.skills_path ??
-                t("installed.installTargetLoading")
-              }
-            >
-              <Chip
-                icon={<FolderOpenOutlinedIcon />}
-                variant="outlined"
-                size="small"
-                color="info"
-                clickable
-                onClick={openInstallTargetDialog}
-                label={t("installed.installTargetChip", {
-                  mode:
-                    installTarget.scope === "project"
-                      ? t("installed.installTargetProject")
-                      : t("installed.installTargetGlobal"),
-                  path:
-                    resolvedTarget?.skills_path ??
-                    t("installed.installTargetLoading"),
-                })}
-                sx={{ "& .MuiChip-label": { whiteSpace: "nowrap" } }}
-              />
-            </Tooltip>
+            <Chip
+              icon={<FolderOpenOutlinedIcon />}
+              variant="outlined"
+              size="small"
+              color="info"
+              clickable
+              aria-label={t("common.installTarget")}
+              onClick={openInstallTargetDialog}
+              label={t("installed.installTargetChip", {
+                mode:
+                  installTarget.scope === "project"
+                    ? t("installed.installTargetProject")
+                    : t("installed.installTargetGlobal"),
+                path:
+                  resolvedTarget?.skills_path ??
+                  t("installed.installTargetLoading"),
+              })}
+              sx={{ maxWidth: { xs: 180, sm: 320 }, "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" } }}
+            />
           </Box>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
-            sx={{ mr: 1, borderRadius: 2 }}
           >
             {t("installed.installSkills")}
           </Button>
-          <LanguageToggle sx={{ mr: 1 }} />
-          <IconButton color="inherit" onClick={toggleColorMode}>
+          <LanguageToggle />
+          <IconButton
+            color="inherit"
+            aria-label={
+              colorMode === "dark"
+                ? t("common.toggleThemeToLight")
+                : t("common.toggleThemeToDark")
+            }
+            onClick={toggleColorMode}
+          >
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>
 
+      {isMobile && (
+        <Drawer
+          anchor="left"
+          open={filterDrawerOpen}
+          onClose={() => setFilterDrawerOpen(false)}
+          PaperProps={{ sx: { width: 300, p: 2 } }}
+        >
+          <InstalledFilters
+            categories={skillCategories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={(value) => {
+              setCategory(value);
+              setFilterDrawerOpen(false);
+            }}
+            t={t}
+          />
+        </Drawer>
+      )}
+
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          mt: 8,
-          p: 3,
-          position: "relative",
-          zIndex: 1,
+          maxWidth: 1440,
+          mx: "auto",
+          px: { xs: 2, sm: 3 },
+          pt: 11,
+          pb: 4,
           display: "flex",
-          gap: 4,
+          gap: 3,
           alignItems: "flex-start",
         }}
       >
-        {/* Categories Sidebar */}
-        <Box
-          sx={{
-            width: 240,
-            flexShrink: 0,
-            position: "sticky",
-            top: 88, // 64px AppBar + 24px mt
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-        >
-          <Typography variant="overline" color="text.secondary" sx={{ px: 1, mb: 0.5, letterSpacing: 1 }}>
-            {t("installed.categories")}
-          </Typography>
-          <Button
-            variant={selectedCategory === null ? "contained" : "text"}
-            color={selectedCategory === null ? "primary" : "inherit"}
-            onClick={() => setCategory(null)}
-            sx={{ justifyContent: "flex-start", borderRadius: 2 }}
-          >
-            {t("installed.allSkills")}
-          </Button>
-          {skillCategories.map((cat) => (
-            <Button
-              key={cat}
-              variant={selectedCategory === cat ? "contained" : "text"}
-              color={selectedCategory === cat ? "primary" : "inherit"}
-              onClick={() => setCategory(cat)}
-              sx={{ justifyContent: "flex-start", borderRadius: 2 }}
-            >
-              {cat}
-            </Button>
-          ))}
-        </Box>
+        {!isMobile && (
+          <Card sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}>
+            <CardContent sx={{ p: 2 }}>
+              <InstalledFilters
+                categories={skillCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setCategory}
+                t={t}
+              />
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Main Content Area */}
-        <Box sx={{ flexGrow: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          {/* Search */}
-          {/* Search Bar only */}
-          <Box sx={{ mb: 3 }}>
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          <Stack
+            direction={{ xs: "column", lg: "row" }}
+            spacing={1.5}
+            alignItems={{ xs: "stretch", lg: "center" }}
+            sx={{ mb: 2 }}
+          >
             <TextField
+              label={t("installed.searchLabel")}
               size="small"
-              placeholder={t("installed.searchPlaceholder")}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(event) => setSearch(event.target.value)}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -307,48 +338,94 @@ export default function InstalledSkillsPage() {
                   ),
                 },
               }}
-              sx={{ width: 400, maxWidth: "100%" }}
+              sx={{ width: { xs: "100%", lg: 360 } }}
             />
-          </Box>
+            <Box sx={{ flexGrow: 1 }} />
+          </Stack>
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
-
-          {showInlineProgress && <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />}
+          {showInlineProgress && <LinearProgress sx={{ mb: 2 }} />}
 
           {pageLoading ? (
             <Box display="flex" justifyContent="center" py={8}>
               <CircularProgress />
             </Box>
           ) : items.length === 0 ? (
-            /* Empty state */
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                py: 12,
-                gap: 2,
-              }}
-            >
-              <ExtensionOffIcon sx={{ fontSize: 64, color: "text.disabled" }} />
-              <Typography variant="h6" color="text.secondary">
-                {t("installed.emptyTitle")}
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
-              >
-                {t("installed.installSkills")}
-              </Button>
-            </Box>
+            <Card>
+              <CardContent sx={{ py: 8, textAlign: "center" }}>
+                <ExtensionOffIcon sx={{ fontSize: 52, color: "text.disabled", mb: 2 }} />
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                  {t("installed.emptyTitle")}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  {t("installed.emptyDescription")}
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
+                >
+                  {t("installed.installSkills")}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : isMobile ? (
+            <Stack spacing={1.5}>
+              {items.map((item) => (
+                <Card key={item.name}>
+                  <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
+                        <Typography variant="subtitle2" sx={{ wordBreak: "break-word" }}>
+                          {item.name}
+                        </Typography>
+                        {item.category && (
+                          <Chip size="small" label={item.category} variant="outlined" />
+                        )}
+                      </Stack>
+                      <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                        {item.description || t("installHub.noDescription")}
+                      </Typography>
+                    </Box>
+
+                    <Stack direction="row" spacing={1} flexWrap="wrap">
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<EditIcon />}
+                        onClick={() => setEditName(item.name)}
+                      >
+                        {t("common.edit")}
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="warning"
+                        startIcon={<SystemUpdateAltIcon />}
+                        onClick={() => handleReinstall(item.name)}
+                      >
+                        {t("common.reinstall")}
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteOutlineIcon />}
+                        onClick={() => setDeleteName(item.name)}
+                      >
+                        {t("common.uninstall")}
+                      </Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
           ) : (
-            <Card elevation={0} sx={{ overflow: "hidden" }}>
+            <Card>
               <TableContainer>
                 <Table size="small">
                   <TableHead>
@@ -360,78 +437,51 @@ export default function InstalledSkillsPage() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {items.map((item, index) => (
-                      <TableRow
-                        key={item.name}
-                        hover
-                        sx={{
-                          animation: `fadeIn 0.3s ease-out ${index * 0.02}s both`,
-                          "@keyframes fadeIn": {
-                            "0%": { opacity: 0, transform: "translateY(8px)" },
-                            "100%": { opacity: 1, transform: "translateY(0)" },
-                          },
-                        }}
-                      >
+                    {items.map((item) => (
+                      <TableRow key={item.name} hover>
                         <TableCell>
-                          <Typography
-                            variant="body2"
-                            fontWeight={600}
-                            color="primary.main"
-                          >
+                          <Typography variant="body2" fontWeight={600} color="primary.main">
                             {item.name}
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Chip
-                            size="small"
-                            label={item.category ?? "—"}
-                            variant="outlined"
-                            sx={{ borderRadius: 1 }}
-                          />
+                          <Chip size="small" label={item.category ?? "—"} variant="outlined" />
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ maxWidth: 420 }}>
                           <Typography
-                            variant="caption"
+                            variant="body2"
                             color="text.secondary"
-                            noWrap
-                            sx={{ maxWidth: 400, display: "block" }}
+                            sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                           >
-                            {item.description ?? ""}
+                            {item.description || t("installHub.noDescription")}
                           </Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Stack
-                            direction="row"
-                            spacing={0.5}
-                            justifyContent="flex-end"
-                          >
-                            <Tooltip title={t("installed.editSkillMd")}>
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => setEditName(item.name)}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title={t("common.reinstall")}>
-                              <IconButton
-                                size="small"
-                                color="warning"
-                                onClick={() => handleReinstall(item.name)}
-                              >
-                                <SystemUpdateAltIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title={t("common.uninstall")}>
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => setDeleteName(item.name)}
-                              >
-                                <DeleteOutlineIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
+                          <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              aria-label={`${t("common.edit")} ${item.name}`}
+                              onClick={() => setEditName(item.name)}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton
+                              size="small"
+                              color="warning"
+                              aria-label={`${t("common.reinstall")} ${item.name}`}
+                              onClick={() => handleReinstall(item.name)}
+                            >
+                              <SystemUpdateAltIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton
+                              size="small"
+                              color="error"
+                              aria-label={`${t("common.uninstall")} ${item.name}`}
+                              onClick={() => setDeleteName(item.name)}
+                            >
+                              <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -444,11 +494,10 @@ export default function InstalledSkillsPage() {
         </Box>
       </Box>
 
-      {/* Skill Editor Drawer */}
       {platformId && editName && (
         <Suspense fallback={null}>
           <SkillEditorDrawer
-            open={true}
+            open
             platformId={platformId}
             skillName={editName}
             onClose={() => setEditName(null)}
@@ -458,7 +507,7 @@ export default function InstalledSkillsPage() {
                 "success"
               );
               setEditName(null);
-              refresh(platformId, installTarget);
+              void refresh(platformId, installTarget);
             }}
           />
         </Suspense>
@@ -473,7 +522,6 @@ export default function InstalledSkillsPage() {
         onApply={applyInstallTarget}
       />
 
-      {/* Delete Confirm Dialog */}
       <ConfirmDialog
         open={deleteName !== null}
         title={t("installed.uninstallSkillTitle")}
@@ -488,6 +536,44 @@ export default function InstalledSkillsPage() {
       />
 
       <NotificationSnackbar />
+    </Box>
+  );
+}
+
+function InstalledFilters({
+  categories,
+  selectedCategory,
+  onCategoryChange,
+  t,
+}: {
+  categories: string[];
+  selectedCategory: string | null;
+  onCategoryChange: (category: string | null) => void;
+  t: ReturnType<typeof useI18n>["t"];
+}) {
+  return (
+    <Box>
+      <Typography variant="overline" color="text.secondary">
+        {t("installed.categories")}
+      </Typography>
+      <List dense disablePadding sx={{ mt: 1 }}>
+        <ListItemButton
+          selected={selectedCategory === null}
+          onClick={() => onCategoryChange(null)}
+        >
+          <ListItemText primary={t("installed.allSkills")} />
+        </ListItemButton>
+        <Divider sx={{ my: 1 }} />
+        {categories.map((category) => (
+          <ListItemButton
+            key={category}
+            selected={selectedCategory === category}
+            onClick={() => onCategoryChange(category)}
+          >
+            <ListItemText primary={category} />
+          </ListItemButton>
+        ))}
+      </List>
     </Box>
   );
 }

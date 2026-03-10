@@ -2,7 +2,8 @@ import { Snackbar, Alert } from "@mui/material";
 import { useUiStore } from "@/stores/uiStore";
 
 export function NotificationSnackbar() {
-  const { notification, clearNotification } = useUiStore();
+  const notification = useUiStore((state) => state.notification);
+  const clearNotification = useUiStore((state) => state.clearNotification);
 
   return (
     <Snackbar

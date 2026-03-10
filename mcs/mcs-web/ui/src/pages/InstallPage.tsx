@@ -79,7 +79,6 @@ import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useDebounce } from "@/hooks/useDebounce";
 import type {
@@ -723,6 +722,7 @@ function SearchToolbar({
       }}
     >
       <TextField
+        label={t("common.search")}
         size="small"
         placeholder={t("install.searchPlaceholder")}
         value={search}
@@ -2003,8 +2003,10 @@ export default function InstallPage() {
   const platform = usePlatformStore((s) =>
     s.platforms.find((p) => p.id === platformId)
   );
-  const { fetchPlatforms } = usePlatformStore();
-  const { colorMode, toggleColorMode, showNotification } = useUiStore();
+  const fetchPlatforms = usePlatformStore((s) => s.fetchPlatforms);
+  const colorMode = useUiStore((s) => s.colorMode);
+  const toggleColorMode = useUiStore((s) => s.toggleColorMode);
+  const showNotification = useUiStore((s) => s.showNotification);
   const {
     loading: installTargetLoading,
     dialogOpen: installTargetDialogOpen,
@@ -2216,14 +2218,13 @@ export default function InstallPage() {
         position: "relative",
       }}
     >
-      <AnimatedBackground />
-
       {/* ── AppBar ── */}
       <AppBar position="fixed">
         <Toolbar>
           {isMobile && (
             <IconButton
               color="inherit"
+              aria-label={t("common.openFilters")}
               onClick={() => setDrawerOpen(true)}
               sx={{ mr: 0.5 }}
             >
@@ -2232,6 +2233,7 @@ export default function InstallPage() {
           )}
           <IconButton
             color="inherit"
+            aria-label={t("common.back")}
             onClick={() => navigateDeferred(`/platform/${platformId}`)}
             sx={{ mr: 0.5 }}
           >
@@ -2240,6 +2242,7 @@ export default function InstallPage() {
           <Tooltip title={t("common.home")}>
             <IconButton
               color="inherit"
+              aria-label={t("common.home")}
               onClick={() => navigateDeferred("/")}
               sx={{ mr: 1 }}
             >
@@ -2271,6 +2274,7 @@ export default function InstallPage() {
                 size="small"
                 color="info"
                 clickable
+                aria-label={t("common.installTarget")}
                 onClick={openInstallTargetDialog}
                 label={t("install.installTargetChip", {
                   mode:
@@ -2286,7 +2290,15 @@ export default function InstallPage() {
             </Tooltip>
           </Box>
           <LanguageToggle sx={{ mr: 1 }} />
-          <IconButton color="inherit" onClick={toggleColorMode}>
+          <IconButton
+            color="inherit"
+            aria-label={
+              colorMode === "dark"
+                ? t("common.toggleThemeToLight")
+                : t("common.toggleThemeToDark")
+            }
+            onClick={toggleColorMode}
+          >
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
@@ -2448,5 +2460,3 @@ export default function InstallPage() {
     </Box>
   );
 }
-
-

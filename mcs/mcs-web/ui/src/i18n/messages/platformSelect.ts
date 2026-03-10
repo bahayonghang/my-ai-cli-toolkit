@@ -1,5 +1,8 @@
 export const enPlatformSelectMessages = {
+  "platformSelect.title": "MyClaude Skills",
   "platformSelect.subtitle": "Select a platform to manage",
+  "platformSelect.availablePlatforms": "Available platforms",
+  "platformSelect.quickAccess": "Quick access",
   "platformSelect.refreshTooltip": "Refresh content and platform list",
   "platformSelect.refreshButton": "Refresh",
   "platformSelect.universalGroupTitle": "Universal Agents",
@@ -17,7 +20,10 @@ export const zhPlatformSelectMessages: Record<
   keyof typeof enPlatformSelectMessages,
   string
 > = {
+  "platformSelect.title": "MyClaude Skills",
   "platformSelect.subtitle": "选择要管理的平台",
+  "platformSelect.availablePlatforms": "可用平台",
+  "platformSelect.quickAccess": "快捷入口",
   "platformSelect.refreshTooltip": "刷新内容与平台列表",
   "platformSelect.refreshButton": "刷新",
   "platformSelect.universalGroupTitle": "通用智能体 (Universal Agents)",

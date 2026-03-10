@@ -12,8 +12,20 @@ const InstallPage = lazy(() => import("@/pages/InstallPage"));
 const UnifiedInstallHubPage = lazy(() => import("@/pages/UnifiedInstallHubPage"));
 
 const Fallback = () => (
-  <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+  <Box
+    display="flex"
+    flexDirection="column"
+    justifyContent="center"
+    alignItems="center"
+    gap={2}
+    minHeight="100vh"
+    role="status"
+    aria-live="polite"
+  >
     <CircularProgress />
+    <Box component="span" sx={{ color: "text.secondary", typography: "body2" }}>
+      Loading
+    </Box>
   </Box>
 );
 

@@ -146,7 +146,7 @@ export function SkillEditorDrawer({
           flexShrink: 0,
         }}
       >
-        <IconButton size="small" onClick={handleClose}>
+        <IconButton size="small" onClick={handleClose} aria-label={t("common.close")}>
           <CloseIcon />
         </IconButton>
         <Typography
@@ -191,7 +191,10 @@ export function SkillEditorDrawer({
           sx={{
             height: "100%",
             "& .cm-editor": { height: "100%" },
-            "& .cm-editor.cm-focused": { outline: "none" },
+            "& .cm-editor.cm-focused": {
+              outline: `2px solid ${theme.palette.primary.main}`,
+              outlineOffset: -2,
+            },
           }}
         />
       </Box>

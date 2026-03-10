@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, IconButton, Typography, Box, LinearProgress,
@@ -58,8 +58,11 @@ export function InstallDialog({
   const [results, setResults] = useState<ItemResult[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
+  const installAbortRef = useRef<AbortController | null>(null);
 
   const handleEnter = () => {
+    installAbortRef.current?.abort();
+    installAbortRef.current = null;
     setPhase("confirm");
     setLinkMode("auto");
     setResults(
@@ -82,6 +85,39 @@ export function InstallDialog({
     });
   };
 
+  useEffect(() => () => installAbortRef.current?.abort(), []);
+
+  const updateResultAtIndex = (index: number, update: Partial<ItemResult>) => {
+    setResults((prev) => {
+      const current = prev[index];
+      if (!current) {
+        return prev;
+      }
+      const next = [...prev];
+      next[index] = { ...current, ...update };
+      return next;
+    });
+  };
+
+  const isAbortError = (error: unknown) =>
+    error instanceof DOMException
+      ? error.name === "AbortError"
+      : error instanceof Error && error.name === "AbortError";
+
+  const handleCancelInstall = () => {
+    installAbortRef.current?.abort();
+    installAbortRef.current = null;
+    onClose();
+  };
+
+  const handleDialogClose = () => {
+    if (phase === "installing") {
+      handleCancelInstall();
+      return;
+    }
+    onClose();
+  };
+
   const successCount = results.filter((r) => r.status === "success").length;
   const failureCount = results.filter((r) => r.status === "error").length;
   const progress =
@@ -91,48 +127,61 @@ export function InstallDialog({
 
   const handleInstall = async () => {
     setPhase("installing");
+    const controller = new AbortController();
+    installAbortRef.current = controller;
 
     for (let i = 0; i < itemNames.length; i++) {
+      if (controller.signal.aborted) {
+        return;
+      }
       const name = itemNames[i];
       setCurrentIndex(i);
-      setResults((prev) =>
-        prev.map((r) => (r.name === name ? { ...r, status: "installing" } : r))
-      );
+      updateResultAtIndex(i, { status: "installing", errorMessage: undefined });
 
       try {
         const result = itemType === "skills"
-          ? await installSkills(platformId, [name], linkMode, installTarget)
-          : await installCommands(platformId, [name], installTarget);
+          ? await installSkills(
+              platformId,
+              [name],
+              linkMode,
+              installTarget,
+              controller.signal
+            )
+          : await installCommands(
+              platformId,
+              [name],
+              installTarget,
+              controller.signal
+            );
+        if (controller.signal.aborted) {
+          return;
+        }
         const itemResult = result.results[0];
-        setResults((prev) =>
-          prev.map((r) =>
-            r.name === name
-              ? {
-                ...r,
-                status: itemResult?.success !== false ? "success" : "error",
-                errorMessage: itemResult?.error ?? undefined,
-              }
-              : r
-          )
-        );
+        updateResultAtIndex(i, {
+          status: itemResult?.success !== false ? "success" : "error",
+          errorMessage: itemResult?.error ?? undefined,
+        });
       } catch (e) {
-        setResults((prev) =>
-          prev.map((r) =>
-            r.name === name
-              ? { ...r, status: "error", errorMessage: (e as Error).message }
-              : r
-          )
-        );
+        if (isAbortError(e) || controller.signal.aborted) {
+          return;
+        }
+        updateResultAtIndex(i, {
+          status: "error",
+          errorMessage: (e as Error).message,
+        });
       }
     }
 
-    setPhase("completed");
+    if (!controller.signal.aborted) {
+      installAbortRef.current = null;
+      setPhase("completed");
+    }
   };
 
   return (
     <Dialog
       open={open}
-      onClose={phase === "installing" ? undefined : onClose}
+      onClose={handleDialogClose}
       maxWidth="sm"
       fullWidth
       TransitionProps={{ onEnter: handleEnter }}
@@ -144,7 +193,7 @@ export function InstallDialog({
           itemType={itemType}
           linkMode={linkMode}
           onLinkModeChange={setLinkMode}
-          onCancel={onClose}
+          onCancel={handleDialogClose}
           onInstall={handleInstall}
         />
       )}
@@ -155,6 +204,7 @@ export function InstallDialog({
           progress={progress}
           successCount={successCount}
           failureCount={failureCount}
+          onCancel={handleCancelInstall}
         />
       )}
       {phase === "completed" && (
@@ -201,7 +251,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
           {t("dialogs.installItemsTitle")}
         </Typography>
-        <IconButton size="small" onClick={onCancel}>
+        <IconButton size="small" onClick={onCancel} aria-label={t("common.close")}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -222,7 +272,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
         {itemType === "skills" && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
             <Typography variant="body2" color="text.secondary">
-              Link Mode:
+              {t("dialogs.installLinkMode")}
             </Typography>
             <ToggleButtonGroup
               value={linkMode}
@@ -230,9 +280,9 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
               onChange={(_, v) => v && onLinkModeChange(v as LinkMode)}
               size="small"
             >
-              <ToggleButton value="auto">Auto</ToggleButton>
-              <ToggleButton value="symlink">Symlink</ToggleButton>
-              <ToggleButton value="copy">Copy</ToggleButton>
+              <ToggleButton value="auto">{t("dialogs.linkModeAuto")}</ToggleButton>
+              <ToggleButton value="symlink">{t("dialogs.linkModeSymlink")}</ToggleButton>
+              <ToggleButton value="copy">{t("dialogs.linkModeCopy")}</ToggleButton>
             </ToggleButtonGroup>
           </Box>
         )}
@@ -315,6 +365,7 @@ interface InstallingPhaseProps {
   progress: number;
   successCount: number;
   failureCount: number;
+  onCancel: () => void;
 }
 
 function InstallingPhase({
@@ -323,6 +374,7 @@ function InstallingPhase({
   progress,
   successCount,
   failureCount,
+  onCancel,
 }: InstallingPhaseProps) {
   const { t } = useI18n();
   const total = results.length;
@@ -336,9 +388,19 @@ function InstallingPhase({
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
           {t("dialogs.installingTitle")}
         </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: { xs: "none", sm: "block" } }}
+        >
+          {t("dialogs.installCancelling")}
+        </Typography>
         <Typography variant="body2" color="text.secondary">
           {done} / {total}
         </Typography>
+        <IconButton size="small" onClick={onCancel} aria-label={t("common.cancel")}>
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
       <DialogContent dividers>

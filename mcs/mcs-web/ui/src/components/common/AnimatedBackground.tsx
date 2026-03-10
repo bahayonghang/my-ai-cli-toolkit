@@ -1,69 +1,45 @@
 import { Box } from "@mui/material";
 
-/**
- * Animated background with slowly-moving gradient orbs.
- * Renders behind the main content via position: fixed + z-index: -1.
- */
-export default function AnimatedBackground() {
-    return (
-        <Box
-            sx={{
-                position: "fixed",
-                inset: 0,
-                zIndex: -1,
-                overflow: "hidden",
-                pointerEvents: "none",
-                background: (theme) =>
-                    theme.palette.mode === "dark"
-                        ? "radial-gradient(ellipse at 50% 0%, rgba(0,70,140,0.6) 0%, transparent 60%), #050505"
-                        : "radial-gradient(ellipse at 50% 0%, rgba(0,70,140,0.08) 0%, transparent 60%), #F8F9FA",
+interface AnimatedBackgroundProps {
+  variant?: "hero" | "subtle";
+}
 
-                "&::before, &::after": {
-                    content: '""',
-                    position: "absolute",
-                    borderRadius: "50%",
-                    filter: "blur(96px)",
-                    opacity: 0.5,
-                },
+export default function AnimatedBackground({
+  variant = "subtle",
+}: AnimatedBackgroundProps) {
+  const isHero = variant === "hero";
 
-                "&::before": {
-                    width: 600,
-                    height: 600,
-                    top: "-10%",
-                    left: "-5%",
-                    background: (theme) =>
-                        theme.palette.mode === "dark"
-                            ? "radial-gradient(circle, rgba(0,70,140,0.45) 0%, transparent 70%)"
-                            : "radial-gradient(circle, rgba(0,70,140,0.18) 0%, transparent 70%)",
-                    animation: "orbFloat 22s ease-in-out infinite alternate",
-                },
-
-                "&::after": {
-                    width: 500,
-                    height: 500,
-                    bottom: "-10%",
-                    right: "-5%",
-                    background: (theme) =>
-                        theme.palette.mode === "dark"
-                            ? "radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)"
-                            : "radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)",
-                    animation: "orbFloat 28s ease-in-out infinite alternate-reverse",
-                },
-
-                "@media (prefers-reduced-motion: reduce)": {
-                    "&::before, &::after": {
-                        animation: "none",
-                        transform: "none",
-                        filter: "blur(72px)",
-                    },
-                },
-
-                "@keyframes orbFloat": {
-                    "0%": { transform: "translate(0, 0) scale(1)" },
-                    "50%": { transform: "translate(30px, 20px) scale(1.05)" },
-                    "100%": { transform: "translate(-20px, 40px) scale(0.96)" },
-                },
-            }}
-        />
-    );
+  return (
+    <Box
+      aria-hidden="true"
+      sx={{
+        position: "fixed",
+        inset: 0,
+        zIndex: -1,
+        overflow: "hidden",
+        pointerEvents: "none",
+        background: (theme) =>
+          theme.palette.mode === "dark"
+            ? `radial-gradient(circle at top left, rgba(125, 186, 178, ${
+                isHero ? 0.12 : 0.06
+              }) 0, transparent 34%), ${theme.palette.background.default}`
+            : `radial-gradient(circle at top left, rgba(22, 93, 102, ${
+                isHero ? 0.08 : 0.04
+              }) 0, transparent 34%), ${theme.palette.background.default}`,
+        "&::before": isHero
+          ? {
+              content: '""',
+              position: "absolute",
+              insetInline: 0,
+              top: 0,
+              height: 240,
+              background: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(180deg, rgba(125, 186, 178, 0.08) 0%, transparent 100%)"
+                  : "linear-gradient(180deg, rgba(22, 93, 102, 0.06) 0%, transparent 100%)",
+            }
+          : undefined,
+      }}
+    />
+  );
 }

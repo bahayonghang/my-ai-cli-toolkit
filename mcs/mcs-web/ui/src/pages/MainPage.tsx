@@ -1,56 +1,60 @@
-import { lazy, startTransition, Suspense, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { lazy, startTransition, Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box,
+  Alert,
   AppBar,
-  Toolbar,
-  Typography,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  Divider,
+  Drawer,
   IconButton,
-  Tabs,
-  Tab,
+  InputAdornment,
+  LinearProgress,
   List,
   ListItemButton,
   ListItemText,
-  Badge,
-  Drawer,
-  Checkbox,
+  Stack,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
+  Tabs,
   TextField,
-  InputAdornment,
-  Button,
-  CircularProgress,
-  Alert,
-  Tooltip,
-  Card,
-  LinearProgress,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SearchIcon from "@mui/icons-material/Search";
-import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import SyncIcon from "@mui/icons-material/Sync";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import HomeIcon from "@mui/icons-material/Home";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import SearchIcon from "@mui/icons-material/Search";
+import SyncIcon from "@mui/icons-material/Sync";
+import TuneIcon from "@mui/icons-material/Tune";
+import { uninstallCommands, uninstallSkills } from "@/api/client";
+import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { StatusChip } from "@/components/common/StatusChip";
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
+import { InstallDialog } from "@/components/dialogs/InstallDialog";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useItemStore } from "@/stores/itemStore";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
-import { uninstallSkills, uninstallCommands } from "@/api/client";
-import { useDebounce } from "@/hooks/useDebounce";
-import { StatusChip } from "@/components/common/StatusChip";
-import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
-import { InstallDialog } from "@/components/dialogs/InstallDialog";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
 
 const DetailDrawer = lazy(() =>
   import("@/components/dialogs/DetailDrawer").then((module) => ({
@@ -73,52 +77,43 @@ const MultiSyncDialog = lazy(() =>
   }))
 );
 
+type TabValue = "skills" | "commands";
+
 export default function MainPage() {
   const { platformId } = useParams<{ platformId: string }>();
   const navigate = useNavigate();
-  const platform = usePlatformStore((s) => s.platforms.find((p) => p.id === platformId));
-  const { fetchPlatforms } = usePlatformStore();
-  const {
-    items, categories, activeTab, search, selectedCategory,
-    selectedNames, loading, error,
-    setTab, setSearch, setCategory, toggleSelection, selectAll,
-    clearSelection, fetchItems, fetchCategories, refresh,
-  } = useItemStore();
-  const { colorMode, toggleColorMode, showNotification } = useUiStore();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const platform = usePlatformStore((state) =>
+    state.platforms.find((entry) => entry.id === platformId)
+  );
+  const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
+  const items = useItemStore((state) => state.items);
+  const categories = useItemStore((state) => state.categories);
+  const activeTab = useItemStore((state) => state.activeTab);
+  const search = useItemStore((state) => state.search);
+  const selectedCategory = useItemStore((state) => state.selectedCategory);
+  const selectedNames = useItemStore((state) => state.selectedNames);
+  const loading = useItemStore((state) => state.loading);
+  const error = useItemStore((state) => state.error);
+  const setTab = useItemStore((state) => state.setTab);
+  const setSearch = useItemStore((state) => state.setSearch);
+  const setCategory = useItemStore((state) => state.setCategory);
+  const toggleSelection = useItemStore((state) => state.toggleSelection);
+  const selectAll = useItemStore((state) => state.selectAll);
+  const clearSelection = useItemStore((state) => state.clearSelection);
+  const fetchItems = useItemStore((state) => state.fetchItems);
+  const fetchCategories = useItemStore((state) => state.fetchCategories);
+  const refresh = useItemStore((state) => state.refresh);
+  const colorMode = useUiStore((state) => state.colorMode);
+  const toggleColorMode = useUiStore((state) => state.toggleColorMode);
+  const showNotification = useUiStore((state) => state.showNotification);
 
   const debouncedSearch = useDebounce(search, 300);
+  const itemType = activeTab === "skills" ? "skill" : "command";
+  const selectedCount = selectedNames.size;
   const navigateDeferred = (to: string) => startTransition(() => navigate(to));
-
-  // Resizable drawer state
-  const [drawerWidth, setDrawerWidth] = useState(() => {
-    const saved = localStorage.getItem("mcsDrawerWidth");
-    return saved ? parseInt(saved, 10) : 240;
-  });
-  const [isResizing, setIsResizing] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem("mcsDrawerWidth", drawerWidth.toString());
-  }, [drawerWidth]);
-
-  useEffect(() => {
-    if (!isResizing) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      let newWidth = e.clientX;
-      if (newWidth < 200) newWidth = 200;
-      if (newWidth > 800) newWidth = 800;
-      setDrawerWidth(newWidth);
-    };
-    const handleMouseUp = () => setIsResizing(false);
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isResizing]);
-
-  // Dialog state
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [detailName, setDetailName] = useState<string | null>(null);
   const [diffName, setDiffName] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<"uninstall" | null>(null);
@@ -127,328 +122,371 @@ export default function MainPage() {
   const [syncOpen, setSyncOpen] = useState(false);
 
   useEffect(() => {
-    fetchPlatforms();
+    void fetchPlatforms();
   }, [fetchPlatforms]);
 
-  useEffect(() => {
-    if (platformId) {
-      fetchCategories(
-        platformId,
-        undefined,
-        activeTab === "skills" ? "skill" : "command"
-      );
-    }
-  }, [platformId, activeTab, fetchCategories]);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     clearSelection();
     setCategory(null);
     setSearch("");
   }, [platformId, clearSelection, setCategory, setSearch]);
 
   useEffect(() => {
-    if (platformId) {
-      fetchItems(platformId);
+    if (!platformId) {
+      return;
     }
+    void fetchCategories(platformId, undefined, itemType);
+  }, [platformId, itemType, fetchCategories]);
+
+  useEffect(() => {
+    if (!platformId) {
+      return;
+    }
+    void fetchItems(platformId);
   }, [platformId, activeTab, debouncedSearch, selectedCategory, fetchItems]);
 
+  useEffect(() => {
+    if (!isMobile) {
+      setFilterDrawerOpen(false);
+    }
+  }, [isMobile]);
+
+  const visibleCategories = useMemo(
+    () => categories.filter((category) => category.item_type === itemType),
+    [categories, itemType]
+  );
+
   const handleUninstall = async () => {
-    if (!platformId || selectedNames.size === 0) return;
+    if (!platformId || selectedCount === 0) {
+      return;
+    }
+
     setConfirmAction(null);
     const names = Array.from(selectedNames);
+
     try {
-      const result = activeTab === "skills"
-        ? await uninstallSkills(platformId, names)
-        : await uninstallCommands(platformId, names);
+      const result =
+        activeTab === "skills"
+          ? await uninstallSkills(platformId, names)
+          : await uninstallCommands(platformId, names);
       showNotification(
         `Uninstalled ${result.success_count} items`,
         result.failure_count > 0 ? "warning" : "success"
       );
       clearSelection();
       await refresh(platformId);
-    } catch (e) {
-      showNotification((e as Error).message, "error");
+    } catch (errorValue) {
+      showNotification((errorValue as Error).message, "error");
     }
   };
-  const showTableLoading = loading && items.length === 0;
+
+  const pageLoading = loading && items.length === 0;
   const showInlineProgress = loading && items.length > 0;
 
   return (
-    <Box sx={{
-      display: "flex",
-      minHeight: "100vh",
-      position: "relative",
-    }}>
-      <AnimatedBackground />
-      {/* AppBar */}
-      <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
+    <Box sx={{ minHeight: "100vh" }}>
+      <AppBar position="fixed">
+        <Toolbar sx={{ gap: 0.5, flexWrap: { xs: "wrap", md: "nowrap" }, alignItems: "center" }}>
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              aria-label="Open filters"
+              onClick={() => setFilterDrawerOpen(true)}
+            >
+              <TuneIcon />
+            </IconButton>
+          )}
+          <IconButton
+            color="inherit"
+            aria-label="Back"
+            onClick={() => navigateDeferred("/")}
+          >
             <ArrowBackIcon />
           </IconButton>
-          <Tooltip title="Home">
-            <IconButton color="inherit" onClick={() => navigateDeferred("/")} sx={{ mr: 1 }}>
-              <HomeIcon />
-            </IconButton>
-          </Tooltip>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+          <IconButton
+            color="inherit"
+            aria-label="Home"
+            onClick={() => navigateDeferred("/")}
+          >
+            <HomeIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
             {platform?.icon} {platform?.name ?? platformId}
           </Typography>
-          <Tooltip title="CLAUDE.md Prompt">
-            <IconButton color="inherit" onClick={() => setPromptOpen(true)}>
-              <DescriptionOutlinedIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Sync to other platforms">
-            <span>
-              <IconButton
-                color="inherit"
-                onClick={() => setSyncOpen(true)}
-                disabled={selectedNames.size === 0}
-              >
-                <SyncIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <IconButton color="inherit" onClick={toggleColorMode}>
+          <IconButton
+            color="inherit"
+            aria-label="Open prompt"
+            onClick={() => setPromptOpen(true)}
+          >
+            <DescriptionOutlinedIcon />
+          </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label="Sync selection"
+            onClick={() => setSyncOpen(true)}
+            disabled={selectedCount === 0}
+          >
+            <SyncIcon />
+          </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label={colorMode === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            onClick={toggleColorMode}
+          >
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar */}
-      <Drawer
-        variant="permanent"
+      {isMobile && (
+        <Drawer
+          anchor="left"
+          open={filterDrawerOpen}
+          onClose={() => setFilterDrawerOpen(false)}
+          PaperProps={{ sx: { width: 300, p: 2 } }}
+        >
+          <FiltersPanel
+            activeTab={activeTab}
+            categories={visibleCategories}
+            selectedCategory={selectedCategory}
+            onTabChange={setTab}
+            onCategoryChange={(value) => {
+              setCategory(value);
+              setFilterDrawerOpen(false);
+            }}
+          />
+        </Drawer>
+      )}
+
+      <Box
+        component="main"
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            overflow: "visible",
-            transition: isResizing ? "none" : "width 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            borderRight: "1px solid",
-            borderColor: "divider",
-          },
+          maxWidth: 1440,
+          mx: "auto",
+          px: { xs: 2, sm: 3 },
+          pt: 11,
+          pb: 4,
+          display: "flex",
+          gap: 3,
+          alignItems: "flex-start",
         }}
       >
-        <Toolbar />
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-          <Tabs
-            value={activeTab}
-            onChange={(_, v) => setTab(v)}
-            variant="fullWidth"
-            sx={{ borderBottom: 1, borderColor: "divider" }}
+        {!isMobile && (
+          <Card sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}>
+            <CardContent sx={{ p: 2 }}>
+              <FiltersPanel
+                activeTab={activeTab}
+                categories={visibleCategories}
+                selectedCategory={selectedCategory}
+                onTabChange={setTab}
+                onCategoryChange={setCategory}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          <Stack
+            direction={{ xs: "column", lg: "row" }}
+            spacing={1.5}
+            alignItems={{ xs: "stretch", lg: "center" }}
+            sx={{ mb: 2 }}
           >
-            <Tab label="Skills" value="skills" />
-            <Tab label="Commands" value="commands" />
-          </Tabs>
-
-          <Box sx={{ flexGrow: 1, overflow: "auto", pb: 2, pt: 1 }}>
-            <List dense disablePadding>
-              <ListItemButton
-                selected={selectedCategory === null}
-                onClick={() => setCategory(null)}
-              >
-                <ListItemText primary={`All ${activeTab === "skills" ? "Skills" : "Commands"}`} />
-                <Badge
-                  badgeContent={categories.filter(c => c.item_type === (activeTab === "skills" ? "skill" : "command")).reduce((sum, c) => sum + c.count, 0)}
-                  color={selectedCategory === null ? "primary" : "default"}
-                  max={999}
-                />
-              </ListItemButton>
-              {categories.filter(c => c.item_type === (activeTab === "skills" ? "skill" : "command")).map((cat) => (
-                <ListItemButton
-                  key={`${activeTab}-${cat.name}`}
-                  selected={selectedCategory === cat.name}
-                  onClick={() => setCategory(cat.name)}
-                >
-                  <ListItemText primary={cat.name} sx={{ pl: 2 }} />
-                  <Badge
-                    badgeContent={cat.count}
-                    color={selectedCategory === cat.name ? "primary" : "default"}
-                    max={999}
-                  />
-                </ListItemButton>
-              ))}
-            </List>
-          </Box>
-        </Box>
-
-        {/* Drag Handle */}
-        <Box
-          onMouseDown={(e) => {
-            e.preventDefault();
-            setIsResizing(true);
-          }}
-          sx={{
-            position: "absolute",
-            top: 0,
-            right: -2,
-            width: 5,
-            height: "100%",
-            cursor: "col-resize",
-            backgroundColor: isResizing ? "primary.main" : "transparent",
-            zIndex: 10,
-            "&:hover": {
-              backgroundColor: "primary.main",
-            },
-            transition: "background-color 0.2s ease",
-          }}
-        />
-      </Drawer>
-
-      {/* Main content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, position: "relative", zIndex: 1 }}>
-        {/* Toolbar */}
-        <Box sx={{ display: "flex", gap: 1, mb: 2, alignItems: "center" }}>
-          <TextField
-            size="small"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              },
-            }}
-            sx={{ minWidth: 240 }}
-          />
-          <Box sx={{ flexGrow: 1 }} />
-          {selectedNames.size > 0 && (
-            <>
-              <Chip label={`${selectedNames.size} selected`} onDelete={clearSelection} />
-              <Tooltip title="Install selected">
-                <Button
-                  variant="contained"
-                  startIcon={<InstallDesktopIcon />}
-                  onClick={() => setInstallOpen(true)}
-                >
-                  Install
-                </Button>
-              </Tooltip>
-              <Tooltip title="Uninstall selected">
+            <TextField
+              label="Search"
+              size="small"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ width: { xs: "100%", lg: 320 } }}
+            />
+            <Box sx={{ flexGrow: 1 }} />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }}>
+              {selectedCount > 0 ? (
+                <>
+                  <Chip label={`${selectedCount} selected`} onDelete={clearSelection} />
+                  <Button
+                    variant="contained"
+                    startIcon={<InstallDesktopIcon />}
+                    onClick={() => setInstallOpen(true)}
+                  >
+                    Install
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteOutlineIcon />}
+                    onClick={() => setConfirmAction("uninstall")}
+                  >
+                    Uninstall
+                  </Button>
+                </>
+              ) : (
                 <Button
                   variant="outlined"
-                  color="error"
-                  startIcon={<DeleteOutlineIcon />}
-                  onClick={() => setConfirmAction("uninstall")}
+                  onClick={selectAll}
+                  disabled={items.length === 0}
                 >
-                  Uninstall
+                  Select All
                 </Button>
-              </Tooltip>
-            </>
-          )}
-          {selectedNames.size === 0 && (
-            <Button size="small" onClick={selectAll}>Select All</Button>
-          )}
-        </Box>
+              )}
+            </Stack>
+          </Stack>
 
-        {/* Error */}
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {showInlineProgress && <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          {showInlineProgress && <LinearProgress sx={{ mb: 2 }} />}
 
-        {/* Loading */}
-        {showTableLoading ? (
-          <Box display="flex" justifyContent="center" py={8}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          /* Item table */
-          <Card elevation={0} sx={{ overflow: "hidden" }}>
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox" />
-                    <TableCell>Name</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {items.map((item, index) => (
-                    <TableRow
-                      key={item.name}
-                      hover
-                      selected={selectedNames.has(item.name)}
-                      sx={{
-                        cursor: "pointer",
-                        animation: `fadeIn 0.3s ease-out ${index * 0.02}s both`,
-                        "@keyframes fadeIn": {
-                          "0%": { opacity: 0, transform: "translateY(10px)" },
-                          "100%": { opacity: 1, transform: "translateY(0)" }
-                        }
-                      }}
-                    >
-                      <TableCell padding="checkbox" onClick={() => toggleSelection(item.name)}>
-                        <Checkbox checked={selectedNames.has(item.name)} />
-                      </TableCell>
-                      <TableCell onClick={() => toggleSelection(item.name)}>
-                        <Typography variant="body2" fontWeight={600} color="primary.main">
-                          {item.name}
+          {pageLoading ? (
+            <Box display="flex" justifyContent="center" py={8}>
+              <CircularProgress />
+            </Box>
+          ) : items.length === 0 ? (
+            <Card>
+              <CardContent sx={{ py: 8, textAlign: "center" }}>
+                <Typography color="text.secondary">No items found</Typography>
+              </CardContent>
+            </Card>
+          ) : isMobile ? (
+            <Stack spacing={1.5}>
+              {items.map((item) => (
+                <Card key={item.name}>
+                  <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                      <Checkbox
+                        checked={selectedNames.has(item.name)}
+                        onChange={() => toggleSelection(item.name)}
+                        inputProps={{ "aria-label": `Select ${item.name}` }}
+                      />
+                      <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                        <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
+                          <Typography variant="subtitle2" sx={{ wordBreak: "break-word" }}>
+                            {item.name}
+                          </Typography>
+                          <StatusChip status={item.status} />
+                          {item.category && (
+                            <Chip size="small" label={item.category} variant="outlined" />
+                          )}
+                        </Stack>
+                        <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                          {item.description || "No description available"}
                         </Typography>
-                      </TableCell>
-                      <TableCell onClick={() => toggleSelection(item.name)}>
-                        <StatusChip status={item.status} />
-                      </TableCell>
-                      <TableCell onClick={() => toggleSelection(item.name)}>
-                        <Chip size="small" label={item.category ?? "—"} variant="outlined" sx={{ borderRadius: 1 }} />
-                      </TableCell>
-                      <TableCell onClick={() => toggleSelection(item.name)}>
-                        <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 300, display: "block" }}>
-                          {item.description ?? ""}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Box sx={{ display: "flex", gap: 0.5, justifyContent: "flex-end" }}>
-                          {activeTab === "skills" && (
-                            <Tooltip title="Detail">
+                      </Box>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1} flexWrap="wrap">
+                      {activeTab === "skills" && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<InfoOutlinedIcon />}
+                          onClick={() => setDetailName(item.name)}
+                        >
+                          Detail
+                        </Button>
+                      )}
+                      {(item.status === "installed" || item.status === "outdated") && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<CompareArrowsIcon />}
+                          onClick={() => setDiffName(item.name)}
+                        >
+                          Diff
+                        </Button>
+                      )}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
+          ) : (
+            <Card>
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell padding="checkbox" />
+                      <TableCell>Name</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Category</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell align="right">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {items.map((item) => (
+                      <TableRow key={item.name} hover selected={selectedNames.has(item.name)}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedNames.has(item.name)}
+                            onChange={() => toggleSelection(item.name)}
+                            inputProps={{ "aria-label": `Select ${item.name}` }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" fontWeight={600} color="primary.main">
+                            {item.name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <StatusChip status={item.status} />
+                        </TableCell>
+                        <TableCell>
+                          <Chip size="small" label={item.category ?? "—"} variant="outlined" />
+                        </TableCell>
+                        <TableCell sx={{ maxWidth: 360 }}>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                          >
+                            {item.description || "No description available"}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                            {activeTab === "skills" && (
                               <IconButton
                                 size="small"
-                                onClick={(e) => { e.stopPropagation(); setDetailName(item.name); }}
+                                aria-label={`View detail for ${item.name}`}
+                                onClick={() => setDetailName(item.name)}
                               >
                                 <InfoOutlinedIcon fontSize="small" />
                               </IconButton>
-                            </Tooltip>
-                          )}
-                          {(item.status === "installed" || item.status === "outdated") && (
-                            <Tooltip title="Diff">
+                            )}
+                            {(item.status === "installed" || item.status === "outdated") && (
                               <IconButton
                                 size="small"
-                                onClick={(e) => { e.stopPropagation(); setDiffName(item.name); }}
+                                aria-label={`Show diff for ${item.name}`}
+                                onClick={() => setDiffName(item.name)}
                               >
                                 <CompareArrowsIcon fontSize="small" />
                               </IconButton>
-                            </Tooltip>
-                          )}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {items.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={6} align="center">
-                        <Typography color="text.secondary" py={4}>
-                          No items found
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Card>
-        )}
+                            )}
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Card>
+          )}
+        </Box>
       </Box>
 
-      {/* Detail Drawer */}
       {platformId && (
         <Suspense fallback={null}>
           <DetailDrawer
@@ -456,12 +494,14 @@ export default function MainPage() {
             platformId={platformId}
             skillName={detailName}
             onClose={() => setDetailName(null)}
-            onShowDiff={(name) => { setDetailName(null); setDiffName(name); }}
+            onShowDiff={(name) => {
+              setDetailName(null);
+              setDiffName(name);
+            }}
           />
         </Suspense>
       )}
 
-      {/* Diff Dialog */}
       {platformId && (
         <Suspense fallback={null}>
           <DiffDialog
@@ -474,7 +514,6 @@ export default function MainPage() {
         </Suspense>
       )}
 
-      {/* Install Dialog */}
       {platformId && (
         <InstallDialog
           open={installOpen}
@@ -494,23 +533,21 @@ export default function MainPage() {
               failureCount > 0 ? "warning" : "success"
             );
             clearSelection();
-            refresh(platformId);
+            void refresh(platformId);
           }}
         />
       )}
 
-      {/* Confirm Uninstall */}
       <ConfirmDialog
         open={confirmAction === "uninstall"}
         title="Uninstall Items"
-        message={`Uninstall ${selectedNames.size} ${activeTab} from ${platform?.name ?? platformId}? This cannot be undone.`}
+        message={`Uninstall ${selectedCount} ${activeTab} from ${platform?.name ?? platformId}? This cannot be undone.`}
         confirmLabel="Uninstall"
         confirmColor="error"
         onConfirm={handleUninstall}
         onCancel={() => setConfirmAction(null)}
       />
 
-      {/* Prompt Dialog */}
       {platformId && (
         <Suspense fallback={null}>
           <PromptDialog
@@ -522,7 +559,6 @@ export default function MainPage() {
         </Suspense>
       )}
 
-      {/* Multi-Sync Dialog */}
       {platformId && (
         <Suspense fallback={null}>
           <MultiSyncDialog
@@ -540,6 +576,58 @@ export default function MainPage() {
       )}
 
       <NotificationSnackbar />
+    </Box>
+  );
+}
+
+function FiltersPanel({
+  activeTab,
+  categories,
+  selectedCategory,
+  onTabChange,
+  onCategoryChange,
+}: {
+  activeTab: TabValue;
+  categories: { name: string; count: number }[];
+  selectedCategory: string | null;
+  onTabChange: (tab: TabValue) => void;
+  onCategoryChange: (category: string | null) => void;
+}) {
+  return (
+    <Box>
+      <Tabs
+        value={activeTab}
+        onChange={(_, value) => onTabChange(value)}
+        variant="fullWidth"
+        sx={{ mb: 2 }}
+      >
+        <Tab label="Skills" value="skills" />
+        <Tab label="Commands" value="commands" />
+      </Tabs>
+
+      <Typography variant="overline" color="text.secondary">
+        Filters
+      </Typography>
+      <List dense disablePadding sx={{ mt: 1 }}>
+        <ListItemButton
+          selected={selectedCategory === null}
+          onClick={() => onCategoryChange(null)}
+        >
+          <ListItemText primary="All" />
+          <Badge badgeContent={categories.reduce((sum, category) => sum + category.count, 0)} color="primary" />
+        </ListItemButton>
+        <Divider sx={{ my: 1 }} />
+        {categories.map((category) => (
+          <ListItemButton
+            key={category.name}
+            selected={selectedCategory === category.name}
+            onClick={() => onCategoryChange(category.name)}
+          >
+            <ListItemText primary={category.name} />
+            <Badge badgeContent={category.count} color={selectedCategory === category.name ? "primary" : "default"} />
+          </ListItemButton>
+        ))}
+      </List>
     </Box>
   );
 }

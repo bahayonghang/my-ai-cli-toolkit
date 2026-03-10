@@ -1,6 +1,8 @@
 export const enDashboardMessages = {
   "dashboard.systemTitle": "System Dashboard",
   "dashboard.unifiedInstallHub": "Unified Install Hub",
+  "dashboard.summaryTitle": "Overview",
+  "dashboard.platformListTitle": "Platforms",
   "dashboard.platforms": "Platforms",
   "dashboard.installedSkills": "Installed Skills",
   "dashboard.cliCommands": "CLI Commands",
@@ -41,6 +43,8 @@ export const zhDashboardMessages: Record<
 > = {
   "dashboard.systemTitle": "系统仪表盘",
   "dashboard.unifiedInstallHub": "统一安装中心",
+  "dashboard.summaryTitle": "概览",
+  "dashboard.platformListTitle": "平台列表",
   "dashboard.platforms": "平台",
   "dashboard.installedSkills": "已安装技能",
   "dashboard.cliCommands": "命令行命令",

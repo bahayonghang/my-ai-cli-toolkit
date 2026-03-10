@@ -184,11 +184,13 @@ export async function installSkills(
   platformId: string,
   names: string[],
   linkMode: "auto" | "symlink" | "copy" = "auto",
-  installTarget?: InstallTarget
+  installTarget?: InstallTarget,
+  signal?: AbortSignal
 ): Promise<BatchResultDto> {
   return postJson(
     `${BASE}/platforms/${platformId}/skills/install`,
-    withInstallTargetBody({ names, link_mode: linkMode }, installTarget)
+    withInstallTargetBody({ names, link_mode: linkMode }, installTarget),
+    { signal }
   );
 }
 
@@ -237,11 +239,13 @@ export async function getCommandDiff(
 export async function installCommands(
   platformId: string,
   names: string[],
-  installTarget?: InstallTarget
+  installTarget?: InstallTarget,
+  signal?: AbortSignal
 ): Promise<BatchResultDto> {
   return postJson(
     `${BASE}/platforms/${platformId}/commands/install`,
-    withInstallTargetBody({ names }, installTarget)
+    withInstallTargetBody({ names }, installTarget),
+    { signal }
   );
 }
 

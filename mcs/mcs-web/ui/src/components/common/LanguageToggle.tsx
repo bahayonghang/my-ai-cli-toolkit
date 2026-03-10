@@ -26,19 +26,21 @@ export function LanguageToggle({ sx }: LanguageToggleProps) {
         size="small"
         onChange={handleLocaleChange}
         aria-label={t("common.languageSwitch")}
+        color="primary"
         sx={{
-          bgcolor: "rgba(0, 0, 0, 0.08)",
+          bgcolor: "action.hover",
+          borderRadius: 999,
           "& .MuiToggleButton-root": {
             border: "none",
-            px: 1,
-            py: 0.25,
+            px: 1.25,
+            py: 0.5,
             color: "inherit",
             fontSize: "0.75rem",
-            fontWeight: 700,
+            fontWeight: 600,
             textTransform: "none",
           },
           "& .Mui-selected": {
-            bgcolor: "rgba(255, 255, 255, 0.2)",
+            bgcolor: "background.paper",
           },
           ...sx,
         }}
