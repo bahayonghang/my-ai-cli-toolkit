@@ -50,6 +50,8 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import HomeIcon from "@mui/icons-material/Home";
+import { getAggregatedStatus } from "@/utils/statusAggregation";
+import { InstallStatusChip } from "@/components/install-hub/InstallStatusChip";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import FolderIcon from "@mui/icons-material/Folder";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
@@ -1563,6 +1565,10 @@ function ExternalInstallPanel({
                         const skillName = toSkillName(item);
                         const key = itemKey(item.method as ExternalInstallMethod, skillName);
                         const isSelected = selectedCatalogKeys.has(key);
+                        const activePlatformStatus = platformId && item.platform_status?.[platformId] != null
+                          ? { [platformId]: item.platform_status[platformId] }
+                          : undefined;
+                        const statusInfo = getAggregatedStatus(activePlatformStatus, t, { emptyDefault: "not_installed" });
 
                         return (
                           <Grid size={{ xs: 12, sm: 6, lg: 6 }} key={item.name}>
@@ -1590,15 +1596,22 @@ function ExternalInstallPanel({
                                   <Typography variant="subtitle2" fontWeight={700} noWrap sx={{ flex: 1, mr: 1 }}>
                                     {item.name}
                                   </Typography>
-                                  {item.category && (
-                                    <Chip
-                                      label={item.category}
-                                      size="small"
-                                      color={isSelected ? "primary" : "default"}
-                                      variant={isSelected ? "filled" : "outlined"}
-                                      sx={{ height: 20, fontSize: "0.65rem", fontWeight: 600 }}
+                                  <Box display="flex" alignItems="center" gap={0.5}>
+                                    {item.category && (
+                                      <Chip
+                                        label={item.category}
+                                        size="small"
+                                        color={isSelected ? "primary" : "default"}
+                                        variant={isSelected ? "filled" : "outlined"}
+                                        sx={{ height: 20, fontSize: "0.65rem", fontWeight: 600 }}
+                                      />
+                                    )}
+                                    <InstallStatusChip
+                                      status={statusInfo.status}
+                                      tooltip={statusInfo.tooltip}
+                                      t={t}
                                     />
-                                  )}
+                                  </Box>
                                 </Box>
                                 <Typography variant="caption" color="text.secondary" sx={{ flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
                                   {item.description || item.repo}

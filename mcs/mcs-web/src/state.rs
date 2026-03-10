@@ -12,7 +12,6 @@ use mcs_core::core::discovery::{
 use mcs_core::core::external_skills::{ExternalSkillEntry, load_external_skills};
 use mcs_core::model::ItemInfo;
 
-use crate::dto::ExternalSkillCatalogDto;
 
 /// Shared application state accessible by all handlers
 #[derive(Clone)]
@@ -103,22 +102,21 @@ impl AppState {
     }
 
     /// Get external skill catalog from TOML registry.
-    pub async fn external_skill_catalog(&self) -> Vec<ExternalSkillCatalogDto> {
+    pub async fn external_skill_catalog(&self) -> Vec<ExternalSkillEntry> {
         {
             let cache = self.cache.read().await;
             if let Some(ref entries) = cache.external_skills {
-                return entries.iter().map(to_external_dto).collect();
+                return entries.clone();
             }
         }
 
         let root = self.project_root().await;
         let entries = load_external_skills(&root);
-        let dtos: Vec<ExternalSkillCatalogDto> = entries.iter().map(to_external_dto).collect();
         let mut cache = self.cache.write().await;
         if cache.external_skills.is_none() {
-            cache.external_skills = Some(entries);
+            cache.external_skills = Some(entries.clone());
         }
-        dtos
+        entries
     }
 
     /// Get cached skills for a platform
@@ -470,16 +468,3 @@ fn normalize_path_key(path: &Path) -> String {
     }
 }
 
-fn to_external_dto(entry: &ExternalSkillEntry) -> ExternalSkillCatalogDto {
-    ExternalSkillCatalogDto {
-        name: entry.name.clone(),
-        repo: entry.repo.clone(),
-        skill_flag: entry.skill_flag.clone(),
-        method: entry.method.clone(),
-        category: entry.category.clone(),
-        description: entry.description.clone(),
-        stars: entry.stars,
-        project_only: entry.project_only,
-        usage: entry.usage.clone(),
-    }
-}

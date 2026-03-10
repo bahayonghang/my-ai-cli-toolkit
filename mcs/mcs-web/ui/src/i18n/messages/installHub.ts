@@ -33,6 +33,19 @@ export const enInstallHubMessages = {
   "installHub.failedPlatformsSuffix":
     "; failed platforms: {platforms}",
   "installHub.failedToInstallItem": "Failed to install {name}",
+  "installHub.statusInstalled": "Installed",
+  "installHub.statusNotInstalled": "Not Installed",
+  "installHub.statusOutdated": "Outdated",
+  "installHub.statusPartial": "Partial",
+  "installHub.installedOnCount": "Installed on {count} platforms",
+  "installHub.tooltipNoPlatformData": "No platform data available",
+  "installHub.tooltipInstalledAll": "Installed on all {count} platforms",
+  "installHub.tooltipOutdatedAll": "Outdated on all {count} platforms",
+  "installHub.tooltipNotInstalledAny": "Not installed on any platform",
+  "installHub.tooltipMixed": "Mixed: {details} across {count} platforms",
+  "installHub.tooltipMixedInstalled": "{count} installed",
+  "installHub.tooltipMixedOutdated": "{count} outdated",
+  "installHub.tooltipMixedNotInstalled": "{count} not installed",
 } as const;
 
 export const zhInstallHubMessages: Record<
@@ -71,4 +84,17 @@ export const zhInstallHubMessages: Record<
     "安装完成：成功 {success}，失败 {failed}{suffix}",
   "installHub.failedPlatformsSuffix": "；失败平台：{platforms}",
   "installHub.failedToInstallItem": "安装 {name} 失败",
+  "installHub.statusInstalled": "已安装",
+  "installHub.statusNotInstalled": "未安装",
+  "installHub.statusOutdated": "需更新",
+  "installHub.statusPartial": "部分安装",
+  "installHub.installedOnCount": "已在 {count} 个平台安装",
+  "installHub.tooltipNoPlatformData": "无平台数据",
+  "installHub.tooltipInstalledAll": "已在全部 {count} 个平台安装",
+  "installHub.tooltipOutdatedAll": "全部 {count} 个平台需更新",
+  "installHub.tooltipNotInstalledAny": "未在任何平台安装",
+  "installHub.tooltipMixed": "混合：{details}，共 {count} 个平台",
+  "installHub.tooltipMixedInstalled": "{count} 已安装",
+  "installHub.tooltipMixedOutdated": "{count} 需更新",
+  "installHub.tooltipMixedNotInstalled": "{count} 未安装",
 };

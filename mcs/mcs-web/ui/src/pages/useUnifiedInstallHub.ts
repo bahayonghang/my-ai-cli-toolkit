@@ -27,6 +27,7 @@ interface Dependencies {
 interface RunnerDependencies {
   platforms: PlatformDisplay[];
   refreshPlatforms: () => Promise<void>;
+  refreshCatalog: () => Promise<void>;
   notify: (message: string, severity?: "success" | "error" | "info" | "warning") => void;
   selectedPlatforms: PlatformSelection;
   selectedSkills: SkillSelection;
@@ -62,6 +63,7 @@ export function useUnifiedInstallHub({
   const runInstall = useInstallRunner({
     platforms,
     refreshPlatforms,
+    refreshCatalog: catalogState.refreshCatalog,
     notify,
     selectedPlatforms: selectionState.selectedPlatforms,
     selectedSkills: selectionState.selectedSkills,
@@ -100,6 +102,10 @@ function useCatalogState(fetchPlatforms: () => Promise<void>) {
     loadCatalog(setCatalog, setCatalogError, setLoadingCatalog);
   }, [fetchPlatforms]);
 
+  const refreshCatalog = useCallback(async () => {
+    await loadCatalog(setCatalog, setCatalogError, setLoadingCatalog);
+  }, []);
+
   return {
     catalog,
     loadingCatalog,
@@ -112,6 +118,7 @@ function useCatalogState(fetchPlatforms: () => Promise<void>) {
     setSearch,
     setSelectedCategory,
     setDefaultOnly,
+    refreshCatalog,
   };
 }
 
@@ -132,6 +139,7 @@ function useSelectionState(platforms: PlatformDisplay[]) {
 function useInstallRunner({
   platforms,
   refreshPlatforms,
+  refreshCatalog,
   notify,
   selectedPlatforms,
   selectedSkills,
@@ -156,10 +164,12 @@ function useInstallRunner({
       totalSteps: totalGroups,
     });
     await refreshPlatforms();
+    await refreshCatalog();
     notifySummary(runResults, notify, t);
   }, [
     platforms,
     refreshPlatforms,
+    refreshCatalog,
     notify,
     selectedPlatforms,
     selectedSkills,

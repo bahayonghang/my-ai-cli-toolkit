@@ -22,6 +22,8 @@ import {
 import type { SkillCatalogDto } from "@/types";
 import type { SkillSelection } from "./types";
 import { useI18n } from "@/i18n";
+import { getAggregatedStatus } from "@/utils/statusAggregation";
+import { InstallStatusChip } from "./InstallStatusChip";
 
 interface Props {
   skills: SkillCatalogDto[];
@@ -205,13 +207,15 @@ interface SkillRowProps {
 
 function SkillRow({ skill, selected, onToggle }: SkillRowProps) {
   const { t } = useI18n();
+  const statusInfo = getAggregatedStatus(skill.platform_status, t);
+
   return (
     <ListItem disablePadding divider>
       <ListItemButton selected={selected} onClick={onToggle}>
         <Checkbox edge="start" checked={selected} tabIndex={-1} />
         <ListItemText
           primary={
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
               <Typography variant="body2" fontWeight={600}>
                 {skill.name}
               </Typography>
@@ -226,6 +230,7 @@ function SkillRow({ skill, selected, onToggle }: SkillRowProps) {
               {skill.category && (
                 <Chip label={skill.category} size="small" variant="outlined" />
               )}
+              <InstallStatusChip status={statusInfo.status} tooltip={statusInfo.tooltip} t={t} />
             </Stack>
           }
           secondary={skill.description ?? t("installHub.noDescription")}

@@ -70,6 +70,8 @@ export interface SkillCatalogDto {
   category: string | null;
   tags: string[];
   is_default: boolean;
+  /** Installation status per platform (platform_id -> status) */
+  platform_status?: Record<string, InstallStatus>;
 }
 
 export interface ItemDetailDto {
@@ -150,6 +152,8 @@ export interface ExternalSkillCatalogDto {
   stars: number | null;
   project_only: boolean;
   usage: string | null;
+  /** Installation status per platform (platform_id -> status) */
+  platform_status?: Record<string, InstallStatus>;
 }
 
 export type ExternalInstallMethod = "vercel" | "playbooks";

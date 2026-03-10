@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -147,6 +149,9 @@ pub struct SkillCatalogDto {
     pub category: Option<String>,
     pub tags: Vec<String>,
     pub is_default: bool,
+    /// Installation status per platform (platform_id -> status)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub platform_status: Option<HashMap<String, InstallStatus>>,
 }
 
 #[derive(Serialize)]
@@ -333,4 +338,7 @@ pub struct ExternalSkillCatalogDto {
     pub stars: Option<u8>,
     pub project_only: bool,
     pub usage: Option<String>,
+    /// Installation status per platform (platform_id -> status)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub platform_status: Option<HashMap<String, InstallStatus>>,
 }
