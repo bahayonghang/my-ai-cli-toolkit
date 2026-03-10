@@ -18,7 +18,7 @@ rustc_cmd := "rustc"
 # ============ 跨平台执行指令 ============
 
 kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; exit 0\"" } else { "pkill -x mcs-web || true" }
-kill_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { Stop-Process -Id $p.OwningProcess -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "lsof -t -i:13242 | xargs kill -9 || true" }
+kill_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { Stop-Process -Id $p.OwningProcess -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:13242 2>/dev/null)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
 
 # 默认任务：交互式选择
 default:
@@ -143,11 +143,11 @@ mcs-web-server:
     cd {{ mcs_dir }}; {{ cargo_cmd }} run --bin mcs-web
 
 # 启动 MCS Web UI 开发服务器
-mcs-web-dev: mcs-web-install
+mcs-web-dev:
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev
 
 # 同时启动 MCS Web UI 和后端开发服务器
-mcs-web-dev-all: mcs-web-install
+mcs-web-dev-all:
     @{{ kill_backend_cmd }}
     @echo "Checking whether port 13242 is occupied by mcs-web..."
     @{{ kill_port_cmd }}
