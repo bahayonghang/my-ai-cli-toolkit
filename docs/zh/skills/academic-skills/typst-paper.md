@@ -23,11 +23,11 @@ Typst 学术论文助手，支持中英文论文的模块化工作流。
 ## 安装
 
 ```bash
-# 安装技能
-uv run python src/install.py install typst-paper
+# 方式 1：通过 MCS 浏览并安装
+just mcs
 
-# 或安装所有技能
-uv run python src/install.py install-all
+# 方式 2：直接安装一方技能目录
+npx skills add bahayonghang/my-claude-code-settings/content/skills
 ```
 
 ## 前置要求

@@ -1,99 +1,74 @@
 # 创建技能
 
-## 技能结构
+## 仓库布局
 
-最简单的技能只需要一个 `SKILL.md` 文件：
+新增一方技能时，请放在：
 
-```
-skills/
-└── my-skill/
-    └── SKILL.md
+```text
+content/skills/<category>/<skill-name>/
 ```
 
-复杂技能可以包含额外目录：
+例如：
 
-```
-skills/
-└── my-skill/
-    ├── SKILL.md        # 必需
-    ├── config/         # 配置模板
-    ├── tips/           # 使用提示
-    ├── references/     # 技术参考
-    ├── scripts/        # 辅助脚本
-    └── cookbook/       # 代码示例
+```text
+content/skills/workflow-skills/my-skill/
+└── SKILL.md
 ```
 
-## SKILL.md 格式
+## 推荐目录结构
 
-每个 `SKILL.md` 必须包含 YAML frontmatter：
+```text
+content/skills/<category>/<skill-name>/
+├── SKILL.md
+├── references/
+├── scripts/
+├── assets/
+├── docs/
+└── tests/
+```
+
+只有 `SKILL.md` 是必需的。新增子目录之前，优先复用同类技能已有模式。
+
+## 推荐 frontmatter
+
+`mcs-core` 当前会解析顶层 frontmatter 字段，例如：
+
+- `name`
+- `description`
+- `category`
+- `tags`
+- `version`
+
+推荐示例：
 
 ```yaml
 ---
 name: my-skill
-description: 用于列表展示的简短描述
-license: MIT  # 可选
+description: 在 MCS 和 docs 中展示的简短描述。
+category: workflow
+tags: [planning, automation]
+version: 0.1.0
 ---
-
-# My Skill
-
-详细说明和文档...
 ```
 
-## 编写有效的技能
+## 编写建议
 
-### 具体明确
+- 主体内容保持命令式、面向执行
+- 优先使用本地 references / scripts，而不是把长教程直接塞进 `SKILL.md`
+- 技能内部路径统一使用 `$SKILL_DIR`
+- 明确触发条件和边界
 
-提供清晰、可操作的指令：
+## 验证流程
 
-```markdown
-## 工作流程
+发布新技能前，至少完成以下步骤：
 
-1. 分析用户需求
-2. 生成初始设计
-3. 根据反馈迭代
-4. 输出最终结果
-```
+1. 放入正确的 `content/skills/` 分类目录
+2. 确认 `SKILL.md` 可被 MCS 正常读取 metadata
+3. 通过 `just mcs` 浏览该技能
+4. 在 `docs/skills/<category>/<skill-name>.md` 新增或更新英文页面
+5. 在 `docs/zh/skills/...` 新增或更新中文页面
 
-### 包含示例
+## 补充说明
 
-展示预期的输入和输出：
-
-```markdown
-## 示例
-
-**输入：** "创建一个登录表单"
-
-**输出：** 一个响应式登录表单，包含邮箱/密码字段、
-验证和提交按钮。
-```
-
-### 定义约束
-
-设置清晰的边界：
-
-```markdown
-## 约束
-
-- 输出必须是有效的 HTML5
-- 使用语义化元素
-- 确保 WCAG 2.1 AA 合规
-```
-
-## 测试技能
-
-1. 安装技能：
-   ```bash
-   ./install.sh install my-skill
-   ```
-
-2. 在 Claude Code 中调用技能进行测试
-
-3. 根据结果迭代 `SKILL.md`
-
-## 最佳实践
-
-- 保持技能专注于单一领域
-- 使用清晰简洁的语言
-- 包含实用示例
-- 记录任何前置要求
-- 遵循现有技能的模式以保持一致性
+- 文档站点不会把技能内部所有 reference 文件逐个镜像成页面。重点是文档化“技能本身”，并说明关键支撑资源。
+- 如果某个技能只用于本地实验或尚未准备公开展示，不要过早加入公开 docs catalog。

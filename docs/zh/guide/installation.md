@@ -3,169 +3,98 @@
 ## 前置要求
 
 - Git
-- Python 3.6+
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Amp](https://ampcode.com/), [Cline](https://cline.bot/), [Codex CLI](https://github.com/openai/codex), [Cursor](https://cursor.com/), [Gemini CLI](https://geminicli.com), [GitHub Copilot](https://github.com/features/copilot), [Kimi Code](https://www.moonshot.cn/), [Qwen Code](https://qwenlm.github.io/qwen-code-docs/), [Google Antigravity](https://antigravity.google/), [Windsurf](https://windsurf.com/), [Trae](https://www.trae.ai/), 或 [OpenCode](https://opencode.ai/)
+- Rust 工具链（`cargo`），用于 `mcs/`
+- Node.js + npm，用于文档站点和 `mcs-web/ui`
+- 可选：如果只想直接安装技能目录，可使用 `npx`
 
 ## 克隆仓库
 
 ```bash
-git clone https://github.com/anthropics/my-claude-skills.git
-cd my-claude-skills
+git clone https://github.com/bahayonghang/my-claude-code-settings.git
+cd my-claude-code-settings
 ```
 
-## 基础用法
+## 主要使用方式
 
-### 安装所有技能
-
-```bash
-# 默认目标是 Claude
-uv run python src/install.py install-all
-```
-
-### 安装到指定目标
-
-```bash
-# 安装到 Gemini
-uv run python src/install.py --target gemini install-all
-
-# 安装到 Codex
-uv run python src/install.py --target codex install-all
-
-# 安装到 Qwen
-uv run python src/install.py --target qwen install-all
-
-# 安装到 Antigravity
-uv run python src/install.py --target antigravity install-all
-
-# 安装到 Windsurf
-uv run python src/install.py --target windsurf install-all
-
-# 安装到 OpenCode
-uv run python src/install.py --target opencode install-all
-```
-
-### 更新全局提示词
-
-```bash
-uv run python src/install.py prompt-update
-```
-
-### 交互模式
-
-```bash
-uv run python src/install.py interactive
-```
-
-## 快速安装 (Claude Code)
-
-将所有技能直接安装到 Claude Code 最快的方法是使用 `npx`：
-
-```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
-```
-
-## TUI 模式 (推荐)
-
-如需现代化可视化体验，推荐使用 Rust MCS TUI：
+### 1. 启动终端界面
 
 ```bash
 just mcs
 ```
 
-### 功能特性
+该命令会构建并运行 Rust workspace 中的 `mcs-tui`。
 
-- 🎯 可视化平台选择 (Claude/Codex/Gemini/Qwen/Antigravity/Windsurf/OpenCode)
-- 🧱 双栏主界面（侧栏分类 + 列表）
-- 🔄 递归目录级更新检测
-- ✅ 批量任务队列（含进度与通知）
-- 🔍 实时搜索与状态过滤
-- 📁 支持嵌套目录命令（如 `zcf/git-commit`）
-
-### 键盘快捷键
-
-| 按键 | 功能 |
-|------|------|
-| `1` / `2` | 切换 Skills/Commands |
-| `Tab` | 在侧栏和列表之间切换焦点 |
-| `i` / `Enter` | 安装选中项 / 当前聚焦项 |
-| `u` / `x` | 卸载当前项 / 选中项 |
-| `U` | 更新当前标签页过期项 |
-| `S` | 打开多平台同步弹窗 |
-| `Space` | 切换选择状态 |
-| `a` | 全选/清空 |
-| `/` | 搜索 |
-| `Esc` | 返回/关闭弹窗 |
-| `q` | 退出程序 |
-
-兼容旧命令：
+### 2. 启动 Web 应用
 
 ```bash
-uv run python src/install_tui.py
+just web
 ```
 
-上述命令现会自动转发到 MCS。
+该命令会同时启动 Axum 后端（`mcs-web`）和 React 前端。
 
-### 依赖要求
-
-- 需要 Rust 工具链（`cargo`）
-- Python 仍用于 CLI 安装脚本（`src/install.py`）
-
-## 验证安装
-
-检查已安装的技能：
+### 3. 本地浏览文档站点
 
 ```bash
-uv run python src/install.py installed
+just doc
 ```
 
-## 安装路径
+### 4. 只安装 skills catalog
 
-| 目标 | Skills 路径 | Commands/Workflows 路径 |
-|------|-------------|-------------------------|
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
+当你只需要技能目录，不需要仓库级 MCS 工具链时，这是最快的路径。
+
+## 平台路径
+
+权威平台路径定义在 `platforms.toml` 中，并与 `mcs-core` 内置默认值合并。
+
+### 共享技能目录平台
+
+下列平台会把 skills 安装到共享目录 `~/.agents/skills/`：
+
+- Amp
+- Cline
+- Codex
+- Cursor
+- Gemini
+- GitHub Copilot
+- Kimi
+- OpenCode
+
+它们的 commands / workflows 仍然使用各自平台目录。
+
+### 平台路径总览
+
+| 平台 | Skills 路径 | Commands / Workflows 路径 |
+|------|-------------|---------------------------|
 | Claude | `~/.claude/skills/` | `~/.claude/commands/` |
-| Amp | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
-| Cline | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
 | Codex | `~/.agents/skills/` | `~/.codex/prompts/` |
-| Cursor | `~/.agents/skills/` | `~/.cursor/commands/` |
 | Gemini | `~/.agents/skills/` | `~/.agents/commands/` |
-| GitHub Copilot | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
-| Kimi Code CLI | `~/.agents/skills/` | 不适用（MCS 仅管理 Skills） |
-| OpenCode | `~/.agents/skills/` | `~/.config/opencode/commands/` |
 | Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
+| Kiro | `~/.kiro/skills/` | `~/.kiro/steering/` |
+| Qoder | `~/.qoder/skills/` | `~/.qoder/commands/` |
+| Trae | `~/.trae/skills/` | `~/.trae/commands/` |
+| Trae CN | `~/.trae-cn/skills/` | `~/.trae-cn/commands/` |
+| OpenCode | `~/.agents/skills/` | `~/.config/opencode/commands/` |
+| iFlow | `~/.iflow/skills/` | `~/.iflow/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
-| Trae | `~/.trae/skills/` | `~/.trae/commands/` |
 
-### Universal 旧目录（仅告警，不自动迁移）
+## 项目根检测
 
-- MCS 启动时会检测 Universal 平台的历史 skills 目录并告警。
-- MCS 不会自动迁移这些历史目录。
-- 常见历史目录：
-  - `~/.codex/skills/`
-  - `~/.cursor/skills/`
-  - `~/.copilot/skills/`
-  - `~/.kimi/skills/`
-  - `~/.amp/skills/`
-  - `~/.cline/skills/`
-  - `~/.config/opencode/skills/`
+`mcs-core` 会向上查找，直到发现 `content/skills/`，再把该目录识别为项目根目录。因此：
 
-手动迁移示例：
+- 当前仓库模型是 `content/skills/`，不是顶层 `skills/`
+- 推荐始终在仓库根目录运行 `just mcs` 或 `just web`
 
-```bash
-mkdir -p ~/.agents/skills
-cp -R ~/.codex/skills/* ~/.agents/skills/
-cp -R ~/.cursor/skills/* ~/.agents/skills/
-```
+## 技能存储模型
 
-### MCS 技能存储模型
+MCS 会在 `~/.mcs/skills/` 中维护 canonical skill store：
 
-- MCS 会将每个已安装技能的 canonical 副本存储在 `~/.mcs/skills/`。
-- 默认采用 symlink 安装：平台目录中的 skills 指向 canonical 副本。
-- 若 symlink 创建不可用（例如 Windows 权限限制），MCS 会自动回退为 copy 安装。
+- 优先使用 symlink 安装
+- 自动回退到 copy 安装
+- 一次性迁移元数据写入 `~/.mcs/migrations/`
 
-### 一次性迁移
-
-- 升级后首次启动，MCS 会执行一次性迁移：将历史“直接复制安装”转换为“canonical + symlink”模型。
-- 迁移标记文件位于 `~/.mcs/migrations/`：
-  - `skills-symlink-v1.done`
-  - `skills-symlink-v1.lock`
+具体操作见 [MCS TUI](/zh/guide/mcs)，实现细节见 [MCS 架构](/zh/guide/mcs-architecture)。

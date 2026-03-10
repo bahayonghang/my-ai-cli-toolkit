@@ -1,46 +1,103 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
-export function generateSidebarByDir(dir) {
-    const items = []
+const CATEGORY_LABELS: Record<string, string> = {
+  'academic-skills': 'Academic',
+  'ai-llm-skills': 'AI & LLM',
+  'diagram-skills': 'Diagram',
+  'document-skills': 'Document',
+  'git-github-skills': 'Git & GitHub',
+  'media-skills': 'Media',
+  'skill-meta-skills': 'Skill Meta',
+  'tech-stack-skills': 'Tech Stack',
+  'workflow-skills': 'Workflow',
+}
 
-    // Try to push an Overview link if index.md exists
-    const overviewPath = path.join(dir, 'index.md')
-    if (fs.existsSync(overviewPath)) {
-        items.push({ text: 'Overview', link: `/${path.relative('docs', dir).replace(/\\/g, '/')}/` })
+function contentSkillsRoot() {
+  return path.resolve(process.cwd(), '../content/skills')
+}
+
+function readSourceCategories() {
+  const root = contentSkillsRoot()
+  if (!fs.existsSync(root)) {
+    return []
+  }
+
+  return fs
+    .readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+    .map((entry) => entry.name)
+    .sort()
+}
+
+function readSourceSkills(category: string) {
+  const categoryDir = path.join(contentSkillsRoot(), category)
+  if (!fs.existsSync(categoryDir)) {
+    return new Set<string>()
+  }
+
+  return new Set(
+    fs
+      .readdirSync(categoryDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+      .map((entry) => entry.name),
+  )
+}
+
+function formatCategory(category: string) {
+  return CATEGORY_LABELS[category] ?? category
+}
+
+export function generateSidebarByDir(dir: string, basePath = '/skills/') {
+  const items: Array<Record<string, unknown>> = []
+  const overviewPath = path.join(dir, 'index.md')
+
+  if (fs.existsSync(overviewPath)) {
+    items.push({ text: 'Overview', link: basePath })
+  }
+
+  for (const category of readSourceCategories()) {
+    const docsCategoryDir = path.join(dir, category)
+    if (!fs.existsSync(docsCategoryDir)) {
+      continue
     }
 
-    const entries = fs.readdirSync(dir, { withFileTypes: true })
-
-    for (const entry of entries) {
-        if (entry.isDirectory() && entry.name !== 'node_modules' && !entry.name.startsWith('.')) {
-            const subDir = path.join(dir, entry.name)
-            const subEntries = fs.readdirSync(subDir, { withFileTypes: true })
-
-            const subItems = []
-            for (const subEntry of subEntries) {
-                if (subEntry.isFile() && subEntry.name.endsWith('.md') && subEntry.name !== 'index.md') {
-                    const nameWithoutExt = path.basename(subEntry.name, '.md')
-                    const link = `/${path.relative('docs', path.join(subDir, nameWithoutExt)).replace(/\\/g, '/')}`
-                    subItems.push({ text: nameWithoutExt, link })
-                }
-            }
-
-            if (subItems.length > 0) {
-                // format title nicely: "ai-and-llm" -> "Ai And Llm" (or customize as needed)
-                const formatTitle = (str) => {
-                    return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-                        .replace('And', '&').replace('Llm', 'LLM');
-                }
-
-                items.push({
-                    text: formatTitle(entry.name),
-                    collapsed: false,
-                    items: subItems
-                })
-            }
+    const sourceSkills = readSourceSkills(category)
+    const subItems = fs
+      .readdirSync(docsCategoryDir, { withFileTypes: true })
+      .filter((entry) => {
+        if (!entry.isFile()) {
+          return false
         }
+
+        if (!entry.name.endsWith('.md') || entry.name === 'index.md') {
+          return false
+        }
+
+        const skillName = path.basename(entry.name, '.md')
+        return sourceSkills.has(skillName)
+      })
+      .map((entry) => {
+        const skillName = path.basename(entry.name, '.md')
+        return {
+          text: skillName,
+          link: `${basePath}${category}/${skillName}`,
+        }
+      })
+      .sort((left, right) =>
+        String(left.text).localeCompare(String(right.text), 'en'),
+      )
+
+    if (subItems.length === 0) {
+      continue
     }
 
-    return [{ text: 'Skills', items }]
+    items.push({
+      text: formatCategory(category),
+      collapsed: false,
+      items: subItems,
+    })
+  }
+
+  return [{ text: 'Skills', items }]
 }

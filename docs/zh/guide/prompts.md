@@ -1,52 +1,18 @@
-# 提示词
+# 提示词（兼容页）
 
-`prompts/` 目录包含增强 Claude Code 行为的全局配置文件。
+当前仓库已经不再把顶层 `prompts/` 目录作为主要 runtime 模型。
 
-## CLAUDE.md
+请改看这些页面：
 
-基于工程最佳实践的全局工作流配置。
+- [运行时文件](/zh/guide/runtime-files)
+- [MCS TUI](/zh/guide/mcs)
+- [MCS 架构](/zh/guide/mcs-architecture)
 
-### 核心原则
+## 当前实际情况
 
-- **KISS/YAGNI** - 保持简单，避免过度工程
-- **结构化工作流** - 系统化的任务处理方法
-- **自我反思** - 交付前验证
+- 仓库贡献者说明位于根目录 `CLAUDE.md`
+- 运行时 hook 资源位于 `content/hooks/`
+- 平台相关 memory / prompt 文件位于 `content/memorys/`
+- prompt diff / update 逻辑位于 `mcs-core`
 
-### 工作流阶段
-
-1. **接收** - 理解请求
-2. **上下文** - 收集相关信息
-3. **探索** - 调查选项
-4. **规划** - 设计解决方案
-5. **执行** - 实现解决方案
-6. **验证** - 验证结果
-7. **交付** - 带文档交付
-
-### 安装
-
-同步到全局配置：
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh prompt-update
-```
-```powershell [Windows]
-.\install.ps1 prompt-update
-```
-:::
-
-这会将 `prompts/CLAUDE.md` 复制到 `~/.claude/CLAUDE.md`。
-
-## TRANSLATE.md
-
-技术内容翻译指南。
-
-### 原则
-
-- **自然表达** - 优先考虑可读性而非逐字翻译
-- **保留技术术语** - 保留代码、品牌名和通用术语
-- **标注歧义** - 对不明确的术语添加注释
-
-### 用法
-
-翻译技术文档时参考此文件以保持一致性和质量。
+本页仅用于兼容旧链接。

@@ -1,70 +1,60 @@
 # Introduction
 
-AI Skills Hub is a cross-platform resource manager for AI CLI tools, providing unified skills, commands, and prompts for Claude Code, Codex CLI, Gemini CLI, Qwen Code, and more.
+This site documents the current repository shape of [`my-claude-code-settings`](https://github.com/bahayonghang/my-claude-code-settings), not the older template project layout that some historical pages still referenced.
 
-## What are Skills?
+## What lives in this repository
 
-Skills are reusable AI instruction modules that enhance Claude Code's capabilities in specific domains. Each skill is defined in a `SKILL.md` file with:
+- `content/skills/` contains installable skill directories, organized by category.
+- `content/commands/` contains slash-command and workflow sources for different platforms.
+- `content/agents/` contains markdown agent definitions grouped into `ccw` and `specialist`.
+- `content/external-skills/` contains the external skill registry and installer tooling.
+- `content/hooks/` and `content/memorys/` contain runtime support files.
+- `mcs/` is a Rust workspace with a shared core library, a terminal UI, and a web app.
 
-- Clear instructions for the AI
-- Domain-specific knowledge
-- Best practices and patterns
-- Optional supporting files (configs, tips, references)
+## Recommended entrypoints
 
-## Core Features
-
-- **Modular Design** - Each skill is self-contained and focused on a specific task
-- **Easy Installation** - Simple CLI commands or modern TUI interface
-- **Update Detection** - Automatically detect outdated installations
-- **Cross-Platform** - Works on Linux, macOS, and Windows
-- **Multi-Target** - Supports Claude Code, Codex CLI, Gemini, Qwen, Antigravity, and Windsurf
-- **Chinese Support** - Full support for Chinese characters in TUI
-
-## Installation Methods
-
-### TUI (Recommended)
-
-Modern terminal interface with visual feedback and update detection:
+### Use MCS TUI
 
 ```bash
 just mcs
 ```
 
-Features:
-- 🧭 Platform select + two-column main layout
-- 🔄 Outdated detection (skills + commands)
-- ⌨️ Keyboard-first workflow with popup navigation
-- 🔁 Compatibility wrapper for legacy `install_tui.py`
+- Best for browsing installed vs source content.
+- Supports platform switching, diff view, batch install/uninstall, and multi-sync.
 
-[Learn more about TUI →](/guide/tui)
+[Open the TUI guide →](/guide/mcs)
 
-### CLI
-
-Traditional command-line interface:
+### Use MCS Web
 
 ```bash
-uv run python src/install.py install-all
+just web
 ```
 
-[Learn more about CLI →](/guide/installation)
+- Runs the Axum backend and React UI together for a browser-based workflow.
+- Best for richer detail drawers, install target dialogs, and catalog browsing.
 
-## Available Skills
+[Open the MCS Web guide →](/guide/mcs-web)
 
-| Skill | Description |
-|-------|-------------|
-| article-cover | Generate professional SVG cover images |
-| codex | Codex CLI integration for code analysis |
-| excalidraw | Create hand-drawn style diagrams |
-| frontend-design | Build production-grade frontend interfaces |
-| gemini-image | AI image generation via Gemini API |
-| research | Technical research with citations |
-| interview-plan | Socratic interview to refine requirements and generate executable plan |
-| tech-blog | Write technical blog posts |
-| tech-design-doc | Generate technical design documents |
+### Install the skill catalog directly
 
-## Next Steps
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
 
-- [TUI Guide](/guide/tui) - Modern terminal interface (recommended)
-- [Installation](/guide/installation) - Set up AI Skills Hub
-- [Commands](/guide/commands) - Learn available CLI commands
-- [Creating Skills](/guide/creating-skills) - Build your own skills
+- Fast path when you only need the skills catalog.
+- Does not replace the repository-level MCS tooling or command catalogs.
+
+## Documentation map
+
+- [Installation](/guide/installation): clone, run, build, and supported platform paths
+- [MCS TUI](/guide/mcs): keyboard flow, install model, migration, troubleshooting
+- [MCS Web](/guide/mcs-web): backend/UI startup, pages, install flows
+- [MCS Architecture](/guide/mcs-architecture): `mcs-core`, `mcs-tui`, `mcs-web`
+- [Commands](/guide/commands): how `content/commands` maps to installed command locations
+- [Runtime Files](/guide/runtime-files): hooks, memory/runtime files, prompt-related assets
+- [External Skills](/guide/external-skills): registry format and install flow for third-party skills
+- [Creating Skills](/guide/creating-skills): adding new `content/skills/<category>/<skill-name>/`
+
+## Notes on legacy pages
+
+Some historical pages used older names such as `my-claude-skills`, `skills/`, `install.sh`, `install.ps1`, or `src/install.py`. Those references are no longer the source of truth for this repository. Where compatibility pages remain, they now redirect readers to the current model.

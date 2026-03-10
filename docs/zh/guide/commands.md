@@ -1,126 +1,63 @@
-# 命令
+# 命令系统
 
-## 概览
+## 源目录结构
 
-`install.sh` (Bash) 和 `install.ps1` (PowerShell) 支持相同的命令。
+命令源文件位于 `content/commands/`，先按平台分组，再按命令家族分层。
 
-## 技能管理
+当前顶层目录包括：
 
-### 列出可用技能
+- `antigravity/`
+- `claude/`
+- `gemini/`
+- `trae/`
+- `windsurf/`
 
-显示仓库中所有技能及其安装状态。
+这些目录下又继续按命令家族拆分，例如：
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh list
-```
-```powershell [Windows]
-.\install.ps1 list
-```
-:::
+- `claude/cc/`
+- `claude/gh/`
+- `claude/issue/`
+- `claude/kiro/`
+- `claude/memory/`
+- `claude/task/`
+- `claude/workflow/`
+- `claude/zcf/`
+- `gemini/plan/`
+- `gemini/zcf/`
 
-### 列出已安装技能
+## 安装模型
 
-显示当前已安装的技能及其来源。
+并不是每一个安装目标平台都要在 `content/commands/` 里拥有同名源目录。
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh installed
-```
-```powershell [Windows]
-.\install.ps1 installed
-```
-:::
+MCS 根据平台配置读取：
 
-### 安装指定技能
+- `commands_source`
+- 可选的 `fallback_commands_source`
 
-按名称安装一个或多个技能。
+`platforms.toml` 中的典型例子：
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh install codex frontend-design
-```
-```powershell [Windows]
-.\install.ps1 install codex frontend-design
-```
-:::
+- Codex 使用 `commands_source = "codex"`，并回退到 `claude`
+- Qwen 回退到 `claude`
+- Trae CN 复用 `trae`
+- Antigravity、Windsurf 这类 app 型平台安装到 `workflows/`
 
-### 安装所有技能
+## 命令最终安装到哪里
 
-一次性安装所有可用技能。
+| 平台类型 | 安装目录 |
+|----------|----------|
+| Claude 类 CLI | `commands/` |
+| Codex | `prompts/` |
+| Kiro | `steering/` |
+| Antigravity / Windsurf | `workflows/` |
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh install-all
-```
-```powershell [Windows]
-.\install.ps1 install-all
-```
-:::
+精确的每个平台路径见 [安装](/zh/guide/installation)，权威配置以 `platforms.toml` 为准。
 
-### 交互模式
+## 推荐使用方式
 
-从编号列表中交互式选择技能。
+- 用 `just mcs` 管理终端工作流
+- 用 `just web` 管理浏览器工作流
+- 在 [/zh/commands/](/zh/commands/) 查看当前仓库实际提供的命令目录
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh interactive
-```
-```powershell [Windows]
-.\install.ps1 interactive
-```
-:::
+## 历史说明
 
-## 提示词管理
-
-### 显示提示词差异
-
-比较本地 `CLAUDE.md` 与全局版本。
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh prompt-diff
-```
-```powershell [Windows]
-.\install.ps1 prompt-diff
-```
-:::
-
-### 更新全局提示词
-
-同步本地 `CLAUDE.md` 到 `~/.claude/CLAUDE.md`。会创建带时间戳的备份。
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh prompt-update
-```
-```powershell [Windows]
-.\install.ps1 prompt-update
-```
-:::
-
-## 目标选择
-
-使用 `--target` (Bash) 或 `-Target` (PowerShell) 在 Claude 和 Codex 之间切换。
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh --target=codex list
-./install.sh --target=codex install-all
-```
-```powershell [Windows]
-.\install.ps1 -Target codex list
-.\install.ps1 -Target codex install-all
-```
-:::
-
-## 帮助
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh help
-```
-```powershell [Windows]
-.\install.ps1 help
-```
-:::
+旧文档里曾把 `install.sh`、`install.ps1`、`src/install.py` 当作主要命令安装入口。对当前仓库来说，这已经不是主路径。当前维护的工作流是 `mcs/` workspace 加上 `content/commands/` 源目录本身。

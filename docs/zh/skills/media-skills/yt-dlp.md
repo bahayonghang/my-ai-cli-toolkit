@@ -16,8 +16,10 @@
 ## 快速开始
 
 ```bash
-# 安装技能
-uv run python src/install.py install yt-dlp
+# 先通过 MCS 或一方技能目录安装仓库中的技能 catalog
+just mcs
+# 或
+npx skills add bahayonghang/my-claude-code-settings/content/skills
 
 # 基础用法
 yt-dlp "https://www.youtube.com/watch?v=VIDEO_ID"

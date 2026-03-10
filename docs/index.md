@@ -1,34 +1,34 @@
 ---
 layout: home
 hero:
-  name: AI Skills Hub
-  text: Cross-Platform AI CLI Resource Manager
-  tagline: Unified skills, commands, and prompts for Claude, Codex, Gemini, Qwen, and more
+  name: My Claude Code Settings
+  text: Cross-Platform AI Content + MCS Workspace
+  tagline: Skills, commands, runtime files, and a Rust TUI/Web manager built around the repository's real `content/` and `mcs/` layout.
   actions:
     - theme: brand
       text: Get Started
       link: /guide/
     - theme: alt
-      text: View Skills
+      text: Browse Skills
       link: /skills/
     - theme: alt
-      text: Commands
-      link: /commands/
+      text: MCS Docs
+      link: /guide/mcs
     - theme: alt
       text: GitHub
-      link: https://github.com/anthropics/my-claude-skills
+      link: https://github.com/bahayonghang/my-claude-code-settings
 
 features:
-  - icon: 🎯
-    title: Reusable Skills
-    details: Modular AI skill modules covering frontend design, research, documentation, and more.
-  - icon: ⚡
-    title: Slash Commands
-    details: Quick access to common workflows like git commit with Conventional Commits support.
-  - icon: 📦
-    title: Unified Format
-    details: Consistent SKILL.md format for easy extension and maintenance.
-  - icon: 🔄
-    title: Cross-Platform
-    details: Single Python installation script (`src/install.py`) powered by uv, works everywhere.
+  - icon: 🧭
+    title: Repository-Aligned Docs
+    details: The docs track the current `content/skills`, `content/commands`, `content/agents`, `content/external-skills`, `content/hooks`, `content/memorys`, and `mcs/` workspace layout.
+  - icon: 🦀
+    title: MCS TUI + Web
+    details: Learn how `mcs-core`, `mcs-tui`, and `mcs-web` work together to discover, install, diff, and sync repository content.
+  - icon: 📚
+    title: Skills Catalog
+    details: Skill pages focus on the installable items under `content/skills` rather than older template-only or drifted documentation.
+  - icon: 🔌
+    title: Runtime + External Content
+    details: The guide also covers hooks, memory/runtime files, and the external-skills registry used alongside the main catalog.
 ---

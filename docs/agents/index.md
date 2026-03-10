@@ -1,31 +1,20 @@
 # Agents Overview
 
-Specialized AI agents that excel in their domain, delivering focused and high-quality results.
+The source of truth for agents in this repository is `content/agents/`.
 
-## Agent Roster
+## Current families
 
-| Agent | Role | Best For | Description |
-|-------|------|----------|-------------|
-| [@frontend-engineer](./frontend-engineer) | UI Expert | Beautiful interfaces | UI/UX design and development expert for polished interfaces |
-| [@document-writer](./document-writer) | Writer | Technical docs | Technical documentation expert for README, API docs, and guides |
+| Family | Location | Purpose |
+|--------|----------|---------|
+| `ccw` | `content/agents/ccw/` | Workflow-oriented agents for planning, exploration, execution, testing, docs, and task orchestration |
+| `specialist` | `content/agents/specialist/` | Narrow domain experts such as CSS, Python, deployment, performance, and spec roles |
 
-## Quick Start
+## Start here
 
-Call agents directly for specific needs:
+- [CCW Family](/agents/ccw)
+- [Specialist Family](/agents/specialist)
 
-```
-@frontend-engineer Create a subscription form with animations
+## Notes
 
-@document-writer Write API documentation for the user service
-```
-
-## Choosing the Right Agent
-
-| Need | Agent |
-|------|-------|
-| "Build this UI component" | @frontend-engineer |
-| "Write documentation for X" | @document-writer |
-
-## See Also
-
-- [Skills](/skills/) - Individual skill definitions
+- Earlier docs described named agents such as `@sisyphus`, `@oracle`, or `@frontend-engineer`. Those were part of an older agent surface and are no longer the current repository catalog.
+- The current documentation focuses on the actual markdown agent files that exist under `content/agents/`.

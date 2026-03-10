@@ -1,34 +1,34 @@
 ---
 layout: home
 hero:
-  name: AI Skills Hub
-  text: 跨平台 AI CLI 资源管理器
-  tagline: 统一的技能、命令与提示词管理，支持 Claude、Codex、Gemini、Qwen 等多平台
+  name: My Claude Code Settings
+  text: 跨平台 AI 内容仓库与 MCS 工作区
+  tagline: 文档直接对齐当前仓库中的 `content/` 与 `mcs/` 结构，覆盖 skills、commands、runtime files，以及 Rust TUI/Web 管理器。
   actions:
     - theme: brand
       text: 快速开始
       link: /zh/guide/
     - theme: alt
-      text: 查看技能
+      text: 浏览技能
       link: /zh/skills/
     - theme: alt
-      text: 命令
-      link: /zh/commands/
+      text: MCS 文档
+      link: /zh/guide/mcs
     - theme: alt
       text: GitHub
-      link: https://github.com/anthropics/my-claude-skills
+      link: https://github.com/bahayonghang/my-claude-code-settings
 
 features:
-  - icon: 🎯
-    title: 可复用技能
-    details: 模块化 AI 技能，覆盖前端设计、技术研究、文档生成等场景。
-  - icon: ⚡
-    title: 斜杠命令
-    details: 快速访问常见工作流，如支持 Conventional Commits 的 git commit。
-  - icon: 📦
-    title: 统一格式
-    details: 一致的 SKILL.md 格式，便于扩展和维护。
-  - icon: 🔄
-    title: 跨平台支持
-    details: 基于 uv 的统一安装脚本 (`src/install.py`)，随处可用。
+  - icon: 🧭
+    title: 对齐真实仓库结构
+    details: 文档以当前的 `content/skills`、`content/commands`、`content/agents`、`content/external-skills`、`content/hooks`、`content/memorys` 和 `mcs/` 为准。
+  - icon: 🦀
+    title: MCS TUI 与 Web
+    details: 说明 `mcs-core`、`mcs-tui`、`mcs-web` 的职责划分，以及内容发现、安装、diff、同步的工作流。
+  - icon: 📚
+    title: 技能目录
+    details: 技能页只围绕当前可安装的 `content/skills` 条目，不再把旧模板页当作真实目录展示。
+  - icon: 🔌
+    title: Runtime 与外部内容
+    details: 除主技能库外，还覆盖 hooks、memory/runtime 文件以及 external-skills 注册表。
 ---

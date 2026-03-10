@@ -2,19 +2,16 @@ import { defineConfig } from 'vitepress'
 import { generateSidebarByDir } from './sidebar'
 
 export default defineConfig({
-  title: 'AI Skills Hub',
-  description: '跨平台 AI CLI 技能与命令管理工具',
-
-  // Ignore dead links since the documentation contains many GitHub-style relative links 
-  // to reference files and external/deleted skills that aren't hosted locally in the docs
+  title: 'My Claude Code Settings',
+  description: 'Cross-platform AI skills, commands, runtime files, and MCS documentation.',
   ignoreDeadLinks: true,
 
   vite: {
     server: {
       fs: {
-        allow: ['../..']
-      }
-    }
+        allow: ['../..'],
+      },
+    },
   },
 
   locales: {
@@ -27,7 +24,7 @@ export default defineConfig({
           { text: 'Skills', link: '/skills/' },
           { text: 'Agents', link: '/agents/' },
           { text: 'Commands', link: '/commands/' },
-          { text: 'GitHub', link: 'https://github.com/anthropics/my-claude-skills' }
+          { text: 'GitHub', link: 'https://github.com/bahayonghang/my-claude-code-settings' },
         ],
         sidebar: {
           '/guide/': [
@@ -36,50 +33,60 @@ export default defineConfig({
               items: [
                 { text: 'Introduction', link: '/guide/' },
                 { text: 'Installation', link: '/guide/installation' },
-                { text: 'MCS Guide', link: '/guide/mcs' },
-                { text: 'Commands', link: '/guide/commands' }
-              ]
+                { text: 'MCS TUI', link: '/guide/mcs' },
+                { text: 'MCS Web', link: '/guide/mcs-web' },
+                { text: 'MCS Architecture', link: '/guide/mcs-architecture' },
+              ],
             },
             {
-              text: 'Advanced',
+              text: 'Repository Content',
+              items: [
+                { text: 'Commands', link: '/guide/commands' },
+                { text: 'Runtime Files', link: '/guide/runtime-files' },
+                { text: 'External Skills', link: '/guide/external-skills' },
+              ],
+            },
+            {
+              text: 'Authoring',
               items: [
                 { text: 'Creating Skills', link: '/guide/creating-skills' },
-                { text: 'Prompts', link: '/guide/prompts' },
-                { text: 'Plugins', link: '/guide/plugins' },
-                { text: 'OMO Agents Tutorial', link: '/guide/omo-agents-tutorial' }
-              ]
+              ],
+            },
+            {
+              text: 'Legacy',
+              items: [
+                { text: 'TUI Alias', link: '/guide/tui' },
+                { text: 'Prompts (Legacy)', link: '/guide/prompts' },
+                { text: 'Plugins (Legacy)', link: '/guide/plugins' },
+                { text: 'OMO Agents Tutorial (Legacy)', link: '/guide/omo-agents-tutorial' },
+              ],
             },
           ],
-          '/skills/': generateSidebarByDir('./docs/skills', '/skills/'),
+          '/skills/': generateSidebarByDir('docs/skills', '/skills/'),
           '/agents/': [
             {
               text: 'Agents',
               items: [
                 { text: 'Overview', link: '/agents/' },
-                { text: 'omo-agents', link: '/agents/omo-agents' },
-                { text: 'sisyphus', link: '/agents/sisyphus' },
-                { text: 'oracle', link: '/agents/oracle' },
-                { text: 'explore', link: '/agents/explore' },
-                { text: 'librarian', link: '/agents/librarian' },
-                { text: 'frontend-engineer', link: '/agents/frontend-engineer' },
-                { text: 'document-writer', link: '/agents/document-writer' },
-                { text: 'multimodal-looker', link: '/agents/multimodal-looker' }
-              ]
-            }
+                { text: 'CCW Family', link: '/agents/ccw' },
+                { text: 'Specialist Family', link: '/agents/specialist' },
+              ],
+            },
           ],
           '/commands/': [
             {
               text: 'Commands',
               items: [
                 { text: 'Overview', link: '/commands/' },
+                { text: 'Catalog', link: '/commands/catalog' },
                 { text: 'export-summary', link: '/commands/export-summary' },
                 { text: 'import-summary', link: '/commands/import-summary' },
-                { text: 'git-commit', link: '/commands/git-commit' }
-              ]
-            }
-          ]
-        }
-      }
+                { text: 'git-commit', link: '/commands/git-commit' },
+              ],
+            },
+          ],
+        },
+      },
     },
     zh: {
       label: '中文',
@@ -91,7 +98,7 @@ export default defineConfig({
           { text: '技能', link: '/zh/skills/' },
           { text: '代理', link: '/zh/agents/' },
           { text: '命令', link: '/zh/commands/' },
-          { text: 'GitHub', link: 'https://github.com/anthropics/my-claude-skills' }
+          { text: 'GitHub', link: 'https://github.com/bahayonghang/my-claude-code-settings' },
         ],
         sidebar: {
           '/zh/guide/': [
@@ -100,64 +107,74 @@ export default defineConfig({
               items: [
                 { text: '简介', link: '/zh/guide/' },
                 { text: '安装', link: '/zh/guide/installation' },
-                { text: 'MCS 指南', link: '/zh/guide/mcs' },
-                { text: '命令', link: '/zh/guide/commands' }
-              ]
+                { text: 'MCS TUI', link: '/zh/guide/mcs' },
+                { text: 'MCS Web', link: '/zh/guide/mcs-web' },
+                { text: 'MCS 架构', link: '/zh/guide/mcs-architecture' },
+              ],
             },
             {
-              text: '进阶',
+              text: '仓库内容',
+              items: [
+                { text: '命令系统', link: '/zh/guide/commands' },
+                { text: '运行时文件', link: '/zh/guide/runtime-files' },
+                { text: '外部技能', link: '/zh/guide/external-skills' },
+              ],
+            },
+            {
+              text: '作者指南',
               items: [
                 { text: '创建技能', link: '/zh/guide/creating-skills' },
-                { text: '提示词', link: '/zh/guide/prompts' },
-                { text: '插件', link: '/zh/guide/plugins' },
-                { text: 'OMO Agents 教程', link: '/zh/guide/omo-agents-tutorial' }
-              ]
-            }
+              ],
+            },
+            {
+              text: '兼容与历史',
+              items: [
+                { text: 'TUI 别名', link: '/zh/guide/tui' },
+                { text: '提示词（旧说明）', link: '/zh/guide/prompts' },
+                { text: '插件（旧说明）', link: '/zh/guide/plugins' },
+                { text: 'OMO Agents 教程（旧说明）', link: '/zh/guide/omo-agents-tutorial' },
+              ],
+            },
           ],
-          '/zh/skills/': generateSidebarByDir('./docs/zh/skills', '/zh/skills/'),
+          '/zh/skills/': generateSidebarByDir('docs/zh/skills', '/zh/skills/'),
           '/zh/agents/': [
             {
-              text: '代理列表',
+              text: '代理',
               items: [
                 { text: '概览', link: '/zh/agents/' },
-                { text: 'omo-agents', link: '/zh/agents/omo-agents' },
-                { text: 'sisyphus', link: '/zh/agents/sisyphus' },
-                { text: 'oracle', link: '/zh/agents/oracle' },
-                { text: 'explore', link: '/zh/agents/explore' },
-                { text: 'librarian', link: '/zh/agents/librarian' },
-                { text: 'frontend-engineer', link: '/zh/agents/frontend-engineer' },
-                { text: 'document-writer', link: '/zh/agents/document-writer' },
-                { text: 'multimodal-looker', link: '/zh/agents/multimodal-looker' }
-              ]
-            }
+                { text: 'CCW 家族', link: '/zh/agents/ccw' },
+                { text: 'Specialist 家族', link: '/zh/agents/specialist' },
+              ],
+            },
           ],
           '/zh/commands/': [
             {
               text: '命令列表',
               items: [
                 { text: '概览', link: '/zh/commands/' },
+                { text: '目录', link: '/zh/commands/catalog' },
                 { text: 'export-summary', link: '/zh/commands/export-summary' },
                 { text: 'import-summary', link: '/zh/commands/import-summary' },
-                { text: 'git-commit', link: '/zh/commands/git-commit' }
-              ]
-            }
-          ]
-        }
-      }
-    }
+                { text: 'git-commit', link: '/zh/commands/git-commit' },
+              ],
+            },
+          ],
+        },
+      },
+    },
   },
 
   themeConfig: {
     logo: '/logo.svg',
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/anthropics/my-claude-skills' }
+      { icon: 'github', link: 'https://github.com/bahayonghang/my-claude-code-settings' },
     ],
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2024-present'
+      copyright: 'Copyright © 2024-present',
     },
     search: {
-      provider: 'local'
-    }
-  }
+      provider: 'local',
+    },
+  },
 })

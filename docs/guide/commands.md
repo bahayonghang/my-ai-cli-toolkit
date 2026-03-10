@@ -1,126 +1,63 @@
 # Commands
 
-## Overview
+## Source layout
 
-Both `install.sh` (Bash) and `install.ps1` (PowerShell) support the same commands.
+Commands are sourced from `content/commands/`, grouped by platform and then by command family.
 
-## Skill Management
+Current top-level source directories include:
 
-### List Available Skills
+- `antigravity/`
+- `claude/`
+- `gemini/`
+- `trae/`
+- `windsurf/`
 
-Shows all skills in the repository with installation status.
+Within those folders, the repository keeps nested command families such as:
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh list
-```
-```powershell [Windows]
-.\install.ps1 list
-```
-:::
+- `claude/cc/`
+- `claude/gh/`
+- `claude/issue/`
+- `claude/kiro/`
+- `claude/memory/`
+- `claude/task/`
+- `claude/workflow/`
+- `claude/zcf/`
+- `gemini/plan/`
+- `gemini/zcf/`
 
-### List Installed Skills
+## Install model
 
-Shows currently installed skills and their source.
+MCS does not require every installed platform to have its own source directory.
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh installed
-```
-```powershell [Windows]
-.\install.ps1 installed
-```
-:::
+Instead, each platform declares:
 
-### Install Specific Skills
+- `commands_source`
+- optional `fallback_commands_source`
 
-Install one or more skills by name.
+Examples from `platforms.toml`:
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh install codex frontend-design
-```
-```powershell [Windows]
-.\install.ps1 install codex frontend-design
-```
-:::
+- Codex uses `commands_source = "codex"` and falls back to `claude`
+- Qwen falls back to `claude`
+- Trae CN reuses `trae`
+- App-style platforms such as Antigravity and Windsurf install to `workflows/`
 
-### Install All Skills
+## What gets installed where
 
-Install all available skills at once.
+| Platform type | Installed path |
+|---------------|----------------|
+| Claude-style CLI | `commands/` |
+| Codex | `prompts/` |
+| Kiro | `steering/` |
+| Antigravity / Windsurf | `workflows/` |
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh install-all
-```
-```powershell [Windows]
-.\install.ps1 install-all
-```
-:::
+The exact per-platform paths are documented in [Installation](/guide/installation) and defined in `platforms.toml`.
 
-### Interactive Mode
+## Recommended way to manage commands
 
-Select skills interactively from a numbered list.
+- Use `just mcs` for the terminal workflow
+- Use `just web` for the browser workflow
+- Use the command catalog in [/commands/](/commands/) to inspect what the repository currently ships
 
-::: code-group
-```bash [Linux/macOS]
-./install.sh interactive
-```
-```powershell [Windows]
-.\install.ps1 interactive
-```
-:::
+## Historical note
 
-## Prompt Management
-
-### Show Prompt Diff
-
-Compare local `CLAUDE.md` with the global version.
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh prompt-diff
-```
-```powershell [Windows]
-.\install.ps1 prompt-diff
-```
-:::
-
-### Update Global Prompt
-
-Sync local `CLAUDE.md` to `~/.claude/CLAUDE.md`. Creates a timestamped backup.
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh prompt-update
-```
-```powershell [Windows]
-.\install.ps1 prompt-update
-```
-:::
-
-## Target Selection
-
-Use `--target` (Bash) or `-Target` (PowerShell) to switch between Claude and Codex.
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh --target=codex list
-./install.sh --target=codex install-all
-```
-```powershell [Windows]
-.\install.ps1 -Target codex list
-.\install.ps1 -Target codex install-all
-```
-:::
-
-## Help
-
-::: code-group
-```bash [Linux/macOS]
-./install.sh help
-```
-```powershell [Windows]
-.\install.ps1 help
-```
-:::
+Older docs referenced `install.sh`, `install.ps1`, or `src/install.py` as the main command-management entrypoints. Those are not the current repository workflow. The supported and maintained path is the MCS workspace plus direct access to the source files under `content/commands/`.

@@ -1,99 +1,74 @@
 # Creating Skills
 
-## Skill Structure
+## Repository layout
 
-A minimal skill requires only a `SKILL.md` file:
+Add new first-party skills under:
 
-```
-skills/
-└── my-skill/
-    └── SKILL.md
+```text
+content/skills/<category>/<skill-name>/
 ```
 
-Complex skills can include additional directories:
+Example:
 
-```
-skills/
-└── my-skill/
-    ├── SKILL.md        # Required
-    ├── config/         # Configuration templates
-    ├── tips/           # Usage tips
-    ├── references/     # Technical references
-    ├── scripts/        # Helper scripts
-    └── cookbook/       # Code examples
+```text
+content/skills/workflow-skills/my-skill/
+└── SKILL.md
 ```
 
-## SKILL.md Format
+## Recommended directory structure
 
-Every `SKILL.md` must include YAML frontmatter:
+```text
+content/skills/<category>/<skill-name>/
+├── SKILL.md
+├── references/
+├── scripts/
+├── assets/
+├── docs/
+└── tests/
+```
+
+Only `SKILL.md` is required. Reuse existing patterns from neighboring skills before adding new subfolders.
+
+## Recommended frontmatter
+
+`mcs-core` currently parses top-level frontmatter fields such as:
+
+- `name`
+- `description`
+- `category`
+- `tags`
+- `version`
+
+Recommended example:
 
 ```yaml
 ---
 name: my-skill
-description: Brief description for listing
-license: MIT  # optional
+description: Short description shown in MCS and docs.
+category: workflow
+tags: [planning, automation]
+version: 0.1.0
 ---
-
-# My Skill
-
-Detailed instructions and documentation...
 ```
 
-## Writing Effective Skills
+## Authoring guidance
 
-### Be Specific
+- Keep the body imperative and execution-oriented.
+- Prefer local references and scripts over long embedded tutorials.
+- Use `$SKILL_DIR` for skill-relative paths inside instructions.
+- Keep triggers and scope explicit.
 
-Provide clear, actionable instructions:
+## Validation loop
 
-```markdown
-## Workflow
+Before publishing a new skill:
 
-1. Analyze the user's requirements
-2. Generate initial design
-3. Iterate based on feedback
-4. Output final result
-```
+1. place it under the correct category in `content/skills/`
+2. verify `SKILL.md` is readable and metadata is discoverable by MCS
+3. browse it through `just mcs`
+4. add or update the matching docs page under `docs/skills/<category>/<skill-name>.md`
+5. add the same page under `docs/zh/skills/...`
 
-### Include Examples
+## Notes
 
-Show expected inputs and outputs:
-
-```markdown
-## Example
-
-**Input:** "Create a login form"
-
-**Output:** A responsive login form with email/password fields,
-validation, and submit button.
-```
-
-### Define Constraints
-
-Set clear boundaries:
-
-```markdown
-## Constraints
-
-- Output must be valid HTML5
-- Use semantic elements
-- Ensure WCAG 2.1 AA compliance
-```
-
-## Testing Your Skill
-
-1. Install the skill:
-   ```bash
-   ./install.sh install my-skill
-   ```
-
-2. Test in Claude Code by invoking the skill
-
-3. Iterate on the `SKILL.md` based on results
-
-## Best Practices
-
-- Keep skills focused on a single domain
-- Use clear, concise language
-- Include practical examples
-- Document any prerequisites
-- Follow existing skill patterns for consistency
+- The docs site does not mirror every reference file under a skill. Document the skill itself, then link or describe the major supporting assets.
+- If a skill is intentionally local-only or experimental, keep it out of the public docs until it is ready to be treated as catalog content.

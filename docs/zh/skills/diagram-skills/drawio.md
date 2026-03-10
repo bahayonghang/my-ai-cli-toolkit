@@ -20,11 +20,11 @@ AI 驱动的 Draw.io 图表生成工具，支持实时浏览器预览。
 ## 安装
 
 ```bash
-# 安装技能
-uv run python src/install.py install drawio
+# 方式 1：通过 MCS 浏览并安装
+just mcs
 
-# 或安装所有技能
-uv run python src/install.py install-all
+# 方式 2：直接安装一方技能目录
+npx skills add bahayonghang/my-claude-code-settings/content/skills
 ```
 
 该技能会自动配置 MCP 服务器：

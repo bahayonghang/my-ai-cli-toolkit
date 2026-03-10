@@ -1,179 +1,105 @@
-# MCS 指南
+# MCS TUI
 
-**MCS** (MyClaude Settings) 是一个基于 Rust 开发的高性能 TUI (终端用户界面) 工具，旨在管理各种 Agent 平台的 AI 技能、命令和提示词。它是项目的主要安装程序和管理界面。
+## 它是什么
 
-## 关键特性
+`MCS` 是 `mcs/` Rust workspace 提供的终端界面二进制。TUI 由两部分配合完成：
 
-- 🚀 **高性能**：采用 Rust 构建，启动瞬间完成，导航流畅。
-- 🎯 **可视化管理**：通过现代 TUI 界面浏览、安装、更新和卸载技能。
-- 🔄 **智能更新**：能够感知目录结构，并通过文件内容和修改时间 (mtime) 检测过期的技能。
-- 📦 **批量操作**：支持队列化多个操作（安装/卸载），并一次性执行。
-- 🌏 **Unicode & ASCII 支持**：无缝适配现代终端和旧环境。
-- 🔍 **强大搜索**：支持按类别、状态或文本搜索过滤。
+- `mcs-core`：负责 discovery、install、diff、metadata parsing、migration、platform resolution
+- `mcs-tui`：负责 ratatui/crossterm 终端界面
 
-## 安装
-
-### 前置条件
-
-- **Rust 工具链**：MCS 基于 Rust 构建，你需要安装 `cargo`。
-  ```bash
-  rustup --version
-  ```
-  如果未安装，请访问 [rustup.rs](https://rustup.rs/) 获取。
-
-### 运行 MCS
-
-推荐使用 `just` 命令运行 MCS：
+## 运行方式
 
 ```bash
 just mcs
 ```
 
-该命令会在需要时自动构建并在完成后运行二进制文件。
-
-或者，如果已构建，你可以直接运行二进制文件：
+或：
 
 ```bash
-./mcs/target/release/mcs
+cd mcs
+cargo run --release --bin mcs --
 ```
 
-## 配置
+## 仓库根检测
 
-### 环境变量
+当前实现会向上查找，直到发现 `content/skills/`，再把该目录识别为项目根目录。
 
-|变量名 | 描述 | 默认值 |
-|---|---|---|
-| `MCS_ASCII` | 设置为 `1`, `true`, 或 `yes` 以强制开启 ASCII 模式。适用于 Unicode 支持有限的终端。 | `false` |
+所以当前仓库模型是：
 
-**示例：强制 ASCII 模式**
+- 仓库根下有 `content/`
+- skills 在 `content/skills/`
+- commands 在 `content/commands/`
+
+如果看不到这套结构，TUI 会直接退出。
+
+## 主要界面
+
+### 平台选择
+
+- 选择目标平台
+- 打开 dashboard
+- 退出
+
+### 主视图
+
+- `1`：skills
+- `2`：commands
+- `Tab`：在侧栏、列表和搜索框之间切换
+- `/`：聚焦搜索
+- `d`：打开详情
+- `D`：打开 diff
+- `P`：查看平台配置
+- `S`：多平台同步
+
+### 安装状态
+
+- `✓` 已安装且最新
+- `⚠` 已过期或有 drift
+- `○` 未安装
+
+## 存储与安装模型
+
+MCS 会把技能 canonical 副本保存在 `~/.mcs/skills/`，然后向平台目标目录安装：
+
+- 优先 symlink
+- 无法创建 symlink 时自动回退 copy
+
+这也是为什么一次性迁移标记会出现在 `~/.mcs/migrations/` 下。
+
+## Prompt 更新行为
+
+默认平台配置里只有 Claude 带有 `prompt_file = "CLAUDE.md"`，因此 TUI 中的 prompt diff / update 流程也是围绕 Claude 设计的。
+
+如果你要扩展 prompt 行为，还应同时查看：
+
+- `mcs/mcs-core/src/core/prompt.rs`
+- `platforms.toml`
+- [运行时文件](/zh/guide/runtime-files) 中记录的 runtime 资源
+
+## 故障排除
+
+### 无法识别项目根目录
+
+请在仓库根目录运行，确保能看到 `content/skills/`：
+
+```bash
+just mcs
+```
+
+### 没有 Rust 工具链
+
+通过 [rustup](https://rustup.rs) 安装 Rust。
+
+### 旧终端中显示异常
+
+可使用 ASCII 模式：
 
 ```bash
 MCS_ASCII=1 just mcs
 ```
 
-### 项目根目录检测
+## 相关页面
 
-MCS 通过搜索 `skills/` 目录来自动检测项目根目录。它会依次查找：
-1. 可执行文件所在的目录。
-2. 当前工作目录。
-3. 父目录（向上查找 10 层）。
-
-确保你在 `my-claude-skills` 项目结构内运行 `mcs`。
-
-## 导航与界面
-
-### 1. 平台选择界面
-
-启动后，你会看到支持的平台列表（Claude, Codex, Gemini 等）。
-
-- **导航**:
-  - `↑` / `↓` 或 `k` / `j`: 移动选择。
-  - `Enter`: 选择平台并进入主视图。
-- **操作**:
-  - `d`: 打开仪表盘（系统概览）。
-  - `q` or `Esc`: 退出。
-
-### 2. 主视图 (技能 & 命令)
-
-主界面分为两栏：**侧边栏** (分类) 和 **项目列表**。
-
-- **标签页**:
-  - `1`: **技能 (Skills)** - 管理 AI 工具/技能。
-  - `2`: **命令 (Commands)** - 管理提示词和工作流。
-
-- **焦点管理**:
-  - `Tab`: 在 **侧边栏** ↔ **项目列表** ↔ **搜索输入框** 之间循环切换焦点。
-
-- **状态图标**:
-  - `✓` (已安装): 最新版本。
-  - `⚠` (过时):  本地有修改或有更新可用。
-  - `○` (未安装): 可安装。
-
-### 键盘快捷键
-
-#### 导航
-| 按键 | 动作 |
-|---|---|
-| `↑` / `↓` / `k` / `j` | 上下移动光标 |
-| `PgUp` / `PgDn` | 翻页 (适用于列表和弹窗) |
-| `Tab` | 切换焦点 (侧边栏 / 列表 / 搜索) |
-
-#### 选择与安装
-| 按键 | 动作 |
-|---|---|
-| `Space` | 切换选中当前项 |
-| `a` | **全选** (或若已全选则取消全选) 当前列表项 |
-| `i` | **安装** 选中的项目 (若无选中则安装当前聚焦项) |
-| `u` | **卸载** 当前聚焦项 |
-| `x` | 批量 **卸载** 选中的项目 |
-| `U` | **更新** 当前视图中所有过期的项目 |
-
-#### 筛选与搜索
-| 按键 | 动作 |
-|---|---|
-| `/` | 聚焦 **搜索** 输入框 |
-| `s` | 循环切换 **状态筛选** (全部 -> 已安装 -> 过时 -> 未安装) |
-| `Esc` | 清除搜索 / 筛选 (或返回上一级) |
-
-#### 视图与工具
-| 按键 | 动作 |
-|---|---|
-| `d` | 打开聚焦项的 **详情** 弹窗 |
-| `D` | 打开 **差异对比 (Diff)** 弹窗 (对比已安装与源文件) |
-| `p` | 打开 **提示词 (Prompt)** 更新弹窗 (仅限 Claude) |
-| `P` | 打开 **平台配置** 弹窗 |
-| `S` | 打开 **多平台同步 (Multi-Sync)** 弹窗 (跨平台同步安装) |
-| `Esc` | 返回平台选择 / 关闭弹窗 |
-| `q` | 退出 |
-
-## 高级功能
-
-### 技能安装存储模型
-
-- MCS 在 `~/.mcs/skills/` 维护技能 canonical 存储。
-- 向各平台安装技能时默认使用 symlink。
-- 当 symlink 不可用时，MCS 会自动回退到 copy 模式。
-
-### 一次性技能迁移
-
-- 升级后首次启动时，MCS 会执行一次性迁移。
-- 迁移会把历史的直接复制安装转换为 canonical + symlink 布局。
-- 迁移标记文件位于 `~/.mcs/migrations/`：
-  - `skills-symlink-v1.done`
-  - `skills-symlink-v1.lock`
-
-### 多平台同步 (`S`)
-
-**多平台同步 (Multi-Sync)** 功能允许你同时将选中的技能安装到多个 Agent 平台。
-
-1. 在主视图中使用 `Space` 选中项目。
-2. 按 `S` 打开同步弹窗。
-3. 使用 `↑`/`↓` 和 `Space` 选择目标平台 (例如: Claude + Gemini)。
-4. 按 `Enter` 执行。
-
-### 提示词管理 (`p`)
-
-*(目前仅支持 Claude)*
-
-按 `p` 检查你的全局系统提示词 (system prompt) 是否需要更新。MCS 会对比你已安装的提示词与项目中的验证提示词是否匹配。
-
-### 仪表盘 (`d`)
-
-在平台查看界面按 `d` 查看系统统计信息，包括技能总数、安装路径和版本信息。
-
-## 故障排除
-
-### "Error: Could not detect project root"
-MCS 需要找到 `skills/` 目录。
-- **修复**: 在 `my-claude-skills` 仓库根目录下运行 `just mcs`。
-
-### "cargo: command not found"
-- **修复**: 通过 [rustup](https://rustup.rs) 安装 Rust。
-
-### 显示错乱 / 出现奇怪字符
-某些 Shell (如默认的 PowerShell 或旧版 CMD) 可能无法很好地处理 Unicode图标。
-- **修复**: 在 ASCII 模式下运行:
-  ```bash
-  MCS_ASCII=1 just mcs
-  ```
-  或使用现代终端，如 Windows Terminal, VS Code Terminal, 或 iTerm2 并配合 Nerd Font 使用。
+- [MCS Web](/zh/guide/mcs-web)
+- [MCS 架构](/zh/guide/mcs-architecture)
+- [安装](/zh/guide/installation)
