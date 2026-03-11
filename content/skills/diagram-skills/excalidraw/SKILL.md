@@ -1,16 +1,22 @@
 ---
 name: excalidraw
-description: Generate hand-drawn style diagrams as Excalidraw JSON. Use when user wants diagrams, mentions Excalidraw, or needs Mermaid-to-visual conversion.
+description: >-
+  Generate hand-drawn style diagrams as Excalidraw JSON (.excalidraw.json).
+  Use when user wants visual diagrams, architecture diagrams, flowcharts,
+  sequence diagrams, system design visuals, or mentions Excalidraw.
+  Also use when the user needs an editable diagram file rather than
+  text-based markup. Trigger even for general "draw me a diagram" requests
+  when a hand-drawn or editable file format is appropriate.
+version: 1.0.0
 argument-hint: [diagram-description]
 allowed-tools: Read, Write, Bash(python *), Glob, Grep
-metadata:
-  category: visual-design
-  tags:
-    - diagram
-    - flowchart
-    - architecture
-    - excalidraw
-    - hand-drawn
+category: visual-design
+tags:
+  - diagram
+  - flowchart
+  - architecture
+  - excalidraw
+  - hand-drawn
 ---
 
 Generate an Excalidraw JSON diagram based on `$ARGUMENTS`.

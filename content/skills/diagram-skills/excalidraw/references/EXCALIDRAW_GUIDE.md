@@ -1,5 +1,14 @@
 # Excalidraw Reference Guide
 
+## Supported Diagram Types
+
+- **Flowchart** — process flows, decision trees, pipelines
+- **Sequence diagram** — multi-phase message flows between participants
+- **Architecture diagram** — system components, microservices, layers
+- **Hub-and-spoke** — central component connecting to multiple peers
+- **ER-style / relationship** — entities with labeled connections
+- **Tree / hierarchy** — org charts, category breakdowns, file structures
+
 ## Core Elements
 
 ### Base Template
