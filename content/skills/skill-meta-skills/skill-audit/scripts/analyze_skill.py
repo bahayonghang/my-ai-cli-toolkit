@@ -8,6 +8,10 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from scripts.utils import FRONTMATTER_PATTERN, estimate_tokens, parse_frontmatter
+
 OFFICIAL_FIELDS = {
     "name", "description", "argument-hint", "disable-model-invocation",
     "user-invocable", "allowed-tools", "model", "context", "agent", "hooks",
@@ -17,53 +21,7 @@ OFFICIAL_FIELDS = {
 # Fields that belong inside `metadata:` block per the official spec.
 METADATA_SUBFIELDS = {"category", "tags"}
 
-FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 CJK_PATTERN = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]")
-
-
-def estimate_tokens(text: str) -> int:
-    """Estimate tokens with CJK-aware weighting (~4 chars/token English, ~2 chars/token CJK)."""
-    if not text:
-        return 0
-    cjk = sum(
-        1 for c in text
-        if '\u4e00' <= c <= '\u9fff'
-        or '\u3040' <= c <= '\u30ff'
-        or '\uac00' <= c <= '\ud7af'
-    )
-    ascii_chars = len(text) - cjk
-    return max(1, -(ascii_chars // -4) + -(cjk // -2)) if (ascii_chars or cjk) else 0
-
-
-def parse_frontmatter(content: str):
-    """Extract YAML frontmatter as key-value pairs with multi-line and list support."""
-    m = FRONTMATTER_PATTERN.match(content)
-    if not m:
-        return {}, content.strip()
-    fm_text = m.group(1)
-    body = content[m.end():].strip()
-    fields: dict[str, str | list[str]] = {}
-    current_key: str | None = None
-    for line in fm_text.split("\n"):
-        if re.match(r"^\S.*:", line):
-            key, val = line.split(":", 1)
-            k = key.strip()
-            current_key = k
-            fields[k] = val.strip()
-        elif current_key and line.startswith(("  ", "\t")):
-            stripped = line.strip()
-            if stripped.startswith("- "):
-                item = stripped[2:].strip()
-                existing = fields[current_key]
-                if isinstance(existing, list):
-                    existing.append(item)
-                else:
-                    fields[current_key] = [item]
-            else:
-                existing = fields[current_key]
-                if isinstance(existing, str):
-                    fields[current_key] = existing + " " + stripped
-    return fields, body
 
 
 def _str_field(fields: dict, key: str, default: str = "") -> str:
@@ -408,8 +366,8 @@ def analyze(skill_path: str) -> dict:
         })
 
     # Voice quality checks
-    first_person = [r"\bI\'ll\b", r"\bI will\b", r"\bwe should\b"]
-    passive_voice = [r"\bis\s+\w+ed\b", r"\bare\s+\w+ed\b", r"\bshould be\b", r"\bit would\b"]
+    first_person = [r"\bI\'ll\b", r"\bI will\b", r"\bwe should\b", r"我(们)?\s*[会打算要想]"]
+    passive_voice = [r"\bis\s+\w+ed\b", r"\bare\s+\w+ed\b", r"\bshould be\b", r"\bit would\b", r"被.*[处理执行完成]", r"将.*被"]
     for pat in first_person:
         if re.search(pat, body, re.IGNORECASE):
             report["issues"].append({

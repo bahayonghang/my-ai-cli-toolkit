@@ -6,39 +6,11 @@ import re
 import sys
 from pathlib import Path
 
-FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from scripts.utils import parse_frontmatter
+
 CJK_PATTERN = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]")
-
-# ── Helpers ──────────────────────────────────────────────────────────────────
-
-
-def _parse_frontmatter_fields(content: str) -> dict[str, str | list[str]]:
-    """Extract YAML frontmatter fields from SKILL.md content."""
-    m = FRONTMATTER_PATTERN.match(content)
-    if not m:
-        return {}
-    fields: dict[str, str | list[str]] = {}
-    current_key: str | None = None
-    for line in m.group(1).split("\n"):
-        if re.match(r"^\S.*:", line):
-            key, val = line.split(":", 1)
-            k = key.strip()
-            current_key = k
-            fields[k] = val.strip()
-        elif current_key and line.startswith(("  ", "\t")):
-            stripped = line.strip()
-            if stripped.startswith("- "):
-                item = stripped[2:].strip()
-                existing = fields[current_key]
-                if isinstance(existing, list):
-                    existing.append(item)
-                else:
-                    fields[current_key] = [item]
-            else:
-                existing = fields[current_key]
-                if isinstance(existing, str):
-                    fields[current_key] = existing + " " + stripped
-    return fields
 
 
 def _get_tags(fields: dict[str, str | list[str]]) -> set[str]:
@@ -102,7 +74,7 @@ def scan_skills(skills_root: Path) -> list[dict]:
             content = skill_md.read_text(encoding="utf-8")
         except Exception:
             continue
-        fields = _parse_frontmatter_fields(content)
+        fields, _ = parse_frontmatter(content)
         name = fields.get("name", child.name)
         if isinstance(name, list):
             name = name[0]

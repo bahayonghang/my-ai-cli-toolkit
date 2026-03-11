@@ -1,6 +1,6 @@
 ---
 name: skill-audit
-description: Analyze Claude Code skills for compliance and token efficiency. Use when reviewing skills.
+description: Analyze and optimize Claude Code skills for spec compliance, token efficiency, anti-patterns, and scope overlap. Use when auditing, reviewing, or comparing skills.
 metadata:
   category: skill-management
   tags:
@@ -16,12 +16,13 @@ Audit the skill at `$ARGUMENTS`.
 ## Steps
 
 1. If `$ARGUMENTS` empty or no SKILL.md found, report error.
-2. Run: `python "$SKILL_DIR/scripts/analyze_skill.py" "$ARGUMENTS"`
+2. Run STATIC analysis: `python "$SKILL_DIR/scripts/analyze_skill.py" "$ARGUMENTS"`
 3. Read `$SKILL_DIR/references/CHECKLIST.md` and `$SKILL_DIR/references/PATTERNS.md`.
 4. Cross-reference JSON with CHECKLIST and PATTERNS.
-5. If parent directory has sibling skills, run: `python "$SKILL_DIR/scripts/detect_overlap.py" "<parent>" --target "<name>"`
-6. Present: **Critical → Recommended → Optional**, each with before/after fix.
-7. Output optimized SKILL.md resolving Critical and Recommended issues.
+5. If sibling skills exist, run: `python "$SKILL_DIR/scripts/detect_overlap.py" "<parent>" --target "<name>"`
+6. DYNAMIC evaluation (optional): If user agrees, generate `evals.json` (schema: `$SKILL_DIR/assets/schemas.md`) and run: `python "$SKILL_DIR/scripts/run_loop.py" --eval-set <path> --skill-path "$ARGUMENTS" --model <current_model> --max-iterations 3 --report auto`
+7. Present: **Critical → Recommended → Optional**, each with before/after fix.
+8. Output optimized SKILL.md resolving Critical and Recommended issues, applying the best description if dynamically optimized.
 
 ## Output
 
