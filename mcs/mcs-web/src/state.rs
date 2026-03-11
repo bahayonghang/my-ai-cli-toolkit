@@ -12,7 +12,6 @@ use mcs_core::core::discovery::{
 use mcs_core::core::external_skills::{ExternalSkillEntry, load_external_skills};
 use mcs_core::model::ItemInfo;
 
-
 /// Shared application state accessible by all handlers
 #[derive(Clone)]
 pub struct AppState {
@@ -467,4 +466,3 @@ fn normalize_path_key(path: &Path) -> String {
         raw
     }
 }
-

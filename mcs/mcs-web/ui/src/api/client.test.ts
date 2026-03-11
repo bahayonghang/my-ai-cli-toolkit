@@ -1,11 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  externalInstallSkill,
   getCategories,
+  getNpxInstalledSkills,
+  getNpxSkillsCatalog,
   getSkills,
   installCommands,
   resolveInstallTarget,
-  startExternalInstallJob,
+  startNpxSkillsCheckJob,
+  startNpxSkillsInstallJob,
+  startNpxSkillsRemoveJob,
+  startNpxSkillsUpdateJob,
 } from "./client";
 
 type MockResponseData = {
@@ -115,50 +119,72 @@ describe("api/client install target", () => {
     expect(JSON.parse(String(init.body))).toEqual({ scope: "global" });
   });
 
-  it("keeps external install compatible and forwards target when provided", async () => {
-    fetchMock.mockResolvedValue(mockSuccess({ success: true, output: "ok" }));
+  it("queries npx skills catalog with install target", async () => {
+    fetchMock.mockResolvedValue(mockSuccess([]));
 
-    await externalInstallSkill("claude", "find-skills", "vercel", {
-      scope: "project",
-      project_path: "/tmp/project",
+    await getNpxSkillsCatalog("claude", {
+      search: "find",
+      installedOnly: true,
+      installTarget: { scope: "project", project_path: "/tmp/project" },
     });
 
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("/api/platforms/claude/npx-skills/catalog?");
+    expect(String(url)).toContain("search=find");
+    expect(String(url)).toContain("installed_only=true");
+    expect(String(url)).toContain("target_scope=project");
+  });
+
+  it("queries npx installed skills with install target", async () => {
+    fetchMock.mockResolvedValue(mockSuccess([]));
+
+    await getNpxInstalledSkills("claude", {
+      search: "find",
+      installTarget: { scope: "global" },
+    });
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("/api/platforms/claude/npx-skills/installed?");
+    expect(String(url)).toContain("search=find");
+    expect(String(url)).toContain("target_scope=global");
+  });
+
+  it("starts npx install job and forwards config and target", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({ job_id: "npx-skills-1", operation: "install", total: 1, status: "running" })
+    );
+
+    await startNpxSkillsInstallJob(
+      "claude",
+      [{ package_ref: "vercel-labs/agent-skills", skill_flags: ["find-skills"] }],
+      { scope: "project", project_path: "/tmp/project" },
+      { agents: ["codex"], cli_mode: "npx" }
+    );
+
     const [url, init] = fetchMock.mock.calls[0];
-    expect(String(url)).toBe("/api/platforms/claude/skills/external-install");
+    expect(String(url)).toBe("/api/platforms/claude/npx-skills/install/jobs");
     const body = JSON.parse(String(init.body));
+    expect(body.items).toEqual([
+      { package_ref: "vercel-labs/agent-skills", skill_flags: ["find-skills"] },
+    ]);
+    expect(body.config).toEqual({ agents: ["codex"], cli_mode: "npx" });
     expect(body.install_target).toEqual({
       scope: "project",
       project_path: "/tmp/project",
     });
   });
 
-  it("starts external install batch job and forwards target when provided", async () => {
+  it("starts npx maintenance jobs", async () => {
     fetchMock.mockResolvedValue(
-      mockSuccess({ job_id: "external-1-1", total: 2, status: "running" })
+      mockSuccess({ job_id: "npx-skills-2", operation: "check", total: 1, status: "running" })
     );
 
-    await startExternalInstallJob(
-      "claude",
-      [
-        { skill_name: "owner/repo-a", method: "vercel" },
-        { skill_name: "owner/repo-b --skill b", method: "playbooks" },
-      ],
-      {
-        scope: "project",
-        project_path: "/tmp/project",
-      }
-    );
+    await startNpxSkillsCheckJob("claude", { scope: "global" });
+    await startNpxSkillsUpdateJob("claude", { scope: "global" });
+    await startNpxSkillsRemoveJob("claude", ["find-skills"], { scope: "global" });
 
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(String(url)).toBe("/api/platforms/claude/skills/external-install/jobs");
-    const body = JSON.parse(String(init.body));
-    expect(body.items).toEqual([
-      { skill_name: "owner/repo-a", method: "vercel" },
-      { skill_name: "owner/repo-b --skill b", method: "playbooks" },
-    ]);
-    expect(body.install_target).toEqual({
-      scope: "project",
-      project_path: "/tmp/project",
-    });
+    expect(String(fetchMock.mock.calls[0][0])).toBe("/api/platforms/claude/npx-skills/check/jobs");
+    expect(String(fetchMock.mock.calls[1][0])).toBe("/api/platforms/claude/npx-skills/update/jobs");
+    expect(String(fetchMock.mock.calls[2][0])).toBe("/api/platforms/claude/npx-skills/remove/jobs");
   });
 });

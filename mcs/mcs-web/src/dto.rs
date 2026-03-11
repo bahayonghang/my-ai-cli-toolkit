@@ -219,63 +219,106 @@ pub struct EditContentRequest {
     pub content: String,
 }
 
-#[derive(Deserialize)]
-pub struct ExternalInstallRequest {
-    pub skill_name: String,
-    pub method: ExternalInstallMethod,
-    #[serde(default)]
-    pub install_target: InstallTargetDto,
-    #[serde(default)]
-    pub config: ExternalInstallConfigDto,
-}
-
-#[derive(Clone, Copy, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub enum ExternalInstallMethod {
-    Vercel,
-    Playbooks,
-}
-
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub enum ExternalInstallCliMode {
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxSkillsCliMode {
     #[default]
     Auto,
     Npx,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct ExternalInstallConfigDto {
+pub struct NpxSkillsCliConfigDto {
     #[serde(default)]
     pub agents: Vec<String>,
     #[serde(default)]
-    pub cli_mode: ExternalInstallCliMode,
+    pub cli_mode: NpxSkillsCliMode,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxSkillsOperation {
+    Install,
+    Remove,
+    Check,
+    Update,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsInstallItemRequest {
+    pub package_ref: String,
+    #[serde(default)]
+    pub skill_flags: Vec<String>,
+}
+
+#[derive(Deserialize)]
+pub struct NpxSkillsInstallJobRequest {
+    pub items: Vec<NpxSkillsInstallItemRequest>,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: NpxSkillsCliConfigDto,
+}
+
+#[derive(Deserialize)]
+pub struct NpxSkillsRemoveJobRequest {
+    pub names: Vec<String>,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: NpxSkillsCliConfigDto,
+}
+
+#[derive(Deserialize)]
+pub struct NpxSkillsMaintenanceJobRequest {
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: NpxSkillsCliConfigDto,
 }
 
 #[derive(Serialize)]
-pub struct ExternalInstallResult {
+pub struct NpxSkillsCatalogItemDto {
+    pub name: String,
+    pub repo: String,
+    pub skill_flag: Option<String>,
+    pub category: Option<String>,
+    pub description: Option<String>,
+    pub stars: Option<u8>,
+    pub project_only: bool,
+    pub usage: Option<String>,
+    pub install_status: InstallStatus,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum NpxInstalledSkillSource {
+    Managed,
+    FilesystemUnmanaged,
+}
+
+#[derive(Serialize)]
+pub struct NpxInstalledSkillDto {
+    pub name: String,
+    pub repo: Option<String>,
+    pub description: Option<String>,
+    pub category: Option<String>,
+    pub source: NpxInstalledSkillSource,
+    pub manageable: bool,
+    pub package_ref: Option<String>,
+    pub skill_flags: Option<Vec<String>>,
+}
+
+#[derive(Serialize)]
+pub struct NpxSkillsCliResult {
     pub success: bool,
     pub output: String,
 }
 
-#[derive(Clone, Deserialize)]
-pub struct ExternalInstallBatchItem {
-    pub skill_name: String,
-    pub method: ExternalInstallMethod,
-}
-
-#[derive(Deserialize)]
-pub struct ExternalInstallJobRequest {
-    pub items: Vec<ExternalInstallBatchItem>,
-    #[serde(default)]
-    pub install_target: InstallTargetDto,
-    #[serde(default)]
-    pub config: ExternalInstallConfigDto,
-}
-
 #[derive(Serialize)]
-pub struct ExternalInstallJobStartResult {
+pub struct NpxSkillsJobStartDto {
     pub job_id: String,
+    pub operation: NpxSkillsOperation,
     pub total: usize,
     pub status: String,
 }
@@ -323,22 +366,4 @@ pub struct CleanupResultDto {
 pub struct CleanupFailureDto {
     pub path: String,
     pub error: String,
-}
-
-// ── External Skill Catalog ────────────────────────────────────────
-
-#[derive(Serialize)]
-pub struct ExternalSkillCatalogDto {
-    pub name: String,
-    pub repo: String,
-    pub skill_flag: Option<String>,
-    pub method: String,
-    pub category: Option<String>,
-    pub description: Option<String>,
-    pub stars: Option<u8>,
-    pub project_only: bool,
-    pub usage: Option<String>,
-    /// Installation status per platform (platform_id -> status)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub platform_status: Option<HashMap<String, InstallStatus>>,
 }

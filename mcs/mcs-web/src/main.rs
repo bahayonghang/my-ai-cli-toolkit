@@ -1,5 +1,6 @@
 mod api;
 mod dto;
+mod services;
 mod state;
 
 use std::net::SocketAddr;

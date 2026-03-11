@@ -5,8 +5,8 @@ use crate::state::AppState;
 pub mod commands;
 pub mod dashboard;
 pub mod error;
-pub mod external_skills;
 pub mod legacy;
+pub mod npx_skills;
 pub mod platforms;
 pub mod prompt;
 pub mod skills;
@@ -21,11 +21,6 @@ pub fn router() -> Router<AppState> {
         .route(
             "/api/skills/catalog",
             axum::routing::get(skills_catalog::catalog),
-        )
-        // External skills catalog
-        .route(
-            "/api/external-skills/catalog",
-            axum::routing::get(external_skills::catalog),
         )
         // Platform routes
         .route("/api/platforms", axum::routing::get(platforms::list))
@@ -67,16 +62,32 @@ pub fn router() -> Router<AppState> {
             axum::routing::put(skills::edit_content),
         )
         .route(
-            "/api/platforms/{id}/skills/external-install",
-            axum::routing::post(skills::external_install),
+            "/api/platforms/{id}/npx-skills/catalog",
+            axum::routing::get(npx_skills::catalog),
         )
         .route(
-            "/api/platforms/{id}/skills/external-install/jobs",
-            axum::routing::post(skills::external_install_jobs_start),
+            "/api/platforms/{id}/npx-skills/installed",
+            axum::routing::get(npx_skills::installed),
         )
         .route(
-            "/api/platforms/{id}/skills/external-install/jobs/{job_id}/stream",
-            axum::routing::get(skills::external_install_jobs_stream),
+            "/api/platforms/{id}/npx-skills/install/jobs",
+            axum::routing::post(npx_skills::install_jobs_start),
+        )
+        .route(
+            "/api/platforms/{id}/npx-skills/remove/jobs",
+            axum::routing::post(npx_skills::remove_jobs_start),
+        )
+        .route(
+            "/api/platforms/{id}/npx-skills/check/jobs",
+            axum::routing::post(npx_skills::check_jobs_start),
+        )
+        .route(
+            "/api/platforms/{id}/npx-skills/update/jobs",
+            axum::routing::post(npx_skills::update_jobs_start),
+        )
+        .route(
+            "/api/platforms/{id}/npx-skills/jobs/{job_id}/stream",
+            axum::routing::get(npx_skills::jobs_stream),
         )
         // Commands
         .route(

@@ -6,6 +6,7 @@ use crate::dto::{ApiError, ErrorDetail};
 
 /// Application-level errors that map to HTTP responses
 #[allow(dead_code)]
+#[derive(Debug)]
 pub enum AppError {
     NotFound(String),
     BadRequest(String),

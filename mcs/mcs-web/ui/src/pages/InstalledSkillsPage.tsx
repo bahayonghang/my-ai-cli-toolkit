@@ -42,17 +42,18 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import SearchIcon from "@mui/icons-material/Search";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import TuneIcon from "@mui/icons-material/Tune";
-import { installSkills, uninstallSkills } from "@/api/client";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
+import TerminalIcon from "@mui/icons-material/Terminal";
+import { installSkills, uninstallSkills } from "@/api/client";
+import { useI18n } from "@/i18n";
+import { usePlatformStore } from "@/stores/platformStore";
+import { useUiStore } from "@/stores/uiStore";
+import { useItemStore } from "@/stores/itemStore";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useI18n } from "@/i18n";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
-import { useItemStore } from "@/stores/itemStore";
-import { usePlatformStore } from "@/stores/platformStore";
-import { useUiStore } from "@/stores/uiStore";
 
 const SkillEditorDrawer = lazy(() =>
   import("@/components/dialogs/SkillEditorDrawer").then((module) => ({
@@ -251,6 +252,14 @@ export default function InstalledSkillsPage() {
             />
           </Box>
           <Button
+            variant="outlined"
+            startIcon={<TerminalIcon />}
+            onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
+            sx={{ mr: 1, borderRadius: 2 }}
+          >
+            {t("npxSkills.pageButton")}
+          </Button>
+          <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
@@ -355,31 +364,49 @@ export default function InstalledSkillsPage() {
               <CircularProgress />
             </Box>
           ) : items.length === 0 ? (
-            <Card>
-              <CardContent sx={{ py: 8, textAlign: "center" }}>
-                <ExtensionOffIcon sx={{ fontSize: 52, color: "text.disabled", mb: 2 }} />
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  {t("installed.emptyTitle")}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  {t("installed.emptyDescription")}
-                </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
-                >
-                  {t("installed.installSkills")}
-                </Button>
-              </CardContent>
-            </Card>
+            /* Empty state */
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                py: 12,
+                gap: 2,
+              }}
+            >
+              <ExtensionOffIcon sx={{ fontSize: 64, color: "text.disabled" }} />
+              <Typography variant="h6" color="text.secondary">
+                {t("installed.emptyTitle")}
+              </Typography>
+              <Button
+                variant="outlined"
+                startIcon={<TerminalIcon />}
+                onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
+              >
+                {t("npxSkills.pageButton")}
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
+              >
+                {t("installed.installSkills")}
+              </Button>
+            </Box>
           ) : isMobile ? (
             <Stack spacing={1.5}>
               {items.map((item) => (
                 <Card key={item.name}>
                   <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                     <Box>
-                      <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        flexWrap="wrap"
+                        alignItems="center"
+                        sx={{ mb: 0.75 }}
+                      >
                         <Typography variant="subtitle2" sx={{ wordBreak: "break-word" }}>
                           {item.name}
                         </Typography>
@@ -387,7 +414,11 @@ export default function InstalledSkillsPage() {
                           <Chip size="small" label={item.category} variant="outlined" />
                         )}
                       </Stack>
-                      <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "anywhere" }}
+                      >
                         {item.description || t("installHub.noDescription")}
                       </Typography>
                     </Box>

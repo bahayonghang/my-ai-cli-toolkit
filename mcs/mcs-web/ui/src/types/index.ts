@@ -140,68 +140,80 @@ export interface PromptDiffDto {
   supports_prompt: boolean;
 }
 
-// ── External Skill Catalog ────────────────────────────────────────
+// ── npx skills ─────────────────────────────────────────────────────
 
-export interface ExternalSkillCatalogDto {
+export type NpxSkillsCliMode = "auto" | "npx";
+export type NpxSkillsOperation = "install" | "remove" | "check" | "update";
+
+export interface NpxSkillsCliConfig {
+  agents: string[];
+  cli_mode: NpxSkillsCliMode;
+}
+
+export interface NpxSkillsCatalogItemDto {
   name: string;
   repo: string;
   skill_flag: string | null;
-  method: "vercel" | "playbooks";
   category: string | null;
   description: string | null;
   stars: number | null;
   project_only: boolean;
   usage: string | null;
-  /** Installation status per platform (platform_id -> status) */
-  platform_status?: Record<string, InstallStatus>;
+  install_status: InstallStatus;
 }
 
-export type ExternalInstallMethod = "vercel" | "playbooks";
-export type ExternalInstallCliMode = "auto" | "npx";
-
-export interface ExternalInstallConfig {
-  agents: string[];
-  cli_mode: ExternalInstallCliMode;
+export interface NpxInstalledSkillDto {
+  name: string;
+  repo: string | null;
+  description: string | null;
+  category: string | null;
+  source: "managed" | "filesystem_unmanaged";
+  manageable: boolean;
+  package_ref: string | null;
+  skill_flags: string[] | null;
 }
 
-export interface ExternalInstallBatchItemDto {
-  skill_name: string;
-  method: ExternalInstallMethod;
+export interface NpxSkillsInstallItemInput {
+  package_ref: string;
+  skill_flags?: string[];
 }
 
-export interface ExternalInstallJobStartDto {
+export interface NpxSkillsJobStartDto {
   job_id: string;
+  operation: NpxSkillsOperation;
   total: number;
   status: string;
 }
 
-export interface ExternalInstallJobStartedPayload {
+export interface NpxSkillsJobStartedPayload {
   job_id: string;
+  operation: NpxSkillsOperation;
   total: number;
   max_concurrency: number;
   started_at_ms: number;
 }
 
-export interface ExternalInstallItemStartedPayload {
+export interface NpxSkillsItemStartedPayload {
   job_id: string;
+  operation: NpxSkillsOperation;
   item_id: string;
-  skill_name: string;
-  method: ExternalInstallMethod;
+  label: string;
 }
 
-export interface ExternalInstallItemFinishedPayload {
+export interface NpxSkillsItemFinishedPayload {
   job_id: string;
+  operation: NpxSkillsOperation;
   item_id: string;
-  skill_name: string;
-  method: ExternalInstallMethod;
+  label: string;
   success: boolean;
   output: string;
   error: string | null;
   duration_ms: number;
 }
 
-export interface ExternalInstallJobProgressPayload {
+export interface NpxSkillsJobProgressPayload {
   job_id: string;
+  operation: NpxSkillsOperation;
   completed: number;
   total: number;
   success_count: number;
@@ -209,16 +221,18 @@ export interface ExternalInstallJobProgressPayload {
   percent: number;
 }
 
-export interface ExternalInstallJobCompletedPayload {
+export interface NpxSkillsJobCompletedPayload {
   job_id: string;
+  operation: NpxSkillsOperation;
   total: number;
   success_count: number;
   failure_count: number;
   completed_at_ms: number;
 }
 
-export interface ExternalInstallJobFailedPayload {
+export interface NpxSkillsJobFailedPayload {
   job_id: string;
+  operation: NpxSkillsOperation;
   message: string;
 }
 

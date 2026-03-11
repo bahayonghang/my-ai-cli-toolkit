@@ -5,10 +5,11 @@ import type {
   PlatformConfig,
   ItemDto,
   SkillCatalogDto,
-  ExternalSkillCatalogDto,
-  ExternalInstallBatchItemDto,
-  ExternalInstallJobStartDto,
-  ExternalInstallConfig,
+  NpxInstalledSkillDto,
+  NpxSkillsCatalogItemDto,
+  NpxSkillsCliConfig,
+  NpxSkillsInstallItemInput,
+  NpxSkillsJobStartDto,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
@@ -135,12 +136,6 @@ export async function getDashboard(signal?: AbortSignal): Promise<DashboardDto> 
 
 export async function getSkillCatalog(): Promise<SkillCatalogDto[]> {
   return fetchJson(`${BASE}/skills/catalog`);
-}
-
-export async function getExternalSkillCatalog(
-  signal?: AbortSignal
-): Promise<ExternalSkillCatalogDto[]> {
-  return fetchJson(`${BASE}/external-skills/catalog`, { signal });
 }
 
 // ── Skills ─────────────────────────────────────────────────────────
@@ -296,21 +291,57 @@ export async function updateSkillContent(
   });
 }
 
-// ── External Skill Install ────────────────────────────────────────
+// ── npx skills ─────────────────────────────────────────────────────
 
-export async function externalInstallSkill(
+export async function getNpxSkillsCatalog(
   platformId: string,
-  skillName: string,
-  method: "vercel" | "playbooks",
+  params?: {
+    search?: string;
+    installedOnly?: boolean;
+    installTarget?: InstallTarget;
+  },
+  signal?: AbortSignal
+): Promise<NpxSkillsCatalogItemDto[]> {
+  const query = new URLSearchParams();
+  if (params?.search) query.set("search", params.search);
+  if (params?.installedOnly) query.set("installed_only", "true");
+  applyInstallTargetQuery(query, params?.installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/npx-skills/catalog${qs ? `?${qs}` : ""}`,
+    { signal }
+  );
+}
+
+export async function getNpxInstalledSkills(
+  platformId: string,
+  params?: {
+    search?: string;
+    installTarget?: InstallTarget;
+  },
+  signal?: AbortSignal
+): Promise<NpxInstalledSkillDto[]> {
+  const query = new URLSearchParams();
+  if (params?.search) query.set("search", params.search);
+  applyInstallTargetQuery(query, params?.installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/npx-skills/installed${qs ? `?${qs}` : ""}`,
+    { signal }
+  );
+}
+
+export async function startNpxSkillsInstallJob(
+  platformId: string,
+  items: NpxSkillsInstallItemInput[],
   installTarget?: InstallTarget,
-  config?: ExternalInstallConfig
-): Promise<{ success: boolean; output: string }> {
+  config?: NpxSkillsCliConfig
+): Promise<NpxSkillsJobStartDto> {
   return postJson(
-    `${BASE}/platforms/${platformId}/skills/external-install`,
+    `${BASE}/platforms/${platformId}/npx-skills/install/jobs`,
     withInstallTargetBody(
       {
-        skill_name: skillName,
-        method,
+        items,
         ...(config ? { config } : {}),
       },
       installTarget
@@ -318,17 +349,49 @@ export async function externalInstallSkill(
   );
 }
 
-export async function startExternalInstallJob(
+export async function startNpxSkillsRemoveJob(
   platformId: string,
-  items: ExternalInstallBatchItemDto[],
+  names: string[],
   installTarget?: InstallTarget,
-  config?: ExternalInstallConfig
-): Promise<ExternalInstallJobStartDto> {
+  config?: NpxSkillsCliConfig
+): Promise<NpxSkillsJobStartDto> {
   return postJson(
-    `${BASE}/platforms/${platformId}/skills/external-install/jobs`,
+    `${BASE}/platforms/${platformId}/npx-skills/remove/jobs`,
     withInstallTargetBody(
       {
-        items,
+        names,
+        ...(config ? { config } : {}),
+      },
+      installTarget
+    )
+  );
+}
+
+export async function startNpxSkillsCheckJob(
+  platformId: string,
+  installTarget?: InstallTarget,
+  config?: NpxSkillsCliConfig
+): Promise<NpxSkillsJobStartDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/npx-skills/check/jobs`,
+    withInstallTargetBody(
+      {
+        ...(config ? { config } : {}),
+      },
+      installTarget
+    )
+  );
+}
+
+export async function startNpxSkillsUpdateJob(
+  platformId: string,
+  installTarget?: InstallTarget,
+  config?: NpxSkillsCliConfig
+): Promise<NpxSkillsJobStartDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/npx-skills/update/jobs`,
+    withInstallTargetBody(
+      {
         ...(config ? { config } : {}),
       },
       installTarget

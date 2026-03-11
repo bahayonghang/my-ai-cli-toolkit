@@ -1,148 +1,76 @@
-import { lazy, startTransition, Suspense, useEffect, useState, useMemo, useCallback, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Chip,
-  TextField,
-  InputAdornment,
-  Button,
-  CircularProgress,
-  LinearProgress,
+  lazy,
+  startTransition,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
   Alert,
+  AppBar,
+  Box,
+  Button,
   Card,
   CardContent,
   Checkbox,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
-  Stack,
-  Paper,
-  Tooltip,
-  Grid,
-  Switch,
-  Slide,
-  Fade,
-  Drawer,
-  Divider,
+  Chip,
+  CircularProgress,
   Dialog,
+  Divider,
+  Drawer,
+  Grid,
+  IconButton,
+  InputAdornment,
+  LinearProgress,
   List,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
-  Autocomplete,
+  Switch,
+  TextField,
+  Toolbar,
+  Tooltip,
+  Typography,
   alpha,
-  useTheme,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import HomeIcon from "@mui/icons-material/Home";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
+import SearchIcon from "@mui/icons-material/Search";
+import SelectAllIcon from "@mui/icons-material/SelectAll";
+import TerminalIcon from "@mui/icons-material/Terminal";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import HomeIcon from "@mui/icons-material/Home";
-import { getAggregatedStatus } from "@/utils/statusAggregation";
-import { InstallStatusChip } from "@/components/install-hub/InstallStatusChip";
-import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import FolderIcon from "@mui/icons-material/Folder";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import SelectAllIcon from "@mui/icons-material/SelectAll";
-import CloseIcon from "@mui/icons-material/Close";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import ExtensionIcon from "@mui/icons-material/Extension";
-import SettingsIcon from "@mui/icons-material/Settings";
-import SpeedIcon from "@mui/icons-material/Speed";
-import { useI18n } from "@/i18n";
-import type { TranslateFn } from "@/i18n";
-import { usePlatformStore } from "@/stores/platformStore";
-import { useUiStore } from "@/stores/uiStore";
-import {
-  getSkills,
-  getCategories,
-  getSkillDetail,
-  installSkills,
-  startExternalInstallJob,
-  getExternalSkillCatalog,
-} from "@/api/client";
-import { InstallDialog } from "@/components/dialogs/InstallDialog";
-import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+
+import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { InstallDialog } from "@/components/dialogs/InstallDialog";
+import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
+import { getCategories, getSkillDetail, getSkills, installSkills } from "@/api/client";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useDebounce } from "@/hooks/useDebounce";
-import type {
-  CategoryDto,
-  ExternalInstallBatchItemDto,
-  ExternalInstallCliMode,
-  ExternalInstallConfig,
-  ExternalInstallItemFinishedPayload,
-  ExternalInstallItemStartedPayload,
-  ExternalInstallJobCompletedPayload,
-  ExternalInstallJobProgressPayload,
-  ExternalInstallMethod,
-  ExternalSkillCatalogDto,
-  InstallStatus,
-  InstallTarget,
-  ItemDetailDto,
-  ItemDto,
-} from "@/types";
+import { useI18n } from "@/i18n";
+import { usePlatformStore } from "@/stores/platformStore";
+import { useUiStore } from "@/stores/uiStore";
+import type { CategoryDto, InstallStatus, ItemDetailDto, ItemDto } from "@/types";
 
-// ── Types & Constants ────────────────────────────────────────────────
-
-type SourceMode = "local" | "vercel" | "playbooks";
-const SIDEBAR_WIDTH = 260;
-
-const COMMON_AGENTS = [
-  "claude-code",
-  "codex",
-  "cursor",
-  "gemini",
-  "copilot",
-  "windsurf",
-  "kiro",
-  "opencode",
-  "cline",
-  "augment",
-  "trae",
-  "trae_cn",
-  "antigravity",
-];
-const DEFAULT_AGENTS = ["claude-code", "codex"];
-const DEFAULT_CLI_MODE: ExternalInstallCliMode = "auto";
-const LS_KEY_AGENTS = "mcs-external-install-agents";
-const LS_KEY_CLI_MODE = "mcs-external-install-cli-mode";
 const Markdown = lazy(() => import("react-markdown"));
 
-function loadAgents(): string[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY_AGENTS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch { /* ignore */ }
-  return DEFAULT_AGENTS;
-}
+const SIDEBAR_WIDTH = 260;
 
-function loadCliMode(): ExternalInstallCliMode {
-  const raw = localStorage.getItem(LS_KEY_CLI_MODE);
-  return raw === "npx" ? "npx" : DEFAULT_CLI_MODE;
-}
-
-// ── Helpers ──────────────────────────────────────────────────────────
-
-function statusLabel(status: InstallStatus, t: TranslateFn): string {
+function statusLabel(status: InstallStatus, t: ReturnType<typeof useI18n>["t"]): string {
   switch (status) {
     case "installed":
       return t("status.installed");
@@ -150,8 +78,6 @@ function statusLabel(status: InstallStatus, t: TranslateFn): string {
       return t("status.outdated");
     case "not_installed":
       return t("status.notInstalled");
-    default:
-      return status;
   }
 }
 
@@ -161,7 +87,7 @@ function statusColor(status: InstallStatus): "success" | "warning" | "default" {
       return "success";
     case "outdated":
       return "warning";
-    default:
+    case "not_installed":
       return "default";
   }
 }
@@ -172,104 +98,48 @@ function StatusIcon({ status }: { status: InstallStatus }) {
       return <CheckCircleOutlineIcon fontSize="small" color="success" />;
     case "outdated":
       return <WarningAmberIcon fontSize="small" color="warning" />;
-    default:
+    case "not_installed":
       return <RadioButtonUncheckedIcon fontSize="small" color="disabled" />;
   }
 }
 
-// ── Sidebar ──────────────────────────────────────────────────────────
-
-interface SidebarProps {
-  sourceMode: SourceMode;
-  onSourceChange: (mode: SourceMode) => void;
-  statusFilter: InstallStatus | null;
-  onStatusFilterChange: (status: InstallStatus | null) => void;
-  statusCounts: { installed: number; outdated: number; not_installed: number };
-  showDefaultOnly: boolean;
-  onDefaultToggle: () => void;
-  onSelectAllDefault: () => void;
-  selectedCategory: string | null;
-  onCategoryChange: (cat: string | null) => void;
-  categories: CategoryDto[];
-  totalSkills: number;
-}
-
-function SidebarContent({
-  sourceMode,
-  onSourceChange,
+function FiltersSidebar({
+  categories,
+  selectedCategory,
+  onCategoryChange,
   statusFilter,
   onStatusFilterChange,
   statusCounts,
   showDefaultOnly,
   onDefaultToggle,
-  onSelectAllDefault,
-  selectedCategory,
-  onCategoryChange,
-  categories,
   totalSkills,
-}: SidebarProps) {
+}: {
+  categories: CategoryDto[];
+  selectedCategory: string | null;
+  onCategoryChange: (category: string | null) => void;
+  statusFilter: InstallStatus | null;
+  onStatusFilterChange: (status: InstallStatus | null) => void;
+  statusCounts: { installed: number; outdated: number; not_installed: number };
+  showDefaultOnly: boolean;
+  onDefaultToggle: () => void;
+  totalSkills: number;
+}) {
   const { t } = useI18n();
   const theme = useTheme();
 
+  const chipSx = (selected = false) => ({
+    height: 20,
+    minWidth: 28,
+    fontSize: "0.7rem",
+    fontWeight: 600,
+    bgcolor: selected
+      ? alpha(theme.palette.primary.main, 0.18)
+      : alpha(theme.palette.text.primary, 0.08),
+    color: selected ? theme.palette.primary.main : theme.palette.text.secondary,
+  });
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 0.5,
-        py: 1,
-      }}
-    >
-      {/* ── SOURCE ── */}
-      <Typography
-        variant="overline"
-        color="text.secondary"
-        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
-      >
-        {t("install.source")}
-      </Typography>
-      <List dense disablePadding>
-        <ListItemButton
-          selected={sourceMode === "local"}
-          onClick={() => onSourceChange("local")}
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <FolderIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={t("install.sourceLocalRepo")}
-            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-          />
-        </ListItemButton>
-        <ListItemButton
-          selected={sourceMode === "vercel"}
-          onClick={() => onSourceChange("vercel")}
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <CloudDownloadIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={t("install.sourceVercel")}
-            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-          />
-        </ListItemButton>
-        <ListItemButton
-          selected={sourceMode === "playbooks"}
-          onClick={() => onSourceChange("playbooks")}
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <MenuBookIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={t("install.sourcePlaybooks")}
-            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-          />
-        </ListItemButton>
-      </List>
-
-      <Divider sx={{ my: 1, mx: 2, opacity: 0.5 }} />
-
-      {/* ── STATUS ── */}
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, py: 1 }}>
       <Typography
         variant="overline"
         color="text.secondary"
@@ -278,104 +148,29 @@ function SidebarContent({
         {t("install.status")}
       </Typography>
       <List dense disablePadding>
-        <ListItemButton
-          selected={statusFilter === "installed"}
-          onClick={() =>
-            onStatusFilterChange(
-              statusFilter === "installed" ? null : "installed"
-            )
-          }
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <CheckCircleOutlineIcon
-              fontSize="small"
-              color={statusFilter === "installed" ? "success" : "disabled"}
+        {(["installed", "outdated", "not_installed"] as const).map((status) => (
+          <ListItemButton
+            key={status}
+            selected={statusFilter === status}
+            onClick={() =>
+              onStatusFilterChange(statusFilter === status ? null : status)
+            }
+          >
+            <ListItemText
+              primary={statusLabel(status, t)}
+              primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
             />
-          </ListItemIcon>
-          <ListItemText
-            primary={t("status.installed")}
-            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-          />
-          <Chip
-            label={statusCounts.installed}
-            size="small"
-            sx={{
-              height: 20,
-              minWidth: 28,
-              fontSize: "0.7rem",
-              fontWeight: 600,
-              bgcolor: alpha(theme.palette.success.main, 0.12),
-              color: theme.palette.success.main,
-            }}
-          />
-        </ListItemButton>
-        <ListItemButton
-          selected={statusFilter === "outdated"}
-          onClick={() =>
-            onStatusFilterChange(
-              statusFilter === "outdated" ? null : "outdated"
-            )
-          }
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <WarningAmberIcon
-              fontSize="small"
-              color={statusFilter === "outdated" ? "warning" : "disabled"}
+            <Chip
+              label={statusCounts[status]}
+              size="small"
+              sx={chipSx(statusFilter === status)}
             />
-          </ListItemIcon>
-          <ListItemText
-            primary={t("status.outdated")}
-            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-          />
-          <Chip
-            label={statusCounts.outdated}
-            size="small"
-            sx={{
-              height: 20,
-              minWidth: 28,
-              fontSize: "0.7rem",
-              fontWeight: 600,
-              bgcolor: alpha(theme.palette.warning.main, 0.12),
-              color: theme.palette.warning.main,
-            }}
-          />
-        </ListItemButton>
-        <ListItemButton
-          selected={statusFilter === "not_installed"}
-          onClick={() =>
-            onStatusFilterChange(
-              statusFilter === "not_installed" ? null : "not_installed"
-            )
-          }
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <RadioButtonUncheckedIcon
-              fontSize="small"
-              color={statusFilter === "not_installed" ? "primary" : "disabled"}
-            />
-          </ListItemIcon>
-          <ListItemText
-            primary={t("status.notInstalled")}
-            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-          />
-          <Chip
-            label={statusCounts.not_installed}
-            size="small"
-            sx={{
-              height: 20,
-              minWidth: 28,
-              fontSize: "0.7rem",
-              fontWeight: 600,
-              bgcolor: alpha(theme.palette.primary.main, 0.12),
-              color: theme.palette.primary.main,
-            }}
-          />
-        </ListItemButton>
+          </ListItemButton>
+        ))}
       </List>
 
       <Divider sx={{ my: 1, mx: 2, opacity: 0.5 }} />
 
-      {/* ── DEFAULT ── */}
       <Typography
         variant="overline"
         color="text.secondary"
@@ -384,34 +179,14 @@ function SidebarContent({
         {t("install.defaultSection")}
       </Typography>
       <Box sx={{ px: 2, display: "flex", alignItems: "center", gap: 1 }}>
-        <Switch
-          size="small"
-          checked={showDefaultOnly}
-          onChange={onDefaultToggle}
-          color="primary"
-        />
+        <Switch size="small" checked={showDefaultOnly} onChange={onDefaultToggle} />
         <Typography variant="body2" fontWeight={500}>
           {t("install.onlyDefaultSkills")}
         </Typography>
       </Box>
-      {showDefaultOnly && (
-        <Box sx={{ px: 2, mt: 0.5 }}>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<SelectAllIcon />}
-            onClick={onSelectAllDefault}
-            fullWidth
-            sx={{ borderRadius: 2, textTransform: "none" }}
-          >
-            {t("install.selectDefaultOnly")}
-          </Button>
-        </Box>
-      )}
 
       <Divider sx={{ my: 1, mx: 2, opacity: 0.5 }} />
 
-      {/* ── CATEGORIES ── */}
       <Typography
         variant="overline"
         color="text.secondary"
@@ -420,58 +195,27 @@ function SidebarContent({
         {t("install.categories")}
       </Typography>
       <List dense disablePadding>
-        <ListItemButton
-          selected={selectedCategory === null}
-          onClick={() => onCategoryChange(null)}
-        >
+        <ListItemButton selected={selectedCategory === null} onClick={() => onCategoryChange(null)}>
           <ListItemText
             primary={t("install.totalSkills")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 600 }}
           />
-          <Chip
-            label={totalSkills}
-            size="small"
-            sx={{
-              height: 20,
-              minWidth: 28,
-              fontSize: "0.7rem",
-              fontWeight: 600,
-              bgcolor: alpha(theme.palette.primary.main, 0.12),
-              color: theme.palette.primary.main,
-            }}
-          />
+          <Chip label={totalSkills} size="small" sx={chipSx(selectedCategory === null)} />
         </ListItemButton>
-        {categories.map((cat) => (
+        {categories.map((category) => (
           <ListItemButton
-            key={cat.name}
-            selected={selectedCategory === cat.name}
-            onClick={() => onCategoryChange(cat.name)}
+            key={category.name}
+            selected={selectedCategory === category.name}
+            onClick={() => onCategoryChange(category.name)}
           >
             <ListItemText
-              primary={cat.name}
-              primaryTypographyProps={{
-                variant: "body2",
-                fontWeight: 500,
-                noWrap: true,
-              }}
+              primary={category.name}
+              primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
             />
             <Chip
-              label={cat.count}
+              label={category.count}
               size="small"
-              sx={{
-                height: 20,
-                minWidth: 28,
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                bgcolor:
-                  selectedCategory === cat.name
-                    ? alpha(theme.palette.primary.main, 0.2)
-                    : alpha(theme.palette.text.primary, 0.08),
-                color:
-                  selectedCategory === cat.name
-                    ? theme.palette.primary.main
-                    : theme.palette.text.secondary,
-              }}
+              sx={chipSx(selectedCategory === category.name)}
             />
           </ListItemButton>
         ))}
@@ -479,219 +223,6 @@ function SidebarContent({
     </Box>
   );
 }
-
-// ── SkillCard ────────────────────────────────────────────────────────
-
-interface SkillCardProps {
-  item: ItemDto;
-  index: number;
-  selected: boolean;
-  onToggle: () => void;
-  onShowDetail: () => void;
-}
-
-function SkillCard({ item, index, selected, onToggle, onShowDetail }: SkillCardProps) {
-  const { t } = useI18n();
-  const theme = useTheme();
-  const isInstalled = item.status === "installed";
-  const isOutdated = item.status === "outdated";
-
-  return (
-    <Card
-      onClick={onToggle}
-      sx={{
-        position: "relative",
-        overflow: "hidden",
-        cursor: "pointer",
-        transition:
-          "transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s",
-        animation: `skillFadeIn 0.3s ease-out ${index * 0.03}s both`,
-        "@keyframes skillFadeIn": {
-          "0%": { opacity: 0, transform: "translateY(12px)" },
-          "100%": { opacity: 1, transform: "translateY(0)" },
-        },
-        ...(selected && {
-          boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.5)}`,
-        }),
-        ...(isOutdated && {
-          borderLeft: `3px solid ${theme.palette.warning.main}`,
-        }),
-        ...(isInstalled && {
-          opacity: 0.7,
-        }),
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: selected
-            ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.5)}, 0 12px 40px ${alpha(theme.palette.primary.main, 0.2)}`
-            : `0 12px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
-        },
-      }}
-    >
-      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-        {/* Top row: Checkbox + Status */}
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          mb={1}
-        >
-          <Checkbox
-            size="small"
-            checked={selected}
-            onClick={(e) => e.stopPropagation()}
-            onChange={onToggle}
-            sx={{
-              p: 0.5,
-              opacity: selected ? 1 : 0.4,
-              "&:hover": { opacity: 1 },
-            }}
-          />
-          <Box display="flex" alignItems="center" gap={0.5}>
-            <Tooltip title={t("common.viewDetail")}>
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onShowDetail();
-                }}
-                sx={{
-                  p: 0.5,
-                  opacity: 0.5,
-                  "&:hover": { opacity: 1, color: "primary.main" },
-                }}
-              >
-                <InfoOutlinedIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Chip
-              icon={<StatusIcon status={item.status} />}
-              label={statusLabel(item.status, t)}
-              color={statusColor(item.status)}
-              variant="outlined"
-              size="small"
-              sx={{ height: 24, borderRadius: 1.5, fontSize: "0.7rem" }}
-            />
-          </Box>
-        </Box>
-
-        {/* Name */}
-        <Typography
-          variant="body2"
-          fontWeight={600}
-          color="primary.main"
-          noWrap
-          sx={{ mb: 0.5 }}
-        >
-          {item.name}
-        </Typography>
-
-        {/* Description */}
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            lineHeight: 1.4,
-            minHeight: "2.8em",
-          }}
-        >
-          {item.description ?? t("installHub.noDescription")}
-        </Typography>
-
-        {/* Bottom: Category + Default badge */}
-        <Box display="flex" alignItems="center" gap={0.5} mt={1.5}>
-          {item.category && (
-            <Chip
-              label={item.category}
-              size="small"
-              variant="outlined"
-              sx={{
-                height: 20,
-                fontSize: "0.65rem",
-                borderRadius: 1,
-                maxWidth: 120,
-              }}
-            />
-          )}
-          {item.is_default && (
-            <Chip
-              label={t("common.default")}
-              size="small"
-              sx={{
-                height: 20,
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                borderRadius: 1,
-                bgcolor: alpha(theme.palette.primary.main, 0.12),
-                color: theme.palette.primary.main,
-                border: `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
-              }}
-            />
-          )}
-        </Box>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── SkillCardGrid ────────────────────────────────────────────────────
-
-function SkillCardGrid({
-  skills,
-  selectedNames,
-  onToggle,
-  onShowDetail,
-}: {
-  skills: ItemDto[];
-  selectedNames: Set<string>;
-  onToggle: (name: string) => void;
-  onShowDetail: (name: string) => void;
-}) {
-  const { t } = useI18n();
-  if (skills.length === 0) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          py: 12,
-          gap: 2,
-        }}
-      >
-        <ExtensionIcon sx={{ fontSize: 64, color: "text.disabled" }} />
-        <Typography variant="h6" color="text.secondary">
-          {t("install.noSkillsFound")}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {t("install.adjustFilters")}
-        </Typography>
-      </Box>
-    );
-  }
-
-  return (
-    <Grid container spacing={2}>
-      {skills.map((item, index) => (
-        <Grid key={item.name} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}>
-          <SkillCard
-            item={item}
-            index={index}
-            selected={selectedNames.has(item.name)}
-            onToggle={() => onToggle(item.name)}
-            onShowDetail={() => onShowDetail(item.name)}
-          />
-        </Grid>
-      ))}
-    </Grid>
-  );
-}
-
-// ── SearchToolbar ────────────────────────────────────────────────────
 
 function SearchToolbar({
   search,
@@ -703,7 +234,7 @@ function SearchToolbar({
   onUpdateAll,
 }: {
   search: string;
-  onSearchChange: (val: string) => void;
+  onSearchChange: (value: string) => void;
   onSelectAll: () => void;
   onClearSelection: () => void;
   selectedCount: number;
@@ -711,6 +242,7 @@ function SearchToolbar({
   onUpdateAll: () => void;
 }) {
   const { t } = useI18n();
+
   return (
     <Box
       sx={{
@@ -726,7 +258,7 @@ function SearchToolbar({
         size="small"
         placeholder={t("install.searchPlaceholder")}
         value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={(event) => onSearchChange(event.target.value)}
         slotProps={{
           input: {
             startAdornment: (
@@ -767,7 +299,6 @@ function SearchToolbar({
           variant="contained"
           color="warning"
           size="small"
-          startIcon={<SystemUpdateAltIcon />}
           onClick={onUpdateAll}
           sx={{ borderRadius: 2 }}
         >
@@ -778,69 +309,134 @@ function SearchToolbar({
   );
 }
 
-// ── FloatingActionBar ────────────────────────────────────────────────
-
-function FloatingActionBar({
-  count,
-  onInstall,
-  onClear,
+function SkillCard({
+  item,
+  selected,
+  index,
+  onToggle,
+  onShowDetail,
 }: {
-  count: number;
-  onInstall: () => void;
-  onClear: () => void;
+  item: ItemDto;
+  selected: boolean;
+  index: number;
+  onToggle: () => void;
+  onShowDetail: () => void;
 }) {
   const { t } = useI18n();
   const theme = useTheme();
 
   return (
-    <Slide direction="down" in={count > 0} mountOnEnter unmountOnExit>
-      <Paper
-        elevation={8}
-        sx={{
-          position: "fixed",
-          top: 80,
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: theme.zIndex.appBar - 1,
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          px: 3,
-          py: 1.5,
-          borderRadius: 4,
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          backgroundColor:
-            theme.palette.mode === "dark"
-              ? "rgba(20, 20, 25, 0.85)"
-              : "rgba(255, 255, 255, 0.9)",
-          border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`,
-          boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.2)}`,
-        }}
-      >
-        <Chip
-          label={t("common.selectedCount", { count })}
-          color="primary"
-          size="small"
-          sx={{ fontWeight: 600 }}
-        />
-        <Button
-          variant="contained"
-          startIcon={<InstallDesktopIcon />}
-          onClick={onInstall}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+    <Card
+      onClick={onToggle}
+      sx={{
+        cursor: "pointer",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        animation: `localSkillFadeIn 0.3s ease-out ${index * 0.03}s both`,
+        "@keyframes localSkillFadeIn": {
+          "0%": { opacity: 0, transform: "translateY(12px)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
+        },
+        boxShadow: selected
+          ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.4)}`
+          : undefined,
+        "&:hover": {
+          transform: "translateY(-3px)",
+          boxShadow: `0 10px 30px ${alpha(theme.palette.primary.main, 0.14)}`,
+        },
+      }}
+    >
+      <CardContent sx={{ "&:last-child": { pb: 2 } }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Checkbox checked={selected} onChange={onToggle} onClick={(event) => event.stopPropagation()} />
+          <Tooltip title={t("common.viewDetail")}>
+            <IconButton
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                onShowDetail();
+              }}
+            >
+              <InfoOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Box display="flex" flexWrap="wrap" gap={0.75} mb={1.25}>
+          <Chip
+            size="small"
+            variant="outlined"
+            color={statusColor(item.status)}
+            icon={<StatusIcon status={item.status} />}
+            label={statusLabel(item.status, t)}
+          />
+          {item.category && <Chip size="small" variant="outlined" label={item.category} />}
+          {item.is_default && (
+            <Chip
+              size="small"
+              label={t("common.default")}
+              sx={{
+                bgcolor: alpha(theme.palette.primary.main, 0.12),
+                color: theme.palette.primary.main,
+                fontWeight: 700,
+              }}
+            />
+          )}
+        </Box>
+
+        <Typography variant="body1" fontWeight={700} sx={{ mb: 0.5 }}>
+          {item.name}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            minHeight: "4.2em",
+          }}
         >
-          {`${t("common.install")} / ${t("common.reinstall")}`}
-        </Button>
-        <IconButton size="small" onClick={onClear}>
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </Paper>
-    </Slide>
+          {item.description ?? t("install.adjustFilters")}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }
 
-// ── SkillDetailDialog ────────────────────────────────────────────────
+function SkillCardGrid({
+  skills,
+  selectedNames,
+  onToggle,
+  onShowDetail,
+}: {
+  skills: ItemDto[];
+  selectedNames: Set<string>;
+  onToggle: (name: string) => void;
+  onShowDetail: (name: string) => void;
+}) {
+  const { t } = useI18n();
+
+  if (skills.length === 0) {
+    return <Alert severity="info">{t("install.noSkillsFound")}</Alert>;
+  }
+
+  return (
+    <Grid container spacing={2}>
+      {skills.map((item, index) => (
+        <Grid key={item.name} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}>
+          <SkillCard
+            item={item}
+            index={index}
+            selected={selectedNames.has(item.name)}
+            onToggle={() => onToggle(item.name)}
+            onShowDetail={() => onShowDetail(item.name)}
+          />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
 
 function SkillDetailDialog({
   open,
@@ -854,12 +450,13 @@ function SkillDetailDialog({
   onClose: () => void;
 }) {
   const { t } = useI18n();
-  const theme = useTheme();
   const [detail, setDetail] = useState<ItemDetailDto | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!open || !skillName) return;
+    if (!open || !skillName) {
+      return;
+    }
     setLoading(true);
     setDetail(null);
     getSkillDetail(platformId, skillName)
@@ -869,22 +466,7 @@ function SkillDetailDialog({
   }, [open, platformId, skillName]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        elevation: 0,
-        sx: {
-          maxHeight: "85vh",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-        },
-      }}
-    >
-      {/* Header */}
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <Box
         sx={{
           display: "flex",
@@ -892,1106 +474,32 @@ function SkillDetailDialog({
           justifyContent: "space-between",
           px: 3,
           py: 2,
-          borderBottom: `1px solid ${theme.palette.mode === "dark"
-            ? "rgba(255, 255, 255, 0.06)"
-            : "rgba(0, 0, 0, 0.06)"
-            }`,
-          flexShrink: 0,
+          borderBottom: 1,
+          borderColor: "divider",
         }}
       >
-        <Box display="flex" alignItems="center" gap={1.5}>
-          <Box
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "linear-gradient(135deg, #8B5CF6, #3B82F6)",
-            }}
-          >
-            <ExtensionIcon sx={{ color: "#fff", fontSize: 18 }} />
-          </Box>
-          <Box>
-            <Typography variant="h6" fontWeight={700} lineHeight={1.2}>
-              {skillName ?? t("dialogs.detailFallbackTitle")}
-            </Typography>
-            {detail?.category && (
-              <Typography variant="caption" color="text.secondary">
-                {detail.category}
-              </Typography>
-            )}
-          </Box>
-        </Box>
-        <IconButton
-          onClick={onClose}
-          size="small"
-          sx={{
-            bgcolor:
-              theme.palette.mode === "dark"
-                ? "rgba(255,255,255,0.06)"
-                : "rgba(0,0,0,0.04)",
-            "&:hover": {
-              bgcolor:
-                theme.palette.mode === "dark"
-                  ? "rgba(255,255,255,0.12)"
-                  : "rgba(0,0,0,0.08)",
-            },
-          }}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
+        <Typography variant="h6" fontWeight={700}>
+          {skillName ?? "SKILL.md"}
+        </Typography>
+        <Button onClick={onClose}>{t("common.close")}</Button>
       </Box>
-
-      {/* Body */}
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          px: 3,
-          py: 2.5,
-        }}
-      >
+      <Box sx={{ px: 3, py: 2.5, maxHeight: "70vh", overflowY: "auto" }}>
         {loading ? (
           <Box display="flex" justifyContent="center" py={8}>
             <CircularProgress />
           </Box>
-        ) : detail ? (
-          <>
-            {/* Metadata row */}
-            <Box display="flex" gap={1} flexWrap="wrap" alignItems="center" mb={2}>
-              <Chip
-                icon={<StatusIcon status={detail.status} />}
-                label={statusLabel(detail.status, t)}
-                color={statusColor(detail.status)}
-                variant="outlined"
-                size="small"
-                sx={{ borderRadius: 1.5 }}
-              />
-              {detail.is_default && (
-                <Chip
-                  label={t("common.default")}
-                  size="small"
-                  sx={{
-                    fontWeight: 600,
-                    bgcolor: alpha(theme.palette.primary.main, 0.12),
-                    color: theme.palette.primary.main,
-                    border: `1px solid ${alpha(theme.palette.primary.main, 0.25)}`,
-                  }}
-                />
-              )}
-              {detail.tags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                  sx={{ borderRadius: 1.5 }}
-                />
-              ))}
-            </Box>
-
-            {/* Description */}
-            {detail.description && (
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  mb: 2.5,
-                  lineHeight: 1.7,
-                  pb: 2,
-                  borderBottom: `1px solid ${theme.palette.mode === "dark"
-                    ? "rgba(255,255,255,0.06)"
-                    : "rgba(0,0,0,0.06)"
-                    }`,
-                }}
-              >
-                {detail.description}
-              </Typography>
-            )}
-
-            {/* Markdown content */}
-            {detail.content ? (
-              <Box
-                sx={{
-                  "& h1": {
-                    fontSize: "1.5rem",
-                    fontWeight: 700,
-                    mt: 3,
-                    mb: 1.5,
-                    fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
-                    background: "linear-gradient(135deg, #8B5CF6, #3B82F6)",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  },
-                  "& h2": {
-                    fontSize: "1.25rem",
-                    fontWeight: 700,
-                    mt: 2.5,
-                    mb: 1,
-                    fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
-                  },
-                  "& h3": {
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    mt: 2,
-                    mb: 0.5,
-                    fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
-                  },
-                  "& p": { mb: 1.5, lineHeight: 1.8, fontSize: "0.9rem" },
-                  "& code": {
-                    bgcolor:
-                      theme.palette.mode === "dark"
-                        ? "rgba(139, 92, 246, 0.12)"
-                        : "rgba(139, 92, 246, 0.08)",
-                    color: theme.palette.primary.main,
-                    px: 0.8,
-                    py: 0.2,
-                    borderRadius: 1,
-                    fontSize: "0.85em",
-                    fontFamily: '"JetBrains Mono", monospace',
-                  },
-                  "& pre": {
-                    bgcolor:
-                      theme.palette.mode === "dark"
-                        ? "rgba(0, 0, 0, 0.4)"
-                        : "rgba(0, 0, 0, 0.03)",
-                    border: `1px solid ${theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.06)"
-                      : "rgba(0,0,0,0.06)"
-                      }`,
-                    p: 2,
-                    borderRadius: 3,
-                    overflow: "auto",
-                    fontSize: "0.85rem",
-                    "& code": {
-                      bgcolor: "transparent",
-                      color: "inherit",
-                      px: 0,
-                      py: 0,
-                    },
-                  },
-                  "& ul, & ol": { pl: 3, mb: 1.5 },
-                  "& li": { mb: 0.5, lineHeight: 1.7, fontSize: "0.9rem" },
-                  "& blockquote": {
-                    borderLeft: `3px solid ${theme.palette.primary.main}`,
-                    pl: 2,
-                    ml: 0,
-                    my: 1.5,
-                    color: "text.secondary",
-                    fontStyle: "italic",
-                  },
-                  "& a": {
-                    color: theme.palette.primary.main,
-                    textDecoration: "none",
-                    "&:hover": { textDecoration: "underline" },
-                  },
-                  "& hr": {
-                    border: "none",
-                    borderTop: `1px solid ${theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.08)"
-                      : "rgba(0,0,0,0.08)"
-                      }`,
-                    my: 2,
-                  },
-                  "& table": {
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    mb: 2,
-                    fontSize: "0.85rem",
-                  },
-                  "& th, & td": {
-                    border: `1px solid ${theme.palette.mode === "dark"
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(0,0,0,0.1)"
-                      }`,
-                    px: 1.5,
-                    py: 1,
-                    textAlign: "left",
-                  },
-                  "& th": {
-                    fontWeight: 600,
-                    bgcolor:
-                      theme.palette.mode === "dark"
-                        ? "rgba(139,92,246,0.08)"
-                        : "rgba(139,92,246,0.04)",
-                  },
-                }}
-              >
-                <Suspense fallback={<CircularProgress size={20} />}>
-                  <Markdown>{detail.content}</Markdown>
-                </Suspense>
-              </Box>
-            ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  py: 6,
-                  gap: 1,
-                }}
-              >
-                <ExtensionIcon
-                  sx={{ fontSize: 48, color: "text.disabled" }}
-                />
-                <Typography color="text.secondary" fontStyle="italic">
-                  {t("dialogs.noSkillContent")}
-                </Typography>
-              </Box>
-            )}
-          </>
+        ) : detail?.content ? (
+          <Suspense fallback={<CircularProgress size={20} />}>
+            <Markdown>{detail.content}</Markdown>
+          </Suspense>
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              py: 6,
-              gap: 1,
-            }}
-          >
-            <Typography color="text.secondary">
-              {t("dialogs.failedLoadDetail")}
-            </Typography>
-          </Box>
+          <Alert severity="error">{t("dialogs.failedLoadDetail")}</Alert>
         )}
       </Box>
     </Dialog>
   );
 }
 
-// ── ExternalInstallPanel ─────────────────────────────────────────────
-
-function ExternalInstallPanel({
-  platformId,
-  sourceMode,
-  installTarget,
-  showNotification,
-}: {
-  platformId: string;
-  sourceMode: "vercel" | "playbooks";
-  installTarget: InstallTarget;
-  showNotification: (msg: string, sev: "success" | "error" | "warning") => void;
-}) {
-  const { t } = useI18n();
-  const theme = useTheme();
-  const [extMethod, setExtMethod] = useState<ExternalInstallMethod>(sourceMode);
-  const [customBatchInput, setCustomBatchInput] = useState("");
-  const [selectedCatalogKeys, setSelectedCatalogKeys] = useState<Set<string>>(new Set());
-
-  // ── Agent & CLI mode config (persisted in localStorage) ──
-  const [agents, setAgents] = useState<string[]>(loadAgents);
-  const [cliMode, setCliMode] = useState<ExternalInstallCliMode>(loadCliMode);
-
-  const updateAgents = useCallback((newAgents: string[]) => {
-    setAgents(newAgents);
-    localStorage.setItem(LS_KEY_AGENTS, JSON.stringify(newAgents));
-  }, []);
-
-  const updateCliMode = useCallback((mode: ExternalInstallCliMode) => {
-    setCliMode(mode);
-    localStorage.setItem(LS_KEY_CLI_MODE, mode);
-  }, []);
-
-  const externalInstallConfig = useMemo(
-    (): ExternalInstallConfig => ({ agents, cli_mode: cliMode }),
-    [agents, cliMode]
-  );
-
-  const [jobId, setJobId] = useState<string | null>(null);
-  const [jobRunning, setJobRunning] = useState(false);
-  const [jobCompleted, setJobCompleted] = useState(0);
-  const [jobTotal, setJobTotal] = useState(0);
-  const [jobPercent, setJobPercent] = useState(0);
-  const [jobSuccessCount, setJobSuccessCount] = useState(0);
-  const [jobFailureCount, setJobFailureCount] = useState(0);
-  const [streamDisconnected, setStreamDisconnected] = useState(false);
-
-  const [catalogItems, setCatalogItems] = useState<ExternalSkillCatalogDto[]>([]);
-  const [catalogLoading, setCatalogLoading] = useState(true);
-  const [itemStates, setItemStates] = useState<
-    Array<{
-      key: string;
-      skillName: string;
-      method: ExternalInstallMethod;
-      status: "pending" | "running" | "success" | "error";
-      output: string;
-      error: string | null;
-      durationMs: number | null;
-    }>
-  >([]);
-
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const streamWarnedRef = useRef(false);
-  const catalogLoadedRef = useRef(false);
-
-  useEffect(() => {
-    setExtMethod(sourceMode);
-    setSelectedCatalogKeys(new Set());
-  }, [sourceMode]);
-
-  useEffect(() => {
-    return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (catalogLoadedRef.current) {
-      return;
-    }
-    const controller = new AbortController();
-
-    const fetchCatalog = async () => {
-      try {
-        setCatalogLoading(true);
-        const data = await getExternalSkillCatalog(controller.signal);
-        setCatalogItems(data);
-        catalogLoadedRef.current = true;
-      } catch (e) {
-        if ((e as Error).name === "AbortError") {
-          return;
-        }
-        console.error("Failed to load external skills catalog", e);
-      } finally {
-        if (!controller.signal.aborted) {
-          setCatalogLoading(false);
-        }
-      }
-    };
-    void fetchCatalog();
-    return () => controller.abort();
-  }, [sourceMode]);
-
-  const visibleCatalogItems = useMemo(
-    () => catalogItems.filter((item) => item.method === sourceMode),
-    [catalogItems, sourceMode]
-  );
-
-  const toSkillName = useCallback((item: ExternalSkillCatalogDto) => {
-    return item.skill_flag ? `${item.repo} --skill ${item.skill_flag}` : item.repo;
-  }, []);
-
-  const itemKey = useCallback((method: ExternalInstallMethod, skillName: string) => {
-    return `${method}::${skillName.trim()}`;
-  }, []);
-
-  const parseCustomInput = useCallback((): ExternalInstallBatchItemDto[] => {
-    const lines = customBatchInput
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    return lines.map((skillName) => ({
-      skill_name: skillName,
-      method: extMethod,
-    }));
-  }, [customBatchInput, extMethod]);
-
-  const queuedItems = useMemo(() => {
-    const dedup = new Map<string, ExternalInstallBatchItemDto>();
-
-    for (const item of visibleCatalogItems) {
-      const skillName = toSkillName(item);
-      const key = itemKey(item.method as ExternalInstallMethod, skillName);
-      if (!selectedCatalogKeys.has(key)) continue;
-      dedup.set(key, {
-        skill_name: skillName,
-        method: item.method as ExternalInstallMethod,
-      });
-    }
-
-    for (const item of parseCustomInput()) {
-      dedup.set(itemKey(item.method, item.skill_name), item);
-    }
-
-    return Array.from(dedup.values());
-  }, [visibleCatalogItems, toSkillName, selectedCatalogKeys, parseCustomInput, itemKey]);
-
-  const closeEventStream = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
-  }, []);
-
-  const initializePendingItems = useCallback(
-    (items: ExternalInstallBatchItemDto[]) => {
-      setItemStates(
-        items.map((item) => ({
-          key: itemKey(item.method, item.skill_name),
-          skillName: item.skill_name,
-          method: item.method,
-          status: "pending" as const,
-          output: "",
-          error: null,
-          durationMs: null,
-        }))
-      );
-    },
-    [itemKey]
-  );
-
-  const handleExternalBatchInstall = async () => {
-    if (queuedItems.length === 0 || jobRunning) return;
-
-    streamWarnedRef.current = false;
-    setStreamDisconnected(false);
-    setJobId(null);
-    setJobRunning(true);
-    setJobCompleted(0);
-    setJobTotal(queuedItems.length);
-    setJobPercent(0);
-    setJobSuccessCount(0);
-    setJobFailureCount(0);
-    initializePendingItems(queuedItems);
-
-    closeEventStream();
-
-    try {
-      const started = await startExternalInstallJob(platformId, queuedItems, installTarget, externalInstallConfig);
-      setJobId(started.job_id);
-      setJobTotal(started.total);
-
-      const streamUrl = `/api/platforms/${encodeURIComponent(
-        platformId
-      )}/skills/external-install/jobs/${encodeURIComponent(started.job_id)}/stream`;
-
-      const source = new EventSource(streamUrl);
-      eventSourceRef.current = source;
-
-      source.addEventListener("item_started", (event) => {
-        const payload = safeParseEvent<ExternalInstallItemStartedPayload>(event);
-        if (!payload) return;
-        const key = itemKey(payload.method, payload.skill_name);
-        setItemStates((prev) =>
-          prev.map((item) => (item.key === key ? { ...item, status: "running" } : item))
-        );
-      });
-
-      source.addEventListener("item_finished", (event) => {
-        const payload = safeParseEvent<ExternalInstallItemFinishedPayload>(event);
-        if (!payload) return;
-        const key = itemKey(payload.method, payload.skill_name);
-        setItemStates((prev) =>
-          prev.map((item) =>
-            item.key === key
-              ? {
-                  ...item,
-                  status: payload.success ? "success" : "error",
-                  output: payload.output ?? "",
-                  error: payload.error,
-                  durationMs: payload.duration_ms,
-                }
-              : item
-          )
-        );
-      });
-
-      source.addEventListener("job_progress", (event) => {
-        const payload = safeParseEvent<ExternalInstallJobProgressPayload>(event);
-        if (!payload) return;
-        setJobCompleted(payload.completed);
-        setJobTotal(payload.total);
-        setJobSuccessCount(payload.success_count);
-        setJobFailureCount(payload.failure_count);
-        setJobPercent(payload.percent);
-      });
-
-      source.addEventListener("job_completed", (event) => {
-        const payload = safeParseEvent<ExternalInstallJobCompletedPayload>(event);
-        if (!payload) return;
-
-        setJobRunning(false);
-        setJobCompleted(payload.total);
-        setJobTotal(payload.total);
-        setJobSuccessCount(payload.success_count);
-        setJobFailureCount(payload.failure_count);
-        setJobPercent(100);
-        closeEventStream();
-
-        showNotification(
-          t("install.externalBatchCompleted", {
-            success: payload.success_count,
-            failed: payload.failure_count,
-          }),
-          payload.failure_count > 0 ? "warning" : "success"
-        );
-      });
-
-      source.addEventListener("job_failed", (event) => {
-        const payload = safeParseEvent<{ message: string }>(event);
-        const message = payload?.message ?? t("install.installationFailed");
-        setJobRunning(false);
-        closeEventStream();
-        showNotification(t("install.externalBatchFailed", { message }), "error");
-      });
-
-      source.onerror = () => {
-        setStreamDisconnected(true);
-        if (!streamWarnedRef.current) {
-          streamWarnedRef.current = true;
-          showNotification(t("install.externalBatchConnectionLost"), "warning");
-        }
-      };
-    } catch (e) {
-      setJobRunning(false);
-      closeEventStream();
-      showNotification((e as Error).message, "error");
-    }
-  };
-
-  const toggleCatalogSelection = (item: ExternalSkillCatalogDto) => {
-    if (jobRunning) return;
-    const skillName = toSkillName(item);
-    const key = itemKey(item.method as ExternalInstallMethod, skillName);
-    setSelectedCatalogKeys((previous) => {
-      const next = new Set(previous);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
-  const selectAllCatalog = () => {
-    if (jobRunning) return;
-    const allKeys = new Set(
-      visibleCatalogItems.map((item) =>
-        itemKey(item.method as ExternalInstallMethod, toSkillName(item))
-      )
-    );
-    setSelectedCatalogKeys(allKeys);
-  };
-
-  const deselectAllCatalog = () => {
-    if (jobRunning) return;
-    setSelectedCatalogKeys(new Set());
-  };
-
-  const clearBatchSelection = () => {
-    if (jobRunning) return;
-    setSelectedCatalogKeys(new Set());
-    setCustomBatchInput("");
-  };
-
-  return (
-    <Fade in>
-      <Card
-        sx={{
-          width: "100%",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "visible",
-        }}
-        elevation={0}
-      >
-        <CardContent sx={{ p: { xs: 2, md: 3 }, flex: 1, display: "flex", flexDirection: "column" }}>
-          <Box display="flex" alignItems="center" gap={1.5} mb={4}>
-            <Box
-              sx={{
-                width: 44,
-                height: 44,
-                borderRadius: 2.5,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
-              }}
-            >
-              <CloudDownloadIcon sx={{ color: "#fff", fontSize: 24 }} />
-            </Box>
-            <Box>
-              <Typography variant="h6" fontWeight={800} sx={{ letterSpacing: "-0.01em" }}>
-                {t("install.externalInstallTitle")}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {sourceMode === "vercel"
-                  ? t("install.externalInstallSubVercel")
-                  : t("install.externalInstallSubPlaybooks")}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Grid container spacing={4} sx={{ flex: 1 }}>
-            <Grid size={{ xs: 12, md: 7, lg: 8 }} sx={{ display: "flex", flexDirection: "column" }}>
-              <Stack spacing={3} sx={{ flex: 1 }}>
-                {!catalogLoading && catalogItems.length > 0 && (
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="subtitle1" gutterBottom fontWeight={700}>
-                      {t("install.externalBatchRecommended")}
-                    </Typography>
-                    <Box display="flex" alignItems="center" gap={1} mb={1.5}>
-                      <Chip
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                        label={t("install.externalBatchSelectionCount", {
-                          count: selectedCatalogKeys.size,
-                        })}
-                      />
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<SelectAllIcon />}
-                        disabled={jobRunning || visibleCatalogItems.length === 0}
-                        onClick={selectAllCatalog}
-                        sx={{ borderRadius: 2, textTransform: "none" }}
-                      >
-                        {t("install.selectAll")}
-                      </Button>
-                      {selectedCatalogKeys.size > 0 && (
-                        <Button
-                          size="small"
-                          variant="text"
-                          disabled={jobRunning}
-                          onClick={deselectAllCatalog}
-                          sx={{ borderRadius: 2, textTransform: "none" }}
-                        >
-                          {t("install.deselectAll")}
-                        </Button>
-                      )}
-                    </Box>
-                    <Grid container spacing={2} sx={{ mb: 2 }}>
-                      {visibleCatalogItems.map((item) => {
-                        const skillName = toSkillName(item);
-                        const key = itemKey(item.method as ExternalInstallMethod, skillName);
-                        const isSelected = selectedCatalogKeys.has(key);
-                        const activePlatformStatus = platformId && item.platform_status?.[platformId] != null
-                          ? { [platformId]: item.platform_status[platformId] }
-                          : undefined;
-                        const statusInfo = getAggregatedStatus(activePlatformStatus, t, { emptyDefault: "not_installed" });
-
-                        return (
-                          <Grid size={{ xs: 12, sm: 6, lg: 6 }} key={item.name}>
-                            <Card
-                              variant="outlined"
-                              sx={{
-                                cursor: "pointer",
-                                borderColor: isSelected ? "primary.main" : "divider",
-                                bgcolor: isSelected ? alpha(theme.palette.primary.main, 0.08) : "background.paper",
-                                height: "100%",
-                                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                                boxShadow: isSelected ? `0 4px 12px ${alpha(theme.palette.primary.main, 0.15)}` : "none",
-                                "&:hover": {
-                                  borderColor: "primary.main",
-                                  transform: "translateY(-2px)",
-                                  boxShadow: `0 6px 16px ${alpha(theme.palette.primary.main, 0.1)}`,
-                                },
-                              }}
-                              onClick={() => {
-                                toggleCatalogSelection(item);
-                              }}
-                            >
-                              <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column" }}>
-                                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
-                                  <Typography variant="subtitle2" fontWeight={700} noWrap sx={{ flex: 1, mr: 1 }}>
-                                    {item.name}
-                                  </Typography>
-                                  <Box display="flex" alignItems="center" gap={0.5}>
-                                    {item.category && (
-                                      <Chip
-                                        label={item.category}
-                                        size="small"
-                                        color={isSelected ? "primary" : "default"}
-                                        variant={isSelected ? "filled" : "outlined"}
-                                        sx={{ height: 20, fontSize: "0.65rem", fontWeight: 600 }}
-                                      />
-                                    )}
-                                    <InstallStatusChip
-                                      status={statusInfo.status}
-                                      tooltip={statusInfo.tooltip}
-                                      t={t}
-                                    />
-                                  </Box>
-                                </Box>
-                                <Typography variant="caption" color="text.secondary" sx={{ flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
-                                  {item.description || item.repo}
-                                </Typography>
-                                {item.usage && (
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      mt: 0.5,
-                                      color: "info.main",
-                                      fontStyle: "italic",
-                                      display: "-webkit-box",
-                                      WebkitLineClamp: 1,
-                                      WebkitBoxOrient: "vertical",
-                                      overflow: "hidden",
-                                      lineHeight: 1.4,
-                                      fontSize: "0.7rem",
-                                    }}
-                                  >
-                                    {item.usage}
-                                  </Typography>
-                                )}
-                                <Box sx={{ mt: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                  <Typography
-                                    variant="caption"
-                                    sx={{ fontFamily: '"JetBrains Mono", monospace', color: "text.secondary", mr: 1 }}
-                                  >
-                                    {skillName}
-                                  </Typography>
-                                  <Checkbox size="small" checked={isSelected} />
-                                </Box>
-                              </Box>
-                            </Card>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  </Box>
-                )}
-              </Stack>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 5, lg: 4 }} sx={{ display: "flex", flexDirection: "column" }}>
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 3,
-                  borderRadius: 3,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 3,
-                  flex: 1,
-                  bgcolor: theme.palette.mode === "dark" ? alpha("#000", 0.2) : alpha("#000", 0.02)
-                }}
-              >
-                {/* ── Configuration: Agent Selection & CLI Mode ── */}
-                <Box>
-                  <Typography variant="subtitle1" fontWeight={700} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-                    <SettingsIcon fontSize="small" />
-                    <span>Configuration</span>
-                  </Typography>
-
-                  {/* Agent selection */}
-                  <Autocomplete
-                    multiple
-                    freeSolo
-                    size="small"
-                    options={COMMON_AGENTS}
-                    value={agents}
-                    onChange={(_e, newValue) => updateAgents(newValue)}
-                    disabled={jobRunning}
-                    slotProps={{
-                      popper: { sx: { zIndex: 1500 } },
-                      listbox: { sx: { maxHeight: 240 } },
-                    }}
-                    renderTags={(value, getTagProps) =>
-                      value.map((option, index) => {
-                        const { key, ...rest } = getTagProps({ index });
-                        return (
-                          <Chip
-                            key={key}
-                            label={option}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                            sx={{ height: 24, fontSize: "0.75rem" }}
-                            {...rest}
-                          />
-                        );
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Target Agents"
-                        placeholder="Add agent..."
-                        helperText="Skills will be installed only for these agents"
-                      />
-                    )}
-                    sx={{ mb: 2 }}
-                  />
-
-                  {/* CLI mode toggle */}
-                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <SpeedIcon fontSize="small" color={cliMode === "auto" ? "primary" : "disabled"} />
-                      <Box>
-                        <Typography variant="body2" fontWeight={600}>
-                          {cliMode === "auto" ? "Auto (prefer local CLI)" : "npx (always download)"}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {cliMode === "auto"
-                            ? "Falls back to npx if local CLI not found"
-                            : "Install locally: npm i -g skills"}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Switch
-                      checked={cliMode === "auto"}
-                      onChange={(_e, checked) => updateCliMode(checked ? "auto" : "npx")}
-                      disabled={jobRunning}
-                      size="small"
-                    />
-                  </Box>
-                </Box>
-
-                <Divider />
-
-                <Typography variant="subtitle1" fontWeight={700} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <span>{t("install.externalBatchCustomInput")}</span>
-                  <Chip size="small" label="CLI" sx={{ height: 18, fontSize: "0.6rem" }} />
-                </Typography>
-
-                <TextField
-                  label={t("install.externalBatchCustomInput")}
-                  placeholder={t("install.externalBatchCustomHint")}
-                  value={customBatchInput}
-                  onChange={(e) => setCustomBatchInput(e.target.value)}
-                  fullWidth
-                  size="small"
-                  multiline
-                  minRows={4}
-                  disabled={jobRunning}
-                />
-
-                <FormControl>
-                  <FormLabel sx={{ fontSize: "0.85rem", fontWeight: 600, mb: 1 }}>
-                    {t("install.installMethod")}
-                  </FormLabel>
-                  <RadioGroup
-                    value={extMethod}
-                    onChange={(e) => setExtMethod(e.target.value as ExternalInstallMethod)}
-                    row
-                    sx={{ opacity: jobRunning ? 0.6 : 1 }}
-                  >
-                    <FormControlLabel
-                      value="vercel"
-                      control={<Radio size="small" />}
-                      label={
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontFamily: '"JetBrains Mono", monospace',
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {t("install.installMethodVercel")}
-                        </Typography>
-                      }
-                    />
-                    <FormControlLabel
-                      value="playbooks"
-                      control={<Radio size="small" />}
-                      label={
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontFamily: '"JetBrains Mono", monospace',
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {t("install.installMethodPlaybooks")}
-                        </Typography>
-                      }
-                    />
-                  </RadioGroup>
-                </FormControl>
-
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={
-                    jobRunning ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      <InstallDesktopIcon />
-                    )
-                  }
-                  onClick={handleExternalBatchInstall}
-                  disabled={queuedItems.length === 0 || jobRunning}
-                  sx={{ borderRadius: 2, fontWeight: 700 }}
-                  fullWidth
-                >
-                  {jobRunning ? t("install.externalBatchInProgress") : t("install.externalBatchStart")}
-                </Button>
-
-                <Stack direction="row" spacing={1}>
-                  <Chip
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                    label={t("install.externalBatchQueueCount", { count: queuedItems.length })}
-                  />
-                  <Chip
-                    size="small"
-                    color={jobFailureCount > 0 ? "warning" : "success"}
-                    variant="outlined"
-                    label={t("install.externalBatchCurrent", {
-                      completed: jobCompleted,
-                      total: jobTotal,
-                    })}
-                  />
-                  <Chip
-                    size="small"
-                    color="success"
-                    variant="outlined"
-                    label={t("installHub.successCount", { count: jobSuccessCount })}
-                  />
-                  <Chip
-                    size="small"
-                    color="error"
-                    variant="outlined"
-                    label={t("installHub.failedCount", { count: jobFailureCount })}
-                  />
-                </Stack>
-
-                {(jobRunning || jobTotal > 0) && (
-                  <Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.max(0, Math.min(100, jobPercent))}
-                      sx={{
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: alpha(theme.palette.primary.main, 0.12),
-                        "& .MuiLinearProgress-bar": {
-                          borderRadius: 4,
-                          transition: "transform 220ms cubic-bezier(0.16, 1, 0.3, 1)",
-                        },
-                      }}
-                    />
-                    {jobId && (
-                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: "block" }}>
-                        Job: {jobId}
-                      </Typography>
-                    )}
-                    {streamDisconnected && (
-                      <Alert severity="warning" sx={{ mt: 1, py: 0 }}>
-                        {t("install.externalBatchConnectionLost")}
-                      </Alert>
-                    )}
-                  </Box>
-                )}
-
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    size="small"
-                    variant="text"
-                    onClick={clearBatchSelection}
-                    disabled={jobRunning}
-                  >
-                    {t("install.externalBatchClear")}
-                  </Button>
-                </Stack>
-
-                {itemStates.length > 0 ? (
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      p: 2.5,
-                      borderRadius: 2,
-                      backgroundColor: theme.palette.mode === "dark" ? "#0d1117" : "#f6f8fa",
-                      border: "1px solid",
-                      borderColor: alpha(theme.palette.divider, 0.8),
-                      overflow: "auto",
-                      flex: 1,
-                      minHeight: 220,
-                    }}
-                  >
-                    <Stack spacing={0.75}>
-                      {itemStates.map((item) => (
-                        <Box
-                          key={item.key}
-                          sx={{
-                            px: 1,
-                            py: 0.75,
-                            borderRadius: 1.5,
-                            border: "1px solid",
-                            borderColor: alpha(theme.palette.divider, 0.8),
-                            transition: "all 180ms cubic-bezier(0.16, 1, 0.3, 1)",
-                            backgroundColor:
-                              item.status === "running"
-                                ? alpha(theme.palette.info.main, 0.08)
-                                : item.status === "success"
-                                ? alpha(theme.palette.success.main, 0.08)
-                                : item.status === "error"
-                                ? alpha(theme.palette.error.main, 0.08)
-                                : "transparent",
-                          }}
-                        >
-                          <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
-                            <Typography variant="caption" sx={{ fontWeight: 700 }}>
-                              {item.skillName}
-                            </Typography>
-                            <Chip
-                              size="small"
-                              color={
-                                item.status === "success"
-                                  ? "success"
-                                  : item.status === "error"
-                                  ? "error"
-                                  : item.status === "running"
-                                  ? "info"
-                                  : "default"
-                              }
-                              label={item.status}
-                              sx={{
-                                height: 20,
-                                fontSize: "0.65rem",
-                                textTransform: "uppercase",
-                                "& .MuiChip-label": { px: 1 },
-                              }}
-                            />
-                          </Box>
-                          <Typography
-                            variant="caption"
-                            sx={{ display: "block", color: "text.secondary", fontFamily: '"JetBrains Mono", monospace' }}
-                          >
-                            {item.method}
-                            {item.durationMs !== null ? ` - ${item.durationMs}ms` : ""}
-                          </Typography>
-                          {item.error && (
-                            <Typography variant="caption" color="error" sx={{ display: "block", mt: 0.5 }}>
-                              {item.error}
-                            </Typography>
-                          )}
-                          {item.status === "error" && item.output && !item.error && (
-                            <Typography
-                              variant="caption"
-                              color="error"
-                              sx={{ display: "block", mt: 0.5 }}
-                            >
-                              {item.output.replace(/\x1b\[[0-9;]*[a-zA-Z]|\x1b\[\?[0-9]*[a-zA-Z]|\x1b\][^\x07]*\x07/g, "").replace(/\[999D\[J/g, "").trim().split("\n").filter((l: string) => l.trim()).slice(-3).join("\n")}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))}
-                    </Stack>
-                  </Paper>
-                ) : (
-                  <Alert severity="info">{t("install.externalBatchNoQueue")}</Alert>
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </Fade>
-  );
-}
-
-function safeParseEvent<T>(event: Event): T | null {
-  const payload = event as MessageEvent<string>;
-  if (!payload?.data) return null;
-  try {
-    return JSON.parse(payload.data) as T;
-  } catch {
-    return null;
-  }
-}
 export default function InstallPage() {
   const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
@@ -2000,8 +508,8 @@ export default function InstallPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigateDeferred = (to: string) => startTransition(() => navigate(to));
 
-  const platform = usePlatformStore((s) =>
-    s.platforms.find((p) => p.id === platformId)
+  const platform = usePlatformStore((state) =>
+    state.platforms.find((item) => item.id === platformId)
   );
   const fetchPlatforms = usePlatformStore((s) => s.fetchPlatforms);
   const colorMode = useUiStore((s) => s.colorMode);
@@ -2018,11 +526,7 @@ export default function InstallPage() {
     applyTarget: applyInstallTarget,
   } = useInstallTarget(platformId);
 
-  // Source mode (replaces tabs)
-  const [sourceMode, setSourceMode] = useState<SourceMode>("local");
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Local skills state
   const [skills, setSkills] = useState<ItemDto[]>([]);
   const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -2039,7 +543,7 @@ export default function InstallPage() {
   const categoriesAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    fetchPlatforms();
+    void fetchPlatforms();
   }, [fetchPlatforms]);
 
   useEffect(() => {
@@ -2050,128 +554,97 @@ export default function InstallPage() {
   }, []);
 
   const fetchSkills = useCallback(async () => {
-    if (!platformId) return;
+    if (!platformId) {
+      return;
+    }
     skillsAbortRef.current?.abort();
     const controller = new AbortController();
     skillsAbortRef.current = controller;
     setLoading(true);
     setError(null);
     try {
-      const data = await getSkills(platformId, {
-        search: debouncedSearch || undefined,
-        category: selectedCategory ?? undefined,
-        installTarget,
-      }, controller.signal);
+      const data = await getSkills(
+        platformId,
+        {
+          search: debouncedSearch || undefined,
+          category: selectedCategory ?? undefined,
+          installTarget,
+        },
+        controller.signal
+      );
       setSkills(data);
-    } catch (e) {
-      if ((e as Error).name === "AbortError") {
+    } catch (error) {
+      if ((error as Error).name === "AbortError") {
         return;
       }
-      setError((e as Error).message);
+      setError((error as Error).message);
     } finally {
       if (!controller.signal.aborted) {
         setLoading(false);
       }
     }
-  }, [platformId, installTarget, debouncedSearch, selectedCategory]);
+  }, [platformId, debouncedSearch, selectedCategory, installTarget]);
 
-  const fetchCats = useCallback(async () => {
-    if (!platformId) return;
+  const fetchCategories = useCallback(async () => {
+    if (!platformId) {
+      return;
+    }
     categoriesAbortRef.current?.abort();
     const controller = new AbortController();
     categoriesAbortRef.current = controller;
     try {
-      const cats = await getCategories(
-        platformId,
-        installTarget,
-        "skill",
-        controller.signal
-      );
-      setCategories(cats);
+      const data = await getCategories(platformId, installTarget, "skill", controller.signal);
+      setCategories(data);
     } catch {
       // non-critical
     }
   }, [platformId, installTarget]);
 
   useEffect(() => {
-    if (sourceMode !== "local") {
-      return;
-    }
-    fetchCats();
-  }, [sourceMode, fetchCats]);
+    void fetchCategories();
+  }, [fetchCategories]);
 
   useEffect(() => {
-    if (sourceMode !== "local") {
-      return;
-    }
-    fetchSkills();
-  }, [sourceMode, fetchSkills]);
+    void fetchSkills();
+  }, [fetchSkills]);
 
-  // Clear selection when source changes
-  useEffect(() => {
-    setSelectedNames(new Set());
-  }, [sourceMode]);
-
-  // Clear selection when install target changes.
   useEffect(() => {
     setSelectedNames(new Set());
   }, [installTarget.scope, installTarget.project_path]);
 
-  // Client-side filtering
   const filteredSkills = useMemo(() => {
-    let result = statusFilter
-      ? skills.filter((s) => s.status === statusFilter)
-      : skills;
-    if (showDefaultOnly) result = result.filter((s) => s.is_default);
+    let result = statusFilter ? skills.filter((skill) => skill.status === statusFilter) : skills;
+    if (showDefaultOnly) {
+      result = result.filter((skill) => skill.is_default);
+    }
     return result;
   }, [skills, statusFilter, showDefaultOnly]);
 
-  // Status counts
   const statusCounts = useMemo(() => {
     const counts = { installed: 0, outdated: 0, not_installed: 0 };
-    for (const s of skills) {
-      if (s.status in counts) counts[s.status as keyof typeof counts]++;
+    for (const skill of skills) {
+      counts[skill.status]++;
     }
     return counts;
   }, [skills]);
 
-  // Selected items (all selected can be installed/reinstalled)
-  const selectedInstallable = useMemo(() => {
-    return skills.filter(
-      (s) => selectedNames.has(s.name)
-    );
-  }, [skills, selectedNames]);
-
-  const toggleSelection = (name: string) => {
-    setSelectedNames((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  };
-
-  const handleSelectAll = () => {
-    const names = filteredSkills
-      .map((s) => s.name);
-    setSelectedNames(new Set(names));
-  };
-
-  const handleSelectAllDefault = () => {
-    const names = filteredSkills
-      .filter((s) => s.is_default)
-      .map((s) => s.name);
-    setSelectedNames(new Set(names));
-  };
+  const selectedInstallable = useMemo(
+    () => skills.filter((skill) => selectedNames.has(skill.name)),
+    [skills, selectedNames]
+  );
 
   const handleBatchUpdate = async () => {
-    if (!platformId) return;
-    const outdated = skills.filter((s) => s.status === "outdated");
-    if (outdated.length === 0) return;
+    if (!platformId) {
+      return;
+    }
+    const outdated = skills.filter((skill) => skill.status === "outdated");
+    if (outdated.length === 0) {
+      return;
+    }
     try {
       const result = await installSkills(
         platformId,
-        outdated.map((s) => s.name),
+        outdated.map((skill) => skill.name),
         "auto",
         installTarget
       );
@@ -2180,34 +653,16 @@ export default function InstallPage() {
           success: result.success_count,
           failedSuffix:
             result.failure_count > 0
-              ? `, ${t("installHub.failedCount", { count: result.failure_count })}`
+              ? `, ${t("common.uninstall")} ${result.failure_count}`
               : "",
         }),
         result.failure_count > 0 ? "warning" : "success"
       );
-      fetchSkills();
-    } catch (e) {
-      showNotification((e as Error).message, "error");
+      void fetchSkills();
+    } catch (error) {
+      showNotification((error as Error).message, "error");
     }
   };
-
-  // Sidebar props
-  const sidebarProps: SidebarProps = {
-    sourceMode,
-    onSourceChange: setSourceMode,
-    statusFilter,
-    onStatusFilterChange: setStatusFilter,
-    statusCounts,
-    showDefaultOnly,
-    onDefaultToggle: () => setShowDefaultOnly((v) => !v),
-    onSelectAllDefault: handleSelectAllDefault,
-    selectedCategory,
-    onCategoryChange: setSelectedCategory,
-    categories,
-    totalSkills: skills.length,
-  };
-  const showLocalLoading = loading && skills.length === 0;
-  const showLocalInlineProgress = loading && skills.length > 0;
 
   return (
     <Box
@@ -2218,7 +673,8 @@ export default function InstallPage() {
         position: "relative",
       }}
     >
-      {/* ── AppBar ── */}
+      <AnimatedBackground />
+
       <AppBar position="fixed">
         <Toolbar>
           {isMobile && (
@@ -2250,24 +706,12 @@ export default function InstallPage() {
             </IconButton>
           </Tooltip>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1, minWidth: 0 }}>
-            <Typography
-              variant="h6"
-              noWrap
-              sx={{
-                fontWeight: 700,
-                letterSpacing: "-0.02em",
-              }}
-            >
+            <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
               {t("install.pageTitle", {
                 platform: `${platform?.icon ?? ""} ${platform?.name ?? platformId}`,
               })}
             </Typography>
-            <Tooltip
-              title={
-                resolvedTarget?.skills_path ??
-                t("install.installTargetLoading")
-              }
-            >
+            <Tooltip title={resolvedTarget?.skills_path ?? t("install.installTargetLoading")}>
               <Chip
                 icon={<FolderOpenOutlinedIcon />}
                 variant="outlined"
@@ -2281,15 +725,20 @@ export default function InstallPage() {
                     installTarget.scope === "project"
                       ? t("install.installTargetProject")
                       : t("install.installTargetGlobal"),
-                  path:
-                    resolvedTarget?.skills_path ??
-                    t("install.installTargetLoading"),
+                  path: resolvedTarget?.skills_path ?? t("install.installTargetLoading"),
                 })}
-                sx={{ "& .MuiChip-label": { whiteSpace: "nowrap" } }}
               />
             </Tooltip>
           </Box>
           <LanguageToggle sx={{ mr: 1 }} />
+          <Button
+            color="inherit"
+            startIcon={<TerminalIcon />}
+            onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
+            sx={{ mr: 1, display: { xs: "none", sm: "inline-flex" } }}
+          >
+            {t("npxSkills.pageButton")}
+          </Button>
           <IconButton
             color="inherit"
             aria-label={
@@ -2304,18 +753,26 @@ export default function InstallPage() {
         </Toolbar>
       </AppBar>
 
-      {/* ── Mobile Drawer ── */}
       {isMobile && (
         <Drawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           PaperProps={{ sx: { width: SIDEBAR_WIDTH, pt: 2 } }}
         >
-          <SidebarContent {...sidebarProps} />
+          <FiltersSidebar
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            statusCounts={statusCounts}
+            showDefaultOnly={showDefaultOnly}
+            onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
+            totalSkills={skills.length}
+          />
         </Drawer>
       )}
 
-      {/* ── Main Layout ── */}
       <Box
         component="main"
         sx={{
@@ -2329,115 +786,94 @@ export default function InstallPage() {
           alignItems: "flex-start",
         }}
       >
-        {/* Desktop Sidebar */}
         {!isMobile && (
-          <Box
-            sx={{
-              width: SIDEBAR_WIDTH,
-              flexShrink: 0,
-              position: "sticky",
-              top: 88,
-            }}
-          >
-            <Card
-              elevation={0}
-              sx={{ overflow: "hidden", borderRadius: 4 }}
-            >
-              <SidebarContent {...sidebarProps} />
+          <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0, position: "sticky", top: 88 }}>
+            <Card elevation={0} sx={{ overflow: "hidden", borderRadius: 4 }}>
+              <FiltersSidebar
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                statusCounts={statusCounts}
+                showDefaultOnly={showDefaultOnly}
+                onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
+                totalSkills={skills.length}
+              />
             </Card>
           </Box>
         )}
 
-        {/* Content Area */}
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-          {/* Local source: skill grid */}
-          {sourceMode === "local" && (
-            <>
-              <SearchToolbar
-                search={search}
-                onSearchChange={setSearch}
-                onSelectAll={handleSelectAll}
-                onClearSelection={() => setSelectedNames(new Set())}
-                selectedCount={selectedNames.size}
-                outdatedCount={statusCounts.outdated}
-                onUpdateAll={handleBatchUpdate}
-              />
+          <SearchToolbar
+            search={search}
+            onSearchChange={setSearch}
+            onSelectAll={() => setSelectedNames(new Set(filteredSkills.map((skill) => skill.name)))}
+            onClearSelection={() => setSelectedNames(new Set())}
+            selectedCount={selectedNames.size}
+            outdatedCount={statusCounts.outdated}
+            onUpdateAll={() => void handleBatchUpdate()}
+          />
 
-              {error && (
-                <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
-                  {error}
-                </Alert>
-              )}
-
-              {(showLocalInlineProgress || installTargetLoading) && (
-                <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
-              )}
-
-              {showLocalLoading ? (
-                <Box display="flex" justifyContent="center" py={8}>
-                  <CircularProgress />
-                </Box>
-              ) : (
-                <SkillCardGrid
-                  skills={filteredSkills}
-                  selectedNames={selectedNames}
-                  onToggle={toggleSelection}
-                  onShowDetail={setDetailName}
-                />
-              )}
-            </>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
+              {error}
+            </Alert>
           )}
 
-          {/* External sources: inline panel */}
-          {sourceMode !== "local" && platformId && (
-            <ExternalInstallPanel
-              platformId={platformId}
-              sourceMode={sourceMode}
-              installTarget={installTarget}
-              showNotification={showNotification}
+          {(loading || installTargetLoading) && (
+            <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
+          )}
+
+          {loading && skills.length === 0 ? (
+            <Box display="flex" justifyContent="center" py={8}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <SkillCardGrid
+              skills={filteredSkills}
+              selectedNames={selectedNames}
+              onToggle={(name) =>
+                setSelectedNames((previous) => {
+                  const next = new Set(previous);
+                  if (next.has(name)) {
+                    next.delete(name);
+                  } else {
+                    next.add(name);
+                  }
+                  return next;
+                })
+              }
+              onShowDetail={setDetailName}
             />
           )}
         </Box>
       </Box>
 
-      {/* ── Floating Action Bar ── */}
-      <FloatingActionBar
-        count={selectedInstallable.length}
-        onInstall={() => setInstallOpen(true)}
-        onClear={() => setSelectedNames(new Set())}
+      <InstallDialog
+        open={installOpen}
+        platformId={platformId ?? ""}
+        platform={platform}
+        itemNames={selectedInstallable.map((skill) => skill.name)}
+        itemCategories={Object.fromEntries(
+          selectedInstallable.map((skill) => [skill.name, skill.category])
+        )}
+        itemType="skills"
+        installTarget={installTarget}
+        onClose={() => setInstallOpen(false)}
+        onCompleted={(successCount, failureCount) => {
+          showNotification(
+            t("install.installedSkillsNotification", {
+              success: successCount,
+              failedSuffix: failureCount > 0 ? `, ${failureCount}` : "",
+            }),
+            failureCount > 0 ? "warning" : "success"
+          );
+          setSelectedNames(new Set());
+          void fetchSkills();
+        }}
       />
 
-      {/* ── Install Dialog ── */}
-      {platformId && (
-        <InstallDialog
-          open={installOpen}
-          platformId={platformId}
-          platform={platform}
-          itemNames={selectedInstallable.map((s) => s.name)}
-          itemCategories={Object.fromEntries(
-            selectedInstallable.map((s) => [s.name, s.category])
-          )}
-          itemType="skills"
-          installTarget={installTarget}
-          onClose={() => setInstallOpen(false)}
-          onCompleted={(successCount, failureCount) => {
-            showNotification(
-              t("install.installedSkillsNotification", {
-                success: successCount,
-                failedSuffix:
-                  failureCount > 0
-                    ? `, ${t("installHub.failedCount", { count: failureCount })}`
-                    : "",
-              }),
-              failureCount > 0 ? "warning" : "success"
-            );
-            setSelectedNames(new Set());
-            fetchSkills();
-          }}
-        />
-      )}
-
-      {/* ── Skill Detail Dialog ── */}
       {platformId && (
         <SkillDetailDialog
           open={detailName !== null}
@@ -2455,6 +891,32 @@ export default function InstallPage() {
         onClose={closeInstallTargetDialog}
         onApply={applyInstallTarget}
       />
+
+      {selectedInstallable.length > 0 && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 80,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: theme.zIndex.appBar - 1,
+          }}
+        >
+          <Card elevation={8}>
+            <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.5 }}>
+              <Chip label={t("common.selectedCount", { count: selectedInstallable.length })} />
+              <Button
+                variant="contained"
+                startIcon={<InstallDesktopIcon />}
+                onClick={() => setInstallOpen(true)}
+              >
+                {t("common.install")}
+              </Button>
+              <Button onClick={() => setSelectedNames(new Set())}>{t("common.clear")}</Button>
+            </CardContent>
+          </Card>
+        </Box>
+      )}
 
       <NotificationSnackbar />
     </Box>

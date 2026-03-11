@@ -15,7 +15,7 @@ pub async fn catalog(State(state): State<AppState>) -> Json<ApiResponse<Vec<Skil
 
     // Collect install status for each platform
     let mut platform_skills: HashMap<String, HashMap<String, InstallStatus>> = HashMap::new();
-    for (platform_id, _) in &platforms {
+    for platform_id in platforms.keys() {
         let skills = state.skills(platform_id).await;
         let skill_status: HashMap<String, InstallStatus> = skills
             .into_iter()
@@ -24,7 +24,10 @@ pub async fn catalog(State(state): State<AppState>) -> Json<ApiResponse<Vec<Skil
         platform_skills.insert(platform_id.clone(), skill_status);
     }
 
-    Json(ApiResponse::ok(to_skill_catalog_dtos(sources, &platform_skills)))
+    Json(ApiResponse::ok(to_skill_catalog_dtos(
+        sources,
+        &platform_skills,
+    )))
 }
 
 fn to_skill_catalog_dtos(
@@ -38,7 +41,9 @@ fn to_skill_catalog_dtos(
             let platform_status: HashMap<String, InstallStatus> = platform_skills
                 .iter()
                 .filter_map(|(platform_id, skills)| {
-                    skills.get(&source.name).map(|status| (platform_id.clone(), *status))
+                    skills
+                        .get(&source.name)
+                        .map(|status| (platform_id.clone(), *status))
                 })
                 .collect();
 
@@ -98,7 +103,8 @@ mod tests {
     #[test]
     fn to_skill_catalog_dtos_maps_fields() {
         let platform_skills = HashMap::new();
-        let output = to_skill_catalog_dtos(vec![source("demo", Some("core"), true)], &platform_skills);
+        let output =
+            to_skill_catalog_dtos(vec![source("demo", Some("core"), true)], &platform_skills);
         let skill = &output[0];
 
         assert_eq!(skill.name, "demo");
@@ -116,7 +122,8 @@ mod tests {
         claude_skills.insert("demo".to_string(), InstallStatus::Installed);
         platform_skills.insert("claude".to_string(), claude_skills);
 
-        let output = to_skill_catalog_dtos(vec![source("demo", Some("core"), true)], &platform_skills);
+        let output =
+            to_skill_catalog_dtos(vec![source("demo", Some("core"), true)], &platform_skills);
         let skill = &output[0];
 
         assert!(skill.platform_status.is_some());
