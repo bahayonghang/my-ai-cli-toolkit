@@ -20,3 +20,4 @@ mcs/target/
 .omcodex/
 .agents/
 .omx/
+mcs/mcs-web/ui/test-results/.last-run.json
