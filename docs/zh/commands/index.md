@@ -18,9 +18,26 @@
 ## 建议从这里开始
 
 - [目录](/zh/commands/catalog)：当前源目录、平台映射、命令家族
-- [export-summary](/zh/commands/export-summary)：核心上下文导出流程
+
+## 命令家族
+
+| 家族 | 说明 | 命令 |
+|------|------|------|
+| [cc](/zh/commands/cc) | 命令创建与代理编写 | create-command, meta-agent |
+| [cli](/zh/commands/cli) | CLI 工具初始化与代码审查 | cli-init, codex-review |
+| [gh](/zh/commands/gh) | Git 操作与 GitHub 集成 | commit, fix-issue, review-pr |
+| [issue](/zh/commands/issue) | GitHub Issue 管理 | discover, discover-by-prompt, execute, new, plan, queue |
+| [kiro](/zh/commands/kiro) | Kiro IDE 集成 | design, execute, spec, task, vibe |
+| [memory](/zh/commands/memory) | 记忆系统管理 | 14 个命令，涵盖记忆生成、加载和更新 |
+| [task](/zh/commands/task) | 任务管理 | breakdown, create, execute, replan |
+| [workflow](/zh/commands/workflow) | 开发工作流 | 约 30 个命令，包含 brainstorm、session、tools、ui-design 子族 |
+| [zcf](/zh/commands/zcf) | Git 工具集 | git-cleanBranches, git-rollback, git-worktree, init-project |
+
+## 独立命令
+
+- [export-summary](/zh/commands/export-summary)：会话上下文导出流程
 - [import-summary](/zh/commands/import-summary)：上下文导入流程
-- [git-commit](/zh/commands/git-commit)：Conventional Commit 辅助命令
+- [工具命令](/zh/commands/utilities)：enhance-prompt, version
 
 ## 相关指南
 

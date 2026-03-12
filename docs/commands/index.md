@@ -18,9 +18,26 @@ The two are related, but they are not always one-to-one.
 ## Start here
 
 - [Catalog](/commands/catalog): current source directories, platform mapping, and command families
-- [export-summary](/commands/export-summary): core summary export flow
+
+## Command Families
+
+| Family | Description | Commands |
+|--------|-------------|----------|
+| [cc](/commands/cc) | Command creation and agent authoring | create-command, meta-agent |
+| [cli](/commands/cli) | CLI tool initialization and code review | cli-init, codex-review |
+| [gh](/commands/gh) | Git operations and GitHub integration | commit, fix-issue, review-pr |
+| [issue](/commands/issue) | GitHub issue management | discover, discover-by-prompt, execute, new, plan, queue |
+| [kiro](/commands/kiro) | Kiro IDE integration | design, execute, spec, task, vibe |
+| [memory](/commands/memory) | Memory system management | 14 commands for memory generation, loading, and updates |
+| [task](/commands/task) | Task management | breakdown, create, execute, replan |
+| [workflow](/commands/workflow) | Development workflows | ~30 commands including brainstorm, session, tools, ui-design sub-families |
+| [zcf](/commands/zcf) | Git utilities | git-cleanBranches, git-rollback, git-worktree, init-project |
+
+## Standalone Commands
+
+- [export-summary](/commands/export-summary): session context export flow
 - [import-summary](/commands/import-summary): summary import flow
-- [git-commit](/commands/git-commit): conventional-commit helper
+- [Utilities](/commands/utilities): enhance-prompt, version
 
 ## Related guide pages
 
