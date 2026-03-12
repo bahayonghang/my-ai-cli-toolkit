@@ -26,6 +26,63 @@
 
 这些文件属于运行时集成资源，不是 installable skill。
 
+### hooks.json
+
+Hook 配置文件定义了在特定生命周期事件中运行哪些 Python 脚本：
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "python3 ${CLAUDE_PLUGIN_ROOT}/pre-bash.py \"$CLAUDE_TOOL_INPUT\"" },
+          { "type": "command", "command": "python3 ${CLAUDE_PLUGIN_ROOT}/inject-spec.py" }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python3 ${CLAUDE_PLUGIN_ROOT}/log-prompt.py" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+- `PreToolUse` hook 在工具执行前触发。`matcher` 字段用于过滤触发的工具类型——此处仅匹配 `Bash` 命令。
+- `UserPromptSubmit` hook 在用户提交 prompt 时触发。没有 matcher 表示每次提交都会触发。
+- `${CLAUDE_PLUGIN_ROOT}` 解析为 `hooks.json` 所在的目录。
+
+### pre-bash.py
+
+在执行前拦截危险的 shell 命令。会将命令字符串与一组硬编码的破坏性模式进行匹配：
+
+- `rm -rf /` 和 `rm -rf ~` — 递归删除根目录或用户主目录
+- `dd if=` — 原始磁盘写入
+- `:(){:|:&};:` — fork 炸弹
+- `mkfs.` — 文件系统格式化
+- `> /dev/sd` — 直接设备写入
+
+如果匹配成功，hook 以退出码 1 终止并输出 `[CWF] BLOCKED` 消息，阻止命令执行。
+
+### inject-spec.py
+
+**已弃用。** 此 hook 现在是空操作（立即以退出码 0 退出）。Spec 注入已由 codeagent-wrapper 通过每个任务的 `skills:` 字段和 `--skills` CLI 参数在内部处理。保留此文件仅为向后兼容。
+
+### log-prompt.py
+
+将用户 prompt 记录到会话专属的日志文件中，便于后续审查。每次 `UserPromptSubmit` 事件触发时：
+
+1. 从 stdin 读取 prompt（包含 `prompt` 字段的 JSON）
+2. 通过 `CLAUDE_CODE_SSE_PORT` 环境变量确定会话 ID
+3. 将带时间戳的条目（截断至 500 字符）写入 `.claude/state/session-{id}.log`
+
+日志文件按会话隔离，以安全处理并发会话。
+
 ## `content/memorys/`
 
 这个目录存放平台相关的 runtime prompt / memory 文件：
@@ -35,6 +92,16 @@
 - `content/memorys/codex/AGENTS.md`
 
 应把它们视为运行时模板或 seed 文件，而不是普通 docs 页面。
+
+### 平台 prompt 文件
+
+| 文件 | 平台 | 用途 |
+|------|------|------|
+| `claude/Unix/CLAUDE.md` | Claude Code (Unix) | Linus Torvalds 风格的工程原则，包含结构化工作流（需求理解 → 上下文收集 → 探索 → 规划 → 执行 → 验证 → 交接）。强制遵循 KISS/YAGNI、向后兼容性，以及中文最终回复。 |
+| `claude/Windows/CLAUDE.md` | Claude Code (Windows) | 相同的工程原则，适配 Windows 环境。 |
+| `codex/AGENTS.md` | Codex CLI | 猫又工程师人设，遵循 SOLID/KISS/DRY/YAGNI 原则，具备危险操作确认机制和结构化响应格式。 |
+
+这些文件由 MCS 作为平台的基础 prompt 或 memory 文件安装。用户安装后可自行修改——MCS 会通过 mtime 比较检测变更，并显示 `Outdated` 状态。
 
 ## 根目录 `CLAUDE.md`
 
