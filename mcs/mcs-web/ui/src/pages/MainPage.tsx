@@ -212,20 +212,20 @@ export default function MainPage() {
               <TuneIcon />
             </IconButton>
           )}
-            <IconButton
-              color="inherit"
-              aria-label={t("common.back")}
-              onClick={() => navigateDeferred("/")}
-            >
-              <ArrowBackIcon />
+          <IconButton
+            color="inherit"
+            aria-label={t("common.back")}
+            onClick={() => navigateDeferred("/")}
+          >
+            <ArrowBackIcon />
           </IconButton>
-            <IconButton
-              color="inherit"
-              aria-label={t("common.home")}
-              onClick={() => navigateDeferred("/")}
-            >
-              <HomeIcon />
-            </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label={t("common.home")}
+            onClick={() => navigateDeferred("/")}
+          >
+            <HomeIcon />
+          </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
             {platform?.icon} {platform?.name ?? platformId}
           </Typography>
@@ -554,21 +554,21 @@ export default function MainPage() {
           )}
           itemType={activeTab}
           onClose={() => setInstallOpen(false)}
-            onCompleted={(successCount, failureCount) => {
-              showNotification(
-                t("dialogs.installCompletedSummary", {
-                  success: successCount,
-                  failedSuffix:
-                    failureCount > 0
-                      ? `, ${t("npxSkills.jobFailed", { count: failureCount })}`
-                      : "",
-                }),
-                failureCount > 0 ? "warning" : "success"
-              );
-              clearSelection();
-              void refresh();
-            }}
-          />
+          onCompleted={(successCount, failureCount) => {
+            showNotification(
+              t("dialogs.installCompletedSummary", {
+                success: successCount,
+                failedSuffix:
+                  failureCount > 0
+                    ? `, ${t("npxSkills.jobFailed", { count: failureCount })}`
+                    : "",
+              }),
+              failureCount > 0 ? "warning" : "success"
+            );
+            clearSelection();
+            void refresh();
+          }}
+        />
       )}
 
       <ConfirmDialog

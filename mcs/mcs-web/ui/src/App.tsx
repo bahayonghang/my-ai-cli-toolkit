@@ -26,6 +26,7 @@ function Fallback() {
       minHeight="100vh"
       role="status"
       aria-live="polite"
+      aria-busy="true"
     >
       <CircularProgress />
       <Box component="span" sx={{ color: "text.secondary", typography: "body2" }}>

@@ -267,7 +267,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                             "& .MuiLinearProgress-bar": {
                                                 borderRadius: 999,
                                                 background: "var(--mcs-warning-progress-strong)",
-                                                transition: "transform 280ms ease",
+                                                transition: "transform 280ms cubic-bezier(0.16, 1, 0.3, 1)",
                                             },
                                         }}
                                     />
@@ -341,7 +341,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                             ? alpha(theme.palette.warning.main, 0.05)
                                             : "transparent",
                                         transition:
-                                            "transform 220ms ease, opacity 220ms ease, background-color 220ms ease, border-color 220ms ease",
+                                            "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1)",
                                         transform: isActive ? "translateY(-1px) scale(1.01)" : "none",
                                         opacity:
                                             cleaning && !isActive ? 0.72 : 1,

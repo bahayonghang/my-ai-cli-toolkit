@@ -234,7 +234,7 @@ export default function InstalledSkillsPage() {
             variant="outlined"
             startIcon={<TerminalIcon />}
             onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
-            sx={{ mr: 1, borderRadius: 2 }}
+            sx={{ mr: 1 }}
           >
             {t("npxSkills.pageButton")}
           </Button>

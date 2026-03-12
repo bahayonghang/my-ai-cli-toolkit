@@ -277,7 +277,7 @@ function SearchToolbar({
         variant="outlined"
         startIcon={<SelectAllIcon />}
         onClick={onSelectAll}
-        sx={{ borderRadius: 2, textTransform: "none" }}
+        sx={{ borderRadius: 2 }}
       >
         {t("install.selectAll")}
       </Button>
@@ -287,7 +287,7 @@ function SearchToolbar({
           size="small"
           variant="text"
           onClick={onClearSelection}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+          sx={{ borderRadius: 2 }}
         >
           {t("install.clear")}
         </Button>
@@ -327,13 +327,13 @@ function SkillCard({
   return (
     <Card
       sx={{
-        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1)",
         boxShadow: selected
           ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.4)}`
           : undefined,
         "&:hover": {
-          transform: "translateY(-3px)",
-          boxShadow: `0 10px 30px ${alpha(theme.palette.primary.main, 0.14)}`,
+          transform: "translateY(-2px)",
+          boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.12)}`,
         },
       }}
     >

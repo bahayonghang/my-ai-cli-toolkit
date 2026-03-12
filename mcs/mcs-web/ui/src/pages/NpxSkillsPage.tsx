@@ -918,7 +918,7 @@ export default function NpxSkillsPage() {
                     boxShadow: isSelected
                       ? `0 8px 24px ${alpha(theme.palette.primary.main, 0.16)}`
                       : "none",
-                    transition: "transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease",
+                    transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
                   <CardActionArea

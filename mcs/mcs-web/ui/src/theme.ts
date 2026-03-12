@@ -41,6 +41,9 @@ const tokens = {
   },
 } as const;
 
+const easing = "cubic-bezier(0.16, 1, 0.3, 1)"; // ease-out-expo
+const duration = "180ms";
+
 function buildTheme(mode: Mode) {
   const tone = tokens[mode];
 
@@ -80,6 +83,17 @@ function buildTheme(mode: Mode) {
             --mcs-error-surface: ${mode === "dark" ? "rgba(220, 140, 132, 0.16)" : "rgba(178, 83, 74, 0.08)"};
             --mcs-error-border: ${mode === "dark" ? "rgba(220, 140, 132, 0.32)" : "rgba(178, 83, 74, 0.22)"};
             --mcs-error-text: ${mode === "dark" ? "#ffd2cd" : "#7e342d"};
+            --mcs-ease: ${easing};
+            --mcs-duration: ${duration};
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+              scroll-behavior: auto !important;
+            }
           }
 
           *, *::before, *::after {
@@ -141,7 +155,7 @@ function buildTheme(mode: Mode) {
             fontWeight: 600,
             boxShadow: "none",
             transition:
-              "background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease",
+              `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
           },
         },
       },
@@ -152,7 +166,7 @@ function buildTheme(mode: Mode) {
             minWidth: 44,
             minHeight: 44,
             transition:
-              "background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease",
+              `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}`,
           },
         },
       },
@@ -247,7 +261,7 @@ function buildTheme(mode: Mode) {
             margin: 0,
             borderRadius: 10,
             transition:
-              "background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease",
+              `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}`,
             "&:hover": {
               backgroundColor: mode === "dark" ? "rgba(125, 186, 178, 0.08)" : "rgba(22, 93, 102, 0.08)",
             },
@@ -263,7 +277,7 @@ function buildTheme(mode: Mode) {
       MuiTableRow: {
         styleOverrides: {
           root: {
-            transition: "background-color 180ms ease",
+            transition: `background-color ${duration} ${easing}`,
             "&.MuiTableRow-hover:hover": {
               backgroundColor: mode === "dark" ? "rgba(125, 186, 178, 0.06)" : "rgba(22, 93, 102, 0.05)",
             },
