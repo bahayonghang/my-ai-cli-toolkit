@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   resolveInstallTarget,
 } from "@/api/client";
+import { useI18n } from "@/i18n";
 import { useUiStore } from "@/stores/uiStore";
 import type { InstallTarget, ResolvedInstallTarget } from "@/types";
 
@@ -113,6 +114,7 @@ interface UseInstallTargetResult {
 }
 
 export function useInstallTarget(platformId?: string): UseInstallTargetResult {
+  const { t } = useI18n();
   const showNotification = useUiStore((s) => s.showNotification);
 
   const [loading, setLoading] = useState(false);
@@ -128,17 +130,15 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
       }
       const normalized = normalizeInstallTarget(nextTarget);
       if (normalized.scope === "project" && !normalized.project_path) {
-        showNotification("Project path is required", "error");
+        showNotification(t("dialogs.projectPathRequired"), "error");
         return false;
       }
 
       setLoading(true);
       try {
-        const controller = new AbortController();
         const resolved = await resolveInstallTarget(
           platformId,
           normalized,
-          controller.signal
         );
         setTarget(normalized);
         setResolvedTarget(resolved);
@@ -155,7 +155,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
         setLoading(false);
       }
     },
-    [platformId, showNotification]
+    [platformId, showNotification, t]
   );
 
   useEffect(() => {
@@ -205,7 +205,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
             setResolvedTarget(fallback);
             saveStoredTarget(platformId, GLOBAL_INSTALL_TARGET);
             saveStoredResolvedTarget(platformId, fallback);
-            showNotification("Project install target is invalid. Switched back to Global.", "warning");
+            showNotification(t("installed.installTargetFallbackWarning"), "warning");
           } catch {
             setResolvedTarget(null);
           }
@@ -224,7 +224,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
       cancelled = true;
       controller.abort();
     };
-  }, [platformId, showNotification]);
+  }, [platformId, showNotification, t]);
 
   const value = useMemo<UseInstallTargetResult>(
     () => ({

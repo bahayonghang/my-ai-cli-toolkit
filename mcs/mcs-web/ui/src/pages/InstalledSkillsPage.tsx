@@ -1,4 +1,4 @@
-import { lazy, startTransition, Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Alert,
@@ -47,9 +47,9 @@ import { LanguageToggle } from "@/components/common/LanguageToggle";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { installSkills, uninstallSkills } from "@/api/client";
 import { useI18n } from "@/i18n";
+import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
-import { useItemStore } from "@/stores/itemStore";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -71,22 +71,11 @@ export default function InstalledSkillsPage() {
     state.platforms.find((entry) => entry.id === platformId)
   );
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
-  const items = useItemStore((state) => state.items);
-  const categories = useItemStore((state) => state.categories);
-  const search = useItemStore((state) => state.search);
-  const selectedCategory = useItemStore((state) => state.selectedCategory);
-  const loading = useItemStore((state) => state.loading);
-  const error = useItemStore((state) => state.error);
-  const setTab = useItemStore((state) => state.setTab);
-  const setSearch = useItemStore((state) => state.setSearch);
-  const setCategory = useItemStore((state) => state.setCategory);
-  const setStatusFilter = useItemStore((state) => state.setStatusFilter);
-  const fetchItems = useItemStore((state) => state.fetchItems);
-  const fetchCategories = useItemStore((state) => state.fetchCategories);
-  const refresh = useItemStore((state) => state.refresh);
   const colorMode = useUiStore((state) => state.colorMode);
   const toggleColorMode = useUiStore((state) => state.toggleColorMode);
   const showNotification = useUiStore((state) => state.showNotification);
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
   const navigateDeferred = (to: string) => startTransition(() => navigate(to));
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
@@ -108,46 +97,31 @@ export default function InstalledSkillsPage() {
   }, [fetchPlatforms]);
 
   useEffect(() => {
-    setTab("skills");
-    setStatusFilter("installed");
-  }, [setTab, setStatusFilter]);
-
-  useLayoutEffect(() => {
     setSearch("");
-    setCategory(null);
-  }, [platformId, setSearch, setCategory]);
-
-  useEffect(() => {
-    if (!platformId) {
-      return;
-    }
-    void fetchCategories(platformId, installTarget, "skill");
-  }, [
-    platformId,
-    installTarget.scope,
-    installTarget.project_path,
-    fetchCategories,
-  ]);
-
-  useEffect(() => {
-    if (!platformId) {
-      return;
-    }
-    void fetchItems(platformId, installTarget);
-  }, [
-    platformId,
-    installTarget.scope,
-    installTarget.project_path,
-    debouncedSearch,
-    selectedCategory,
-    fetchItems,
-  ]);
+    setSelectedCategory(null);
+  }, [platformId]);
 
   useEffect(() => {
     if (!isMobile) {
       setFilterDrawerOpen(false);
     }
   }, [isMobile]);
+
+  const {
+    items,
+    categories,
+    loading,
+    error,
+    refresh,
+  } = usePlatformItemsData({
+    platformId,
+    activeTab: "skills",
+    itemTypeOverride: "skill",
+    search: debouncedSearch,
+    selectedCategory,
+    statusFilter: "installed",
+    installTarget,
+  });
 
   const handleDelete = async () => {
     if (!platformId || !deleteName) {
@@ -163,7 +137,7 @@ export default function InstalledSkillsPage() {
         t("installed.uninstalledNotification", { name: nameToDelete }),
         "success"
       );
-      await refresh(platformId, installTarget);
+      await refresh();
     } catch (errorValue) {
       showNotification((errorValue as Error).message, "error");
     }
@@ -180,7 +154,7 @@ export default function InstalledSkillsPage() {
         t("installed.reinstalledNotification", { name }),
         "success"
       );
-      await refresh(platformId, installTarget);
+      await refresh();
     } catch (errorValue) {
       showNotification(
         t("installed.reinstallFailed", { error: (errorValue as Error).message }),
@@ -192,7 +166,6 @@ export default function InstalledSkillsPage() {
   const skillCategories = useMemo(
     () =>
       categories
-        .filter((category) => category.item_type === "skill")
         .map((category) => category.name),
     [categories]
   );
@@ -234,7 +207,6 @@ export default function InstalledSkillsPage() {
             <Chip
               icon={<FolderOpenOutlinedIcon />}
               variant="outlined"
-              size="small"
               color="info"
               clickable
               aria-label={t("common.installTarget")}
@@ -248,7 +220,14 @@ export default function InstalledSkillsPage() {
                   resolvedTarget?.skills_path ??
                   t("installed.installTargetLoading"),
               })}
-              sx={{ maxWidth: { xs: 180, sm: 320 }, "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" } }}
+              sx={{
+                maxWidth: { xs: 220, sm: 360 },
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
             />
           </Box>
           <Button
@@ -292,7 +271,7 @@ export default function InstalledSkillsPage() {
             categories={skillCategories}
             selectedCategory={selectedCategory}
             onCategoryChange={(value) => {
-              setCategory(value);
+              setSelectedCategory(value);
               setFilterDrawerOpen(false);
             }}
             t={t}
@@ -319,7 +298,7 @@ export default function InstalledSkillsPage() {
               <InstalledFilters
                 categories={skillCategories}
                 selectedCategory={selectedCategory}
-                onCategoryChange={setCategory}
+                onCategoryChange={setSelectedCategory}
                 t={t}
               />
             </CardContent>
@@ -335,7 +314,6 @@ export default function InstalledSkillsPage() {
           >
             <TextField
               label={t("installed.searchLabel")}
-              size="small"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               slotProps={{
@@ -419,13 +397,12 @@ export default function InstalledSkillsPage() {
                         color="text.secondary"
                         sx={{ overflowWrap: "anywhere" }}
                       >
-                        {item.description || t("installHub.noDescription")}
+                        {item.description || t("common.noDescriptionAvailable")}
                       </Typography>
                     </Box>
 
                     <Stack direction="row" spacing={1} flexWrap="wrap">
                       <Button
-                        size="small"
                         variant="outlined"
                         startIcon={<EditIcon />}
                         onClick={() => setEditName(item.name)}
@@ -433,7 +410,6 @@ export default function InstalledSkillsPage() {
                         {t("common.edit")}
                       </Button>
                       <Button
-                        size="small"
                         variant="outlined"
                         color="warning"
                         startIcon={<SystemUpdateAltIcon />}
@@ -442,7 +418,6 @@ export default function InstalledSkillsPage() {
                         {t("common.reinstall")}
                       </Button>
                       <Button
-                        size="small"
                         variant="outlined"
                         color="error"
                         startIcon={<DeleteOutlineIcon />}
@@ -482,15 +457,20 @@ export default function InstalledSkillsPage() {
                           <Typography
                             variant="body2"
                             color="text.secondary"
-                            sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                            sx={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              overflowWrap: "anywhere",
+                            }}
                           >
-                            {item.description || t("installHub.noDescription")}
+                            {item.description || t("common.noDescriptionAvailable")}
                           </Typography>
                         </TableCell>
                         <TableCell align="right">
                           <Stack direction="row" spacing={0.5} justifyContent="flex-end">
                             <IconButton
-                              size="small"
                               color="primary"
                               aria-label={`${t("common.edit")} ${item.name}`}
                               onClick={() => setEditName(item.name)}
@@ -498,7 +478,6 @@ export default function InstalledSkillsPage() {
                               <EditIcon fontSize="small" />
                             </IconButton>
                             <IconButton
-                              size="small"
                               color="warning"
                               aria-label={`${t("common.reinstall")} ${item.name}`}
                               onClick={() => handleReinstall(item.name)}
@@ -506,7 +485,6 @@ export default function InstalledSkillsPage() {
                               <SystemUpdateAltIcon fontSize="small" />
                             </IconButton>
                             <IconButton
-                              size="small"
                               color="error"
                               aria-label={`${t("common.uninstall")} ${item.name}`}
                               onClick={() => setDeleteName(item.name)}
@@ -538,7 +516,7 @@ export default function InstalledSkillsPage() {
                 "success"
               );
               setEditName(null);
-              void refresh(platformId, installTarget);
+              void refresh();
             }}
           />
         </Suspense>

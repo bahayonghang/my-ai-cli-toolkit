@@ -1,4 +1,4 @@
-import { lazy, startTransition, Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Alert,
@@ -47,12 +47,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import SyncIcon from "@mui/icons-material/Sync";
 import TuneIcon from "@mui/icons-material/Tune";
 import { uninstallCommands, uninstallSkills } from "@/api/client";
+import { useI18n } from "@/i18n";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { StatusChip } from "@/components/common/StatusChip";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useItemStore } from "@/stores/itemStore";
+import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 
@@ -80,6 +82,7 @@ const MultiSyncDialog = lazy(() =>
 type TabValue = "skills" | "commands";
 
 export default function MainPage() {
+  const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -88,26 +91,13 @@ export default function MainPage() {
     state.platforms.find((entry) => entry.id === platformId)
   );
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
-  const items = useItemStore((state) => state.items);
-  const categories = useItemStore((state) => state.categories);
-  const activeTab = useItemStore((state) => state.activeTab);
-  const search = useItemStore((state) => state.search);
-  const selectedCategory = useItemStore((state) => state.selectedCategory);
-  const selectedNames = useItemStore((state) => state.selectedNames);
-  const loading = useItemStore((state) => state.loading);
-  const error = useItemStore((state) => state.error);
-  const setTab = useItemStore((state) => state.setTab);
-  const setSearch = useItemStore((state) => state.setSearch);
-  const setCategory = useItemStore((state) => state.setCategory);
-  const toggleSelection = useItemStore((state) => state.toggleSelection);
-  const selectAll = useItemStore((state) => state.selectAll);
-  const clearSelection = useItemStore((state) => state.clearSelection);
-  const fetchItems = useItemStore((state) => state.fetchItems);
-  const fetchCategories = useItemStore((state) => state.fetchCategories);
-  const refresh = useItemStore((state) => state.refresh);
   const colorMode = useUiStore((state) => state.colorMode);
   const toggleColorMode = useUiStore((state) => state.toggleColorMode);
   const showNotification = useUiStore((state) => state.showNotification);
+  const [activeTab, setActiveTab] = useState<TabValue>("skills");
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
   const debouncedSearch = useDebounce(search, 300);
   const itemType = activeTab === "skills" ? "skill" : "command";
@@ -125,25 +115,11 @@ export default function MainPage() {
     void fetchPlatforms();
   }, [fetchPlatforms]);
 
-  useLayoutEffect(() => {
-    clearSelection();
-    setCategory(null);
+  useEffect(() => {
+    setSelectedNames(new Set());
+    setSelectedCategory(null);
     setSearch("");
-  }, [platformId, clearSelection, setCategory, setSearch]);
-
-  useEffect(() => {
-    if (!platformId) {
-      return;
-    }
-    void fetchCategories(platformId, undefined, itemType);
-  }, [platformId, itemType, fetchCategories]);
-
-  useEffect(() => {
-    if (!platformId) {
-      return;
-    }
-    void fetchItems(platformId);
-  }, [platformId, activeTab, debouncedSearch, selectedCategory, fetchItems]);
+  }, [platformId]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -151,10 +127,44 @@ export default function MainPage() {
     }
   }, [isMobile]);
 
+  const {
+    items,
+    categories,
+    loading,
+    error,
+    refresh,
+  } = usePlatformItemsData({
+    platformId,
+    activeTab,
+    search: debouncedSearch,
+    selectedCategory,
+  });
+
   const visibleCategories = useMemo(
     () => categories.filter((category) => category.item_type === itemType),
     [categories, itemType]
   );
+
+  const toggleSelection = (name: string) => {
+    setSelectedNames((previous) => {
+      const next = new Set(previous);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelectedNames(new Set());
+  const selectAll = () => setSelectedNames(new Set(items.map((item) => item.name)));
+  const handleTabChange = (tab: TabValue) => {
+    setActiveTab(tab);
+    clearSelection();
+    setSearch("");
+    setSelectedCategory(null);
+  };
 
   const handleUninstall = async () => {
     if (!platformId || selectedCount === 0) {
@@ -170,11 +180,17 @@ export default function MainPage() {
           ? await uninstallSkills(platformId, names)
           : await uninstallCommands(platformId, names);
       showNotification(
-        `Uninstalled ${result.success_count} items`,
+        t("dialogs.uninstallCompletedSummary", {
+          success: result.success_count,
+          failedSuffix:
+            result.failure_count > 0
+              ? `, ${t("npxSkills.jobFailed", { count: result.failure_count })}`
+              : "",
+        }),
         result.failure_count > 0 ? "warning" : "success"
       );
       clearSelection();
-      await refresh(platformId);
+      await refresh();
     } catch (errorValue) {
       showNotification((errorValue as Error).message, "error");
     }
@@ -190,47 +206,52 @@ export default function MainPage() {
           {isMobile && (
             <IconButton
               color="inherit"
-              aria-label="Open filters"
+              aria-label={t("common.openFilters")}
               onClick={() => setFilterDrawerOpen(true)}
             >
               <TuneIcon />
             </IconButton>
           )}
-          <IconButton
-            color="inherit"
-            aria-label="Back"
-            onClick={() => navigateDeferred("/")}
-          >
-            <ArrowBackIcon />
+            <IconButton
+              color="inherit"
+              aria-label={t("common.back")}
+              onClick={() => navigateDeferred("/")}
+            >
+              <ArrowBackIcon />
           </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="Home"
-            onClick={() => navigateDeferred("/")}
-          >
-            <HomeIcon />
-          </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label={t("common.home")}
+              onClick={() => navigateDeferred("/")}
+            >
+              <HomeIcon />
+            </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
             {platform?.icon} {platform?.name ?? platformId}
           </Typography>
           <IconButton
             color="inherit"
-            aria-label="Open prompt"
+            aria-label={t("common.openPrompt")}
             onClick={() => setPromptOpen(true)}
           >
             <DescriptionOutlinedIcon />
           </IconButton>
           <IconButton
             color="inherit"
-            aria-label="Sync selection"
+            aria-label={t("common.syncSelection")}
             onClick={() => setSyncOpen(true)}
             disabled={selectedCount === 0}
           >
             <SyncIcon />
           </IconButton>
+          <LanguageToggle />
           <IconButton
             color="inherit"
-            aria-label={colorMode === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            aria-label={
+              colorMode === "dark"
+                ? t("common.toggleThemeToLight")
+                : t("common.toggleThemeToDark")
+            }
             onClick={toggleColorMode}
           >
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
@@ -249,11 +270,12 @@ export default function MainPage() {
             activeTab={activeTab}
             categories={visibleCategories}
             selectedCategory={selectedCategory}
-            onTabChange={setTab}
+            onTabChange={handleTabChange}
             onCategoryChange={(value) => {
-              setCategory(value);
+              setSelectedCategory(value);
               setFilterDrawerOpen(false);
             }}
+            t={t}
           />
         </Drawer>
       )}
@@ -278,8 +300,9 @@ export default function MainPage() {
                 activeTab={activeTab}
                 categories={visibleCategories}
                 selectedCategory={selectedCategory}
-                onTabChange={setTab}
-                onCategoryChange={setCategory}
+                onTabChange={handleTabChange}
+                onCategoryChange={setSelectedCategory}
+                t={t}
               />
             </CardContent>
           </Card>
@@ -293,8 +316,7 @@ export default function MainPage() {
             sx={{ mb: 2 }}
           >
             <TextField
-              label="Search"
-              size="small"
+              label={t("common.search")}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               slotProps={{
@@ -312,13 +334,16 @@ export default function MainPage() {
             <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }}>
               {selectedCount > 0 ? (
                 <>
-                  <Chip label={`${selectedCount} selected`} onDelete={clearSelection} />
+                  <Chip
+                    label={t("common.selectedCount", { count: selectedCount })}
+                    onDelete={clearSelection}
+                  />
                   <Button
                     variant="contained"
                     startIcon={<InstallDesktopIcon />}
                     onClick={() => setInstallOpen(true)}
                   >
-                    Install
+                    {t("common.install")}
                   </Button>
                   <Button
                     variant="outlined"
@@ -326,7 +351,7 @@ export default function MainPage() {
                     startIcon={<DeleteOutlineIcon />}
                     onClick={() => setConfirmAction("uninstall")}
                   >
-                    Uninstall
+                    {t("common.uninstall")}
                   </Button>
                 </>
               ) : (
@@ -335,7 +360,7 @@ export default function MainPage() {
                   onClick={selectAll}
                   disabled={items.length === 0}
                 >
-                  Select All
+                  {t("install.selectAll")}
                 </Button>
               )}
             </Stack>
@@ -355,7 +380,7 @@ export default function MainPage() {
           ) : items.length === 0 ? (
             <Card>
               <CardContent sx={{ py: 8, textAlign: "center" }}>
-                <Typography color="text.secondary">No items found</Typography>
+                <Typography color="text.secondary">{t("common.noItemsFound")}</Typography>
               </CardContent>
             </Card>
           ) : isMobile ? (
@@ -367,7 +392,7 @@ export default function MainPage() {
                       <Checkbox
                         checked={selectedNames.has(item.name)}
                         onChange={() => toggleSelection(item.name)}
-                        inputProps={{ "aria-label": `Select ${item.name}` }}
+                        inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
                       />
                       <Box sx={{ minWidth: 0, flexGrow: 1 }}>
                         <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
@@ -380,7 +405,7 @@ export default function MainPage() {
                           )}
                         </Stack>
                         <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                          {item.description || "No description available"}
+                          {item.description || t("common.noDescriptionAvailable")}
                         </Typography>
                       </Box>
                     </Stack>
@@ -388,22 +413,20 @@ export default function MainPage() {
                     <Stack direction="row" spacing={1} flexWrap="wrap">
                       {activeTab === "skills" && (
                         <Button
-                          size="small"
                           variant="outlined"
                           startIcon={<InfoOutlinedIcon />}
                           onClick={() => setDetailName(item.name)}
                         >
-                          Detail
+                          {t("common.viewDetail")}
                         </Button>
                       )}
                       {(item.status === "installed" || item.status === "outdated") && (
                         <Button
-                          size="small"
                           variant="outlined"
                           startIcon={<CompareArrowsIcon />}
                           onClick={() => setDiffName(item.name)}
                         >
-                          Diff
+                          {t("common.showDiff")}
                         </Button>
                       )}
                     </Stack>
@@ -418,11 +441,11 @@ export default function MainPage() {
                   <TableHead>
                     <TableRow>
                       <TableCell padding="checkbox" />
-                      <TableCell>Name</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Category</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      <TableCell>{t("common.name")}</TableCell>
+                      <TableCell>{t("install.status")}</TableCell>
+                      <TableCell>{t("common.category")}</TableCell>
+                      <TableCell>{t("common.description")}</TableCell>
+                      <TableCell align="right">{t("common.actions")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -432,7 +455,7 @@ export default function MainPage() {
                           <Checkbox
                             checked={selectedNames.has(item.name)}
                             onChange={() => toggleSelection(item.name)}
-                            inputProps={{ "aria-label": `Select ${item.name}` }}
+                            inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
                           />
                         </TableCell>
                         <TableCell>
@@ -450,17 +473,22 @@ export default function MainPage() {
                           <Typography
                             variant="body2"
                             color="text.secondary"
-                            sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                            sx={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              overflowWrap: "anywhere",
+                            }}
                           >
-                            {item.description || "No description available"}
+                            {item.description || t("common.noDescriptionAvailable")}
                           </Typography>
                         </TableCell>
                         <TableCell align="right">
                           <Stack direction="row" spacing={0.5} justifyContent="flex-end">
                             {activeTab === "skills" && (
                               <IconButton
-                                size="small"
-                                aria-label={`View detail for ${item.name}`}
+                                aria-label={`${t("common.viewDetail")} ${item.name}`}
                                 onClick={() => setDetailName(item.name)}
                               >
                                 <InfoOutlinedIcon fontSize="small" />
@@ -468,8 +496,7 @@ export default function MainPage() {
                             )}
                             {(item.status === "installed" || item.status === "outdated") && (
                               <IconButton
-                                size="small"
-                                aria-label={`Show diff for ${item.name}`}
+                                aria-label={`${t("common.showDiff")} ${item.name}`}
                                 onClick={() => setDiffName(item.name)}
                               >
                                 <CompareArrowsIcon fontSize="small" />
@@ -527,22 +554,32 @@ export default function MainPage() {
           )}
           itemType={activeTab}
           onClose={() => setInstallOpen(false)}
-          onCompleted={(successCount, failureCount) => {
-            showNotification(
-              `Installed ${successCount} items${failureCount > 0 ? `, ${failureCount} failed` : ""}`,
-              failureCount > 0 ? "warning" : "success"
-            );
-            clearSelection();
-            void refresh(platformId);
-          }}
-        />
+            onCompleted={(successCount, failureCount) => {
+              showNotification(
+                t("dialogs.installCompletedSummary", {
+                  success: successCount,
+                  failedSuffix:
+                    failureCount > 0
+                      ? `, ${t("npxSkills.jobFailed", { count: failureCount })}`
+                      : "",
+                }),
+                failureCount > 0 ? "warning" : "success"
+              );
+              clearSelection();
+              void refresh();
+            }}
+          />
       )}
 
       <ConfirmDialog
         open={confirmAction === "uninstall"}
-        title="Uninstall Items"
-        message={`Uninstall ${selectedCount} ${activeTab} from ${platform?.name ?? platformId}? This cannot be undone.`}
-        confirmLabel="Uninstall"
+        title={t("dialogs.uninstallItemsTitle")}
+        message={t("dialogs.uninstallItemsMessage", {
+          count: selectedCount,
+          itemType: activeTab === "skills" ? t("common.skills") : t("common.commands"),
+          platform: platform?.name ?? platformId ?? "",
+        })}
+        confirmLabel={t("common.uninstall")}
         confirmColor="error"
         onConfirm={handleUninstall}
         onCancel={() => setConfirmAction(null)}
@@ -554,7 +591,9 @@ export default function MainPage() {
             open={promptOpen}
             platformId={platformId}
             onClose={() => setPromptOpen(false)}
-            onUpdated={() => showNotification("CLAUDE.md updated successfully", "success")}
+            onUpdated={() =>
+              showNotification(t("dialogs.promptUpdatedSuccess"), "success")
+            }
           />
         </Suspense>
       )}
@@ -586,12 +625,14 @@ function FiltersPanel({
   selectedCategory,
   onTabChange,
   onCategoryChange,
+  t,
 }: {
   activeTab: TabValue;
   categories: { name: string; count: number }[];
   selectedCategory: string | null;
   onTabChange: (tab: TabValue) => void;
   onCategoryChange: (category: string | null) => void;
+  t: ReturnType<typeof useI18n>["t"];
 }) {
   return (
     <Box>
@@ -601,19 +642,19 @@ function FiltersPanel({
         variant="fullWidth"
         sx={{ mb: 2 }}
       >
-        <Tab label="Skills" value="skills" />
-        <Tab label="Commands" value="commands" />
+        <Tab label={t("common.skills")} value="skills" />
+        <Tab label={t("common.commands")} value="commands" />
       </Tabs>
 
       <Typography variant="overline" color="text.secondary">
-        Filters
+        {t("common.filters")}
       </Typography>
       <List dense disablePadding sx={{ mt: 1 }}>
         <ListItemButton
           selected={selectedCategory === null}
           onClick={() => onCategoryChange(null)}
         >
-          <ListItemText primary="All" />
+          <ListItemText primary={t("common.all")} />
           <Badge badgeContent={categories.reduce((sum, category) => sum + category.count, 0)} color="primary" />
         </ListItemButton>
         <Divider sx={{ my: 1 }} />
