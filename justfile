@@ -32,6 +32,9 @@ tui: mcs
 # 启动 Web 版技能管理器
 web: mcs-web-dev-all
 
+# 强制重新编译后端并启动 Web 版技能管理器
+web-rebuild: mcs-web-rebuild-dev-all
+
 # 启动文档开发服务器
 doc: docs
 
@@ -44,6 +47,7 @@ help:
     @echo "⚡ 快捷启动："
     @echo "  just tui                    - 启动 TUI 技能管理器"
     @echo "  just web                    - 启动 Web 版技能管理器"
+    @echo "  just web-rebuild            - 强制重新编译后端并启动 Web"
     @echo "  just doc                    - 启动文档开发服务器"
     @echo ""
     @echo "📚 文档相关："
@@ -163,6 +167,11 @@ mcs-web-dev-all:
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} concurrently -k -n "backend,ui" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && {{ cargo_cmd }} run --bin mcs-web" "{{ npx_cmd }} wait-on http://127.0.0.1:13242 --timeout 60000 && {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev"
+
+# 强制重新编译后端并启动 MCS Web 开发服务器
+mcs-web-rebuild-dev-all:
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clean -p mcs-web -p mcs-core
+    {{ just_cmd }} mcs-web-dev-all
 
 # 构建 MCS Web UI 静态资源
 mcs-web-build-ui: mcs-web-install
