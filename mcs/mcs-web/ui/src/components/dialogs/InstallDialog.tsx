@@ -6,7 +6,6 @@ import {
   Chip, Collapse, CircularProgress, Paper,
   ToggleButton, ToggleButtonGroup,
 } from "@mui/material";
-import type { Theme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -251,7 +250,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
           {t("dialogs.installItemsTitle")}
         </Typography>
-        <IconButton size="small" onClick={onCancel} aria-label={t("common.close")}>
+        <IconButton onClick={onCancel} aria-label={t("common.close")}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -278,7 +277,6 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
               value={linkMode}
               exclusive
               onChange={(_, v) => v && onLinkModeChange(v as LinkMode)}
-              size="small"
             >
               <ToggleButton value="auto">{t("dialogs.linkModeAuto")}</ToggleButton>
               <ToggleButton value="symlink">{t("dialogs.linkModeSymlink")}</ToggleButton>
@@ -293,8 +291,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
             maxHeight: 240,
             overflow: "auto",
             borderRadius: 2,
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+            backgroundColor: "var(--mcs-surface-muted)",
           }}
         >
           <List dense disablePadding>
@@ -398,7 +395,7 @@ function InstallingPhase({
         <Typography variant="body2" color="text.secondary">
           {done} / {total}
         </Typography>
-        <IconButton size="small" onClick={onCancel} aria-label={t("common.cancel")}>
+        <IconButton onClick={onCancel} aria-label={t("common.cancel")}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -411,7 +408,7 @@ function InstallingPhase({
             sx={{
               height: 8,
               borderRadius: 4,
-              backgroundColor: "rgba(139, 92, 246, 0.15)",
+              backgroundColor: "var(--mcs-warning-progress)",
               "& .MuiLinearProgress-bar": { borderRadius: 4 },
             }}
           />
@@ -433,8 +430,7 @@ function InstallingPhase({
             maxHeight: 260,
             overflow: "auto",
             borderRadius: 2,
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+            backgroundColor: "var(--mcs-surface-muted)",
           }}
         >
           <List dense disablePadding>
@@ -568,8 +564,7 @@ function CompletedPhase({
             maxHeight: 260,
             overflow: "auto",
             borderRadius: 2,
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+            backgroundColor: "var(--mcs-surface-muted)",
           }}
         >
           <List dense disablePadding>
@@ -586,9 +581,7 @@ function CompletedPhase({
                   sx={{
                     py: 0.5,
                     px: 1,
-                    cursor: item.status === "error" ? "pointer" : "default",
                   }}
-                  onClick={() => item.status === "error" && onToggleError(item.name)}
                 >
                   <ListItemIcon sx={{ minWidth: 32 }}>
                     {item.status === "success" ? (
@@ -610,12 +603,18 @@ function CompletedPhase({
                       </Typography>
                     }
                   />
-                  {item.status === "error" &&
-                    (expandedErrors.has(item.name) ? (
-                      <ExpandLessIcon fontSize="small" color="action" />
-                    ) : (
-                      <ExpandMoreIcon fontSize="small" color="action" />
-                    ))}
+                  {item.status === "error" && (
+                    <IconButton
+                      aria-label={`${t("common.showDiff")} ${item.name}`}
+                      onClick={() => onToggleError(item.name)}
+                    >
+                      {expandedErrors.has(item.name) ? (
+                        <ExpandLessIcon fontSize="small" color="action" />
+                      ) : (
+                        <ExpandMoreIcon fontSize="small" color="action" />
+                      )}
+                    </IconButton>
+                  )}
                 </ListItem>
 
                 {item.status === "error" && item.errorMessage && (
@@ -627,27 +626,18 @@ function CompletedPhase({
                         mb: 1,
                         p: 1.5,
                         borderRadius: 1,
-                        backgroundColor: (theme: Theme) =>
-                          theme.palette.mode === "dark"
-                            ? "rgba(239, 83, 80, 0.15)"
-                            : "rgba(254, 226, 226, 0.8)",
+                        backgroundColor: "var(--mcs-error-surface)",
                         border: "1px solid",
-                        borderColor: (theme: Theme) =>
-                          theme.palette.mode === "dark"
-                            ? "rgba(239, 83, 80, 0.3)"
-                            : "rgba(239, 83, 80, 0.2)",
+                        borderColor: "var(--mcs-error-border)",
                       }}
                     >
                       <Typography
                         variant="caption"
                         sx={{
-                          color: (theme: Theme) =>
-                            theme.palette.mode === "dark"
-                              ? "#ffb4ab"
-                              : "error.dark",
+                          color: "var(--mcs-error-text)",
                           fontFamily: "monospace",
                           whiteSpace: "pre-wrap",
-                          wordBreak: "break-all",
+                          overflowWrap: "anywhere",
                         }}
                       >
                         {item.errorMessage}

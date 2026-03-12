@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { getPromptDiff, updatePrompt } from "@/api/client";
+import { useI18n } from "@/i18n";
 import type { PromptDiffDto } from "@/types";
 
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
+  const { t } = useI18n();
   const [data, setData] = useState<PromptDiffDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -59,9 +61,9 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h6" component="span">
-          CLAUDE.md Prompt Diff
+          {t("dialogs.promptDiffTitle")}
         </Typography>
-        <IconButton onClick={onClose}>
+        <IconButton aria-label={t("common.close")} onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -75,7 +77,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
         ) : data ? (
           !data.supports_prompt ? (
             <Typography color="text.secondary" py={4} textAlign="center">
-              Prompt management is only supported for the Claude platform
+              {t("dialogs.promptUnsupported")}
             </Typography>
           ) : data.has_diff ? (
             <Box
@@ -87,7 +89,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
                 overflow: "auto",
                 p: 2,
                 m: 0,
-                bgcolor: "background.default",
+                bgcolor: "var(--mcs-surface-muted)",
                 borderRadius: 1,
               }}
             >
@@ -96,15 +98,19 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
                 let bg = "transparent";
                 if (line.startsWith("+")) {
                   color = "success.main";
-                  bg = "rgba(76, 175, 80, 0.08)";
+                  bg = "var(--mcs-diff-add-bg)";
                 } else if (line.startsWith("-")) {
                   color = "error.main";
-                  bg = "rgba(244, 67, 54, 0.08)";
+                  bg = "var(--mcs-diff-remove-bg)";
                 } else if (line.startsWith("@@")) {
                   color = "info.main";
                 }
                 return (
-                  <Box key={i} component="span" sx={{ display: "block", color, bgcolor: bg, px: 1 }}>
+                  <Box
+                    key={i}
+                    component="span"
+                    sx={{ display: "block", color, bgcolor: bg, px: 1, overflowWrap: "anywhere" }}
+                  >
                     {line || "\n"}
                   </Box>
                 );
@@ -112,13 +118,13 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
             </Box>
           ) : (
             <Typography color="text.secondary" py={4} textAlign="center">
-              CLAUDE.md is up to date — no changes needed
+              {t("dialogs.promptNoChanges")}
             </Typography>
           )
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t("common.close")}</Button>
         {data?.has_diff && (
           <Button
             variant="contained"
@@ -126,7 +132,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
             disabled={updating}
             startIcon={updating ? <CircularProgress size={16} /> : undefined}
           >
-            Update CLAUDE.md
+            {t("dialogs.promptUpdate")}
           </Button>
         )}
       </DialogActions>

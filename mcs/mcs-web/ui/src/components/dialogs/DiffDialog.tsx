@@ -11,6 +11,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import type { DiffDto } from "@/types";
 import { getSkillDiff, getCommandDiff } from "@/api/client";
+import { useI18n } from "@/i18n";
 
 interface Props {
   open: boolean;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Props) {
+  const { t } = useI18n();
   const [diff, setDiff] = useState<DiffDto | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -38,9 +40,9 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h6" component="span">
-          Diff: {itemName}
+          {t("dialogs.diffTitle", { name: itemName ?? "" })}
         </Typography>
-        <IconButton onClick={onClose}>
+        <IconButton aria-label={t("common.close")} onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -60,10 +62,8 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
                 overflow: "auto",
                 p: 2,
                 m: 0,
-                bgcolor: "background.default",
+                bgcolor: "var(--mcs-surface-muted)",
                 borderRadius: 1,
-                "& .diff-add": { color: "success.main", bgcolor: "success.main", opacity: 0.1 },
-                "& .diff-del": { color: "error.main", bgcolor: "error.main", opacity: 0.1 },
               }}
             >
               {diff.diff_text.split("\n").map((line, i) => {
@@ -71,10 +71,10 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
                 let bg = "transparent";
                 if (line.startsWith("+")) {
                   color = "success.main";
-                  bg = "rgba(76, 175, 80, 0.08)";
+                  bg = "var(--mcs-diff-add-bg)";
                 } else if (line.startsWith("-")) {
                   color = "error.main";
-                  bg = "rgba(244, 67, 54, 0.08)";
+                  bg = "var(--mcs-diff-remove-bg)";
                 } else if (line.startsWith("@@") || line.startsWith("#")) {
                   color = "info.main";
                 }
@@ -82,7 +82,7 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
                   <Box
                     key={i}
                     component="span"
-                    sx={{ display: "block", color, bgcolor: bg, px: 1 }}
+                    sx={{ display: "block", color, bgcolor: bg, px: 1, overflowWrap: "anywhere" }}
                   >
                     {line || "\n"}
                   </Box>
@@ -91,12 +91,12 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
             </Box>
           ) : (
             <Typography color="text.secondary" py={4} textAlign="center">
-              Files are identical — no differences found
+              {t("dialogs.noDiff")}
             </Typography>
           )
         ) : (
           <Typography color="error" py={4} textAlign="center">
-            Failed to load diff
+            {t("dialogs.failedLoadDiff")}
           </Typography>
         )}
       </DialogContent>

@@ -20,12 +20,8 @@ export default function AnimatedBackground({
         pointerEvents: "none",
         background: (theme) =>
           theme.palette.mode === "dark"
-            ? `radial-gradient(circle at top left, rgba(125, 186, 178, ${
-                isHero ? 0.12 : 0.06
-              }) 0, transparent 34%), ${theme.palette.background.default}`
-            : `radial-gradient(circle at top left, rgba(22, 93, 102, ${
-                isHero ? 0.08 : 0.04
-              }) 0, transparent 34%), ${theme.palette.background.default}`,
+            ? `radial-gradient(circle at top left, ${isHero ? "var(--mcs-hero-accent)" : "rgba(125, 186, 178, 0.06)"} 0, transparent 34%), ${theme.palette.background.default}`
+            : `radial-gradient(circle at top left, ${isHero ? "var(--mcs-hero-accent)" : "rgba(22, 93, 102, 0.04)"} 0, transparent 34%), ${theme.palette.background.default}`,
         "&::before": isHero
           ? {
               content: '""',
@@ -33,10 +29,7 @@ export default function AnimatedBackground({
               insetInline: 0,
               top: 0,
               height: 240,
-              background: (theme) =>
-                theme.palette.mode === "dark"
-                  ? "linear-gradient(180deg, rgba(125, 186, 178, 0.08) 0%, transparent 100%)"
-                  : "linear-gradient(180deg, rgba(22, 93, 102, 0.06) 0%, transparent 100%)",
+              background: "linear-gradient(180deg, var(--mcs-hero-accent) 0%, transparent 100%)",
             }
           : undefined,
       }}

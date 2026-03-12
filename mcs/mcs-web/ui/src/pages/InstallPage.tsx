@@ -15,6 +15,7 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   Checkbox,
   Chip,
@@ -312,13 +313,11 @@ function SearchToolbar({
 function SkillCard({
   item,
   selected,
-  index,
   onToggle,
   onShowDetail,
 }: {
   item: ItemDto;
   selected: boolean;
-  index: number;
   onToggle: () => void;
   onShowDetail: () => void;
 }) {
@@ -327,15 +326,8 @@ function SkillCard({
 
   return (
     <Card
-      onClick={onToggle}
       sx={{
-        cursor: "pointer",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        animation: `localSkillFadeIn 0.3s ease-out ${index * 0.03}s both`,
-        "@keyframes localSkillFadeIn": {
-          "0%": { opacity: 0, transform: "translateY(12px)" },
-          "100%": { opacity: 1, transform: "translateY(0)" },
-        },
         boxShadow: selected
           ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.4)}`
           : undefined,
@@ -345,12 +337,18 @@ function SkillCard({
         },
       }}
     >
+      <CardActionArea onClick={onToggle} sx={{ height: "100%", alignItems: "stretch" }}>
       <CardContent sx={{ "&:last-child": { pb: 2 } }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-          <Checkbox checked={selected} onChange={onToggle} onClick={(event) => event.stopPropagation()} />
+          <Checkbox
+            checked={selected}
+            onChange={onToggle}
+            onClick={(event) => event.stopPropagation()}
+            inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
+          />
           <Tooltip title={t("common.viewDetail")}>
             <IconButton
-              size="small"
+              aria-label={t("common.viewDetail")}
               onClick={(event) => {
                 event.stopPropagation();
                 onShowDetail();
@@ -397,9 +395,10 @@ function SkillCard({
             minHeight: "4.2em",
           }}
         >
-          {item.description ?? t("install.adjustFilters")}
+          {item.description ?? t("common.noDescriptionAvailable")}
         </Typography>
       </CardContent>
+      </CardActionArea>
     </Card>
   );
 }
@@ -423,11 +422,10 @@ function SkillCardGrid({
 
   return (
     <Grid container spacing={2}>
-      {skills.map((item, index) => (
+      {skills.map((item) => (
         <Grid key={item.name} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 3 }}>
           <SkillCard
             item={item}
-            index={index}
             selected={selectedNames.has(item.name)}
             onToggle={() => onToggle(item.name)}
             onShowDetail={() => onShowDetail(item.name)}
@@ -715,7 +713,6 @@ export default function InstallPage() {
               <Chip
                 icon={<FolderOpenOutlinedIcon />}
                 variant="outlined"
-                size="small"
                 color="info"
                 clickable
                 aria-label={t("common.installTarget")}
@@ -727,6 +724,14 @@ export default function InstallPage() {
                       : t("install.installTargetGlobal"),
                   path: resolvedTarget?.skills_path ?? t("install.installTargetLoading"),
                 })}
+                sx={{
+                  maxWidth: { xs: 220, sm: 360 },
+                  "& .MuiChip-label": {
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  },
+                }}
               />
             </Tooltip>
           </Box>

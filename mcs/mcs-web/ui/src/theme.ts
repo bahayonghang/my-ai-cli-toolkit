@@ -70,6 +70,16 @@ function buildTheme(mode: Mode) {
             --mcs-focus: ${tone.focus};
             --mcs-shadow-sm: ${tone.shadowSm};
             --mcs-shadow-md: ${tone.shadowMd};
+            --mcs-surface-muted: ${mode === "dark" ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.02)"};
+            --mcs-toolbar-overlay: ${mode === "dark" ? "rgba(24, 33, 39, 0.92)" : "rgba(255, 255, 255, 0.94)"};
+            --mcs-hero-accent: ${mode === "dark" ? "rgba(125, 186, 178, 0.08)" : "rgba(22, 93, 102, 0.06)"};
+            --mcs-diff-add-bg: ${mode === "dark" ? "rgba(116, 196, 148, 0.16)" : "rgba(47, 125, 87, 0.1)"};
+            --mcs-diff-remove-bg: ${mode === "dark" ? "rgba(220, 140, 132, 0.16)" : "rgba(178, 83, 74, 0.1)"};
+            --mcs-warning-progress: ${mode === "dark" ? "rgba(208, 169, 105, 0.18)" : "rgba(168, 107, 31, 0.14)"};
+            --mcs-warning-progress-strong: ${mode === "dark" ? "rgba(208, 169, 105, 0.72)" : "rgba(168, 107, 31, 0.72)"};
+            --mcs-error-surface: ${mode === "dark" ? "rgba(220, 140, 132, 0.16)" : "rgba(178, 83, 74, 0.08)"};
+            --mcs-error-border: ${mode === "dark" ? "rgba(220, 140, 132, 0.32)" : "rgba(178, 83, 74, 0.22)"};
+            --mcs-error-text: ${mode === "dark" ? "#ffd2cd" : "#7e342d"};
           }
 
           *, *::before, *::after {
@@ -124,7 +134,8 @@ function buildTheme(mode: Mode) {
       MuiButton: {
         styleOverrides: {
           root: {
-            minHeight: 40,
+            minWidth: 44,
+            minHeight: 44,
             textTransform: "none",
             borderRadius: 10,
             fontWeight: 600,
@@ -138,8 +149,19 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           root: {
             borderRadius: 10,
+            minWidth: 44,
+            minHeight: 44,
             transition:
               "background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease",
+          },
+        },
+      },
+      MuiToggleButton: {
+        styleOverrides: {
+          root: {
+            minWidth: 44,
+            minHeight: 44,
+            textTransform: "none",
           },
         },
       },
@@ -180,7 +202,7 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           root: {
             backgroundColor:
-              mode === "dark" ? "rgba(24, 33, 39, 0.92)" : "rgba(255, 255, 255, 0.94)",
+              "var(--mcs-toolbar-overlay)",
             color: tone.textPrimary,
             borderBottom: "1px solid var(--mcs-border)",
             boxShadow: "none",

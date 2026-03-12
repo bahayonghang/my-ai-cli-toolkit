@@ -23,7 +23,6 @@ export function LanguageToggle({ sx }: LanguageToggleProps) {
       <ToggleButtonGroup
         value={locale}
         exclusive
-        size="small"
         onChange={handleLocaleChange}
         aria-label={t("common.languageSwitch")}
         color="primary"
@@ -32,10 +31,10 @@ export function LanguageToggle({ sx }: LanguageToggleProps) {
           borderRadius: 999,
           "& .MuiToggleButton-root": {
             border: "none",
-            px: 1.25,
-            py: 0.5,
+            px: 1.5,
+            minHeight: 44,
             color: "inherit",
-            fontSize: "0.75rem",
+            fontSize: "0.85rem",
             fontWeight: 600,
             textTransform: "none",
           },

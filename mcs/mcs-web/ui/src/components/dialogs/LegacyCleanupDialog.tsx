@@ -14,6 +14,7 @@ import {
     Fade,
     FormControlLabel,
     LinearProgress,
+    ListItemButton,
     Stack,
     Typography,
     Zoom,
@@ -22,6 +23,7 @@ import {
 } from "@mui/material";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
+import { useI18n } from "@/i18n";
 import type { LegacyDirDto } from "@/types";
 import { cleanupLegacyDirs, getLegacyDirs } from "@/api/client";
 
@@ -40,10 +42,12 @@ interface CleanupProgress {
 
 export function LegacyCleanupDialog({ open, onClose }: Props) {
     const theme = useTheme();
+    const { t } = useI18n();
     const [items, setItems] = useState<LegacyDirDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [cleaning, setCleaning] = useState(false);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const [progress, setProgress] = useState<CleanupProgress | null>(null);
     const [result, setResult] = useState<{
         removed: number;
@@ -58,13 +62,18 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
         setResult(null);
         setProgress(null);
         setLoading(true);
+        setLoadError(null);
 
         getLegacyDirs()
             .then((data) => {
                 setItems(data);
                 setSelected(new Set(data.map((d) => d.legacy_path)));
             })
-            .catch(console.error)
+            .catch((error) => {
+                setItems([]);
+                setSelected(new Set());
+                setLoadError((error as Error).message);
+            })
             .finally(() => setLoading(false));
     }, [open]);
 
@@ -131,7 +140,6 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                 failedCount += res.failed.length;
             } catch (e) {
                 failedCount += 1;
-                console.error("Cleanup failed for path", path, e);
             } finally {
                 setProgress((prev) =>
                     prev
@@ -173,17 +181,37 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
         >
             <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <FolderDeleteIcon color="warning" />
-                旧版技能目录清理
+                {t("dialogs.legacyCleanupTitle")}
             </DialogTitle>
             <DialogContent dividers>
                 {loading ? (
                     <Box display="flex" justifyContent="center" p={4}>
                         <CircularProgress />
                     </Box>
+                ) : loadError ? (
+                    <Stack spacing={2}>
+                        <Alert severity="error">{loadError}</Alert>
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                setLoading(true);
+                                setLoadError(null);
+                                getLegacyDirs()
+                                    .then((data) => {
+                                        setItems(data);
+                                        setSelected(new Set(data.map((d) => d.legacy_path)));
+                                    })
+                                    .catch((error) => setLoadError((error as Error).message))
+                                    .finally(() => setLoading(false));
+                            }}
+                        >
+                            {t("dialogs.retry")}
+                        </Button>
+                    </Stack>
                 ) : items.length === 0 ? (
-                    <Fade in timeout={220}>
-                        <Alert severity="success" sx={{ borderRadius: 2 }}>
-                            未检测到旧版技能目录，所有目录均已迁移！
+                        <Fade in timeout={220}>
+                            <Alert severity="success" sx={{ borderRadius: 2 }}>
+                            {t("dialogs.legacyCleanupEmpty")}
                         </Alert>
                     </Fade>
                 ) : (
@@ -191,10 +219,10 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                         <Fade in timeout={220}>
                             <Alert severity="warning" sx={{ borderRadius: 2 }}>
                                 <Typography variant="body2" fontWeight={600}>
-                                    以下旧版目录已迁移至共享位置，可以安全删除。
+                                    {t("dialogs.legacyCleanupWarningTitle")}
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary">
-                                    删除操作不可恢复，请确认这些目录中没有额外自定义内容。
+                                    {t("dialogs.legacyCleanupWarningBody")}
                                 </Typography>
                             </Alert>
                         </Fade>
@@ -217,7 +245,10 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                         mb={1}
                                     >
                                         <Typography variant="body2" fontWeight={700}>
-                                            正在异步清理 ({progress.processed}/{progress.total})
+                                            {t("dialogs.legacyCleanupProgress", {
+                                                processed: progress.processed,
+                                                total: progress.total,
+                                            })}
                                         </Typography>
                                         <Chip
                                             label={`${progressPercent}%`}
@@ -232,24 +263,23 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                         sx={{
                                             height: 8,
                                             borderRadius: 999,
-                                            bgcolor: alpha(theme.palette.warning.main, 0.14),
+                                            bgcolor: "var(--mcs-warning-progress)",
                                             "& .MuiLinearProgress-bar": {
                                                 borderRadius: 999,
-                                                background:
-                                                    "linear-gradient(90deg, #F59E0B 0%, #F97316 100%)",
+                                                background: "var(--mcs-warning-progress-strong)",
                                                 transition: "transform 280ms ease",
                                             },
                                         }}
                                     />
                                     <Box display="flex" justifyContent="space-between" mt={1}>
                                         <Typography variant="caption" color="text.secondary">
-                                            已删除 {progress.removed} 项
+                                            {t("dialogs.legacyCleanupRemoved", { count: progress.removed })}
                                         </Typography>
                                         <Typography
                                             variant="caption"
                                             color={progress.failed > 0 ? "error.main" : "text.secondary"}
                                         >
-                                            失败 {progress.failed} 项
+                                            {t("dialogs.legacyCleanupFailed", { count: progress.failed })}
                                         </Typography>
                                     </Box>
                                     {progress.currentPath && (
@@ -260,10 +290,10 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                                 display: "block",
                                                 fontFamily: '"JetBrains Mono", monospace',
                                                 color: "text.secondary",
-                                                wordBreak: "break-all",
+                                                overflowWrap: "anywhere",
                                             }}
                                         >
-                                            当前：{progress.currentPath}
+                                            {t("dialogs.legacyCleanupCurrent", { path: progress.currentPath })}
                                         </Typography>
                                     )}
                                 </Box>
@@ -285,7 +315,10 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                 }
                                 label={
                                     <Typography variant="body2" fontWeight={600}>
-                                        全选 ({selected.size}/{items.length})
+                                        {t("dialogs.legacyCleanupSelectAll", {
+                                            selected: selected.size,
+                                            total: items.length,
+                                        })}
                                     </Typography>
                                 }
                             />
@@ -296,8 +329,9 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                             const isActive = progress?.currentPath === item.legacy_path;
 
                             return (
-                                <Box
+                                <ListItemButton
                                     key={item.legacy_path}
+                                    component="div"
                                     sx={{
                                         p: 1.5,
                                         borderRadius: 2,
@@ -321,9 +355,11 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                     <Box display="flex" alignItems="center" gap={1}>
                                         <Checkbox
                                             checked={isSelected}
-                                            size="small"
                                             sx={{ p: 0.5 }}
                                             disabled={cleaning}
+                                            inputProps={{
+                                                "aria-label": t("common.selectItem", { name: item.platform_id }),
+                                            }}
                                         />
                                         <Box flex={1} minWidth={0}>
                                             <Box display="flex" alignItems="center" gap={1}>
@@ -331,7 +367,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                                     {item.platform_id}
                                                 </Typography>
                                                 <Chip
-                                                    label="legacy"
+                                                    label={t("dialogs.legacyTag")}
                                                     size="small"
                                                     color="warning"
                                                     variant="outlined"
@@ -346,7 +382,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                                     fontSize: "0.7rem",
                                                     display: "block",
                                                     mt: 0.5,
-                                                    wordBreak: "break-all",
+                                                    overflowWrap: "anywhere",
                                                 }}
                                             >
                                                 {item.legacy_path}
@@ -364,7 +400,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                             </Typography>
                                         </Box>
                                     </Box>
-                                </Box>
+                                </ListItemButton>
                             );
                         })}
 
@@ -375,8 +411,15 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                         severity={result.failed > 0 ? "warning" : "success"}
                                         sx={{ borderRadius: 2 }}
                                     >
-                                        已清理 {result.removed} 个目录
-                                        {result.failed > 0 && `，${result.failed} 个失败`}
+                                        {t("dialogs.legacyCleanupResult", {
+                                            removed: result.removed,
+                                            failedSuffix:
+                                                result.failed > 0
+                                                    ? t("dialogs.legacyCleanupFailedSuffix", {
+                                                        count: result.failed,
+                                                    })
+                                                    : "",
+                                        })}
                                     </Alert>
                                 ) : null}
                             </Box>
@@ -386,7 +429,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} disabled={cleaning}>
-                    关闭
+                    {t("common.close")}
                 </Button>
                 <Button
                     variant="contained"
@@ -402,8 +445,11 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                     disabled={cleaning || selected.size === 0 || items.length === 0}
                 >
                     {cleaning && progress
-                        ? `清理中... (${progress.processed}/${progress.total})`
-                        : `清理选中目录 (${selected.size})`}
+                        ? t("dialogs.legacyCleanupRunning", {
+                            processed: progress.processed,
+                            total: progress.total,
+                        })
+                        : t("dialogs.legacyCleanupAction", { count: selected.size })}
                 </Button>
             </DialogActions>
         </Dialog>

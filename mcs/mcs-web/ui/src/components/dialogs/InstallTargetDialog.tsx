@@ -20,6 +20,7 @@ import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import type { InstallTarget, InstallTargetScope } from "@/types";
 import { useI18n } from "@/i18n";
 import { pickFolder } from "@/api/client";
+import { useUiStore } from "@/stores/uiStore";
 
 interface Props {
   open: boolean;
@@ -39,6 +40,7 @@ export function InstallTargetDialog({
   onApply,
 }: Props) {
   const { t } = useI18n();
+  const showNotification = useUiStore((state) => state.showNotification);
   const [scope, setScope] = useState<InstallTargetScope>("global");
   const [projectPath, setProjectPath] = useState("");
   const [pickingFolder, setPickingFolder] = useState(false);
@@ -70,7 +72,7 @@ export function InstallTargetDialog({
         setProjectPath(res.path);
       }
     } catch (e) {
-      console.error("Failed to pick folder", e);
+      showNotification((e as Error).message, "error");
     } finally {
       setPickingFolder(false);
     }
@@ -89,7 +91,6 @@ export function InstallTargetDialog({
                 setScope(value as InstallTargetScope);
               }
             }}
-            size="small"
           >
             <ToggleButton value="global">{t("dialogs.installTargetGlobal")}</ToggleButton>
             <ToggleButton value="project">{t("dialogs.installTargetProject")}</ToggleButton>
@@ -103,7 +104,6 @@ export function InstallTargetDialog({
                 onChange={(e) => setProjectPath(e.target.value)}
                 placeholder={t("dialogs.projectPathPlaceholder")}
                 fullWidth
-                size="small"
                 disabled={loading || pickingFolder}
                 InputProps={{
                   endAdornment: (
@@ -111,7 +111,6 @@ export function InstallTargetDialog({
                       <IconButton
                         onClick={handlePickFolder}
                         disabled={loading || pickingFolder}
-                        size="small"
                         title={t("dialogs.chooseLocalFolder")}
                         aria-label={t("dialogs.chooseLocalFolder")}
                       >

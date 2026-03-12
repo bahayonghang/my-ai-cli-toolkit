@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from "@mui/material";
+import { useI18n } from "@/i18n";
 import { useUiStore } from "@/stores/uiStore";
 import { lightTheme, darkTheme } from "@/theme";
 import PlatformSelectPage from "@/pages/PlatformSelectPage";
@@ -12,23 +13,27 @@ const InstallPage = lazy(() => import("@/pages/InstallPage"));
 const NpxSkillsPage = lazy(() => import("@/pages/NpxSkillsPage"));
 const UnifiedInstallHubPage = lazy(() => import("@/pages/UnifiedInstallHubPage"));
 
-const Fallback = () => (
-  <Box
-    display="flex"
-    flexDirection="column"
-    justifyContent="center"
-    alignItems="center"
-    gap={2}
-    minHeight="100vh"
-    role="status"
-    aria-live="polite"
-  >
-    <CircularProgress />
-    <Box component="span" sx={{ color: "text.secondary", typography: "body2" }}>
-      Loading
+function Fallback() {
+  const { t } = useI18n();
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      gap={2}
+      minHeight="100vh"
+      role="status"
+      aria-live="polite"
+    >
+      <CircularProgress />
+      <Box component="span" sx={{ color: "text.secondary", typography: "body2" }}>
+        {t("common.loading")}
+      </Box>
     </Box>
-  </Box>
-);
+  );
+}
 
 export default function App() {
   const colorMode = useUiStore((s) => s.colorMode);

@@ -15,6 +15,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { getSkillDetail, updateSkillContent } from "@/api/client";
 import { useI18n } from "@/i18n";
+import { useUiStore } from "@/stores/uiStore";
 
 interface Props {
   open: boolean;
@@ -33,6 +34,7 @@ export function SkillEditorDrawer({
 }: Props) {
   const { t } = useI18n();
   const theme = useTheme();
+  const showNotification = useUiStore((state) => state.showNotification);
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
   const originalContentRef = useRef("");
@@ -88,14 +90,16 @@ export function SkillEditorDrawer({
           changes: { from: 0, to: view.state.doc.length, insert: content },
         });
       })
-      .catch(console.error)
+      .catch((error) => {
+        showNotification((error as Error).message, "error");
+      })
       .finally(() => setLoading(false));
 
     return () => {
       view.destroy();
       viewRef.current = null;
     };
-  }, [open, theme.palette.mode, platformId, skillName, editorContainer]);
+  }, [editorContainer, open, platformId, showNotification, skillName, theme.palette.mode]);
 
   const handleSave = async () => {
     if (!viewRef.current) return;
@@ -107,7 +111,7 @@ export function SkillEditorDrawer({
       setIsDirty(false);
       onSaved();
     } catch (e) {
-      console.error("Failed to save:", e);
+      showNotification((e as Error).message, "error");
     } finally {
       setSaving(false);
     }
@@ -146,7 +150,7 @@ export function SkillEditorDrawer({
           flexShrink: 0,
         }}
       >
-        <IconButton size="small" onClick={handleClose} aria-label={t("common.close")}>
+        <IconButton onClick={handleClose} aria-label={t("common.close")}>
           <CloseIcon />
         </IconButton>
         <Typography

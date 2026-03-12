@@ -16,6 +16,7 @@ import ReactMarkdown from "react-markdown";
 import type { ItemDetailDto } from "@/types";
 import { getSkillDetail } from "@/api/client";
 import { StatusChip } from "@/components/common/StatusChip";
+import { useI18n } from "@/i18n";
 
 interface Props {
   open: boolean;
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff, onReinstall }: Props) {
+  const { t } = useI18n();
   const [detail, setDetail] = useState<ItemDetailDto | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -50,9 +52,9 @@ export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff,
         {/* Header */}
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h6" fontWeight={600}>
-            {skillName ?? "Detail"}
+            {skillName ?? t("dialogs.detailFallbackTitle")}
           </Typography>
-          <IconButton onClick={onClose}>
+          <IconButton aria-label={t("common.close")} onClick={onClose}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -90,21 +92,19 @@ export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff,
               {(detail.status === "installed" || detail.status === "outdated") && (
                 <Button
                   variant="outlined"
-                  size="small"
                   startIcon={<CompareArrowsIcon />}
                   onClick={() => skillName && onShowDiff(skillName)}
                 >
-                  View Diff
+                  {t("dialogs.viewDiff")}
                 </Button>
               )}
               {(detail.status === "installed" || detail.status === "outdated") && onReinstall && (
                 <Button
                   variant="outlined"
                   color="primary"
-                  size="small"
                   onClick={() => skillName && onReinstall(skillName)}
                 >
-                  Reinstall
+                  {t("common.reinstall")}
                 </Button>
               )}
             </Box>
@@ -140,12 +140,12 @@ export function DetailDrawer({ open, platformId, skillName, onClose, onShowDiff,
               </Box>
             ) : (
               <Typography color="text.secondary" fontStyle="italic">
-                No SKILL.md content available
+                {t("dialogs.noSkillContent")}
               </Typography>
             )}
           </>
         ) : (
-          <Typography color="text.secondary">Failed to load detail</Typography>
+          <Typography color="text.secondary">{t("dialogs.failedLoadDetail")}</Typography>
         )}
       </Box>
     </Drawer>
