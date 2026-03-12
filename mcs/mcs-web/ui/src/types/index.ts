@@ -150,6 +150,12 @@ export interface NpxSkillsCliConfig {
   cli_mode: NpxSkillsCliMode;
 }
 
+export interface NpxSkillsRunConfig {
+  agents: string[];
+  cliMode: NpxSkillsCliMode;
+  installTarget: InstallTarget;
+}
+
 export interface NpxSkillsCatalogItemDto {
   name: string;
   repo: string;

@@ -1,8 +1,23 @@
 import { expect, test } from "@playwright/test";
 
-import { installMockEventSource, mockNpxSkillsApi } from "./helpers/npxSkillsHarness";
+import {
+  installMockEventSource,
+  maybeSubmitNpxSkillsRunDialog,
+  mockNpxSkillsApi,
+  seedNpxSkillsRunConfig,
+  setNpxSkillsInstallTarget,
+} from "./helpers/npxSkillsHarness";
 
 test("quick install starts a job and renders progress", async ({ page }) => {
+  const installTarget = {
+    scope: "project" as const,
+    project_path: "/tmp/npx-skills-install-project",
+  };
+  const runConfig = {
+    agents: ["codex", "gemini"],
+    cli_mode: "npx" as const,
+  };
+
   await installMockEventSource(page, [
     {
       match: "install-job",
@@ -59,17 +74,35 @@ test("quick install starts a job and renders progress", async ({ page }) => {
       ],
     },
   ]);
-  await mockNpxSkillsApi(page);
+  const api = await mockNpxSkillsApi(page);
+  await seedNpxSkillsRunConfig(page, runConfig);
 
   await page.goto("/platform/claude/npx-skills");
+  await setNpxSkillsInstallTarget(page, installTarget);
   await page.getByRole("button", { name: /quick install/i }).click();
   await page.getByLabel(/package/i).fill("vercel-labs/agent-skills");
+  await page.getByLabel(/skill flags/i).fill("find-skills\nreview");
   await page.getByRole("button", { name: /^install$/i }).click();
+  await maybeSubmitNpxSkillsRunDialog(page, {
+    installTarget,
+    submitButtons: [/^install$/i, /^run$/i, /^confirm$/i],
+  });
 
   await expect(page.getByRole("tab", { name: /maintenance/i })).toHaveAttribute(
     "aria-selected",
     "true"
   );
+  await expect.poll(() => api.requests.installJobs.length).toBe(1);
   await expect(page.getByText(/install finished/i)).toBeVisible();
   await expect(page.getByText("vercel-labs/agent-skills")).toBeVisible();
+  expect(api.requests.installJobs[0]).toEqual({
+    items: [
+      {
+        package_ref: "vercel-labs/agent-skills",
+        skill_flags: ["find-skills", "review"],
+      },
+    ],
+    config: runConfig,
+    install_target: installTarget,
+  });
 });

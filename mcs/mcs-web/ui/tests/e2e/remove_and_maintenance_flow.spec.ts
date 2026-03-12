@@ -1,8 +1,23 @@
 import { expect, test } from "@playwright/test";
 
-import { installMockEventSource, mockNpxSkillsApi } from "./helpers/npxSkillsHarness";
+import {
+  installMockEventSource,
+  maybeSubmitNpxSkillsRunDialog,
+  mockNpxSkillsApi,
+  seedNpxSkillsRunConfig,
+  setNpxSkillsInstallTarget,
+} from "./helpers/npxSkillsHarness";
 
 test("managed items are removable and maintenance jobs run", async ({ page }) => {
+  const installTarget = {
+    scope: "project" as const,
+    project_path: "/tmp/npx-skills-maintenance-project",
+  };
+  const runConfig = {
+    agents: ["codex", "gemini"],
+    cli_mode: "npx" as const,
+  };
+
   await installMockEventSource(page, [
     {
       match: "remove-job",
@@ -113,9 +128,11 @@ test("managed items are removable and maintenance jobs run", async ({ page }) =>
       ],
     },
   ]);
-  await mockNpxSkillsApi(page);
+  const api = await mockNpxSkillsApi(page);
+  await seedNpxSkillsRunConfig(page, runConfig);
 
   await page.goto("/platform/claude/npx-skills");
+  await setNpxSkillsInstallTarget(page, installTarget);
   await page.getByRole("tab", { name: /installed/i }).click();
 
   const unmanagedRow = page.getByRole("row").filter({ hasText: "legacy-unmanaged" });
@@ -125,8 +142,27 @@ test("managed items are removable and maintenance jobs run", async ({ page }) =>
   const managedRow = page.getByRole("row").filter({ hasText: "find-skills" });
   await managedRow.getByRole("button", { name: /uninstall/i }).click();
   await page.getByRole("button", { name: /^uninstall$/i }).click();
+  await maybeSubmitNpxSkillsRunDialog(page, {
+    installTarget,
+    submitButtons: [/^uninstall$/i, /^remove$/i, /^run$/i, /^confirm$/i],
+  });
+  await expect.poll(() => api.requests.removeJobs.length).toBe(1);
   await expect(page.getByText(/remove finished/i)).toBeVisible();
+  expect(api.requests.removeJobs[0]).toEqual({
+    names: ["find-skills"],
+    config: runConfig,
+    install_target: installTarget,
+  });
 
   await page.getByRole("button", { name: /check for updates/i }).click();
+  await maybeSubmitNpxSkillsRunDialog(page, {
+    installTarget,
+    submitButtons: [/^check for updates$/i, /^check$/i, /^run$/i, /^confirm$/i],
+  });
+  await expect.poll(() => api.requests.checkJobs.length).toBe(1);
   await expect(page.getByText(/check finished/i)).toBeVisible();
+  expect(api.requests.checkJobs[0]).toEqual({
+    config: runConfig,
+    install_target: installTarget,
+  });
 });

@@ -14,14 +14,11 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   Checkbox,
   Chip,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Drawer,
   FormControlLabel,
   Grid,
@@ -66,8 +63,8 @@ import {
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
+import { NpxRunConfigDialog } from "@/components/dialogs/NpxRunConfigDialog";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useI18n } from "@/i18n";
 import type {
@@ -83,10 +80,13 @@ import type {
   NpxSkillsJobProgressPayload,
   NpxSkillsJobStartDto,
   NpxSkillsOperation,
+  NpxSkillsRunConfig,
 } from "@/types";
 import { useUiStore } from "@/stores/uiStore";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useDebounce } from "@/hooks/useDebounce";
+import { finalizeInterruptedJob } from "@/utils/npxJobState";
+import { buildNpxJobNotification, buildNpxRunConfigSummary } from "./npxSkillsFeedback";
 
 type ViewMode = "find" | "installed" | "maintenance";
 
@@ -98,6 +98,31 @@ interface JobItemState {
   error: string | null;
   durationMs: number | null;
 }
+
+type PendingRunAction =
+  | {
+      kind: "install";
+      items: NpxSkillsInstallItemInput[];
+      labels: string[];
+      itemCount: number;
+    }
+  | {
+      kind: "quick-install";
+      packageRef: string;
+      skillFlagsInput: string;
+    }
+  | {
+      kind: "remove";
+      names: string[];
+    }
+  | {
+      kind: "check";
+    }
+  | {
+      kind: "update";
+    };
+
+type RunResultStatus = "idle" | "running" | "success" | "warning" | "error" | "interrupted";
 
 const COMMON_AGENTS = [
   "claude-code",
@@ -215,7 +240,7 @@ export default function NpxSkillsPage() {
 
   const [view, setView] = useState<ViewMode>("find");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [quickInstallOpen, setQuickInstallOpen] = useState(false);
+  const [pendingRunAction, setPendingRunAction] = useState<PendingRunAction | null>(null);
   const [catalogSearch, setCatalogSearch] = useState("");
   const [installedSearch, setInstalledSearch] = useState("");
   const debouncedCatalogSearch = useDebounce(catalogSearch, 250);
@@ -236,11 +261,6 @@ export default function NpxSkillsPage() {
   const [agents, setAgents] = useState<string[]>(loadAgents);
   const [cliMode, setCliMode] = useState<NpxSkillsCliMode>(loadCliMode);
 
-  const [quickPackageRef, setQuickPackageRef] = useState("");
-  const [quickSkillFlags, setQuickSkillFlags] = useState("");
-
-  const [removeNames, setRemoveNames] = useState<string[]>([]);
-
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobOperation, setJobOperation] = useState<NpxSkillsOperation | null>(null);
   const [jobRunning, setJobRunning] = useState(false);
@@ -251,11 +271,16 @@ export default function NpxSkillsPage() {
   const [jobFailureCount, setJobFailureCount] = useState(0);
   const [streamDisconnected, setStreamDisconnected] = useState(false);
   const [jobItems, setJobItems] = useState<JobItemState[]>([]);
+  const [expandedJobItemIds, setExpandedJobItemIds] = useState<Set<string>>(new Set());
+  const [jobRunConfig, setJobRunConfig] = useState<NpxSkillsRunConfig | null>(null);
+  const [jobResultStatus, setJobResultStatus] = useState<RunResultStatus>("idle");
+  const [jobStatusMessage, setJobStatusMessage] = useState<string | null>(null);
 
   const eventSourceRef = useRef<EventSource | null>(null);
   const streamWarnedRef = useRef(false);
   const catalogAbortRef = useRef<AbortController | null>(null);
   const installedAbortRef = useRef<AbortController | null>(null);
+  const jobItemsRef = useRef<JobItemState[]>([]);
 
   useEffect(() => {
     void fetchPlatforms();
@@ -272,12 +297,17 @@ export default function NpxSkillsPage() {
     };
   }, []);
 
-  const cliConfig = useMemo<NpxSkillsCliConfig>(
+  useEffect(() => {
+    jobItemsRef.current = jobItems;
+  }, [jobItems]);
+
+  const defaultRunConfig = useMemo<NpxSkillsRunConfig>(
     () => ({
       agents,
-      cli_mode: cliMode,
+      cliMode,
+      installTarget,
     }),
-    [agents, cliMode]
+    [agents, cliMode, installTarget]
   );
 
   const updateAgents = useCallback((next: string[]) => {
@@ -409,8 +439,24 @@ export default function NpxSkillsPage() {
     void fetchInstalled();
   }, [fetchCatalog, fetchInstalled]);
 
+  const toggleJobItemExpanded = useCallback((id: string) => {
+    setExpandedJobItemIds((previous) => {
+      const next = new Set(previous);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
   const startJob = useCallback(
-    async (labels: string[], starter: () => Promise<NpxSkillsJobStartDto>) => {
+    async (
+      labels: string[],
+      starter: () => Promise<NpxSkillsJobStartDto>,
+      runConfig: NpxSkillsRunConfig
+    ) => {
       if (!platformId || labels.length === 0 || jobRunning) {
         return;
       }
@@ -424,6 +470,10 @@ export default function NpxSkillsPage() {
       setJobPercent(0);
       setJobSuccessCount(0);
       setJobFailureCount(0);
+      setExpandedJobItemIds(new Set());
+      setJobRunConfig(runConfig);
+      setJobResultStatus("running");
+      setJobStatusMessage(null);
       initializeJobItems(labels);
       closeEventStream();
       setView("maintenance");
@@ -497,19 +547,15 @@ export default function NpxSkillsPage() {
           setJobPercent(100);
           closeEventStream();
           refreshAfterJob();
-
-          const failedSuffix =
-            payload.failure_count > 0
-              ? `, ${t("npxSkills.jobFailed", { count: payload.failure_count })}`
-              : "";
-          showNotification(
-            t("npxSkills.jobCompleted", {
-              operation: operationLabel(payload.operation, t),
-              success: payload.success_count,
-              failedSuffix,
-            }),
-            payload.failure_count > 0 ? "warning" : "success"
+          const notification = buildNpxJobNotification(
+            payload.operation,
+            payload.success_count,
+            payload.failure_count,
+            t
           );
+          setJobResultStatus(payload.failure_count > 0 ? "warning" : "success");
+          setJobStatusMessage(notification.message);
+          showNotification(notification.message, notification.severity);
         });
 
         source.addEventListener("job_failed", (event) => {
@@ -518,18 +564,40 @@ export default function NpxSkillsPage() {
             return;
           }
           setJobRunning(false);
-          closeEventStream();
-          showNotification(
+          setJobResultStatus("error");
+          setJobStatusMessage(
             t("npxSkills.jobFailedMessage", {
               operation: operationLabel(payload.operation, t),
               message: payload.message,
-            }),
-            "error"
+            })
           );
+          closeEventStream();
+          const notification = buildNpxJobNotification(payload.operation, 0, 1, t);
+          showNotification(notification.message, notification.severity);
         });
 
         source.onerror = () => {
+          const interrupted = finalizeInterruptedJob(
+            jobItemsRef.current,
+            t("npxSkills.jobInterrupted", {
+              operation: operationLabel(started.operation, t),
+            })
+          );
+          closeEventStream();
+          setJobItems(interrupted.items);
+          setJobRunning(false);
+          setJobCompleted(interrupted.completed);
+          setJobTotal(interrupted.total);
+          setJobSuccessCount(interrupted.successCount);
+          setJobFailureCount(interrupted.failureCount);
+          setJobPercent(interrupted.percent);
           setStreamDisconnected(true);
+          setJobResultStatus("interrupted");
+          setJobStatusMessage(
+            t("npxSkills.jobInterruptedMessage", {
+              operation: operationLabel(started.operation, t),
+            })
+          );
           if (!streamWarnedRef.current) {
             streamWarnedRef.current = true;
             showNotification(t("npxSkills.jobConnectionLost"), "warning");
@@ -537,6 +605,8 @@ export default function NpxSkillsPage() {
         };
       } catch (error) {
         setJobRunning(false);
+        setJobResultStatus("error");
+        setJobStatusMessage((error as Error).message);
         closeEventStream();
         showNotification((error as Error).message, "error");
       }
@@ -552,83 +622,207 @@ export default function NpxSkillsPage() {
     ]
   );
 
-  const handleInstallSelected = async () => {
-    if (!platformId || selectedInstallPayload.length === 0) {
+  const openInstallSelectedDialog = () => {
+    if (selectedInstallPayload.length === 0) {
       return;
     }
-    await startJob(
-      selectedCatalogItems.map((item) => {
+    setPendingRunAction({
+      kind: "install",
+      items: selectedInstallPayload,
+      labels: selectedCatalogItems.map((item) => {
         let label = item.repo;
         if (item.skill_flag) {
           label += ` --skill ${item.skill_flag}`;
         }
         return label;
       }),
-      () =>
-        startNpxSkillsInstallJob(
-          platformId,
-          selectedInstallPayload,
-          installTarget,
-          cliConfig
-        )
-    );
-    setSelectedCatalogKeys(new Set());
+      itemCount: selectedCatalogItems.length,
+    });
   };
 
-  const handleQuickInstall = async () => {
-    if (!platformId || !quickPackageRef.trim()) {
-      return;
-    }
-    const item: NpxSkillsInstallItemInput = {
-      package_ref: quickPackageRef.trim(),
-      skill_flags: parseSkillFlags(quickSkillFlags),
-    };
-    await startJob(
-      [item.package_ref],
-      () => startNpxSkillsInstallJob(platformId, [item], installTarget, cliConfig)
-    );
-    setQuickInstallOpen(false);
-    setQuickPackageRef("");
-    setQuickSkillFlags("");
+  const openQuickInstallDialog = () => {
+    setPendingRunAction({
+      kind: "quick-install",
+      packageRef: "",
+      skillFlagsInput: "",
+    });
   };
 
-  const handleRemove = async () => {
-    if (!platformId || removeNames.length === 0) {
+  const openRemoveDialog = (names: string[]) => {
+    if (names.length === 0) {
       return;
     }
-    const names = [...removeNames];
-    setRemoveNames([]);
-    await startJob(names, () =>
-      startNpxSkillsRemoveJob(platformId, names, installTarget, cliConfig)
-    );
-    setSelectedInstalledNames(new Set());
+    setPendingRunAction({ kind: "remove", names });
   };
 
   const openRemoveSelected = () => {
-    setRemoveNames(
+    openRemoveDialog(
       installedItems
         .filter((item) => selectedInstalledNames.has(item.name) && item.manageable)
         .map((item) => item.name)
     );
   };
 
-  const handleCheck = async () => {
-    if (!platformId) {
-      return;
-    }
-    await startJob([t("npxSkills.operationCheck")], () =>
-      startNpxSkillsCheckJob(platformId, installTarget, cliConfig)
-    );
-  };
+  const openCheckDialog = () => setPendingRunAction({ kind: "check" });
+  const openUpdateDialog = () => setPendingRunAction({ kind: "update" });
 
-  const handleUpdate = async () => {
-    if (!platformId) {
-      return;
+  const handleRunDialogConfirm = useCallback(
+    async (payload: {
+      config: NpxSkillsRunConfig;
+      packageRef: string;
+      skillFlagsInput: string;
+    }) => {
+      if (!platformId || !pendingRunAction) {
+        return;
+      }
+
+      const runCliConfig: NpxSkillsCliConfig = {
+        agents: payload.config.agents,
+        cli_mode: payload.config.cliMode,
+      };
+
+      if (pendingRunAction.kind === "install") {
+        await startJob(
+          pendingRunAction.labels,
+          () =>
+            startNpxSkillsInstallJob(
+              platformId,
+              pendingRunAction.items,
+              payload.config.installTarget,
+              runCliConfig
+            ),
+          payload.config
+        );
+        setSelectedCatalogKeys(new Set());
+      } else if (pendingRunAction.kind === "quick-install") {
+        const item: NpxSkillsInstallItemInput = {
+          package_ref: payload.packageRef,
+          skill_flags: parseSkillFlags(payload.skillFlagsInput),
+        };
+        await startJob(
+          [item.package_ref],
+          () =>
+            startNpxSkillsInstallJob(
+              platformId,
+              [item],
+              payload.config.installTarget,
+              runCliConfig
+            ),
+          payload.config
+        );
+      } else if (pendingRunAction.kind === "remove") {
+        const names = [...pendingRunAction.names];
+        await startJob(
+          names,
+          () =>
+            startNpxSkillsRemoveJob(
+              platformId,
+              names,
+              payload.config.installTarget,
+              runCliConfig
+            ),
+          payload.config
+        );
+        setSelectedInstalledNames(new Set());
+      } else if (pendingRunAction.kind === "check") {
+        await startJob(
+          [t("npxSkills.operationCheck")],
+          () =>
+            startNpxSkillsCheckJob(
+              platformId,
+              payload.config.installTarget,
+              runCliConfig
+            ),
+          payload.config
+        );
+      } else if (pendingRunAction.kind === "update") {
+        await startJob(
+          [t("npxSkills.operationUpdate")],
+          () =>
+            startNpxSkillsUpdateJob(
+              platformId,
+              payload.config.installTarget,
+              runCliConfig
+            ),
+          payload.config
+        );
+      }
+
+      setPendingRunAction(null);
+    },
+    [pendingRunAction, platformId, startJob, t]
+  );
+
+  const pendingRunDialogContent = useMemo(() => {
+    if (!pendingRunAction) {
+      return null;
     }
-    await startJob([t("npxSkills.operationUpdate")], () =>
-      startNpxSkillsUpdateJob(platformId, installTarget, cliConfig)
-    );
-  };
+
+    switch (pendingRunAction.kind) {
+      case "install":
+        return {
+          title: t("npxSkills.runConfigInstallTitle"),
+          description: t("npxSkills.runConfigInstallDescription"),
+          confirmLabel: t("npxSkills.runConfigInstallConfirm"),
+          confirmColor: "primary" as const,
+          packageRef: undefined,
+          skillFlagsInput: undefined,
+        };
+      case "quick-install":
+        return {
+          title: t("npxSkills.runConfigQuickInstallTitle"),
+          description: t("npxSkills.runConfigQuickInstallDescription"),
+          confirmLabel: t("npxSkills.runConfigQuickInstallConfirm"),
+          confirmColor: "primary" as const,
+          packageRef: pendingRunAction.packageRef,
+          skillFlagsInput: pendingRunAction.skillFlagsInput,
+        };
+      case "remove":
+        return {
+          title: t("npxSkills.runConfigRemoveTitle"),
+          description: t("npxSkills.runConfigRemoveDescription"),
+          confirmLabel: t("npxSkills.runConfigRemoveConfirm"),
+          confirmColor: "error" as const,
+          packageRef: undefined,
+          skillFlagsInput: undefined,
+        };
+      case "check":
+        return {
+          title: t("npxSkills.runConfigCheckTitle"),
+          description: t("npxSkills.runConfigCheckDescription"),
+          confirmLabel: t("npxSkills.runConfigCheckConfirm"),
+          confirmColor: "info" as const,
+          packageRef: undefined,
+          skillFlagsInput: undefined,
+        };
+      case "update":
+        return {
+          title: t("npxSkills.runConfigUpdateTitle"),
+          description: t("npxSkills.runConfigUpdateDescription"),
+          confirmLabel: t("npxSkills.runConfigUpdateConfirm"),
+          confirmColor: "warning" as const,
+          packageRef: undefined,
+          skillFlagsInput: undefined,
+        };
+    }
+  }, [pendingRunAction, t]);
+
+  const runConfigSummary = useMemo(
+    () => (jobRunConfig ? buildNpxRunConfigSummary(jobRunConfig, t) : null),
+    [jobRunConfig, t]
+  );
+  const runConfigPath = useMemo(() => {
+    if (!jobRunConfig) {
+      return "";
+    }
+    if (jobRunConfig.installTarget.scope === "project") {
+      return jobRunConfig.installTarget.project_path?.trim() ?? "";
+    }
+    if (installTarget.scope === "global") {
+      return resolvedTarget?.skills_path ?? "";
+    }
+    return "";
+  }, [installTarget.scope, jobRunConfig, resolvedTarget?.skills_path]);
 
   const renderFindView = () => (
     <>
@@ -642,7 +836,6 @@ export default function NpxSkillsPage() {
         }}
       >
         <TextField
-          size="small"
           placeholder={t("npxSkills.searchCatalogPlaceholder")}
           value={catalogSearch}
           onChange={(event) => setCatalogSearch(event.target.value)}
@@ -667,7 +860,6 @@ export default function NpxSkillsPage() {
           label={t("npxSkills.installedOnly")}
         />
         <Button
-          size="small"
           variant="outlined"
           startIcon={<RefreshIcon />}
           onClick={() => void fetchCatalog()}
@@ -675,10 +867,9 @@ export default function NpxSkillsPage() {
           {t("npxSkills.refreshCatalog")}
         </Button>
         <Button
-          size="small"
           variant="outlined"
           startIcon={<TipsAndUpdatesOutlinedIcon />}
-          onClick={() => setQuickInstallOpen(true)}
+          onClick={openQuickInstallDialog}
         >
           {t("npxSkills.quickInstall")}
         </Button>
@@ -687,7 +878,7 @@ export default function NpxSkillsPage() {
           variant="contained"
           startIcon={<InstallDesktopIcon />}
           disabled={selectedInstallPayload.length === 0 || jobRunning}
-          onClick={() => void handleInstallSelected()}
+          onClick={openInstallSelectedDialog}
         >
           {t("npxSkills.installSelected")}
         </Button>
@@ -720,38 +911,42 @@ export default function NpxSkillsPage() {
               <Grid key={key} size={{ xs: 12, sm: 6, lg: 4 }}>
                 <Card
                   variant="outlined"
-                  onClick={() => {
-                    if (isDisabled) {
-                      return;
-                    }
-                    setSelectedCatalogKeys((previous) => {
-                      const next = new Set(previous);
-                      if (next.has(key)) {
-                        next.delete(key);
-                      } else {
-                        next.add(key);
-                      }
-                      return next;
-                    });
-                  }}
                   sx={{
                     height: "100%",
-                    cursor: isDisabled ? "not-allowed" : "pointer",
                     opacity: isDisabled ? 0.55 : 1,
                     borderColor: isSelected ? "primary.main" : "divider",
                     boxShadow: isSelected
                       ? `0 8px 24px ${alpha(theme.palette.primary.main, 0.16)}`
                       : "none",
-                    transition: "all 160ms ease",
-                    "&:hover": isDisabled
-                      ? undefined
-                      : {
-                          borderColor: "primary.main",
-                          transform: "translateY(-2px)",
-                        },
+                    transition: "transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease",
                   }}
                 >
-                  <CardContent>
+                  <CardActionArea
+                    disabled={isDisabled}
+                    onClick={() => {
+                      setSelectedCatalogKeys((previous) => {
+                        const next = new Set(previous);
+                        if (next.has(key)) {
+                          next.delete(key);
+                        } else {
+                          next.add(key);
+                        }
+                        return next;
+                      });
+                    }}
+                    aria-pressed={isSelected}
+                    sx={{
+                      height: "100%",
+                      alignItems: "stretch",
+                      "&:hover": isDisabled
+                        ? undefined
+                        : {
+                            borderColor: "primary.main",
+                            transform: "translateY(-2px)",
+                          },
+                    }}
+                  >
+                    <CardContent>
                     <Box
                       display="flex"
                       alignItems="flex-start"
@@ -768,13 +963,31 @@ export default function NpxSkillsPage() {
                           color="text.secondary"
                           sx={{
                             fontFamily: '"Fira Code", monospace',
-                            wordBreak: "break-all",
+                            overflowWrap: "anywhere",
                           }}
                         >
                           {item.repo}
                         </Typography>
                       </Box>
-                      <Checkbox checked={isSelected} disabled={isDisabled} />
+                      <Checkbox
+                        checked={isSelected}
+                        disabled={isDisabled}
+                        inputProps={{
+                          "aria-label": t("common.selectItem", { name: item.name }),
+                        }}
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={() => {
+                          setSelectedCatalogKeys((previous) => {
+                            const next = new Set(previous);
+                            if (next.has(key)) {
+                              next.delete(key);
+                            } else {
+                              next.add(key);
+                            }
+                            return next;
+                          });
+                        }}
+                      />
                     </Box>
 
                     <Box display="flex" gap={0.75} flexWrap="wrap" mb={1.5}>
@@ -825,7 +1038,8 @@ export default function NpxSkillsPage() {
                         {item.usage}
                       </Typography>
                     )}
-                  </CardContent>
+                    </CardContent>
+                  </CardActionArea>
                 </Card>
               </Grid>
             );
@@ -847,7 +1061,6 @@ export default function NpxSkillsPage() {
         }}
       >
         <TextField
-          size="small"
           placeholder={t("npxSkills.searchInstalledPlaceholder")}
           value={installedSearch}
           onChange={(event) => setInstalledSearch(event.target.value)}
@@ -863,7 +1076,6 @@ export default function NpxSkillsPage() {
           sx={{ width: 360, maxWidth: "100%" }}
         />
         <Button
-          size="small"
           variant="outlined"
           startIcon={<RefreshIcon />}
           onClick={() => void fetchInstalled()}
@@ -903,6 +1115,99 @@ export default function NpxSkillsPage() {
         </Box>
       ) : installedItems.length === 0 ? (
         <Alert severity="info">{t("npxSkills.noInstalledResults")}</Alert>
+      ) : isMobile ? (
+        <Stack spacing={1.5}>
+          {installedItems.map((item) => {
+            const selected = selectedInstalledNames.has(item.name);
+            return (
+              <Card key={item.name} variant="outlined">
+                <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                    <Checkbox
+                      checked={selected}
+                      disabled={!item.manageable}
+                      inputProps={{
+                        "aria-label": t("common.selectItem", { name: item.name }),
+                      }}
+                      onChange={() =>
+                        setSelectedInstalledNames((previous) => {
+                          const next = new Set(previous);
+                          if (next.has(item.name)) {
+                            next.delete(item.name);
+                          } else {
+                            next.add(item.name);
+                          }
+                          return next;
+                        })
+                      }
+                    />
+                    <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                      <Typography variant="body1" fontWeight={700}>
+                        {item.name}
+                      </Typography>
+                      <Box display="flex" gap={0.75} flexWrap="wrap" mt={0.75} mb={1}>
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          label={
+                            item.source === "managed"
+                              ? t("npxSkills.sourceCatalog")
+                              : t("npxSkills.sourceFilesystem")
+                          }
+                        />
+                        {!item.manageable && (
+                          <Chip
+                            size="small"
+                            color="warning"
+                            variant="outlined"
+                            label={t("npxSkills.unmanaged")}
+                          />
+                        )}
+                        {item.category && <Chip size="small" variant="outlined" label={item.category} />}
+                      </Box>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          display: "block",
+                          color: "text.secondary",
+                          fontFamily: '"Fira Code", monospace',
+                          overflowWrap: "anywhere",
+                        }}
+                      >
+                        {item.package_ref ?? item.repo ?? "—"}
+                      </Typography>
+                      {item.skill_flags && item.skill_flags.length > 0 && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            display: "block",
+                            mt: 0.75,
+                            color: "text.secondary",
+                            fontFamily: '"Fira Code", monospace',
+                            overflowWrap: "anywhere",
+                          }}
+                        >
+                          {item.skill_flags.map((flag) => `--skill ${flag}`).join(" ")}
+                        </Typography>
+                      )}
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1, overflowWrap: "anywhere" }}>
+                        {item.description ?? "—"}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <Button
+                    color="error"
+                    variant="outlined"
+                  disabled={!item.manageable}
+                  onClick={() => openRemoveDialog([item.name])}
+                >
+                  {t("common.uninstall")}
+                </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </Stack>
       ) : (
         <Card elevation={0}>
           <Box sx={{ overflowX: "auto" }}>
@@ -946,6 +1251,9 @@ export default function NpxSkillsPage() {
                         <Checkbox
                           checked={selected}
                           disabled={!item.manageable}
+                          inputProps={{
+                            "aria-label": t("common.selectItem", { name: item.name }),
+                          }}
                           onChange={() =>
                             setSelectedInstalledNames((previous) => {
                               const next = new Set(previous);
@@ -989,7 +1297,7 @@ export default function NpxSkillsPage() {
                           sx={{
                             fontFamily: '"Fira Code", monospace',
                             color: "text.secondary",
-                            wordBreak: "break-all",
+                            overflowWrap: "anywhere",
                           }}
                         >
                           {item.package_ref ?? item.repo ?? "—"}
@@ -1020,7 +1328,7 @@ export default function NpxSkillsPage() {
                           color="error"
                           variant="outlined"
                           disabled={!item.manageable}
-                          onClick={() => setRemoveNames([item.name])}
+                          onClick={() => openRemoveDialog([item.name])}
                         >
                           {t("common.uninstall")}
                         </Button>
@@ -1055,7 +1363,7 @@ export default function NpxSkillsPage() {
                   color="info"
                   startIcon={<RefreshIcon />}
                   disabled={jobRunning}
-                  onClick={() => void handleCheck()}
+                  onClick={openCheckDialog}
                 >
                   {t("npxSkills.checkUpdates")}
                 </Button>
@@ -1079,7 +1387,7 @@ export default function NpxSkillsPage() {
                   color="warning"
                   startIcon={<SystemUpdateAltIcon />}
                   disabled={jobRunning}
-                  onClick={() => void handleUpdate()}
+                  onClick={openUpdateDialog}
                 >
                   {t("npxSkills.updateAll")}
                 </Button>
@@ -1091,18 +1399,52 @@ export default function NpxSkillsPage() {
 
       <Card variant="outlined">
         <CardContent>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            gap={2}
-            mb={2}
-            flexWrap="wrap"
-          >
-            <Typography variant="h6">
-              {jobOperation ? operationLabel(jobOperation, t) : t("npxSkills.viewMaintenance")}
-            </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap">
+          <Stack spacing={2}>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              gap={2}
+              flexWrap="wrap"
+            >
+              <Box>
+                <Typography variant="h6">
+                  {jobOperation ? operationLabel(jobOperation, t) : t("npxSkills.viewMaintenance")}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {jobStatusMessage ?? t("npxSkills.jobEmpty")}
+                </Typography>
+              </Box>
+              <Chip
+                color={
+                  jobResultStatus === "success"
+                    ? "success"
+                    : jobResultStatus === "warning"
+                    ? "warning"
+                    : jobResultStatus === "error" || jobResultStatus === "interrupted"
+                    ? "error"
+                    : jobResultStatus === "running"
+                    ? "info"
+                    : "default"
+                }
+                variant={jobResultStatus === "idle" ? "outlined" : "filled"}
+                label={
+                  jobResultStatus === "success"
+                    ? t("npxSkills.runResultSuccess")
+                    : jobResultStatus === "warning"
+                    ? t("npxSkills.runResultWarning")
+                    : jobResultStatus === "error"
+                    ? t("npxSkills.runResultError")
+                    : jobResultStatus === "interrupted"
+                    ? t("npxSkills.runResultInterrupted")
+                    : jobResultStatus === "running"
+                    ? t("npxSkills.runResultRunning")
+                    : t("npxSkills.viewMaintenance")
+                }
+              />
+            </Box>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
               <Chip
                 size="small"
                 variant="outlined"
@@ -1129,10 +1471,35 @@ export default function NpxSkillsPage() {
                 label={t("npxSkills.jobFailed", { count: jobFailureCount })}
               />
             </Stack>
-          </Box>
 
-          {(jobRunning || jobTotal > 0) && (
-            <Box sx={{ mb: 2 }}>
+            {runConfigSummary && (
+              <Card
+                variant="outlined"
+                sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.04) }}
+              >
+                <CardContent sx={{ "&:last-child": { pb: 2 } }}>
+                  <Typography variant="overline" color="text.secondary">
+                    {t("npxSkills.runConfigExecutedWith")}
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+                    <Chip size="small" variant="outlined" label={runConfigSummary.agentsLabel} />
+                    <Chip size="small" variant="outlined" label={runConfigSummary.cliModeLabel} />
+                    <Chip size="small" variant="outlined" label={runConfigSummary.installTargetLabel} />
+                    <Chip size="small" color="info" variant="outlined" label={t("npxSkills.runConfigTemporaryOverride")} />
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1.25 }}>
+                    {runConfigPath
+                      ? t("npxSkills.runConfigCurrentPath", {
+                          path: runConfigPath,
+                        })
+                      : t("npxSkills.runConfigUnknownPath")}
+                  </Typography>
+                </CardContent>
+              </Card>
+            )}
+
+            {(jobRunning || jobTotal > 0) && (
+            <Box>
               <LinearProgress
                 variant="determinate"
                 value={Math.max(0, Math.min(100, jobPercent))}
@@ -1192,46 +1559,76 @@ export default function NpxSkillsPage() {
                             ? "info"
                             : "default"
                         }
-                        label={item.status}
+                        label={
+                          item.status === "success"
+                            ? t("npxSkills.itemStatusSuccess")
+                            : item.status === "error"
+                            ? t("npxSkills.itemStatusError")
+                            : item.status === "running"
+                            ? t("npxSkills.itemStatusRunning")
+                            : t("npxSkills.itemStatusPending")
+                        }
                       />
                     </Box>
                     <Typography variant="caption" color="text.secondary">
                       {item.durationMs != null ? `${item.durationMs}ms` : ""}
                     </Typography>
                     {item.error && (
-                      <Typography
-                        variant="body2"
-                        color="error"
-                        sx={{ mt: 1, whiteSpace: "pre-wrap" }}
-                      >
-                        {item.error}
+                      <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                        {t("npxSkills.itemErrorSummary")}: {item.error}
                       </Typography>
                     )}
-                    {item.output && (
-                      <Box
-                        sx={{
-                          mt: 1.5,
-                          p: 1.5,
-                          borderRadius: 2,
-                          bgcolor:
-                            theme.palette.mode === "dark"
-                              ? "rgba(0,0,0,0.3)"
-                              : "rgba(0,0,0,0.03)",
-                          border: `1px solid ${theme.palette.divider}`,
-                          fontFamily: '"Fira Code", monospace',
-                          fontSize: "0.75rem",
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {item.output}
-                      </Box>
+                    {(item.output || item.error) && (
+                      <>
+                        <Button
+                          size="small"
+                          sx={{ mt: 1 }}
+                          onClick={() => toggleJobItemExpanded(item.id)}
+                        >
+                          {expandedJobItemIds.has(item.id)
+                            ? t("npxSkills.itemHideDetails")
+                            : t("npxSkills.itemShowDetails")}
+                        </Button>
+                        {expandedJobItemIds.has(item.id) && (
+                          <Box
+                            sx={{
+                              mt: 1.5,
+                              p: 1.5,
+                              borderRadius: 2,
+                              bgcolor: "var(--mcs-surface-muted)",
+                              border: `1px solid ${theme.palette.divider}`,
+                              fontFamily: '"Fira Code", monospace',
+                              fontSize: "0.75rem",
+                              whiteSpace: "pre-wrap",
+                              overflowWrap: "anywhere",
+                            }}
+                          >
+                            {item.error && (
+                              <Box sx={{ mb: item.output ? 1.5 : 0 }}>
+                                <Typography variant="caption" color="error" sx={{ display: "block", mb: 0.5 }}>
+                                  {t("npxSkills.itemErrorSummary")}
+                                </Typography>
+                                {item.error}
+                              </Box>
+                            )}
+                            {item.output && (
+                              <Box>
+                                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
+                                  {t("npxSkills.itemOutputLabel")}
+                                </Typography>
+                                {item.output}
+                              </Box>
+                            )}
+                          </Box>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>
               ))}
             </Stack>
           )}
+          </Stack>
         </CardContent>
       </Card>
     </>
@@ -1250,16 +1647,18 @@ export default function NpxSkillsPage() {
 
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton
-            color="inherit"
-            onClick={() => navigateDeferred(`/platform/${platformId}`)}
-            sx={{ mr: 0.5 }}
-          >
+            <IconButton
+              color="inherit"
+              aria-label={t("common.back")}
+              onClick={() => navigateDeferred(`/platform/${platformId}`)}
+              sx={{ mr: 0.5 }}
+            >
             <ArrowBackIcon />
           </IconButton>
           <Tooltip title={t("common.home")}>
             <IconButton
               color="inherit"
+              aria-label={t("common.home")}
               onClick={() => navigateDeferred("/")}
               sx={{ mr: 1 }}
             >
@@ -1276,9 +1675,9 @@ export default function NpxSkillsPage() {
               <Chip
                 icon={<FolderOpenOutlinedIcon />}
                 variant="outlined"
-                size="small"
                 color="info"
                 clickable
+                aria-label={t("common.installTarget")}
                 onClick={openInstallTargetDialog}
                 label={t("installed.installTargetChip", {
                   mode:
@@ -1287,7 +1686,14 @@ export default function NpxSkillsPage() {
                       : t("installed.installTargetGlobal"),
                   path: resolvedTarget?.skills_path ?? t("installed.installTargetLoading"),
                 })}
-                sx={{ "& .MuiChip-label": { whiteSpace: "nowrap" } }}
+                sx={{
+                  maxWidth: { xs: 220, sm: 360 },
+                  "& .MuiChip-label": {
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  },
+                }}
               />
             </Tooltip>
           </Box>
@@ -1300,7 +1706,15 @@ export default function NpxSkillsPage() {
             {t("npxSkills.settings")}
           </Button>
           <LanguageToggle sx={{ mr: 1 }} />
-          <IconButton color="inherit" onClick={toggleColorMode}>
+          <IconButton
+            color="inherit"
+            aria-label={
+              colorMode === "dark"
+                ? t("common.toggleThemeToLight")
+                : t("common.toggleThemeToDark")
+            }
+            onClick={toggleColorMode}
+          >
             {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
@@ -1381,7 +1795,7 @@ export default function NpxSkillsPage() {
               {t("npxSkills.settings")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {t("npxSkills.targetAgentsHelp")}
+              {t("npxSkills.settingsDefaultsNote")}
             </Typography>
           </Box>
 
@@ -1454,45 +1868,23 @@ export default function NpxSkillsPage() {
         </Stack>
       </Drawer>
 
-      <Dialog
-        open={quickInstallOpen}
-        onClose={() => setQuickInstallOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>{t("npxSkills.quickInstallTitle")}</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ pt: 1 }}>
-            <Alert severity="info">{t("npxSkills.quickInstallHelp")}</Alert>
-            <TextField
-              label={t("npxSkills.packageRef")}
-              placeholder={t("npxSkills.packageRefPlaceholder")}
-              value={quickPackageRef}
-              onChange={(event) => setQuickPackageRef(event.target.value)}
-              fullWidth
-            />
-            <TextField
-              label={t("npxSkills.skillFlags")}
-              placeholder={t("npxSkills.skillFlagsPlaceholder")}
-              value={quickSkillFlags}
-              onChange={(event) => setQuickSkillFlags(event.target.value)}
-              fullWidth
-              multiline
-              minRows={3}
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setQuickInstallOpen(false)}>{t("common.cancel")}</Button>
-          <Button
-            variant="contained"
-            onClick={() => void handleQuickInstall()}
-            disabled={!quickPackageRef.trim() || jobRunning}
-          >
-            {t("common.install")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {pendingRunAction && pendingRunDialogContent && (
+        <NpxRunConfigDialog
+          open
+          loading={jobRunning}
+          title={pendingRunDialogContent.title}
+          description={pendingRunDialogContent.description}
+          confirmLabel={pendingRunDialogContent.confirmLabel}
+          confirmColor={pendingRunDialogContent.confirmColor}
+          agentOptions={COMMON_AGENTS}
+          defaultConfig={defaultRunConfig}
+          recentProjects={recentProjects}
+          packageRef={pendingRunDialogContent.packageRef}
+          skillFlagsInput={pendingRunDialogContent.skillFlagsInput}
+          onClose={() => setPendingRunAction(null)}
+          onConfirm={handleRunDialogConfirm}
+        />
+      )}
 
       <InstallTargetDialog
         open={installTargetDialogOpen}
@@ -1501,16 +1893,6 @@ export default function NpxSkillsPage() {
         recentProjects={recentProjects}
         onClose={closeInstallTargetDialog}
         onApply={applyInstallTarget}
-      />
-
-      <ConfirmDialog
-        open={removeNames.length > 0}
-        title={t("npxSkills.confirmRemoveTitle")}
-        message={t("npxSkills.confirmRemoveMessage", { count: removeNames.length })}
-        confirmLabel={t("common.uninstall")}
-        confirmColor="error"
-        onConfirm={() => void handleRemove()}
-        onCancel={() => setRemoveNames([])}
       />
 
       <NotificationSnackbar />
