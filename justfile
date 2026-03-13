@@ -18,7 +18,8 @@ rustc_cmd := "rustc"
 # ============ 跨平台执行指令 ============
 
 kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; exit 0\"" } else { "pkill -x mcs-web || true" }
-kill_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$p = Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -First 1; if ($p) { Stop-Process -Id $p.OwningProcess -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:13242 2>/dev/null)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
+kill_backend_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$procIds = @(Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); foreach ($procId in $procIds) { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:13242 2>/dev/null | sort -u)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
+kill_ui_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$procIds = @(Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); foreach ($procId in $procIds) { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:5173 2>/dev/null | sort -u)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
 
 # 默认任务：交互式选择
 default:
@@ -32,8 +33,11 @@ tui: mcs
 # 启动 Web 版技能管理器
 web: mcs-web-dev-all
 
-# 强制重新编译后端并启动 Web 版技能管理器
+# 强制重新编译前后端并启动 Web 开发环境
 web-rebuild: mcs-web-rebuild-dev-all
+
+# 强制重新编译前后端并启动 Web 生产环境
+web-rebuild-prod: mcs-web-rebuild-prod
 
 # 启动文档开发服务器
 doc: docs
@@ -47,7 +51,8 @@ help:
     @echo "⚡ 快捷启动："
     @echo "  just tui                    - 启动 TUI 技能管理器"
     @echo "  just web                    - 启动 Web 版技能管理器"
-    @echo "  just web-rebuild            - 强制重新编译后端并启动 Web"
+    @echo "  just web-rebuild            - 强制重新编译前后端并启动 Web 开发环境"
+    @echo "  just web-rebuild-prod       - 强制重新编译前后端并启动 Web 生产环境"
     @echo "  just doc                    - 启动文档开发服务器"
     @echo ""
     @echo "📚 文档相关："
@@ -67,7 +72,10 @@ help:
     @echo "  just mcs-web-ci-install     - 强制执行 npm ci"
     @echo "  just mcs-web-server         - 启动后端服务器 (port 13242)"
     @echo "  just mcs-web-dev            - 启动 UI 开发服务器 (port 5173)"
+    @echo "  just mcs-web-stop           - 停止 Web 后端与 UI 开发服务"
     @echo "  just mcs-web-dev-all        - 启动 UI + 后端开发服务器"
+    @echo "  just mcs-web-rebuild-dev-all - 清理后重建并启动开发环境"
+    @echo "  just mcs-web-rebuild-prod   - 清理后重建并启动生产环境"
     @echo "  just mcs-web-build          - 构建生产版本 (UI + 后端)"
     @echo "  just mcs-web-build-ui       - 构建 UI 静态资源"
     @echo "  just mcs-web-build-frontend - 兼容旧别名，等同 mcs-web-build-ui"
@@ -141,9 +149,17 @@ mcs-web-install:
 mcs-web-ci-install:
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} ci
 
+# 停止 MCS Web 后端与 UI 开发服务
+mcs-web-stop:
+    @echo "🛑 停止 MCS Web 服务..."
+    @{{ kill_backend_cmd }}
+    @{{ kill_backend_port_cmd }}
+    @{{ kill_ui_port_cmd }}
+    @echo "✓ MCS Web 服务已停止"
+
 # 启动 MCS Web 后端开发服务器
 mcs-web-server:
-    {{ kill_backend_cmd }}
+    {{ just_cmd }} mcs-web-stop
     cd {{ mcs_dir }}; {{ cargo_cmd }} run --bin mcs-web
 
 # 启动 MCS Web UI 开发服务器
@@ -152,9 +168,8 @@ mcs-web-dev:
 
 # 同时启动 MCS Web UI 和后端开发服务器
 mcs-web-dev-all:
-    @{{ kill_backend_cmd }}
+    @{{ just_cmd }} mcs-web-stop
     @echo "Checking whether port 13242 is occupied by mcs-web..."
-    @{{ kill_port_cmd }}
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  🚀 启动 MCS Web 开发服务器"
@@ -168,10 +183,31 @@ mcs-web-dev-all:
     @echo ""
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} concurrently -k -n "backend,ui" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && {{ cargo_cmd }} run --bin mcs-web" "{{ npx_cmd }} wait-on http://127.0.0.1:13242 --timeout 60000 && {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev"
 
-# 强制重新编译后端并启动 MCS Web 开发服务器
-mcs-web-rebuild-dev-all:
+# 强制重新编译前后端并启动 MCS Web 开发服务器
+mcs-web-rebuild-dev-all: mcs-web-install
+    @{{ just_cmd }} mcs-web-stop
+    @echo "🧹 清理旧的 UI 构建产物..."
+    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} rimraf dist
+    @echo "🧹 清理 Rust 编译缓存..."
     cd {{ mcs_dir }}; {{ cargo_cmd }} clean -p mcs-web -p mcs-core
+    @echo "🔨 重新构建 UI 静态资源..."
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run build
+    @echo "✅ 前后端清理+重建完成，启动开发环境..."
     {{ just_cmd }} mcs-web-dev-all
+
+# 强制重新编译前后端并启动 MCS Web 生产服务器
+mcs-web-rebuild-prod: mcs-web-install
+    @{{ just_cmd }} mcs-web-stop
+    @echo "🧹 清理旧的 UI 构建产物..."
+    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} rimraf dist
+    @echo "🧹 清理 Rust 编译缓存..."
+    cd {{ mcs_dir }}; {{ cargo_cmd }} clean -p mcs-web -p mcs-core
+    @echo "🔨 重新构建 UI 静态资源..."
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run build
+    @echo "🦀 重新构建 Rust 生产版后端..."
+    cd {{ mcs_dir }}; {{ cargo_cmd }} build --release --bin mcs-web
+    @echo "✅ 前后端清理+重建完成，启动生产环境..."
+    cd {{ mcs_dir }}; {{ cargo_cmd }} run --release --bin mcs-web
 
 # 构建 MCS Web UI 静态资源
 mcs-web-build-ui: mcs-web-install
@@ -198,7 +234,7 @@ mcs-web-build: mcs-web-build-ui
 
 # 启动 MCS Web 生产版本
 mcs-web: mcs-web-build
-    {{ kill_backend_cmd }}
+    {{ just_cmd }} mcs-web-stop
     cd {{ mcs_dir }}; {{ cargo_cmd }} run --release --bin mcs-web
 
 # ============ Rust 代码检查 ============

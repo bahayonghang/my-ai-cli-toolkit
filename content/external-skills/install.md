@@ -79,6 +79,11 @@ npx skills add https://github.com/sickn33/antigravity-awesome-skills --skill ski
 npx skills add sanyuan0704/code-review-expert -g -y
 ```
 
+```shell
+# 规划文件
+npx skills add https://github.com/othmanadi/planning-with-files --skill planning-with-files
+```
+
 ## python代码质量分析与重构
 
 ```shell

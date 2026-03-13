@@ -24,6 +24,7 @@ All subdirectories under `content/skills/` are installable skill content consume
 - `skill-meta-skills`
 - `tech-stack-skills`
 - `workflow-skills`
+- `frontend-skills`
 
 ## Metadata
 
