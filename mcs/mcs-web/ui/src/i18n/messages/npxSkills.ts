@@ -125,6 +125,9 @@ export const enNpxSkillsMessages = {
   "npxSkills.operationCheck": "Check",
   "npxSkills.operationUpdate": "Update",
   "npxSkills.jobEmpty": "No job has run yet.",
+  "npxSkills.copyInstallCommand": "Copy install command",
+  "npxSkills.copySuccess": "Install command copied",
+  "npxSkills.copyFailed": "Failed to copy",
 } as const;
 
 export const zhNpxSkillsMessages: Record<
@@ -244,4 +247,7 @@ export const zhNpxSkillsMessages: Record<
   "npxSkills.operationCheck": "检查",
   "npxSkills.operationUpdate": "更新",
   "npxSkills.jobEmpty": "还没有执行任何任务。",
+  "npxSkills.copyInstallCommand": "复制安装命令",
+  "npxSkills.copySuccess": "安装命令已复制",
+  "npxSkills.copyFailed": "复制失败",
 };

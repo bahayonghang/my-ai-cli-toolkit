@@ -50,6 +50,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import LightModeIcon from "@mui/icons-material/LightMode";
 
 import {
@@ -969,25 +970,46 @@ export default function NpxSkillsPage() {
                           {item.repo}
                         </Typography>
                       </Box>
-                      <Checkbox
-                        checked={isSelected}
-                        disabled={isDisabled}
-                        inputProps={{
-                          "aria-label": t("common.selectItem", { name: item.name }),
-                        }}
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={() => {
-                          setSelectedCatalogKeys((previous) => {
-                            const next = new Set(previous);
-                            if (next.has(key)) {
-                              next.delete(key);
-                            } else {
-                              next.add(key);
-                            }
-                            return next;
-                          });
-                        }}
-                      />
+                      <Box display="flex" alignItems="center">
+                        <Tooltip title={t("npxSkills.copyInstallCommand")} arrow>
+                          <IconButton
+                            size="small"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              const cmd = item.skill_flag
+                                ? `npx skills install ${item.repo} --skill ${item.skill_flag}`
+                                : `npx skills install ${item.repo}`;
+                              navigator.clipboard.writeText(cmd).then(
+                                () => showNotification(t("npxSkills.copySuccess"), "success"),
+                                () => showNotification(t("npxSkills.copyFailed"), "error"),
+                              );
+                            }}
+                            aria-label={t("npxSkills.copyInstallCommand")}
+                            sx={{ mr: 0.5 }}
+                          >
+                            <ContentCopyIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Checkbox
+                          checked={isSelected}
+                          disabled={isDisabled}
+                          inputProps={{
+                            "aria-label": t("common.selectItem", { name: item.name }),
+                          }}
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={() => {
+                            setSelectedCatalogKeys((previous) => {
+                              const next = new Set(previous);
+                              if (next.has(key)) {
+                                next.delete(key);
+                              } else {
+                                next.add(key);
+                              }
+                              return next;
+                            });
+                          }}
+                        />
+                      </Box>
                     </Box>
 
                     <Box display="flex" gap={0.75} flexWrap="wrap" mb={1.5}>
