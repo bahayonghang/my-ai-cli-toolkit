@@ -1,8 +1,20 @@
-# API Key Configuration
+# API Configuration
 
-# Usage:
-# 1. Copy this file to secrets.md
-# 2. Replace YOUR_API_KEY with your actual API Key
-# 3. Get API Key at: https://ismaque.org/register?aff=zySn
+# API Provider: google (default) | proxy
+# - google: Uses Google's official Generative Language API
+# - proxy: Uses a third-party proxy service
+API_PROVIDER=google
 
-API_KEY=YOUR_API_KEY
+# ─── Google Official API (default) ───────────────────────────
+# Get your key at: https://aistudio.google.com/apikey
+GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY
+
+# ─── Third-party Proxy API (alternative) ─────────────────────
+# Register at your chosen proxy provider
+PROXY_API_KEY=YOUR_PROXY_API_KEY
+PROXY_BASE_URL=https://your-proxy-provider.example.com
+
+# ⚠️ Security Reminder:
+# - Do NOT commit secrets.md to version control
+# - Add config/secrets.md to your .gitignore
+# - Keep API keys confidential and rotate them regularly

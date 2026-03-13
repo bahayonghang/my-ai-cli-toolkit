@@ -21,7 +21,7 @@ if command -v ffmpeg &> /dev/null; then
     echo -e "${GREEN}✅ FFmpeg 已安装!${NC}"
     echo "   版本信息: $FFMPEG_VERSION"
     echo
-    echo "可以继续使用 yt-dlp 下载视频了喵~"
+    echo "可以继续使用 yt-dlp 下载视频了。"
     exit 0
 else
     echo -e "${RED}❌ FFmpeg 未安装!${NC}"

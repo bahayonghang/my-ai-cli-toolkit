@@ -1,6 +1,7 @@
 ---
 name: rust-cli-tui-developer
-description: Expert guidance for Rust CLI and TUI development with clap, inquire, and ratatui. Use when building terminal apps.
+version: "1.1.0"
+description: "Expert guidance for building Rust CLI and TUI applications using clap, inquire, and ratatui. Use this skill when creating command-line tools, argument parsers, interactive terminal prompts, or rich terminal UIs in Rust — prefer it over generic Rust advice for any CLI/TUI task."
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -13,6 +14,8 @@ metadata:
     - clap
     - ratatui
     - console
+    - inquire
+    - crossterm
 ---
 
 Execute the Rust CLI/TUI development task described in `$ARGUMENTS`.
@@ -20,10 +23,8 @@ Execute the Rust CLI/TUI development task described in `$ARGUMENTS`.
 ## Steps
 
 1. If `$ARGUMENTS` is empty, report an error requesting a description of the desired terminal application.
-2. Read `$SKILL_DIR/references/CLI_TUI_GUIDE.md` for architectural patterns and library specifics (clap, inquire, ratatui).
-3. Review `$SKILL_DIR/SOURCE_SETUP.md` if submodules need to be initialized.
-4. If the user wants to see official examples, search the `@source` directory as outlined in the guide.
-5. Generate or modify the required Rust code according to best practices.
+2. Read `$SKILL_DIR/references/CLI_TUI_GUIDE.md` for architectural patterns, library specifics (clap, inquire, ratatui), and common Cargo configurations.
+3. Generate or modify the required Rust code according to best practices.
 
 ## Output
 

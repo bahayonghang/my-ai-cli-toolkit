@@ -26,7 +26,7 @@
 | Reference name doesn't match content | Verify page content matches reference name |
 | Using vendor benchmarks as neutral | Note the source bias in report |
 | Overly broad search queries | Focus each query on single topic |
-| Missing year constraints | Add `2024 2025` for recent info |
+| Missing year constraints | Add current year for recent info |
 
 ## Example Research Task
 

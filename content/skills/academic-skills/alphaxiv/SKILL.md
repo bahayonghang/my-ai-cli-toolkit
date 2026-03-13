@@ -1,18 +1,25 @@
 ---
 name: alphaxiv-paper-lookup
-description: Look up any arxiv paper on alphaxiv.org to get a structured AI-generated overview. This is faster and more reliable than trying to read a raw PDF.
+description: >
+  Look up, summarize, or explain any arXiv paper using alphaxiv.org's AI-generated
+  overviews. Use this skill whenever the user shares an arXiv or alphaxiv URL, pastes
+  a paper ID (e.g. 2401.12345), or asks to summarize, explain, read, or understand a
+  research paper. Trigger even when the user only mentions a paper title or says
+  "what does this paper say", "explain this paper", "give me the key ideas", or
+  "what are the results". Prefer this over reading raw PDFs — it is faster and
+  structured for LLM consumption.
+metadata:
+  category: academic-research
+  tags: [arxiv, paper-lookup, summarize, research, alphaxiv, overview, multi-language]
+  version: "1.1"
+  last_updated: "2026-03-12"
+argument-hint: "[arxiv-url|paper-id] [--lang LANG]"
+allowed-tools: Bash(curl *), WebFetch
 ---
 
 # AlphaXiv Paper Lookup
 
-Look up any arxiv paper on alphaxiv.org to get a structured AI-generated overview. This is faster and more reliable than trying to read a raw PDF.
-
-## When to Use
-
-- User shares an arxiv URL (e.g. `arxiv.org/abs/2401.12345`)
-- User mentions a paper ID (e.g. `2401.12345`)
-- User asks you to explain, summarize, or analyze a research paper
-- User shares an alphaxiv URL (e.g. `alphaxiv.org/overview/2401.12345`)
+Fetch structured AI overviews for arXiv papers. No auth required.
 
 ## Workflow
 
@@ -34,6 +41,8 @@ Parse the paper ID from whatever the user provides:
 curl -s "https://api.alphaxiv.org/papers/v3/{PAPER_ID}"
 ```
 
+> On platforms without `curl`, use `WebFetch` with the same URL.
+
 Extract `versionId` from the JSON response. This is the UUID needed for the next call.
 
 If this returns 404, the paper hasn't been indexed on alphaxiv yet.
@@ -41,8 +50,10 @@ If this returns 404, the paper hasn't been indexed on alphaxiv yet.
 ### Step 3: Fetch the AI overview
 
 ```bash
-curl -s "https://api.alphaxiv.org/papers/v3/{VERSION_ID}/overview/en"
+curl -s "https://api.alphaxiv.org/papers/v3/{VERSION_ID}/overview/{LANG}"
 ```
+
+> On platforms without `curl`, use `WebFetch` with the same URL.
 
 The response contains:
 
@@ -61,9 +72,25 @@ If the `intermediateReport`, `summary`, and `overview` fields don't contain the 
 curl -s "https://alphaxiv.org/abs/{PAPER_ID}.md"
 ```
 
+> On platforms without `curl`, use `WebFetch` with the same URL.
+
 This returns the full extracted text of the paper as markdown. Only use this as a fallback — the overview and intermediate report are usually sufficient.
 
 If this returns 404, the full text hasn't been processed yet. As a last resort, direct the user to the PDF at `https://arxiv.org/pdf/{PAPER_ID}`.
+
+## Output Format
+
+Adapt presentation to user intent:
+
+| User intent | Format |
+|---|---|
+| "summarize" / "overview" | 3-5 bullet key contributions, then 1-paragraph summary |
+| "explain" / "what does it do" | Plain-language explanation, avoid jargon |
+| "what are the results" | Lead with metrics from `results` field, then context |
+| "key ideas" / "main points" | Numbered list of 3-5 insights from `keyInsights` |
+| "read this paper" | Full breakdown: problem → method → results → limitations |
+
+Always include paper title and year. Never reproduce the `overview` blob verbatim — synthesize from `intermediateReport` or `summary` fields.
 
 ## Error Handling
 
@@ -71,8 +98,20 @@ If this returns 404, the full text hasn't been processed yet. As a last resort, 
 - **404 on Step 3**: Overview not generated for this paper.
 - **`intermediateReport` is null**: Use `summary` and `overview` fields instead.
 
-## Notes
+## Language
 
-- No authentication required — these are public endpoints.
-- Replace `en` with a language code (`fr`, `de`, `es`, `zh`, `ja`, `ar`, `hi`, `pt`) for translated overviews.
+Default: `en`. Auto-detect the user's language and use the matching code:
 
+| Language | Code |
+|---|---|
+| English | `en` |
+| French | `fr` |
+| German | `de` |
+| Spanish | `es` |
+| Chinese | `zh` |
+| Japanese | `ja` |
+| Arabic | `ar` |
+| Hindi | `hi` |
+| Portuguese | `pt` |
+
+Substitute in Step 3: `.../overview/{LANG}`. If the user writes in Chinese, use `zh` automatically — do not ask.

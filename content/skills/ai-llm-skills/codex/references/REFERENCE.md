@@ -69,7 +69,7 @@ codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
   --enable web_search_request \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
-  "compare Vite vs Webpack for React projects in 2024"
+  "compare Vite vs Webpack for React projects in <current_year>"
 ```
 
 ## Session Resume
@@ -93,6 +93,18 @@ web_search_request = true
 - Requires Codex CLI installed and authenticated
 - All commands use `--dangerously-bypass-approvals-and-sandbox` for automation
 - Use `--skip-git-repo-check` to work in any directory
+
+### Security: `--dangerously-bypass-approvals-and-sandbox`
+
+This flag disables **all** confirmation prompts and filesystem sandboxing. When active:
+- Codex can read, write, and delete any file without asking
+- No sandbox isolation — commands run with your full user permissions
+- Intended for automated/CI pipelines where human approval is impractical
+
+**Recommendations:**
+- Only use in controlled environments (local dev, CI)
+- Never use on production systems or with untrusted prompts
+- Review generated changes via `git diff` after execution
 
 ## Troubleshooting
 

@@ -26,6 +26,7 @@ yt-dlp -f "bestvideo[height<=1080]+bestaudio/best[height<=1080]" "URL"
 yt-dlp -o "%(playlist_index)s-%(title)s.%(ext)s" "PLAYLIST_URL"
 
 # 批量下载（从文件读取 URL）
+# 参考 $SKILL_DIR/assets/urls.txt 获取 URL 列表格式示例
 yt-dlp -a urls.txt
 
 # 限制下载速度（避免被封）

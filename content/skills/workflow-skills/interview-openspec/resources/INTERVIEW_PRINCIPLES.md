@@ -42,3 +42,7 @@ During the Specs phase, guide users to express requirements in WHEN/THEN format:
 ## 7. Incremental Generation (OpenSpec-specific)
 
 Write each artifact immediately after its interview phase completes. The user can exit at any point with partial but valid artifacts. Never batch all writing to the end.
+
+## 8. Approach Exploration (Brainstorming Integration)
+
+After Phase 1 (Proposal) completes, propose 2-3 viable implementation approaches with tradeoff analysis and a recommendation. Present via `AskUserQuestion` for the user to select. The selected approach feeds into proposal.md's "What Changes" section; rejected approaches are documented in design.md's "Alternatives Considered" section. See `resources/BRAINSTORMING_INTEGRATION.md` for the full protocol.

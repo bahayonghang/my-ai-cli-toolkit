@@ -1,14 +1,28 @@
 ---
 name: research
-description: Use codex web search for technical research with citation links. Use when user needs online research, literature surveys, or technology comparisons.
+description: >-
+  Use codex web search for technical research with citation links. Trigger when
+  user needs online research, literature surveys, technology comparisons,
+  competitive analysis, or asks to 'research X', 'compare X vs Y',
+  'find latest info about X', or needs cited sources for any technical topic.
+version: 1.0.0
 argument-hint: [research-topic]
-allowed-tools: Read, Bash(codex *), Write
+allowed-tools:
+  - Read
+  - Bash(codex *)
+  - Write
 metadata:
   category: research
-  tags: [web-search, technical-research, citation, report]
+  tags: [web-search, technical-research, citation, report, comparison]
 ---
 
 Research `$ARGUMENTS` using codex web search.
+
+## Prerequisites
+
+1. Verify Codex CLI is available: `command -v codex`.
+   - If not found, instruct user: `npm install -g @openai/codex`
+   - **Fallback**: If Codex CLI is unavailable and cannot be installed, use WebSearch / WebFetch tools instead to perform the research manually.
 
 ## Steps
 

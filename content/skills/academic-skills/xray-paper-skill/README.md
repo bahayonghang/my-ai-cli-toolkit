@@ -1,40 +1,51 @@
 # xray-paper-skill
 
-论文X光机 (Paper X-Ray Scanner) — 一个 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) Skill，解构学术论文，穿透学术黑话，还原作者最底层的逻辑模型。
+`xray-paper-skill` 是一个用于“论文解构”而不是“论文复述”的 Claude Code skill。它会把论文拆成问题定义、核心洞见、创新增量、隐含假设、未解问题，以及一眼能懂的 napkin formula / ASCII logic flow。
 
-## 功能
+## 适用场景
 
-- 支持 PDF 路径、文本内容或论文链接输入
-- 认知提取算法：去噪 → 提取 → 批判
-- 五维分析：核心痛点、解题机制、创新增量、批判性边界、餐巾纸公式
-- 生成 Org-mode 格式报告，含 ASCII 逻辑流程图
+- 读一篇论文，但不想只看摘要复述
+- 提炼论文的核心贡献、关键机制、局限和边界条件
+- 用 reviewer 视角快速判断这篇 paper 靠什么成立
+- 从本地论文文件、网页链接、arXiv / alphaxiv 页面或粘贴文本中提取逻辑模型
 
-## 安装
+## 输入支持
 
-```bash
-git clone https://github.com/lijigang/ljg-skill-xray-paper.git ~/.claude/skills/ljg-xray-paper
+- 本地 `.pdf`
+- 本地 `.txt` / `.md` / `.org`
+- 网页 URL、`arXiv abs` 页面、`alphaxiv` 页面
+- 直接粘贴论文正文、摘要或长段落
+
+当前不支持把**远程 PDF URL**当作可直接解析输入。遇到这种情况，skill 会要求提供本地 PDF 或粘贴文本。
+
+## 调用示例
+
+```text
+/xray-paper-skill ./papers/mamba.pdf
+/xray-paper-skill https://arxiv.org/abs/2401.12345
+/xray-paper-skill ./papers/mamba.pdf --save ~/Documents/notes/
 ```
 
-## 使用
+也可以直接在聊天里贴论文片段，然后让 skill 做 reviewer-style x-ray analysis。
 
-在 Claude Code 中输入：
+## 输出特点
 
-```
-/ljg-xray-paper <论文PDF路径、URL或粘贴内容>
-```
+- 默认直接在对话里输出，不自动写文件
+- 用户显式传 `--save PATH` 时，才会写出 Org 报告
+- 如果用户要求“总结”，会先给 1-2 句 summary，再继续完整 x-ray 结构
 
-## 输出示例
+固定输出骨架：
 
-生成的 Org-mode 报告包含：
+- `Problem`
+- `Insight`
+- `Delta`
+- `Critique`
+- `Logic Flow`
+- `Napkin Formula`
+- `Napkin Sketch`
 
-- **NAPKIN FORMULA** — 餐巾纸公式，一句话浓缩核心
-- **PROBLEM** — 痛点定义与前人困境
-- **INSIGHT** — 作者的灵光一闪
-- **DELTA** — 相比 SOTA 的创新增量
-- **CRITIQUE** — 隐形假设与未解之谜
-- **LOGIC FLOW** — ASCII 逻辑结构图
-- **NAPKIN SKETCH** — ASCII 餐巾纸图
+## 资源文件
 
-## License
-
-MIT
+- `resources/ANALYSIS_FRAMEWORK.md`：去噪 -> 提取 -> 批判 的分析框架
+- `resources/TEMPLATE.org`：保存为 Org 文件时使用的模板
+- `scripts/xray_io.py`：本地 PDF 提取与保存路径解析

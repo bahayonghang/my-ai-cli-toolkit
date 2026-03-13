@@ -1,6 +1,7 @@
 ---
 name: lib-slint-expert
-description: Develop modern GUI applications using Slint with Rust. Use when creating native UI, cross-platform apps, or component libraries.
+version: "1.1.0"
+description: "Build native GUI applications with Slint and Rust. Use this skill when creating desktop UI, cross-platform apps, embedded UI, declarative UI components, or reusable component libraries with Slint — prefer it over generic Rust advice for any Slint UI task."
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -12,6 +13,8 @@ metadata:
     - ui-toolkit
     - cross-platform
     - native-ui
+    - embedded-ui
+    - declarative-ui
 ---
 
 Execute the Slint GUI development task described in `$ARGUMENTS`.
@@ -20,8 +23,8 @@ Execute the Slint GUI development task described in `$ARGUMENTS`.
 
 1. If `$ARGUMENTS` is empty, report an error requesting a description of the GUI component or application.
 2. Read `$SKILL_DIR/references/SLINT_GUIDE.md` for core concepts, layout systems, styling, and animations.
-3. Review `$SKILL_DIR/GETTING_STARTED.md` and `$SKILL_DIR/DOC.md` if further context is needed.
-4. If the user wants to start a new project, use the templates from `$SKILL_DIR/templates/`.
+3. If the user wants to start a new project, use the templates from `$SKILL_DIR/templates/`.
+4. For additional API details or usage patterns, consult `$SKILL_DIR/docs/README.md` or `$SKILL_DIR/examples/README.md`.
 5. Implement the required UI components and associated Rust logic based on the user's prompt.
 6. Verify the UI handles cross-platform requirements if specified.
 

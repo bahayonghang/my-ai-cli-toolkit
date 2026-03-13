@@ -164,3 +164,68 @@ Exports over 10K rows are processed asynchronously.
 - **Selective depth**: Simple CRUD features don't need full 4-phase treatment — skip to Phase 4 directly
 - **Skip freely**: Tell the system "skip this phase" at any point to advance with defaults
 - **Interrupt safely**: Each phase writes its artifact immediately — you can stop after any phase and resume later with `/opsx:continue`
+
+## Phase 1.5 — Approach Proposal Example
+
+### Scenario: Adding CSV Export (continued from above)
+
+> **System** (after Phase 1 proposal.md is written): "Before we dive into specs, let me propose implementation approaches based on what we've discussed."
+
+**AskUserQuestion call:**
+```
+questions: [
+  {
+    question: "Here are viable implementation approaches for CSV export:",
+    header: "Approach",
+    options: [
+      {
+        label: "A: Client-side only",
+        description: "Generate CSV entirely in the browser using papaparse. Pros: simple, no server changes. Cons: fails on large datasets (>50K rows), blocks UI thread"
+      },
+      {
+        label: "B: Hybrid (Recommended)",
+        description: "Client-side for small exports (<10K rows), server-side job queue for large ones. Pros: best UX for both cases, progressive enhancement. Cons: two code paths to maintain"
+      },
+      {
+        label: "C: Server-side only",
+        description: "All exports processed on server with download links. Pros: consistent behavior, handles any size. Cons: slower for small exports, requires job queue infrastructure"
+      }
+    ]
+  }
+]
+```
+
+> **User selects**: "B: Hybrid"
+>
+> **System**: "Good choice. I'll add the hybrid approach to proposal.md and carry it forward into specs and design. The rejected approaches (client-only, server-only) will be documented in design.md's Alternatives Considered section."
+>
+> **Updated proposal.md** now includes:
+> ```markdown
+> ## Selected Approach
+> Hybrid: Client-side generation for datasets ≤10K rows (immediate download),
+> server-side job queue for larger datasets (progress tracking + download link).
+> ```
+
+## Visual Companion Offer Example
+
+### Scenario: Dashboard UI Redesign
+
+> **System** (after reading project context): "This project involves UI layout and component design decisions."
+
+**AskUserQuestion call:**
+```
+questions: [
+  {
+    question: "This project involves UI design decisions. Enable the browser visual companion? It shows mockups and layout options you can click to select.",
+    header: "Visual",
+    options: [
+      { label: "Enable", description: "Start browser companion — visual questions shown as interactive HTML mockups" },
+      { label: "No thanks", description: "Discuss all questions in the terminal as text" }
+    ]
+  }
+]
+```
+
+> **User selects**: "Enable"
+>
+> **System**: "Starting the visual companion server... Please open http://localhost:52341 in your browser. Visual design questions will be shown there; conceptual questions will continue in the terminal."

@@ -16,7 +16,7 @@ try {
         Write-Host "✅ FFmpeg 已安装!" -ForegroundColor Green
         Write-Host "   版本信息: $versionLine"
         Write-Host ""
-        Write-Host "可以继续使用 yt-dlp 下载视频了喵~"
+        Write-Host "可以继续使用 yt-dlp 下载视频了。"
         exit 0
     }
 } catch {

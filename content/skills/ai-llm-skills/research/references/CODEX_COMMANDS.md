@@ -12,7 +12,7 @@ codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
 
 ## Query Tips
 
-- Add year constraints: `2024 2025`
+- Add year constraints: use current and previous year (e.g., `2025 2026`)
 - Request raw links: `Return RAW search results with URLs`
 - Focus each query on single topic, avoid overly broad searches
 - **IMPORTANT**: Always include the exact product name in query (e.g., "OpenSearch" not "Elasticsearch" if researching OpenSearch)
@@ -21,13 +21,13 @@ codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
 
 ```bash
 # Architecture features
-"Return RAW search results with URLs. Search: OpenSearch unique features architecture 2024 2025"
+"Return RAW search results with URLs. Search: OpenSearch unique features architecture <current_year-1> <current_year>"
 
 # Comparison
-"Return RAW search results with URLs. Search: OpenSearch vs Elasticsearch key differences 2024 2025"
+"Return RAW search results with URLs. Search: OpenSearch vs Elasticsearch key differences <current_year-1> <current_year>"
 
 # Performance data
-"Return RAW search results with URLs. Search: OpenSearch performance benchmark 2024 2025"
+"Return RAW search results with URLs. Search: OpenSearch performance benchmark <current_year-1> <current_year>"
 
 # History
 "Return RAW search results with URLs. Search: OpenSearch history timeline fork Elasticsearch"

@@ -63,6 +63,48 @@ Best for: Process explanations, architecture overviews
 └─────────────────────────────────────────────────┘
 ```
 
+### Centered Concept Layout
+Best for: Tutorials, single-concept articles, how-to guides
+
+```
+┌─────────────────────────────────────────────────┐
+│  [Logo]                                         │
+│                                                 │
+│                 ┌───────────┐                   │
+│                 │           │                   │
+│                 │  Central  │                   │
+│                 │   Icon/   │                   │
+│                 │  Illust.  │                   │
+│                 │           │                   │
+│                 └───────────┘                   │
+│                                                 │
+│         Main Title (Large, Gradient)            │
+│           Subtitle (Medium, White)              │
+│                                                 │
+│    [Tag1]  [Tag2]  [Tag3]  [Tag4]              │
+└─────────────────────────────────────────────────┘
+```
+
+### Typography-First Layout
+Best for: Opinion pieces, editorials, commentary articles
+
+```
+┌─────────────────────────────────────────────────┐
+│  [Logo]                                         │
+│                                                 │
+│                                                 │
+│     "  Main Title in Large Display Font  "      │
+│                                                 │
+│         ─── Decorative Divider ───              │
+│                                                 │
+│       Subtitle styled as a pull-quote           │
+│       with emphasis on typography               │
+│                                                 │
+│                                                 │
+│    [Tag1]  [Tag2]  [Tag3]                       │
+└─────────────────────────────────────────────────┘
+```
+
 ## Color System
 
 | Purpose | Background | Stroke/Text | Use Case |
@@ -72,6 +114,30 @@ Best for: Process explanations, architecture overviews
 | Positive/After | `#1c2128` | `#00f2fe` | Solution, new version |
 | Success | `#22863a` | `#22863a` | Checkmarks, improvements |
 | Accent | `#ff6b35` → `#ffcc02` | gradient | Titles, highlights |
+
+### Light Theme
+
+For non-technical articles (lifestyle, design, education), prefer a light theme:
+
+| Purpose | Value | Use Case |
+|---------|-------|----------|
+| Background gradient start | `#f6f8fa` | Light base |
+| Background gradient end | `#ffffff` | Clean white |
+| Primary text | `#24292f` | Dark text for readability |
+| Secondary text | `#57606a` | Subtitles, descriptions |
+| Accent (unchanged) | `#ff6b35` → `#ffcc02` | Titles, highlights |
+
+```svg
+<!-- Light theme gradient definition -->
+<linearGradient id="bgGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" style="stop-color:#f6f8fa"/>
+  <stop offset="100%" style="stop-color:#ffffff"/>
+</linearGradient>
+<!-- Dark text for light backgrounds -->
+<text fill="#24292f" font-family="Arial, sans-serif" font-size="46" font-weight="bold">
+  Title Here
+</text>
+```
 
 ## SVG Template
 
@@ -189,6 +255,10 @@ Status icons: `❌` (negative), `⚠` (warning), `✓` (positive)
    - Comparison → Use 2-3 column comparison layout
    - Process/Flow → Use flow diagram layout
    - Single concept → Use centered illustration
+   - Opinion/Editorial → Use typography-first layout
+- **Choose theme**:
+   - Technical articles → Dark theme (default)
+   - Non-technical articles (lifestyle, design, education) → Light theme
 - **Extract key elements**:
    - Main title (keep concise, 10-15 Chinese chars or 5-8 English words)
    - Subtitle (descriptive, can be longer)

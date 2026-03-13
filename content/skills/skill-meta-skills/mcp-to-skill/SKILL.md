@@ -3,10 +3,13 @@ name: mcp-to-skill
 description: |
   Convert MCP (Model Context Protocol) servers to Claude Code Skills. Use when:
   (1) User wants to convert an MCP server project to a skill
-  (2) User mentions "MCP to skill", "convert MCP", or "MCP 转 skill"
+  (2) User mentions "MCP to skill", "convert MCP", "MCP 转 skill"
   (3) User has an MCP server codebase and wants to make it a reusable skill
   (4) User wants to analyze MCP server structure for skill creation
-  Supports TypeScript/JavaScript and Python MCP servers. Generates complete skill package with SKILL.md, scripts, and references.
+  (5) User says "MCP project is too hard to install" or "share MCP tools with others"
+  (6) User wants to package MCP tools for non-technical users
+  (7) User asks "how to distribute MCP tools" or "make MCP portable"
+  Supports TypeScript/JavaScript and Python MCP servers. Handles Tools, Resources, and Prompts.
 category: skill-management
 tags: [mcp, skill-conversion, model-context-protocol, automation]
 ---
@@ -17,151 +20,106 @@ Convert MCP servers into Claude Code Skills for easier distribution and usage.
 
 ## Conversion Workflow
 
-### 1. Analyze MCP Server
+### Step 1: Analyze MCP Server
 
-Read and understand the MCP server structure:
+Run the analysis script to extract tool/resource/prompt definitions:
 
 ```bash
-# Key files to analyze
-- package.json / pyproject.toml  # Dependencies and entry point
-- src/index.ts / main.py         # Entry point and tool registration
-- src/**/*.ts / **/*.py          # Tool implementations
+python3 scripts/analyze_mcp.py /path/to/mcp-project --pretty
 ```
 
-Extract this information:
-- **Server name and description**
-- **Available tools** (name, description, parameters, implementation)
-- **Dependencies** (runtime requirements)
-- **Execution method** (node, python, etc.)
+The script outputs JSON with: `tools`, `resources`, `prompts`, `mcp_sdks`, `dependencies`.
 
-### 2. Map MCP Tools to Skill Structure
+For manual analysis, inspect these key files:
+- `package.json` / `pyproject.toml` — dependencies and entry point
+- `src/index.ts` / `main.py` — server setup, tool/resource/prompt registration
+- Source files — implementation details
 
-| MCP Concept | Skill Equivalent |
-|-------------|------------------|
-| Tool name | Script or instruction section |
-| Tool description | Used in SKILL.md description |
-| Tool parameters | Script arguments or instruction parameters |
-| Tool implementation | `scripts/` executable or inline instructions |
+### Step 2: Map MCP Components to Skill Structure
 
-### 3. Generate Skill Structure
+Map all three MCP primitives:
+
+| MCP Primitive | Skill Equivalent |
+|---------------|------------------|
+| **Tool** | `scripts/` executable or instruction section |
+| **Resource** | `references/` markdown file (static) or script (dynamic) |
+| **Prompt** | Workflow instruction section in SKILL.md |
+
+For the complete mapping table and conversion patterns, see `references/MAPPING.md`.
+
+### Step 3: Choose Conversion Pattern Per Tool
+
+For each MCP tool, pick the right pattern:
+
+- **Pattern A (Script):** Complex logic, API calls, error handling → `scripts/tool_name.py`
+- **Pattern B (Instruction):** Simple commands, no deps → inline in SKILL.md
+- **Pattern C (Hybrid):** Tools requiring server runtime → setup instructions + MCP connection
+
+Decision: Can it run standalone? → A or B. Is it trivial? → B. Needs server state? → C.
+
+For detailed pattern descriptions and examples, see `references/MAPPING.md`.
+For real-world conversion case studies, see `references/EXAMPLES.md`.
+
+### Step 4: Generate Skill Structure
 
 ```
 {skill-name}/
 ├── SKILL.md                    # Core instructions
 ├── scripts/
-│   ├── run_server.sh          # Server startup script (optional)
-│   └── {tool_name}.{ext}      # Individual tool scripts
-└── references/
-    └── tools.md               # Tool reference documentation
+│   └── {tool_name}.{ext}      # Pattern A tool scripts
+├── references/
+│   └── {topic}.md             # MCP Resources → reference docs
+└── config/
+    └── secrets.example.md     # Required env vars / API keys
 ```
 
-### 4. Write SKILL.md
-
-Template structure:
+### Step 5: Write SKILL.md
 
 ```markdown
 ---
 name: {skill-name}
 description: |
   {Original MCP server description}. Use when:
-  (1) {Primary use case}
+  (1) {Primary use case from tool descriptions}
   (2) {Secondary use case}
-  {List all tool capabilities}
 ---
 
 # {Skill Name}
 
-{Brief description of what this skill does}
+{Brief description}
 
 ## Prerequisites
 
-{Any setup requirements - permissions, API keys, etc.}
+{Setup: permissions, API keys, runtime requirements}
+Required environment variables: (list from MCP server's .env / config)
 
-## Available Tools
-
-{List each tool with usage instructions}
+## Tools
 
 ### {Tool Name}
-
-{Description}
-
-**Usage:**
-{How to invoke - either via script or direct instruction}
-
-**Parameters:**
-- `{param}`: {description}
-
-**Example:**
-{Concrete usage example}
+{Description, usage, parameters, example}
 ```
 
-## Conversion Patterns
+### Step 6: Handle Secrets & Environment Variables
 
-### Pattern A: Script-based (for complex tools)
+- Never include actual secrets in skill files
+- Create `config/secrets.example.md` listing all required env vars with descriptions
+- Document minimum required scopes/permissions in Prerequisites
+- See `references/MAPPING.md` § "Secrets & Environment Variables" for patterns
 
-When MCP tool has complex logic, create executable script:
+### Step 7: Verify the Converted Skill
 
-```python
-# scripts/tool_name.py
-#!/usr/bin/env python3
-import argparse
-# ... implementation
-```
+Before packaging, run through this checklist:
 
-Reference in SKILL.md:
-```markdown
-Run `scripts/tool_name.py --param value`
-```
+- [ ] SKILL.md has proper frontmatter (`name`, `description` with triggers)
+- [ ] All MCP **Tools** are documented with usage instructions
+- [ ] All MCP **Resources** are converted to `references/` files
+- [ ] All MCP **Prompts** are converted to workflow sections
+- [ ] Scripts are executable (`chmod +x`) and tested standalone
+- [ ] `config/secrets.example.md` exists if env vars are needed
+- [ ] No content duplication between SKILL.md and references
+- [ ] No unnecessary files (README, CHANGELOG, LICENSE, etc.)
 
-### Pattern B: Instruction-based (for simple tools)
-
-When MCP tool is simple, use inline instructions:
-
-```markdown
-### Send Notification
-
-To send a system notification:
-1. Use AppleScript: `display notification "message" with title "title"`
-```
-
-### Pattern C: Hybrid (server-dependent tools)
-
-When tools require the MCP server runtime:
-
-```markdown
-## Setup
-
-Start the MCP server:
-\`\`\`bash
-cd {project-path}
-npm start  # or: node dist/index.js
-\`\`\`
-
-Then use MCP tools via the running server.
-```
-
-## AppleScript MCP Example
-
-For applescript-mcp specifically:
-
-1. **No server needed** - Tools are standalone AppleScripts
-2. **Use instruction-based pattern** - Each tool becomes a section
-3. **Group by category** - System, Calendar, Finder, etc.
-4. **Include permission notes** - macOS security requirements
-
-## Output Checklist
-
-Before packaging, verify:
-
-- [ ] SKILL.md has proper frontmatter (name, description)
-- [ ] Description includes all use cases and triggers
-- [ ] All MCP tools are documented
-- [ ] Scripts are executable and tested
-- [ ] References are complete but not redundant
-- [ ] No unnecessary files (README, CHANGELOG, etc.)
-
-## Package the Skill
-
-```bash
-python3 ~/.claude/skills/skill-creator/scripts/package_skill.py /path/to/skill
-```
+Test the skill by:
+1. Installing it to a test platform directory
+2. Invoking each tool/instruction manually
+3. Verifying scripts handle missing args and errors gracefully

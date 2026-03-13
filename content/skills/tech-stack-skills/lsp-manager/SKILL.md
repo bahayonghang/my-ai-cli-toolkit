@@ -1,6 +1,7 @@
 ---
 name: lsp-manager
-description: Detect programming languages to configure LSP servers and troubleshoot integration issues. Use when users request to set up language servers or diagnostics.
+version: "1.1.0"
+description: "Detect project languages, configure LSP servers, and troubleshoot language-server integration. Use this skill when setting up code intelligence, autocomplete, type checking, IDE integration, or diagnosing LSP failures — prefer it over manual config for any language-server task."
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 metadata:
@@ -12,6 +13,8 @@ metadata:
     - diagnostics
     - configuration
     - troubleshooting
+    - ide-integration
+    - autocomplete
 ---
 
 Execute the LSP configuration or troubleshooting task described in `$ARGUMENTS`.
@@ -19,15 +22,14 @@ Execute the LSP configuration or troubleshooting task described in `$ARGUMENTS`.
 ## Steps
 
 1. If `$ARGUMENTS` is empty, report an error requesting the user to specify their project path or language.
-2. Read `$SKILL_DIR/references/WORKFLOW.md` for the overarching workflow instructions.
-3. To detect the project's language, run `python $SKILL_DIR/scripts/detect_language.py <target_directory>`.
-4. To check the server status, run `bash $SKILL_DIR/scripts/check_server.sh`.
-5. For generating custom config, run `python $SKILL_DIR/scripts/generate_config.py <Languages...>`.
-6. Read `$SKILL_DIR/references/servers.md` and `$SKILL_DIR/references/troubleshooting.md` if specific servers or troubleshooting steps are needed.
+2. To detect the project's language, run `python $SKILL_DIR/scripts/detect_language.py <target_directory>`.
+3. To check installed language servers, run `python $SKILL_DIR/scripts/check_server.py`.
+4. For generating custom config, run `python $SKILL_DIR/scripts/generate_config.py <Languages...>`.
+5. Read `$SKILL_DIR/references/servers.md` and `$SKILL_DIR/references/troubleshooting.md` if specific servers or troubleshooting steps are needed.
 
 ## Output
 
-Information about the detected languages, recommended LSP plugins, or instructions for fixing integration issues.
+Information about the detected languages, recommended LSP servers, or instructions for fixing integration issues.
 
 ## Error Handling
 

@@ -91,7 +91,7 @@ def main():
         print("✅ FFmpeg 已安装!")
         print(f"   版本信息: {version_info}")
         print()
-        print("可以继续使用 yt-dlp 下载视频了喵~")
+        print("可以继续使用 yt-dlp 下载视频了。")
         return 0
     else:
         print("❌ FFmpeg 未安装!")

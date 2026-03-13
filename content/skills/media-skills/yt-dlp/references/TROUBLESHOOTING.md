@@ -12,7 +12,9 @@
 | Vimeo | ✅ 支持 | - |
 | Twitch | ✅ 支持 | - |
 | Coursera | ✅ 支持 | 需要登录 |
-| Netflix | ⚠️ 有限支持 | 需要特定工具 |
+| Netflix | ❌ 不支持（DRM 保护） | 见下方说明 |
+
+> **关于 DRM 保护内容：** Netflix、Disney+、Amazon Prime Video 等平台的内容受 DRM（数字版权管理）保护，无法通过 yt-dlp 下载。yt-dlp 仅支持无 DRM 保护的公开或登录可访问内容。
 
 ## 最佳实践
 

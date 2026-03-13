@@ -21,20 +21,12 @@ npm install -g <language-server>  # 或其他包管理器
 
 **诊断步骤**:
 
-1. 检查插件状态
-```bash
-claude --debug
-# 或在 Claude Code 中
-/plugin
-```
+1. 检查编辑器的 LSP 日志输出（大多数编辑器在 Output 面板提供 LSP 日志通道）
 
 2. 验证配置文件
 ```bash
 # 检查 .lsp.json 语法
 cat .lsp.json | python -m json.tool
-
-# 检查 plugin.json
-cat .claude-plugin/plugin.json | python -m json.tool
 ```
 
 3. 测试服务器手动启动
@@ -43,11 +35,10 @@ cat .claude-plugin/plugin.json | python -m json.tool
 <language-server> --stdio  # 测试 stdio 通信
 ```
 
-4. 启用调试日志
-```bash
-claude --enable-lsp-logging --debug
-tail -f ~/.claude/debug/*.log
-```
+4. 检查编辑器 LSP 日志
+   - VS Code: Output 面板 → 选择对应语言服务器通道
+   - Neovim: `:LspLog` 或 `~/.local/state/nvim/lsp.log`
+   - Emacs: `*lsp-log*` buffer
 
 ### 3. 配置文件错误
 
@@ -61,9 +52,12 @@ tail -f ~/.claude/debug/*.log
 
 **解决**:
 ```bash
-# 确保脚本可执行
+# 确保脚本可执行 (Unix/macOS)
 chmod +x scripts/*.sh
 chmod +x scripts/*.py
+
+# Windows 下确认 Python 可执行
+python --version
 ```
 
 ### 5. 服务器启动超时
@@ -78,17 +72,6 @@ chmod +x scripts/*.py
 
 ## 调试工具
 
-### 验证配置
-```bash
-claude plugin validate
-```
-
-### 查看详细日志
-```bash
-claude --enable-lsp-logging
-tail -f ~/.claude/debug/*.log
-```
-
 ### 测试语言服务器
 ```bash
 # 检查版本
@@ -97,3 +80,9 @@ tail -f ~/.claude/debug/*.log
 # 测试通信
 echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | <language-server> --stdio
 ```
+
+### 使用 check_server.py 批量检查
+```bash
+python scripts/check_server.py
+```
+输出 JSON 格式的安装状态，方便自动化处理。
