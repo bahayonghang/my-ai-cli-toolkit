@@ -1,12 +1,11 @@
 import {
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Alert,
   AppBar,
@@ -49,9 +48,7 @@ import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlin
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import LightModeIcon from "@mui/icons-material/LightMode";
 
 import {
   getNpxInstalledSkills,
@@ -64,9 +61,11 @@ import {
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { NpxRunConfigDialog } from "@/components/dialogs/NpxRunConfigDialog";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useI18n } from "@/i18n";
 import type {
   NpxInstalledSkillDto,
@@ -217,16 +216,15 @@ function parseSkillFlags(input: string): string[] {
 export default function NpxSkillsPage() {
   const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
-  const navigate = useNavigate();
+  const navigateDeferred = useNavigateDeferred();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
 
   const platform = usePlatformStore((state) =>
     state.platforms.find((item) => item.id === platformId)
   );
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
-  const { colorMode, toggleColorMode, showNotification } = useUiStore();
+  const { showNotification } = useUiStore();
 
   const {
     loading: installTargetLoading,
@@ -976,9 +974,12 @@ export default function NpxSkillsPage() {
                             size="small"
                             onClick={(event) => {
                               event.stopPropagation();
+                              const repoUrl = item.repo.startsWith("https://")
+                                ? item.repo
+                                : `https://github.com/${item.repo}`;
                               const cmd = item.skill_flag
-                                ? `npx skills install ${item.repo} --skill ${item.skill_flag}`
-                                : `npx skills install ${item.repo}`;
+                                ? `npx skills add ${repoUrl} --skill ${item.skill_flag}`
+                                : `npx skills add ${repoUrl}`;
                               navigator.clipboard.writeText(cmd).then(
                                 () => showNotification(t("npxSkills.copySuccess"), "success"),
                                 () => showNotification(t("npxSkills.copyFailed"), "error"),
@@ -1728,17 +1729,7 @@ export default function NpxSkillsPage() {
             {t("npxSkills.settings")}
           </Button>
           <LanguageToggle sx={{ mr: 1 }} />
-          <IconButton
-            color="inherit"
-            aria-label={
-              colorMode === "dark"
-                ? t("common.toggleThemeToLight")
-                : t("common.toggleThemeToDark")
-            }
-            onClick={toggleColorMode}
-          >
-            {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          <ThemeToggleButton />
         </Toolbar>
       </AppBar>
 

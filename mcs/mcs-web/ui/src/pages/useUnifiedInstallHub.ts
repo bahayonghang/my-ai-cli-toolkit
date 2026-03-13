@@ -213,16 +213,18 @@ export async function installAcrossPlatforms(
   setResults([]);
   setExecution({ running: true, currentStep: 0, totalSteps: totalPlatforms });
 
-  for (let index = 0; index < selection.platforms.length; index++) {
-    const platform = selection.platforms[index];
-    setExecution({ running: true, currentStep: index + 1, totalSteps: totalPlatforms });
+  let completedCount = 0;
 
-    const platformResult = await installOnPlatform(platform, selection.skills, t);
-    runResultsByPlatform.set(platform.id, platformResult);
-
+  const promises = selection.platforms.map(async (platform) => {
+    const result = await installOnPlatform(platform, selection.skills, t);
+    runResultsByPlatform.set(platform.id, result);
+    completedCount++;
+    setExecution({ running: true, currentStep: completedCount, totalSteps: totalPlatforms });
     setResults(resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform));
-  }
+    return result;
+  });
 
+  await Promise.allSettled(promises);
   return resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform);
 }
 

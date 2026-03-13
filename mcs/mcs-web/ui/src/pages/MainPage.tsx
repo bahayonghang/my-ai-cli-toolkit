@@ -1,5 +1,5 @@
-import { lazy, startTransition, Suspense, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   Alert,
   AppBar,
@@ -36,13 +36,11 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import SearchIcon from "@mui/icons-material/Search";
 import SyncIcon from "@mui/icons-material/Sync";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -50,15 +48,15 @@ import { uninstallCommands, uninstallSkills } from "@/api/client";
 import { useI18n } from "@/i18n";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { StatusChip } from "@/components/common/StatusChip";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
-import { useUiStore } from "@/stores/uiStore";
-
-const DetailDrawer = lazy(() =>
+import { useUiStore } from "@/stores/uiStore";const DetailDrawer = lazy(() =>
   import("@/components/dialogs/DetailDrawer").then((module) => ({
     default: module.DetailDrawer,
   }))
@@ -84,15 +82,13 @@ type TabValue = "skills" | "commands";
 export default function MainPage() {
   const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
-  const navigate = useNavigate();
+  const navigateDeferred = useNavigateDeferred();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const platform = usePlatformStore((state) =>
     state.platforms.find((entry) => entry.id === platformId)
   );
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
-  const colorMode = useUiStore((state) => state.colorMode);
-  const toggleColorMode = useUiStore((state) => state.toggleColorMode);
   const showNotification = useUiStore((state) => state.showNotification);
   const [activeTab, setActiveTab] = useState<TabValue>("skills");
   const [search, setSearch] = useState("");
@@ -102,7 +98,6 @@ export default function MainPage() {
   const debouncedSearch = useDebounce(search, 300);
   const itemType = activeTab === "skills" ? "skill" : "command";
   const selectedCount = selectedNames.size;
-  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [detailName, setDetailName] = useState<string | null>(null);
   const [diffName, setDiffName] = useState<string | null>(null);
@@ -245,17 +240,7 @@ export default function MainPage() {
             <SyncIcon />
           </IconButton>
           <LanguageToggle />
-          <IconButton
-            color="inherit"
-            aria-label={
-              colorMode === "dark"
-                ? t("common.toggleThemeToLight")
-                : t("common.toggleThemeToDark")
-            }
-            onClick={toggleColorMode}
-          >
-            {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          <ThemeToggleButton />
         </Toolbar>
       </AppBar>
 

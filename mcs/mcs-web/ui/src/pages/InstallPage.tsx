@@ -1,6 +1,5 @@
 import {
   lazy,
-  startTransition,
   Suspense,
   useCallback,
   useEffect,
@@ -8,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Alert,
   AppBar,
@@ -51,16 +50,16 @@ import TerminalIcon from "@mui/icons-material/Terminal";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
 
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { getCategories, getSkillDetail, getSkills, installSkills } from "@/api/client";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
@@ -277,7 +276,6 @@ function SearchToolbar({
         variant="outlined"
         startIcon={<SelectAllIcon />}
         onClick={onSelectAll}
-        sx={{ borderRadius: 2 }}
       >
         {t("install.selectAll")}
       </Button>
@@ -287,7 +285,6 @@ function SearchToolbar({
           size="small"
           variant="text"
           onClick={onClearSelection}
-          sx={{ borderRadius: 2 }}
         >
           {t("install.clear")}
         </Button>
@@ -301,7 +298,6 @@ function SearchToolbar({
           color="warning"
           size="small"
           onClick={onUpdateAll}
-          sx={{ borderRadius: 2 }}
         >
           {t("install.updateAll", { count: outdatedCount })}
         </Button>
@@ -327,6 +323,7 @@ function SkillCard({
   return (
     <Card
       sx={{
+        willChange: "transform, box-shadow",
         transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1)",
         boxShadow: selected
           ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.4)}`
@@ -501,17 +498,14 @@ function SkillDetailDialog({
 export default function InstallPage() {
   const { t } = useI18n();
   const { platformId } = useParams<{ platformId: string }>();
-  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
+  const navigateDeferred = useNavigateDeferred();
 
   const platform = usePlatformStore((state) =>
     state.platforms.find((item) => item.id === platformId)
   );
   const fetchPlatforms = usePlatformStore((s) => s.fetchPlatforms);
-  const colorMode = useUiStore((s) => s.colorMode);
-  const toggleColorMode = useUiStore((s) => s.toggleColorMode);
   const showNotification = useUiStore((s) => s.showNotification);
   const {
     loading: installTargetLoading,
@@ -744,17 +738,7 @@ export default function InstallPage() {
           >
             {t("npxSkills.pageButton")}
           </Button>
-          <IconButton
-            color="inherit"
-            aria-label={
-              colorMode === "dark"
-                ? t("common.toggleThemeToLight")
-                : t("common.toggleThemeToDark")
-            }
-            onClick={toggleColorMode}
-          >
-            {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          <ThemeToggleButton />
         </Toolbar>
       </AppBar>
 
@@ -821,13 +805,13 @@ export default function InstallPage() {
           />
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
           {(loading || installTargetLoading) && (
-            <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
+            <LinearProgress sx={{ mb: 2 }} />
           )}
 
           {loading && skills.length === 0 ? (

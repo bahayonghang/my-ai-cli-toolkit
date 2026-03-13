@@ -55,7 +55,6 @@ export function InstallDialog({
   const [phase, setPhase] = useState<Phase>("confirm");
   const [linkMode, setLinkMode] = useState<LinkMode>("auto");
   const [results, setResults] = useState<ItemResult[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
   const installAbortRef = useRef<AbortController | null>(null);
 
@@ -71,7 +70,6 @@ export function InstallDialog({
         status: "pending",
       }))
     );
-    setCurrentIndex(0);
     setExpandedErrors(new Set());
   };
 
@@ -85,18 +83,6 @@ export function InstallDialog({
   };
 
   useEffect(() => () => installAbortRef.current?.abort(), []);
-
-  const updateResultAtIndex = (index: number, update: Partial<ItemResult>) => {
-    setResults((prev) => {
-      const current = prev[index];
-      if (!current) {
-        return prev;
-      }
-      const next = [...prev];
-      next[index] = { ...current, ...update };
-      return next;
-    });
-  };
 
   const isAbortError = (error: unknown) =>
     error instanceof DOMException
@@ -119,61 +105,47 @@ export function InstallDialog({
 
   const successCount = results.filter((r) => r.status === "success").length;
   const failureCount = results.filter((r) => r.status === "error").length;
-  const progress =
-    results.length > 0
-      ? ((successCount + failureCount) / results.length) * 100
-      : 0;
 
   const handleInstall = async () => {
     setPhase("installing");
     const controller = new AbortController();
     installAbortRef.current = controller;
 
-    for (let i = 0; i < itemNames.length; i++) {
-      if (controller.signal.aborted) {
-        return;
-      }
-      const name = itemNames[i];
-      setCurrentIndex(i);
-      updateResultAtIndex(i, { status: "installing", errorMessage: undefined });
+    // Mark all items as installing at once (single batch request)
+    setResults((prev) => prev.map((r) => ({ ...r, status: "installing" as const })));
 
-      try {
-        const result = itemType === "skills"
-          ? await installSkills(
-              platformId,
-              [name],
-              linkMode,
-              installTarget,
-              controller.signal
-            )
-          : await installCommands(
-              platformId,
-              [name],
-              installTarget,
-              controller.signal
-            );
-        if (controller.signal.aborted) {
-          return;
-        }
-        const itemResult = result.results[0];
-        updateResultAtIndex(i, {
-          status: itemResult?.success !== false ? "success" : "error",
-          errorMessage: itemResult?.error ?? undefined,
-        });
-      } catch (e) {
-        if (isAbortError(e) || controller.signal.aborted) {
-          return;
-        }
-        updateResultAtIndex(i, {
-          status: "error",
-          errorMessage: (e as Error).message,
-        });
-      }
-    }
+    try {
+      const response =
+        itemType === "skills"
+          ? await installSkills(platformId, itemNames, linkMode, installTarget, controller.signal)
+          : await installCommands(platformId, itemNames, installTarget, controller.signal);
 
-    if (!controller.signal.aborted) {
-      installAbortRef.current = null;
+      if (controller.signal.aborted) return;
+
+      // Map batch results back to individual items
+      setResults((prev) =>
+        prev.map((r) => {
+          const batchItem = response.results.find((br) => br.item_name === r.name);
+          return {
+            ...r,
+            status: batchItem?.success !== false ? "success" : "error",
+            errorMessage: batchItem?.error ?? undefined,
+          };
+        })
+      );
       setPhase("completed");
+    } catch (e) {
+      if (isAbortError(e) || controller.signal.aborted) return;
+      setResults((prev) =>
+        prev.map((r) =>
+          r.status === "installing"
+            ? { ...r, status: "error" as const, errorMessage: (e as Error).message }
+            : r
+        )
+      );
+      setPhase("completed");
+    } finally {
+      installAbortRef.current = null;
     }
   };
 
@@ -199,8 +171,6 @@ export function InstallDialog({
       {phase === "installing" && (
         <InstallingPhase
           results={results}
-          currentIndex={currentIndex}
-          progress={progress}
           successCount={successCount}
           failureCount={failureCount}
           onCancel={handleCancelInstall}
@@ -211,7 +181,6 @@ export function InstallDialog({
           results={results}
           successCount={successCount}
           failureCount={failureCount}
-          progress={progress}
           expandedErrors={expandedErrors}
           onToggleError={toggleError}
           onClose={() => {
@@ -358,8 +327,6 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
 
 interface InstallingPhaseProps {
   results: ItemResult[];
-  currentIndex: number;
-  progress: number;
   successCount: number;
   failureCount: number;
   onCancel: () => void;
@@ -367,8 +334,6 @@ interface InstallingPhaseProps {
 
 function InstallingPhase({
   results,
-  currentIndex,
-  progress,
   successCount,
   failureCount,
   onCancel,
@@ -376,7 +341,6 @@ function InstallingPhase({
   const { t } = useI18n();
   const total = results.length;
   const done = successCount + failureCount;
-  const currentItem = results[currentIndex];
 
   return (
     <>
@@ -384,13 +348,6 @@ function InstallingPhase({
         <CircularProgress size={20} thickness={4} />
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
           {t("dialogs.installingTitle")}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ display: { xs: "none", sm: "block" } }}
-        >
-          {t("dialogs.installCancelling")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {done} / {total}
@@ -403,8 +360,7 @@ function InstallingPhase({
       <DialogContent dividers>
         <Box sx={{ mb: 1 }}>
           <LinearProgress
-            variant="determinate"
-            value={progress}
+            variant="indeterminate"
             sx={{
               height: 8,
               borderRadius: 4,
@@ -414,15 +370,13 @@ function InstallingPhase({
           />
         </Box>
 
-        {currentItem && (
-          <Typography
-            variant="caption"
-            color="primary"
-            sx={{ display: "block", mb: 2 }}
-          >
-            ▶ {currentItem.name}
-          </Typography>
-        )}
+        <Typography
+          variant="caption"
+          color="primary"
+          sx={{ display: "block", mb: 2 }}
+        >
+          {t("dialogs.installingBatchCount", { count: total })}
+        </Typography>
 
         <Paper
           variant="outlined"
@@ -493,7 +447,6 @@ interface CompletedPhaseProps {
   results: ItemResult[];
   successCount: number;
   failureCount: number;
-  progress: number;
   expandedErrors: Set<string>;
   onToggleError: (name: string) => void;
   onClose: () => void;
@@ -605,7 +558,11 @@ function CompletedPhase({
                   />
                   {item.status === "error" && (
                     <IconButton
-                      aria-label={`${t("common.showDiff")} ${item.name}`}
+                      aria-label={
+                        expandedErrors.has(item.name)
+                          ? `${t("npxSkills.itemHideDetails")} ${item.name}`
+                          : `${t("npxSkills.itemShowDetails")} ${item.name}`
+                      }
                       onClick={() => onToggleError(item.name)}
                     >
                       {expandedErrors.has(item.name) ? (

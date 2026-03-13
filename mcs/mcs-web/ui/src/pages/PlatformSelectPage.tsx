@@ -1,5 +1,4 @@
-import { lazy, startTransition, Suspense, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -16,11 +15,13 @@ import {
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import TerminalIcon from "@mui/icons-material/Terminal";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { getLegacyDirs } from "@/api/client";
 import { useI18n } from "@/i18n";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { usePlatformStore } from "@/stores/platformStore";
 
 const LegacyCleanupDialog = lazy(() =>
@@ -31,7 +32,7 @@ const LegacyCleanupDialog = lazy(() =>
 
 export default function PlatformSelectPage() {
   const { t } = useI18n();
-  const navigate = useNavigate();
+  const navigateDeferred = useNavigateDeferred();
   const platforms = usePlatformStore((state) => state.platforms);
   const loading = usePlatformStore((state) => state.loading);
   const error = usePlatformStore((state) => state.error);
@@ -39,7 +40,6 @@ export default function PlatformSelectPage() {
   const refreshPlatforms = usePlatformStore((state) => state.refreshPlatforms);
   const [legacyCount, setLegacyCount] = useState(0);
   const [legacyOpen, setLegacyOpen] = useState(false);
-  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
 
   const refreshLegacyCount = () => {
     getLegacyDirs()
@@ -116,7 +116,7 @@ export default function PlatformSelectPage() {
         )}
 
         <Grid container spacing={2} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <ShortcutCard
               title={t("platformSelect.unifiedInstallLabel")}
               description={t("platformSelect.unifiedInstallTitle")}
@@ -124,12 +124,24 @@ export default function PlatformSelectPage() {
               onClick={() => navigateDeferred("/install-hub")}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <ShortcutCard
               title={t("platformSelect.dashboardLabel")}
               description={t("platformSelect.dashboardTitle")}
               icon={<DashboardCustomizeIcon color="primary" />}
               onClick={() => navigateDeferred("/dashboard")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <ShortcutCard
+              title={t("platformSelect.npxSkillsLabel")}
+              description={t("platformSelect.npxSkillsTitle")}
+              icon={<TerminalIcon color={platforms.length > 0 ? "primary" : "disabled"} />}
+              disabled={platforms.length === 0}
+              onClick={() => {
+                const first = platforms[0];
+                if (first) navigateDeferred(`/platform/${first.id}/npx-skills`);
+              }}
             />
           </Grid>
         </Grid>
@@ -202,16 +214,18 @@ function ShortcutCard({
   title,
   description,
   icon,
+  disabled,
   onClick,
 }: {
   title: string;
   description: string;
   icon: React.ReactNode;
+  disabled?: boolean;
   onClick: () => void;
 }) {
   return (
-    <Card>
-      <CardActionArea onClick={onClick} sx={{ height: "100%" }}>
+    <Card sx={{ opacity: disabled ? 0.5 : 1 }}>
+      <CardActionArea onClick={onClick} disabled={disabled} sx={{ height: "100%" }}>
         <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, p: 3 }}>
           <Box
             sx={{

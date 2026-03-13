@@ -14,6 +14,8 @@ export const enPlatformSelectMessages = {
   "platformSelect.dashboardLabel": "Dashboard",
   "platformSelect.legacyCleanupTooltip": "Detected legacy skill directories. Click to clean up",
   "platformSelect.legacyCleanupLabel": "{count} legacy dirs",
+  "platformSelect.npxSkillsLabel": "NPX Skills",
+  "platformSelect.npxSkillsTitle": "Browse & install external skills via npx",
 } as const;
 
 export const zhPlatformSelectMessages: Record<
@@ -35,4 +37,6 @@ export const zhPlatformSelectMessages: Record<
   "platformSelect.dashboardLabel": "仪表盘",
   "platformSelect.legacyCleanupTooltip": "检测到旧版技能目录，点击打开清理",
   "platformSelect.legacyCleanupLabel": "{count} 个待清理旧目录",
+  "platformSelect.npxSkillsLabel": "NPX Skills",
+  "platformSelect.npxSkillsTitle": "浏览并安装 npx 外部技能",
 };

@@ -1,5 +1,4 @@
-import { lazy, startTransition, Suspense, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   AppBar,
@@ -18,16 +17,15 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import HomeIcon from "@mui/icons-material/Home";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { getLegacyDirs } from "@/api/client";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useI18n } from "@/i18n";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useDashboardStore } from "@/stores/dashboardStore";
-import { useUiStore } from "@/stores/uiStore";
 
 const LegacyCleanupDialog = lazy(() =>
   import("@/components/dialogs/LegacyCleanupDialog").then((module) => ({
@@ -37,16 +35,13 @@ const LegacyCleanupDialog = lazy(() =>
 
 export default function DashboardPage() {
   const { t } = useI18n();
-  const navigate = useNavigate();
   const data = useDashboardStore((state) => state.data);
   const loading = useDashboardStore((state) => state.loading);
   const error = useDashboardStore((state) => state.error);
   const fetchDashboard = useDashboardStore((state) => state.fetchDashboard);
-  const colorMode = useUiStore((state) => state.colorMode);
-  const toggleColorMode = useUiStore((state) => state.toggleColorMode);
   const [legacyCount, setLegacyCount] = useState(0);
   const [legacyOpen, setLegacyOpen] = useState(false);
-  const navigateDeferred = (to: string) => startTransition(() => navigate(to));
+  const navigateDeferred = useNavigateDeferred();
 
   useEffect(() => {
     void fetchDashboard();
@@ -126,17 +121,7 @@ export default function DashboardPage() {
             {t("dashboard.unifiedInstallHub")}
           </Button>
           <LanguageToggle />
-          <IconButton
-            color="inherit"
-            aria-label={
-              colorMode === "dark"
-                ? t("common.toggleThemeToLight")
-                : t("common.toggleThemeToDark")
-            }
-            onClick={toggleColorMode}
-          >
-            {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          <ThemeToggleButton />
         </Toolbar>
       </AppBar>
 

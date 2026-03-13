@@ -1,12 +1,9 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import HomeIcon from "@mui/icons-material/Home";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import {
   Alert,
   AppBar,
   Box,
-  Button,
   CircularProgress,
   Grid,
   IconButton,
@@ -16,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { InstallExecutionPanel } from "@/components/install-hub/InstallExecutionPanel";
 import { PlatformTargetPanel } from "@/components/install-hub/PlatformTargetPanel";
 import { SkillCatalogPanel } from "@/components/install-hub/SkillCatalogPanel";
@@ -30,8 +28,6 @@ export default function UnifiedInstallHubPage() {
   const platforms = usePlatformStore((state) => state.platforms);
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
   const refreshPlatforms = usePlatformStore((state) => state.refreshPlatforms);
-  const colorMode = useUiStore((state) => state.colorMode);
-  const toggleColorMode = useUiStore((state) => state.toggleColorMode);
   const showNotification = useUiStore((state) => state.showNotification);
   const model = useUnifiedInstallHub({
     platforms,
@@ -46,11 +42,7 @@ export default function UnifiedInstallHubPage() {
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
-      <PageToolbar
-        colorMode={colorMode}
-        onHome={() => navigate("/")}
-        onToggleTheme={toggleColorMode}
-      />
+      <PageToolbar onHome={() => navigate("/")} />
       <PageBody model={model} platforms={platforms} />
       <NotificationSnackbar />
     </Box>
@@ -66,13 +58,9 @@ function LoadingScreen() {
 }
 
 function PageToolbar({
-  colorMode,
   onHome,
-  onToggleTheme,
 }: {
-  colorMode: "light" | "dark";
   onHome: () => void;
-  onToggleTheme: () => void;
 }) {
   const { t } = useI18n();
   return (
@@ -87,26 +75,8 @@ function PageToolbar({
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           {t("installHub.pageTitle")}
         </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={onHome}
-          sx={{ display: { xs: "none", sm: "inline-flex" }, mr: 1 }}
-        >
-          {t("common.home")}
-        </Button>
         <LanguageToggle sx={{ mr: 1 }} />
-        <IconButton
-          color="inherit"
-          aria-label={
-            colorMode === "dark"
-              ? t("common.toggleThemeToLight")
-              : t("common.toggleThemeToDark")
-          }
-          onClick={onToggleTheme}
-        >
-          {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-        </IconButton>
+        <ThemeToggleButton />
       </Toolbar>
     </AppBar>
   );
