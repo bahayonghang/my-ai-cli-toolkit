@@ -151,3 +151,9 @@ references/
 assets/
   template.json  ← referenced by $SKILL_DIR/assets/template.json, not read into context
 ```
+
+## Pattern 16: Dangling File References
+
+**Detect**: SKILL.md body 提到 `references/X.md` 或 `scripts/Y.py`，但文件不存在；或目录有文件但 body 从未引用。
+**Problem**: Claude 尝试读取/执行不存在的文件会失败；孤立文件浪费 context 预算。
+**Fix**: 创建缺失文件，或移除/更新 body 中的引用。确保 body 至少引用一个目录内文件。

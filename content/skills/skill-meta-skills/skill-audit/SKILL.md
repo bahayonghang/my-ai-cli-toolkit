@@ -26,7 +26,7 @@ Audit the skill at `$ARGUMENTS`.
 
 ## Output
 
-Issues by severity, token budget table (Before/After/Δ), overlap report (if any), optimized SKILL.md.
+Issues by severity, quality score (format/completeness/writing, /24), token budget table (Before/After/Δ), overlap report (if any), optimized SKILL.md.
 
 ## Rules
 

@@ -59,3 +59,15 @@
 - **Check**: Skill description and tags are distinct from sibling skills. Trigger conditions do not overlap with existing skills in the same directory.
 - **Fail**: Description Jaccard similarity ≥ 0.4 with another skill, or ≥ 2 shared tags without clear scope differentiation.
 - **Fix**: Differentiate descriptions with distinct verbs and trigger conditions. Use more specific tags. Consider merging highly overlapping skills.
+
+## 11. Reference Consistency
+
+- **Check**: body 中提到的 references/X 或 scripts/X 路径必须对应真实文件；反之，若目录有文件，body 应至少引用一个。
+- **Fail**: 悬空引用或孤立文件。
+- **Fix**: 删除悬空引用或创建缺失文件；在 body 中引用至少一个目录内文件。
+
+## 12. Content & Metadata Completeness
+
+- **Check**: 主要内容为英文 (≥70% ASCII)。frontmatter 含 license (非占位符)、version 信息、metadata 块 (≥1 子键)。
+- **Fail**: 高比例非 ASCII、缺失 license/version/metadata。
+- **Fix**: 主要内容用英文。补充 license、version、metadata 字段。

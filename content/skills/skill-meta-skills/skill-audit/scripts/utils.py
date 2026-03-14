@@ -80,3 +80,16 @@ def parse_skill_md(skill_path: Path) -> tuple[str, str, str]:
             break
 
     return name, description, content
+
+
+def extract_body_refs(body: str) -> dict[str, set[str]]:
+    """Extract file references to references/ and scripts/ from body text.
+
+    Returns {"references": {stem_names}, "scripts": {stem_names}}.
+    """
+    result: dict[str, set[str]] = {"references": set(), "scripts": set()}
+    for dir_type in ("references", "scripts"):
+        pattern = rf"{dir_type}/([a-zA-Z0-9_][a-zA-Z0-9_.-]*?)\.(?:md|py|sh|json|yaml|yml|txt|csv)"
+        for m in re.finditer(pattern, body):
+            result[dir_type].add(m.group(1).strip())
+    return result

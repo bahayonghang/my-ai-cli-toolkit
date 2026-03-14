@@ -10,7 +10,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from scripts.utils import FRONTMATTER_PATTERN, estimate_tokens, parse_frontmatter
+from scripts.utils import (
+    FRONTMATTER_PATTERN,
+    estimate_tokens,
+    extract_body_refs,
+    parse_frontmatter,
+)
 
 OFFICIAL_FIELDS = {
     "name", "description", "argument-hint", "disable-model-invocation",
@@ -30,6 +35,184 @@ def _str_field(fields: dict, key: str, default: str = "") -> str:
     if isinstance(val, list):
         return ", ".join(val)
     return val  # type: ignore[return-value]
+
+
+def _check_english_content(content: str) -> bool:
+    """Check if content is primarily English (>=70% ASCII in first 2000 chars)."""
+    sample = content[:2000]
+    if not sample:
+        return True
+    non_ascii = sum(1 for c in sample if ord(c) > 127)
+    return (1 - non_ascii / len(sample)) >= 0.70
+
+
+def _has_metadata_block(fields: dict) -> bool:
+    """Check if metadata field contains at least one sub-key."""
+    meta = fields.get("metadata")
+    if meta is None:
+        return False
+    if isinstance(meta, str):
+        return bool(meta.strip())
+    if isinstance(meta, list):
+        return len(meta) > 0
+    return bool(meta)
+
+
+def _license_not_placeholder(fields: dict) -> bool:
+    """Check if license value is not a placeholder like Unknown/TBD/N/A."""
+    raw = fields.get("license")
+    if raw is None:
+        return False
+    s = str(raw).strip()
+    if not s:
+        return False
+    placeholders = {"unknown", "n/a", "na", "none", "null", "tbd", "todo", "-"}
+    return s.lower() not in placeholders
+
+
+def _has_version_info(fields: dict, body: str) -> bool:
+    """Check if frontmatter or body contains version information."""
+    for key in ("version", "skill-version", "data-version"):
+        if fields.get(key):
+            return True
+    # Check metadata string for version info
+    meta = fields.get("metadata")
+    if isinstance(meta, str) and "version" in meta.lower():
+        return True
+    if isinstance(meta, list) and any("version" in str(item).lower() for item in meta):
+        return True
+    # Check body for version patterns
+    if re.search(r"\bv(?:ersion)?\s*[:\s]\s*\d+(?:\.\d+)*", body, re.IGNORECASE):
+        return True
+    return bool(re.search(r"(?:^|\s)v\d+(?:\.\d+)+(?:\s|[,.)]|$)", body))
+
+
+def _compute_score(report: dict, fields: dict, body: str, content: str, skill_dir: Path) -> dict:
+    """Compute 3-dimension quality score (24 pts max).
+
+    Format (8): deduct from 8 per format violation.
+    Completeness (8): add 1 per completeness item present.
+    Writing (8): add 1 per writing quality item satisfied.
+    """
+    issues = report["issues"]
+    structure = report["structure"]
+
+    def _has_issue(
+        category: str | None = None,
+        message_contains: str | None = None,
+        categories: set[str] | None = None,
+    ) -> bool:
+        for iss in issues:
+            cat = iss["category"]
+            if category and cat != category:
+                if not categories or cat not in categories:
+                    continue
+            elif categories and cat not in categories:
+                continue
+            if message_contains and message_contains.lower() not in iss["message"].lower():
+                continue
+            return True
+        return False
+
+    # --- Format (8 pts, deduct from 8) ---
+    format_checks = [
+        ("SKILL.md exists", structure.get("has_skill_md", False)),
+        ("Directory name format", not _has_issue(category="name", message_contains="Invalid")),
+        ("No README.md", not _has_issue(category="structure", message_contains="README")),
+        (
+            "YAML frontmatter present",
+            not _has_issue(category="frontmatter", message_contains="not found"),
+        ),
+        (
+            "name matches directory",
+            not _has_issue(category="name", message_contains="does not match"),
+        ),
+        (
+            "description field present",
+            "description" not in report["frontmatter"].get("missing_required", []),
+        ),
+        (
+            "description under 1024 chars",
+            not _has_issue(category="description", message_contains="1024"),
+        ),
+        (
+            "description no XML brackets",
+            not _has_issue(categories={"description", "security"}, message_contains="XML"),
+        ),
+    ]
+    format_details = []
+    format_score = 8
+    for label, passed in format_checks:
+        format_details.append({"item": label, "pass": passed})
+        if not passed:
+            format_score -= 1
+
+    # --- Completeness (8 pts, add from 0) ---
+    compat = fields.get("compatibility")
+    compat_ok = bool(compat) and (not isinstance(compat, str) or len(compat) <= 500)
+
+    comp_checks = [
+        ("license field", "license" in fields),
+        ("compatibility field (<=500 chars)", compat_ok),
+        ("metadata block", _has_metadata_block(fields)),
+        ("scripts/ directory", structure.get("has_scripts", False)),
+        ("references/ directory", structure.get("has_references", False)),
+        ("assets/ directory", structure.get("has_assets", False)),
+        ("body has examples", not _has_issue(category="workflow", message_contains="examples")),
+        (
+            "body has error handling",
+            not _has_issue(category="workflow", message_contains="error handling"),
+        ),
+    ]
+    comp_details = []
+    comp_score = 0
+    for label, passed in comp_checks:
+        comp_details.append({"item": label, "pass": passed})
+        if passed:
+            comp_score += 1
+
+    # --- Writing (8 pts, add from 0) ---
+    desc = _str_field(fields, "description")
+    desc_lower = desc.lower() if desc else ""
+    vague = bool(re.search(r"\b(helps? with|assists? with|supports? .{0,20}\.)", desc_lower))
+    trigger_pat = r"\buse\s+when\b|\btrigger|\bactivate|\binvoke\s+when\b|触发|适用于|当.*时"
+    has_trigger = bool(re.search(trigger_pat, desc, re.IGNORECASE)) if desc else False
+    tokens_body = report["tokens"].get("skill_md_body", 0)
+    has_refs_or_scripts = (
+        structure.get("has_references", False) or structure.get("has_scripts", False)
+    )
+    progressive = tokens_body <= 500 and has_refs_or_scripts
+
+    writing_checks = [
+        ("description task boundary", len(desc) >= 40 and not (vague and len(desc) < 80)),
+        ("description trigger", has_trigger),
+        ("progressive disclosure", progressive),
+        ("content primarily English", _check_english_content(content)),
+        ("forward ref consistency", not _has_issue(message_contains="Dangling")),
+        ("reverse ref consistency", not _has_issue(message_contains="does not reference")),
+        ("license not placeholder", _license_not_placeholder(fields)),
+        ("version info", _has_version_info(fields, body)),
+    ]
+    writing_details = []
+    writing_score = 0
+    for label, passed in writing_checks:
+        writing_details.append({"item": label, "pass": passed})
+        if passed:
+            writing_score += 1
+
+    total = format_score + comp_score + writing_score
+    return {
+        "format": format_score,
+        "completeness": comp_score,
+        "writing": writing_score,
+        "total": total,
+        "max": 24,
+        "details": {
+            "format": format_details,
+            "completeness": comp_details,
+            "writing": writing_details,
+        },
+    }
 
 
 def analyze(skill_path: str) -> dict:
@@ -367,7 +550,10 @@ def analyze(skill_path: str) -> dict:
 
     # Voice quality checks
     first_person = [r"\bI\'ll\b", r"\bI will\b", r"\bwe should\b", r"我(们)?\s*[会打算要想]"]
-    passive_voice = [r"\bis\s+\w+ed\b", r"\bare\s+\w+ed\b", r"\bshould be\b", r"\bit would\b", r"被.*[处理执行完成]", r"将.*被"]
+    passive_voice = [
+        r"\bis\s+\w+ed\b", r"\bare\s+\w+ed\b", r"\bshould be\b",
+        r"\bit would\b", r"被.*[处理执行完成]", r"将.*被",
+    ]
     for pat in first_person:
         if re.search(pat, body, re.IGNORECASE):
             report["issues"].append({
@@ -446,7 +632,7 @@ def analyze(skill_path: str) -> dict:
     if tokens_body > 100:
         has_examples = bool(re.search(
             r"^#{1,3}\s*(Examples?|Usage)", body, re.MULTILINE | re.IGNORECASE,
-        ))
+        )) or bool(re.findall(r"```[\s\S]*?```", body))
         if not has_examples:
             report["issues"].append({
                 "severity": "optional",
@@ -468,6 +654,89 @@ def analyze(skill_path: str) -> dict:
                 "fix": "Add a ## Troubleshooting section for common error cases.",
                 "pattern_id": "P10",
             })
+
+    # Dimension 11: Reference consistency
+    body_refs = extract_body_refs(body)
+    for dir_type in ("references", "scripts"):
+        dir_path = skill_dir / dir_type
+        for stem in sorted(body_refs[dir_type]):
+            if dir_path.is_dir():
+                candidates = list(dir_path.glob(f"{stem}.*"))
+                if not any(p.is_file() for p in candidates):
+                    report["issues"].append({
+                        "severity": "recommended",
+                        "category": "consistency",
+                        "message": f"Dangling reference: {dir_type}/{stem}.* not found",
+                        "fix": f"Create the missing file in {dir_type}/ or update the reference.",
+                        "pattern_id": "P16",
+                    })
+            else:
+                report["issues"].append({
+                    "severity": "recommended",
+                    "category": "consistency",
+                    "message": (
+                        f"Dangling reference: {dir_type}/ directory does not exist"
+                        f" (body references {dir_type}/{stem})"
+                    ),
+                    "fix": f"Create {dir_type}/ with the referenced file, or remove the reference.",
+                    "pattern_id": "P16",
+                })
+
+    for dir_type in ("references", "scripts"):
+        dir_path = skill_dir / dir_type
+        if dir_path.is_dir():
+            existing = [p for p in dir_path.iterdir() if p.is_file()]
+            if existing and not body_refs[dir_type]:
+                report["issues"].append({
+                    "severity": "optional",
+                    "category": "consistency",
+                    "message": f"{dir_type}/ has files but body does not reference any",
+                    "fix": f"Reference at least one file from {dir_type}/ in the SKILL.md body.",
+                    "pattern_id": "P16",
+                })
+
+    # Dimension 12: Content & metadata completeness
+    if not _check_english_content(content):
+        report["issues"].append({
+            "severity": "recommended",
+            "category": "writing",
+            "message": "Content is not primarily in English (<70% ASCII in sample)",
+            "fix": "Write primary content in English for broader accessibility.",
+        })
+
+    if "license" not in fields:
+        report["issues"].append({
+            "severity": "optional",
+            "category": "completeness",
+            "message": "No license field in frontmatter",
+            "fix": "Add a license field (e.g., license: MIT) to frontmatter.",
+        })
+    elif not _license_not_placeholder(fields):
+        report["issues"].append({
+            "severity": "optional",
+            "category": "completeness",
+            "message": f"License is a placeholder value: '{_str_field(fields, 'license')}'",
+            "fix": "Replace placeholder with an actual license (e.g., MIT, Apache-2.0).",
+        })
+
+    if not _has_version_info(fields, body):
+        report["issues"].append({
+            "severity": "optional",
+            "category": "completeness",
+            "message": "No version information found in frontmatter or body",
+            "fix": "Add version info in metadata (e.g., metadata: version: '1.0') or body.",
+        })
+
+    if not _has_metadata_block(fields):
+        report["issues"].append({
+            "severity": "optional",
+            "category": "completeness",
+            "message": "No metadata block or metadata is empty",
+            "fix": "Add metadata block with at least one sub-key (e.g., category, tags, version).",
+        })
+
+    # Compute quality score
+    report["score"] = _compute_score(report, fields, body, content, skill_dir)
 
     # Sort issues by severity
     severity_order = {"critical": 0, "recommended": 1, "optional": 2}
