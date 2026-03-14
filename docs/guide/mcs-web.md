@@ -16,8 +16,8 @@ just web
 
 This starts:
 
-- backend at `http://127.0.0.1:13242`
-- UI at `http://localhost:5173`
+- backend at `http://127.0.0.1:23242`
+- UI at `http://localhost:15173`
 
 ## Build and run production mode
 

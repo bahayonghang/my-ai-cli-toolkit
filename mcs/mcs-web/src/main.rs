@@ -67,7 +67,7 @@ async fn main() {
     // Build shared state
     let app_state = AppState::new(project_root, platforms);
 
-    // CORS layer (permissive for dev UI on :5173)
+    // CORS layer (permissive for dev UI on :15173)
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
@@ -120,9 +120,9 @@ async fn main() {
 
     // Start server
     let port: u16 = std::env::var("MCS_WEB_PORT")
-        .unwrap_or_else(|_| "13242".to_string())
+        .unwrap_or_else(|_| "23242".to_string())
         .parse()
-        .unwrap_or(13242);
+        .unwrap_or(23242);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
@@ -153,7 +153,7 @@ async fn main() {
         });
     } else {
         tracing::info!("UI not built (dev mode) - not opening browser automatically");
-        tracing::info!("Please open http://localhost:5173/ manually to access the UI");
+        tracing::info!("Please open http://localhost:15173/ manually to access the UI");
     }
 
     axum::serve(listener, app).await.unwrap();

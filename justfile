@@ -18,8 +18,8 @@ rustc_cmd := "rustc"
 # ============ 跨平台执行指令 ============
 
 kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; exit 0\"" } else { "pkill -x mcs-web || true" }
-kill_backend_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$procIds = @(Get-NetTCPConnection -LocalPort 13242 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); foreach ($procId in $procIds) { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:13242 2>/dev/null | sort -u)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
-kill_ui_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$procIds = @(Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); foreach ($procId in $procIds) { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:5173 2>/dev/null | sort -u)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
+kill_backend_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$procIds = @(Get-NetTCPConnection -LocalPort 23242 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); foreach ($procId in $procIds) { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:23242 2>/dev/null | sort -u)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
+kill_ui_port_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command '$procIds = @(Get-NetTCPConnection -LocalPort 15173 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); foreach ($procId in $procIds) { Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue }; exit 0'" } else { "pids=\"$(lsof -t -i:15173 2>/dev/null | sort -u)\"; if [ -n \"$pids\" ]; then kill -9 $pids; fi" }
 
 # 默认任务：交互式选择
 default:
@@ -70,8 +70,8 @@ help:
     @echo "🌐 MCS Web："
     @echo "  just mcs-web-install        - 安装 MCS Web UI 依赖"
     @echo "  just mcs-web-ci-install     - 强制执行 npm ci"
-    @echo "  just mcs-web-server         - 启动后端服务器 (port 13242)"
-    @echo "  just mcs-web-dev            - 启动 UI 开发服务器 (port 5173)"
+    @echo "  just mcs-web-server         - 启动后端服务器 (port 23242)"
+    @echo "  just mcs-web-dev            - 启动 UI 开发服务器 (port 15173)"
     @echo "  just mcs-web-stop           - 停止 Web 后端与 UI 开发服务"
     @echo "  just mcs-web-dev-all        - 启动 UI + 后端开发服务器"
     @echo "  just mcs-web-rebuild-dev-all - 清理后重建并启动开发环境"
@@ -169,19 +169,19 @@ mcs-web-dev:
 # 同时启动 MCS Web UI 和后端开发服务器
 mcs-web-dev-all:
     @{{ just_cmd }} mcs-web-stop
-    @echo "Checking whether port 13242 is occupied by mcs-web..."
+    @echo "Checking whether port 23242 is occupied by mcs-web..."
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  🚀 启动 MCS Web 开发服务器"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "  UI 页面: http://localhost:5173/"
-    @echo "  后端 API: http://127.0.0.1:13242"
+    @echo "  UI 页面: http://localhost:15173/"
+    @echo "  后端 API: http://127.0.0.1:23242"
     @echo ""
-    @echo "  提示: 启动完成后请打开 http://localhost:5173/ 访问技能管理器"
+    @echo "  提示: 启动完成后请打开 http://localhost:15173/ 访问技能管理器"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} concurrently -k -n "backend,ui" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && {{ cargo_cmd }} run --bin mcs-web" "{{ npx_cmd }} wait-on http://127.0.0.1:13242 --timeout 60000 && {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev"
+    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} concurrently -k -n "backend,ui" -c "bgBlue.bold,bgMagenta.bold" "cd ../.. && {{ cargo_cmd }} run --bin mcs-web" "{{ npx_cmd }} wait-on http://127.0.0.1:23242 --timeout 60000 && {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run dev"
 
 # 强制重新编译前后端并启动 MCS Web 开发服务器
 mcs-web-rebuild-dev-all: mcs-web-install
