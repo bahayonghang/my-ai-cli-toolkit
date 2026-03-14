@@ -249,6 +249,8 @@ pub struct NpxSkillsInstallItemRequest {
     pub package_ref: String,
     #[serde(default)]
     pub skill_flags: Vec<String>,
+    #[serde(default)]
+    pub catalog_entry_id: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -279,10 +281,19 @@ pub struct NpxSkillsMaintenanceJobRequest {
 
 #[derive(Serialize)]
 pub struct NpxSkillsCatalogItemDto {
+    pub id: String,
     pub name: String,
-    pub repo: String,
+    pub package_ref: String,
     pub skill_flag: Option<String>,
-    pub category: Option<String>,
+    pub group_id: String,
+    pub group_label: String,
+    pub group_order: i32,
+    pub category_id: String,
+    pub category_label: String,
+    pub category_order: i32,
+    pub tags: Vec<String>,
+    pub install_kind: String,
+    pub install_provider: String,
     pub description: Option<String>,
     pub stars: Option<u8>,
     pub project_only: bool,
@@ -299,14 +310,23 @@ pub enum NpxInstalledSkillSource {
 
 #[derive(Serialize)]
 pub struct NpxInstalledSkillDto {
+    pub id: String,
     pub name: String,
-    pub repo: Option<String>,
+    pub package_ref: String,
+    pub skill_flag: Option<String>,
+    pub group_id: String,
+    pub group_label: String,
+    pub group_order: i32,
+    pub category_id: String,
+    pub category_label: String,
+    pub category_order: i32,
+    pub tags: Vec<String>,
+    pub install_kind: String,
+    pub install_provider: String,
     pub description: Option<String>,
-    pub category: Option<String>,
     pub source: NpxInstalledSkillSource,
     pub manageable: bool,
-    pub package_ref: Option<String>,
-    pub skill_flags: Option<Vec<String>>,
+    pub skill_flags: Vec<String>,
 }
 
 #[derive(Serialize)]

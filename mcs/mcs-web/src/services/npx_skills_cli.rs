@@ -174,6 +174,7 @@ mod tests {
             &NpxSkillsInstallItemRequest {
                 package_ref: "vercel-labs/agent-skills".into(),
                 skill_flags: vec!["find-skills".into(), "review".into()],
+                catalog_entry_id: Some("catalog-find-skills".into()),
             },
             &NpxSkillsCliConfigDto {
                 agents: vec!["codex".into(), "claude-code".into()],
@@ -220,6 +221,7 @@ mod tests {
             &NpxSkillsInstallItemRequest {
                 package_ref: "   ".into(),
                 skill_flags: vec![],
+                catalog_entry_id: None,
             },
             &NpxSkillsCliConfigDto::default(),
             true,

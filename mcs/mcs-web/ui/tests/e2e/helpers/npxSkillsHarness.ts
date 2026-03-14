@@ -7,14 +7,23 @@ type EventPlan = {
 };
 
 type ManagedSkill = {
+  id: string;
   name: string;
-  repo: string | null;
+  package_ref: string;
+  skill_flag: string | null;
+  group_id: string;
+  group_label: string;
+  group_order: number;
+  category_id: string;
+  category_label: string;
+  category_order: number;
+  tags: string[];
+  install_kind: string;
+  install_provider: string;
   description: string | null;
-  category: string | null;
   source: "managed" | "filesystem_unmanaged";
   manageable: boolean;
-  package_ref: string | null;
-  skill_flags: string[] | null;
+  skill_flags: string[];
 };
 
 type InstallTarget = {
@@ -28,7 +37,7 @@ type NpxSkillsCliConfig = {
 };
 
 type InstallJobRequest = {
-  items: Array<{ package_ref: string; skill_flags?: string[] }>;
+  items: Array<{ package_ref: string; skill_flags?: string[]; catalog_entry_id?: string | null }>;
   config?: NpxSkillsCliConfig;
   install_target?: InstallTarget;
 };
@@ -89,7 +98,9 @@ function resolvedPathsForTarget(target: InstallTarget) {
 async function clickFirstVisible(dialog: Locator, names: RegExp[]) {
   for (const name of names) {
     const button = dialog.getByRole("button", { name }).first();
-    if (await button.isVisible().catch(() => false)) {
+    const isVisible = await button.isVisible().catch(() => false);
+    const isEnabled = await button.isEnabled().catch(() => false);
+    if (isVisible && isEnabled) {
       await button.click();
       return true;
     }
@@ -219,24 +230,42 @@ export async function maybeSubmitNpxSkillsRunDialog(
 export async function mockNpxSkillsApi(page: Page) {
   let installedItems: ManagedSkill[] = [
     {
+      id: "find-skills",
       name: "find-skills",
-      repo: "vercel-labs/agent-skills",
+      package_ref: "vercel-labs/agent-skills",
+      skill_flag: "find-skills",
+      group_id: "engineering",
+      group_label: "Engineering",
+      group_order: 10,
+      category_id: "discovery",
+      category_label: "Discovery",
+      category_order: 10,
+      tags: ["search"],
+      install_kind: "skills_cli",
+      install_provider: "vercel",
       description: "Find skills quickly",
-      category: "discovery",
       source: "managed",
       manageable: true,
-      package_ref: "vercel-labs/agent-skills",
       skill_flags: ["find-skills"],
     },
     {
+      id: "legacy-unmanaged",
       name: "legacy-unmanaged",
-      repo: null,
+      package_ref: "legacy-unmanaged",
+      skill_flag: null,
+      group_id: "uncategorized",
+      group_label: "Uncategorized",
+      group_order: 999,
+      category_id: "uncategorized",
+      category_label: "Uncategorized",
+      category_order: 999,
+      tags: [],
+      install_kind: "skills_cli",
+      install_provider: "unknown",
       description: "Found on filesystem only",
-      category: null,
       source: "filesystem_unmanaged",
       manageable: false,
-      package_ref: null,
-      skill_flags: null,
+      skill_flags: [],
     },
   ];
   const requests: NpxSkillsCapturedRequests = {
@@ -268,10 +297,19 @@ export async function mockNpxSkillsApi(page: Page) {
   await page.route("**/api/platforms/claude/npx-skills/catalog**", (route) =>
     jsonResponse(route, [
       {
+        id: "find-skills",
         name: "find-skills",
-        repo: "vercel-labs/agent-skills",
+        package_ref: "vercel-labs/agent-skills",
         skill_flag: "find-skills",
-        category: "discovery",
+        group_id: "engineering",
+        group_label: "Engineering",
+        group_order: 10,
+        category_id: "discovery",
+        category_label: "Discovery",
+        category_order: 10,
+        tags: ["search"],
+        install_kind: "skills_cli",
+        install_provider: "vercel",
         description: "Find skills quickly",
         stars: 5,
         project_only: false,
@@ -279,10 +317,19 @@ export async function mockNpxSkillsApi(page: Page) {
         install_status: "installed",
       },
       {
+        id: "review",
         name: "review",
-        repo: "vercel-labs/agent-skills",
+        package_ref: "vercel-labs/agent-skills",
         skill_flag: "review",
-        category: "quality",
+        group_id: "engineering",
+        group_label: "Engineering",
+        group_order: 10,
+        category_id: "quality",
+        category_label: "Quality",
+        category_order: 20,
+        tags: ["review"],
+        install_kind: "skills_cli",
+        install_provider: "vercel",
         description: "Review code and changes",
         stars: 5,
         project_only: false,
@@ -301,13 +348,22 @@ export async function mockNpxSkillsApi(page: Page) {
     installedItems = [
       ...installedItems,
       {
+        id: "review",
         name: "review",
-        repo: "vercel-labs/agent-skills",
+        package_ref: "vercel-labs/agent-skills",
+        skill_flag: "review",
+        group_id: "engineering",
+        group_label: "Engineering",
+        group_order: 10,
+        category_id: "quality",
+        category_label: "Quality",
+        category_order: 20,
+        tags: ["review"],
+        install_kind: "skills_cli",
+        install_provider: "vercel",
         description: "Review code and changes",
-        category: "quality",
         source: "managed",
         manageable: true,
-        package_ref: "vercel-labs/agent-skills",
         skill_flags: ["review"],
       },
     ];

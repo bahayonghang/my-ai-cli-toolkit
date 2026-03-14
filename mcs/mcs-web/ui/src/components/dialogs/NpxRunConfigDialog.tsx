@@ -60,8 +60,8 @@ export function NpxRunConfigDialog({
   agentOptions,
   defaultConfig,
   recentProjects,
-  packageRef = "",
-  skillFlagsInput = "",
+  packageRef,
+  skillFlagsInput,
   onClose,
   onConfirm,
 }: Props) {
@@ -70,8 +70,8 @@ export function NpxRunConfigDialog({
   const [agents, setAgents] = useState<string[]>(defaultConfig.agents);
   const [cliMode, setCliMode] = useState<NpxSkillsCliMode>(defaultConfig.cliMode);
   const [installTarget, setInstallTarget] = useState<InstallTarget>(defaultConfig.installTarget);
-  const [draftPackageRef, setDraftPackageRef] = useState(packageRef);
-  const [draftSkillFlagsInput, setDraftSkillFlagsInput] = useState(skillFlagsInput);
+  const [draftPackageRef, setDraftPackageRef] = useState(packageRef ?? "");
+  const [draftSkillFlagsInput, setDraftSkillFlagsInput] = useState(skillFlagsInput ?? "");
   const [pickingFolder, setPickingFolder] = useState(false);
 
   useEffect(() => {
@@ -81,8 +81,8 @@ export function NpxRunConfigDialog({
     setAgents(defaultConfig.agents);
     setCliMode(defaultConfig.cliMode);
     setInstallTarget(defaultConfig.installTarget);
-    setDraftPackageRef(packageRef);
-    setDraftSkillFlagsInput(skillFlagsInput);
+    setDraftPackageRef(packageRef ?? "");
+    setDraftSkillFlagsInput(skillFlagsInput ?? "");
   }, [defaultConfig, open, packageRef, skillFlagsInput]);
 
   const needsPackageRef = packageRef !== undefined;

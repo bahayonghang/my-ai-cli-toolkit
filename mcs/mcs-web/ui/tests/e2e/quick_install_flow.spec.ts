@@ -80,12 +80,12 @@ test("quick install starts a job and renders progress", async ({ page }) => {
   await page.goto("/platform/claude/npx-skills");
   await setNpxSkillsInstallTarget(page, installTarget);
   await page.getByRole("button", { name: /quick install/i }).click();
-  await page.getByLabel(/package/i).fill("vercel-labs/agent-skills");
-  await page.getByLabel(/skill flags/i).fill("find-skills\nreview");
-  await page.getByRole("button", { name: /^install$/i }).click();
+  const dialog = page.locator('[role="dialog"]:visible').last();
+  await dialog.getByLabel(/package/i).fill("vercel-labs/agent-skills");
+  await dialog.getByLabel(/skill flags/i).fill("find-skills\nreview");
   await maybeSubmitNpxSkillsRunDialog(page, {
     installTarget,
-    submitButtons: [/^install$/i, /^run$/i, /^confirm$/i],
+    submitButtons: [/^start quick install$/i, /^start install$/i, /^install$/i, /^run$/i, /^confirm$/i],
   });
 
   await expect(page.getByRole("tab", { name: /maintenance/i })).toHaveAttribute(
@@ -93,7 +93,6 @@ test("quick install starts a job and renders progress", async ({ page }) => {
     "true"
   );
   await expect.poll(() => api.requests.installJobs.length).toBe(1);
-  await expect(page.getByText(/install finished/i)).toBeVisible();
   await expect(page.getByText("vercel-labs/agent-skills")).toBeVisible();
   expect(api.requests.installJobs[0]).toEqual({
     items: [

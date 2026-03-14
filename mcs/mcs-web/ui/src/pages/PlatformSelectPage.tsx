@@ -115,8 +115,8 @@ export default function PlatformSelectPage() {
           </Alert>
         )}
 
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, md: 4 }}>
+        <Grid container spacing={2} sx={{ mb: 4, alignItems: "stretch" }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
             <ShortcutCard
               title={t("platformSelect.unifiedInstallLabel")}
               description={t("platformSelect.unifiedInstallTitle")}
@@ -124,7 +124,7 @@ export default function PlatformSelectPage() {
               onClick={() => navigateDeferred("/install-hub")}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
             <ShortcutCard
               title={t("platformSelect.dashboardLabel")}
               description={t("platformSelect.dashboardTitle")}
@@ -132,7 +132,7 @@ export default function PlatformSelectPage() {
               onClick={() => navigateDeferred("/dashboard")}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
             <ShortcutCard
               title={t("platformSelect.npxSkillsLabel")}
               description={t("platformSelect.npxSkillsTitle")}
@@ -224,9 +224,19 @@ function ShortcutCard({
   onClick: () => void;
 }) {
   return (
-    <Card sx={{ opacity: disabled ? 0.5 : 1 }}>
-      <CardActionArea onClick={onClick} disabled={disabled} sx={{ height: "100%" }}>
-        <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, p: 3 }}>
+    <Card
+      sx={{
+        opacity: disabled ? 0.5 : 1,
+        flex: 1,
+        minWidth: 0,
+      }}
+    >
+      <CardActionArea
+        onClick={onClick}
+        disabled={disabled}
+        sx={{ height: "100%", minHeight: 128, alignItems: "stretch" }}
+      >
+        <CardContent sx={{ height: "100%", display: "flex", alignItems: "center", gap: 2, p: 3 }}>
           <Box
             sx={{
               width: 48,
@@ -240,7 +250,7 @@ function ShortcutCard({
           >
             {icon}
           </Box>
-          <Box sx={{ minWidth: 0 }}>
+          <Box sx={{ minWidth: 0, display: "grid", alignContent: "center" }}>
             <Typography variant="h6">{title}</Typography>
             <Typography variant="body2" color="text.secondary">
               {description}

@@ -12,7 +12,9 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::sync::{RwLock, Semaphore, broadcast};
 use tokio_stream::{StreamExt as TokioStreamExt, wrappers::BroadcastStream};
 
-use mcs_core::core::external_skills::ExternalSkillEntry;
+use mcs_core::core::external_skills::{
+    EXTERNAL_SKILLS_KIND_SKILLS_CLI, ResolvedExternalSkillEntry, uncategorized_skill,
+};
 use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 use mcs_core::model::InstallStatus;
 
@@ -109,6 +111,7 @@ enum ManagedUpdate {
     Install {
         package_ref: String,
         skill_flags: Vec<String>,
+        catalog_entry_id: Option<String>,
         agents: Vec<String>,
     },
     Remove {
@@ -121,6 +124,8 @@ enum ManagedUpdate {
 pub struct NpxSkillsCatalogQuery {
     pub search: Option<String>,
     pub installed_only: Option<bool>,
+    pub group_id: Option<String>,
+    pub category_id: Option<String>,
     #[serde(flatten)]
     pub install_target: InstallTargetQuery,
 }
@@ -128,6 +133,8 @@ pub struct NpxSkillsCatalogQuery {
 #[derive(Deserialize, Default)]
 pub struct NpxSkillsInstalledQuery {
     pub search: Option<String>,
+    pub group_id: Option<String>,
+    pub category_id: Option<String>,
     #[serde(flatten)]
     pub install_target: InstallTargetQuery,
 }
@@ -206,7 +213,12 @@ pub async fn catalog(
     )
     .map_err(AppError::BadRequest)?;
 
-    let catalog_entries = filtered_catalog_entries(state.external_skill_catalog().await);
+    let catalog_entries = resolved_catalog_entries(
+        state
+            .external_skill_catalog()
+            .await
+            .map_err(AppError::Internal)?,
+    )?;
     let project_root = state.project_root().await;
     let installed_names = load_entries(&project_root, &resolved.platform.skills_path())
         .await?
@@ -221,6 +233,16 @@ pub async fn catalog(
             let dto = to_catalog_dto(&entry, &installed_names);
             if let Some(ref search) = search
                 && !catalog_item_matches(&dto, search)
+            {
+                return None;
+            }
+            if let Some(ref group_id) = query.group_id
+                && dto.group_id != *group_id
+            {
+                return None;
+            }
+            if let Some(ref category_id) = query.category_id
+                && dto.category_id != *category_id
             {
                 return None;
             }
@@ -255,9 +277,20 @@ pub async fn installed(
     .map_err(AppError::BadRequest)?;
 
     let project_root = state.project_root().await;
-    let entries = filtered_catalog_entries(state.external_skill_catalog().await);
-    let entry_map = entries
-        .into_iter()
+    let entries = resolved_catalog_entries(
+        state
+            .external_skill_catalog()
+            .await
+            .map_err(AppError::Internal)?,
+    )?;
+    let entry_map_by_id = entries
+        .iter()
+        .cloned()
+        .map(|entry| (entry.id.clone(), entry))
+        .collect::<HashMap<_, _>>();
+    let entry_map_by_installed_name = entries
+        .iter()
+        .cloned()
         .map(|entry| (catalog_skill_name(&entry), entry))
         .collect::<HashMap<_, _>>();
     let managed_entries = load_entries(&project_root, &resolved.platform.skills_path()).await?;
@@ -271,19 +304,28 @@ pub async fn installed(
     let mut items_by_name: BTreeMap<String, NpxInstalledSkillDto> = BTreeMap::new();
 
     for entry in managed_entries {
-        let catalog_entry = entry_map.get(&entry.name);
-        let item = NpxInstalledSkillDto {
-            name: entry.name.clone(),
-            repo: Some(entry.package_ref.clone()),
-            description: catalog_entry.and_then(|item| item.description.clone()),
-            category: catalog_entry.and_then(|item| item.category.clone()),
-            source: NpxInstalledSkillSource::Managed,
-            manageable: true,
-            package_ref: Some(entry.package_ref.clone()),
-            skill_flags: Some(entry.skill_flags.clone()),
-        };
+        let resolved_skill =
+            resolve_managed_catalog_entry(&entry, &entry_map_by_id, &entry_map_by_installed_name);
+        let item = to_installed_dto(
+            entry.name.clone(),
+            entry.package_ref.clone(),
+            entry.skill_flags.clone(),
+            NpxInstalledSkillSource::Managed,
+            true,
+            resolved_skill,
+        );
         if let Some(ref search) = search
             && !installed_item_matches(&item, search)
+        {
+            continue;
+        }
+        if let Some(ref group_id) = query.group_id
+            && item.group_id != *group_id
+        {
+            continue;
+        }
+        if let Some(ref category_id) = query.category_id
+            && item.category_id != *category_id
         {
             continue;
         }
@@ -291,19 +333,30 @@ pub async fn installed(
     }
 
     for name in discovered_names.difference(&managed_names) {
-        let catalog_entry = entry_map.get(name);
-        let item = NpxInstalledSkillDto {
-            name: name.clone(),
-            repo: catalog_entry.map(|entry| entry.repo.clone()),
-            description: catalog_entry.and_then(|entry| entry.description.clone()),
-            category: catalog_entry.and_then(|entry| entry.category.clone()),
-            source: NpxInstalledSkillSource::FilesystemUnmanaged,
-            manageable: false,
-            package_ref: None,
-            skill_flags: None,
-        };
+        let resolved_skill = entry_map_by_installed_name.get(name).cloned();
+        let item = to_installed_dto(
+            name.clone(),
+            resolved_skill
+                .as_ref()
+                .map(|entry| entry.package_ref.clone())
+                .unwrap_or_else(|| name.clone()),
+            Vec::new(),
+            NpxInstalledSkillSource::FilesystemUnmanaged,
+            false,
+            resolved_skill,
+        );
         if let Some(ref search) = search
             && !installed_item_matches(&item, search)
+        {
+            continue;
+        }
+        if let Some(ref group_id) = query.group_id
+            && item.group_id != *group_id
+        {
+            continue;
+        }
+        if let Some(ref category_id) = query.category_id
+            && item.category_id != *category_id
         {
             continue;
         }
@@ -353,6 +406,7 @@ pub async fn install_jobs_start(
             managed_update: ManagedUpdate::Install {
                 package_ref: item.package_ref.clone(),
                 skill_flags: item.skill_flags.clone(),
+                catalog_entry_id: item.catalog_entry_id.clone(),
                 agents: body.config.agents.clone(),
             },
         });
@@ -819,23 +873,33 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
     ));
 }
 
-fn filtered_catalog_entries(entries: Vec<ExternalSkillEntry>) -> Vec<ExternalSkillEntry> {
-    entries
-        .into_iter()
-        .filter(|entry| entry.method.eq_ignore_ascii_case("vercel"))
-        .collect()
+fn resolved_catalog_entries(
+    registry: mcs_core::core::external_skills::ExternalSkillsRegistry,
+) -> Result<Vec<ResolvedExternalSkillEntry>, AppError> {
+    registry
+        .resolved_skills_for_kind(EXTERNAL_SKILLS_KIND_SKILLS_CLI)
+        .map_err(|error| AppError::Internal(error.to_string()))
 }
 
 fn to_catalog_dto(
-    entry: &ExternalSkillEntry,
+    entry: &ResolvedExternalSkillEntry,
     installed_names: &HashSet<String>,
 ) -> NpxSkillsCatalogItemDto {
     let installed_name = catalog_skill_name(entry);
     NpxSkillsCatalogItemDto {
+        id: entry.id.clone(),
         name: entry.name.clone(),
-        repo: entry.repo.clone(),
+        package_ref: entry.package_ref.clone(),
         skill_flag: entry.skill_flag.clone(),
-        category: entry.category.clone(),
+        group_id: entry.group_id.clone(),
+        group_label: entry.group_label.clone(),
+        group_order: entry.group_order,
+        category_id: entry.category_id.clone(),
+        category_label: entry.category_label.clone(),
+        category_order: entry.category_order,
+        tags: entry.tags.clone(),
+        install_kind: entry.install_kind.clone(),
+        install_provider: entry.install_provider.clone(),
         description: entry.description.clone(),
         stars: entry.stars,
         project_only: entry.project_only,
@@ -848,7 +912,60 @@ fn to_catalog_dto(
     }
 }
 
-fn catalog_skill_name(entry: &ExternalSkillEntry) -> String {
+fn to_installed_dto(
+    name: String,
+    package_ref: String,
+    skill_flags: Vec<String>,
+    source: NpxInstalledSkillSource,
+    manageable: bool,
+    resolved_skill: Option<ResolvedExternalSkillEntry>,
+) -> NpxInstalledSkillDto {
+    let resolved = resolved_skill.unwrap_or_else(|| {
+        uncategorized_skill(
+            name.clone(),
+            name.clone(),
+            None,
+            package_ref.clone(),
+            skill_flags.first().cloned(),
+        )
+    });
+
+    NpxInstalledSkillDto {
+        id: resolved.id,
+        name,
+        package_ref,
+        skill_flag: resolved.skill_flag,
+        group_id: resolved.group_id,
+        group_label: resolved.group_label,
+        group_order: resolved.group_order,
+        category_id: resolved.category_id,
+        category_label: resolved.category_label,
+        category_order: resolved.category_order,
+        tags: resolved.tags,
+        install_kind: resolved.install_kind,
+        install_provider: resolved.install_provider,
+        description: resolved.description,
+        source,
+        manageable,
+        skill_flags,
+    }
+}
+
+fn resolve_managed_catalog_entry(
+    entry: &ManagedInventoryEntry,
+    entry_map_by_id: &HashMap<String, ResolvedExternalSkillEntry>,
+    entry_map_by_installed_name: &HashMap<String, ResolvedExternalSkillEntry>,
+) -> Option<ResolvedExternalSkillEntry> {
+    if let Some(catalog_entry_id) = &entry.catalog_entry_id
+        && let Some(resolved) = entry_map_by_id.get(catalog_entry_id)
+    {
+        return Some(resolved.clone());
+    }
+
+    entry_map_by_installed_name.get(&entry.name).cloned()
+}
+
+fn catalog_skill_name(entry: &ResolvedExternalSkillEntry) -> String {
     entry
         .skill_flag
         .clone()
@@ -857,39 +974,36 @@ fn catalog_skill_name(entry: &ExternalSkillEntry) -> String {
 
 fn catalog_item_matches(item: &NpxSkillsCatalogItemDto, search: &str) -> bool {
     item.name.to_lowercase().contains(search)
-        || item.repo.to_lowercase().contains(search)
+        || item.package_ref.to_lowercase().contains(search)
         || item
             .description
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
-        || item
-            .category
-            .as_ref()
-            .is_some_and(|value| value.to_lowercase().contains(search))
+        || item.group_label.to_lowercase().contains(search)
+        || item.category_label.to_lowercase().contains(search)
         || item
             .usage
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
+        || item
+            .tags
+            .iter()
+            .any(|tag| tag.to_lowercase().contains(search))
 }
 
 fn installed_item_matches(item: &NpxInstalledSkillDto, search: &str) -> bool {
     item.name.to_lowercase().contains(search)
-        || item
-            .package_ref
-            .as_ref()
-            .is_some_and(|value| value.to_lowercase().contains(search))
-        || item
-            .repo
-            .as_ref()
-            .is_some_and(|value| value.to_lowercase().contains(search))
+        || item.package_ref.to_lowercase().contains(search)
         || item
             .description
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
+        || item.group_label.to_lowercase().contains(search)
+        || item.category_label.to_lowercase().contains(search)
         || item
-            .category
-            .as_ref()
-            .is_some_and(|value| value.to_lowercase().contains(search))
+            .tags
+            .iter()
+            .any(|tag| tag.to_lowercase().contains(search))
 }
 
 fn normalize_install_items(
@@ -909,6 +1023,7 @@ fn normalize_install_items(
                 .map(|flag| flag.trim().to_string())
                 .filter(|flag| !flag.is_empty())
                 .collect(),
+            catalog_entry_id: item.catalog_entry_id,
         });
     }
 
@@ -968,6 +1083,7 @@ async fn apply_managed_update(
         ManagedUpdate::Install {
             package_ref,
             skill_flags,
+            catalog_entry_id,
             agents,
         } => {
             let Some(before_names) = before_names else {
@@ -985,6 +1101,7 @@ async fn apply_managed_update(
                 .map(|name| ManagedInventoryEntry {
                     name: name.clone(),
                     package_ref: package_ref.clone(),
+                    catalog_entry_id: catalog_entry_id.clone(),
                     skill_flags: if skill_flags.is_empty() {
                         Vec::new()
                     } else if skill_flags.iter().any(|flag| flag == &name) {
@@ -1163,34 +1280,49 @@ fn app_error_message(error: &AppError) -> String {
 mod tests {
     use super::*;
 
-    fn entry(name: &str, method: &str, skill_flag: Option<&str>) -> ExternalSkillEntry {
-        ExternalSkillEntry {
+    fn entry(
+        name: &str,
+        provider: &str,
+        skill_flag: Option<&str>,
+        category_id: &str,
+    ) -> ResolvedExternalSkillEntry {
+        ResolvedExternalSkillEntry {
+            id: format!("{name}-id"),
             name: name.to_string(),
-            repo: format!("owner/{name}"),
-            skill_flag: skill_flag.map(|value| value.to_string()),
-            method: method.to_string(),
-            category: Some("tools".into()),
             description: Some(format!("Description for {name}")),
             stars: Some(5),
             project_only: false,
             usage: Some("Use it".into()),
+            tags: vec!["tools".into()],
+            group_id: "engineering".into(),
+            group_label: "Engineering".into(),
+            group_order: 10,
+            category_id: category_id.to_string(),
+            category_label: category_id.to_string(),
+            category_order: 20,
+            install_kind: EXTERNAL_SKILLS_KIND_SKILLS_CLI.to_string(),
+            install_provider: provider.to_string(),
+            package_ref: format!("owner/{name}"),
+            skill_flag: skill_flag.map(|value| value.to_string()),
         }
     }
 
     #[test]
-    fn filtered_catalog_entries_keeps_only_vercel_items() {
-        let filtered = filtered_catalog_entries(vec![
-            entry("find-skills", "vercel", None),
-            entry("playbook-skill", "playbooks", None),
-        ]);
-        assert_eq!(filtered.len(), 1);
-        assert_eq!(filtered[0].name, "find-skills");
+    fn to_catalog_dto_includes_taxonomy_fields() {
+        let dto = to_catalog_dto(
+            &entry("find-skills", "vercel", Some("find-skills"), "discovery"),
+            &HashSet::new(),
+        );
+        assert_eq!(dto.group_id, "engineering");
+        assert_eq!(dto.category_id, "discovery");
+        assert_eq!(dto.install_provider, "vercel");
+        assert_eq!(dto.package_ref, "owner/find-skills");
     }
 
     #[test]
     fn to_catalog_dto_uses_skill_flag_for_install_status() {
         let dto = to_catalog_dto(
-            &entry("display-name", "vercel", Some("real-skill")),
+            &entry("display-name", "vercel", Some("real-skill"), "tools"),
             &HashSet::from(["real-skill".to_string()]),
         );
         assert_eq!(dto.install_status, InstallStatus::Installed);
@@ -1221,5 +1353,24 @@ mod tests {
             &[],
         );
         assert_eq!(names, vec!["find-skills".to_string()]);
+    }
+
+    #[test]
+    fn installed_item_matches_considers_taxonomy_and_tags() {
+        let item = to_installed_dto(
+            "find-skills".into(),
+            "owner/find-skills".into(),
+            vec!["find-skills".into()],
+            NpxInstalledSkillSource::Managed,
+            true,
+            Some(entry(
+                "find-skills",
+                "vercel",
+                Some("find-skills"),
+                "discovery",
+            )),
+        );
+        assert!(installed_item_matches(&item, "engineering"));
+        assert!(installed_item_matches(&item, "tools"));
     }
 }

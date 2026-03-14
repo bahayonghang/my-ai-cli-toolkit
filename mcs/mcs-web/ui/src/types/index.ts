@@ -157,10 +157,19 @@ export interface NpxSkillsRunConfig {
 }
 
 export interface NpxSkillsCatalogItemDto {
+  id: string;
   name: string;
-  repo: string;
+  package_ref: string;
   skill_flag: string | null;
-  category: string | null;
+  group_id: string;
+  group_label: string;
+  group_order: number;
+  category_id: string;
+  category_label: string;
+  category_order: number;
+  tags: string[];
+  install_kind: string;
+  install_provider: string;
   description: string | null;
   stars: number | null;
   project_only: boolean;
@@ -169,19 +178,29 @@ export interface NpxSkillsCatalogItemDto {
 }
 
 export interface NpxInstalledSkillDto {
+  id: string;
   name: string;
-  repo: string | null;
+  package_ref: string;
+  skill_flag: string | null;
+  group_id: string;
+  group_label: string;
+  group_order: number;
+  category_id: string;
+  category_label: string;
+  category_order: number;
+  tags: string[];
+  install_kind: string;
+  install_provider: string;
   description: string | null;
-  category: string | null;
   source: "managed" | "filesystem_unmanaged";
   manageable: boolean;
-  package_ref: string | null;
-  skill_flags: string[] | null;
+  skill_flags: string[];
 }
 
 export interface NpxSkillsInstallItemInput {
   package_ref: string;
   skill_flags?: string[];
+  catalog_entry_id?: string | null;
 }
 
 export interface NpxSkillsJobStartDto {

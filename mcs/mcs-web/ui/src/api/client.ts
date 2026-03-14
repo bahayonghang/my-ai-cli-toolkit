@@ -298,6 +298,8 @@ export async function getNpxSkillsCatalog(
   params?: {
     search?: string;
     installedOnly?: boolean;
+    groupId?: string;
+    categoryId?: string;
     installTarget?: InstallTarget;
   },
   signal?: AbortSignal
@@ -305,6 +307,8 @@ export async function getNpxSkillsCatalog(
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
   if (params?.installedOnly) query.set("installed_only", "true");
+  if (params?.groupId) query.set("group_id", params.groupId);
+  if (params?.categoryId) query.set("category_id", params.categoryId);
   applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
   return fetchJson(
@@ -317,12 +321,16 @@ export async function getNpxInstalledSkills(
   platformId: string,
   params?: {
     search?: string;
+    groupId?: string;
+    categoryId?: string;
     installTarget?: InstallTarget;
   },
   signal?: AbortSignal
 ): Promise<NpxInstalledSkillDto[]> {
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
+  if (params?.groupId) query.set("group_id", params.groupId);
+  if (params?.categoryId) query.set("category_id", params.categoryId);
   applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
   return fetchJson(

@@ -9,7 +9,7 @@ use mcs_core::config::platform::PlatformConfig;
 use mcs_core::core::discovery::{
     SkillSource, discover_commands, discover_skill_sources, resolve_skills_for_platform,
 };
-use mcs_core::core::external_skills::{ExternalSkillEntry, load_external_skills};
+use mcs_core::core::external_skills::{ExternalSkillsRegistry, load_external_skills};
 use mcs_core::model::ItemInfo;
 
 /// Shared application state accessible by all handlers
@@ -36,8 +36,8 @@ struct DiscoveryCache {
     scoped_skills: HashMap<String, Vec<ItemInfo>>,
     /// Discovered commands for ad-hoc project targets, keyed by normalized commands path
     scoped_commands: HashMap<String, Vec<ItemInfo>>,
-    /// External skills from TOML registry
-    external_skills: Option<Vec<ExternalSkillEntry>>,
+    /// External skills registry from TOML
+    external_skills: Option<Result<ExternalSkillsRegistry, String>>,
 }
 
 impl AppState {
@@ -101,21 +101,21 @@ impl AppState {
     }
 
     /// Get external skill catalog from TOML registry.
-    pub async fn external_skill_catalog(&self) -> Vec<ExternalSkillEntry> {
+    pub async fn external_skill_catalog(&self) -> Result<ExternalSkillsRegistry, String> {
         {
             let cache = self.cache.read().await;
-            if let Some(ref entries) = cache.external_skills {
-                return entries.clone();
+            if let Some(ref registry) = cache.external_skills {
+                return registry.clone();
             }
         }
 
         let root = self.project_root().await;
-        let entries = load_external_skills(&root);
+        let registry = load_external_skills(&root).map_err(|error| error.to_string());
         let mut cache = self.cache.write().await;
         if cache.external_skills.is_none() {
-            cache.external_skills = Some(entries.clone());
+            cache.external_skills = Some(registry.clone());
         }
-        entries
+        registry
     }
 
     /// Get cached skills for a platform
@@ -268,6 +268,7 @@ impl AppState {
         cache.commands = commands_map;
         cache.scoped_skills.clear();
         cache.scoped_commands.clear();
+        cache.external_skills = None;
     }
 
     /// Invalidate and re-discover for a specific platform (after install/uninstall).

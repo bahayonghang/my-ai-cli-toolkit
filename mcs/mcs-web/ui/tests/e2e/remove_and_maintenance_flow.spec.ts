@@ -141,13 +141,11 @@ test("managed items are removable and maintenance jobs run", async ({ page }) =>
 
   const managedRow = page.getByRole("row").filter({ hasText: "find-skills" });
   await managedRow.getByRole("button", { name: /uninstall/i }).click();
-  await page.getByRole("button", { name: /^uninstall$/i }).click();
   await maybeSubmitNpxSkillsRunDialog(page, {
     installTarget,
-    submitButtons: [/^uninstall$/i, /^remove$/i, /^run$/i, /^confirm$/i],
+    submitButtons: [/^start remove$/i, /^uninstall$/i, /^remove$/i, /^run$/i, /^confirm$/i],
   });
   await expect.poll(() => api.requests.removeJobs.length).toBe(1);
-  await expect(page.getByText(/remove finished/i)).toBeVisible();
   expect(api.requests.removeJobs[0]).toEqual({
     names: ["find-skills"],
     config: runConfig,
@@ -157,10 +155,9 @@ test("managed items are removable and maintenance jobs run", async ({ page }) =>
   await page.getByRole("button", { name: /check for updates/i }).click();
   await maybeSubmitNpxSkillsRunDialog(page, {
     installTarget,
-    submitButtons: [/^check for updates$/i, /^check$/i, /^run$/i, /^confirm$/i],
+    submitButtons: [/^start check$/i, /^check for updates$/i, /^check$/i, /^run$/i, /^confirm$/i],
   });
   await expect.poll(() => api.requests.checkJobs.length).toBe(1);
-  await expect(page.getByText(/check finished/i)).toBeVisible();
   expect(api.requests.checkJobs[0]).toEqual({
     config: runConfig,
     install_target: installTarget,

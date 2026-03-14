@@ -18,11 +18,15 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
+  Divider,
   Drawer,
   FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
+  List,
+  ListItemButton,
+  ListItemText,
   LinearProgress,
   Stack,
   Switch,
@@ -49,6 +53,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import TuneIcon from "@mui/icons-material/Tune";
 
 import {
   getNpxInstalledSkills,
@@ -123,6 +128,22 @@ type PendingRunAction =
     };
 
 type RunResultStatus = "idle" | "running" | "success" | "warning" | "error" | "interrupted";
+
+interface TaxonomyCategorySummary {
+  id: string;
+  label: string;
+  count: number;
+  groupId: string;
+  groupOrder: number;
+  categoryOrder: number;
+}
+
+interface TaxonomyGroupSummary {
+  id: string;
+  label: string;
+  order: number;
+  categories: TaxonomyCategorySummary[];
+}
 
 const COMMON_AGENTS = [
   "claude-code",
@@ -203,7 +224,7 @@ function installStatusColor(
 }
 
 function buildInstallKey(item: NpxSkillsCatalogItemDto) {
-  return `${item.repo}::${item.skill_flag ?? ""}`;
+  return `${item.package_ref}::${item.skill_flag ?? ""}`;
 }
 
 function parseSkillFlags(input: string): string[] {
@@ -211,6 +232,67 @@ function parseSkillFlags(input: string): string[] {
     .split(/[\n,]/)
     .map((value) => value.trim())
     .filter(Boolean);
+}
+
+function buildTaxonomyGroups<
+  T extends {
+    group_id: string;
+    group_label: string;
+    group_order: number;
+    category_id: string;
+    category_label: string;
+    category_order: number;
+  },
+>(items: T[]): TaxonomyGroupSummary[] {
+  const groups = new Map<string, TaxonomyGroupSummary>();
+
+  for (const item of items) {
+    const existingGroup = groups.get(item.group_id);
+    if (!existingGroup) {
+      groups.set(item.group_id, {
+        id: item.group_id,
+        label: item.group_label,
+        order: item.group_order,
+        categories: [
+          {
+            id: item.category_id,
+            label: item.category_label,
+            count: 1,
+            groupId: item.group_id,
+            groupOrder: item.group_order,
+            categoryOrder: item.category_order,
+          },
+        ],
+      });
+      continue;
+    }
+
+    const existingCategory = existingGroup.categories.find(
+      (category) => category.id === item.category_id
+    );
+    if (existingCategory) {
+      existingCategory.count += 1;
+    } else {
+      existingGroup.categories.push({
+        id: item.category_id,
+        label: item.category_label,
+        count: 1,
+        groupId: item.group_id,
+        groupOrder: item.group_order,
+        categoryOrder: item.category_order,
+      });
+    }
+  }
+
+  return Array.from(groups.values())
+    .map((group) => ({
+      ...group,
+      categories: [...group.categories].sort(
+        (left, right) =>
+          left.categoryOrder - right.categoryOrder || left.label.localeCompare(right.label)
+      ),
+    }))
+    .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label));
 }
 
 export default function NpxSkillsPage() {
@@ -238,6 +320,7 @@ export default function NpxSkillsPage() {
   } = useInstallTarget(platformId);
 
   const [view, setView] = useState<ViewMode>("find");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [pendingRunAction, setPendingRunAction] = useState<PendingRunAction | null>(null);
   const [catalogSearch, setCatalogSearch] = useState("");
@@ -245,6 +328,10 @@ export default function NpxSkillsPage() {
   const debouncedCatalogSearch = useDebounce(catalogSearch, 250);
   const debouncedInstalledSearch = useDebounce(installedSearch, 250);
   const [installedOnly, setInstalledOnly] = useState(false);
+  const [selectedCatalogCategoryId, setSelectedCatalogCategoryId] = useState<string | null>(null);
+  const [selectedInstalledCategoryId, setSelectedInstalledCategoryId] = useState<string | null>(
+    null
+  );
 
   const [catalogItems, setCatalogItems] = useState<NpxSkillsCatalogItemDto[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
@@ -295,6 +382,12 @@ export default function NpxSkillsPage() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setFiltersOpen(false);
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     jobItemsRef.current = jobItems;
@@ -398,17 +491,45 @@ export default function NpxSkillsPage() {
     setSelectedInstalledNames(new Set());
   }, [installedSearch, installTarget.scope, installTarget.project_path]);
 
+  useEffect(() => {
+    setSelectedCatalogCategoryId(null);
+  }, [catalogSearch, installedOnly, installTarget.scope, installTarget.project_path]);
+
+  useEffect(() => {
+    setSelectedInstalledCategoryId(null);
+  }, [installedSearch, installTarget.scope, installTarget.project_path]);
+
+  const catalogGroups = useMemo(() => buildTaxonomyGroups(catalogItems), [catalogItems]);
+  const installedGroups = useMemo(() => buildTaxonomyGroups(installedItems), [installedItems]);
+
+  const visibleCatalogItems = useMemo(
+    () =>
+      selectedCatalogCategoryId
+        ? catalogItems.filter((item) => item.category_id === selectedCatalogCategoryId)
+        : catalogItems,
+    [catalogItems, selectedCatalogCategoryId]
+  );
+
+  const visibleInstalledItems = useMemo(
+    () =>
+      selectedInstalledCategoryId
+        ? installedItems.filter((item) => item.category_id === selectedInstalledCategoryId)
+        : installedItems,
+    [installedItems, selectedInstalledCategoryId]
+  );
+
   const selectedCatalogItems = useMemo(
     () =>
-      catalogItems.filter((item) => selectedCatalogKeys.has(buildInstallKey(item))),
-    [catalogItems, selectedCatalogKeys]
+      visibleCatalogItems.filter((item) => selectedCatalogKeys.has(buildInstallKey(item))),
+    [visibleCatalogItems, selectedCatalogKeys]
   );
 
   const selectedInstallPayload = useMemo<NpxSkillsInstallItemInput[]>(
     () =>
       selectedCatalogItems.map((item) => ({
-        package_ref: item.repo,
+        package_ref: item.package_ref,
         skill_flags: item.skill_flag ? [item.skill_flag] : [],
+        catalog_entry_id: item.id,
       })),
     [selectedCatalogItems]
   );
@@ -629,7 +750,7 @@ export default function NpxSkillsPage() {
       kind: "install",
       items: selectedInstallPayload,
       labels: selectedCatalogItems.map((item) => {
-        let label = item.repo;
+        let label = item.package_ref;
         if (item.skill_flag) {
           label += ` --skill ${item.skill_flag}`;
         }
@@ -849,6 +970,14 @@ export default function NpxSkillsPage() {
           }}
           sx={{ width: 360, maxWidth: "100%" }}
         />
+        {isMobile && (
+          <IconButton
+            aria-label={t("common.openFilters")}
+            onClick={() => setFiltersOpen(true)}
+          >
+            <TuneIcon />
+          </IconButton>
+        )}
         <FormControlLabel
           control={
             <Switch
@@ -858,6 +987,14 @@ export default function NpxSkillsPage() {
           }
           label={t("npxSkills.installedOnly")}
         />
+        {isMobile && (
+          <IconButton
+            aria-label={t("common.openFilters")}
+            onClick={() => setFiltersOpen(true)}
+          >
+            <TuneIcon />
+          </IconButton>
+        )}
         <Button
           variant="outlined"
           startIcon={<RefreshIcon />}
@@ -883,25 +1020,43 @@ export default function NpxSkillsPage() {
         </Button>
       </Box>
 
-      {catalogError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {catalogError}
-        </Alert>
-      )}
+      <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+        {!isMobile && (
+          <Card
+            variant="outlined"
+            sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}
+          >
+            <CardContent sx={{ p: 2 }}>
+              <NpxSkillsFilters
+                groups={catalogGroups}
+                selectedCategoryId={selectedCatalogCategoryId}
+                onCategoryChange={setSelectedCatalogCategoryId}
+                t={t}
+              />
+            </CardContent>
+          </Card>
+        )}
 
-      {(catalogLoading || installTargetLoading) && (
-        <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
-      )}
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          {catalogError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {catalogError}
+            </Alert>
+          )}
 
-      {catalogLoading && catalogItems.length === 0 ? (
-        <Box display="flex" justifyContent="center" py={8}>
-          <CircularProgress />
-        </Box>
-      ) : catalogItems.length === 0 ? (
-        <Alert severity="info">{t("npxSkills.noCatalogResults")}</Alert>
-      ) : (
-        <Grid container spacing={2}>
-          {catalogItems.map((item) => {
+          {(catalogLoading || installTargetLoading) && (
+            <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
+          )}
+
+          {catalogLoading && catalogItems.length === 0 ? (
+            <Box display="flex" justifyContent="center" py={8}>
+              <CircularProgress />
+            </Box>
+          ) : visibleCatalogItems.length === 0 ? (
+            <Alert severity="info">{t("npxSkills.noCatalogResults")}</Alert>
+          ) : (
+            <Grid container spacing={2}>
+              {visibleCatalogItems.map((item) => {
             const key = buildInstallKey(item);
             const isSelected = selectedCatalogKeys.has(key);
             const isDisabled = item.project_only && installTarget.scope === "global";
@@ -965,7 +1120,7 @@ export default function NpxSkillsPage() {
                             overflowWrap: "anywhere",
                           }}
                         >
-                          {item.repo}
+                          {item.package_ref}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center">
@@ -974,12 +1129,9 @@ export default function NpxSkillsPage() {
                             size="small"
                             onClick={(event) => {
                               event.stopPropagation();
-                              const repoUrl = item.repo.startsWith("https://")
-                                ? item.repo
-                                : `https://github.com/${item.repo}`;
                               const cmd = item.skill_flag
-                                ? `npx skills add ${repoUrl} --skill ${item.skill_flag}`
-                                : `npx skills add ${repoUrl}`;
+                                ? `npx skills add ${item.package_ref} --skill ${item.skill_flag}`
+                                : `npx skills add ${item.package_ref}`;
                               navigator.clipboard.writeText(cmd).then(
                                 () => showNotification(t("npxSkills.copySuccess"), "success"),
                                 () => showNotification(t("npxSkills.copyFailed"), "error"),
@@ -1026,9 +1178,8 @@ export default function NpxSkillsPage() {
                             : t("status.notInstalled")
                         }
                       />
-                      {item.category && (
-                        <Chip size="small" variant="outlined" label={item.category} />
-                      )}
+                      <Chip size="small" variant="outlined" label={item.category_label} />
+                      <Chip size="small" variant="outlined" label={item.install_provider} />
                       {item.project_only && (
                         <Chip
                           size="small"
@@ -1066,9 +1217,11 @@ export default function NpxSkillsPage() {
                 </Card>
               </Grid>
             );
-          })}
-        </Grid>
-      )}
+              })}
+            </Grid>
+          )}
+        </Box>
+      </Box>
     </>
   );
 
@@ -1122,25 +1275,43 @@ export default function NpxSkillsPage() {
         </Button>
       </Box>
 
-      {installedError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {installedError}
-        </Alert>
-      )}
+      <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+        {!isMobile && (
+          <Card
+            variant="outlined"
+            sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}
+          >
+            <CardContent sx={{ p: 2 }}>
+              <NpxSkillsFilters
+                groups={installedGroups}
+                selectedCategoryId={selectedInstalledCategoryId}
+                onCategoryChange={setSelectedInstalledCategoryId}
+                t={t}
+              />
+            </CardContent>
+          </Card>
+        )}
 
-      {(installedLoading || installTargetLoading) && (
-        <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
-      )}
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          {installedError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {installedError}
+            </Alert>
+          )}
 
-      {installedLoading && installedItems.length === 0 ? (
-        <Box display="flex" justifyContent="center" py={8}>
-          <CircularProgress />
-        </Box>
-      ) : installedItems.length === 0 ? (
-        <Alert severity="info">{t("npxSkills.noInstalledResults")}</Alert>
-      ) : isMobile ? (
+          {(installedLoading || installTargetLoading) && (
+            <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
+          )}
+
+          {installedLoading && installedItems.length === 0 ? (
+            <Box display="flex" justifyContent="center" py={8}>
+              <CircularProgress />
+            </Box>
+          ) : visibleInstalledItems.length === 0 ? (
+            <Alert severity="info">{t("npxSkills.noInstalledResults")}</Alert>
+          ) : isMobile ? (
         <Stack spacing={1.5}>
-          {installedItems.map((item) => {
+          {visibleInstalledItems.map((item) => {
             const selected = selectedInstalledNames.has(item.name);
             return (
               <Card key={item.name} variant="outlined">
@@ -1186,7 +1357,8 @@ export default function NpxSkillsPage() {
                             label={t("npxSkills.unmanaged")}
                           />
                         )}
-                        {item.category && <Chip size="small" variant="outlined" label={item.category} />}
+                        <Chip size="small" variant="outlined" label={item.category_label} />
+                        <Chip size="small" variant="outlined" label={item.install_provider} />
                       </Box>
                       <Typography
                         variant="caption"
@@ -1197,9 +1369,9 @@ export default function NpxSkillsPage() {
                           overflowWrap: "anywhere",
                         }}
                       >
-                        {item.package_ref ?? item.repo ?? "—"}
+                        {item.package_ref}
                       </Typography>
-                      {item.skill_flags && item.skill_flags.length > 0 && (
+                      {item.skill_flags.length > 0 && (
                         <Typography
                           variant="caption"
                           sx={{
@@ -1231,7 +1403,7 @@ export default function NpxSkillsPage() {
             );
           })}
         </Stack>
-      ) : (
+          ) : (
         <Card elevation={0}>
           <Box sx={{ overflowX: "auto" }}>
             <Box
@@ -1266,7 +1438,7 @@ export default function NpxSkillsPage() {
                 </Box>
               </Box>
               <Box component="tbody">
-                {installedItems.map((item) => {
+                {visibleInstalledItems.map((item) => {
                   const selected = selectedInstalledNames.has(item.name);
                   return (
                     <Box component="tr" key={item.name}>
@@ -1323,9 +1495,9 @@ export default function NpxSkillsPage() {
                             overflowWrap: "anywhere",
                           }}
                         >
-                          {item.package_ref ?? item.repo ?? "—"}
+                          {item.package_ref}
                         </Typography>
-                        {item.skill_flags && item.skill_flags.length > 0 && (
+                        {item.skill_flags.length > 0 && (
                           <Typography
                             variant="caption"
                             sx={{
@@ -1339,7 +1511,7 @@ export default function NpxSkillsPage() {
                           </Typography>
                         )}
                       </Box>
-                      <Box component="td">{item.category ?? "—"}</Box>
+                      <Box component="td">{item.category_label}</Box>
                       <Box component="td">
                         <Typography variant="body2" color="text.secondary">
                           {item.description ?? "—"}
@@ -1363,7 +1535,9 @@ export default function NpxSkillsPage() {
             </Box>
           </Box>
         </Card>
-      )}
+          )}
+        </Box>
+      </Box>
     </>
   );
 
@@ -1792,6 +1966,31 @@ export default function NpxSkillsPage() {
       </Box>
 
       <Drawer
+        anchor="left"
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        PaperProps={{ sx: { width: 300, p: 2 } }}
+      >
+        {view !== "maintenance" && (
+          <NpxSkillsFilters
+            groups={view === "find" ? catalogGroups : installedGroups}
+            selectedCategoryId={
+              view === "find" ? selectedCatalogCategoryId : selectedInstalledCategoryId
+            }
+            onCategoryChange={(categoryId) => {
+              if (view === "find") {
+                setSelectedCatalogCategoryId(categoryId);
+              } else {
+                setSelectedInstalledCategoryId(categoryId);
+              }
+              setFiltersOpen(false);
+            }}
+            t={t}
+          />
+        )}
+      </Drawer>
+
+      <Drawer
         anchor="right"
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
@@ -1948,5 +2147,63 @@ function SummaryCard({
         </Box>
       </CardContent>
     </Card>
+  );
+}
+
+function NpxSkillsFilters({
+  groups,
+  selectedCategoryId,
+  onCategoryChange,
+  t,
+}: {
+  groups: TaxonomyGroupSummary[];
+  selectedCategoryId: string | null;
+  onCategoryChange: (categoryId: string | null) => void;
+  t: ReturnType<typeof useI18n>["t"];
+}) {
+  const totalCount = groups.reduce(
+    (sum, group) =>
+      sum + group.categories.reduce((groupSum, category) => groupSum + category.count, 0),
+    0
+  );
+
+  return (
+    <Box>
+      <Typography variant="overline" color="text.secondary">
+        {t("common.category")}
+      </Typography>
+      <List dense disablePadding sx={{ mt: 1 }}>
+        <ListItemButton
+          selected={selectedCategoryId === null}
+          onClick={() => onCategoryChange(null)}
+        >
+          <ListItemText primary={t("common.all")} secondary={String(totalCount)} />
+        </ListItemButton>
+        <Divider sx={{ my: 1 }} />
+        {groups.map((group) => (
+          <Box key={group.id} sx={{ mb: 1.5 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", px: 2, py: 0.5, textTransform: "uppercase" }}
+            >
+              {group.label}
+            </Typography>
+            {group.categories.map((category) => (
+              <ListItemButton
+                key={category.id}
+                selected={selectedCategoryId === category.id}
+                onClick={() => onCategoryChange(category.id)}
+              >
+                <ListItemText
+                  primary={category.label}
+                  secondary={String(category.count)}
+                />
+              </ListItemButton>
+            ))}
+          </Box>
+        ))}
+      </List>
+    </Box>
   );
 }

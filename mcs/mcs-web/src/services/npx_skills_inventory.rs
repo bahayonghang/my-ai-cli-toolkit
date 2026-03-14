@@ -16,6 +16,8 @@ pub struct ManagedInventoryEntry {
     pub name: String,
     pub package_ref: String,
     #[serde(default)]
+    pub catalog_entry_id: Option<String>,
+    #[serde(default)]
     pub skill_flags: Vec<String>,
     #[serde(default)]
     pub agents: Vec<String>,
@@ -296,6 +298,7 @@ mod tests {
         ManagedInventoryEntry {
             name: name.to_string(),
             package_ref: "owner/repo".to_string(),
+            catalog_entry_id: Some("catalog-entry".to_string()),
             skill_flags: vec![],
             agents: vec!["codex".to_string()],
             install_target_scope: InstallTargetScopeDto::Global,
