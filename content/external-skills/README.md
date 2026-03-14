@@ -13,13 +13,12 @@ This directory is intentionally separate from the first-party catalog in `conten
 | `install_tui.py` | TUI installer |
 | `CLAUDE.md` | Contributor guidance for this module |
 
-## Supported install types
+## Registry shape
 
-- `npm-cli`
-- `npx`
-- `pip-cli`
-- `git`
-- `vercel`
+- `schema.version = 2`
+- `groups` and `categories` define taxonomy
+- `skills[].install` defines install metadata
+- current curated entries use `install.kind = "skills_cli"`
 
 ## Common usage
 

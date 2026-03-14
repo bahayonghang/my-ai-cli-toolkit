@@ -29,13 +29,17 @@ class ExternalSkillInfo:
 
     name: str
     description: str
-    skill_type: str  # npm-cli | npx | pip-cli | git
+    skill_type: str  # skills_cli
     package: str
     requires: list[str] = field(default_factory=list)
     supported_targets: list[str] = field(default_factory=list)
     homepage: str = ""
     license: str = ""
     is_supported: bool = True
+    group: str = ""
+    category: str = ""
+    provider: str = ""
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass

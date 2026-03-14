@@ -12,7 +12,7 @@ This module provides infrastructure for discovering, installing, and managing sk
 
 ```
 external-skills/
-├── registry.toml          # Skill registry (GitHub sources)
+├── external-skills.toml   # Skill registry (v2 taxonomy + install metadata)
 ├── install.py             # CLI installer
 ├── install.md             # Installation documentation
 ├── install_tui.py         # TUI entry point
@@ -44,15 +44,27 @@ external-skills/
 
 ## Registry Format
 
-`registry.toml` defines external skills:
+`external-skills.toml` defines external skills:
 
 ```toml
-[skills.skill-name]
+[schema]
+version = 2
+
+[[groups]]
+id = "engineering"
+label = "Engineering"
+
+[[categories]]
+id = "frontend"
+group_id = "engineering"
+label = "Frontend"
+
+[[skills]]
+id = "skill-name"
 name = "skill-name"
 description = "Brief description"
-repo = "owner/repo"
-branch = "main"
-path = "path/to/skill"  # optional, defaults to root
+category_id = "frontend"
+install = { kind = "skills_cli", provider = "vercel", package_ref = "owner/repo", skill_flag = "skill-name" }
 ```
 
 ## Key Components
@@ -132,13 +144,13 @@ pytest external-skills/tui/tests/test_property_*.py
 ## Adding New Skills to Registry
 
 1. Fork the repository or create a PR
-2. Add entry to `registry.toml`:
+2. Add entry to `external-skills.toml`:
    ```toml
-   [skills.my-new-skill]
+   [[skills]]
+   id = "my-new-skill"
    name = "my-new-skill"
    description = "What this skill does"
-   repo = "github-user/repo-name"
-   branch = "main"
-   path = "skills/my-skill"  # if not at repo root
+   category_id = "frontend"
+   install = { kind = "skills_cli", provider = "vercel", package_ref = "github-user/repo-name", skill_flag = "my-new-skill" }
    ```
 3. Ensure the skill follows `SKILL.md` format

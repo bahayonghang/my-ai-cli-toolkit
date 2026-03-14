@@ -43,11 +43,13 @@ def render_skill_detail(skill: ExternalSkillInfo) -> str:
         "",
         f"📝 Description: {skill.description}",
         f"📦 Type: {skill.skill_type}",
+        f"🗂️ Group: {skill.group or 'N/A'}",
+        f"🏷️ Category: {skill.category or 'N/A'}",
+        f"🚚 Provider: {skill.provider or 'N/A'}",
         f"📍 Package: {skill.package}",
         f"🔧 Requires: {', '.join(skill.requires) if skill.requires else 'None'}",
         f"🎯 Platforms: {', '.join(skill.supported_targets) if skill.supported_targets else 'None'}",
-        f"🏠 Homepage: {skill.homepage or 'N/A'}",
-        f"📜 License: {skill.license or 'N/A'}",
+        f"🏷️ Tags: {', '.join(skill.tags) if skill.tags else 'None'}",
     ]
 
     return "\n".join(lines)

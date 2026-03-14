@@ -27,7 +27,7 @@ from .models import (
 )
 
 # 默认配置文件路径
-DEFAULT_REGISTRY_PATH = Path(__file__).parent.parent.parent / "registry.toml"
+DEFAULT_REGISTRY_PATH = Path(__file__).parent.parent.parent / "external-skills.toml"
 
 
 class ExternalSkillManager:
@@ -49,7 +49,7 @@ class ExternalSkillManager:
 
         Args:
             platform: 目标平台
-            registry_path: 配置文件路径，默认为 registry.toml
+            registry_path: 配置文件路径，默认为 external-skills.toml
         """
         self.platform = platform
         self.registry_path = registry_path or DEFAULT_REGISTRY_PATH
@@ -58,7 +58,7 @@ class ExternalSkillManager:
     def get_skills(self) -> list[ExternalSkillInfo]:
         """获取所有技能列表
 
-        从 registry.toml 加载所有技能，并根据当前平台设置 is_supported 标志。
+        从 external-skills.toml 加载所有技能，并根据当前平台设置 is_supported 标志。
 
         Returns:
             技能信息列表
@@ -161,41 +161,40 @@ class ExternalSkillManager:
                 error="无法获取技能配置",
             )
 
-        # Step 1: 全局安装 (如果需要)
-        install_command = raw_skill.get("install_command", "")
-        if not skip_install and install_command:
-            if on_output:
-                on_output(f"[Step 1] 全局安装: {install_command}")
+        install = raw_skill.get("install", {})
+        if install.get("kind") != "skills_cli":
+            return InstallResult(
+                success=False,
+                skill_name=skill_name,
+                message="安装失败",
+                error="当前 TUI 仅支持 skills_cli 类型的技能",
+            )
 
-            success = self._run_command(install_command, on_output=on_output)
-            if not success:
-                return InstallResult(
-                    success=False,
-                    skill_name=skill_name,
-                    message="安装失败",
-                    error="全局安装命令执行失败",
-                )
+        package_ref = install.get("package_ref", "").strip()
+        skill_flag = str(install.get("skill_flag", "")).strip()
+        if not package_ref:
+            return InstallResult(
+                success=False,
+                skill_name=skill_name,
+                message="安装失败",
+                error="技能缺少 install.package_ref",
+            )
 
-        # Step 2: 初始化
-        init_command = raw_skill.get("init_command", "")
-        if init_command:
-            init_args = raw_skill.get("init_args", [])
-            target_map = raw_skill.get("target_map", {})
+        full_install_cmd = f"npx skills add {package_ref}".strip()
+        if skill_flag:
+            full_install_cmd += f" --skill {skill_flag}"
 
-            # 构建完整的初始化命令
-            full_init_cmd = self._build_init_command(init_command, init_args, target_map)
+        if on_output:
+            on_output(f"[Step 1] 安装技能: {full_install_cmd}")
 
-            if on_output:
-                on_output(f"[Step 2] 初始化项目: {full_init_cmd}")
-
-            success = self._run_command(full_init_cmd, cwd=cwd, on_output=on_output)
-            if not success:
-                return InstallResult(
-                    success=False,
-                    skill_name=skill_name,
-                    message="安装失败",
-                    error="初始化命令执行失败",
-                )
+        success = self._run_command(full_install_cmd, cwd=cwd, on_output=on_output)
+        if not success:
+            return InstallResult(
+                success=False,
+                skill_name=skill_name,
+                message="安装失败",
+                error="skills CLI 命令执行失败",
+            )
 
         return InstallResult(
             success=True,
@@ -227,29 +226,53 @@ class ExternalSkillManager:
 
         skills: dict[str, ExternalSkillInfo] = {}
 
-        # 验证 skills 字段是否为字典类型
-        skills_data = data.get("skills", {})
-        if not isinstance(skills_data, dict):
-            raise ValueError("配置文件格式错误: 'skills' 必须是一个表")
+        if data.get("schema", {}).get("version") != 2:
+            raise ValueError("配置文件格式错误: schema.version 必须为 2")
 
-        for name, s_data in skills_data.items():
-            # 验证每个技能配置是否为字典类型
+        group_map = {
+            group["id"]: group for group in data.get("groups", []) if isinstance(group, dict)
+        }
+        category_map = {
+            category["id"]: category
+            for category in data.get("categories", [])
+            if isinstance(category, dict)
+        }
+
+        skills_data = data.get("skills", [])
+        if not isinstance(skills_data, list):
+            raise ValueError("配置文件格式错误: 'skills' 必须是一个数组")
+
+        for s_data in skills_data:
             if not isinstance(s_data, dict):
-                raise ValueError(f"配置文件格式错误: 技能 '{name}' 的配置必须是一个表")
+                continue
 
-            supported_targets = s_data.get("supported_targets", [])
+            install = s_data.get("install", {})
+            if install.get("kind") != "skills_cli":
+                continue
+
+            name = s_data.get("name") or s_data.get("id", "")
+            if not name:
+                continue
+
+            category = category_map.get(s_data.get("category_id", ""), {})
+            group = group_map.get(category.get("group_id", ""), {})
+            supported_targets = ["all"]
             is_supported = self._is_platform_supported(supported_targets)
 
             skills[name] = ExternalSkillInfo(
                 name=name,
                 description=s_data.get("description", ""),
-                skill_type=s_data.get("type", "npm-cli"),
-                package=s_data.get("package", "") or s_data.get("repo", ""),
-                requires=s_data.get("requires", []),
+                skill_type=install.get("kind", "skills_cli"),
+                package=install.get("package_ref", ""),
+                requires=["npx"],
                 supported_targets=supported_targets,
-                homepage=s_data.get("homepage", ""),
-                license=s_data.get("license", ""),
+                homepage="",
+                license="",
                 is_supported=is_supported,
+                group=group.get("label", ""),
+                category=category.get("label", ""),
+                provider=install.get("provider", ""),
+                tags=list(s_data.get("tags", [])),
             )
 
         self._skills_cache = skills
@@ -270,7 +293,10 @@ class ExternalSkillManager:
         try:
             with open(self.registry_path, "rb") as f:
                 data = tomllib.load(f)
-            return data.get("skills", {}).get(skill_name)
+            for skill in data.get("skills", []):
+                if isinstance(skill, dict) and (skill.get("name") == skill_name or skill.get("id") == skill_name):
+                    return skill
+            return None
         except Exception:
             return None
 

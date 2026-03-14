@@ -42,7 +42,14 @@ app = typer.Typer(
 )
 console = Console()
 
-CONFIG_FILE = Path(__file__).parent / "registry.toml"
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+CONFIG_FILE = Path(__file__).parent / "external-skills.toml"
 UNIVERSAL_SHARED_SKILLS_AGENTS = {
     "amp",
     "cline",
@@ -78,16 +85,30 @@ class RegistryConfig:
     default_install_method: str = "symlink"
     default_scope: str = "global"
     auto_detect_agents: bool = True
-    known_agents: list[str] = field(default_factory=list)
+    known_agents: list[str] = field(
+        default_factory=lambda: [
+            "claude",
+            "codex",
+            "cursor",
+            "gemini",
+            "kiro",
+            "windsurf",
+            "opencode",
+            "copilot",
+            "cline",
+            "antigravity",
+        ]
+    )
 
 
 @dataclass
 class ExternalSkill:
     """外部技能定义"""
 
+    id: str
     name: str
     description: str = ""
-    type: str = "npm-cli"  # npm-cli | npx | pip-cli | git | vercel
+    type: str = "skills_cli"
     package: str = ""
     repo: str = ""
     skill_name: str = ""  # Vercel 类型的技能名
@@ -105,6 +126,10 @@ class ExternalSkill:
     homepage: str = ""
     license: str = ""
     recommended: bool = False
+    group: str = ""
+    category: str = ""
+    provider: str = ""
+    tags: list[str] = field(default_factory=list)
 
 
 def load_registry() -> tuple[RegistryConfig, dict[str, ExternalSkill]]:
@@ -116,40 +141,57 @@ def load_registry() -> tuple[RegistryConfig, dict[str, ExternalSkill]]:
     with open(CONFIG_FILE, "rb") as f:
         data = tomllib.load(f)
 
-    # 加载全局配置
-    config_data = data.get("config", {})
-    config = RegistryConfig(
-        default_install_method=config_data.get("default_install_method", "symlink"),
-        default_scope=config_data.get("default_scope", "global"),
-        auto_detect_agents=config_data.get("auto_detect_agents", True),
-        known_agents=config_data.get("known_agents", []),
-    )
+    schema = data.get("schema", {})
+    if schema.get("version") != 2:
+        rprint("[red]❌ external-skills.toml schema.version 必须为 2[/red]")
+        raise typer.Exit(1)
 
-    # 加载技能
+    config = RegistryConfig()
+    group_map = {
+        group["id"]: group for group in data.get("groups", []) if isinstance(group, dict)
+    }
+    category_map = {
+        category["id"]: category
+        for category in data.get("categories", [])
+        if isinstance(category, dict)
+    }
+
     skills: dict[str, ExternalSkill] = {}
-    for name, s_data in data.get("skills", {}).items():
-        skills[name] = ExternalSkill(
+    for s_data in data.get("skills", []):
+        if not isinstance(s_data, dict):
+            continue
+
+        category_id = s_data.get("category_id", "")
+        category = category_map.get(category_id, {})
+        group = group_map.get(category.get("group_id", ""), {})
+        install = s_data.get("install", {})
+        install_kind = install.get("kind", "")
+        if install_kind != "skills_cli":
+            continue
+
+        name = s_data.get("name") or s_data.get("id", "")
+        if not name:
+            continue
+
+        skill = ExternalSkill(
+            id=s_data.get("id", name),
             name=name,
             description=s_data.get("description", ""),
-            type=s_data.get("type", "npm-cli"),
-            package=s_data.get("package", ""),
-            repo=s_data.get("repo", ""),
-            skill_name=s_data.get("skill_name", ""),
-            install_method=s_data.get("install_method", config.default_install_method),
-            scope=s_data.get("scope", config.default_scope),
-            install_command=s_data.get("install_command", ""),
-            init_command=s_data.get("init_command", ""),
-            init_args=s_data.get("init_args", []),
-            target_map=s_data.get("target_map", {}),
-            supported_targets=s_data.get("supported_targets", []),
-            requires=s_data.get("requires", []),
-            branch=s_data.get("branch", "main"),
-            dest=s_data.get("dest", ""),
-            post_clone=s_data.get("post_clone", ""),
-            homepage=s_data.get("homepage", ""),
-            license=s_data.get("license", ""),
-            recommended=s_data.get("recommended", False),
+            type=install_kind,
+            package=install.get("package_ref", ""),
+            repo=install.get("package_ref", ""),
+            skill_name=install.get("skill_flag", ""),
+            install_method=config.default_install_method,
+            scope="project" if s_data.get("project_only", False) else config.default_scope,
+            supported_targets=["all"],
+            requires=["npx"],
+            recommended=(s_data.get("stars", 0) or 0) >= 5,
+            group=group.get("label", ""),
+            category=category.get("label", ""),
+            provider=install.get("provider", ""),
+            tags=list(s_data.get("tags", [])),
         )
+        skills[skill.name] = skill
 
     return config, skills
 
@@ -380,24 +422,27 @@ def list_skills(
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Name", style="cyan")
     table.add_column("Type", style="green")
+    table.add_column("Group", style="blue")
+    table.add_column("Category", style="magenta")
+    table.add_column("Provider", style="yellow")
     table.add_column("Method", style="yellow")
     table.add_column("Scope")
-    table.add_column("Targets")
     table.add_column("Description")
 
-    for skill in skills.values():
+    for skill in sorted(
+        skills.values(), key=lambda item: (item.group, item.category, item.name)
+    ):
         method_icon = "🔗" if skill.install_method == "symlink" else "📋"
         scope_icon = "🌍" if skill.scope == "global" else "📁"
-        targets_str = ", ".join(skill.supported_targets[:3])
-        if len(skill.supported_targets) > 3:
-            targets_str += f" (+{len(skill.supported_targets) - 3})"
 
         table.add_row(
             f"{'⭐ ' if skill.recommended else ''}{skill.name}",
             skill.type,
+            skill.group or "-",
+            skill.category or "-",
+            skill.provider or "-",
             f"{method_icon} {skill.install_method}",
             f"{scope_icon} {skill.scope}",
-            targets_str,
             skill.description[:40] + "..." if len(skill.description) > 40 else skill.description,
         )
 
@@ -455,13 +500,14 @@ def show_info(
     panel_content = f"""
 [dim]Description:[/dim] {skill.description}
 [dim]Type:[/dim] {skill.type}
+[dim]Group:[/dim] {skill.group or "-"}
+[dim]Category:[/dim] {skill.category or "-"}
+[dim]Provider:[/dim] {skill.provider or "-"}
 [dim]Install Method:[/dim] {"🔗 " if skill.install_method == "symlink" else "📋 "}{skill.install_method}
 [dim]Scope:[/dim] {"🌍 " if skill.scope == "global" else "📁 "}{skill.scope}
 [dim]Package:[/dim] {skill.package or skill.repo or "-"}
-[dim]License:[/dim] {skill.license or "-"}
-[dim]Homepage:[/dim] {skill.homepage or "-"}
 [dim]Requires:[/dim] {", ".join(skill.requires) or "-"}
-[dim]Supported Targets:[/dim] {", ".join(skill.supported_targets[:8])}{"..." if len(skill.supported_targets) > 8 else ""}
+[dim]Tags:[/dim] {", ".join(skill.tags) or "-"}
 """
 
     if skill.install_command:
@@ -562,13 +608,15 @@ def install_skill(
     rprint(f"[dim]项目目录: {cwd}[/dim]")
     rprint(f"[dim]安装方式: {'🔗 ' if skill.install_method == 'symlink' else '📋 '}{skill.install_method}[/dim]\n")
 
-    # Vercel Skills 类型处理
-    if skill.type == "vercel":
+    # skills CLI 类型处理
+    if skill.type == "skills_cli":
         rprint("[bold]Step 1: 使用 npx skills 安装[/bold]")
-        install_cmd = f"npx skills add {skill.skill_name or skill.name}"
+        install_cmd = f"npx skills add {skill.package}"
+        if skill.skill_name:
+            install_cmd += f" --skill {skill.skill_name}"
         success, _ = run_command(install_cmd, cwd=cwd, dry_run=dry_run)
         if not success:
-            rprint("[red]❌ Vercel Skills 安装失败[/red]")
+            rprint("[red]❌ skills CLI 安装失败[/red]")
             raise typer.Exit(1)
         rprint(f"\n[green]✓ 技能 {skill.name} 安装完成！[/green]")
         return

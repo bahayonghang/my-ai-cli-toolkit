@@ -395,11 +395,13 @@ class MainScreen(Screen):
         lines = [
             f"📝 Description: {skill.description}",
             f"📦 Type: {skill.skill_type}",
+            f"🗂️ Group: {skill.group or 'N/A'}",
+            f"🏷️ Category: {skill.category or 'N/A'}",
+            f"🚚 Provider: {skill.provider or 'N/A'}",
             f"📍 Package: {skill.package}",
             f"🔧 Requires: {', '.join(skill.requires) if skill.requires else 'None'}",
             f"🎯 Platforms: {', '.join(skill.supported_targets)}",
-            f"🏠 Homepage: {skill.homepage or 'N/A'}",
-            f"📜 License: {skill.license or 'N/A'}",
+            f"🏷️ Tags: {', '.join(skill.tags) if skill.tags else 'None'}",
             f"✅ Supported: {'Yes' if skill.is_supported else 'No'}",
         ]
         detail_content.update("\n".join(lines))

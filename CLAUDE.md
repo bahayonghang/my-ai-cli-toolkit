@@ -19,7 +19,7 @@ just mcs-rebuild  # Force clean + rebuild
 
 ### MCS Web (Rust backend + React UI)
 ```bash
-just web                # Start both backend (port 13242) and UI (port 5173) with hot-reload
+just web                # Start both backend (port 23242) and UI (port 15173) with hot-reload
 just mcs-web-server     # Backend only
 just mcs-web-dev        # UI only (requires backend running)
 just mcs-web            # Build production bundle and run
@@ -54,7 +54,7 @@ The installable content, organized by type:
 - **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
 - **`content/agents/`** — AI agent definitions (CCW and specialist agents).
 - **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).
-- **`content/external-skills/`** — Registry (`registry.toml`) and Python installer (`install.py`) for npm/npx/pip/git/vercel-sourced skills. Usage: `python install.py list | agents | install <skill> --target <platform> | check <skill> | info <skill>`.
+- **`content/external-skills/`** — Registry (`external-skills.toml`) and Python installer (`install.py`) for curated external skills. Usage: `python install.py list | agents | install <skill> --target <platform> | check <skill> | info <skill>`.
 
 ### MCS Rust Workspace (`mcs/`)
 Cargo workspace with three crates:
@@ -76,8 +76,8 @@ Cargo workspace with three crates:
 - `tui/input.rs`, `tui/actions.rs` — Input event → action dispatch
 
 **`mcs-web`** (binary) — HTTP server + embedded SPA:
-- Backend: Axum on port 13242. REST routes in `src/api/mod.rs`: platforms, skills, commands, prompt, dashboard, sync, diff.
-- UI: React + TypeScript + MUI (Material UI v6) in `mcs-web/ui/`. Vite dev server on port 5173 proxies API calls to 13242.
+- Backend: Axum on port 23242. REST routes in `src/api/mod.rs`: platforms, skills, commands, prompt, dashboard, sync, diff.
+- UI: React + TypeScript + MUI (Material UI v6) in `mcs-web/ui/`. Vite dev server on port 15173 proxies API calls to 23242.
 - State: Zustand stores per domain (platformStore, dashboardStore, uiStore).
 
 ### Platform Configuration (`platforms.toml`)
