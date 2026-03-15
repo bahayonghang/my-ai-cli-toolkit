@@ -6,7 +6,7 @@
 
 | 分类 | 覆盖内容 |
 |------|----------|
-| `academic-skills` | 论文写作、质检、幻灯片、学位论文、复现 |
+| `academic-skills` | 论文写作、质检、幻灯片、学位论文、复现、文献检索 |
 | `ai-llm-skills` | Codex、Gemini、research 工作流 |
 | `diagram-skills` | draw.io、Excalidraw、Mermaid |
 | `document-skills` | Office 文档、PDF/LaTeX、Typst、Touying、标书 |

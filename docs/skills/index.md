@@ -6,7 +6,7 @@ This section tracks the installable catalog under `content/skills/`.
 
 | Category | What it covers |
 |----------|----------------|
-| `academic-skills` | paper writing, audit, slides, thesis, replication |
+| `academic-skills` | paper writing, audit, slides, thesis, replication, bibliography search |
 | `ai-llm-skills` | Codex, Gemini, research workflows |
 | `diagram-skills` | draw.io, Excalidraw, Mermaid |
 | `document-skills` | office documents, PDF/LaTeX, Typst, Touying, bid writing |
