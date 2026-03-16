@@ -113,7 +113,49 @@ export interface DashboardPlatformStats {
   installed_commands: number;
 }
 
+export interface DashboardSummary {
+  activePlatforms: number;
+  totalPlatforms: number;
+  installedSkills: number;
+  totalSkills: number;
+  installedCommands: number;
+  totalCommands: number;
+  outdatedSkills: number;
+  skillCoverage: number;
+  commandCoverage: number;
+}
+
+export interface DashboardTopSkill {
+  name: string;
+  installedOn: number;
+  outdatedOn: number;
+  category: string | null;
+}
+
+export interface DashboardTopCategory {
+  name: string;
+  installed: number;
+  total: number;
+}
+
+export interface DashboardUpdateQueueItem {
+  platformId: string;
+  platformName: string;
+  platformIcon: string;
+  outdatedSkills: number;
+  installedSkills: number;
+  totalSkills: number;
+}
+
+export interface DashboardSkillSpotlight {
+  topSkills: DashboardTopSkill[];
+  topCategories: DashboardTopCategory[];
+  updateQueue: DashboardUpdateQueueItem[];
+}
+
 export interface DashboardDto {
+  summary: DashboardSummary;
+  skillSpotlight: DashboardSkillSpotlight;
   platforms: DashboardPlatformStats[];
 }
 

@@ -196,7 +196,60 @@ pub struct DashboardPlatformStats {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DashboardSummary {
+    pub active_platforms: usize,
+    pub total_platforms: usize,
+    pub installed_skills: usize,
+    pub total_skills: usize,
+    pub installed_commands: usize,
+    pub total_commands: usize,
+    pub outdated_skills: usize,
+    pub skill_coverage: usize,
+    pub command_coverage: usize,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DashboardTopSkill {
+    pub name: String,
+    pub installed_on: usize,
+    pub outdated_on: usize,
+    pub category: Option<String>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DashboardTopCategory {
+    pub name: String,
+    pub installed: usize,
+    pub total: usize,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DashboardUpdateQueueItem {
+    pub platform_id: String,
+    pub platform_name: String,
+    pub platform_icon: String,
+    pub outdated_skills: usize,
+    pub installed_skills: usize,
+    pub total_skills: usize,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DashboardSkillSpotlight {
+    pub top_skills: Vec<DashboardTopSkill>,
+    pub top_categories: Vec<DashboardTopCategory>,
+    pub update_queue: Vec<DashboardUpdateQueueItem>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DashboardDto {
+    pub summary: DashboardSummary,
+    pub skill_spotlight: DashboardSkillSpotlight,
     pub platforms: Vec<DashboardPlatformStats>,
 }
 
