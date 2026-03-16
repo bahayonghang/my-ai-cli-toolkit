@@ -84,6 +84,11 @@ npx skills add sanyuan0704/code-review-expert -g -y
 npx skills add https://github.com/othmanadi/planning-with-files --skill planning-with-files
 ```
 
+```shell
+# BMAD 全自动研发流水线（多Agent 编排）- 支持从需求到部署的完整研发流程，通过 4 个阶段编排 9 个专业 Agent。
+npx skills add https://github.com/echoVic/boss-skill --skill boss-skill -g -y
+```
+
 ## python代码质量分析与重构
 
 ```shell

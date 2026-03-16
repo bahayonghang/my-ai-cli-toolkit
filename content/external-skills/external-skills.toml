@@ -243,6 +243,16 @@ tags = ["planning", "workflow"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/othmanadi/planning-with-files", skill_flag = "planning-with-files" }
 
 [[skills]]
+id = "boss-skill"
+name = "boss-skill"
+description = "Boss Skill - BMAD 全自动研发流水线（多Agent 编排，支持从需求到部署的完整研发流程）"
+stars = 5
+usage = "安装后使用 /boss 命令或 \"boss mode\" 启动全自动研发流水线"
+category_id = "dev-tools"
+tags = ["automation", "orchestration", "workflow", "multi-agent"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/echoVic/boss-skill", skill_flag = "boss-skill" }
+
+[[skills]]
 id = "python-code-quality"
 name = "python-code-quality"
 description = "Python 代码质量分析（静态分析/代码规范/最佳实践）"
