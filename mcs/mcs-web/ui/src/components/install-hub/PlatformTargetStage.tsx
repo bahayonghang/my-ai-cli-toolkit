@@ -1,0 +1,193 @@
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LayersClearIcon from "@mui/icons-material/LayersClear";
+import SelectAllIcon from "@mui/icons-material/SelectAll";
+import {
+  Box,
+  Button,
+  ButtonBase,
+  Chip,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useI18n } from "@/i18n";
+import type { PlatformDisplay } from "@/types";
+import type { PlatformSelection } from "./types";
+
+interface PlatformTargetStageProps {
+  platforms: PlatformDisplay[];
+  selectedPlatforms: PlatformSelection;
+  disabled?: boolean;
+  locked?: boolean;
+  onTogglePlatform: (platformId: string) => void;
+  onSelectAll: () => void;
+  onClearSelection: () => void;
+}
+
+export function PlatformTargetStage({
+  platforms,
+  selectedPlatforms,
+  disabled = false,
+  locked = false,
+  onTogglePlatform,
+  onSelectAll,
+  onClearSelection,
+}: PlatformTargetStageProps) {
+  const { t } = useI18n();
+  const stageDisabled = disabled || locked;
+
+  return (
+    <Stack spacing={2.5}>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={1.5}
+        justifyContent="space-between"
+        alignItems={{ xs: "stretch", md: "center" }}
+      >
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          <Chip
+            label={t("installHub.availableCount", { count: platforms.length })}
+            variant="outlined"
+          />
+          <Chip
+            label={t("common.selectedCount", { count: selectedPlatforms.size })}
+            color="primary"
+            variant="outlined"
+          />
+        </Stack>
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<SelectAllIcon />}
+            onClick={onSelectAll}
+            disabled={stageDisabled || platforms.length === 0}
+          >
+            {t("installHub.selectAll")}
+          </Button>
+          <Button
+            size="small"
+            variant="text"
+            startIcon={<LayersClearIcon />}
+            onClick={onClearSelection}
+            disabled={stageDisabled || selectedPlatforms.size === 0}
+          >
+            {t("installHub.clearSelection")}
+          </Button>
+        </Stack>
+      </Stack>
+
+      {locked ? (
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            borderRadius: 3,
+            border: "1px dashed rgba(255, 255, 255, 0.12)",
+            bgcolor: "rgba(255, 255, 255, 0.03)",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            {t("installHub.selectSkillToUnlockPlatforms")}
+          </Typography>
+        </Box>
+      ) : null}
+
+      {platforms.length === 0 ? (
+        <Box
+          sx={{
+            px: 2,
+            py: 3,
+            borderRadius: 3,
+            border: "1px solid var(--mcs-dashboard-outline)",
+          }}
+        >
+          <Typography color="text.secondary">{t("installHub.noPlatformsFound")}</Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={1.5}>
+          {platforms.map((platform) => {
+            const selected = selectedPlatforms.has(platform.id);
+
+            return (
+              <Grid key={platform.id} size={{ xs: 12, md: 6 }}>
+                <ButtonBase
+                  onClick={() => onTogglePlatform(platform.id)}
+                  disabled={stageDisabled}
+                  sx={{
+                    width: "100%",
+                    textAlign: "left",
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: selected
+                      ? "rgba(143, 197, 187, 0.42)"
+                      : "rgba(255, 255, 255, 0.08)",
+                    background: selected
+                      ? "linear-gradient(180deg, rgba(143, 197, 187, 0.16) 0%, rgba(17, 24, 29, 0.92) 100%)"
+                      : "linear-gradient(180deg, rgba(20, 28, 34, 0.92) 0%, rgba(14, 20, 24, 0.9) 100%)",
+                    boxShadow: selected ? "var(--mcs-shadow-md)" : "var(--mcs-shadow-sm)",
+                    p: 2.25,
+                    alignItems: "stretch",
+                    justifyContent: "stretch",
+                    opacity: stageDisabled ? 0.72 : 1,
+                    transition:
+                      "transform var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease), background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease)",
+                    "&:hover": {
+                      transform: stageDisabled ? "none" : "translateY(-1px)",
+                    },
+                  }}
+                >
+                  <Stack spacing={2} sx={{ width: "100%" }}>
+                    <Stack direction="row" spacing={1.5} justifyContent="space-between" alignItems="flex-start">
+                      <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
+                        <Typography variant="h4" sx={{ lineHeight: 1 }}>
+                          {platform.icon}
+                        </Typography>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography variant="h6" sx={{ lineHeight: 1.1 }}>
+                            {platform.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {platform.id}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      {selected ? (
+                        <Chip
+                          icon={<CheckCircleIcon fontSize="small" />}
+                          label={t("installHub.platformSelected")}
+                          color="success"
+                          size="small"
+                        />
+                      ) : (
+                        <Chip label={t("installHub.platformReady")} variant="outlined" size="small" />
+                      )}
+                    </Stack>
+
+                    <Box>
+                      <Typography
+                        variant="overline"
+                        sx={{ color: "var(--mcs-dashboard-muted)", display: "block" }}
+                      >
+                        {t("installHub.platformPathLabel")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "var(--mcs-dashboard-muted)",
+                          overflowWrap: "anywhere",
+                        }}
+                      >
+                        {platform.skills_path}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </ButtonBase>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
+    </Stack>
+  );
+}

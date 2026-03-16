@@ -4,18 +4,28 @@ import { useI18n } from "@/i18n";
 import type { TranslateFn } from "@/i18n";
 import type {
   ExecutionState,
+  InstallHubStage,
   PlatformInstallResult,
   PlatformSelection,
   SkillSelection,
 } from "@/components/install-hub/types";
 import type { PlatformDisplay, SkillCatalogDto } from "@/types";
 import {
+  buildInstallHubSummary,
+  coerceInstallHubStage,
   collectSkillCategories,
   filterSkillCatalog,
+  resolveInstallHubSteps,
   summarizeInstallResults,
 } from "./installHubLogic";
 
-const INITIAL_EXECUTION: ExecutionState = { running: false, currentStep: 0, totalSteps: 0 };
+const INITIAL_EXECUTION: ExecutionState = {
+  running: false,
+  currentStep: 0,
+  totalSteps: 0,
+  phase: "idle",
+  activePlatformId: null,
+};
 
 interface Dependencies {
   platforms: PlatformDisplay[];
@@ -33,6 +43,7 @@ interface RunnerDependencies {
   selectedSkills: SkillSelection;
   setExecution: (state: ExecutionState) => void;
   setResults: (results: PlatformInstallResult[]) => void;
+  setActiveStage: (stage: InstallHubStage) => void;
   t: TranslateFn;
 }
 
@@ -47,13 +58,54 @@ export function useUnifiedInstallHub({
   const selectionState = useSelectionState(platforms);
   const [execution, setExecution] = useState<ExecutionState>(INITIAL_EXECUTION);
   const [results, setResults] = useState<PlatformInstallResult[]>([]);
-  const selectedPlatformList = useMemo(
-    () => platforms.filter((platform) => selectionState.selectedPlatforms.has(platform.id)),
-    [platforms, selectionState.selectedPlatforms]
+  const [activeStage, setActiveStage] = useState<InstallHubStage>("skills");
+  const summary = useMemo(
+    () =>
+      buildInstallHubSummary({
+        platforms,
+        selectedPlatforms: selectionState.selectedPlatforms,
+        selectedSkills: selectionState.selectedSkills,
+        filteredSkillCount: catalogState.filteredSkills.length,
+        totalSkillCount: catalogState.catalog.length,
+      }),
+    [
+      platforms,
+      selectionState.selectedPlatforms,
+      selectionState.selectedSkills,
+      catalogState.filteredSkills.length,
+      catalogState.catalog.length,
+    ],
   );
-  const plannedActionCount = useMemo(
-    () => selectedPlatformList.length * selectionState.selectedSkills.size,
-    [selectedPlatformList, selectionState.selectedSkills]
+  const steps = useMemo(
+    () =>
+      resolveInstallHubSteps(
+        selectionState.selectedSkills.size,
+        selectionState.selectedPlatforms.size,
+      ),
+    [selectionState.selectedSkills.size, selectionState.selectedPlatforms.size],
+  );
+
+  useEffect(() => {
+    setActiveStage((previous) =>
+      coerceInstallHubStage(
+        previous,
+        selectionState.selectedSkills.size,
+        selectionState.selectedPlatforms.size,
+      ),
+    );
+  }, [selectionState.selectedPlatforms.size, selectionState.selectedSkills.size]);
+
+  const goToStage = useCallback(
+    (stage: InstallHubStage) => {
+      if (execution.running && stage !== "review") {
+        return;
+      }
+      if (stage !== "skills" && !steps[stage].available) {
+        return;
+      }
+      setActiveStage(stage);
+    },
+    [execution.running, steps],
   );
   const runInstall = useInstallRunner({
     platforms,
@@ -64,16 +116,21 @@ export function useUnifiedInstallHub({
     selectedSkills: selectionState.selectedSkills,
     setExecution,
     setResults,
+    setActiveStage,
     t,
   });
 
   return {
     ...catalogState,
     ...selectionState,
+    activeStage,
+    goToStage,
+    steps,
+    summary,
     execution,
     results,
     setResults,
-    plannedActionCount,
+    plannedActionCount: summary.plannedActionCount,
     runInstall,
   };
 }
@@ -120,13 +177,11 @@ function useCatalogState(fetchPlatforms: () => Promise<void>) {
 function useSelectionState(platforms: PlatformDisplay[]) {
   const [selectedSkills, setSelectedSkills] = useState<SkillSelection>(new Set());
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformSelection>(new Set());
-
   useEffect(() => {
-    if (platforms.length === 0) return;
-    setSelectedPlatforms((previous) =>
-      previous.size === 0 ? new Set(platforms.map((platform) => platform.id)) : previous
-    );
-  }, [platforms]);
+    if (platforms.length === 0 && selectedPlatforms.size > 0) {
+      setSelectedPlatforms(new Set());
+    }
+  }, [platforms.length, selectedPlatforms.size]);
 
   return { selectedSkills, selectedPlatforms, setSelectedSkills, setSelectedPlatforms };
 }
@@ -140,12 +195,14 @@ function useInstallRunner({
   selectedSkills,
   setExecution,
   setResults,
+  setActiveStage,
   t,
 }: RunnerDependencies) {
   return useCallback(async () => {
     const selection = resolveInstallSelection(platforms, selectedPlatforms, selectedSkills);
     if (!selection) return;
     const totalPlatforms = selection.platforms.length;
+    setActiveStage("review");
 
     const runResults = await installAcrossPlatforms(
       selection,
@@ -157,6 +214,8 @@ function useInstallRunner({
       running: false,
       currentStep: totalPlatforms,
       totalSteps: totalPlatforms,
+      phase: "complete",
+      activePlatformId: null,
     });
     await refreshPlatforms();
     await refreshCatalog();
@@ -170,6 +229,7 @@ function useInstallRunner({
     selectedSkills,
     setExecution,
     setResults,
+    setActiveStage,
     t,
   ]);
 }
@@ -211,7 +271,13 @@ export async function installAcrossPlatforms(
   const totalPlatforms = selection.platforms.length;
   const runResultsByPlatform = new Map<string, PlatformInstallResult>();
   setResults([]);
-  setExecution({ running: true, currentStep: 0, totalSteps: totalPlatforms });
+  setExecution({
+    running: true,
+    currentStep: 0,
+    totalSteps: totalPlatforms,
+    phase: "running",
+    activePlatformId: selection.platforms[0]?.id ?? null,
+  });
 
   let completedCount = 0;
 
@@ -219,7 +285,15 @@ export async function installAcrossPlatforms(
     const result = await installOnPlatform(platform, selection.skills, t);
     runResultsByPlatform.set(platform.id, result);
     completedCount++;
-    setExecution({ running: true, currentStep: completedCount, totalSteps: totalPlatforms });
+    const nextActivePlatform =
+      selection.platforms.find((candidate) => !runResultsByPlatform.has(candidate.id))?.id ?? null;
+    setExecution({
+      running: true,
+      currentStep: completedCount,
+      totalSteps: totalPlatforms,
+      phase: "running",
+      activePlatformId: nextActivePlatform,
+    });
     setResults(resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform));
     return result;
   });

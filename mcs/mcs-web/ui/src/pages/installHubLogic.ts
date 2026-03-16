@@ -1,5 +1,12 @@
-import type { SkillCatalogDto } from "@/types";
-import type { PlatformInstallResult } from "@/components/install-hub/types";
+import type { SkillCatalogDto, PlatformDisplay } from "@/types";
+import type {
+  InstallHubSelectionSummary,
+  InstallHubStage,
+  InstallHubStepState,
+  PlatformInstallResult,
+  PlatformSelection,
+  SkillSelection,
+} from "@/components/install-hub/types";
 
 const EMPTY_CATEGORY = "uncategorized";
 
@@ -47,4 +54,63 @@ export function summarizeInstallResults(results: PlatformInstallResult[]): {
   }
 
   return { totalSuccess, totalFailure, failedPlatforms };
+}
+
+export function resolveInstallHubSteps(
+  selectedSkillCount: number,
+  selectedPlatformCount: number,
+): Record<InstallHubStage, InstallHubStepState> {
+  return {
+    skills: {
+      stage: "skills",
+      available: true,
+      complete: selectedSkillCount > 0,
+    },
+    platforms: {
+      stage: "platforms",
+      available: selectedSkillCount > 0,
+      complete: selectedPlatformCount > 0,
+    },
+    review: {
+      stage: "review",
+      available: selectedSkillCount > 0 && selectedPlatformCount > 0,
+      complete: false,
+    },
+  };
+}
+
+export function coerceInstallHubStage(
+  activeStage: InstallHubStage,
+  selectedSkillCount: number,
+  selectedPlatformCount: number,
+): InstallHubStage {
+  if (selectedSkillCount === 0) {
+    return "skills";
+  }
+
+  if (activeStage === "review" && selectedPlatformCount === 0) {
+    return "platforms";
+  }
+
+  return activeStage;
+}
+
+export function buildInstallHubSummary(args: {
+  platforms: PlatformDisplay[];
+  selectedPlatforms: PlatformSelection;
+  selectedSkills: SkillSelection;
+  filteredSkillCount: number;
+  totalSkillCount: number;
+}): InstallHubSelectionSummary {
+  const selectedPlatformItems = args.platforms.filter((platform) =>
+    args.selectedPlatforms.has(platform.id),
+  );
+
+  return {
+    selectedSkillNames: Array.from(args.selectedSkills),
+    selectedPlatforms: selectedPlatformItems,
+    filteredSkillCount: args.filteredSkillCount,
+    totalSkillCount: args.totalSkillCount,
+    plannedActionCount: selectedPlatformItems.length * args.selectedSkills.size,
+  };
 }

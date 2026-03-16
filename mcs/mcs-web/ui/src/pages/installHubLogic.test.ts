@@ -3,8 +3,11 @@ import type { PlatformInstallResult } from "@/components/install-hub/types";
 import type { TranslateFn } from "@/i18n";
 import type { PlatformDisplay } from "@/types";
 import {
+  buildInstallHubSummary,
+  coerceInstallHubStage,
   collectSkillCategories,
   filterSkillCatalog,
+  resolveInstallHubSteps,
   summarizeInstallResults,
 } from "./installHubLogic";
 import { installAcrossPlatforms } from "./useUnifiedInstallHub";
@@ -121,6 +124,50 @@ describe("summarizeInstallResults", () => {
   });
 });
 
+describe("resolveInstallHubSteps", () => {
+  it("unlocks stages progressively as selections become valid", () => {
+    expect(resolveInstallHubSteps(0, 0)).toEqual({
+      skills: { stage: "skills", available: true, complete: false },
+      platforms: { stage: "platforms", available: false, complete: false },
+      review: { stage: "review", available: false, complete: false },
+    });
+
+    expect(resolveInstallHubSteps(2, 1)).toEqual({
+      skills: { stage: "skills", available: true, complete: true },
+      platforms: { stage: "platforms", available: true, complete: true },
+      review: { stage: "review", available: true, complete: false },
+    });
+  });
+});
+
+describe("coerceInstallHubStage", () => {
+  it("falls back to the latest reachable stage when selections shrink", () => {
+    expect(coerceInstallHubStage("review", 0, 0)).toBe("skills");
+    expect(coerceInstallHubStage("review", 1, 0)).toBe("platforms");
+    expect(coerceInstallHubStage("platforms", 2, 0)).toBe("platforms");
+  });
+});
+
+describe("buildInstallHubSummary", () => {
+  it("derives selected items and action count from the current filters", () => {
+    expect(
+      buildInstallHubSummary({
+        platforms: SHARED_PATH_PLATFORMS,
+        selectedPlatforms: new Set(["claude", "codex"]),
+        selectedSkills: new Set(["alpha", "beta"]),
+        filteredSkillCount: 5,
+        totalSkillCount: 9,
+      }),
+    ).toEqual({
+      selectedSkillNames: ["alpha", "beta"],
+      selectedPlatforms: SHARED_PATH_PLATFORMS,
+      filteredSkillCount: 5,
+      totalSkillCount: 9,
+      plannedActionCount: 4,
+    });
+  });
+});
+
 describe("installAcrossPlatforms", () => {
   it("installs each selected platform even when skills_path is shared", async () => {
     installSkillsMock
@@ -156,16 +203,22 @@ describe("installAcrossPlatforms", () => {
       running: true,
       currentStep: 0,
       totalSteps: 2,
+      phase: "running",
+      activePlatformId: "claude",
     });
     expect(setExecution).toHaveBeenNthCalledWith(2, {
       running: true,
       currentStep: 1,
       totalSteps: 2,
+      phase: "running",
+      activePlatformId: "codex",
     });
     expect(setExecution).toHaveBeenNthCalledWith(3, {
       running: true,
       currentStep: 2,
       totalSteps: 2,
+      phase: "running",
+      activePlatformId: null,
     });
     expect(results).toEqual([
       {
