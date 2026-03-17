@@ -11,7 +11,7 @@ For the current repository, use:
 ## Current model
 
 - first-party installable content lives under `content/skills/`
-- third-party skill registry metadata lives in `content/skills/external-skills.toml`
+- third-party skill registry metadata lives in `content/skills/external-skills/`
 - management flows are surfaced through MCS TUI and MCS Web
 
 Keep this page only as a compatibility pointer for legacy bookmarks.

@@ -31,7 +31,7 @@
 
 - `core/discovery.rs`：遍历 skills / commands 源目录，计算安装状态，读取 metadata
 - `core/skill_meta.rs`：解析 MCS 当前使用的顶层 skill frontmatter 字段
-- `core/external_skills.rs`：从 `content/skills/external-skills.toml` 加载 external-skills 注册表
+- `core/external_skills.rs`：从 `content/skills/external-skills/`（`index.toml` + 分类分片）加载 external-skills 注册表
 
 ### 安装流水线
 

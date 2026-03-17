@@ -4,8 +4,8 @@ This directory contains the repository's main skill source area.
 
 ## Scope
 
-All subdirectories under `content/skills/` are installable skill content consumed by MCS.
-Top-level metadata files such as `default.toml` and `external-skills.toml` are not installable skills.
+Most subdirectories under `content/skills/` are installable skill content consumed by MCS.
+Top-level metadata like `default.toml` and the registry directory `external-skills/` are not installable skills.
 
 ## Conventions
 
@@ -39,8 +39,8 @@ For MCS compatibility, prefer top-level frontmatter fields:
 
 ## Registry note
 
-- `external-skills.toml` is the curated third-party registry used by `mcs-core` and `mcs-web`
-- do not place `SKILL.md` beside that file; installable skills still belong in category subdirectories
+- `external-skills/` is the curated third-party registry used by `mcs-core` and `mcs-web`
+- do not place `SKILL.md` inside that registry directory; installable skills still belong in category subdirectories
 
 ## Release checklist for a new skill
 

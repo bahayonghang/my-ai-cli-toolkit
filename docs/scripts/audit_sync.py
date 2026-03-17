@@ -10,13 +10,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTENT_SKILLS = REPO_ROOT / "content" / "skills"
 DOCS_SKILLS = REPO_ROOT / "docs" / "skills"
 DOCS_ZH_SKILLS = REPO_ROOT / "docs" / "zh" / "skills"
+SKIP_SKILL_DIRS = {"external-skills"}
 
 
 def skill_categories() -> list[str]:
     return sorted(
         entry.name
         for entry in CONTENT_SKILLS.iterdir()
-        if entry.is_dir() and not entry.name.startswith(".")
+        if entry.is_dir() and not entry.name.startswith(".") and entry.name not in SKIP_SKILL_DIRS
     )
 
 
@@ -92,8 +93,10 @@ def stale_reference_checks() -> list[str]:
         REPO_ROOT / "content" / "skills" / "README.md",
         REPO_ROOT / "content" / "skills" / "CLAUDE.md",
         REPO_ROOT / "content" / "agents" / "CLAUDE.md",
-        REPO_ROOT / "content" / "skills" / "external-skills.toml",
     ]
+    registry_dir = REPO_ROOT / "content" / "skills" / "external-skills"
+    if registry_dir.exists():
+        files.extend(sorted(registry_dir.rglob("*.toml")))
 
     forbidden = {
         "my-claude-skills": "stale repository name",

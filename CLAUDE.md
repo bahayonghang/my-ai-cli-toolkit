@@ -54,7 +54,7 @@ The installable content, organized by type:
 - **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
 - **`content/agents/`** — AI agent definitions (CCW and specialist agents).
 - **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).
-- **`content/skills/external-skills.toml`** — Curated external-skill registry consumed by `mcs-core` and surfaced through the `mcs-web` `npx skills` flow.
+- **`content/skills/external-skills/`** — Directoryized external-skill registry (`index.toml` + category fragments) consumed by `mcs-core` and surfaced through the `mcs-web` `npx skills` flow.
 
 ### MCS Rust Workspace (`mcs/`)
 Cargo workspace with three crates:

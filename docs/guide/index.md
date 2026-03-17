@@ -7,7 +7,7 @@ This site documents the current repository shape of [`my-claude-code-settings`](
 - `content/skills/` contains installable skill directories, organized by category.
 - `content/commands/` contains slash-command and workflow sources for different platforms.
 - `content/agents/` contains markdown agent definitions grouped into `ccw` and `specialist`.
-- `content/skills/external-skills.toml` contains the external skill registry metadata used by MCS Web.
+- `content/skills/external-skills/` contains the external skill registry metadata used by MCS Web.
 - `content/hooks/` and `content/memorys/` contain runtime support files.
 - `mcs/` is a Rust workspace with a shared core library, a terminal UI, and a web app.
 

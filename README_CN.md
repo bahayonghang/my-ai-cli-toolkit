@@ -33,7 +33,7 @@ just doc
 │   ├── skills/            # 一方技能目录
 │   ├── commands/          # Slash command / workflow 源文件
 │   ├── agents/            # Markdown agent 定义
-│   ├── skills/            # 含一方技能目录与 external-skills.toml 注册表数据
+│   ├── skills/            # 含一方技能目录与 external-skills/ 注册表分片
 │   ├── hooks/             # 运行时 hook 资源
 │   └── memorys/           # 平台相关 runtime memory / prompt 文件
 ├── docs/                  # VitePress 文档站点
@@ -42,7 +42,7 @@ just doc
 └── justfile               # 常用入口命令
 ```
 
-当前第三方技能注册表位于 `content/skills/external-skills.toml`。
+当前第三方技能注册表位于 `content/skills/external-skills/`。
 
 ## 技能分类
 

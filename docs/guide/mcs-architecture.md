@@ -31,7 +31,7 @@ Project root detection succeeds when `content/skills/` is found.
 
 - `core/discovery.rs`: walks skill and command source trees, computes install status, reads metadata
 - `core/skill_meta.rs`: parses top-level skill frontmatter fields used by MCS
-- `core/external_skills.rs`: loads the external-skills registry from `content/skills/external-skills.toml`
+- `core/external_skills.rs`: loads the external-skills registry from `content/skills/external-skills/` (`index.toml` + category fragments)
 
 ### Install pipeline
 
