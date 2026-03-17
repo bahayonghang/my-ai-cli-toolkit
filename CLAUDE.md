@@ -54,7 +54,7 @@ The installable content, organized by type:
 - **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
 - **`content/agents/`** — AI agent definitions (CCW and specialist agents).
 - **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).
-- **`content/external-skills/`** — Registry (`external-skills.toml`) and Python installer (`install.py`) for curated external skills. Usage: `python install.py list | agents | install <skill> --target <platform> | check <skill> | info <skill>`.
+- **`content/skills/external-skills.toml`** — Curated external-skill registry consumed by `mcs-core` and surfaced through the `mcs-web` `npx skills` flow.
 
 ### MCS Rust Workspace (`mcs/`)
 Cargo workspace with three crates:
@@ -64,7 +64,7 @@ Cargo workspace with three crates:
 - `core/discovery.rs` — Scans the content directory for skills and commands, computes `InstallStatus` (Installed / NotInstalled / Outdated via mtime comparison).
 - `core/installer.rs` — Copies/removes skills and commands to platform directories.
 - `core/install_target.rs` — `InstallTarget` with `scope: Global | Project`. Global installs go to the platform's `base_dir`; Project installs resolve to `<project_path>/.<platform>` (with special mappings: `opencode` → `.opencode`, `antigravity` → `.gemini/antigravity`, `windsurf` → `.codeium/windsurf`).
-- `core/skill_store.rs` — Local skill cache at `~/.mcs/skills/`. Installs via symlink (preferred) with copy fallback (`SkillInstallMode`). Used by the migration and external skill systems.
+- `core/skill_store.rs` — Local skill cache at `~/.mcs/skills/`. Installs via symlink (preferred) with copy fallback (`SkillInstallMode`). Used by the migration and external-registry-backed install systems.
 - `core/skill_migration.rs` — One-shot migration (`skills-symlink-v1`) that converts skills previously copied into the store to symlinks for deduplication.
 - `core/skill_meta.rs` — Parses `SKILL.md` metadata (name, description, tags, category).
 - `model.rs` — Core types: `ItemInfo`, `ItemType`, `InstallStatus`, `InstallResult`, `LinkMode`.

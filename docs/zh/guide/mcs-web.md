@@ -38,7 +38,7 @@ just mcs-web
 
 - 通过 `content/skills/` 识别仓库根目录
 - 通过 `mcs-core` 读取平台配置
-- 暴露平台、dashboard、skills、commands、prompt、sync、external skills 等 REST API
+- 暴露平台、dashboard、skills、commands、prompt、sync，以及基于外部注册表的 `npx skills` REST API
 - 在 `mcs-web/ui/dist/` 存在时直接托管构建后的 SPA
 
 ## 前端界面

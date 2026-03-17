@@ -21,7 +21,7 @@ hero:
 features:
   - icon: 🧭
     title: 对齐真实仓库结构
-    details: 文档以当前的 `content/skills`、`content/commands`、`content/agents`、`content/external-skills`、`content/hooks`、`content/memorys` 和 `mcs/` 为准。
+    details: 文档以当前的 `content/skills`、`content/commands`、`content/agents`、`content/hooks`、`content/memorys` 和 `mcs/` 为准，其中外部注册表文件位于 `content/skills/`。
   - icon: 🦀
     title: MCS TUI 与 Web
     details: 说明 `mcs-core`、`mcs-tui`、`mcs-web` 的职责划分，以及内容发现、安装、diff、同步的工作流。
@@ -30,5 +30,5 @@ features:
     details: 技能页只围绕当前可安装的 `content/skills` 条目，不再把旧模板页当作真实目录展示。
   - icon: 🔌
     title: Runtime 与外部内容
-    details: 除主技能库外，还覆盖 hooks、memory/runtime 文件以及 external-skills 注册表。
+    details: 除主技能库外，还覆盖 hooks、memory/runtime 文件以及 external-skills 注册表文件。
 ---

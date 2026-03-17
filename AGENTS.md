@@ -19,7 +19,7 @@ Use `just` from the repository root for standard workflows:
 Follow the existing language defaults instead of inventing local variants. Rust must pass `cargo fmt` and `cargo clippy -- -D warnings`; use snake_case for modules and functions. React + TypeScript uses 2-space indentation, PascalCase for components and page files such as `NpxSkillsPage.tsx`, and camelCase for hooks, stores, and utilities such as `useUiStore` or `statusAggregation.ts`. Keep Markdown content concise and directory names kebab-case, for example `workflow-skills` or `git-github-skills`.
 
 ## Testing Guidelines
-Prefer targeted tests while iterating, then run `just ci` before opening a PR. UI changes should include Vitest coverage and Playwright coverage for changed user flows. Rust changes should add or update `cargo test` coverage near the affected crate. When editing the Python external-skill installer, update tests under `content/external-skills/tui/tests`.
+Prefer targeted tests while iterating, then run `just ci` before opening a PR. UI changes should include Vitest coverage and Playwright coverage for changed user flows. Rust changes should add or update `cargo test` coverage near the affected crate. When editing external-registry loading or `npx skills` integration, update the nearest Rust or web tests.
 
 ## Commit & Pull Request Guidelines
 Recent history follows Conventional Commits with an optional scope and emoji, for example `feat(skills): ✨ add drawio skill` or `docs(guide): 📝 update runtime docs`. Keep subjects imperative and scoped. PRs should summarize the change, list verification commands, link related issues, and include screenshots or short recordings for `mcs-web`, TUI, or docs UI changes.

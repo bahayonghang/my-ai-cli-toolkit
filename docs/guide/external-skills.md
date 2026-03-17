@@ -2,16 +2,15 @@
 
 ## Overview
 
-Third-party skills are managed from `content/external-skills/`.
+Third-party skills are described by the registry file `content/skills/external-skills.toml`.
 
-This area is separate from the first-party repository catalog under `content/skills/`.
+This registry lives alongside the first-party catalog under `content/skills/`, but it is not itself an installable skill directory.
 
-It contains:
+The current model is:
 
-- `external-skills.toml`: registry data
-- `install.py`: CLI installer
-- `install_tui.py`: terminal UI for the external catalog
-- `README.md`: registry usage and supported install types
+- first-party skills: `content/skills/<category>/<skill-name>/`
+- third-party registry: `content/skills/external-skills.toml`
+- web management surface: MCS Web `npx skills`
 
 ## Supported install types
 
@@ -25,13 +24,13 @@ The registry currently documents flows for:
 
 ## Relationship to MCS
 
-MCS consumes this catalog through `mcs-core` and exposes external-skill functionality in the web API.
+MCS consumes this registry through `mcs-core` and exposes external-skill functionality in the web API.
 
 That means:
 
 - first-party catalog lives in `content/skills/`
-- third-party catalog lives in `content/external-skills/`
-- docs should describe them separately
+- third-party registry also lives under `content/skills/`
+- docs should still describe first-party skill directories and third-party registry data separately
 
 ## When to use it
 
@@ -41,14 +40,22 @@ Use external skills when:
 - installation depends on another package manager or remote repo
 - you want to keep third-party lifecycle separate from the first-party catalog
 
-## CLI examples
+## Registry examples
 
-```bash
-cd content/external-skills
-uv run python install.py list
-uv run python install.py agents
-uv run python install.py info <skill-name>
-uv run python install.py install <skill-name> --target claude
+```toml
+[schema]
+version = 2
+
+[[skills]]
+id = "find-skills"
+name = "find-skills"
+category_id = "frontend"
+
+[skills.install]
+kind = "skills_cli"
+provider = "vercel"
+package_ref = "vercel-labs/skills"
+skill_flag = "find-skills"
 ```
 
-For more detail, inspect the local README in `content/external-skills/README.md`.
+The old standalone Python installer/TUI has been retired.

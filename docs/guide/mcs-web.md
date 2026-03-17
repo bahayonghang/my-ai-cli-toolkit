@@ -38,7 +38,7 @@ Useful companion commands:
 
 - detects the repository root through `content/skills/`
 - loads platform config through `mcs-core`
-- exposes REST endpoints for platforms, dashboard, skills, commands, prompt actions, sync, and external skills
+- exposes REST endpoints for platforms, dashboard, skills, commands, prompt actions, sync, and the external registry-backed `npx skills` flow
 - serves the built SPA when `mcs-web/ui/dist/` exists
 
 ## Frontend surfaces

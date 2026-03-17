@@ -11,7 +11,7 @@
 ## 当前模型
 
 - 一方可安装内容位于 `content/skills/`
-- 第三方技能注册表和安装工具位于 `content/external-skills/`
+- 第三方技能注册表元数据位于 `content/skills/external-skills.toml`
 - 管理流程通过 MCS TUI 和 MCS Web 暴露
 
 本页仅用于兼容旧书签。

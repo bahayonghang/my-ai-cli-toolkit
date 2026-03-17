@@ -33,7 +33,7 @@ just doc
 │   ├── skills/            # First-party skill catalog
 │   ├── commands/          # Slash commands and workflow sources
 │   ├── agents/            # Markdown agent definitions
-│   ├── external-skills/   # Third-party skill registry and installer tooling
+│   ├── skills/            # Includes first-party skills plus external-skills.toml registry data
 │   ├── hooks/             # Runtime hook assets
 │   └── memorys/           # Platform-specific runtime memory / prompt files
 ├── docs/                  # VitePress documentation site
@@ -41,6 +41,8 @@ just doc
 ├── platforms.toml         # Platform install mapping
 └── justfile               # Common entrypoints
 ```
+
+The curated third-party registry now lives at `content/skills/external-skills.toml`.
 
 ## Skill categories
 

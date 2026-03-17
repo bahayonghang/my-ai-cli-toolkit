@@ -7,7 +7,7 @@
 - `content/skills/`：按分类组织的可安装技能目录
 - `content/commands/`：不同平台的 slash command / workflow 源文件
 - `content/agents/`：分为 `ccw` 和 `specialist` 两组的 agent 定义
-- `content/external-skills/`：外部技能注册表与安装工具
+- `content/skills/external-skills.toml`：供 MCS Web 使用的外部技能注册表元数据
 - `content/hooks/` 与 `content/memorys/`：运行时支持文件
 - `mcs/`：Rust workspace，包含共享核心库、TUI 和 Web 应用
 

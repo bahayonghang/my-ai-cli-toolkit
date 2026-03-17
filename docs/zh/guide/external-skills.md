@@ -2,16 +2,15 @@
 
 ## 概览
 
-第三方技能由 `content/external-skills/` 管理。
+第三方技能现在由注册表文件 `content/skills/external-skills.toml` 描述。
 
-它与仓库自带的 `content/skills/` 主 catalog 是两套不同的体系。
+它与仓库自带的 `content/skills/` 一方技能目录共存，但它本身不是可安装技能目录。
 
-这个目录当前包含：
+当前模型是：
 
-- `external-skills.toml`：注册表数据
-- `install.py`：CLI 安装器
-- `install_tui.py`：外部 catalog 的终端界面
-- `README.md`：注册表使用说明与支持的安装类型
+- 一方技能：`content/skills/<category>/<skill-name>/`
+- 第三方注册表：`content/skills/external-skills.toml`
+- Web 管理入口：MCS Web 的 `npx skills`
 
 ## 支持的安装类型
 
@@ -25,13 +24,13 @@
 
 ## 与 MCS 的关系
 
-MCS 会通过 `mcs-core` 读取这份 catalog，并在 Web API 中暴露 external skill 相关能力。
+MCS 会通过 `mcs-core` 读取这份注册表，并在 Web API 中暴露 external skill 相关能力。
 
 也就是说：
 
 - 一方 catalog 在 `content/skills/`
-- 三方 catalog 在 `content/external-skills/`
-- 文档里必须把这两者分开说明
+- 三方注册表也位于 `content/skills/`
+- 文档里仍然要把“一方技能目录”和“三方注册表数据”区分开说明
 
 ## 什么时候使用它
 
@@ -41,14 +40,22 @@ MCS 会通过 `mcs-core` 读取这份 catalog，并在 Web API 中暴露 externa
 - 安装依赖其他包管理器或远程仓库
 - 想把第三方能力的生命周期与主 catalog 分离
 
-## CLI 示例
+## 注册表示例
 
-```bash
-cd content/external-skills
-uv run python install.py list
-uv run python install.py agents
-uv run python install.py info <skill-name>
-uv run python install.py install <skill-name> --target claude
+```toml
+[schema]
+version = 2
+
+[[skills]]
+id = "find-skills"
+name = "find-skills"
+category_id = "frontend"
+
+[skills.install]
+kind = "skills_cli"
+provider = "vercel"
+package_ref = "vercel-labs/skills"
+skill_flag = "find-skills"
 ```
 
-更完整的用法见本地文件 `content/external-skills/README.md`。
+旧的 Python 安装器/TUI 已退役。

@@ -31,7 +31,7 @@ Project root detection succeeds when `content/skills/` is found.
 
 - `core/discovery.rs`: walks skill and command source trees, computes install status, reads metadata
 - `core/skill_meta.rs`: parses top-level skill frontmatter fields used by MCS
-- `core/external_skills.rs`: loads the external-skills catalog
+- `core/external_skills.rs`: loads the external-skills registry from `content/skills/external-skills.toml`
 
 ### Install pipeline
 
@@ -58,7 +58,7 @@ It calls into `mcs-core` for discovery, diff, prompt update, install, uninstall,
 
 - async app state
 - REST API handlers
-- external-skill install jobs and streaming
+- external-registry-backed install jobs and streaming
 - built UI asset serving
 
 The React UI talks only to the Axum API layer. Shared business rules stay in `mcs-core`.

@@ -92,7 +92,7 @@ def stale_reference_checks() -> list[str]:
         REPO_ROOT / "content" / "skills" / "README.md",
         REPO_ROOT / "content" / "skills" / "CLAUDE.md",
         REPO_ROOT / "content" / "agents" / "CLAUDE.md",
-        REPO_ROOT / "content" / "external-skills" / "README.md",
+        REPO_ROOT / "content" / "skills" / "external-skills.toml",
     ]
 
     forbidden = {
@@ -104,6 +104,8 @@ def stale_reference_checks() -> list[str]:
 
     issues: list[str] = []
     for file in files:
+        if not file.exists():
+            continue
         text = file.read_text(encoding="utf-8")
         for needle, reason in forbidden.items():
             if needle in text:

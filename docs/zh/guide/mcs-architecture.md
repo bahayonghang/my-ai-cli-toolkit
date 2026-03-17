@@ -31,7 +31,7 @@
 
 - `core/discovery.rs`：遍历 skills / commands 源目录，计算安装状态，读取 metadata
 - `core/skill_meta.rs`：解析 MCS 当前使用的顶层 skill frontmatter 字段
-- `core/external_skills.rs`：加载 external-skills catalog
+- `core/external_skills.rs`：从 `content/skills/external-skills.toml` 加载 external-skills 注册表
 
 ### 安装流水线
 
@@ -58,7 +58,7 @@
 
 - 异步 app state
 - REST API handlers
-- external skill 安装任务与流式状态
+- 基于外部注册表的安装任务与流式状态
 - 构建后 UI 资源托管
 
 React UI 只与 Axum API 对话，业务规则继续放在 `mcs-core`。
