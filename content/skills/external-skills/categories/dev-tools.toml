@@ -1,0 +1,80 @@
+[[skills]]
+id = "skill-creator"
+name = "skill-creator"
+description = "Claude 技能创建器（交互式引导创建新 Claude Code 技能）"
+stars = 4
+usage = "安装后使用 /skill-creator 命令交互式创建新技能"
+tags = ["skills", "scaffolding"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/anthropics/skills", skill_flag = "skill-creator" }
+
+[[skills]]
+id = "agent-browser"
+name = "agent-browser"
+description = "AI Agent 浏览器自动化工具（Rust 无头浏览器, 支持测试/截图/数据提取）"
+stars = 4
+usage = "安装后通过自然语言指令控制浏览器执行自动化任务"
+tags = ["browser", "automation", "testing"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/vercel-labs/agent-browser", skill_flag = "agent-browser" }
+
+[[skills]]
+id = "find-skills"
+name = "find-skills"
+description = "技能发现工具（查找和安装 agent skills 生态中的可用技能包）"
+stars = 5
+usage = "安装后使用 /find-skills 命令搜索和发现可用技能"
+tags = ["discovery", "registry"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/vercel-labs/skills", skill_flag = "find-skills" }
+
+[[skills]]
+id = "code-review-expert"
+name = "code-review-expert"
+description = "代码审查专家 — 多维度结构化审查（SOLID/安全/性能, P0-P3 评级报告）"
+stars = 4
+usage = "安装后使用 /code-review 命令进行多维度结构化代码审查"
+tags = ["review", "quality"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "sanyuan0704/code-review-expert", skill_flag = "code-review-expert" }
+
+[[skills]]
+id = "claude-skills-fullstack"
+name = "claude-skills-fullstack"
+description = "全栈开发结对编程助手 — 66 个专用技能（前后端框架/测试/DevOps）"
+stars = 4
+usage = "安装后使用 /find-skills 命令发现 66 个专用开发技能并按需安装"
+tags = ["fullstack", "pairing"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "jeffallan/claude-skills" }
+
+[[skills]]
+id = "skill-seekers"
+name = "skill-seekers"
+description = "技能发现工具 — 查找和安装 agent skills 生态中的可用技能包"
+stars = 5
+usage = "安装后使用 /skill-seekers 命令搜索并安装社区技能"
+tags = ["discovery", "community"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/sickn33/antigravity-awesome-skills", skill_flag = "skill-seekers" }
+
+[[skills]]
+id = "planning-with-files"
+name = "planning-with-files"
+description = "Manus 风格的文件驱动型规划工具（自动生成 task_plan.md / findings.md / progress.md）"
+stars = 5
+usage = "安装后通过执行自动规划与跟踪复杂任务，提供详细的发现记录与进度管理"
+tags = ["planning", "workflow"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/othmanadi/planning-with-files", skill_flag = "planning-with-files" }
+
+[[skills]]
+id = "boss-skill"
+name = "boss-skill"
+description = "Boss Skill - BMAD 全自动研发流水线（多Agent 编排，支持从需求到部署的完整研发流程）"
+stars = 5
+usage = "安装后使用 /boss 命令或 \"boss mode\" 启动全自动研发流水线"
+tags = ["automation", "orchestration", "workflow", "multi-agent"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/echoVic/boss-skill", skill_flag = "boss-skill" }
+
+[[skills]]
+id = "agent-architecture-analysis"
+name = "agent-architecture-analysis"
+description = "Agent 架构分析工具（代码架构审查/设计模式识别）"
+stars = 3
+usage = "安装后自动分析项目架构，识别设计模式并给出改进建议"
+tags = ["architecture", "analysis"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "existential-birds/beagle", skill_flag = "agent-architecture-analysis" }

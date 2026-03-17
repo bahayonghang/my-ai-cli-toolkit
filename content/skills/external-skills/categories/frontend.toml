@@ -1,0 +1,26 @@
+[[skills]]
+id = "vercel-react-best-practices"
+name = "vercel-react-best-practices"
+description = "Vercel React 和 Next.js 性能优化最佳实践（57 条规则, 8 大类别）"
+stars = 4
+usage = "安装后在 React/Next.js 项目中自动生效，提供组件设计与性能优化指导"
+tags = ["react", "nextjs", "performance"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/vercel-labs/agent-skills", skill_flag = "vercel-react-best-practices" }
+
+[[skills]]
+id = "vue-best-practices"
+name = "vue-best-practices"
+description = "Vue 3 开发最佳实践（Composition API / 响应式 / 组件设计指南）"
+stars = 3
+usage = "安装后在 Vue 3 项目中自动生效，提供 Composition API 开发指导"
+tags = ["vue", "frontend"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/hyf0/vue-skills", skill_flag = "vue-best-practices" }
+
+[[skills]]
+id = "vuejs-ai-skills"
+name = "vuejs-ai-skills"
+description = "Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）"
+stars = 4
+usage = "安装后在 Vue.js 项目中自动生效，提供官方推荐的开发实践"
+tags = ["vue", "official"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vuejs-ai/skills" }

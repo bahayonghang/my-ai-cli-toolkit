@@ -1,0 +1,8 @@
+[[skills]]
+id = "supabase-agent-skills"
+name = "supabase-agent-skills"
+description = "Supabase Agent Skills — PostgreSQL 最佳实践（查询/连接/模式/RLS）"
+stars = 4
+usage = "安装后在使用 Supabase 的项目中自动生效，指导数据库设计与查询优化"
+tags = ["supabase", "postgres", "rls"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "supabase/agent-skills" }

@@ -1,15 +1,19 @@
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::fmt::{Display, Formatter};
-use std::path::Path;
+use std::path::{Component, Path, PathBuf};
 
 use serde::Deserialize;
+use serde::de::DeserializeOwned;
 
 pub const EXTERNAL_SKILLS_SCHEMA_VERSION: u32 = 2;
 pub const EXTERNAL_SKILLS_KIND_SKILLS_CLI: &str = "skills_cli";
 
 const ALLOWED_INSTALL_KINDS: &[&str] = &[EXTERNAL_SKILLS_KIND_SKILLS_CLI];
 const ALLOWED_INSTALL_PROVIDERS: &[&str] = &["vercel", "playbooks"];
+const EXTERNAL_SKILLS_DIR: &str = "external-skills";
+const EXTERNAL_SKILLS_INDEX_FILE: &str = "index.toml";
+const EXTERNAL_SKILLS_CATEGORY_DIR: &str = "categories";
 const FALLBACK_GROUP_ID: &str = "uncategorized";
 const FALLBACK_GROUP_LABEL: &str = "Uncategorized";
 const FALLBACK_ORDER: i32 = i32::MAX / 2;
@@ -45,6 +49,8 @@ pub struct ExternalSkillCategory {
     pub label: String,
     #[serde(default)]
     pub order: Option<i32>,
+    #[serde(default)]
+    pub file: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -69,6 +75,38 @@ pub struct ExternalSkillEntry {
     #[serde(default)]
     pub usage: Option<String>,
     pub category_id: String,
+    #[serde(default)]
+    pub tags: Vec<String>,
+    pub install: ExternalSkillInstall,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+struct ExternalSkillsIndex {
+    pub schema: ExternalSkillsSchema,
+    #[serde(default)]
+    pub groups: Vec<ExternalSkillGroup>,
+    #[serde(default)]
+    pub categories: Vec<ExternalSkillCategory>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+struct ExternalSkillsCategoryFragment {
+    #[serde(default)]
+    pub skills: Vec<ExternalSkillFragmentEntry>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+struct ExternalSkillFragmentEntry {
+    pub id: String,
+    pub name: String,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub stars: Option<u8>,
+    #[serde(default)]
+    pub project_only: bool,
+    #[serde(default)]
+    pub usage: Option<String>,
     #[serde(default)]
     pub tags: Vec<String>,
     pub install: ExternalSkillInstall,
@@ -327,27 +365,198 @@ impl ExternalSkillsRegistry {
     }
 }
 
+impl ExternalSkillFragmentEntry {
+    fn into_entry(self, category_id: String) -> ExternalSkillEntry {
+        ExternalSkillEntry {
+            id: self.id,
+            name: self.name,
+            description: self.description,
+            stars: self.stars,
+            project_only: self.project_only,
+            usage: self.usage,
+            category_id,
+            tags: self.tags,
+            install: self.install,
+        }
+    }
+}
+
+fn external_skills_registry_dir(project_root: &Path) -> PathBuf {
+    project_root
+        .join("content")
+        .join("skills")
+        .join(EXTERNAL_SKILLS_DIR)
+}
+
+fn read_toml_file<T: DeserializeOwned>(path: &Path, label: &str) -> Result<T, ExternalSkillsError> {
+    let content = std::fs::read_to_string(path).map_err(|error| {
+        ExternalSkillsError::new(format!(
+            "Failed to read {label} ({}): {error}",
+            path.display()
+        ))
+    })?;
+
+    toml::from_str(&content).map_err(|error| {
+        ExternalSkillsError::new(format!(
+            "Failed to parse {label} ({}): {error}",
+            path.display()
+        ))
+    })
+}
+
+fn normalize_registry_relative_path(path: &str) -> Result<PathBuf, &'static str> {
+    let candidate = Path::new(path.trim());
+    if candidate.as_os_str().is_empty() {
+        return Err("path must not be empty");
+    }
+
+    let mut normalized = PathBuf::new();
+    for component in candidate.components() {
+        match component {
+            Component::Normal(part) => normalized.push(part),
+            Component::CurDir => {}
+            Component::ParentDir => return Err("path must not contain '..'"),
+            Component::RootDir | Component::Prefix(_) => {
+                return Err("path must be relative to content/skills/external-skills/");
+            }
+        }
+    }
+
+    if normalized.as_os_str().is_empty() {
+        return Err("path must not resolve to the registry root");
+    }
+
+    Ok(normalized)
+}
+
+fn resolve_category_fragment_path(
+    registry_dir: &Path,
+    category: &ExternalSkillCategory,
+) -> Result<(PathBuf, String), ExternalSkillsError> {
+    let file = category.file.as_deref().ok_or_else(|| {
+        ExternalSkillsError::new(format!(
+            "External skills category '{}' must define file",
+            category.id
+        ))
+    })?;
+
+    let normalized = normalize_registry_relative_path(file).map_err(|reason| {
+        ExternalSkillsError::new(format!(
+            "External skills category '{}' has invalid file '{}': {reason}",
+            category.id, file
+        ))
+    })?;
+    let relative_display = normalized.to_string_lossy().replace('\\', "/");
+    Ok((registry_dir.join(&normalized), relative_display))
+}
+
+fn discover_registry_fragment_files(dir: &Path) -> Result<Vec<PathBuf>, ExternalSkillsError> {
+    let mut files = Vec::new();
+    if !dir.exists() {
+        return Ok(files);
+    }
+
+    let entries = std::fs::read_dir(dir).map_err(|error| {
+        ExternalSkillsError::new(format!(
+            "Failed to read external skills fragment directory ({}): {error}",
+            dir.display()
+        ))
+    })?;
+
+    for entry in entries {
+        let entry = entry.map_err(|error| {
+            ExternalSkillsError::new(format!(
+                "Failed to enumerate external skills fragment directory ({}): {error}",
+                dir.display()
+            ))
+        })?;
+        let path = entry.path();
+        if path.is_dir() {
+            files.extend(discover_registry_fragment_files(&path)?);
+            continue;
+        }
+        if path.extension().and_then(|value| value.to_str()) == Some("toml") {
+            files.push(path);
+        }
+    }
+
+    Ok(files)
+}
+
 pub fn load_external_skills(
     project_root: &Path,
 ) -> Result<ExternalSkillsRegistry, ExternalSkillsError> {
-    let toml_path = project_root
-        .join("content")
-        .join("skills")
-        .join("external-skills.toml");
+    let registry_dir = external_skills_registry_dir(project_root);
+    let index_path = registry_dir.join(EXTERNAL_SKILLS_INDEX_FILE);
+    let index: ExternalSkillsIndex = read_toml_file(&index_path, "external skills index")?;
 
-    let content = std::fs::read_to_string(&toml_path).map_err(|error| {
-        ExternalSkillsError::new(format!(
-            "Failed to read external-skills.toml ({}): {error}",
-            toml_path.display()
-        ))
-    })?;
+    let mut category_file_owners = HashMap::new();
+    let mut skill_origins: HashMap<String, (String, String)> = HashMap::new();
+    let mut skills = Vec::new();
 
-    let parsed: ExternalSkillsRegistry = toml::from_str(&content).map_err(|error| {
-        ExternalSkillsError::new(format!(
-            "Failed to parse external-skills.toml ({}): {error}",
-            toml_path.display()
-        ))
-    })?;
+    for category in &index.categories {
+        let (fragment_path, relative_display) =
+            resolve_category_fragment_path(&registry_dir, category)?;
+
+        if let Some(existing_category) =
+            category_file_owners.insert(relative_display.clone(), category.id.clone())
+        {
+            return Err(ExternalSkillsError::new(format!(
+                "External skills categories '{}' and '{}' both reference '{}'",
+                existing_category, category.id, relative_display
+            )));
+        }
+
+        if !fragment_path.is_file() {
+            return Err(ExternalSkillsError::new(format!(
+                "External skills category '{}' references missing file '{}' ({})",
+                category.id,
+                relative_display,
+                fragment_path.display()
+            )));
+        }
+
+        let label = format!("external skills category fragment '{}'", category.id);
+        let fragment: ExternalSkillsCategoryFragment = read_toml_file(&fragment_path, &label)?;
+        for fragment_skill in fragment.skills {
+            if let Some((other_category, other_file)) = skill_origins.insert(
+                fragment_skill.id.clone(),
+                (category.id.clone(), relative_display.clone()),
+            ) {
+                return Err(ExternalSkillsError::new(format!(
+                    "Duplicate external skills entry id '{}' found in '{}' (category '{}') and '{}' (category '{}')",
+                    fragment_skill.id, other_file, other_category, relative_display, category.id
+                )));
+            }
+            skills.push(fragment_skill.into_entry(category.id.clone()));
+        }
+    }
+
+    let categories_dir = registry_dir.join(EXTERNAL_SKILLS_CATEGORY_DIR);
+    let mut fragment_files = discover_registry_fragment_files(&categories_dir)?;
+    fragment_files.sort();
+    for fragment_path in fragment_files {
+        let relative_display = fragment_path
+            .strip_prefix(&registry_dir)
+            .ok()
+            .unwrap_or(fragment_path.as_path())
+            .to_string_lossy()
+            .replace('\\', "/");
+        if !category_file_owners.contains_key(&relative_display) {
+            return Err(ExternalSkillsError::new(format!(
+                "Unreferenced external skills fragment '{}' under '{}'",
+                relative_display,
+                categories_dir.display()
+            )));
+        }
+    }
+
+    let parsed = ExternalSkillsRegistry {
+        schema: index.schema,
+        groups: index.groups,
+        categories: index.categories,
+        skills,
+    };
     parsed.validate()?;
     Ok(parsed)
 }
@@ -411,6 +620,97 @@ provider = "vercel"
 package_ref = "vercel-labs/skills"
 skill_flag = "find-skills"
 "#
+    }
+
+    fn sample_split_index() -> &'static str {
+        r#"
+[schema]
+version = 2
+
+[[groups]]
+id = "engineering"
+label = "Engineering"
+order = 10
+
+[[categories]]
+id = "frontend"
+group_id = "engineering"
+label = "Frontend"
+order = 10
+file = "categories/frontend.toml"
+
+[[categories]]
+id = "dev-tools"
+group_id = "engineering"
+label = "Developer Tools"
+order = 20
+file = "categories/dev-tools.toml"
+"#
+    }
+
+    fn sample_frontend_fragment() -> &'static str {
+        r#"
+[[skills]]
+id = "find-skills"
+name = "find-skills"
+description = "Find skills quickly"
+stars = 4
+usage = "Discover packages"
+tags = ["search"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/skills", skill_flag = "find-skills" }
+
+[[skills]]
+id = "alpha-skill"
+name = "alpha-skill"
+description = "Alpha"
+tags = ["alpha"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/alpha", skill_flag = "alpha-skill" }
+"#
+    }
+
+    fn sample_dev_tools_fragment() -> &'static str {
+        r#"
+[[skills]]
+id = "zeta-tool"
+name = "zeta-tool"
+description = "Zeta"
+tags = ["tooling"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/zeta", skill_flag = "zeta-tool" }
+"#
+    }
+
+    fn temp_project_root(name: &str) -> PathBuf {
+        std::env::temp_dir().join(format!(
+            "mcs_external_skills_{}_{}_{}",
+            name,
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or_default()
+        ))
+    }
+
+    fn write_split_registry(
+        project_root: &Path,
+        index: &str,
+        fragments: &[(&str, &str)],
+    ) -> PathBuf {
+        let registry_dir = project_root
+            .join("content")
+            .join("skills")
+            .join(EXTERNAL_SKILLS_DIR);
+        let categories_dir = registry_dir.join(EXTERNAL_SKILLS_CATEGORY_DIR);
+        std::fs::create_dir_all(&categories_dir).unwrap();
+        std::fs::write(registry_dir.join(EXTERNAL_SKILLS_INDEX_FILE), index).unwrap();
+        for (relative_path, content) in fragments {
+            let path = registry_dir.join(relative_path);
+            if let Some(parent) = path.parent() {
+                std::fs::create_dir_all(parent).unwrap();
+            }
+            std::fs::write(path, content).unwrap();
+        }
+        registry_dir
     }
 
     #[test]
@@ -532,26 +832,159 @@ package_ref = "vercel-labs/skills"
     }
 
     #[test]
-    fn load_external_skills_reads_registry_from_content_skills() {
-        let project_root = std::env::temp_dir().join(format!(
-            "mcs_external_skills_{}_{}",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .map(|d| d.as_nanos())
-                .unwrap_or_default()
-        ));
-        let skills_dir = project_root.join("content").join("skills");
-        std::fs::create_dir_all(&skills_dir).unwrap();
-        std::fs::write(skills_dir.join("external-skills.toml"), sample_registry()).unwrap();
+    fn load_external_skills_reads_split_registry_from_content_skills() {
+        let project_root = temp_project_root("split_ok");
+        write_split_registry(
+            &project_root,
+            sample_split_index(),
+            &[
+                ("categories/frontend.toml", sample_frontend_fragment()),
+                ("categories/dev-tools.toml", sample_dev_tools_fragment()),
+            ],
+        );
 
         let registry = load_external_skills(&project_root).unwrap();
         let resolved = registry
             .resolved_skills_for_kind(EXTERNAL_SKILLS_KIND_SKILLS_CLI)
             .unwrap();
 
-        assert_eq!(resolved.len(), 1);
-        assert_eq!(resolved[0].id, "find-skills");
+        let ids = resolved
+            .iter()
+            .map(|skill| skill.id.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(ids, vec!["alpha-skill", "find-skills", "zeta-tool"]);
+        assert_eq!(
+            registry
+                .categories
+                .iter()
+                .find(|category| category.id == "frontend")
+                .and_then(|category| category.file.as_deref()),
+            Some("categories/frontend.toml")
+        );
+
+        let _ = std::fs::remove_dir_all(project_root);
+    }
+
+    #[test]
+    fn load_external_skills_fails_when_category_file_is_missing() {
+        let project_root = temp_project_root("missing_fragment");
+        write_split_registry(&project_root, sample_split_index(), &[]);
+
+        let error = load_external_skills(&project_root).unwrap_err();
+        assert!(error.to_string().contains("references missing file"));
+        assert!(error.to_string().contains("categories/frontend.toml"));
+
+        let _ = std::fs::remove_dir_all(project_root);
+    }
+
+    #[test]
+    fn load_external_skills_fails_when_two_categories_share_same_file() {
+        let project_root = temp_project_root("duplicate_file");
+        write_split_registry(
+            &project_root,
+            r#"
+[schema]
+version = 2
+
+[[groups]]
+id = "engineering"
+label = "Engineering"
+
+[[categories]]
+id = "frontend"
+group_id = "engineering"
+label = "Frontend"
+file = "categories/shared.toml"
+
+[[categories]]
+id = "dev-tools"
+group_id = "engineering"
+label = "Developer Tools"
+file = "categories/shared.toml"
+"#,
+            &[("categories/shared.toml", sample_frontend_fragment())],
+        );
+
+        let error = load_external_skills(&project_root).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("both reference 'categories/shared.toml'")
+        );
+
+        let _ = std::fs::remove_dir_all(project_root);
+    }
+
+    #[test]
+    fn load_external_skills_fails_when_duplicate_skill_ids_exist_across_fragments() {
+        let project_root = temp_project_root("duplicate_skill");
+        write_split_registry(
+            &project_root,
+            sample_split_index(),
+            &[
+                (
+                    "categories/frontend.toml",
+                    r#"
+[[skills]]
+id = "shared-skill"
+name = "shared-skill"
+tags = ["frontend"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/shared", skill_flag = "shared-skill" }
+"#,
+                ),
+                (
+                    "categories/dev-tools.toml",
+                    r#"
+[[skills]]
+id = "shared-skill"
+name = "shared-skill"
+tags = ["tools"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/shared-tools", skill_flag = "shared-skill" }
+"#,
+                ),
+            ],
+        );
+
+        let error = load_external_skills(&project_root).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("Duplicate external skills entry id 'shared-skill'")
+        );
+        assert!(error.to_string().contains("categories/frontend.toml"));
+        assert!(error.to_string().contains("categories/dev-tools.toml"));
+
+        let _ = std::fs::remove_dir_all(project_root);
+    }
+
+    #[test]
+    fn load_external_skills_fails_when_unreferenced_fragment_exists() {
+        let project_root = temp_project_root("unreferenced_fragment");
+        write_split_registry(
+            &project_root,
+            sample_split_index(),
+            &[
+                ("categories/frontend.toml", sample_frontend_fragment()),
+                ("categories/dev-tools.toml", sample_dev_tools_fragment()),
+                (
+                    "categories/extra.toml",
+                    r#"
+[[skills]]
+id = "extra-skill"
+name = "extra-skill"
+tags = ["extra"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/extra", skill_flag = "extra-skill" }
+"#,
+                ),
+            ],
+        );
+
+        let error = load_external_skills(&project_root).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("Unreferenced external skills fragment 'categories/extra.toml'")
+        );
 
         let _ = std::fs::remove_dir_all(project_root);
     }

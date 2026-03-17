@@ -1,0 +1,8 @@
+[[skills]]
+id = "best-minds"
+name = "best-minds"
+description = "Best Minds (多种专家 AI 思维模型与分析能力)"
+stars = 5
+usage = "安装后使用 /best-minds 命令召唤多种专家思维模型进行分析"
+tags = ["analysis", "thinking"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/ceeon/best-minds", skill_flag = "best-minds" }

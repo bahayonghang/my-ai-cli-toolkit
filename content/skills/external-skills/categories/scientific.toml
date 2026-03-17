@@ -1,0 +1,17 @@
+[[skills]]
+id = "claude-scientific-skills"
+name = "claude-scientific-skills"
+description = "AI 科学家技能库 — 140+ 科研通用技能（生信/基因/分子研发, PubMed 集成）"
+stars = 5
+usage = "安装后使用 /find-skills 命令发现 140+ 科研技能并按需安装"
+tags = ["science", "research"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "K-Dense-AI/claude-scientific-skills" }
+
+[[skills]]
+id = "research-skills"
+name = "research-skills"
+description = "学术研究技能包（文献综述/实验设计/论文撰写辅助）"
+stars = 3
+usage = "安装后使用 /find-skills 命令发现可用的学术研究辅助技能"
+tags = ["research", "writing"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "luwill/research-skills" }

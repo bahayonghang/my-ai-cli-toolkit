@@ -1,0 +1,71 @@
+[[skills]]
+id = "ui-ux-pro-max"
+name = "ui-ux-pro-max"
+description = "UI/UX Pro Max 设计专家 — 60+ 审美风格 / 百套配色 / 企业页面向导"
+stars = 5
+usage = "安装后使用 /ui-ux-pro-max 命令启动高级 UI/UX 设计向导"
+tags = ["design", "ui", "ux"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill", skill_flag = "ui-ux-pro-max" }
+
+[[skills]]
+id = "better-icons"
+name = "better-icons"
+description = "Better Icons — 图标搜索与管理专家（支持 150+ 图标集 / 20万+ 图标 / 自动同步项目）"
+stars = 5
+usage = "安装后通过自然语言搜索图标，支持 React/Vue/SVG 等多种框架导出并自动同步到项目"
+tags = ["icons", "design", "assets"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "better-auth/better-icons" }
+
+[[skills]]
+id = "impeccable"
+name = "impeccable"
+description = "Impeccable — Paul Bakaus 开发的高级设计语言集，提供 17 条专项指令、设计防错模式与专业词汇表"
+stars = 5
+usage = "安装后使用 /teach-impeccable 命令学习设计规则，自动提升 UI 品质"
+tags = ["design", "language"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "pbakaus/impeccable", skill_flag = "teach-impeccable" }
+
+[[skills]]
+id = "design-taste-frontend"
+name = "design-taste-frontend"
+description = "Taste-Skill (Design Taste) — 资深 UI/UX 设计专家，专注于构建具有高端审美、现代排版和流畅动画的数字界面"
+stars = 5
+usage = "安装后通过自然语言指令引导 AI 生成极具美感的前端代码，涵盖布局、排版、色彩及动效建议"
+tags = ["design", "frontend", "aesthetic", "motion"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill", skill_flag = "design-taste-frontend" }
+
+[[skills]]
+id = "full-output-enforcement"
+name = "full-output-enforcement"
+description = "Taste-Skill (Full Output) — 强制完整代码输出，拒绝任何占位符或简化，确保生成的代码可直接使用"
+stars = 5
+usage = "安装后自动生效，确保 AI 在生成前端代码时不会跳过细节，提供 100% 完整且立即可用的实现"
+tags = ["reliability", "frontend", "code-quality"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill", skill_flag = "full-output-enforcement" }
+
+[[skills]]
+id = "high-end-visual-design"
+name = "high-end-visual-design"
+description = "Taste-Skill (Visual Excellence) — 视觉卓越专家，专注于精心挑选的调色板、现代字体和极致的视觉细节"
+stars = 5
+usage = "安装后在需要高级视觉呈现的项目中调用，提升 UI 的精致度与专业感"
+tags = ["design", "visual", "typography", "colors"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill", skill_flag = "high-end-visual-design" }
+
+[[skills]]
+id = "redesign-existing-projects"
+name = "redesign-existing-projects"
+description = "Taste-Skill (Project Redesign) — 项目重构与重设计专家，擅长将老旧或平庸的界面升级为现代高端风格"
+stars = 5
+usage = "安装后对现有项目进行扫描，提供美学升级建议并辅助执行重构工作"
+tags = ["redesign", "modernization", "refactor"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill", skill_flag = "redesign-existing-projects" }
+
+[[skills]]
+id = "drawio-skills"
+name = "drawio-skills"
+description = "Draw.io 图表技能包（流程图、架构图与可视化编辑辅助）"
+stars = 4
+usage = "安装后可为 draw.io 图表创建、编辑与可视化建模提供辅助能力"
+tags = ["drawio", "diagram", "visualization"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/drawio-skills" }

@@ -1,0 +1,17 @@
+[[skills]]
+id = "vitepress-skills"
+name = "vitepress-skills"
+description = "通用型 VitePress 写作/站点维护 skill (skills.sh/antfu/skills/vitepress)"
+stars = 5
+usage = "安装后在 VitePress 项目中自动生效，辅助文档站点开发与维护"
+tags = ["docs", "vitepress"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "antfu/skills", skill_flag = "vitepress" }
+
+[[skills]]
+id = "academic-writing-skills"
+name = "academic-writing-skills"
+description = "学术写作技能包（论文写作、结构润色与学术表达辅助）"
+stars = 4
+usage = "安装后可为学术论文、技术文档与研究写作提供结构化写作辅助"
+tags = ["academic", "writing", "research"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/academic-writing-skills" }

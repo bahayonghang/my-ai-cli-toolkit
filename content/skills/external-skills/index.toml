@@ -1,0 +1,104 @@
+[schema]
+version = 2
+
+[[groups]]
+id = "engineering"
+label = "Engineering"
+order = 10
+
+[[groups]]
+id = "research"
+label = "Research"
+order = 20
+
+[[groups]]
+id = "knowledge"
+label = "Knowledge"
+order = 30
+
+[[groups]]
+id = "language"
+label = "Language"
+order = 40
+
+[[groups]]
+id = "productivity"
+label = "Productivity"
+order = 50
+
+[[categories]]
+id = "frontend"
+group_id = "engineering"
+label = "Frontend"
+order = 10
+file = "categories/frontend.toml"
+
+[[categories]]
+id = "dev-tools"
+group_id = "engineering"
+label = "Developer Tools"
+order = 20
+file = "categories/dev-tools.toml"
+
+[[categories]]
+id = "media"
+group_id = "engineering"
+label = "Media"
+order = 30
+file = "categories/media.toml"
+
+[[categories]]
+id = "database"
+group_id = "engineering"
+label = "Database"
+order = 40
+file = "categories/database.toml"
+
+[[categories]]
+id = "ui-ux"
+group_id = "engineering"
+label = "UI/UX"
+order = 50
+file = "categories/ui-ux.toml"
+
+[[categories]]
+id = "python"
+group_id = "engineering"
+label = "Python"
+order = 60
+file = "categories/python.toml"
+
+[[categories]]
+id = "scientific"
+group_id = "research"
+label = "Scientific"
+order = 10
+file = "categories/scientific.toml"
+
+[[categories]]
+id = "obsidian"
+group_id = "knowledge"
+label = "Obsidian"
+order = 10
+file = "categories/obsidian.toml"
+
+[[categories]]
+id = "writing"
+group_id = "knowledge"
+label = "Writing"
+order = 20
+file = "categories/writing.toml"
+
+[[categories]]
+id = "translate"
+group_id = "language"
+label = "Translation"
+order = 10
+file = "categories/translate.toml"
+
+[[categories]]
+id = "productivity"
+group_id = "productivity"
+label = "Productivity"
+order = 10
+file = "categories/productivity.toml"

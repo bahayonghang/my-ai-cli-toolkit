@@ -14,6 +14,8 @@ import yaml
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
+SKIP_DIRS = {"external-skills"}
+
 
 def extract_yaml_frontmatter(content: str) -> dict | None:
     """
@@ -124,7 +126,7 @@ def scan_skills_directory(skills_dir: Path = None) -> list[dict]:
 
     # 遍历所有子目录
     for item in sorted(skills_dir.iterdir()):
-        if item.is_dir() and not item.name.startswith("."):
+        if item.is_dir() and not item.name.startswith(".") and item.name not in SKIP_DIRS:
             result = check_skill_metadata(item)
             results.append(result)
 

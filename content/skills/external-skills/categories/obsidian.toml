@@ -1,0 +1,19 @@
+[[skills]]
+id = "obsidian-skills"
+name = "obsidian-skills"
+description = "Obsidian 笔记技能（官方, Kepano 维护）"
+stars = 5
+project_only = true
+usage = "在 Obsidian vault 项目中安装后自动生效（仅支持 project 级别）"
+tags = ["obsidian", "notes"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "kepano/obsidian-skills" }
+
+[[skills]]
+id = "obsidian-visual-skills"
+name = "obsidian-visual-skills"
+description = "Obsidian 可视化技能（图表/看板/时间线等视觉笔记）"
+stars = 4
+project_only = true
+usage = "在 Obsidian vault 项目中安装后自动生效，提供可视化笔记能力（仅支持 project 级别）"
+tags = ["obsidian", "visual"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "axtonliu/axton-obsidian-visual-skills" }

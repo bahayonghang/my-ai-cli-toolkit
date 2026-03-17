@@ -463,7 +463,7 @@ mod tests {
     }
 
     #[test]
-    fn top_level_external_registry_file_is_not_discovered_as_skill() {
+    fn external_registry_directory_is_not_discovered_as_skill() {
         let project_root = temp_dir("project_registry_file");
         let skills_root = project_root.join("content").join("skills");
         std::fs::create_dir_all(skills_root.join("workflow-skills").join("demo-skill")).unwrap();
@@ -475,8 +475,9 @@ mod tests {
             "---\nname: demo-skill\n---\n",
         )
         .unwrap();
+        std::fs::create_dir_all(skills_root.join("external-skills").join("categories")).unwrap();
         std::fs::write(
-            skills_root.join("external-skills.toml"),
+            skills_root.join("external-skills").join("index.toml"),
             "[schema]\nversion = 2\n",
         )
         .unwrap();
