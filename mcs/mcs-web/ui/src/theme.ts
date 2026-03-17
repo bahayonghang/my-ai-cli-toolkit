@@ -215,6 +215,9 @@ function buildTheme(mode: Mode) {
               animation-iteration-count: 1 !important;
               transition-duration: 0.01ms !important;
               scroll-behavior: auto !important;
+              backdrop-filter: none !important;
+              -webkit-backdrop-filter: none !important;
+              transform: none !important;
             }
           }
 
@@ -315,6 +318,7 @@ function buildTheme(mode: Mode) {
             position: "relative",
             overflow: "hidden",
             isolation: "isolate",
+            willChange: "transform, box-shadow",
             transition:
               `background-color ${duration} ${easing}, border-color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
             "&::before": {

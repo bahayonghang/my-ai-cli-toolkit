@@ -130,7 +130,7 @@ function FiltersSidebar({
   const chipSx = (selected = false) => ({
     height: 20,
     minWidth: 28,
-    fontSize: "0.7rem",
+    fontSize: "0.75rem",
     fontWeight: 600,
     bgcolor: selected
       ? alpha(theme.palette.primary.main, 0.18)
@@ -143,7 +143,7 @@ function FiltersSidebar({
       <Typography
         variant="overline"
         color="text.secondary"
-        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
+        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.75rem" }}
       >
         {t("install.status")}
       </Typography>
@@ -174,7 +174,7 @@ function FiltersSidebar({
       <Typography
         variant="overline"
         color="text.secondary"
-        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
+        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.75rem" }}
       >
         {t("install.defaultSection")}
       </Typography>
@@ -190,7 +190,7 @@ function FiltersSidebar({
       <Typography
         variant="overline"
         color="text.secondary"
-        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.65rem" }}
+        sx={{ px: 2, mb: 0.5, letterSpacing: 1.5, fontSize: "0.75rem" }}
       >
         {t("install.categories")}
       </Typography>
@@ -811,7 +811,7 @@ export default function InstallPage() {
           )}
 
           {(loading || installTargetLoading) && (
-            <LinearProgress sx={{ mb: 2 }} />
+            <LinearProgress aria-label={t("common.loading")} sx={{ mb: 2 }} />
           )}
 
           {loading && skills.length === 0 ? (

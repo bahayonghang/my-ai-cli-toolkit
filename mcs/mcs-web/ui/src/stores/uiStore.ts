@@ -32,7 +32,9 @@ interface UiState {
 }
 
 export const useUiStore = create<UiState>((set) => ({
-  colorMode: (readStorage(COLOR_MODE_KEY) as ColorMode) ?? "dark",
+  colorMode: (readStorage(COLOR_MODE_KEY) as ColorMode)
+    ?? (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light" : "dark"),
   locale: resolveInitialLocale(
     readStorage(LOCALE_KEY),
     typeof navigator === "undefined" ? undefined : navigator.language
@@ -50,6 +52,9 @@ export const useUiStore = create<UiState>((set) => ({
 
   setLocale: (locale) => {
     writeStorage(LOCALE_KEY, locale);
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = locale;
+    }
     set({ locale });
   },
 
@@ -61,3 +66,8 @@ export const useUiStore = create<UiState>((set) => ({
 
   clearNotification: () => set({ notification: null }),
 }));
+
+// Sync <html lang> with initial locale
+if (typeof document !== "undefined") {
+  document.documentElement.lang = useUiStore.getState().locale;
+}

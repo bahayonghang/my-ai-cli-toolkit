@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, memo, Suspense, useEffect, useState } from "react";
 import {
   Alert,
   AppBar,
@@ -16,15 +16,15 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import HomeIcon from "@mui/icons-material/Home";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
-import { getLegacyDirs } from "@/api/client";
+import { glassPanelSx } from "@/components/common/glassPanel";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
+import { useLegacyDirs } from "@/hooks/useLegacyDirs";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import type {
   DashboardPlatformStats,
@@ -40,49 +40,19 @@ const LegacyCleanupDialog = lazy(() =>
   }))
 );
 
-const sectionShellSx = {
-  position: "relative",
-  borderRadius: 4,
-  border: "1px solid var(--mcs-glass-stroke)",
-  background:
-    "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-  boxShadow: "var(--mcs-panel-shadow)",
-  backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-  WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-  overflow: "hidden",
-  isolation: "isolate",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    inset: 0,
-    background: "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 42%)",
-    pointerEvents: "none",
-  },
-  "& > *": {
-    position: "relative",
-    zIndex: 1,
-  },
-} as const;
-
 export default function DashboardPage() {
   const { t } = useI18n();
   const data = useDashboardStore((state) => state.data);
   const loading = useDashboardStore((state) => state.loading);
   const error = useDashboardStore((state) => state.error);
   const fetchDashboard = useDashboardStore((state) => state.fetchDashboard);
-  const [legacyCount, setLegacyCount] = useState(0);
+  const { legacyCount, refreshLegacyCount } = useLegacyDirs();
   const [legacyOpen, setLegacyOpen] = useState(false);
   const navigateDeferred = useNavigateDeferred();
 
   useEffect(() => {
     void fetchDashboard();
   }, [fetchDashboard]);
-
-  useEffect(() => {
-    getLegacyDirs()
-      .then((dirs) => setLegacyCount(dirs.length))
-      .catch(() => setLegacyCount(0));
-  }, []);
 
   const heroStatus = data
     ? data.summary.installedSkills === 0
@@ -105,13 +75,6 @@ export default function DashboardPage() {
           >
             <ArrowBackIcon />
           </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label={t("common.home")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <HomeIcon />
-          </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
             {t("dashboard.systemTitle")}
           </Typography>
@@ -119,8 +82,8 @@ export default function DashboardPage() {
       </AppBar>
 
       <Box
+        component="main"
         sx={{
-          maxWidth: 1440,
           mx: "auto",
           px: { xs: 2, sm: 3, md: 4 },
           pt: 11,
@@ -168,14 +131,12 @@ export default function DashboardPage() {
         ) : null}
       </Box>
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<CircularProgress size={24} sx={{ position: "fixed", bottom: 24, right: 24 }} />}>
         <LegacyCleanupDialog
           open={legacyOpen}
           onClose={() => {
             setLegacyOpen(false);
-            getLegacyDirs()
-              .then((dirs) => setLegacyCount(dirs.length))
-              .catch(() => setLegacyCount(0));
+            refreshLegacyCount();
           }}
         />
       </Suspense>
@@ -199,7 +160,7 @@ function HeroSection({
   const { t } = useI18n();
 
   return (
-    <Box sx={{ ...sectionShellSx, p: { xs: 2.5, md: 3.5 } }}>
+    <Box sx={{ ...glassPanelSx, p: { xs: 2.5, md: 3.5 } }}>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 7 }}>
           <Stack spacing={2.5}>
@@ -368,6 +329,7 @@ function HeroSection({
                 <LinearProgress
                   variant="determinate"
                   value={summary.commandCoverage}
+                  aria-label={t("dashboard.commandsCoverage")}
                   sx={{
                     height: 10,
                     borderRadius: 999,
@@ -450,10 +412,10 @@ function SkillsSpotlight({
   const { t } = useI18n();
 
   return (
-    <Box sx={{ ...sectionShellSx, p: { xs: 2.25, md: 3 } }}>
+    <Box sx={{ ...glassPanelSx, p: { xs: 2.25, md: 3 } }}>
       <Stack spacing={2.5}>
         <Box>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography variant="overline" component="h2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
             {t("dashboard.skillsSpotlightTitle")}
           </Typography>
           <Typography variant="body1" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
@@ -486,6 +448,7 @@ function SkillsSpotlight({
             <LinearProgress
               variant="determinate"
               value={summary.skillCoverage}
+              aria-label={t("dashboard.skillCoverageLabel")}
               sx={{
                 height: 12,
                 borderRadius: 999,
@@ -543,7 +506,7 @@ function SkillsSpotlight({
   );
 }
 
-function TopSkillToken({ skill }: { skill: DashboardTopSkill }) {
+const TopSkillToken = memo(function TopSkillToken({ skill }: { skill: DashboardTopSkill }) {
   const { t } = useI18n();
 
   return (
@@ -588,9 +551,9 @@ function TopSkillToken({ skill }: { skill: DashboardTopSkill }) {
       </Stack>
     </Box>
   );
-}
+});
 
-function TopCategoryBar({ category }: { category: DashboardTopCategory }) {
+const TopCategoryBar = memo(function TopCategoryBar({ category }: { category: DashboardTopCategory }) {
   const { t } = useI18n();
   const progress = percentage(category.installed, category.total);
 
@@ -615,6 +578,7 @@ function TopCategoryBar({ category }: { category: DashboardTopCategory }) {
         <LinearProgress
           variant="determinate"
           value={progress}
+          aria-label={category.name}
           sx={{
             height: 8,
             borderRadius: 999,
@@ -634,16 +598,16 @@ function TopCategoryBar({ category }: { category: DashboardTopCategory }) {
       </Stack>
     </Box>
   );
-}
+});
 
 function UpdateQueuePanel({ updateQueue }: { updateQueue: DashboardUpdateQueueItem[] }) {
   const { t } = useI18n();
 
   return (
-    <Box sx={{ ...sectionShellSx, p: { xs: 2.25, md: 3 }, height: "100%" }}>
+    <Box sx={{ ...glassPanelSx, p: { xs: 2.25, md: 3 }, height: "100%" }}>
       <Stack spacing={2}>
         <Box>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography variant="overline" component="h2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
             {t("dashboard.updateQueueTitle")}
           </Typography>
           <Typography variant="body1" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
@@ -691,6 +655,7 @@ function UpdateQueuePanel({ updateQueue }: { updateQueue: DashboardUpdateQueueIt
                   <LinearProgress
                     variant="determinate"
                     value={percentage(item.installedSkills, item.totalSkills)}
+                    aria-label={item.platformName}
                     sx={{
                       height: 7,
                       borderRadius: 999,
@@ -725,10 +690,10 @@ function PlatformsMatrix({
   const compactPlatforms = platforms.slice(3);
 
   return (
-    <Box sx={{ ...sectionShellSx, p: { xs: 2.25, md: 3 } }}>
+    <Box sx={{ ...glassPanelSx, p: { xs: 2.25, md: 3 } }}>
       <Stack spacing={2.5}>
         <Box>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography variant="overline" component="h2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
             {t("dashboard.platformMatrixTitle")}
           </Typography>
           <Typography variant="body1" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
@@ -737,14 +702,10 @@ function PlatformsMatrix({
         </Box>
 
         <Grid container spacing={2}>
-          {featuredPlatforms.map((platform, index) => (
+          {featuredPlatforms.map((platform) => (
             <Grid
               key={platform.id}
-              size={
-                index === 0
-                  ? { xs: 12, lg: 6 }
-                  : { xs: 12, sm: 6, lg: 3 }
-              }
+              size={{ xs: 12, sm: 6, lg: 4 }}
             >
               <PlatformCard
                 platform={platform}
@@ -765,7 +726,7 @@ function PlatformsMatrix({
   );
 }
 
-function PlatformCard({
+const PlatformCard = memo(function PlatformCard({
   platform,
   emphasized = false,
   onClick,
@@ -813,7 +774,11 @@ function PlatformCard({
                 {platform.icon}
               </Typography>
               <Box sx={{ minWidth: 0 }}>
-                <Typography variant={emphasized ? "h5" : "h6"} sx={{ wordBreak: "break-word" }}>
+                <Typography
+                  variant={emphasized ? "h5" : "h6"}
+                  noWrap
+                  sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                >
                   {platform.name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
@@ -830,7 +795,7 @@ function PlatformCard({
                   borderRadius: 999,
                   bgcolor: "var(--mcs-dashboard-warm-soft)",
                   color: "warning.dark",
-                  fontSize: "0.72rem",
+                  fontSize: "0.75rem",
                   fontWeight: 700,
                   whiteSpace: "nowrap",
                 }}
@@ -859,7 +824,7 @@ function PlatformCard({
       </CardActionArea>
     </Card>
   );
-}
+});
 
 function MetricRail({
   label,
@@ -885,6 +850,7 @@ function MetricRail({
       <LinearProgress
         variant="determinate"
         value={progress}
+        aria-label={label}
         sx={{
           height: 7,
           borderRadius: 999,

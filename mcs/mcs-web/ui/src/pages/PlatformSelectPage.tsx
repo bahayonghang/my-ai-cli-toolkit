@@ -19,7 +19,7 @@ import TerminalIcon from "@mui/icons-material/Terminal";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { getLegacyDirs } from "@/api/client";
+import { useLegacyDirs } from "@/hooks/useLegacyDirs";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { usePlatformStore } from "@/stores/platformStore";
@@ -38,18 +38,11 @@ export default function PlatformSelectPage() {
   const error = usePlatformStore((state) => state.error);
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
   const refreshPlatforms = usePlatformStore((state) => state.refreshPlatforms);
-  const [legacyCount, setLegacyCount] = useState(0);
+  const { legacyCount, refreshLegacyCount } = useLegacyDirs();
   const [legacyOpen, setLegacyOpen] = useState(false);
-
-  const refreshLegacyCount = () => {
-    getLegacyDirs()
-      .then((dirs) => setLegacyCount(dirs.length))
-      .catch(() => setLegacyCount(0));
-  };
 
   useEffect(() => {
     void fetchPlatforms();
-    refreshLegacyCount();
   }, [fetchPlatforms]);
 
   if (loading && platforms.length === 0) {
@@ -61,7 +54,7 @@ export default function PlatformSelectPage() {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", position: "relative" }}>
+    <Box component="main" sx={{ minHeight: "100vh", position: "relative" }}>
       <AnimatedBackground variant="hero" />
       <Box sx={{ maxWidth: 1240, mx: "auto", px: { xs: 2, sm: 3, md: 4 }, py: { xs: 4, md: 6 } }}>
         <Stack
@@ -197,7 +190,7 @@ export default function PlatformSelectPage() {
         </Grid>
       </Box>
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<CircularProgress size={24} sx={{ position: "fixed", bottom: 24, right: 24 }} />}>
         <LegacyCleanupDialog
           open={legacyOpen}
           onClose={() => {

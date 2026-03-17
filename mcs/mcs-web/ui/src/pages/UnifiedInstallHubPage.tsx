@@ -34,31 +34,8 @@ import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
 import type { InstallHubStage } from "@/components/install-hub/types";
+import { glassPanelSx } from "@/components/common/glassPanel";
 import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
-
-const sectionShellSx = {
-  position: "relative",
-  borderRadius: 4,
-  border: "1px solid var(--mcs-glass-stroke)",
-  background:
-    "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-  boxShadow: "var(--mcs-panel-shadow)",
-  backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-  WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-  overflow: "hidden",
-  isolation: "isolate",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    inset: 0,
-    background: "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 42%)",
-    pointerEvents: "none",
-  },
-  "& > *": {
-    position: "relative",
-    zIndex: 1,
-  },
-} as const;
 
 export default function UnifiedInstallHubPage() {
   const navigate = useNavigate();
@@ -78,7 +55,7 @@ export default function UnifiedInstallHubPage() {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", position: "relative" }}>
+    <Box component="main" sx={{ minHeight: "100vh", position: "relative" }}>
       <AnimatedBackground variant="dashboard" />
       <PageToolbar onBack={() => navigate(-1)} onHome={() => navigate("/")} />
       <PageBody model={model} platforms={platforms} />
@@ -165,7 +142,7 @@ function InstallHero({
   const activeStageTitle = t(`installHub.stageTitle.${model.activeStage}`);
 
   return (
-    <Box sx={{ ...sectionShellSx, p: { xs: 2.5, md: 3.25 } }}>
+    <Box sx={{ ...glassPanelSx, p: { xs: 2.5, md: 3.25 } }}>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 8 }}>
           <Stack spacing={2.5}>

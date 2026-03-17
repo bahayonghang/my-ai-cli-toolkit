@@ -195,7 +195,7 @@ export default function MainPage() {
   const showInlineProgress = loading && items.length > 0;
 
   return (
-    <Box sx={{ minHeight: "100vh" }}>
+    <Box component="main" sx={{ minHeight: "100vh" }}>
       <AppBar position="fixed">
         <Toolbar sx={{ gap: 0.5, flexWrap: { xs: "wrap", md: "nowrap" }, alignItems: "center" }}>
           {isMobile && (

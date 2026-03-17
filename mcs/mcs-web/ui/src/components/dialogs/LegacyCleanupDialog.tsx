@@ -371,7 +371,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                                     size="small"
                                                     color="warning"
                                                     variant="outlined"
-                                                    sx={{ height: 18, fontSize: "0.6rem" }}
+                                                    sx={{ height: 18, fontSize: "0.75rem" }}
                                                 />
                                             </Box>
                                             <Typography
@@ -379,7 +379,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                                 color="text.secondary"
                                                 sx={{
                                                     fontFamily: '"JetBrains Mono", monospace',
-                                                    fontSize: "0.7rem",
+                                                    fontSize: "0.75rem",
                                                     display: "block",
                                                     mt: 0.5,
                                                     overflowWrap: "anywhere",
@@ -392,7 +392,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                                                 color="success.main"
                                                 sx={{
                                                     fontFamily: '"JetBrains Mono", monospace',
-                                                    fontSize: "0.65rem",
+                                                    fontSize: "0.75rem",
                                                     display: "block",
                                                 }}
                                             >

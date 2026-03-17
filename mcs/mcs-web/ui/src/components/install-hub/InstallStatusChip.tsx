@@ -70,7 +70,7 @@ export function InstallStatusChip({ status, tooltip, t }: InstallStatusChipProps
         color={config.color}
         variant={config.variant}
         sx={{
-          fontSize: "0.7rem",
+          fontSize: "0.75rem",
           height: 20,
           "& .MuiChip-icon": {
             fontSize: 14,

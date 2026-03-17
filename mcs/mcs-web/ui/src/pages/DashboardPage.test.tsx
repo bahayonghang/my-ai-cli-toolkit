@@ -38,6 +38,10 @@ vi.mock("@/hooks/useNavigateDeferred", () => ({
   useNavigateDeferred: () => () => {},
 }));
 
+vi.mock("@/hooks/useLegacyDirs", () => ({
+  useLegacyDirs: () => ({ legacyCount: 0, refreshLegacyCount: () => {} }),
+}));
+
 const dashboardFixture: DashboardDto = {
   summary: {
     activePlatforms: 3,

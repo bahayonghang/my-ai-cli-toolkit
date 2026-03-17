@@ -171,7 +171,7 @@ export default function InstalledSkillsPage() {
   const showInlineProgress = (loading && items.length > 0) || installTargetLoading;
 
   return (
-    <Box sx={{ minHeight: "100vh" }}>
+    <Box component="main" sx={{ minHeight: "100vh" }}>
       <AppBar position="fixed">
         <Toolbar sx={{ gap: 0.5, flexWrap: { xs: "wrap", lg: "nowrap" }, alignItems: "center" }}>
           {isMobile && (

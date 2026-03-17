@@ -58,7 +58,7 @@ export function SkillEditorDrawer({
         EditorView.theme({
           "&": {
             height: "100%",
-            fontSize: "13px",
+            fontSize: "0.8125rem",
             fontFamily: '"JetBrains Mono", monospace',
           },
           ".cm-scroller": { overflow: "auto", height: "100%" },
