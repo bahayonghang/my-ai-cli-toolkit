@@ -1,51 +1,140 @@
-import { createTheme, type ThemeOptions } from "@mui/material/styles";
+import { alpha, createTheme, type ThemeOptions } from "@mui/material/styles";
 
 type Mode = "light" | "dark";
 
-const tokens = {
+interface CatppuccinPalette {
+  rosewater: string;
+  flamingo: string;
+  pink: string;
+  mauve: string;
+  red: string;
+  maroon: string;
+  peach: string;
+  yellow: string;
+  green: string;
+  teal: string;
+  sky: string;
+  sapphire: string;
+  blue: string;
+  lavender: string;
+  text: string;
+  subtext1: string;
+  subtext0: string;
+  overlay2: string;
+  overlay1: string;
+  overlay0: string;
+  surface2: string;
+  surface1: string;
+  surface0: string;
+  base: string;
+  mantle: string;
+  crust: string;
+}
+
+const catppuccin: Record<Mode, CatppuccinPalette> = {
   light: {
-    primary: "#165d66",
-    secondary: "#4d6c87",
-    background: "#f4f6f8",
-    paper: "#ffffff",
-    surface: "#ffffff",
-    surfaceSubtle: "#edf1f4",
-    border: "#d8e0e6",
-    textPrimary: "#16202a",
-    textSecondary: "#55636f",
-    focus: "#2b7a85",
-    success: "#2f7d57",
-    warning: "#a86b1f",
-    error: "#b2534a",
-    selection: "rgba(22, 93, 102, 0.16)",
-    shadowSm: "0 1px 2px rgba(15, 23, 42, 0.05)",
-    shadowMd: "0 12px 28px rgba(15, 23, 42, 0.08)",
+    rosewater: "#dc8a78",
+    flamingo: "#dd7878",
+    pink: "#ea76cb",
+    mauve: "#8839ef",
+    red: "#d20f39",
+    maroon: "#e64553",
+    peach: "#fe640b",
+    yellow: "#df8e1d",
+    green: "#40a02b",
+    teal: "#179299",
+    sky: "#04a5e5",
+    sapphire: "#209fb5",
+    blue: "#1e66f5",
+    lavender: "#7287fd",
+    text: "#4c4f69",
+    subtext1: "#5c5f77",
+    subtext0: "#6c6f85",
+    overlay2: "#7c7f93",
+    overlay1: "#8c8fa1",
+    overlay0: "#9ca0b0",
+    surface2: "#acb0be",
+    surface1: "#bcc0cc",
+    surface0: "#ccd0da",
+    base: "#eff1f5",
+    mantle: "#e6e9ef",
+    crust: "#dce0e8",
   },
   dark: {
-    primary: "#7dbab2",
-    secondary: "#8fa9c2",
-    background: "#11181d",
-    paper: "#182127",
-    surface: "#182127",
-    surfaceSubtle: "#202b33",
-    border: "#30404a",
-    textPrimary: "#e8eef2",
-    textSecondary: "#a8b6c0",
-    focus: "#9cd4cb",
-    success: "#74c494",
-    warning: "#d0a969",
-    error: "#dc8c84",
-    selection: "rgba(125, 186, 178, 0.22)",
-    shadowSm: "0 1px 2px rgba(0, 0, 0, 0.24)",
-    shadowMd: "0 16px 36px rgba(0, 0, 0, 0.3)",
+    rosewater: "#f5e0dc",
+    flamingo: "#f2cdcd",
+    pink: "#f5c2e7",
+    mauve: "#cba6f7",
+    red: "#f38ba8",
+    maroon: "#eba0ac",
+    peach: "#fab387",
+    yellow: "#f9e2af",
+    green: "#a6e3a1",
+    teal: "#94e2d5",
+    sky: "#89dceb",
+    sapphire: "#74c7ec",
+    blue: "#89b4fa",
+    lavender: "#b4befe",
+    text: "#cdd6f4",
+    subtext1: "#bac2de",
+    subtext0: "#a6adc8",
+    overlay2: "#9399b2",
+    overlay1: "#7f849c",
+    overlay0: "#6c7086",
+    surface2: "#585b70",
+    surface1: "#45475a",
+    surface0: "#313244",
+    base: "#1e1e2e",
+    mantle: "#181825",
+    crust: "#11111b",
   },
 } as const;
 
-const easing = "cubic-bezier(0.16, 1, 0.3, 1)"; // ease-out-expo
+const tokens = {
+  light: {
+    primary: catppuccin.light.blue,
+    secondary: catppuccin.light.lavender,
+    background: catppuccin.light.base,
+    paper: catppuccin.light.mantle,
+    surface: catppuccin.light.mantle,
+    surfaceSubtle: alpha(catppuccin.light.surface0, 0.46),
+    border: catppuccin.light.surface1,
+    textPrimary: catppuccin.light.text,
+    textSecondary: catppuccin.light.subtext1,
+    focus: catppuccin.light.lavender,
+    success: catppuccin.light.green,
+    warning: catppuccin.light.peach,
+    error: catppuccin.light.red,
+    selection: alpha(catppuccin.light.blue, 0.22),
+    shadowSm: `0 12px 32px ${alpha(catppuccin.light.surface2, 0.18)}`,
+    shadowMd: `0 24px 60px ${alpha(catppuccin.light.surface2, 0.22)}`,
+  },
+  dark: {
+    primary: catppuccin.dark.blue,
+    secondary: catppuccin.dark.lavender,
+    background: catppuccin.dark.base,
+    paper: catppuccin.dark.mantle,
+    surface: catppuccin.dark.mantle,
+    surfaceSubtle: alpha(catppuccin.dark.surface0, 0.72),
+    border: catppuccin.dark.surface1,
+    textPrimary: catppuccin.dark.text,
+    textSecondary: catppuccin.dark.subtext1,
+    focus: catppuccin.dark.lavender,
+    success: catppuccin.dark.green,
+    warning: catppuccin.dark.peach,
+    error: catppuccin.dark.red,
+    selection: alpha(catppuccin.dark.blue, 0.24),
+    shadowSm: `0 14px 36px ${alpha(catppuccin.dark.crust, 0.38)}`,
+    shadowMd: `0 26px 72px ${alpha(catppuccin.dark.crust, 0.5)}`,
+  },
+} as const;
+
+const easing = "cubic-bezier(0.16, 1, 0.3, 1)";
 const duration = "180ms";
 
 function buildTheme(mode: Mode) {
   const tone = tokens[mode];
+  const palette = catppuccin[mode];
 
   const shared: ThemeOptions = {
     typography: {
@@ -69,34 +158,53 @@ function buildTheme(mode: Mode) {
             color-scheme: ${mode};
             --mcs-surface: ${tone.surface};
             --mcs-surface-subtle: ${tone.surfaceSubtle};
+            --mcs-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.42 : 0.3)};
             --mcs-border: ${tone.border};
             --mcs-focus: ${tone.focus};
             --mcs-shadow-sm: ${tone.shadowSm};
             --mcs-shadow-md: ${tone.shadowMd};
-            --mcs-surface-muted: ${mode === "dark" ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.02)"};
-            --mcs-toolbar-overlay: ${mode === "dark" ? "rgba(24, 33, 39, 0.92)" : "rgba(255, 255, 255, 0.94)"};
-            --mcs-hero-accent: ${mode === "dark" ? "rgba(125, 186, 178, 0.08)" : "rgba(22, 93, 102, 0.06)"};
-            --mcs-dashboard-surface: ${mode === "dark" ? "rgba(25, 36, 42, 0.9)" : "rgba(255, 251, 244, 0.86)"};
-            --mcs-dashboard-surface-strong: ${mode === "dark" ? "rgba(30, 44, 51, 0.96)" : "rgba(249, 243, 232, 0.96)"};
-            --mcs-dashboard-surface-muted: ${mode === "dark" ? "rgba(20, 29, 35, 0.62)" : "rgba(255, 255, 255, 0.72)"};
-            --mcs-dashboard-outline: ${mode === "dark" ? "rgba(124, 152, 160, 0.22)" : "rgba(92, 110, 122, 0.18)"};
-            --mcs-dashboard-outline-strong: ${mode === "dark" ? "rgba(156, 189, 196, 0.32)" : "rgba(77, 108, 135, 0.24)"};
-            --mcs-dashboard-accent: ${mode === "dark" ? "#8fc5bb" : "#78a89f"};
-            --mcs-dashboard-accent-strong: ${mode === "dark" ? "#b7e1d8" : "#2c6e69"};
-            --mcs-dashboard-accent-soft: ${mode === "dark" ? "rgba(143, 197, 187, 0.16)" : "rgba(120, 168, 159, 0.15)"};
-            --mcs-dashboard-warm-soft: ${mode === "dark" ? "rgba(208, 169, 105, 0.15)" : "rgba(218, 177, 96, 0.18)"};
-            --mcs-dashboard-warm-strong: ${mode === "dark" ? "#d9b173" : "#bf7d2d"};
-            --mcs-dashboard-progress-track: ${mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(28, 43, 58, 0.08)"};
-            --mcs-dashboard-muted: ${mode === "dark" ? "rgba(232, 238, 242, 0.72)" : "rgba(22, 32, 42, 0.66)"};
-            --mcs-dashboard-ink: ${mode === "dark" ? "#eef4f6" : "#1b262d"};
-            --mcs-dashboard-grid: ${mode === "dark" ? "rgba(177, 201, 208, 0.06)" : "rgba(24, 48, 63, 0.05)"};
-            --mcs-diff-add-bg: ${mode === "dark" ? "rgba(116, 196, 148, 0.16)" : "rgba(47, 125, 87, 0.1)"};
-            --mcs-diff-remove-bg: ${mode === "dark" ? "rgba(220, 140, 132, 0.16)" : "rgba(178, 83, 74, 0.1)"};
-            --mcs-warning-progress: ${mode === "dark" ? "rgba(208, 169, 105, 0.18)" : "rgba(168, 107, 31, 0.14)"};
-            --mcs-warning-progress-strong: ${mode === "dark" ? "rgba(208, 169, 105, 0.72)" : "rgba(168, 107, 31, 0.72)"};
-            --mcs-error-surface: ${mode === "dark" ? "rgba(220, 140, 132, 0.16)" : "rgba(178, 83, 74, 0.08)"};
-            --mcs-error-border: ${mode === "dark" ? "rgba(220, 140, 132, 0.32)" : "rgba(178, 83, 74, 0.22)"};
-            --mcs-error-text: ${mode === "dark" ? "#ffd2cd" : "#7e342d"};
+            --mcs-toolbar-overlay: ${alpha(palette.mantle, mode === "dark" ? 0.92 : 0.84)};
+            --mcs-hero-accent: ${alpha(palette.lavender, mode === "dark" ? 0.14 : 0.12)};
+            --mcs-dashboard-surface: ${alpha(palette.mantle, mode === "dark" ? 0.78 : 0.76)};
+            --mcs-dashboard-surface-strong: ${alpha(palette.surface0, mode === "dark" ? 0.76 : 0.56)};
+            --mcs-dashboard-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.66 : 0.42)};
+            --mcs-dashboard-outline: ${alpha(palette.overlay1, mode === "dark" ? 0.34 : 0.5)};
+            --mcs-dashboard-outline-strong: ${alpha(palette.lavender, mode === "dark" ? 0.4 : 0.34)};
+            --mcs-dashboard-accent: ${palette.blue};
+            --mcs-dashboard-accent-strong: ${mode === "dark" ? palette.lavender : palette.sapphire};
+            --mcs-dashboard-accent-soft: ${alpha(palette.blue, mode === "dark" ? 0.18 : 0.14)};
+            --mcs-dashboard-warm-soft: ${alpha(palette.peach, mode === "dark" ? 0.18 : 0.16)};
+            --mcs-dashboard-warm-strong: ${mode === "dark" ? palette.peach : palette.yellow};
+            --mcs-dashboard-progress-track: ${alpha(palette.overlay0, mode === "dark" ? 0.28 : 0.22)};
+            --mcs-dashboard-muted: ${alpha(palette.text, mode === "dark" ? 0.76 : 0.72)};
+            --mcs-dashboard-ink: ${palette.text};
+            --mcs-dashboard-grid: ${alpha(palette.overlay0, mode === "dark" ? 0.12 : 0.16)};
+            --mcs-diff-add-bg: ${alpha(palette.green, mode === "dark" ? 0.18 : 0.12)};
+            --mcs-diff-remove-bg: ${alpha(palette.red, mode === "dark" ? 0.18 : 0.12)};
+            --mcs-warning-progress: ${alpha(palette.peach, mode === "dark" ? 0.22 : 0.16)};
+            --mcs-warning-progress-strong: ${alpha(palette.peach, mode === "dark" ? 0.78 : 0.72)};
+            --mcs-success-surface: ${alpha(palette.green, mode === "dark" ? 0.16 : 0.1)};
+            --mcs-success-border: ${alpha(palette.green, mode === "dark" ? 0.32 : 0.22)};
+            --mcs-error-surface: ${alpha(palette.red, mode === "dark" ? 0.18 : 0.1)};
+            --mcs-error-border: ${alpha(palette.red, mode === "dark" ? 0.34 : 0.22)};
+            --mcs-error-text: ${mode === "dark" ? palette.rosewater : palette.maroon};
+            --mcs-glass-fill: ${alpha(palette.mantle, mode === "dark" ? 0.74 : 0.78)};
+            --mcs-glass-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.72 : 0.54)};
+            --mcs-glass-stroke: ${alpha(palette.overlay1, mode === "dark" ? 0.34 : 0.44)};
+            --mcs-glass-stroke-strong: ${alpha(palette.lavender, mode === "dark" ? 0.42 : 0.36)};
+            --mcs-glass-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.12 : 0.42)};
+            --mcs-glass-shadow: ${mode === "dark"
+              ? `0 18px 48px ${alpha(palette.crust, 0.34)}`
+              : `0 16px 44px ${alpha(palette.surface2, 0.2)}`};
+            --mcs-glass-shadow-hover: ${mode === "dark"
+              ? `0 24px 58px ${alpha(palette.crust, 0.42)}`
+              : `0 22px 54px ${alpha(palette.surface2, 0.24)}`};
+            --mcs-glass-blur: ${mode === "dark" ? "18px" : "16px"};
+            --mcs-panel-fill: ${alpha(palette.mantle, mode === "dark" ? 0.72 : 0.74)};
+            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.7 : 0.52)};
+            --mcs-panel-shadow: ${mode === "dark"
+              ? `0 26px 68px ${alpha(palette.crust, 0.42)}`
+              : `0 24px 58px ${alpha(palette.surface2, 0.22)}`};
             --mcs-ease: ${easing};
             --mcs-duration: ${duration};
           }
@@ -121,11 +229,13 @@ function buildTheme(mode: Mode) {
           body {
             margin: 0;
             background:
-              radial-gradient(circle at top left, ${mode === "dark" ? "rgba(125, 186, 178, 0.08)" : "rgba(22, 93, 102, 0.05)"} 0, transparent 34%),
+              radial-gradient(circle at 12% 0%, ${alpha(palette.rosewater, mode === "dark" ? 0.14 : 0.16)} 0, transparent 28%),
+              radial-gradient(circle at 85% 8%, ${alpha(palette.blue, mode === "dark" ? 0.14 : 0.12)} 0, transparent 30%),
+              radial-gradient(circle at 50% 100%, ${alpha(palette.yellow, mode === "dark" ? 0.1 : 0.08)} 0, transparent 34%),
               linear-gradient(180deg, ${tone.background} 0%, ${tone.background} 100%);
             color: ${tone.textPrimary};
             scrollbar-width: thin;
-            scrollbar-color: ${mode === "dark" ? "rgba(168, 182, 192, 0.28) transparent" : "rgba(85, 99, 111, 0.26) transparent"};
+            scrollbar-color: ${alpha(palette.overlay1, 0.48)} transparent;
           }
 
           ::selection {
@@ -142,7 +252,7 @@ function buildTheme(mode: Mode) {
           }
 
           ::-webkit-scrollbar-thumb {
-            background-color: ${mode === "dark" ? "rgba(168, 182, 192, 0.28)" : "rgba(85, 99, 111, 0.26)"};
+            background-color: ${alpha(palette.overlay1, 0.48)};
             border-radius: 999px;
             border: 2px solid transparent;
             background-clip: padding-box;
@@ -197,9 +307,34 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            backgroundColor: "var(--mcs-surface)",
-            border: "1px solid var(--mcs-border)",
-            boxShadow: "var(--mcs-shadow-sm)",
+            backgroundColor: "var(--mcs-glass-fill)",
+            border: "1px solid var(--mcs-glass-stroke)",
+            boxShadow: "var(--mcs-glass-shadow)",
+            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+            position: "relative",
+            overflow: "hidden",
+            isolation: "isolate",
+            transition:
+              `background-color ${duration} ${easing}, border-color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 38%)",
+              pointerEvents: "none",
+            },
+            "& > *": {
+              position: "relative",
+              zIndex: 1,
+            },
+            "&:hover": {
+              backgroundColor: "var(--mcs-glass-fill-strong)",
+              borderColor: "var(--mcs-glass-stroke-strong)",
+              boxShadow: "var(--mcs-glass-shadow-hover)",
+              transform: "translateY(-1px)",
+            },
           },
         },
       },
@@ -223,14 +358,14 @@ function buildTheme(mode: Mode) {
           paper: {
             backgroundColor: "var(--mcs-surface)",
             borderRight: "1px solid var(--mcs-border)",
+            boxShadow: "var(--mcs-shadow-sm)",
           },
         },
       },
       MuiAppBar: {
         styleOverrides: {
           root: {
-            backgroundColor:
-              "var(--mcs-toolbar-overlay)",
+            backgroundColor: "var(--mcs-toolbar-overlay)",
             color: tone.textPrimary,
             borderBottom: "1px solid var(--mcs-border)",
             boxShadow: "none",
@@ -264,7 +399,7 @@ function buildTheme(mode: Mode) {
       MuiBackdrop: {
         styleOverrides: {
           root: {
-            backgroundColor: mode === "dark" ? "rgba(4, 8, 12, 0.56)" : "rgba(18, 24, 31, 0.24)",
+            backgroundColor: alpha(palette.crust, mode === "dark" ? 0.64 : 0.28),
             backdropFilter: "none",
           },
         },
@@ -277,13 +412,13 @@ function buildTheme(mode: Mode) {
             transition:
               `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}`,
             "&:hover": {
-              backgroundColor: mode === "dark" ? "rgba(125, 186, 178, 0.08)" : "rgba(22, 93, 102, 0.08)",
+              backgroundColor: alpha(palette.blue, mode === "dark" ? 0.12 : 0.08),
             },
             "&.Mui-selected": {
-              backgroundColor: mode === "dark" ? "rgba(125, 186, 178, 0.14)" : "rgba(22, 93, 102, 0.12)",
+              backgroundColor: alpha(palette.blue, mode === "dark" ? 0.18 : 0.12),
             },
             "&.Mui-selected:hover": {
-              backgroundColor: mode === "dark" ? "rgba(125, 186, 178, 0.18)" : "rgba(22, 93, 102, 0.16)",
+              backgroundColor: alpha(palette.blue, mode === "dark" ? 0.22 : 0.16),
             },
           },
         },
@@ -293,7 +428,7 @@ function buildTheme(mode: Mode) {
           root: {
             transition: `background-color ${duration} ${easing}`,
             "&.MuiTableRow-hover:hover": {
-              backgroundColor: mode === "dark" ? "rgba(125, 186, 178, 0.06)" : "rgba(22, 93, 102, 0.05)",
+              backgroundColor: alpha(palette.blue, mode === "dark" ? 0.08 : 0.05),
             },
           },
         },
