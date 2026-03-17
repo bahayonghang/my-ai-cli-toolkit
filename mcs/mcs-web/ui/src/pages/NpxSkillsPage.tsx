@@ -7,27 +7,17 @@ import {
 } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Alert,
   AppBar,
   Autocomplete,
   Box,
   Button,
   Card,
-  CardActionArea,
   CardContent,
-  Checkbox,
   Chip,
-  CircularProgress,
-  Divider,
   Drawer,
   FormControlLabel,
   Grid,
   IconButton,
-  InputAdornment,
-  List,
-  ListItemButton,
-  ListItemText,
-  LinearProgress,
   Stack,
   Switch,
   Tab,
@@ -36,24 +26,16 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-  alpha,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BuildCircleOutlinedIcon from "@mui/icons-material/BuildCircleOutlined";
 import HomeIcon from "@mui/icons-material/Home";
-import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
-import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
-import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import TuneIcon from "@mui/icons-material/Tune";
+import SettingsIcon from "@mui/icons-material/Settings";
+import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
 
 import {
   getNpxInstalledSkills,
@@ -93,207 +75,22 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { finalizeInterruptedJob } from "@/utils/npxJobState";
 import { buildNpxJobNotification, buildNpxRunConfigSummary } from "./npxSkillsFeedback";
 
-type ViewMode = "find" | "installed" | "maintenance";
-
-interface JobItemState {
-  id: string;
-  label: string;
-  status: "pending" | "running" | "success" | "error";
-  output: string;
-  error: string | null;
-  durationMs: number | null;
-}
-
-type PendingRunAction =
-  | {
-      kind: "install";
-      items: NpxSkillsInstallItemInput[];
-      labels: string[];
-      itemCount: number;
-    }
-  | {
-      kind: "quick-install";
-      packageRef: string;
-      skillFlagsInput: string;
-    }
-  | {
-      kind: "remove";
-      names: string[];
-    }
-  | {
-      kind: "check";
-    }
-  | {
-      kind: "update";
-    };
-
-type RunResultStatus = "idle" | "running" | "success" | "warning" | "error" | "interrupted";
-
-interface TaxonomyCategorySummary {
-  id: string;
-  label: string;
-  count: number;
-  groupId: string;
-  groupOrder: number;
-  categoryOrder: number;
-}
-
-interface TaxonomyGroupSummary {
-  id: string;
-  label: string;
-  order: number;
-  categories: TaxonomyCategorySummary[];
-}
-
-const COMMON_AGENTS = [
-  "claude-code",
-  "codex",
-  "cursor",
-  "gemini",
-  "copilot",
-  "windsurf",
-  "kiro",
-  "opencode",
-  "cline",
-  "augment",
-  "trae",
-  "trae_cn",
-  "antigravity",
-];
-const DEFAULT_AGENTS = ["claude-code", "codex"];
-const DEFAULT_CLI_MODE: NpxSkillsCliMode = "auto";
-const LS_KEY_AGENTS = "mcs-npx-skills-agents";
-const LS_KEY_CLI_MODE = "mcs-npx-skills-cli-mode";
-
-function loadAgents(): string[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY_AGENTS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch {
-    // ignore storage errors
-  }
-  return DEFAULT_AGENTS;
-}
-
-function loadCliMode(): NpxSkillsCliMode {
-  const raw = localStorage.getItem(LS_KEY_CLI_MODE);
-  return raw === "npx" ? "npx" : DEFAULT_CLI_MODE;
-}
-
-function safeParseEvent<T>(event: Event): T | null {
-  const payload = event as MessageEvent<string>;
-  if (!payload?.data) {
-    return null;
-  }
-  try {
-    return JSON.parse(payload.data) as T;
-  } catch {
-    return null;
-  }
-}
-
-function operationLabel(operation: NpxSkillsOperation, t: ReturnType<typeof useI18n>["t"]) {
-  switch (operation) {
-    case "install":
-      return t("npxSkills.operationInstall");
-    case "remove":
-      return t("npxSkills.operationRemove");
-    case "check":
-      return t("npxSkills.operationCheck");
-    case "update":
-      return t("npxSkills.operationUpdate");
-  }
-}
-
-function installStatusColor(
-  status: NpxSkillsCatalogItemDto["install_status"]
-): "success" | "warning" | "default" {
-  switch (status) {
-    case "installed":
-      return "success";
-    case "outdated":
-      return "warning";
-    default:
-      return "default";
-  }
-}
-
-function buildInstallKey(item: NpxSkillsCatalogItemDto) {
-  return `${item.package_ref}::${item.skill_flag ?? ""}`;
-}
-
-function parseSkillFlags(input: string): string[] {
-  return input
-    .split(/[\n,]/)
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
-
-function buildTaxonomyGroups<
-  T extends {
-    group_id: string;
-    group_label: string;
-    group_order: number;
-    category_id: string;
-    category_label: string;
-    category_order: number;
-  },
->(items: T[]): TaxonomyGroupSummary[] {
-  const groups = new Map<string, TaxonomyGroupSummary>();
-
-  for (const item of items) {
-    const existingGroup = groups.get(item.group_id);
-    if (!existingGroup) {
-      groups.set(item.group_id, {
-        id: item.group_id,
-        label: item.group_label,
-        order: item.group_order,
-        categories: [
-          {
-            id: item.category_id,
-            label: item.category_label,
-            count: 1,
-            groupId: item.group_id,
-            groupOrder: item.group_order,
-            categoryOrder: item.category_order,
-          },
-        ],
-      });
-      continue;
-    }
-
-    const existingCategory = existingGroup.categories.find(
-      (category) => category.id === item.category_id
-    );
-    if (existingCategory) {
-      existingCategory.count += 1;
-    } else {
-      existingGroup.categories.push({
-        id: item.category_id,
-        label: item.category_label,
-        count: 1,
-        groupId: item.group_id,
-        groupOrder: item.group_order,
-        categoryOrder: item.category_order,
-      });
-    }
-  }
-
-  return Array.from(groups.values())
-    .map((group) => ({
-      ...group,
-      categories: [...group.categories].sort(
-        (left, right) =>
-          left.categoryOrder - right.categoryOrder || left.label.localeCompare(right.label)
-      ),
-    }))
-    .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label));
-}
+import type { ViewMode, JobItemState, PendingRunAction, RunResultStatus } from "./npx-skills/types";
+import { COMMON_AGENTS, LS_KEY_AGENTS, LS_KEY_CLI_MODE } from "./npx-skills/types";
+import {
+  loadAgents,
+  loadCliMode,
+  safeParseEvent,
+  operationLabel,
+  buildInstallKey,
+  parseSkillFlags,
+  buildTaxonomyGroups,
+} from "./npx-skills/utils";
+import NpxFindView from "./npx-skills/NpxFindView";
+import NpxInstalledView from "./npx-skills/NpxInstalledView";
+import NpxMaintenanceView from "./npx-skills/NpxMaintenanceView";
+import NpxSummaryCard from "./npx-skills/NpxSummaryCard";
+import NpxSkillsFilters from "./npx-skills/NpxSkillsFilters";
 
 export default function NpxSkillsPage() {
   const { t } = useI18n();
@@ -944,895 +741,9 @@ export default function NpxSkillsPage() {
     return "";
   }, [installTarget.scope, jobRunConfig, resolvedTarget?.skills_path]);
 
-  const renderFindView = () => (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 1.5,
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <TextField
-          placeholder={t("npxSkills.searchCatalogPlaceholder")}
-          value={catalogSearch}
-          onChange={(event) => setCatalogSearch(event.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{ width: 360, maxWidth: "100%" }}
-        />
-        {isMobile && (
-          <IconButton
-            aria-label={t("common.openFilters")}
-            onClick={() => setFiltersOpen(true)}
-          >
-            <TuneIcon />
-          </IconButton>
-        )}
-        <FormControlLabel
-          control={
-            <Switch
-              checked={installedOnly}
-              onChange={(_, checked) => setInstalledOnly(checked)}
-            />
-          }
-          label={t("npxSkills.installedOnly")}
-        />
-        {isMobile && (
-          <IconButton
-            aria-label={t("common.openFilters")}
-            onClick={() => setFiltersOpen(true)}
-          >
-            <TuneIcon />
-          </IconButton>
-        )}
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
-          onClick={() => void fetchCatalog()}
-        >
-          {t("npxSkills.refreshCatalog")}
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<TipsAndUpdatesOutlinedIcon />}
-          onClick={openQuickInstallDialog}
-        >
-          {t("npxSkills.quickInstall")}
-        </Button>
-        <Box sx={{ flexGrow: 1 }} />
-        <Button
-          variant="contained"
-          startIcon={<InstallDesktopIcon />}
-          disabled={selectedInstallPayload.length === 0 || jobRunning}
-          onClick={openInstallSelectedDialog}
-        >
-          {t("npxSkills.installSelected")}
-        </Button>
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-        {!isMobile && (
-          <Card
-            variant="outlined"
-            sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}
-          >
-            <CardContent sx={{ p: 2 }}>
-              <NpxSkillsFilters
-                groups={catalogGroups}
-                selectedCategoryId={selectedCatalogCategoryId}
-                onCategoryChange={setSelectedCatalogCategoryId}
-                t={t}
-              />
-            </CardContent>
-          </Card>
-        )}
-
-        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-          {catalogError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {catalogError}
-            </Alert>
-          )}
-
-          {(catalogLoading || installTargetLoading) && (
-            <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
-          )}
-
-          {catalogLoading && catalogItems.length === 0 ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
-          ) : visibleCatalogItems.length === 0 ? (
-            <Alert severity="info">{t("npxSkills.noCatalogResults")}</Alert>
-          ) : (
-            <Grid container spacing={2}>
-              {visibleCatalogItems.map((item) => {
-            const key = buildInstallKey(item);
-            const isSelected = selectedCatalogKeys.has(key);
-            const isDisabled = item.project_only && installTarget.scope === "global";
-
-            return (
-              <Grid key={key} size={{ xs: 12, sm: 6, lg: 4 }}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    height: "100%",
-                    opacity: isDisabled ? 0.55 : 1,
-                    borderColor: isSelected ? "primary.main" : "divider",
-                    boxShadow: isSelected
-                      ? `0 8px 24px ${alpha(theme.palette.primary.main, 0.16)}`
-                      : "none",
-                    transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms cubic-bezier(0.16, 1, 0.3, 1)",
-                  }}
-                >
-                  <CardActionArea
-                    disabled={isDisabled}
-                    onClick={() => {
-                      setSelectedCatalogKeys((previous) => {
-                        const next = new Set(previous);
-                        if (next.has(key)) {
-                          next.delete(key);
-                        } else {
-                          next.add(key);
-                        }
-                        return next;
-                      });
-                    }}
-                    aria-pressed={isSelected}
-                    sx={{
-                      height: "100%",
-                      alignItems: "stretch",
-                      "&:hover": isDisabled
-                        ? undefined
-                        : {
-                            borderColor: "primary.main",
-                            transform: "translateY(-2px)",
-                          },
-                    }}
-                  >
-                    <CardContent>
-                    <Box
-                      display="flex"
-                      alignItems="flex-start"
-                      justifyContent="space-between"
-                      gap={1}
-                      mb={1}
-                    >
-                      <Box>
-                        <Typography variant="body1" fontWeight={700}>
-                          {item.name}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{
-                            fontFamily: '"Fira Code", monospace',
-                            overflowWrap: "anywhere",
-                          }}
-                        >
-                          {item.package_ref}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center">
-                        <Tooltip title={t("npxSkills.copyInstallCommand")} arrow>
-                          <IconButton
-                            size="small"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              const cmd = item.skill_flag
-                                ? `npx skills add ${item.package_ref} --skill ${item.skill_flag}`
-                                : `npx skills add ${item.package_ref}`;
-                              navigator.clipboard.writeText(cmd).then(
-                                () => showNotification(t("npxSkills.copySuccess"), "success"),
-                                () => showNotification(t("npxSkills.copyFailed"), "error"),
-                              );
-                            }}
-                            aria-label={t("npxSkills.copyInstallCommand")}
-                            sx={{ mr: 0.5 }}
-                          >
-                            <ContentCopyIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Checkbox
-                          checked={isSelected}
-                          disabled={isDisabled}
-                          inputProps={{
-                            "aria-label": t("common.selectItem", { name: item.name }),
-                          }}
-                          onClick={(event) => event.stopPropagation()}
-                          onChange={() => {
-                            setSelectedCatalogKeys((previous) => {
-                              const next = new Set(previous);
-                              if (next.has(key)) {
-                                next.delete(key);
-                              } else {
-                                next.add(key);
-                              }
-                              return next;
-                            });
-                          }}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Box display="flex" gap={0.75} flexWrap="wrap" mb={1.5}>
-                      <Chip
-                        size="small"
-                        color={installStatusColor(item.install_status)}
-                        variant="outlined"
-                        label={
-                          item.install_status === "installed"
-                            ? t("status.installed")
-                            : item.install_status === "outdated"
-                            ? t("status.outdated")
-                            : t("status.notInstalled")
-                        }
-                      />
-                      <Chip size="small" variant="outlined" label={item.category_label} />
-                      <Chip size="small" variant="outlined" label={item.install_provider} />
-                      {item.project_only && (
-                        <Chip
-                          size="small"
-                          color="warning"
-                          variant="outlined"
-                          label={t("npxSkills.projectOnly")}
-                        />
-                      )}
-                    </Box>
-
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        minHeight: "4.2em",
-                      }}
-                    >
-                      {item.description ?? t("npxSkills.noDescription")}
-                    </Typography>
-
-                    {item.usage && (
-                      <Typography
-                        variant="caption"
-                        sx={{ display: "block", mt: 1.25, color: "info.main" }}
-                      >
-                        {item.usage}
-                      </Typography>
-                    )}
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            );
-              })}
-            </Grid>
-          )}
-        </Box>
-      </Box>
-    </>
-  );
-
-  const renderInstalledView = () => (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 1.5,
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <TextField
-          placeholder={t("npxSkills.searchInstalledPlaceholder")}
-          value={installedSearch}
-          onChange={(event) => setInstalledSearch(event.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{ width: 360, maxWidth: "100%" }}
-        />
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
-          onClick={() => void fetchInstalled()}
-        >
-          {t("npxSkills.refreshInstalled")}
-        </Button>
-        <Box sx={{ flexGrow: 1 }} />
-        <Button
-          variant="contained"
-          color="error"
-          startIcon={<DeleteOutlineIcon />}
-          disabled={
-            jobRunning ||
-            installedItems.filter(
-              (item) => selectedInstalledNames.has(item.name) && item.manageable
-            ).length === 0
-          }
-          onClick={openRemoveSelected}
-        >
-          {t("npxSkills.removeSelected")}
-        </Button>
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-        {!isMobile && (
-          <Card
-            variant="outlined"
-            sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}
-          >
-            <CardContent sx={{ p: 2 }}>
-              <NpxSkillsFilters
-                groups={installedGroups}
-                selectedCategoryId={selectedInstalledCategoryId}
-                onCategoryChange={setSelectedInstalledCategoryId}
-                t={t}
-              />
-            </CardContent>
-          </Card>
-        )}
-
-        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-          {installedError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {installedError}
-            </Alert>
-          )}
-
-          {(installedLoading || installTargetLoading) && (
-            <LinearProgress sx={{ mb: 2, borderRadius: 999 }} />
-          )}
-
-          {installedLoading && installedItems.length === 0 ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
-          ) : visibleInstalledItems.length === 0 ? (
-            <Alert severity="info">{t("npxSkills.noInstalledResults")}</Alert>
-          ) : isMobile ? (
-        <Stack spacing={1.5}>
-          {visibleInstalledItems.map((item) => {
-            const selected = selectedInstalledNames.has(item.name);
-            return (
-              <Card key={item.name} variant="outlined">
-                <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Stack direction="row" spacing={1.5} alignItems="flex-start">
-                    <Checkbox
-                      checked={selected}
-                      disabled={!item.manageable}
-                      inputProps={{
-                        "aria-label": t("common.selectItem", { name: item.name }),
-                      }}
-                      onChange={() =>
-                        setSelectedInstalledNames((previous) => {
-                          const next = new Set(previous);
-                          if (next.has(item.name)) {
-                            next.delete(item.name);
-                          } else {
-                            next.add(item.name);
-                          }
-                          return next;
-                        })
-                      }
-                    />
-                    <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                      <Typography variant="body1" fontWeight={700}>
-                        {item.name}
-                      </Typography>
-                      <Box display="flex" gap={0.75} flexWrap="wrap" mt={0.75} mb={1}>
-                        <Chip
-                          size="small"
-                          variant="outlined"
-                          label={
-                            item.source === "managed"
-                              ? t("npxSkills.sourceCatalog")
-                              : t("npxSkills.sourceFilesystem")
-                          }
-                        />
-                        {!item.manageable && (
-                          <Chip
-                            size="small"
-                            color="warning"
-                            variant="outlined"
-                            label={t("npxSkills.unmanaged")}
-                          />
-                        )}
-                        <Chip size="small" variant="outlined" label={item.category_label} />
-                        <Chip size="small" variant="outlined" label={item.install_provider} />
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          display: "block",
-                          color: "text.secondary",
-                          fontFamily: '"Fira Code", monospace',
-                          overflowWrap: "anywhere",
-                        }}
-                      >
-                        {item.package_ref}
-                      </Typography>
-                      {item.skill_flags.length > 0 && (
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: "block",
-                            mt: 0.75,
-                            color: "text.secondary",
-                            fontFamily: '"Fira Code", monospace',
-                            overflowWrap: "anywhere",
-                          }}
-                        >
-                          {item.skill_flags.map((flag) => `--skill ${flag}`).join(" ")}
-                        </Typography>
-                      )}
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1, overflowWrap: "anywhere" }}>
-                        {item.description ?? "—"}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Button
-                    color="error"
-                    variant="outlined"
-                  disabled={!item.manageable}
-                  onClick={() => openRemoveDialog([item.name])}
-                >
-                  {t("common.uninstall")}
-                </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </Stack>
-          ) : (
-        <Card elevation={0}>
-          <Box sx={{ overflowX: "auto" }}>
-            <Box
-              component="table"
-              sx={{
-                width: "100%",
-                borderCollapse: "collapse",
-                "& th, & td": {
-                  borderBottom: `1px solid ${theme.palette.divider}`,
-                  px: 2,
-                  py: 1.5,
-                  textAlign: "left",
-                  verticalAlign: "top",
-                },
-                "& th": {
-                  color: "text.secondary",
-                  fontWeight: 700,
-                  fontSize: "0.75rem",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                },
-              }}
-            >
-              <Box component="thead">
-                <Box component="tr">
-                  <Box component="th" sx={{ width: 48 }} />
-                  <Box component="th">{t("common.name")}</Box>
-                  <Box component="th">{t("npxSkills.repo")}</Box>
-                  <Box component="th">{t("common.category")}</Box>
-                  <Box component="th">{t("common.description")}</Box>
-                  <Box component="th">{t("common.actions")}</Box>
-                </Box>
-              </Box>
-              <Box component="tbody">
-                {visibleInstalledItems.map((item) => {
-                  const selected = selectedInstalledNames.has(item.name);
-                  return (
-                    <Box component="tr" key={item.name}>
-                      <Box component="td">
-                        <Checkbox
-                          checked={selected}
-                          disabled={!item.manageable}
-                          inputProps={{
-                            "aria-label": t("common.selectItem", { name: item.name }),
-                          }}
-                          onChange={() =>
-                            setSelectedInstalledNames((previous) => {
-                              const next = new Set(previous);
-                              if (next.has(item.name)) {
-                                next.delete(item.name);
-                              } else {
-                                next.add(item.name);
-                              }
-                              return next;
-                            })
-                          }
-                        />
-                      </Box>
-                      <Box component="td">
-                        <Typography variant="body2" fontWeight={700}>
-                          {item.name}
-                        </Typography>
-                        <Chip
-                          size="small"
-                          variant="outlined"
-                          sx={{ mt: 0.75 }}
-                          label={
-                            item.source === "managed"
-                              ? t("npxSkills.sourceCatalog")
-                              : t("npxSkills.sourceFilesystem")
-                          }
-                        />
-                        {!item.manageable && (
-                          <Chip
-                            size="small"
-                            color="warning"
-                            variant="outlined"
-                            sx={{ mt: 0.75, ml: 0.75 }}
-                            label={t("npxSkills.unmanaged")}
-                          />
-                        )}
-                      </Box>
-                      <Box component="td">
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontFamily: '"Fira Code", monospace',
-                            color: "text.secondary",
-                            overflowWrap: "anywhere",
-                          }}
-                        >
-                          {item.package_ref}
-                        </Typography>
-                        {item.skill_flags.length > 0 && (
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              display: "block",
-                              mt: 0.75,
-                              color: "text.secondary",
-                              fontFamily: '"Fira Code", monospace',
-                            }}
-                          >
-                            {item.skill_flags.map((flag) => `--skill ${flag}`).join(" ")}
-                          </Typography>
-                        )}
-                      </Box>
-                      <Box component="td">{item.category_label}</Box>
-                      <Box component="td">
-                        <Typography variant="body2" color="text.secondary">
-                          {item.description ?? "—"}
-                        </Typography>
-                      </Box>
-                      <Box component="td">
-                        <Button
-                          size="small"
-                          color="error"
-                          variant="outlined"
-                          disabled={!item.manageable}
-                          onClick={() => openRemoveDialog([item.name])}
-                        >
-                          {t("common.uninstall")}
-                        </Button>
-                      </Box>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </Box>
-          </Box>
-        </Card>
-          )}
-        </Box>
-      </Box>
-    </>
-  );
-
-  const renderMaintenanceView = () => (
-    <>
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card variant="outlined">
-            <CardContent>
-              <Stack spacing={1.5}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <BuildCircleOutlinedIcon color="info" />
-                  <Typography variant="h6">{t("npxSkills.checkUpdates")}</Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t("npxSkills.runCheckHelp")}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="info"
-                  startIcon={<RefreshIcon />}
-                  disabled={jobRunning}
-                  onClick={openCheckDialog}
-                >
-                  {t("npxSkills.checkUpdates")}
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card variant="outlined">
-            <CardContent>
-              <Stack spacing={1.5}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <SystemUpdateAltIcon color="warning" />
-                  <Typography variant="h6">{t("npxSkills.updateAll")}</Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t("npxSkills.runUpdateHelp")}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="warning"
-                  startIcon={<SystemUpdateAltIcon />}
-                  disabled={jobRunning}
-                  onClick={openUpdateDialog}
-                >
-                  {t("npxSkills.updateAll")}
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Card variant="outlined">
-        <CardContent>
-          <Stack spacing={2}>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              gap={2}
-              flexWrap="wrap"
-            >
-              <Box>
-                <Typography variant="h6">
-                  {jobOperation ? operationLabel(jobOperation, t) : t("npxSkills.viewMaintenance")}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {jobStatusMessage ?? t("npxSkills.jobEmpty")}
-                </Typography>
-              </Box>
-              <Chip
-                color={
-                  jobResultStatus === "success"
-                    ? "success"
-                    : jobResultStatus === "warning"
-                    ? "warning"
-                    : jobResultStatus === "error" || jobResultStatus === "interrupted"
-                    ? "error"
-                    : jobResultStatus === "running"
-                    ? "info"
-                    : "default"
-                }
-                variant={jobResultStatus === "idle" ? "outlined" : "filled"}
-                label={
-                  jobResultStatus === "success"
-                    ? t("npxSkills.runResultSuccess")
-                    : jobResultStatus === "warning"
-                    ? t("npxSkills.runResultWarning")
-                    : jobResultStatus === "error"
-                    ? t("npxSkills.runResultError")
-                    : jobResultStatus === "interrupted"
-                    ? t("npxSkills.runResultInterrupted")
-                    : jobResultStatus === "running"
-                    ? t("npxSkills.runResultRunning")
-                    : t("npxSkills.viewMaintenance")
-                }
-              />
-            </Box>
-
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              <Chip
-                size="small"
-                variant="outlined"
-                label={t("npxSkills.jobQueue", { count: jobItems.length })}
-              />
-              <Chip
-                size="small"
-                variant="outlined"
-                label={t("npxSkills.jobCurrent", {
-                  completed: jobCompleted,
-                  total: jobTotal,
-                })}
-              />
-              <Chip
-                size="small"
-                color="success"
-                variant="outlined"
-                label={t("npxSkills.jobSuccess", { count: jobSuccessCount })}
-              />
-              <Chip
-                size="small"
-                color="error"
-                variant="outlined"
-                label={t("npxSkills.jobFailed", { count: jobFailureCount })}
-              />
-            </Stack>
-
-            {runConfigSummary && (
-              <Card
-                variant="outlined"
-                sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.04) }}
-              >
-                <CardContent sx={{ "&:last-child": { pb: 2 } }}>
-                  <Typography variant="overline" color="text.secondary">
-                    {t("npxSkills.runConfigExecutedWith")}
-                  </Typography>
-                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                    <Chip size="small" variant="outlined" label={runConfigSummary.agentsLabel} />
-                    <Chip size="small" variant="outlined" label={runConfigSummary.cliModeLabel} />
-                    <Chip size="small" variant="outlined" label={runConfigSummary.installTargetLabel} />
-                    <Chip size="small" color="info" variant="outlined" label={t("npxSkills.runConfigTemporaryOverride")} />
-                  </Stack>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1.25 }}>
-                    {runConfigPath
-                      ? t("npxSkills.runConfigCurrentPath", {
-                          path: runConfigPath,
-                        })
-                      : t("npxSkills.runConfigUnknownPath")}
-                  </Typography>
-                </CardContent>
-              </Card>
-            )}
-
-            {(jobRunning || jobTotal > 0) && (
-            <Box>
-              <LinearProgress
-                variant="determinate"
-                value={Math.max(0, Math.min(100, jobPercent))}
-                sx={{ height: 8, borderRadius: 999 }}
-              />
-              {jobId && (
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: "block" }}>
-                  Job: {jobId}
-                </Typography>
-              )}
-              {streamDisconnected && (
-                <Alert severity="warning" sx={{ mt: 1 }}>
-                  {t("npxSkills.jobConnectionLost")}
-                </Alert>
-              )}
-            </Box>
-          )}
-
-          {jobItems.length === 0 ? (
-            <Alert severity="info">{t("npxSkills.jobEmpty")}</Alert>
-          ) : (
-            <Stack spacing={1}>
-              {jobItems.map((item) => (
-                <Card
-                  key={item.id}
-                  variant="outlined"
-                  sx={{
-                    bgcolor:
-                      item.status === "running"
-                        ? alpha(theme.palette.info.main, 0.06)
-                        : item.status === "success"
-                        ? alpha(theme.palette.success.main, 0.06)
-                        : item.status === "error"
-                        ? alpha(theme.palette.error.main, 0.06)
-                        : "background.paper",
-                  }}
-                >
-                  <CardContent sx={{ "&:last-child": { pb: 2 } }}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      gap={2}
-                      mb={1}
-                    >
-                      <Typography variant="body2" fontWeight={700}>
-                        {item.label}
-                      </Typography>
-                      <Chip
-                        size="small"
-                        color={
-                          item.status === "success"
-                            ? "success"
-                            : item.status === "error"
-                            ? "error"
-                            : item.status === "running"
-                            ? "info"
-                            : "default"
-                        }
-                        label={
-                          item.status === "success"
-                            ? t("npxSkills.itemStatusSuccess")
-                            : item.status === "error"
-                            ? t("npxSkills.itemStatusError")
-                            : item.status === "running"
-                            ? t("npxSkills.itemStatusRunning")
-                            : t("npxSkills.itemStatusPending")
-                        }
-                      />
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {item.durationMs != null ? `${item.durationMs}ms` : ""}
-                    </Typography>
-                    {item.error && (
-                      <Typography variant="body2" color="error" sx={{ mt: 1 }}>
-                        {t("npxSkills.itemErrorSummary")}: {item.error}
-                      </Typography>
-                    )}
-                    {(item.output || item.error) && (
-                      <>
-                        <Button
-                          size="small"
-                          sx={{ mt: 1 }}
-                          onClick={() => toggleJobItemExpanded(item.id)}
-                        >
-                          {expandedJobItemIds.has(item.id)
-                            ? t("npxSkills.itemHideDetails")
-                            : t("npxSkills.itemShowDetails")}
-                        </Button>
-                        {expandedJobItemIds.has(item.id) && (
-                          <Box
-                            sx={{
-                              mt: 1.5,
-                              p: 1.5,
-                              borderRadius: 2,
-                              bgcolor: "var(--mcs-surface-muted)",
-                              border: `1px solid ${theme.palette.divider}`,
-                              fontFamily: '"Fira Code", monospace',
-                              fontSize: "0.75rem",
-                              whiteSpace: "pre-wrap",
-                              overflowWrap: "anywhere",
-                            }}
-                          >
-                            {item.error && (
-                              <Box sx={{ mb: item.output ? 1.5 : 0 }}>
-                                <Typography variant="caption" color="error" sx={{ display: "block", mb: 0.5 }}>
-                                  {t("npxSkills.itemErrorSummary")}
-                                </Typography>
-                                {item.error}
-                              </Box>
-                            )}
-                            {item.output && (
-                              <Box>
-                                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
-                                  {t("npxSkills.itemOutputLabel")}
-                                </Typography>
-                                {item.output}
-                              </Box>
-                            )}
-                          </Box>
-                        )}
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          )}
-          </Stack>
-        </CardContent>
-      </Card>
-    </>
-  );
-
   return (
     <Box
+      component="main"
       sx={{
         minHeight: "100vh",
         display: "flex",
@@ -1908,7 +819,6 @@ export default function NpxSkillsPage() {
       </AppBar>
 
       <Box
-        component="main"
         sx={{
           flexGrow: 1,
           mt: 8,
@@ -1919,28 +829,28 @@ export default function NpxSkillsPage() {
       >
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid size={{ xs: 6, md: 3 }}>
-            <SummaryCard
+            <NpxSummaryCard
               label={t("npxSkills.summaryInstalled")}
               value={installedItems.length}
               icon={<Inventory2OutlinedIcon color="success" />}
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
-            <SummaryCard
+            <NpxSummaryCard
               label={t("npxSkills.summaryCatalog")}
               value={catalogItems.length}
               icon={<TipsAndUpdatesOutlinedIcon color="info" />}
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
-            <SummaryCard
+            <NpxSummaryCard
               label={t("npxSkills.summaryAgents")}
               value={agents.length}
               icon={<BuildCircleOutlinedIcon color="warning" />}
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
-            <SummaryCard
+            <NpxSummaryCard
               label={t("npxSkills.summaryCliMode")}
               value={cliMode.toUpperCase()}
               icon={<SettingsIcon color="action" />}
@@ -1960,9 +870,79 @@ export default function NpxSkillsPage() {
           </Tabs>
         </Card>
 
-        {view === "find" && renderFindView()}
-        {view === "installed" && renderInstalledView()}
-        {view === "maintenance" && renderMaintenanceView()}
+        {view === "find" && (
+          <NpxFindView
+            t={t}
+            isMobile={isMobile}
+            catalogSearch={catalogSearch}
+            setCatalogSearch={setCatalogSearch}
+            installedOnly={installedOnly}
+            setInstalledOnly={setInstalledOnly}
+            setFiltersOpen={setFiltersOpen}
+            fetchCatalog={() => void fetchCatalog()}
+            openQuickInstallDialog={openQuickInstallDialog}
+            openInstallSelectedDialog={openInstallSelectedDialog}
+            selectedInstallPayload={selectedInstallPayload}
+            jobRunning={jobRunning}
+            catalogGroups={catalogGroups}
+            selectedCatalogCategoryId={selectedCatalogCategoryId}
+            setSelectedCatalogCategoryId={setSelectedCatalogCategoryId}
+            catalogError={catalogError}
+            catalogLoading={catalogLoading}
+            installTargetLoading={installTargetLoading}
+            catalogItems={catalogItems}
+            visibleCatalogItems={visibleCatalogItems}
+            selectedCatalogKeys={selectedCatalogKeys}
+            setSelectedCatalogKeys={setSelectedCatalogKeys}
+            installTargetScope={installTarget.scope}
+            showNotification={showNotification}
+          />
+        )}
+        {view === "installed" && (
+          <NpxInstalledView
+            t={t}
+            isMobile={isMobile}
+            installedSearch={installedSearch}
+            setInstalledSearch={setInstalledSearch}
+            fetchInstalled={() => void fetchInstalled()}
+            jobRunning={jobRunning}
+            installedItems={installedItems}
+            selectedInstalledNames={selectedInstalledNames}
+            setSelectedInstalledNames={setSelectedInstalledNames}
+            openRemoveSelected={openRemoveSelected}
+            openRemoveDialog={openRemoveDialog}
+            installedGroups={installedGroups}
+            selectedInstalledCategoryId={selectedInstalledCategoryId}
+            setSelectedInstalledCategoryId={setSelectedInstalledCategoryId}
+            installedError={installedError}
+            installedLoading={installedLoading}
+            installTargetLoading={installTargetLoading}
+            visibleInstalledItems={visibleInstalledItems}
+          />
+        )}
+        {view === "maintenance" && (
+          <NpxMaintenanceView
+            t={t}
+            jobRunning={jobRunning}
+            openCheckDialog={openCheckDialog}
+            openUpdateDialog={openUpdateDialog}
+            jobOperation={jobOperation}
+            jobStatusMessage={jobStatusMessage}
+            jobResultStatus={jobResultStatus}
+            jobItems={jobItems}
+            jobCompleted={jobCompleted}
+            jobTotal={jobTotal}
+            jobSuccessCount={jobSuccessCount}
+            jobFailureCount={jobFailureCount}
+            jobPercent={jobPercent}
+            jobId={jobId}
+            streamDisconnected={streamDisconnected}
+            expandedJobItemIds={expandedJobItemIds}
+            toggleJobItemExpanded={toggleJobItemExpanded}
+            runConfigSummary={runConfigSummary}
+            runConfigPath={runConfigPath}
+          />
+        )}
       </Box>
 
       <Drawer
@@ -2108,102 +1088,6 @@ export default function NpxSkillsPage() {
       />
 
       <NotificationSnackbar />
-    </Box>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string | number;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Card variant="outlined" sx={{ height: "100%" }}>
-      <CardContent sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: "action.hover",
-          }}
-        >
-          {icon}
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            {label}
-          </Typography>
-          <Typography variant="h6" fontWeight={700}>
-            {value}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-}
-
-function NpxSkillsFilters({
-  groups,
-  selectedCategoryId,
-  onCategoryChange,
-  t,
-}: {
-  groups: TaxonomyGroupSummary[];
-  selectedCategoryId: string | null;
-  onCategoryChange: (categoryId: string | null) => void;
-  t: ReturnType<typeof useI18n>["t"];
-}) {
-  const totalCount = groups.reduce(
-    (sum, group) =>
-      sum + group.categories.reduce((groupSum, category) => groupSum + category.count, 0),
-    0
-  );
-
-  return (
-    <Box>
-      <Typography variant="overline" color="text.secondary">
-        {t("common.category")}
-      </Typography>
-      <List dense disablePadding sx={{ mt: 1 }}>
-        <ListItemButton
-          selected={selectedCategoryId === null}
-          onClick={() => onCategoryChange(null)}
-        >
-          <ListItemText primary={t("common.all")} secondary={String(totalCount)} />
-        </ListItemButton>
-        <Divider sx={{ my: 1 }} />
-        {groups.map((group) => (
-          <Box key={group.id} sx={{ mb: 1.5 }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "block", px: 2, py: 0.5, textTransform: "uppercase" }}
-            >
-              {group.label}
-            </Typography>
-            {group.categories.map((category) => (
-              <ListItemButton
-                key={category.id}
-                selected={selectedCategoryId === category.id}
-                onClick={() => onCategoryChange(category.id)}
-              >
-                <ListItemText
-                  primary={category.label}
-                  secondary={String(category.count)}
-                />
-              </ListItemButton>
-            ))}
-          </Box>
-        ))}
-      </List>
     </Box>
   );
 }
