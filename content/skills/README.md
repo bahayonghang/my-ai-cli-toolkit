@@ -1,6 +1,11 @@
 # `content/skills/`
 
-This directory is the first-party skill catalog for the repository.
+This directory is the main skill source area for the repository.
+
+It contains both:
+
+- first-party installable skill directories
+- `external-skills.toml`, the curated third-party registry consumed by `mcs-core` / `mcs-web`
 
 ## Current category layout
 
@@ -18,7 +23,8 @@ content/skills/
 ├── CLAUDE.md
 ├── README.md
 ├── check.py
-└── default.toml
+├── default.toml
+└── external-skills.toml
 ```
 
 ## Required structure for a skill
@@ -51,6 +57,7 @@ Prefer those top-level fields when adding new skills.
 ## Validation
 
 - `default.toml` controls which categories are part of default install flows
+- `external-skills.toml` stores the curated external registry used by the Web `npx skills` flow
 - `check.py` helps validate `SKILL.md` metadata coverage
 - `just mcs` is the quickest way to verify that a skill is discoverable
 

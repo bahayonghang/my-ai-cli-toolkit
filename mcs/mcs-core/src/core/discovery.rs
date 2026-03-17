@@ -461,4 +461,31 @@ mod tests {
         let _ = std::fs::remove_dir_all(project_root);
         let _ = std::fs::remove_dir_all(install_root);
     }
+
+    #[test]
+    fn top_level_external_registry_file_is_not_discovered_as_skill() {
+        let project_root = temp_dir("project_registry_file");
+        let skills_root = project_root.join("content").join("skills");
+        std::fs::create_dir_all(skills_root.join("workflow-skills").join("demo-skill")).unwrap();
+        std::fs::write(
+            skills_root
+                .join("workflow-skills")
+                .join("demo-skill")
+                .join("SKILL.md"),
+            "---\nname: demo-skill\n---\n",
+        )
+        .unwrap();
+        std::fs::write(
+            skills_root.join("external-skills.toml"),
+            "[schema]\nversion = 2\n",
+        )
+        .unwrap();
+
+        let discovered = discover_skill_sources(&project_root);
+
+        assert_eq!(discovered.len(), 1);
+        assert_eq!(discovered[0].name, "demo-skill");
+
+        let _ = std::fs::remove_dir_all(project_root);
+    }
 }

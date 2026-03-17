@@ -332,7 +332,7 @@ pub fn load_external_skills(
 ) -> Result<ExternalSkillsRegistry, ExternalSkillsError> {
     let toml_path = project_root
         .join("content")
-        .join("external-skills")
+        .join("skills")
         .join("external-skills.toml");
 
     let content = std::fs::read_to_string(&toml_path).map_err(|error| {
@@ -529,5 +529,30 @@ package_ref = "vercel-labs/skills"
 
         let error = parsed.validate().unwrap_err();
         assert!(error.to_string().contains("unsupported install provider"));
+    }
+
+    #[test]
+    fn load_external_skills_reads_registry_from_content_skills() {
+        let project_root = std::env::temp_dir().join(format!(
+            "mcs_external_skills_{}_{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or_default()
+        ));
+        let skills_dir = project_root.join("content").join("skills");
+        std::fs::create_dir_all(&skills_dir).unwrap();
+        std::fs::write(skills_dir.join("external-skills.toml"), sample_registry()).unwrap();
+
+        let registry = load_external_skills(&project_root).unwrap();
+        let resolved = registry
+            .resolved_skills_for_kind(EXTERNAL_SKILLS_KIND_SKILLS_CLI)
+            .unwrap();
+
+        assert_eq!(resolved.len(), 1);
+        assert_eq!(resolved[0].id, "find-skills");
+
+        let _ = std::fs::remove_dir_all(project_root);
     }
 }
