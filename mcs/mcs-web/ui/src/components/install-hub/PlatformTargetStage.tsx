@@ -83,8 +83,8 @@ export function PlatformTargetStage({
             px: 2,
             py: 1.5,
             borderRadius: 3,
-            border: "1px dashed rgba(255, 255, 255, 0.12)",
-            bgcolor: "rgba(255, 255, 255, 0.03)",
+            border: "1px dashed var(--mcs-dashboard-outline)",
+            bgcolor: "var(--mcs-dashboard-surface-muted)",
           }}
         >
           <Typography variant="body2" color="text.secondary">
@@ -120,12 +120,12 @@ export function PlatformTargetStage({
                     borderRadius: 3,
                     border: "1px solid",
                     borderColor: selected
-                      ? "rgba(143, 197, 187, 0.42)"
-                      : "rgba(255, 255, 255, 0.08)",
+                      ? "var(--mcs-dashboard-outline-strong)"
+                      : "var(--mcs-dashboard-outline)",
                     background: selected
-                      ? "linear-gradient(180deg, rgba(143, 197, 187, 0.16) 0%, rgba(17, 24, 29, 0.92) 100%)"
-                      : "linear-gradient(180deg, rgba(20, 28, 34, 0.92) 0%, rgba(14, 20, 24, 0.9) 100%)",
-                    boxShadow: selected ? "var(--mcs-shadow-md)" : "var(--mcs-shadow-sm)",
+                      ? "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-panel-fill) 100%)"
+                      : "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-panel-fill) 100%)",
+                    boxShadow: selected ? "var(--mcs-panel-shadow)" : "var(--mcs-glass-shadow)",
                     p: 2.25,
                     alignItems: "stretch",
                     justifyContent: "stretch",

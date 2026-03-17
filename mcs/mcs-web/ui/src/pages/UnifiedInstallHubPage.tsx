@@ -39,11 +39,25 @@ import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 const sectionShellSx = {
   position: "relative",
   borderRadius: 4,
-  border: "1px solid var(--mcs-dashboard-outline)",
+  border: "1px solid var(--mcs-glass-stroke)",
   background:
-    "linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-dashboard-surface) 100%)",
-  boxShadow: "var(--mcs-shadow-md)",
+    "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+  boxShadow: "var(--mcs-panel-shadow)",
+  backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+  WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
   overflow: "hidden",
+  isolation: "isolate",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 42%)",
+    pointerEvents: "none",
+  },
+  "& > *": {
+    position: "relative",
+    zIndex: 1,
+  },
 } as const;
 
 export default function UnifiedInstallHubPage() {
@@ -205,7 +219,7 @@ function InstallHero({
                     bgcolor:
                       stage === model.activeStage
                         ? "var(--mcs-dashboard-accent-soft)"
-                        : "rgba(255, 255, 255, 0.03)",
+                        : "var(--mcs-dashboard-surface-muted)",
                   }}
                 >
                   <Typography variant="caption" fontWeight={700}>
@@ -303,8 +317,8 @@ function MetricPlate({
             : "var(--mcs-dashboard-outline)",
         bgcolor:
           tone === "accent"
-            ? "rgba(143, 197, 187, 0.12)"
-            : "rgba(255, 255, 255, 0.04)",
+            ? "var(--mcs-dashboard-accent-soft)"
+            : "var(--mcs-dashboard-surface-muted)",
         p: 1.5,
       }}
     >
@@ -316,7 +330,10 @@ function MetricPlate({
             borderRadius: 2,
             display: "grid",
             placeItems: "center",
-            bgcolor: tone === "accent" ? "var(--mcs-dashboard-accent-soft)" : "rgba(255, 255, 255, 0.04)",
+            bgcolor:
+              tone === "accent"
+                ? "var(--mcs-dashboard-accent-soft)"
+                : "var(--mcs-dashboard-surface-muted)",
           }}
         >
           {icon}

@@ -94,8 +94,8 @@ export function MobileInstallSummaryBar({
           borderRadius: 3,
           border: "1px solid var(--mcs-dashboard-outline-strong)",
           background:
-            "linear-gradient(180deg, rgba(19, 30, 36, 0.98) 0%, rgba(13, 19, 24, 0.98) 100%)",
-          boxShadow: "var(--mcs-shadow-md)",
+            "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+          boxShadow: "var(--mcs-panel-shadow)",
           p: 1.5,
         }}
       >
@@ -163,8 +163,8 @@ function SummarySurface({
         borderRadius: 4,
         border: "1px solid var(--mcs-dashboard-outline-strong)",
         background:
-          "linear-gradient(180deg, rgba(20, 30, 36, 0.96) 0%, rgba(12, 18, 22, 0.96) 100%)",
-        boxShadow: "var(--mcs-shadow-md)",
+          "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+        boxShadow: "var(--mcs-panel-shadow)",
         p: { xs: 2, md: 2.5 },
       }}
     >

@@ -132,7 +132,7 @@ function ReviewPreviewBlock({
         borderRadius: 3,
         border: "1px solid var(--mcs-dashboard-outline)",
         background:
-          "linear-gradient(180deg, rgba(18, 27, 33, 0.95) 0%, rgba(13, 19, 24, 0.94) 100%)",
+          "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
         p: { xs: 2, md: 2.4 },
       }}
     >
@@ -184,8 +184,8 @@ function ReviewPreviewBlock({
                     px: 1.5,
                     py: 1.35,
                     borderRadius: 2.5,
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    bgcolor: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid var(--mcs-dashboard-outline)",
+                    bgcolor: "var(--mcs-dashboard-surface-muted)",
                   }}
                 >
                   <Stack direction="row" spacing={1.25} alignItems="center">
@@ -238,7 +238,7 @@ function ExecutionStatusBlock({
         borderRadius: 3,
         border: "1px solid var(--mcs-dashboard-outline)",
         background:
-          "linear-gradient(180deg, rgba(16, 24, 29, 0.96) 0%, rgba(11, 16, 20, 0.95) 100%)",
+          "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
         p: { xs: 2, md: 2.4 },
       }}
     >
@@ -329,16 +329,16 @@ function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
         border: "1px solid",
         borderColor:
           severity === "success"
-            ? "rgba(116, 196, 148, 0.24)"
+            ? "var(--mcs-success-border)"
             : severity === "warning"
-              ? "rgba(208, 169, 105, 0.24)"
-              : "rgba(220, 140, 132, 0.24)",
+              ? "var(--mcs-warning-progress-strong)"
+              : "var(--mcs-error-border)",
         background:
           severity === "success"
-            ? "rgba(116, 196, 148, 0.08)"
+            ? "var(--mcs-success-surface)"
             : severity === "warning"
-              ? "rgba(208, 169, 105, 0.08)"
-              : "rgba(220, 140, 132, 0.08)",
+              ? "var(--mcs-warning-progress)"
+              : "var(--mcs-error-surface)",
         p: { xs: 1.75, md: 2 },
       }}
     >

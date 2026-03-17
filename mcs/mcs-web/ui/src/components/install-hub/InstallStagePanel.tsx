@@ -49,11 +49,13 @@ export function InstallStagePanel({
           ? "var(--mcs-dashboard-outline-strong)"
           : "var(--mcs-dashboard-outline)",
         background: active
-          ? "linear-gradient(180deg, rgba(21, 32, 39, 0.96) 0%, rgba(16, 24, 29, 0.92) 100%)"
+          ? "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)"
           : complete
-            ? "linear-gradient(180deg, rgba(19, 31, 36, 0.92) 0%, rgba(15, 22, 27, 0.9) 100%)"
-            : "linear-gradient(180deg, rgba(17, 24, 29, 0.84) 0%, rgba(14, 20, 24, 0.82) 100%)",
-        boxShadow: active ? "var(--mcs-shadow-md)" : "var(--mcs-shadow-sm)",
+            ? "linear-gradient(180deg, var(--mcs-success-surface) 0%, var(--mcs-panel-fill) 100%)"
+            : "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-panel-fill) 100%)",
+        boxShadow: active ? "var(--mcs-panel-shadow)" : "var(--mcs-glass-shadow)",
+        backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+        WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
         overflow: "hidden",
         isolation: "isolate",
         "&::before": {
@@ -63,9 +65,9 @@ export function InstallStagePanel({
           top: 0,
           height: 2,
           background: active
-            ? "linear-gradient(90deg, var(--mcs-dashboard-accent-strong), rgba(217, 177, 115, 0.72))"
+            ? "linear-gradient(90deg, var(--mcs-dashboard-accent-strong), var(--mcs-dashboard-warm-strong))"
             : complete
-              ? "linear-gradient(90deg, rgba(116, 196, 148, 0.72), rgba(143, 197, 187, 0.52))"
+              ? "linear-gradient(90deg, var(--mcs-success-border), var(--mcs-dashboard-accent-soft))"
               : "transparent",
         },
       }}
@@ -88,12 +90,14 @@ export function InstallStagePanel({
                 bgcolor: active
                   ? "var(--mcs-dashboard-accent-soft)"
                   : complete
-                    ? "rgba(116, 196, 148, 0.12)"
-                    : "rgba(255, 255, 255, 0.04)",
+                    ? "var(--mcs-success-surface)"
+                    : "var(--mcs-dashboard-surface-muted)",
                 border: "1px solid",
                 borderColor: active
                   ? "var(--mcs-dashboard-outline-strong)"
-                  : "rgba(255, 255, 255, 0.08)",
+                  : complete
+                    ? "var(--mcs-success-border)"
+                    : "var(--mcs-dashboard-outline)",
                 color: "var(--mcs-dashboard-ink)",
                 flexShrink: 0,
               }}
@@ -151,8 +155,8 @@ export function InstallStagePanel({
               px: 1.75,
               py: 1.5,
               borderRadius: 3,
-              bgcolor: "rgba(255, 255, 255, 0.03)",
-              border: "1px dashed rgba(255, 255, 255, 0.08)",
+              bgcolor: "var(--mcs-dashboard-surface-muted)",
+              border: "1px dashed var(--mcs-dashboard-outline)",
               color: "var(--mcs-dashboard-muted)",
             }}
           >

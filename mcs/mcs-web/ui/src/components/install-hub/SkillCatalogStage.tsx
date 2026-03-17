@@ -188,7 +188,7 @@ export function SkillCatalogStage({
             borderRadius: 3,
             border: "1px solid var(--mcs-dashboard-outline)",
             background:
-              "linear-gradient(180deg, rgba(16, 24, 29, 0.95) 0%, rgba(12, 18, 22, 0.94) 100%)",
+              "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
             overflow: "hidden",
           }}
         >
@@ -204,9 +204,9 @@ export function SkillCatalogStage({
                     sx={{
                       px: 2.25,
                       py: 1.15,
-                      bgcolor: "rgba(255, 255, 255, 0.03)",
-                      borderTop: "1px solid rgba(255, 255, 255, 0.04)",
-                      borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+                      bgcolor: "var(--mcs-dashboard-surface-muted)",
+                      borderTop: "1px solid var(--mcs-dashboard-outline)",
+                      borderBottom: "1px solid var(--mcs-dashboard-outline)",
                       scrollMarginTop: 112,
                     }}
                   >
@@ -267,7 +267,7 @@ function CategoryQuickNav({
         top: { lg: 108 },
         borderRadius: 3,
         border: "1px solid var(--mcs-dashboard-outline)",
-        bgcolor: "rgba(255, 255, 255, 0.03)",
+        bgcolor: "var(--mcs-dashboard-surface-muted)",
         p: 1.25,
       }}
     >
@@ -300,10 +300,10 @@ function CategoryQuickNav({
                   border: "1px solid",
                   borderColor: active
                     ? "var(--mcs-dashboard-outline-strong)"
-                    : "rgba(255, 255, 255, 0.06)",
+                    : "var(--mcs-dashboard-outline)",
                   bgcolor: active
                     ? "var(--mcs-dashboard-accent-soft)"
-                    : "rgba(255, 255, 255, 0.02)",
+                    : "var(--mcs-dashboard-surface-muted)",
                 }}
               >
                 <Typography
@@ -341,7 +341,7 @@ function SkillRow({
   ).length;
 
   return (
-    <ListItem disablePadding divider sx={{ borderColor: "rgba(255, 255, 255, 0.04)" }}>
+    <ListItem disablePadding divider sx={{ borderColor: "var(--mcs-dashboard-outline)" }}>
       <ListItemButton
         selected={selected}
         disabled={disabled}
@@ -351,11 +351,11 @@ function SkillRow({
           px: { xs: 1.25, md: 1.75 },
           py: 1.35,
           "&.Mui-selected": {
-            backgroundColor: "rgba(143, 197, 187, 0.12)",
-            boxShadow: "inset 0 0 0 1px rgba(143, 197, 187, 0.18)",
+            backgroundColor: "var(--mcs-dashboard-accent-soft)",
+            boxShadow: "inset 0 0 0 1px var(--mcs-dashboard-outline-strong)",
           },
           "&.Mui-selected:hover": {
-            backgroundColor: "rgba(143, 197, 187, 0.16)",
+            backgroundColor: "var(--mcs-dashboard-accent-soft)",
           },
         }}
       >
