@@ -70,6 +70,11 @@ npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill u
 ```
 
 ```shell
+# Taste-Skill (High-Agency Frontend) - 前端审美与设计专家技能集，包含 4 个专项技能（审美建议、完整输出、视觉细节、项目重设计）。
+npx skills add Leonxlnx/taste-skill -g -y
+```
+
+```shell
 # 技能发现工具（帮助查找和安装 agent skills 生态系统中的可用技能包）⭐⭐⭐⭐⭐
 npx skills add https://github.com/sickn33/antigravity-awesome-skills --skill skill-seekers -g -y
 ```
