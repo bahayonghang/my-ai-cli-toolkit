@@ -95,3 +95,23 @@ A skill is a directory containing at minimum a `SKILL.md` file. The file's YAML 
 - **UI**: React + TypeScript strict mode, MUI v6 (Grid v2 API with `size` prop). No CSS files — all styling via MUI `sx` prop.
 - **Commands source fallback**: Platforms can declare a `fallback_commands_source` (e.g., `codex` falls back to `claude` commands if no codex-specific commands exist).
 - **No root `CLAUDE.md` for OMC config**: The OMC multi-agent orchestration config lives in `.claude/CLAUDE.md`, not the project root.
+
+## Design Context
+
+### Users
+Primary users are developers and AI-tool power users managing Claude/Codex/Gemini/Qwen-style skills, commands, and platform configuration in local development environments. They use MCS Web to quickly understand platform availability, inspect install state, and complete installation or update tasks without friction or ambiguity.
+
+### Brand Personality
+Calm, precise, trustworthy.
+
+The interface should evoke confidence and control rather than hype. It should feel like a polished control surface for real technical work: clear information hierarchy, low cognitive noise, and predictable interactions. Visual interest is welcome, but it must support orientation and focus instead of competing with the task.
+
+### Aesthetic Direction
+A refined productivity interface for technical users. The visual system can retain expressive theming and environmental depth, but should avoid obvious "AI-generated" tells such as gratuitous glassmorphism, repetitive card grids, decorative gradients, or flashy futuristic motifs. Both light and dark themes must feel intentional and equally complete. Motion should be restrained, meaningful, and reduced-motion-safe.
+
+### Design Principles
+1. Prioritize fast management flows: users should be able to scan status, choose a platform, and act quickly.
+2. Favor calm precision over spectacle: every visual treatment must improve clarity, hierarchy, or feedback.
+3. Avoid AI-slop patterns: no template-looking hero stats, decorative gradients, overused glass panels, or generic dashboard theatrics unless they serve a real purpose.
+4. Design both themes seriously: light and dark modes should each have strong contrast, coherent surfaces, and no second-class styling.
+5. Treat accessibility as baseline quality: target WCAG AA or better, preserve keyboard/focus clarity, and respect reduced-motion preferences.
