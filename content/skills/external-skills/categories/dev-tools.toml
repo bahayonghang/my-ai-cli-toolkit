@@ -73,8 +73,17 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "https://git
 [[skills]]
 id = "agent-architecture-analysis"
 name = "agent-architecture-analysis"
-description = "Agent 架构分析工具（代码架构审查/设计模式识别）"
+description = "Agent 架构 analysis 工具（代码架构审查/设计模式识别）"
 stars = 3
 usage = "安装后自动分析项目架构，识别设计模式并给出改进建议"
 tags = ["architecture", "analysis"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "existential-birds/beagle", skill_flag = "agent-architecture-analysis" }
+
+[[skills]]
+id = "skill-optimizer"
+name = "skill-optimizer"
+description = "Skill Optimizer — Claude Code 插件分析与优化工具（支持 Frontmatter 合规检查 / Token 效率测量 / 指令清晰度检测 / 自动化修复建议）"
+stars = 5
+usage = "安装后使用 /skill-audit <路径> 启动 10 维度专项审计，自动检测反模式并生成符合 Anthropic 官方规范的优化版 SKILL.md"
+tags = ["skills", "optimization", "audit", "linter", "token-efficiency"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/skill_optimizer", skill_flag = "skill-audit" }
