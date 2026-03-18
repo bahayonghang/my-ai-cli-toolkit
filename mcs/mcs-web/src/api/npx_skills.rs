@@ -220,11 +220,15 @@ pub async fn catalog(
             .map_err(AppError::Internal)?,
     )?;
     let project_root = state.project_root().await;
-    let installed_names = load_entries(&project_root, &resolved.platform.skills_path())
+    let skills_path = resolved.platform.skills_path();
+    let mut installed_names = load_entries(&project_root, &skills_path)
         .await?
         .into_iter()
         .map(|entry| entry.name)
         .collect::<HashSet<_>>();
+    if let Ok(discovered) = discover_skill_names(&skills_path).await {
+        installed_names.extend(discovered);
+    }
     let search = query.search.as_ref().map(|value| value.to_lowercase());
 
     let mut items: Vec<NpxSkillsCatalogItemDto> = catalog_entries
