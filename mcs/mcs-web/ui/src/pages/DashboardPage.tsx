@@ -203,8 +203,8 @@ function HeroSection({
                 px: 1.5,
                 py: 0.85,
                 borderRadius: 999,
-                border: "1px solid var(--mcs-dashboard-outline-strong)",
-                bgcolor: "var(--mcs-dashboard-accent-soft)",
+                border: "1px solid var(--mcs-summary-tile-stroke)",
+                bgcolor: "var(--mcs-summary-tile-fill)",
                 color: "var(--mcs-dashboard-ink)",
               }}
             >
@@ -308,8 +308,8 @@ function HeroSection({
               sx={{
                 p: 2.25,
                 borderRadius: 3,
-                border: "1px solid var(--mcs-dashboard-outline)",
-                bgcolor: "var(--mcs-dashboard-warm-soft)",
+                border: "1px solid var(--mcs-summary-tile-stroke)",
+                bgcolor: "var(--mcs-summary-tile-fill)",
               }}
             >
               <Stack spacing={1.25}>

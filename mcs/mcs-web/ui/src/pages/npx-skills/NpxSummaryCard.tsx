@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 export interface NpxSummaryCardProps {
   label: string;
@@ -14,26 +9,54 @@ export interface NpxSummaryCardProps {
 
 export default function NpxSummaryCard({ label, value, icon }: NpxSummaryCardProps) {
   return (
-    <Card variant="outlined" sx={{ height: "100%" }}>
-      <CardContent sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+    <Card
+      sx={{
+        height: "100%",
+        position: "relative",
+        overflow: "hidden",
+        background: "var(--mcs-summary-tile-fill)",
+        borderColor: "var(--mcs-summary-tile-stroke)",
+        boxShadow: "none",
+      }}
+    >
+      <CardContent
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.75,
+          minHeight: 108,
+          p: 2.25,
+        }}
+      >
         <Box
           sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 2,
+            width: 52,
+            height: 52,
+            borderRadius: 3,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            bgcolor: "action.hover",
+            background:
+              "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
+            border: "1px solid var(--mcs-dashboard-outline)",
+            boxShadow:
+              "inset 0 1px 0 var(--mcs-glass-highlight), var(--mcs-glass-shadow)",
+            flexShrink: 0,
           }}
         >
           {icon}
         </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
+        <Box sx={{ minWidth: 0 }}>
+          <Typography
+            variant="overline"
+            sx={{ color: "var(--mcs-dashboard-muted)", display: "block", mb: 0.35, lineHeight: 1.2 }}
+          >
             {label}
           </Typography>
-          <Typography variant="h6" fontWeight={700}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05, wordBreak: "break-word" }}
+          >
             {value}
           </Typography>
         </Box>

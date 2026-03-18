@@ -66,6 +66,18 @@ export function SkillCatalogStage({
     groupedSkills.find(([, groupSkills]) =>
       groupSkills.some((skill) => selectedSkills.has(skill.name)),
     )?.[0] ?? groupedSkills[0]?.[0] ?? null;
+  const scrollCategoryIntoView = (category: string) => {
+    const target = globalThis.document?.getElementById(toCategoryAnchor(category));
+    if (!target) {
+      return;
+    }
+    const prefersReducedMotion =
+      globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    target.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
 
   return (
     <Stack spacing={2.5}>
@@ -115,6 +127,8 @@ export function SkillCatalogStage({
 
       <Box
         sx={{
+          position: "relative",
+          overflow: "hidden",
           display: "grid",
           gap: 1.25,
           gridTemplateColumns: {
@@ -123,6 +137,29 @@ export function SkillCatalogStage({
             xl: "minmax(0, 1.8fr) minmax(240px, 0.9fr) auto",
           },
           alignItems: "center",
+          borderRadius: 3,
+          border: "1px solid var(--mcs-dashboard-outline)",
+          background:
+            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 42%, var(--mcs-panel-fill) 100%)",
+          boxShadow:
+            "inset 0 1px 0 var(--mcs-glass-highlight), 0 18px 40px rgba(15, 23, 42, 0.12)",
+          p: { xs: 1.25, md: 1.5 },
+          isolation: "isolate",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            insetInline: 18,
+            top: 0,
+            height: 1,
+            background:
+              "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
+            opacity: 0.9,
+            pointerEvents: "none",
+          },
+          "& > *": {
+            position: "relative",
+            zIndex: 1,
+          },
         }}
       >
         <TextField
@@ -177,18 +214,16 @@ export function SkillCatalogStage({
             targetId: toCategoryAnchor(category),
           }))}
           disabled={disabled}
-          onJump={(category) => {
-            const target = globalThis.document?.getElementById(toCategoryAnchor(category));
-            target?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+          onJump={scrollCategoryIntoView}
         />
 
         <Box
           sx={{
-            borderRadius: 3,
+            borderRadius: 3.5,
             border: "1px solid var(--mcs-dashboard-outline)",
             background:
-              "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+              "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 24%, var(--mcs-panel-fill) 100%)",
+            boxShadow: "var(--mcs-panel-shadow)",
             overflow: "hidden",
           }}
         >
@@ -204,9 +239,11 @@ export function SkillCatalogStage({
                     sx={{
                       px: 2.25,
                       py: 1.15,
-                      bgcolor: "var(--mcs-dashboard-surface-muted)",
+                      background:
+                        "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-dashboard-surface-subtle) 100%)",
                       borderTop: "1px solid var(--mcs-dashboard-outline)",
                       borderBottom: "1px solid var(--mcs-dashboard-outline)",
+                      boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
                       scrollMarginTop: 112,
                     }}
                   >
@@ -265,10 +302,13 @@ function CategoryQuickNav({
       sx={{
         position: { xs: "static", lg: "sticky" },
         top: { lg: 108 },
-        borderRadius: 3,
+        borderRadius: 3.5,
         border: "1px solid var(--mcs-dashboard-outline)",
-        bgcolor: "var(--mcs-dashboard-surface-muted)",
+        background:
+          "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 24%, var(--mcs-panel-fill) 100%)",
+        boxShadow: "var(--mcs-summary-tile-shadow)",
         p: 1.25,
+        overflow: "hidden",
       }}
     >
       <Stack spacing={1}>
@@ -290,6 +330,7 @@ function CategoryQuickNav({
                 key={category.label}
                 disabled={disabled}
                 onClick={() => onJump(category.label)}
+                aria-current={active ? "location" : undefined}
                 sx={{
                   width: "100%",
                   borderRadius: 2.5,
@@ -304,6 +345,8 @@ function CategoryQuickNav({
                   bgcolor: active
                     ? "var(--mcs-dashboard-accent-soft)"
                     : "var(--mcs-dashboard-surface-muted)",
+                  boxShadow: active ? "var(--mcs-summary-tile-shadow)" : "none",
+                  transition: "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease)",
                 }}
               >
                 <Typography
@@ -339,6 +382,10 @@ function SkillRow({
   const installedOnCount = Object.values(skill.platform_status ?? {}).filter(
     (status) => status === "installed",
   ).length;
+  const skillDomId = toSafeDomId(skill.name);
+  const titleId = `${skillDomId}-title`;
+  const descriptionId = `${skillDomId}-description`;
+  const metaId = `${skillDomId}-meta`;
 
   return (
     <ListItem disablePadding divider sx={{ borderColor: "var(--mcs-dashboard-outline)" }}>
@@ -346,25 +393,42 @@ function SkillRow({
         selected={selected}
         disabled={disabled}
         onClick={onToggle}
+        role="checkbox"
+        aria-checked={selected}
+        aria-labelledby={titleId}
+        aria-describedby={`${descriptionId} ${metaId}`}
         sx={{
           alignItems: "flex-start",
           px: { xs: 1.25, md: 1.75 },
           py: 1.35,
+          transition: "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), transform var(--mcs-duration) var(--mcs-ease)",
+          "&:hover": {
+            backgroundColor: "var(--mcs-dashboard-surface-muted)",
+          },
           "&.Mui-selected": {
-            backgroundColor: "var(--mcs-dashboard-accent-soft)",
+            background:
+              "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
             boxShadow: "inset 0 0 0 1px var(--mcs-dashboard-outline-strong)",
           },
           "&.Mui-selected:hover": {
-            backgroundColor: "var(--mcs-dashboard-accent-soft)",
+            background:
+              "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
           },
         }}
       >
-        <Checkbox edge="start" checked={selected} disableRipple tabIndex={-1} />
+        <Checkbox
+          edge="start"
+          checked={selected}
+          disableRipple
+          tabIndex={-1}
+          inputProps={{ "aria-hidden": true }}
+          sx={{ pointerEvents: "none" }}
+        />
         <ListItemText
           primary={
             <Stack spacing={1}>
               <Stack direction="row" spacing={1} alignItems="center" useFlexGap flexWrap="wrap">
-                <Typography variant="body1" fontWeight={700}>
+                <Typography id={titleId} variant="body1" fontWeight={700}>
                   {skill.name}
                 </Typography>
                 {skill.is_default ? (
@@ -380,6 +444,7 @@ function SkillRow({
               </Stack>
 
               <Typography
+                id={descriptionId}
                 variant="body2"
                 sx={{
                   color: "var(--mcs-dashboard-muted)",
@@ -389,11 +454,13 @@ function SkillRow({
                 {skill.description ?? t("installHub.noDescription")}
               </Typography>
 
-              {installedOnCount > 0 ? (
-                <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
-                  {t("installHub.installedOnCount", { count: installedOnCount })}
-                </Typography>
-              ) : null}
+              <Box id={metaId}>
+                {installedOnCount > 0 ? (
+                  <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+                    {t("installHub.installedOnCount", { count: installedOnCount })}
+                  </Typography>
+                ) : null}
+              </Box>
             </Stack>
           }
         />
@@ -418,5 +485,9 @@ function groupSkillsByCategory(skills: SkillCatalogDto[], uncategorizedLabel: st
 }
 
 function toCategoryAnchor(category: string) {
-  return `install-hub-category-${category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  return `install-hub-category-${toSafeDomId(category)}`;
+}
+
+function toSafeDomId(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "item";
 }

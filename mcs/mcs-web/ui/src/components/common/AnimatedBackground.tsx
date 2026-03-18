@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 
 interface AnimatedBackgroundProps {
   variant?: "hero" | "subtle" | "dashboard";
@@ -7,8 +7,17 @@ interface AnimatedBackgroundProps {
 export default function AnimatedBackground({
   variant = "subtle",
 }: AnimatedBackgroundProps) {
+  const theme = useTheme();
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)", {
+    noSsr: true,
+  });
+  const isCompactViewport = useMediaQuery(theme.breakpoints.down("md"), {
+    noSsr: true,
+  });
   const isHero = variant === "hero";
   const isDashboard = variant === "dashboard";
+  const showAmbientBlobs = isHero && !prefersReducedMotion && !isCompactViewport;
+  const softenEffects = prefersReducedMotion || isCompactViewport;
 
   return (
     <Box
@@ -19,47 +28,68 @@ export default function AnimatedBackground({
         zIndex: -1,
         overflow: "hidden",
         pointerEvents: "none",
-        background: (theme) =>
+        background: (paletteTheme) =>
           isDashboard
-            ? `radial-gradient(circle at top left, var(--mcs-dashboard-accent-soft) 0, transparent 34%), radial-gradient(circle at top right, var(--mcs-warning-progress) 0, transparent 28%), linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, ${theme.palette.background.default} 100%)`
-            : `radial-gradient(circle at top left, ${isHero ? "var(--mcs-hero-accent)" : "var(--mcs-dashboard-accent-soft)"} 0, transparent 34%), ${theme.palette.background.default}`,
+            ? softenEffects
+              ? `linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-panel-fill-strong) 26%, ${paletteTheme.palette.background.default} 68%, ${paletteTheme.palette.background.default} 100%)`
+              : `radial-gradient(circle at 12% 0%, var(--mcs-dashboard-accent-soft) 0, transparent 30%), radial-gradient(circle at 92% 8%, var(--mcs-warning-progress) 0, transparent 24%), linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-panel-fill-strong) 28%, ${paletteTheme.palette.background.default} 62%, ${paletteTheme.palette.background.default} 100%)`
+            : softenEffects
+              ? `linear-gradient(180deg, var(--mcs-hero-band) 0%, transparent 20%), ${paletteTheme.palette.background.default}`
+              : `radial-gradient(circle at top left, ${isHero ? "var(--mcs-hero-accent)" : "var(--mcs-dashboard-accent-soft)"} 0, transparent 34%), linear-gradient(180deg, var(--mcs-hero-band) 0%, transparent 24%), ${paletteTheme.palette.background.default}`,
         "&::before": isDashboard
-          ? {
-              content: '""',
-              position: "absolute",
-              inset: 0,
-              background:
-                "repeating-linear-gradient(90deg, transparent 0, transparent 95px, var(--mcs-dashboard-grid) 95px, var(--mcs-dashboard-grid) 96px), repeating-linear-gradient(180deg, transparent 0, transparent 95px, var(--mcs-dashboard-grid) 95px, var(--mcs-dashboard-grid) 96px)",
-              maskImage: "linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, transparent 85%)",
-            }
+          ? softenEffects
+            ? undefined
+            : {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "repeating-linear-gradient(90deg, transparent 0, transparent 95px, var(--mcs-dashboard-grid) 95px, var(--mcs-dashboard-grid) 96px), repeating-linear-gradient(180deg, transparent 0, transparent 95px, var(--mcs-dashboard-grid) 95px, var(--mcs-dashboard-grid) 96px)",
+                maskImage: "linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.56) 48%, transparent 88%)",
+              }
           : isHero
-          ? {
-              content: '""',
-              position: "absolute",
-              insetInline: 0,
-              top: 0,
-              height: 240,
-              background: "linear-gradient(180deg, var(--mcs-hero-accent) 0%, transparent 100%)",
-            }
-          : undefined,
+            ? {
+                content: '""',
+                position: "absolute",
+                insetInline: 0,
+                top: 0,
+                height: softenEffects ? 200 : 280,
+                background:
+                  "linear-gradient(180deg, var(--mcs-hero-band) 0%, transparent 100%)",
+              }
+            : undefined,
         "&::after": isDashboard
-          ? {
-              content: '""',
-              position: "absolute",
-              insetInline: "8%",
-              top: 72,
-              height: 220,
-              borderRadius: "999px",
-              background:
-                "radial-gradient(circle, var(--mcs-dashboard-accent-soft) 0%, transparent 70%)",
-              filter: "blur(24px)",
-              opacity: 0.8,
-            }
-          : undefined,
+          ? softenEffects
+            ? undefined
+            : {
+                content: '""',
+                position: "absolute",
+                insetInline: "10%",
+                top: 56,
+                height: 300,
+                borderRadius: "999px",
+                background:
+                  "radial-gradient(circle, var(--mcs-dashboard-accent-soft) 0%, transparent 72%)",
+                filter: "blur(34px)",
+                opacity: 0.8,
+              }
+          : isHero && !softenEffects
+            ? {
+                content: '""',
+                position: "absolute",
+                insetInline: "12%",
+                top: 116,
+                height: 120,
+                borderRadius: "999px",
+                background:
+                  "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
+                opacity: 0.22,
+                filter: "blur(16px)",
+              }
+            : undefined,
       }}
     >
-      {/* Ambient color blobs — give backdrop-filter something to blur through */}
-      {isHero && (
+      {showAmbientBlobs && (
         <>
           <Box
             sx={{
@@ -73,7 +103,6 @@ export default function AnimatedBackground({
               borderRadius: "50%",
               background: "var(--mcs-blob-blue)",
               filter: "blur(72px)",
-              willChange: "transform",
               contain: "strict",
               animation: "blobDrift1 36s ease-in-out infinite alternate",
               "@keyframes blobDrift1": {
@@ -94,7 +123,6 @@ export default function AnimatedBackground({
               borderRadius: "50%",
               background: "var(--mcs-blob-mauve)",
               filter: "blur(68px)",
-              willChange: "transform",
               contain: "strict",
               animation: "blobDrift2 32s ease-in-out infinite alternate",
               "@keyframes blobDrift2": {
@@ -115,7 +143,6 @@ export default function AnimatedBackground({
               borderRadius: "50%",
               background: "var(--mcs-blob-rosewater)",
               filter: "blur(64px)",
-              willChange: "transform",
               contain: "strict",
               animation: "blobDrift3 40s ease-in-out infinite alternate",
               "@keyframes blobDrift3": {
@@ -136,7 +163,6 @@ export default function AnimatedBackground({
               borderRadius: "50%",
               background: "var(--mcs-blob-teal)",
               filter: "blur(60px)",
-              willChange: "transform",
               contain: "strict",
               animation: "blobDrift4 34s ease-in-out infinite alternate",
               "@keyframes blobDrift4": {

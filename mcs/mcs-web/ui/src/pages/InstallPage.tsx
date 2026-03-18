@@ -323,7 +323,6 @@ function SkillCard({
   return (
     <Card
       sx={{
-        willChange: "transform, box-shadow",
         transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1)",
         boxShadow: selected
           ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.4)}`

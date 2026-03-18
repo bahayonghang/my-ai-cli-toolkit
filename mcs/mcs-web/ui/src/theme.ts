@@ -163,18 +163,32 @@ function buildTheme(mode: Mode) {
             --mcs-focus: ${tone.focus};
             --mcs-shadow-sm: ${tone.shadowSm};
             --mcs-shadow-md: ${tone.shadowMd};
-            --mcs-toolbar-overlay: ${alpha(palette.mantle, mode === "dark" ? 0.92 : 0.84)};
-            --mcs-hero-accent: ${alpha(palette.lavender, mode === "dark" ? 0.14 : 0.12)};
-            --mcs-dashboard-surface: ${alpha(palette.mantle, mode === "dark" ? 0.78 : 0.76)};
-            --mcs-dashboard-surface-strong: ${alpha(palette.surface0, mode === "dark" ? 0.76 : 0.56)};
-            --mcs-dashboard-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.66 : 0.42)};
-            --mcs-dashboard-outline: ${alpha(palette.overlay1, mode === "dark" ? 0.34 : 0.5)};
-            --mcs-dashboard-outline-strong: ${alpha(palette.lavender, mode === "dark" ? 0.4 : 0.34)};
+            --mcs-toolbar-overlay: ${alpha(palette.mantle, mode === "dark" ? 0.9 : 0.82)};
+            --mcs-hero-accent: ${alpha(palette.lavender, mode === "dark" ? 0.16 : 0.13)};
+            --mcs-hero-band: ${alpha(mode === "dark" ? palette.surface0 : palette.rosewater, mode === "dark" ? 0.38 : 0.24)};
+            --mcs-hero-surface: ${alpha(palette.mantle, mode === "dark" ? 0.62 : 0.72)};
+            --mcs-hero-surface-strong: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.74 : 0.62)};
+            --mcs-hero-outline: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.34 : 0.24)};
+            --mcs-hero-shadow: ${mode === "dark"
+              ? `0 28px 88px ${alpha(palette.crust, 0.52)}`
+              : `0 26px 80px ${alpha(palette.surface2, 0.24)}`};
+            --mcs-dashboard-surface: ${alpha(palette.mantle, mode === "dark" ? 0.8 : 0.8)};
+            --mcs-dashboard-surface-strong: ${alpha(palette.surface0, mode === "dark" ? 0.84 : 0.62)};
+            --mcs-dashboard-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.7 : 0.46)};
+            --mcs-dashboard-surface-subtle: ${alpha(palette.surface0, mode === "dark" ? 0.54 : 0.3)};
+            --mcs-dashboard-outline: ${alpha(palette.overlay1, mode === "dark" ? 0.36 : 0.5)};
+            --mcs-dashboard-outline-strong: ${alpha(palette.lavender, mode === "dark" ? 0.42 : 0.34)};
             --mcs-dashboard-accent: ${palette.blue};
             --mcs-dashboard-accent-strong: ${mode === "dark" ? palette.lavender : palette.sapphire};
-            --mcs-dashboard-accent-soft: ${alpha(palette.blue, mode === "dark" ? 0.18 : 0.14)};
-            --mcs-dashboard-warm-soft: ${alpha(palette.peach, mode === "dark" ? 0.18 : 0.16)};
+            --mcs-dashboard-accent-soft: ${alpha(palette.blue, mode === "dark" ? 0.2 : 0.14)};
+            --mcs-dashboard-warm-soft: ${alpha(palette.peach, mode === "dark" ? 0.2 : 0.16)};
             --mcs-dashboard-warm-strong: ${mode === "dark" ? palette.peach : palette.yellow};
+            --mcs-summary-tile-fill: ${alpha(palette.mantle, mode === "dark" ? 0.74 : 0.8)};
+            --mcs-summary-tile-fill-strong: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.82 : 0.68)};
+            --mcs-summary-tile-stroke: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.24 : 0.2)};
+            --mcs-summary-tile-shadow: ${mode === "dark"
+              ? `0 20px 58px ${alpha(palette.crust, 0.42)}`
+              : `0 18px 46px ${alpha(palette.surface2, 0.18)}`};
             --mcs-dashboard-progress-track: ${alpha(palette.overlay0, mode === "dark" ? 0.28 : 0.22)};
             --mcs-dashboard-muted: ${alpha(palette.text, mode === "dark" ? 0.76 : 0.72)};
             --mcs-dashboard-ink: ${palette.text};
@@ -201,7 +215,12 @@ function buildTheme(mode: Mode) {
               : `0 22px 54px ${alpha(palette.surface2, 0.24)}`};
             --mcs-glass-blur: ${mode === "dark" ? "22px" : "18px"};
             --mcs-panel-fill: ${alpha(palette.mantle, mode === "dark" ? 0.46 : 0.54)};
-            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.50 : 0.42)};
+            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.5 : 0.42)};
+            --mcs-panel-fill-emphasis: ${alpha(mode === "dark" ? palette.surface1 : palette.surface0, mode === "dark" ? 0.52 : 0.48)};
+            --mcs-panel-stroke: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.3 : 0.38)};
+            --mcs-panel-stroke-soft: ${alpha(mode === "dark" ? palette.overlay0 : palette.overlay1, mode === "dark" ? 0.14 : 0.18)};
+            --mcs-panel-accent: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.88 : 0.76)};
+            --mcs-panel-accent-soft: ${alpha(mode === "dark" ? palette.blue : palette.sky, mode === "dark" ? 0.34 : 0.28)};
             --mcs-blob-blue: ${alpha(palette.blue, mode === "dark" ? 0.18 : 0.14)};
             --mcs-blob-mauve: ${alpha(palette.mauve, mode === "dark" ? 0.16 : 0.12)};
             --mcs-blob-rosewater: ${alpha(palette.rosewater, mode === "dark" ? 0.15 : 0.13)};
@@ -282,11 +301,15 @@ function buildTheme(mode: Mode) {
             minWidth: 44,
             minHeight: 44,
             textTransform: "none",
-            borderRadius: 10,
-            fontWeight: 600,
+            borderRadius: 12,
+            fontWeight: 700,
+            letterSpacing: "-0.01em",
             boxShadow: "none",
             transition:
               `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
+            "&:hover": {
+              transform: "translateY(-1px)",
+            },
           },
         },
       },
@@ -314,25 +337,33 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            backgroundColor: "var(--mcs-glass-fill)",
-            border: "1px solid var(--mcs-glass-stroke)",
+            backgroundColor: "var(--mcs-panel-fill)",
+            border: "1px solid var(--mcs-panel-stroke)",
             boxShadow:
-              "var(--mcs-glass-shadow), inset 0 1px 0 0 var(--mcs-glass-highlight)",
-            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(170%)",
-            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(170%)",
+              "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-glass-highlight)",
             position: "relative",
             overflow: "hidden",
             isolation: "isolate",
-            willChange: "transform, box-shadow",
             transition:
               `background-color ${duration} ${easing}, border-color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
             "&::before": {
-              content: '""',
+              content: '\"\"',
               position: "absolute",
               inset: 0,
               borderTop: "1px solid var(--mcs-glass-highlight)",
               background:
-                "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 38%)",
+                "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 32%)",
+              pointerEvents: "none",
+            },
+            "&::after": {
+              content: '\"\"',
+              position: "absolute",
+              insetInline: 18,
+              top: 0,
+              height: 1,
+              background:
+                "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
+              opacity: 0.52,
               pointerEvents: "none",
             },
             "& > *": {
@@ -340,10 +371,10 @@ function buildTheme(mode: Mode) {
               zIndex: 1,
             },
             "&:hover": {
-              backgroundColor: "var(--mcs-glass-fill-strong)",
-              borderColor: "var(--mcs-glass-stroke-strong)",
+              backgroundColor: "var(--mcs-panel-fill-strong)",
+              borderColor: "var(--mcs-glass-stroke)",
               boxShadow:
-                "var(--mcs-glass-shadow-hover), inset 0 1px 0 0 var(--mcs-glass-highlight)",
+                "var(--mcs-glass-shadow), inset 0 1px 0 0 var(--mcs-glass-highlight)",
               transform: "translateY(-1px)",
             },
           },

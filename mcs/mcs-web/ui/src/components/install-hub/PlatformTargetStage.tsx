@@ -108,12 +108,19 @@ export function PlatformTargetStage({
         <Grid container spacing={1.5}>
           {platforms.map((platform) => {
             const selected = selectedPlatforms.has(platform.id);
+            const platformDomId = `install-hub-platform-${platform.id}`;
+            const titleId = `${platformDomId}-title`;
+            const pathId = `${platformDomId}-path`;
+            const statusId = `${platformDomId}-status`;
 
             return (
               <Grid key={platform.id} size={{ xs: 12, md: 6 }}>
                 <ButtonBase
                   onClick={() => onTogglePlatform(platform.id)}
                   disabled={stageDisabled}
+                  aria-pressed={selected}
+                  aria-labelledby={titleId}
+                  aria-describedby={`${statusId} ${pathId}`}
                   sx={{
                     width: "100%",
                     textAlign: "left",
@@ -144,7 +151,7 @@ export function PlatformTargetStage({
                           {platform.icon}
                         </Typography>
                         <Box sx={{ minWidth: 0 }}>
-                          <Typography variant="h6" sx={{ lineHeight: 1.1 }}>
+                          <Typography id={titleId} variant="h6" sx={{ lineHeight: 1.1 }}>
                             {platform.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -166,16 +173,25 @@ export function PlatformTargetStage({
 
                     <Box>
                       <Typography
+                        id={statusId}
+                        variant="body2"
+                        sx={{ color: "var(--mcs-dashboard-muted)", fontWeight: 600, mb: 0.5 }}
+                      >
+                        {selected ? t("installHub.platformSelected") : t("installHub.platformReady")}
+                      </Typography>
+                      <Typography
                         variant="overline"
                         sx={{ color: "var(--mcs-dashboard-muted)", display: "block" }}
                       >
                         {t("installHub.platformPathLabel")}
                       </Typography>
                       <Typography
+                        id={pathId}
                         variant="body2"
                         sx={{
                           color: "var(--mcs-dashboard-muted)",
                           overflowWrap: "anywhere",
+                          fontFamily: "var(--font-family-mono, inherit)",
                         }}
                       >
                         {platform.skills_path}

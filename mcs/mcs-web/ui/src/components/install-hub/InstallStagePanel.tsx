@@ -47,15 +47,26 @@ export function InstallStagePanel({
         border: "1px solid",
         borderColor: active
           ? "var(--mcs-dashboard-outline-strong)"
-          : "var(--mcs-dashboard-outline)",
-        background: active
-          ? "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)"
           : complete
-            ? "linear-gradient(180deg, var(--mcs-success-surface) 0%, var(--mcs-panel-fill) 100%)"
-            : "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-panel-fill) 100%)",
-        boxShadow: active ? "var(--mcs-panel-shadow)" : "var(--mcs-glass-shadow)",
-        backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-        WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+            ? "var(--mcs-success-border)"
+            : locked
+              ? "var(--mcs-dashboard-outline)"
+              : "var(--mcs-dashboard-outline)",
+        background: active
+          ? "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill-strong) 48%, var(--mcs-panel-fill) 100%)"
+          : complete
+            ? "linear-gradient(180deg, var(--mcs-success-surface) 0%, var(--mcs-summary-tile-fill) 100%)"
+            : locked
+              ? "linear-gradient(180deg, var(--mcs-dashboard-surface-subtle) 0%, var(--mcs-panel-fill) 100%)"
+              : "linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-panel-fill) 100%)",
+        boxShadow: active
+          ? "var(--mcs-summary-tile-shadow)"
+          : complete
+            ? "0 14px 32px rgba(15, 23, 42, 0.12)"
+            : locked
+              ? "none"
+              : "0 14px 32px rgba(15, 23, 42, 0.1)",
+        opacity: locked ? 0.9 : 1,
         overflow: "hidden",
         isolation: "isolate",
         "&::before": {
@@ -70,6 +81,16 @@ export function InstallStagePanel({
               ? "linear-gradient(90deg, var(--mcs-success-border), var(--mcs-dashboard-accent-soft))"
               : "transparent",
         },
+        "&::after": active
+          ? {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 26%)",
+              pointerEvents: "none",
+            }
+          : undefined,
       }}
     >
       <Stack spacing={2.5} sx={{ p: { xs: 2, md: 2.75 } }}>
@@ -82,22 +103,23 @@ export function InstallStagePanel({
           <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ minWidth: 0 }}>
             <Box
               sx={{
-                width: 42,
-                height: 42,
-                borderRadius: 2.5,
+                width: 46,
+                height: 46,
+                borderRadius: 3,
                 display: "grid",
                 placeItems: "center",
                 bgcolor: active
                   ? "var(--mcs-dashboard-accent-soft)"
                   : complete
                     ? "var(--mcs-success-surface)"
-                    : "var(--mcs-dashboard-surface-muted)",
+                    : "var(--mcs-dashboard-surface-strong)",
                 border: "1px solid",
                 borderColor: active
                   ? "var(--mcs-dashboard-outline-strong)"
                   : complete
                     ? "var(--mcs-success-border)"
                     : "var(--mcs-dashboard-outline)",
+                boxShadow: active ? "var(--mcs-summary-tile-shadow)" : "none",
                 color: "var(--mcs-dashboard-ink)",
                 flexShrink: 0,
               }}
@@ -138,11 +160,15 @@ export function InstallStagePanel({
           {actionLabel && onActivate && !active ? (
             <Button
               size="small"
-              variant="text"
+              variant="outlined"
               onClick={onActivate}
               endIcon={<ArrowOutwardIcon fontSize="small" />}
               disabled={locked}
-              sx={{ flexShrink: 0 }}
+              sx={{
+                flexShrink: 0,
+                borderColor: active ? "var(--mcs-dashboard-outline-strong)" : "var(--mcs-dashboard-outline)",
+                bgcolor: locked ? "var(--mcs-dashboard-surface-subtle)" : "transparent",
+              }}
             >
               {actionLabel}
             </Button>
@@ -152,11 +178,13 @@ export function InstallStagePanel({
         {!active && preview ? (
           <Box
             sx={{
-              px: 1.75,
-              py: 1.5,
+              px: 1.9,
+              py: 1.65,
               borderRadius: 3,
-              bgcolor: "var(--mcs-dashboard-surface-muted)",
+              background:
+                "linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-dashboard-surface-subtle) 100%)",
               border: "1px dashed var(--mcs-dashboard-outline)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
               color: "var(--mcs-dashboard-muted)",
             }}
           >
