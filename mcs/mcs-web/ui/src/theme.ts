@@ -188,20 +188,24 @@ function buildTheme(mode: Mode) {
             --mcs-error-surface: ${alpha(palette.red, mode === "dark" ? 0.18 : 0.1)};
             --mcs-error-border: ${alpha(palette.red, mode === "dark" ? 0.34 : 0.22)};
             --mcs-error-text: ${mode === "dark" ? palette.rosewater : palette.maroon};
-            --mcs-glass-fill: ${alpha(palette.mantle, mode === "dark" ? 0.74 : 0.78)};
-            --mcs-glass-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.72 : 0.54)};
-            --mcs-glass-stroke: ${alpha(palette.overlay1, mode === "dark" ? 0.34 : 0.44)};
-            --mcs-glass-stroke-strong: ${alpha(palette.lavender, mode === "dark" ? 0.42 : 0.36)};
-            --mcs-glass-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.12 : 0.42)};
+            --mcs-glass-fill: ${alpha(palette.mantle, mode === "dark" ? 0.48 : 0.56)};
+            --mcs-glass-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.52 : 0.44)};
+            --mcs-glass-stroke: ${alpha(palette.overlay1, mode === "dark" ? 0.24 : 0.34)};
+            --mcs-glass-stroke-strong: ${alpha(palette.lavender, mode === "dark" ? 0.50 : 0.40)};
+            --mcs-glass-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.20 : 0.52)};
             --mcs-glass-shadow: ${mode === "dark"
               ? `0 18px 48px ${alpha(palette.crust, 0.34)}`
               : `0 16px 44px ${alpha(palette.surface2, 0.2)}`};
             --mcs-glass-shadow-hover: ${mode === "dark"
               ? `0 24px 58px ${alpha(palette.crust, 0.42)}`
               : `0 22px 54px ${alpha(palette.surface2, 0.24)}`};
-            --mcs-glass-blur: ${mode === "dark" ? "18px" : "16px"};
-            --mcs-panel-fill: ${alpha(palette.mantle, mode === "dark" ? 0.72 : 0.74)};
-            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.7 : 0.52)};
+            --mcs-glass-blur: ${mode === "dark" ? "22px" : "18px"};
+            --mcs-panel-fill: ${alpha(palette.mantle, mode === "dark" ? 0.46 : 0.54)};
+            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.50 : 0.42)};
+            --mcs-blob-blue: ${alpha(palette.blue, mode === "dark" ? 0.18 : 0.14)};
+            --mcs-blob-mauve: ${alpha(palette.mauve, mode === "dark" ? 0.16 : 0.12)};
+            --mcs-blob-rosewater: ${alpha(palette.rosewater, mode === "dark" ? 0.15 : 0.13)};
+            --mcs-blob-teal: ${alpha(palette.teal, mode === "dark" ? 0.14 : 0.10)};
             --mcs-panel-shadow: ${mode === "dark"
               ? `0 26px 68px ${alpha(palette.crust, 0.42)}`
               : `0 24px 58px ${alpha(palette.surface2, 0.22)}`};
@@ -312,9 +316,10 @@ function buildTheme(mode: Mode) {
             backgroundImage: "none",
             backgroundColor: "var(--mcs-glass-fill)",
             border: "1px solid var(--mcs-glass-stroke)",
-            boxShadow: "var(--mcs-glass-shadow)",
-            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+            boxShadow:
+              "var(--mcs-glass-shadow), inset 0 1px 0 0 var(--mcs-glass-highlight)",
+            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(170%)",
+            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(170%)",
             position: "relative",
             overflow: "hidden",
             isolation: "isolate",
@@ -325,6 +330,7 @@ function buildTheme(mode: Mode) {
               content: '""',
               position: "absolute",
               inset: 0,
+              borderTop: "1px solid var(--mcs-glass-highlight)",
               background:
                 "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 38%)",
               pointerEvents: "none",
@@ -336,7 +342,8 @@ function buildTheme(mode: Mode) {
             "&:hover": {
               backgroundColor: "var(--mcs-glass-fill-strong)",
               borderColor: "var(--mcs-glass-stroke-strong)",
-              boxShadow: "var(--mcs-glass-shadow-hover)",
+              boxShadow:
+                "var(--mcs-glass-shadow-hover), inset 0 1px 0 0 var(--mcs-glass-highlight)",
               transform: "translateY(-1px)",
             },
           },
