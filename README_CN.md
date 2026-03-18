@@ -30,10 +30,9 @@ just doc
 ```text
 .
 ├── content/
-│   ├── skills/            # 一方技能目录
+│   ├── skills/            # 一方技能目录与 external-skills/ 注册表分片
 │   ├── commands/          # Slash command / workflow 源文件
 │   ├── agents/            # Markdown agent 定义
-│   ├── skills/            # 含一方技能目录与 external-skills/ 注册表分片
 │   ├── hooks/             # 运行时 hook 资源
 │   └── memorys/           # 平台相关 runtime memory / prompt 文件
 ├── docs/                  # VitePress 文档站点
@@ -102,6 +101,12 @@ just mcs-web-test
 - 中英文技能目录页
 
 ## 只安装 skills catalog
+
+若想要无交互式地默认全局安装所有技能到特定的 Agent（Universal、Antigravity、Claude Code、iFlow CLI、Kiro CLI、Qwen Code、Trae、Trae CN）：
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+```
 
 如果你只想获取一方技能目录，而不需要完整仓库工作流：
 

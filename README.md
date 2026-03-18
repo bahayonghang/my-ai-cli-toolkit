@@ -102,6 +102,12 @@ The VitePress site in `docs/` covers:
 
 ## Direct skill-only install
 
+To install all skills non-interactively to specific agents (Universal, Antigravity, Claude Code, iFlow CLI, Kiro CLI, Qwen Code, Trae, Trae CN):
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+```
+
 If you only want the first-party skill catalog and do not need the full repository workflow:
 
 ```bash
