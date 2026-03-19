@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit CN"
+  short_description: "Generate split Chinese Conventional Commit messages"
+  default_prompt: "Use $git-commit-cn to inspect staged changes and draft split Chinese Conventional Commit messages without pushing."

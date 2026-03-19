@@ -1,19 +1,23 @@
 ---
 name: gh-address-comments
-description: Address GitHub PR review comments using gh CLI. Use when responding to PR feedback.
-metadata:
-  category: devops
-  tags:
-    - github
-    - pr-review
-    - code-review
-argument-hint: "[pr-number-or-url]"
-allowed-tools: Read, Bash, python
+description: Address GitHub PR review comments and actionable review threads with GitHub CLI. Use when triaging reviewer feedback, summarizing unresolved PR comments, or applying selected fixes on a pull request.
+category: git-github
+tags:
+  - github
+  - gh-cli
+  - pr-review
+  - code-review
+version: 1.1.0
+allowed-tools:
+  - Read
+  - Bash
+  - python
 ---
 
 1. Verify `gh auth status`. If unauthenticated, ask user to run `gh auth login`.
-2. Run fetching script: `python "$SKILL_DIR/scripts/fetch_comments.py" --pr "$ARGUMENTS"`.
-3. Provide a numbered list of review threads with a short summary of required fixes.
-4. Ask user which comments to address.
-5. Apply fixes for the selected comments.
-6. If authentication fails mid-run, ask user to re-authenticate and retry.
+2. Resolve the target PR. Default to the current branch PR, or pass an explicit PR number/URL with `python "$SKILL_DIR/scripts/fetch_comments.py" --repo "." --pr "$ARGUMENTS"`.
+3. If `rtk` is available, prefer `rtk gh ...`, `rtk read`, and `rtk grep` for human-facing exploration. Do not wrap script-friendly JSON or GraphQL payloads with RTK compression.
+4. Run `python "$SKILL_DIR/scripts/fetch_comments.py" --repo "." [--pr "$ARGUMENTS"]` to get an actionable summary. Use `--json` only when another tool needs structured output.
+5. Present the numbered actionable items, grouped by review thread or review body, then ask which items to address if the user did not specify them.
+6. Apply fixes for the selected comments and summarize which review items were addressed.
+7. If authentication fails mid-run, ask the user to re-authenticate and retry.

@@ -1,20 +1,22 @@
 ---
 name: git-commit-cn
-description: Generate conventional Chinese git commit messages with emojis. Use when committing staged changes.
-metadata:
-  category: development-tools
-  tags:
-    - git
-    - commit-message
-    - conventional-commits
-    - chinese
-argument-hint: "[额外说明或范围限制]"
-allowed-tools: Bash
+description: Generate split Chinese Conventional Commit messages with emojis for staged changes. Use when reviewing staged diffs, drafting commit messages, or preparing safe multi-commit Git history without pushing by default.
+category: git-github
+tags:
+  - git
+  - conventional-commits
+  - commit-message
+  - chinese
+version: 1.1.0
+allowed-tools:
+  - Bash
+  - python
 ---
 
-1. Analyze changes via `git diff --staged` and `git status`.
+1. Analyze staged changes via `git diff --staged` and `git status`. If `rtk` is available, prefer `rtk git status` and `rtk git diff --staged` for model-visible inspection.
 2. Determine commit type and emoji using [references/commit-types.md](references/commit-types.md) and `$ARGUMENTS`.
-3. Split changes into separate commits by module/type.
-4. Execute commit using HEREDOC: `git commit -m "$(cat <<'EOF' \n <type>(<scope>): <emoji> <description> \n EOF)"`.
-5. Push changes to remote. Confirm before pushing to `main` or `master`.
-6. **PROHIBITED**: Never include Co-Author fields or attribution lines.
+3. Split changes into separate commits by module or type before writing any commit message.
+4. Generate commit text with `python "$SKILL_DIR/scripts/compose_commit_message.py" ...` and commit with `git commit -F <message-file>` so multi-line messages work in both PowerShell and POSIX shells.
+5. If `rtk` is available and the user wants compact command feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
+6. Do not push by default. Only discuss `git push` if the user explicitly asked for it.
+7. **PROHIBITED**: Never include Co-Author fields or attribution lines.
