@@ -22,6 +22,7 @@ pub enum LinkMode {
 pub enum ItemType {
     Skill,
     Command,
+    Agent,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

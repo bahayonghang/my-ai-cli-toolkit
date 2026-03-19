@@ -57,25 +57,30 @@ pub fn draw(frame: &mut Frame, state: &AppState) {
                     .style(style_system::style(StyleRole::StatusSuccess)),
                 Cell::from(format!("{}/{}", s.commands_installed, s.commands_total))
                     .style(style_system::style(StyleRole::NotificationInfo)),
+                Cell::from(format!("{}/{}", s.agents_installed, s.agents_total))
+                    .style(style_system::style(StyleRole::BadgeAccent)),
                 Cell::from(format!("{}", s.outdated)).style(if s.outdated > 0 {
                     style_system::style(StyleRole::StatusWarning)
                 } else {
                     style_system::style(StyleRole::TextMuted)
                 }),
-                Cell::from(if s.has_prompt { "✓" } else { "-" })
+                Cell::from(if s.has_guidance { "✓" } else { "-" })
                     .style(style_system::style(StyleRole::TextMuted)),
             ])
         })
         .collect();
 
-    let header = Row::new(["Platform", "Skills", "Commands", "Outdated", "Prompt"])
-        .style(style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD))
-        .bottom_margin(1);
+    let header = Row::new([
+        "Platform", "Skills", "Commands", "Agents", "Outdated", "Guidance",
+    ])
+    .style(style_system::style(StyleRole::HintKey).add_modifier(Modifier::BOLD))
+    .bottom_margin(1);
 
     let table = Table::new(
         rows,
         [
             Constraint::Length(16),
+            Constraint::Length(10),
             Constraint::Length(10),
             Constraint::Length(10),
             Constraint::Length(10),

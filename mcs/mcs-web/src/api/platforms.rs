@@ -33,6 +33,12 @@ pub async fn list(State(state): State<AppState>) -> Json<ApiResponse<Vec<Platfor
                 icon: display.icon.to_string(),
                 base_dir: platform.base_dir.clone(),
                 skills_path,
+                commands_path: platform.commands_display_path(),
+                agents_path: platform.agents_display_path(),
+                guidance_path: platform.guidance_display_path(),
+                supports_commands: platform.supports_commands(),
+                supports_agents: platform.supports_agents(),
+                supports_guidance: platform.supports_guidance(),
             });
             seen.insert(display.id.to_string());
         }
@@ -59,6 +65,12 @@ pub async fn list(State(state): State<AppState>) -> Json<ApiResponse<Vec<Platfor
                 icon: "📁".to_string(),
                 base_dir: platform.base_dir.clone(),
                 skills_path,
+                commands_path: platform.commands_display_path(),
+                agents_path: platform.agents_display_path(),
+                guidance_path: platform.guidance_display_path(),
+                supports_commands: platform.supports_commands(),
+                supports_agents: platform.supports_agents(),
+                supports_guidance: platform.supports_guidance(),
             });
         }
     }
@@ -118,11 +130,24 @@ pub async fn resolve_install_target(
             .skills_path()
             .to_string_lossy()
             .into_owned(),
-        commands_path: resolved
+        commands_path: resolved.platform.commands_display_path().map(|_| {
+            resolved
+                .platform
+                .commands_path()
+                .to_string_lossy()
+                .into_owned()
+        }),
+        agents_path: resolved.platform.agents_display_path().map(|_| {
+            resolved
+                .platform
+                .agents_path()
+                .to_string_lossy()
+                .into_owned()
+        }),
+        guidance_path: resolved
             .platform
-            .commands_path()
-            .to_string_lossy()
-            .into_owned(),
+            .guidance_path()
+            .map(|path| path.to_string_lossy().into_owned()),
     })))
 }
 
@@ -144,38 +169,52 @@ pub async fn categories(
     let wants_commands = query
         .item_type
         .is_none_or(|item_type| item_type == mcs_core::model::ItemType::Command);
+    let wants_agents = query
+        .item_type
+        .is_none_or(|item_type| item_type == mcs_core::model::ItemType::Agent);
 
-    let (skills, commands) = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
-        let skills = if wants_skills {
-            state.skills(&id).await
+    let (skills, commands, agents) =
+        if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+            let skills = if wants_skills {
+                state.skills(&id).await
+            } else {
+                Vec::new()
+            };
+            let commands = if wants_commands {
+                state.commands(&id).await
+            } else {
+                Vec::new()
+            };
+            let agents = if wants_agents {
+                state.agents(&id).await
+            } else {
+                Vec::new()
+            };
+            (skills, commands, agents)
         } else {
-            Vec::new()
+            let resolved = resolve_target_platform(
+                &base_platform,
+                &install_target.to_core(),
+                InstallTargetAccessMode::Read,
+            )
+            .map_err(AppError::BadRequest)?;
+            let skills = if wants_skills {
+                state.skills_for_platform_config(&resolved.platform).await
+            } else {
+                Vec::new()
+            };
+            let commands = if wants_commands {
+                state.commands_for_platform_config(&resolved.platform).await
+            } else {
+                Vec::new()
+            };
+            let agents = if wants_agents {
+                state.agents_for_platform_config(&resolved.platform).await
+            } else {
+                Vec::new()
+            };
+            (skills, commands, agents)
         };
-        let commands = if wants_commands {
-            state.commands(&id).await
-        } else {
-            Vec::new()
-        };
-        (skills, commands)
-    } else {
-        let resolved = resolve_target_platform(
-            &base_platform,
-            &install_target.to_core(),
-            InstallTargetAccessMode::Read,
-        )
-        .map_err(AppError::BadRequest)?;
-        let skills = if wants_skills {
-            state.skills_for_platform_config(&resolved.platform).await
-        } else {
-            Vec::new()
-        };
-        let commands = if wants_commands {
-            state.commands_for_platform_config(&resolved.platform).await
-        } else {
-            Vec::new()
-        };
-        (skills, commands)
-    };
 
     let mut skill_cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
     for item in skills.iter() {
@@ -195,6 +234,15 @@ pub async fn categories(
         *cmd_cats.entry(cat).or_default() += 1;
     }
 
+    let mut agent_cats: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    for item in agents.iter() {
+        let cat = item
+            .category
+            .clone()
+            .unwrap_or_else(|| "uncategorized".into());
+        *agent_cats.entry(cat).or_default() += 1;
+    }
+
     let mut result: Vec<CategoryDto> = Vec::new();
     for (name, count) in skill_cats {
         result.push(CategoryDto {
@@ -208,6 +256,13 @@ pub async fn categories(
             name,
             count,
             item_type: mcs_core::model::ItemType::Command,
+        });
+    }
+    for (name, count) in agent_cats {
+        result.push(CategoryDto {
+            name,
+            count,
+            item_type: mcs_core::model::ItemType::Agent,
         });
     }
 

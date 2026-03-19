@@ -4,7 +4,7 @@ use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 pub fn draw(frame: &mut Frame, area: Rect, has_diff: bool, diff_text: &str, scroll: u16) {
-    let block = style_system::modal_block("CLAUDE.md");
+    let block = style_system::modal_block("Guidance");
     let inner = block.inner(area);
     frame.render_widget(block, area);
 

@@ -20,13 +20,13 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
     frame.render_widget(block, area);
 
     let chunks = Layout::vertical([
-        Constraint::Length(2), // tabs
+        Constraint::Length(3), // tabs
         Constraint::Length(1), // separator
         Constraint::Min(1),    // categories
     ])
     .split(inner);
 
-    // Skills/Commands toggle
+    // Skills/Commands/Agents toggle
     let icons = style_system::icons();
     let tab_style = |active: bool| {
         if active {
@@ -58,6 +58,17 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
                 }
             ),
             tab_style(state.active_tab == ContentTab::Commands),
+        )),
+        Line::from(Span::styled(
+            format!(
+                " {} Agents   ",
+                if state.active_tab == ContentTab::Agents {
+                    icons.tab_selected
+                } else {
+                    icons.tab_unselected
+                }
+            ),
+            tab_style(state.active_tab == ContentTab::Agents),
         )),
     ];
     frame.render_widget(Paragraph::new(tabs), chunks[0]);

@@ -8,6 +8,7 @@ use mcs_core::model::{InstallStatus, ItemInfo, ItemType, LinkMode};
 pub enum ContentTab {
     Skills,
     Commands,
+    Agents,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -135,8 +136,10 @@ pub struct DashboardStats {
     pub skills_total: usize,
     pub commands_installed: usize,
     pub commands_total: usize,
+    pub agents_installed: usize,
+    pub agents_total: usize,
     pub outdated: usize,
-    pub has_prompt: bool,
+    pub has_guidance: bool,
 }
 
 pub struct AppState {
@@ -149,6 +152,7 @@ pub struct AppState {
     // Items
     pub skills: Vec<ItemInfo>,
     pub commands: Vec<ItemInfo>,
+    pub agents: Vec<ItemInfo>,
 
     // View state
     pub active_tab: ContentTab,
@@ -192,6 +196,7 @@ impl AppState {
             platform: None,
             skills: Vec::new(),
             commands: Vec::new(),
+            agents: Vec::new(),
             active_tab: ContentTab::Skills,
             selected_category: None,
             search_query: String::new(),
@@ -220,6 +225,7 @@ impl AppState {
         match self.active_tab {
             ContentTab::Skills => &self.skills,
             ContentTab::Commands => &self.commands,
+            ContentTab::Agents => &self.agents,
         }
     }
 
@@ -289,6 +295,7 @@ impl AppState {
         };
         self.skills = mcs_core::core::discovery::discover_skills(&self.project_root, &platform);
         self.commands = mcs_core::core::discovery::discover_commands(&self.project_root, &platform);
+        self.agents = mcs_core::core::discovery::discover_agents(&self.project_root, &platform);
         self.cursor = 0;
         self.selected_indices.clear();
         self.selected_category = None;
@@ -342,14 +349,17 @@ impl AppState {
             let p = &self.platforms[&name];
             let skills = mcs_core::core::discovery::discover_skills(&self.project_root, p);
             let commands = mcs_core::core::discovery::discover_commands(&self.project_root, p);
+            let agents = mcs_core::core::discovery::discover_agents(&self.project_root, p);
             stats.push(DashboardStats {
                 platform_name: name,
                 skills_installed: skills.iter().filter(|i| i.is_installed()).count(),
                 skills_total: skills.len(),
                 commands_installed: commands.iter().filter(|i| i.is_installed()).count(),
                 commands_total: commands.len(),
+                agents_installed: agents.iter().filter(|i| i.is_installed()).count(),
+                agents_total: agents.len(),
                 outdated: skills.iter().filter(|i| i.needs_update()).count(),
-                has_prompt: p.prompt_file.is_some(),
+                has_guidance: p.supports_guidance(),
             });
         }
         self.dashboard_cache = Some(stats);

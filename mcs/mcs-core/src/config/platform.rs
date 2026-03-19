@@ -13,9 +13,14 @@ pub struct PlatformConfig {
     pub skills_base_dir: Option<String>,
     pub skills_subdir: String,
     pub commands_subdir: String,
-    pub prompt_file: Option<String>,
     pub commands_source: String,
     pub fallback_commands_source: Option<String>,
+    pub agents_subdir: String,
+    pub agents_source: String,
+    pub fallback_agents_source: Option<String>,
+    pub guidance_file: Option<String>,
+    pub guidance_source: String,
+    pub fallback_guidance_source: Option<String>,
 }
 
 impl PlatformConfig {
@@ -47,19 +52,50 @@ impl PlatformConfig {
         self.base_path().join(&self.commands_subdir)
     }
 
+    pub fn commands_display_path(&self) -> Option<String> {
+        self.supports_commands()
+            .then(|| join_display_path(&self.base_dir, &self.commands_subdir))
+    }
+
     pub fn supports_commands(&self) -> bool {
         !self.commands_subdir.trim().is_empty() && !self.commands_source.trim().is_empty()
     }
 
-    pub fn prompt_path(&self) -> Option<PathBuf> {
-        self.prompt_file.as_ref().map(|f| self.base_path().join(f))
+    pub fn agents_path(&self) -> PathBuf {
+        self.base_path().join(&self.agents_subdir)
+    }
+
+    pub fn agents_display_path(&self) -> Option<String> {
+        self.supports_agents()
+            .then(|| join_display_path(&self.base_dir, &self.agents_subdir))
+    }
+
+    pub fn supports_agents(&self) -> bool {
+        !self.agents_subdir.trim().is_empty() && !self.agents_source.trim().is_empty()
+    }
+
+    pub fn guidance_path(&self) -> Option<PathBuf> {
+        self.guidance_file
+            .as_ref()
+            .map(|file| self.base_path().join(file))
+    }
+
+    pub fn guidance_display_path(&self) -> Option<String> {
+        self.guidance_file.as_deref().map(|file| {
+            if file.contains(['/', '\\']) {
+                join_display_path(&self.base_dir, file)
+            } else {
+                format!("{}/{}", self.base_dir.trim_end_matches(['/', '\\']), file)
+            }
+        })
+    }
+
+    pub fn supports_guidance(&self) -> bool {
+        self.guidance_file.is_some() && !self.guidance_source.trim().is_empty()
     }
 }
 
 fn expand_home_path(raw: &str) -> PathBuf {
-    // Only expand a leading `~` (Unix-style home shorthand).
-    // A bare `replace("~", home)` would corrupt Windows paths that contain
-    // `~` mid-string (e.g. 8.3 short names like `RUNNER~1`).
     if let Some(rest) = raw.strip_prefix('~') {
         let rest = rest.strip_prefix('/').unwrap_or(rest);
         let rest = rest.strip_prefix('\\').unwrap_or(rest);
@@ -157,7 +193,6 @@ fn contains_installed_skill(path: &Path) -> bool {
     false
 }
 
-/// Display metadata for platform selection screen (static references)
 pub struct PlatformDisplay {
     pub id: &'static str,
     pub name: &'static str,
@@ -166,7 +201,6 @@ pub struct PlatformDisplay {
     pub skills_dir: &'static str,
 }
 
-/// Owned display metadata for API responses
 #[derive(Debug, Clone, Serialize)]
 pub struct PlatformDisplayOwned {
     pub id: String,
@@ -174,6 +208,12 @@ pub struct PlatformDisplayOwned {
     pub icon: String,
     pub base_dir: String,
     pub skills_path: String,
+    pub commands_path: Option<String>,
+    pub agents_path: Option<String>,
+    pub guidance_path: Option<String>,
+    pub supports_commands: bool,
+    pub supports_agents: bool,
+    pub supports_guidance: bool,
 }
 
 pub fn platform_displays() -> &'static [PlatformDisplay] {
@@ -185,6 +225,13 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
                 icon: "🤖",
                 base_dir: "~/.claude/",
                 skills_dir: "~/.claude/skills/",
+            },
+            PlatformDisplay {
+                id: "codex",
+                name: "Codex",
+                icon: "🧠",
+                base_dir: "~/.codex/",
+                skills_dir: "~/.agents/skills/",
             },
             PlatformDisplay {
                 id: "gemini",
@@ -254,16 +301,28 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
     &DISPLAYS
 }
 
-/// Get owned platform display data (for API serialization)
 pub fn platform_displays_owned() -> Vec<PlatformDisplayOwned> {
-    platform_displays()
-        .iter()
-        .map(|d| PlatformDisplayOwned {
-            id: d.id.to_string(),
-            name: d.name.to_string(),
-            icon: d.icon.to_string(),
-            base_dir: d.base_dir.to_string(),
-            skills_path: d.skills_dir.to_string(),
+    default_platforms()
+        .into_iter()
+        .map(|(id, platform)| {
+            let skills_path = if is_universal_shared_skills_platform(&id) {
+                universal_shared_skills_display_path().to_string()
+            } else {
+                platform.skills_display_path()
+            };
+            PlatformDisplayOwned {
+                id: id.clone(),
+                name: platform.name.clone(),
+                icon: "📁".to_string(),
+                base_dir: platform.base_dir.clone(),
+                skills_path,
+                commands_path: platform.commands_display_path(),
+                agents_path: platform.agents_display_path(),
+                guidance_path: platform.guidance_display_path(),
+                supports_commands: platform.supports_commands(),
+                supports_agents: platform.supports_agents(),
+                supports_guidance: platform.supports_guidance(),
+            }
         })
         .collect()
 }
@@ -273,19 +332,26 @@ fn p(
     base: &str,
     skills_base: Option<&str>,
     skills: &str,
-    cmds: &str,
-    prompt: Option<&str>,
-    sources: (&str, Option<&str>),
+    commands: (&str, &str, Option<&str>),
+    agents: (&str, &str, Option<&str>),
+    guidance: Option<(&str, &str, Option<&str>)>,
 ) -> PlatformConfig {
     PlatformConfig {
         name: name.into(),
         base_dir: base.into(),
         skills_base_dir: skills_base.map(Into::into),
         skills_subdir: skills.into(),
-        commands_subdir: cmds.into(),
-        prompt_file: prompt.map(Into::into),
-        commands_source: sources.0.into(),
-        fallback_commands_source: sources.1.map(Into::into),
+        commands_subdir: commands.0.into(),
+        commands_source: commands.1.into(),
+        fallback_commands_source: commands.2.map(Into::into),
+        agents_subdir: agents.0.into(),
+        agents_source: agents.1.into(),
+        fallback_agents_source: agents.2.map(Into::into),
+        guidance_file: guidance.map(|(file, _, _)| file.into()),
+        guidance_source: guidance
+            .map(|(_, source, _)| source.into())
+            .unwrap_or_default(),
+        fallback_guidance_source: guidance.and_then(|(_, _, fallback)| fallback.map(Into::into)),
     }
 }
 
@@ -298,9 +364,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.claude",
                 None,
                 "skills",
-                "commands",
-                Some("CLAUDE.md"),
-                ("claude", None),
+                ("commands", "claude", None),
+                ("agents", "claude", None),
+                Some(("CLAUDE.md", "claude", None)),
             ),
         ),
         (
@@ -310,9 +376,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.amp",
                 Some("~/.agents"),
                 "skills",
-                "commands",
+                ("", "", None),
+                ("", "", None),
                 None,
-                ("", None),
             ),
         ),
         (
@@ -322,9 +388,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.cline",
                 Some("~/.agents"),
                 "skills",
-                "commands",
+                ("", "", None),
+                ("", "", None),
                 None,
-                ("", None),
             ),
         ),
         (
@@ -334,9 +400,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.codex",
                 Some("~/.agents"),
                 "skills",
-                "prompts",
-                None,
-                ("codex", Some("claude")),
+                ("", "", None),
+                ("", "", None),
+                Some(("AGENTS.md", "codex", None)),
             ),
         ),
         (
@@ -346,9 +412,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.cursor",
                 Some("~/.agents"),
                 "skills",
-                "commands",
+                ("commands", "cursor", Some("claude")),
+                ("", "", None),
                 None,
-                ("cursor", Some("claude")),
             ),
         ),
         (
@@ -358,9 +424,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.agents",
                 None,
                 "skills",
-                "commands",
+                ("commands", "gemini", None),
+                ("", "", None),
                 None,
-                ("gemini", None),
             ),
         ),
         (
@@ -370,9 +436,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.copilot",
                 Some("~/.agents"),
                 "skills",
-                "commands",
+                ("", "", None),
+                ("", "", None),
                 None,
-                ("", None),
             ),
         ),
         (
@@ -382,9 +448,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.kimi",
                 Some("~/.agents"),
                 "skills",
-                "commands",
+                ("", "", None),
+                ("", "", None),
                 None,
-                ("", None),
             ),
         ),
         (
@@ -394,9 +460,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.qwen",
                 None,
                 "skills",
-                "commands",
+                ("commands", "qwen", Some("claude")),
+                ("", "", None),
                 None,
-                ("qwen", Some("claude")),
             ),
         ),
         (
@@ -406,9 +472,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.qoder",
                 None,
                 "skills",
-                "commands",
+                ("commands", "qoder", Some("claude")),
+                ("", "", None),
                 None,
-                ("qoder", Some("claude")),
             ),
         ),
         (
@@ -418,9 +484,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.kiro",
                 None,
                 "skills",
-                "steering",
+                ("steering", "kiro", Some("claude")),
+                ("", "", None),
                 None,
-                ("kiro", Some("claude")),
             ),
         ),
         (
@@ -430,9 +496,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.trae",
                 None,
                 "skills",
-                "commands",
+                ("commands", "trae", Some("claude")),
+                ("", "", None),
                 None,
-                ("trae", Some("claude")),
             ),
         ),
         (
@@ -442,9 +508,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.trae-cn",
                 None,
                 "skills",
-                "commands",
+                ("commands", "trae", Some("claude")),
+                ("", "", None),
                 None,
-                ("trae", Some("claude")),
             ),
         ),
         (
@@ -454,9 +520,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.config/opencode",
                 Some("~/.agents"),
                 "skills",
-                "commands",
+                ("commands", "opencode", Some("claude")),
+                ("", "", None),
                 None,
-                ("opencode", Some("claude")),
             ),
         ),
         (
@@ -466,9 +532,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.iflow",
                 None,
                 "skills",
-                "commands",
+                ("commands", "iflow", Some("claude")),
+                ("", "", None),
                 None,
-                ("iflow", Some("claude")),
             ),
         ),
         (
@@ -478,9 +544,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.gemini/antigravity",
                 None,
                 "skills",
-                "workflows",
+                ("workflows", "antigravity", None),
+                ("", "", None),
                 None,
-                ("antigravity", None),
             ),
         ),
         (
@@ -490,9 +556,9 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.codeium/windsurf",
                 None,
                 "skills",
-                "workflows",
+                ("workflows", "windsurf", None),
+                ("", "", None),
                 None,
-                ("windsurf", None),
             ),
         ),
     ])
@@ -504,9 +570,15 @@ struct TomlPlatform {
     skills_base_dir: Option<String>,
     skills_subdir: Option<String>,
     commands_subdir: Option<String>,
-    prompt_file: Option<String>,
     commands_source: Option<String>,
     fallback_commands_source: Option<String>,
+    agents_subdir: Option<String>,
+    agents_source: Option<String>,
+    fallback_agents_source: Option<String>,
+    #[serde(alias = "prompt_file")]
+    guidance_file: Option<String>,
+    guidance_source: Option<String>,
+    fallback_guidance_source: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -514,7 +586,6 @@ struct TomlConfig {
     platforms: Option<HashMap<String, TomlPlatform>>,
 }
 
-/// Load platforms with 3-tier priority: defaults → project TOML → user TOML
 pub fn load_platforms(project_root: &Path) -> HashMap<String, PlatformConfig> {
     let mut platforms = default_platforms();
     tracing::info!(
@@ -522,14 +593,12 @@ pub fn load_platforms(project_root: &Path) -> HashMap<String, PlatformConfig> {
         "Loaded default platform configuration"
     );
 
-    // Project-level override
     apply_toml_overrides(
         &mut platforms,
         &project_root.join("platforms.toml"),
         "project",
     );
 
-    // User-level override (highest priority)
     let user_config = home_dir()
         .join(".config")
         .join("myclaude")
@@ -569,17 +638,23 @@ fn apply_toml_overrides(
 
     let override_count = toml_platforms.len();
     for (name, tp) in toml_platforms {
-        let entry = platforms.entry(name.clone()).or_insert_with(|| {
-            p(
-                &name,
-                &format!("~/.{name}"),
-                None,
-                "skills",
-                "commands",
-                None,
-                (&name, None),
-            )
-        });
+        let entry = platforms
+            .entry(name.clone())
+            .or_insert_with(|| PlatformConfig {
+                name: name.clone(),
+                base_dir: format!("~/.{name}"),
+                skills_base_dir: None,
+                skills_subdir: "skills".into(),
+                commands_subdir: String::new(),
+                commands_source: String::new(),
+                fallback_commands_source: None,
+                agents_subdir: String::new(),
+                agents_source: String::new(),
+                fallback_agents_source: None,
+                guidance_file: None,
+                guidance_source: String::new(),
+                fallback_guidance_source: None,
+            });
         if let Some(v) = tp.base_dir {
             entry.base_dir = v;
         }
@@ -592,32 +667,78 @@ fn apply_toml_overrides(
         if let Some(v) = tp.commands_subdir {
             entry.commands_subdir = v;
         }
-        if let Some(v) = tp.prompt_file {
-            entry.prompt_file = Some(v);
-        }
         if let Some(v) = tp.commands_source {
             entry.commands_source = v;
         }
         if let Some(v) = tp.fallback_commands_source {
             entry.fallback_commands_source = Some(v);
         }
+        if let Some(v) = tp.agents_subdir {
+            entry.agents_subdir = v;
+        }
+        if let Some(v) = tp.agents_source {
+            entry.agents_source = v;
+        }
+        if let Some(v) = tp.fallback_agents_source {
+            entry.fallback_agents_source = Some(v);
+        }
+        if let Some(v) = tp.guidance_file {
+            entry.guidance_file = Some(v);
+        }
+        if let Some(v) = tp.guidance_source {
+            entry.guidance_source = v;
+        }
+        if let Some(v) = tp.fallback_guidance_source {
+            entry.fallback_guidance_source = Some(v);
+        }
     }
     tracing::info!(source, path = %path.display(), count = override_count, "Applied platform override file");
 }
 
-/// Get commands source directory with fallback logic
-pub fn commands_source_dir(platform: &PlatformConfig, commands_base: &Path) -> PathBuf {
-    let primary = commands_base.join(&platform.commands_source);
+fn capability_source_dir(
+    platforms_base: &Path,
+    primary_source: &str,
+    fallback_source: Option<&str>,
+    kind: &str,
+) -> PathBuf {
+    let primary = platforms_base.join(primary_source).join(kind);
     if primary.exists() {
         return primary;
     }
-    if let Some(ref fallback) = platform.fallback_commands_source {
-        let fb = commands_base.join(fallback);
-        if fb.exists() {
-            return fb;
+    if let Some(fallback) = fallback_source {
+        let fallback_path = platforms_base.join(fallback).join(kind);
+        if fallback_path.exists() {
+            return fallback_path;
         }
     }
     primary
+}
+
+pub fn commands_source_dir(platform: &PlatformConfig, platforms_base: &Path) -> PathBuf {
+    capability_source_dir(
+        platforms_base,
+        &platform.commands_source,
+        platform.fallback_commands_source.as_deref(),
+        "commands",
+    )
+}
+
+pub fn agents_source_dir(platform: &PlatformConfig, platforms_base: &Path) -> PathBuf {
+    capability_source_dir(
+        platforms_base,
+        &platform.agents_source,
+        platform.fallback_agents_source.as_deref(),
+        "agents",
+    )
+}
+
+pub fn guidance_source_dir(platform: &PlatformConfig, platforms_base: &Path) -> PathBuf {
+    capability_source_dir(
+        platforms_base,
+        &platform.guidance_source,
+        platform.fallback_guidance_source.as_deref(),
+        "guidance",
+    )
 }
 
 #[cfg(test)]
@@ -635,9 +756,14 @@ mod tests {
             skills_base_dir,
             skills_subdir: "skills".to_string(),
             commands_subdir: "commands".to_string(),
-            prompt_file: None,
             commands_source: commands_source.to_string(),
             fallback_commands_source: None,
+            agents_subdir: "agents".to_string(),
+            agents_source: "claude".to_string(),
+            fallback_agents_source: None,
+            guidance_file: None,
+            guidance_source: String::new(),
+            fallback_guidance_source: None,
         }
     }
 
@@ -671,8 +797,17 @@ mod tests {
 
     #[test]
     fn supports_commands_is_false_for_skills_only_platform() {
-        let platform = test_platform("~/.amp".to_string(), Some("~/.agents".to_string()), "");
+        let mut platform = test_platform("~/.amp".to_string(), Some("~/.agents".to_string()), "");
+        platform.commands_subdir = String::new();
         assert!(!platform.supports_commands());
+    }
+
+    #[test]
+    fn supports_agents_is_false_when_not_configured() {
+        let mut platform = test_platform("~/.codex".to_string(), Some("~/.agents".to_string()), "");
+        platform.agents_subdir = String::new();
+        platform.agents_source = String::new();
+        assert!(!platform.supports_agents());
     }
 
     #[test]
@@ -692,10 +827,15 @@ mod tests {
                 base_dir: legacy_base.to_string_lossy().to_string(),
                 skills_base_dir: Some(shared_base.to_string_lossy().to_string()),
                 skills_subdir: "skills".to_string(),
-                commands_subdir: "prompts".to_string(),
-                prompt_file: None,
-                commands_source: "codex".to_string(),
-                fallback_commands_source: Some("claude".to_string()),
+                commands_subdir: String::new(),
+                commands_source: String::new(),
+                fallback_commands_source: None,
+                agents_subdir: String::new(),
+                agents_source: String::new(),
+                fallback_agents_source: None,
+                guidance_file: Some("AGENTS.md".to_string()),
+                guidance_source: "codex".to_string(),
+                fallback_guidance_source: None,
             },
         );
 
@@ -704,5 +844,29 @@ mod tests {
         assert_eq!(legacy_dirs[0].platform_id, "codex");
         assert_eq!(legacy_dirs[0].legacy_path, legacy_base.join("skills"));
         assert_eq!(legacy_dirs[0].shared_path, shared_base.join("skills"));
+    }
+
+    #[test]
+    fn guidance_display_path_uses_filename() {
+        let platform = PlatformConfig {
+            name: "claude".into(),
+            base_dir: "~/.claude".into(),
+            skills_base_dir: None,
+            skills_subdir: "skills".into(),
+            commands_subdir: "commands".into(),
+            commands_source: "claude".into(),
+            fallback_commands_source: None,
+            agents_subdir: "agents".into(),
+            agents_source: "claude".into(),
+            fallback_agents_source: None,
+            guidance_file: Some("CLAUDE.md".into()),
+            guidance_source: "claude".into(),
+            fallback_guidance_source: None,
+        };
+
+        assert_eq!(
+            platform.guidance_display_path(),
+            Some("~/.claude/CLAUDE.md".into())
+        );
     }
 }

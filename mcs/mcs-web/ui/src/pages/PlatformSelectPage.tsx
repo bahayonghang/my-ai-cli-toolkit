@@ -12,6 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
@@ -20,6 +21,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { glassPanelSx } from "@/components/common/glassPanel";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useLegacyDirs } from "@/hooks/useLegacyDirs";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
@@ -30,6 +32,39 @@ const LegacyCleanupDialog = lazy(() =>
     default: module.LegacyCleanupDialog,
   }))
 );
+
+const heroStatSx: SxProps<Theme> = {
+  height: "100%",
+  display: "grid",
+  alignContent: "space-between",
+  gap: 1.5,
+  minHeight: 132,
+  px: 2.25,
+  py: 2,
+  borderRadius: 3,
+  border: "1px solid var(--mcs-control-stroke)",
+  background:
+    "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-control-fill) 100%)",
+  boxShadow: "inset 0 1px 0 0 var(--mcs-glass-highlight)",
+};
+
+const sectionLabelSx: SxProps<Theme> = {
+  color: "var(--mcs-dashboard-muted)",
+  letterSpacing: "0.12em",
+};
+
+const platformCardSx: SxProps<Theme> = {
+  height: "100%",
+  background:
+    "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+  borderColor: "var(--mcs-control-stroke)",
+  boxShadow: "var(--mcs-shadow-sm)",
+  "&:hover": {
+    borderColor: "var(--mcs-control-stroke-strong)",
+    backgroundColor: "var(--mcs-control-fill)",
+    boxShadow: "var(--mcs-shadow-md)",
+  },
+};
 
 export default function PlatformSelectPage() {
   const { t } = useI18n();
@@ -87,26 +122,43 @@ export default function PlatformSelectPage() {
               py: { xs: 2.5, sm: 3, md: 4 },
               mb: 4,
               background:
-                "linear-gradient(180deg, var(--mcs-hero-surface-strong) 0%, var(--mcs-hero-surface) 52%, var(--mcs-panel-fill) 100%)",
+                "linear-gradient(180deg, var(--mcs-hero-surface-strong) 0%, var(--mcs-hero-surface) 48%, var(--mcs-control-fill) 100%)",
               borderColor: "var(--mcs-hero-outline)",
-              boxShadow: "var(--mcs-hero-shadow), inset 0 1px 0 0 var(--mcs-glass-highlight)",
+              boxShadow: "var(--mcs-hero-shadow)",
             },
           ]}
         >
           <Grid container spacing={{ xs: 2.5, md: 3.5 }} alignItems="stretch">
             <Grid size={{ xs: 12, lg: 8 }}>
               <Stack spacing={3} sx={{ height: "100%", justifyContent: "space-between" }}>
-                <Stack spacing={1.5}>
-                  <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-accent-strong)" }}>
-                    {t("platformSelect.quickAccess")}
-                  </Typography>
+                <Stack spacing={2}>
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1.25}
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                  >
+                    <Typography variant="overline" sx={sectionLabelSx}>
+                      {t("platformSelect.quickAccess")}
+                    </Typography>
+                    <Chip
+                      label={t("platformSelect.availablePlatforms")}
+                      size="small"
+                      sx={{
+                        borderRadius: 1.5,
+                        borderColor: "var(--mcs-control-stroke)",
+                        backgroundColor: "var(--mcs-control-fill)",
+                      }}
+                      variant="outlined"
+                    />
+                  </Stack>
                   <Typography
                     variant="h2"
                     sx={{
                       maxWidth: 860,
-                      fontSize: { xs: "2.2rem", sm: "2.75rem", md: "3.35rem" },
-                      lineHeight: 1.02,
-                      letterSpacing: "-0.05em",
+                      fontSize: { xs: "2.25rem", sm: "2.9rem", md: "3.6rem" },
+                      lineHeight: 0.98,
+                      letterSpacing: "-0.06em",
+                      textWrap: "balance",
                     }}
                   >
                     {t("platformSelect.title")}
@@ -114,7 +166,11 @@ export default function PlatformSelectPage() {
                   <Typography
                     variant="body1"
                     color="text.secondary"
-                    sx={{ maxWidth: 720, fontSize: { xs: "1rem", md: "1.06rem" }, lineHeight: 1.75 }}
+                    sx={{
+                      maxWidth: 720,
+                      fontSize: { xs: "1rem", md: "1.05rem" },
+                      lineHeight: 1.8,
+                    }}
                   >
                     {t("platformSelect.subtitle")}
                   </Typography>
@@ -123,30 +179,20 @@ export default function PlatformSelectPage() {
                 <Grid container spacing={1.5}>
                   {heroStats.map((stat) => (
                     <Grid key={stat.label} size={{ xs: 12, sm: 4 }}>
-                      <Box
-                        sx={{
-                          height: "100%",
-                          borderRadius: 3,
-                          px: 2,
-                          py: 1.75,
-                          border: "1px solid var(--mcs-summary-tile-stroke)",
-                          background: "var(--mcs-summary-tile-fill)",
-                          boxShadow: "none",
-                        }}
-                      >
-                        <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)", display: "block", mb: 0.75 }}>
+                      <Box sx={heroStatSx}>
+                        <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)", display: "block" }}>
                           {stat.label}
                         </Typography>
                         <Typography
-                          variant={stat.emphasis === "metric" ? "h5" : "body1"}
+                          variant={stat.emphasis === "metric" ? "h3" : "body1"}
                           sx={{
-                            fontWeight: stat.emphasis === "metric" ? 700 : 600,
-                            letterSpacing: stat.emphasis === "metric" ? "-0.04em" : "-0.01em",
+                            fontWeight: stat.emphasis === "metric" ? 750 : 650,
+                            letterSpacing: stat.emphasis === "metric" ? "-0.06em" : "-0.015em",
                             color:
                               stat.emphasis === "metric"
                                 ? "var(--mcs-dashboard-accent-strong)"
                                 : "var(--mcs-dashboard-ink)",
-                            lineHeight: 1.3,
+                            lineHeight: stat.emphasis === "metric" ? 0.95 : 1.45,
                             wordBreak: "break-word",
                           }}
                         >
@@ -163,27 +209,35 @@ export default function PlatformSelectPage() {
               <Stack spacing={1.5} sx={{ height: "100%" }}>
                 <Box
                   sx={{
-                    borderRadius: 3.5,
-                    p: 2,
-                    border: "1px solid var(--mcs-dashboard-outline)",
+                    p: 2.25,
+                    borderRadius: 3,
+                    border: "1px solid var(--mcs-control-stroke-strong)",
                     background:
-                      "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-summary-tile-fill) 100%)",
-                    boxShadow: "var(--mcs-summary-tile-shadow)",
+                      "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-control-fill) 100%)",
+                    display: "grid",
+                    gap: 0.75,
                   }}
                 >
-                  <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
-                    {t("platformSelect.quickAccess")}
+                  <Typography variant="overline" sx={sectionLabelSx}>
+                    {t("platformSelect.unifiedInstallLabel")}
                   </Typography>
-                  <Typography variant="h6" sx={{ mt: 0.5, mb: 0.75, letterSpacing: "-0.03em" }}>
+                  <Typography variant="h6" sx={{ letterSpacing: "-0.04em", lineHeight: 1.05 }}>
                     {t("platformSelect.unifiedInstallTitle")}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
                     {t("platformSelect.dashboardTitle")}
                   </Typography>
                 </Box>
 
-                <Stack direction={{ xs: "column", sm: "row", lg: "column" }} spacing={1.25}>
-                  <LanguageToggle />
+                <Stack
+                  direction={{ xs: "column", sm: "row", lg: "column" }}
+                  spacing={1.25}
+                  sx={{ mt: "auto" }}
+                >
+                  <Stack direction="row" spacing={1.25} alignItems="center">
+                    <LanguageToggle />
+                    <ThemeToggleButton />
+                  </Stack>
                   <Button
                     variant="outlined"
                     onClick={() => {
@@ -222,24 +276,27 @@ export default function PlatformSelectPage() {
         <Grid container spacing={2} sx={{ mb: 4, alignItems: "stretch" }}>
           <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
             <ShortcutCard
-              title={t("platformSelect.unifiedInstallLabel")}
-              description={t("platformSelect.unifiedInstallTitle")}
+              eyebrow={t("platformSelect.unifiedInstallLabel")}
+              title={t("platformSelect.unifiedInstallTitle")}
+              description={t("platformSelect.dashboardTitle")}
               icon={<InstallDesktopIcon color="primary" />}
               onClick={() => navigateDeferred("/install-hub")}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
             <ShortcutCard
-              title={t("platformSelect.dashboardLabel")}
-              description={t("platformSelect.dashboardTitle")}
+              eyebrow={t("platformSelect.dashboardLabel")}
+              title={t("platformSelect.dashboardTitle")}
+              description={t("platformSelect.quickAccess")}
               icon={<DashboardCustomizeIcon color="primary" />}
               onClick={() => navigateDeferred("/dashboard")}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex" }}>
             <ShortcutCard
-              title={t("platformSelect.npxSkillsLabel")}
-              description={t("platformSelect.npxSkillsTitle")}
+              eyebrow={t("platformSelect.npxSkillsLabel")}
+              title={t("platformSelect.npxSkillsTitle")}
+              description={t("platformSelect.quickAccess")}
               icon={<TerminalIcon color={platforms.length > 0 ? "primary" : "disabled"} />}
               disabled={platforms.length === 0}
               onClick={() => {
@@ -250,77 +307,102 @@ export default function PlatformSelectPage() {
           </Grid>
         </Grid>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} justifyContent="space-between" sx={{ mb: 2.5 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1.5}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", sm: "flex-end" }}
+          sx={{ mb: 2.5 }}
+        >
           <Box>
-            <Typography variant="overline" color="text.secondary">
+            <Typography variant="overline" sx={sectionLabelSx}>
               {t("platformSelect.availablePlatforms")}
             </Typography>
-            <Typography variant="h5" sx={{ mt: 0.5, letterSpacing: "-0.03em" }}>
+            <Typography variant="h4" sx={{ mt: 0.5, letterSpacing: "-0.05em", lineHeight: 0.95 }}>
               {platforms.length}
             </Typography>
           </Box>
           <Chip
             label={t("common.selectedCount", { count: platforms.length })}
             variant="outlined"
-            sx={{ alignSelf: { xs: "flex-start", sm: "center" } }}
+            sx={{
+              alignSelf: { xs: "flex-start", sm: "center" },
+              borderRadius: 1.5,
+              borderColor: "var(--mcs-control-stroke)",
+              backgroundColor: "var(--mcs-control-fill)",
+            }}
           />
         </Stack>
         <Grid container spacing={2}>
           {platforms.map((platform) => (
             <Grid key={platform.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-              <Card
-                sx={{
-                  height: "100%",
-                  background:
-                    "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-                }}
-              >
+              <Card sx={platformCardSx}>
                 <CardActionArea
                   onClick={() => navigateDeferred(`/platform/${platform.id}`)}
-                  sx={{ height: "100%", minHeight: 176, alignItems: "stretch" }}
+                  sx={{ height: "100%", minHeight: 188, alignItems: "stretch" }}
                 >
                   <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", gap: 2.5, p: 3 }}>
-                    <Stack direction="row" spacing={1.5} alignItems="center">
+                    <Stack direction="row" spacing={1.5} alignItems="flex-start">
                       <Box
                         sx={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: 3,
+                          width: 62,
+                          minWidth: 62,
+                          height: 62,
+                          borderRadius: 2,
                           display: "grid",
                           placeItems: "center",
                           background:
-                            "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
-                          border: "1px solid var(--mcs-dashboard-outline)",
-                          boxShadow: "var(--mcs-summary-tile-shadow)",
-                          flexShrink: 0,
+                            "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-dashboard-surface-muted) 100%)",
+                          border: "1px solid var(--mcs-control-stroke)",
+                          boxShadow: "inset 0 1px 0 0 var(--mcs-glass-highlight)",
                         }}
                       >
                         <Typography variant="h4" component="span" sx={{ lineHeight: 1 }}>
                           {platform.icon}
                         </Typography>
                       </Box>
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography variant="h6" sx={{ wordBreak: "break-word", letterSpacing: "-0.03em" }}>
-                          {platform.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                      <Stack spacing={0.5} sx={{ minWidth: 0, flexGrow: 1 }}>
+                        <Typography variant="overline" sx={sectionLabelSx}>
                           {platform.id}
                         </Typography>
-                      </Box>
+                        <Typography variant="h6" sx={{ wordBreak: "break-word", letterSpacing: "-0.04em", lineHeight: 1.05 }}>
+                          {platform.name}
+                        </Typography>
+                      </Stack>
                     </Stack>
 
-                    <Stack spacing={1.25} sx={{ minWidth: 0, mt: "auto" }}>
+                    <Stack spacing={1.5} sx={{ minWidth: 0, mt: "auto" }}>
                       <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                        <Chip label={t("common.platform")} size="small" variant="outlined" />
-                        <Chip label={t("platformSelect.quickAccess")} size="small" variant="outlined" />
+                        <Chip
+                          label={t("common.platform")}
+                          size="small"
+                          variant="outlined"
+                          sx={{ borderRadius: 1.25, borderColor: "var(--mcs-control-stroke)" }}
+                        />
+                        <Chip
+                          label={t("platformSelect.quickAccess")}
+                          size="small"
+                          variant="outlined"
+                          sx={{ borderRadius: 1.25, borderColor: "var(--mcs-control-stroke)" }}
+                        />
                       </Stack>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ overflowWrap: "anywhere", lineHeight: 1.7 }}
+                      <Box
+                        sx={{
+                          pt: 1.25,
+                          borderTop: "1px solid var(--mcs-control-divider)",
+                        }}
                       >
-                        {platform.skills_path}
-                      </Typography>
+                        <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)", display: "block", mb: 0.75 }}>
+                          Path
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ overflowWrap: "anywhere", lineHeight: 1.7 }}
+                        >
+                          {platform.skills_path}
+                        </Typography>
+                      </Box>
                     </Stack>
                   </CardContent>
                 </CardActionArea>
@@ -344,12 +426,14 @@ export default function PlatformSelectPage() {
 }
 
 function ShortcutCard({
+  eyebrow,
   title,
   description,
   icon,
   disabled,
   onClick,
 }: {
+  eyebrow: string;
   title: string;
   description: string;
   icon: React.ReactNode;
@@ -359,43 +443,46 @@ function ShortcutCard({
   return (
     <Card
       sx={{
+        ...platformCardSx,
         opacity: disabled ? 0.54 : 1,
         flex: 1,
         minWidth: 0,
-        background:
-          "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
       }}
     >
       <CardActionArea
         onClick={onClick}
         disabled={disabled}
-        sx={{ height: "100%", minHeight: 152, alignItems: "stretch" }}
+        sx={{ height: "100%", minHeight: 160, alignItems: "stretch" }}
       >
-        <CardContent sx={{ height: "100%", display: "flex", alignItems: "center", gap: 2.25, p: 3 }}>
-          <Box
-            sx={{
-              width: 54,
-              height: 54,
-              borderRadius: 3,
-              display: "grid",
-              placeItems: "center",
-              background:
-                "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
-              border: "1px solid var(--mcs-dashboard-outline)",
-              boxShadow: "var(--mcs-summary-tile-shadow)",
-              flexShrink: 0,
-            }}
-          >
-            {icon}
-          </Box>
-          <Box sx={{ minWidth: 0, display: "grid", alignContent: "center", gap: 0.5 }}>
-            <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
-              {title}
-            </Typography>
-            <Typography variant="h6" sx={{ letterSpacing: "-0.03em" }}>
-              {description}
-            </Typography>
-          </Box>
+        <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", gap: 2, p: 3 }}>
+          <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="flex-start">
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="overline" sx={sectionLabelSx}>
+                {eyebrow}
+              </Typography>
+              <Typography variant="h6" sx={{ mt: 0.5, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
+                {title}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                width: 52,
+                minWidth: 52,
+                height: 52,
+                borderRadius: 2,
+                display: "grid",
+                placeItems: "center",
+                background:
+                  "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-dashboard-surface-muted) 100%)",
+                border: "1px solid var(--mcs-control-stroke)",
+              }}
+            >
+              {icon}
+            </Box>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.75, mt: "auto" }}>
+            {description}
+          </Typography>
         </CardContent>
       </CardActionArea>
     </Card>

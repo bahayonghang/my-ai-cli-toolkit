@@ -1,19 +1,17 @@
 use std::path::Path;
+use std::path::PathBuf;
 use std::time::SystemTime;
 use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
 };
 
-use std::path::PathBuf;
-
-use crate::config::paths::{commands_src_dir, skills_src_dir};
-use crate::config::platform::{PlatformConfig, commands_source_dir};
+use crate::config::paths::{platforms_src_dir, skills_src_dir};
+use crate::config::platform::{PlatformConfig, agents_source_dir, commands_source_dir};
 use crate::core::fs_utils::walkdir_files;
 use crate::core::skill_meta::parse_skill_frontmatter;
 use crate::model::{InstallStatus, ItemInfo, ItemType};
 
-/// Pre-scanned source skill info (platform-independent, computed once)
 #[derive(Debug, Clone)]
 pub struct SkillSource {
     pub name: String,
@@ -97,6 +95,7 @@ fn path_signature(path: &Path) -> (Option<SystemTime>, Option<u64>) {
 
     (latest, Some(hasher.finish()))
 }
+
 fn determine_status(
     target: &Path,
     src_mtime: Option<SystemTime>,
@@ -120,7 +119,6 @@ fn determine_status(
     InstallStatus::Installed
 }
 
-/// Load default category names from skills/default.toml
 fn load_default_categories(project_root: &Path) -> Vec<String> {
     let toml_path = skills_src_dir(project_root).join("default.toml");
     let Ok(content) = std::fs::read_to_string(&toml_path) else {
@@ -136,7 +134,6 @@ fn load_default_categories(project_root: &Path) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// Scan all skills from source directory
 pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
     tracing::info!(
         platform = platform.name.as_str(),
@@ -153,7 +150,6 @@ pub fn discover_skills(project_root: &Path, platform: &PlatformConfig) -> Vec<It
     skills
 }
 
-/// Scan source skills once (platform-independent, shared across all platforms)
 pub fn discover_skill_sources(project_root: &Path) -> Vec<SkillSource> {
     let src_dir = skills_src_dir(project_root);
     if !src_dir.exists() {
@@ -182,7 +178,7 @@ pub fn discover_skill_sources(project_root: &Path) -> Vec<SkillSource> {
         } else if let Some(ref cat) = parent_cat {
             default_cats.iter().any(|c| c == cat)
         } else {
-            true // top-level skills are always default
+            true
         };
 
         let category = parent_cat.or(meta.category);
@@ -205,7 +201,6 @@ pub fn discover_skill_sources(project_root: &Path) -> Vec<SkillSource> {
     sources
 }
 
-/// Resolve skills for a specific platform using pre-scanned sources (fast — only checks targets)
 pub fn resolve_skills_for_platform(
     sources: &[SkillSource],
     platform: &PlatformConfig,
@@ -214,7 +209,6 @@ pub fn resolve_skills_for_platform(
         .iter()
         .map(|src| {
             let target = platform.skills_path().join(&src.name);
-            // Exclude mtimes from the signature so copied-but-identical trees stay "Installed".
             let (tgt_mtime, tgt_sig) = path_signature(&target);
             let status = determine_status(&target, src.src_mtime, tgt_mtime, src.src_sig, tgt_sig);
 
@@ -237,43 +231,58 @@ pub fn resolve_skills_for_platform(
         .collect()
 }
 
-/// Scan all commands from platform-specific source directory
 pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
+    discover_platform_file_items(project_root, platform, ItemType::Command)
+}
+
+pub fn discover_agents(project_root: &Path, platform: &PlatformConfig) -> Vec<ItemInfo> {
+    discover_platform_file_items(project_root, platform, ItemType::Agent)
+}
+
+fn discover_platform_file_items(
+    project_root: &Path,
+    platform: &PlatformConfig,
+    item_type: ItemType,
+) -> Vec<ItemInfo> {
     tracing::info!(
         platform = platform.name.as_str(),
-        "Starting commands discovery"
+        item_type = ?item_type,
+        "Starting platform file discovery"
     );
-    if !platform.supports_commands() {
+
+    let Some((src_dir, target_dir)) =
+        platform_file_item_source_and_target(project_root, platform, item_type)
+    else {
         tracing::info!(
             platform = platform.name.as_str(),
-            command_count = 0usize,
-            "Completed commands discovery"
+            item_type = ?item_type,
+            item_count = 0usize,
+            "Platform capability not managed"
         );
         return Vec::new();
-    }
+    };
 
-    let commands_base = commands_src_dir(project_root);
-    let src_dir = commands_source_dir(platform, &commands_base);
     if !src_dir.exists() {
         tracing::info!(
             platform = platform.name.as_str(),
-            command_count = 0usize,
-            "Completed commands discovery"
+            item_type = ?item_type,
+            item_count = 0usize,
+            "Completed platform file discovery"
         );
         return Vec::new();
     }
 
-    let mut commands: Vec<ItemInfo> = Vec::new();
-    let mut files: Vec<_> = walkdir_files(&src_dir);
+    let mut items: Vec<ItemInfo> = Vec::new();
+    let mut files = walkdir_files(&src_dir);
     files.sort();
 
     for file_path in files {
         let rel = file_path.strip_prefix(&src_dir).unwrap();
-        let cmd_name = rel.with_extension("").to_string_lossy().replace('\\', "/");
-        let target = platform.commands_path().join(rel);
-        let src_mtime = file_mtime(&file_path);
-        let tgt_mtime = file_mtime(&target);
-        let status = determine_status(&target, src_mtime, tgt_mtime, None, None);
+        let item_name = rel.with_extension("").to_string_lossy().replace('\\', "/");
+        let target = target_dir.join(rel);
+        let (src_mtime, src_sig) = path_signature(&file_path);
+        let (tgt_mtime, tgt_sig) = path_signature(&target);
+        let status = determine_status(&target, src_mtime, tgt_mtime, src_sig, tgt_sig);
 
         let category = if rel.components().count() > 1 {
             rel.components()
@@ -283,9 +292,9 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
             Some("general".into())
         };
 
-        commands.push(ItemInfo {
-            name: cmd_name,
-            item_type: ItemType::Command,
+        items.push(ItemInfo {
+            name: item_name,
+            item_type,
             description: None,
             status,
             source_path: file_path,
@@ -299,15 +308,35 @@ pub fn discover_commands(project_root: &Path, platform: &PlatformConfig) -> Vec<
             is_default: false,
         });
     }
+
     tracing::info!(
         platform = platform.name.as_str(),
-        command_count = commands.len(),
-        "Completed commands discovery"
+        item_type = ?item_type,
+        item_count = items.len(),
+        "Completed platform file discovery"
     );
-    commands
+    items
 }
 
-/// Recursively find directories containing SKILL.md
+fn platform_file_item_source_and_target(
+    project_root: &Path,
+    platform: &PlatformConfig,
+    item_type: ItemType,
+) -> Option<(PathBuf, PathBuf)> {
+    let platforms_base = platforms_src_dir(project_root);
+    match item_type {
+        ItemType::Command if platform.supports_commands() => Some((
+            commands_source_dir(platform, &platforms_base),
+            platform.commands_path(),
+        )),
+        ItemType::Agent if platform.supports_agents() => Some((
+            agents_source_dir(platform, &platforms_base),
+            platform.agents_path(),
+        )),
+        _ => None,
+    }
+}
+
 pub(crate) fn find_skill_dirs(dir: &Path) -> Vec<std::path::PathBuf> {
     let mut result = Vec::new();
     if let Ok(entries) = std::fs::read_dir(dir) {
@@ -329,7 +358,6 @@ pub(crate) fn find_skill_dirs(dir: &Path) -> Vec<std::path::PathBuf> {
 mod tests {
     use super::*;
     use crate::config::platform::PlatformConfig;
-    use std::path::PathBuf;
 
     fn temp_dir(name: &str) -> PathBuf {
         let dir = std::env::temp_dir().join(format!(
@@ -352,9 +380,14 @@ mod tests {
             skills_base_dir: None,
             skills_subdir: "skills".into(),
             commands_subdir: "commands".into(),
-            prompt_file: Some("CLAUDE.md".into()),
             commands_source: "claude".into(),
             fallback_commands_source: None,
+            agents_subdir: "agents".into(),
+            agents_source: "claude".into(),
+            fallback_agents_source: None,
+            guidance_file: Some("CLAUDE.md".into()),
+            guidance_source: "claude".into(),
+            fallback_guidance_source: None,
         }
     }
 
@@ -393,7 +426,6 @@ mod tests {
         assert_eq!(status_first, InstallStatus::Installed);
 
         std::thread::sleep(std::time::Duration::from_millis(50));
-        // Use a different payload to force signature change.
         std::fs::write(
             source_skill.join("scripts").join("run.sh"),
             "echo v2 updated",
@@ -447,7 +479,6 @@ mod tests {
         assert_eq!(status_first, InstallStatus::Installed);
 
         std::thread::sleep(std::time::Duration::from_millis(1200));
-        // Same size, different content.
         std::fs::write(source_skill.join("scripts").join("run.sh"), "echo v2").unwrap();
 
         let second = discover_skills(&project_root, &platform);
@@ -488,5 +519,33 @@ mod tests {
         assert_eq!(discovered[0].name, "demo-skill");
 
         let _ = std::fs::remove_dir_all(project_root);
+    }
+
+    #[test]
+    fn discovers_agents_from_platform_content_tree() {
+        let project_root = temp_dir("agents_project");
+        let agent_src = project_root
+            .join("content")
+            .join("platforms")
+            .join("claude")
+            .join("agents")
+            .join("specialist");
+        std::fs::create_dir_all(&agent_src).unwrap();
+        std::fs::write(agent_src.join("reviewer.md"), "# reviewer").unwrap();
+
+        let install_root = temp_dir("agents_install");
+        let target_root = install_root.join("agents").join("specialist");
+        std::fs::create_dir_all(&target_root).unwrap();
+        std::fs::write(target_root.join("reviewer.md"), "# reviewer").unwrap();
+
+        let platform = test_platform(&install_root);
+        let agents = discover_agents(&project_root, &platform);
+        assert_eq!(agents.len(), 1);
+        assert_eq!(agents[0].name, "specialist/reviewer");
+        assert_eq!(agents[0].item_type, ItemType::Agent);
+        assert_eq!(agents[0].status, InstallStatus::Installed);
+
+        let _ = std::fs::remove_dir_all(project_root);
+        let _ = std::fs::remove_dir_all(install_root);
     }
 }

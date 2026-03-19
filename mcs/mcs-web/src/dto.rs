@@ -402,7 +402,9 @@ pub struct ResolvedInstallTargetDto {
     pub project_path: Option<String>,
     pub base_dir: String,
     pub skills_path: String,
-    pub commands_path: String,
+    pub commands_path: Option<String>,
+    pub agents_path: Option<String>,
+    pub guidance_path: Option<String>,
 }
 
 #[derive(Serialize)]

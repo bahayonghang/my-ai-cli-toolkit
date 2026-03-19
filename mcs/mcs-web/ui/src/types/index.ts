@@ -1,6 +1,6 @@
 // ── Enums matching Rust backend ─────────────────────────────────────
 
-export type ItemType = "skill" | "command";
+export type ItemType = "skill" | "command" | "agent";
 export type InstallStatus = "installed" | "not_installed" | "outdated";
 export type InstallTargetScope = "global" | "project";
 
@@ -14,7 +14,9 @@ export interface ResolvedInstallTarget {
   project_path: string | null;
   base_dir: string;
   skills_path: string;
-  commands_path: string;
+  commands_path: string | null;
+  agents_path: string | null;
+  guidance_path: string | null;
 }
 
 // ── API Response Types ─────────────────────────────────────────────
@@ -39,6 +41,12 @@ export interface PlatformDisplay {
   icon: string;
   base_dir: string;
   skills_path: string;
+  commands_path?: string | null;
+  agents_path?: string | null;
+  guidance_path?: string | null;
+  supports_commands?: boolean;
+  supports_agents?: boolean;
+  supports_guidance?: boolean;
 }
 
 export interface PlatformConfig {
@@ -47,9 +55,14 @@ export interface PlatformConfig {
   skills_base_dir: string | null;
   skills_subdir: string;
   commands_subdir: string;
-  prompt_file: string | null;
   commands_source: string;
   fallback_commands_source: string | null;
+  agents_subdir: string;
+  agents_source: string;
+  fallback_agents_source: string | null;
+  guidance_file: string | null;
+  guidance_source: string;
+  fallback_guidance_source: string | null;
 }
 
 // ── Items (Skills / Commands) ──────────────────────────────────────

@@ -178,7 +178,7 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
                 // Sidebar click
                 state.focus = state::FocusTarget::Sidebar;
                 let sidebar_row = (row - metrics.header_height) as usize;
-                // Row 0 = Skills tab, Row 1 = Commands tab
+                // Row 0 = Skills tab, Row 1 = Commands tab, Row 2 = Agents tab
                 if sidebar_row == 0 {
                     state.active_tab = state::ContentTab::Skills;
                     state.cursor = 0;
@@ -191,7 +191,13 @@ fn handle_mouse(state: &mut AppState, mouse: MouseEvent, area: Rect) {
                     state.category_cursor = 0;
                     state.selected_category = None;
                     state.selected_indices.clear();
-                } else if sidebar_row >= 3 {
+                } else if sidebar_row == 2 {
+                    state.active_tab = state::ContentTab::Agents;
+                    state.cursor = 0;
+                    state.category_cursor = 0;
+                    state.selected_category = None;
+                    state.selected_indices.clear();
+                } else if sidebar_row >= 4 {
                     let cats = state.categories();
                     if let Some(cat_idx) = sidebar_category_cursor_from_row(sidebar_row, &cats) {
                         state.category_cursor = cat_idx;
@@ -228,6 +234,7 @@ fn sidebar_category_cursor_from_row(
     categories: &[(String, usize)],
 ) -> Option<usize> {
     let visual_row = sidebar_row.checked_sub(3)?;
+    let visual_row = visual_row.checked_sub(1)?;
     let has_default = categories
         .first()
         .is_some_and(|(name, _)| name == "default");
@@ -369,22 +376,22 @@ mod tests {
     fn sidebar_row_mapping_skips_default_separator() {
         let categories = vec![("default".to_string(), 1), ("custom".to_string(), 2)];
         assert_eq!(
-            sidebar_category_cursor_from_row(3, &categories),
+            sidebar_category_cursor_from_row(4, &categories),
             Some(0),
             "row for All category"
         );
         assert_eq!(
-            sidebar_category_cursor_from_row(4, &categories),
+            sidebar_category_cursor_from_row(5, &categories),
             Some(1),
             "row for default category"
         );
         assert_eq!(
-            sidebar_category_cursor_from_row(5, &categories),
+            sidebar_category_cursor_from_row(6, &categories),
             None,
             "separator row"
         );
         assert_eq!(
-            sidebar_category_cursor_from_row(6, &categories),
+            sidebar_category_cursor_from_row(7, &categories),
             Some(2),
             "row for first non-default category"
         );

@@ -44,7 +44,7 @@ import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import SearchIcon from "@mui/icons-material/Search";
 import SyncIcon from "@mui/icons-material/Sync";
 import TuneIcon from "@mui/icons-material/Tune";
-import { uninstallCommands, uninstallSkills } from "@/api/client";
+import { uninstallAgents, uninstallCommands, uninstallSkills } from "@/api/client";
 import { useI18n } from "@/i18n";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
@@ -56,7 +56,9 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
-import { useUiStore } from "@/stores/uiStore";const DetailDrawer = lazy(() =>
+import { useUiStore } from "@/stores/uiStore";
+import type { PlatformDisplay } from "@/types";
+const DetailDrawer = lazy(() =>
   import("@/components/dialogs/DetailDrawer").then((module) => ({
     default: module.DetailDrawer,
   }))
@@ -77,7 +79,7 @@ const MultiSyncDialog = lazy(() =>
   }))
 );
 
-type TabValue = "skills" | "commands";
+type TabValue = "skills" | "commands" | "agents";
 
 export default function MainPage() {
   const { t } = useI18n();
@@ -96,7 +98,8 @@ export default function MainPage() {
   const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
   const debouncedSearch = useDebounce(search, 300);
-  const itemType = activeTab === "skills" ? "skill" : "command";
+  const itemType =
+    activeTab === "skills" ? "skill" : activeTab === "commands" ? "command" : "agent";
   const selectedCount = selectedNames.size;
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [detailName, setDetailName] = useState<string | null>(null);
@@ -122,6 +125,15 @@ export default function MainPage() {
     }
   }, [isMobile]);
 
+  useEffect(() => {
+    if (activeTab === "commands" && platform?.supports_commands === false) {
+      setActiveTab("skills");
+    }
+    if (activeTab === "agents" && platform?.supports_agents === false) {
+      setActiveTab("skills");
+    }
+  }, [activeTab, platform?.supports_agents, platform?.supports_commands]);
+
   const {
     items,
     categories,
@@ -139,6 +151,21 @@ export default function MainPage() {
     () => categories.filter((category) => category.item_type === itemType),
     [categories, itemType]
   );
+  const currentTabLabel =
+    activeTab === "skills"
+      ? t("common.skills")
+      : activeTab === "commands"
+        ? t("common.commands")
+        : t("common.agents");
+  const capabilitySummary = [
+    platform?.supports_commands === false ? null : t("common.commands"),
+    platform?.supports_agents === false ? null : t("common.agents"),
+    t("common.skills"),
+  ].filter((value): value is string => Boolean(value));
+  const totalVisibleCount = items.length;
+  const totalCategoryCount = visibleCategories.reduce((sum, category) => sum + category.count, 0);
+  const activeFilterLabel = selectedCategory ?? t("common.all");
+  const categoryCountLabel = t("common.categoryCount", { count: visibleCategories.length });
 
   const toggleSelection = (name: string) => {
     setSelectedNames((previous) => {
@@ -173,7 +200,9 @@ export default function MainPage() {
       const result =
         activeTab === "skills"
           ? await uninstallSkills(platformId, names)
-          : await uninstallCommands(platformId, names);
+          : activeTab === "commands"
+            ? await uninstallCommands(platformId, names)
+            : await uninstallAgents(platformId, names);
       showNotification(
         t("dialogs.uninstallCompletedSummary", {
           success: result.success_count,
@@ -226,7 +255,7 @@ export default function MainPage() {
           </Typography>
           <IconButton
             color="inherit"
-            aria-label={t("common.openPrompt")}
+            aria-label={t("common.openGuidance")}
             onClick={() => setPromptOpen(true)}
           >
             <DescriptionOutlinedIcon />
@@ -255,6 +284,7 @@ export default function MainPage() {
             activeTab={activeTab}
             categories={visibleCategories}
             selectedCategory={selectedCategory}
+            platform={platform}
             onTabChange={handleTabChange}
             onCategoryChange={(value) => {
               setSelectedCategory(value);
@@ -279,12 +309,25 @@ export default function MainPage() {
         }}
       >
         {!isMobile && (
-          <Card sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}>
-            <CardContent sx={{ p: 2 }}>
+          <Card
+            sx={{
+              width: 292,
+              flexShrink: 0,
+              position: "sticky",
+              top: 96,
+              overflow: "hidden",
+              background:
+                "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+              borderColor: "var(--mcs-control-stroke)",
+              boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+            }}
+          >
+            <CardContent sx={{ p: 0 }}>
               <FiltersPanel
                 activeTab={activeTab}
                 categories={visibleCategories}
                 selectedCategory={selectedCategory}
+                platform={platform}
                 onTabChange={handleTabChange}
                 onCategoryChange={setSelectedCategory}
                 t={t}
@@ -294,62 +337,175 @@ export default function MainPage() {
         )}
 
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-          <Stack
-            direction={{ xs: "column", lg: "row" }}
-            spacing={1.5}
-            alignItems={{ xs: "stretch", lg: "center" }}
-            sx={{ mb: 2 }}
+          <Card
+            sx={{
+              mb: 2,
+              overflow: "hidden",
+              background:
+                "linear-gradient(180deg, var(--mcs-hero-surface-strong) 0%, var(--mcs-control-fill-strong) 56%, var(--mcs-control-fill) 100%)",
+              borderColor: "var(--mcs-control-stroke)",
+              boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+            }}
           >
-            <TextField
-              label={t("common.search")}
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{ width: { xs: "100%", lg: 320 } }}
-            />
-            <Box sx={{ flexGrow: 1 }} />
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }}>
-              {selectedCount > 0 ? (
-                <>
-                  <Chip
-                    label={t("common.selectedCount", { count: selectedCount })}
-                    onDelete={clearSelection}
-                  />
-                  <Button
-                    variant="contained"
-                    startIcon={<InstallDesktopIcon />}
-                    onClick={() => setInstallOpen(true)}
+            <CardContent sx={{ p: 0 }}>
+              <Box sx={{ px: { xs: 2, md: 2.5 }, py: { xs: 2, md: 2.5 } }}>
+                <Stack spacing={2.25}>
+                  <Stack
+                    direction={{ xs: "column", xl: "row" }}
+                    spacing={2}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "flex-start", xl: "flex-start" }}
                   >
-                    {t("common.install")}
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteOutlineIcon />}
-                    onClick={() => setConfirmAction("uninstall")}
+                    <Stack spacing={1.25} sx={{ minWidth: 0 }}>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
+                        <Typography
+                          variant="overline"
+                          sx={{ color: "var(--mcs-dashboard-muted)", letterSpacing: "0.14em" }}
+                        >
+                          {platform?.name ?? platformId}
+                        </Typography>
+                        <Chip
+                          size="small"
+                          label={platformId}
+                          variant="outlined"
+                          sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
+                        />
+                        <Chip
+                          size="small"
+                          label={currentTabLabel}
+                          color="primary"
+                          sx={{ borderRadius: 1.5 }}
+                        />
+                      </Stack>
+                      <Typography variant="h4" sx={{ letterSpacing: "-0.05em", lineHeight: 0.98 }}>
+                        <Box component="span" sx={{ mr: 1 }}>
+                          {platform?.icon}
+                        </Box>
+                        {currentTabLabel}
+                      </Typography>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                        {capabilitySummary.map((item) => (
+                          <Chip
+                            key={item}
+                            size="small"
+                            label={item}
+                            variant="outlined"
+                            sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
+                          />
+                        ))}
+                      </Stack>
+                    </Stack>
+
+                    <Stack spacing={1} alignItems={{ xs: "flex-start", xl: "flex-end" }}>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                        <Chip
+                          label={t("common.selectedCount", { count: selectedCount })}
+                          color={selectedCount > 0 ? "primary" : "default"}
+                          variant={selectedCount > 0 ? "filled" : "outlined"}
+                          onDelete={selectedCount > 0 ? clearSelection : undefined}
+                          sx={{ borderRadius: 1.5 }}
+                        />
+                        <Chip
+                          label={`${totalVisibleCount} ${currentTabLabel}`}
+                          variant="outlined"
+                          sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
+                        />
+                      </Stack>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" justifyContent={{ xl: "flex-end" }}>
+                        <Button
+                          variant="contained"
+                          startIcon={<InstallDesktopIcon />}
+                          onClick={() => setInstallOpen(true)}
+                          disabled={selectedCount === 0}
+                        >
+                          {t("common.install")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          startIcon={<SyncIcon />}
+                          onClick={() => setSyncOpen(true)}
+                          disabled={selectedCount === 0}
+                        >
+                          {t("common.syncSelection")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          startIcon={<DeleteOutlineIcon />}
+                          onClick={() => setConfirmAction("uninstall")}
+                          disabled={selectedCount === 0}
+                        >
+                          {t("common.uninstall")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          onClick={selectAll}
+                          disabled={items.length === 0}
+                        >
+                          {t("install.selectAll")}
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box
+                sx={{
+                  px: { xs: 2, md: 2.5 },
+                  py: 1.5,
+                  backgroundColor: "var(--mcs-control-fill)",
+                }}
+              >
+                <Stack spacing={1.5}>
+                  <Stack
+                    direction={{ xs: "column", lg: "row" }}
+                    spacing={1.5}
+                    alignItems={{ xs: "stretch", lg: "center" }}
                   >
-                    {t("common.uninstall")}
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  variant="outlined"
-                  onClick={selectAll}
-                  disabled={items.length === 0}
-                >
-                  {t("install.selectAll")}
-                </Button>
-              )}
-            </Stack>
-          </Stack>
+                    <TextField
+                      label={t("common.search")}
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SearchIcon />
+                            </InputAdornment>
+                          ),
+                        },
+                      }}
+                      sx={{ width: { xs: "100%", lg: 360 } }}
+                    />
+                    <Box sx={{ flexGrow: 1 }} />
+                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
+                      <Chip
+                        size="small"
+                        label={`${t("common.filters")}: ${activeFilterLabel}`}
+                        variant="outlined"
+                        sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
+                      />
+                      <Chip
+                        size="small"
+                        label={`${currentTabLabel}: ${totalVisibleCount}`}
+                        variant="outlined"
+                        sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
+                      />
+                      <Chip
+                        size="small"
+                        label={categoryCountLabel}
+                        variant="outlined"
+                        sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Box>
+            </CardContent>
+          </Card>
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -358,69 +514,103 @@ export default function MainPage() {
           )}
           {showInlineProgress && <LinearProgress sx={{ mb: 2 }} />}
 
-          {pageLoading ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
-          ) : items.length === 0 ? (
-            <Card>
-              <CardContent sx={{ py: 8, textAlign: "center" }}>
+          <Card
+            sx={{
+              mb: 2,
+              background:
+                "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+              borderColor: "var(--mcs-control-stroke)",
+            }}
+          >
+            <CardContent
+              sx={{
+                py: 1.5,
+                px: { xs: 2, md: 2.5 },
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 1,
+                flexWrap: "wrap",
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                {currentTabLabel} · {t("common.resultsCount", { count: totalVisibleCount })}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {t("common.filters")} · {activeFilterLabel} · {totalCategoryCount}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Box
+            sx={{
+              overflow: "hidden",
+              borderRadius: 3,
+              border: "1px solid var(--mcs-control-stroke)",
+              background:
+                "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+              boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+            }}
+          >
+            {pageLoading ? (
+              <Box display="flex" justifyContent="center" py={8}>
+                <CircularProgress />
+              </Box>
+            ) : items.length === 0 ? (
+              <Box sx={{ py: 8, textAlign: "center" }}>
                 <Typography color="text.secondary">{t("common.noItemsFound")}</Typography>
-              </CardContent>
-            </Card>
-          ) : isMobile ? (
-            <Stack spacing={1.5}>
-              {items.map((item) => (
-                <Card key={item.name}>
-                  <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <Stack direction="row" spacing={1.5} alignItems="flex-start">
-                      <Checkbox
-                        checked={selectedNames.has(item.name)}
-                        onChange={() => toggleSelection(item.name)}
-                        inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
-                      />
-                      <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
-                          <Typography variant="subtitle2" sx={{ wordBreak: "break-word" }}>
-                            {item.name}
-                          </Typography>
-                          <StatusChip status={item.status} />
-                          {item.category && (
-                            <Chip size="small" label={item.category} variant="outlined" />
+              </Box>
+            ) : isMobile ? (
+              <Box sx={{ p: 1.5 }}>
+                <Stack spacing={1.5}>
+                  {items.map((item) => (
+                    <Card key={item.name}>
+                      <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                          <Checkbox
+                            checked={selectedNames.has(item.name)}
+                            onChange={() => toggleSelection(item.name)}
+                            inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
+                          />
+                          <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                            <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
+                              <Typography variant="subtitle2" sx={{ wordBreak: "break-word" }}>
+                                {item.name}
+                              </Typography>
+                              <StatusChip status={item.status} />
+                              {item.category && <Chip size="small" label={item.category} variant="outlined" />}
+                            </Stack>
+                            <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                              {item.description || t("common.noDescriptionAvailable")}
+                            </Typography>
+                          </Box>
+                        </Stack>
+
+                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                          {activeTab === "skills" && (
+                            <Button
+                              variant="outlined"
+                              startIcon={<InfoOutlinedIcon />}
+                              onClick={() => setDetailName(item.name)}
+                            >
+                              {t("common.viewDetail")}
+                            </Button>
+                          )}
+                          {(item.status === "installed" || item.status === "outdated") && (
+                            <Button
+                              variant="outlined"
+                              startIcon={<CompareArrowsIcon />}
+                              onClick={() => setDiffName(item.name)}
+                            >
+                              {t("common.showDiff")}
+                            </Button>
                           )}
                         </Stack>
-                        <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                          {item.description || t("common.noDescriptionAvailable")}
-                        </Typography>
-                      </Box>
-                    </Stack>
-
-                    <Stack direction="row" spacing={1} flexWrap="wrap">
-                      {activeTab === "skills" && (
-                        <Button
-                          variant="outlined"
-                          startIcon={<InfoOutlinedIcon />}
-                          onClick={() => setDetailName(item.name)}
-                        >
-                          {t("common.viewDetail")}
-                        </Button>
-                      )}
-                      {(item.status === "installed" || item.status === "outdated") && (
-                        <Button
-                          variant="outlined"
-                          startIcon={<CompareArrowsIcon />}
-                          onClick={() => setDiffName(item.name)}
-                        >
-                          {t("common.showDiff")}
-                        </Button>
-                      )}
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          ) : (
-            <Card>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              </Box>
+            ) : (
               <TableContainer>
                 <Table size="small">
                   <TableHead>
@@ -494,8 +684,8 @@ export default function MainPage() {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Card>
-          )}
+            )}
+          </Box>
         </Box>
       </Box>
 
@@ -520,7 +710,7 @@ export default function MainPage() {
             open={diffName !== null}
             platformId={platformId}
             itemName={diffName}
-            itemType={activeTab === "skills" ? "skill" : "command"}
+            itemType={itemType}
             onClose={() => setDiffName(null)}
           />
         </Suspense>
@@ -561,7 +751,12 @@ export default function MainPage() {
         title={t("dialogs.uninstallItemsTitle")}
         message={t("dialogs.uninstallItemsMessage", {
           count: selectedCount,
-          itemType: activeTab === "skills" ? t("common.skills") : t("common.commands"),
+          itemType:
+            activeTab === "skills"
+              ? t("common.skills")
+              : activeTab === "commands"
+                ? t("common.commands")
+                : t("common.agents"),
           platform: platform?.name ?? platformId ?? "",
         })}
         confirmLabel={t("common.uninstall")}
@@ -577,7 +772,7 @@ export default function MainPage() {
             platformId={platformId}
             onClose={() => setPromptOpen(false)}
             onUpdated={() =>
-              showNotification(t("dialogs.promptUpdatedSuccess"), "success")
+              showNotification(t("dialogs.guidanceUpdatedSuccess"), "success")
             }
           />
         </Suspense>
@@ -588,7 +783,7 @@ export default function MainPage() {
           <MultiSyncDialog
             open={syncOpen}
             itemNames={Array.from(selectedNames)}
-            itemType={activeTab === "skills" ? "skill" : "command"}
+            itemType={itemType}
             currentPlatformId={platformId}
             onClose={() => setSyncOpen(false)}
             onSynced={(message, severity) => {
@@ -608,6 +803,7 @@ function FiltersPanel({
   activeTab,
   categories,
   selectedCategory,
+  platform,
   onTabChange,
   onCategoryChange,
   t,
@@ -615,45 +811,105 @@ function FiltersPanel({
   activeTab: TabValue;
   categories: { name: string; count: number }[];
   selectedCategory: string | null;
+  platform?: PlatformDisplay;
   onTabChange: (tab: TabValue) => void;
   onCategoryChange: (category: string | null) => void;
   t: ReturnType<typeof useI18n>["t"];
 }) {
   return (
     <Box>
-      <Tabs
-        value={activeTab}
-        onChange={(_, value) => onTabChange(value)}
-        variant="fullWidth"
-        sx={{ mb: 2 }}
+      <Box
+        sx={{
+          px: 2.25,
+          py: 2,
+          borderBottom: "1px solid var(--mcs-control-divider)",
+          background:
+            "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-control-fill) 100%)",
+        }}
       >
-        <Tab label={t("common.skills")} value="skills" />
-        <Tab label={t("common.commands")} value="commands" />
-      </Tabs>
+        <Typography variant="overline" color="text.secondary">
+          {t("common.filters")}
+        </Typography>
+        <Typography variant="h6" sx={{ mt: 0.5, letterSpacing: "-0.04em" }}>
+          {platform?.name ?? t("common.platform")}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {platform?.id ?? "—"}
+        </Typography>
+      </Box>
 
-      <Typography variant="overline" color="text.secondary">
-        {t("common.filters")}
-      </Typography>
-      <List dense disablePadding sx={{ mt: 1 }}>
-        <ListItemButton
-          selected={selectedCategory === null}
-          onClick={() => onCategoryChange(null)}
+      <Box sx={{ p: 2 }}>
+        <Tabs
+          value={activeTab}
+          onChange={(_, value) => onTabChange(value)}
+          variant="fullWidth"
+          sx={{
+            mb: 2,
+            p: 0.5,
+            borderRadius: 2,
+            backgroundColor: "var(--mcs-control-fill)",
+            minHeight: 0,
+            ".MuiTab-root": {
+              minHeight: 40,
+              borderRadius: 1.5,
+            },
+          }}
         >
-          <ListItemText primary={t("common.all")} />
-          <Badge badgeContent={categories.reduce((sum, category) => sum + category.count, 0)} color="primary" />
-        </ListItemButton>
-        <Divider sx={{ my: 1 }} />
-        {categories.map((category) => (
+          <Tab label={t("common.skills")} value="skills" />
+          <Tab
+            label={t("common.commands")}
+            value="commands"
+            disabled={platform?.supports_commands === false}
+          />
+          <Tab
+            label={t("common.agents")}
+            value="agents"
+            disabled={platform?.supports_agents === false}
+          />
+        </Tabs>
+
+        <Typography variant="overline" color="text.secondary">
+          {t("common.category")}
+        </Typography>
+        <List dense disablePadding sx={{ mt: 1, display: "grid", gap: 0.75 }}>
           <ListItemButton
-            key={category.name}
-            selected={selectedCategory === category.name}
-            onClick={() => onCategoryChange(category.name)}
+            selected={selectedCategory === null}
+            onClick={() => onCategoryChange(null)}
+            sx={{
+              px: 1.25,
+              py: 1,
+              border: "1px solid var(--mcs-control-divider)",
+            }}
           >
-            <ListItemText primary={category.name} />
-            <Badge badgeContent={category.count} color={selectedCategory === category.name ? "primary" : "default"} />
+            <ListItemText
+              primary={t("common.all")}
+              secondary={t("common.categoryCount", { count: categories.length })}
+            />
+            <Badge
+              badgeContent={categories.reduce((sum, category) => sum + category.count, 0)}
+              color="primary"
+            />
           </ListItemButton>
-        ))}
-      </List>
+          {categories.map((category) => (
+            <ListItemButton
+              key={category.name}
+              selected={selectedCategory === category.name}
+              onClick={() => onCategoryChange(category.name)}
+              sx={{
+                px: 1.25,
+                py: 1,
+                border: "1px solid var(--mcs-control-divider)",
+              }}
+            >
+              <ListItemText primary={category.name} />
+              <Badge
+                badgeContent={category.count}
+                color={selectedCategory === category.name ? "primary" : "default"}
+              />
+            </ListItemButton>
+          ))}
+        </List>
+      </Box>
     </Box>
   );
 }

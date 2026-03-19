@@ -12,7 +12,7 @@ import {
   Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { getPromptDiff, updatePrompt } from "@/api/client";
+import { getGuidanceDiff, updateGuidance } from "@/api/client";
 import { useI18n } from "@/i18n";
 import type { PromptDiffDto } from "@/types";
 
@@ -34,7 +34,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
     if (!open) return;
     setLoading(true);
     setError(null);
-    getPromptDiff(platformId)
+    getGuidanceDiff(platformId)
       .then(setData)
       .catch((e) => setError((e as Error).message))
       .finally(() => setLoading(false));
@@ -43,7 +43,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
   const handleUpdate = async () => {
     setUpdating(true);
     try {
-      const result = await updatePrompt(platformId);
+      const result = await updateGuidance(platformId);
       if (result.success) {
         onUpdated();
         onClose();
@@ -61,7 +61,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h6" component="span">
-          {t("dialogs.promptDiffTitle")}
+          {t("dialogs.guidanceDiffTitle")}
         </Typography>
         <IconButton aria-label={t("common.close")} onClick={onClose}>
           <CloseIcon />
@@ -77,7 +77,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
         ) : data ? (
           !data.supports_prompt ? (
             <Typography color="text.secondary" py={4} textAlign="center">
-              {t("dialogs.promptUnsupported")}
+              {t("dialogs.guidanceUnsupported")}
             </Typography>
           ) : data.has_diff ? (
             <Box
@@ -118,7 +118,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
             </Box>
           ) : (
             <Typography color="text.secondary" py={4} textAlign="center">
-              {t("dialogs.promptNoChanges")}
+              {t("dialogs.guidanceNoChanges")}
             </Typography>
           )
         ) : null}
@@ -132,7 +132,7 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
             disabled={updating}
             startIcon={updating ? <CircularProgress size={16} /> : undefined}
           >
-            {t("dialogs.promptUpdate")}
+            {t("dialogs.guidanceUpdate")}
           </Button>
         )}
       </DialogActions>

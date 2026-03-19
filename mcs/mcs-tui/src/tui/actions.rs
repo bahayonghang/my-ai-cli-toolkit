@@ -175,15 +175,15 @@ fn dispatch_prompt_update(state: &mut AppState) -> ActionResult {
         return ActionResult {
             accepted: false,
             level: NotificationLevel::Warning,
-            message: "Prompt management only supports Claude".into(),
+            message: "Guidance management is not configured for this platform".into(),
         };
     }
 
     let task = BatchTask {
-        label: "Update CLAUDE.md".into(),
+        label: "Update guidance".into(),
         kind: BatchTaskKind::PromptUpdate { platform },
     };
-    enqueue_batch(state, "Prompt Update", vec![task], false)
+    enqueue_batch(state, "Guidance Update", vec![task], false)
 }
 
 fn dispatch_multi_sync(
@@ -404,6 +404,7 @@ fn item_type_for_tab(tab: ContentTab) -> ItemType {
     match tab {
         ContentTab::Skills => ItemType::Skill,
         ContentTab::Commands => ItemType::Command,
+        ContentTab::Agents => ItemType::Agent,
     }
 }
 

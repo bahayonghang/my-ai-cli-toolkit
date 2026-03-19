@@ -110,6 +110,13 @@ export function MultiSyncDialog({
     }
   };
 
+  const itemTypeLabel =
+    itemType === "skill"
+      ? t("common.skills")
+      : itemType === "command"
+        ? t("common.commands")
+        : t("common.agents");
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -124,7 +131,7 @@ export function MultiSyncDialog({
         <Typography variant="body2" color="text.secondary" mb={2}>
           {t("dialogs.syncPlatformsDescription", {
             count: itemNames.length,
-            itemType: itemType === "skill" ? t("common.skills") : t("common.commands"),
+            itemType: itemTypeLabel,
           })}
         </Typography>
         {loading ? (
@@ -170,11 +177,7 @@ export function MultiSyncDialog({
                 </ListItemIcon>
                 <ListItemText
                   primary={`${p.icon} ${p.name}`}
-                  secondary={
-                    p.id === currentPlatformId
-                      ? t("dialogs.syncCurrentTarget", { path: p.skills_path })
-                      : p.skills_path
-                  }
+                  secondary={resolvePlatformTargetPath(p, itemType, t, p.id === currentPlatformId)}
                 />
               </ListItemButton>
             ))}
@@ -194,4 +197,20 @@ export function MultiSyncDialog({
       </DialogActions>
     </Dialog>
   );
+}
+
+function resolvePlatformTargetPath(
+  platform: PlatformDisplay,
+  itemType: ItemType,
+  t: ReturnType<typeof useI18n>["t"],
+  isCurrent: boolean
+) {
+  const path =
+    itemType === "skill"
+      ? platform.skills_path
+      : itemType === "command"
+        ? platform.commands_path ?? t("dialogs.syncUnsupportedTarget")
+        : platform.agents_path ?? t("dialogs.syncUnsupportedTarget");
+
+  return isCurrent ? t("dialogs.syncCurrentTarget", { path }) : path;
 }

@@ -10,14 +10,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import type { DiffDto } from "@/types";
-import { getSkillDiff, getCommandDiff } from "@/api/client";
+import { getAgentDiff, getCommandDiff, getSkillDiff } from "@/api/client";
 import { useI18n } from "@/i18n";
 
 interface Props {
   open: boolean;
   platformId: string;
   itemName: string | null;
-  itemType: "skill" | "command";
+  itemType: "skill" | "command" | "agent";
   onClose: () => void;
 }
 
@@ -29,7 +29,12 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
   useEffect(() => {
     if (!open || !itemName) return;
     setLoading(true);
-    const fetcher = itemType === "skill" ? getSkillDiff : getCommandDiff;
+    const fetcher =
+      itemType === "skill"
+        ? getSkillDiff
+        : itemType === "command"
+          ? getCommandDiff
+          : getAgentDiff;
     fetcher(platformId, itemName)
       .then(setDiff)
       .catch(() => setDiff(null))

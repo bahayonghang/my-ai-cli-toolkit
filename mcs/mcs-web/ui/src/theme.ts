@@ -164,14 +164,17 @@ function buildTheme(mode: Mode) {
             --mcs-shadow-sm: ${tone.shadowSm};
             --mcs-shadow-md: ${tone.shadowMd};
             --mcs-toolbar-overlay: ${alpha(palette.mantle, mode === "dark" ? 0.9 : 0.82)};
-            --mcs-hero-accent: ${alpha(palette.lavender, mode === "dark" ? 0.16 : 0.13)};
-            --mcs-hero-band: ${alpha(mode === "dark" ? palette.surface0 : palette.rosewater, mode === "dark" ? 0.38 : 0.24)};
-            --mcs-hero-surface: ${alpha(palette.mantle, mode === "dark" ? 0.62 : 0.72)};
-            --mcs-hero-surface-strong: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.74 : 0.62)};
-            --mcs-hero-outline: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.34 : 0.24)};
+            --mcs-hero-accent: ${alpha(palette.lavender, mode === "dark" ? 0.12 : 0.1)};
+            --mcs-hero-band: ${alpha(mode === "dark" ? palette.surface0 : palette.rosewater, mode === "dark" ? 0.24 : 0.16)};
+            --mcs-hero-band-strong: ${alpha(mode === "dark" ? palette.surface1 : palette.surface1, mode === "dark" ? 0.52 : 0.34)};
+            --mcs-hero-surface: ${alpha(palette.mantle, mode === "dark" ? 0.84 : 0.9)};
+            --mcs-hero-surface-strong: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.92 : 0.74)};
+            --mcs-hero-outline: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.28 : 0.2)};
             --mcs-hero-shadow: ${mode === "dark"
-              ? `0 28px 88px ${alpha(palette.crust, 0.52)}`
-              : `0 26px 80px ${alpha(palette.surface2, 0.24)}`};
+              ? `0 26px 72px ${alpha(palette.crust, 0.42)}`
+              : `0 22px 56px ${alpha(palette.surface2, 0.18)}`};
+            --mcs-hero-grid: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.16 : 0.14)};
+            --mcs-hero-frame: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.18 : 0.14)};
             --mcs-dashboard-surface: ${alpha(palette.mantle, mode === "dark" ? 0.8 : 0.8)};
             --mcs-dashboard-surface-strong: ${alpha(palette.surface0, mode === "dark" ? 0.84 : 0.62)};
             --mcs-dashboard-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.7 : 0.46)};
@@ -189,6 +192,11 @@ function buildTheme(mode: Mode) {
             --mcs-summary-tile-shadow: ${mode === "dark"
               ? `0 20px 58px ${alpha(palette.crust, 0.42)}`
               : `0 18px 46px ${alpha(palette.surface2, 0.18)}`};
+            --mcs-control-fill: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.78 : 0.58)};
+            --mcs-control-fill-strong: ${alpha(mode === "dark" ? palette.surface1 : palette.surface0, mode === "dark" ? 0.92 : 0.74)};
+            --mcs-control-stroke: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.38 : 0.3)};
+            --mcs-control-stroke-strong: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.34 : 0.26)};
+            --mcs-control-divider: ${alpha(mode === "dark" ? palette.overlay0 : palette.overlay1, mode === "dark" ? 0.24 : 0.18)};
             --mcs-dashboard-progress-track: ${alpha(palette.overlay0, mode === "dark" ? 0.28 : 0.22)};
             --mcs-dashboard-muted: ${alpha(palette.text, mode === "dark" ? 0.76 : 0.72)};
             --mcs-dashboard-ink: ${palette.text};
@@ -202,25 +210,27 @@ function buildTheme(mode: Mode) {
             --mcs-error-surface: ${alpha(palette.red, mode === "dark" ? 0.18 : 0.1)};
             --mcs-error-border: ${alpha(palette.red, mode === "dark" ? 0.34 : 0.22)};
             --mcs-error-text: ${mode === "dark" ? palette.rosewater : palette.maroon};
-            --mcs-glass-fill: ${alpha(palette.mantle, mode === "dark" ? 0.48 : 0.56)};
-            --mcs-glass-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.52 : 0.44)};
-            --mcs-glass-stroke: ${alpha(palette.overlay1, mode === "dark" ? 0.24 : 0.34)};
-            --mcs-glass-stroke-strong: ${alpha(palette.lavender, mode === "dark" ? 0.50 : 0.40)};
-            --mcs-glass-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.20 : 0.52)};
+            --mcs-glass-fill: ${alpha(palette.mantle, mode === "dark" ? 0.36 : 0.44)};
+            --mcs-glass-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.42 : 0.34)};
+            --mcs-glass-stroke: ${alpha(palette.overlay1, mode === "dark" ? 0.18 : 0.26)};
+            --mcs-glass-stroke-strong: ${alpha(palette.lavender, mode === "dark" ? 0.34 : 0.28)};
+            --mcs-glass-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.12 : 0.34)};
             --mcs-glass-shadow: ${mode === "dark"
-              ? `0 18px 48px ${alpha(palette.crust, 0.34)}`
-              : `0 16px 44px ${alpha(palette.surface2, 0.2)}`};
+              ? `0 14px 36px ${alpha(palette.crust, 0.26)}`
+              : `0 12px 32px ${alpha(palette.surface2, 0.14)}`};
             --mcs-glass-shadow-hover: ${mode === "dark"
-              ? `0 24px 58px ${alpha(palette.crust, 0.42)}`
-              : `0 22px 54px ${alpha(palette.surface2, 0.24)}`};
-            --mcs-glass-blur: ${mode === "dark" ? "22px" : "18px"};
-            --mcs-panel-fill: ${alpha(palette.mantle, mode === "dark" ? 0.46 : 0.54)};
-            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.5 : 0.42)};
-            --mcs-panel-fill-emphasis: ${alpha(mode === "dark" ? palette.surface1 : palette.surface0, mode === "dark" ? 0.52 : 0.48)};
-            --mcs-panel-stroke: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.3 : 0.38)};
-            --mcs-panel-stroke-soft: ${alpha(mode === "dark" ? palette.overlay0 : palette.overlay1, mode === "dark" ? 0.14 : 0.18)};
-            --mcs-panel-accent: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.88 : 0.76)};
-            --mcs-panel-accent-soft: ${alpha(mode === "dark" ? palette.blue : palette.sky, mode === "dark" ? 0.34 : 0.28)};
+              ? `0 18px 44px ${alpha(palette.crust, 0.34)}`
+              : `0 16px 40px ${alpha(palette.surface2, 0.18)}`};
+            --mcs-glass-blur: ${mode === "dark" ? "14px" : "10px"};
+            --mcs-panel-fill: ${alpha(palette.mantle, mode === "dark" ? 0.82 : 0.88)};
+            --mcs-panel-fill-strong: ${alpha(palette.surface0, mode === "dark" ? 0.86 : 0.7)};
+            --mcs-panel-fill-emphasis: ${alpha(mode === "dark" ? palette.surface1 : palette.surface0, mode === "dark" ? 0.9 : 0.82)};
+            --mcs-panel-stroke: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.34 : 0.28)};
+            --mcs-panel-stroke-soft: ${alpha(mode === "dark" ? palette.overlay0 : palette.overlay1, mode === "dark" ? 0.18 : 0.14)};
+            --mcs-panel-accent: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.7 : 0.6)};
+            --mcs-panel-accent-soft: ${alpha(mode === "dark" ? palette.blue : palette.sky, mode === "dark" ? 0.22 : 0.18)};
+            --mcs-panel-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.12 : 0.3)};
+            --mcs-panel-grid: ${alpha(mode === "dark" ? palette.overlay0 : palette.overlay1, mode === "dark" ? 0.12 : 0.1)};
             --mcs-blob-blue: ${alpha(palette.blue, mode === "dark" ? 0.18 : 0.14)};
             --mcs-blob-mauve: ${alpha(palette.mauve, mode === "dark" ? 0.16 : 0.12)};
             --mcs-blob-rosewater: ${alpha(palette.rosewater, mode === "dark" ? 0.15 : 0.13)};
@@ -340,7 +350,7 @@ function buildTheme(mode: Mode) {
             backgroundColor: "var(--mcs-panel-fill)",
             border: "1px solid var(--mcs-panel-stroke)",
             boxShadow:
-              "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-glass-highlight)",
+              "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
             position: "relative",
             overflow: "hidden",
             isolation: "isolate",
@@ -350,20 +360,21 @@ function buildTheme(mode: Mode) {
               content: '\"\"',
               position: "absolute",
               inset: 0,
-              borderTop: "1px solid var(--mcs-glass-highlight)",
               background:
-                "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 32%)",
+                "linear-gradient(180deg, var(--mcs-panel-highlight) 0%, transparent 26%), linear-gradient(90deg, var(--mcs-panel-grid) 0, var(--mcs-panel-grid) 1px, transparent 1px, transparent 88px)",
+              backgroundSize: "100% 100%, 88px 100%",
               pointerEvents: "none",
+              opacity: 0.64,
             },
             "&::after": {
               content: '\"\"',
               position: "absolute",
               insetInline: 18,
               top: 0,
-              height: 1,
+              height: 2,
               background:
                 "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
-              opacity: 0.52,
+              opacity: 0.44,
               pointerEvents: "none",
             },
             "& > *": {
@@ -374,7 +385,7 @@ function buildTheme(mode: Mode) {
               backgroundColor: "var(--mcs-panel-fill-strong)",
               borderColor: "var(--mcs-glass-stroke)",
               boxShadow:
-                "var(--mcs-glass-shadow), inset 0 1px 0 0 var(--mcs-glass-highlight)",
+                "var(--mcs-glass-shadow), inset 0 1px 0 0 var(--mcs-panel-highlight)",
               transform: "translateY(-1px)",
             },
           },

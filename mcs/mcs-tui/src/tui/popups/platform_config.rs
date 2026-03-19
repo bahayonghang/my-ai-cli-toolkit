@@ -33,12 +33,16 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &AppState) {
         ]),
         Line::from(vec![
             Span::styled("Commands: ", style_system::style(StyleRole::HintKey)),
-            Span::raw(p.commands_path().display().to_string()),
+            Span::raw(p.commands_display_path().unwrap_or_else(|| "-".into())),
         ]),
         Line::from(vec![
-            Span::styled("Prompt: ", style_system::style(StyleRole::HintKey)),
+            Span::styled("Agents: ", style_system::style(StyleRole::HintKey)),
+            Span::raw(p.agents_display_path().unwrap_or_else(|| "-".into())),
+        ]),
+        Line::from(vec![
+            Span::styled("Guidance: ", style_system::style(StyleRole::HintKey)),
             Span::raw(
-                p.prompt_path()
+                p.guidance_path()
                     .map(|p| p.display().to_string())
                     .unwrap_or("-".into()),
             ),

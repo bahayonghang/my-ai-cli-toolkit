@@ -91,6 +91,9 @@ pub fn compute_diff_for_item(item: &ItemInfo) -> Result<String, String> {
         ItemType::Command => {
             build_file_diff_text(&item.source_path, &item.target_path).map_err(|e| e.to_string())
         }
+        ItemType::Agent => {
+            build_file_diff_text(&item.source_path, &item.target_path).map_err(|e| e.to_string())
+        }
     }
 }
 

@@ -132,6 +132,7 @@ pub(crate) fn help_tokens_for_state(state: &AppState) -> Vec<FooterToken> {
         Screen::Main => vec![
             FooterToken::new("[Tab]", "Focus"),
             FooterToken::new("[↑↓]", "Move"),
+            FooterToken::new("[1/2/3]", "Tab"),
             FooterToken::new("[Space]", "Select"),
             FooterToken::new("[i/r/u]", "Install/Reinstall/Uninstall"),
             FooterToken::new("[S]", "Sync"),

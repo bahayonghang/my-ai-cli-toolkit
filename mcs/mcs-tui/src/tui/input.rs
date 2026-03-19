@@ -83,6 +83,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
         // Toggle Skills/Commands
         KeyCode::Char('1') => switch_tab(state, ContentTab::Skills),
         KeyCode::Char('2') => switch_tab(state, ContentTab::Commands),
+        KeyCode::Char('3') => switch_tab(state, ContentTab::Agents),
         // Selection
         KeyCode::Char(' ') if state.focus == FocusTarget::ItemList => {
             if let Some(&idx) = filtered.get(state.cursor)
@@ -228,7 +229,7 @@ pub fn handle_main_key(state: &mut AppState, key: KeyEvent) {
                 } else {
                     state.push_notification(
                         NotificationLevel::Warning,
-                        "Prompt management only supports Claude",
+                        "Guidance management is not configured for this platform",
                     );
                 }
             }

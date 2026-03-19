@@ -2,6 +2,7 @@ use axum::Router;
 
 use crate::state::AppState;
 
+pub mod agents;
 pub mod commands;
 pub mod dashboard;
 pub mod error;
@@ -106,6 +107,31 @@ pub fn router() -> Router<AppState> {
             "/api/platforms/{id}/commands/uninstall",
             axum::routing::post(commands::uninstall),
         )
+        // Agents
+        .route(
+            "/api/platforms/{id}/agents",
+            axum::routing::get(agents::list),
+        )
+        .route(
+            "/api/platforms/{id}/agents/{name}",
+            axum::routing::get(agents::detail),
+        )
+        .route(
+            "/api/platforms/{id}/agents/{name}/diff",
+            axum::routing::get(agents::diff),
+        )
+        .route(
+            "/api/platforms/{id}/agents/install",
+            axum::routing::post(agents::install),
+        )
+        .route(
+            "/api/platforms/{id}/agents/uninstall",
+            axum::routing::post(agents::uninstall),
+        )
+        .route(
+            "/api/platforms/{id}/agents/{name}/content",
+            axum::routing::put(agents::edit_content),
+        )
         // Prompt
         .route(
             "/api/platforms/{id}/prompt/diff",
@@ -113,6 +139,15 @@ pub fn router() -> Router<AppState> {
         )
         .route(
             "/api/platforms/{id}/prompt/update",
+            axum::routing::post(prompt::update),
+        )
+        // Guidance
+        .route(
+            "/api/platforms/{id}/guidance/diff",
+            axum::routing::get(prompt::diff),
+        )
+        .route(
+            "/api/platforms/{id}/guidance/update",
             axum::routing::post(prompt::update),
         )
         // Multi-platform sync

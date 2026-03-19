@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
 use mcs_core::config::platform::PlatformConfig;
-use mcs_core::core::installer::{install_command, install_skill};
+use mcs_core::core::installer::{install_agent, install_command, install_skill};
 use mcs_core::model::{InstallResult, ItemType, LinkMode};
 
 use crate::api::error::AppError;
@@ -81,6 +81,13 @@ pub async fn multi_sync(
                         item_name: item_name.clone(),
                     });
                 }
+                ItemType::Agent => {
+                    install_tasks.push(InstallTask {
+                        index: result_index,
+                        platform: platform.clone(),
+                        item_name: item_name.clone(),
+                    });
+                }
             }
             result_index += 1;
         }
@@ -97,6 +104,7 @@ pub async fn multi_sync(
                     install_skill(&root, &task.platform, &task.item_name, LinkMode::Auto)
                 }
                 ItemType::Command => install_command(&root, &task.platform, &task.item_name),
+                ItemType::Agent => install_agent(&root, &task.platform, &task.item_name),
             };
             (task.index, result)
         });

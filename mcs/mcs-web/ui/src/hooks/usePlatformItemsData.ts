@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getCategories, getCommands, getSkills } from "@/api/client";
+import { getAgents, getCategories, getCommands, getSkills } from "@/api/client";
 import type {
   CategoryDto,
   InstallStatus,
@@ -10,7 +10,7 @@ import type {
 
 interface Options {
   platformId?: string;
-  activeTab: "skills" | "commands";
+  activeTab: "skills" | "commands" | "agents";
   search: string;
   selectedCategory: string | null;
   statusFilter?: InstallStatus | null;
@@ -41,7 +41,9 @@ export function usePlatformItemsData({
   const [error, setError] = useState<string | null>(null);
   const itemsAbortRef = useRef<AbortController | null>(null);
   const categoriesAbortRef = useRef<AbortController | null>(null);
-  const itemType = itemTypeOverride ?? (activeTab === "skills" ? "skill" : "command");
+  const itemType =
+    itemTypeOverride ??
+    (activeTab === "skills" ? "skill" : activeTab === "commands" ? "command" : "agent");
 
   const fetchCategories = useCallback(async () => {
     if (!platformId) {
@@ -92,7 +94,9 @@ export function usePlatformItemsData({
       const nextItems =
         activeTab === "skills"
           ? await getSkills(platformId, params, controller.signal)
-          : await getCommands(platformId, params, controller.signal);
+          : activeTab === "commands"
+            ? await getCommands(platformId, params, controller.signal)
+            : await getAgents(platformId, params, controller.signal);
       if (!controller.signal.aborted) {
         setItems(nextItems);
       }

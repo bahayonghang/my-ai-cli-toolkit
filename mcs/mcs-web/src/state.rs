@@ -7,7 +7,8 @@ use tokio::sync::RwLock;
 
 use mcs_core::config::platform::PlatformConfig;
 use mcs_core::core::discovery::{
-    SkillSource, discover_commands, discover_skill_sources, resolve_skills_for_platform,
+    SkillSource, discover_agents, discover_commands, discover_skill_sources,
+    resolve_skills_for_platform,
 };
 use mcs_core::core::external_skills::{ExternalSkillsRegistry, load_external_skills};
 use mcs_core::model::ItemInfo;
@@ -32,10 +33,14 @@ struct DiscoveryCache {
     skills: HashMap<String, Vec<ItemInfo>>,
     /// Discovered commands per platform
     commands: HashMap<String, Vec<ItemInfo>>,
+    /// Discovered agents per platform
+    agents: HashMap<String, Vec<ItemInfo>>,
     /// Resolved skills for ad-hoc project targets, keyed by normalized skills path
     scoped_skills: HashMap<String, Vec<ItemInfo>>,
     /// Discovered commands for ad-hoc project targets, keyed by normalized commands path
     scoped_commands: HashMap<String, Vec<ItemInfo>>,
+    /// Discovered agents for ad-hoc project targets, keyed by normalized agents path
+    scoped_agents: HashMap<String, Vec<ItemInfo>>,
     /// External skills registry from TOML
     external_skills: Option<Result<ExternalSkillsRegistry, String>>,
 }
@@ -155,6 +160,24 @@ impl AppState {
             .unwrap_or_default()
     }
 
+    /// Get cached agents for a platform
+    pub async fn agents(&self, platform_id: &str) -> Vec<ItemInfo> {
+        {
+            let cache = self.cache.read().await;
+            if let Some(cached) = cache.agents.get(platform_id) {
+                return cached.clone();
+            }
+        }
+        self.refresh_platform(platform_id).await;
+        self.cache
+            .read()
+            .await
+            .agents
+            .get(platform_id)
+            .cloned()
+            .unwrap_or_default()
+    }
+
     /// Resolve skills using an ad-hoc platform config without binding to platform-id cache.
     pub async fn skills_for_platform_config(&self, platform: &PlatformConfig) -> Vec<ItemInfo> {
         let cache_key = normalize_path_key(&platform.skills_path());
@@ -204,6 +227,25 @@ impl AppState {
         commands
     }
 
+    /// Resolve agents using an ad-hoc platform config without binding to platform-id cache.
+    pub async fn agents_for_platform_config(&self, platform: &PlatformConfig) -> Vec<ItemInfo> {
+        let cache_key = normalize_path_key(&platform.agents_path());
+        {
+            let cache = self.cache.read().await;
+            if let Some(cached) = cache.scoped_agents.get(&cache_key) {
+                return cached.clone();
+            }
+        }
+        let root = self.project_root().await;
+        let agents = discover_agents_async(root, platform.clone()).await;
+        self.cache
+            .write()
+            .await
+            .scoped_agents
+            .insert(cache_key, agents.clone());
+        agents
+    }
+
     /// Pre-warm cache for all platforms (call at startup).
     ///
     /// Scans source skills ONCE and resolves per-platform status efficiently.
@@ -239,16 +281,25 @@ impl AppState {
         }
 
         let mut command_set = tokio::task::JoinSet::new();
+        let mut agent_set = tokio::task::JoinSet::new();
         for (id, platform) in platforms {
             let root = root.clone();
+            let agent_root = root.clone();
+            let agent_platform = platform.clone();
+            let agent_id = id.clone();
             command_set.spawn_blocking(move || {
                 let commands = discover_commands(&root, &platform);
                 (id, commands)
+            });
+            agent_set.spawn_blocking(move || {
+                let agents = discover_agents(&agent_root, &agent_platform);
+                (agent_id, agents)
             });
         }
 
         let mut skills_map = HashMap::new();
         let mut commands_map = HashMap::new();
+        let mut agents_map = HashMap::new();
         while let Some(res) = skill_set.join_next().await {
             if let Ok((_first_id, ids, skills)) = res {
                 for id in ids {
@@ -261,13 +312,20 @@ impl AppState {
                 commands_map.insert(id, commands);
             }
         }
+        while let Some(res) = agent_set.join_next().await {
+            if let Ok((id, agents)) = res {
+                agents_map.insert(id, agents);
+            }
+        }
 
         let mut cache = self.cache.write().await;
         cache.skill_sources = skill_sources;
         cache.skills = skills_map;
         cache.commands = commands_map;
+        cache.agents = agents_map;
         cache.scoped_skills.clear();
         cache.scoped_commands.clear();
+        cache.scoped_agents.clear();
         cache.external_skills = None;
     }
 
@@ -283,11 +341,13 @@ impl AppState {
         if let Some(platform) = platform {
             let sources = self.cached_or_discovered_sources(root.clone()).await;
             let skills = resolve_skills_for_platform_async(sources.clone(), platform.clone()).await;
-            let commands = discover_commands_async(root, platform.clone()).await;
+            let commands = discover_commands_async(root.clone(), platform.clone()).await;
+            let agents = discover_agents_async(root, platform.clone()).await;
 
             let mut cache = self.cache.write().await;
             cache.skills.insert(platform_id.to_string(), skills);
             cache.commands.insert(platform_id.to_string(), commands);
+            cache.agents.insert(platform_id.to_string(), agents);
         }
     }
 
@@ -302,6 +362,7 @@ impl AppState {
 
         let mut skill_groups: HashMap<String, Vec<(String, PlatformConfig)>> = HashMap::new();
         let mut command_set = tokio::task::JoinSet::new();
+        let mut agent_set = tokio::task::JoinSet::new();
         for pid in platform_ids {
             if let Some(platform) = all_platforms.get(pid) {
                 skill_groups
@@ -311,9 +372,16 @@ impl AppState {
                 let root = root.clone();
                 let platform = platform.clone();
                 let pid = pid.clone();
+                let agent_root = root.clone();
+                let agent_platform = platform.clone();
+                let agent_pid = pid.clone();
                 command_set.spawn_blocking(move || {
                     let commands = discover_commands(&root, &platform);
                     (pid, commands)
+                });
+                agent_set.spawn_blocking(move || {
+                    let agents = discover_agents(&agent_root, &agent_platform);
+                    (agent_pid, agents)
                 });
             }
         }
@@ -345,6 +413,11 @@ impl AppState {
                 cache.commands.insert(pid, commands);
             }
         }
+        while let Some(res) = agent_set.join_next().await {
+            if let Ok((pid, agents)) = res {
+                cache.agents.insert(pid, agents);
+            }
+        }
     }
 
     /// Invalidate cache for an ad-hoc platform config such as a project-scoped install target.
@@ -352,7 +425,8 @@ impl AppState {
         let root = self.project_root().await;
         let sources = self.cached_or_discovered_sources(root.clone()).await;
         let skills = resolve_skills_for_platform_async(sources, platform.clone()).await;
-        let commands = discover_commands_async(root, platform.clone()).await;
+        let commands = discover_commands_async(root.clone(), platform.clone()).await;
+        let agents = discover_agents_async(root, platform.clone()).await;
         let mut cache = self.cache.write().await;
         cache
             .scoped_skills
@@ -360,6 +434,9 @@ impl AppState {
         cache
             .scoped_commands
             .insert(normalize_path_key(&platform.commands_path()), commands);
+        cache
+            .scoped_agents
+            .insert(normalize_path_key(&platform.agents_path()), agents);
     }
 
     /// Re-discover a single platform and update cache
@@ -372,7 +449,8 @@ impl AppState {
         if let Some(platform) = platform {
             let sources = self.cached_or_discovered_sources(root.clone()).await;
             let skills = resolve_skills_for_platform_async(sources.clone(), platform.clone()).await;
-            let commands = discover_commands_async(root, platform.clone()).await;
+            let commands = discover_commands_async(root.clone(), platform.clone()).await;
+            let agents = discover_agents_async(root, platform.clone()).await;
 
             let mut cache = self.cache.write().await;
             if cache.skill_sources.is_empty() {
@@ -380,6 +458,7 @@ impl AppState {
             }
             cache.skills.insert(platform_id.to_string(), skills);
             cache.commands.insert(platform_id.to_string(), commands);
+            cache.agents.insert(platform_id.to_string(), agents);
         }
     }
 
@@ -434,6 +513,19 @@ async fn discover_commands_async(root: PathBuf, platform: PlatformConfig) -> Vec
             tracing::error!(
                 platform = platform_name.as_str(),
                 "Failed to join command discovery task: {error}"
+            );
+            Vec::new()
+        })
+}
+
+async fn discover_agents_async(root: PathBuf, platform: PlatformConfig) -> Vec<ItemInfo> {
+    let platform_name = platform.name.clone();
+    tokio::task::spawn_blocking(move || discover_agents(&root, &platform))
+        .await
+        .unwrap_or_else(|error| {
+            tracing::error!(
+                platform = platform_name.as_str(),
+                "Failed to join agent discovery task: {error}"
             );
             Vec::new()
         })

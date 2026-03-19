@@ -37,9 +37,14 @@ impl TestEnv {
             skills_base_dir: None,
             skills_subdir: "skills".into(),
             commands_subdir: "commands".into(),
-            prompt_file: None,
             commands_source: "claude".into(),
             fallback_commands_source: None,
+            agents_subdir: "agents".into(),
+            agents_source: "claude".into(),
+            fallback_agents_source: None,
+            guidance_file: None,
+            guidance_source: String::new(),
+            fallback_guidance_source: None,
         }
     }
 

@@ -41,12 +41,8 @@ pub fn skills_src_dir(root: &Path) -> PathBuf {
     root.join("content").join("skills")
 }
 
-pub fn commands_src_dir(root: &Path) -> PathBuf {
-    root.join("content").join("commands")
-}
-
-pub fn prompts_src_dir(root: &Path) -> PathBuf {
-    root.join("content").join("prompts")
+pub fn platforms_src_dir(root: &Path) -> PathBuf {
+    root.join("content").join("platforms")
 }
 
 pub fn home_dir() -> PathBuf {

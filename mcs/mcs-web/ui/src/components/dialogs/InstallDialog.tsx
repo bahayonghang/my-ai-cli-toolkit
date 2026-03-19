@@ -15,7 +15,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { installSkills, installCommands } from "@/api/client";
+import { installAgents, installCommands, installSkills } from "@/api/client";
 import type { InstallTarget, PlatformDisplay } from "@/types";
 import { useI18n } from "@/i18n";
 
@@ -35,7 +35,7 @@ interface Props {
   platform?: PlatformDisplay;
   itemNames: string[];
   itemCategories?: Record<string, string | null>;
-  itemType: "skills" | "commands";
+  itemType: "skills" | "commands" | "agents";
   installTarget?: InstallTarget;
   onClose: () => void;
   onCompleted: (successCount: number, failureCount: number) => void;
@@ -118,7 +118,9 @@ export function InstallDialog({
       const response =
         itemType === "skills"
           ? await installSkills(platformId, itemNames, linkMode, installTarget, controller.signal)
-          : await installCommands(platformId, itemNames, installTarget, controller.signal);
+          : itemType === "commands"
+            ? await installCommands(platformId, itemNames, installTarget, controller.signal)
+            : await installAgents(platformId, itemNames, installTarget, controller.signal);
 
       if (controller.signal.aborted) return;
 
@@ -198,7 +200,7 @@ export function InstallDialog({
 interface ConfirmPhaseProps {
   platform?: PlatformDisplay;
   results: ItemResult[];
-  itemType: "skills" | "commands";
+  itemType: "skills" | "commands" | "agents";
   linkMode: LinkMode;
   onLinkModeChange: (mode: LinkMode) => void;
   onCancel: () => void;
@@ -210,7 +212,9 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
   const itemTypeLabel =
     itemType === "skills"
       ? t("dialogs.itemTypeSkills")
-      : t("dialogs.itemTypeCommands");
+      : itemType === "commands"
+        ? t("dialogs.itemTypeCommands")
+        : t("dialogs.itemTypeAgents");
 
   return (
     <>

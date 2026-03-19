@@ -146,9 +146,14 @@ mod tests {
             skills_base_dir: None,
             skills_subdir: "skills".to_string(),
             commands_subdir: "commands".to_string(),
-            prompt_file: None,
             commands_source: "claude".to_string(),
             fallback_commands_source: None,
+            agents_subdir: "agents".to_string(),
+            agents_source: "claude".to_string(),
+            fallback_agents_source: None,
+            guidance_file: None,
+            guidance_source: String::new(),
+            fallback_guidance_source: None,
         }
     }
 

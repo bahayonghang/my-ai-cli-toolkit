@@ -255,18 +255,87 @@ export async function uninstallCommands(
   );
 }
 
-// ── Prompt ─────────────────────────────────────────────────────────
+// ── Agents ─────────────────────────────────────────────────────────
+
+export async function getAgents(
+  platformId: string,
+  params?: {
+    search?: string;
+    category?: string;
+    status?: InstallStatus;
+    installTarget?: InstallTarget;
+  },
+  signal?: AbortSignal
+): Promise<ItemDto[]> {
+  const query = new URLSearchParams();
+  if (params?.search) query.set("search", params.search);
+  if (params?.category) query.set("category", params.category);
+  if (params?.status) query.set("status", params.status);
+  applyInstallTargetQuery(query, params?.installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/agents${qs ? `?${qs}` : ""}`,
+    { signal }
+  );
+}
+
+export async function getAgentDiff(
+  platformId: string,
+  name: string
+): Promise<DiffDto> {
+  return fetchJson(`${BASE}/platforms/${platformId}/agents/${name}/diff`);
+}
+
+export async function installAgents(
+  platformId: string,
+  names: string[],
+  installTarget?: InstallTarget,
+  signal?: AbortSignal
+): Promise<BatchResultDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/agents/install`,
+    withInstallTargetBody({ names }, installTarget),
+    { signal }
+  );
+}
+
+export async function uninstallAgents(
+  platformId: string,
+  names: string[],
+  installTarget?: InstallTarget
+): Promise<BatchResultDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/agents/uninstall`,
+    withInstallTargetBody({ names }, installTarget)
+  );
+}
+
+// ── Guidance ───────────────────────────────────────────────────────
+
+export async function getGuidanceDiff(
+  platformId: string
+): Promise<PromptDiffDto> {
+  return fetchJson(`${BASE}/platforms/${platformId}/guidance/diff`);
+}
+
+export async function updateGuidance(
+  platformId: string
+): Promise<{ success: boolean; item_name: string; message: string }> {
+  return postJson(`${BASE}/platforms/${platformId}/guidance/update`, {});
+}
+
+// ── Prompt Compatibility ───────────────────────────────────────────
 
 export async function getPromptDiff(
   platformId: string
 ): Promise<PromptDiffDto> {
-  return fetchJson(`${BASE}/platforms/${platformId}/prompt/diff`);
+  return getGuidanceDiff(platformId);
 }
 
 export async function updatePrompt(
   platformId: string
 ): Promise<{ success: boolean; item_name: string; message: string }> {
-  return postJson(`${BASE}/platforms/${platformId}/prompt/update`, {});
+  return updateGuidance(platformId);
 }
 
 // ── Multi-Sync ────────────────────────────────────────────────────
@@ -274,7 +343,7 @@ export async function updatePrompt(
 export async function multiSync(body: {
   platform_names: string[];
   items: string[];
-  item_type: "skill" | "command";
+  item_type: "skill" | "command" | "agent";
 }): Promise<BatchResultDto> {
   return postJson(`${BASE}/sync`, body);
 }
