@@ -23,3 +23,5 @@ mcs/target/
 mcs/mcs-web/ui/test-results/.last-run.json
 
 .playwright-mcp/
+
+.impeccable.md

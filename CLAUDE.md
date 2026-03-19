@@ -99,19 +99,21 @@ A skill is a directory containing at minimum a `SKILL.md` file. The file's YAML 
 ## Design Context
 
 ### Users
-Primary users are developers and AI-tool power users managing Claude/Codex/Gemini/Qwen-style skills, commands, and platform configuration in local development environments. They use MCS Web to quickly understand platform availability, inspect install state, and complete installation or update tasks without friction or ambiguity.
+MCS Web serves developer-tool power users who manage AI skills, commands, agents, and platform configuration across local coding environments. They use it in active development workflows to scan platform availability, inspect install status, compare source vs installed content, and complete install, update, sync, and cleanup actions with low friction. The interface should support fast orientation, high information density, and confident execution rather than exploratory browsing.
 
 ### Brand Personality
 Calm, precise, trustworthy.
 
-The interface should evoke confidence and control rather than hype. It should feel like a polished control surface for real technical work: clear information hierarchy, low cognitive noise, and predictable interactions. Visual interest is welcome, but it must support orientation and focus instead of competing with the task.
+The product should feel like a dependable control surface for serious technical work: composed, efficient, and quietly opinionated. The emotional target is confidence and clarity rather than hype or spectacle. Even when the UI becomes bolder, it should still communicate discipline, structure, and technical credibility.
 
 ### Aesthetic Direction
-A refined productivity interface for technical users. The visual system can retain expressive theming and environmental depth, but should avoid obvious "AI-generated" tells such as gratuitous glassmorphism, repetitive card grids, decorative gradients, or flashy futuristic motifs. Both light and dark themes must feel intentional and equally complete. Motion should be restrained, meaningful, and reduced-motion-safe.
+Direction: calm precision with stronger visual authority.
+
+The interface should lean toward a refined control-room aesthetic for developer tools: structured, editorially deliberate, and slightly more distinctive than a generic dashboard, but never like a marketing landing page. Favor strong hierarchy, asymmetry where useful, tinted neutrals, and memorable focal moments that still preserve operational clarity. Avoid dark neon, purple-blue AI gradients, excessive motion, and anything that reads as promotional rather than utilitarian.
 
 ### Design Principles
-1. Prioritize fast management flows: users should be able to scan status, choose a platform, and act quickly.
-2. Favor calm precision over spectacle: every visual treatment must improve clarity, hierarchy, or feedback.
-3. Avoid AI-slop patterns: no template-looking hero stats, decorative gradients, overused glass panels, or generic dashboard theatrics unless they serve a real purpose.
-4. Design both themes seriously: light and dark modes should each have strong contrast, coherent surfaces, and no second-class styling.
-5. Treat accessibility as baseline quality: target WCAG AA or better, preserve keyboard/focus clarity, and respect reduced-motion preferences.
+1. Design for scanability first: users should understand state, available actions, and hierarchy within seconds.
+2. Increase contrast with restraint: make important things feel more intentional and more visible without turning the interface into spectacle.
+3. Keep the product operational, not promotional: every bold move must reinforce utility, orientation, or confidence.
+4. Build memorable structure through typography, spacing, and surface treatment instead of trendy AI-slop effects.
+5. Respect accessibility and focus: calm motion, strong contrast, clear keyboard/focus behavior, and reduced-motion-safe interactions are baseline quality.
