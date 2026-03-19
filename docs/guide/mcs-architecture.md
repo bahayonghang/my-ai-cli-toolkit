@@ -15,8 +15,8 @@ The Rust workspace in `mcs/` currently has three crates:
 `mcs-core` treats the repository as a `content/`-based project:
 
 - skills: `content/skills/`
-- commands: `content/commands/`
-- prompts path helper exists in code, but the broader runtime file model in this repository also includes `content/hooks/` and `content/memorys/`
+- platform content: `content/platforms/<platform>/{commands,agents,guidance}/`
+- runtime support: `content/hooks/`
 
 Project root detection succeeds when `content/skills/` is found.
 
@@ -29,17 +29,17 @@ Project root detection succeeds when `content/skills/` is found.
 
 ### Content discovery
 
-- `core/discovery.rs`: walks skill and command source trees, computes install status, reads metadata
+- `core/discovery.rs`: walks skill, command, and agent source trees, computes install status, reads metadata
 - `core/skill_meta.rs`: parses top-level skill frontmatter fields used by MCS
 - `core/external_skills.rs`: loads the external-skills registry from `content/skills/external-skills/` (`index.toml` + category fragments)
 
 ### Install pipeline
 
-- `core/installer.rs`: install/uninstall for skills and commands
+- `core/installer.rs`: install/uninstall for skills, commands, and agents
 - `core/install_target.rs`: global vs project-local install targets
 - `core/skill_store.rs`: canonical local store under `~/.mcs/skills/`
 - `core/skill_migration.rs`: one-time migration to canonical store + symlink model
-- `core/prompt.rs`: prompt diff/update logic for platforms that define a prompt file
+- `core/guidance.rs`: guidance diff/update logic for platforms that define `CLAUDE.md` or `AGENTS.md`
 
 ## TUI flow
 
@@ -50,7 +50,7 @@ Project root detection succeeds when `content/skills/` is found.
 - popups and dialogs
 - rendering widgets
 
-It calls into `mcs-core` for discovery, diff, prompt update, install, uninstall, and sync decisions.
+It calls into `mcs-core` for discovery, diff, guidance update, install, uninstall, and sync decisions.
 
 ## Web flow
 

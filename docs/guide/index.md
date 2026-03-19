@@ -5,10 +5,11 @@ This site documents the current repository shape of [`my-claude-code-settings`](
 ## What lives in this repository
 
 - `content/skills/` contains installable skill directories, organized by category.
-- `content/commands/` contains slash-command and workflow sources for different platforms.
-- `content/agents/` contains markdown agent definitions grouped into `ccw` and `specialist`.
+- `content/platforms/<platform>/commands/` contains platform-scoped command and workflow sources.
+- `content/platforms/claude/agents/` contains Claude agent definitions grouped into `ccw` and `specialist`.
+- `content/platforms/<platform>/guidance/` contains persistent guidance seeds such as `CLAUDE.md` and `AGENTS.md`.
 - `content/skills/external-skills/` contains the external skill registry metadata used by MCS Web.
-- `content/hooks/` and `content/memorys/` contain runtime support files.
+- `content/hooks/` contains runtime support files.
 - `mcs/` is a Rust workspace with a shared core library, a terminal UI, and a web app.
 
 ## Recommended entrypoints
@@ -50,8 +51,8 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 - [MCS TUI](/guide/mcs): keyboard flow, install model, migration, troubleshooting
 - [MCS Web](/guide/mcs-web): backend/UI startup, pages, install flows
 - [MCS Architecture](/guide/mcs-architecture): `mcs-core`, `mcs-tui`, `mcs-web`
-- [Commands](/guide/commands): how `content/commands` maps to installed command locations
-- [Runtime Files](/guide/runtime-files): hooks, memory/runtime files, prompt-related assets
+- [Commands](/guide/commands): how `content/platforms/*/commands` maps to installed command locations
+- [Runtime Files](/guide/runtime-files): hooks and platform guidance/runtime assets
 - [External Skills](/guide/external-skills): registry format and install flow for third-party skills
 - [Creating Skills](/guide/creating-skills): adding new `content/skills/<category>/<skill-name>/`
 

@@ -2,28 +2,28 @@
 
 ## Source layout
 
-Commands are sourced from `content/commands/`, grouped by platform and then by command family.
+Commands are sourced from `content/platforms/<platform>/commands/`, grouped by platform and then by command family.
 
 Current top-level source directories include:
 
-- `antigravity/`
-- `claude/`
-- `gemini/`
-- `trae/`
-- `windsurf/`
+- `content/platforms/antigravity/commands/`
+- `content/platforms/claude/commands/`
+- `content/platforms/gemini/commands/`
+- `content/platforms/trae/commands/`
+- `content/platforms/windsurf/commands/`
 
 Within those folders, the repository keeps nested command families such as:
 
-- `claude/cc/`
-- `claude/gh/`
-- `claude/issue/`
-- `claude/kiro/`
-- `claude/memory/`
-- `claude/task/`
-- `claude/workflow/`
-- `claude/zcf/`
-- `gemini/plan/`
-- `gemini/zcf/`
+- `content/platforms/claude/commands/cc/`
+- `content/platforms/claude/commands/gh/`
+- `content/platforms/claude/commands/issue/`
+- `content/platforms/claude/commands/kiro/`
+- `content/platforms/claude/commands/memory/`
+- `content/platforms/claude/commands/task/`
+- `content/platforms/claude/commands/workflow/`
+- `content/platforms/claude/commands/zcf/`
+- `content/platforms/gemini/commands/plan/`
+- `content/platforms/gemini/commands/zcf/`
 
 ## Install model
 
@@ -36,7 +36,7 @@ Instead, each platform declares:
 
 Examples from `platforms.toml`:
 
-- Codex uses `commands_source = "codex"` and falls back to `claude`
+- Codex does not install managed commands in v1; it uses guidance plus shared skills
 - Qwen falls back to `claude`
 - Trae CN reuses `trae`
 - App-style platforms such as Antigravity and Windsurf install to `workflows/`
@@ -46,7 +46,6 @@ Examples from `platforms.toml`:
 | Platform type | Installed path |
 |---------------|----------------|
 | Claude-style CLI | `commands/` |
-| Codex | `prompts/` |
 | Kiro | `steering/` |
 | Antigravity / Windsurf | `workflows/` |
 
@@ -60,4 +59,4 @@ The exact per-platform paths are documented in [Installation](/guide/installatio
 
 ## Historical note
 
-Older docs referenced `install.sh`, `install.ps1`, or `src/install.py` as the main command-management entrypoints. Those are not the current repository workflow. The supported and maintained path is the MCS workspace plus direct access to the source files under `content/commands/`.
+Older docs referenced `install.sh`, `install.ps1`, or `src/install.py` as the main command-management entrypoints. Those are not the current repository workflow. The supported and maintained path is the MCS workspace plus direct access to the source files under `content/platforms/*/commands/`.

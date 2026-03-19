@@ -7,7 +7,7 @@ The repository contains runtime-oriented assets beyond installable skills and co
 Current top-level runtime content lives under:
 
 - `content/hooks/`
-- `content/memorys/`
+- `content/platforms/*/guidance/`
 - root-level `CLAUDE.md`
 
 ## `content/hooks/`
@@ -83,13 +83,13 @@ Records user prompts to session-specific log files for later review. On each `Us
 
 Log files are session-isolated to handle concurrent sessions safely.
 
-## `content/memorys/`
+## `content/platforms/*/guidance/`
 
 This directory stores platform-specific runtime prompt or memory files:
 
-- `content/memorys/claude/Unix/CLAUDE.md`
-- `content/memorys/claude/Windows/CLAUDE.md`
-- `content/memorys/codex/AGENTS.md`
+- `content/platforms/claude/guidance/Unix/CLAUDE.md`
+- `content/platforms/claude/guidance/Windows/CLAUDE.md`
+- `content/platforms/codex/guidance/AGENTS.md`
 
 Treat these as runtime seeds or templates, not as normal docs-site pages.
 
@@ -101,7 +101,7 @@ Treat these as runtime seeds or templates, not as normal docs-site pages.
 | `claude/Windows/CLAUDE.md` | Claude Code (Windows) | Same engineering principles adapted for Windows environments. |
 | `codex/AGENTS.md` | Codex CLI | Nekomata engineer persona with SOLID/KISS/DRY/YAGNI principles, dangerous operation confirmation mechanism, and structured response format. |
 
-These files are installed by MCS as the platform's base prompt or memory file. Users can customize them after installation — MCS will detect modifications via mtime comparison and show an `Outdated` status.
+These files are installed by MCS as the platform's base guidance file. Users can customize them after installation — MCS will detect modifications via mtime comparison and show an `Outdated` status.
 
 ## Root `CLAUDE.md`
 
@@ -113,13 +113,13 @@ It is not the same thing as:
 - a skill definition
 - a generated runtime memory file
 
-## Prompt-related note
+## Guidance-related note
 
-The MCS codebase still has a prompt update path for platforms that define `prompt_file`, with Claude being the default case. If you are changing runtime prompt behavior, inspect:
+The MCS codebase now manages platform guidance files for platforms that define `guidance_file`. If you are changing runtime guidance behavior, inspect:
 
 - `platforms.toml`
-- `mcs/mcs-core/src/core/prompt.rs`
-- the runtime assets under `content/memorys/` and `content/hooks/`
+- `mcs/mcs-core/src/core/guidance.rs`
+- the runtime assets under `content/platforms/*/guidance/` and `content/hooks/`
 
 ## Why this matters in docs
 
@@ -127,5 +127,5 @@ Earlier docs treated `prompts/` as the primary runtime source directory. In this
 
 - contributor instructions at the root
 - hooks under `content/hooks/`
-- memory/runtime files under `content/memorys/`
-- prompt update logic in `mcs-core`
+- platform guidance/runtime files under `content/platforms/*/guidance/`
+- guidance update logic in `mcs-core`

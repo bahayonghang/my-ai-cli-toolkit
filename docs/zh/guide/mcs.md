@@ -28,7 +28,7 @@ cargo run --release --bin mcs --
 
 - 仓库根下有 `content/`
 - skills 在 `content/skills/`
-- commands 在 `content/commands/`
+- 平台级内容在 `content/platforms/<platform>/`
 
 如果看不到这套结构，TUI 会直接退出。
 
@@ -44,6 +44,7 @@ cargo run --release --bin mcs --
 
 - `1`：skills
 - `2`：commands
+- `3`：agents
 - `Tab`：在侧栏、列表和搜索框之间切换
 - `/`：聚焦搜索
 - `d`：打开详情
@@ -66,13 +67,13 @@ MCS 会把技能 canonical 副本保存在 `~/.mcs/skills/`，然后向平台目
 
 这也是为什么一次性迁移标记会出现在 `~/.mcs/migrations/` 下。
 
-## Prompt 更新行为
+## Guidance 更新行为
 
-默认平台配置里只有 Claude 带有 `prompt_file = "CLAUDE.md"`，因此 TUI 中的 prompt diff / update 流程也是围绕 Claude 设计的。
+默认平台配置里，Claude 与 Codex 都暴露 guidance 更新能力（分别是 `CLAUDE.md` 与 `AGENTS.md`）。因此 TUI 中的 guidance diff / update 流程已经是平台感知的，而不再只围绕 Claude。
 
-如果你要扩展 prompt 行为，还应同时查看：
+如果你要扩展 guidance 行为，还应同时查看：
 
-- `mcs/mcs-core/src/core/prompt.rs`
+- `mcs/mcs-core/src/core/guidance.rs`
 - `platforms.toml`
 - [运行时文件](/zh/guide/runtime-files) 中记录的 runtime 资源
 

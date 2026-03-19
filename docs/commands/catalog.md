@@ -1,21 +1,21 @@
 # Commands Catalog
 
-## Source directories in `content/commands/`
+## Source directories in `content/platforms/*/commands/`
 
 | Source directory | Notes |
 |------------------|-------|
-| `claude/` | The largest command tree: core commands plus `cc`, `gh`, `issue`, `kiro`, `memory`, `task`, `workflow`, and `zcf` families |
-| `gemini/` | Summary commands plus `plan` and `zcf` families |
-| `antigravity/` | Workflow-style summary commands |
-| `trae/` | Summary commands plus `zcf` family |
-| `windsurf/` | Summary workflow commands |
+| `content/platforms/claude/commands/` | The largest command tree: core commands plus `cc`, `gh`, `issue`, `kiro`, `memory`, `task`, `workflow`, and `zcf` families |
+| `content/platforms/gemini/commands/` | Summary commands plus `plan` and `zcf` families |
+| `content/platforms/antigravity/commands/` | Workflow-style summary commands |
+| `content/platforms/trae/commands/` | Summary commands plus `zcf` family |
+| `content/platforms/windsurf/commands/` | Summary workflow commands |
 
 ## Installed platform mapping
 
 | Installed platform | Command source | Fallback source | Installed folder |
 |--------------------|----------------|-----------------|------------------|
 | Claude | `claude` | none | `~/.claude/commands/` |
-| Codex | `codex` | `claude` | `~/.codex/prompts/` |
+| Codex | not managed in v1 | n/a | guidance only (`~/.codex/AGENTS.md`) |
 | Gemini | `gemini` | none | `~/.agents/commands/` |
 | Qwen | `qwen` | `claude` | `~/.qwen/commands/` |
 | Kiro | `kiro` | `claude` | `~/.kiro/steering/` |
@@ -58,5 +58,5 @@
 ## Notes
 
 - The command catalog is broader than the three standalone command docs in this section.
-- For exact file-level truth, inspect `content/commands/` directly.
+- For exact file-level truth, inspect `content/platforms/*/commands/` directly.
 - For how MCS resolves target paths and fallbacks, inspect `platforms.toml` and `mcs-core/src/config/platform.rs`.

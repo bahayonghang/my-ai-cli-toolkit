@@ -63,24 +63,24 @@ These platforms install skills into the shared `~/.agents/skills/` root:
 - Kimi
 - OpenCode
 
-Commands or workflows still install into platform-specific locations.
+Commands, agents, or guidance still install into platform-specific locations.
 
 ### Native platform paths
 
-| Platform | Skills path | Commands / workflows path |
-|----------|-------------|---------------------------|
-| Claude | `~/.claude/skills/` | `~/.claude/commands/` |
-| Codex | `~/.agents/skills/` | `~/.codex/prompts/` |
-| Gemini | `~/.agents/skills/` | `~/.agents/commands/` |
-| Qwen | `~/.qwen/skills/` | `~/.qwen/commands/` |
-| Kiro | `~/.kiro/skills/` | `~/.kiro/steering/` |
-| Qoder | `~/.qoder/skills/` | `~/.qoder/commands/` |
-| Trae | `~/.trae/skills/` | `~/.trae/commands/` |
-| Trae CN | `~/.trae-cn/skills/` | `~/.trae-cn/commands/` |
-| OpenCode | `~/.agents/skills/` | `~/.config/opencode/commands/` |
-| iFlow | `~/.iflow/skills/` | `~/.iflow/commands/` |
-| Antigravity | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/workflows/` |
-| Windsurf | `~/.codeium/windsurf/skills/` | `~/.codeium/windsurf/workflows/` |
+| Platform | Skills path | Platform-managed extras |
+|----------|-------------|-------------------------|
+| Claude | `~/.claude/skills/` | commands: `~/.claude/commands/`, agents: `~/.claude/agents/`, guidance: `~/.claude/CLAUDE.md` |
+| Codex | `~/.agents/skills/` | guidance: `~/.codex/AGENTS.md` |
+| Gemini | `~/.agents/skills/` | commands: `~/.agents/commands/` |
+| Qwen | `~/.qwen/skills/` | commands: `~/.qwen/commands/` |
+| Kiro | `~/.kiro/skills/` | commands: `~/.kiro/steering/` |
+| Qoder | `~/.qoder/skills/` | commands: `~/.qoder/commands/` |
+| Trae | `~/.trae/skills/` | commands: `~/.trae/commands/` |
+| Trae CN | `~/.trae-cn/skills/` | commands: `~/.trae-cn/commands/` |
+| OpenCode | `~/.agents/skills/` | commands: `~/.config/opencode/commands/` |
+| iFlow | `~/.iflow/skills/` | commands: `~/.iflow/commands/` |
+| Antigravity | `~/.gemini/antigravity/skills/` | workflows: `~/.gemini/antigravity/workflows/` |
+| Windsurf | `~/.codeium/windsurf/skills/` | workflows: `~/.codeium/windsurf/workflows/` |
 
 ## Project root detection
 

@@ -2,32 +2,32 @@
 
 ## 源目录结构
 
-命令源文件位于 `content/commands/`，先按平台分组，再按命令家族分层。
+命令源文件位于 `content/platforms/<platform>/commands/`，先按平台分组，再按命令家族分层。
 
 当前顶层目录包括：
 
-- `antigravity/`
-- `claude/`
-- `gemini/`
-- `trae/`
-- `windsurf/`
+- `content/platforms/antigravity/commands/`
+- `content/platforms/claude/commands/`
+- `content/platforms/gemini/commands/`
+- `content/platforms/trae/commands/`
+- `content/platforms/windsurf/commands/`
 
 这些目录下又继续按命令家族拆分，例如：
 
-- `claude/cc/`
-- `claude/gh/`
-- `claude/issue/`
-- `claude/kiro/`
-- `claude/memory/`
-- `claude/task/`
-- `claude/workflow/`
-- `claude/zcf/`
-- `gemini/plan/`
-- `gemini/zcf/`
+- `content/platforms/claude/commands/cc/`
+- `content/platforms/claude/commands/gh/`
+- `content/platforms/claude/commands/issue/`
+- `content/platforms/claude/commands/kiro/`
+- `content/platforms/claude/commands/memory/`
+- `content/platforms/claude/commands/task/`
+- `content/platforms/claude/commands/workflow/`
+- `content/platforms/claude/commands/zcf/`
+- `content/platforms/gemini/commands/plan/`
+- `content/platforms/gemini/commands/zcf/`
 
 ## 安装模型
 
-并不是每一个安装目标平台都要在 `content/commands/` 里拥有同名源目录。
+并不是每一个安装目标平台都要在 `content/platforms/*/commands/` 里拥有同名源目录。
 
 MCS 根据平台配置读取：
 
@@ -36,7 +36,7 @@ MCS 根据平台配置读取：
 
 `platforms.toml` 中的典型例子：
 
-- Codex 使用 `commands_source = "codex"`，并回退到 `claude`
+- Codex 在 v1 不托管 commands，主要使用 guidance 与共享 skills
 - Qwen 回退到 `claude`
 - Trae CN 复用 `trae`
 - Antigravity、Windsurf 这类 app 型平台安装到 `workflows/`
@@ -46,7 +46,6 @@ MCS 根据平台配置读取：
 | 平台类型 | 安装目录 |
 |----------|----------|
 | Claude 类 CLI | `commands/` |
-| Codex | `prompts/` |
 | Kiro | `steering/` |
 | Antigravity / Windsurf | `workflows/` |
 
@@ -60,4 +59,4 @@ MCS 根据平台配置读取：
 
 ## 历史说明
 
-旧文档里曾把 `install.sh`、`install.ps1`、`src/install.py` 当作主要命令安装入口。对当前仓库来说，这已经不是主路径。当前维护的工作流是 `mcs/` workspace 加上 `content/commands/` 源目录本身。
+旧文档里曾把 `install.sh`、`install.ps1`、`src/install.py` 当作主要命令安装入口。对当前仓库来说，这已经不是主路径。当前维护的工作流是 `mcs/` workspace 加上 `content/platforms/*/commands/` 源目录本身。

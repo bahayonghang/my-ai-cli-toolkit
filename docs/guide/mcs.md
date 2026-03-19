@@ -28,7 +28,7 @@ That means the correct mental model is:
 
 - repository root contains `content/`
 - skills live under `content/skills/`
-- commands live under `content/commands/`
+- platform content lives under `content/platforms/<platform>/`
 
 If the TUI cannot find that layout, it exits early.
 
@@ -44,6 +44,7 @@ If the TUI cannot find that layout, it exits early.
 
 - `1`: skills
 - `2`: commands
+- `3`: agents
 - `Tab`: cycle sidebar, item list, and search
 - `/`: focus search
 - `d`: open detail
@@ -66,13 +67,13 @@ MCS keeps canonical skill copies in `~/.mcs/skills/` and then installs to platfo
 
 This is also why one-time migration files appear under `~/.mcs/migrations/`.
 
-## Prompt update behavior
+## Guidance update behavior
 
-Claude is the only platform with `prompt_file = "CLAUDE.md"` in the default platform config. TUI prompt update and diff flow is therefore Claude-oriented.
+Claude and Codex both expose guidance update flow in the default platform config (`CLAUDE.md` and `AGENTS.md`). The TUI guidance diff/update action is platform-aware rather than Claude-only.
 
-If you are extending prompt behavior, also inspect:
+If you are extending guidance behavior, also inspect:
 
-- `mcs/mcs-core/src/core/prompt.rs`
+- `mcs/mcs-core/src/core/guidance.rs`
 - `platforms.toml`
 - the runtime assets documented in [Runtime Files](/guide/runtime-files)
 
