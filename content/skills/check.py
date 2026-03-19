@@ -1,196 +1,250 @@
 #!/usr/bin/env python3
-"""
-检查 skills 目录下所有 SKILL.md 文件的 YAML frontmatter 完整性
-"""
+from __future__ import annotations
 
-import io
+import argparse
+import json
 import re
 import sys
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-# 确保 stdout 使用 UTF-8 编码，解决 Windows GBK 编码问题
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+MAX_SKILL_NAME_LENGTH = 64
+ALLOWED_FRONTMATTER_KEYS = {
+    "name",
+    "description",
+    "category",
+    "tags",
+    "version",
+    "metadata",
+    "allowed-tools",
+    "license",
+    "argument-hint",
+}
 
-SKIP_DIRS = {"external-skills"}
+
+@dataclass
+class ValidationResult:
+    path: str
+    ok: bool
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
 
-def extract_yaml_frontmatter(content: str) -> dict | None:
-    """
-    从 Markdown 内容中提取 YAML frontmatter
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Validate skill frontmatter with the repository's current schema.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "targets",
+        nargs="*",
+        default=["content/skills"],
+        help="Skill directories, SKILL.md files, or parent directories to scan.",
+    )
+    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+    return parser.parse_args()
 
-    Args:
-        content: Markdown 文件内容
 
-    Returns:
-        解析后的 YAML 字典，如果没有 frontmatter 则返回 None
-    """
-    # 匹配 YAML frontmatter (以 --- 开始和结束)
-    pattern = r"^---\s*\n(.*?)\n---\s*\n"
-    match = re.match(pattern, content, re.DOTALL)
+def main() -> int:
+    args = parse_args()
+    skill_dirs = collect_skill_dirs(args.targets)
+    if not skill_dirs:
+        print("No skills found.", file=sys.stderr)
+        return 1
 
+    results = [validate_skill(skill_dir) for skill_dir in skill_dirs]
+
+    if args.json:
+        print(
+            json.dumps(
+                [
+                    {
+                        "path": result.path,
+                        "ok": result.ok,
+                        "errors": result.errors,
+                        "warnings": result.warnings,
+                    }
+                    for result in results
+                ],
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+    else:
+        render_results(results)
+
+    return 0 if all(result.ok for result in results) else 1
+
+
+def collect_skill_dirs(targets: list[str]) -> list[Path]:
+    skill_dirs: set[Path] = set()
+    for raw_target in targets:
+        target = Path(raw_target)
+        if not target.exists():
+            continue
+        if target.is_file() and target.name == "SKILL.md":
+            skill_dirs.add(target.parent.resolve())
+            continue
+        if target.is_dir() and target.joinpath("SKILL.md").is_file():
+            skill_dirs.add(target.resolve())
+            continue
+        if target.is_dir():
+            for skill_md in target.rglob("SKILL.md"):
+                skill_dirs.add(skill_md.parent.resolve())
+    return sorted(skill_dirs)
+
+
+def validate_skill(skill_dir: Path) -> ValidationResult:
+    skill_md = skill_dir / "SKILL.md"
+    result = ValidationResult(path=str(skill_dir), ok=True)
+
+    if not skill_md.is_file():
+        result.ok = False
+        result.errors.append("SKILL.md not found")
+        return result
+
+    try:
+        content = skill_md.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        result.ok = False
+        result.errors.append(f"SKILL.md must be UTF-8 encoded: {exc}")
+        return result
+
+    if not content.startswith("---"):
+        result.ok = False
+        result.errors.append("Missing YAML frontmatter")
+        return result
+
+    match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
     if not match:
-        return None
+        result.ok = False
+        result.errors.append("Invalid frontmatter delimiters")
+        return result
 
-    yaml_content = match.group(1)
     try:
-        return yaml.safe_load(yaml_content)
-    except yaml.YAMLError:
-        return None
-
-
-def check_skill_metadata(skill_path: Path) -> dict[str, any]:
-    """
-    检查单个 skill 的 metadata 完整性
-
-    Args:
-        skill_path: skill 目录路径
-
-    Returns:
-        检查结果字典
-    """
-    result = {
-        "name": skill_path.name,
-        "has_skill_md": False,
-        "has_frontmatter": False,
-        "has_category": False,
-        "has_tags": False,
-        "category_value": None,
-        "tags_value": None,
-        "errors": [],
-    }
-
-    # 检查 SKILL.md 文件 (大小写不敏感)
-    skill_md_path = None
-    for candidate in ["SKILL.md", "skill.md", "Skill.md"]:
-        candidate_path = skill_path / candidate
-        if candidate_path.exists():
-            skill_md_path = candidate_path
-            break
-
-    if not skill_md_path:
-        result["errors"].append("未找到 SKILL.md 文件")
+        frontmatter = yaml.safe_load(match.group(1))
+    except yaml.YAMLError as exc:
+        result.ok = False
+        result.errors.append(f"Invalid YAML: {exc}")
         return result
 
-    result["has_skill_md"] = True
-
-    # 读取文件内容
-    try:
-        content = skill_md_path.read_text(encoding="utf-8")
-    except Exception as e:
-        result["errors"].append(f"读取文件失败: {e}")
+    if not isinstance(frontmatter, dict):
+        result.ok = False
+        result.errors.append("Frontmatter must be a YAML object")
         return result
 
-    # 提取 YAML frontmatter
-    metadata = extract_yaml_frontmatter(content)
+    validate_keys(frontmatter, result)
+    validate_name(frontmatter.get("name"), result)
+    validate_description(frontmatter.get("description"), result)
+    validate_category(frontmatter.get("category"), frontmatter.get("metadata"), result)
+    validate_tags(frontmatter.get("tags"), frontmatter.get("metadata"), result)
 
-    if metadata is None:
-        result["errors"].append("未找到有效的 YAML frontmatter")
-        return result
-
-    result["has_frontmatter"] = True
-
-    # 检查 category 字段
-    if "category" in metadata:
-        result["has_category"] = True
-        result["category_value"] = metadata["category"]
-    else:
-        result["errors"].append("缺少 category 字段")
-
-    # 检查 tags 字段
-    if "tags" in metadata:
-        result["has_tags"] = True
-        result["tags_value"] = metadata["tags"]
-    else:
-        result["errors"].append("缺少 tags 字段")
-
+    if result.errors:
+        result.ok = False
     return result
 
 
-def scan_skills_directory(skills_dir: Path = None) -> list[dict]:
-    """
-    扫描 skills 目录下的所有 skill
-
-    Args:
-        skills_dir: skills 目录路径，默认为当前脚本所在目录
-
-    Returns:
-        所有 skill 的检查结果列表
-    """
-    if skills_dir is None:
-        skills_dir = Path(__file__).parent
-
-    results = []
-
-    # 遍历所有子目录
-    for item in sorted(skills_dir.iterdir()):
-        if item.is_dir() and not item.name.startswith(".") and item.name not in SKIP_DIRS:
-            result = check_skill_metadata(item)
-            results.append(result)
-
-    return results
+def validate_keys(frontmatter: dict[str, Any], result: ValidationResult) -> None:
+    unexpected = sorted(set(frontmatter.keys()) - ALLOWED_FRONTMATTER_KEYS)
+    if unexpected:
+        result.warnings.append(
+            "Unexpected frontmatter key(s): " + ", ".join(unexpected)
+        )
 
 
-def print_report(results: list[dict]):
-    """
-    打印检查报告
+def validate_name(name: Any, result: ValidationResult) -> None:
+    if not isinstance(name, str) or not name.strip():
+        result.errors.append("Missing required frontmatter key: name")
+        return
 
-    Args:
-        results: 检查结果列表
-    """
-    print("=" * 80)
-    print("Skills Metadata 完整性检查报告")
-    print("=" * 80)
-    print()
-
-    # 统计信息
-    total = len(results)
-    complete = sum(1 for r in results if r["has_category"] and r["has_tags"])
-    incomplete = total - complete
-
-    print(f"📊 总计: {total} 个 skills")
-    print(f"✅ 完整: {complete} 个")
-    print(f"❌ 不完整: {incomplete} 个")
-    print()
-
-    # 列出不完整的 skills
-    if incomplete > 0:
-        print("=" * 80)
-        print("❌ 缺少 category 或 tags 的 Skills:")
-        print("=" * 80)
-        print()
-
-        for result in results:
-            if not (result["has_category"] and result["has_tags"]):
-                print(f"📁 {result['name']}")
-
-                if not result["has_skill_md"]:
-                    print("   ⚠️  未找到 SKILL.md 文件")
-                elif not result["has_frontmatter"]:
-                    print("   ⚠️  未找到 YAML frontmatter")
-                else:
-                    if not result["has_category"]:
-                        print("   ❌ 缺少 category 字段")
-                    if not result["has_tags"]:
-                        print("   ❌ 缺少 tags 字段")
-
-                if result["errors"]:
-                    for error in result["errors"]:
-                        print(f"   ⚠️  {error}")
-
-                print()
-    else:
-        print("🎉 所有 skills 的 metadata 都完整！")
-        print()
+    normalized = name.strip()
+    if not re.fullmatch(r"[a-z0-9-]+", normalized):
+        result.errors.append(
+            f"Invalid skill name '{normalized}': use lowercase letters, digits, and hyphens only"
+        )
+    if normalized.startswith("-") or normalized.endswith("-") or "--" in normalized:
+        result.errors.append(
+            f"Invalid skill name '{normalized}': do not start/end with hyphens or use consecutive hyphens"
+        )
+    if len(normalized) > MAX_SKILL_NAME_LENGTH:
+        result.errors.append(
+            f"Skill name is too long ({len(normalized)} > {MAX_SKILL_NAME_LENGTH})"
+        )
 
 
-def main():
-    """主函数"""
-    results = scan_skills_directory()
-    print_report(results)
+def validate_description(description: Any, result: ValidationResult) -> None:
+    if not isinstance(description, str) or not description.strip():
+        result.errors.append("Missing required frontmatter key: description")
+        return
+
+    normalized = description.strip()
+    if "<" in normalized or ">" in normalized:
+        result.errors.append("Description must not contain angle brackets")
+    if len(normalized) > 1024:
+        result.errors.append(f"Description is too long ({len(normalized)} > 1024)")
+
+
+def validate_category(category: Any, metadata: Any, result: ValidationResult) -> None:
+    if category is None:
+        if metadata_category(metadata):
+            result.warnings.append(
+                "Nested metadata.category is present, but mcs-core only reads top-level category"
+            )
+        else:
+            result.warnings.append("Top-level category is missing")
+        return
+    if not isinstance(category, str):
+        result.errors.append("category must be a string")
+
+
+def validate_tags(tags: Any, metadata: Any, result: ValidationResult) -> None:
+    if tags is None:
+        if metadata_tags(metadata):
+            result.warnings.append(
+                "Nested metadata.tags is present, but mcs-core only reads top-level tags"
+            )
+        return
+
+    if isinstance(tags, list):
+        if not all(isinstance(tag, str) and tag.strip() for tag in tags):
+            result.errors.append("tags must be a list of non-empty strings")
+        return
+
+    if not isinstance(tags, str):
+        result.errors.append("tags must be a string or a list of strings")
+
+
+def metadata_category(metadata: Any) -> str | None:
+    if isinstance(metadata, dict):
+        value = metadata.get("category")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
+def metadata_tags(metadata: Any) -> list[str]:
+    if not isinstance(metadata, dict):
+        return []
+    value = metadata.get("tags")
+    if isinstance(value, list):
+        return [tag for tag in value if isinstance(tag, str) and tag.strip()]
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    return []
+
+
+def render_results(results: list[ValidationResult]) -> None:
+    for result in results:
+        status = "OK" if result.ok else "FAIL"
+        print(f"[{status}] {result.path}")
+        for warning in result.warnings:
+            print(f"  warning: {warning}")
+        for error in result.errors:
+            print(f"  error: {error}")
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
