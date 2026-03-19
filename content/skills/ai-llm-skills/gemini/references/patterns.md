@@ -2,19 +2,37 @@
 
 Advanced patterns for orchestrating Gemini CLI effectively from Claude Code.
 
+## Shared Model Convention
+
+Assume the primary and fast model variables are set once per shell session.
+
+```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+GEMINI_FAST_MODEL="${GEMINI_FAST_MODEL:-gemini-3.1-flash-preview}"
+```
+
+```powershell
+if (-not $env:GEMINI_MODEL) { $env:GEMINI_MODEL = "gemini-3.1-pro-preview" }
+if (-not $env:GEMINI_FAST_MODEL) { $env:GEMINI_FAST_MODEL = "gemini-3.1-flash-preview" }
+```
+
+If preview access is unavailable, switch `GEMINI_MODEL` to `gemini-2.5-pro` or `auto`.
+
 ## Pattern 1: Generate-Review-Fix Cycle
 
 The most reliable pattern for quality code generation.
 
 ```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+
 # Step 1: Generate code
-gemini "Create [code description]" --approval-mode yolo -o text
+gemini "Create [code description]" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # Step 2: Have Gemini review its own work
-gemini "Review [generated file] for bugs and security issues" -o text
+gemini "Review [generated file] for bugs and security issues" -m "$GEMINI_MODEL" -o text
 
 # Step 3: Fix identified issues
-gemini "Fix these issues in [file]: [list from review]. Apply now." --approval-mode yolo -o text
+gemini "Fix these issues in [file]: [list from review]. Apply now." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ### Why It Works
@@ -24,15 +42,17 @@ gemini "Fix these issues in [file]: [list from review]. Apply now." --approval-m
 
 ### Example
 ```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+
 # Generate
-gemini "Create a user authentication module with bcrypt and JWT" --approval-mode yolo -o text
+gemini "Create a user authentication module with bcrypt and JWT" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # Review
-gemini "Review auth.js for security vulnerabilities" -o text
+gemini "Review auth.js for security vulnerabilities" -m "$GEMINI_MODEL" -o text
 # Output: "Found XSS risk, missing input validation, weak JWT secret"
 
 # Fix
-gemini "Fix in auth.js: XSS risk, add input validation, use env var for JWT secret. Apply now." --approval-mode yolo -o text
+gemini "Fix in auth.js: XSS risk, add input validation, use env var for JWT secret. Apply now." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ## Pattern 2: JSON Output for Programmatic Processing
@@ -40,7 +60,8 @@ gemini "Fix in auth.js: XSS risk, add input validation, use env var for JWT secr
 Use JSON output when you need to process results programmatically.
 
 ```bash
-gemini "[prompt]" -o json 2>&1
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "[prompt]" -m "$GEMINI_MODEL" -o json 2>&1
 ```
 
 ### Parsing the Response
@@ -49,7 +70,8 @@ gemini "[prompt]" -o json 2>&1
 // In Node.js or with jq
 const result = JSON.parse(output);
 const content = result.response;
-const tokenUsage = result.stats.models["gemini-2.5-flash"].tokens.total;
+const [modelName] = Object.keys(result.stats.models);
+const tokenUsage = result.stats.models[modelName].tokens.total;
 const toolCalls = result.stats.tools.byName;
 ```
 
@@ -64,13 +86,16 @@ const toolCalls = result.stats.tools.byName;
 For long-running tasks, execute in background and continue working.
 
 ```bash
-# Start in background
-gemini "[long task]" --approval-mode yolo -o text 2>&1 &
-
-# Get process ID for later
+# Bash / zsh
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "[long task]" -m "$GEMINI_MODEL" --approval-mode yolo -o text > gemini.log 2>&1 &
 echo $!
+```
 
-# Monitor output incrementally with BashOutput tool
+```powershell
+# PowerShell
+if (-not $env:GEMINI_MODEL) { $env:GEMINI_MODEL = "gemini-3.1-pro-preview" }
+Start-Process gemini -ArgumentList @("[long task]", "-m", $env:GEMINI_MODEL, "--approval-mode", "yolo", "-o", "text") -RedirectStandardOutput "gemini.log" -RedirectStandardError "gemini.err"
 ```
 
 ### When to Use
@@ -80,10 +105,12 @@ echo $!
 
 ### Parallel Execution
 ```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+
 # Run multiple tasks simultaneously
-gemini "Create frontend" --approval-mode yolo -o text 2>&1 &
-gemini "Create backend" --approval-mode yolo -o text 2>&1 &
-gemini "Create tests" --approval-mode yolo -o text 2>&1 &
+gemini "Create frontend" -m "$GEMINI_MODEL" --approval-mode yolo -o text > frontend.log 2>&1 &
+gemini "Create backend" -m "$GEMINI_MODEL" --approval-mode yolo -o text > backend.log 2>&1 &
+gemini "Create tests" -m "$GEMINI_MODEL" --approval-mode yolo -o text > tests.log 2>&1 &
 ```
 
 ## Pattern 4: Model Selection Strategy
@@ -94,22 +121,25 @@ Choose the right model for the task.
 
 ```
 Is the task complex (architecture, multi-file, deep analysis)?
-├── Yes → Use gemini-2.5-pro (or auto routing)
+├── Yes -> Use $GEMINI_MODEL (default: gemini-3.1-pro-preview)
 └── No → Is speed critical?
-    ├── Yes → Use gemini-2.5-flash
-    └── No → Use auto (default, smart routing)
+    ├── Yes -> Use $GEMINI_FAST_MODEL (default: gemini-3.1-flash-preview)
+    └── No -> Use $GEMINI_MODEL, or fallback to auto if preview access is unavailable
 ```
 
 ### Examples
 ```bash
-# Complex: Architecture analysis (auto routing handles this)
-gemini "Analyze codebase architecture" -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+GEMINI_FAST_MODEL="${GEMINI_FAST_MODEL:-gemini-3.1-flash-preview}"
+
+# Complex: Architecture analysis
+gemini "Analyze codebase architecture" -m "$GEMINI_MODEL" -o text
 
 # Quick: Simple formatting
-gemini "Format this JSON" -m gemini-2.5-flash -o text
+gemini "Format this JSON" -m "$GEMINI_FAST_MODEL" -o text
 
-# Explicit Pro for complex reasoning
-gemini "Refactor this module" -m gemini-2.5-pro -o text
+# Compatibility fallback if 3.1 preview is unavailable
+gemini "Refactor this module" -m "$GEMINI_MODEL" -o text
 ```
 
 ## Pattern 5: Rate Limit Handling
@@ -121,31 +151,44 @@ Default behavior - CLI retries automatically with backoff.
 
 ### Approach 2: Use Flash for Lower Priority
 ```bash
-# High priority: Use Pro
-gemini "[important task]" --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+GEMINI_FAST_MODEL="${GEMINI_FAST_MODEL:-gemini-3.1-flash-preview}"
 
-# Lower priority: Use Flash (different quota)
-gemini "[less critical task]" -m gemini-2.5-flash -o text
+# High priority: Use the primary model
+gemini "[important task]" -m "$GEMINI_MODEL" --approval-mode yolo -o text
+
+# Lower priority: Use the fast model
+gemini "[less critical task]" -m "$GEMINI_FAST_MODEL" -o text
 ```
 
 ### Approach 3: Batch Operations
 Combine related operations into single prompts:
 ```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+
 # Instead of multiple calls:
-gemini "Create file A" --approval-mode yolo
-gemini "Create file B" --approval-mode yolo
-gemini "Create file C" --approval-mode yolo
+gemini "Create file A" -m "$GEMINI_MODEL" --approval-mode yolo
+gemini "Create file B" -m "$GEMINI_MODEL" --approval-mode yolo
+gemini "Create file C" -m "$GEMINI_MODEL" --approval-mode yolo
 
 # Single call:
-gemini "Create files A, B, and C with [specs]. Create all now." --approval-mode yolo
+gemini "Create files A, B, and C with [specs]. Create all now." -m "$GEMINI_MODEL" --approval-mode yolo
 ```
 
 ### Approach 4: Sequential with Delays
 For automated scripts, add delays:
 ```bash
-gemini "[task 1]" --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "[task 1]" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 sleep 2
-gemini "[task 2]" --approval-mode yolo -o text
+gemini "[task 2]" -m "$GEMINI_MODEL" --approval-mode yolo -o text
+```
+
+```powershell
+if (-not $env:GEMINI_MODEL) { $env:GEMINI_MODEL = "gemini-3.1-pro-preview" }
+gemini "[task 1]" -m $env:GEMINI_MODEL --approval-mode yolo -o text
+Start-Sleep -Seconds 2
+gemini "[task 2]" -m $env:GEMINI_MODEL --approval-mode yolo -o text
 ```
 
 ## Pattern 6: Context Enrichment
@@ -154,7 +197,8 @@ Provide rich context for better results.
 
 ### Using File References
 ```bash
-gemini "Based on @./package.json and @./src/index.js, suggest improvements" -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Based on @./package.json and @./src/index.js, suggest improvements" -m "$GEMINI_MODEL" -o text
 ```
 
 ### Using GEMINI.md
@@ -173,12 +217,13 @@ This is a React app using TypeScript.
 
 ### Explicit Context in Prompt
 ```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
 gemini "Given this context:
 - Project uses React 18 with TypeScript
 - State management: Zustand
 - Styling: Tailwind CSS
 
-Create a user profile component." --approval-mode yolo -o text
+Create a user profile component." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ## Pattern 7: Validation Pipeline
@@ -214,7 +259,8 @@ Always validate Gemini's output before using.
 ### Automated Validation Pattern
 ```bash
 # Generate
-gemini "Create utility functions" --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Create utility functions" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # Validate
 node --check utils.js && eslint utils.js && npm test
@@ -225,17 +271,19 @@ node --check utils.js && eslint utils.js && npm test
 Build complex outputs in stages.
 
 ```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+
 # Stage 1: Core structure
-gemini "Create basic Express server with routes for /api/users" --approval-mode yolo -o text
+gemini "Create basic Express server with routes for /api/users" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # Stage 2: Add feature
-gemini "Add authentication middleware to the Express server in server.js" --approval-mode yolo -o text
+gemini "Add authentication middleware to the Express server in server.js" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # Stage 3: Add another feature
-gemini "Add rate limiting to the Express server in server.js" --approval-mode yolo -o text
+gemini "Add rate limiting to the Express server in server.js" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # Stage 4: Review all
-gemini "Review server.js for issues and optimize" -o text
+gemini "Review server.js for issues and optimize" -m "$GEMINI_MODEL" -o text
 ```
 
 ### Benefits
@@ -251,13 +299,15 @@ Use both AIs for highest quality.
 ```bash
 # 1. Claude writes code (using normal Claude Code tools)
 # 2. Gemini reviews
-gemini "Review this code for bugs and security issues: [paste code]" -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Review this code for bugs and security issues: [paste code]" -m "$GEMINI_MODEL" -o text
 ```
 
 ### Gemini Generates, Claude Reviews
 ```bash
 # 1. Gemini generates
-gemini "Create [code]" --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Create [code]" -m "$GEMINI_MODEL" --approval-mode yolo -o text
 
 # 2. Claude reviews the output (in conversation)
 # "Review this code that Gemini generated..."
@@ -273,7 +323,8 @@ Use sessions for multi-turn workflows.
 
 ```bash
 # Initial task
-gemini "Analyze this codebase architecture" -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Analyze this codebase architecture" -m "$GEMINI_MODEL" -o text
 # Session saved automatically
 
 # List sessions
