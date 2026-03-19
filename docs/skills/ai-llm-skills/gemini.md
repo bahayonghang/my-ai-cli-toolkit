@@ -1,205 +1,217 @@
 # Gemini CLI Integration Skill
 
-This skill enables Claude Code to effectively orchestrate Gemini CLI (v0.27.0+) for code generation, review, analysis, and specialized tasks. The default model is Auto routing (automatically selects between Flash and Pro based on task complexity).
+This skill helps Claude Code orchestrate Gemini CLI for code generation, review, architecture analysis, and web research. The skill now defaults to `gemini-3.1-pro-preview`, with a shared variable convention so future model swaps happen in one place instead of across many hard-coded examples.
 
 ## When to Use This Skill
 
-### Ideal Use Cases
+Use this skill when you want Gemini CLI to provide:
 
-1. **Second Opinion / Cross-Validation**
-   - Code review after writing code (different AI perspective)
-   - Security audit with alternative analysis
-   - Finding bugs Claude might have missed
+1. A second engineering opinion on code, bugs, or security issues
+2. Google Search-grounded answers for current docs, releases, or benchmarks
+3. Codebase-wide analysis with `codebase_investigator`
+4. Long-running or parallelizable side work while Claude continues locally
+5. Specialized generation such as tests, docs, or code translations
 
-2. **Google Search Grounding**
-   - Questions requiring current internet information
-   - Latest library versions, API changes, documentation updates
-   - Current events or recent releases
+Avoid it for tiny one-step tasks where CLI overhead is larger than the benefit.
 
-3. **Codebase Architecture Analysis**
-   - Use Gemini's `codebase_investigator` tool
-   - Understanding unfamiliar codebases
-   - Mapping cross-file dependencies
+## Default Model Convention
 
-4. **Parallel Processing**
-   - Offload tasks while continuing other work
-   - Run multiple code generations simultaneously
-   - Background documentation generation
-
-5. **Specialized Generation**
-   - Test suite generation
-   - JSDoc/documentation generation
-   - Code translation between languages
-
-### When NOT to Use
-
-- Simple, quick tasks (overhead not worth it)
-- Tasks requiring immediate response (rate limits cause delays)
-- When context is already loaded and understood
-- Interactive refinement requiring conversation
-
-## Core Instructions
-
-### 1. Verify Installation
+### Bash / zsh
 
 ```bash
-command -v gemini || which gemini
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+GEMINI_FAST_MODEL="${GEMINI_FAST_MODEL:-gemini-3.1-flash-preview}"
 ```
 
-### 2. Basic Command Pattern
+### PowerShell
+
+```powershell
+if (-not $env:GEMINI_MODEL) { $env:GEMINI_MODEL = "gemini-3.1-pro-preview" }
+if (-not $env:GEMINI_FAST_MODEL) { $env:GEMINI_FAST_MODEL = "gemini-3.1-flash-preview" }
+```
+
+### Official Override Order
+
+1. `--model`
+2. `GEMINI_MODEL`
+3. `settings.json` at `model.name`
+4. Gemini CLI default `auto`
+
+Compatibility fallback if 3.1 preview access is unavailable: `gemini-2.5-pro` or `auto`.
+
+## Quick Start
+
+### Verify Installation
 
 ```bash
-gemini "[prompt]" --approval-mode yolo -o text 2>&1
+command -v gemini
+```
+
+```powershell
+Get-Command gemini
+```
+
+If Gemini CLI is missing, install it with:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+### Default Command Pattern
+
+```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "[prompt]" -m "$GEMINI_MODEL" --approval-mode yolo -o text 2>&1
 ```
 
 Key flags:
-- `--approval-mode yolo`: Auto-approve all tool calls (replaces deprecated `--yolo`)
-- `-o text`: Human-readable output
-- `-o json`: Structured output with stats
-- `-m gemini-2.5-flash`: Use faster model for simple tasks
-- `-m auto`: Smart routing (default) — auto-selects Flash or Pro based on complexity
 
-### 3. Critical Behavioral Notes
+- `--approval-mode yolo`: auto-approve tool calls
+- `-o text`: human-readable output
+- `-o json`: structured output with stats
+- `-m "$GEMINI_MODEL"`: primary default model for this skill
+- `-m "$GEMINI_FAST_MODEL"`: lower-latency path for lighter tasks
 
-**Approval Mode Behavior**: `--approval-mode yolo` auto-approves tool calls but does NOT prevent planning prompts. Gemini may still present plans and ask "Does this plan look good?" Use forceful language:
-- "Apply now"
+## Core Behaviors
+
+### Planning Still Happens
+
+`--approval-mode yolo` does not skip Gemini's internal planning phase. If you want immediate action, say so explicitly:
+
+- "Apply changes now"
 - "Start immediately"
 - "Do this without asking for confirmation"
 
-> **Note:** `--yolo` / `-y` is deprecated. Use `--approval-mode yolo` instead. Other modes: `default`, `auto_edit`.
+### Validate Output
 
-**Rate Limits**: Free tier limits apply. CLI auto-retries with exponential backoff. Expect messages like "quota will reset after Xs".
+Always review Gemini-generated code for:
 
-### 4. Output Processing
+- Security issues
+- Requirement mismatches
+- Style and architectural consistency
+- Dependency choices
 
-For JSON output (`-o json`), parse:
-```json
-{
-  "response": "actual content",
-  "stats": {
-    "models": { "tokens": {...} },
-    "tools": { "byName": {...} }
-  }
-}
-```
+### Rate Limits
+
+Gemini CLI auto-retries with exponential backoff. When preview quotas are tight, shift lighter work to `GEMINI_FAST_MODEL`, or fall back to `gemini-2.5-pro` / `auto`.
 
 ## Quick Reference Commands
 
 ### Code Generation
+
 ```bash
-gemini "Create [description] with [features]. Output complete file content." --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Create [description] with [features]. Output complete file content." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ### Code Review
+
 ```bash
-gemini "Review [file] for: 1) features, 2) bugs/security issues, 3) improvements" -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Review [file] for features, bugs, security issues, and improvements." -m "$GEMINI_MODEL" -o text
 ```
 
 ### Bug Fixing
+
 ```bash
-gemini "Fix these bugs in [file]: [list]. Apply fixes now." --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Fix these bugs in [file]: [list]. Apply fixes now." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ### Test Generation
+
 ```bash
-gemini "Generate [Jest/pytest] tests for [file]. Focus on [areas]." --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Generate [Jest/pytest] tests for [file]. Focus on [areas]." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ### Documentation
+
 ```bash
-gemini "Generate JSDoc for all functions in [file]. Output as markdown." --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Generate JSDoc for all functions in [file]. Output as markdown." -m "$GEMINI_MODEL" --approval-mode yolo -o text
 ```
 
 ### Architecture Analysis
+
 ```bash
-gemini "Use codebase_investigator to analyze this project" -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "Use codebase_investigator to analyze this project" -m "$GEMINI_MODEL" -o text
 ```
 
 ### Web Research
-```bash
-gemini "What are the latest [topic]? Use Google Search." -o text
-```
-
-### Faster Model (Simple Tasks)
-```bash
-gemini "[prompt]" -m gemini-2.5-flash -o text
-```
-
-## Error Handling
-
-### Rate Limit Exceeded
-- CLI auto-retries with exponential backoff
-- Use `-m gemini-2.5-flash` for lower priority tasks (different quota)
-- Use Auto routing (default) to let the system optimize model selection
-- Run in background for long operations
-
-### Command Failures
-- Check JSON output for detailed error stats
-- Verify Gemini is authenticated: `gemini --version`
-- Check `~/.gemini/settings.json` for config issues
-
-### Validation After Generation
-Always verify Gemini's output:
-- Check for security vulnerabilities (XSS, injection)
-- Test functionality matches requirements
-- Review code style consistency
-- Verify dependencies are appropriate
-
-## Integration Workflow
-
-### Standard Generate-Review-Fix Cycle
 
 ```bash
-# 1. Generate
-gemini "Create [code]" --approval-mode yolo -o text
-
-# 2. Review (Gemini reviews its own work)
-gemini "Review [file] for bugs and security issues" -o text
-
-# 3. Fix identified issues
-gemini "Fix [issues] in [file]. Apply now." --approval-mode yolo -o text
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "What are the latest [topic]? Use Google Search." -m "$GEMINI_MODEL" -o text
 ```
 
-### Background Execution
+### Fast Model for Lightweight Tasks
 
-For long tasks, run in background and monitor:
 ```bash
-gemini "[long task]" --approval-mode yolo -o text 2>&1 &
-# Monitor with BashOutput tool
+GEMINI_FAST_MODEL="${GEMINI_FAST_MODEL:-gemini-3.1-flash-preview}"
+gemini "[prompt]" -m "$GEMINI_FAST_MODEL" -o text
 ```
 
-## Gemini's Unique Capabilities
+## Background Execution
 
-These tools are available only through Gemini:
+### Bash / zsh
 
-1. **google_web_search** - Real-time internet search via Google
-2. **codebase_investigator** - Deep architectural analysis (experimental agent, may require opt-in)
-3. **save_memory** - Cross-session persistent memory
+```bash
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
+gemini "[long task]" -m "$GEMINI_MODEL" --approval-mode yolo -o text > gemini.log 2>&1 &
+echo $!
+```
 
-## Model Selection
+### PowerShell
+
+```powershell
+if (-not $env:GEMINI_MODEL) { $env:GEMINI_MODEL = "gemini-3.1-pro-preview" }
+Start-Process gemini -ArgumentList @("[long task]", "-m", $env:GEMINI_MODEL, "--approval-mode", "yolo", "-o", "text") -RedirectStandardOutput "gemini.log" -RedirectStandardError "gemini.err"
+```
+
+## Model Selection Guide
 
 | Model | Use Case |
 |-------|----------|
-| `auto` (default) | Smart routing — auto-selects Flash or Pro based on task complexity |
-| `gemini-2.5-pro` | Complex reasoning tasks |
-| `gemini-2.5-flash` | Quick tasks, lower latency |
-| `gemini-3-pro-preview` | Latest capabilities (requires Google AI Ultra or paid API key) |
-| `gemini-3-flash-preview` | Latest Flash model (requires Preview Features enabled) |
+| `gemini-3.1-pro-preview` | Primary default for code generation, review, and analysis |
+| `gemini-3.1-flash-preview` | Faster, lower-latency path for lighter work |
+| `gemini-2.5-pro` | Compatibility fallback when 3.1 preview access is unavailable |
+| `auto` | CLI-managed fallback when you want Gemini to choose |
 
-## Configuration
+## Persistent Configuration
 
-### Project Context (Optional)
+### Environment Variables
 
-Create `.gemini/GEMINI.md` in project root for persistent context that Gemini will automatically read.
+```bash
+export GEMINI_MODEL=gemini-3.1-pro-preview
+export GEMINI_FAST_MODEL=gemini-3.1-flash-preview
+```
 
-### Session Management
+### `settings.json`
 
-List sessions: `gemini --list-sessions`
-Resume session: `echo "follow-up" | gemini -r [index] -o text`
+```json
+{
+  "model": {
+    "name": "gemini-3.1-pro-preview"
+  },
+  "general": {
+    "previewFeatures": true
+  }
+}
+```
+
+## Unique Gemini Capabilities
+
+Gemini CLI exposes several capabilities that are especially useful from Claude Code:
+
+1. `google_web_search`
+2. `codebase_investigator`
+3. `save_memory`
 
 ## See Also
 
-- `reference.md` - Complete command and flag reference
-- `templates.md` - Prompt templates for common operations
-- `patterns.md` - Advanced integration patterns
-- `tools.md` - Gemini's built-in tools documentation
+- `content/skills/ai-llm-skills/gemini/SKILL.md`
+- `content/skills/ai-llm-skills/gemini/references/reference.md`
+- `content/skills/ai-llm-skills/gemini/references/patterns.md`
+- `content/skills/ai-llm-skills/gemini/references/tools.md`

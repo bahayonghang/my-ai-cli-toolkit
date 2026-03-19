@@ -100,6 +100,8 @@ just mcs-web-test
 - 外部技能
 - 中英文技能目录页
 
+其中 Codex CLI skill 的说明见 `docs/skills/ai-llm-skills/codex.md` 与 `docs/zh/skills/ai-llm-skills/codex.md`。这两页会同步维护当前 Codex CLI 写法，并已更新为默认模型 `gpt-5.4` 以及推荐的 `codex exec` / 实时网络搜索配置。
+
 ## 只安装 skills catalog
 
 若想要无交互式地默认全局安装所有技能到特定的 Agent（Universal、Antigravity、Claude Code、iFlow CLI、Kiro CLI、Qwen Code、Trae、Trae CN）：

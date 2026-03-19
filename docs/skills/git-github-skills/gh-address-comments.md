@@ -1,42 +1,35 @@
-# GitHub PR Comment Handler
+# GitHub Address Comments
 
-Interactively address review comments and issue threads on the current branch's open GitHub PR using `gh` CLI.
+Summarize actionable GitHub PR feedback and apply selected fixes with `gh`.
 
 ## Overview
 
-This skill fetches all review comments from your PR, presents them as a numbered list with fix summaries, lets you choose which to address, and applies the fixes automatically.
+This skill now defaults to a stable actionable summary instead of dumping raw review JSON. It supports both:
 
-## Prerequisites
+- the current branch PR
+- an explicit PR number or URL
 
-- GitHub CLI (`gh`) installed and authenticated
-- Repository with an open PR on the current branch
+Use the bundled helper when you need a repeatable summary:
 
 ```bash
-# Verify authentication
-gh auth status
-# If needed, authenticate with required scopes
-gh auth login  # ensure repo + workflow scopes
+python content/skills/git-github-skills/gh-address-comments/scripts/fetch_comments.py --repo .
+python content/skills/git-github-skills/gh-address-comments/scripts/fetch_comments.py --repo . --pr 42 --json
 ```
 
 ## Workflow
 
-1. **Fetch** — Retrieves all review threads and comments from the current branch's PR
-2. **Summarize** — Numbers each comment with a short description of the required fix
-3. **Select** — You choose which comments to address
-4. **Fix** — Applies the selected fixes to your codebase
+1. Verify `gh auth status`.
+2. Resolve the PR from the current branch or `--pr`.
+3. Run the helper to collect unresolved review threads, review bodies, and top-level comments.
+4. Present the numbered actionable items to the user.
+5. Apply the selected fixes and summarize which feedback was addressed.
 
-## Usage
+## RTK Fast Path
 
-```bash
-# Address comments on current branch's PR
-/gh-address-comments
+If `rtk` is installed, prefer it for model-facing exploration:
 
-# Or specify a PR number
-/gh-address-comments --pr 42
-```
+- `rtk gh pr view ...`
+- `rtk read ...`
+- `rtk grep ...`
 
-## When to Use
-
-- After receiving code review feedback on a PR
-- When you want to batch-process multiple review comments
-- To quickly triage and fix reviewer suggestions
+Do not wrap machine-readable JSON or GraphQL payloads with RTK compression when another script needs the raw output.

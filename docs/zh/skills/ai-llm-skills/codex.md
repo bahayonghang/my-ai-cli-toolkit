@@ -1,93 +1,160 @@
 # codex
 
-通过 Codex CLI 执行代码生成、分析和网络搜索。
+通过 Codex CLI 执行深度代码分析、调试、重构与实时技术检索。
 
-## 能力
+从 GPT-5.4 开始，OpenAI 推荐在大多数 Codex 编码场景中优先使用最新的 GPT-5 通用模型，因此这个 skill 现在默认使用 `gpt-5.4`。
 
-### 1. 代码生成
+## 默认配置
 
-具有最大推理能力的深度代码分析和生成。
+- 规范命令：`codex exec`
+- 兼容短别名：`codex e`
+- 默认模型：`gpt-5.4`
+- 代码任务推理：`xhigh`
+- 网络搜索推理：`high`
+- 实时搜索配置：`-c web_search="live"`
 
-**使用场景**：
-- 需要深度理解的复杂代码分析
-- 跨多个文件的大规模重构
-- 带安全控制的自动代码生成
+## 统一模型入口
 
-**默认配置**：
-- 模型：`gpt-5.3-codex`
-- 推理：`xhigh`（最大思考深度）
+下面的示例都把默认模型集中在一个变量里：
 
-**命令**：
 ```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+```
+
+这只是示例里的 shell 约定，Codex 真正需要的只有最终传给 `-m` 的模型名。
+
+## 代码执行模板
+
+适用于代码分析、调试、重构和生成：
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=xhigh \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  -C <workdir> \
+  "<task>"
+```
+
+### 示例
+
+```bash
+# 解释文件
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=xhigh \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "explain @src/main.ts"
+
+# 重构代码
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "refactor @src/utils for performance"
+
+# 分析整个项目
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=xhigh \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  -C /path/to/project \
+  "analyze @. and find security issues"
+```
+
+## 网络搜索模板
+
+适用于当前文档、网页总结和实时技术调研：
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "<task>"
 ```
 
-**示例**：
+### 示例
+
 ```bash
-# 解释代码
-codex e ... "explain @src/main.ts"
-
-# 重构
-codex e ... "refactor @src/utils for performance"
-
-# 多文件分析
-codex e ... -C /path/to/project "analyze @. and find security issues"
-```
-
-### 2. 网络搜索与获取
-
-带网络搜索和页面内容获取的在线研究。
-
-**使用场景**：
-- 文档查找
-- 获取和总结网页
-- 当前信息检索
-- 技术对比
-
-**默认配置**：
-- 模型：`gpt-5.3-codex`
-- 推理：`high`
-- 网络搜索：启用
-
-**命令**：
-```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
-  --enable web_search_request \
+# 获取 GitHub 仓库页面并总结
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
-  "<task>"
+  "Fetch and summarize https://github.com/user/repo"
+
+# 检索当前文档
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "find the latest React 19 hooks documentation"
+
+# 做技术对比
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "compare Vite vs Webpack for React projects today"
 ```
 
-**示例**：
+## 模型覆盖与配置
+
+单次覆盖模型：
+
 ```bash
-# 获取 GitHub 仓库
-codex e ... "Fetch and summarize https://github.com/user/repo"
+codex exec -m gpt-5.4-pro "review @src/server.ts for race conditions"
+```
 
-# 文档搜索
-codex e ... "find the latest React 19 hooks documentation"
+在 `~/.codex/config.toml` 中设置持久化默认模型：
 
-# 技术研究
-codex e ... "compare Vite vs Webpack for React projects in 2024"
+```toml
+model = "gpt-5.4"
+```
+
+或定义一个复用 profile：
+
+```toml
+[profiles.codex-web]
+model = "gpt-5.4"
+web_search = "live"
 ```
 
 ## 会话恢复
 
-继续之前的对话：
+继续已有的非交互 Codex 会话：
 
 ```bash
-codex e resume <session_id> "<follow-up task>"
+codex exec resume <session_id> "<follow-up task>"
 ```
 
-## 文件引用
+示例：
 
-- `@file` - 引用特定文件
-- `@.` - 引用整个工作目录
-- `-C <dir>` - 设置工作目录
+```bash
+codex exec resume <session_id> "now add type hints"
+```
 
-## 前置要求
+## 前置要求与说明
 
-- 已安装并认证 Codex CLI
-- 已配置 API 访问
+- 检查安装：`command -v codex`
+- 检查登录：`codex login status`
+- 需要登录时执行：`codex login`
+- `@file` 表示相对当前工作目录引用文件
+- `@.` 表示引用整个工作目录
+- `--json` 可用于程序化输出
+- 自动化示例默认都使用 `--dangerously-bypass-approvals-and-sandbox`
+- 一次性目录可配合 `--skip-git-repo-check`
+- 优先使用 `-c web_search="live"`，不要继续使用旧版 web 搜索 flag 或旧的 feature toggle 写法

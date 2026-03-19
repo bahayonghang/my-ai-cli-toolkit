@@ -100,6 +100,8 @@ The VitePress site in `docs/` covers:
 - external skills
 - skill catalog pages in English and Chinese
 
+For the Codex CLI skill specifically, see `docs/skills/ai-llm-skills/codex.md` and `docs/zh/skills/ai-llm-skills/codex.md`. Those pages track the current Codex CLI syntax and now document the `gpt-5.4` default model plus the recommended `codex exec` / live web-search patterns.
+
 ## Direct skill-only install
 
 To install all skills non-interactively to specific agents (Universal, Antigravity, Claude Code, iFlow CLI, Kiro CLI, Qwen Code, Trae, Trae CN):

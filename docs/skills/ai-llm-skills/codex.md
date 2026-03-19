@@ -1,174 +1,160 @@
 # Codex CLI Integration
 
-Two specialized capabilities for different use cases.
+Run the local Codex CLI for deep code work and live technical research.
 
-## Capability 1: Code Generation
+Starting with GPT-5.4, OpenAI recommends the latest GPT-5 general-purpose model for most Codex coding tasks, so this skill now defaults to `gpt-5.4`.
 
-Deep code analysis and generation with maximum reasoning power.
+## Default Configuration
 
-### When to Use
+- Preferred command: `codex exec`
+- Short alias still available: `codex e`
+- Default model: `gpt-5.4`
+- Code reasoning: `xhigh`
+- Web search reasoning: `high`
+- Live web search: `-c web_search="live"`
 
-- Complex code analysis requiring deep understanding
-- Large-scale refactoring across multiple files
-- Automated code generation with safety controls
-- Tasks requiring specialized reasoning models
+## Shared Model Convention
 
-### Default Configuration
-
-- Model: `gpt-5.3-codex`
-- Reasoning: `xhigh` (maximum thinking depth)
-
-### Command Pattern
+These examples keep the default model in one place:
 
 ```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+```
+
+This is just a shell convention for the examples. Codex itself only requires the final `-m` value.
+
+## Code Execution Template
+
+Use this for analysis, debugging, refactoring, and other code-heavy tasks:
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   -C <workdir> \
   "<task>"
 ```
 
-### Parameters
-
-- `<task>` (required): Task description, supports `@file` references
-- `-m <model>`: Override model (e.g., `gpt-5.3-codex`, `gpt-5`)
-- `-c model_reasoning_effort=<level>`: Override reasoning (low/medium/high/xhigh)
-- `-C <workdir>`: Working directory (default: current)
-
 ### Examples
 
-Basic code analysis:
 ```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
+# Explain a file
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "explain @src/main.ts"
-```
 
-Refactoring with custom model:
-```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
+# Refactor code
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "refactor @src/utils for performance"
-```
 
-Multi-file analysis:
-```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
+# Analyze an entire project
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   -C /path/to/project \
   "analyze @. and find security issues"
 ```
 
----
+## Web Search Template
 
-## Capability 2: Web Search & Fetch
-
-Online research with web search and page content fetching.
-
-### When to Use
-
-- Online research and documentation lookup
-- Fetch and summarize specific web pages (GitHub repos, docs, articles)
-- Current information retrieval
-- API documentation search
-- Technology comparison and recommendations
-
-### Default Configuration
-
-- Model: `gpt-5.3-codex`
-- Reasoning: `high`
-- Web search: enabled
-
-### Command Pattern
+Use this for current docs, URL summarization, and live technical research:
 
 ```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
-  --enable web_search_request \
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "<task>"
 ```
 
-### Parameters
-
-- `<task>` (required): Search query or research task
-- `-m <model>`: Override model
-- `-c model_reasoning_effort=<level>`: Override reasoning (low/medium/high/xhigh)
-- `--enable web_search_request`: Enable web search (required for this capability)
-
-### Alternative: Config File
-
-Add to `~/.codex/config.toml`:
-```toml
-[features]
-web_search_request = true
-```
-
 ### Examples
 
-Fetch GitHub repo:
 ```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
-  --enable web_search_request \
+# Fetch a GitHub repository page
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "Fetch and summarize https://github.com/user/repo"
-```
 
-Documentation search:
-```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
-  --enable web_search_request \
+# Search current documentation
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
   "find the latest React 19 hooks documentation"
-```
 
-Technology research:
-```bash
-codex e -m gpt-5.3-codex -c model_reasoning_effort=high \
-  --enable web_search_request \
+# Compare technologies with live search
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
-  "compare Vite vs Webpack for React projects in 2024"
+  "compare Vite vs Webpack for React projects today"
 ```
 
----
+## Model Override and Config
+
+Override the model for one run:
+
+```bash
+codex exec -m gpt-5.4-pro "review @src/server.ts for race conditions"
+```
+
+Set a persistent default in `~/.codex/config.toml`:
+
+```toml
+model = "gpt-5.4"
+```
+
+Or define a reusable profile:
+
+```toml
+[profiles.codex-web]
+model = "gpt-5.4"
+web_search = "live"
+```
 
 ## Session Resume
 
-Both capabilities support session resumption for multi-turn conversations.
-
-### Resume Command
+Continue an existing non-interactive Codex session:
 
 ```bash
-codex e resume <session_id> "<follow-up task>"
+codex exec resume <session_id> "<follow-up task>"
 ```
 
-### Example
+Example:
 
 ```bash
-# First session (code generation)
-codex e -m gpt-5.3-codex -c model_reasoning_effort=xhigh \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "add comments to @utils.js"
-# Output includes: thread_id in JSON output
-
-# Continue the conversation
-codex e resume <session_id> "now add type hints"
+codex exec resume <session_id> "now add type hints"
 ```
 
----
+## Prerequisites and Notes
 
-## Notes
-
-- Requires Codex CLI installed and authenticated
-- `@file` syntax references files relative to working directory
-- `@.` references entire working directory
-- JSON output available with `--json` flag for programmatic use
-- All commands use `--dangerously-bypass-approvals-and-sandbox` for automation
-- Use `--skip-git-repo-check` to work in any directory
+- Verify installation: `command -v codex`
+- Verify login: `codex login status`
+- Authenticate if needed: `codex login`
+- `@file` references files relative to the working directory
+- `@.` references the entire working directory
+- JSON output is available with `--json`
+- All automation examples use `--dangerously-bypass-approvals-and-sandbox`
+- Use `--skip-git-repo-check` for one-off directories
+- Prefer `-c web_search="live"` over the legacy web-search flag and old feature-toggle form

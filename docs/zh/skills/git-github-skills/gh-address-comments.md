@@ -1,42 +1,35 @@
-# GitHub PR Comment Handler
+# GitHub Address Comments
 
-Interactively address review comments and issue threads on the current branch's open GitHub PR using `gh` CLI.
+使用 `gh` 汇总 PR 中可执行的 review 反馈，并对选中的问题进行修复。
 
-## Overview
+## 概览
 
-This skill fetches all review comments from your PR, presents them as a numbered list with fix summaries, lets you choose which to address, and applies the fixes automatically.
+这个技能现在默认输出稳定的“可行动摘要”，不再直接倾倒原始 review JSON。它同时支持：
 
-## Prerequisites
+- 当前分支关联的 PR
+- 显式指定的 PR 编号或 URL
 
-- GitHub CLI (`gh`) installed and authenticated
-- Repository with an open PR on the current branch
-
-```bash
-# Verify authentication
-gh auth status
-# If needed, authenticate with required scopes
-gh auth login  # ensure repo + workflow scopes
-```
-
-## Workflow
-
-1. **Fetch** — Retrieves all review threads and comments from the current branch's PR
-2. **Summarize** — Numbers each comment with a short description of the required fix
-3. **Select** — You choose which comments to address
-4. **Fix** — Applies the selected fixes to your codebase
-
-## Usage
+常用命令：
 
 ```bash
-# Address comments on current branch's PR
-/gh-address-comments
-
-# Or specify a PR number
-/gh-address-comments --pr 42
+python content/skills/git-github-skills/gh-address-comments/scripts/fetch_comments.py --repo .
+python content/skills/git-github-skills/gh-address-comments/scripts/fetch_comments.py --repo . --pr 42 --json
 ```
 
-## When to Use
+## 工作流
 
-- After receiving code review feedback on a PR
-- When you want to batch-process multiple review comments
-- To quickly triage and fix reviewer suggestions
+1. 先确认 `gh auth status`。
+2. 从当前分支或 `--pr` 解析目标 PR。
+3. 运行脚本收集未解决的 review thread、review body 和顶层评论。
+4. 将结果整理成编号列表给用户确认。
+5. 修复选中的反馈，并总结本轮已处理的评论项。
+
+## RTK 快路径
+
+如果本机安装了 `rtk`，优先把它用于模型可见的探索步骤：
+
+- `rtk gh pr view ...`
+- `rtk read ...`
+- `rtk grep ...`
+
+如果后续脚本需要原始 JSON 或 GraphQL 输出，就不要让 RTK 压缩这类机器输入。

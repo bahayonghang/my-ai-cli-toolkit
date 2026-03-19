@@ -58,9 +58,10 @@ Prefer those top-level fields when adding new skills.
 
 ## Validation
 
-- `default.toml` controls which categories are part of default install flows
+- `default.toml` controls which categories are part of default install flows    
 - `external-skills/` stores the curated external registry used by the Web `npx skills` flow
 - `check.py` helps validate `SKILL.md` metadata coverage
+  - Example: `python content/skills/check.py content/skills/git-github-skills`
 - `just mcs` is the quickest way to verify that a skill is discoverable
 
 ## Public docs

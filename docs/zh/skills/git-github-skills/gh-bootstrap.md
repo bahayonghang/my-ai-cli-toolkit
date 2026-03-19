@@ -1,112 +1,32 @@
-<div v-pre>
+# GitHub Bootstrap
 
-# gh-bootstrap
+从上游模板安全引导 GitHub 仓库配置，而不是凭记忆手写配置文件。
 
-一站式 GitHub 仓库配置初始化工具。
+## 概览
 
-## 概述
+`gh-bootstrap` 现在内置了运行时脚本，用来承接重复性的执行动作：
 
-GH Bootstrap 是一个综合性的 GitHub 仓库初始化配置工具。它自动设置分支保护、Issue 模板、PR 模板、Actions 工作流等最佳实践配置。
-
-## 功能特性
-
-- 🔒 **分支保护** - 自动配置主分支保护规则
-- 📋 **Issue 模板** - Bug 报告、功能请求模板
-- 🔀 **PR 模板** - 标准化的 Pull Request 模板
-- ⚙️ **GitHub Actions** - CI/CD 工作流模板
-- 🏷️ **标签系统** - 预定义的 Issue 标签
-- 📄 **文档模板** - README、CONTRIBUTING、CODE_OF_CONDUCT
-
-## 使用方法
-
-```
-/gh-bootstrap
+```bash
+python content/skills/git-github-skills/gh-bootstrap/scripts/gh_bootstrap_runtime.py detect .
+python content/skills/git-github-skills/gh-bootstrap/scripts/gh_bootstrap_runtime.py fetch-template <repo-url> .gh-bootstrap-cache/template
+python content/skills/git-github-skills/gh-bootstrap/scripts/gh_bootstrap_runtime.py render-template <template> <output> --var projectName=my-project
+python content/skills/git-github-skills/gh-bootstrap/scripts/gh_bootstrap_runtime.py validate-tree .
 ```
 
-```
-初始化 GitHub 仓库最佳实践配置
-```
+## 工作流
 
-## 生成的文件
+1. 检测语言、框架和现有 `.github` 文件。
+2. 阅读 `specs/template-catalog.md`，确定要使用的上游模板来源。
+3. 克隆选定模板仓库。
+4. 对目标模板做显式占位符替换后写入输出文件。
+5. 扫描输出目录，只要还有 `{{placeholder}}` 未替换就不能结束。
 
-```
-.github/
-├── ISSUE_TEMPLATE/
-│   ├── bug_report.md
-│   ├── feature_request.md
-│   └── config.yml
-├── PULL_REQUEST_TEMPLATE.md
-├── workflows/
-│   ├── ci.yml
-│   ├── release.yml
-│   └── dependabot.yml
-├── CODEOWNERS
-└── dependabot.yml
+## 规则
 
-docs/
-├── CONTRIBUTING.md
-└── CODE_OF_CONDUCT.md
+- 不能凭记忆生成 CI、Issue、PR 或其他仓库配置。
+- `phases/` 和 `specs/` 继续作为规则和资料来源。
+- 检测、克隆、渲染、校验这四步走统一脚本入口。
 
-README.md
-LICENSE
-```
+## RTK 快路径
 
-## 分支保护规则
-
-自动配置的保护规则：
-
-| 规则 | 说明 |
-|------|------|
-| 需要 PR 审查 | 至少 1 人审批 |
-| 需要状态检查 | CI 必须通过 |
-| 需要线性历史 | 禁止合并提交 |
-| 禁止强制推送 | 保护提交历史 |
-| 禁止删除 | 保护主分支 |
-
-## 工作流模板
-
-### CI 工作流
-
-```yaml
-name: CI
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run tests
-        run: npm test
-```
-
-### Release 工作流
-
-```yaml
-name: Release
-on:
-  push:
-    tags: ['v*']
-jobs:
-  release:
-    # 自动发布配置
-```
-
-## 标签系统
-
-| 标签 | 颜色 | 描述 |
-|------|------|------|
-| bug | 红色 | 问题/缺陷 |
-| enhancement | 蓝色 | 新功能 |
-| documentation | 绿色 | 文档相关 |
-| good first issue | 紫色 | 适合新手 |
-| help wanted | 黄色 | 需要帮助 |
-
-## 最佳实践
-
-1. **在新仓库创建后立即运行** - 建立标准化基础
-2. **根据项目调整** - 修改模板适应项目需求
-3. **保持更新** - 定期更新工作流版本
-4. **团队协作** - 确保团队了解贡献流程
-
-
-</div>
+如果本机安装了 `rtk`，可以用它做仓库扫描、模板检查和生成后的 diff 审阅；模板下载和文件渲染仍然走原始脚本路径。
