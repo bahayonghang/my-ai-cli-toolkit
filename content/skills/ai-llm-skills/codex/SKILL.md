@@ -2,12 +2,9 @@
 name: codex
 description: >-
   Use when you want to run the local OpenAI Codex CLI for code generation,
-  debugging, refactoring, and especially explicit review workflows for pull
-  requests, diffs, commits, and uncommitted changes. Trigger this skill whenever
-  the user mentions Codex, asks for a Codex CLI run, wants OpenAI to review
-  current changes, compare a branch against a base, review a commit or diff,
-  give a second engineering opinion on changes, or needs live OpenAI-backed
-  technical web search.
+  debugging, refactoring, explicit review workflows for pull requests, diffs,
+  commits, and uncommitted changes, or live technical research with current web
+  results, comparisons, latest information, and citation-backed summaries.
 version: 1.2.0
 argument-hint: [task-description]
 allowed-tools:
@@ -54,6 +51,7 @@ This is only an example shell convention; Codex itself only requires the final `
    - **Review-only**: code review, PR review, diff review, commit review, second-opinion analysis.
    - **Apply/fix execution**: generation, refactoring, debugging, or review findings that the user explicitly wants fixed.
    - **Web search / docs lookup**: current information, docs, URLs, comparisons.
+   - **Research / comparison**: batch research, cited summaries, technology comparisons, vendor landscape, latest updates.
 3. For review-only tasks, prefer the lowest-risk path first:
    ```bash
    CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
@@ -90,7 +88,59 @@ This is only an example shell convention; Codex itself only requires the final `
    ```bash
    codex exec resume <session_id> "<follow-up>"
    ```
-7. Read `$SKILL_DIR/references/REFERENCE.md` for review templates, focus prompts, target selection guidance, and post-review checklists.
+7. Read `$SKILL_DIR/references/REFERENCE.md` for review templates, research workflow guidance, source selection, citation format, and post-run checklists.
+
+## Research Workflow
+
+Use this when the user asks to research a topic, compare tools, find the latest information, or produce a citation-backed summary.
+
+1. Clarify the scope if needed:
+   - exact products, frameworks, or vendors
+   - comparison axes such as architecture, performance, cost, governance, DX, or migration risk
+   - whether the user wants a quick answer, a decision memo, or a structured report
+2. Break broad topics into focused queries. Prefer one query per subtopic instead of one overloaded search.
+3. Use live web search with `codex exec`:
+   ```bash
+   CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+   codex exec -m "$CODEX_MODEL" \
+     -c model_reasoning_effort=high \
+     -c web_search="live" \
+     --dangerously-bypass-approvals-and-sandbox \
+     --skip-git-repo-check \
+     "Return raw results with URLs. Search: <focused query>"
+   ```
+4. For multi-angle research, run a small batch of focused searches, for example:
+   - product overview / architecture
+   - latest release notes or announcements
+   - comparison against named alternatives
+   - benchmarks or pricing, if the user asked for them
+5. Prefer sources in this order unless the task requires otherwise:
+   - official documentation
+   - official blogs, changelogs, or announcements
+   - reputable third-party technical analysis
+   - benchmarks, with vendor bias called out when relevant
+6. Validate links before finalizing if the report contains many citations or if a result looks stale.
+7. Deliver a concise synthesis with clickable citations, explicit uncertainty, and a recommendation only when the evidence supports it.
+
+### Research Prompt Templates
+
+#### Latest information
+
+```text
+Research the latest information about <topic>. Use live web search, prefer official sources, include publication dates where available, and return a concise summary with clickable citations.
+```
+
+#### Technology comparison
+
+```text
+Compare <option A> vs <option B> for <use case>. Use live web search, prefer official docs and recent sources, separate facts from opinion, and include clickable citations for each major claim.
+```
+
+#### Decision memo
+
+```text
+Research <topic> for a team deciding whether to adopt it. Cover architecture, operational tradeoffs, ecosystem maturity, migration risk, and current status. End with a recommendation and clickable citations.
+```
 
 ## Review Workflows
 

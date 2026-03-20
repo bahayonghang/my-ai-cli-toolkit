@@ -1,6 +1,6 @@
 # Codex CLI Integration
 
-Run the local Codex CLI for deep code work and live technical research.
+Run the local Codex CLI for deep code work, live technical research, and citation-backed web workflows.
 
 Starting with GPT-5.4, OpenAI recommends the latest GPT-5 general-purpose model for most Codex coding tasks, so this skill now defaults to `gpt-5.4`.
 
@@ -66,9 +66,14 @@ codex exec -m "$CODEX_MODEL" \
   "analyze @. and find security issues"
 ```
 
-## Web Search Template
+## Web Search and Research Template
 
-Use this for current docs, URL summarization, and live technical research:
+Use this for current docs, URL summarization, and the merged live research workflow that replaces the standalone `research` skill:
+
+- break broad research into focused subqueries
+- prefer official docs and official announcements first
+- keep clickable citations in the final answer
+- validate links when the reference list is long or a result looks stale
 
 ```bash
 CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"

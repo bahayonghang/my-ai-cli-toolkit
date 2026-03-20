@@ -157,7 +157,7 @@ python3 ~/.claude/skills/public/memory-system/scripts/memory.py cleanup \
 ## 相关技能
 
 - [planning-with-files](./planning-with-files) — 基于文件的任务规划工作流
-- [research](./research) — 支持网络搜索的技术研究
+- [codex](../ai-llm-skills/codex) — Web 搜索、实时技术调研与带引用的 Codex 工作流
 
 ## 参考资料
 

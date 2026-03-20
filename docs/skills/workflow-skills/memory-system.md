@@ -117,4 +117,4 @@ python3 ~/.claude/skills/public/memory-system/scripts/memory.py cleanup \
 ## Related Skills
 
 - [planning-with-files](./planning-with-files) — File-based task planning workflow
-- [research](./research) — Technical research with web search support
+- [codex](../ai-llm-skills/codex) — Web search, live technical research, and citation-ready Codex workflows

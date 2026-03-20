@@ -26,6 +26,139 @@ Use this order when choosing a model:
 | `-C <workdir>` | Working directory | current directory |
 | `--json` | JSON output for programmatic use | disabled |
 
+## Research Source Priority
+
+Prefer sources in this order unless the task requires something else:
+
+1. Official documentation
+2. Official blogs, announcements, changelogs, and release notes
+3. Reputable third-party technical analysis
+4. Benchmarks and surveys, with source bias called out when relevant
+
+Guidance:
+- Prefer official docs for APIs, product behavior, and current platform limits.
+- Prefer official announcements for release timing, roadmap signals, and deprecations.
+- Use third-party analysis only when it adds missing context or comparison value.
+- Do not present vendor benchmarks as neutral without labeling the bias.
+
+## Research Query Construction
+
+Use focused queries. One query per subtopic is usually better than one broad prompt.
+
+Rules:
+- Include the exact product or framework name.
+- Add the current year when the task asks for latest information.
+- Ask for raw URLs when you need citations or link validation.
+- Separate architecture, pricing, benchmarks, release history, and comparisons into distinct searches.
+
+Good query patterns:
+- `<product> architecture 2025 2026`
+- `<product A> vs <product B> for <use case> 2025 2026`
+- `<product> pricing enterprise 2026`
+- `<product> changelog release notes 2026`
+
+Common pitfalls:
+- Broad queries that blur multiple questions together
+- Searching for a category without the exact product name
+- Missing year constraints for fast-moving topics
+- Asking for conclusions before gathering source links
+
+## Batch Retrieval Pattern
+
+Use a small batch of focused searches for research-heavy requests:
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "Return raw results with URLs. Search: <focused query 1>"
+
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "Return raw results with URLs. Search: <focused query 2>"
+```
+
+Use batches for:
+- technology comparisons
+- latest-info roundups
+- vendor landscape research
+- reports that need citations per section
+
+Legacy note:
+- `codex e` still works as a short alias, but prefer `codex exec` in docs and reusable snippets.
+
+## Link Validation and Citation Rules
+
+Validate links before finalizing when the answer contains multiple citations, the results look stale, or the user needs a durable report.
+
+Validation options:
+- Let the user click-check simple URLs when speed matters.
+- Use Codex validation for batch verification or replacement hunting.
+
+Example validation prompt:
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "Verify whether these URLs are still valid. For any broken URL, find the best replacement from the same source if possible:\n1. <url1>\n2. <url2>"
+```
+
+Citation rules:
+- Every major claim should have a clickable citation when the task is research-heavy.
+- Match the citation label to the actual page title or publisher.
+- Do not cite summary pages when the primary document is available.
+- Do not include performance numbers, pricing, or release claims without a source.
+
+Recommended format:
+
+```markdown
+React 19 expands the stable hooks surface (source: [React Docs]).
+
+[React Docs]: https://react.dev/
+```
+
+## Research Report Structure
+
+Use this structure for deeper research or comparison outputs:
+
+```markdown
+# [Topic] Research Report
+
+## Overview
+Brief framing of the topic and why it matters
+
+## Key Findings
+- Concise fact with citation
+- Concise fact with citation
+
+## Comparison
+| Option | Strengths | Tradeoffs | Sources |
+|--------|-----------|-----------|---------|
+
+## Recommendation
+Recommendation only when supported by evidence
+
+## References
+[Source Name]: URL
+```
+
+Guidance:
+- Keep headings declarative, not phrased as questions.
+- Trim sections the user did not ask for.
+- Separate facts, interpretation, and recommendation.
+- Call out uncertainty explicitly when sources conflict.
+
 ## Review Usage Guidance
 
 ### When to use `@file`
@@ -298,6 +431,118 @@ codex exec -m "$CODEX_MODEL" -c model_reasoning_effort=high -c web_search="live"
   "compare Vite vs Webpack for React projects today"
 ```
 
+## Research Workflow Reference
+
+Use this playbook when the user wants more than a one-shot docs lookup: technology comparisons, latest updates, literature-style technical surveys, market or vendor analysis, or any answer that must include clickable citations.
+
+### Research principles
+
+- Codex should retrieve raw sources and URLs; you should synthesize the final answer yourself.
+- Keep only the evidence the user actually cares about.
+- Do not invent performance numbers, release claims, or market facts without sources.
+- Prefer declarative section titles over question headings in the final report.
+- Make sure each reference name matches the destination page content.
+
+### Source priority
+
+1. Official documentation
+2. Official blogs, changelogs, and announcements
+3. Reputable third-party technical analysis
+4. Benchmarks and market reports, with vendor bias called out where relevant
+
+### Query design
+
+- Use one focused query per subtopic instead of one overloaded search.
+- Include the exact product or project name in each query.
+- Add year constraints when recency matters.
+- Ask for raw URLs in the result when collecting evidence.
+
+Example query shapes:
+
+```text
+Return raw search results with source URLs. Search: OpenSearch unique features architecture 2025 2026
+Return raw search results with source URLs. Search: OpenSearch vs Elasticsearch key differences 2025 2026
+Return raw search results with source URLs. Search: Bun vs Node serverless cold start comparison 2025 2026
+```
+
+Recommended command pattern:
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "Return raw search results with source URLs. Search: <focused query>"
+```
+
+### Link validation
+
+For long reference lists or suspicious results, validate links in batch before finalizing:
+
+```bash
+CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex exec -m "$CODEX_MODEL" \
+  -c model_reasoning_effort=high \
+  -c web_search="live" \
+  --dangerously-bypass-approvals-and-sandbox \
+  --skip-git-repo-check \
+  "Use web search to verify whether these URLs are valid. For each broken URL, find the correct replacement and report both the bad link and the replacement."
+```
+
+Rules:
+- Let the user click-check a few simple links if that is faster.
+- Use batch validation when there are many citations or when 404 replacement is needed.
+- Replace broken URLs before delivering the final report.
+
+### Citation format
+
+Inline citation example:
+
+```markdown
+OpenSearch forked from Elasticsearch 7.10 in 2021 (source: [AWS OpenSearch Blog]).
+```
+
+Link definitions at the end:
+
+```markdown
+[AWS OpenSearch Blog]: https://aws.amazon.com/blogs/opensource/...
+```
+
+### Report structure
+
+```markdown
+# [Topic] Research Report
+
+## 1. Overview
+What it is, what problem it solves
+
+## 2. Core Features/Architecture
+Key technical points with citations
+
+## 3. Comparison (if applicable)
+Table comparison, each item with source
+
+## 4. Recommendations
+Conclusions based on research
+
+## References
+[Link Name 1]: URL1
+[Link Name 2]: URL2
+```
+
+### Common pitfalls
+
+| Pitfall | Solution |
+|---------|----------|
+| Codex searches the wrong product | Include the exact product name in every query |
+| Final report contains 404 links | Validate links before finalizing |
+| Reference name does not match destination | Verify the page title and content before citing |
+| Vendor benchmark presented as neutral | Note the source bias explicitly |
+| Query is too broad | Split it into focused subqueries |
+| Recent changes are missing | Add current-year constraints |
+
 ## Session Resume
 
 Resume a previous session for multi-turn conversations:
@@ -320,33 +565,34 @@ model = "gpt-5.4"
 web_search = "live"
 ```
 
-## Post-Review Checklist
+## Post-Run Checklist
 
-- Confirm the review target was correct: file, branch diff, commit, or uncommitted work.
+- Confirm the task mode was correct: review, apply/fix, web lookup, or research.
+- Confirm the search scope or review target was correct.
+- Verify each finding or claim has evidence and a concrete source.
 - Separate blockers from nice-to-have suggestions.
-- Verify each finding has evidence, impact, and a concrete fix direction.
-- Decide whether a follow-up apply/fix run is actually desired.
-- If changes will be applied, review the resulting diff after Codex writes code.
+- Validate links when the output is citation-heavy.
+- If changes were applied, review the resulting diff after Codex writes code.
 - Re-run tests, lint, or type checks after any fix pass.
 
 ## Notes
 
-- Requires Codex CLI installed and authenticated
-- Use `codex login status` to verify login and `codex login` to authenticate
-- All commands that write use `--dangerously-bypass-approvals-and-sandbox` for automation
-- Use `--skip-git-repo-check` to work in any directory
-- `codex e` remains a short alias, but `codex exec` is the preferred form in docs
-- Prefer `-c web_search="live"` over the legacy web-search flag and old feature-toggle form
+- Requires Codex CLI installed and authenticated.
+- Use `codex login status` to verify login and `codex login` to authenticate.
+- All commands that write use `--dangerously-bypass-approvals-and-sandbox` for automation.
+- Use `--skip-git-repo-check` to work in any directory.
+- Prefer `codex exec` in docs and automation; `codex e` is only a legacy short alias.
+- Prefer `-c web_search="live"` over the legacy web-search flag and old feature-toggle form.
 
 ### Security: `--dangerously-bypass-approvals-and-sandbox`
 
 This flag disables **all** confirmation prompts and filesystem sandboxing. When active:
 - Codex can read, write, and delete any file without asking
 - No sandbox isolation — commands run with your full user permissions
-- Intended for automated/CI pipelines where human approval is impractical
+- Intended for automated or CI-style environments where human approval is impractical
 
 **Recommendations:**
-- Only use in controlled environments (local dev, CI)
+- Only use in controlled environments
 - Never use on production systems or with untrusted prompts
 - Review generated changes via `git diff` after execution
 
@@ -358,3 +604,4 @@ This flag disables **all** confirmation prompts and filesystem sandboxing. When 
 | Authentication error | Run `codex login` to authenticate |
 | Session resume fails | Verify `session_id` from previous JSON output |
 | Web search not working | Add `-c web_search="live"` or configure `web_search = "live"` |
+| Stale or broken citations | Re-run focused searches and validate URLs before finalizing |
