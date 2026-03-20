@@ -11,6 +11,38 @@
 
 ## 快速开始
 
+### 直接从 GitHub 安装 skills
+
+如果你只是想安装 skills，不需要先克隆本仓库。
+
+交互式安装器：
+
+```bash
+# macOS / Linux
+bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
+```
+
+```powershell
+# Windows PowerShell
+irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
+```
+
+直接安装一方 skills catalog：
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
+把全部一方 skills 无交互式安装到指定 Agent：
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+```
+
+### 在需要 MCS、文档或本地工作流时再克隆仓库
+
+只有当你要使用 Rust TUI、Web、文档站点，或者本地 `just` 入口时，才需要克隆仓库：
+
 ```bash
 git clone https://github.com/bahayonghang/my-claude-code-settings.git
 cd my-claude-code-settings
@@ -23,7 +55,35 @@ just web
 
 # 文档站点
 just doc
+
+# 本地交互式 skills 安装器
+just skills-install
 ```
+
+## 交互式安装脚本
+
+`tools/scripts/skills-install/` 下的跨平台脚本默认面向“远程直接执行”场景，两端流程一致：
+
+1. 选择安装范围：`project` 或 `global`
+2. 通过 `npx skills ls --json` 识别已安装 skills
+3. 选择安装模式：
+   - 从本仓库 GitHub source 安装一方 skills
+   - 从 `content/skills/external-skills/` 选择第三方 skills
+4. 从 GitHub 下载候选元数据：
+   - 一方 skills：`content/skills/catalog.json`
+   - 第三方 skills：`content/skills/external-skills/index.toml` 与 `categories/*.toml`
+5. 在选择前自动过滤掉已安装 skills
+6. 执行对应的 `npx skills add ...` 命令
+
+如果你已经克隆仓库，仍可使用本地便捷入口：
+
+```bash
+just skills-install
+just skills-install-sh
+just skills-install-ps1
+```
+
+当选择 `project` 范围时，当前 shell 工作目录会被视为安装目标。
 
 ## 仓库结构
 
@@ -100,21 +160,7 @@ just mcs-web-test
 - 外部技能
 - 中英文技能目录页
 
-其中 Codex CLI skill 的说明见 `docs/skills/ai-llm-skills/codex.md` 与 `docs/zh/skills/ai-llm-skills/codex.md`。这两页会同步维护当前 Codex CLI 写法，并已更新为默认模型 `gpt-5.4` 以及推荐的 `codex exec` / 实时网络搜索配置。
-
-## 只安装 skills catalog
-
-若想要无交互式地默认全局安装所有技能到特定的 Agent（Universal、Antigravity、Claude Code、iFlow CLI、Kiro CLI、Qwen Code、Trae、Trae CN）：
-
-```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
-```
-
-如果你只想获取一方技能目录，而不需要完整仓库工作流：
-
-```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
-```
+其中 Codex CLI skill 的说明见 `docs/skills/ai-llm-skills/codex.md` 与 `docs/zh/skills/ai-llm-skills/codex.md`。这两页会同步维护当前 Codex CLI 写法，并已更新为默认模型 `gpt-5.4` 以及推荐的 `codex exec` 与实时网络搜索用法。
 
 ## License
 

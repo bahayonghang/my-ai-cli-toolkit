@@ -14,6 +14,30 @@
 
 ## 推荐入口
 
+### 直接从 GitHub 安装 skills
+
+```bash
+# macOS / Linux
+bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
+```
+
+```powershell
+# Windows PowerShell
+irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
+```
+
+- 适合想在终端里交互式安装，又不想克隆仓库的场景。
+- 同时支持一方 GitHub 安装和 `external-skills` 三方安装，并会先识别已安装技能。
+
+### 直接安装一方 skills catalog
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
+- 适合只想快速获取一方 skills catalog 的场景。
+- 不会替代仓库级的 MCS、command catalog 和 runtime 说明。
+
 ### 使用 MCS TUI
 
 ```bash
@@ -35,18 +59,19 @@ just web
 
 [打开 MCS Web 指南 →](/zh/guide/mcs-web)
 
-### 直接安装技能目录
+### 克隆仓库后使用本地安装包装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
+just skills-install
+just skills-install-ps1
 ```
 
-- 适合只想快速获取 skills catalog 的场景。
-- 不会替代仓库级的 MCS、command catalog 和 runtime 说明。
+- 这是对同一套安装脚本的本地包装入口。
+- 只有在仓库已经克隆到本地时才有意义。
 
 ## 文档地图
 
-- [安装](/zh/guide/installation)：克隆、运行、构建、平台路径
+- [安装](/zh/guide/installation)：远程直接安装、克隆后工作流、构建、平台路径
 - [MCS TUI](/zh/guide/mcs)：快捷键、安装模型、迁移、排错
 - [MCS Web](/zh/guide/mcs-web)：后端/UI 启动、页面结构、安装流程
 - [MCS 架构](/zh/guide/mcs-architecture)：`mcs-core`、`mcs-tui`、`mcs-web`

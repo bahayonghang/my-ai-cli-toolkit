@@ -14,6 +14,30 @@ This site documents the current repository shape of [`my-claude-code-settings`](
 
 ## Recommended entrypoints
 
+### Install skills directly from GitHub
+
+```bash
+# macOS / Linux
+bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
+```
+
+```powershell
+# Windows PowerShell
+irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
+```
+
+- Best when you want an interactive terminal installer without cloning the repository.
+- Supports first-party GitHub installs and third-party `external-skills` installs with installed-skill detection.
+
+### Install the first-party skills catalog directly
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
+- Fast path when you only need the first-party skills catalog.
+- Does not replace the repository-level MCS tooling or command catalogs.
+
 ### Use MCS TUI
 
 ```bash
@@ -36,18 +60,19 @@ just web
 
 [Open the MCS Web guide →](/guide/mcs-web)
 
-### Install the skill catalog directly
+### Use local installer wrappers after cloning
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
+just skills-install
+just skills-install-ps1
 ```
 
-- Fast path when you only need the skills catalog.
-- Does not replace the repository-level MCS tooling or command catalogs.
+- Local convenience wrappers around the same installer scripts.
+- Only relevant after the repository has already been cloned.
 
 ## Documentation map
 
-- [Installation](/guide/installation): clone, run, build, and supported platform paths
+- [Installation](/guide/installation): direct remote install, clone-based workflows, build, and supported platform paths
 - [MCS TUI](/guide/mcs): keyboard flow, install model, migration, troubleshooting
 - [MCS Web](/guide/mcs-web): backend/UI startup, pages, install flows
 - [MCS Architecture](/guide/mcs-architecture): `mcs-core`, `mcs-tui`, `mcs-web`

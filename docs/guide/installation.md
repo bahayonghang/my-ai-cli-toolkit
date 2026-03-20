@@ -2,49 +2,90 @@
 
 ## Prerequisites
 
-- Git
-- Rust toolchain (`cargo`) for `mcs/`
-- Node.js + npm for the docs site and `mcs-web/ui`
-- Optional: `npx` if you want the direct skill-only install flow
+Choose the minimal setup for your workflow:
 
-## Clone the repository
+- Direct skill installation only:
+  - Node.js
+  - `npx`
+- Repository workflows:
+  - Git
+  - Rust toolchain (`cargo`) for `mcs/`
+  - Node.js + npm for the docs site and `mcs-web/ui`
+  - optional `just` for local task entrypoints
+
+## Install skills without cloning the repository
+
+If you only want to install skills, the repository clone is optional.
+
+### Interactive remote installer
+
+```bash
+# macOS / Linux
+bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
+```
+
+```powershell
+# Windows PowerShell
+irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
+```
+
+These scripts:
+
+- ask you to choose `project` or `global` scope first
+- inspect the selected scope with `npx skills ls --json`
+- let you choose either:
+  - first-party skills from this repository's GitHub source
+  - third-party skills from `content/skills/external-skills/`
+- download candidate metadata from GitHub:
+  - first-party skills from `content/skills/catalog.json`
+  - third-party skills from `content/skills/external-skills/index.toml` and `categories/*.toml`
+- hide already installed skills before selection
+
+For `project` scope, the current shell working directory is used as the install target.
+
+### Install only the first-party skills catalog
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills
+```
+
+This is the lightweight path when you only want the first-party skill folders and do not need the repository's MCS tooling or the interactive external-skills flow.
+
+### Install all first-party skills non-interactively
+
+```bash
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+```
+
+## Clone the repository when you need local tooling
+
+Clone the repository when you want the Rust TUI, the web app, the local docs site, or local `just` wrappers for the installer scripts.
 
 ```bash
 git clone https://github.com/bahayonghang/my-claude-code-settings.git
 cd my-claude-code-settings
 ```
 
-## Primary ways to use the repository
-
-### 1. Start the terminal UI
+### Primary local entrypoints
 
 ```bash
 just mcs
-```
-
-This builds and runs `mcs-tui` from the Rust workspace.
-
-### 2. Start the web app
-
-```bash
 just web
-```
-
-This runs the Axum backend (`mcs-web`) and the React UI together.
-
-### 3. Browse the documentation site locally
-
-```bash
 just doc
+just skills-install
 ```
 
-### 4. Install only the skills catalog
+Explicit local installer entrypoints are also available:
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
+just skills-install-sh
+just skills-install-ps1
 ```
 
-This is the lightweight path when you only want the skill folders and do not need the repository's MCS tooling.
+`just skills-install` picks the current platform default:
+
+- Windows -> `skills-install.ps1`
+- macOS / Linux -> `skills-install.sh`
 
 ## Platform paths
 
