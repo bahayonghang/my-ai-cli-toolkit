@@ -15,18 +15,6 @@
 
 如果你只是想安装 skills，不需要先克隆本仓库。
 
-交互式安装器：
-
-```bash
-# macOS / Linux
-bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
-```
-
-```powershell
-# Windows PowerShell
-irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
-```
-
 直接安装一方 skills catalog：
 
 ```bash
@@ -55,35 +43,7 @@ just web
 
 # 文档站点
 just doc
-
-# 本地交互式 skills 安装器
-just skills-install
 ```
-
-## 交互式安装脚本
-
-`tools/scripts/skills-install/` 下的跨平台脚本默认面向“远程直接执行”场景，两端流程一致：
-
-1. 选择安装范围：`project` 或 `global`
-2. 通过 `npx skills ls --json` 识别已安装 skills
-3. 选择安装模式：
-   - 从本仓库 GitHub source 安装一方 skills
-   - 从 `content/skills/external-skills/` 选择第三方 skills
-4. 从 GitHub 下载候选元数据：
-   - 一方 skills：`content/skills/catalog.json`
-   - 第三方 skills：`content/skills/external-skills/index.toml` 与 `categories/*.toml`
-5. 在选择前自动过滤掉已安装 skills
-6. 执行对应的 `npx skills add ...` 命令
-
-如果你已经克隆仓库，仍可使用本地便捷入口：
-
-```bash
-just skills-install
-just skills-install-sh
-just skills-install-ps1
-```
-
-当选择 `project` 范围时，当前 shell 工作目录会被视为安装目标。
 
 ## 仓库结构
 

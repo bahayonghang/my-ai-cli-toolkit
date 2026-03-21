@@ -17,32 +17,6 @@
 
 如果你只是想安装 skills，不必先克隆本仓库。
 
-### 远程交互式安装器
-
-```bash
-# macOS / Linux
-bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
-```
-
-```powershell
-# Windows PowerShell
-irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
-```
-
-这两个脚本会：
-
-- 先让你选择 `project` 或 `global` 安装范围
-- 使用 `npx skills ls --json` 检查该范围内已安装的技能
-- 在两种来源之间切换：
-  - 从本仓库 GitHub source 安装一方 skills
-  - 从 `content/skills/external-skills/` 中选择第三方 skills
-- 自动从 GitHub 下载候选元数据：
-  - 一方 skills：`content/skills/catalog.json`
-  - 第三方 skills：`content/skills/external-skills/index.toml` 与 `categories/*.toml`
-- 在选择前自动隐藏已安装的技能
-
-当选择 `project` 范围时，当前 shell 工作目录会被视为安装目标。
-
 ### 只安装一方 skills catalog
 
 ```bash
@@ -72,20 +46,7 @@ cd my-claude-code-settings
 just mcs
 just web
 just doc
-just skills-install
 ```
-
-如果你想显式指定本地安装脚本，也可以使用：
-
-```bash
-just skills-install-sh
-just skills-install-ps1
-```
-
-`just skills-install` 会按当前平台选择默认脚本：
-
-- Windows -> `skills-install.ps1`
-- macOS / Linux -> `skills-install.sh`
 
 ## 平台路径
 

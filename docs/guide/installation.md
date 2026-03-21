@@ -17,32 +17,6 @@ Choose the minimal setup for your workflow:
 
 If you only want to install skills, the repository clone is optional.
 
-### Interactive remote installer
-
-```bash
-# macOS / Linux
-bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
-```
-
-```powershell
-# Windows PowerShell
-irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
-```
-
-These scripts:
-
-- ask you to choose `project` or `global` scope first
-- inspect the selected scope with `npx skills ls --json`
-- let you choose either:
-  - first-party skills from this repository's GitHub source
-  - third-party skills from `content/skills/external-skills/`
-- download candidate metadata from GitHub:
-  - first-party skills from `content/skills/catalog.json`
-  - third-party skills from `content/skills/external-skills/index.toml` and `categories/*.toml`
-- hide already installed skills before selection
-
-For `project` scope, the current shell working directory is used as the install target.
-
 ### Install only the first-party skills catalog
 
 ```bash
@@ -72,20 +46,7 @@ cd my-claude-code-settings
 just mcs
 just web
 just doc
-just skills-install
 ```
-
-Explicit local installer entrypoints are also available:
-
-```bash
-just skills-install-sh
-just skills-install-ps1
-```
-
-`just skills-install` picks the current platform default:
-
-- Windows -> `skills-install.ps1`
-- macOS / Linux -> `skills-install.sh`
 
 ## Platform paths
 

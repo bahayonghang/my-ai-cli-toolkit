@@ -14,21 +14,6 @@
 
 ## 推荐入口
 
-### 直接从 GitHub 安装 skills
-
-```bash
-# macOS / Linux
-bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
-```
-
-```powershell
-# Windows PowerShell
-irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
-```
-
-- 适合想在终端里交互式安装，又不想克隆仓库的场景。
-- 同时支持一方 GitHub 安装和 `external-skills` 三方安装，并会先识别已安装技能。
-
 ### 直接安装一方 skills catalog
 
 ```bash
@@ -58,16 +43,6 @@ just web
 - 适合浏览安装目标、查看详情抽屉和 Web 端 catalog。
 
 [打开 MCS Web 指南 →](/zh/guide/mcs-web)
-
-### 克隆仓库后使用本地安装包装命令
-
-```bash
-just skills-install
-just skills-install-ps1
-```
-
-- 这是对同一套安装脚本的本地包装入口。
-- 只有在仓库已经克隆到本地时才有意义。
 
 ## 文档地图
 

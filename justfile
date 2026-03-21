@@ -14,10 +14,6 @@ just_cmd := "just"
 node_cmd := "node"
 cargo_cmd := "cargo"
 rustc_cmd := "rustc"
-skills_install_sh_cmd := "bash ./tools/scripts/skills-install/skills-install.sh"
-skills_install_ps1_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\\tools\\scripts\\skills-install\\skills-install.ps1" } else { "pwsh -NoProfile -File ./tools/scripts/skills-install/skills-install.ps1" }
-skills_install_cmd := if os_family() == "windows" { skills_install_ps1_cmd } else { skills_install_sh_cmd }
-
 # ============ 跨平台执行指令 ============
 
 kill_backend_cmd := if os_family() == "windows" { "powershell.exe -NoLogo -NoProfile -Command \"Get-Process -Name 'mcs-web' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; exit 0\"" } else { "pkill -x mcs-web || true" }
@@ -57,7 +53,6 @@ help:
     @echo "  just web-rebuild            - 强制重新编译前后端并启动 Web 开发环境"
     @echo "  just web-rebuild-prod       - 强制重新编译前后端并启动 Web 生产环境"
     @echo "  just doc                    - 启动文档开发服务器"
-    @echo "  just skills-install         - 运行已克隆仓库后的本地交互式 skills 安装脚本"
     @echo ""
     @echo "📚 文档相关："
     @echo "  just docs-install           - 安装文档站点依赖"
@@ -65,11 +60,6 @@ help:
     @echo "  just docs-build             - 构建生产版本文档"
     @echo "  just docs-preview           - 预览构建后的文档"
     @echo "  just docs                   - 安装依赖并启动文档开发"
-    @echo ""
-    @echo "📦 Skills 安装："
-    @echo "  just skills-install         - 运行已克隆仓库后的当前平台本地安装脚本"
-    @echo "  just skills-install-sh      - 显式运行已克隆仓库后的 macOS/Linux 本地安装脚本"
-    @echo "  just skills-install-ps1     - 显式运行已克隆仓库后的 Windows PowerShell 本地安装脚本"
     @echo ""
     @echo "🦀 MCS (Rust TUI)："
     @echo "  just mcs                    - 启动 MCS TUI (release)"
@@ -130,20 +120,6 @@ docs-preview:
 
 # 一键启动文档开发
 docs: docs-install docs-dev
-
-# ============ 本地交互式 skills 安装脚本（适用于已克隆仓库） ============
-
-# 运行当前平台默认的本地交互式 skills 安装脚本
-skills-install:
-    {{ skills_install_cmd }}
-
-# 显式运行 macOS/Linux 版本地安装脚本
-skills-install-sh:
-    {{ skills_install_sh_cmd }}
-
-# 显式运行 Windows PowerShell 版本地安装脚本
-skills-install-ps1:
-    {{ skills_install_ps1_cmd }}
 
 # ============ MCS (Rust TUI) ============
 

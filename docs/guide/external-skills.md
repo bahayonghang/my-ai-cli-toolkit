@@ -9,7 +9,6 @@ This registry lives alongside the first-party catalog under `content/skills/`, b
 The current model is:
 
 - first-party skills: `content/skills/<category>/<skill-name>/`
-- first-party installer manifest: `content/skills/catalog.json`
 - third-party registry index: `content/skills/external-skills/index.toml`
 - third-party category fragments: `content/skills/external-skills/categories/<category-id>.toml`
 - web management surface: MCS Web and `npx skills`
@@ -30,29 +29,6 @@ That means:
 - first-party catalog lives in `content/skills/`
 - third-party registry also lives under `content/skills/`
 - docs should still describe first-party skill directories and third-party registry data separately
-
-## Interactive install flow
-
-The repository also includes terminal installer scripts at `tools/scripts/skills-install/` for users who want an interactive CLI flow outside MCS Web.
-
-Preferred remote entrypoints:
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
-```
-
-```powershell
-irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
-```
-
-Those scripts:
-
-- compare installed skills against `npx skills ls --json`
-- read first-party metadata from remote `content/skills/catalog.json`
-- read external metadata from remote `content/skills/external-skills/index.toml` and `categories/*.toml`
-- translate selected entries into one or more `npx skills add <package_ref> [--skill <flag>]` commands
-
-If you already cloned the repository, local `just skills-install*` wrappers remain available as convenience commands.
 
 ## When to use it
 

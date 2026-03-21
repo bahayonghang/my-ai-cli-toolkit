@@ -14,21 +14,6 @@ This site documents the current repository shape of [`my-claude-code-settings`](
 
 ## Recommended entrypoints
 
-### Install skills directly from GitHub
-
-```bash
-# macOS / Linux
-bash <(curl -fsSL https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.sh)
-```
-
-```powershell
-# Windows PowerShell
-irm https://raw.githubusercontent.com/bahayonghang/my-claude-code-settings/main/tools/scripts/skills-install/skills-install.ps1 | iex
-```
-
-- Best when you want an interactive terminal installer without cloning the repository.
-- Supports first-party GitHub installs and third-party `external-skills` installs with installed-skill detection.
-
 ### Install the first-party skills catalog directly
 
 ```bash
@@ -59,16 +44,6 @@ just web
 - Best for richer detail drawers, install target dialogs, and catalog browsing.
 
 [Open the MCS Web guide →](/guide/mcs-web)
-
-### Use local installer wrappers after cloning
-
-```bash
-just skills-install
-just skills-install-ps1
-```
-
-- Local convenience wrappers around the same installer scripts.
-- Only relevant after the repository has already been cloned.
 
 ## Documentation map
 
