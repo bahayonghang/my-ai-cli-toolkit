@@ -83,6 +83,8 @@ Use the JSON form when the workflow already has a structured spec or when many f
 - The parser also accepts compact syntax inside `spec.query` when a JSON spec is used.
 - Generic field filters work for many fields, including `title`, `shorttitle`, `annotation`, `keywords`, `abstract`, `file`, `copyright`, `doi`, and `eprint`.
 - Negated generic field filters are written like `-annotation:survey`.
+- RTK can help discover `.bib` files and inspect field coverage, but it should not replace the raw JSON output of `scripts/search_bib.py`.
+- If you want a compact human-readable summary after the search, pipe the JSON into `scripts/preview_bib_search.py` instead of changing the query syntax.
 
 ## Natural-language mapping examples
 

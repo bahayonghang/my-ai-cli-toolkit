@@ -11,8 +11,8 @@ description: >-
 metadata:
   category: academic-skills
   tags: [bibtex, biblatex, citation, latex, typst, bibliography, research, zotero, bib]
-  version: "1.0.0"
-  last_updated: "2026-03-16"
+  version: "1.1.0"
+  last_updated: "2026-03-20"
 allowed-tools: Read, Bash
 ---
 
@@ -25,10 +25,12 @@ Use this skill when the user provides a `.bib` file and wants research-oriented 
 Follow this workflow:
 
 1. Identify the `.bib` file to use.
-2. Translate the user's request into either a JSON search spec or a compact query expression.
-3. Run `scripts/search_bib.py` on the `.bib` file.
-4. Review the JSON results and present the best matches clearly.
-5. Include LaTeX and/or Typst citation snippets whenever the user asks for them or would benefit from them.
+2. If `rtk` is available, prefer it for exploratory steps such as locating `.bib` files and inspecting representative fields.
+3. Translate the user's request into either a JSON search spec or a compact query expression.
+4. Run `scripts/search_bib.py` on the `.bib` file and keep its JSON output uncompressed.
+5. Optionally pipe the JSON into `scripts/preview_bib_search.py` for a compact human-readable summary.
+6. Review the results and present the best matches clearly.
+7. Include LaTeX and/or Typst citation snippets whenever the user asks for them or would benefit from them.
 
 ## Input expectations
 
@@ -114,6 +116,20 @@ For more examples, see `references/query-syntax.md`.
 
 Run the script with a JSON spec, a spec file, or a compact query.
 
+## RTK Fast Path
+
+If `rtk` is available, prefer it only for model-facing exploration:
+
+- locate bibliography files with `rtk find . -name "*.bib"`
+- inspect a representative slice with `rtk read /path/to/library.bib -l aggressive -m 80`
+- confirm whether fields such as DOI, keywords, annotation, or eprint are present with `rtk grep "doi|keywords|annotation|eprint" /path/to/library.bib`
+
+Keep machine-readable search results on the raw script path:
+
+- use raw `python scripts/search_bib.py ...` whenever another tool or script needs JSON
+- do not wrap `search_bib.py` output with RTK compression
+- use `python scripts/preview_bib_search.py` only after JSON has already been produced
+
 ### Inline JSON example
 
 ```bash
@@ -142,6 +158,15 @@ python scripts/search_bib.py \
 python scripts/search_bib.py --bib /path/to/library.bib --spec-file /path/to/spec.json
 ```
 
+### Human-readable preview example
+
+```bash
+python scripts/search_bib.py \
+  --bib /path/to/library.bib \
+  --query 'mamba time series forecasting author:Cheng year>=2024 has:code type:article,misc cite:both limit:5' \
+| python scripts/preview_bib_search.py
+```
+
 If the user uploads a `.bib` file into the conversation, first make sure you know its local path in the execution environment, then run the script against that file.
 
 ## Output expectations
@@ -163,6 +188,12 @@ For each selected entry, usually include:
 - the most relevant supporting fields for the query, such as keywords, annotation, or a short abstract excerpt
 
 If the user asked for a compact query, it is helpful to echo the interpreted filters briefly, especially when negation or multiple field filters are involved.
+
+When using the preview helper:
+
+- treat it as a compact rendering of the JSON, not as a separate search engine
+- keep `search_bib.py` as the source of truth for filtering, scoring, sorting, and citations
+- do not rely on the preview output when exact raw BibTeX preservation matters
 
 ## Citation formatting rules
 
@@ -217,4 +248,5 @@ The script is pure Python with a linear scan and no external dependencies. For t
 ## Resources
 
 - `scripts/search_bib.py`: parses `.bib` files, applies filters, ranks results, and formats citation snippets
+- `scripts/preview_bib_search.py`: renders `search_bib.py` JSON into a compact human-readable summary
 - `references/query-syntax.md`: examples for mapping user requests into structured search specs and compact expressions
