@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Architects+Daughter&family=Patrick+Hand&family=DM+Sans:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #FFFEF9;
+    --ink: #2B2B2B;
+    --ink-light: #6B6B6B;
+    --accent: #E85D3A;
+    --marker: #FFE066;
+    --block: #E8F4EC;
+    --hand: 'Caveat', 'PingFang SC', cursive;
+    --hand-alt: 'Architects Daughter', 'Patrick Hand', cursive;
+    --sans: 'DM Sans', 'PingFang SC', system-ui, sans-serif;
+    --mono: 'SF Mono', 'Menlo', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; background: var(--bg); }
+
+  .page {
+    width: 1080px;
+    background: var(--bg);
+    position: relative;
+  }
+
+  .page > .grain {
+    position: absolute;
+    inset: 0;
+    filter: url(#noise);
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* subtle dot grid like notebook paper */
+  .page > .dotgrid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .colophon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 60px 36px;
+    border-top: 2px dashed rgba(0,0,0,0.08);
+  }
+
+  .colophon .who {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .colophon .who img {
+    width: 40px; height: 40px;
+    border-radius: 50%; object-fit: cover;
+  }
+
+  .colophon .who span {
+    font: 400 24px/1 var(--sans);
+    color: var(--ink-light);
+  }
+
+  .colophon .arxiv {
+    font: 400 22px/1 var(--mono);
+    color: var(--ink-light);
+  }
+
+  {{CUSTOM_CSS}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="noise">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <!-- reusable arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="var(--ink)" />
+    </marker>
+  </defs>
+</svg>
+<div class="page">
+  <div class="grain"></div>
+  <div class="dotgrid"></div>
+  {{CONTENT_HTML}}
+  <div class="colophon">
+    <div class="who">
+      <img src="file:///Users/lijigang/.claude/skills/ljg-card/assets/logo.png" alt="">
+      <span>{{SOURCE}}</span>
+    </div>
+    {{ARXIV_LINE}}
+  </div>
+</div>
+</body>
+</html>
