@@ -1,13 +1,7 @@
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import {
-  Box,
-  Button,
-  Chip,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip, Stack, Typography } from "@mui/material";
 
 interface InstallStagePanelProps {
   stepNumber: number;
@@ -46,19 +40,19 @@ export function InstallStagePanel({
         borderRadius: 4,
         border: "1px solid",
         borderColor: active
-          ? "var(--mcs-dashboard-outline-strong)"
+          ? "var(--mcs-workbench-outline-strong)"
           : complete
             ? "var(--mcs-success-border)"
             : locked
-              ? "var(--mcs-dashboard-outline)"
-              : "var(--mcs-dashboard-outline)",
+              ? "var(--mcs-workbench-outline)"
+              : "var(--mcs-workbench-outline)",
         background: active
           ? "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill-strong) 48%, var(--mcs-panel-fill) 100%)"
           : complete
             ? "linear-gradient(180deg, var(--mcs-success-surface) 0%, var(--mcs-summary-tile-fill) 100%)"
             : locked
-              ? "linear-gradient(180deg, var(--mcs-dashboard-surface-subtle) 0%, var(--mcs-panel-fill) 100%)"
-              : "linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-panel-fill) 100%)",
+              ? "linear-gradient(180deg, var(--mcs-workbench-surface-subtle) 0%, var(--mcs-panel-fill) 100%)"
+              : "linear-gradient(180deg, var(--mcs-workbench-surface-strong) 0%, var(--mcs-panel-fill) 100%)",
         boxShadow: active
           ? "var(--mcs-summary-tile-shadow)"
           : complete
@@ -76,9 +70,9 @@ export function InstallStagePanel({
           top: 0,
           height: 2,
           background: active
-            ? "linear-gradient(90deg, var(--mcs-dashboard-accent-strong), var(--mcs-dashboard-warm-strong))"
+            ? "linear-gradient(90deg, var(--mcs-workbench-accent-strong), var(--mcs-workbench-warm-strong))"
             : complete
-              ? "linear-gradient(90deg, var(--mcs-success-border), var(--mcs-dashboard-accent-soft))"
+              ? "linear-gradient(90deg, var(--mcs-success-border), var(--mcs-workbench-accent-soft))"
               : "transparent",
         },
         "&::after": active
@@ -100,7 +94,12 @@ export function InstallStagePanel({
           justifyContent="space-between"
           alignItems={{ xs: "flex-start", md: "flex-start" }}
         >
-          <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ minWidth: 0 }}>
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="flex-start"
+            sx={{ minWidth: 0 }}
+          >
             <Box
               sx={{
                 width: 46,
@@ -109,18 +108,18 @@ export function InstallStagePanel({
                 display: "grid",
                 placeItems: "center",
                 bgcolor: active
-                  ? "var(--mcs-dashboard-accent-soft)"
+                  ? "var(--mcs-workbench-accent-soft)"
                   : complete
                     ? "var(--mcs-success-surface)"
-                    : "var(--mcs-dashboard-surface-strong)",
+                    : "var(--mcs-workbench-surface-strong)",
                 border: "1px solid",
                 borderColor: active
-                  ? "var(--mcs-dashboard-outline-strong)"
+                  ? "var(--mcs-workbench-outline-strong)"
                   : complete
                     ? "var(--mcs-success-border)"
-                    : "var(--mcs-dashboard-outline)",
+                    : "var(--mcs-workbench-outline)",
                 boxShadow: active ? "var(--mcs-summary-tile-shadow)" : "none",
-                color: "var(--mcs-dashboard-ink)",
+                color: "var(--mcs-workbench-ink)",
                 flexShrink: 0,
               }}
             >
@@ -130,17 +129,35 @@ export function InstallStagePanel({
             </Box>
 
             <Box sx={{ minWidth: 0 }}>
-              <Stack direction="row" spacing={1} alignItems="center" useFlexGap flexWrap="wrap">
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                useFlexGap
+                flexWrap="wrap"
+              >
                 <Typography variant="h5" sx={{ letterSpacing: "-0.03em" }}>
                   {title}
                 </Typography>
                 <Chip
                   size="small"
                   label={statusLabel}
-                  color={active ? "primary" : complete ? "success" : locked ? "default" : "info"}
+                  color={
+                    active
+                      ? "primary"
+                      : complete
+                        ? "success"
+                        : locked
+                          ? "default"
+                          : "info"
+                  }
                   variant={active ? "filled" : "outlined"}
                   icon={
-                    complete ? <TaskAltIcon fontSize="small" /> : locked ? <LockOutlinedIcon fontSize="small" /> : undefined
+                    complete ? (
+                      <TaskAltIcon fontSize="small" />
+                    ) : locked ? (
+                      <LockOutlinedIcon fontSize="small" />
+                    ) : undefined
                   }
                 />
               </Stack>
@@ -149,7 +166,7 @@ export function InstallStagePanel({
                 sx={{
                   mt: 0.75,
                   maxWidth: 720,
-                  color: "var(--mcs-dashboard-muted)",
+                  color: "var(--mcs-workbench-muted)",
                 }}
               >
                 {description}
@@ -166,8 +183,12 @@ export function InstallStagePanel({
               disabled={locked}
               sx={{
                 flexShrink: 0,
-                borderColor: active ? "var(--mcs-dashboard-outline-strong)" : "var(--mcs-dashboard-outline)",
-                bgcolor: locked ? "var(--mcs-dashboard-surface-subtle)" : "transparent",
+                borderColor: active
+                  ? "var(--mcs-workbench-outline-strong)"
+                  : "var(--mcs-workbench-outline)",
+                bgcolor: locked
+                  ? "var(--mcs-workbench-surface-subtle)"
+                  : "transparent",
               }}
             >
               {actionLabel}
@@ -182,10 +203,10 @@ export function InstallStagePanel({
               py: 1.65,
               borderRadius: 3,
               background:
-                "linear-gradient(180deg, var(--mcs-dashboard-surface-strong) 0%, var(--mcs-dashboard-surface-subtle) 100%)",
-              border: "1px dashed var(--mcs-dashboard-outline)",
+                "linear-gradient(180deg, var(--mcs-workbench-surface-strong) 0%, var(--mcs-workbench-surface-subtle) 100%)",
+              border: "1px dashed var(--mcs-workbench-outline)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-              color: "var(--mcs-dashboard-muted)",
+              color: "var(--mcs-workbench-muted)",
             }}
           >
             {preview}
@@ -196,12 +217,11 @@ export function InstallStagePanel({
           sx={{
             display: "grid",
             gridTemplateRows: active ? "1fr" : "0fr",
-            transition: "grid-template-rows var(--mcs-duration) var(--mcs-ease)",
+            transition:
+              "grid-template-rows var(--mcs-duration) var(--mcs-ease)",
           }}
         >
-          <Box sx={{ overflow: "hidden" }}>
-            {active ? children : null}
-          </Box>
+          <Box sx={{ overflow: "hidden" }}>{active ? children : null}</Box>
         </Box>
       </Stack>
     </Box>

@@ -13,10 +13,7 @@ import {
 import { useMemo } from "react";
 import { useI18n } from "@/i18n";
 import { summarizeInstallResults } from "@/pages/installHubLogic";
-import type {
-  ExecutionState,
-  PlatformInstallResult,
-} from "./types";
+import type { ExecutionState, PlatformInstallResult } from "./types";
 import type { PlatformDisplay } from "@/types";
 
 interface InstallReviewStageProps {
@@ -40,8 +37,13 @@ export function InstallReviewStage({
 }: InstallReviewStageProps) {
   const { t } = useI18n();
   const canInstall =
-    !execution.running && selectedSkillNames.length > 0 && selectedPlatforms.length > 0;
-  const progressValue = progressPercent(execution.currentStep, execution.totalSteps);
+    !execution.running &&
+    selectedSkillNames.length > 0 &&
+    selectedPlatforms.length > 0;
+  const progressValue = progressPercent(
+    execution.currentStep,
+    execution.totalSteps,
+  );
   const currentPlatformName = selectedPlatforms.find(
     (platform) => platform.id === execution.activePlatformId,
   )?.name;
@@ -57,16 +59,25 @@ export function InstallReviewStage({
       >
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           <Chip
-            label={t("installHub.skillsChip", { count: selectedSkillNames.length })}
+            label={t("installHub.skillsChip", {
+              count: selectedSkillNames.length,
+            })}
             color="primary"
             variant="outlined"
           />
           <Chip
-            label={t("installHub.platformsChip", { count: selectedPlatforms.length })}
+            label={t("installHub.platformsChip", {
+              count: selectedPlatforms.length,
+            })}
             color="secondary"
             variant="outlined"
           />
-          <Chip label={t("installHub.willRunActions", { count: plannedActionCount })} variant="outlined" />
+          <Chip
+            label={t("installHub.willRunActions", {
+              count: plannedActionCount,
+            })}
+            variant="outlined"
+          />
         </Stack>
 
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
@@ -93,7 +104,10 @@ export function InstallReviewStage({
         sx={{
           display: "grid",
           gap: 1.5,
-          gridTemplateColumns: { xs: "1fr", xl: "minmax(0, 1.15fr) minmax(0, 0.85fr)" },
+          gridTemplateColumns: {
+            xs: "1fr",
+            xl: "minmax(0, 1.15fr) minmax(0, 0.85fr)",
+          },
         }}
       >
         <ReviewPreviewBlock
@@ -130,7 +144,7 @@ function ReviewPreviewBlock({
     <Box
       sx={{
         borderRadius: 3,
-        border: "1px solid var(--mcs-dashboard-outline)",
+        border: "1px solid var(--mcs-workbench-outline)",
         background:
           "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
         p: { xs: 2, md: 2.4 },
@@ -138,19 +152,27 @@ function ReviewPreviewBlock({
     >
       <Stack spacing={2.25}>
         <Box>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="overline"
+            sx={{ color: "var(--mcs-workbench-muted)" }}
+          >
             {t("installHub.reviewSelection")}
           </Typography>
           <Typography variant="h6" sx={{ mt: 0.5 }}>
             {t("installHub.executionScopeTitle")}
           </Typography>
-          <Typography variant="body2" sx={{ mt: 0.75, color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="body2"
+            sx={{ mt: 0.75, color: "var(--mcs-workbench-muted)" }}
+          >
             {t("installHub.reviewSelectionHint", { count: plannedActionCount })}
           </Typography>
         </Box>
 
         <Stack spacing={1.25}>
-          <Typography variant="subtitle2">{t("installHub.selectedSkillsTitle")}</Typography>
+          <Typography variant="subtitle2">
+            {t("installHub.selectedSkillsTitle")}
+          </Typography>
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             {selectedSkillNames.length === 0 ? (
               <Chip
@@ -167,7 +189,9 @@ function ReviewPreviewBlock({
         </Stack>
 
         <Stack spacing={1.25}>
-          <Typography variant="subtitle2">{t("installHub.selectedPlatformsTitle")}</Typography>
+          <Typography variant="subtitle2">
+            {t("installHub.selectedPlatformsTitle")}
+          </Typography>
           <Stack spacing={1}>
             {selectedPlatforms.length === 0 ? (
               <Chip
@@ -184,8 +208,8 @@ function ReviewPreviewBlock({
                     px: 1.5,
                     py: 1.35,
                     borderRadius: 2.5,
-                    border: "1px solid var(--mcs-dashboard-outline)",
-                    bgcolor: "var(--mcs-dashboard-surface-muted)",
+                    border: "1px solid var(--mcs-workbench-outline)",
+                    bgcolor: "var(--mcs-workbench-surface-muted)",
                   }}
                 >
                   <Stack direction="row" spacing={1.25} alignItems="center">
@@ -196,7 +220,10 @@ function ReviewPreviewBlock({
                       <Typography variant="body2" fontWeight={700}>
                         {platform.name}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "var(--mcs-workbench-muted)" }}
+                      >
                         {platform.skills_path}
                       </Typography>
                     </Box>
@@ -236,7 +263,7 @@ function ExecutionStatusBlock({
     <Box
       sx={{
         borderRadius: 3,
-        border: "1px solid var(--mcs-dashboard-outline)",
+        border: "1px solid var(--mcs-workbench-outline)",
         background:
           "linear-gradient(180deg, var(--mcs-panel-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
         p: { xs: 2, md: 2.4 },
@@ -244,7 +271,10 @@ function ExecutionStatusBlock({
     >
       <Stack spacing={2.25}>
         <Box>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="overline"
+            sx={{ color: "var(--mcs-workbench-muted)" }}
+          >
             {t("installHub.execution")}
           </Typography>
           <Typography variant="h6" sx={{ mt: 0.5 }}>
@@ -254,7 +284,9 @@ function ExecutionStatusBlock({
 
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           <Chip
-            label={t("installHub.successCount", { count: summary.totalSuccess })}
+            label={t("installHub.successCount", {
+              count: summary.totalSuccess,
+            })}
             color="success"
             variant="outlined"
           />
@@ -271,7 +303,10 @@ function ExecutionStatusBlock({
 
         {execution.running ? (
           <Stack spacing={1}>
-            <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "var(--mcs-workbench-muted)" }}
+            >
               {t("installHub.installingOnPlatform", {
                 current: execution.currentStep,
                 total: execution.totalSteps,
@@ -279,7 +314,9 @@ function ExecutionStatusBlock({
             </Typography>
             {currentPlatformName ? (
               <Typography variant="body2">
-                {t("installHub.currentPlatformLabel", { platform: currentPlatformName })}
+                {t("installHub.currentPlatformLabel", {
+                  platform: currentPlatformName,
+                })}
               </Typography>
             ) : null}
             <LinearProgress variant="determinate" value={progressValue} />
@@ -352,13 +389,17 @@ function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
           <Typography variant="h6">{`${result.platform.icon} ${result.platform.name}`}</Typography>
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             <Chip
-              label={t("installHub.successCount", { count: result.successCount })}
+              label={t("installHub.successCount", {
+                count: result.successCount,
+              })}
               size="small"
               color="success"
               variant="outlined"
             />
             <Chip
-              label={t("installHub.failedCount", { count: result.failureCount })}
+              label={t("installHub.failedCount", {
+                count: result.failureCount,
+              })}
               size="small"
               color={result.failureCount > 0 ? "error" : "default"}
               variant="outlined"
@@ -371,14 +412,21 @@ function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
           </Stack>
         </Stack>
 
-        {result.requestError ? <Alert severity="error">{result.requestError}</Alert> : null}
+        {result.requestError ? (
+          <Alert severity="error">{result.requestError}</Alert>
+        ) : null}
 
         {result.results.length === 0 ? (
-          <Typography color="text.secondary">{t("installHub.noItemLevelResults")}</Typography>
+          <Typography color="text.secondary">
+            {t("installHub.noItemLevelResults")}
+          </Typography>
         ) : (
           <Stack spacing={1}>
             {failedItems.map((item) => (
-              <Alert key={`${result.platform.id}-${item.item_name}`} severity="error">
+              <Alert
+                key={`${result.platform.id}-${item.item_name}`}
+                severity="error"
+              >
                 {item.item_name}: {item.error ?? item.message}
               </Alert>
             ))}
@@ -391,7 +439,9 @@ function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
               </Alert>
             ))}
             {result.failureCount === 0 && reusedItems.length === 0 ? (
-              <Alert severity="success">{t("installHub.allSelectedInstalled")}</Alert>
+              <Alert severity="success">
+                {t("installHub.allSelectedInstalled")}
+              </Alert>
             ) : null}
           </Stack>
         )}

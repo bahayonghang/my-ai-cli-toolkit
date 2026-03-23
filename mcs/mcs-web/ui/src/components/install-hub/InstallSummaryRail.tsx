@@ -1,13 +1,6 @@
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip, Divider, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useI18n } from "@/i18n";
 import type { TranslateFn } from "@/i18n";
@@ -83,7 +76,7 @@ export function MobileInstallSummaryBar({
   return (
     <Box
       sx={{
-        display: { xs: "block", xl: "none" },
+        display: { xs: "block", lg: "none" },
         position: "sticky",
         bottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
         zIndex: 5,
@@ -96,7 +89,7 @@ export function MobileInstallSummaryBar({
           position: "relative",
           overflow: "hidden",
           borderRadius: 3.5,
-          border: "1px solid var(--mcs-dashboard-outline-strong)",
+          border: "1px solid var(--mcs-workbench-outline-strong)",
           background:
             "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill-strong) 34%, var(--mcs-panel-fill) 100%)",
           boxShadow: "var(--mcs-panel-shadow)",
@@ -122,18 +115,42 @@ export function MobileInstallSummaryBar({
         }}
       >
         <Stack spacing={1.25}>
-          <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Box>
-              <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="overline"
+                sx={{ color: "var(--mcs-workbench-muted)" }}
+              >
                 {t(`installHub.stageTitle.${activeStage}`)}
               </Typography>
-              <Typography variant="body1" fontWeight={700} sx={{ letterSpacing: "-0.03em" }}>
-                {t("installHub.willRunActions", { count: summary.plannedActionCount })}
+              <Typography
+                variant="body1"
+                fontWeight={700}
+                sx={{ letterSpacing: "-0.03em" }}
+              >
+                {t("installHub.willRunActions", {
+                  count: summary.plannedActionCount,
+                })}
               </Typography>
             </Box>
             <Stack direction="row" spacing={0.75}>
-              <Chip label={t("installHub.skillsChip", { count: summary.selectedSkillNames.length })} size="small" />
-              <Chip label={t("installHub.platformsChip", { count: summary.selectedPlatforms.length })} size="small" />
+              <Chip
+                label={t("installHub.skillsChip", {
+                  count: summary.selectedSkillNames.length,
+                })}
+                size="small"
+              />
+              <Chip
+                label={t("installHub.platformsChip", {
+                  count: summary.selectedPlatforms.length,
+                })}
+                size="small"
+              />
             </Stack>
           </Stack>
 
@@ -149,7 +166,10 @@ export function MobileInstallSummaryBar({
           </Button>
 
           {execution.phase === "complete" && results.length > 0 ? (
-            <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "var(--mcs-workbench-muted)" }}
+            >
               {t("installHub.summaryResultsHint")}
             </Typography>
           ) : null}
@@ -184,7 +204,7 @@ function SummarySurface({
         position: "sticky",
         top: 94,
         borderRadius: 4,
-        border: "1px solid var(--mcs-dashboard-outline-strong)",
+        border: "1px solid var(--mcs-workbench-outline-strong)",
         background:
           "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 18%, var(--mcs-panel-fill-strong) 48%, var(--mcs-panel-fill) 100%)",
         boxShadow: "0 18px 40px rgba(15, 23, 42, 0.14)",
@@ -209,7 +229,7 @@ function SummarySurface({
           height: 140,
           borderRadius: "999px",
           background:
-            "radial-gradient(circle, var(--mcs-dashboard-accent-soft) 0%, transparent 72%)",
+            "radial-gradient(circle, var(--mcs-workbench-accent-soft) 0%, transparent 72%)",
           filter: "blur(28px)",
           opacity: 0.72,
           pointerEvents: "none",
@@ -222,13 +242,23 @@ function SummarySurface({
     >
       <Stack spacing={2.25}>
         <Box>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-accent-strong)" }}>
+          <Typography
+            variant="overline"
+            sx={{ color: "var(--mcs-workbench-accent-strong)" }}
+          >
             {t("installHub.summaryEyebrow")}
           </Typography>
           <Typography variant="h5" sx={{ mt: 0.5, letterSpacing: "-0.04em" }}>
             {t("installHub.summaryTitle")}
           </Typography>
-          <Typography variant="body2" sx={{ mt: 0.75, color: "var(--mcs-dashboard-muted)", lineHeight: 1.7 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 0.75,
+              color: "var(--mcs-workbench-muted)",
+              lineHeight: 1.7,
+            }}
+          >
             {t("installHub.summarySubtitle")}
           </Typography>
         </Box>
@@ -240,56 +270,87 @@ function SummarySurface({
             gap: 1,
           }}
         >
-          <SummaryMetric value={summary.selectedSkillNames.length} label={t("installHub.skillsChip", { count: summary.selectedSkillNames.length })} />
-          <SummaryMetric value={summary.selectedPlatforms.length} label={t("installHub.platformsChip", { count: summary.selectedPlatforms.length })} />
-          <SummaryMetric value={summary.plannedActionCount} label={t("installHub.willRunActions", { count: summary.plannedActionCount })} />
+          <SummaryMetric
+            value={summary.selectedSkillNames.length}
+            label={t("installHub.skillsChip", {
+              count: summary.selectedSkillNames.length,
+            })}
+          />
+          <SummaryMetric
+            value={summary.selectedPlatforms.length}
+            label={t("installHub.platformsChip", {
+              count: summary.selectedPlatforms.length,
+            })}
+          />
+          <SummaryMetric
+            value={summary.plannedActionCount}
+            label={t("installHub.willRunActions", {
+              count: summary.plannedActionCount,
+            })}
+          />
         </Box>
 
         <Stack spacing={1}>
-          {(["skills", "platforms", "review"] as InstallHubStage[]).map((stage, index) => {
-            const isActive = stage === activeStage;
-            const disabled = execution.running && stage !== "review" ? true : stage !== "skills" && !steps[stage].available;
+          {(["skills", "platforms", "review"] as InstallHubStage[]).map(
+            (stage, index) => {
+              const isActive = stage === activeStage;
+              const disabled =
+                execution.running && stage !== "review"
+                  ? true
+                  : stage !== "skills" && !steps[stage].available;
 
-            return (
-              <Button
-                key={stage}
-                variant="text"
-                color="inherit"
-                onClick={() => onGoStage(stage)}
-                disabled={disabled}
-                sx={{
-                  justifyContent: "space-between",
-                  px: 1.25,
-                  py: 1.15,
-                  minHeight: 54,
-                  borderRadius: 3,
-                  border: "1px solid",
-                  borderColor: isActive ? "var(--mcs-dashboard-outline-strong)" : "var(--mcs-dashboard-outline)",
-                  bgcolor: isActive ? "var(--mcs-dashboard-accent-soft)" : alpha("#000", 0),
-                  background: isActive
-                    ? "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)"
-                    : "transparent",
-                  boxShadow: isActive ? "var(--mcs-summary-tile-shadow)" : "none",
-                  color: "text.primary",
-                }}
-              >
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Chip
-                    size="small"
-                    label={String(index + 1).padStart(2, "0")}
-                    variant={isActive ? "filled" : "outlined"}
-                    sx={{ minWidth: 42 }}
-                  />
-                  <Typography variant="body2" fontWeight={700}>
-                    {t(`installHub.stageTitle.${stage}`)}
+              return (
+                <Button
+                  key={stage}
+                  variant="text"
+                  color="inherit"
+                  onClick={() => onGoStage(stage)}
+                  disabled={disabled}
+                  sx={{
+                    justifyContent: "space-between",
+                    px: 1.25,
+                    py: 1.15,
+                    minHeight: 54,
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: isActive
+                      ? "var(--mcs-workbench-outline-strong)"
+                      : "var(--mcs-workbench-outline)",
+                    bgcolor: isActive
+                      ? "var(--mcs-workbench-accent-soft)"
+                      : alpha("#000", 0),
+                    background: isActive
+                      ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)"
+                      : "transparent",
+                    boxShadow: isActive
+                      ? "var(--mcs-summary-tile-shadow)"
+                      : "none",
+                    color: "text.primary",
+                  }}
+                >
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip
+                      size="small"
+                      label={String(index + 1).padStart(2, "0")}
+                      variant={isActive ? "filled" : "outlined"}
+                      sx={{ minWidth: 42 }}
+                    />
+                    <Typography variant="body2" fontWeight={700}>
+                      {t(`installHub.stageTitle.${stage}`)}
+                    </Typography>
+                  </Stack>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "var(--mcs-workbench-muted)" }}
+                  >
+                    {t(
+                      `installHub.stepStatus.${resolveStepStatusLabel(stage, steps, activeStage)}`,
+                    )}
                   </Typography>
-                </Stack>
-                <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
-                  {t(`installHub.stepStatus.${resolveStepStatusLabel(stage, steps, activeStage)}`)}
-                </Typography>
-              </Button>
-            );
-          })}
+                </Button>
+              );
+            },
+          )}
         </Stack>
 
         <Divider />
@@ -321,7 +382,10 @@ function SummarySurface({
         </Button>
 
         {execution.phase === "complete" && results.length > 0 ? (
-          <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="caption"
+            sx={{ color: "var(--mcs-workbench-muted)" }}
+          >
             {t("installHub.summaryResultsHint")}
           </Typography>
         ) : null}
@@ -338,17 +402,23 @@ function SummaryMetric({ value, label }: { value: number; label: string }) {
         borderRadius: 3,
         px: 1.25,
         py: 1.1,
-        border: "1px solid var(--mcs-dashboard-outline)",
+        border: "1px solid var(--mcs-workbench-outline)",
         background:
-          "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-dashboard-surface-muted) 100%)",
+          "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-workbench-surface-muted) 100%)",
         boxShadow:
           "inset 0 1px 0 var(--mcs-glass-highlight), 0 10px 24px rgba(17, 24, 39, 0.12)",
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
+      <Typography
+        variant="h6"
+        sx={{ fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05 }}
+      >
         {value}
       </Typography>
-      <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)", display: "block", mt: 0.35 }}>
+      <Typography
+        variant="caption"
+        sx={{ color: "var(--mcs-workbench-muted)", display: "block", mt: 0.35 }}
+      >
         {label}
       </Typography>
     </Box>
@@ -381,7 +451,11 @@ function SummaryList({
               <Chip key={item} label={item} size="small" variant="outlined" />
             ))}
             {overflowCount > 0 ? (
-              <Chip label={`+${overflowCount}`} size="small" variant="outlined" />
+              <Chip
+                label={`+${overflowCount}`}
+                size="small"
+                variant="outlined"
+              />
             ) : null}
           </>
         )}

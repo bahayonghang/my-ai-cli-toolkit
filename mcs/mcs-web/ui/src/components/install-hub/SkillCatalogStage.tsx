@@ -1,11 +1,14 @@
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import {
   Box,
   Button,
   ButtonBase,
   Checkbox,
   Chip,
+  Collapse,
   FormControl,
   FormControlLabel,
+  IconButton,
   InputLabel,
   List,
   ListItem,
@@ -17,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useI18n } from "@/i18n";
 import type { SkillCatalogDto } from "@/types";
 import type { SkillSelection } from "./types";
@@ -58,21 +61,35 @@ export function SkillCatalogStage({
   onClearSelection,
 }: SkillCatalogStageProps) {
   const { t } = useI18n();
+  const [expandedSkills, setExpandedSkills] = useState<Set<string>>(new Set());
   const groupedSkills = useMemo(
     () => groupSkillsByCategory(skills, t("installHub.uncategorizedCategory")),
     [skills, t],
   );
+  const selectedSkillNames = useMemo(
+    () =>
+      skills
+        .filter((skill) => selectedSkills.has(skill.name))
+        .map((skill) => skill.name),
+    [selectedSkills, skills],
+  );
   const activeGroupLabel =
     groupedSkills.find(([, groupSkills]) =>
       groupSkills.some((skill) => selectedSkills.has(skill.name)),
-    )?.[0] ?? groupedSkills[0]?.[0] ?? null;
+    )?.[0] ??
+    groupedSkills[0]?.[0] ??
+    null;
+
   const scrollCategoryIntoView = (category: string) => {
-    const target = globalThis.document?.getElementById(toCategoryAnchor(category));
+    const target = globalThis.document?.getElementById(
+      toCategoryAnchor(category),
+    );
     if (!target) {
       return;
     }
     const prefersReducedMotion =
-      globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+      globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ??
+      false;
     target.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start",
@@ -101,7 +118,11 @@ export function SkillCatalogStage({
             variant="outlined"
           />
           {defaultOnly ? (
-            <Chip label={t("installHub.onlyDefaultSkills")} color="info" variant="outlined" />
+            <Chip
+              label={t("installHub.onlyDefaultSkills")}
+              color="info"
+              variant="outlined"
+            />
           ) : null}
         </Stack>
 
@@ -138,7 +159,7 @@ export function SkillCatalogStage({
           },
           alignItems: "center",
           borderRadius: 3,
-          border: "1px solid var(--mcs-dashboard-outline)",
+          border: "1px solid var(--mcs-workbench-outline)",
           background:
             "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 42%, var(--mcs-panel-fill) 100%)",
           boxShadow:
@@ -170,7 +191,9 @@ export function SkillCatalogStage({
           onChange={(event) => onSearchChange(event.target.value)}
         />
         <FormControl size="small" disabled={disabled}>
-          <InputLabel id="install-hub-stage-category-label">{t("installHub.category")}</InputLabel>
+          <InputLabel id="install-hub-stage-category-label">
+            {t("installHub.category")}
+          </InputLabel>
           <Select
             label={t("installHub.category")}
             labelId="install-hub-stage-category-label"
@@ -200,6 +223,71 @@ export function SkillCatalogStage({
 
       <Box
         sx={{
+          borderRadius: 3.5,
+          border: "1px solid var(--mcs-workbench-outline)",
+          background:
+            "linear-gradient(180deg, var(--mcs-workbench-surface-strong) 0%, var(--mcs-panel-fill) 100%)",
+          boxShadow: "var(--mcs-glass-shadow)",
+          px: { xs: 1.5, md: 2 },
+          py: 1.5,
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", lg: "row" }}
+          spacing={1.5}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", lg: "center" }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <Typography
+              variant="overline"
+              sx={{ color: "var(--mcs-workbench-muted)" }}
+            >
+              {t("installHub.selectedBundleTitle")}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ mt: 0.5, color: "var(--mcs-workbench-muted)" }}
+            >
+              {selectedSkillNames.length > 0
+                ? t("installHub.selectedBundleHint")
+                : t("installHub.selectedBundleEmpty")}
+            </Typography>
+          </Box>
+
+          <Stack direction="row" spacing={0.75} useFlexGap flexWrap="wrap">
+            {selectedSkillNames.length === 0 ? (
+              <Chip
+                label={t("installHub.summaryEmptySkills")}
+                size="small"
+                variant="outlined"
+              />
+            ) : (
+              <>
+                {selectedSkillNames.slice(0, 6).map((name) => (
+                  <Chip
+                    key={name}
+                    label={name}
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                  />
+                ))}
+                {selectedSkillNames.length > 6 ? (
+                  <Chip
+                    label={`+${selectedSkillNames.length - 6}`}
+                    size="small"
+                    variant="outlined"
+                  />
+                ) : null}
+              </>
+            )}
+          </Stack>
+        </Stack>
+      </Box>
+
+      <Box
+        sx={{
           display: "grid",
           gap: 1.5,
           gridTemplateColumns: { xs: "1fr", lg: "220px minmax(0, 1fr)" },
@@ -220,7 +308,7 @@ export function SkillCatalogStage({
         <Box
           sx={{
             borderRadius: 3.5,
-            border: "1px solid var(--mcs-dashboard-outline)",
+            border: "1px solid var(--mcs-workbench-outline)",
             background:
               "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 24%, var(--mcs-panel-fill) 100%)",
             boxShadow: "var(--mcs-panel-shadow)",
@@ -229,50 +317,96 @@ export function SkillCatalogStage({
         >
           {skills.length === 0 ? (
             <Box sx={{ p: 3 }}>
-              <Typography color="text.secondary">{t("installHub.noSkillsFound")}</Typography>
+              <Typography color="text.secondary">
+                {t("installHub.noSkillsFound")}
+              </Typography>
             </Box>
           ) : (
-            <Stack spacing={0}>
-              {groupedSkills.map(([category, categorySkills]) => (
-                <Box key={category} id={toCategoryAnchor(category)}>
-                  <Box
-                    sx={{
-                      px: 2.25,
-                      py: 1.15,
-                      background:
-                        "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-dashboard-surface-subtle) 100%)",
-                      borderTop: "1px solid var(--mcs-dashboard-outline)",
-                      borderBottom: "1px solid var(--mcs-dashboard-outline)",
-                      boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
-                      scrollMarginTop: 112,
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      alignItems="center"
-                      justifyContent="space-between"
-                    >
-                      <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
-                        {category}
-                      </Typography>
-                      <Chip label={categorySkills.length} size="small" variant="outlined" />
-                    </Stack>
-                  </Box>
-                  <List dense disablePadding>
-                    {categorySkills.map((skill) => (
-                      <SkillRow
-                        key={skill.name}
-                        skill={skill}
-                        selected={selectedSkills.has(skill.name)}
-                        disabled={disabled}
-                        onToggle={() => onToggleSkill(skill.name)}
-                      />
-                    ))}
-                  </List>
-                </Box>
-              ))}
-            </Stack>
+            <Box>
+              <Box
+                sx={{
+                  px: 2.25,
+                  py: 1,
+                  borderBottom: "1px solid var(--mcs-workbench-outline)",
+                  bgcolor: "var(--mcs-workbench-surface-subtle)",
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{ color: "var(--mcs-workbench-muted)" }}
+                >
+                  {t("installHub.catalogScrollHint")}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  maxHeight: {
+                    xs: "none",
+                    lg: "min(980px, calc(100vh - 280px))",
+                  },
+                  overflowY: { xs: "visible", lg: "auto" },
+                }}
+              >
+                <Stack spacing={0}>
+                  {groupedSkills.map(([category, categorySkills]) => (
+                    <Box key={category} id={toCategoryAnchor(category)}>
+                      <Box
+                        sx={{
+                          px: 2.25,
+                          py: 1.15,
+                          background:
+                            "linear-gradient(180deg, var(--mcs-workbench-surface-muted) 0%, var(--mcs-workbench-surface-subtle) 100%)",
+                          borderTop: "1px solid var(--mcs-workbench-outline)",
+                          borderBottom:
+                            "1px solid var(--mcs-workbench-outline)",
+                          boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
+                          scrollMarginTop: 112,
+                          position: { lg: "sticky" },
+                          top: { lg: 0 },
+                          zIndex: 1,
+                        }}
+                      >
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <Typography
+                            variant="overline"
+                            sx={{ color: "var(--mcs-workbench-muted)" }}
+                          >
+                            {category}
+                          </Typography>
+                          <Chip
+                            label={categorySkills.length}
+                            size="small"
+                            variant="outlined"
+                          />
+                        </Stack>
+                      </Box>
+                      <List dense disablePadding>
+                        {categorySkills.map((skill) => (
+                          <SkillRow
+                            key={skill.name}
+                            skill={skill}
+                            selected={selectedSkills.has(skill.name)}
+                            expanded={expandedSkills.has(skill.name)}
+                            disabled={disabled}
+                            onToggle={() => onToggleSkill(skill.name)}
+                            onToggleExpanded={() =>
+                              setExpandedSkills((previous) =>
+                                toggleInSet(previous, skill.name),
+                              )
+                            }
+                          />
+                        ))}
+                      </List>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+            </Box>
           )}
         </Box>
       </Box>
@@ -303,7 +437,7 @@ function CategoryQuickNav({
         position: { xs: "static", lg: "sticky" },
         top: { lg: 108 },
         borderRadius: 3.5,
-        border: "1px solid var(--mcs-dashboard-outline)",
+        border: "1px solid var(--mcs-workbench-outline)",
         background:
           "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 24%, var(--mcs-panel-fill) 100%)",
         boxShadow: "var(--mcs-summary-tile-shadow)",
@@ -313,10 +447,16 @@ function CategoryQuickNav({
     >
       <Stack spacing={1}>
         <Box sx={{ px: 0.75, pt: 0.5, pb: 0.25 }}>
-          <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="overline"
+            sx={{ color: "var(--mcs-workbench-muted)" }}
+          >
             {t("installHub.categoryRailTitle")}
           </Typography>
-          <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "var(--mcs-workbench-muted)" }}
+          >
             {t("installHub.categoryRailHint")}
           </Typography>
         </Box>
@@ -340,13 +480,14 @@ function CategoryQuickNav({
                   textAlign: "left",
                   border: "1px solid",
                   borderColor: active
-                    ? "var(--mcs-dashboard-outline-strong)"
-                    : "var(--mcs-dashboard-outline)",
+                    ? "var(--mcs-workbench-outline-strong)"
+                    : "var(--mcs-workbench-outline)",
                   bgcolor: active
-                    ? "var(--mcs-dashboard-accent-soft)"
-                    : "var(--mcs-dashboard-surface-muted)",
+                    ? "var(--mcs-workbench-accent-soft)"
+                    : "var(--mcs-workbench-surface-muted)",
                   boxShadow: active ? "var(--mcs-summary-tile-shadow)" : "none",
-                  transition: "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease)",
+                  transition:
+                    "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease)",
                 }}
               >
                 <Typography
@@ -369,26 +510,36 @@ function CategoryQuickNav({
 function SkillRow({
   skill,
   selected,
+  expanded,
   disabled,
   onToggle,
+  onToggleExpanded,
 }: {
   skill: SkillCatalogDto;
   selected: boolean;
+  expanded: boolean;
   disabled: boolean;
   onToggle: () => void;
+  onToggleExpanded: () => void;
 }) {
   const { t } = useI18n();
   const statusInfo = getAggregatedStatus(skill.platform_status, t);
   const installedOnCount = Object.values(skill.platform_status ?? {}).filter(
     (status) => status === "installed",
   ).length;
+  const description = skill.description ?? t("installHub.noDescription");
+  const hasLongDescription = description.length > 110;
   const skillDomId = toSafeDomId(skill.name);
   const titleId = `${skillDomId}-title`;
   const descriptionId = `${skillDomId}-description`;
   const metaId = `${skillDomId}-meta`;
 
   return (
-    <ListItem disablePadding divider sx={{ borderColor: "var(--mcs-dashboard-outline)" }}>
+    <ListItem
+      disablePadding
+      divider
+      sx={{ borderColor: "var(--mcs-workbench-outline)" }}
+    >
       <ListItemButton
         selected={selected}
         disabled={disabled}
@@ -401,18 +552,19 @@ function SkillRow({
           alignItems: "flex-start",
           px: { xs: 1.25, md: 1.75 },
           py: 1.35,
-          transition: "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), transform var(--mcs-duration) var(--mcs-ease)",
+          transition:
+            "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), transform var(--mcs-duration) var(--mcs-ease)",
           "&:hover": {
-            backgroundColor: "var(--mcs-dashboard-surface-muted)",
+            backgroundColor: "var(--mcs-workbench-surface-muted)",
           },
           "&.Mui-selected": {
             background:
-              "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
-            boxShadow: "inset 0 0 0 1px var(--mcs-dashboard-outline-strong)",
+              "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)",
+            boxShadow: "inset 0 0 0 1px var(--mcs-workbench-outline-strong)",
           },
           "&.Mui-selected:hover": {
             background:
-              "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
+              "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)",
           },
         }}
       >
@@ -427,7 +579,13 @@ function SkillRow({
         <ListItemText
           primary={
             <Stack spacing={1}>
-              <Stack direction="row" spacing={1} alignItems="center" useFlexGap flexWrap="wrap">
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                useFlexGap
+                flexWrap="wrap"
+              >
                 <Typography id={titleId} variant="body1" fontWeight={700}>
                   {skill.name}
                 </Typography>
@@ -439,28 +597,97 @@ function SkillRow({
                     variant="outlined"
                   />
                 ) : null}
-                {skill.category ? <Chip label={skill.category} size="small" variant="outlined" /> : null}
-                <InstallStatusChip status={statusInfo.status} tooltip={statusInfo.tooltip} t={t} />
+                {skill.category ? (
+                  <Chip
+                    label={skill.category}
+                    size="small"
+                    variant="outlined"
+                  />
+                ) : null}
+                <InstallStatusChip
+                  status={statusInfo.status}
+                  tooltip={statusInfo.tooltip}
+                  t={t}
+                />
               </Stack>
 
               <Typography
                 id={descriptionId}
                 variant="body2"
                 sx={{
-                  color: "var(--mcs-dashboard-muted)",
+                  color: "var(--mcs-workbench-muted)",
                   maxWidth: 920,
+                  ...(hasLongDescription && !expanded
+                    ? {
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }
+                    : null),
                 }}
               >
-                {skill.description ?? t("installHub.noDescription")}
+                {description}
               </Typography>
 
-              <Box id={metaId}>
+              <Stack
+                id={metaId}
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                useFlexGap
+                flexWrap="wrap"
+              >
                 {installedOnCount > 0 ? (
-                  <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
-                    {t("installHub.installedOnCount", { count: installedOnCount })}
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "var(--mcs-workbench-muted)" }}
+                  >
+                    {t("installHub.installedOnCount", {
+                      count: installedOnCount,
+                    })}
                   </Typography>
                 ) : null}
-              </Box>
+                {hasLongDescription ? (
+                  <IconButton
+                    size="small"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onToggleExpanded();
+                    }}
+                    aria-label={
+                      expanded
+                        ? t("installHub.hideDetails")
+                        : t("installHub.skillDetails")
+                    }
+                    sx={{
+                      ml: installedOnCount > 0 ? 0.5 : 0,
+                      color: "var(--mcs-workbench-muted)",
+                    }}
+                  >
+                    <ExpandMoreRoundedIcon
+                      fontSize="small"
+                      sx={{
+                        transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+                        transition:
+                          "transform var(--mcs-duration) var(--mcs-ease)",
+                      }}
+                    />
+                  </IconButton>
+                ) : null}
+              </Stack>
+              {hasLongDescription ? (
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "var(--mcs-workbench-muted)" }}
+                  >
+                    {expanded
+                      ? t("installHub.hideDetails")
+                      : t("installHub.skillDetails")}
+                  </Typography>
+                </Collapse>
+              ) : null}
             </Stack>
           }
         />
@@ -469,7 +696,10 @@ function SkillRow({
   );
 }
 
-function groupSkillsByCategory(skills: SkillCatalogDto[], uncategorizedLabel: string) {
+function groupSkillsByCategory(
+  skills: SkillCatalogDto[],
+  uncategorizedLabel: string,
+) {
   const groups = new Map<string, SkillCatalogDto[]>();
   for (const skill of skills) {
     const category = skill.category ?? uncategorizedLabel;
@@ -481,7 +711,9 @@ function groupSkillsByCategory(skills: SkillCatalogDto[], uncategorizedLabel: st
     }
   }
 
-  return Array.from(groups.entries()).sort(([left], [right]) => left.localeCompare(right));
+  return Array.from(groups.entries()).sort(([left], [right]) =>
+    left.localeCompare(right),
+  );
 }
 
 function toCategoryAnchor(category: string) {
@@ -489,5 +721,17 @@ function toCategoryAnchor(category: string) {
 }
 
 function toSafeDomId(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "item";
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "item"
+  );
+}
+
+function toggleInSet<T>(source: Set<T>, value: T): Set<T> {
+  const next = new Set(source);
+  if (next.has(value)) next.delete(value);
+  else next.add(value);
+  return next;
 }

@@ -83,8 +83,8 @@ export function PlatformTargetStage({
             px: 2,
             py: 1.5,
             borderRadius: 3,
-            border: "1px dashed var(--mcs-dashboard-outline)",
-            bgcolor: "var(--mcs-dashboard-surface-muted)",
+            border: "1px dashed var(--mcs-workbench-outline)",
+            bgcolor: "var(--mcs-workbench-surface-muted)",
           }}
         >
           <Typography variant="body2" color="text.secondary">
@@ -99,10 +99,12 @@ export function PlatformTargetStage({
             px: 2,
             py: 3,
             borderRadius: 3,
-            border: "1px solid var(--mcs-dashboard-outline)",
+            border: "1px solid var(--mcs-workbench-outline)",
           }}
         >
-          <Typography color="text.secondary">{t("installHub.noPlatformsFound")}</Typography>
+          <Typography color="text.secondary">
+            {t("installHub.noPlatformsFound")}
+          </Typography>
         </Box>
       ) : (
         <Grid container spacing={1.5}>
@@ -127,12 +129,14 @@ export function PlatformTargetStage({
                     borderRadius: 3,
                     border: "1px solid",
                     borderColor: selected
-                      ? "var(--mcs-dashboard-outline-strong)"
-                      : "var(--mcs-dashboard-outline)",
+                      ? "var(--mcs-workbench-outline-strong)"
+                      : "var(--mcs-workbench-outline)",
                     background: selected
-                      ? "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-panel-fill) 100%)"
-                      : "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-panel-fill) 100%)",
-                    boxShadow: selected ? "var(--mcs-panel-shadow)" : "var(--mcs-glass-shadow)",
+                      ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill) 100%)"
+                      : "linear-gradient(180deg, var(--mcs-workbench-surface-muted) 0%, var(--mcs-panel-fill) 100%)",
+                    boxShadow: selected
+                      ? "var(--mcs-panel-shadow)"
+                      : "var(--mcs-glass-shadow)",
                     p: 2.25,
                     alignItems: "stretch",
                     justifyContent: "stretch",
@@ -145,13 +149,27 @@ export function PlatformTargetStage({
                   }}
                 >
                   <Stack spacing={2} sx={{ width: "100%" }}>
-                    <Stack direction="row" spacing={1.5} justifyContent="space-between" alignItems="flex-start">
-                      <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
+                    <Stack
+                      direction="row"
+                      spacing={1.5}
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                    >
+                      <Stack
+                        direction="row"
+                        spacing={1.25}
+                        alignItems="center"
+                        sx={{ minWidth: 0 }}
+                      >
                         <Typography variant="h4" sx={{ lineHeight: 1 }}>
                           {platform.icon}
                         </Typography>
                         <Box sx={{ minWidth: 0 }}>
-                          <Typography id={titleId} variant="h6" sx={{ lineHeight: 1.1 }}>
+                          <Typography
+                            id={titleId}
+                            variant="h6"
+                            sx={{ lineHeight: 1.1 }}
+                          >
                             {platform.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -167,7 +185,11 @@ export function PlatformTargetStage({
                           size="small"
                         />
                       ) : (
-                        <Chip label={t("installHub.platformReady")} variant="outlined" size="small" />
+                        <Chip
+                          label={t("installHub.platformReady")}
+                          variant="outlined"
+                          size="small"
+                        />
                       )}
                     </Stack>
 
@@ -175,13 +197,22 @@ export function PlatformTargetStage({
                       <Typography
                         id={statusId}
                         variant="body2"
-                        sx={{ color: "var(--mcs-dashboard-muted)", fontWeight: 600, mb: 0.5 }}
+                        sx={{
+                          color: "var(--mcs-workbench-muted)",
+                          fontWeight: 600,
+                          mb: 0.5,
+                        }}
                       >
-                        {selected ? t("installHub.platformSelected") : t("installHub.platformReady")}
+                        {selected
+                          ? t("installHub.platformSelected")
+                          : t("installHub.platformReady")}
                       </Typography>
                       <Typography
                         variant="overline"
-                        sx={{ color: "var(--mcs-dashboard-muted)", display: "block" }}
+                        sx={{
+                          color: "var(--mcs-workbench-muted)",
+                          display: "block",
+                        }}
                       >
                         {t("installHub.platformPathLabel")}
                       </Typography>
@@ -189,7 +220,7 @@ export function PlatformTargetStage({
                         id={pathId}
                         variant="body2"
                         sx={{
-                          color: "var(--mcs-dashboard-muted)",
+                          color: "var(--mcs-workbench-muted)",
                           overflowWrap: "anywhere",
                           fontFamily: "var(--font-family-mono, inherit)",
                         }}
