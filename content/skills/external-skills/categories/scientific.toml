@@ -15,3 +15,12 @@ stars = 3
 usage = "安装后使用 /find-skills 命令发现可用的学术研究辅助技能"
 tags = ["research", "writing"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "luwill/research-skills" }
+
+[[skills]]
+id = "academic-figure-generator"
+name = "academic-figure-generator"
+description = "学术图表生成器 (AI驱动的学术论文插图和配图 Prompt 生成工具)"
+stars = 4
+usage = "使用此技能辅助分析论文并生成高质量的学术图表 Prompt"
+tags = ["research", "graphics"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "LigphiDonk/academic-figure-generator" }

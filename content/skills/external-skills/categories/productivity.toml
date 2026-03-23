@@ -16,3 +16,11 @@ usage = "安装后使用 /pua 命令或通过角色选择器切换不同的 Agen
 tags = ["prompts", "roleplay", "assistant"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "tanweai/pua", skill_flag = "pua" }
 
+[[skills]]
+id = "AIPPT"
+name = "AIPPT"
+description = "Agent skills for PPT"
+stars = 5
+usage = "安装后提供 AI 生成与处理 PPT 的能力"
+tags = ["ppt", "presentation", "productivity", "ai"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/AIPPT", skill_flag = "AIPPT" }
