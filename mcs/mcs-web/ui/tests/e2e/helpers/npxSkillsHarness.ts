@@ -9,8 +9,8 @@ type EventPlan = {
 type ManagedSkill = {
   id: string;
   name: string;
-  package_ref: string;
-  skill_flag: string | null;
+  scope: "global" | "project";
+  agents: string[];
   group_id: string;
   group_label: string;
   group_order: number;
@@ -18,12 +18,30 @@ type ManagedSkill = {
   category_label: string;
   category_order: number;
   tags: string[];
-  install_kind: string;
-  install_provider: string;
   description: string | null;
-  source: "managed" | "filesystem_unmanaged";
-  manageable: boolean;
-  skill_flags: string[];
+  source: {
+    kind: "curated" | "manual_github" | "manual_git" | "manual_local" | "manual_unknown";
+    ref: string;
+    display: string;
+  };
+  catalog_match: { id: string; name: string; category_label: string } | null;
+  tracking: {
+    kind: "tracked" | "untracked";
+    source_type: string | null;
+    installed_at: string | null;
+    updated_at: string | null;
+    reason: string | null;
+  };
+  update: {
+    kind: "not_checked" | "up_to_date" | "update_available" | "unsupported";
+    last_checked_at_ms: number | null;
+    reason: string | null;
+  };
+  actions: {
+    removable: boolean;
+    reinstallable: boolean;
+    batch_updatable: boolean;
+  };
 };
 
 type InstallTarget = {
@@ -43,7 +61,7 @@ type InstallJobRequest = {
 };
 
 type RemoveJobRequest = {
-  names: string[];
+  item_ids: string[];
   config?: NpxSkillsCliConfig;
   install_target?: InstallTarget;
 };
@@ -232,8 +250,8 @@ export async function mockNpxSkillsApi(page: Page) {
     {
       id: "find-skills",
       name: "find-skills",
-      package_ref: "vercel-labs/agent-skills",
-      skill_flag: "find-skills",
+      scope: "global",
+      agents: ["Claude Code"],
       group_id: "engineering",
       group_label: "Engineering",
       group_order: 10,
@@ -241,31 +259,71 @@ export async function mockNpxSkillsApi(page: Page) {
       category_label: "Discovery",
       category_order: 10,
       tags: ["search"],
-      install_kind: "skills_cli",
-      install_provider: "vercel",
       description: "Find skills quickly",
-      source: "managed",
-      manageable: true,
-      skill_flags: ["find-skills"],
+      source: {
+        kind: "curated",
+        ref: "vercel-labs/agent-skills",
+        display: "vercel-labs/agent-skills",
+      },
+      catalog_match: {
+        id: "find-skills",
+        name: "find-skills",
+        category_label: "Discovery",
+      },
+      tracking: {
+        kind: "tracked",
+        source_type: "well-known",
+        installed_at: null,
+        updated_at: null,
+        reason: null,
+      },
+      update: {
+        kind: "not_checked",
+        last_checked_at_ms: null,
+        reason: null,
+      },
+      actions: {
+        removable: true,
+        reinstallable: true,
+        batch_updatable: true,
+      },
     },
     {
       id: "legacy-unmanaged",
       name: "legacy-unmanaged",
-      package_ref: "legacy-unmanaged",
-      skill_flag: null,
-      group_id: "uncategorized",
-      group_label: "Uncategorized",
+      scope: "global",
+      agents: [],
+      group_id: "manual",
+      group_label: "Manual",
       group_order: 999,
-      category_id: "uncategorized",
-      category_label: "Uncategorized",
+      category_id: "manual_local",
+      category_label: "Local",
       category_order: 999,
       tags: [],
-      install_kind: "skills_cli",
-      install_provider: "unknown",
       description: "Found on filesystem only",
-      source: "filesystem_unmanaged",
-      manageable: false,
-      skill_flags: [],
+      source: {
+        kind: "manual_local",
+        ref: "/tmp/claude/skills/legacy-unmanaged",
+        display: "/tmp/claude/skills/legacy-unmanaged",
+      },
+      catalog_match: null,
+      tracking: {
+        kind: "untracked",
+        source_type: null,
+        installed_at: null,
+        updated_at: null,
+        reason: "No lock metadata found for this installed skill.",
+      },
+      update: {
+        kind: "unsupported",
+        last_checked_at_ms: null,
+        reason: "No lock metadata found for this installed skill.",
+      },
+      actions: {
+        removable: false,
+        reinstallable: false,
+        batch_updatable: false,
+      },
     },
   ];
   const requests: NpxSkillsCapturedRequests = {
@@ -314,7 +372,8 @@ export async function mockNpxSkillsApi(page: Page) {
         stars: 5,
         project_only: false,
         usage: "Use /find-skills",
-        install_status: "installed",
+        installed_state: "installed",
+        installed_instance_id: "find-skills",
       },
       {
         id: "review",
@@ -334,13 +393,39 @@ export async function mockNpxSkillsApi(page: Page) {
         stars: 5,
         project_only: false,
         usage: "Use /review",
-        install_status: "not_installed",
+        installed_state: "not_installed",
+        installed_instance_id: null,
       },
     ])
   );
 
   await page.route("**/api/platforms/claude/npx-skills/installed**", (route) =>
-    jsonResponse(route, installedItems)
+    jsonResponse(route, {
+      target: {
+        scope: "global",
+        project_path: null,
+        base_dir: "/tmp/claude",
+        skills_path: "/tmp/claude/skills",
+        commands_path: "/tmp/claude/commands",
+        agents_path: null,
+        guidance_path: null,
+      },
+      capabilities: {
+        list: { supported: true, reason: null },
+        remove: { supported: true, reason: null },
+        check: { supported: true, reason: null },
+        update: { supported: true, reason: null },
+      },
+      summary: {
+        total: installedItems.length,
+        curated: installedItems.filter((item) => item.source.kind === "curated").length,
+        manual: installedItems.filter((item) => item.source.kind !== "curated").length,
+        tracked: installedItems.filter((item) => item.tracking.kind === "tracked").length,
+        update_available: installedItems.filter((item) => item.update.kind === "update_available")
+          .length,
+      },
+      items: installedItems,
+    })
   );
 
   await page.route("**/api/platforms/claude/npx-skills/install/jobs", async (route) => {
@@ -350,8 +435,8 @@ export async function mockNpxSkillsApi(page: Page) {
       {
         id: "review",
         name: "review",
-        package_ref: "vercel-labs/agent-skills",
-        skill_flag: "review",
+        scope: "global",
+        agents: ["Claude Code"],
         group_id: "engineering",
         group_label: "Engineering",
         group_order: 10,
@@ -359,12 +444,34 @@ export async function mockNpxSkillsApi(page: Page) {
         category_label: "Quality",
         category_order: 20,
         tags: ["review"],
-        install_kind: "skills_cli",
-        install_provider: "vercel",
         description: "Review code and changes",
-        source: "managed",
-        manageable: true,
-        skill_flags: ["review"],
+        source: {
+          kind: "curated",
+          ref: "vercel-labs/agent-skills",
+          display: "vercel-labs/agent-skills",
+        },
+        catalog_match: {
+          id: "review",
+          name: "review",
+          category_label: "Quality",
+        },
+        tracking: {
+          kind: "tracked",
+          source_type: "well-known",
+          installed_at: null,
+          updated_at: null,
+          reason: null,
+        },
+        update: {
+          kind: "not_checked",
+          last_checked_at_ms: null,
+          reason: null,
+        },
+        actions: {
+          removable: true,
+          reinstallable: true,
+          batch_updatable: true,
+        },
       },
     ];
     await jsonResponse(route, {
@@ -377,7 +484,7 @@ export async function mockNpxSkillsApi(page: Page) {
 
   await page.route("**/api/platforms/claude/npx-skills/remove/jobs", async (route) => {
     requests.removeJobs.push(parseRequestBody<RemoveJobRequest>(route));
-    installedItems = installedItems.filter((item) => item.name !== "find-skills");
+    installedItems = installedItems.filter((item) => item.id !== "find-skills");
     await jsonResponse(route, {
       job_id: "remove-job",
       operation: "remove",

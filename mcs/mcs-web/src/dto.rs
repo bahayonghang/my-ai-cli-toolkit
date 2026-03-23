@@ -317,7 +317,7 @@ pub struct NpxSkillsInstallJobRequest {
 
 #[derive(Deserialize)]
 pub struct NpxSkillsRemoveJobRequest {
-    pub names: Vec<String>,
+    pub item_ids: Vec<String>,
     #[serde(default)]
     pub install_target: InstallTargetDto,
     #[serde(default)]
@@ -351,22 +351,126 @@ pub struct NpxSkillsCatalogItemDto {
     pub stars: Option<u8>,
     pub project_only: bool,
     pub usage: Option<String>,
-    pub install_status: InstallStatus,
+    pub installed_state: NpxCatalogInstalledStateDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub installed_instance_id: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
-#[serde(rename_all = "lowercase")]
-pub enum NpxInstalledSkillSource {
-    Managed,
-    FilesystemUnmanaged,
+#[serde(rename_all = "snake_case")]
+pub enum NpxCatalogInstalledStateDto {
+    Installed,
+    NotInstalled,
 }
 
 #[derive(Serialize)]
-pub struct NpxInstalledSkillDto {
+pub struct NpxSkillsInstalledInventoryDto {
+    pub target: ResolvedInstallTargetDto,
+    pub capabilities: NpxSkillsCapabilitiesDto,
+    pub summary: NpxSkillsInstalledSummaryDto,
+    pub items: Vec<NpxInstalledSkillInstanceDto>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsCapabilityDto {
+    pub supported: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsCapabilitiesDto {
+    pub list: NpxSkillsCapabilityDto,
+    pub remove: NpxSkillsCapabilityDto,
+    pub check: NpxSkillsCapabilityDto,
+    pub update: NpxSkillsCapabilityDto,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsInstalledSummaryDto {
+    pub total: usize,
+    pub curated: usize,
+    pub manual: usize,
+    pub tracked: usize,
+    pub update_available: usize,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxInstalledSourceKindDto {
+    Curated,
+    ManualGithub,
+    ManualGit,
+    ManualLocal,
+    ManualUnknown,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxInstalledSourceDto {
+    pub kind: NpxInstalledSourceKindDto,
+    #[serde(rename = "ref")]
+    pub r#ref: String,
+    pub display: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxCatalogMatchDto {
     pub id: String,
     pub name: String,
-    pub package_ref: String,
-    pub skill_flag: Option<String>,
+    pub category_label: String,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxInstalledTrackingKindDto {
+    Tracked,
+    Untracked,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxInstalledTrackingDto {
+    pub kind: NpxInstalledTrackingKindDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub installed_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxInstalledUpdateKindDto {
+    NotChecked,
+    UpToDate,
+    UpdateAvailable,
+    Unsupported,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxInstalledUpdateDto {
+    pub kind: NpxInstalledUpdateKindDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_checked_at_ms: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxInstalledActionsDto {
+    pub removable: bool,
+    pub reinstallable: bool,
+    pub batch_updatable: bool,
+}
+
+#[derive(Serialize)]
+pub struct NpxInstalledSkillInstanceDto {
+    pub id: String,
+    pub name: String,
+    pub scope: InstallTargetScopeDto,
+    pub agents: Vec<String>,
     pub group_id: String,
     pub group_label: String,
     pub group_order: i32,
@@ -374,12 +478,13 @@ pub struct NpxInstalledSkillDto {
     pub category_label: String,
     pub category_order: i32,
     pub tags: Vec<String>,
-    pub install_kind: String,
-    pub install_provider: String,
     pub description: Option<String>,
-    pub source: NpxInstalledSkillSource,
-    pub manageable: bool,
-    pub skill_flags: Vec<String>,
+    pub source: NpxInstalledSourceDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub catalog_match: Option<NpxCatalogMatchDto>,
+    pub tracking: NpxInstalledTrackingDto,
+    pub update: NpxInstalledUpdateDto,
+    pub actions: NpxInstalledActionsDto,
 }
 
 #[derive(Serialize)]

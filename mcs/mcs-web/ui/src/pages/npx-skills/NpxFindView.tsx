@@ -311,13 +311,11 @@ export default function NpxFindView({
                     <Box display="flex" gap={0.75} flexWrap="wrap" mb={1.5}>
                       <Chip
                         size="small"
-                        color={installStatusColor(item.install_status)}
+                        color={installStatusColor(item.installed_state)}
                         variant="outlined"
                         label={
-                          item.install_status === "installed"
+                          item.installed_state === "installed"
                             ? t("status.installed")
-                            : item.install_status === "outdated"
-                            ? t("status.outdated")
                             : t("status.notInstalled")
                         }
                       />

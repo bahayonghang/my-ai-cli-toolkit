@@ -48,13 +48,11 @@ export function operationLabel(operation: NpxSkillsOperation, t: TranslationFn) 
 }
 
 export function installStatusColor(
-  status: NpxSkillsCatalogItemDto["install_status"]
-): "success" | "warning" | "default" {
+  status: NpxSkillsCatalogItemDto["installed_state"]
+): "success" | "default" {
   switch (status) {
     case "installed":
       return "success";
-    case "outdated":
-      return "warning";
     default:
       return "default";
   }

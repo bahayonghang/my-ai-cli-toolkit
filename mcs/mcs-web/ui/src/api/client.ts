@@ -5,11 +5,11 @@ import type {
   PlatformConfig,
   ItemDto,
   SkillCatalogDto,
-  NpxInstalledSkillDto,
   NpxSkillsCatalogItemDto,
   NpxSkillsCliConfig,
   NpxSkillsInstallItemInput,
   NpxSkillsJobStartDto,
+  NpxSkillsInstalledInventoryDto,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
@@ -395,7 +395,7 @@ export async function getNpxInstalledSkills(
     installTarget?: InstallTarget;
   },
   signal?: AbortSignal
-): Promise<NpxInstalledSkillDto[]> {
+): Promise<NpxSkillsInstalledInventoryDto> {
   const query = new URLSearchParams();
   if (params?.search) query.set("search", params.search);
   if (params?.groupId) query.set("group_id", params.groupId);
@@ -428,7 +428,7 @@ export async function startNpxSkillsInstallJob(
 
 export async function startNpxSkillsRemoveJob(
   platformId: string,
-  names: string[],
+  itemIds: string[],
   installTarget?: InstallTarget,
   config?: NpxSkillsCliConfig
 ): Promise<NpxSkillsJobStartDto> {
@@ -436,7 +436,7 @@ export async function startNpxSkillsRemoveJob(
     `${BASE}/platforms/${platformId}/npx-skills/remove/jobs`,
     withInstallTargetBody(
       {
-        names,
+        item_ids: itemIds,
         ...(config ? { config } : {}),
       },
       installTarget

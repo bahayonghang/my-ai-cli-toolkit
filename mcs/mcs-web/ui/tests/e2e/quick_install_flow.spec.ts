@@ -78,6 +78,7 @@ test("quick install starts a job and renders progress", async ({ page }) => {
   await seedNpxSkillsRunConfig(page, runConfig);
 
   await page.goto("/platform/claude/npx-skills");
+  await page.getByRole("tab", { name: /find/i }).click();
   await setNpxSkillsInstallTarget(page, installTarget);
   await page.getByRole("button", { name: /quick install/i }).click();
   const dialog = page.locator('[role="dialog"]:visible').last();

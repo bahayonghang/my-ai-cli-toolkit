@@ -10,8 +10,7 @@ import {
 
 test("managed items are removable and maintenance jobs run", async ({ page }) => {
   const installTarget = {
-    scope: "project" as const,
-    project_path: "/tmp/npx-skills-maintenance-project",
+    scope: "global" as const,
   };
   const runConfig = {
     agents: ["codex", "gemini"],
@@ -147,7 +146,7 @@ test("managed items are removable and maintenance jobs run", async ({ page }) =>
   });
   await expect.poll(() => api.requests.removeJobs.length).toBe(1);
   expect(api.requests.removeJobs[0]).toEqual({
-    names: ["find-skills"],
+    item_ids: ["find-skills"],
     config: runConfig,
     install_target: installTarget,
   });

@@ -73,6 +73,14 @@ pub fn build_check_args(is_global: bool) -> Vec<String> {
     args
 }
 
+pub fn build_list_args(is_global: bool) -> Vec<String> {
+    let mut args = vec!["list".to_string(), "--json".to_string()];
+    if is_global {
+        args.push("-g".to_string());
+    }
+    args
+}
+
 pub fn build_update_args(is_global: bool) -> Vec<String> {
     let mut args = vec!["update".to_string()];
     if is_global {

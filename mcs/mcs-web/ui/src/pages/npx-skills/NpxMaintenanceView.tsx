@@ -16,7 +16,7 @@ import BuildCircleOutlinedIcon from "@mui/icons-material/BuildCircleOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 
-import type { NpxSkillsOperation } from "@/types";
+import type { NpxSkillsCapabilitiesDto, NpxSkillsOperation } from "@/types";
 import type { JobItemState, RunResultStatus, TranslationFn } from "./types";
 import { operationLabel } from "./utils";
 
@@ -25,6 +25,7 @@ export interface NpxMaintenanceViewProps {
   jobRunning: boolean;
   openCheckDialog: () => void;
   openUpdateDialog: () => void;
+  capabilities: NpxSkillsCapabilitiesDto | null;
   jobOperation: NpxSkillsOperation | null;
   jobStatusMessage: string | null;
   jobResultStatus: RunResultStatus;
@@ -47,6 +48,7 @@ export default function NpxMaintenanceView({
   jobRunning,
   openCheckDialog,
   openUpdateDialog,
+  capabilities,
   jobOperation,
   jobStatusMessage,
   jobResultStatus,
@@ -83,11 +85,16 @@ export default function NpxMaintenanceView({
                   variant="contained"
                   color="info"
                   startIcon={<RefreshIcon />}
-                  disabled={jobRunning}
+                  disabled={jobRunning || capabilities?.check.supported === false}
                   onClick={openCheckDialog}
                 >
                   {t("npxSkills.checkUpdates")}
                 </Button>
+                {capabilities?.check.supported === false && capabilities.check.reason ? (
+                  <Typography variant="caption" color="text.secondary">
+                    {capabilities.check.reason}
+                  </Typography>
+                ) : null}
               </Stack>
             </CardContent>
           </Card>
@@ -107,11 +114,16 @@ export default function NpxMaintenanceView({
                   variant="contained"
                   color="warning"
                   startIcon={<SystemUpdateAltIcon />}
-                  disabled={jobRunning}
+                  disabled={jobRunning || capabilities?.update.supported === false}
                   onClick={openUpdateDialog}
                 >
                   {t("npxSkills.updateAll")}
                 </Button>
+                {capabilities?.update.supported === false && capabilities.update.reason ? (
+                  <Typography variant="caption" color="text.secondary">
+                    {capabilities.update.reason}
+                  </Typography>
+                ) : null}
               </Stack>
             </CardContent>
           </Card>

@@ -2,8 +2,7 @@ use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::sse::{Event, KeepAlive, Sse};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::HashMap;
 use std::convert::Infallible;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -13,25 +12,24 @@ use tokio::sync::{RwLock, Semaphore, broadcast};
 use tokio_stream::{StreamExt as TokioStreamExt, wrappers::BroadcastStream};
 
 use mcs_core::core::external_skills::{
-    EXTERNAL_SKILLS_KIND_SKILLS_CLI, ResolvedExternalSkillEntry, uncategorized_skill,
+    EXTERNAL_SKILLS_KIND_SKILLS_CLI, ResolvedExternalSkillEntry,
 };
 use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
-use mcs_core::model::InstallStatus;
 
 use crate::api::error::AppError;
 use crate::dto::{
-    ApiResponse, InstallTargetDto, InstallTargetQuery, InstallTargetScopeDto, NpxInstalledSkillDto,
-    NpxInstalledSkillSource, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto,
-    NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest, NpxSkillsJobStartDto,
-    NpxSkillsMaintenanceJobRequest, NpxSkillsOperation, NpxSkillsRemoveJobRequest,
+    ApiResponse, InstallTargetDto, InstallTargetQuery, InstallTargetScopeDto,
+    NpxCatalogInstalledStateDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto,
+    NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest, NpxSkillsInstalledInventoryDto,
+    NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest, NpxSkillsOperation,
+    NpxSkillsRemoveJobRequest, ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{
     build_check_args, build_install_args, build_remove_args, build_update_args,
     execute_skills_command,
 };
 use crate::services::npx_skills_inventory::{
-    ManagedInventoryEntry, discover_skill_names, load_entries, remove_entries, touch_all_entries,
-    upsert_entries,
+    apply_catalog_install_state, clear_check_cache, resolve_inventory, write_check_cache,
 };
 use crate::state::AppState;
 
@@ -76,7 +74,7 @@ impl NpxSkillsJob {
 struct NpxSkillsJobTask {
     label: String,
     args: Vec<String>,
-    managed_update: ManagedUpdate,
+    state_update: StateUpdate,
 }
 
 #[derive(Clone)]
@@ -107,17 +105,9 @@ struct TaskExecutionContext {
 }
 
 #[derive(Clone)]
-enum ManagedUpdate {
-    Install {
-        package_ref: String,
-        skill_flags: Vec<String>,
-        catalog_entry_id: Option<String>,
-        agents: Vec<String>,
-    },
-    Remove {
-        name: String,
-    },
-    TouchAll,
+enum StateUpdate {
+    ClearCheckCache,
+    WriteCheckCache,
 }
 
 #[derive(Deserialize, Default)]
@@ -220,44 +210,46 @@ pub async fn catalog(
             .map_err(AppError::Internal)?,
     )?;
     let project_root = state.project_root().await;
-    let skills_path = resolved.platform.skills_path();
-    let mut installed_names = load_entries(&project_root, &skills_path)
-        .await?
-        .into_iter()
-        .map(|entry| entry.name)
-        .collect::<HashSet<_>>();
-    if let Ok(discovered) = discover_skill_names(&skills_path).await {
-        installed_names.extend(discovered);
-    }
+    let inventory = resolve_inventory(
+        &project_root,
+        &install_target,
+        resolved_install_target_dto(&resolved),
+        &catalog_entries,
+        NpxSkillsCliConfigDto::default().cli_mode,
+    )
+    .await?;
     let search = query.search.as_ref().map(|value| value.to_lowercase());
 
-    let mut items: Vec<NpxSkillsCatalogItemDto> = catalog_entries
-        .into_iter()
-        .filter_map(|entry| {
-            let dto = to_catalog_dto(&entry, &installed_names);
-            if let Some(ref search) = search
-                && !catalog_item_matches(&dto, search)
-            {
-                return None;
-            }
-            if let Some(ref group_id) = query.group_id
-                && dto.group_id != *group_id
-            {
-                return None;
-            }
-            if let Some(ref category_id) = query.category_id
-                && dto.category_id != *category_id
-            {
-                return None;
-            }
-            if query.installed_only.unwrap_or(false)
-                && dto.install_status != InstallStatus::Installed
-            {
-                return None;
-            }
-            Some(dto)
-        })
-        .collect();
+    let mut items: Vec<NpxSkillsCatalogItemDto> =
+        apply_catalog_install_state(catalog_entries, &inventory)
+            .into_iter()
+            .filter_map(|entry| {
+                if let Some(ref search) = search
+                    && !catalog_item_matches(&entry, search)
+                {
+                    return None;
+                }
+                if let Some(ref group_id) = query.group_id
+                    && entry.group_id != *group_id
+                {
+                    return None;
+                }
+                if let Some(ref category_id) = query.category_id
+                    && entry.category_id != *category_id
+                {
+                    return None;
+                }
+                if query.installed_only.unwrap_or(false)
+                    && !matches!(
+                        entry.installed_state,
+                        NpxCatalogInstalledStateDto::Installed
+                    )
+                {
+                    return None;
+                }
+                Some(entry)
+            })
+            .collect();
 
     items.sort_by(|left, right| left.name.cmp(&right.name));
     Ok(Json(ApiResponse::ok(items)))
@@ -267,7 +259,7 @@ pub async fn installed(
     State(state): State<AppState>,
     Path(id): Path<String>,
     Query(query): Query<NpxSkillsInstalledQuery>,
-) -> Result<Json<ApiResponse<Vec<NpxInstalledSkillDto>>>, AppError> {
+) -> Result<Json<ApiResponse<NpxSkillsInstalledInventoryDto>>, AppError> {
     let base_platform = state
         .platform(&id)
         .await
@@ -281,94 +273,51 @@ pub async fn installed(
     .map_err(AppError::BadRequest)?;
 
     let project_root = state.project_root().await;
-    let entries = resolved_catalog_entries(
+    let catalog_entries = resolved_catalog_entries(
         state
             .external_skill_catalog()
             .await
             .map_err(AppError::Internal)?,
     )?;
-    let entry_map_by_id = entries
-        .iter()
-        .cloned()
-        .map(|entry| (entry.id.clone(), entry))
-        .collect::<HashMap<_, _>>();
-    let entry_map_by_installed_name = entries
-        .iter()
-        .cloned()
-        .map(|entry| (catalog_skill_name(&entry), entry))
-        .collect::<HashMap<_, _>>();
-    let managed_entries = load_entries(&project_root, &resolved.platform.skills_path()).await?;
-    let managed_names = managed_entries
-        .iter()
-        .map(|entry| entry.name.clone())
-        .collect::<HashSet<_>>();
-    let discovered_names = discover_skill_names(&resolved.platform.skills_path()).await?;
+    let inventory = resolve_inventory(
+        &project_root,
+        &install_target,
+        resolved_install_target_dto(&resolved),
+        &catalog_entries,
+        NpxSkillsCliConfigDto::default().cli_mode,
+    )
+    .await?;
     let search = query.search.as_ref().map(|value| value.to_lowercase());
+    let mut items = inventory
+        .items
+        .into_iter()
+        .filter(|item| {
+            if let Some(ref value) = search
+                && !installed_item_matches(item, value)
+            {
+                return false;
+            }
+            if let Some(ref group_id) = query.group_id
+                && item.group_id != *group_id
+            {
+                return false;
+            }
+            if let Some(ref category_id) = query.category_id
+                && item.category_id != *category_id
+            {
+                return false;
+            }
+            true
+        })
+        .collect::<Vec<_>>();
+    items.sort_by(|left, right| left.name.cmp(&right.name));
 
-    let mut items_by_name: BTreeMap<String, NpxInstalledSkillDto> = BTreeMap::new();
-
-    for entry in managed_entries {
-        let resolved_skill =
-            resolve_managed_catalog_entry(&entry, &entry_map_by_id, &entry_map_by_installed_name);
-        let item = to_installed_dto(
-            entry.name.clone(),
-            entry.package_ref.clone(),
-            entry.skill_flags.clone(),
-            NpxInstalledSkillSource::Managed,
-            true,
-            resolved_skill,
-        );
-        if let Some(ref search) = search
-            && !installed_item_matches(&item, search)
-        {
-            continue;
-        }
-        if let Some(ref group_id) = query.group_id
-            && item.group_id != *group_id
-        {
-            continue;
-        }
-        if let Some(ref category_id) = query.category_id
-            && item.category_id != *category_id
-        {
-            continue;
-        }
-        items_by_name.insert(entry.name.clone(), item);
-    }
-
-    for name in discovered_names.difference(&managed_names) {
-        let resolved_skill = entry_map_by_installed_name.get(name).cloned();
-        let item = to_installed_dto(
-            name.clone(),
-            resolved_skill
-                .as_ref()
-                .map(|entry| entry.package_ref.clone())
-                .unwrap_or_else(|| name.clone()),
-            Vec::new(),
-            NpxInstalledSkillSource::FilesystemUnmanaged,
-            false,
-            resolved_skill,
-        );
-        if let Some(ref search) = search
-            && !installed_item_matches(&item, search)
-        {
-            continue;
-        }
-        if let Some(ref group_id) = query.group_id
-            && item.group_id != *group_id
-        {
-            continue;
-        }
-        if let Some(ref category_id) = query.category_id
-            && item.category_id != *category_id
-        {
-            continue;
-        }
-        items_by_name.insert(name.clone(), item);
-    }
-
-    let items = items_by_name.into_values().collect();
-    Ok(Json(ApiResponse::ok(items)))
+    Ok(Json(ApiResponse::ok(NpxSkillsInstalledInventoryDto {
+        target: inventory.target,
+        capabilities: inventory.capabilities,
+        summary: inventory.summary,
+        items,
+    })))
 }
 
 pub async fn install_jobs_start(
@@ -407,12 +356,7 @@ pub async fn install_jobs_start(
         tasks.push(NpxSkillsJobTask {
             label: install_label(item),
             args: build_install_args(item, &body.config, is_global)?,
-            managed_update: ManagedUpdate::Install {
-                package_ref: item.package_ref.clone(),
-                skill_flags: item.skill_flags.clone(),
-                catalog_entry_id: item.catalog_entry_id.clone(),
-                agents: body.config.agents.clone(),
-            },
+            state_update: StateUpdate::ClearCheckCache,
         });
     }
 
@@ -453,25 +397,43 @@ pub async fn remove_jobs_start(
         install_target_scope: install_target.scope,
     };
 
-    let names = normalize_names(body.names)?;
-    if names.len() > NPX_SKILLS_MAX_ITEMS {
+    let item_ids = normalize_names(body.item_ids)?;
+    if item_ids.len() > NPX_SKILLS_MAX_ITEMS {
         return Err(AppError::BadRequest(format!(
             "Too many remove items ({}); max allowed is {NPX_SKILLS_MAX_ITEMS}",
-            names.len()
+            item_ids.len()
         )));
     }
 
-    let managed_names = load_entries(&project_root, &target_ctx.skills_path)
-        .await?
+    let catalog_entries = resolved_catalog_entries(
+        state
+            .external_skill_catalog()
+            .await
+            .map_err(AppError::Internal)?,
+    )?;
+    let inventory = resolve_inventory(
+        &project_root,
+        &install_target,
+        resolved_install_target_dto(&resolved),
+        &catalog_entries,
+        NpxSkillsCliConfigDto::default().cli_mode,
+    )
+    .await?;
+    let removable_items = inventory
+        .items
         .into_iter()
-        .map(|entry| entry.name)
-        .collect::<HashSet<_>>();
-    for name in &names {
-        if !managed_names.contains(name) {
+        .filter(|item| item.actions.removable)
+        .map(|item| (item.id, item.name))
+        .collect::<HashMap<_, _>>();
+
+    let mut names = Vec::with_capacity(item_ids.len());
+    for item_id in &item_ids {
+        let Some(name) = removable_items.get(item_id) else {
             return Err(AppError::BadRequest(format!(
-                "Skill '{name}' is not managed by npx skills and cannot be removed from this page"
+                "Installed skill item '{item_id}' cannot be removed from this page"
             )));
-        }
+        };
+        names.push(name.clone());
     }
 
     let is_global = !matches!(install_target.scope, InstallTargetScopeDto::Project);
@@ -480,7 +442,7 @@ pub async fn remove_jobs_start(
         tasks.push(NpxSkillsJobTask {
             label: name.clone(),
             args: build_remove_args(name, is_global)?,
-            managed_update: ManagedUpdate::Remove { name: name.clone() },
+            state_update: StateUpdate::ClearCheckCache,
         });
     }
 
@@ -519,6 +481,27 @@ pub async fn check_jobs_start(
         skills_path: resolved.platform.skills_path(),
         install_target_scope: install_target.scope,
     };
+    let inventory = resolve_inventory(
+        &target_ctx.project_root,
+        &install_target,
+        resolved_install_target_dto(&resolved),
+        &resolved_catalog_entries(
+            state
+                .external_skill_catalog()
+                .await
+                .map_err(AppError::Internal)?,
+        )?,
+        NpxSkillsCliConfigDto::default().cli_mode,
+    )
+    .await?;
+    if !inventory.capabilities.check.supported {
+        return Err(AppError::BadRequestWithDetails {
+            message: "Check is not supported for the current install target".into(),
+            details: serde_json::json!({
+                "reason": inventory.capabilities.check.reason,
+            }),
+        });
+    }
 
     let is_global = !matches!(install_target.scope, InstallTargetScopeDto::Project);
     let result = start_job(
@@ -528,7 +511,7 @@ pub async fn check_jobs_start(
         vec![NpxSkillsJobTask {
             label: "check".into(),
             args: build_check_args(is_global),
-            managed_update: ManagedUpdate::TouchAll,
+            state_update: StateUpdate::WriteCheckCache,
         }],
         target_ctx,
         install_target,
@@ -560,6 +543,27 @@ pub async fn update_jobs_start(
         skills_path: resolved.platform.skills_path(),
         install_target_scope: install_target.scope,
     };
+    let inventory = resolve_inventory(
+        &target_ctx.project_root,
+        &install_target,
+        resolved_install_target_dto(&resolved),
+        &resolved_catalog_entries(
+            state
+                .external_skill_catalog()
+                .await
+                .map_err(AppError::Internal)?,
+        )?,
+        NpxSkillsCliConfigDto::default().cli_mode,
+    )
+    .await?;
+    if !inventory.capabilities.update.supported {
+        return Err(AppError::BadRequestWithDetails {
+            message: "Update is not supported for the current install target".into(),
+            details: serde_json::json!({
+                "reason": inventory.capabilities.update.reason,
+            }),
+        });
+    }
 
     let is_global = !matches!(install_target.scope, InstallTargetScopeDto::Project);
     let result = start_job(
@@ -569,7 +573,7 @@ pub async fn update_jobs_start(
         vec![NpxSkillsJobTask {
             label: "update".into(),
             args: build_update_args(is_global),
-            managed_update: ManagedUpdate::TouchAll,
+            state_update: StateUpdate::ClearCheckCache,
         }],
         target_ctx,
         install_target,
@@ -789,33 +793,24 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
     .await;
 
     let started = tokio::time::Instant::now();
-    let before_names = match &task.managed_update {
-        ManagedUpdate::Install { .. } => {
-            discover_skill_names(&ctx.target_ctx.skills_path).await.ok()
-        }
-        _ => None,
-    };
     let result = execute_skills_command(&task.args, &ctx.config, &ctx.install_target).await;
     let duration_ms = started.elapsed().as_millis();
 
     let payload = match result {
         Ok(result) => {
-            let inventory_result = if result.success {
-                apply_managed_update(
-                    &task.managed_update,
+            let state_result = if result.success {
+                apply_state_update(
+                    &task.state_update,
                     &ctx.target_ctx,
-                    before_names,
-                    ctx.operation,
-                    true,
+                    &ctx.install_target,
+                    &result.output,
                 )
                 .await
             } else {
                 Ok(())
             };
             let output = truncate_utf8(result.output.clone(), NPX_SKILLS_OUTPUT_MAX_BYTES);
-            let inventory_error = inventory_result
-                .err()
-                .map(|error| app_error_message(&error));
+            let inventory_error = state_result.err().map(|error| app_error_message(&error));
             let success = result.success && inventory_error.is_none();
             ItemFinishedPayload {
                 job_id: ctx.job_id.clone(),
@@ -885,95 +880,42 @@ fn resolved_catalog_entries(
         .map_err(|error| AppError::Internal(error.to_string()))
 }
 
-fn to_catalog_dto(
-    entry: &ResolvedExternalSkillEntry,
-    installed_names: &HashSet<String>,
-) -> NpxSkillsCatalogItemDto {
-    let installed_name = catalog_skill_name(entry);
-    NpxSkillsCatalogItemDto {
-        id: entry.id.clone(),
-        name: entry.name.clone(),
-        package_ref: entry.package_ref.clone(),
-        skill_flag: entry.skill_flag.clone(),
-        group_id: entry.group_id.clone(),
-        group_label: entry.group_label.clone(),
-        group_order: entry.group_order,
-        category_id: entry.category_id.clone(),
-        category_label: entry.category_label.clone(),
-        category_order: entry.category_order,
-        tags: entry.tags.clone(),
-        install_kind: entry.install_kind.clone(),
-        install_provider: entry.install_provider.clone(),
-        description: entry.description.clone(),
-        stars: entry.stars,
-        project_only: entry.project_only,
-        usage: entry.usage.clone(),
-        install_status: if installed_names.contains(&installed_name) {
-            InstallStatus::Installed
-        } else {
-            InstallStatus::NotInstalled
-        },
+fn resolved_install_target_dto(
+    resolved: &mcs_core::core::install_target::ResolvedInstallTarget,
+) -> ResolvedInstallTargetDto {
+    let project_path = resolved
+        .normalized_project_path
+        .as_ref()
+        .map(|path| path.to_string_lossy().into_owned());
+
+    ResolvedInstallTargetDto {
+        scope: InstallTargetScopeDto::from_core(resolved.scope),
+        project_path,
+        base_dir: resolved.platform.base_path().to_string_lossy().into_owned(),
+        skills_path: resolved
+            .platform
+            .skills_path()
+            .to_string_lossy()
+            .into_owned(),
+        commands_path: resolved.platform.commands_display_path().map(|_| {
+            resolved
+                .platform
+                .commands_path()
+                .to_string_lossy()
+                .into_owned()
+        }),
+        agents_path: resolved.platform.agents_display_path().map(|_| {
+            resolved
+                .platform
+                .agents_path()
+                .to_string_lossy()
+                .into_owned()
+        }),
+        guidance_path: resolved
+            .platform
+            .guidance_path()
+            .map(|path| path.to_string_lossy().into_owned()),
     }
-}
-
-fn to_installed_dto(
-    name: String,
-    package_ref: String,
-    skill_flags: Vec<String>,
-    source: NpxInstalledSkillSource,
-    manageable: bool,
-    resolved_skill: Option<ResolvedExternalSkillEntry>,
-) -> NpxInstalledSkillDto {
-    let resolved = resolved_skill.unwrap_or_else(|| {
-        uncategorized_skill(
-            name.clone(),
-            name.clone(),
-            None,
-            package_ref.clone(),
-            skill_flags.first().cloned(),
-        )
-    });
-
-    NpxInstalledSkillDto {
-        id: resolved.id,
-        name,
-        package_ref,
-        skill_flag: resolved.skill_flag,
-        group_id: resolved.group_id,
-        group_label: resolved.group_label,
-        group_order: resolved.group_order,
-        category_id: resolved.category_id,
-        category_label: resolved.category_label,
-        category_order: resolved.category_order,
-        tags: resolved.tags,
-        install_kind: resolved.install_kind,
-        install_provider: resolved.install_provider,
-        description: resolved.description,
-        source,
-        manageable,
-        skill_flags,
-    }
-}
-
-fn resolve_managed_catalog_entry(
-    entry: &ManagedInventoryEntry,
-    entry_map_by_id: &HashMap<String, ResolvedExternalSkillEntry>,
-    entry_map_by_installed_name: &HashMap<String, ResolvedExternalSkillEntry>,
-) -> Option<ResolvedExternalSkillEntry> {
-    if let Some(catalog_entry_id) = &entry.catalog_entry_id
-        && let Some(resolved) = entry_map_by_id.get(catalog_entry_id)
-    {
-        return Some(resolved.clone());
-    }
-
-    entry_map_by_installed_name.get(&entry.name).cloned()
-}
-
-fn catalog_skill_name(entry: &ResolvedExternalSkillEntry) -> String {
-    entry
-        .skill_flag
-        .clone()
-        .unwrap_or_else(|| entry.name.clone())
 }
 
 fn catalog_item_matches(item: &NpxSkillsCatalogItemDto, search: &str) -> bool {
@@ -995,15 +937,16 @@ fn catalog_item_matches(item: &NpxSkillsCatalogItemDto, search: &str) -> bool {
             .any(|tag| tag.to_lowercase().contains(search))
 }
 
-fn installed_item_matches(item: &NpxInstalledSkillDto, search: &str) -> bool {
+fn installed_item_matches(item: &crate::dto::NpxInstalledSkillInstanceDto, search: &str) -> bool {
     item.name.to_lowercase().contains(search)
-        || item.package_ref.to_lowercase().contains(search)
+        || item.source.r#ref.to_lowercase().contains(search)
         || item
             .description
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
         || item.group_label.to_lowercase().contains(search)
         || item.category_label.to_lowercase().contains(search)
+        || item.source.display.to_lowercase().contains(search)
         || item
             .tags
             .iter()
@@ -1076,100 +1019,41 @@ fn is_mutating_operation(operation: NpxSkillsOperation) -> bool {
     )
 }
 
-async fn apply_managed_update(
-    managed_update: &ManagedUpdate,
+async fn apply_state_update(
+    state_update: &StateUpdate,
     target_ctx: &TargetContext,
-    before_names: Option<HashSet<String>>,
-    operation: NpxSkillsOperation,
-    succeeded: bool,
+    install_target: &InstallTargetDto,
+    output: &str,
 ) -> Result<(), AppError> {
-    match managed_update {
-        ManagedUpdate::Install {
-            package_ref,
-            skill_flags,
-            catalog_entry_id,
-            agents,
-        } => {
-            let Some(before_names) = before_names else {
-                return Ok(());
-            };
-            let after_names = discover_skill_names(&target_ctx.skills_path).await?;
-            let inferred_names = infer_managed_names(&before_names, &after_names, skill_flags);
-            if inferred_names.is_empty() {
-                return Ok(());
-            }
-
-            let now = unix_time_ms() as u64;
-            let entries = inferred_names
-                .into_iter()
-                .map(|name| ManagedInventoryEntry {
-                    name: name.clone(),
-                    package_ref: package_ref.clone(),
-                    catalog_entry_id: catalog_entry_id.clone(),
-                    skill_flags: if skill_flags.is_empty() {
-                        Vec::new()
-                    } else if skill_flags.iter().any(|flag| flag == &name) {
-                        vec![name]
-                    } else {
-                        skill_flags.clone()
-                    },
-                    agents: agents.clone(),
-                    install_target_scope: target_ctx.install_target_scope,
+    match state_update {
+        StateUpdate::ClearCheckCache => {
+            clear_check_cache(&target_ctx.project_root, &target_ctx.skills_path)
+        }
+        StateUpdate::WriteCheckCache => {
+            let inventory = resolve_inventory(
+                &target_ctx.project_root,
+                install_target,
+                ResolvedInstallTargetDto {
+                    scope: target_ctx.install_target_scope,
+                    project_path: install_target.project_path.clone(),
+                    base_dir: String::new(),
                     skills_path: target_ctx.skills_path.to_string_lossy().into_owned(),
-                    last_operation: operation,
-                    updated_at_ms: now,
-                    last_check_at_ms: None,
-                    last_check_succeeded: None,
-                })
-                .collect();
-            upsert_entries(&target_ctx.project_root, &target_ctx.skills_path, entries).await
-        }
-        ManagedUpdate::Remove { name } => {
-            remove_entries(
+                    commands_path: None,
+                    agents_path: None,
+                    guidance_path: None,
+                },
+                &[],
+                NpxSkillsCliConfigDto::default().cli_mode,
+            )
+            .await?;
+            write_check_cache(
                 &target_ctx.project_root,
                 &target_ctx.skills_path,
-                std::slice::from_ref(name),
+                &inventory,
+                output,
             )
-            .await
-        }
-        ManagedUpdate::TouchAll => {
-            touch_all_entries(
-                &target_ctx.project_root,
-                &target_ctx.skills_path,
-                operation,
-                succeeded,
-            )
-            .await
         }
     }
-}
-
-fn infer_managed_names(
-    before_names: &HashSet<String>,
-    after_names: &HashSet<String>,
-    skill_flags: &[String],
-) -> Vec<String> {
-    if !skill_flags.is_empty() {
-        let mut seen = HashSet::new();
-        let mut inferred = Vec::new();
-        for flag in skill_flags
-            .iter()
-            .map(|flag| flag.trim())
-            .filter(|flag| !flag.is_empty())
-        {
-            if seen.insert(flag.to_string()) {
-                inferred.push(flag.to_string());
-            }
-        }
-        return inferred;
-    }
-
-    let mut added = after_names
-        .difference(before_names)
-        .cloned()
-        .collect::<Vec<_>>();
-    added.sort();
-    if added.len() == 1 { added } else { Vec::new() }
 }
 
 async fn invalidate_install_target(
@@ -1222,8 +1106,9 @@ fn unix_time_ms() -> u128 {
 }
 
 fn build_sse_envelope<T: Serialize>(event: &str, payload: &T) -> NpxSkillsSseEnvelope {
-    let data = serde_json::to_string(payload)
-        .unwrap_or_else(|_| json!({ "message": "Failed to serialize SSE payload" }).to_string());
+    let data = serde_json::to_string(payload).unwrap_or_else(|_| {
+        serde_json::json!({ "message": "Failed to serialize SSE payload" }).to_string()
+    });
     NpxSkillsSseEnvelope {
         event: event.to_string(),
         data,
@@ -1284,54 +1169,6 @@ fn app_error_message(error: &AppError) -> String {
 mod tests {
     use super::*;
 
-    fn entry(
-        name: &str,
-        provider: &str,
-        skill_flag: Option<&str>,
-        category_id: &str,
-    ) -> ResolvedExternalSkillEntry {
-        ResolvedExternalSkillEntry {
-            id: format!("{name}-id"),
-            name: name.to_string(),
-            description: Some(format!("Description for {name}")),
-            stars: Some(5),
-            project_only: false,
-            usage: Some("Use it".into()),
-            tags: vec!["tools".into()],
-            group_id: "engineering".into(),
-            group_label: "Engineering".into(),
-            group_order: 10,
-            category_id: category_id.to_string(),
-            category_label: category_id.to_string(),
-            category_order: 20,
-            install_kind: EXTERNAL_SKILLS_KIND_SKILLS_CLI.to_string(),
-            install_provider: provider.to_string(),
-            package_ref: format!("owner/{name}"),
-            skill_flag: skill_flag.map(|value| value.to_string()),
-        }
-    }
-
-    #[test]
-    fn to_catalog_dto_includes_taxonomy_fields() {
-        let dto = to_catalog_dto(
-            &entry("find-skills", "vercel", Some("find-skills"), "discovery"),
-            &HashSet::new(),
-        );
-        assert_eq!(dto.group_id, "engineering");
-        assert_eq!(dto.category_id, "discovery");
-        assert_eq!(dto.install_provider, "vercel");
-        assert_eq!(dto.package_ref, "owner/find-skills");
-    }
-
-    #[test]
-    fn to_catalog_dto_uses_skill_flag_for_install_status() {
-        let dto = to_catalog_dto(
-            &entry("display-name", "vercel", Some("real-skill"), "tools"),
-            &HashSet::from(["real-skill".to_string()]),
-        );
-        assert_eq!(dto.install_status, InstallStatus::Installed);
-    }
-
     #[test]
     fn normalize_names_deduplicates_and_rejects_empty() {
         let names = normalize_names(vec!["find-skills".into(), "find-skills".into(), " ".into()])
@@ -1340,41 +1177,46 @@ mod tests {
     }
 
     #[test]
-    fn infer_managed_names_prefers_skill_flags() {
-        let names = infer_managed_names(
-            &HashSet::new(),
-            &HashSet::from(["pkg".to_string()]),
-            &["find-skills".to_string(), "review".to_string()],
-        );
-        assert_eq!(names, vec!["find-skills".to_string(), "review".to_string()]);
-    }
-
-    #[test]
-    fn infer_managed_names_uses_single_added_dir_when_no_flags() {
-        let names = infer_managed_names(
-            &HashSet::new(),
-            &HashSet::from(["find-skills".to_string()]),
-            &[],
-        );
-        assert_eq!(names, vec!["find-skills".to_string()]);
-    }
-
-    #[test]
     fn installed_item_matches_considers_taxonomy_and_tags() {
-        let item = to_installed_dto(
-            "find-skills".into(),
-            "owner/find-skills".into(),
-            vec!["find-skills".into()],
-            NpxInstalledSkillSource::Managed,
-            true,
-            Some(entry(
-                "find-skills",
-                "vercel",
-                Some("find-skills"),
-                "discovery",
-            )),
-        );
+        let item = crate::dto::NpxInstalledSkillInstanceDto {
+            id: "find-skills".into(),
+            name: "find-skills".into(),
+            scope: InstallTargetScopeDto::Global,
+            agents: vec!["Claude Code".into()],
+            group_id: "engineering".into(),
+            group_label: "Engineering".into(),
+            group_order: 10,
+            category_id: "tools".into(),
+            category_label: "Tools".into(),
+            category_order: 20,
+            tags: vec!["tag".into()],
+            description: Some("Find skills quickly".into()),
+            source: crate::dto::NpxInstalledSourceDto {
+                kind: crate::dto::NpxInstalledSourceKindDto::Curated,
+                r#ref: "vercel-labs/skills".into(),
+                display: "vercel-labs/skills".into(),
+            },
+            catalog_match: None,
+            tracking: crate::dto::NpxInstalledTrackingDto {
+                kind: crate::dto::NpxInstalledTrackingKindDto::Tracked,
+                source_type: Some("well-known".into()),
+                installed_at: None,
+                updated_at: None,
+                reason: None,
+            },
+            update: crate::dto::NpxInstalledUpdateDto {
+                kind: crate::dto::NpxInstalledUpdateKindDto::NotChecked,
+                last_checked_at_ms: None,
+                reason: None,
+            },
+            actions: crate::dto::NpxInstalledActionsDto {
+                removable: true,
+                reinstallable: true,
+                batch_updatable: true,
+            },
+        };
         assert!(installed_item_matches(&item, "engineering"));
         assert!(installed_item_matches(&item, "tools"));
+        assert!(installed_item_matches(&item, "vercel-labs/skills"));
     }
 }

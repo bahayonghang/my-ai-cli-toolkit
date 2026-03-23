@@ -136,7 +136,33 @@ describe("api/client install target", () => {
   });
 
   it("queries npx installed skills with install target", async () => {
-    fetchMock.mockResolvedValue(mockSuccess([]));
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        target: {
+          scope: "global",
+          project_path: null,
+          base_dir: "/tmp/claude",
+          skills_path: "/tmp/claude/skills",
+          commands_path: null,
+          agents_path: null,
+          guidance_path: null,
+        },
+        capabilities: {
+          list: { supported: true, reason: null },
+          remove: { supported: true, reason: null },
+          check: { supported: true, reason: null },
+          update: { supported: true, reason: null },
+        },
+        summary: {
+          total: 0,
+          curated: 0,
+          manual: 0,
+          tracked: 0,
+          update_available: 0,
+        },
+        items: [],
+      })
+    );
 
     await getNpxInstalledSkills("claude", {
       search: "find",
@@ -186,5 +212,7 @@ describe("api/client install target", () => {
     expect(String(fetchMock.mock.calls[0][0])).toBe("/api/platforms/claude/npx-skills/check/jobs");
     expect(String(fetchMock.mock.calls[1][0])).toBe("/api/platforms/claude/npx-skills/update/jobs");
     expect(String(fetchMock.mock.calls[2][0])).toBe("/api/platforms/claude/npx-skills/remove/jobs");
+    const removeBody = JSON.parse(String(fetchMock.mock.calls[2][1]?.body));
+    expect(removeBody.item_ids).toEqual(["find-skills"]);
   });
 });

@@ -2,6 +2,14 @@ import type { NpxSkillsCliMode, NpxSkillsInstallItemInput } from "@/types";
 import type { useI18n } from "@/i18n";
 
 export type ViewMode = "find" | "installed" | "maintenance";
+export type InstalledSourceFilter = "all" | "curated" | "manual";
+export type InstalledTrackingFilter = "all" | "tracked" | "untracked";
+export type InstalledUpdateFilter =
+  | "all"
+  | "not_checked"
+  | "up_to_date"
+  | "update_available"
+  | "unsupported";
 
 export interface JobItemState {
   id: string;
@@ -26,7 +34,7 @@ export type PendingRunAction =
     }
   | {
       kind: "remove";
-      names: string[];
+      itemIds: string[];
     }
   | {
       kind: "check";

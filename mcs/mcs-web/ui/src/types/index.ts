@@ -229,14 +229,67 @@ export interface NpxSkillsCatalogItemDto {
   stars: number | null;
   project_only: boolean;
   usage: string | null;
-  install_status: InstallStatus;
+  installed_state: "installed" | "not_installed";
+  installed_instance_id: string | null;
 }
 
-export interface NpxInstalledSkillDto {
+export interface NpxSkillsCapabilityDto {
+  supported: boolean;
+  reason: string | null;
+}
+
+export interface NpxSkillsCapabilitiesDto {
+  list: NpxSkillsCapabilityDto;
+  remove: NpxSkillsCapabilityDto;
+  check: NpxSkillsCapabilityDto;
+  update: NpxSkillsCapabilityDto;
+}
+
+export interface NpxSkillsInstalledSummaryDto {
+  total: number;
+  curated: number;
+  manual: number;
+  tracked: number;
+  update_available: number;
+}
+
+export interface NpxInstalledSourceDto {
+  kind: "curated" | "manual_github" | "manual_git" | "manual_local" | "manual_unknown";
+  ref: string;
+  display: string;
+}
+
+export interface NpxCatalogMatchDto {
   id: string;
   name: string;
-  package_ref: string;
-  skill_flag: string | null;
+  category_label: string;
+}
+
+export interface NpxInstalledTrackingDto {
+  kind: "tracked" | "untracked";
+  source_type: string | null;
+  installed_at: string | null;
+  updated_at: string | null;
+  reason: string | null;
+}
+
+export interface NpxInstalledUpdateDto {
+  kind: "not_checked" | "up_to_date" | "update_available" | "unsupported";
+  last_checked_at_ms: number | null;
+  reason: string | null;
+}
+
+export interface NpxInstalledActionsDto {
+  removable: boolean;
+  reinstallable: boolean;
+  batch_updatable: boolean;
+}
+
+export interface NpxInstalledSkillInstanceDto {
+  id: string;
+  name: string;
+  scope: "global" | "project";
+  agents: string[];
   group_id: string;
   group_label: string;
   group_order: number;
@@ -244,12 +297,19 @@ export interface NpxInstalledSkillDto {
   category_label: string;
   category_order: number;
   tags: string[];
-  install_kind: string;
-  install_provider: string;
   description: string | null;
-  source: "managed" | "filesystem_unmanaged";
-  manageable: boolean;
-  skill_flags: string[];
+  source: NpxInstalledSourceDto;
+  catalog_match: NpxCatalogMatchDto | null;
+  tracking: NpxInstalledTrackingDto;
+  update: NpxInstalledUpdateDto;
+  actions: NpxInstalledActionsDto;
+}
+
+export interface NpxSkillsInstalledInventoryDto {
+  target: ResolvedInstallTarget;
+  capabilities: NpxSkillsCapabilitiesDto;
+  summary: NpxSkillsInstalledSummaryDto;
+  items: NpxInstalledSkillInstanceDto[];
 }
 
 export interface NpxSkillsInstallItemInput {
