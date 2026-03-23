@@ -1,8 +1,17 @@
 export const enInstalledMessages = {
   "installed.installSkills": "Install Skills",
+  "installed.workspaceEyebrow": "Installed skills workspace",
+  "installed.workspaceTitle": "Manage installed skills for {platform}",
+  "installed.workspaceSubtitle":
+    "Review the current library, switch install target when needed, and move into install or npx flows without losing context.",
   "installed.categories": "CATEGORIES",
   "installed.allSkills": "All Skills",
   "installed.searchLabel": "Search installed skills",
+  "installed.filteredSummary": "{count} skills in view",
+  "installed.categoriesSummary": "{count} categories",
+  "installed.activeFilter": "Category: {category}",
+  "installed.clearFilters": "Clear filters",
+  "installed.installTargetLabel": "Install target",
   "installed.filterToggle": "Show filters",
   "installed.mobileListTitle": "Installed skills",
   "installed.searchPlaceholder": "Search installed skills...",
@@ -29,9 +38,18 @@ export const zhInstalledMessages: Record<
   string
 > = {
   "installed.installSkills": "安装技能",
+  "installed.workspaceEyebrow": "已安装技能工作区",
+  "installed.workspaceTitle": "管理 {platform} 的已安装技能",
+  "installed.workspaceSubtitle":
+    "在同一个工作面里检查当前技能库、切换安装目标，并快速进入安装或 npx 流程。",
   "installed.categories": "分类",
   "installed.allSkills": "全部技能",
   "installed.searchLabel": "搜索已安装技能",
+  "installed.filteredSummary": "当前显示 {count} 个技能",
+  "installed.categoriesSummary": "{count} 个分类",
+  "installed.activeFilter": "分类：{category}",
+  "installed.clearFilters": "清空筛选",
+  "installed.installTargetLabel": "安装目标",
   "installed.filterToggle": "显示筛选",
   "installed.mobileListTitle": "已安装技能",
   "installed.searchPlaceholder": "搜索已安装技能...",

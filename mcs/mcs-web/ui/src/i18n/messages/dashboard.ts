@@ -1,10 +1,12 @@
 export const enDashboardMessages = {
   "dashboard.systemTitle": "System Dashboard",
   "dashboard.unifiedInstallHub": "Unified Install Hub",
+  "dashboard.homeAction": "All platforms",
+  "dashboard.refreshAction": "Refresh",
   "dashboard.heroEyebrow": "Control Room",
-  "dashboard.heroTitle": "Skills stay visible, actionable, and aligned.",
+  "dashboard.heroTitle": "Monitor the system, then move straight into the next action.",
   "dashboard.heroSubtitle":
-    "Track coverage, update pressure, and platform momentum from one bright dashboard.",
+    "Keep the update queue, platform coverage, and install entrypoint in one operational view.",
   "dashboard.heroReady": "Everything looks steady across active platforms.",
   "dashboard.heroAttention": "{count} updates are waiting for review.",
   "dashboard.heroEmpty": "No skills are installed yet. Start from the shared install hub.",
@@ -43,8 +45,10 @@ export const zhDashboardMessages: Record<
 > = {
   "dashboard.systemTitle": "系统仪表盘",
   "dashboard.unifiedInstallHub": "统一安装中心",
+  "dashboard.homeAction": "全部平台",
+  "dashboard.refreshAction": "刷新",
   "dashboard.heroEyebrow": "控制台",
-  "dashboard.heroTitle": "让 skills 始终醒目、可操作、状态一致。",
+  "dashboard.heroTitle": "先看系统状态，再进入下一步操作。",
   "dashboard.heroSubtitle": "在一个更明亮的看板里同时追踪覆盖率、更新压力和平台动向。",
   "dashboard.heroReady": "当前活跃平台整体运行平稳。",
   "dashboard.heroAttention": "有 {count} 个更新等待处理。",
