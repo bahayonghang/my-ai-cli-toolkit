@@ -34,7 +34,7 @@ import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
 import type { InstallHubStage } from "@/components/install-hub/types";
-import { glassPanelSx } from "@/components/common/glassPanel";
+import { workbenchPanelSx } from "@/components/common/glassPanel";
 import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 
 export default function UnifiedInstallHubPage() {
@@ -56,7 +56,7 @@ export default function UnifiedInstallHubPage() {
 
   return (
     <Box component="main" sx={{ minHeight: "100vh", position: "relative" }}>
-      <AnimatedBackground variant="dashboard" />
+      <AnimatedBackground variant="workbench" />
       <PageToolbar onBack={() => navigate(-1)} onHome={() => navigate("/")} />
       <PageBody model={model} platforms={platforms} />
       <NotificationSnackbar />
@@ -66,7 +66,12 @@ export default function UnifiedInstallHubPage() {
 
 function LoadingScreen() {
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+    >
       <CircularProgress />
     </Box>
   );
@@ -84,10 +89,18 @@ function PageToolbar({
   return (
     <AppBar position="fixed">
       <Toolbar sx={{ gap: 1 }}>
-        <IconButton color="inherit" aria-label={t("common.back")} onClick={onBack}>
+        <IconButton
+          color="inherit"
+          aria-label={t("common.back")}
+          onClick={onBack}
+        >
           <ArrowBackIcon />
         </IconButton>
-        <IconButton color="inherit" aria-label={t("common.home")} onClick={onHome}>
+        <IconButton
+          color="inherit"
+          aria-label={t("common.home")}
+          onClick={onHome}
+        >
           <HomeIcon />
         </IconButton>
         <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
@@ -110,7 +123,7 @@ function PageBody({
   return (
     <Box
       sx={{
-        maxWidth: 1560,
+        maxWidth: 1520,
         mx: "auto",
         px: { xs: 2, sm: 3, md: 4 },
         pt: 11,
@@ -142,25 +155,28 @@ function InstallHero({
   const activeStageTitle = t(`installHub.stageTitle.${model.activeStage}`);
 
   return (
-    <Box sx={{ ...glassPanelSx, p: { xs: 2.5, md: 3.25 } }}>
+    <Box sx={{ ...workbenchPanelSx, p: { xs: 2.25, md: 2.75 } }}>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          <Stack spacing={2.5}>
+          <Stack spacing={2}>
             <Box>
-              <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="overline"
+                sx={{ color: "var(--mcs-workbench-muted)" }}
+              >
                 {t("installHub.heroEyebrow")}
               </Typography>
               <Typography
-                variant="h2"
+                variant="h3"
                 sx={{
-                  mt: 1,
+                  mt: 0.75,
                   fontSize: {
-                    xs: "clamp(2rem, 7vw, 2.8rem)",
-                    md: "clamp(2.7rem, 5vw, 3.8rem)",
+                    xs: "clamp(1.7rem, 6vw, 2.25rem)",
+                    md: "clamp(2.2rem, 4vw, 2.9rem)",
                   },
-                  lineHeight: 1.03,
+                  lineHeight: 1.08,
                   letterSpacing: "-0.045em",
-                  maxWidth: 820,
+                  maxWidth: 780,
                 }}
               >
                 {t("installHub.heroTitle")}
@@ -168,9 +184,9 @@ function InstallHero({
               <Typography
                 variant="body1"
                 sx={{
-                  mt: 1.5,
-                  maxWidth: 740,
-                  color: "var(--mcs-dashboard-muted)",
+                  mt: 1,
+                  maxWidth: 680,
+                  color: "var(--mcs-workbench-muted)",
                 }}
               >
                 {t("installHub.heroSubtitle")}
@@ -178,57 +194,71 @@ function InstallHero({
             </Box>
 
             <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-              {(["skills", "platforms", "review"] as InstallHubStage[]).map((stage, index) => (
-                <Box
-                  key={stage}
-                  sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 1,
-                    px: 1.5,
-                    py: 0.85,
-                    borderRadius: 999,
-                    border: "1px solid",
-                    borderColor:
-                      stage === model.activeStage
-                        ? "var(--mcs-dashboard-outline-strong)"
-                        : "var(--mcs-dashboard-outline)",
-                    bgcolor:
-                      stage === model.activeStage
-                        ? "var(--mcs-dashboard-accent-soft)"
-                        : "var(--mcs-dashboard-surface-muted)",
-                  }}
-                >
-                  <Typography variant="caption" fontWeight={700}>
-                    {String(index + 1).padStart(2, "0")}
-                  </Typography>
-                  <Typography variant="body2" fontWeight={600}>
-                    {t(`installHub.stageTitle.${stage}`)}
-                  </Typography>
-                </Box>
-              ))}
+              {(["skills", "platforms", "review"] as InstallHubStage[]).map(
+                (stage, index) => (
+                  <Box
+                    key={stage}
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 1,
+                      px: 1.5,
+                      py: 0.85,
+                      borderRadius: 999,
+                      border: "1px solid",
+                      borderColor:
+                        stage === model.activeStage
+                          ? "var(--mcs-workbench-outline-strong)"
+                          : "var(--mcs-workbench-outline)",
+                      bgcolor:
+                        stage === model.activeStage
+                          ? "var(--mcs-workbench-accent-soft)"
+                          : "var(--mcs-workbench-surface-muted)",
+                    }}
+                  >
+                    <Typography variant="caption" fontWeight={700}>
+                      {String(index + 1).padStart(2, "0")}
+                    </Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {t(`installHub.stageTitle.${stage}`)}
+                    </Typography>
+                  </Box>
+                ),
+              )}
             </Stack>
           </Stack>
         </Grid>
 
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Stack spacing={1.5} sx={{ height: "100%", justifyContent: "space-between" }}>
+          <Stack
+            spacing={1.25}
+            sx={{ height: "100%", justifyContent: "space-between" }}
+          >
             <Box
               sx={{
                 borderRadius: 3,
-                border: "1px solid var(--mcs-dashboard-outline-strong)",
-                bgcolor: "var(--mcs-dashboard-accent-soft)",
+                border: "1px solid var(--mcs-workbench-outline-strong)",
+                bgcolor: "var(--mcs-workbench-accent-soft)",
                 px: 2,
                 py: 1.5,
               }}
             >
-              <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="overline"
+                sx={{ color: "var(--mcs-workbench-muted)" }}
+              >
                 {t("installHub.summaryEyebrow")}
               </Typography>
-              <Typography variant="h6" sx={{ mt: 0.4 }}>
+              <Typography
+                variant="h6"
+                sx={{ mt: 0.35, letterSpacing: "-0.03em" }}
+              >
                 {activeStageTitle}
               </Typography>
-              <Typography variant="body2" sx={{ mt: 0.75, color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="body2"
+                sx={{ mt: 0.75, color: "var(--mcs-workbench-muted)" }}
+              >
                 {t(`installHub.stageDescription.${model.activeStage}`)}
               </Typography>
             </Box>
@@ -290,12 +320,12 @@ function MetricPlate({
         border: "1px solid",
         borderColor:
           tone === "accent"
-            ? "var(--mcs-dashboard-outline-strong)"
-            : "var(--mcs-dashboard-outline)",
+            ? "var(--mcs-workbench-outline-strong)"
+            : "var(--mcs-workbench-outline)",
         bgcolor:
           tone === "accent"
-            ? "var(--mcs-dashboard-accent-soft)"
-            : "var(--mcs-dashboard-surface-muted)",
+            ? "var(--mcs-workbench-accent-soft)"
+            : "var(--mcs-workbench-surface-muted)",
         p: 1.5,
       }}
     >
@@ -309,14 +339,17 @@ function MetricPlate({
             placeItems: "center",
             bgcolor:
               tone === "accent"
-                ? "var(--mcs-dashboard-accent-soft)"
-                : "var(--mcs-dashboard-surface-muted)",
+                ? "var(--mcs-workbench-accent-soft)"
+                : "var(--mcs-workbench-surface-muted)",
           }}
         >
           {icon}
         </Box>
         <Box>
-          <Typography variant="caption" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="caption"
+            sx={{ color: "var(--mcs-workbench-muted)" }}
+          >
             {label}
           </Typography>
           <Typography variant="h5" sx={{ mt: 0.3 }}>
@@ -340,7 +373,7 @@ function InstallWorkbench({
   return (
     <>
       <Grid container spacing={2.5} alignItems="flex-start">
-        <Grid size={{ xs: 12, xl: 8 }}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Stack spacing={2}>
             <InstallStagePanel
               stepNumber={1}
@@ -366,10 +399,14 @@ function InstallWorkbench({
                 onDefaultOnlyChange={model.setDefaultOnly}
                 onSearchChange={model.setSearch}
                 onSelectAllFiltered={() =>
-                  model.setSelectedSkills(new Set(model.filteredSkills.map((skill) => skill.name)))
+                  model.setSelectedSkills(
+                    new Set(model.filteredSkills.map((skill) => skill.name)),
+                  )
                 }
                 onToggleSkill={(name) =>
-                  model.setSelectedSkills((previous) => toggleInSet(previous, name))
+                  model.setSelectedSkills((previous) =>
+                    toggleInSet(previous, name),
+                  )
                 }
               />
             </InstallStagePanel>
@@ -393,10 +430,14 @@ function InstallWorkbench({
                 selectedPlatforms={model.selectedPlatforms}
                 onClearSelection={() => model.setSelectedPlatforms(new Set())}
                 onSelectAll={() =>
-                  model.setSelectedPlatforms(new Set(platforms.map((platform) => platform.id)))
+                  model.setSelectedPlatforms(
+                    new Set(platforms.map((platform) => platform.id)),
+                  )
                 }
                 onTogglePlatform={(platformId) =>
-                  model.setSelectedPlatforms((previous) => toggleInSet(previous, platformId))
+                  model.setSelectedPlatforms((previous) =>
+                    toggleInSet(previous, platformId),
+                  )
                 }
               />
             </InstallStagePanel>
@@ -406,7 +447,11 @@ function InstallWorkbench({
               title={t("installHub.stageTitle.review")}
               description={t("installHub.stageDescription.review")}
               active={model.activeStage === "review"}
-              available={model.steps.review.available || model.execution.running || model.results.length > 0}
+              available={
+                model.steps.review.available ||
+                model.execution.running ||
+                model.results.length > 0
+              }
               complete={model.execution.phase === "complete"}
               statusLabel={resolveStepStatusLabel(model, "review", t)}
               actionLabel={t("installHub.openStage")}
@@ -426,7 +471,10 @@ function InstallWorkbench({
           </Stack>
         </Grid>
 
-        <Grid size={{ xs: 12, xl: 4 }} sx={{ display: { xs: "none", xl: "block" } }}>
+        <Grid
+          size={{ xs: 12, lg: 4 }}
+          sx={{ display: { xs: "none", lg: "block" } }}
+        >
           <InstallSummaryRail
             summary={model.summary}
             steps={model.steps}
@@ -486,7 +534,9 @@ function buildSkillsPreview(
       </Typography>
       <Typography variant="body2" color="text.secondary">
         {model.summary.selectedSkillNames.length > 0
-          ? t("installHub.selectedSkillsPreview", { count: model.summary.selectedSkillNames.length })
+          ? t("installHub.selectedSkillsPreview", {
+              count: model.summary.selectedSkillNames.length,
+            })
           : t("installHub.summaryEmptySkills")}
       </Typography>
     </Stack>
@@ -501,7 +551,9 @@ function buildPlatformsPreview(
     <Stack spacing={0.75}>
       <Typography variant="body2">
         {model.summary.selectedPlatforms.length > 0
-          ? t("installHub.selectedPlatformsPreview", { count: model.summary.selectedPlatforms.length })
+          ? t("installHub.selectedPlatformsPreview", {
+              count: model.summary.selectedPlatforms.length,
+            })
           : t("installHub.summaryEmptyPlatforms")}
       </Typography>
       {!model.steps.platforms.available ? (
@@ -520,11 +572,15 @@ function buildReviewPreview(
   return (
     <Stack spacing={0.75}>
       <Typography variant="body2">
-        {t("installHub.willRunActions", { count: model.summary.plannedActionCount })}
+        {t("installHub.willRunActions", {
+          count: model.summary.plannedActionCount,
+        })}
       </Typography>
       <Typography variant="body2" color="text.secondary">
         {model.steps.review.available
-          ? t("installHub.reviewSelectionHint", { count: model.summary.plannedActionCount })
+          ? t("installHub.reviewSelectionHint", {
+              count: model.summary.plannedActionCount,
+            })
           : t("installHub.reviewLockedHint")}
       </Typography>
     </Stack>

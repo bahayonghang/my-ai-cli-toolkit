@@ -7,7 +7,11 @@ export interface NpxSummaryCardProps {
   icon: React.ReactNode;
 }
 
-export default function NpxSummaryCard({ label, value, icon }: NpxSummaryCardProps) {
+export default function NpxSummaryCard({
+  label,
+  value,
+  icon,
+}: NpxSummaryCardProps) {
   return (
     <Card
       sx={{
@@ -37,8 +41,8 @@ export default function NpxSummaryCard({ label, value, icon }: NpxSummaryCardPro
             alignItems: "center",
             justifyContent: "center",
             background:
-              "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-muted) 100%)",
-            border: "1px solid var(--mcs-dashboard-outline)",
+              "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)",
+            border: "1px solid var(--mcs-workbench-outline)",
             boxShadow:
               "inset 0 1px 0 var(--mcs-glass-highlight), var(--mcs-glass-shadow)",
             flexShrink: 0,
@@ -49,13 +53,23 @@ export default function NpxSummaryCard({ label, value, icon }: NpxSummaryCardPro
         <Box sx={{ minWidth: 0 }}>
           <Typography
             variant="overline"
-            sx={{ color: "var(--mcs-dashboard-muted)", display: "block", mb: 0.35, lineHeight: 1.2 }}
+            sx={{
+              color: "var(--mcs-workbench-muted)",
+              display: "block",
+              mb: 0.35,
+              lineHeight: 1.2,
+            }}
           >
             {label}
           </Typography>
           <Typography
             variant="h5"
-            sx={{ fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05, wordBreak: "break-word" }}
+            sx={{
+              fontWeight: 700,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.05,
+              wordBreak: "break-word",
+            }}
           >
             {value}
           </Typography>

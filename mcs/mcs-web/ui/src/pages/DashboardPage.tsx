@@ -17,9 +17,11 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import HomeIcon from "@mui/icons-material/Home";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
-import { glassPanelSx } from "@/components/common/glassPanel";
+import { monitorPanelSx } from "@/components/common/glassPanel";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useI18n } from "@/i18n";
@@ -37,7 +39,7 @@ import type {
 const LegacyCleanupDialog = lazy(() =>
   import("@/components/dialogs/LegacyCleanupDialog").then((module) => ({
     default: module.LegacyCleanupDialog,
-  }))
+  })),
 );
 
 export default function DashboardPage() {
@@ -64,7 +66,7 @@ export default function DashboardPage() {
 
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
-      <AnimatedBackground variant="dashboard" />
+      <AnimatedBackground variant="monitor" />
 
       <AppBar position="fixed">
         <Toolbar sx={{ gap: 1 }}>
@@ -75,9 +77,39 @@ export default function DashboardPage() {
           >
             <ArrowBackIcon />
           </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label={t("common.home")}
+            onClick={() => navigateDeferred("/")}
+          >
+            <HomeIcon />
+          </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
             {t("dashboard.systemTitle")}
           </Typography>
+          <Button
+            variant="outlined"
+            startIcon={
+              loading ? (
+                <CircularProgress size={16} color="inherit" />
+              ) : (
+                <RefreshIcon />
+              )
+            }
+            onClick={() => void fetchDashboard()}
+            disabled={loading}
+          >
+            {t("dashboard.refreshAction")}
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<InstallDesktopIcon />}
+            onClick={() => navigateDeferred("/install-hub")}
+          >
+            {t("dashboard.unifiedInstallHub")}
+          </Button>
+          <LanguageToggle />
+          <ThemeToggleButton />
         </Toolbar>
       </AppBar>
 
@@ -106,11 +138,15 @@ export default function DashboardPage() {
               summary={data.summary}
               legacyCount={legacyCount}
               heroStatus={heroStatus}
-              onOpenInstallHub={() => navigateDeferred("/install-hub")}
               onOpenLegacy={() => setLegacyOpen(true)}
             />
 
             <Grid container spacing={2.5}>
+              <Grid size={{ xs: 12, lg: 4 }}>
+                <UpdateQueuePanel
+                  updateQueue={data.skillSpotlight.updateQueue}
+                />
+              </Grid>
               <Grid size={{ xs: 12, lg: 8 }}>
                 <SkillsSpotlight
                   summary={data.summary}
@@ -118,20 +154,26 @@ export default function DashboardPage() {
                   topCategories={data.skillSpotlight.topCategories}
                 />
               </Grid>
-              <Grid size={{ xs: 12, lg: 4 }}>
-                <UpdateQueuePanel updateQueue={data.skillSpotlight.updateQueue} />
-              </Grid>
             </Grid>
 
             <PlatformsMatrix
               platforms={data.platforms}
-              onPlatformClick={(platformId) => navigateDeferred(`/platform/${platformId}`)}
+              onPlatformClick={(platformId) =>
+                navigateDeferred(`/platform/${platformId}`)
+              }
             />
           </Stack>
         ) : null}
       </Box>
 
-      <Suspense fallback={<CircularProgress size={24} sx={{ position: "fixed", bottom: 24, right: 24 }} />}>
+      <Suspense
+        fallback={
+          <CircularProgress
+            size={24}
+            sx={{ position: "fixed", bottom: 24, right: 24 }}
+          />
+        }
+      >
         <LegacyCleanupDialog
           open={legacyOpen}
           onClose={() => {
@@ -148,37 +190,46 @@ function HeroSection({
   summary,
   legacyCount,
   heroStatus,
-  onOpenInstallHub,
   onOpenLegacy,
 }: {
   summary: DashboardSummary;
   legacyCount: number;
   heroStatus: string;
-  onOpenInstallHub: () => void;
   onOpenLegacy: () => void;
 }) {
   const { t } = useI18n();
 
   return (
-    <Box sx={{ ...glassPanelSx, p: { xs: 2.5, md: 3.5 } }}>
+    <Box
+      sx={{
+        p: { xs: 2.25, md: 2.75 },
+        borderRadius: 4,
+        border: "1px solid var(--mcs-monitor-outline)",
+        bgcolor: "var(--mcs-monitor-surface)",
+        boxShadow: "var(--mcs-shadow-sm)",
+      }}
+    >
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Stack spacing={2.5}>
+        <Grid size={{ xs: 12, lg: 8 }}>
+          <Stack spacing={2}>
             <Box>
-              <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="overline"
+                sx={{ color: "var(--mcs-monitor-muted)" }}
+              >
                 {t("dashboard.heroEyebrow")}
               </Typography>
               <Typography
-                variant="h2"
+                variant="h4"
                 sx={{
-                  mt: 1.25,
-                  maxWidth: 720,
+                  mt: 0.75,
+                  maxWidth: 760,
                   fontSize: {
-                    xs: "clamp(2rem, 7vw, 2.8rem)",
-                    md: "clamp(2.6rem, 5vw, 3.6rem)",
+                    xs: "clamp(1.55rem, 6vw, 2rem)",
+                    md: "clamp(1.9rem, 4vw, 2.4rem)",
                   },
-                  lineHeight: 1.04,
-                  letterSpacing: "-0.04em",
+                  lineHeight: 1.08,
+                  letterSpacing: "-0.035em",
                 }}
               >
                 {t("dashboard.heroTitle")}
@@ -186,10 +237,10 @@ function HeroSection({
               <Typography
                 variant="body1"
                 sx={{
-                  mt: 1.5,
-                  maxWidth: 640,
-                  color: "var(--mcs-dashboard-muted)",
-                  fontSize: { xs: "1rem", md: "1.05rem" },
+                  mt: 1,
+                  maxWidth: 680,
+                  color: "var(--mcs-monitor-muted)",
+                  fontSize: { xs: "0.98rem", md: "1rem" },
                 }}
               >
                 {t("dashboard.heroSubtitle")}
@@ -205,7 +256,7 @@ function HeroSection({
                 borderRadius: 999,
                 border: "1px solid var(--mcs-summary-tile-stroke)",
                 bgcolor: "var(--mcs-summary-tile-fill)",
-                color: "var(--mcs-dashboard-ink)",
+                color: "var(--mcs-monitor-ink)",
               }}
             >
               <Typography variant="body2" fontWeight={600}>
@@ -213,8 +264,8 @@ function HeroSection({
               </Typography>
             </Box>
 
-            <Grid container spacing={1.5}>
-              <Grid size={{ xs: 12, sm: 4 }}>
+            <Grid container spacing={1.25}>
+              <Grid size={{ xs: 12, sm: 6, xl: 4 }}>
                 <MetricPlate
                   label={t("dashboard.installedSkills")}
                   value={`${summary.installedSkills}/${summary.totalSkills}`}
@@ -224,15 +275,17 @@ function HeroSection({
                   })}
                 />
               </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
+              <Grid size={{ xs: 12, sm: 6, xl: 4 }}>
                 <MetricPlate
                   label={t("dashboard.outdated")}
                   value={summary.outdatedSkills}
-                  detail={t("dashboard.updatesAvailable", { count: summary.outdatedSkills })}
+                  detail={t("dashboard.updatesAvailable", {
+                    count: summary.outdatedSkills,
+                  })}
                   tone={summary.outdatedSkills > 0 ? "warm" : "neutral"}
                 />
               </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
+              <Grid size={{ xs: 12, sm: 6, xl: 4 }}>
                 <MetricPlate
                   label={t("dashboard.activePlatforms")}
                   value={`${summary.activePlatforms}/${summary.totalPlatforms}`}
@@ -245,67 +298,22 @@ function HeroSection({
           </Stack>
         </Grid>
 
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <Stack
-            spacing={2}
-            sx={{
-              height: "100%",
-              justifyContent: "space-between",
-            }}
-          >
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={1.25}
-              justifyContent="flex-end"
-              alignItems={{ xs: "stretch", sm: "center" }}
-              flexWrap="wrap"
-              useFlexGap
-            >
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Stack spacing={1.5} sx={{ height: "100%" }}>
+            {legacyCount > 0 && (
               <Button
-                variant="contained"
-                startIcon={<InstallDesktopIcon />}
-                onClick={onOpenInstallHub}
-                sx={{
-                  px: 2,
-                  bgcolor: "var(--mcs-dashboard-accent)",
-                  color: "var(--mcs-dashboard-ink)",
-                  "&:hover": {
-                    bgcolor: "var(--mcs-dashboard-accent-strong)",
-                  },
-                }}
+                variant="outlined"
+                color="warning"
+                startIcon={<WarningAmberIcon />}
+                onClick={onOpenLegacy}
+                sx={{ alignSelf: "flex-start" }}
               >
-                {t("dashboard.unifiedInstallHub")}
+                {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
               </Button>
-              {legacyCount > 0 && (
-                <Button
-                  variant="outlined"
-                  color="warning"
-                  startIcon={<WarningAmberIcon />}
-                  onClick={onOpenLegacy}
-                >
-                  {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
-                </Button>
-              )}
-              <LanguageToggle />
-              <Box
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: 44,
-                  minWidth: 44,
-                  px: 0.5,
-                  borderRadius: 999,
-                  border: "1px solid var(--mcs-dashboard-outline)",
-                  bgcolor: "var(--mcs-dashboard-surface-muted)",
-                }}
-              >
-                <ThemeToggleButton />
-              </Box>
-            </Stack>
-
+            )}
             <Box
               sx={{
+                mt: legacyCount > 0 ? 0 : "auto",
                 p: 2.25,
                 borderRadius: 3,
                 border: "1px solid var(--mcs-summary-tile-stroke)",
@@ -319,7 +327,10 @@ function HeroSection({
                   justifyContent="space-between"
                   alignItems={{ xs: "flex-start", sm: "center" }}
                 >
-                  <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "var(--mcs-monitor-muted)" }}
+                  >
                     {t("dashboard.commandsCoverage")}
                   </Typography>
                   <Typography variant="body2" fontWeight={700}>
@@ -333,14 +344,17 @@ function HeroSection({
                   sx={{
                     height: 10,
                     borderRadius: 999,
-                    bgcolor: "var(--mcs-dashboard-progress-track)",
+                    bgcolor: "var(--mcs-monitor-progress-track)",
                     "& .MuiLinearProgress-bar": {
                       borderRadius: 999,
-                      bgcolor: "var(--mcs-dashboard-warm-strong)",
+                      bgcolor: "var(--mcs-monitor-warm-strong)",
                     },
                   }}
                 />
-                <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "var(--mcs-monitor-muted)" }}
+                >
                   {t("dashboard.commandsCoverageSub", {
                     installed: summary.installedCommands,
                     total: summary.totalCommands,
@@ -372,14 +386,14 @@ function MetricPlate({
         height: "100%",
         p: 2,
         borderRadius: 3,
-        border: "1px solid var(--mcs-dashboard-outline)",
+        border: "1px solid var(--mcs-monitor-outline)",
         background:
           tone === "warm"
-            ? "linear-gradient(180deg, var(--mcs-dashboard-warm-soft) 0%, transparent 100%)"
-            : "var(--mcs-dashboard-surface-muted)",
+            ? "linear-gradient(180deg, var(--mcs-monitor-warm-soft) 0%, transparent 100%)"
+            : "var(--mcs-monitor-surface-muted)",
       }}
     >
-      <Typography variant="overline" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+      <Typography variant="overline" sx={{ color: "var(--mcs-monitor-muted)" }}>
         {label}
       </Typography>
       <Typography
@@ -393,7 +407,10 @@ function MetricPlate({
       >
         {value}
       </Typography>
-      <Typography variant="body2" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
+      <Typography
+        variant="body2"
+        sx={{ mt: 1, color: "var(--mcs-monitor-muted)" }}
+      >
         {detail}
       </Typography>
     </Box>
@@ -412,13 +429,20 @@ function SkillsSpotlight({
   const { t } = useI18n();
 
   return (
-    <Box sx={{ ...glassPanelSx, p: { xs: 2.25, md: 3 } }}>
+    <Box sx={{ ...monitorPanelSx, p: { xs: 2.25, md: 3 } }}>
       <Stack spacing={2.5}>
         <Box>
-          <Typography variant="overline" component="h2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="overline"
+            component="h2"
+            sx={{ color: "var(--mcs-monitor-muted)" }}
+          >
             {t("dashboard.skillsSpotlightTitle")}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="body1"
+            sx={{ mt: 1, color: "var(--mcs-monitor-muted)" }}
+          >
             {t("dashboard.skillsSpotlightSub")}
           </Typography>
         </Box>
@@ -427,8 +451,8 @@ function SkillsSpotlight({
           sx={{
             p: 2.25,
             borderRadius: 3,
-            border: "1px solid var(--mcs-dashboard-outline)",
-            bgcolor: "var(--mcs-dashboard-surface-muted)",
+            border: "1px solid var(--mcs-monitor-outline)",
+            bgcolor: "var(--mcs-monitor-surface-muted)",
           }}
         >
           <Stack spacing={1.25}>
@@ -438,7 +462,10 @@ function SkillsSpotlight({
               justifyContent="space-between"
               alignItems={{ xs: "flex-start", sm: "center" }}
             >
-              <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "var(--mcs-monitor-muted)" }}
+              >
                 {t("dashboard.skillCoverageLabel")}
               </Typography>
               <Typography variant="body2" fontWeight={700}>
@@ -452,14 +479,17 @@ function SkillsSpotlight({
               sx={{
                 height: 12,
                 borderRadius: 999,
-                bgcolor: "var(--mcs-dashboard-progress-track)",
+                bgcolor: "var(--mcs-monitor-progress-track)",
                 "& .MuiLinearProgress-bar": {
                   borderRadius: 999,
-                  bgcolor: "var(--mcs-dashboard-accent-strong)",
+                  bgcolor: "var(--mcs-monitor-accent-strong)",
                 },
               }}
             />
-            <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "var(--mcs-monitor-muted)" }}
+            >
               {t("dashboard.skillCoverageSub", {
                 installed: summary.installedSkills,
                 total: summary.totalSkills,
@@ -506,7 +536,11 @@ function SkillsSpotlight({
   );
 }
 
-const TopSkillToken = memo(function TopSkillToken({ skill }: { skill: DashboardTopSkill }) {
+const TopSkillToken = memo(function TopSkillToken({
+  skill,
+}: {
+  skill: DashboardTopSkill;
+}) {
   const { t } = useI18n();
 
   return (
@@ -515,8 +549,8 @@ const TopSkillToken = memo(function TopSkillToken({ skill }: { skill: DashboardT
         height: "100%",
         p: 1.75,
         borderRadius: 3,
-        border: "1px solid var(--mcs-dashboard-outline)",
-        bgcolor: "var(--mcs-dashboard-surface-muted)",
+        border: "1px solid var(--mcs-monitor-outline)",
+        bgcolor: "var(--mcs-monitor-surface-muted)",
       }}
     >
       <Stack spacing={1}>
@@ -527,11 +561,17 @@ const TopSkillToken = memo(function TopSkillToken({ skill }: { skill: DashboardT
           spacing={1}
         >
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, overflowWrap: "anywhere" }}>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, overflowWrap: "anywhere" }}
+            >
               {skill.name}
             </Typography>
             {skill.category && (
-              <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "var(--mcs-monitor-muted)" }}
+              >
                 {skill.category}
               </Typography>
             )}
@@ -540,11 +580,14 @@ const TopSkillToken = memo(function TopSkillToken({ skill }: { skill: DashboardT
             {skill.installedOn}
           </Typography>
         </Stack>
-        <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+        <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
           {t("dashboard.installedOnPlatforms", { count: skill.installedOn })}
         </Typography>
         {skill.outdatedOn > 0 && (
-          <Typography variant="body2" sx={{ color: "warning.main", fontWeight: 600 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "warning.main", fontWeight: 600 }}
+          >
             {t("dashboard.outdatedOnPlatforms", { count: skill.outdatedOn })}
           </Typography>
         )}
@@ -553,7 +596,11 @@ const TopSkillToken = memo(function TopSkillToken({ skill }: { skill: DashboardT
   );
 });
 
-const TopCategoryBar = memo(function TopCategoryBar({ category }: { category: DashboardTopCategory }) {
+const TopCategoryBar = memo(function TopCategoryBar({
+  category,
+}: {
+  category: DashboardTopCategory;
+}) {
   const { t } = useI18n();
   const progress = percentage(category.installed, category.total);
 
@@ -562,8 +609,8 @@ const TopCategoryBar = memo(function TopCategoryBar({ category }: { category: Da
       sx={{
         p: 1.5,
         borderRadius: 3,
-        border: "1px solid var(--mcs-dashboard-outline)",
-        bgcolor: "var(--mcs-dashboard-surface-muted)",
+        border: "1px solid var(--mcs-monitor-outline)",
+        bgcolor: "var(--mcs-monitor-surface-muted)",
       }}
     >
       <Stack spacing={1}>
@@ -582,14 +629,14 @@ const TopCategoryBar = memo(function TopCategoryBar({ category }: { category: Da
           sx={{
             height: 8,
             borderRadius: 999,
-            bgcolor: "var(--mcs-dashboard-progress-track)",
+            bgcolor: "var(--mcs-monitor-progress-track)",
             "& .MuiLinearProgress-bar": {
               borderRadius: 999,
-              bgcolor: "var(--mcs-dashboard-accent)",
+              bgcolor: "var(--mcs-monitor-accent)",
             },
           }}
         />
-        <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+        <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
           {t("dashboard.categoryCoverage", {
             installed: category.installed,
             total: category.total,
@@ -600,17 +647,28 @@ const TopCategoryBar = memo(function TopCategoryBar({ category }: { category: Da
   );
 });
 
-function UpdateQueuePanel({ updateQueue }: { updateQueue: DashboardUpdateQueueItem[] }) {
+function UpdateQueuePanel({
+  updateQueue,
+}: {
+  updateQueue: DashboardUpdateQueueItem[];
+}) {
   const { t } = useI18n();
 
   return (
-    <Box sx={{ ...glassPanelSx, p: { xs: 2.25, md: 3 }, height: "100%" }}>
+    <Box sx={{ ...monitorPanelSx, p: { xs: 2.25, md: 3 }, height: "100%" }}>
       <Stack spacing={2}>
         <Box>
-          <Typography variant="overline" component="h2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="overline"
+            component="h2"
+            sx={{ color: "var(--mcs-monitor-muted)" }}
+          >
             {t("dashboard.updateQueueTitle")}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="body1"
+            sx={{ mt: 1, color: "var(--mcs-monitor-muted)" }}
+          >
             {t("dashboard.updateQueueSub")}
           </Typography>
         </Box>
@@ -623,24 +681,35 @@ function UpdateQueuePanel({ updateQueue }: { updateQueue: DashboardUpdateQueueIt
                 sx={{
                   p: 1.75,
                   borderRadius: 3,
-                  border: "1px solid var(--mcs-dashboard-outline)",
+                  border: "1px solid var(--mcs-monitor-outline)",
                   bgcolor:
                     index === 0
-                      ? "var(--mcs-dashboard-warm-soft)"
-                      : "var(--mcs-dashboard-surface-muted)",
+                      ? "var(--mcs-monitor-warm-soft)"
+                      : "var(--mcs-monitor-surface-muted)",
                 }}
               >
                 <Stack spacing={1}>
-                  <Stack direction="row" justifyContent="space-between" spacing={1}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    spacing={1}
+                  >
                     <Stack direction="row" spacing={1.25} alignItems="center">
-                      <Typography variant="h5" component="span" sx={{ lineHeight: 1 }}>
+                      <Typography
+                        variant="h5"
+                        component="span"
+                        sx={{ lineHeight: 1 }}
+                      >
                         {item.platformIcon}
                       </Typography>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={700}>
                           {item.platformName}
                         </Typography>
-                        <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "var(--mcs-monitor-muted)" }}
+                        >
                           {t("dashboard.skillCoverageSub", {
                             installed: item.installedSkills,
                             total: item.totalSkills,
@@ -659,10 +728,10 @@ function UpdateQueuePanel({ updateQueue }: { updateQueue: DashboardUpdateQueueIt
                     sx={{
                       height: 7,
                       borderRadius: 999,
-                      bgcolor: "var(--mcs-dashboard-progress-track)",
+                      bgcolor: "var(--mcs-monitor-progress-track)",
                       "& .MuiLinearProgress-bar": {
                         borderRadius: 999,
-                        bgcolor: "var(--mcs-dashboard-warm-strong)",
+                        bgcolor: "var(--mcs-monitor-warm-strong)",
                       },
                     }}
                   />
@@ -690,23 +759,27 @@ function PlatformsMatrix({
   const compactPlatforms = platforms.slice(3);
 
   return (
-    <Box sx={{ ...glassPanelSx, p: { xs: 2.25, md: 3 } }}>
+    <Box sx={{ ...monitorPanelSx, p: { xs: 2.25, md: 3 } }}>
       <Stack spacing={2.5}>
         <Box>
-          <Typography variant="overline" component="h2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="overline"
+            component="h2"
+            sx={{ color: "var(--mcs-monitor-muted)" }}
+          >
             {t("dashboard.platformMatrixTitle")}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 1, color: "var(--mcs-dashboard-muted)" }}>
+          <Typography
+            variant="body1"
+            sx={{ mt: 1, color: "var(--mcs-monitor-muted)" }}
+          >
             {t("dashboard.platformMatrixSub")}
           </Typography>
         </Box>
 
         <Grid container spacing={2}>
           {featuredPlatforms.map((platform) => (
-            <Grid
-              key={platform.id}
-              size={{ xs: 12, sm: 6, lg: 4 }}
-            >
+            <Grid key={platform.id} size={{ xs: 12, sm: 6, lg: 4 }}>
               <PlatformCard
                 platform={platform}
                 emphasized
@@ -717,7 +790,10 @@ function PlatformsMatrix({
 
           {compactPlatforms.map((platform) => (
             <Grid key={platform.id} size={{ xs: 12, sm: 6, lg: 3 }}>
-              <PlatformCard platform={platform} onClick={() => onPlatformClick(platform.id)} />
+              <PlatformCard
+                platform={platform}
+                onClick={() => onPlatformClick(platform.id)}
+              />
             </Grid>
           ))}
         </Grid>
@@ -736,18 +812,24 @@ const PlatformCard = memo(function PlatformCard({
   onClick: () => void;
 }) {
   const { t } = useI18n();
-  const skillCoverage = percentage(platform.installed_skills, platform.total_skills);
-  const commandCoverage = percentage(platform.installed_commands, platform.total_commands);
+  const skillCoverage = percentage(
+    platform.installed_skills,
+    platform.total_skills,
+  );
+  const commandCoverage = percentage(
+    platform.installed_commands,
+    platform.total_commands,
+  );
 
   return (
     <Card
       sx={{
         height: "100%",
         borderRadius: 3.5,
-        border: "1px solid var(--mcs-dashboard-outline)",
+        border: "1px solid var(--mcs-monitor-outline)",
         background: emphasized
-          ? "linear-gradient(180deg, var(--mcs-dashboard-accent-soft) 0%, var(--mcs-dashboard-surface-strong) 70%)"
-          : "linear-gradient(180deg, var(--mcs-dashboard-surface-muted) 0%, var(--mcs-dashboard-surface) 100%)",
+          ? "linear-gradient(180deg, var(--mcs-monitor-accent-soft) 0%, var(--mcs-monitor-surface-strong) 70%)"
+          : "linear-gradient(180deg, var(--mcs-monitor-surface-muted) 0%, var(--mcs-monitor-surface) 100%)",
         boxShadow: "none",
       }}
     >
@@ -768,8 +850,18 @@ const PlatformCard = memo(function PlatformCard({
             height: "100%",
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
-            <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={2}
+          >
+            <Stack
+              direction="row"
+              spacing={1.25}
+              alignItems="center"
+              sx={{ minWidth: 0 }}
+            >
               <Typography variant="h4" component="span" sx={{ lineHeight: 1 }}>
                 {platform.icon}
               </Typography>
@@ -781,7 +873,10 @@ const PlatformCard = memo(function PlatformCard({
                 >
                   {platform.name}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "var(--mcs-monitor-muted)" }}
+                >
                   {platform.id}
                 </Typography>
               </Box>
@@ -793,14 +888,16 @@ const PlatformCard = memo(function PlatformCard({
                   px: 1.1,
                   py: 0.55,
                   borderRadius: 999,
-                  bgcolor: "var(--mcs-dashboard-warm-soft)",
+                  bgcolor: "var(--mcs-monitor-warm-soft)",
                   color: "warning.dark",
                   fontSize: "0.75rem",
                   fontWeight: 700,
                   whiteSpace: "nowrap",
                 }}
               >
-                {t("dashboard.updatesAvailable", { count: platform.outdated_skills })}
+                {t("dashboard.updatesAvailable", {
+                  count: platform.outdated_skills,
+                })}
               </Box>
             )}
           </Stack>
@@ -810,14 +907,14 @@ const PlatformCard = memo(function PlatformCard({
               label={t("dashboard.skillCoverageLabel")}
               value={`${platform.installed_skills}/${platform.total_skills}`}
               progress={skillCoverage}
-              accent="var(--mcs-dashboard-accent-strong)"
+              accent="var(--mcs-monitor-accent-strong)"
             />
-            <Divider sx={{ borderColor: "var(--mcs-dashboard-outline)" }} />
+            <Divider sx={{ borderColor: "var(--mcs-monitor-outline)" }} />
             <MetricRail
               label={t("dashboard.commandsLabel")}
               value={`${platform.installed_commands}/${platform.total_commands}`}
               progress={commandCoverage}
-              accent="var(--mcs-dashboard-warm-strong)"
+              accent="var(--mcs-monitor-warm-strong)"
             />
           </Stack>
         </Stack>
@@ -840,7 +937,7 @@ function MetricRail({
   return (
     <Stack spacing={0.85}>
       <Stack direction="row" justifyContent="space-between" spacing={1}>
-        <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+        <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
           {label}
         </Typography>
         <Typography variant="body2" fontWeight={700}>
@@ -854,7 +951,7 @@ function MetricRail({
         sx={{
           height: 7,
           borderRadius: 999,
-          bgcolor: "var(--mcs-dashboard-progress-track)",
+          bgcolor: "var(--mcs-monitor-progress-track)",
           "& .MuiLinearProgress-bar": {
             borderRadius: 999,
             bgcolor: accent,
@@ -871,11 +968,11 @@ function EmptyStateMessage({ message }: { message: string }) {
       sx={{
         p: 2,
         borderRadius: 3,
-        border: "1px dashed var(--mcs-dashboard-outline-strong)",
-        bgcolor: "var(--mcs-dashboard-surface-muted)",
+        border: "1px dashed var(--mcs-monitor-outline-strong)",
+        bgcolor: "var(--mcs-monitor-surface-muted)",
       }}
     >
-      <Typography variant="body2" sx={{ color: "var(--mcs-dashboard-muted)" }}>
+      <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
         {message}
       </Typography>
     </Box>
