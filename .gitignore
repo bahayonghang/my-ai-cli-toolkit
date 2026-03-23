@@ -25,3 +25,8 @@ mcs/mcs-web/ui/test-results/.last-run.json
 .playwright-mcp/
 
 .impeccable.md
+
+# planning with files
+task_plan.md
+findings.md
+progress.md
