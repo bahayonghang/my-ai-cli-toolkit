@@ -15,6 +15,7 @@ import { useI18n } from "@/i18n";
 import { summarizeInstallResults } from "@/pages/installHubLogic";
 import type { ExecutionState, PlatformInstallResult } from "./types";
 import type { PlatformDisplay } from "@/types";
+import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 
 interface InstallReviewStageProps {
   selectedSkillNames: string[];
@@ -212,22 +213,13 @@ function ReviewPreviewBlock({
                     bgcolor: "var(--mcs-workbench-surface-muted)",
                   }}
                 >
-                  <Stack direction="row" spacing={1.25} alignItems="center">
-                    <Typography variant="h6" sx={{ lineHeight: 1 }}>
-                      {platform.icon}
-                    </Typography>
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography variant="body2" fontWeight={700}>
-                        {platform.name}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "var(--mcs-workbench-muted)" }}
-                      >
-                        {platform.skills_path}
-                      </Typography>
-                    </Box>
-                  </Stack>
+                  <PlatformIdentity
+                    platformId={platform.id}
+                    name={platform.name}
+                    fallbackIcon={platform.icon}
+                    subtitle={platform.skills_path}
+                    size={42}
+                  />
                 </Box>
               ))
             )}
@@ -386,7 +378,12 @@ function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
           justifyContent="space-between"
           alignItems={{ xs: "flex-start", md: "center" }}
         >
-          <Typography variant="h6">{`${result.platform.icon} ${result.platform.name}`}</Typography>
+          <PlatformIdentity
+            platformId={result.platform.id}
+            name={result.platform.name}
+            fallbackIcon={result.platform.icon}
+            size={40}
+          />
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             <Chip
               label={t("installHub.successCount", {

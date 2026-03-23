@@ -33,60 +33,60 @@ interface CatppuccinPalette {
 
 const catppuccin: Record<Mode, CatppuccinPalette> = {
   light: {
-    rosewater: "#dc8a78",
-    flamingo: "#dd7878",
-    pink: "#ea76cb",
-    mauve: "#8839ef",
-    red: "#d20f39",
-    maroon: "#e64553",
-    peach: "#fe640b",
-    yellow: "#df8e1d",
-    green: "#40a02b",
-    teal: "#179299",
-    sky: "#04a5e5",
-    sapphire: "#209fb5",
-    blue: "#1e66f5",
-    lavender: "#7287fd",
-    text: "#4c4f69",
-    subtext1: "#5c5f77",
-    subtext0: "#6c6f85",
-    overlay2: "#7c7f93",
-    overlay1: "#8c8fa1",
-    overlay0: "#9ca0b0",
-    surface2: "#acb0be",
-    surface1: "#bcc0cc",
-    surface0: "#ccd0da",
-    base: "#eff1f5",
-    mantle: "#e6e9ef",
-    crust: "#dce0e8",
+    rosewater: "#FCE7F3",
+    flamingo: "#F9A8D4",
+    pink: "#EC4899",
+    mauve: "#7C3AED",
+    red: "#DC2626",
+    maroon: "#C2410C",
+    peach: "#F59E0B",
+    yellow: "#FBBF24",
+    green: "#10B981",
+    teal: "#14B8A6",
+    sky: "#0EA5E9",
+    sapphire: "#2563EB",
+    blue: "#1D4ED8",
+    lavender: "#6366F1",
+    text: "#0F172A",
+    subtext1: "#334155",
+    subtext0: "#475569",
+    overlay2: "#64748B",
+    overlay1: "#94A3B8",
+    overlay0: "#CBD5E1",
+    surface2: "#D7E3F4",
+    surface1: "#E2E8F0",
+    surface0: "#EEF2FF",
+    base: "#F8FAFC",
+    mantle: "#FFFFFF",
+    crust: "#E2E8F0",
   },
   dark: {
-    rosewater: "#f5e0dc",
-    flamingo: "#f2cdcd",
-    pink: "#f5c2e7",
-    mauve: "#cba6f7",
-    red: "#f38ba8",
-    maroon: "#eba0ac",
-    peach: "#fab387",
-    yellow: "#f9e2af",
-    green: "#a6e3a1",
-    teal: "#94e2d5",
-    sky: "#89dceb",
-    sapphire: "#74c7ec",
-    blue: "#89b4fa",
-    lavender: "#b4befe",
-    text: "#cdd6f4",
-    subtext1: "#bac2de",
-    subtext0: "#a6adc8",
-    overlay2: "#9399b2",
-    overlay1: "#7f849c",
-    overlay0: "#6c7086",
-    surface2: "#585b70",
-    surface1: "#45475a",
-    surface0: "#313244",
-    base: "#1e1e2e",
-    mantle: "#181825",
-    crust: "#11111b",
+    rosewater: "#FBCFE8",
+    flamingo: "#F472B6",
+    pink: "#F472B6",
+    mauve: "#A78BFA",
+    red: "#F87171",
+    maroon: "#FB923C",
+    peach: "#FBBF24",
+    yellow: "#FDE68A",
+    green: "#34D399",
+    teal: "#2DD4BF",
+    sky: "#38BDF8",
+    sapphire: "#60A5FA",
+    blue: "#3B82F6",
+    lavender: "#818CF8",
+    text: "#E2E8F0",
+    subtext1: "#CBD5E1",
+    subtext0: "#94A3B8",
+    overlay2: "#64748B",
+    overlay1: "#475569",
+    overlay0: "#334155",
+    surface2: "#334155",
+    surface1: "#1E293B",
+    surface0: "#111827",
+    base: "#0B1120",
+    mantle: "#111827",
+    crust: "#020617",
   },
 } as const;
 
@@ -130,7 +130,9 @@ const tokens = {
 } as const;
 
 const easing = "cubic-bezier(0.16, 1, 0.3, 1)";
-const duration = "180ms";
+const fastDuration = "160ms";
+const duration = "220ms";
+const slowDuration = "280ms";
 
 function buildTheme(mode: Mode) {
   const tone = tokens[mode];
@@ -138,33 +140,43 @@ function buildTheme(mode: Mode) {
 
   const shared: ThemeOptions = {
     typography: {
-      fontFamily: '"Noto Sans SC", sans-serif',
+      fontFamily: '"Noto Sans SC", "Plus Jakarta Sans", sans-serif',
       h1: {
-        fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
         fontWeight: 700,
       },
       h2: {
-        fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
         fontWeight: 700,
       },
       h3: {
-        fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
         fontWeight: 700,
       },
       h4: {
-        fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
         fontWeight: 700,
       },
       h5: {
-        fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
         fontWeight: 700,
       },
       h6: {
-        fontFamily: '"Outfit", "Noto Sans SC", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
         fontWeight: 700,
       },
-      button: { fontWeight: 600 },
-      overline: { fontWeight: 700, letterSpacing: "0.08em" },
+      button: {
+        fontFamily: '"Plus Jakarta Sans", "Noto Sans SC", sans-serif',
+        fontWeight: 700,
+      },
+      overline: {
+        fontFamily: '"JetBrains Mono", monospace',
+        fontWeight: 700,
+        letterSpacing: "0.08em",
+      },
+      caption: {
+        fontFamily: '"JetBrains Mono", monospace',
+      },
     },
     shape: {
       borderRadius: 14,
@@ -172,8 +184,11 @@ function buildTheme(mode: Mode) {
     components: {
       MuiCssBaseline: {
         styleOverrides: () => `
+          @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
           :root {
             color-scheme: ${mode};
+            --mcs-duration-fast: ${fastDuration};
             --mcs-surface: ${tone.surface};
             --mcs-surface-subtle: ${tone.surfaceSubtle};
             --mcs-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.42 : 0.3)};
@@ -250,6 +265,8 @@ function buildTheme(mode: Mode) {
                 ? `0 24px 64px ${alpha(palette.crust, 0.4)}`
                 : `0 22px 54px ${alpha(palette.surface2, 0.2)}`
             };
+            --mcs-page-edge: ${alpha(mode === "dark" ? palette.crust : palette.base, mode === "dark" ? 0.94 : 0.9)};
+            --mcs-page-rail: ${alpha(palette.mantle, mode === "dark" ? 0.82 : 0.88)};
             --mcs-workbench-surface: ${alpha(palette.mantle, mode === "dark" ? 0.9 : 0.94)};
             --mcs-workbench-surface-strong: ${alpha(palette.surface0, mode === "dark" ? 0.9 : 0.8)};
             --mcs-workbench-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.76 : 0.58)};
@@ -344,6 +361,18 @@ function buildTheme(mode: Mode) {
             --mcs-dashboard-grid: var(--mcs-monitor-grid);
             --mcs-ease: ${easing};
             --mcs-duration: ${duration};
+            --mcs-duration-slow: ${slowDuration};
+          }
+
+          @keyframes mcs-shell-rise {
+            from {
+              opacity: 0;
+              transform: translateY(12px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
 
           @media (prefers-reduced-motion: reduce) {
@@ -369,11 +398,12 @@ function buildTheme(mode: Mode) {
           body {
             margin: 0;
             background:
-              radial-gradient(circle at 12% 0%, ${alpha(palette.rosewater, mode === "dark" ? 0.14 : 0.16)} 0, transparent 28%),
-              radial-gradient(circle at 85% 8%, ${alpha(palette.blue, mode === "dark" ? 0.14 : 0.12)} 0, transparent 30%),
-              radial-gradient(circle at 50% 100%, ${alpha(palette.yellow, mode === "dark" ? 0.1 : 0.08)} 0, transparent 34%),
+              radial-gradient(circle at 0% 0%, ${alpha(palette.sky, mode === "dark" ? 0.18 : 0.14)} 0, transparent 26%),
+              radial-gradient(circle at 100% 0%, ${alpha(palette.mauve, mode === "dark" ? 0.18 : 0.12)} 0, transparent 28%),
+              radial-gradient(circle at 50% 100%, ${alpha(palette.teal, mode === "dark" ? 0.14 : 0.08)} 0, transparent 32%),
               linear-gradient(180deg, ${tone.background} 0%, ${tone.background} 100%);
             color: ${tone.textPrimary};
+            font-family: "Noto Sans SC", "Plus Jakarta Sans", sans-serif;
             scrollbar-width: thin;
             scrollbar-color: ${alpha(palette.overlay1, 0.48)} transparent;
           }

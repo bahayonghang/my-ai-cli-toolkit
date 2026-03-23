@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Alert,
-  AppBar,
   Badge,
   Box,
   Button,
@@ -29,26 +28,25 @@ import {
   TableRow,
   Tabs,
   TextField,
-  Toolbar,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import HomeIcon from "@mui/icons-material/Home";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import SearchIcon from "@mui/icons-material/Search";
 import SyncIcon from "@mui/icons-material/Sync";
-import TuneIcon from "@mui/icons-material/Tune";
 import { uninstallAgents, uninstallCommands, uninstallSkills } from "@/api/client";
 import { useI18n } from "@/i18n";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
+import {
+  AppShell,
+  MobileFilterButton,
+  PlatformShellIdentity,
+} from "@/components/shell/AppShell";
 import { StatusChip } from "@/components/common/StatusChip";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
@@ -58,6 +56,10 @@ import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
+import {
+  PlatformBadge,
+  PlatformCapabilityChips,
+} from "@/components/platform/PlatformVisuals";
 const DetailDrawer = lazy(() =>
   import("@/components/dialogs/DetailDrawer").then((module) => ({
     default: module.DetailDrawer,
@@ -157,11 +159,6 @@ export default function MainPage() {
       : activeTab === "commands"
         ? t("common.commands")
         : t("common.agents");
-  const capabilitySummary = [
-    platform?.supports_commands === false ? null : t("common.commands"),
-    platform?.supports_agents === false ? null : t("common.agents"),
-    t("common.skills"),
-  ].filter((value): value is string => Boolean(value));
   const totalVisibleCount = items.length;
   const totalCategoryCount = visibleCategories.reduce((sum, category) => sum + category.count, 0);
   const activeFilterLabel = selectedCategory ?? t("common.all");
@@ -224,35 +221,22 @@ export default function MainPage() {
   const showInlineProgress = loading && items.length > 0;
 
   return (
-    <Box component="main" sx={{ minHeight: "100vh" }}>
-      <AppBar position="fixed">
-        <Toolbar sx={{ gap: 0.5, flexWrap: { xs: "wrap", md: "nowrap" }, alignItems: "center" }}>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label={t("common.openFilters")}
-              onClick={() => setFilterDrawerOpen(true)}
-            >
-              <TuneIcon />
-            </IconButton>
-          )}
-          <IconButton
-            color="inherit"
-            aria-label={t("common.back")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label={t("common.home")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <HomeIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
-            {platform?.icon} {platform?.name ?? platformId}
-          </Typography>
+    <AppShell
+      variant="workbench"
+      title={
+        <PlatformShellIdentity
+          platformId={platform?.id ?? platformId}
+          name={platform?.name ?? platformId ?? t("common.unknown")}
+          fallbackIcon={platform?.icon}
+          subtitle={currentTabLabel}
+        />
+      }
+      subtitle={currentTabLabel}
+      onBack={() => navigateDeferred("/")}
+      onHome={() => navigateDeferred("/")}
+      actions={
+        <>
+          {isMobile ? <MobileFilterButton onClick={() => setFilterDrawerOpen(true)} /> : null}
           <IconButton
             color="inherit"
             aria-label={t("common.openGuidance")}
@@ -268,10 +252,9 @@ export default function MainPage() {
           >
             <SyncIcon />
           </IconButton>
-          <LanguageToggle />
-          <ThemeToggleButton />
-        </Toolbar>
-      </AppBar>
+        </>
+      }
+    >
 
       {isMobile && (
         <Drawer
@@ -295,19 +278,7 @@ export default function MainPage() {
         </Drawer>
       )}
 
-      <Box
-        component="main"
-        sx={{
-          maxWidth: 1440,
-          mx: "auto",
-          px: { xs: 2, sm: 3 },
-          pt: 11,
-          pb: 4,
-          display: "flex",
-          gap: 3,
-          alignItems: "flex-start",
-        }}
-      >
+      <Box component="main" sx={{ display: "flex", gap: 3, alignItems: "flex-start" }}>
         {!isMobile && (
           <Card
             sx={{
@@ -377,23 +348,21 @@ export default function MainPage() {
                           sx={{ borderRadius: 1.5 }}
                         />
                       </Stack>
-                      <Typography variant="h4" sx={{ letterSpacing: "-0.05em", lineHeight: 0.98 }}>
-                        <Box component="span" sx={{ mr: 1 }}>
-                          {platform?.icon}
-                        </Box>
-                        {currentTabLabel}
-                      </Typography>
-                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                        {capabilitySummary.map((item) => (
-                          <Chip
-                            key={item}
-                            size="small"
-                            label={item}
-                            variant="outlined"
-                            sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
-                          />
-                        ))}
+                      <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
+                        <PlatformBadge
+                          platformId={platform?.id ?? platformId}
+                          name={platform?.name ?? platformId ?? t("common.unknown")}
+                          fallbackIcon={platform?.icon}
+                          size={54}
+                        />
+                        <Typography
+                          variant="h4"
+                          sx={{ letterSpacing: "-0.05em", lineHeight: 0.98 }}
+                        >
+                          {currentTabLabel}
+                        </Typography>
                       </Stack>
+                      {platform ? <PlatformCapabilityChips platform={platform} /> : null}
                     </Stack>
 
                     <Stack spacing={1} alignItems={{ xs: "flex-start", xl: "flex-end" }}>
@@ -795,7 +764,7 @@ export default function MainPage() {
       )}
 
       <NotificationSnackbar />
-    </Box>
+    </AppShell>
   );
 }
 

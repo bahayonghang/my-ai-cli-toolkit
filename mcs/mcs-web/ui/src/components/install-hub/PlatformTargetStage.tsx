@@ -13,6 +13,7 @@ import {
 import { useI18n } from "@/i18n";
 import type { PlatformDisplay } from "@/types";
 import type { PlatformSelection } from "./types";
+import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 
 interface PlatformTargetStageProps {
   platforms: PlatformDisplay[];
@@ -161,20 +162,14 @@ export function PlatformTargetStage({
                         alignItems="center"
                         sx={{ minWidth: 0 }}
                       >
-                        <Typography variant="h4" sx={{ lineHeight: 1 }}>
-                          {platform.icon}
-                        </Typography>
-                        <Box sx={{ minWidth: 0 }}>
-                          <Typography
-                            id={titleId}
-                            variant="h6"
-                            sx={{ lineHeight: 1.1 }}
-                          >
-                            {platform.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {platform.id}
-                          </Typography>
+                        <Box id={titleId}>
+                          <PlatformIdentity
+                            platformId={platform.id}
+                            name={platform.name}
+                            fallbackIcon={platform.icon}
+                            subtitle={platform.id}
+                            size={44}
+                          />
                         </Box>
                       </Stack>
                       {selected ? (

@@ -10,7 +10,6 @@ import {
 import { useParams } from "react-router-dom";
 import {
   Alert,
-  AppBar,
   Box,
   Button,
   Card,
@@ -29,19 +28,16 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  Stack,
   Switch,
   TextField,
-  Toolbar,
   Tooltip,
   Typography,
   alpha,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import HomeIcon from "@mui/icons-material/Home";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import SearchIcon from "@mui/icons-material/Search";
@@ -51,12 +47,18 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 
-import AnimatedBackground from "@/components/common/AnimatedBackground";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
+import {
+  AppShell,
+  ListSurface,
+  MetricStrip,
+  MobileFilterButton,
+  PlatformShellIdentity,
+  SectionHero,
+} from "@/components/shell/AppShell";
+import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 import { getCategories, getSkillDetail, getSkills, installSkills } from "@/api/client";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
@@ -655,93 +657,80 @@ export default function InstallPage() {
     }
   };
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        position: "relative",
-      }}
-    >
-      <AnimatedBackground />
+  const installTargetLabel = t("install.installTargetChip", {
+    mode:
+      installTarget.scope === "project"
+        ? t("install.installTargetProject")
+        : t("install.installTargetGlobal"),
+    path: resolvedTarget?.skills_path ?? t("install.installTargetLoading"),
+  });
 
-      <AppBar position="fixed">
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label={t("common.openFilters")}
-              onClick={() => setDrawerOpen(true)}
-              sx={{ mr: 0.5 }}
-            >
-              <FilterListIcon />
-            </IconButton>
-          )}
-          <IconButton
-            color="inherit"
-            aria-label={t("common.back")}
-            onClick={() => navigateDeferred(`/platform/${platformId}`)}
-            sx={{ mr: 0.5 }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <Tooltip title={t("common.home")}>
-            <IconButton
-              color="inherit"
-              aria-label={t("common.home")}
-              onClick={() => navigateDeferred("/")}
-              sx={{ mr: 1 }}
-            >
-              <HomeIcon />
-            </IconButton>
+  return (
+    <AppShell
+      variant="workbench"
+      title={
+        <PlatformShellIdentity
+          platformId={platform?.id ?? platformId}
+          name={platform?.name ?? platformId ?? t("common.unknown")}
+          fallbackIcon={platform?.icon}
+          subtitle={t("common.install")}
+        />
+      }
+      subtitle={installTargetLabel}
+      onBack={() => navigateDeferred(`/platform/${platformId}`)}
+      onHome={() => navigateDeferred("/")}
+      actions={
+        <>
+          {isMobile ? (
+            <MobileFilterButton onClick={() => setDrawerOpen(true)} />
+          ) : null}
+          <Tooltip title={resolvedTarget?.skills_path ?? t("install.installTargetLoading")}>
+            <Chip
+              icon={<FolderOpenOutlinedIcon />}
+              variant="outlined"
+              color="info"
+              clickable
+              aria-label={t("common.installTarget")}
+              onClick={openInstallTargetDialog}
+              label={installTargetLabel}
+              sx={{
+                maxWidth: { xs: 220, sm: 420 },
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
+            />
           </Tooltip>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1, minWidth: 0 }}>
-            <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
-              {t("install.pageTitle", {
-                platform: `${platform?.icon ?? ""} ${platform?.name ?? platformId}`,
-              })}
-            </Typography>
-            <Tooltip title={resolvedTarget?.skills_path ?? t("install.installTargetLoading")}>
-              <Chip
-                icon={<FolderOpenOutlinedIcon />}
-                variant="outlined"
-                color="info"
-                clickable
-                aria-label={t("common.installTarget")}
-                onClick={openInstallTargetDialog}
-                label={t("install.installTargetChip", {
-                  mode:
-                    installTarget.scope === "project"
-                      ? t("install.installTargetProject")
-                      : t("install.installTargetGlobal"),
-                  path: resolvedTarget?.skills_path ?? t("install.installTargetLoading"),
-                })}
-                sx={{
-                  maxWidth: { xs: 220, sm: 360 },
-                  "& .MuiChip-label": {
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  },
-                }}
-              />
-            </Tooltip>
-          </Box>
-          <LanguageToggle sx={{ mr: 1 }} />
           <Button
-            color="inherit"
+            variant="outlined"
             startIcon={<TerminalIcon />}
             onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
-            sx={{ mr: 1, display: { xs: "none", sm: "inline-flex" } }}
           >
             {t("npxSkills.pageButton")}
           </Button>
-          <ThemeToggleButton />
-        </Toolbar>
-      </AppBar>
-
-      {isMobile && (
+        </>
+      }
+      filterRail={
+        !isMobile ? (
+          <Card elevation={0} sx={{ overflow: "hidden", borderRadius: 4 }}>
+            <FiltersSidebar
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              statusCounts={statusCounts}
+              showDefaultOnly={showDefaultOnly}
+              onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
+              totalSkills={skills.length}
+            />
+          </Card>
+        ) : undefined
+      }
+    >
+      {isMobile ? (
         <Drawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
@@ -759,84 +748,164 @@ export default function InstallPage() {
             totalSkills={skills.length}
           />
         </Drawer>
-      )}
+      ) : null}
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          mt: 8,
-          p: 3,
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          gap: 3,
-          alignItems: "flex-start",
-        }}
-      >
-        {!isMobile && (
-          <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0, position: "sticky", top: 88 }}>
-            <Card elevation={0} sx={{ overflow: "hidden", borderRadius: 4 }}>
-              <FiltersSidebar
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                statusCounts={statusCounts}
-                showDefaultOnly={showDefaultOnly}
-                onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
-                totalSkills={skills.length}
+      <Stack spacing={3}>
+        <SectionHero
+          variant="workbench"
+          eyebrow={t("install.workspaceEyebrow")}
+          title={
+            <Stack direction="row" spacing={1.25} alignItems="center">
+              <PlatformBadge
+                platformId={platform?.id ?? platformId}
+                name={platform?.name ?? platformId ?? t("common.unknown")}
+                fallbackIcon={platform?.icon}
+                size={58}
               />
-            </Card>
-          </Box>
-        )}
+              <Box component="span">
+                {t("install.pageTitle", {
+                  platform: platform?.name ?? platformId ?? t("common.unknown"),
+                })}
+              </Box>
+            </Stack>
+          }
+          description={t("install.pageSubtitle")}
+          meta={
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+              <Chip
+                label={t("common.resultsCount", { count: filteredSkills.length })}
+                variant="outlined"
+              />
+              <Chip
+                label={t("common.categoryCount", { count: categories.length })}
+                variant="outlined"
+              />
+              <Chip label={installTargetLabel} color="info" variant="outlined" />
+            </Stack>
+          }
+          actions={
+            selectedInstallable.length > 0 ? (
+              <>
+                <Button
+                  variant="contained"
+                  startIcon={<InstallDesktopIcon />}
+                  onClick={() => setInstallOpen(true)}
+                >
+                  {t("common.install")}
+                </Button>
+                <Button variant="text" onClick={() => setSelectedNames(new Set())}>
+                  {t("common.clear")}
+                </Button>
+              </>
+            ) : undefined
+          }
+        />
 
-        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+        <MetricStrip
+          tone="workbench"
+          items={[
+            {
+              key: "visible",
+              label: t("common.results"),
+              value: filteredSkills.length,
+              detail: t("install.searchPlaceholder"),
+              emphasis: true,
+            },
+            {
+              key: "categories",
+              label: t("common.categories"),
+              value: categories.length,
+              detail: selectedCategory ?? t("common.all"),
+            },
+            {
+              key: "selected",
+              label: t("common.selectedCount", { count: selectedNames.size }),
+              value: selectedNames.size,
+              detail: t("install.selectAll"),
+            },
+            {
+              key: "updates",
+              label: t("common.updateAll"),
+              value: statusCounts.outdated,
+              detail: t("status.outdated"),
+            },
+          ]}
+        />
+
+        <ListSurface tone="workbench">
           <SearchToolbar
             search={search}
             onSearchChange={setSearch}
-            onSelectAll={() => setSelectedNames(new Set(filteredSkills.map((skill) => skill.name)))}
+            onSelectAll={() =>
+              setSelectedNames(new Set(filteredSkills.map((skill) => skill.name)))
+            }
             onClearSelection={() => setSelectedNames(new Set())}
             selectedCount={selectedNames.size}
             outdatedCount={statusCounts.outdated}
             onUpdateAll={() => void handleBatchUpdate()}
           />
+        </ListSurface>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
+        {selectedInstallable.length > 0 ? (
+          <ListSurface tone="workbench">
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={1.25}
+              justifyContent="space-between"
+              alignItems={{ xs: "stretch", md: "center" }}
+            >
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Chip
+                  label={t("common.selectedCount", { count: selectedInstallable.length })}
+                  color="primary"
+                />
+                <Chip label={installTargetLabel} variant="outlined" />
+              </Stack>
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Button
+                  variant="contained"
+                  startIcon={<InstallDesktopIcon />}
+                  onClick={() => setInstallOpen(true)}
+                >
+                  {t("common.install")}
+                </Button>
+                <Button variant="text" onClick={() => setSelectedNames(new Set())}>
+                  {t("common.clear")}
+                </Button>
+              </Stack>
+            </Stack>
+          </ListSurface>
+        ) : null}
 
-          {(loading || installTargetLoading) && (
-            <LinearProgress aria-label={t("common.loading")} sx={{ mb: 2 }} />
-          )}
+        {error ? <Alert severity="error">{error}</Alert> : null}
 
-          {loading && skills.length === 0 ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <SkillCardGrid
-              skills={filteredSkills}
-              selectedNames={selectedNames}
-              onToggle={(name) =>
-                setSelectedNames((previous) => {
-                  const next = new Set(previous);
-                  if (next.has(name)) {
-                    next.delete(name);
-                  } else {
-                    next.add(name);
-                  }
-                  return next;
-                })
-              }
-              onShowDetail={setDetailName}
-            />
-          )}
-        </Box>
-      </Box>
+        {(loading || installTargetLoading) ? (
+          <LinearProgress aria-label={t("common.loading")} />
+        ) : null}
+
+        {loading && skills.length === 0 ? (
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <SkillCardGrid
+            skills={filteredSkills}
+            selectedNames={selectedNames}
+            onToggle={(name) =>
+              setSelectedNames((previous) => {
+                const next = new Set(previous);
+                if (next.has(name)) {
+                  next.delete(name);
+                } else {
+                  next.add(name);
+                }
+                return next;
+              })
+            }
+            onShowDetail={setDetailName}
+          />
+        )}
+      </Stack>
 
       <InstallDialog
         open={installOpen}
@@ -881,32 +950,10 @@ export default function InstallPage() {
       />
 
       {selectedInstallable.length > 0 && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 80,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: theme.zIndex.appBar - 1,
-          }}
-        >
-          <Card elevation={8}>
-            <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.5 }}>
-              <Chip label={t("common.selectedCount", { count: selectedInstallable.length })} />
-              <Button
-                variant="contained"
-                startIcon={<InstallDesktopIcon />}
-                onClick={() => setInstallOpen(true)}
-              >
-                {t("common.install")}
-              </Button>
-              <Button onClick={() => setSelectedNames(new Set())}>{t("common.clear")}</Button>
-            </CardContent>
-          </Card>
-        </Box>
+        null
       )}
 
       <NotificationSnackbar />
-    </Box>
+    </AppShell>
   );
 }

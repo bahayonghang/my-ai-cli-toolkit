@@ -2,15 +2,11 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Alert,
-  AppBar,
   Box,
   Button,
-  Card,
-  CardContent,
   Chip,
   CircularProgress,
   Divider,
-  Drawer,
   IconButton,
   InputAdornment,
   LinearProgress,
@@ -25,36 +21,39 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Toolbar,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import ExtensionOffIcon from "@mui/icons-material/ExtensionOff";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
-import TuneIcon from "@mui/icons-material/Tune";
-import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { installSkills, uninstallSkills } from "@/api/client";
+import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
+import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
+import {
+  AppShell,
+  FilterRail,
+  ListSurface,
+  MetaChips,
+  MetricStrip,
+  MobileFilterButton,
+  PlatformShellIdentity,
+  SectionHero,
+} from "@/components/shell/AppShell";
 import { useI18n } from "@/i18n";
 import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useUiStore } from "@/stores/uiStore";
-import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
-import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
-import { workbenchPanelSx } from "@/components/common/glassPanel";
 
 const SkillEditorDrawer = lazy(() =>
   import("@/components/dialogs/SkillEditorDrawer").then((module) => ({
@@ -164,503 +163,330 @@ export default function InstalledSkillsPage() {
   const activeFilterLabel = selectedCategory
     ? t("installed.activeFilter", { category: selectedCategory })
     : null;
-
   const pageLoading = loading && items.length === 0;
   const showInlineProgress =
     (loading && items.length > 0) || installTargetLoading;
+  const installTargetLabel = t("installed.installTargetChip", {
+    mode:
+      installTarget.scope === "project"
+        ? t("installed.installTargetProject")
+        : t("installed.installTargetGlobal"),
+    path: resolvedTarget?.skills_path ?? t("installed.installTargetLoading"),
+  });
 
   return (
-    <Box component="main" sx={{ minHeight: "100vh" }}>
-      <AppBar position="fixed">
-        <Toolbar
-          sx={{
-            gap: 0.5,
-            flexWrap: { xs: "wrap", lg: "nowrap" },
-            alignItems: "center",
-          }}
-        >
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label={t("common.openFilters")}
-              onClick={() => setFilterDrawerOpen(true)}
-            >
-              <TuneIcon />
-            </IconButton>
-          )}
-          <IconButton
-            color="inherit"
-            aria-label={t("common.back")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label={t("common.home")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <HomeIcon />
-          </IconButton>
-          <Box
+    <AppShell
+      variant="workbench"
+      title={
+        <PlatformShellIdentity
+          platformId={platform?.id ?? platformId}
+          name={platform?.name ?? platformId ?? t("common.unknown")}
+          fallbackIcon={platform?.icon}
+          subtitle={t("common.skills")}
+        />
+      }
+      subtitle={installTargetLabel}
+      onBack={() => navigateDeferred("/")}
+      onHome={() => navigateDeferred("/")}
+      actions={
+        <>
+          {isMobile ? (
+            <MobileFilterButton onClick={() => setFilterDrawerOpen(true)} />
+          ) : null}
+          <Chip
+            icon={<FolderOpenOutlinedIcon />}
+            variant="outlined"
+            color="info"
+            clickable
+            aria-label={t("common.installTarget")}
+            onClick={openInstallTargetDialog}
+            label={installTargetLabel}
             sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              flexGrow: 1,
-              minWidth: 0,
+              maxWidth: { xs: 220, sm: 420 },
+              "& .MuiChip-label": {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              },
             }}
-          >
-            <Typography variant="h6" noWrap>
-              {platform?.icon} {platform?.name ?? platformId}
-            </Typography>
-          </Box>
-          <LanguageToggle />
-          <ThemeToggleButton />
-        </Toolbar>
-      </AppBar>
-
-      {isMobile && (
-        <Drawer
-          anchor="left"
-          open={filterDrawerOpen}
-          onClose={() => setFilterDrawerOpen(false)}
-          PaperProps={{ sx: { width: 300, p: 2 } }}
-        >
-          <InstalledFilters
-            categories={skillCategories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={(value) => {
-              setSelectedCategory(value);
-              setFilterDrawerOpen(false);
-            }}
-            t={t}
           />
-        </Drawer>
-      )}
-
-      <Box
-        component="main"
-        sx={{
-          maxWidth: 1440,
-          mx: "auto",
-          px: { xs: 2, sm: 3 },
-          pt: 11,
-          pb: 4,
-        }}
-      >
-        <Stack spacing={2.5}>
-          <Box
-            sx={{
-              ...workbenchPanelSx,
-              p: { xs: 2.25, md: 2.75 },
-            }}
+          <Button
+            variant="outlined"
+            startIcon={<TerminalIcon />}
+            onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
           >
-            <Stack spacing={2}>
-              <Stack
-                direction={{ xs: "column", lg: "row" }}
-                spacing={2}
-                justifyContent="space-between"
-                alignItems={{ xs: "flex-start", lg: "flex-start" }}
-              >
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography
-                    variant="overline"
-                    sx={{ color: "var(--mcs-workbench-muted)" }}
-                  >
-                    {t("installed.workspaceEyebrow")}
-                  </Typography>
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      mt: 0.75,
-                      letterSpacing: "-0.04em",
-                      lineHeight: 1.05,
-                    }}
-                  >
-                    {t("installed.workspaceTitle", {
-                      platform:
-                        platform?.name ?? platformId ?? t("common.unknown"),
-                    })}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1, maxWidth: 780 }}
-                  >
-                    {t("installed.workspaceSubtitle")}
-                  </Typography>
-                </Box>
-
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={1}
-                  useFlexGap
-                  flexWrap="wrap"
-                  alignItems={{ xs: "stretch", sm: "center" }}
-                >
-                  <Chip
-                    icon={<FolderOpenOutlinedIcon />}
-                    variant="outlined"
-                    color="info"
-                    clickable
-                    aria-label={t("common.installTarget")}
-                    onClick={openInstallTargetDialog}
-                    label={t("installed.installTargetChip", {
-                      mode:
-                        installTarget.scope === "project"
-                          ? t("installed.installTargetProject")
-                          : t("installed.installTargetGlobal"),
-                      path:
-                        resolvedTarget?.skills_path ??
-                        t("installed.installTargetLoading"),
-                    })}
-                    sx={{
-                      maxWidth: { xs: "100%", sm: 420 },
-                      justifyContent: "flex-start",
-                      "& .MuiChip-label": {
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      },
-                    }}
-                  />
-                  <Button
-                    variant="outlined"
-                    startIcon={<TerminalIcon />}
-                    onClick={() =>
-                      navigateDeferred(`/platform/${platformId}/npx-skills`)
-                    }
-                  >
-                    {t("npxSkills.pageButton")}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() =>
-                      navigateDeferred(`/platform/${platformId}/install`)
-                    }
-                  >
-                    {t("installed.installSkills")}
-                  </Button>
-                </Stack>
-              </Stack>
-
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                <Chip
-                  label={t("installed.filteredSummary", {
-                    count: items.length,
-                  })}
-                  variant="outlined"
-                />
-                <Chip
-                  label={t("installed.categoriesSummary", {
-                    count: skillCategories.length,
-                  })}
-                  variant="outlined"
-                />
-                {activeFilterLabel ? (
-                  <Chip
-                    label={activeFilterLabel}
-                    color="primary"
-                    variant="outlined"
-                  />
-                ) : null}
-              </Stack>
-            </Stack>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start" }}>
-            {!isMobile && (
-              <Box
-                sx={{
-                  ...workbenchPanelSx,
-                  width: 280,
-                  flexShrink: 0,
-                  position: "sticky",
-                  top: 96,
-                  p: 2,
-                }}
-              >
+            {t("npxSkills.pageButton")}
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigateDeferred(`/platform/${platformId}/install`)}
+          >
+            {t("installed.installSkills")}
+          </Button>
+        </>
+      }
+      filterRail={
+        <FilterRail
+          title={t("installed.categories")}
+          sections={[
+            {
+              id: "installed-filters",
+              content: (
                 <InstalledFilters
                   categories={skillCategories}
                   selectedCategory={selectedCategory}
                   onCategoryChange={setSelectedCategory}
                   t={t}
                 />
-              </Box>
-            )}
+              ),
+            },
+          ]}
+        />
+      }
+    >
+      <FilterRail
+        title={t("installed.categories")}
+        mobileOpen={filterDrawerOpen}
+        onCloseMobile={() => setFilterDrawerOpen(false)}
+        sections={[
+          {
+            id: "installed-filters-mobile",
+            content: (
+              <InstalledFilters
+                categories={skillCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={(value) => {
+                  setSelectedCategory(value);
+                  setFilterDrawerOpen(false);
+                }}
+                t={t}
+              />
+            ),
+          },
+        ]}
+      />
 
-            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-              <Stack
-                direction={{ xs: "column", lg: "row" }}
-                spacing={1.5}
-                alignItems={{ xs: "stretch", lg: "center" }}
-                sx={{ mb: 2 }}
+      <Stack spacing={3}>
+        <SectionHero
+          variant="workbench"
+          eyebrow={t("installed.workspaceEyebrow")}
+          title={t("installed.workspaceTitle", {
+            platform: platform?.name ?? platformId ?? t("common.unknown"),
+          })}
+          description={t("installed.workspaceSubtitle")}
+          meta={
+            <MetaChips
+              items={[
+                t("installed.filteredSummary", { count: items.length }),
+                t("installed.categoriesSummary", { count: skillCategories.length }),
+                activeFilterLabel ?? t("common.all"),
+              ]}
+            />
+          }
+        />
+
+        <MetricStrip
+          items={[
+            {
+              key: "skills",
+              label: t("common.skills"),
+              value: t("installed.filteredSummary", { count: items.length }),
+              detail: t("installed.searchLabel"),
+            },
+            {
+              key: "categories",
+              label: t("common.category"),
+              value: t("installed.categoriesSummary", {
+                count: skillCategories.length,
+              }),
+              detail: activeFilterLabel ?? t("common.all"),
+            },
+            {
+              key: "target",
+              label: t("common.installTarget"),
+              value:
+                installTarget.scope === "project"
+                  ? t("installed.installTargetProject")
+                  : t("installed.installTargetGlobal"),
+              detail: resolvedTarget?.skills_path ?? t("installed.installTargetLoading"),
+            },
+          ]}
+        />
+
+        <ListSurface tone="workbench">
+          <Stack
+            direction={{ xs: "column", lg: "row" }}
+            spacing={1.5}
+            alignItems={{ xs: "stretch", lg: "center" }}
+          >
+            <TextField
+              label={t("installed.searchLabel")}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ width: { xs: "100%", lg: 360 } }}
+            />
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ flexGrow: 1 }}>
+              <Chip label={t("installed.filteredSummary", { count: items.length })} variant="outlined" />
+              {activeFilterLabel ? <Chip label={activeFilterLabel} color="primary" variant="outlined" /> : null}
+            </Stack>
+            {search || selectedCategory ? (
+              <Button
+                variant="text"
+                onClick={() => {
+                  setSearch("");
+                  setSelectedCategory(null);
+                }}
               >
-                <TextField
-                  label={t("installed.searchLabel")}
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                  sx={{ width: { xs: "100%", lg: 360 } }}
-                />
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  useFlexGap
-                  flexWrap="wrap"
-                  sx={{ flexGrow: 1 }}
-                >
-                  <Chip
-                    label={t("installed.filteredSummary", {
-                      count: items.length,
-                    })}
-                    variant="outlined"
-                  />
-                  {activeFilterLabel ? (
-                    <Chip
-                      label={activeFilterLabel}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ) : null}
-                </Stack>
-                {(search || selectedCategory) && (
-                  <Button
-                    variant="text"
-                    onClick={() => {
-                      setSearch("");
-                      setSelectedCategory(null);
-                    }}
-                  >
-                    {t("installed.clearFilters")}
-                  </Button>
-                )}
-              </Stack>
+                {t("installed.clearFilters")}
+              </Button>
+            ) : null}
+          </Stack>
+        </ListSurface>
 
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error}
-                </Alert>
-              )}
-              {showInlineProgress && <LinearProgress sx={{ mb: 2 }} />}
+        {error ? <Alert severity="error">{error}</Alert> : null}
+        {showInlineProgress ? <LinearProgress /> : null}
 
-              {pageLoading ? (
-                <Box display="flex" justifyContent="center" py={8}>
-                  <CircularProgress />
-                </Box>
-              ) : items.length === 0 ? (
-                /* Empty state */
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    py: 12,
-                    gap: 2,
-                  }}
-                >
-                  <ExtensionOffIcon
-                    sx={{ fontSize: 64, color: "text.disabled" }}
-                  />
-                  <Typography variant="h6" color="text.secondary">
-                    {t("installed.emptyTitle")}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("installed.emptyDescription")}
-                  </Typography>
-                  <Button
-                    variant="outlined"
-                    startIcon={<TerminalIcon />}
-                    onClick={() =>
-                      navigateDeferred(`/platform/${platformId}/npx-skills`)
-                    }
-                  >
-                    {t("npxSkills.pageButton")}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() =>
-                      navigateDeferred(`/platform/${platformId}/install`)
-                    }
-                  >
-                    {t("installed.installSkills")}
-                  </Button>
-                </Box>
-              ) : isMobile ? (
-                <Stack spacing={1.5}>
-                  {items.map((item) => (
-                    <Card key={item.name}>
-                      <CardContent
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                        }}
-                      >
-                        <Box>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            flexWrap="wrap"
-                            alignItems="center"
-                            sx={{ mb: 0.75 }}
-                          >
-                            <Typography
-                              variant="subtitle2"
-                              sx={{ wordBreak: "break-word" }}
-                            >
-                              {item.name}
-                            </Typography>
-                            {item.category && (
-                              <Chip
-                                size="small"
-                                label={item.category}
-                                variant="outlined"
-                              />
-                            )}
-                          </Stack>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ overflowWrap: "anywhere" }}
-                          >
-                            {item.description ||
-                              t("common.noDescriptionAvailable")}
-                          </Typography>
-                        </Box>
-
-                        <Stack direction="row" spacing={1} flexWrap="wrap">
-                          <Button
-                            variant="outlined"
-                            startIcon={<EditIcon />}
-                            onClick={() => setEditName(item.name)}
-                          >
-                            {t("common.edit")}
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            color="warning"
-                            startIcon={<SystemUpdateAltIcon />}
-                            onClick={() => handleReinstall(item.name)}
-                          >
-                            {t("common.reinstall")}
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            color="error"
-                            startIcon={<DeleteOutlineIcon />}
-                            onClick={() => setDeleteName(item.name)}
-                          >
-                            {t("common.uninstall")}
-                          </Button>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </Stack>
-              ) : (
-                <Card>
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>{t("common.name")}</TableCell>
-                          <TableCell>{t("common.category")}</TableCell>
-                          <TableCell>{t("common.description")}</TableCell>
-                          <TableCell align="right">
-                            {t("common.actions")}
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {items.map((item) => (
-                          <TableRow key={item.name} hover>
-                            <TableCell>
-                              <Typography
-                                variant="body2"
-                                fontWeight={600}
-                                color="primary.main"
-                              >
-                                {item.name}
-                              </Typography>
-                            </TableCell>
-                            <TableCell>
-                              <Chip
-                                size="small"
-                                label={item.category ?? "—"}
-                                variant="outlined"
-                              />
-                            </TableCell>
-                            <TableCell sx={{ maxWidth: 420 }}>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{
-                                  display: "-webkit-box",
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: "vertical",
-                                  overflow: "hidden",
-                                  overflowWrap: "anywhere",
-                                }}
-                              >
-                                {item.description ||
-                                  t("common.noDescriptionAvailable")}
-                              </Typography>
-                            </TableCell>
-                            <TableCell align="right">
-                              <Stack
-                                direction="row"
-                                spacing={0.5}
-                                justifyContent="flex-end"
-                              >
-                                <IconButton
-                                  color="primary"
-                                  aria-label={`${t("common.edit")} ${item.name}`}
-                                  onClick={() => setEditName(item.name)}
-                                >
-                                  <EditIcon fontSize="small" />
-                                </IconButton>
-                                <IconButton
-                                  color="warning"
-                                  aria-label={`${t("common.reinstall")} ${item.name}`}
-                                  onClick={() => handleReinstall(item.name)}
-                                >
-                                  <SystemUpdateAltIcon fontSize="small" />
-                                </IconButton>
-                                <IconButton
-                                  color="error"
-                                  aria-label={`${t("common.uninstall")} ${item.name}`}
-                                  onClick={() => setDeleteName(item.name)}
-                                >
-                                  <DeleteOutlineIcon fontSize="small" />
-                                </IconButton>
-                              </Stack>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Card>
-              )}
-            </Box>
+        {pageLoading ? (
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
           </Box>
-        </Stack>
-      </Box>
+        ) : items.length === 0 ? (
+          <ListSurface tone="workbench">
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                py: 10,
+                gap: 2,
+                textAlign: "center",
+              }}
+            >
+              <ExtensionOffIcon sx={{ fontSize: 64, color: "text.disabled" }} />
+              <Typography variant="h6" color="text.secondary">
+                {t("installed.emptyTitle")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {t("installed.emptyDescription")}
+              </Typography>
+            </Box>
+          </ListSurface>
+        ) : isMobile ? (
+          <Stack spacing={1.25}>
+            {items.map((item) => (
+              <ListSurface key={item.name} tone="workbench">
+                <Stack spacing={1.5}>
+                  <Box>
+                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center" sx={{ mb: 0.75 }}>
+                      <Typography variant="subtitle1" sx={{ wordBreak: "break-word" }}>
+                        {item.name}
+                      </Typography>
+                      {item.category ? (
+                        <Chip size="small" label={item.category} variant="outlined" />
+                      ) : null}
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                      {item.description || t("common.noDescriptionAvailable")}
+                    </Typography>
+                  </Box>
 
-      {platformId && editName && (
+                  <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => setEditName(item.name)}>
+                      {t("common.edit")}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="warning"
+                      startIcon={<SystemUpdateAltIcon />}
+                      onClick={() => handleReinstall(item.name)}
+                    >
+                      {t("common.reinstall")}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      startIcon={<DeleteOutlineIcon />}
+                      onClick={() => setDeleteName(item.name)}
+                    >
+                      {t("common.uninstall")}
+                    </Button>
+                  </Stack>
+                </Stack>
+              </ListSurface>
+            ))}
+          </Stack>
+        ) : (
+          <ListSurface tone="workbench" padded={false}>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t("common.name")}</TableCell>
+                    <TableCell>{t("common.category")}</TableCell>
+                    <TableCell>{t("common.description")}</TableCell>
+                    <TableCell align="right">{t("common.actions")}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {items.map((item) => (
+                    <TableRow key={item.name} hover>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600} color="primary.main">
+                          {item.name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip size="small" label={item.category ?? "—"} variant="outlined" />
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 420 }}>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            overflowWrap: "anywhere",
+                          }}
+                        >
+                          {item.description || t("common.noDescriptionAvailable")}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                          <IconButton color="primary" aria-label={`${t("common.edit")} ${item.name}`} onClick={() => setEditName(item.name)}>
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton color="warning" aria-label={`${t("common.reinstall")} ${item.name}`} onClick={() => handleReinstall(item.name)}>
+                            <SystemUpdateAltIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton color="error" aria-label={`${t("common.uninstall")} ${item.name}`} onClick={() => setDeleteName(item.name)}>
+                            <DeleteOutlineIcon fontSize="small" />
+                          </IconButton>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </ListSurface>
+        )}
+      </Stack>
+
+      {platformId && editName ? (
         <Suspense fallback={null}>
           <SkillEditorDrawer
             open
@@ -677,7 +503,7 @@ export default function InstalledSkillsPage() {
             }}
           />
         </Suspense>
-      )}
+      ) : null}
 
       <InstallTargetDialog
         open={installTargetDialogOpen}
@@ -702,7 +528,7 @@ export default function InstalledSkillsPage() {
       />
 
       <NotificationSnackbar />
-    </Box>
+    </AppShell>
   );
 }
 
@@ -719,14 +545,8 @@ function InstalledFilters({
 }) {
   return (
     <Box>
-      <Typography variant="overline" color="text.secondary">
-        {t("installed.categories")}
-      </Typography>
-      <List dense disablePadding sx={{ mt: 1 }}>
-        <ListItemButton
-          selected={selectedCategory === null}
-          onClick={() => onCategoryChange(null)}
-        >
+      <List dense disablePadding>
+        <ListItemButton selected={selectedCategory === null} onClick={() => onCategoryChange(null)}>
           <ListItemText primary={t("installed.allSkills")} />
         </ListItemButton>
         <Divider sx={{ my: 1 }} />

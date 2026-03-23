@@ -85,17 +85,21 @@ test("unified install hub walks through the staged install flow", async ({ page 
   await page.goto("/install-hub");
 
   await expect(
-    page.getByRole("heading", { name: /guide every skill install with one clear path/i }),
+    page.getByRole("heading", {
+      name: /guide every skills rollout with one clear operational path/i,
+    }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: /continue to targets/i })).toBeDisabled();
 
-  await page.getByRole("button", { name: /frontend-design/i }).click();
+  await page.getByRole("checkbox", { name: /frontend-design/i }).click();
   await expect(page.getByRole("button", { name: /continue to targets/i })).toBeEnabled();
 
   await page.getByRole("button", { name: /continue to targets/i }).click();
   await expect(page.getByRole("heading", { name: /choose targets/i }).last()).toBeVisible();
 
-  await page.getByRole("button", { name: /claude/i }).click();
+  await page
+    .locator('[aria-labelledby="install-hub-platform-claude-title"]')
+    .click();
   await expect(page.getByRole("button", { name: /continue to review/i })).toBeEnabled();
 
   await page.getByRole("button", { name: /continue to review/i }).click();

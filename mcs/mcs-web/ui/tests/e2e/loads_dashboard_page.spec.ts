@@ -117,7 +117,11 @@ test("loads the dashboard and keeps main navigation flows working", async ({ pag
 
   await page.goto("/dashboard");
 
-  await expect(page.getByRole("heading", { name: /skills stay visible/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: /read the signal, surface the risk, and move into the next action/i,
+    })
+  ).toBeVisible();
   await expect(page.getByText("frontend-design")).toBeVisible();
   await expect(page.getByText("Platform Matrix")).toBeVisible();
 

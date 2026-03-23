@@ -105,8 +105,8 @@ describe("PlatformSelectPage", () => {
 
     const markup = renderPage();
 
-    expect(markup).toContain("Open install hub");
-    expect(markup).toContain("Choose a platform workspace");
+    expect(markup).toContain("Open install workbench");
+    expect(markup).toContain("Platform workspaces");
     expect(markup).toContain("Shared library");
     expect(markup).toContain("Dedicated library");
     expect(markup).toContain("Skills path");

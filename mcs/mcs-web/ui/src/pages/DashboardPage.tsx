@@ -1,7 +1,6 @@
 import { lazy, memo, Suspense, useEffect, useState } from "react";
 import {
   Alert,
-  AppBar,
   Box,
   Button,
   Card,
@@ -9,21 +8,21 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  IconButton,
   LinearProgress,
   Stack,
-  Toolbar,
   Typography,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import HomeIcon from "@mui/icons-material/Home";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { monitorPanelSx } from "@/components/common/glassPanel";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
+import {
+  AppShell,
+  MetaChips,
+  MetricStrip,
+  SectionHero as ShellHero,
+} from "@/components/shell/AppShell";
+import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useLegacyDirs } from "@/hooks/useLegacyDirs";
@@ -65,28 +64,14 @@ export default function DashboardPage() {
     : "";
 
   return (
-    <Box sx={{ minHeight: "100vh", position: "relative" }}>
-      <AnimatedBackground variant="monitor" />
-
-      <AppBar position="fixed">
-        <Toolbar sx={{ gap: 1 }}>
-          <IconButton
-            color="inherit"
-            aria-label={t("common.back")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label={t("common.home")}
-            onClick={() => navigateDeferred("/")}
-          >
-            <HomeIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
-            {t("dashboard.systemTitle")}
-          </Typography>
+    <AppShell
+      variant="monitor"
+      title={t("dashboard.systemTitle")}
+      subtitle={t("dashboard.heroSubtitle")}
+      onBack={() => navigateDeferred("/")}
+      onHome={() => navigateDeferred("/")}
+      actions={
+        <>
           <Button
             variant="outlined"
             startIcon={
@@ -108,20 +93,10 @@ export default function DashboardPage() {
           >
             {t("dashboard.unifiedInstallHub")}
           </Button>
-          <LanguageToggle />
-          <ThemeToggleButton />
-        </Toolbar>
-      </AppBar>
-
-      <Box
-        component="main"
-        sx={{
-          mx: "auto",
-          px: { xs: 2, sm: 3, md: 4 },
-          pt: 11,
-          pb: 6,
-        }}
-      >
+        </>
+      }
+    >
+      <Box component="main">
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -182,7 +157,7 @@ export default function DashboardPage() {
           }}
         />
       </Suspense>
-    </Box>
+    </AppShell>
   );
 }
 
@@ -200,220 +175,108 @@ function HeroSection({
   const { t } = useI18n();
 
   return (
-    <Box
-      sx={{
-        p: { xs: 2.25, md: 2.75 },
-        borderRadius: 4,
-        border: "1px solid var(--mcs-monitor-outline)",
-        bgcolor: "var(--mcs-monitor-surface)",
-        boxShadow: "var(--mcs-shadow-sm)",
-      }}
-    >
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <Stack spacing={2}>
-            <Box>
-              <Typography
-                variant="overline"
-                sx={{ color: "var(--mcs-monitor-muted)" }}
-              >
-                {t("dashboard.heroEyebrow")}
-              </Typography>
-              <Typography
-                variant="h4"
-                sx={{
-                  mt: 0.75,
-                  maxWidth: 760,
-                  fontSize: {
-                    xs: "clamp(1.55rem, 6vw, 2rem)",
-                    md: "clamp(1.9rem, 4vw, 2.4rem)",
-                  },
-                  lineHeight: 1.08,
-                  letterSpacing: "-0.035em",
-                }}
-              >
-                {t("dashboard.heroTitle")}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  mt: 1,
-                  maxWidth: 680,
-                  color: "var(--mcs-monitor-muted)",
-                  fontSize: { xs: "0.98rem", md: "1rem" },
-                }}
-              >
-                {t("dashboard.heroSubtitle")}
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                display: "inline-flex",
-                alignSelf: "flex-start",
-                px: 1.5,
-                py: 0.85,
-                borderRadius: 999,
-                border: "1px solid var(--mcs-summary-tile-stroke)",
-                bgcolor: "var(--mcs-summary-tile-fill)",
-                color: "var(--mcs-monitor-ink)",
-              }}
+    <Stack spacing={2}>
+      <ShellHero
+        variant="monitor"
+        eyebrow={t("dashboard.heroEyebrow")}
+        title={t("dashboard.heroTitle")}
+        description={t("dashboard.heroSubtitle")}
+        meta={<MetaChips items={[heroStatus]} />}
+        actions={
+          legacyCount > 0 ? (
+            <Button
+              variant="outlined"
+              color="warning"
+              startIcon={<WarningAmberIcon />}
+              onClick={onOpenLegacy}
             >
-              <Typography variant="body2" fontWeight={600}>
-                {heroStatus}
-              </Typography>
-            </Box>
+              {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
+            </Button>
+          ) : undefined
+        }
+      />
 
-            <Grid container spacing={1.25}>
-              <Grid size={{ xs: 12, sm: 6, xl: 4 }}>
-                <MetricPlate
-                  label={t("dashboard.installedSkills")}
-                  value={`${summary.installedSkills}/${summary.totalSkills}`}
-                  detail={t("dashboard.skillCoverageSub", {
-                    installed: summary.installedSkills,
-                    total: summary.totalSkills,
-                  })}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, xl: 4 }}>
-                <MetricPlate
-                  label={t("dashboard.outdated")}
-                  value={summary.outdatedSkills}
-                  detail={t("dashboard.updatesAvailable", {
-                    count: summary.outdatedSkills,
-                  })}
-                  tone={summary.outdatedSkills > 0 ? "warm" : "neutral"}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, xl: 4 }}>
-                <MetricPlate
-                  label={t("dashboard.activePlatforms")}
-                  value={`${summary.activePlatforms}/${summary.totalPlatforms}`}
-                  detail={t("dashboard.activePlatformsSub", {
-                    count: summary.totalPlatforms,
-                  })}
-                />
-              </Grid>
-            </Grid>
-          </Stack>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, xl: 8 }}>
+          <MetricStrip
+            tone="monitor"
+            items={[
+              {
+                key: "installed",
+                label: t("dashboard.installedSkills"),
+                value: `${summary.installedSkills}/${summary.totalSkills}`,
+                detail: t("dashboard.skillCoverageSub", {
+                  installed: summary.installedSkills,
+                  total: summary.totalSkills,
+                }),
+                emphasis: true,
+              },
+              {
+                key: "updates",
+                label: t("dashboard.outdated"),
+                value: summary.outdatedSkills,
+                detail: t("dashboard.updatesAvailable", {
+                  count: summary.outdatedSkills,
+                }),
+              },
+              {
+                key: "platforms",
+                label: t("dashboard.activePlatforms"),
+                value: `${summary.activePlatforms}/${summary.totalPlatforms}`,
+                detail: t("dashboard.activePlatformsSub", {
+                  count: summary.totalPlatforms,
+                }),
+              },
+            ]}
+          />
         </Grid>
-
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Stack spacing={1.5} sx={{ height: "100%" }}>
-            {legacyCount > 0 && (
-              <Button
-                variant="outlined"
-                color="warning"
-                startIcon={<WarningAmberIcon />}
-                onClick={onOpenLegacy}
-                sx={{ alignSelf: "flex-start" }}
+        <Grid size={{ xs: 12, xl: 4 }}>
+          <Box
+            sx={{
+              ...monitorPanelSx,
+              p: 2.25,
+              height: "100%",
+            }}
+          >
+            <Stack spacing={1.25}>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={1}
+                justifyContent="space-between"
+                alignItems={{ xs: "flex-start", sm: "center" }}
               >
-                {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
-              </Button>
-            )}
-            <Box
-              sx={{
-                mt: legacyCount > 0 ? 0 : "auto",
-                p: 2.25,
-                borderRadius: 3,
-                border: "1px solid var(--mcs-summary-tile-stroke)",
-                bgcolor: "var(--mcs-summary-tile-fill)",
-              }}
-            >
-              <Stack spacing={1.25}>
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={1}
-                  justifyContent="space-between"
-                  alignItems={{ xs: "flex-start", sm: "center" }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "var(--mcs-monitor-muted)" }}
-                  >
-                    {t("dashboard.commandsCoverage")}
-                  </Typography>
-                  <Typography variant="body2" fontWeight={700}>
-                    {summary.commandCoverage}%
-                  </Typography>
-                </Stack>
-                <LinearProgress
-                  variant="determinate"
-                  value={summary.commandCoverage}
-                  aria-label={t("dashboard.commandsCoverage")}
-                  sx={{
-                    height: 10,
-                    borderRadius: 999,
-                    bgcolor: "var(--mcs-monitor-progress-track)",
-                    "& .MuiLinearProgress-bar": {
-                      borderRadius: 999,
-                      bgcolor: "var(--mcs-monitor-warm-strong)",
-                    },
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  sx={{ color: "var(--mcs-monitor-muted)" }}
-                >
-                  {t("dashboard.commandsCoverageSub", {
-                    installed: summary.installedCommands,
-                    total: summary.totalCommands,
-                  })}
+                <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
+                  {t("dashboard.commandsCoverage")}
+                </Typography>
+                <Typography variant="body2" fontWeight={700}>
+                  {summary.commandCoverage}%
                 </Typography>
               </Stack>
-            </Box>
-          </Stack>
+              <LinearProgress
+                variant="determinate"
+                value={summary.commandCoverage}
+                aria-label={t("dashboard.commandsCoverage")}
+                sx={{
+                  height: 10,
+                  borderRadius: 999,
+                  bgcolor: "var(--mcs-monitor-progress-track)",
+                  "& .MuiLinearProgress-bar": {
+                    borderRadius: 999,
+                    bgcolor: "var(--mcs-monitor-warm-strong)",
+                  },
+                }}
+              />
+              <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
+                {t("dashboard.commandsCoverageSub", {
+                  installed: summary.installedCommands,
+                  total: summary.totalCommands,
+                })}
+              </Typography>
+            </Stack>
+          </Box>
         </Grid>
       </Grid>
-    </Box>
-  );
-}
-
-function MetricPlate({
-  label,
-  value,
-  detail,
-  tone = "neutral",
-}: {
-  label: string;
-  value: number | string;
-  detail: string;
-  tone?: "neutral" | "warm";
-}) {
-  return (
-    <Box
-      sx={{
-        height: "100%",
-        p: 2,
-        borderRadius: 3,
-        border: "1px solid var(--mcs-monitor-outline)",
-        background:
-          tone === "warm"
-            ? "linear-gradient(180deg, var(--mcs-monitor-warm-soft) 0%, transparent 100%)"
-            : "var(--mcs-monitor-surface-muted)",
-      }}
-    >
-      <Typography variant="overline" sx={{ color: "var(--mcs-monitor-muted)" }}>
-        {label}
-      </Typography>
-      <Typography
-        variant="h3"
-        sx={{
-          mt: 0.75,
-          fontSize: { xs: "2rem", md: "2.25rem" },
-          lineHeight: 1,
-          letterSpacing: "-0.04em",
-        }}
-      >
-        {value}
-      </Typography>
-      <Typography
-        variant="body2"
-        sx={{ mt: 1, color: "var(--mcs-monitor-muted)" }}
-      >
-        {detail}
-      </Typography>
-    </Box>
+    </Stack>
   );
 }
 
@@ -695,13 +558,12 @@ function UpdateQueuePanel({
                     spacing={1}
                   >
                     <Stack direction="row" spacing={1.25} alignItems="center">
-                      <Typography
-                        variant="h5"
-                        component="span"
-                        sx={{ lineHeight: 1 }}
-                      >
-                        {item.platformIcon}
-                      </Typography>
+                      <PlatformBadge
+                        platformId={item.platformId}
+                        name={item.platformName}
+                        fallbackIcon={item.platformIcon}
+                        size={40}
+                      />
                       <Box>
                         <Typography variant="subtitle1" fontWeight={700}>
                           {item.platformName}
@@ -862,9 +724,12 @@ const PlatformCard = memo(function PlatformCard({
               alignItems="center"
               sx={{ minWidth: 0 }}
             >
-              <Typography variant="h4" component="span" sx={{ lineHeight: 1 }}>
-                {platform.icon}
-              </Typography>
+              <PlatformBadge
+                platformId={platform.id}
+                name={platform.name}
+                fallbackIcon={platform.icon}
+                size={46}
+              />
               <Box sx={{ minWidth: 0 }}>
                 <Typography
                   variant={emphasized ? "h5" : "h6"}

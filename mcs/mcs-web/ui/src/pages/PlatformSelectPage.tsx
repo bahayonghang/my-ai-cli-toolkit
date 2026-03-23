@@ -3,74 +3,37 @@ import {
   Alert,
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
   Chip,
   CircularProgress,
-  Grid,
   Stack,
   Typography,
 } from "@mui/material";
-import type { SxProps, Theme } from "@mui/material/styles";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
-import { entryPanelSx } from "@/components/common/glassPanel";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useLegacyDirs } from "@/hooks/useLegacyDirs";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { usePlatformStore } from "@/stores/platformStore";
+import {
+  AppShell,
+  ListSurface,
+  MetaChips,
+  MetricStrip,
+  SectionHero,
+} from "@/components/shell/AppShell";
+import {
+  PlatformBadge,
+  PlatformCapabilityChips,
+} from "@/components/platform/PlatformVisuals";
 
 const LegacyCleanupDialog = lazy(() =>
   import("@/components/dialogs/LegacyCleanupDialog").then((module) => ({
     default: module.LegacyCleanupDialog,
   })),
 );
-
-const heroStatSx: SxProps<Theme> = {
-  height: "100%",
-  display: "grid",
-  alignContent: "space-between",
-  gap: 1.5,
-  minHeight: 132,
-  px: 2.25,
-  py: 2,
-  borderRadius: 3,
-  border: "1px solid var(--mcs-shell-stroke)",
-  background:
-    "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-shell-fill) 100%)",
-  boxShadow: "inset 0 1px 0 0 var(--mcs-glass-highlight)",
-};
-
-const sectionLabelSx: SxProps<Theme> = {
-  color: "var(--mcs-entry-muted)",
-  letterSpacing: "0.12em",
-};
-
-const utilityButtonSx: SxProps<Theme> = {
-  justifyContent: "flex-start",
-  borderColor: "var(--mcs-shell-stroke)",
-  backgroundColor: "var(--mcs-shell-fill)",
-};
-
-const platformCardSx: SxProps<Theme> = {
-  height: "100%",
-  background:
-    "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-  borderColor: "var(--mcs-shell-stroke)",
-  boxShadow: "var(--mcs-shadow-sm)",
-  "&:hover": {
-    borderColor: "var(--mcs-shell-stroke-strong)",
-    backgroundColor: "var(--mcs-shell-fill)",
-    boxShadow: "var(--mcs-shadow-md)",
-  },
-};
 
 export default function PlatformSelectPage() {
   const { t } = useI18n();
@@ -88,7 +51,6 @@ export default function PlatformSelectPage() {
   }, [fetchPlatforms]);
 
   const firstPlatformId = platforms[0]?.id ?? null;
-
   const sharedPathCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const platform of platforms) {
@@ -100,510 +62,213 @@ export default function PlatformSelectPage() {
     return counts;
   }, [platforms]);
 
-  const heroStats = useMemo(
-    () => [
-      {
-        label: t("platformSelect.availablePlatforms"),
-        value: platforms.length,
-        emphasis: "metric" as const,
-      },
-      {
-        label: t("platformSelect.unifiedInstallLabel"),
-        value: t("platformSelect.unifiedInstallTitle"),
-        emphasis: "note" as const,
-      },
-      {
-        label: t("platformSelect.npxSkillsLabel"),
-        value: t("platformSelect.npxSkillsTitle"),
-        emphasis: "note" as const,
-      },
-    ],
-    [platforms.length, t],
-  );
+  const metricItems = [
+    {
+      key: "platforms",
+      label: t("platformSelect.availablePlatforms"),
+      value: platforms.length,
+      detail: t("platformSelect.libraryTitle"),
+      emphasis: true,
+    },
+    {
+      key: "hub",
+      label: t("platformSelect.unifiedInstallLabel"),
+      value: t("platformSelect.unifiedInstallTitle"),
+      detail: t("platformSelect.subtitle"),
+    },
+    {
+      key: "npx",
+      label: t("platformSelect.npxSkillsLabel"),
+      value: t("platformSelect.npxSkillsTitle"),
+      detail: t("platformSelect.librarySubtitle"),
+    },
+  ];
 
   if (loading && platforms.length === 0) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box component="main" sx={{ minHeight: "100vh", position: "relative" }}>
-      <AnimatedBackground variant="entry" />
-      <Box
-        sx={{
-          maxWidth: 1280,
-          mx: "auto",
-          px: { xs: 2, sm: 3, md: 4 },
-          py: { xs: 4, md: 6 },
-        }}
-      >
-        <Stack
-          direction={{ xs: "column", lg: "row" }}
-          spacing={1.5}
-          justifyContent="space-between"
-          alignItems={{ xs: "stretch", lg: "center" }}
-          sx={{ mb: 2.5 }}
-        >
-          <Stack spacing={0.6}>
-            <Typography variant="overline" sx={sectionLabelSx}>
-              {t("platformSelect.availablePlatforms")}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {t("platformSelect.librarySubtitle")}
-            </Typography>
-          </Stack>
-
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1}
-            useFlexGap
-            flexWrap="wrap"
-            alignItems={{ xs: "stretch", sm: "center" }}
+    <AppShell
+      variant="entry"
+      title={t("platformSelect.title")}
+      subtitle={t("platformSelect.subtitle")}
+      actions={
+        <>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              void refreshPlatforms();
+              refreshLegacyCount();
+            }}
+            startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <RefreshIcon />}
+            disabled={loading}
           >
+            {t("platformSelect.refreshButton")}
+          </Button>
+          {legacyCount > 0 ? (
             <Button
               variant="outlined"
-              onClick={() => {
-                void refreshPlatforms();
-                refreshLegacyCount();
-              }}
-              startIcon={
-                loading ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : (
-                  <RefreshIcon />
-                )
-              }
-              disabled={loading}
-              sx={utilityButtonSx}
+              color="warning"
+              startIcon={<WarningAmberIcon />}
+              onClick={() => setLegacyOpen(true)}
             >
-              {t("platformSelect.refreshButton")}
+              {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
             </Button>
-            {legacyCount > 0 && (
+          ) : null}
+        </>
+      }
+      maxWidth={1480}
+    >
+      <Stack spacing={3}>
+        <SectionHero
+          variant="entry"
+          eyebrow={t("platformSelect.heroEyebrow")}
+          title={t("platformSelect.title")}
+          description={t("platformSelect.subtitle")}
+          meta={
+            <MetaChips
+              items={[
+                t("platformSelect.availablePlatforms"),
+                t("platformSelect.unifiedInstallLabel"),
+                t("platformSelect.npxSkillsLabel"),
+              ]}
+            />
+          }
+          actions={
+            <>
+              <Button
+                variant="contained"
+                size="large"
+                startIcon={<InstallDesktopIcon />}
+                onClick={() => navigateDeferred("/install-hub")}
+              >
+                {t("platformSelect.primaryAction")}
+              </Button>
               <Button
                 variant="outlined"
-                color="warning"
-                startIcon={<WarningAmberIcon />}
-                onClick={() => setLegacyOpen(true)}
+                size="large"
+                startIcon={<DashboardCustomizeIcon />}
+                onClick={() => navigateDeferred("/dashboard")}
+              >
+                {t("platformSelect.dashboardAction")}
+              </Button>
+              <Button
+                variant="text"
+                size="large"
+                startIcon={<TerminalIcon />}
+                disabled={!firstPlatformId}
+                onClick={() => {
+                  if (firstPlatformId) {
+                    navigateDeferred(`/platform/${firstPlatformId}/npx-skills`);
+                  }
+                }}
                 sx={{ justifyContent: "flex-start" }}
               >
-                {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
+                {t("platformSelect.npxAction")}
               </Button>
-            )}
-            <LanguageToggle />
-            <Box
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 44,
-                minWidth: 44,
-                px: 0.5,
-                borderRadius: 999,
-                border: "1px solid var(--mcs-shell-stroke)",
-                bgcolor: "var(--mcs-shell-fill)",
-              }}
-            >
-              <ThemeToggleButton />
-            </Box>
-          </Stack>
+            </>
+          }
+        />
+
+        <MetricStrip items={metricItems} tone="entry" />
+
+        {error ? <Alert severity="error">{error}</Alert> : null}
+
+        <Stack spacing={1.25}>
+          <Typography variant="overline" color="text.secondary">
+            {t("platformSelect.platformWorkspaceLabel")}
+          </Typography>
+          <Typography variant="h4" sx={{ letterSpacing: "-0.05em" }}>
+            {t("platformSelect.libraryTitle")}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 760 }}>
+            {t("platformSelect.librarySubtitle")}
+          </Typography>
         </Stack>
 
-        <Box
-          sx={[
-            entryPanelSx,
-            {
-              px: { xs: 2.5, sm: 3.5, md: 4.5 },
-              py: { xs: 2.5, sm: 3, md: 4 },
-              mb: 4,
-              background:
-                "linear-gradient(180deg, var(--mcs-hero-surface-strong) 0%, var(--mcs-hero-surface) 48%, var(--mcs-shell-fill) 100%)",
-              borderColor: "var(--mcs-hero-outline)",
-              boxShadow: "var(--mcs-hero-shadow)",
-            },
-          ]}
-        >
-          <Grid container spacing={{ xs: 2.5, md: 3.5 }} alignItems="stretch">
-            <Grid size={{ xs: 12, lg: 8 }}>
-              <Stack
-                spacing={3}
-                sx={{ height: "100%", justifyContent: "space-between" }}
-              >
-                <Stack spacing={2}>
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={1.25}
-                    alignItems={{ xs: "flex-start", sm: "center" }}
-                  >
-                    <Typography variant="overline" sx={sectionLabelSx}>
-                      {t("platformSelect.heroEyebrow")}
-                    </Typography>
-                    <Chip
-                      label={t("platformSelect.availablePlatforms")}
-                      size="small"
-                      sx={{
-                        borderRadius: 1.5,
-                        borderColor: "var(--mcs-shell-stroke)",
-                        backgroundColor: "var(--mcs-shell-fill)",
-                      }}
-                      variant="outlined"
-                    />
-                  </Stack>
-                  <Typography
-                    variant="h2"
-                    sx={{
-                      maxWidth: 860,
-                      fontSize: { xs: "2.25rem", sm: "2.9rem", md: "3.6rem" },
-                      lineHeight: 0.98,
-                      letterSpacing: "-0.06em",
-                      textWrap: "balance",
-                    }}
-                  >
-                    {t("platformSelect.title")}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{
-                      maxWidth: 720,
-                      fontSize: { xs: "1rem", md: "1.05rem" },
-                      lineHeight: 1.8,
-                    }}
-                  >
-                    {t("platformSelect.subtitle")}
-                  </Typography>
-                </Stack>
+        <Stack spacing={1.5}>
+          {platforms.map((platform) => {
+            const libraryScope =
+              (sharedPathCounts.get(platform.skills_path) ?? 0) > 1
+                ? t("platformSelect.sharedLibrary")
+                : t("platformSelect.dedicatedLibrary");
 
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={1.25}
-                  useFlexGap
-                  flexWrap="wrap"
-                  alignItems={{ xs: "stretch", sm: "center" }}
-                >
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<InstallDesktopIcon />}
-                    onClick={() => navigateDeferred("/install-hub")}
-                    sx={{
-                      minWidth: { sm: 220 },
-                      px: 2.25,
-                      bgcolor: "var(--mcs-entry-accent)",
-                      color: "var(--mcs-entry-ink)",
-                      "&:hover": {
-                        bgcolor: "var(--mcs-entry-accent-strong)",
-                      },
-                    }}
-                  >
-                    {t("platformSelect.primaryAction")}
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<DashboardCustomizeIcon />}
-                    onClick={() => navigateDeferred("/dashboard")}
-                    sx={{ minWidth: { sm: 208 } }}
-                  >
-                    {t("platformSelect.dashboardAction")}
-                  </Button>
-                  <Button
-                    variant="text"
-                    size="large"
-                    startIcon={<TerminalIcon />}
-                    disabled={!firstPlatformId}
-                    onClick={() => {
-                      if (firstPlatformId) {
-                        navigateDeferred(
-                          `/platform/${firstPlatformId}/npx-skills`,
-                        );
-                      }
-                    }}
-                    sx={{ justifyContent: "flex-start", px: 0.5 }}
-                  >
-                    {t("platformSelect.npxAction")}
-                  </Button>
-                </Stack>
-              </Stack>
-            </Grid>
-
-            <Grid size={{ xs: 12, lg: 4 }}>
-              <Stack spacing={1.5} sx={{ height: "100%" }}>
-                <Box
+            return (
+              <ListSurface key={platform.id} tone="entry">
+                <Button
+                  fullWidth
+                  color="inherit"
+                  onClick={() => navigateDeferred(`/platform/${platform.id}`)}
                   sx={{
-                    p: 2.25,
+                    justifyContent: "flex-start",
+                    alignItems: "stretch",
+                    textTransform: "none",
+                    p: 0,
                     borderRadius: 3,
-                    border: "1px solid var(--mcs-shell-stroke-strong)",
-                    background:
-                      "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-shell-fill) 100%)",
-                    display: "grid",
-                    gap: 0.75,
                   }}
                 >
-                  <Typography variant="overline" sx={sectionLabelSx}>
-                    {t("platformSelect.unifiedInstallLabel")}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{ letterSpacing: "-0.04em", lineHeight: 1.05 }}
-                  >
-                    {t("platformSelect.libraryTitle")}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.7 }}
-                  >
-                    {t("platformSelect.librarySubtitle")}
-                  </Typography>
-                </Box>
-
-                <Grid container spacing={1.5} sx={{ mt: "auto" }}>
-                  {heroStats.map((stat) => (
-                    <Grid key={stat.label} size={{ xs: 12, sm: 4, lg: 12 }}>
-                      <Box sx={heroStatSx}>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "var(--mcs-entry-muted)",
-                            display: "block",
-                          }}
-                        >
-                          {stat.label}
-                        </Typography>
-                        <Typography
-                          variant={stat.emphasis === "metric" ? "h3" : "body1"}
-                          sx={{
-                            fontWeight: stat.emphasis === "metric" ? 750 : 650,
-                            letterSpacing:
-                              stat.emphasis === "metric"
-                                ? "-0.06em"
-                                : "-0.015em",
-                            color:
-                              stat.emphasis === "metric"
-                                ? "var(--mcs-entry-accent-strong)"
-                                : "var(--mcs-entry-ink)",
-                            lineHeight:
-                              stat.emphasis === "metric" ? 0.95 : 1.45,
-                            wordBreak: "break-word",
-                          }}
-                        >
-                          {stat.value}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Stack>
-            </Grid>
-          </Grid>
-        </Box>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={1.5}
-          justifyContent="space-between"
-          alignItems={{ xs: "flex-start", sm: "flex-end" }}
-          sx={{ mb: 2.5 }}
-        >
-          <Box>
-            <Typography variant="overline" sx={sectionLabelSx}>
-              {t("platformSelect.platformWorkspaceLabel")}
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{ mt: 0.5, letterSpacing: "-0.05em", lineHeight: 0.95 }}
-            >
-              {t("platformSelect.libraryTitle")}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 1, maxWidth: 720 }}
-            >
-              {t("platformSelect.librarySubtitle")}
-            </Typography>
-          </Box>
-          <Chip
-            label={t("platformSelect.availablePlatforms")}
-            variant="outlined"
-            sx={{
-              alignSelf: { xs: "flex-start", sm: "center" },
-              borderRadius: 1.5,
-              borderColor: "var(--mcs-shell-stroke)",
-              backgroundColor: "var(--mcs-shell-fill)",
-            }}
-          />
-        </Stack>
-        <Grid container spacing={2}>
-          {platforms.map((platform) => (
-            <Grid key={platform.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-              <Card sx={platformCardSx}>
-                <CardActionArea
-                  onClick={() => navigateDeferred(`/platform/${platform.id}`)}
-                  sx={{ height: "100%", minHeight: 188, alignItems: "stretch" }}
-                >
-                  <CardContent
+                  <Box
                     sx={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 2.5,
-                      p: 3,
+                      width: "100%",
+                      display: "grid",
+                      gap: 2,
+                      gridTemplateColumns: { xs: "1fr", lg: "82px minmax(0, 1fr) minmax(300px, 0.7fr)" },
+                      alignItems: "start",
                     }}
                   >
-                    <Stack
-                      direction="row"
-                      spacing={1.5}
-                      alignItems="flex-start"
+                    <Box
+                      sx={{
+                        pt: 0.2,
+                      }}
                     >
-                      <Box
-                        sx={{
-                          width: 62,
-                          minWidth: 62,
-                          height: 62,
-                          borderRadius: 2,
-                          display: "grid",
-                          placeItems: "center",
-                          background:
-                            "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-entry-surface-muted) 100%)",
-                          border: "1px solid var(--mcs-shell-stroke)",
-                          boxShadow:
-                            "inset 0 1px 0 0 var(--mcs-glass-highlight)",
-                        }}
-                      >
-                        <Typography
-                          variant="h4"
-                          component="span"
-                          sx={{ lineHeight: 1 }}
-                        >
-                          {platform.icon}
-                        </Typography>
-                      </Box>
-                      <Stack spacing={0.5} sx={{ minWidth: 0, flexGrow: 1 }}>
-                        <Typography variant="overline" sx={sectionLabelSx}>
+                      <PlatformBadge
+                        platformId={platform.id}
+                        name={platform.name}
+                        fallbackIcon={platform.icon}
+                        size={68}
+                      />
+                    </Box>
+
+                    <Stack spacing={1.1} sx={{ minWidth: 0 }}>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
+                        <Typography variant="overline" color="text.secondary">
                           {platform.id}
                         </Typography>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            wordBreak: "break-word",
-                            letterSpacing: "-0.04em",
-                            lineHeight: 1.05,
-                          }}
-                        >
-                          {platform.name}
-                        </Typography>
+                        <Chip label={libraryScope} size="small" variant="outlined" />
                       </Stack>
+                      <Typography variant="h5" sx={{ letterSpacing: "-0.04em", textAlign: "left" }}>
+                        {platform.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ textAlign: "left" }}>
+                        {t("platformSelect.librarySubtitle")}
+                      </Typography>
+                      <PlatformCapabilityChips platform={platform} />
                     </Stack>
 
-                    <Stack spacing={1.5} sx={{ minWidth: 0, mt: "auto" }}>
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        useFlexGap
-                        flexWrap="wrap"
-                      >
-                        <Chip
-                          label={
-                            (sharedPathCounts.get(platform.skills_path) ?? 0) >
-                            1
-                              ? t("platformSelect.sharedLibrary")
-                              : t("platformSelect.dedicatedLibrary")
-                          }
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            borderRadius: 1.25,
-                            borderColor: "var(--mcs-shell-stroke)",
-                          }}
-                        />
-                        {platform.supports_commands && (
-                          <Chip
-                            label={t("common.commands")}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              borderRadius: 1.25,
-                              borderColor: "var(--mcs-shell-stroke)",
-                            }}
-                          />
-                        )}
-                        {platform.supports_guidance && (
-                          <Chip
-                            label={t("common.guidance")}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              borderRadius: 1.25,
-                              borderColor: "var(--mcs-shell-stroke)",
-                            }}
-                          />
-                        )}
-                        {platform.supports_agents && (
-                          <Chip
-                            label={t("common.agents")}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              borderRadius: 1.25,
-                              borderColor: "var(--mcs-shell-stroke)",
-                            }}
-                          />
-                        )}
-                      </Stack>
-                      <Box
-                        sx={{
-                          pt: 1.25,
-                          borderTop: "1px solid var(--mcs-shell-divider)",
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "var(--mcs-entry-muted)",
-                            display: "block",
-                            mb: 0.75,
-                          }}
-                        >
-                          {t("platformSelect.skillsPathLabel")}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ overflowWrap: "anywhere", lineHeight: 1.7 }}
-                        >
-                          {platform.skills_path}
-                        </Typography>
-                      </Box>
+                    <Stack spacing={0.75} sx={{ minWidth: 0, textAlign: "left" }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("platformSelect.skillsPathLabel")}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                        {platform.skills_path}
+                      </Typography>
                     </Stack>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+                  </Box>
+                </Button>
+              </ListSurface>
+            );
+          })}
+        </Stack>
+      </Stack>
 
       <Suspense
         fallback={
-          <CircularProgress
-            size={24}
-            sx={{ position: "fixed", bottom: 24, right: 24 }}
-          />
+          <CircularProgress size={24} sx={{ position: "fixed", bottom: 24, right: 24 }} />
         }
       >
         <LegacyCleanupDialog
@@ -614,6 +279,6 @@ export default function PlatformSelectPage() {
           }}
         />
       </Suspense>
-    </Box>
+    </AppShell>
   );
 }

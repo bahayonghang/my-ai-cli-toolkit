@@ -129,7 +129,7 @@ describe("InstalledSkillsPage", () => {
   it("renders the workspace summary and focused result controls", () => {
     const markup = renderPage();
 
-    expect(markup).toContain("Manage installed skills for Codex");
+    expect(markup).toContain("Manage the installed skills library for Codex");
     expect(markup).toContain("Install target");
     expect(markup).toContain("2 skills in view");
     expect(markup).toContain("2 categories");
@@ -142,6 +142,6 @@ describe("InstalledSkillsPage", () => {
     const markup = renderPage();
 
     expect(markup).toContain("Installed skills failed to load");
-    expect(markup).toContain("Manage installed skills for Codex");
+    expect(markup).toContain("Manage the installed skills library for Codex");
   });
 });

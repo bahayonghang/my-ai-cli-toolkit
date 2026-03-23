@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import type { ExecutionState, PlatformInstallResult } from "./types";
 import { useI18n } from "@/i18n";
+import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 
 interface Props {
   selectedSkillCount: number;
@@ -131,7 +132,12 @@ function PlatformResultAccordion({ result }: PlatformResultAccordionProps) {
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack direction="row" spacing={1} alignItems="center" sx={{ width: "100%" }}>
-          <Typography fontWeight={600}>{`${result.platform.icon} ${result.platform.name}`}</Typography>
+          <PlatformIdentity
+            platformId={result.platform.id}
+            name={result.platform.name}
+            fallbackIcon={result.platform.icon}
+            size={36}
+          />
           <Chip
             label={t("installHub.successCount", { count: result.successCount })}
             size="small"

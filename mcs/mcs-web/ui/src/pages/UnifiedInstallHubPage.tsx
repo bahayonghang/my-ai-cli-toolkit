@@ -1,25 +1,17 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import HomeIcon from "@mui/icons-material/Home";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
 import {
   Alert,
-  AppBar,
   Box,
   CircularProgress,
   Grid,
-  IconButton,
   Stack,
-  Toolbar,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import { LanguageToggle } from "@/components/common/LanguageToggle";
-import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { InstallReviewStage } from "@/components/install-hub/InstallReviewStage";
 import { InstallStagePanel } from "@/components/install-hub/InstallStagePanel";
 import {
@@ -34,10 +26,11 @@ import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
 import type { InstallHubStage } from "@/components/install-hub/types";
-import { workbenchPanelSx } from "@/components/common/glassPanel";
+import { AppShell, MetricStrip, SectionHero as ShellHero } from "@/components/shell/AppShell";
 import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 
 export default function UnifiedInstallHubPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const platforms = usePlatformStore((state) => state.platforms);
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
@@ -55,12 +48,16 @@ export default function UnifiedInstallHubPage() {
   }
 
   return (
-    <Box component="main" sx={{ minHeight: "100vh", position: "relative" }}>
-      <AnimatedBackground variant="workbench" />
-      <PageToolbar onBack={() => navigate(-1)} onHome={() => navigate("/")} />
+    <AppShell
+      variant="workbench"
+      title={t("installHub.pageTitle")}
+      subtitle={t("installHub.heroSubtitle")}
+      onBack={() => navigate(-1)}
+      onHome={() => navigate("/")}
+    >
       <PageBody model={model} platforms={platforms} />
       <NotificationSnackbar />
-    </Box>
+    </AppShell>
   );
 }
 
@@ -77,42 +74,6 @@ function LoadingScreen() {
   );
 }
 
-function PageToolbar({
-  onBack,
-  onHome,
-}: {
-  onBack: () => void;
-  onHome: () => void;
-}) {
-  const { t } = useI18n();
-
-  return (
-    <AppBar position="fixed">
-      <Toolbar sx={{ gap: 1 }}>
-        <IconButton
-          color="inherit"
-          aria-label={t("common.back")}
-          onClick={onBack}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        <IconButton
-          color="inherit"
-          aria-label={t("common.home")}
-          onClick={onHome}
-        >
-          <HomeIcon />
-        </IconButton>
-        <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
-          {t("installHub.pageTitle")}
-        </Typography>
-        <LanguageToggle sx={{ mr: 0.5 }} />
-        <ThemeToggleButton />
-      </Toolbar>
-    </AppBar>
-  );
-}
-
 function PageBody({
   model,
   platforms,
@@ -123,11 +84,7 @@ function PageBody({
   return (
     <Box
       sx={{
-        maxWidth: 1520,
-        mx: "auto",
-        px: { xs: 2, sm: 3, md: 4 },
-        pt: 11,
-        pb: { xs: 4, md: 6 },
+        pb: { xs: 2, md: 0 },
       }}
     >
       {model.catalogError ? (
@@ -155,80 +112,87 @@ function InstallHero({
   const activeStageTitle = t(`installHub.stageTitle.${model.activeStage}`);
 
   return (
-    <Box sx={{ ...workbenchPanelSx, p: { xs: 2.25, md: 2.75 } }}>
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <Stack spacing={2}>
-            <Box>
-              <Typography
-                variant="overline"
-                sx={{ color: "var(--mcs-workbench-muted)" }}
-              >
-                {t("installHub.heroEyebrow")}
-              </Typography>
-              <Typography
-                variant="h3"
-                sx={{
-                  mt: 0.75,
-                  fontSize: {
-                    xs: "clamp(1.7rem, 6vw, 2.25rem)",
-                    md: "clamp(2.2rem, 4vw, 2.9rem)",
-                  },
-                  lineHeight: 1.08,
-                  letterSpacing: "-0.045em",
-                  maxWidth: 780,
-                }}
-              >
-                {t("installHub.heroTitle")}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  mt: 1,
-                  maxWidth: 680,
-                  color: "var(--mcs-workbench-muted)",
-                }}
-              >
-                {t("installHub.heroSubtitle")}
-              </Typography>
-            </Box>
-
-            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-              {(["skills", "platforms", "review"] as InstallHubStage[]).map(
-                (stage, index) => (
-                  <Box
-                    key={stage}
-                    sx={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 1,
-                      px: 1.5,
-                      py: 0.85,
-                      borderRadius: 999,
-                      border: "1px solid",
-                      borderColor:
-                        stage === model.activeStage
-                          ? "var(--mcs-workbench-outline-strong)"
-                          : "var(--mcs-workbench-outline)",
-                      bgcolor:
-                        stage === model.activeStage
-                          ? "var(--mcs-workbench-accent-soft)"
-                          : "var(--mcs-workbench-surface-muted)",
-                    }}
-                  >
-                    <Typography variant="caption" fontWeight={700}>
-                      {String(index + 1).padStart(2, "0")}
-                    </Typography>
-                    <Typography variant="body2" fontWeight={600}>
-                      {t(`installHub.stageTitle.${stage}`)}
-                    </Typography>
-                  </Box>
-                ),
-              )}
-            </Stack>
+    <Stack spacing={2}>
+      <ShellHero
+        variant="workbench"
+        eyebrow={t("installHub.heroEyebrow")}
+        title={t("installHub.heroTitle")}
+        description={t("installHub.heroSubtitle")}
+        meta={
+          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+            {(["skills", "platforms", "review"] as InstallHubStage[]).map(
+              (stage, index) => (
+                <Box
+                  key={stage}
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 1,
+                    px: 1.5,
+                    py: 0.85,
+                    borderRadius: 999,
+                    border: "1px solid",
+                    borderColor:
+                      stage === model.activeStage
+                        ? "var(--mcs-workbench-outline-strong)"
+                        : "var(--mcs-workbench-outline)",
+                    bgcolor:
+                      stage === model.activeStage
+                        ? "var(--mcs-workbench-accent-soft)"
+                        : "var(--mcs-workbench-surface-muted)",
+                  }}
+                >
+                  <Typography variant="caption" fontWeight={700}>
+                    {String(index + 1).padStart(2, "0")}
+                  </Typography>
+                  <Typography variant="body2" fontWeight={600}>
+                    {t(`installHub.stageTitle.${stage}`)}
+                  </Typography>
+                </Box>
+              ),
+            )}
           </Stack>
-        </Grid>
+        }
+      />
 
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, lg: 8 }}>
+          <MetricStrip
+            tone="workbench"
+            items={[
+              {
+                key: "catalog",
+                label: t("installHub.metricCatalog"),
+                value: model.summary.totalSkillCount,
+                detail: t("installHub.filteredTotal", {
+                  filtered: model.summary.filteredSkillCount,
+                  total: model.summary.totalSkillCount,
+                }),
+                emphasis: true,
+              },
+              {
+                key: "categories",
+                label: t("installHub.metricCategories"),
+                value: model.categories.length,
+                detail: t("installHub.categoryRailTitle"),
+              },
+              {
+                key: "targets",
+                label: t("installHub.metricTargets"),
+                value: platformCount,
+                detail: t("installHub.selectedPlatformsPreview", {
+                  count: model.summary.selectedPlatforms.length,
+                }),
+              },
+              {
+                key: "actions",
+                label: t("installHub.metricActions"),
+                value: model.summary.plannedActionCount,
+                detail: activeStageTitle,
+              },
+            ]}
+          />
+        </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
           <Stack
             spacing={1.25}
@@ -297,7 +261,7 @@ function InstallHero({
           </Stack>
         </Grid>
       </Grid>
-    </Box>
+    </Stack>
   );
 }
 

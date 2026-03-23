@@ -18,6 +18,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { installAgents, installCommands, installSkills } from "@/api/client";
 import type { InstallTarget, PlatformDisplay } from "@/types";
 import { useI18n } from "@/i18n";
+import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 
 type Phase = "confirm" | "installing" | "completed";
 type LinkMode = "auto" | "symlink" | "copy";
@@ -233,12 +234,31 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
           <Typography variant="body2" color="text.secondary">
             {t("dialogs.platformLabel")}
           </Typography>
-          <Chip
-            label={platform ? `${platform.icon} ${platform.name}` : t("common.unknown")}
-            color="primary"
-            size="small"
-            variant="outlined"
-          />
+          {platform ? (
+            <Box
+              sx={{
+                px: 1,
+                py: 0.75,
+                borderRadius: 999,
+                border: "1px solid var(--mcs-panel-stroke-soft)",
+                bgcolor: "var(--mcs-panel-fill-emphasis)",
+              }}
+            >
+              <PlatformIdentity
+                platformId={platform.id}
+                name={platform.name}
+                fallbackIcon={platform.icon}
+                size={30}
+              />
+            </Box>
+          ) : (
+            <Chip
+              label={t("common.unknown")}
+              color="primary"
+              size="small"
+              variant="outlined"
+            />
+          )}
         </Box>
 
         {itemType === "skills" && (

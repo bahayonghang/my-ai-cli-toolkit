@@ -16,6 +16,7 @@ import {
 import type { PlatformDisplay } from "@/types";
 import type { PlatformSelection } from "./types";
 import { useI18n } from "@/i18n";
+import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 
 interface Props {
   platforms: PlatformDisplay[];
@@ -107,7 +108,14 @@ function PlatformList({
               >
                 <Checkbox checked={selectedPlatforms.has(platform.id)} tabIndex={-1} />
                 <ListItemText
-                  primary={`${platform.icon} ${platform.name}`}
+                  primary={
+                    <PlatformIdentity
+                      platformId={platform.id}
+                      name={platform.name}
+                      fallbackIcon={platform.icon}
+                      size={34}
+                    />
+                  }
                   secondary={platform.skills_path}
                 />
               </ListItemButton>

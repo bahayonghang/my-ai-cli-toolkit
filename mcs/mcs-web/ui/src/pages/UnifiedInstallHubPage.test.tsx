@@ -183,7 +183,7 @@ describe("UnifiedInstallHubPage", () => {
   it("renders the staged workbench hero, summary, and three guided steps", () => {
     const markup = renderPage();
 
-    expect(markup).toContain("Guide every skill install with one clear path.");
+    expect(markup).toContain("Guide every skills rollout with one clear operational path.");
     expect(markup).toContain("Choose Skills");
     expect(markup).toContain("Choose Targets");
     expect(markup).toContain("Review &amp; Execute");
