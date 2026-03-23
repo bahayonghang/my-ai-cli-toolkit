@@ -1,0 +1,18 @@
+#+title:      概念解剖：{概念名}
+#+date:       [{YYYY-MM-DD Day HH:MM}]
+#+filetags:   :concept:
+#+identifier: {YYYYMMDDTHHMMSS}
+#+source:     {来源描述}
+
+* 定锚
+* 八刀
+** 历史
+** 辩证
+** 现象
+** 语言
+** 形式
+** 存在
+** 美感
+** 元反思
+* 内观
+* 压缩
