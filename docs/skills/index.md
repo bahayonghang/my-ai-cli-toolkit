@@ -6,15 +6,16 @@ This section tracks the installable catalog under `content/skills/`.
 
 | Category | What it covers |
 |----------|----------------|
-| `academic-skills` | paper writing, audit, slides, thesis, replication, bibliography search |
+| `academic-skills` | paper reading, writing, audit, slides, thesis, replication, bibliography search, paper-to-card flows |
 | `ai-llm-skills` | Codex, Gemini |
 | `diagram-skills` | draw.io, Excalidraw, Mermaid |
-| `document-skills` | office documents, PDF/LaTeX, Typst, Touying, bid writing |
+| `document-skills` | office documents, PDF/LaTeX, Typst, Touying, bid writing, screenshots, visual cards, theming |
 | `git-github-skills` | GitHub review and repository workflows |
+| `learning-skills` | concept anatomy, plain rewriting, rank reduction, English word study, paired word and concept flows |
 | `media-skills` | article covers and media download |
-| `skill-meta-skills` | skill creation, MCP conversion, audit |
+| `skill-meta-skills` | skill creation, MCP conversion, skill maps, audit |
 | `tech-stack-skills` | Slint, LSP, Rust CLI/TUI, uv, Vue |
-| `workflow-skills` | interview workflows, memory, review, coding guidance |
+| `workflow-skills` | interview workflows, memory, review, web access, architecture, coding guidance |
 
 ## Notes
 

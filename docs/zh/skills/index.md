@@ -6,11 +6,12 @@
 
 | 分类 | 覆盖内容 |
 |------|----------|
-| `academic-skills` | 论文写作、质检、幻灯片、学位论文、复现、文献检索 |
+| `academic-skills` | 读论文、论文写作、质检、幻灯片、学位论文、复现、文献检索 |
 | `ai-llm-skills` | Codex、Gemini |
 | `diagram-skills` | draw.io、Excalidraw、Mermaid |
-| `document-skills` | Office 文档、PDF/LaTeX、Typst、Touying、标书 |
+| `document-skills` | Office 文档、PDF/LaTeX、Typst、Touying、标书、截图、视觉卡片、主题套用 |
 | `git-github-skills` | GitHub 审查与仓库工作流 |
+| `learning-skills` | 概念解剖与概念学习流 |
 | `media-skills` | 文章封面与媒体下载 |
 | `skill-meta-skills` | skill 创建、MCP 转换、skill 审计 |
 | `tech-stack-skills` | Slint、LSP、Rust CLI/TUI、uv、Vue |
