@@ -1,0 +1,77 @@
+{
+  "skill_name": "web-access",
+  "evals": [
+    {
+      "id": 1,
+      "should_trigger": true,
+      "prompt": "帮我去小红书搜 3 个做 AI coding 教程的账号，不要只给搜索结果页。请点进账号主页看最近内容风格，最后给我一个对比摘要。",
+      "expected_output": "使用真实浏览器或等价交互方式进入反爬平台，读取多个账号主页内容，并给出基于实际页面内容的对比摘要。",
+      "files": [],
+      "expectations": [
+        "任务被识别为需要真实浏览器环境或等价的高交互联网能力。",
+        "输出不是停留在搜索结果摘要，而是包含进入详情页后的信息。",
+        "结果体现了多来源调研而不是单页摘录。"
+      ]
+    },
+    {
+      "id": 2,
+      "should_trigger": true,
+      "prompt": "我已经在 Chrome 登录了创作者后台。帮我打开这个页面看看草稿发布表单里有哪些字段，但先不要替我提交任何东西：https://example.com/dashboard/draft",
+      "expected_output": "连接已有浏览器登录态，读取目标页面中的表单字段，并在结果中保持只读和不提交。",
+      "files": [],
+      "expectations": [
+        "任务被识别为需要登录态页面访问。",
+        "输出明确保持只读，不发生提交或发布动作。",
+        "结果包含页面字段或表单结构信息，而不是泛泛说明。"
+      ]
+    },
+    {
+      "id": 3,
+      "should_trigger": true,
+      "prompt": "同时调研 Cursor、Windsurf、Claude Code 三个官网的 pricing 和 team plan 页面。如果一个页面是展开式导航，就继续点进去。最后给我汇总成差异表。",
+      "expected_output": "从多个官网页面提取价格和团队计划信息，必要时继续页面内导航，再输出汇总对比。",
+      "files": [],
+      "expectations": [
+        "任务被识别为多来源网页调研。",
+        "执行过程允许从入口页继续导航到 pricing 或 team plan 页面。",
+        "最终结果是面向比较的汇总，而不是三个独立摘录。"
+      ]
+    },
+    {
+      "id": 4,
+      "should_trigger": false,
+      "prompt": "读一下这篇公开博客并总结重点就行：https://example.com/blog/agentic-workflows 这是静态文章，不需要你帮我点任何东西。",
+      "expected_output": "优先采用静态网页读取或正文提取方式完成，不应默认升级到浏览器 CDP。",
+      "files": [],
+      "expectations": [
+        "这是一个已知 URL 的静态正文读取近似反例。",
+        "实现应优先考虑 WebFetch、Jina 或 curl 等轻量手段。",
+        "除非静态方式失败，否则不应默认进入重型浏览器工作流。"
+      ]
+    },
+    {
+      "id": 5,
+      "should_trigger": false,
+      "prompt": "查一下 OpenAI Responses API 现在怎么传 tools 参数，给我官方文档链接和一个最小 JSON 例子，不需要打开浏览器做交互。",
+      "expected_output": "优先查官方文档或 API 参考，不应把纯文档/SDK 查询误识别为浏览器自动化任务。",
+      "files": [],
+      "expectations": [
+        "这是一个纯官方文档 / API 查阅近似反例。",
+        "实现应优先使用官方文档或静态网页读取能力。",
+        "不应为了完成该任务而默认要求真实浏览器交互。"
+      ]
+    },
+    {
+      "id": 6,
+      "should_trigger": false,
+      "prompt": "我本地有个 markdown 笔记，帮我整理成一页摘要就行，不需要联网，也不需要查网页。",
+      "expected_output": "识别为纯本地任务，不应触发 web-access 的联网或浏览器工作流。",
+      "files": [],
+      "expectations": [
+        "这是一个纯本地处理反例。",
+        "实现不应把“摘要”这种泛化表述误判成网页调研。",
+        "不需要任何联网或浏览器操作。"
+      ]
+    }
+  ]
+}
