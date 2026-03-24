@@ -7,23 +7,21 @@ description: >-
   `--search`, and apply/fix for approved code changes. Use when the user
   invokes /codex or explicitly wants the local Codex CLI.
 version: 1.5.0
+category: development-tools
+tags:
+  - openai-codex
+  - codex-cli
+  - gpt-5.4
+  - second-opinion
+  - code-review
+  - adversarial-review
+  - technical-research
 argument-hint: [task-description]
 allowed-tools:
   - Bash(codex *)
   - Bash(command -v codex)
-  - Bash(npm install -g @openai/codex)
   - Bash(Get-Command codex*)
   - Read
-metadata:
-  category: development-tools
-  tags:
-    - openai-codex
-    - codex-cli
-    - gpt-5.4
-    - second-opinion
-    - code-review
-    - adversarial-review
-    - technical-research
 ---
 
 Run Codex CLI for `$ARGUMENTS`.
@@ -38,6 +36,7 @@ Run Codex CLI for `$ARGUMENTS`.
 - Default research search path: top-level `--search`
 - Default posture: review-only first, write only when the user explicitly wants Codex to apply changes
 - Preferred automation path for writes: `--full-auto` before `--dangerously-bypass-approvals-and-sandbox`
+- Keep sandbox bypass available for exceptional cases, but only after explicit user confirmation for that specific run
 - Resume path: `codex exec resume <session_id> "<follow-up>"`
 
 ## Prerequisites
@@ -45,10 +44,30 @@ Run Codex CLI for `$ARGUMENTS`.
 1. Verify Codex CLI is installed.
    - Bash / zsh: `command -v codex`
    - PowerShell: `Get-Command codex`
-   - If missing, tell the user to install it: `npm install -g @openai/codex`
+   - If missing, tell the user to install it manually: `npm install -g @openai/codex`
 2. Verify authentication: `codex login status`
    - If not authenticated, tell the user to run `codex login`
 3. If Codex is unavailable and the task is mainly research or docs lookup, fall back to the host's native web or documentation tools instead of blocking.
+
+## Bypass Confirmation Gate
+
+Keep `danger-full-access` and `--dangerously-bypass-approvals-and-sandbox`
+available, but never use them by default.
+
+Before using either bypass path:
+
+1. Try `read-only`, `workspace-write`, or `--full-auto` first.
+2. State why the narrower sandbox is insufficient.
+3. Show the exact Codex command that would run with bypass.
+4. Ask the user to confirm this specific bypassed run.
+5. Only proceed after an explicit yes.
+
+Use this confirmation shape:
+
+```text
+Codex needs <danger-full-access | full bypass> for this run to <reason>.
+This would allow <scope>. Proceed?
+```
 
 ## Scope Boundary
 
@@ -106,7 +125,7 @@ Planned AI Run
 - Model: <literal model id>
 - Runtime: <reasoning=xhigh | reasoning=high | reasoning=<level>; sandbox=<mode>>
 - Search: <off | live>
-- Access: <review-safe | workspace-write | bypassed sandbox/approvals>
+- Access: <review-safe | workspace-write | confirmed danger-full-access | confirmed bypassed sandbox/approvals>
 - Workdir: <path or current>
 ```
 
@@ -117,7 +136,8 @@ Rules:
 - For `codex review`, pass model or sandbox overrides as top-level Codex options before the subcommand, for example `codex -m $MODEL -s read-only review ...`.
 - Use `Search: live` only for runs started with top-level `--search`.
 - `review`, `challenge`, and `consult` should default to read-only or another review-safe posture.
-- `apply/fix` should default to `workspace-write` / `--full-auto`; use full bypass only with explicit user intent.
+- `apply/fix` should default to `workspace-write` / `--full-auto`.
+- Use `danger-full-access` or full bypass only after explicit confirmation for that exact run.
 - If `-C` is omitted, show `current` for `Workdir`.
 
 ## Quick Reference
@@ -171,13 +191,14 @@ error: cannot open '.git/FETCH_HEAD': Permission denied
 
 For any mode that needs git write access (commit, push, pull), you **must** use
 `danger-full-access` or `--dangerously-bypass-approvals-and-sandbox`.
+Do not switch to either mode until the user has explicitly confirmed the bypassed run.
 
 ### Recommended sandbox flags by mode
 
 - **Review / Challenge / Consult**: `-s read-only` (default, safe)
 - **Research**: `--skip-git-repo-check` (no repo context needed)
 - **Apply/Fix without git writes**: `--full-auto` (auto-approve file edits)
-- **Apply/Fix with git writes**: `--full-auto --dangerously-bypass-approvals-and-sandbox`
+- **Apply/Fix with git writes**: `danger-full-access` after confirmation; use full bypass only as a confirmed last resort
 
 ### Platform-specific sandbox issues
 

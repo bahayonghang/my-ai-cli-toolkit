@@ -108,7 +108,7 @@ Research <topic> for a team deciding whether to adopt it. Cover architecture, op
 ### Apply approved findings template
 
 ```text
-Fix the approved findings in <target>. Apply the changes now, keep the scope tight, and end with a short summary plus any validation that still needs to run.
+Fix the approved findings in <target>. Apply the changes now, keep the scope tight, and end with a short summary plus any validation that still needs to run. If git writes or sandbox escape are required, stop and ask for explicit confirmation before using them.
 ```
 
 ## Research Query Design
@@ -294,7 +294,9 @@ even when the rules engine returns "allow" (issue
 
 ### Apply/Fix recipes with git write access
 
-When the user wants Codex to commit or push changes, use the bypass flag:
+Only use these recipes after the user explicitly confirms the bypassed run.
+When git writes are required, prefer `danger-full-access` first and reserve the
+full bypass flag for last-resort cases.
 
 ```bash
 # Apply changes and commit

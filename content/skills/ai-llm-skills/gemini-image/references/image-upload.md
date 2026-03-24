@@ -1,27 +1,16 @@
-# Image Upload (Required for Image-to-Image)
+# Image Input Guidance
 
-Local images must be uploaded to an image hosting service to get a URL for image-to-image generation.
+Do not upload local images to third-party hosting services by default.
 
-## Recommended Image Hosts
+## Preferred path
 
-### Litterbox (Temporary, 1 hour)
+- For the Google official API, use a local image file encoded as `inline_data`.
+- For a proxy provider, use a remote image URL only when the user explicitly
+  provides or approves that URL.
 
-```bash
-curl -s -F "reqtype=fileupload" -F "time=1h" -F "fileToUpload=@/path/to/local/image" https://litterbox.catbox.moe/resources/internals/api.php
-```
+## Third-party hosting fallback
 
-### Catbox (Permanent)
-
-```bash
-curl -s -F "reqtype=fileupload" -F "fileToUpload=@/path/to/local/image" https://catbox.moe/user/api.php
-```
-
-## Usage
-
-1. Upload image and get the returned URL
-2. Put URL at the beginning of prompt, followed by description
-
-Example:
-```
-https://litter.catbox.moe/xxxxx.png Enhance this image to 4K, keep original content unchanged
-```
+If the configured provider absolutely requires a public URL and the user
+explicitly approves third-party hosting, warn about the exposure first and use a
+temporary host rather than a permanent one. Keep the uploaded image scoped to
+the current task and avoid reusing the URL elsewhere.

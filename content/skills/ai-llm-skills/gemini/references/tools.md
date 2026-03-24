@@ -332,9 +332,9 @@ gemini --allowed-tools "read_file,glob" "Find config files" -o text
 
 ### Tool Combination Patterns
 
-**Research → Implement:**
+**Research → Review Boundary:**
 ```bash
-gemini "Use Google Search to find best practices for [topic], then implement them" --approval-mode yolo -o text
+gemini "Use Google Search to find best practices for [topic]. Return sources, dates, and the concrete guidance only. Do not modify files." -o text
 ```
 
 **Analyze → Report:**
