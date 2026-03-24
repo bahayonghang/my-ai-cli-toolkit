@@ -85,7 +85,7 @@ export default function NpxMaintenanceView({
                   variant="contained"
                   color="info"
                   startIcon={<RefreshIcon />}
-                  disabled={jobRunning || capabilities?.check.supported === false}
+                  disabled={jobRunning || !capabilities || capabilities.check.supported === false}
                   onClick={openCheckDialog}
                 >
                   {t("npxSkills.checkUpdates")}
@@ -114,7 +114,7 @@ export default function NpxMaintenanceView({
                   variant="contained"
                   color="warning"
                   startIcon={<SystemUpdateAltIcon />}
-                  disabled={jobRunning || capabilities?.update.supported === false}
+                  disabled={jobRunning || !capabilities || capabilities.update.supported === false}
                   onClick={openUpdateDialog}
                 >
                   {t("npxSkills.updateAll")}
@@ -234,7 +234,7 @@ export default function NpxMaintenanceView({
             {(jobRunning || jobTotal > 0) && (
             <Box>
               <LinearProgress
-                aria-label="job progress"
+                aria-label={t("npxSkills.jobProgressLabel")}
                 variant="determinate"
                 value={Math.max(0, Math.min(100, jobPercent))}
                 sx={{ height: 8, borderRadius: 999 }}
@@ -331,7 +331,7 @@ export default function NpxMaintenanceView({
                               borderRadius: 2,
                               bgcolor: "var(--mcs-surface-muted)",
                               border: `1px solid ${theme.palette.divider}`,
-                              fontFamily: '"Fira Code", monospace',
+                              fontFamily: 'var(--font-family-mono)',
                               fontSize: "0.75rem",
                               whiteSpace: "pre-wrap",
                               overflowWrap: "anywhere",

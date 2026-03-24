@@ -7,13 +7,14 @@ import {
   CardContent,
   Checkbox,
   Chip,
-  CircularProgress,
   FormControl,
   InputAdornment,
   InputLabel,
   LinearProgress,
   MenuItem,
+  Pagination,
   Select,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -59,7 +60,10 @@ export interface NpxInstalledViewProps {
   installedErrorHint: string | null;
   installedLoading: boolean;
   installTargetLoading: boolean;
-  visibleInstalledItems: NpxInstalledSkillInstanceDto[];
+  filteredInstalledTotal: number;
+  installedPage: number;
+  setInstalledPage: (page: number) => void;
+  installedTotalPages: number;
   sourceFilter: InstalledSourceFilter;
   setSourceFilter: (value: InstalledSourceFilter) => void;
   trackingFilter: InstalledTrackingFilter;
@@ -119,7 +123,10 @@ export default function NpxInstalledView({
   installedErrorHint,
   installedLoading,
   installTargetLoading,
-  visibleInstalledItems,
+  filteredInstalledTotal,
+  installedPage,
+  setInstalledPage,
+  installedTotalPages,
   sourceFilter,
   setSourceFilter,
   trackingFilter,
@@ -129,69 +136,77 @@ export default function NpxInstalledView({
   capabilities,
 }: NpxInstalledViewProps) {
   const theme = useTheme();
-  const selectedCount = installedItems.filter((item) => selectedInstalledIds.has(item.id)).length;
-  const visibleCount = visibleInstalledItems.length;
+  const selectedCount = selectedInstalledIds.size;
+  const visibleCount = filteredInstalledTotal;
+  const showInitialSkeleton = installedLoading && installedItems.length === 0;
+
+  const renderSkeletonCards = () => (
+    <Stack spacing={1.5}>
+      {Array.from({ length: isMobile ? 4 : 6 }, (_, index) => (
+        <Card key={index} variant="outlined">
+          <CardContent sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+            <Skeleton variant="text" width="38%" height={28} />
+            <Skeleton variant="text" width="56%" />
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+              <Skeleton variant="rounded" width={84} height={24} />
+              <Skeleton variant="rounded" width={72} height={24} />
+              <Skeleton variant="rounded" width={96} height={24} />
+            </Stack>
+            <Skeleton variant="text" width="88%" />
+            <Skeleton variant="text" width="76%" />
+          </CardContent>
+        </Card>
+      ))}
+    </Stack>
+  );
 
   return (
     <>
       <Box
         sx={{
-          display: "grid",
-          gap: 1.25,
           mb: 2.5,
-          gridTemplateColumns: {
-            xs: "repeat(2, minmax(0, 1fr))",
-            xl: "repeat(5, minmax(0, 1fr))",
-          },
+          px: 1.5,
+          py: 1.35,
+          borderRadius: 3,
+          border: "1px solid var(--mcs-workbench-outline)",
+          backgroundColor: "var(--mcs-panel-fill-emphasis)",
         }}
       >
-        {[
-          { label: t("npxSkills.summaryInstalled"), value: installedSummary?.total ?? installedItems.length },
-          { label: t("npxSkills.summaryCurated"), value: installedSummary?.curated ?? 0 },
-          { label: t("npxSkills.summaryManual"), value: installedSummary?.manual ?? 0 },
-          { label: t("npxSkills.filterTracked"), value: installedSummary?.tracked ?? 0 },
-          { label: t("npxSkills.summaryUpdates"), value: installedSummary?.update_available ?? 0 },
-        ].map((metric) => (
-          <Box
-            key={metric.label}
-            sx={{
-              borderRadius: 3,
-              border: "1px solid var(--mcs-workbench-outline)",
-              background:
-                "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-              px: 1.5,
-              py: 1.3,
-            }}
-          >
-            <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
-              {metric.label}
-            </Typography>
-            <Typography variant="h6" sx={{ mt: 0.35, letterSpacing: "-0.03em" }}>
-              {metric.value}
-            </Typography>
-          </Box>
-        ))}
+        <Stack
+          direction={{ xs: "column", lg: "row" }}
+          spacing={1}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", lg: "center" }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            {t("npxSkills.summaryInstalled")}: {installedSummary?.total ?? installedItems.length} ·{" "}
+            {t("npxSkills.summaryCurated")}: {installedSummary?.curated ?? 0} ·{" "}
+            {t("npxSkills.summaryManual")}: {installedSummary?.manual ?? 0}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t("npxSkills.inventoryVisible", { count: visibleCount })} ·{" "}
+            {t("npxSkills.inventorySelected", { count: selectedCount })}
+            {capabilities?.check.supported === false ? ` · ${t("npxSkills.inventoryGlobalOnlyMaintenance")}` : ""}
+          </Typography>
+        </Stack>
       </Box>
 
       <Box
         sx={{
           mb: 2.5,
-          px: 1.5,
-          py: 1.25,
-          borderRadius: 3,
-          border: "1px solid var(--mcs-workbench-outline)",
-          background:
-            "linear-gradient(90deg, var(--mcs-workbench-surface-muted) 0%, var(--mcs-panel-fill-emphasis) 100%)",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 1.5,
+          alignItems: "center",
         }}
       >
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap alignItems="center">
-          <Chip size="small" variant="outlined" label={t("npxSkills.inventoryVisible", { count: visibleCount })} />
-          <Chip size="small" variant="outlined" label={t("npxSkills.inventorySelected", { count: selectedCount })} />
-          <Chip size="small" variant="outlined" label={t("npxSkills.inventoryScopedToCurrentTarget")} />
-          {capabilities?.check.supported === false ? (
-            <Chip size="small" color="warning" variant="outlined" label={t("npxSkills.inventoryGlobalOnlyMaintenance")} />
-          ) : null}
-        </Stack>
+        <Chip size="small" variant="outlined" label={t("npxSkills.inventoryScopedToCurrentTarget")} />
+        <Chip size="small" variant="outlined" label={t("npxSkills.filterTracked")} />
+        <Chip
+          size="small"
+          variant="outlined"
+          label={t("npxSkills.summaryUpdates") + ": " + (installedSummary?.update_available ?? 0)}
+        />
       </Box>
 
       <Box
@@ -269,13 +284,7 @@ export default function NpxInstalledView({
           variant="contained"
           color="error"
           startIcon={<DeleteOutlineIcon />}
-          disabled={
-            jobRunning ||
-            installedItems.filter(
-              (item) => selectedInstalledIds.has(item.id) && item.actions.removable
-            ).length === 0 ||
-            !capabilities?.remove.supported
-          }
+          disabled={jobRunning || selectedCount === 0 || !capabilities?.remove.supported}
           onClick={openRemoveSelected}
         >
           {t("npxSkills.removeSelected")}
@@ -318,18 +327,16 @@ export default function NpxInstalledView({
           ) : null}
 
           {(installedLoading || installTargetLoading) && (
-            <LinearProgress aria-label="loading" sx={{ mb: 2, borderRadius: 999 }} />
+            <LinearProgress aria-label={t("common.loading")} sx={{ mb: 2, borderRadius: 999 }} />
           )}
 
-          {installedLoading && installedItems.length === 0 ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
-          ) : visibleInstalledItems.length === 0 ? (
+          {showInitialSkeleton ? (
+            renderSkeletonCards()
+          ) : visibleCount === 0 ? (
             <Alert severity="info">{t("npxSkills.noInstalledResults")}</Alert>
           ) : isMobile ? (
             <Stack spacing={1.5}>
-              {visibleInstalledItems.map((item) => {
+              {installedItems.map((item) => {
                 const selected = selectedInstalledIds.has(item.id);
                 return (
                   <Card key={item.id} variant="outlined">
@@ -386,7 +393,7 @@ export default function NpxInstalledView({
                             sx={{
                               display: "block",
                               color: "text.secondary",
-                              fontFamily: '"Fira Code", monospace',
+                              fontFamily: 'var(--font-family-mono)',
                               overflowWrap: "anywhere",
                             }}
                           >
@@ -451,7 +458,7 @@ export default function NpxInstalledView({
                     </Box>
                   </Box>
                   <Box component="tbody">
-                    {visibleInstalledItems.map((item) => {
+                    {installedItems.map((item) => {
                       const selected = selectedInstalledIds.has(item.id);
                       return (
                         <Box component="tr" key={item.id}>
@@ -509,7 +516,7 @@ export default function NpxInstalledView({
                             <Typography
                               variant="body2"
                               sx={{
-                                fontFamily: '"Fira Code", monospace',
+                                fontFamily: 'var(--font-family-mono)',
                                 color: "text.secondary",
                                 overflowWrap: "anywhere",
                               }}
@@ -618,6 +625,29 @@ export default function NpxInstalledView({
               </Box>
             </Card>
           )}
+
+          {visibleCount > 0 && installedTotalPages > 1 ? (
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1.25}
+              justifyContent="space-between"
+              alignItems={{ xs: "stretch", sm: "center" }}
+              sx={{ mt: 2 }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                {t("npxSkills.inventoryVisible", { count: visibleCount })}
+              </Typography>
+              <Pagination
+                color="primary"
+                count={installedTotalPages}
+                page={installedPage}
+                onChange={(_, page) => setInstalledPage(page)}
+                shape="rounded"
+                siblingCount={isMobile ? 0 : 1}
+                size={isMobile ? "small" : "medium"}
+              />
+            </Stack>
+          ) : null}
         </Box>
       </Box>
     </>

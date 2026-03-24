@@ -392,6 +392,16 @@ export async function getNpxInstalledSkills(
     search?: string;
     groupId?: string;
     categoryId?: string;
+    sourceFilter?: "all" | "curated" | "manual";
+    trackingFilter?: "all" | "tracked" | "untracked";
+    updateFilter?:
+      | "all"
+      | "not_checked"
+      | "up_to_date"
+      | "update_available"
+      | "unsupported";
+    page?: number;
+    pageSize?: number;
     installTarget?: InstallTarget;
   },
   signal?: AbortSignal
@@ -400,6 +410,17 @@ export async function getNpxInstalledSkills(
   if (params?.search) query.set("search", params.search);
   if (params?.groupId) query.set("group_id", params.groupId);
   if (params?.categoryId) query.set("category_id", params.categoryId);
+  if (params?.sourceFilter && params.sourceFilter !== "all") {
+    query.set("source_filter", params.sourceFilter);
+  }
+  if (params?.trackingFilter && params.trackingFilter !== "all") {
+    query.set("tracking_filter", params.trackingFilter);
+  }
+  if (params?.updateFilter && params.updateFilter !== "all") {
+    query.set("update_filter", params.updateFilter);
+  }
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.pageSize) query.set("page_size", String(params.pageSize));
   applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
   return fetchJson(

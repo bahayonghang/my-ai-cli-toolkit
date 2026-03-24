@@ -43,7 +43,7 @@ pub struct InstallRequest {
     pub install_target: InstallTargetDto,
 }
 
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum InstallTargetScopeDto {
     #[default]
@@ -272,7 +272,7 @@ pub struct EditContentRequest {
     pub content: String,
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum NpxSkillsCliMode {
     #[default]
@@ -332,7 +332,7 @@ pub struct NpxSkillsMaintenanceJobRequest {
     pub config: NpxSkillsCliConfigDto,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct NpxSkillsCatalogItemDto {
     pub id: String,
     pub name: String,
@@ -363,12 +363,35 @@ pub enum NpxCatalogInstalledStateDto {
     NotInstalled,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct NpxSkillsInstalledInventoryDto {
     pub target: ResolvedInstallTargetDto,
     pub capabilities: NpxSkillsCapabilitiesDto,
     pub summary: NpxSkillsInstalledSummaryDto,
+    pub groups: Vec<NpxTaxonomyGroupDto>,
+    pub filtered_total: usize,
+    pub page: usize,
+    pub page_size: usize,
+    pub total_pages: usize,
     pub items: Vec<NpxInstalledSkillInstanceDto>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+pub struct NpxTaxonomyCategoryDto {
+    pub id: String,
+    pub label: String,
+    pub count: usize,
+    pub group_id: String,
+    pub group_order: i32,
+    pub category_order: i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+pub struct NpxTaxonomyGroupDto {
+    pub id: String,
+    pub label: String,
+    pub order: i32,
+    pub categories: Vec<NpxTaxonomyCategoryDto>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -465,7 +488,7 @@ pub struct NpxInstalledActionsDto {
     pub batch_updatable: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct NpxInstalledSkillInstanceDto {
     pub id: String,
     pub name: String,
@@ -501,7 +524,7 @@ pub struct NpxSkillsJobStartDto {
     pub status: String,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct ResolvedInstallTargetDto {
     pub scope: InstallTargetScopeDto,
     pub project_path: Option<String>,

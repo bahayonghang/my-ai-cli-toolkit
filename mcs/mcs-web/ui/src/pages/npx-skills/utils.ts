@@ -1,5 +1,18 @@
-import type { NpxSkillsCatalogItemDto, NpxSkillsCliMode, NpxSkillsOperation } from "@/types";
-import type { TaxonomyGroupSummary, TranslationFn } from "./types";
+import type {
+  NpxInstalledSkillInstanceDto,
+  NpxSkillsCatalogItemDto,
+  NpxSkillsCliMode,
+  NpxSkillsOperation,
+} from "@/types";
+import type {
+  InstalledSourceFilter,
+  InstalledTrackingFilter,
+  InstalledUpdateFilter,
+  TaxonomyCategorySummary,
+  TaxonomyGroupSummary,
+  TranslationFn,
+  ViewMode,
+} from "./types";
 import { DEFAULT_AGENTS, DEFAULT_CLI_MODE, LS_KEY_AGENTS, LS_KEY_CLI_MODE } from "./types";
 
 export function loadAgents(): string[] {
@@ -79,36 +92,31 @@ export function buildTaxonomyGroups<
     category_order: number;
   },
 >(items: T[]): TaxonomyGroupSummary[] {
-  const groups = new Map<string, TaxonomyGroupSummary>();
+  const groups = new Map<
+    string,
+    {
+      label: string;
+      order: number;
+      categories: Map<string, TaxonomyCategorySummary>;
+    }
+  >();
 
   for (const item of items) {
-    const existingGroup = groups.get(item.group_id);
-    if (!existingGroup) {
-      groups.set(item.group_id, {
-        id: item.group_id,
+    let group = groups.get(item.group_id);
+    if (!group) {
+      group = {
         label: item.group_label,
         order: item.group_order,
-        categories: [
-          {
-            id: item.category_id,
-            label: item.category_label,
-            count: 1,
-            groupId: item.group_id,
-            groupOrder: item.group_order,
-            categoryOrder: item.category_order,
-          },
-        ],
-      });
-      continue;
+        categories: new Map(),
+      };
+      groups.set(item.group_id, group);
     }
 
-    const existingCategory = existingGroup.categories.find(
-      (category) => category.id === item.category_id
-    );
+    const existingCategory = group.categories.get(item.category_id);
     if (existingCategory) {
       existingCategory.count += 1;
     } else {
-      existingGroup.categories.push({
+      group.categories.set(item.category_id, {
         id: item.category_id,
         label: item.category_label,
         count: 1,
@@ -119,13 +127,110 @@ export function buildTaxonomyGroups<
     }
   }
 
-  return Array.from(groups.values())
-    .map((group) => ({
-      ...group,
-      categories: [...group.categories].sort(
+  return Array.from(groups.entries())
+    .map(([groupId, group]) => ({
+      id: groupId,
+      label: group.label,
+      order: group.order,
+      categories: Array.from(group.categories.values()).sort(
         (left, right) =>
           left.categoryOrder - right.categoryOrder || left.label.localeCompare(right.label)
       ),
     }))
+    .map((group) => ({
+      ...group,
+    }))
     .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label));
+}
+
+function normalizeSearchQuery(value: string) {
+  return value.trim().toLowerCase();
+}
+
+export function shouldLoadCatalog(view: ViewMode, loaded: boolean, stale: boolean) {
+  return view === "find" && (!loaded || stale);
+}
+
+export function shouldLoadInstalled(view: ViewMode, loaded: boolean, stale: boolean) {
+  return (view === "installed" || view === "maintenance") && (!loaded || stale);
+}
+
+export function filterCatalogItems(
+  items: NpxSkillsCatalogItemDto[],
+  options: {
+    search: string;
+    categoryId: string | null;
+    installedOnly: boolean;
+  }
+) {
+  const search = normalizeSearchQuery(options.search);
+  return items.filter((item) => {
+    if (options.categoryId && item.category_id !== options.categoryId) {
+      return false;
+    }
+    if (options.installedOnly && item.installed_state !== "installed") {
+      return false;
+    }
+    if (!search) {
+      return true;
+    }
+    return (
+      item.name.toLowerCase().includes(search) ||
+      item.package_ref.toLowerCase().includes(search) ||
+      item.description?.toLowerCase().includes(search) === true ||
+      item.group_label.toLowerCase().includes(search) ||
+      item.category_label.toLowerCase().includes(search) ||
+      item.usage?.toLowerCase().includes(search) === true ||
+      item.tags.some((tag) => tag.toLowerCase().includes(search))
+    );
+  });
+}
+
+export function filterInstalledItems(
+  items: NpxInstalledSkillInstanceDto[],
+  options: {
+    search: string;
+    categoryId: string | null;
+    sourceFilter: InstalledSourceFilter;
+    trackingFilter: InstalledTrackingFilter;
+    updateFilter: InstalledUpdateFilter;
+  }
+) {
+  const search = normalizeSearchQuery(options.search);
+  return items.filter((item) => {
+    if (options.categoryId && item.category_id !== options.categoryId) {
+      return false;
+    }
+    if (options.sourceFilter === "curated" && item.source.kind !== "curated") {
+      return false;
+    }
+    if (options.sourceFilter === "manual" && item.source.kind === "curated") {
+      return false;
+    }
+    if (options.trackingFilter !== "all" && item.tracking.kind !== options.trackingFilter) {
+      return false;
+    }
+    if (options.updateFilter !== "all" && item.update.kind !== options.updateFilter) {
+      return false;
+    }
+    if (!search) {
+      return true;
+    }
+    return (
+      item.name.toLowerCase().includes(search) ||
+      item.source.ref.toLowerCase().includes(search) ||
+      item.description?.toLowerCase().includes(search) === true ||
+      item.group_label.toLowerCase().includes(search) ||
+      item.category_label.toLowerCase().includes(search) ||
+      item.source.display.toLowerCase().includes(search) ||
+      item.tags.some((tag) => tag.toLowerCase().includes(search))
+    );
+  });
+}
+
+export function paginateItems<T>(items: T[], page: number, pageSize: number) {
+  const safePage = Math.max(1, page);
+  const safePageSize = Math.max(1, pageSize);
+  const start = (safePage - 1) * safePageSize;
+  return items.slice(start, start + safePageSize);
 }

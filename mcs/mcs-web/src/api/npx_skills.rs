@@ -19,17 +19,19 @@ use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_pla
 use crate::api::error::AppError;
 use crate::dto::{
     ApiResponse, InstallTargetDto, InstallTargetQuery, InstallTargetScopeDto,
-    NpxCatalogInstalledStateDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto,
-    NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest, NpxSkillsInstalledInventoryDto,
-    NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest, NpxSkillsOperation,
-    NpxSkillsRemoveJobRequest, ResolvedInstallTargetDto,
+    NpxCatalogInstalledStateDto, NpxInstalledSkillInstanceDto, NpxSkillsCatalogItemDto,
+    NpxSkillsCliConfigDto, NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest,
+    NpxSkillsInstalledInventoryDto, NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest,
+    NpxSkillsOperation, NpxSkillsRemoveJobRequest, ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{
     build_check_args, build_install_args, build_remove_args, build_update_args,
     execute_skills_command,
 };
 use crate::services::npx_skills_inventory::{
-    apply_catalog_install_state, clear_check_cache, resolve_inventory, write_check_cache,
+    apply_catalog_install_state_with_lookup, clear_check_cache, clear_persisted_list_cache,
+    invalidate_inventory_cache, resolve_catalog_install_state, resolve_inventory,
+    write_check_cache,
 };
 use crate::state::AppState;
 
@@ -38,6 +40,8 @@ const NPX_SKILLS_MAX_CONCURRENCY: usize = 3;
 const NPX_SKILLS_OUTPUT_MAX_BYTES: usize = 8 * 1024;
 const NPX_SKILLS_JOB_RETENTION_SECS: u64 = 30 * 60;
 const NPX_SKILLS_JOB_HISTORY_MAX_EVENTS: usize = 2_048;
+const NPX_SKILLS_DEFAULT_PAGE_SIZE: usize = 50;
+const NPX_SKILLS_MAX_PAGE_SIZE: usize = 100;
 
 type NpxSkillsJobMap = HashMap<String, Arc<RwLock<NpxSkillsJob>>>;
 
@@ -125,6 +129,11 @@ pub struct NpxSkillsInstalledQuery {
     pub search: Option<String>,
     pub group_id: Option<String>,
     pub category_id: Option<String>,
+    pub source_filter: Option<String>,
+    pub tracking_filter: Option<String>,
+    pub update_filter: Option<String>,
+    pub page: Option<usize>,
+    pub page_size: Option<usize>,
     #[serde(flatten)]
     pub install_target: InstallTargetQuery,
 }
@@ -203,6 +212,7 @@ pub async fn catalog(
     )
     .map_err(AppError::BadRequest)?;
 
+    let resolved_target = resolved_install_target_dto(&resolved);
     let catalog_entries = resolved_catalog_entries(
         state
             .external_skill_catalog()
@@ -210,18 +220,17 @@ pub async fn catalog(
             .map_err(AppError::Internal)?,
     )?;
     let project_root = state.project_root().await;
-    let inventory = resolve_inventory(
+    let installed_ids = resolve_catalog_install_state(
         &project_root,
         &install_target,
-        resolved_install_target_dto(&resolved),
-        &catalog_entries,
+        &resolved_target,
         NpxSkillsCliConfigDto::default().cli_mode,
     )
     .await?;
     let search = query.search.as_ref().map(|value| value.to_lowercase());
 
     let mut items: Vec<NpxSkillsCatalogItemDto> =
-        apply_catalog_install_state(catalog_entries, &inventory)
+        apply_catalog_install_state_with_lookup(catalog_entries, &installed_ids)
             .into_iter()
             .filter_map(|entry| {
                 if let Some(ref search) = search
@@ -272,6 +281,7 @@ pub async fn installed(
     )
     .map_err(AppError::BadRequest)?;
 
+    let resolved_target = resolved_install_target_dto(&resolved);
     let project_root = state.project_root().await;
     let catalog_entries = resolved_catalog_entries(
         state
@@ -282,12 +292,40 @@ pub async fn installed(
     let inventory = resolve_inventory(
         &project_root,
         &install_target,
-        resolved_install_target_dto(&resolved),
+        resolved_target,
         &catalog_entries,
         NpxSkillsCliConfigDto::default().cli_mode,
     )
     .await?;
     let search = query.search.as_ref().map(|value| value.to_lowercase());
+    let filtered_total = inventory
+        .items
+        .iter()
+        .filter(|item| {
+            if let Some(ref value) = search
+                && !installed_item_matches(item, value)
+            {
+                return false;
+            }
+            if let Some(ref group_id) = query.group_id
+                && item.group_id != *group_id
+            {
+                return false;
+            }
+            if let Some(ref category_id) = query.category_id
+                && item.category_id != *category_id
+            {
+                return false;
+            }
+            installed_item_matches_source_filter(item, query.source_filter.as_deref())
+                && installed_item_matches_tracking_filter(item, query.tracking_filter.as_deref())
+                && installed_item_matches_update_filter(item, query.update_filter.as_deref())
+        })
+        .count();
+    let page_size = sanitize_page_size(query.page_size);
+    let total_pages = total_pages(filtered_total, page_size);
+    let page = sanitize_page(query.page, total_pages);
+    let start = (page - 1) * page_size;
     let mut items = inventory
         .items
         .into_iter()
@@ -307,8 +345,12 @@ pub async fn installed(
             {
                 return false;
             }
-            true
+            installed_item_matches_source_filter(item, query.source_filter.as_deref())
+                && installed_item_matches_tracking_filter(item, query.tracking_filter.as_deref())
+                && installed_item_matches_update_filter(item, query.update_filter.as_deref())
         })
+        .skip(start)
+        .take(page_size)
         .collect::<Vec<_>>();
     items.sort_by(|left, right| left.name.cmp(&right.name));
 
@@ -316,6 +358,11 @@ pub async fn installed(
         target: inventory.target,
         capabilities: inventory.capabilities,
         summary: inventory.summary,
+        groups: inventory.groups,
+        filtered_total,
+        page,
+        page_size,
+        total_pages,
         items,
     })))
 }
@@ -953,6 +1000,84 @@ fn installed_item_matches(item: &crate::dto::NpxInstalledSkillInstanceDto, searc
             .any(|tag| tag.to_lowercase().contains(search))
 }
 
+fn installed_item_matches_source_filter(
+    item: &NpxInstalledSkillInstanceDto,
+    filter: Option<&str>,
+) -> bool {
+    match filter.unwrap_or("all") {
+        "all" | "" => true,
+        "curated" => matches!(
+            item.source.kind,
+            crate::dto::NpxInstalledSourceKindDto::Curated
+        ),
+        "manual" => !matches!(
+            item.source.kind,
+            crate::dto::NpxInstalledSourceKindDto::Curated
+        ),
+        _ => true,
+    }
+}
+
+fn installed_item_matches_tracking_filter(
+    item: &NpxInstalledSkillInstanceDto,
+    filter: Option<&str>,
+) -> bool {
+    match filter.unwrap_or("all") {
+        "all" | "" => true,
+        "tracked" => matches!(
+            item.tracking.kind,
+            crate::dto::NpxInstalledTrackingKindDto::Tracked
+        ),
+        "untracked" => {
+            matches!(
+                item.tracking.kind,
+                crate::dto::NpxInstalledTrackingKindDto::Untracked
+            )
+        }
+        _ => true,
+    }
+}
+
+fn installed_item_matches_update_filter(
+    item: &NpxInstalledSkillInstanceDto,
+    filter: Option<&str>,
+) -> bool {
+    match filter.unwrap_or("all") {
+        "all" | "" => true,
+        "not_checked" => matches!(
+            item.update.kind,
+            crate::dto::NpxInstalledUpdateKindDto::NotChecked
+        ),
+        "up_to_date" => matches!(
+            item.update.kind,
+            crate::dto::NpxInstalledUpdateKindDto::UpToDate
+        ),
+        "update_available" => matches!(
+            item.update.kind,
+            crate::dto::NpxInstalledUpdateKindDto::UpdateAvailable
+        ),
+        "unsupported" => matches!(
+            item.update.kind,
+            crate::dto::NpxInstalledUpdateKindDto::Unsupported
+        ),
+        _ => true,
+    }
+}
+
+fn sanitize_page_size(page_size: Option<usize>) -> usize {
+    page_size
+        .unwrap_or(NPX_SKILLS_DEFAULT_PAGE_SIZE)
+        .clamp(1, NPX_SKILLS_MAX_PAGE_SIZE)
+}
+
+fn total_pages(filtered_total: usize, page_size: usize) -> usize {
+    std::cmp::max(1, filtered_total.div_ceil(page_size))
+}
+
+fn sanitize_page(page: Option<usize>, total_pages: usize) -> usize {
+    page.unwrap_or(1).clamp(1, total_pages)
+}
+
 fn normalize_install_items(
     items: Vec<NpxSkillsInstallItemRequest>,
 ) -> Result<Vec<NpxSkillsInstallItemRequest>, AppError> {
@@ -1027,7 +1152,14 @@ async fn apply_state_update(
 ) -> Result<(), AppError> {
     match state_update {
         StateUpdate::ClearCheckCache => {
-            clear_check_cache(&target_ctx.project_root, &target_ctx.skills_path)
+            clear_check_cache(&target_ctx.project_root, &target_ctx.skills_path)?;
+            clear_persisted_list_cache(
+                &target_ctx.project_root,
+                &target_ctx.skills_path,
+                target_ctx.install_target_scope,
+            );
+            invalidate_inventory_cache(&target_ctx.skills_path, target_ctx.install_target_scope);
+            Ok(())
         }
         StateUpdate::WriteCheckCache => {
             let inventory = resolve_inventory(
@@ -1051,7 +1183,9 @@ async fn apply_state_update(
                 &target_ctx.skills_path,
                 &inventory,
                 output,
-            )
+            )?;
+            invalidate_inventory_cache(&target_ctx.skills_path, target_ctx.install_target_scope);
+            Ok(())
         }
     }
 }
@@ -1218,5 +1352,78 @@ mod tests {
         assert!(installed_item_matches(&item, "engineering"));
         assert!(installed_item_matches(&item, "tools"));
         assert!(installed_item_matches(&item, "vercel-labs/skills"));
+    }
+
+    #[test]
+    fn installed_filter_helpers_match_expected_states() {
+        let item = crate::dto::NpxInstalledSkillInstanceDto {
+            id: "local-tool".into(),
+            name: "local-tool".into(),
+            scope: InstallTargetScopeDto::Global,
+            agents: vec![],
+            group_id: "manual".into(),
+            group_label: "Manual".into(),
+            group_order: 1,
+            category_id: "manual_local".into(),
+            category_label: "Local".into(),
+            category_order: 1,
+            tags: vec![],
+            description: None,
+            source: crate::dto::NpxInstalledSourceDto {
+                kind: crate::dto::NpxInstalledSourceKindDto::ManualLocal,
+                r#ref: "./skills/local-tool".into(),
+                display: "./skills/local-tool".into(),
+            },
+            catalog_match: None,
+            tracking: crate::dto::NpxInstalledTrackingDto {
+                kind: crate::dto::NpxInstalledTrackingKindDto::Untracked,
+                source_type: None,
+                installed_at: None,
+                updated_at: None,
+                reason: None,
+            },
+            update: crate::dto::NpxInstalledUpdateDto {
+                kind: crate::dto::NpxInstalledUpdateKindDto::Unsupported,
+                last_checked_at_ms: None,
+                reason: Some("local".into()),
+            },
+            actions: crate::dto::NpxInstalledActionsDto {
+                removable: true,
+                reinstallable: false,
+                batch_updatable: false,
+            },
+        };
+
+        assert!(installed_item_matches_source_filter(&item, Some("manual")));
+        assert!(!installed_item_matches_source_filter(
+            &item,
+            Some("curated")
+        ));
+        assert!(installed_item_matches_tracking_filter(
+            &item,
+            Some("untracked")
+        ));
+        assert!(!installed_item_matches_tracking_filter(
+            &item,
+            Some("tracked")
+        ));
+        assert!(installed_item_matches_update_filter(
+            &item,
+            Some("unsupported")
+        ));
+        assert!(!installed_item_matches_update_filter(
+            &item,
+            Some("up_to_date")
+        ));
+    }
+
+    #[test]
+    fn pagination_helpers_clamp_values() {
+        assert_eq!(sanitize_page_size(None), NPX_SKILLS_DEFAULT_PAGE_SIZE);
+        assert_eq!(sanitize_page_size(Some(999)), NPX_SKILLS_MAX_PAGE_SIZE);
+        assert_eq!(total_pages(0, 50), 1);
+        assert_eq!(total_pages(101, 50), 3);
+        assert_eq!(sanitize_page(Some(9), 3), 3);
+        assert_eq!(sanitize_page(Some(0), 3), 1);
     }
 }

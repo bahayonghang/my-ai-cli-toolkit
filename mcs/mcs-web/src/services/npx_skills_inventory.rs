@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
@@ -15,12 +16,16 @@ use crate::dto::{
     NpxInstalledSourceKindDto, NpxInstalledTrackingDto, NpxInstalledTrackingKindDto,
     NpxInstalledUpdateDto, NpxInstalledUpdateKindDto, NpxSkillsCapabilitiesDto,
     NpxSkillsCapabilityDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
-    NpxSkillsInstalledInventoryDto, NpxSkillsInstalledSummaryDto, ResolvedInstallTargetDto,
+    NpxSkillsInstalledInventoryDto, NpxSkillsInstalledSummaryDto, NpxTaxonomyCategoryDto,
+    NpxTaxonomyGroupDto, ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{build_list_args, execute_skills_command};
 
 const CHECK_CACHE_VERSION: u32 = 1;
 const CHECK_CACHE_DIR: &str = "check-cache";
+const INVENTORY_CACHE_TTL_MS: u64 = 60_000;
+const LIST_CACHE_VERSION: u32 = 1;
+const LIST_CACHE_DIR: &str = "list-cache";
 const GLOBAL_LOCK_FILE: &str = ".skill-lock.json";
 const PROJECT_LOCK_FILE: &str = "skills-lock.json";
 const MANUAL_GROUP_ID: &str = "manual";
@@ -33,7 +38,7 @@ const CATEGORY_ORDER_UNKNOWN: i32 = 40;
 const PROJECT_MAINTENANCE_REASON: &str =
     "The current skills CLI only supports check/update from the global lock file.";
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct CliListedSkill {
     name: String,
     path: String,
@@ -108,6 +113,34 @@ struct CheckCacheEntry {
     reason: Option<String>,
 }
 
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+struct ListedSkillsCacheFile {
+    version: u32,
+    cached_at_ms: u64,
+    #[serde(default)]
+    listed_skills: Vec<CliListedSkill>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+struct InventoryCacheKey {
+    normalized_skills_path: String,
+    install_target_scope: InstallTargetScopeDto,
+    cli_mode: NpxSkillsCliMode,
+}
+
+#[derive(Clone, Debug)]
+struct InstalledInventorySourceData {
+    listed_skills: Vec<CliListedSkill>,
+    lock_entries: HashMap<String, LockMetadata>,
+    check_cache: CheckCacheFile,
+}
+
+#[derive(Clone, Debug)]
+struct InventoryCacheEntry {
+    cached_at_ms: u64,
+    data: Arc<InstalledInventorySourceData>,
+}
+
 pub async fn resolve_inventory(
     project_root: &Path,
     install_target: &InstallTargetDto,
@@ -115,20 +148,22 @@ pub async fn resolve_inventory(
     catalog_entries: &[ResolvedExternalSkillEntry],
     cli_mode: NpxSkillsCliMode,
 ) -> Result<NpxSkillsInstalledInventoryDto, AppError> {
-    let listed_skills = list_installed_skills(install_target, cli_mode).await?;
-    let lock_entries = load_lock_entries(install_target);
-    let check_cache = read_check_cache(project_root, Path::new(&resolved_target.skills_path))?;
+    let source_data =
+        resolve_inventory_source_data(project_root, install_target, &resolved_target, cli_mode)
+            .await?;
     let capabilities = build_capabilities(install_target.scope);
     let catalog_by_installed_name = catalog_entries
         .iter()
         .map(|entry| (catalog_installed_name(entry), entry))
         .collect::<HashMap<_, _>>();
 
-    let mut items = listed_skills
-        .into_iter()
+    let mut items = source_data
+        .listed_skills
+        .iter()
+        .cloned()
         .map(|listed| {
-            let lock = lock_entries.get(listed.name.as_str());
-            let cached = check_cache.items.get(listed.name.as_str());
+            let lock = source_data.lock_entries.get(listed.name.as_str());
+            let cached = source_data.check_cache.items.get(listed.name.as_str());
             build_inventory_item(
                 listed,
                 install_target.scope,
@@ -147,34 +182,22 @@ pub async fn resolve_inventory(
             .then_with(|| left.name.cmp(&right.name))
     });
 
-    let summary = NpxSkillsInstalledSummaryDto {
-        total: items.len(),
-        curated: items
-            .iter()
-            .filter(|item| matches!(item.source.kind, NpxInstalledSourceKindDto::Curated))
-            .count(),
-        manual: items
-            .iter()
-            .filter(|item| !matches!(item.source.kind, NpxInstalledSourceKindDto::Curated))
-            .count(),
-        tracked: items
-            .iter()
-            .filter(|item| matches!(item.tracking.kind, NpxInstalledTrackingKindDto::Tracked))
-            .count(),
-        update_available: items
-            .iter()
-            .filter(|item| matches!(item.update.kind, NpxInstalledUpdateKindDto::UpdateAvailable))
-            .count(),
-    };
-
+    let filtered_total = items.len();
+    let page_size = filtered_total.max(1);
     Ok(NpxSkillsInstalledInventoryDto {
         target: resolved_target,
         capabilities,
-        summary,
+        summary: build_summary(&items),
+        groups: build_taxonomy_groups(&items),
+        filtered_total,
+        page: 1,
+        page_size,
+        total_pages: 1,
         items,
     })
 }
 
+#[cfg(test)]
 pub fn apply_catalog_install_state(
     catalog_entries: Vec<ResolvedExternalSkillEntry>,
     inventory: &NpxSkillsInstalledInventoryDto,
@@ -184,7 +207,29 @@ pub fn apply_catalog_install_state(
         .iter()
         .map(|item| (item.name.clone(), item.id.clone()))
         .collect::<HashMap<_, _>>();
+    apply_catalog_install_state_with_lookup(catalog_entries, &installed_ids)
+}
 
+pub async fn resolve_catalog_install_state(
+    project_root: &Path,
+    install_target: &InstallTargetDto,
+    resolved_target: &ResolvedInstallTargetDto,
+    cli_mode: NpxSkillsCliMode,
+) -> Result<HashMap<String, String>, AppError> {
+    let source_data =
+        resolve_inventory_source_data(project_root, install_target, resolved_target, cli_mode)
+            .await?;
+    Ok(source_data
+        .listed_skills
+        .iter()
+        .map(|skill| (skill.name.clone(), skill.name.clone()))
+        .collect())
+}
+
+pub fn apply_catalog_install_state_with_lookup(
+    catalog_entries: Vec<ResolvedExternalSkillEntry>,
+    installed_ids: &HashMap<String, String>,
+) -> Vec<NpxSkillsCatalogItemDto> {
     let mut items = catalog_entries
         .into_iter()
         .map(|entry| {
@@ -222,6 +267,114 @@ pub fn apply_catalog_install_state(
     items
 }
 
+async fn resolve_inventory_source_data(
+    project_root: &Path,
+    install_target: &InstallTargetDto,
+    resolved_target: &ResolvedInstallTargetDto,
+    cli_mode: NpxSkillsCliMode,
+) -> Result<Arc<InstalledInventorySourceData>, AppError> {
+    let now_ms = unix_time_ms();
+    let cache_key = inventory_cache_key(
+        Path::new(&resolved_target.skills_path),
+        install_target.scope,
+        cli_mode,
+    );
+    if let Some(cached) = read_inventory_cache(&cache_key, now_ms, INVENTORY_CACHE_TTL_MS) {
+        return Ok(cached);
+    }
+
+    let listed_skills = if let Some(cached) =
+        read_persisted_list_cache(project_root, &cache_key, now_ms, INVENTORY_CACHE_TTL_MS)
+    {
+        cached
+    } else {
+        let listed = list_installed_skills(install_target, cli_mode).await?;
+        write_persisted_list_cache(project_root, &cache_key, &listed, now_ms);
+        listed
+    };
+    let data = Arc::new(InstalledInventorySourceData {
+        listed_skills,
+        lock_entries: load_lock_entries(install_target),
+        check_cache: read_check_cache(project_root, Path::new(&resolved_target.skills_path))?,
+    });
+    write_inventory_cache(cache_key, Arc::clone(&data), now_ms);
+    Ok(data)
+}
+
+fn build_summary(items: &[NpxInstalledSkillInstanceDto]) -> NpxSkillsInstalledSummaryDto {
+    NpxSkillsInstalledSummaryDto {
+        total: items.len(),
+        curated: items
+            .iter()
+            .filter(|item| matches!(item.source.kind, NpxInstalledSourceKindDto::Curated))
+            .count(),
+        manual: items
+            .iter()
+            .filter(|item| !matches!(item.source.kind, NpxInstalledSourceKindDto::Curated))
+            .count(),
+        tracked: items
+            .iter()
+            .filter(|item| matches!(item.tracking.kind, NpxInstalledTrackingKindDto::Tracked))
+            .count(),
+        update_available: items
+            .iter()
+            .filter(|item| matches!(item.update.kind, NpxInstalledUpdateKindDto::UpdateAvailable))
+            .count(),
+    }
+}
+
+fn build_taxonomy_groups(items: &[NpxInstalledSkillInstanceDto]) -> Vec<NpxTaxonomyGroupDto> {
+    let mut groups =
+        HashMap::<String, (String, i32, HashMap<String, NpxTaxonomyCategoryDto>)>::new();
+    for item in items {
+        let group = groups.entry(item.group_id.clone()).or_insert_with(|| {
+            (
+                item.group_label.clone(),
+                item.group_order,
+                HashMap::<String, NpxTaxonomyCategoryDto>::new(),
+            )
+        });
+
+        let category =
+            group
+                .2
+                .entry(item.category_id.clone())
+                .or_insert_with(|| NpxTaxonomyCategoryDto {
+                    id: item.category_id.clone(),
+                    label: item.category_label.clone(),
+                    count: 0,
+                    group_id: item.group_id.clone(),
+                    group_order: item.group_order,
+                    category_order: item.category_order,
+                });
+        category.count += 1;
+    }
+
+    let mut resolved = groups
+        .into_iter()
+        .map(|(id, (label, order, categories))| {
+            let mut categories = categories.into_values().collect::<Vec<_>>();
+            categories.sort_by(|left, right| {
+                left.category_order
+                    .cmp(&right.category_order)
+                    .then_with(|| left.label.cmp(&right.label))
+            });
+            NpxTaxonomyGroupDto {
+                id,
+                label,
+                order,
+                categories,
+            }
+        })
+        .collect::<Vec<_>>();
+    resolved.sort_by(|left, right| {
+        left.order
+            .cmp(&right.order)
+            .then_with(|| left.label.cmp(&right.label))
+    });
+    resolved
+}
+
 pub fn clear_check_cache(project_root: &Path, skills_path: &Path) -> Result<(), AppError> {
     let path = check_cache_path(project_root, skills_path);
     if !path.exists() {
@@ -234,6 +387,31 @@ pub fn clear_check_cache(project_root: &Path, skills_path: &Path) -> Result<(), 
             path.display()
         ))
     })
+}
+
+pub fn invalidate_inventory_cache(skills_path: &Path, install_target_scope: InstallTargetScopeDto) {
+    let normalized_skills_path = normalize_path(skills_path);
+    let mut cache = inventory_cache()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    cache.retain(|key, _| {
+        !(key.normalized_skills_path == normalized_skills_path
+            && key.install_target_scope == install_target_scope)
+    });
+}
+
+pub fn clear_persisted_list_cache(
+    project_root: &Path,
+    skills_path: &Path,
+    install_target_scope: InstallTargetScopeDto,
+) {
+    for cli_mode in [NpxSkillsCliMode::Auto, NpxSkillsCliMode::Npx] {
+        let key = inventory_cache_key(skills_path, install_target_scope, cli_mode);
+        let path = list_cache_path(project_root, &key);
+        if path.exists() {
+            let _ = std::fs::remove_file(path);
+        }
+    }
 }
 
 pub fn write_check_cache(
@@ -724,10 +902,131 @@ fn check_cache_path(project_root: &Path, skills_path: &Path) -> PathBuf {
         .join(format!("{}.json", stable_path_hash(skills_path)))
 }
 
+fn list_cache_path(project_root: &Path, key: &InventoryCacheKey) -> PathBuf {
+    project_root
+        .join(".omx")
+        .join("state")
+        .join("npx-skills")
+        .join(LIST_CACHE_DIR)
+        .join(format!("{}.json", stable_key_hash(key)))
+}
+
+fn inventory_cache() -> &'static Mutex<HashMap<InventoryCacheKey, InventoryCacheEntry>> {
+    static INVENTORY_CACHE: OnceLock<Mutex<HashMap<InventoryCacheKey, InventoryCacheEntry>>> =
+        OnceLock::new();
+    INVENTORY_CACHE.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+fn inventory_cache_key(
+    skills_path: &Path,
+    install_target_scope: InstallTargetScopeDto,
+    cli_mode: NpxSkillsCliMode,
+) -> InventoryCacheKey {
+    InventoryCacheKey {
+        normalized_skills_path: normalize_path(skills_path),
+        install_target_scope,
+        cli_mode,
+    }
+}
+
+fn read_inventory_cache(
+    key: &InventoryCacheKey,
+    now_ms: u64,
+    ttl_ms: u64,
+) -> Option<Arc<InstalledInventorySourceData>> {
+    let mut cache = inventory_cache()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    let (cached_at_ms, data) = cache
+        .get(key)
+        .map(|entry| (entry.cached_at_ms, Arc::clone(&entry.data)))?;
+    if now_ms.saturating_sub(cached_at_ms) > ttl_ms {
+        cache.remove(key);
+        return None;
+    }
+    Some(data)
+}
+
+fn write_inventory_cache(
+    key: InventoryCacheKey,
+    data: Arc<InstalledInventorySourceData>,
+    now_ms: u64,
+) {
+    let mut cache = inventory_cache()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    cache.insert(
+        key,
+        InventoryCacheEntry {
+            cached_at_ms: now_ms,
+            data,
+        },
+    );
+}
+
+fn read_persisted_list_cache(
+    project_root: &Path,
+    key: &InventoryCacheKey,
+    now_ms: u64,
+    ttl_ms: u64,
+) -> Option<Vec<CliListedSkill>> {
+    let path = list_cache_path(project_root, key);
+    if !path.exists() {
+        return None;
+    }
+
+    let cache: ListedSkillsCacheFile = match read_json_file(&path) {
+        Ok(cache) => cache,
+        Err(_) => return None,
+    };
+    if cache.version != LIST_CACHE_VERSION {
+        return None;
+    }
+    if now_ms.saturating_sub(cache.cached_at_ms) > ttl_ms {
+        let _ = std::fs::remove_file(path);
+        return None;
+    }
+    Some(cache.listed_skills)
+}
+
+fn write_persisted_list_cache(
+    project_root: &Path,
+    key: &InventoryCacheKey,
+    listed_skills: &[CliListedSkill],
+    cached_at_ms: u64,
+) {
+    let path = list_cache_path(project_root, key);
+    if let Some(parent) = path.parent()
+        && std::fs::create_dir_all(parent).is_err()
+    {
+        return;
+    }
+
+    let cache = ListedSkillsCacheFile {
+        version: LIST_CACHE_VERSION,
+        cached_at_ms,
+        listed_skills: listed_skills.to_vec(),
+    };
+    let Ok(content) = serde_json::to_string(&cache) else {
+        return;
+    };
+    let _ = std::fs::write(path, content);
+}
+
 fn stable_path_hash(path: &Path) -> String {
-    let normalized = normalize_path(path);
+    stable_hash(&normalize_path(path))
+}
+
+fn stable_key_hash(key: &InventoryCacheKey) -> String {
+    stable_hash(&format!(
+        "{}|{:?}|{:?}",
+        key.normalized_skills_path, key.install_target_scope, key.cli_mode
+    ))
+}
+
+fn stable_hash(input: &str) -> String {
     let mut hash: u64 = 0xcbf29ce484222325;
-    for byte in normalized.as_bytes() {
+    for byte in input.as_bytes() {
         hash ^= u64::from(*byte);
         hash = hash.wrapping_mul(0x100000001b3);
     }
@@ -817,6 +1116,13 @@ mod tests {
     use super::*;
     use std::fs;
 
+    fn clear_inventory_cache_for_tests() {
+        inventory_cache()
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+    }
+
     fn temp_dir(label: &str) -> PathBuf {
         let dir = std::env::temp_dir().join(format!(
             "mcs_npx_inventory_{}_{}_{}",
@@ -872,8 +1178,44 @@ mod tests {
                 tracked: 0,
                 update_available: 0,
             },
+            groups: vec![NpxTaxonomyGroupDto {
+                id: "engineering".into(),
+                label: "Engineering".into(),
+                order: 10,
+                categories: vec![NpxTaxonomyCategoryDto {
+                    id: "tools".into(),
+                    label: "Tools".into(),
+                    count: 1,
+                    group_id: "engineering".into(),
+                    group_order: 10,
+                    category_order: 20,
+                }],
+            }],
+            filtered_total: 1,
+            page: 1,
+            page_size: 1,
+            total_pages: 1,
             items: vec![item],
         }
+    }
+
+    fn source_data_with_names(names: &[&str]) -> Arc<InstalledInventorySourceData> {
+        Arc::new(InstalledInventorySourceData {
+            listed_skills: names
+                .iter()
+                .map(|name| CliListedSkill {
+                    name: (*name).into(),
+                    path: format!("/tmp/{name}"),
+                    _scope: "global".into(),
+                    agents: vec!["codex".into()],
+                })
+                .collect(),
+            lock_entries: HashMap::new(),
+            check_cache: CheckCacheFile {
+                version: CHECK_CACHE_VERSION,
+                items: BTreeMap::new(),
+            },
+        })
     }
 
     #[test]
@@ -926,6 +1268,93 @@ mod tests {
             update.kind,
             NpxInstalledUpdateKindDto::Unsupported
         ));
+    }
+
+    #[test]
+    fn build_taxonomy_groups_aggregates_counts_by_group_and_category() {
+        let first = inventory_with_item(
+            NpxInstalledSkillInstanceDto {
+                id: "alpha".into(),
+                name: "alpha".into(),
+                scope: InstallTargetScopeDto::Global,
+                agents: vec![],
+                group_id: "engineering".into(),
+                group_label: "Engineering".into(),
+                group_order: 10,
+                category_id: "tools".into(),
+                category_label: "Tools".into(),
+                category_order: 20,
+                tags: vec![],
+                description: None,
+                source: NpxInstalledSourceDto {
+                    kind: NpxInstalledSourceKindDto::Curated,
+                    r#ref: "vercel-labs/skills".into(),
+                    display: "vercel-labs/skills".into(),
+                },
+                catalog_match: None,
+                tracking: NpxInstalledTrackingDto {
+                    kind: NpxInstalledTrackingKindDto::Tracked,
+                    source_type: None,
+                    installed_at: None,
+                    updated_at: None,
+                    reason: None,
+                },
+                update: NpxInstalledUpdateDto {
+                    kind: NpxInstalledUpdateKindDto::NotChecked,
+                    last_checked_at_ms: None,
+                    reason: None,
+                },
+                actions: NpxInstalledActionsDto {
+                    removable: true,
+                    reinstallable: true,
+                    batch_updatable: true,
+                },
+            },
+            "/tmp/skills",
+        );
+        let mut items = first.items;
+        items.push(NpxInstalledSkillInstanceDto {
+            id: "beta".into(),
+            name: "beta".into(),
+            scope: InstallTargetScopeDto::Global,
+            agents: vec![],
+            group_id: "engineering".into(),
+            group_label: "Engineering".into(),
+            group_order: 10,
+            category_id: "tools".into(),
+            category_label: "Tools".into(),
+            category_order: 20,
+            tags: vec![],
+            description: None,
+            source: NpxInstalledSourceDto {
+                kind: NpxInstalledSourceKindDto::Curated,
+                r#ref: "vercel-labs/skills".into(),
+                display: "vercel-labs/skills".into(),
+            },
+            catalog_match: None,
+            tracking: NpxInstalledTrackingDto {
+                kind: NpxInstalledTrackingKindDto::Tracked,
+                source_type: None,
+                installed_at: None,
+                updated_at: None,
+                reason: None,
+            },
+            update: NpxInstalledUpdateDto {
+                kind: NpxInstalledUpdateKindDto::NotChecked,
+                last_checked_at_ms: None,
+                reason: None,
+            },
+            actions: NpxInstalledActionsDto {
+                removable: true,
+                reinstallable: true,
+                batch_updatable: true,
+            },
+        });
+
+        let groups = build_taxonomy_groups(&items);
+        assert_eq!(groups.len(), 1);
+        assert_eq!(groups[0].categories.len(), 1);
+        assert_eq!(groups[0].categories[0].count, 2);
     }
 
     #[test]
@@ -988,6 +1417,11 @@ mod tests {
                 tracked: 2,
                 update_available: 1,
             },
+            groups: vec![],
+            filtered_total: 2,
+            page: 1,
+            page_size: 2,
+            total_pages: 1,
             items: vec![
                 NpxInstalledSkillInstanceDto {
                     id: "find-skills".into(),
@@ -1090,6 +1524,143 @@ mod tests {
                 .get("local-only")
                 .map(|entry| entry.status.as_str()),
             Some("unsupported")
+        );
+    }
+
+    #[test]
+    fn inventory_cache_returns_cached_snapshot_for_matching_key() {
+        clear_inventory_cache_for_tests();
+        let skills_path = PathBuf::from("/tmp/skills");
+        let key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+        let data = source_data_with_names(&["find-skills"]);
+
+        write_inventory_cache(key.clone(), Arc::clone(&data), 1_000);
+
+        let cached = read_inventory_cache(&key, 5_000, INVENTORY_CACHE_TTL_MS)
+            .expect("cached inventory should exist");
+        assert_eq!(cached.listed_skills.len(), 1);
+        assert_eq!(
+            cached.listed_skills.first().map(|item| item.name.clone()),
+            Some("find-skills".into())
+        );
+    }
+
+    #[test]
+    fn inventory_cache_expires_after_ttl() {
+        clear_inventory_cache_for_tests();
+        let skills_path = PathBuf::from("/tmp/skills-expiry");
+        let key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+
+        write_inventory_cache(key.clone(), source_data_with_names(&["expiring"]), 1_000);
+
+        assert!(read_inventory_cache(&key, 61_500, INVENTORY_CACHE_TTL_MS).is_none());
+    }
+
+    #[test]
+    fn inventory_cache_invalidation_clears_matching_scope_and_path() {
+        clear_inventory_cache_for_tests();
+        let skills_path = PathBuf::from("/tmp/skills-invalidate");
+        let global_key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+        let project_key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Project,
+            NpxSkillsCliMode::Auto,
+        );
+        let data = source_data_with_names(&["keep-me"]);
+
+        write_inventory_cache(global_key.clone(), Arc::clone(&data), 1_000);
+        write_inventory_cache(project_key.clone(), data, 1_000);
+
+        invalidate_inventory_cache(&skills_path, InstallTargetScopeDto::Global);
+
+        assert!(read_inventory_cache(&global_key, 2_000, INVENTORY_CACHE_TTL_MS).is_none());
+        assert!(read_inventory_cache(&project_key, 2_000, INVENTORY_CACHE_TTL_MS).is_some());
+    }
+
+    #[test]
+    fn persisted_list_cache_roundtrips_within_ttl() {
+        let project_root = temp_dir("persisted-list-cache");
+        let skills_path = project_root.join("skills");
+        fs::create_dir_all(&skills_path).expect("skills dir");
+        let key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+        let listed_skills = source_data_with_names(&["find-skills", "review"])
+            .listed_skills
+            .clone();
+
+        write_persisted_list_cache(&project_root, &key, &listed_skills, 1_000);
+
+        let cached = read_persisted_list_cache(&project_root, &key, 5_000, INVENTORY_CACHE_TTL_MS)
+            .expect("persisted list cache should exist");
+        assert_eq!(cached.len(), 2);
+        assert_eq!(cached[0].name, "find-skills");
+        assert_eq!(cached[1].name, "review");
+    }
+
+    #[test]
+    fn persisted_list_cache_expires_after_ttl() {
+        let project_root = temp_dir("persisted-list-expiry");
+        let skills_path = project_root.join("skills");
+        fs::create_dir_all(&skills_path).expect("skills dir");
+        let key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+        let listed_skills = source_data_with_names(&["expiring"]).listed_skills.clone();
+
+        write_persisted_list_cache(&project_root, &key, &listed_skills, 1_000);
+
+        assert!(
+            read_persisted_list_cache(&project_root, &key, 61_500, INVENTORY_CACHE_TTL_MS)
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn clear_persisted_list_cache_removes_matching_scope_files() {
+        let project_root = temp_dir("persisted-list-clear");
+        let skills_path = project_root.join("skills");
+        fs::create_dir_all(&skills_path).expect("skills dir");
+        let global_key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+        let project_key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Project,
+            NpxSkillsCliMode::Auto,
+        );
+        let listed_skills = source_data_with_names(&["keep-me"]).listed_skills.clone();
+
+        write_persisted_list_cache(&project_root, &global_key, &listed_skills, 1_000);
+        write_persisted_list_cache(&project_root, &project_key, &listed_skills, 1_000);
+
+        clear_persisted_list_cache(&project_root, &skills_path, InstallTargetScopeDto::Global);
+
+        assert!(
+            read_persisted_list_cache(&project_root, &global_key, 2_000, INVENTORY_CACHE_TTL_MS)
+                .is_none()
+        );
+        assert!(
+            read_persisted_list_cache(&project_root, &project_key, 2_000, INVENTORY_CACHE_TTL_MS)
+                .is_some()
         );
     }
 

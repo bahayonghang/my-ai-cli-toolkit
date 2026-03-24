@@ -285,6 +285,22 @@ export interface NpxInstalledActionsDto {
   batch_updatable: boolean;
 }
 
+export interface NpxTaxonomyCategoryDto {
+  id: string;
+  label: string;
+  count: number;
+  group_id: string;
+  group_order: number;
+  category_order: number;
+}
+
+export interface NpxTaxonomyGroupDto {
+  id: string;
+  label: string;
+  order: number;
+  categories: NpxTaxonomyCategoryDto[];
+}
+
 export interface NpxInstalledSkillInstanceDto {
   id: string;
   name: string;
@@ -309,6 +325,11 @@ export interface NpxSkillsInstalledInventoryDto {
   target: ResolvedInstallTarget;
   capabilities: NpxSkillsCapabilitiesDto;
   summary: NpxSkillsInstalledSummaryDto;
+  groups: NpxTaxonomyGroupDto[];
+  filtered_total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
   items: NpxInstalledSkillInstanceDto[];
 }
 

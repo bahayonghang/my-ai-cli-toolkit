@@ -160,18 +160,33 @@ describe("api/client install target", () => {
           tracked: 0,
           update_available: 0,
         },
+        groups: [],
+        filtered_total: 0,
+        page: 1,
+        page_size: 50,
+        total_pages: 1,
         items: [],
       })
     );
 
     await getNpxInstalledSkills("claude", {
       search: "find",
+      sourceFilter: "manual",
+      trackingFilter: "tracked",
+      updateFilter: "unsupported",
+      page: 2,
+      pageSize: 20,
       installTarget: { scope: "global" },
     });
 
     const [url] = fetchMock.mock.calls[0];
     expect(String(url)).toContain("/api/platforms/claude/npx-skills/installed?");
     expect(String(url)).toContain("search=find");
+    expect(String(url)).toContain("source_filter=manual");
+    expect(String(url)).toContain("tracking_filter=tracked");
+    expect(String(url)).toContain("update_filter=unsupported");
+    expect(String(url)).toContain("page=2");
+    expect(String(url)).toContain("page_size=20");
     expect(String(url)).toContain("target_scope=global");
   });
 

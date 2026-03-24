@@ -165,6 +165,7 @@ export const enNpxSkillsMessages = {
   "npxSkills.lastCheckedAt": "Last checked: {value}",
   "npxSkills.installedAt": "Installed: {value}",
   "npxSkills.updatedAt": "Updated: {value}",
+  "npxSkills.jobProgressLabel": "Job progress",
 } as const;
 
 export const zhNpxSkillsMessages: Record<
@@ -324,4 +325,5 @@ export const zhNpxSkillsMessages: Record<
   "npxSkills.lastCheckedAt": "最近检查：{value}",
   "npxSkills.installedAt": "安装时间：{value}",
   "npxSkills.updatedAt": "更新时间：{value}",
+  "npxSkills.jobProgressLabel": "任务进度",
 };
