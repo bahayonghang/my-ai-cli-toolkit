@@ -6,7 +6,7 @@
 2. 配置全局记忆与指导文件
 3. 安装 oh-my-claudecode
 4. 安装本仓库中的一方 skills
-5. 按需安装 `external-skills` 中维护的第三方 skills
+5. 按需安装 `community-skills-registry` 中维护的第三方 skills
 6. 在需要时使用本仓库的 MCS、Web 和本地文档
 
 ## 1. 前置要求
@@ -48,11 +48,11 @@ npx zcf
 
 ## 5. 推荐安装路径：直接从 GitHub 安装 skills
 
-这是后续安装“本仓库一方 skills + `external-skills` 第三方 skills”最推荐的路径，不需要先克隆本仓库。
+这是后续安装”本仓库一方 skills + `community-skills-registry` 第三方 skills”最推荐的路径，不需要先克隆本仓库。
 
 ### 直接安装本仓库一方 skills catalog
 
-如果你只想安装本仓库的一方 skills，不需要 external-skills 的交互选择流程：
+如果你只想安装本仓库的一方 skills，不需要 community-skills-registry 的交互选择流程：
 
 ```bash
 npx skills add bahayonghang/my-claude-code-settings/content/skills
@@ -66,7 +66,7 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
-这条命令只覆盖本仓库的一方 skills，不包含 `external-skills` 的第三方 registry 选择流程。
+这条命令只覆盖本仓库的一方 skills，不包含 `community-skills-registry` 的第三方 registry 选择流程。
 
 ## 6. 后续所有 skills 的推荐安装顺序
 
@@ -121,7 +121,7 @@ just web
 
 1. 先完成 Claude Code / OMC / 全局记忆的基础配置
 2. 通过 `npx skills add` 安装一方 skills
-3. 按需从 `external-skills` 中补充第三方 skills
+3. 按需从 `community-skills-registry` 中补充第三方 skills
 4. 只有在需要本地管理能力时再克隆本仓库
 5. 需要统一浏览和管理时，再使用 `just mcs` 或 `just web`
 
@@ -131,5 +131,5 @@ just web
 - 中文说明：`README_CN.md`
 - 安装文档：`docs/guide/installation.md`
 - 中文安装文档：`docs/zh/guide/installation.md`
-- 外部技能说明：`docs/guide/external-skills.md`
-- 中文外部技能说明：`docs/zh/guide/external-skills.md`
+- 外部技能说明：`docs/guide/community-skills-registry.md`
+- 中文外部技能说明：`docs/zh/guide/community-skills-registry.md`

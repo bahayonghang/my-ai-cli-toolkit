@@ -4,14 +4,14 @@
 
 对当前仓库，请改看：
 
-- [外部技能](/zh/guide/external-skills)
+- [外部技能](/zh/guide/community-skills-registry)
 - [技能目录](/zh/skills/)
 - [命令目录](/zh/commands/)
 
 ## 当前模型
 
 - 一方可安装内容位于 `content/skills/`
-- 第三方技能注册表元数据位于 `content/skills/external-skills/`
+- 第三方技能注册表元数据位于 `content/community-skills-registry/`
 - 管理流程通过 MCS TUI 和 MCS Web 暴露
 
 本页仅用于兼容旧书签。

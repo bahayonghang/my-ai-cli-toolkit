@@ -4,14 +4,14 @@ Older docs described a separate plugin-marketplace workflow that is not the prim
 
 For the current repository, use:
 
-- [External Skills](/guide/external-skills)
+- [External Skills](/guide/community-skills-registry)
 - [Skills](/skills/)
 - [Commands](/commands/)
 
 ## Current model
 
 - first-party installable content lives under `content/skills/`
-- third-party skill registry metadata lives in `content/skills/external-skills/`
+- third-party skill registry metadata lives in `content/community-skills-registry/`
 - management flows are surfaced through MCS TUI and MCS Web
 
 Keep this page only as a compatibility pointer for legacy bookmarks.

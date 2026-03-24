@@ -50,7 +50,8 @@ just doc
 ```text
 .
 ├── content/
-│   ├── skills/            # 一方技能目录与 external-skills/ 注册表分片
+│   ├── skills/            # 一方技能目录
+│   ├── community-skills-registry/  # 第三方技能注册表（TOML 元数据）
 │   ├── commands/          # Slash command / workflow 源文件
 │   ├── agents/            # Markdown agent 定义
 │   ├── hooks/             # 运行时 hook 资源
@@ -61,7 +62,7 @@ just doc
 └── justfile               # 常用入口命令
 ```
 
-当前第三方技能注册表位于 `content/skills/external-skills/`。
+当前第三方技能注册表位于 `content/community-skills-registry/`。
 
 ## 技能分类
 

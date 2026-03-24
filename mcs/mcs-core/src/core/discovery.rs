@@ -494,34 +494,6 @@ mod tests {
     }
 
     #[test]
-    fn external_registry_directory_is_not_discovered_as_skill() {
-        let project_root = temp_dir("project_registry_file");
-        let skills_root = project_root.join("content").join("skills");
-        std::fs::create_dir_all(skills_root.join("workflow-skills").join("demo-skill")).unwrap();
-        std::fs::write(
-            skills_root
-                .join("workflow-skills")
-                .join("demo-skill")
-                .join("SKILL.md"),
-            "---\nname: demo-skill\n---\n",
-        )
-        .unwrap();
-        std::fs::create_dir_all(skills_root.join("external-skills").join("categories")).unwrap();
-        std::fs::write(
-            skills_root.join("external-skills").join("index.toml"),
-            "[schema]\nversion = 2\n",
-        )
-        .unwrap();
-
-        let discovered = discover_skill_sources(&project_root);
-
-        assert_eq!(discovered.len(), 1);
-        assert_eq!(discovered[0].name, "demo-skill");
-
-        let _ = std::fs::remove_dir_all(project_root);
-    }
-
-    #[test]
     fn discovers_agents_from_platform_content_tree() {
         let project_root = temp_dir("agents_project");
         let agent_src = project_root

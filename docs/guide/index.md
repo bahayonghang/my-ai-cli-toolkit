@@ -8,7 +8,7 @@ This site documents the current repository shape of [`my-claude-code-settings`](
 - `content/platforms/<platform>/commands/` contains platform-scoped command and workflow sources.
 - `content/platforms/claude/agents/` contains Claude agent definitions grouped into `ccw` and `specialist`.
 - `content/platforms/<platform>/guidance/` contains persistent guidance seeds such as `CLAUDE.md` and `AGENTS.md`.
-- `content/skills/external-skills/` contains the external skill registry metadata used by MCS Web.
+- `content/community-skills-registry/` contains the external skill registry metadata used by MCS Web.
 - `content/hooks/` contains runtime support files.
 - `mcs/` is a Rust workspace with a shared core library, a terminal UI, and a web app.
 
@@ -53,7 +53,7 @@ just web
 - [MCS Architecture](/guide/mcs-architecture): `mcs-core`, `mcs-tui`, `mcs-web`
 - [Commands](/guide/commands): how `content/platforms/*/commands` maps to installed command locations
 - [Runtime Files](/guide/runtime-files): hooks and platform guidance/runtime assets
-- [External Skills](/guide/external-skills): registry format and install flow for third-party skills
+- [External Skills](/guide/community-skills-registry): registry format and install flow for third-party skills
 - [Creating Skills](/guide/creating-skills): adding new `content/skills/<category>/<skill-name>/`
 
 ## Notes on legacy pages

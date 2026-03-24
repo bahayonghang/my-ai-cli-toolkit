@@ -11,7 +11,7 @@ pub const EXTERNAL_SKILLS_KIND_SKILLS_CLI: &str = "skills_cli";
 
 const ALLOWED_INSTALL_KINDS: &[&str] = &[EXTERNAL_SKILLS_KIND_SKILLS_CLI];
 const ALLOWED_INSTALL_PROVIDERS: &[&str] = &["vercel", "playbooks"];
-const EXTERNAL_SKILLS_DIR: &str = "external-skills";
+const EXTERNAL_SKILLS_DIR: &str = "community-skills-registry";
 const EXTERNAL_SKILLS_INDEX_FILE: &str = "index.toml";
 const EXTERNAL_SKILLS_CATEGORY_DIR: &str = "categories";
 const FALLBACK_GROUP_ID: &str = "uncategorized";
@@ -384,7 +384,6 @@ impl ExternalSkillFragmentEntry {
 fn external_skills_registry_dir(project_root: &Path) -> PathBuf {
     project_root
         .join("content")
-        .join("skills")
         .join(EXTERNAL_SKILLS_DIR)
 }
 
@@ -417,7 +416,7 @@ fn normalize_registry_relative_path(path: &str) -> Result<PathBuf, &'static str>
             Component::CurDir => {}
             Component::ParentDir => return Err("path must not contain '..'"),
             Component::RootDir | Component::Prefix(_) => {
-                return Err("path must be relative to content/skills/external-skills/");
+                return Err("path must be relative to content/community-skills-registry/");
             }
         }
     }
@@ -698,7 +697,6 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
     ) -> PathBuf {
         let registry_dir = project_root
             .join("content")
-            .join("skills")
             .join(EXTERNAL_SKILLS_DIR);
         let categories_dir = registry_dir.join(EXTERNAL_SKILLS_CATEGORY_DIR);
         std::fs::create_dir_all(&categories_dir).unwrap();

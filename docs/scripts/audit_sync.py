@@ -10,14 +10,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTENT_SKILLS = REPO_ROOT / "content" / "skills"
 DOCS_SKILLS = REPO_ROOT / "docs" / "skills"
 DOCS_ZH_SKILLS = REPO_ROOT / "docs" / "zh" / "skills"
-SKIP_SKILL_DIRS = {"external-skills"}
 
 
 def skill_categories() -> list[str]:
     return sorted(
         entry.name
         for entry in CONTENT_SKILLS.iterdir()
-        if entry.is_dir() and not entry.name.startswith(".") and entry.name not in SKIP_SKILL_DIRS
+        if entry.is_dir() and not entry.name.startswith(".")
     )
 
 
@@ -76,8 +75,8 @@ def stale_reference_checks() -> list[str]:
         REPO_ROOT / "docs" / "zh" / "guide" / "mcs-architecture.md",
         REPO_ROOT / "docs" / "guide" / "runtime-files.md",
         REPO_ROOT / "docs" / "zh" / "guide" / "runtime-files.md",
-        REPO_ROOT / "docs" / "guide" / "external-skills.md",
-        REPO_ROOT / "docs" / "zh" / "guide" / "external-skills.md",
+        REPO_ROOT / "docs" / "guide" / "community-skills-registry.md",
+        REPO_ROOT / "docs" / "zh" / "guide" / "community-skills-registry.md",
         REPO_ROOT / "docs" / "guide" / "creating-skills.md",
         REPO_ROOT / "docs" / "zh" / "guide" / "creating-skills.md",
         REPO_ROOT / "docs" / "commands" / "index.md",
@@ -94,7 +93,7 @@ def stale_reference_checks() -> list[str]:
         REPO_ROOT / "content" / "skills" / "CLAUDE.md",
         REPO_ROOT / "content" / "agents" / "CLAUDE.md",
     ]
-    registry_dir = REPO_ROOT / "content" / "skills" / "external-skills"
+    registry_dir = REPO_ROOT / "content" / "community-skills-registry"
     if registry_dir.exists():
         files.extend(sorted(registry_dir.rglob("*.toml")))
 

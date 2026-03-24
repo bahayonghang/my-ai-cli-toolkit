@@ -43,7 +43,7 @@ export default defineConfig({
               items: [
                 { text: 'Commands', link: '/guide/commands' },
                 { text: 'Runtime Files', link: '/guide/runtime-files' },
-                { text: 'External Skills', link: '/guide/external-skills' },
+                { text: 'External Skills', link: '/guide/community-skills-registry' },
               ],
             },
             {
@@ -136,7 +136,7 @@ export default defineConfig({
               items: [
                 { text: '命令系统', link: '/zh/guide/commands' },
                 { text: '运行时文件', link: '/zh/guide/runtime-files' },
-                { text: '外部技能', link: '/zh/guide/external-skills' },
+                { text: '外部技能', link: '/zh/guide/community-skills-registry' },
               ],
             },
             {

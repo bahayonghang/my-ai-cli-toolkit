@@ -30,5 +30,5 @@ features:
     details: Skill pages focus on the installable items under `content/skills` rather than older template-only or drifted documentation.
   - icon: 🔌
     title: Runtime + External Content
-    details: The guide also covers hooks, memory/runtime files, and the external-skills registry file used alongside the main catalog.
+    details: The guide also covers hooks, memory/runtime files, and the community-skills-registry used alongside the main catalog.
 ---

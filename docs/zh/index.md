@@ -30,5 +30,5 @@ features:
     details: 技能页只围绕当前可安装的 `content/skills` 条目，不再把旧模板页当作真实目录展示。
   - icon: 🔌
     title: Runtime 与外部内容
-    details: 除主技能库外，还覆盖 hooks、memory/runtime 文件以及 external-skills 注册表文件。
+    details: 除主技能库外，还覆盖 hooks、memory/runtime 文件以及 community-skills-registry 注册表。
 ---

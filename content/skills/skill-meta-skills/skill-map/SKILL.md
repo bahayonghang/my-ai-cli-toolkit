@@ -13,7 +13,7 @@ category: skill-management
 只面向安装后的技能目录：
 - 扫描目标：`~/.claude/skills/*/SKILL.md`
 - 不扫描仓库源码目录（如 `content/skills/`）
-- 不把 registry 目录（如 `external-skills/`）当作 installable skill
+- 不把 registry 目录（如 `content/community-skills-registry/`）当作 installable skill
 
 ## 执行
 

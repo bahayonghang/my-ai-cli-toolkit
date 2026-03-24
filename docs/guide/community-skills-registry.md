@@ -2,15 +2,15 @@
 
 ## Overview
 
-Third-party skills are described by the registry directory `content/skills/external-skills/`.
+Third-party skills are described by the registry directory `content/community-skills-registry/`.
 
-This registry lives alongside the first-party catalog under `content/skills/`, but it is not itself an installable skill directory.
+This registry lives as a sibling of the first-party catalog `content/skills/`, and it is not itself an installable skill directory.
 
 The current model is:
 
 - first-party skills: `content/skills/<category>/<skill-name>/`
-- third-party registry index: `content/skills/external-skills/index.toml`
-- third-party category fragments: `content/skills/external-skills/categories/<category-id>.toml`
+- third-party registry index: `content/community-skills-registry/index.toml`
+- third-party category fragments: `content/community-skills-registry/categories/<category-id>.toml`
 - web management surface: MCS Web and `npx skills`
 
 ## Supported install types
@@ -27,7 +27,7 @@ MCS consumes this registry through `mcs-core` and exposes external-skill functio
 That means:
 
 - first-party catalog lives in `content/skills/`
-- third-party registry also lives under `content/skills/`
+- third-party registry lives at `content/community-skills-registry/`
 - docs should still describe first-party skill directories and third-party registry data separately
 
 ## When to use it

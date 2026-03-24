@@ -50,7 +50,8 @@ just doc
 ```text
 .
 ├── content/
-│   ├── skills/            # First-party skill catalog + external-skills/ registry fragments
+│   ├── skills/            # First-party skill catalog
+│   ├── community-skills-registry/  # Third-party skill registry (TOML metadata)
 │   ├── commands/          # Slash commands and workflow sources
 │   ├── agents/            # Markdown agent definitions
 │   ├── hooks/             # Runtime hook assets
@@ -61,7 +62,7 @@ just doc
 └── justfile               # Common entrypoints
 ```
 
-The curated third-party registry lives at `content/skills/external-skills/`.
+The curated third-party registry lives at `content/community-skills-registry/`.
 
 ## Skill categories
 

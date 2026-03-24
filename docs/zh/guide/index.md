@@ -8,7 +8,7 @@
 - `content/platforms/<platform>/commands/`：平台级 command / workflow 源文件
 - `content/platforms/claude/agents/`：按 `ccw` 与 `specialist` 分组的 Claude agent 定义
 - `content/platforms/<platform>/guidance/`：平台级指导文件种子，如 `CLAUDE.md`、`AGENTS.md`
-- `content/skills/external-skills/`：供 MCS Web 使用的外部技能注册表元数据
+- `content/community-skills-registry/`：供 MCS Web 使用的外部技能注册表元数据
 - `content/hooks/`：运行时支持文件
 - `mcs/`：Rust workspace，包含共享核心库、TUI 和 Web 应用
 
@@ -52,7 +52,7 @@ just web
 - [MCS 架构](/zh/guide/mcs-architecture)：`mcs-core`、`mcs-tui`、`mcs-web`
 - [命令系统](/zh/guide/commands)：`content/platforms/*/commands` 如何映射到各平台
 - [运行时文件](/zh/guide/runtime-files)：hooks 与平台 guidance/runtime 文件
-- [外部技能](/zh/guide/external-skills)：第三方技能注册表与安装流程
+- [外部技能](/zh/guide/community-skills-registry)：第三方技能注册表与安装流程
 - [创建技能](/zh/guide/creating-skills)：新增 `content/skills/<category>/<skill-name>/`
 
 ## 关于历史页面

@@ -2,15 +2,15 @@
 
 ## 概览
 
-第三方技能现在由注册表目录 `content/skills/external-skills/` 描述。
+第三方技能现在由注册表目录 `content/community-skills-registry/` 描述。
 
-它与仓库自带的 `content/skills/` 一方技能目录共存，但它本身不是可安装技能目录。
+它作为 `content/skills/` 一方技能目录的同级目录存在，但它本身不是可安装技能目录。
 
 当前模型是：
 
 - 一方技能：`content/skills/<category>/<skill-name>/`
-- 第三方注册表索引：`content/skills/external-skills/index.toml`
-- 第三方分类分片：`content/skills/external-skills/categories/<category-id>.toml`
+- 第三方注册表索引：`content/community-skills-registry/index.toml`
+- 第三方分类分片：`content/community-skills-registry/categories/<category-id>.toml`
 - Web 管理入口：MCS Web 与 `npx skills`
 
 ## 支持的安装类型
@@ -27,7 +27,7 @@ MCS 会通过 `mcs-core` 读取这份注册表，并在 Web API 中暴露 extern
 也就是说：
 
 - 一方 catalog 在 `content/skills/`
-- 三方注册表也位于 `content/skills/`
+- 三方注册表位于 `content/community-skills-registry/`
 - 文档里仍然要把“一方技能目录”和“三方注册表数据”区分开说明
 
 ## 什么时候使用它
