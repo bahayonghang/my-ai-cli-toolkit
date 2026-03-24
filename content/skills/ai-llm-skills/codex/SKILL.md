@@ -1,260 +1,248 @@
 ---
 name: codex
 description: >-
-  Use when you want to run the local OpenAI Codex CLI for code generation,
-  debugging, refactoring, explicit review workflows for pull requests, diffs,
-  commits, and uncommitted changes, or live technical research with current web
-  results, comparisons, latest information, and citation-backed summaries.
-version: 1.2.0
+  OpenAI Codex CLI wrapper — five modes: `codex review` for PR/diff/commit
+  review, adversarial challenge for edge cases and security, consult for
+  second opinions on code or architecture, live research with citations via
+  `--search`, and apply/fix for approved code changes. Use when the user
+  invokes /codex or explicitly wants the local Codex CLI.
+version: 1.5.0
 argument-hint: [task-description]
 allowed-tools:
   - Bash(codex *)
+  - Bash(command -v codex)
+  - Bash(npm install -g @openai/codex)
+  - Bash(Get-Command codex*)
+  - Read
 metadata:
   category: development-tools
-  tags: [openai-codex, codex-cli, gpt-5.4, web-search, second-opinion, code-review, pr-review]
+  tags:
+    - openai-codex
+    - codex-cli
+    - gpt-5.4
+    - second-opinion
+    - code-review
+    - adversarial-review
+    - technical-research
 ---
 
 Run Codex CLI for `$ARGUMENTS`.
 
 ## Defaults
 
-- Primary command form: `codex exec`
-- Default model: `gpt-5.4`
-- Default code reasoning: `xhigh`
-- Default web-search reasoning: `high`
-- Default review mode: review-only first, apply/fix only with explicit user intent
-- Single-run model override: `-m <model>`
-- Persistent model override: set `model` in `~/.codex/config.toml` or in `profiles.<name>.model`
+- Primary review command: `codex review`
+- Primary general command: `codex exec`
+- Default model: `gpt-5.4` (referred to as `$MODEL` in recipes below)
+- Default review / consult reasoning: `xhigh`
+- Default research reasoning: `high`
+- Default research search path: top-level `--search`
+- Default posture: review-only first, write only when the user explicitly wants Codex to apply changes
+- Preferred automation path for writes: `--full-auto` before `--dangerously-bypass-approvals-and-sandbox`
+- Resume path: `codex exec resume <session_id> "<follow-up>"`
 
 ## Prerequisites
 
-1. Verify Codex CLI is installed: `command -v codex`.
-   - If not found, instruct user: `npm install -g @openai/codex`
-2. Verify authentication: `codex login status`.
-   - If not authenticated, instruct user: `codex login`
-3. If installation or login is not possible, fall back to native web/document tools instead of blocking.
+1. Verify Codex CLI is installed.
+   - Bash / zsh: `command -v codex`
+   - PowerShell: `Get-Command codex`
+   - If missing, tell the user to install it: `npm install -g @openai/codex`
+2. Verify authentication: `codex login status`
+   - If not authenticated, tell the user to run `codex login`
+3. If Codex is unavailable and the task is mainly research or docs lookup, fall back to the host's native web or documentation tools instead of blocking.
 
-## Session Model Convention
+## Scope Boundary
 
-Use a shell variable in examples so the default model lives in one place:
+This skill wraps the **local Codex CLI** (`codex` command). It is distinct from the
+OMC orchestration layer's `ask_codex` MCP tool, which delegates to Codex as an
+agent role (architect, planner, critic, etc.) via the MCP protocol.
 
-```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-```
+- **This skill**: user explicitly wants `codex review`, `codex exec`, or Codex CLI features
+- **OMC `ask_codex`**: orchestrator delegates analysis/review to Codex as a reasoning backend
 
-This is only an example shell convention; Codex itself only requires the final `-m` value.
+If the user says "ask codex about X" without specifying CLI usage, defer to OMC's
+MCP delegation. This skill activates on `/codex` invocation or explicit CLI intent.
 
-## Steps
+## Mode Router
 
-1. If `$ARGUMENTS` is empty, ask user for the task description.
-2. Decide whether the task is primarily:
-   - **Review-only**: code review, PR review, diff review, commit review, second-opinion analysis.
-   - **Apply/fix execution**: generation, refactoring, debugging, or review findings that the user explicitly wants fixed.
-   - **Web search / docs lookup**: current information, docs, URLs, comparisons.
-   - **Research / comparison**: batch research, cited summaries, technology comparisons, vendor landscape, latest updates.
-3. For review-only tasks, prefer the lowest-risk path first:
-   ```bash
-   CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-   codex exec -m "$CODEX_MODEL" \
-     -c model_reasoning_effort=xhigh \
-     --skip-git-repo-check \
-     -C <workdir> \
-     "Review <target>. Do not modify files. Return findings with severity, evidence, and recommended fixes only."
-   ```
-4. For apply/fix tasks, or only after the user explicitly says to implement fixes, run:
-   ```bash
-   CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-   codex exec -m "$CODEX_MODEL" \
-     -c model_reasoning_effort=xhigh \
-     --dangerously-bypass-approvals-and-sandbox \
-     --skip-git-repo-check \
-     -C <workdir> \
-     "<task>"
-   ```
-   > **⚠️ Safety note:** `--dangerously-bypass-approvals-and-sandbox` disables all
-   > confirmation prompts and filesystem sandboxing. Use it only when the user
-   > clearly wants changes applied, because Codex can modify or delete files without asking.
-5. For web search / docs lookup, run:
-   ```bash
-   CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-   codex exec -m "$CODEX_MODEL" \
-     -c model_reasoning_effort=high \
-     -c web_search="live" \
-     --dangerously-bypass-approvals-and-sandbox \
-     --skip-git-repo-check \
-     "<task>"
-   ```
-6. To continue a previous non-interactive session, run:
-   ```bash
-   codex exec resume <session_id> "<follow-up>"
-   ```
-7. Read `$SKILL_DIR/references/REFERENCE.md` for review templates, research workflow guidance, source selection, citation format, and post-run checklists.
+If `$ARGUMENTS` is empty, ask the user for the task description.
 
-## Research Workflow
+Choose one primary mode:
 
-Use this when the user asks to research a topic, compare tools, find the latest information, or produce a citation-backed summary.
+- `review`: PR, diff, branch, commit, uncommitted changes, merge readiness, or review-style second opinion. Prefer `codex review`.
+- `challenge`: adversarial probing for edge cases, race conditions, security issues, or failure modes. Use `codex exec` with a read-only posture and an attack-minded prompt.
+- `consult`: second opinion on a file, module, architecture decision, migration, or plan. Use `codex exec` without write access.
+- `research`: latest docs, current product comparisons, citations, release notes, or vendor landscape. Use top-level `--search` with `codex exec`.
+- `apply/fix`: generation, refactoring, debugging, or fixing approved findings. Only use when the user explicitly wants Codex to make changes.
+- `resume`: follow-up on a previous non-interactive session via `codex exec resume`.
 
-1. Clarify the scope if needed:
-   - exact products, frameworks, or vendors
-   - comparison axes such as architecture, performance, cost, governance, DX, or migration risk
-   - whether the user wants a quick answer, a decision memo, or a structured report
-2. Break broad topics into focused queries. Prefer one query per subtopic instead of one overloaded search.
-3. Use live web search with `codex exec`:
-   ```bash
-   CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-   codex exec -m "$CODEX_MODEL" \
-     -c model_reasoning_effort=high \
-     -c web_search="live" \
-     --dangerously-bypass-approvals-and-sandbox \
-     --skip-git-repo-check \
-     "Return raw results with URLs. Search: <focused query>"
-   ```
-4. For multi-angle research, run a small batch of focused searches, for example:
-   - product overview / architecture
-   - latest release notes or announcements
-   - comparison against named alternatives
-   - benchmarks or pricing, if the user asked for them
-5. Prefer sources in this order unless the task requires otherwise:
-   - official documentation
-   - official blogs, changelogs, or announcements
-   - reputable third-party technical analysis
-   - benchmarks, with vendor bias called out when relevant
-6. Validate links before finalizing if the report contains many citations or if a result looks stale.
-7. Deliver a concise synthesis with clickable citations, explicit uncertainty, and a recommendation only when the evidence supports it.
+If a task spans multiple modes, do them in this order:
 
-### Research Prompt Templates
+1. `review` or `challenge`
+2. `consult`
+3. `research`
+4. `apply/fix`
 
-#### Latest information
+### Keyword Signals
+
+| Keywords in `$ARGUMENTS`                         | → Mode      |
+|--------------------------------------------------|-------------|
+| review, PR, diff, merge, branch, commit, changes | review      |
+| challenge, break, attack, adversarial, scary     | challenge   |
+| consult, second opinion, what do you think, @file| consult     |
+| research, compare, latest, docs, citations       | research    |
+| fix, apply, refactor, implement, write, generate | apply/fix   |
+| resume, continue, follow-up, session             | resume      |
+
+If ambiguous, prefer read-only modes (review/challenge/consult) over write modes (apply/fix).
+
+## Planned Run Header
+
+Before any Codex invocation, emit this block exactly once:
 
 ```text
-Research the latest information about <topic>. Use live web search, prefer official sources, include publication dates where available, and return a concise summary with clickable citations.
+Planned AI Run
+- Tool: Codex CLI
+- Mode: <review | challenge | consult | research | apply/fix | resume>
+- Model: <literal model id>
+- Runtime: <reasoning=xhigh | reasoning=high | reasoning=<level>; sandbox=<mode>>
+- Search: <off | live>
+- Access: <review-safe | workspace-write | bypassed sandbox/approvals>
+- Workdir: <path or current>
 ```
 
-#### Technology comparison
+Rules:
 
-```text
-Compare <option A> vs <option B> for <use case>. Use live web search, prefer official docs and recent sources, separate facts from opinion, and include clickable citations for each major claim.
+- Keep the header and the final command aligned.
+- Use the same literal model id in the header and the actual Codex invocation when you override the model explicitly.
+- For `codex review`, pass model or sandbox overrides as top-level Codex options before the subcommand, for example `codex -m $MODEL -s read-only review ...`.
+- Use `Search: live` only for runs started with top-level `--search`.
+- `review`, `challenge`, and `consult` should default to read-only or another review-safe posture.
+- `apply/fix` should default to `workspace-write` / `--full-auto`; use full bypass only with explicit user intent.
+- If `-C` is omitted, show `current` for `Workdir`.
+
+## Quick Reference
+
+| Mode      | Command                          | Default flags              |
+|-----------|----------------------------------|----------------------------|
+| Review    | `codex review`                   | `-m $MODEL -s read-only`   |
+| Challenge | `codex exec`                     | `-s read-only`, xhigh      |
+| Consult   | `codex exec`                     | `-s read-only`, xhigh      |
+| Research  | `codex --search exec`            | `--skip-git-repo-check`    |
+| Apply/Fix | `codex exec`                     | `--full-auto`, xhigh       |
+| Resume    | `codex exec resume <id> "<msg>"` | inherits previous session  |
+
+For full command recipes, prompt templates, and shell-quoting notes, read `$SKILL_DIR/references/REFERENCE.md`.
+
+## Reference
+
+Read `$SKILL_DIR/references/REFERENCE.md` for:
+
+- review, challenge, consult, and research prompt templates (with output format instructions)
+- target-specific command recipes
+- query-splitting guidance
+- citation and shell-quoting notes
+- session ID retrieval for resume
+- post-run safety checklist
+
+## Sandbox & Git Permissions
+
+Codex runs commands inside a sandbox that restricts file system access. This is the
+single most common source of "Permission denied" errors, especially for git operations.
+
+### Why git fails in the sandbox
+
+Even in `workspace-write` mode, Codex force-mounts `.git/` as **read-only** after
+writable roots are applied. Any git command that writes metadata — `fetch`, `commit`,
+`pull`, `push`, `checkout`, `merge`, `rebase`, `stash` — will fail with:
+
+```
+error: cannot open '.git/FETCH_HEAD': Permission denied
 ```
 
-#### Decision memo
+### Quick fix: choose the right sandbox mode
 
-```text
-Research <topic> for a team deciding whether to adopt it. Cover architecture, operational tradeoffs, ecosystem maturity, migration risk, and current status. End with a recommendation and clickable citations.
-```
+| Sandbox mode | git read | git write | When to use |
+|--------------|----------|-----------|-------------|
+| `read-only` (default) | Yes | **No** | review, challenge, consult |
+| `workspace-write` | Yes | **No** (`.git/` stays read-only) | editing files only |
+| `--full-auto` | Yes | **No** (same sandbox, auto-approve only) | unattended file edits |
+| `danger-full-access` | Yes | **Yes** | apply/fix that needs git write |
+| `--dangerously-bypass-approvals-and-sandbox` | Yes | **Yes** | last resort, unrestricted |
 
-## Review Workflows
+For any mode that needs git write access (commit, push, pull), you **must** use
+`danger-full-access` or `--dangerously-bypass-approvals-and-sandbox`.
 
-### Review uncommitted changes
+### Recommended sandbox flags by mode
 
-Use when the user asks to review local staged, unstaged, or untracked work before commit.
+- **Review / Challenge / Consult**: `-s read-only` (default, safe)
+- **Research**: `--skip-git-repo-check` (no repo context needed)
+- **Apply/Fix without git writes**: `--full-auto` (auto-approve file edits)
+- **Apply/Fix with git writes**: `--full-auto --dangerously-bypass-approvals-and-sandbox`
 
-```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=xhigh \
-  --skip-git-repo-check \
-  -C <workdir> \
-  "Review the current uncommitted changes in @. Do not modify files. Focus on correctness, regressions, missing tests, and risky diffs."
-```
+### Platform-specific sandbox issues
 
-### Review against a base branch
-
-Use for PR-style review before opening or updating a pull request.
-
-```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=xhigh \
-  --skip-git-repo-check \
-  -C <workdir> \
-  "Review all changes in this branch against <base-branch>. Do not modify files. Summarize the branch intent, then list findings by severity with file evidence and suggested fixes."
-```
-
-### Review a specific commit
-
-Use when the user asks whether one commit is safe, clean, or ready to cherry-pick.
-
-```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=xhigh \
-  --skip-git-repo-check \
-  -C <workdir> \
-  "Review commit <sha>. Do not modify files. Check intent, correctness, hidden regressions, and whether follow-up changes are needed."
-```
-
-### Review with a custom focus
-
-Use when the user wants targeted review such as security, performance, architecture, or test coverage.
-
-```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=xhigh \
-  --skip-git-repo-check \
-  -C <workdir> \
-  "Review <target> with focus on <security|performance|maintainability|tests>. Do not modify files. Return only findings relevant to that focus plus any critical blocker outside the focus."
-```
-
-## Structured Review Output
-
-Ask Codex to use this format for review-only tasks:
-
-```text
-Review Scope
-- Target:
-- Focus:
-- Assumptions:
-
-Summary
-- Overall risk:
-- Ready to merge:
-
-Findings
-1. [severity] Title
-   - Evidence: path/to/file:line or diff/commit context
-   - Why it matters:
-   - Recommended fix:
-
-2. [severity] Title
-   - Evidence:
-   - Why it matters:
-   - Recommended fix:
-
-Open Questions
-- ...
-
-Suggested Next Steps
-- ...
-```
-
-## Model Selection
-
-- Default: `gpt-5.4`
-- One-off override: `-m <model>`
-- Session-level example override: set `CODEX_MODEL` before running the examples
-- Persistent default:
+**Windows:**
+- Git Bash (`bash.exe`) fails inside Windows sandbox with `"couldn't create signal pipe, Win32 error 5"` (issue [#15016](https://github.com/openai/codex/issues/15016)).
+- **Workaround**: use PowerShell as the shell, or disable sandbox:
   ```toml
-  model = "gpt-5.4"
-  ```
-- Profile-based override:
-  ```toml
-  [profiles.codex-deep]
-  model = "gpt-5.4"
-  model_reasoning_effort = "xhigh"
+  # ~/.codex/config.toml
+  [windows]
+  sandbox = "off"
   ```
 
-## Notes
+**Linux (bubblewrap):**
+- `.git/` and resolved `gitdir:` targets are force-mounted read-only after writable
+  roots, and `--add-dir` cannot override this (issue [#14338](https://github.com/openai/codex/issues/14338)).
+- AppArmor `unprivileged_userns` restriction can prevent the sandbox from starting
+  entirely (issue [#9273](https://github.com/openai/codex/issues/9273)).
 
-- `codex e` is still a valid short alias, but prefer `codex exec` in docs and automation snippets.
-- Prefer `-c web_search="live"` over the legacy web-search flag and old feature-toggle form.
-- Starting with GPT-5.4, OpenAI recommends the general-purpose GPT-5.4 model for most Codex coding tasks.
-- For pure review, omit dangerous write flags unless the user explicitly requests changes to be applied.
-- For review + fix workflows, start with review-only output, confirm priorities, then rerun in apply mode if needed.
+**macOS:**
+- Git fsmonitor IPC socket is blocked by sandbox network policy
+  (issue [#14372](https://github.com/openai/codex/issues/14372)).
+- **Workaround**: disable fsmonitor before running Codex:
+  ```bash
+  git config --local core.fsmonitor false
+  ```
+
+### Pre-trusting a workspace
+
+To avoid the trust prompt on every run, add the project to `config.toml`:
+
+```toml
+# ~/.codex/config.toml
+[projects."/path/to/your/project"]
+trust_level = "trusted"
+```
+
+### Diagnosing sandbox denials
+
+Use the built-in sandbox diagnostic to see what is being blocked:
+
+```bash
+codex sandbox <platform> --log-denials <command>
+# Example:
+codex sandbox macos --log-denials git diff
+codex sandbox linux --log-denials git commit -m "test"
+```
+
+For full sandbox configuration details, read `$SKILL_DIR/references/REFERENCE.md`.
 
 ## Error Handling
 
-- `codex: command not found`: install via `npm install -g @openai/codex`
-- Login/auth error: run `codex login`
-- Rate limit or timeout: retry with lower `model_reasoning_effort` or a lighter model
-- CLI unavailable and cannot be installed: fall back to native web/document tools
+- `codex: command not found`: tell the user to install `@openai/codex`
+- `codex login status` fails or shows no auth: tell the user to run `codex login`
+- rate limit or timeout: retry with a smaller scope, lower reasoning, or a lighter model
+- research output lacks citations: rerun with `--search` and an explicit request for URLs
+- review task accidentally ran in write mode: stop, surface the mismatch, and switch back to review-safe mode
+- Codex unavailable: fall back to native tools when the task does not strictly require Codex
+- **sandbox permission denied on `.git/`**: switch to `danger-full-access` or `--dangerously-bypass-approvals-and-sandbox`; see the Sandbox section above
+- **Windows bash signal pipe error**: switch to PowerShell or disable Windows sandbox
+- **git fsmonitor IPC error (macOS)**: run `git config --local core.fsmonitor false`
+- **sandbox fails to start (Linux AppArmor)**: check `kernel.apparmor_restrict_unprivileged_userns` sysctl
+
+## Notes
+
+- `codex exec` is the preferred general non-interactive entrypoint.
+- `codex review` is the preferred review entrypoint for branch, diff, commit, and uncommitted review.
+- Read-only and review-safe paths are the default. Writing is opt-in.
+- For current Codex configuration semantics, project-scoped overrides, and web search modes, rely on `~/.codex/config.toml` and current CLI help.

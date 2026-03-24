@@ -6,7 +6,7 @@ description: >-
   architecture analysis, or current web information. Trigger whenever the user
   mentions gemini, asks for Google Search results, needs real-time web data,
   wants codebase investigation, or requests a different AI's opinion on code.
-version: 1.1.0
+version: 1.1.1
 argument-hint: [task-description]
 metadata:
   category: development-tools
@@ -40,7 +40,11 @@ Run Gemini CLI for `$ARGUMENTS`.
 
 ## Model Convention
 
-Use shell variables in examples so the default model lives in one place.
+Default command examples in this skill use explicit model literals so the planned
+run header and the CLI invocation stay in sync.
+
+Use shell variables or config only when you intentionally want to honor an
+override outside the default skill path.
 
 ### Bash / zsh
 
@@ -63,44 +67,85 @@ Official override order for the effective model:
 3. `settings.json` value at `model.name`
 4. Gemini CLI default `auto`
 
+## Planned Run Header
+
+Before any `gemini` invocation, emit this text block exactly once:
+
+```text
+Planned AI Run
+- Tool: Gemini CLI
+- Mode: <generate | analyze | review | fast-path | compatibility-fallback | structured-output>
+- Model: <literal model id>
+- Runtime: <approval=yolo, output=text | approval=yolo, output=json>
+- Search: <grounded when requested | off>
+- Access: <yolo | review-safe>
+- Workdir: <path or current>
+```
+
+Rules:
+
+- The header must appear before the command, never after it.
+- Use the same literal model id in the header and the final `-m` flag.
+- If the user explicitly names a different model, reflect that exact model in
+  both places.
+- Use `grounded when requested` only when the task depends on Gemini's web or
+  Google-grounded capabilities; otherwise use `off`.
+- Use `compatibility-fallback` when dropping to `gemini-2.5-pro` or `auto`, and
+  say so in the header.
+
 ## Steps
 
 1. If `$ARGUMENTS` is empty, ask the user for the task description.
-2. Set `GEMINI_MODEL` and `GEMINI_FAST_MODEL` using the shell convention above.
-3. For default code generation, analysis, and review tasks, run:
-   ```bash
-   GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
-   gemini "$ARGUMENTS" -m "$GEMINI_MODEL" --approval-mode yolo -o text 2>&1
+2. Choose the literal model id for this run.
+   - Default to `gemini-3.1-pro-preview`.
+   - Use `gemini-3.1-flash-preview` for fast or lower-priority tasks.
+   - Use `gemini-2.5-pro` or `auto` only as explicit compatibility fallbacks.
+   - If the user explicitly requests another model, use that literal in both the
+     header and the command.
+3. Emit the planned run header before invoking Gemini:
+   ```text
+   Planned AI Run
+   - Tool: Gemini CLI
+   - Mode: <generate | analyze | review | fast-path | compatibility-fallback | structured-output>
+   - Model: <literal model id>
+   - Runtime: <approval=yolo, output=text | approval=yolo, output=json>
+   - Search: <grounded when requested | off>
+   - Access: <yolo | review-safe>
+   - Workdir: <path or current>
    ```
-4. For faster or lower-priority tasks, run:
+4. For default code generation, analysis, and review tasks, run:
    ```bash
-   GEMINI_FAST_MODEL="${GEMINI_FAST_MODEL:-gemini-3.1-flash-preview}"
-   gemini "$ARGUMENTS" -m "$GEMINI_FAST_MODEL" --approval-mode yolo -o text 2>&1
+   gemini "$ARGUMENTS" -m gemini-3.1-pro-preview --approval-mode yolo -o text 2>&1
    ```
-5. For a one-off compatibility override, run:
+5. For faster or lower-priority tasks, run:
+   ```bash
+   gemini "$ARGUMENTS" -m gemini-3.1-flash-preview --approval-mode yolo -o text 2>&1
+   ```
+6. For a one-off compatibility override, run:
    ```bash
    gemini "$ARGUMENTS" -m gemini-2.5-pro --approval-mode yolo -o text 2>&1
    ```
-6. Include action directives such as "Apply changes now" or "Start immediately" because `--approval-mode yolo` auto-approves tool calls but does not skip Gemini's internal planning phase.
-7. For structured output, use `-o json` and extract the `response` field.
-8. Validate generated code for syntax, security, and style before accepting it.
-9. If preview model access is denied, retry with `GEMINI_MODEL=auto` or `GEMINI_MODEL=gemini-2.5-pro`.
+7. Include action directives such as "Apply changes now" or "Start immediately" because `--approval-mode yolo` auto-approves tool calls but does not skip Gemini's internal planning phase.
+8. For structured output, switch the header to `Mode: structured-output`, set `Runtime: approval=yolo, output=json`, and run:
+   ```bash
+   gemini "$ARGUMENTS" -m gemini-3.1-pro-preview --approval-mode yolo -o json 2>&1
+   ```
+9. Validate generated code for syntax, security, and style before accepting it.
+10. If preview model access is denied, retry with `gemini-2.5-pro` or `auto` and mark the header as `Mode: compatibility-fallback`.
 
 ## Core Patterns
 
 ### Generate-Review-Fix Cycle
 
 ```bash
-GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
-
 # 1. Generate
-gemini "Create [description]" -m "$GEMINI_MODEL" --approval-mode yolo -o text
+gemini "Create [description]" -m gemini-3.1-pro-preview --approval-mode yolo -o text
 
 # 2. Review
-gemini "Review [file] for bugs and security issues" -m "$GEMINI_MODEL" -o text
+gemini "Review [file] for bugs and security issues" -m gemini-3.1-pro-preview -o text
 
 # 3. Fix
-gemini "Fix these issues in [file]: [list]. Apply now." -m "$GEMINI_MODEL" --approval-mode yolo -o text
+gemini "Fix these issues in [file]: [list]. Apply now." -m gemini-3.1-pro-preview --approval-mode yolo -o text
 ```
 
 ### Background Execution
@@ -108,14 +153,12 @@ gemini "Fix these issues in [file]: [list]. Apply now." -m "$GEMINI_MODEL" --app
 Use a shell-appropriate background command.
 
 ```bash
-GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
-gemini "[long task]" -m "$GEMINI_MODEL" --approval-mode yolo -o text > gemini.log 2>&1 &
+gemini "[long task]" -m gemini-3.1-pro-preview --approval-mode yolo -o text > gemini.log 2>&1 &
 echo $!
 ```
 
 ```powershell
-if (-not $env:GEMINI_MODEL) { $env:GEMINI_MODEL = "gemini-3.1-pro-preview" }
-Start-Process gemini -ArgumentList @("[long task]", "-m", $env:GEMINI_MODEL, "--approval-mode", "yolo", "-o", "text") -RedirectStandardOutput "gemini.log" -RedirectStandardError "gemini.err"
+Start-Process gemini -ArgumentList @("[long task]", "-m", "gemini-3.1-pro-preview", "--approval-mode", "yolo", "-o", "text") -RedirectStandardOutput "gemini.log" -RedirectStandardError "gemini.err"
 ```
 
 ### Cross-Validation with Claude

@@ -1,6 +1,8 @@
 # Gemini CLI Command Reference
 
 Complete reference for Gemini CLI v0.27.0+ with this skill's model-default convention.
+The default skill path uses explicit model literals so the planned run header and
+the CLI invocation stay aligned.
 
 ## Installation
 
@@ -69,6 +71,28 @@ gemini
 | `--list-extensions` | `-l` | List installed extensions |
 | `--screen-reader` | | Enable screen reader mode |
 
+## Planned Run Header
+
+Before any `gemini` invocation in the skill workflow, present this block:
+
+```text
+Planned AI Run
+- Tool: Gemini CLI
+- Mode: <generate | analyze | review | fast-path | compatibility-fallback | structured-output>
+- Model: <literal model id>
+- Runtime: <approval=yolo, output=text | approval=yolo, output=json>
+- Search: <grounded when requested | off>
+- Access: <yolo | review-safe>
+- Workdir: <path or current>
+```
+
+Guidance:
+- Keep the header and the final `-m` flag on the same literal model id.
+- Use `gemini-3.1-pro-preview` for the default skill path unless the user explicitly asks for a different model.
+- Use `gemini-3.1-flash-preview` for fast-path runs and mark the mode accordingly.
+- Use `gemini-2.5-pro` or `auto` only for compatibility fallback, and say so in the header.
+- Treat environment variables and `settings.json` as deliberate overrides, not hidden defaults for the displayed summary.
+
 ## Output Formats
 
 ### Text (`-o text`)
@@ -80,8 +104,7 @@ gemini "prompt" -o text
 ### JSON (`-o json`)
 
 ```bash
-GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"
-gemini "prompt" -m "$GEMINI_MODEL" -o json
+gemini "prompt" -m gemini-3.1-pro-preview -o json
 ```
 
 Returns structured data:
@@ -131,7 +154,9 @@ Real-time newline-delimited JSON events for monitoring long tasks.
 
 ### Shared Shell Convention
 
-Use one variable for the primary model and one for the faster model.
+Use one variable for the primary model and one for the faster model when you
+intentionally want reusable overrides. The default skill path still displays and
+uses explicit model literals.
 
 ```bash
 GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.1-pro-preview}"

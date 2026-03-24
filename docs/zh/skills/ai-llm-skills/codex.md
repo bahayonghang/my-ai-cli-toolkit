@@ -1,35 +1,104 @@
-# codex
+# Codex CLI Integration
 
-通过 Codex CLI 执行深度代码分析、调试、重构、实时技术检索，以及带引用的研究工作流。
+当你希望明确走 Codex CLI 工作流，而不是普通 shell 调用时，使用这个 skill：
+diff 感知代码审查、对抗式 challenge、second opinion、实时技术调研，或让 Codex
+直接修改代码。
 
-从 GPT-5.4 开始，OpenAI 推荐在大多数 Codex 编码场景中优先使用最新的 GPT-5 通用模型，因此这个 skill 现在默认使用 `gpt-5.4`。
+从 GPT-5.4 开始，OpenAI 推荐在大多数 Codex 编码任务中优先使用通用模型
+`gpt-5.4`，因此这个 skill 默认也使用它。
 
 ## 默认配置
 
-- 规范命令：`codex exec`
-- 兼容短别名：`codex e`
+- 主审查命令：`codex review`
+- 主通用命令：`codex exec`
 - 默认模型：`gpt-5.4`
-- 代码任务推理：`xhigh`
-- 网络搜索推理：`high`
-- 实时搜索配置：`-c web_search="live"`
+- 审查与咨询推理强度：`xhigh`
+- 调研推理强度：`high`
+- 实时搜索入口：顶层 `--search`
+- 默认安全策略：先 review-only，再按明确要求进入写入模式
 
-## 统一模型入口
+## 模式说明
 
-下面的示例都把默认模型集中在一个变量里：
+### Review
+
+用于 PR、分支、commit、未提交改动的代码审查。
 
 ```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
+codex -m gpt-5.4 -s read-only review --uncommitted
+codex -m gpt-5.4 -s read-only review --base main
+codex -m gpt-5.4 -s read-only review --commit <sha>
 ```
 
-这只是示例里的 shell 约定，Codex 真正需要的只有最终传给 `-m` 的模型名。
-
-## 代码执行模板
-
-适用于代码分析、调试、重构和生成：
+带重点的默认未提交改动审查：
 
 ```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
+codex -m gpt-5.4 -s read-only review "Focus on security, regressions, and missing tests."
+```
+
+约束：
+
+- `codex review` 不能把自定义 prompt 和 `--uncommitted`、`--base`、`--commit` 一起使用。
+- 如果你既要固定审查目标，又要自定义重点，要么先对目标做普通 `codex review`，要么改用 `codex exec` 的 consult / challenge 路径。
+
+### Challenge
+
+当你想让 Codex 站在“找问题、试图打破它”的角度工作，而不是做平衡审查时使用。
+
+```bash
+codex -m gpt-5.4 -s read-only exec \
+  -c model_reasoning_effort=xhigh \
+  -C <workdir> \
+  "Review the relevant changes or files. Be adversarial. Find edge cases, race conditions, security holes, failure modes, and silent data corruption risks. Do not modify files."
+```
+
+### Consult
+
+用于对某个文件、方案、迁移计划或架构决策做 second opinion。
+
+```bash
+codex -m gpt-5.4 -s read-only exec \
+  -c model_reasoning_effort=xhigh \
+  -C <workdir> \
+  "Review @<target> as a second opinion. Explain the main risks, questionable assumptions, missing tests, and the simplest safe next step. Do not modify files."
+```
+
+### Research
+
+用于当前文档、最新信息、带引用的技术对比。
+
+```bash
+codex --search -m gpt-5.4 exec \
+  -c model_reasoning_effort=high \
+  --skip-git-repo-check \
+  "Research <topic>. Prefer official sources, include dates when relevant, and return clickable citations."
+```
+
+示例：
+
+```bash
+codex --search -m gpt-5.4 exec \
+  -c model_reasoning_effort=high \
+  "Compare Vite vs Webpack for React projects in 2026. Prefer official docs and recent sources, and include citations."
+```
+
+### Apply / Fix
+
+只有在你明确希望 Codex 动手改代码时才使用。
+
+优先使用受控的自动写入：
+
+```bash
+codex -m gpt-5.4 exec \
+  -c model_reasoning_effort=xhigh \
+  --full-auto \
+  -C <workdir> \
+  "<task>"
+```
+
+只有在你明确接受完全无沙箱的自动写入时，才使用全量绕过：
+
+```bash
+codex -m gpt-5.4 exec \
   -c model_reasoning_effort=xhigh \
   --dangerously-bypass-approvals-and-sandbox \
   --skip-git-repo-check \
@@ -37,110 +106,9 @@ codex exec -m "$CODEX_MODEL" \
   "<task>"
 ```
 
-### 示例
-
-```bash
-# 解释文件
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=xhigh \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "explain @src/main.ts"
-
-# 重构代码
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=high \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "refactor @src/utils for performance"
-
-# 分析整个项目
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=xhigh \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  -C /path/to/project \
-  "analyze @. and find security issues"
-```
-
-## 网络搜索与研究模板
-
-适用于当前文档、网页总结，以及已经并入 Codex 的实时技术调研工作流：
-
-- 将宽泛问题拆成多个聚焦子查询
-- 优先使用官方文档与官方公告
-- 最终输出保留可点击引用
-- 当引用较多或结果可疑时，先做链接校验
-
-```bash
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=high \
-  -c web_search="live" \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "<task>"
-```
-
-### 示例
-
-```bash
-# 获取 GitHub 仓库页面并总结
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=high \
-  -c web_search="live" \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "Fetch and summarize https://github.com/user/repo"
-
-# 检索当前文档
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=high \
-  -c web_search="live" \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "find the latest React 19 hooks documentation"
-
-# 做技术对比
-CODEX_MODEL="${CODEX_MODEL:-gpt-5.4}"
-codex exec -m "$CODEX_MODEL" \
-  -c model_reasoning_effort=high \
-  -c web_search="live" \
-  --dangerously-bypass-approvals-and-sandbox \
-  --skip-git-repo-check \
-  "compare Vite vs Webpack for React projects today"
-```
-
-## 模型覆盖与配置
-
-单次覆盖模型：
-
-```bash
-codex exec -m gpt-5.4-pro "review @src/server.ts for race conditions"
-```
-
-在 `~/.codex/config.toml` 中设置持久化默认模型：
-
-```toml
-model = "gpt-5.4"
-```
-
-或定义一个复用 profile：
-
-```toml
-[profiles.codex-web]
-model = "gpt-5.4"
-web_search = "live"
-```
-
 ## 会话恢复
 
-继续已有的非交互 Codex 会话：
+继续已有的非交互会话：
 
 ```bash
 codex exec resume <session_id> "<follow-up task>"
@@ -149,17 +117,41 @@ codex exec resume <session_id> "<follow-up task>"
 示例：
 
 ```bash
-codex exec resume <session_id> "now add type hints"
+codex exec resume <session_id> "now compare this with the latest official migration guide"
 ```
 
-## 前置要求与说明
+## 配置说明
 
-- 检查安装：`command -v codex`
+持久化用户配置位于 `~/.codex/config.toml`。
+
+基础默认值：
+
+```toml
+model = "gpt-5.4"
+```
+
+用于实时调研的 profile：
+
+```toml
+[profiles.codex-web]
+model = "gpt-5.4"
+web_search = "live"
+```
+
+## 前置要求
+
+- 检查安装：
+  - Bash / zsh: `command -v codex`
+  - PowerShell: `Get-Command codex`
 - 检查登录：`codex login status`
 - 需要登录时执行：`codex login`
-- `@file` 表示相对当前工作目录引用文件
-- `@.` 表示引用整个工作目录
-- `--json` 可用于程序化输出
-- 自动化示例默认都使用 `--dangerously-bypass-approvals-and-sandbox`
-- 一次性目录可配合 `--skip-git-repo-check`
-- 优先使用 `-c web_search="live"`，不要继续使用旧版 web 搜索 flag 或旧的 feature toggle 写法
+
+## 说明
+
+- 对于 diff 感知的审查任务，优先使用 `codex review`，而不是手写 `codex exec "Review ..."`。
+- `codex review` 的自定义 prompt 与 `--uncommitted`、`--base`、`--commit` 互斥。
+- 对于实时网络调研，优先使用顶层 `--search`，不要继续沿用旧的 feature toggle 示例。
+- `@file` 表示相对当前工作目录引用文件。
+- `@.` 表示引用当前工作树。
+- 需要机器可读输出时，使用 `--json`。
+- 默认应保持只读姿态；写入应是显式选择。
