@@ -30,3 +30,9 @@ mcs/mcs-web/ui/test-results/.last-run.json
 task_plan.md
 findings.md
 progress.md
+# Ignored large files and examples
+content/skills/skill-meta-skills/skill-manager/data/*.json
+content/skills/skill-meta-skills/skill-seekers/config_patterns/*.json
+content/skills/skill-meta-skills/skill-seekers/references/test_examples/*.json
+content/skills/skill-meta-skills/skill-seekers/*.json
+content/skills/document-skills/latex-document-skill/examples/*.png
