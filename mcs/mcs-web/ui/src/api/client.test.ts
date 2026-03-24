@@ -190,6 +190,82 @@ describe("api/client install target", () => {
     expect(String(url)).toContain("target_scope=global");
   });
 
+  it("normalizes partial npx installed inventory payloads", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        target: {
+          scope: "global",
+          project_path: null,
+          base_dir: "/tmp/claude",
+          skills_path: "/tmp/claude/skills",
+          commands_path: null,
+          agents_path: null,
+          guidance_path: null,
+        },
+        capabilities: {
+          list: { supported: true, reason: null },
+          remove: { supported: true, reason: null },
+          check: { supported: true, reason: null },
+          update: { supported: true, reason: null },
+        },
+        summary: {
+          total: 1,
+          curated: 1,
+          manual: 0,
+          tracked: 1,
+          update_available: 0,
+        },
+        items: [
+          {
+            id: "find-skills",
+            name: "find-skills",
+            scope: "global",
+            agents: ["codex"],
+            group_id: "engineering",
+            group_label: "Engineering",
+            group_order: 10,
+            category_id: "discovery",
+            category_label: "Discovery",
+            category_order: 10,
+            tags: [],
+            description: "Find skills quickly",
+            source: {
+              kind: "curated",
+              ref: "vercel-labs/agent-skills",
+              display: "vercel-labs/agent-skills",
+            },
+            catalog_match: null,
+            tracking: {
+              kind: "tracked",
+              source_type: "well-known",
+              installed_at: null,
+              updated_at: null,
+              reason: null,
+            },
+            update: {
+              kind: "not_checked",
+              last_checked_at_ms: null,
+              reason: null,
+            },
+            actions: {
+              removable: true,
+              reinstallable: true,
+              batch_updatable: true,
+            },
+          },
+        ],
+      })
+    );
+
+    const inventory = await getNpxInstalledSkills("claude");
+
+    expect(inventory.groups).toEqual([]);
+    expect(inventory.filtered_total).toBe(1);
+    expect(inventory.page).toBe(1);
+    expect(inventory.page_size).toBe(1);
+    expect(inventory.total_pages).toBe(1);
+  });
+
   it("starts npx install job and forwards config and target", async () => {
     fetchMock.mockResolvedValue(
       mockSuccess({ job_id: "npx-skills-1", operation: "install", total: 1, status: "running" })

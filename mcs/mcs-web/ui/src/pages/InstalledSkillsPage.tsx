@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
   Divider,
   IconButton,
   InputAdornment,
@@ -52,6 +51,7 @@ import { useUiStore } from "@/stores/uiStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
+import PageLoadingState from "@/components/common/PageLoadingState";
 
 const SkillEditorDrawer = lazy(() =>
   import("@/components/dialogs/SkillEditorDrawer").then((module) => ({
@@ -81,6 +81,7 @@ export default function InstalledSkillsPage() {
     dialogOpen: installTargetDialogOpen,
     target: installTarget,
     resolvedTarget,
+    resolutionError,
     recentProjects,
     openDialog: openInstallTargetDialog,
     closeDialog: closeInstallTargetDialog,
@@ -102,8 +103,10 @@ export default function InstalledSkillsPage() {
     }
   }, [isMobile]);
 
+  const installTargetBlocked = Boolean(resolutionError);
   const { items, categories, loading, error, refresh } = usePlatformItemsData({
     platformId,
+    enabled: Boolean(resolvedTarget) && !installTargetLoading && !installTargetBlocked,
     activeTab: "skills",
     itemTypeOverride: "skill",
     search: debouncedSearch,
@@ -164,12 +167,16 @@ export default function InstalledSkillsPage() {
   const pageLoading = loading && items.length === 0;
   const showInlineProgress =
     (loading && items.length > 0) || installTargetLoading;
+  const installTargetPath = resolvedTarget?.skills_path
+    ?? (installTargetBlocked
+      ? t("installed.installTargetUnavailable")
+      : t("installed.installTargetLoading"));
   const installTargetLabel = t("installed.installTargetChip", {
     mode:
       installTarget.scope === "project"
         ? t("installed.installTargetProject")
         : t("installed.installTargetGlobal"),
-    path: resolvedTarget?.skills_path ?? t("installed.installTargetLoading"),
+    path: installTargetPath,
   });
 
   return (
@@ -310,13 +317,14 @@ export default function InstalledSkillsPage() {
           </Stack>
         </ListSurface>
 
+        {installTargetBlocked ? (
+          <Alert severity="error">{resolutionError}</Alert>
+        ) : null}
         {error ? <Alert severity="error">{error}</Alert> : null}
         {showInlineProgress ? <LinearProgress /> : null}
 
         {pageLoading ? (
-          <Box display="flex" justifyContent="center" py={8}>
-            <CircularProgress />
-          </Box>
+          <PageLoadingState message={t("common.loading")} minHeight={320} />
         ) : items.length === 0 ? (
           <ListSurface tone="workbench">
             <Box

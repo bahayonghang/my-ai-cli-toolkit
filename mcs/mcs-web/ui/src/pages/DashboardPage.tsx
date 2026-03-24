@@ -18,6 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { monitorPanelSx } from "@/components/common/glassPanel";
+import PageLoadingState from "@/components/common/PageLoadingState";
 import {
   AppShell,
 } from "@/components/shell/AppShell";
@@ -103,9 +104,7 @@ export default function DashboardPage() {
         )}
 
         {loading && !data ? (
-          <Box display="flex" justifyContent="center" py={10}>
-            <CircularProgress />
-          </Box>
+          <PageLoadingState message={t("common.loading")} minHeight={320} />
         ) : data ? (
           <Stack spacing={3}>
             <HeroSection

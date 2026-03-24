@@ -181,17 +181,20 @@ function ShellNavButton({
   subtitle,
   icon,
   active,
+  ariaCurrent,
   onClick,
 }: {
   label: ReactNode;
   subtitle?: ReactNode;
   icon: ReactNode;
   active: boolean;
+  ariaCurrent?: "page" | "location";
   onClick: () => void;
 }) {
   return (
     <ButtonBase
       onClick={onClick}
+      aria-current={active ? ariaCurrent : undefined}
       sx={{
         width: "100%",
         textAlign: "left",
@@ -359,6 +362,7 @@ export function AppShell({
           subtitle={t("common.overviewSubtitle")}
           icon={<SquaresFour size={18} weight="bold" />}
           active={location.pathname === "/"}
+          ariaCurrent="page"
           onClick={() => {
             navigateDeferred("/");
             setNavOpen(false);
@@ -369,6 +373,7 @@ export function AppShell({
           subtitle={t("common.dashboardSubtitle")}
           icon={<ChartPieSlice size={18} weight="bold" />}
           active={location.pathname.startsWith("/dashboard")}
+          ariaCurrent="page"
           onClick={() => {
             navigateDeferred("/dashboard");
             setNavOpen(false);
@@ -379,6 +384,7 @@ export function AppShell({
           subtitle={t("common.installHubSubtitle")}
           icon={<DownloadSimple size={18} weight="bold" />}
           active={location.pathname.startsWith("/install-hub")}
+          ariaCurrent="page"
           onClick={() => {
             navigateDeferred("/install-hub");
             setNavOpen(false);
@@ -396,6 +402,7 @@ export function AppShell({
           {platforms.map((platform) => (
             <ButtonBase
               key={platform.id}
+              aria-current={activePlatformId === platform.id ? "location" : undefined}
               onClick={() => {
                 navigateDeferred(`/platform/${platform.id}`);
                 setNavOpen(false);

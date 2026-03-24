@@ -50,6 +50,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
+import PageLoadingState from "@/components/common/PageLoadingState";
 import { InstallDialog } from "@/components/dialogs/InstallDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import {
@@ -613,11 +614,13 @@ export default function InstallPage() {
     dialogOpen: installTargetDialogOpen,
     target: installTarget,
     resolvedTarget,
+    resolutionError,
     recentProjects,
     openDialog: openInstallTargetDialog,
     closeDialog: closeInstallTargetDialog,
     applyTarget: applyInstallTarget,
   } = useInstallTarget(platformId);
+  const installTargetBlocked = Boolean(resolutionError);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [skills, setSkills] = useState<ItemDto[]>([]);
@@ -647,7 +650,10 @@ export default function InstallPage() {
   }, []);
 
   const fetchSkills = useCallback(async () => {
-    if (!platformId) {
+    if (!platformId || !resolvedTarget || installTargetLoading || installTargetBlocked) {
+      setSkills([]);
+      setLoading(false);
+      setError(null);
       return;
     }
     skillsAbortRef.current?.abort();
@@ -676,10 +682,19 @@ export default function InstallPage() {
         setLoading(false);
       }
     }
-  }, [platformId, debouncedSearch, selectedCategory, installTarget]);
+  }, [
+    debouncedSearch,
+    installTarget,
+    installTargetBlocked,
+    installTargetLoading,
+    platformId,
+    resolvedTarget,
+    selectedCategory,
+  ]);
 
   const fetchCategories = useCallback(async () => {
-    if (!platformId) {
+    if (!platformId || !resolvedTarget || installTargetLoading || installTargetBlocked) {
+      setCategories([]);
       return;
     }
     categoriesAbortRef.current?.abort();
@@ -691,7 +706,7 @@ export default function InstallPage() {
     } catch {
       // non-critical
     }
-  }, [platformId, installTarget]);
+  }, [installTarget, installTargetBlocked, installTargetLoading, platformId, resolvedTarget]);
 
   useEffect(() => {
     void fetchCategories();
@@ -757,12 +772,16 @@ export default function InstallPage() {
     }
   };
 
+  const installTargetPath = resolvedTarget?.skills_path
+    ?? (installTargetBlocked
+      ? t("installed.installTargetUnavailable")
+      : t("install.installTargetLoading"));
   const installTargetLabel = t("install.installTargetChip", {
     mode:
       installTarget.scope === "project"
         ? t("install.installTargetProject")
         : t("install.installTargetGlobal"),
-    path: resolvedTarget?.skills_path ?? t("install.installTargetLoading"),
+    path: installTargetPath,
   });
 
   return (
@@ -784,7 +803,7 @@ export default function InstallPage() {
           {isMobile ? (
             <MobileFilterButton onClick={() => setDrawerOpen(true)} />
           ) : null}
-          <Tooltip title={resolvedTarget?.skills_path ?? t("install.installTargetLoading")}>
+          <Tooltip title={installTargetPath}>
             <Chip
               icon={<FolderOpenOutlinedIcon />}
               variant="outlined"
@@ -879,6 +898,9 @@ export default function InstallPage() {
           />
         </ListSurface>
 
+        {installTargetBlocked ? (
+          <Alert severity="error">{resolutionError}</Alert>
+        ) : null}
         {error ? <Alert severity="error">{error}</Alert> : null}
 
         {(loading || installTargetLoading) ? (
@@ -886,9 +908,7 @@ export default function InstallPage() {
         ) : null}
 
         {loading && skills.length === 0 ? (
-          <Box display="flex" justifyContent="center" py={8}>
-            <CircularProgress />
-          </Box>
+          <PageLoadingState message={t("common.loading")} minHeight={320} />
         ) : isMobile ? (
           <SkillCardGrid
             skills={filteredSkills}

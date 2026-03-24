@@ -28,6 +28,7 @@ import {
   PlatformBadge,
   PlatformCapabilityChips,
 } from "@/components/platform/PlatformVisuals";
+import PageLoadingState from "@/components/common/PageLoadingState";
 
 const LegacyCleanupDialog = lazy(() =>
   import("@/components/dialogs/LegacyCleanupDialog").then((module) => ({
@@ -63,11 +64,7 @@ export default function PlatformSelectPage() {
   }, [platforms]);
 
   if (loading && platforms.length === 0) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100dvh">
-        <CircularProgress />
-      </Box>
-    );
+    return <PageLoadingState message={t("common.loading")} />;
   }
 
   return (

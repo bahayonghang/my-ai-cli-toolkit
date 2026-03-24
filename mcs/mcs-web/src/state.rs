@@ -400,24 +400,31 @@ impl AppState {
             });
         }
 
-        let mut cache = self.cache.write().await;
+        let mut skill_results = HashMap::new();
         while let Some(res) = skill_set.join_next().await {
             if let Ok((ids, skills)) = res {
                 for id in ids {
-                    cache.skills.insert(id, skills.clone());
+                    skill_results.insert(id, skills.clone());
                 }
             }
         }
+        let mut command_results = HashMap::new();
         while let Some(res) = command_set.join_next().await {
             if let Ok((pid, commands)) = res {
-                cache.commands.insert(pid, commands);
+                command_results.insert(pid, commands);
             }
         }
+        let mut agent_results = HashMap::new();
         while let Some(res) = agent_set.join_next().await {
             if let Ok((pid, agents)) = res {
-                cache.agents.insert(pid, agents);
+                agent_results.insert(pid, agents);
             }
         }
+
+        let mut cache = self.cache.write().await;
+        cache.skills.extend(skill_results);
+        cache.commands.extend(command_results);
+        cache.agents.extend(agent_results);
     }
 
     /// Invalidate cache for an ad-hoc platform config such as a project-scoped install target.

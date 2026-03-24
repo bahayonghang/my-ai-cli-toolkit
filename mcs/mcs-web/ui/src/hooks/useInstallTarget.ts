@@ -3,6 +3,7 @@ import {
   resolveInstallTarget,
 } from "@/api/client";
 import { useI18n } from "@/i18n";
+import type { TranslateFn } from "@/i18n";
 import { useUiStore } from "@/stores/uiStore";
 import type { InstallTarget, ResolvedInstallTarget } from "@/types";
 
@@ -107,10 +108,28 @@ interface UseInstallTargetResult {
   dialogOpen: boolean;
   target: InstallTarget;
   resolvedTarget: ResolvedInstallTarget | null;
+  resolutionError: string | null;
   recentProjects: string[];
   openDialog: () => void;
   closeDialog: () => void;
   applyTarget: (target: InstallTarget) => Promise<boolean>;
+}
+
+export function resolveStoredTargetFailure(
+  storedTarget: InstallTarget,
+  message: string,
+  t: TranslateFn
+) {
+  return {
+    target: storedTarget,
+    resolvedTarget: null as ResolvedInstallTarget | null,
+    resolutionError: message,
+    notificationMessage:
+      storedTarget.scope === "project"
+        ? t("installed.installTargetResolveBlocked")
+        : message,
+    notificationSeverity: storedTarget.scope === "project" ? "warning" as const : "error" as const,
+  };
 }
 
 export function useInstallTarget(platformId?: string): UseInstallTargetResult {
@@ -121,6 +140,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [target, setTarget] = useState<InstallTarget>(GLOBAL_INSTALL_TARGET);
   const [resolvedTarget, setResolvedTarget] = useState<ResolvedInstallTarget | null>(null);
+  const [resolutionError, setResolutionError] = useState<string | null>(null);
   const [recentProjects, setRecentProjects] = useState<string[]>([]);
 
   const applyTarget = useCallback(
@@ -140,6 +160,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
           platformId,
           normalized,
         );
+        setResolutionError(null);
         setTarget(normalized);
         setResolvedTarget(resolved);
         saveStoredTarget(platformId, normalized);
@@ -149,7 +170,10 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
         }
         return true;
       } catch (e) {
-        showNotification((e as Error).message, "error");
+        const message = (e as Error).message;
+        setResolvedTarget(null);
+        setResolutionError(message);
+        showNotification(message, "error");
         return false;
       } finally {
         setLoading(false);
@@ -162,6 +186,7 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
     if (!platformId) {
       setTarget(GLOBAL_INSTALL_TARGET);
       setResolvedTarget(null);
+      setResolutionError(null);
       setRecentProjects([]);
       setLoading(false);
       return;
@@ -185,34 +210,22 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
         if (cancelled) {
           return;
         }
+        setResolutionError(null);
         setResolvedTarget(resolved);
         saveStoredResolvedTarget(platformId, resolved);
       } catch (e) {
         if (cancelled) {
           return;
         }
-        if (stored.scope === "project") {
-          try {
-            const fallback = await resolveInstallTarget(
-              platformId,
-              GLOBAL_INSTALL_TARGET,
-              controller.signal
-            );
-            if (cancelled) {
-              return;
-            }
-            setTarget(GLOBAL_INSTALL_TARGET);
-            setResolvedTarget(fallback);
-            saveStoredTarget(platformId, GLOBAL_INSTALL_TARGET);
-            saveStoredResolvedTarget(platformId, fallback);
-            showNotification(t("installed.installTargetFallbackWarning"), "warning");
-          } catch {
-            setResolvedTarget(null);
-          }
-        } else {
-          setResolvedTarget(null);
-          showNotification((e as Error).message, "error");
-        }
+        const message = (e as Error).message;
+        const failureState = resolveStoredTargetFailure(stored, message, t);
+        setTarget(failureState.target);
+        setResolvedTarget(failureState.resolvedTarget);
+        setResolutionError(failureState.resolutionError);
+        showNotification(
+          failureState.notificationMessage,
+          failureState.notificationSeverity
+        );
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -232,12 +245,13 @@ export function useInstallTarget(platformId?: string): UseInstallTargetResult {
       dialogOpen,
       target,
       resolvedTarget,
+      resolutionError,
       recentProjects,
       openDialog: () => setDialogOpen(true),
       closeDialog: () => setDialogOpen(false),
       applyTarget,
     }),
-    [applyTarget, dialogOpen, loading, recentProjects, resolvedTarget, target]
+    [applyTarget, dialogOpen, loading, recentProjects, resolvedTarget, resolutionError, target]
   );
 
   return value;

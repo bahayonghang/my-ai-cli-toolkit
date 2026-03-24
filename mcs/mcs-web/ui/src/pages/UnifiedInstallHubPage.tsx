@@ -1,7 +1,6 @@
 import {
   Alert,
   Box,
-  CircularProgress,
   Grid,
   Stack,
   Typography,
@@ -23,6 +22,7 @@ import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
 import type { InstallHubStage } from "@/components/install-hub/types";
 import { AppShell } from "@/components/shell/AppShell";
+import PageLoadingState from "@/components/common/PageLoadingState";
 import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 
 export default function UnifiedInstallHubPage() {
@@ -59,16 +59,8 @@ export default function UnifiedInstallHubPage() {
 }
 
 function LoadingScreen() {
-  return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100dvh"
-    >
-      <CircularProgress />
-    </Box>
-  );
+  const { t } = useI18n();
+  return <PageLoadingState message={t("common.loading")} />;
 }
 
 function PageBody({

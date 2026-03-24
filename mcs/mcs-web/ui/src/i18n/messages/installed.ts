@@ -29,8 +29,9 @@ export const enInstalledMessages = {
   "installed.installTargetGlobal": "Global",
   "installed.installTargetProject": "Project",
   "installed.installTargetLoading": "Resolving install target...",
-  "installed.installTargetFallbackWarning":
-    "Project install target is invalid. Switched back to Global.",
+  "installed.installTargetUnavailable": "Resolve the install target to continue.",
+  "installed.installTargetResolveBlocked":
+    "Project install target is invalid. Update the path or switch to Global to continue.",
 } as const;
 
 export const zhInstalledMessages: Record<
@@ -67,5 +68,7 @@ export const zhInstalledMessages: Record<
   "installed.installTargetGlobal": "全局",
   "installed.installTargetProject": "项目",
   "installed.installTargetLoading": "正在解析安装目录...",
-  "installed.installTargetFallbackWarning": "项目安装目标无效，已切回全局安装目标。",
+  "installed.installTargetUnavailable": "请先解析安装目标后再继续。",
+  "installed.installTargetResolveBlocked":
+    "当前项目安装目标无效，请修正路径或显式切回全局目标后再继续。",
 };

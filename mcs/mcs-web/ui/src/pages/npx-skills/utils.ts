@@ -15,9 +15,30 @@ import type {
 } from "./types";
 import { DEFAULT_AGENTS, DEFAULT_CLI_MODE, LS_KEY_AGENTS, LS_KEY_CLI_MODE } from "./types";
 
+function getLocalStorage(): Pick<Storage, "getItem" | "setItem"> | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const storage = window.localStorage;
+  if (
+    !storage ||
+    typeof storage.getItem !== "function" ||
+    typeof storage.setItem !== "function"
+  ) {
+    return null;
+  }
+
+  return storage;
+}
+
 export function loadAgents(): string[] {
+  const storage = getLocalStorage();
+  if (!storage) {
+    return DEFAULT_AGENTS;
+  }
   try {
-    const raw = localStorage.getItem(LS_KEY_AGENTS);
+    const raw = storage.getItem(LS_KEY_AGENTS);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -31,8 +52,28 @@ export function loadAgents(): string[] {
 }
 
 export function loadCliMode(): NpxSkillsCliMode {
-  const raw = localStorage.getItem(LS_KEY_CLI_MODE);
-  return raw === "npx" ? "npx" : DEFAULT_CLI_MODE;
+  const storage = getLocalStorage();
+  if (!storage) {
+    return DEFAULT_CLI_MODE;
+  }
+  try {
+    const raw = storage.getItem(LS_KEY_CLI_MODE);
+    return raw === "npx" ? "npx" : DEFAULT_CLI_MODE;
+  } catch {
+    return DEFAULT_CLI_MODE;
+  }
+}
+
+export function persistNpxSkillsPreference(key: string, value: string) {
+  const storage = getLocalStorage();
+  if (!storage) {
+    return;
+  }
+  try {
+    storage.setItem(key, value);
+  } catch {
+    // ignore storage errors
+  }
 }
 
 export function safeParseEvent<T>(event: Event): T | null {

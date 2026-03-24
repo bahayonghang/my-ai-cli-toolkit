@@ -113,6 +113,98 @@ function resolvedPathsForTarget(target: InstallTarget) {
   };
 }
 
+function buildInstalledGroups(items: ManagedSkill[]) {
+  const groups = new Map<
+    string,
+    {
+      id: string;
+      label: string;
+      order: number;
+      categories: Map<
+        string,
+        {
+          id: string;
+          label: string;
+          count: number;
+          group_id: string;
+          group_order: number;
+          category_order: number;
+        }
+      >;
+    }
+  >();
+
+  for (const item of items) {
+    const group =
+      groups.get(item.group_id)
+      ?? {
+        id: item.group_id,
+        label: item.group_label,
+        order: item.group_order,
+        categories: new Map(),
+      };
+    groups.set(item.group_id, group);
+
+    const category =
+      group.categories.get(item.category_id)
+      ?? {
+        id: item.category_id,
+        label: item.category_label,
+        count: 0,
+        group_id: item.group_id,
+        group_order: item.group_order,
+        category_order: item.category_order,
+      };
+    category.count += 1;
+    group.categories.set(item.category_id, category);
+  }
+
+  return Array.from(groups.values())
+    .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label))
+    .map((group) => ({
+      id: group.id,
+      label: group.label,
+      order: group.order,
+      categories: Array.from(group.categories.values()).sort(
+        (left, right) =>
+          left.category_order - right.category_order || left.label.localeCompare(right.label),
+      ),
+    }));
+}
+
+function buildInstalledInventoryResponse(items: ManagedSkill[]) {
+  return {
+    target: {
+      scope: "global" as const,
+      project_path: null,
+      base_dir: "/tmp/claude",
+      skills_path: "/tmp/claude/skills",
+      commands_path: "/tmp/claude/commands",
+      agents_path: null,
+      guidance_path: null,
+    },
+    capabilities: {
+      list: { supported: true, reason: null },
+      remove: { supported: true, reason: null },
+      check: { supported: true, reason: null },
+      update: { supported: true, reason: null },
+    },
+    summary: {
+      total: items.length,
+      curated: items.filter((item) => item.source.kind === "curated").length,
+      manual: items.filter((item) => item.source.kind !== "curated").length,
+      tracked: items.filter((item) => item.tracking.kind === "tracked").length,
+      update_available: items.filter((item) => item.update.kind === "update_available").length,
+    },
+    groups: buildInstalledGroups(items),
+    filtered_total: items.length,
+    page: 1,
+    page_size: Math.max(items.length, 1),
+    total_pages: 1,
+    items,
+  };
+}
+
 async function clickFirstVisible(dialog: Locator, names: RegExp[]) {
   for (const name of names) {
     const button = dialog.getByRole("button", { name }).first();
@@ -400,32 +492,7 @@ export async function mockNpxSkillsApi(page: Page) {
   );
 
   await page.route("**/api/platforms/claude/npx-skills/installed**", (route) =>
-    jsonResponse(route, {
-      target: {
-        scope: "global",
-        project_path: null,
-        base_dir: "/tmp/claude",
-        skills_path: "/tmp/claude/skills",
-        commands_path: "/tmp/claude/commands",
-        agents_path: null,
-        guidance_path: null,
-      },
-      capabilities: {
-        list: { supported: true, reason: null },
-        remove: { supported: true, reason: null },
-        check: { supported: true, reason: null },
-        update: { supported: true, reason: null },
-      },
-      summary: {
-        total: installedItems.length,
-        curated: installedItems.filter((item) => item.source.kind === "curated").length,
-        manual: installedItems.filter((item) => item.source.kind !== "curated").length,
-        tracked: installedItems.filter((item) => item.tracking.kind === "tracked").length,
-        update_available: installedItems.filter((item) => item.update.kind === "update_available")
-          .length,
-      },
-      items: installedItems,
-    })
+    jsonResponse(route, buildInstalledInventoryResponse(installedItems))
   );
 
   await page.route("**/api/platforms/claude/npx-skills/install/jobs", async (route) => {

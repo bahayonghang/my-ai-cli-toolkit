@@ -37,6 +37,8 @@ const CATEGORY_ORDER_LOCAL: i32 = 30;
 const CATEGORY_ORDER_UNKNOWN: i32 = 40;
 const PROJECT_MAINTENANCE_REASON: &str =
     "The current skills CLI only supports check/update from the global lock file.";
+const DEFAULT_PAGE_SIZE: usize = 50;
+const MAX_PAGE_SIZE: usize = 200;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct CliListedSkill {
@@ -135,6 +137,47 @@ struct InstalledInventorySourceData {
     check_cache: CheckCacheFile,
 }
 
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct InventoryQuery {
+    pub search: Option<String>,
+    pub group_id: Option<String>,
+    pub category_id: Option<String>,
+    pub source_filter: Option<String>,
+    pub tracking_filter: Option<String>,
+    pub update_filter: Option<String>,
+    pub page: Option<usize>,
+    pub page_size: Option<usize>,
+}
+
+#[derive(Clone, Debug)]
+pub struct InventoryPageResult {
+    pub target: ResolvedInstallTargetDto,
+    pub capabilities: NpxSkillsCapabilitiesDto,
+    pub summary: NpxSkillsInstalledSummaryDto,
+    pub groups: Vec<NpxTaxonomyGroupDto>,
+    pub filtered_total: usize,
+    pub page: usize,
+    pub page_size: usize,
+    pub total_pages: usize,
+    pub items: Vec<NpxInstalledSkillInstanceDto>,
+}
+
+impl InventoryPageResult {
+    pub fn into_dto(self) -> NpxSkillsInstalledInventoryDto {
+        NpxSkillsInstalledInventoryDto {
+            target: self.target,
+            capabilities: self.capabilities,
+            summary: self.summary,
+            groups: self.groups,
+            filtered_total: self.filtered_total,
+            page: self.page,
+            page_size: self.page_size,
+            total_pages: self.total_pages,
+            items: self.items,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 struct InventoryCacheEntry {
     cached_at_ms: u64,
@@ -193,6 +236,58 @@ pub async fn resolve_inventory(
         page: 1,
         page_size,
         total_pages: 1,
+        items,
+    })
+}
+
+pub async fn resolve_inventory_page(
+    project_root: &Path,
+    install_target: &InstallTargetDto,
+    resolved_target: ResolvedInstallTargetDto,
+    catalog_entries: &[ResolvedExternalSkillEntry],
+    cli_mode: NpxSkillsCliMode,
+    query: &InventoryQuery,
+) -> Result<InventoryPageResult, AppError> {
+    let inventory = resolve_inventory(
+        project_root,
+        install_target,
+        resolved_target,
+        catalog_entries,
+        cli_mode,
+    )
+    .await?;
+    let search = query.search.as_ref().map(|value| value.to_lowercase());
+    let mut filtered_items = inventory
+        .items
+        .into_iter()
+        .filter(|item| item_matches_query(item, search.as_deref(), query))
+        .collect::<Vec<_>>();
+    filtered_items.sort_by(|left, right| {
+        left.group_order
+            .cmp(&right.group_order)
+            .then_with(|| left.category_order.cmp(&right.category_order))
+            .then_with(|| left.name.cmp(&right.name))
+    });
+    let filtered_total = filtered_items.len();
+    let page_size = sanitize_page_size(query.page_size);
+    let total_pages = total_pages(filtered_total, page_size);
+    let page = sanitize_page(query.page, total_pages);
+    let start = (page - 1) * page_size;
+    let items = filtered_items
+        .into_iter()
+        .skip(start)
+        .take(page_size)
+        .collect::<Vec<_>>();
+
+    Ok(InventoryPageResult {
+        target: inventory.target,
+        capabilities: inventory.capabilities,
+        summary: inventory.summary,
+        groups: inventory.groups,
+        filtered_total,
+        page,
+        page_size,
+        total_pages,
         items,
     })
 }
@@ -294,7 +389,7 @@ async fn resolve_inventory_source_data(
     };
     let data = Arc::new(InstalledInventorySourceData {
         listed_skills,
-        lock_entries: load_lock_entries(install_target),
+        lock_entries: load_lock_entries(install_target)?,
         check_cache: read_check_cache(project_root, Path::new(&resolved_target.skills_path))?,
     });
     write_inventory_cache(cache_key, Arc::clone(&data), now_ms);
@@ -321,6 +416,92 @@ fn build_summary(items: &[NpxInstalledSkillInstanceDto]) -> NpxSkillsInstalledSu
             .filter(|item| matches!(item.update.kind, NpxInstalledUpdateKindDto::UpdateAvailable))
             .count(),
     }
+}
+
+fn item_matches_query(
+    item: &NpxInstalledSkillInstanceDto,
+    search: Option<&str>,
+    query: &InventoryQuery,
+) -> bool {
+    if let Some(value) = search
+        && !item_matches_search(item, value)
+    {
+        return false;
+    }
+    if let Some(ref group_id) = query.group_id
+        && item.group_id != *group_id
+    {
+        return false;
+    }
+    if let Some(ref category_id) = query.category_id
+        && item.category_id != *category_id
+    {
+        return false;
+    }
+    item_matches_source_filter(item, query.source_filter.as_deref())
+        && item_matches_tracking_filter(item, query.tracking_filter.as_deref())
+        && item_matches_update_filter(item, query.update_filter.as_deref())
+}
+
+fn item_matches_search(item: &NpxInstalledSkillInstanceDto, search: &str) -> bool {
+    item.name.to_lowercase().contains(search)
+        || item.source.r#ref.to_lowercase().contains(search)
+        || item
+            .description
+            .as_ref()
+            .is_some_and(|value| value.to_lowercase().contains(search))
+        || item.group_label.to_lowercase().contains(search)
+        || item.category_label.to_lowercase().contains(search)
+        || item.source.display.to_lowercase().contains(search)
+        || item
+            .tags
+            .iter()
+            .any(|tag| tag.to_lowercase().contains(search))
+}
+
+fn item_matches_source_filter(item: &NpxInstalledSkillInstanceDto, filter: Option<&str>) -> bool {
+    match filter.unwrap_or("all") {
+        "all" | "" => true,
+        "curated" => matches!(item.source.kind, NpxInstalledSourceKindDto::Curated),
+        "manual" => !matches!(item.source.kind, NpxInstalledSourceKindDto::Curated),
+        _ => true,
+    }
+}
+
+fn item_matches_tracking_filter(item: &NpxInstalledSkillInstanceDto, filter: Option<&str>) -> bool {
+    match filter.unwrap_or("all") {
+        "all" | "" => true,
+        "tracked" => matches!(item.tracking.kind, NpxInstalledTrackingKindDto::Tracked),
+        "untracked" => matches!(item.tracking.kind, NpxInstalledTrackingKindDto::Untracked),
+        _ => true,
+    }
+}
+
+fn item_matches_update_filter(item: &NpxInstalledSkillInstanceDto, filter: Option<&str>) -> bool {
+    match filter.unwrap_or("all") {
+        "all" | "" => true,
+        "not_checked" => matches!(item.update.kind, NpxInstalledUpdateKindDto::NotChecked),
+        "up_to_date" => matches!(item.update.kind, NpxInstalledUpdateKindDto::UpToDate),
+        "update_available" => {
+            matches!(item.update.kind, NpxInstalledUpdateKindDto::UpdateAvailable)
+        }
+        "unsupported" => matches!(item.update.kind, NpxInstalledUpdateKindDto::Unsupported),
+        _ => true,
+    }
+}
+
+fn sanitize_page_size(page_size: Option<usize>) -> usize {
+    page_size
+        .unwrap_or(DEFAULT_PAGE_SIZE)
+        .clamp(1, MAX_PAGE_SIZE)
+}
+
+fn total_pages(filtered_total: usize, page_size: usize) -> usize {
+    std::cmp::max(1, filtered_total.div_ceil(page_size))
+}
+
+fn sanitize_page(page: Option<usize>, total_pages: usize) -> usize {
+    page.unwrap_or(1).clamp(1, total_pages)
 }
 
 fn build_taxonomy_groups(items: &[NpxInstalledSkillInstanceDto]) -> Vec<NpxTaxonomyGroupDto> {
@@ -592,37 +773,49 @@ async fn list_installed_skills(
     Ok(listed)
 }
 
-fn load_lock_entries(install_target: &InstallTargetDto) -> HashMap<String, LockMetadata> {
+fn load_lock_entries(
+    install_target: &InstallTargetDto,
+) -> Result<HashMap<String, LockMetadata>, AppError> {
     match install_target.scope {
         InstallTargetScopeDto::Global => read_global_lock(),
         InstallTargetScopeDto::Project => install_target
             .project_path
             .as_ref()
             .map(PathBuf::from)
-            .map_or_else(HashMap::new, |path| read_project_lock(&path)),
+            .map_or_else(|| Ok(HashMap::new()), |path| read_project_lock(&path)),
     }
 }
 
-fn read_global_lock() -> HashMap<String, LockMetadata> {
+fn read_global_lock() -> Result<HashMap<String, LockMetadata>, AppError> {
     let path = std::env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)
         .map(|base| base.join("skills").join(GLOBAL_LOCK_FILE))
         .unwrap_or_else(|| home_dir().join(".agents").join(GLOBAL_LOCK_FILE));
 
-    let file: GlobalLockFile = read_json_file(&path).unwrap_or_default();
-    file.skills
-        .into_iter()
-        .map(|(name, entry)| (name, global_lock_metadata(entry)))
-        .collect()
+    read_global_lock_from(&path)
 }
 
-fn read_project_lock(project_path: &Path) -> HashMap<String, LockMetadata> {
+fn read_project_lock(project_path: &Path) -> Result<HashMap<String, LockMetadata>, AppError> {
     let path = project_path.join(PROJECT_LOCK_FILE);
-    let file: ProjectLockFile = read_json_file(&path).unwrap_or_default();
-    file.skills
+    read_project_lock_from(&path)
+}
+
+fn read_global_lock_from(path: &Path) -> Result<HashMap<String, LockMetadata>, AppError> {
+    let file: GlobalLockFile = read_json_file(path)?;
+    Ok(file
+        .skills
+        .into_iter()
+        .map(|(name, entry)| (name, global_lock_metadata(entry)))
+        .collect())
+}
+
+fn read_project_lock_from(path: &Path) -> Result<HashMap<String, LockMetadata>, AppError> {
+    let file: ProjectLockFile = read_json_file(path)?;
+    Ok(file
+        .skills
         .into_iter()
         .map(|(name, entry)| (name, project_lock_metadata(entry)))
-        .collect()
+        .collect())
 }
 
 fn global_lock_metadata(entry: GlobalLockEntry) -> LockMetadata {
@@ -1730,5 +1923,84 @@ mod tests {
             items[0].installed_instance_id.as_deref(),
             Some("find-skills")
         );
+    }
+
+    #[tokio::test]
+    async fn resolve_inventory_page_sorts_before_paginating() {
+        clear_inventory_cache_for_tests();
+
+        let project_root = temp_dir("inventory_page");
+        let skills_path = project_root.join("skills");
+        let cache_key = inventory_cache_key(
+            &skills_path,
+            InstallTargetScopeDto::Global,
+            NpxSkillsCliMode::Auto,
+        );
+        write_inventory_cache(
+            cache_key,
+            source_data_with_names(&["zeta", "alpha", "beta"]),
+            unix_time_ms(),
+        );
+
+        let page = resolve_inventory_page(
+            &project_root,
+            &InstallTargetDto {
+                scope: InstallTargetScopeDto::Global,
+                project_path: None,
+            },
+            ResolvedInstallTargetDto {
+                scope: InstallTargetScopeDto::Global,
+                project_path: None,
+                base_dir: project_root.to_string_lossy().into_owned(),
+                skills_path: skills_path.to_string_lossy().into_owned(),
+                commands_path: None,
+                agents_path: None,
+                guidance_path: None,
+            },
+            &[],
+            NpxSkillsCliMode::Auto,
+            &InventoryQuery {
+                page: Some(2),
+                page_size: Some(1),
+                ..InventoryQuery::default()
+            },
+        )
+        .await
+        .expect("resolve inventory page");
+
+        assert_eq!(page.filtered_total, 3);
+        assert_eq!(page.page, 2);
+        assert_eq!(page.page_size, 1);
+        assert_eq!(page.total_pages, 3);
+        assert_eq!(page.items.len(), 1);
+        assert_eq!(page.items[0].name, "beta");
+    }
+
+    #[test]
+    fn malformed_global_lock_returns_error() {
+        let project_root = temp_dir("broken_global_lock");
+        let lock_path = project_root.join(GLOBAL_LOCK_FILE);
+        fs::write(&lock_path, "{ not valid json").expect("write malformed lock");
+
+        let error = read_global_lock_from(&lock_path).expect_err("lock should fail");
+        let message = match error {
+            AppError::Internal(message) => message,
+            other => panic!("unexpected error: {other:?}"),
+        };
+        assert!(message.contains(lock_path.to_string_lossy().as_ref()));
+    }
+
+    #[test]
+    fn malformed_project_lock_returns_error() {
+        let project_root = temp_dir("broken_project_lock");
+        let lock_path = project_root.join(PROJECT_LOCK_FILE);
+        fs::write(&lock_path, "{ not valid json").expect("write malformed lock");
+
+        let error = read_project_lock_from(&lock_path).expect_err("lock should fail");
+        let message = match error {
+            AppError::Internal(message) => message,
+            other => panic!("unexpected error: {other:?}"),
+        };
+        assert!(message.contains(lock_path.to_string_lossy().as_ref()));
     }
 }

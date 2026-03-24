@@ -87,6 +87,34 @@ function withInstallTargetBody<T extends Record<string, unknown>>(
   return { ...body, install_target: installTarget };
 }
 
+function normalizeNpxInstalledInventory(
+  data: NpxSkillsInstalledInventoryDto
+): NpxSkillsInstalledInventoryDto {
+  const items = Array.isArray(data.items) ? data.items : [];
+  const groups = Array.isArray(data.groups) ? data.groups : [];
+  const filteredTotal =
+    typeof data.filtered_total === "number" ? data.filtered_total : items.length;
+  const pageSize =
+    typeof data.page_size === "number" && data.page_size > 0
+      ? data.page_size
+      : Math.max(items.length, 1);
+  const totalPages =
+    typeof data.total_pages === "number" && data.total_pages > 0 ? data.total_pages : 1;
+
+  return {
+    ...data,
+    groups: groups.map((group) => ({
+      ...group,
+      categories: Array.isArray(group.categories) ? group.categories : [],
+    })),
+    filtered_total: filteredTotal,
+    page: typeof data.page === "number" && data.page > 0 ? data.page : 1,
+    page_size: pageSize,
+    total_pages: totalPages,
+    items,
+  };
+}
+
 // ── Platforms ──────────────────────────────────────────────────────
 
 export async function getPlatforms(signal?: AbortSignal): Promise<PlatformDisplay[]> {
@@ -423,10 +451,11 @@ export async function getNpxInstalledSkills(
   if (params?.pageSize) query.set("page_size", String(params.pageSize));
   applyInstallTargetQuery(query, params?.installTarget);
   const qs = query.toString();
-  return fetchJson(
+  const data = await fetchJson<NpxSkillsInstalledInventoryDto>(
     `${BASE}/platforms/${platformId}/npx-skills/installed${qs ? `?${qs}` : ""}`,
     { signal }
   );
+  return normalizeNpxInstalledInventory(data);
 }
 
 export async function startNpxSkillsInstallJob(

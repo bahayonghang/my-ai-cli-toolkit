@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -87,6 +88,7 @@ import {
 import {
   loadAgents,
   loadCliMode,
+  persistNpxSkillsPreference,
   safeParseEvent,
   operationLabel,
   buildInstallKey,
@@ -119,11 +121,13 @@ export default function NpxSkillsPage() {
     dialogOpen: installTargetDialogOpen,
     target: installTarget,
     resolvedTarget,
+    resolutionError,
     recentProjects,
     openDialog: openInstallTargetDialog,
     closeDialog: closeInstallTargetDialog,
     applyTarget: applyInstallTarget,
   } = useInstallTarget(platformId);
+  const installTargetBlocked = Boolean(resolutionError);
 
   const [view, setView] = useState<ViewMode>("installed");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -258,12 +262,12 @@ export default function NpxSkillsPage() {
 
   const updateAgents = useCallback((next: string[]) => {
     setAgents(next);
-    localStorage.setItem(LS_KEY_AGENTS, JSON.stringify(next));
+    persistNpxSkillsPreference(LS_KEY_AGENTS, JSON.stringify(next));
   }, []);
 
   const updateCliMode = useCallback((next: NpxSkillsCliMode) => {
     setCliMode(next);
-    localStorage.setItem(LS_KEY_CLI_MODE, next);
+    persistNpxSkillsPreference(LS_KEY_CLI_MODE, next);
   }, []);
 
   const installTargetKey = useMemo(
@@ -757,7 +761,7 @@ export default function NpxSkillsPage() {
   );
 
   const openInstallSelectedDialog = () => {
-    if (selectedInstallPayload.length === 0) {
+    if (selectedInstallPayload.length === 0 || !resolvedTarget) {
       return;
     }
     setPendingRunAction({
@@ -775,6 +779,9 @@ export default function NpxSkillsPage() {
   };
 
   const openQuickInstallDialog = () => {
+    if (!resolvedTarget) {
+      return;
+    }
     setPendingRunAction({
       kind: "quick-install",
       packageRef: "",
@@ -799,7 +806,7 @@ export default function NpxSkillsPage() {
   );
 
   const openRemoveDialog = (itemIds: string[]) => {
-    if (itemIds.length === 0) {
+    if (itemIds.length === 0 || !resolvedTarget) {
       return;
     }
     setPendingRunAction({ kind: "remove", itemIds });
@@ -809,8 +816,18 @@ export default function NpxSkillsPage() {
     openRemoveDialog(Array.from(selectedInstalledIds));
   };
 
-  const openCheckDialog = () => setPendingRunAction({ kind: "check" });
-  const openUpdateDialog = () => setPendingRunAction({ kind: "update" });
+  const openCheckDialog = () => {
+    if (!resolvedTarget) {
+      return;
+    }
+    setPendingRunAction({ kind: "check" });
+  };
+  const openUpdateDialog = () => {
+    if (!resolvedTarget) {
+      return;
+    }
+    setPendingRunAction({ kind: "update" });
+  };
 
   const handleRunDialogConfirm = useCallback(
     async (payload: {
@@ -962,8 +979,10 @@ export default function NpxSkillsPage() {
     installTarget.scope === "project"
       ? t("installed.installTargetProject")
       : t("installed.installTargetGlobal");
-  const installTargetPath =
-    resolvedTarget?.skills_path ?? t("installed.installTargetLoading");
+  const installTargetPath = resolvedTarget?.skills_path
+    ?? (installTargetBlocked
+      ? t("installed.installTargetUnavailable")
+      : t("installed.installTargetLoading"));
   const runConfigPath = useMemo(() => {
     if (jobRunConfig?.installTarget.scope === "project") {
       return (
@@ -1023,6 +1042,11 @@ export default function NpxSkillsPage() {
       }
     >
       <Box sx={{ position: "relative", zIndex: 1 }}>
+        {installTargetBlocked ? (
+          <Alert severity="error" sx={{ mb: 2.5 }}>
+            {resolutionError}
+          </Alert>
+        ) : null}
         <ListSurface tone="workbench">
           <Stack spacing={1.25}>
             <Stack

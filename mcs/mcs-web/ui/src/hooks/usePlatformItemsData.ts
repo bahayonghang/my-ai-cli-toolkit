@@ -10,6 +10,7 @@ import type {
 
 interface Options {
   platformId?: string;
+  enabled?: boolean;
   activeTab: "skills" | "commands" | "agents";
   search: string;
   selectedCategory: string | null;
@@ -28,6 +29,7 @@ interface Result {
 
 export function usePlatformItemsData({
   platformId,
+  enabled = true,
   activeTab,
   search,
   selectedCategory,
@@ -46,7 +48,7 @@ export function usePlatformItemsData({
     (activeTab === "skills" ? "skill" : activeTab === "commands" ? "command" : "agent");
 
   const fetchCategories = useCallback(async () => {
-    if (!platformId) {
+    if (!platformId || !enabled) {
       setCategories([]);
       return;
     }
@@ -70,12 +72,13 @@ export function usePlatformItemsData({
       }
       setError((errorValue as Error).message);
     }
-  }, [installTarget, itemType, platformId]);
+  }, [enabled, installTarget, itemType, platformId]);
 
   const fetchItems = useCallback(async () => {
-    if (!platformId) {
+    if (!platformId || !enabled) {
       setItems([]);
       setLoading(false);
+      setError(null);
       return;
     }
     itemsAbortRef.current?.abort();
@@ -110,7 +113,7 @@ export function usePlatformItemsData({
         setLoading(false);
       }
     }
-  }, [activeTab, installTarget, platformId, search, selectedCategory, statusFilter]);
+  }, [activeTab, enabled, installTarget, platformId, search, selectedCategory, statusFilter]);
 
   const refresh = useCallback(async () => {
     await Promise.all([fetchItems(), fetchCategories()]);
