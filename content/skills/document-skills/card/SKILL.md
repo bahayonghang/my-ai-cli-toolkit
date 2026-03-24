@@ -3,7 +3,6 @@ name: card
 description: "Turn URLs, pasted text, Markdown, or article files into PNG knowledge cards and visual explainers. Supports five modes: `-l` long reading card, `-i` infographic, `-m` multi-card carousel, `-v` sketchnote, and `-c` black-and-white manga comic. Use whenever the user asks to make content into a card, long image, infographic, visual note, sketchnote, comic, manga page, or says '铸' / 'cast' / '做成图' / '做成卡片' / '视觉化一下', even if they do not specify a mode. Choose the best-fit mode automatically when no flag is given. Do not use it for generic photo illustration, slide decks, or editable diagram authoring."
 category: document-skills
 tags: [card, png, infographic, sketchnote, comic, visualization, longform]
-user_invocable: true
 version: "1.7.0"
 ---
 

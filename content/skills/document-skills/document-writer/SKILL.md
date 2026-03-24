@@ -1,11 +1,10 @@
 ---
 name: document-writer
 description: Generate technical documentation and code comments from codebase. Use when user requests README, API docs, architecture guides, or JSDoc.
+category: ai-orchestration
+tags: [documentation, readme, api-docs, jsdoc, omo-skills]
 argument-hint: [target-path]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: ai-orchestration
-  tags: [documentation, readme, api-docs, jsdoc, omo-skills]
 ---
 
 Write or update documentation for the target project at `$ARGUMENTS`.

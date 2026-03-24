@@ -1,9 +1,8 @@
 ---
 name: touying
 description: Author Typst slide decks with Touying. Use when working with .typ presentations, themes, or animations.
-metadata:
-  category: document-processing
-  tags: [typst, touying, slide-deck, animation, theme]
+category: document-processing
+tags: [typst, touying, slide-deck, animation, theme]
 argument-hint: path-to-typ-file
 allowed-tools: [Read, Write, Glob, Grep]
 ---

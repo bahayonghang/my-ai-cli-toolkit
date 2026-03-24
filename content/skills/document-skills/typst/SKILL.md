@@ -1,6 +1,8 @@
 ---
 name: typst
 description: Generate and edit idiomatic Typst (.typ) code. Use when working with Typst files or when the user mentions Typst markup or document formatting.
+category: document-processing
+tags: [typst, typesetting, markup, document]
 allowed-tools:
   - Read
   - Write

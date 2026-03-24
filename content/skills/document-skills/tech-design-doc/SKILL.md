@@ -1,9 +1,8 @@
 ---
 name: tech-design-doc
 description: Generate technical design documents with proper structure, diagrams, and implementation details. Use when designing a new feature, documenting architecture decisions, or planning refactoring work. Default language is English.
-metadata:
-  category: documentation
-  tags: [design-doc, architecture, adr, rfc, technical-spec]
+category: documentation
+tags: [design-doc, architecture, adr, rfc, technical-spec]
 argument-hint: [feature-name]
 allowed-tools: Read, Write, Glob, Grep
 ---
