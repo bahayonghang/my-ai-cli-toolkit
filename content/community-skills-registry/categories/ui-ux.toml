@@ -69,3 +69,12 @@ stars = 4
 usage = "安装后可为 draw.io 图表创建、编辑与可视化建模提供辅助能力"
 tags = ["drawio", "diagram", "visualization"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/drawio-skills" }
+
+[[skills]]
+id = "design-dna"
+name = "design-dna"
+description = "Design DNA — 将参考 UI（图片、截图、网页链接）转换为量化的 Design DNA JSON（包含 Token、定性样式和视觉特效），从而生成风格匹配的 UI 界面"
+stars = 5
+usage = "提供参考 UI 即可提取设计基因，用于后续准确还原项目设计语言与快速生成对应界面的代码"
+tags = ["design", "ui", "dna", "vision", "generator"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "zanwei/design-dna" }
