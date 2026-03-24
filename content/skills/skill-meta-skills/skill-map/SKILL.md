@@ -1,7 +1,6 @@
 ---
 name: skill-map
 description: "Skill map viewer. Scans installed skills under ~/.claude/skills and renders an ASCII overview of name, version, triggerability, description, and category signals. Use whenever the user asks what skills are installed, available, or grouped, including phrases like 'skills', '技能', '技能地图', 'skill map', '我有哪些技能', '看看技能', '列出技能', or 'list skills'."
-user_invocable: true
 version: "1.1.0"
 category: skill-management
 ---

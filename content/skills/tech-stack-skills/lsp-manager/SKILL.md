@@ -2,19 +2,18 @@
 name: lsp-manager
 version: "1.1.0"
 description: "Detect project languages, configure LSP servers, and troubleshoot language-server integration. Use this skill when setting up code intelligence, autocomplete, type checking, IDE integration, or diagnosing LSP failures — prefer it over manual config for any language-server task."
+category: development-tools
+tags:
+  - lsp
+  - language-server
+  - code-intelligence
+  - diagnostics
+  - configuration
+  - troubleshooting
+  - ide-integration
+  - autocomplete
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: development-tools
-  tags:
-    - lsp
-    - language-server
-    - code-intelligence
-    - diagnostics
-    - configuration
-    - troubleshooting
-    - ide-integration
-    - autocomplete
 ---
 
 Execute the LSP configuration or troubleshooting task described in `$ARGUMENTS`.

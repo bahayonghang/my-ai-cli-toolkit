@@ -2,9 +2,8 @@
 name: article-cover
 description: "Generate article cover images as SVG. Use when creating cover/banner/header graphics for blogs, documentation, social media cards, or OG images. Trigger this skill whenever the user mentions article covers, blog banners, post thumbnails, social sharing images, or any visual header for written content — even if they don't explicitly say 'SVG'."
 version: 1.0.0
-metadata:
-  category: content-creation
-  tags: [svg, graphics, cover-image, blog, design, banner, og-image, social-media, thumbnail]
+category: content-creation
+tags: [svg, graphics, cover-image, blog, design, banner, og-image, social-media, thumbnail]
 argument-hint: [article-title-or-topic]
 allowed-tools: Write, Read
 ---

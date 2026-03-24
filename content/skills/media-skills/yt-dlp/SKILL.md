@@ -2,10 +2,9 @@
 name: yt-dlp
 description: "Download videos via yt-dlp from YouTube, Bilibili, Twitter/X, TikTok, and 1000+ sites. Use when downloading video, extracting audio/music, grabbing subtitles/captions, or saving any online media. Trigger this skill whenever the user wants to download, save, rip, or extract media from a URL — even if they don't mention yt-dlp by name."
 version: 1.0.0
-metadata:
-  license: MIT
-  category: media-processing
-  tags: [video-download, youtube, bilibili, subtitle, media, audio, music, tiktok, twitter]
+license: MIT
+category: media-processing
+tags: [video-download, youtube, bilibili, subtitle, media, audio, music, tiktok, twitter]
 argument-hint: [video-url]
 allowed-tools: Read, Bash(yt-dlp *, ffmpeg -version)
 ---

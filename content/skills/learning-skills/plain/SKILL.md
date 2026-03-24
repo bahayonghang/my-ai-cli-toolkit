@@ -3,7 +3,6 @@ name: plain
 description: Plain-language rewrite skill that turns existing content or questions into natural prose a smart 12-year-old can retell. Use whenever the user says 白话说 / 说人话 / plain / grok, wants jargon stripped away, or needs a concept, document, or explanation rewritten into concrete spoken language. Prefer this over `learn` for simplification and over `rank` for summarization. Do not use it for single-word vocabulary study.
 category: learning-skills
 tags: [plain-language, rewriting, explanation, org-mode, note-taking, readability]
-user_invocable: true
 version: "5.1.0"
 ---
 

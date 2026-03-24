@@ -4,7 +4,6 @@ description: Deep single-word English mastery skill. Unpacks one English word's 
 category: learning-skills
 tags: [english, vocabulary, semantics, language-learning, markdown]
 version: "1.1.0"
-user_invocable: true
 ---
 
 ## Usage

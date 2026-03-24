@@ -2,20 +2,19 @@
 name: rust-cli-tui-developer
 version: "1.1.0"
 description: "Expert guidance for building Rust CLI and TUI applications using clap, inquire, and ratatui. Use this skill when creating command-line tools, argument parsers, interactive terminal prompts, or rich terminal UIs in Rust — prefer it over generic Rust advice for any CLI/TUI task."
+category: rust-development
+tags:
+  - rust
+  - cli
+  - tui
+  - terminal
+  - clap
+  - ratatui
+  - console
+  - inquire
+  - crossterm
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: rust-development
-  tags:
-    - rust
-    - cli
-    - tui
-    - terminal
-    - clap
-    - ratatui
-    - console
-    - inquire
-    - crossterm
 ---
 
 Execute the Rust CLI/TUI development task described in `$ARGUMENTS`.

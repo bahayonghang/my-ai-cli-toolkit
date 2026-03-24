@@ -3,7 +3,6 @@ name: word-flow
 description: Word-to-card workflow skill that runs `word` first and then `card -i` for one or more explicit English words. Use when the user wants both deep word analysis and a visual card, says 词卡 / word card / word flow, or provides a clear list of English vocabulary items to turn into cards. Do not use it for raw dictionary lookup, generic English sentences, or ambiguous word targets; if the target list is unclear, ask for the exact words.
 category: learning-skills
 tags: [english, vocabulary, workflow, card, png, language-learning]
-user_invocable: true
 version: "1.1.0"
 ---
 

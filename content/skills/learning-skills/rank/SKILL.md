@@ -1,9 +1,8 @@
 ---
 name: rank
-description: Domain-reduction skill that finds the smallest set of independent generators behind a messy field and proves them with four tests: generativity, minimality, independence, and predictive power. Use when the user asks for 秩 / irreducible structure / what really holds a domain up, or wants to reduce many phenomena to a small hidden core. Do not use it for ordinary summaries or plain-language rewrites.
+description: "Domain-reduction skill that finds the smallest set of independent generators behind a messy field and proves them with four tests: generativity, minimality, independence, and predictive power. Use when the user asks for 秩 / irreducible structure / what really holds a domain up, or wants to reduce many phenomena to a small hidden core. Do not use it for ordinary summaries or plain-language rewrites."
 category: learning-skills
 tags: [reduction, generators, structure, org-mode, note-taking, analysis]
-user_invocable: true
 version: "1.0.0"
 ---
 

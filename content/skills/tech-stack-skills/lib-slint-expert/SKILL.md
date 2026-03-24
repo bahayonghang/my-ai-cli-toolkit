@@ -2,19 +2,18 @@
 name: lib-slint-expert
 version: "1.1.0"
 description: "Build native GUI applications with Slint and Rust. Use this skill when creating desktop UI, cross-platform apps, embedded UI, declarative UI components, or reusable component libraries with Slint — prefer it over generic Rust advice for any Slint UI task."
+category: gui-development
+tags:
+  - slint
+  - rust
+  - gui
+  - ui-toolkit
+  - cross-platform
+  - native-ui
+  - embedded-ui
+  - declarative-ui
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: gui-development
-  tags:
-    - slint
-    - rust
-    - gui
-    - ui-toolkit
-    - cross-platform
-    - native-ui
-    - embedded-ui
-    - declarative-ui
 ---
 
 Execute the Slint GUI development task described in `$ARGUMENTS`.

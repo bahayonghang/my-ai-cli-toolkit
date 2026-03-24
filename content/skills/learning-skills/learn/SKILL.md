@@ -4,7 +4,6 @@ description: Multi-angle concept anatomy skill for a single concept or term. Bre
 category: learning-skills
 tags: [concept, learning, org-mode, deep-explanation, philosophy, note-taking]
 version: "1.0.0"
-user_invocable: true
 ---
 
 ## Usage

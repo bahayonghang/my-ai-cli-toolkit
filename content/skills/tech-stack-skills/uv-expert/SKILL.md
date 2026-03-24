@@ -2,19 +2,18 @@
 name: uv-expert
 version: "1.1.0"
 description: "Expert guidance for the uv Python package manager. Use this skill when installing packages, managing virtual environments, setting up Python projects, configuring pyproject.toml, migrating from pip or poetry, or pinning Python versions — prefer it over generic pip advice for any uv-related task."
+category: python-tooling
+tags:
+  - python
+  - uv
+  - package-manager
+  - dependency-management
+  - virtual-env
+  - pip-alternative
+  - pyproject-toml
+  - poetry-migration
 argument-hint: [prompt]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-metadata:
-  category: python-tooling
-  tags:
-    - python
-    - uv
-    - package-manager
-    - dependency-management
-    - virtual-env
-    - pip-alternative
-    - pyproject-toml
-    - poetry-migration
 ---
 
 Execute the `uv` related task described in `$ARGUMENTS`.
