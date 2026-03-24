@@ -354,7 +354,7 @@ function SummaryMetric({ value, label }: { value: number; label: string }) {
         background:
           "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-workbench-surface-muted) 100%)",
         boxShadow:
-          "inset 0 1px 0 var(--mcs-glass-highlight), 0 10px 24px rgba(17, 24, 39, 0.12)",
+          "inset 0 1px 0 var(--mcs-glass-highlight), var(--mcs-shadow-sm)",
       }}
     >
       <Typography

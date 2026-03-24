@@ -36,6 +36,7 @@ export default function NpxSkillsFilters({
         <ListItemButton
           selected={selectedCategoryId === null}
           onClick={() => onCategoryChange(null)}
+          sx={{ minHeight: 44 }}
         >
           <ListItemText primary={t("common.all")} secondary={String(totalCount)} />
         </ListItemButton>
@@ -54,6 +55,7 @@ export default function NpxSkillsFilters({
                 key={category.id}
                 selected={selectedCategoryId === category.id}
                 onClick={() => onCategoryChange(category.id)}
+                sx={{ minHeight: 44 }}
               >
                 <ListItemText
                   primary={category.label}

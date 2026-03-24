@@ -1,6 +1,5 @@
 import { IconButton, Tooltip } from "@mui/material";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
+import { MoonStars, SunDim } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import { useUiStore } from "@/stores/uiStore";
 
@@ -19,8 +18,13 @@ export function ThemeToggleButton() {
         color="inherit"
         aria-label={label}
         onClick={toggleColorMode}
+        sx={{
+          borderRadius: 999,
+          px: 1.1,
+          minWidth: 46,
+        }}
       >
-        {colorMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+        {colorMode === "dark" ? <SunDim size={18} weight="bold" /> : <MoonStars size={18} weight="bold" />}
       </IconButton>
     </Tooltip>
   );

@@ -25,7 +25,7 @@ function Fallback() {
       justifyContent="center"
       alignItems="center"
       gap={2}
-      minHeight="100vh"
+      minHeight="100dvh"
       role="status"
       aria-live="polite"
       aria-busy="true"

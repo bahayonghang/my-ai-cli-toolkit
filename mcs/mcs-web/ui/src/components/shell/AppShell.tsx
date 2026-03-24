@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import InstallDesktopRoundedIcon from "@mui/icons-material/InstallDesktopRounded";
-import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRightRounded";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import {
-  alpha,
+  ArrowLeft,
+  CaretRight,
+  ChartPieSlice,
+  DownloadSimple,
+  House,
+  List,
+  SlidersHorizontal,
+  SquaresFour,
+} from "@phosphor-icons/react";
+import {
   Box,
   ButtonBase,
   Chip,
@@ -201,11 +203,11 @@ function ShellNavButton({
           ? "var(--mcs-workbench-outline-strong)"
           : "var(--mcs-shell-divider)",
         background: active
-          ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill) 100%)"
-          : "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
-        boxShadow: active ? "var(--mcs-shadow-sm)" : "none",
-        px: 1.4,
-        py: 1.25,
+          ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill-emphasis) 100%)"
+          : "linear-gradient(180deg, var(--mcs-panel-fill) 0%, var(--mcs-panel-fill-emphasis) 100%)",
+        boxShadow: active ? "var(--mcs-shadow-sm)" : "inset 0 1px 0 var(--mcs-glass-highlight)",
+        px: 1.5,
+        py: 1.3,
         transition:
           "transform var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), background-color var(--mcs-duration) var(--mcs-ease)",
         "&:hover": {
@@ -213,6 +215,7 @@ function ShellNavButton({
           borderColor: active
             ? "var(--mcs-workbench-outline-strong)"
             : "var(--mcs-control-stroke-strong)",
+          boxShadow: "var(--mcs-shadow-sm)",
         },
       }}
     >
@@ -221,13 +224,14 @@ function ShellNavButton({
           sx={{
             width: 38,
             height: 38,
-            borderRadius: 2.5,
+            borderRadius: 2.75,
             border: "1px solid var(--mcs-panel-stroke-soft)",
             background:
               active
                 ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill-emphasis) 100%)"
                 : "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
             color: active ? "var(--mcs-panel-accent)" : "text.secondary",
+            boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -253,9 +257,10 @@ function ShellNavButton({
             </Typography>
           ) : null}
         </Box>
-        <KeyboardArrowRightRoundedIcon
-          fontSize="small"
-          sx={{ color: active ? "var(--mcs-panel-accent)" : "text.disabled" }}
+        <CaretRight
+          size={16}
+          weight="bold"
+          style={{ color: active ? "var(--mcs-panel-accent)" : "var(--mcs-workbench-muted)" }}
         />
       </Stack>
     </ButtonBase>
@@ -290,6 +295,7 @@ export function AppShell({
   const { t } = useI18n();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isWorkbenchShell = variant === "workbench";
   const navigateDeferred = useNavigateDeferred();
   const location = useLocation();
   const platforms = usePlatformStore((state) => state.platforms);
@@ -316,9 +322,9 @@ export function AppShell({
           borderRadius: 4,
           border: "1px solid var(--mcs-control-stroke)",
           background:
-            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
-          boxShadow: "var(--mcs-shadow-sm)",
-          p: 2,
+            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 56%, var(--mcs-entry-band) 100%)",
+          boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 var(--mcs-glass-highlight)",
+          p: 2.2,
         }}
       >
         <Stack spacing={1.5}>
@@ -336,7 +342,10 @@ export function AppShell({
           <Chip
             label={t("common.controlPlaneLabel")}
             variant="outlined"
-            sx={{ alignSelf: "flex-start" }}
+            sx={{
+              alignSelf: "flex-start",
+              backgroundColor: "var(--mcs-panel-fill-emphasis)",
+            }}
           />
         </Stack>
       </Box>
@@ -348,7 +357,7 @@ export function AppShell({
         <ShellNavButton
           label={t("common.overview")}
           subtitle={t("common.overviewSubtitle")}
-          icon={<WidgetsRoundedIcon fontSize="small" />}
+          icon={<SquaresFour size={18} weight="bold" />}
           active={location.pathname === "/"}
           onClick={() => {
             navigateDeferred("/");
@@ -358,7 +367,7 @@ export function AppShell({
         <ShellNavButton
           label={t("common.dashboard")}
           subtitle={t("common.dashboardSubtitle")}
-          icon={<DashboardRoundedIcon fontSize="small" />}
+          icon={<ChartPieSlice size={18} weight="bold" />}
           active={location.pathname.startsWith("/dashboard")}
           onClick={() => {
             navigateDeferred("/dashboard");
@@ -368,7 +377,7 @@ export function AppShell({
         <ShellNavButton
           label={t("common.installHub")}
           subtitle={t("common.installHubSubtitle")}
-          icon={<InstallDesktopRoundedIcon fontSize="small" />}
+          icon={<DownloadSimple size={18} weight="bold" />}
           active={location.pathname.startsWith("/install-hub")}
           onClick={() => {
             navigateDeferred("/install-hub");
@@ -495,6 +504,12 @@ export function AppShell({
               borderRight: "1px solid var(--mcs-shell-divider)",
               background:
                 "linear-gradient(180deg, var(--mcs-page-rail) 0%, var(--mcs-page-edge) 100%)",
+              backdropFilter: isWorkbenchShell
+                ? "none"
+                : "blur(calc(var(--mcs-glass-blur) * 0.66)) saturate(130%)",
+              WebkitBackdropFilter: isWorkbenchShell
+                ? "none"
+                : "blur(calc(var(--mcs-glass-blur) * 0.66)) saturate(130%)",
             }}
           >
             {navContent}
@@ -508,7 +523,7 @@ export function AppShell({
               sx: {
                 width: 320,
                 p: 2,
-                bgcolor: "background.default",
+                bgcolor: "transparent",
                 backgroundImage: "none",
               },
             }}
@@ -519,18 +534,17 @@ export function AppShell({
 
         <Box sx={{ minWidth: 0, display: "flex", flexDirection: "column" }}>
           <Box
-            sx={{
-              position: "sticky",
-              top: 0,
-              zIndex: 20,
-              px: { xs: 2, sm: 2.5, md: 3 },
-              py: { xs: 1.35, md: 1.75 },
-              borderBottom: "1px solid var(--mcs-shell-divider)",
-              backgroundColor: alpha(
-                theme.palette.background.default,
-                theme.palette.mode === "dark" ? 0.96 : 0.92,
-              ),
-            }}
+              sx={{
+                position: "sticky",
+                top: 0,
+                zIndex: 20,
+                px: { xs: 2, sm: 2.5, md: 3 },
+                py: { xs: 1.35, md: 1.75 },
+                borderBottom: "1px solid var(--mcs-shell-divider)",
+                backgroundColor: "var(--mcs-toolbar-overlay)",
+                backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+                WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+              }}
           >
             <Stack
               direction={{ xs: "column", lg: "row" }}
@@ -545,17 +559,17 @@ export function AppShell({
                     aria-label={t("common.openNavigation")}
                     onClick={() => setNavOpen(true)}
                   >
-                    <MenuRoundedIcon />
+                    <List size={18} weight="bold" />
                   </IconButton>
                 ) : null}
                 {onBack ? (
                   <IconButton color="inherit" aria-label={t("common.back")} onClick={onBack}>
-                    <KeyboardArrowRightRoundedIcon sx={{ transform: "rotate(180deg)" }} />
+                    <ArrowLeft size={18} weight="bold" />
                   </IconButton>
                 ) : null}
                 {onHome ? (
                   <IconButton color="inherit" aria-label={t("common.home")} onClick={onHome}>
-                    <HomeRoundedIcon />
+                    <House size={18} weight="bold" />
                   </IconButton>
                 ) : null}
                 <Box sx={{ minWidth: 0, flexGrow: 1 }}>
@@ -645,9 +659,19 @@ export function SectionHero({
     <Box
       sx={{
         ...surfaceMap[variant],
+        position: "relative",
+        overflow: "hidden",
         px: { xs: 2.5, md: 3.2 },
         py: { xs: 2.4, md: 3 },
         animation: "mcs-shell-rise 260ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 30%)",
+          pointerEvents: "none",
+        },
       }}
     >
       <Stack
@@ -692,16 +716,22 @@ export function SectionHero({
         </Stack>
 
         {actions ? (
-          <Stack
-            spacing={1}
-            useFlexGap
+          <Box
             sx={{
-              minWidth: { xs: "100%", xl: 280 },
+              minWidth: { xs: "100%", xl: 300 },
               width: { xs: "100%", xl: "auto" },
+              borderRadius: 3.5,
+              border: "1px solid var(--mcs-shell-stroke)",
+              background:
+                "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-shell-fill) 100%)",
+              boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
+              p: 1,
             }}
           >
-            {actions}
-          </Stack>
+            <Stack spacing={1} useFlexGap>
+              {actions}
+            </Stack>
+          </Box>
         ) : null}
       </Stack>
     </Box>
@@ -717,6 +747,15 @@ export function MetricStrip({
   tone?: PageSectionTone;
   density?: "feature" | "compact";
 }) {
+  const xlColumns =
+    items.length <= 1
+      ? "1fr"
+      : items.length === 2
+        ? "1.15fr 0.85fr"
+        : items.length === 3
+          ? "1.22fr 0.9fr 0.9fr"
+          : "1.2fr 0.9fr 0.9fr 0.9fr";
+
   return (
     <Box
       sx={{
@@ -725,11 +764,11 @@ export function MetricStrip({
         gridTemplateColumns: {
           xs: "1fr",
           sm: "repeat(2, minmax(0, 1fr))",
-          xl: `repeat(${Math.min(Math.max(items.length, 1), 4)}, minmax(0, 1fr))`,
+          xl: xlColumns,
         },
       }}
     >
-      {items.map((item) => (
+      {items.map((item, index) => (
         <Box
           key={item.key}
           sx={{
@@ -738,6 +777,25 @@ export function MetricStrip({
             px: density === "compact" ? 1.6 : 2,
             py: density === "compact" ? 1.25 : 1.8,
             minHeight: density === "compact" ? 84 : 124,
+            position: "relative",
+            overflow: "hidden",
+            borderColor: item.emphasis ? "var(--mcs-shell-stroke-strong)" : undefined,
+            boxShadow: item.emphasis ? "var(--mcs-shadow-sm)" : undefined,
+            "&::before": item.emphasis
+              ? {
+                  content: '""',
+                  position: "absolute",
+                  insetInline: 0,
+                  top: 0,
+                  height: 3,
+                  background:
+                    "linear-gradient(90deg, var(--mcs-workbench-accent-strong), var(--mcs-workbench-warm-strong))",
+                }
+              : undefined,
+            gridColumn:
+              density === "feature" && index === 0 && items.length >= 3
+                ? { xl: "span 1" }
+                : undefined,
           }}
         >
           {density === "compact" ? (
@@ -812,6 +870,7 @@ export function ListSurface({
         ...toneSurface(tone),
         borderRadius: 3.5,
         overflow: "hidden",
+        boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 var(--mcs-glass-highlight)",
         p: padded ? { xs: 1.5, md: 2 } : 0,
       }}
     >
@@ -865,7 +924,7 @@ export function FilterRail({
       anchor="left"
       open={mobileOpen}
       onClose={onCloseMobile}
-      PaperProps={{ sx: { width: 320, p: 2, bgcolor: "background.default" } }}
+      PaperProps={{ sx: { width: 320, p: 2, bgcolor: "transparent" } }}
     >
       {content}
     </Drawer>
@@ -886,9 +945,16 @@ export function MobileFilterButton({
 }: {
   onClick: () => void;
 }) {
+  const { t } = useI18n();
+
   return (
-    <IconButton color="inherit" aria-label="open filters" onClick={onClick}>
-      <TuneRoundedIcon />
+    <IconButton
+      color="inherit"
+      aria-label={t("common.openFilters")}
+      onClick={onClick}
+      sx={{ borderRadius: 999 }}
+    >
+      <SlidersHorizontal size={18} weight="bold" />
     </IconButton>
   );
 }
@@ -923,7 +989,9 @@ export function StickyActionBar({
           py: 1.35,
           borderColor: "var(--mcs-workbench-outline-strong)",
           background:
-            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill-strong) 100%)",
+            "linear-gradient(180deg, var(--mcs-glass-fill-strong) 0%, var(--mcs-panel-fill-strong) 100%)",
+          backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+          WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
         }}
       >
         <Stack

@@ -289,16 +289,13 @@ export default function InstalledSkillsPage() {
               }}
               sx={{ width: { xs: "100%", lg: 360 } }}
             />
-            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ flexGrow: 1 }}>
-              <Chip label={t("installed.filteredSummary", { count: items.length })} variant="outlined" />
-              <Chip
-                label={t("installed.categoriesSummary", {
-                  count: skillCategories.length,
-                })}
-                variant="outlined"
-              />
-              {activeFilterLabel ? <Chip label={activeFilterLabel} color="primary" variant="outlined" /> : null}
-            </Stack>
+            <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
+              {t("installed.filteredSummary", { count: items.length })} ·{" "}
+              {t("installed.categoriesSummary", {
+                count: skillCategories.length,
+              })}
+              {activeFilterLabel ? ` · ${activeFilterLabel}` : ""}
+            </Typography>
             {search || selectedCategory ? (
               <Button
                 variant="text"
@@ -508,7 +505,11 @@ function InstalledFilters({
   return (
     <Box>
       <List dense disablePadding>
-        <ListItemButton selected={selectedCategory === null} onClick={() => onCategoryChange(null)}>
+        <ListItemButton
+          selected={selectedCategory === null}
+          onClick={() => onCategoryChange(null)}
+          sx={{ minHeight: 44 }}
+        >
           <ListItemText primary={t("installed.allSkills")} />
         </ListItemButton>
         <Divider sx={{ my: 1 }} />
@@ -517,6 +518,7 @@ function InstalledFilters({
             key={category}
             selected={selectedCategory === category}
             onClick={() => onCategoryChange(category)}
+            sx={{ minHeight: 44 }}
           >
             <ListItemText primary={category} />
           </ListItemButton>

@@ -64,7 +64,7 @@ function LoadingScreen() {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      minHeight="100vh"
+      minHeight="100dvh"
     >
       <CircularProgress />
     </Box>

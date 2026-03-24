@@ -1,4 +1,4 @@
-import TranslateIcon from "@mui/icons-material/Translate";
+import { Translate } from "@phosphor-icons/react";
 import { ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useI18n } from "@/i18n";
@@ -27,19 +27,20 @@ export function LanguageToggle({ sx }: LanguageToggleProps) {
         aria-label={t("common.languageSwitch")}
         color="primary"
         sx={{
-          bgcolor: "action.hover",
           borderRadius: 999,
+          px: 0.25,
           "& .MuiToggleButton-root": {
-            border: "none",
+            border: 0,
             px: 1.5,
             minHeight: 44,
-            color: "inherit",
-            fontSize: "0.85rem",
-            fontWeight: 600,
+            color: "text.secondary",
+            fontSize: "0.82rem",
+            fontWeight: 700,
             textTransform: "none",
+            gap: 0.5,
           },
           "& .Mui-selected": {
-            bgcolor: "background.paper",
+            color: "text.primary",
           },
           ...sx,
         }}
@@ -48,7 +49,7 @@ export function LanguageToggle({ sx }: LanguageToggleProps) {
           {t("common.languageZh")}
         </ToggleButton>
         <ToggleButton value="en" aria-label={t("common.languageEn")}>
-          <TranslateIcon fontSize="inherit" sx={{ mr: 0.5 }} />
+          <Translate size={14} weight="bold" />
           {t("common.languageEn")}
         </ToggleButton>
       </ToggleButtonGroup>

@@ -163,7 +163,6 @@ export default function MainPage() {
   const totalVisibleCount = items.length;
   const totalCategoryCount = visibleCategories.reduce((sum, category) => sum + category.count, 0);
   const activeFilterLabel = selectedCategory ?? t("common.all");
-  const categoryCountLabel = t("common.categoryCount", { count: visibleCategories.length });
 
   const toggleSelection = (name: string) => {
     setSelectedNames((previous) => {
@@ -288,10 +287,9 @@ export default function MainPage() {
               position: "sticky",
               top: 96,
               overflow: "hidden",
-              background:
-                "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
+              backgroundColor: "var(--mcs-panel-fill)",
               borderColor: "var(--mcs-control-stroke)",
-              boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+              boxShadow: "var(--mcs-shadow-sm)",
             }}
           >
             <CardContent sx={{ p: 0 }}>
@@ -313,10 +311,9 @@ export default function MainPage() {
             sx={{
               mb: 2,
               overflow: "hidden",
-              background:
-                "linear-gradient(180deg, var(--mcs-hero-surface-strong) 0%, var(--mcs-control-fill-strong) 56%, var(--mcs-control-fill) 100%)",
+              backgroundColor: "var(--mcs-panel-fill)",
               borderColor: "var(--mcs-control-stroke)",
-              boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+              boxShadow: "var(--mcs-shadow-sm)",
             }}
           >
             <CardContent sx={{ p: 0 }}>
@@ -334,20 +331,8 @@ export default function MainPage() {
                           variant="overline"
                           sx={{ color: "var(--mcs-dashboard-muted)", letterSpacing: "0.14em" }}
                         >
-                          {platform?.name ?? platformId}
+                          {platformId} · {currentTabLabel}
                         </Typography>
-                        <Chip
-                          size="small"
-                          label={platformId}
-                          variant="outlined"
-                          sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
-                        />
-                        <Chip
-                          size="small"
-                          label={currentTabLabel}
-                          color="primary"
-                          sx={{ borderRadius: 1.5 }}
-                        />
                       </Stack>
                       <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
                         <PlatformBadge
@@ -364,23 +349,16 @@ export default function MainPage() {
                         </Typography>
                       </Stack>
                       {platform ? <PlatformCapabilityChips platform={platform} /> : null}
+                      <Typography variant="body2" color="text.secondary">
+                        {t("common.resultsCount", { count: totalVisibleCount })} · {activeFilterLabel} ·{" "}
+                        {t("common.categoryCount", { count: totalCategoryCount })}
+                      </Typography>
                     </Stack>
 
                     <Stack spacing={1} alignItems={{ xs: "flex-start", xl: "flex-end" }}>
-                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                        <Chip
-                          label={t("common.selectedCount", { count: selectedCount })}
-                          color={selectedCount > 0 ? "primary" : "default"}
-                          variant={selectedCount > 0 ? "filled" : "outlined"}
-                          onDelete={selectedCount > 0 ? clearSelection : undefined}
-                          sx={{ borderRadius: 1.5 }}
-                        />
-                        <Chip
-                          label={`${totalVisibleCount} ${currentTabLabel}`}
-                          variant="outlined"
-                          sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
-                        />
-                      </Stack>
+                      <Typography variant="body2" color="text.secondary">
+                        {t("common.selectedCount", { count: selectedCount })}
+                      </Typography>
                       <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" justifyContent={{ xl: "flex-end" }}>
                         <Button
                           variant="contained"
@@ -426,7 +404,7 @@ export default function MainPage() {
                 sx={{
                   px: { xs: 2, md: 2.5 },
                   py: 1.5,
-                  backgroundColor: "var(--mcs-control-fill)",
+                  backgroundColor: "var(--mcs-panel-fill-emphasis)",
                 }}
               >
                 <Stack spacing={1.5}>
@@ -451,26 +429,9 @@ export default function MainPage() {
                       sx={{ width: { xs: "100%", lg: 360 } }}
                     />
                     <Box sx={{ flexGrow: 1 }} />
-                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
-                      <Chip
-                        size="small"
-                        label={`${t("common.filters")}: ${activeFilterLabel}`}
-                        variant="outlined"
-                        sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
-                      />
-                      <Chip
-                        size="small"
-                        label={`${currentTabLabel}: ${totalVisibleCount}`}
-                        variant="outlined"
-                        sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
-                      />
-                      <Chip
-                        size="small"
-                        label={categoryCountLabel}
-                        variant="outlined"
-                        sx={{ borderRadius: 1.5, borderColor: "var(--mcs-control-stroke)" }}
-                      />
-                    </Stack>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("common.filters")}: {activeFilterLabel}
+                    </Typography>
                   </Stack>
                 </Stack>
               </Box>
@@ -484,41 +445,13 @@ export default function MainPage() {
           )}
           {showInlineProgress && <LinearProgress sx={{ mb: 2 }} />}
 
-          <Card
-            sx={{
-              mb: 2,
-              background:
-                "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-              borderColor: "var(--mcs-control-stroke)",
-            }}
-          >
-            <CardContent
-              sx={{
-                py: 1.5,
-                px: { xs: 2, md: 2.5 },
-                display: "flex",
-                justifyContent: "space-between",
-                gap: 1,
-                flexWrap: "wrap",
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                {currentTabLabel} · {t("common.resultsCount", { count: totalVisibleCount })}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {t("common.filters")} · {activeFilterLabel} · {totalCategoryCount}
-              </Typography>
-            </CardContent>
-          </Card>
-
           <Box
             sx={{
               overflow: "hidden",
               borderRadius: 3,
               border: "1px solid var(--mcs-control-stroke)",
-              background:
-                "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-panel-fill) 100%)",
-              boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+              backgroundColor: "var(--mcs-panel-fill)",
+              boxShadow: "var(--mcs-shadow-sm)",
             }}
           >
             {pageLoading ? (
@@ -795,8 +728,7 @@ function FiltersPanel({
           px: 2.25,
           py: 2,
           borderBottom: "1px solid var(--mcs-control-divider)",
-          background:
-            "linear-gradient(180deg, var(--mcs-control-fill-strong) 0%, var(--mcs-control-fill) 100%)",
+          backgroundColor: "var(--mcs-panel-fill-emphasis)",
         }}
       >
         <Typography variant="overline" color="text.secondary">
@@ -822,7 +754,7 @@ function FiltersPanel({
             backgroundColor: "var(--mcs-control-fill)",
             minHeight: 0,
             ".MuiTab-root": {
-              minHeight: 40,
+              minHeight: 44,
               borderRadius: 1.5,
             },
           }}
@@ -850,6 +782,7 @@ function FiltersPanel({
             sx={{
               px: 1.25,
               py: 1,
+              minHeight: 44,
               border: "1px solid var(--mcs-control-divider)",
             }}
           >
@@ -870,6 +803,7 @@ function FiltersPanel({
               sx={{
                 px: 1.25,
                 py: 1,
+                minHeight: 44,
                 border: "1px solid var(--mcs-control-divider)",
               }}
             >

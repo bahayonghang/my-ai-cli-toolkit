@@ -1,4 +1,9 @@
-import { lazy, memo, Suspense, useEffect, useState } from "react";
+import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from "react";
+import {
+  ArrowsClockwise,
+  DownloadSimple,
+  WarningCircle,
+} from "@phosphor-icons/react";
 import {
   Alert,
   Box,
@@ -12,13 +17,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { monitorPanelSx } from "@/components/common/glassPanel";
 import {
   AppShell,
-  MetricStrip,
 } from "@/components/shell/AppShell";
 import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 import { useI18n } from "@/i18n";
@@ -76,7 +77,7 @@ export default function DashboardPage() {
               loading ? (
                 <CircularProgress size={16} color="inherit" />
               ) : (
-                <RefreshIcon />
+                <ArrowsClockwise size={16} weight="bold" />
               )
             }
             onClick={() => void fetchDashboard()}
@@ -86,7 +87,7 @@ export default function DashboardPage() {
           </Button>
           <Button
             variant="contained"
-            startIcon={<InstallDesktopIcon />}
+            startIcon={<DownloadSimple size={18} weight="bold" />}
             onClick={() => navigateDeferred("/install-hub")}
           >
             {t("dashboard.unifiedInstallHub")}
@@ -173,13 +174,13 @@ function HeroSection({
   const { t } = useI18n();
 
   return (
-    <Stack spacing={2}>
-      <Box
-        sx={{
-          ...monitorPanelSx,
-          p: { xs: 2, md: 2.5 },
-        }}
-      >
+    <Box
+      sx={{
+        ...monitorPanelSx,
+        p: { xs: 2, md: 2.5 },
+      }}
+    >
+      <Stack spacing={2}>
         <Stack
           direction={{ xs: "column", lg: "row" }}
           spacing={1.5}
@@ -205,48 +206,70 @@ function HeroSection({
             <Button
               variant="outlined"
               color="warning"
-              startIcon={<WarningAmberIcon />}
+              startIcon={<WarningCircle size={16} weight="bold" />}
               onClick={onOpenLegacy}
             >
               {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
             </Button>
           ) : null}
         </Stack>
-      </Box>
 
-      <MetricStrip
-        tone="monitor"
-        density="compact"
-        items={[
-          {
-            key: "installed",
-            label: t("dashboard.installedSkills"),
-            value: `${summary.installedSkills}/${summary.totalSkills}`,
-            detail: t("dashboard.skillCoverageSub", {
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={{ xs: 1, md: 2 }}
+          useFlexGap
+          flexWrap="wrap"
+          divider={<Divider flexItem sx={{ borderColor: "var(--mcs-monitor-outline)" }} />}
+        >
+          <SummaryStat
+            label={t("dashboard.installedSkills")}
+            value={`${summary.installedSkills}/${summary.totalSkills}`}
+            detail={t("dashboard.skillCoverageSub", {
               installed: summary.installedSkills,
               total: summary.totalSkills,
-            }),
-            emphasis: true,
-          },
-          {
-            key: "updates",
-            label: t("dashboard.outdated"),
-            value: summary.outdatedSkills,
-            detail: t("dashboard.updatesAvailable", {
+            })}
+          />
+          <SummaryStat
+            label={t("dashboard.outdated")}
+            value={summary.outdatedSkills}
+            detail={t("dashboard.updatesAvailable", {
               count: summary.outdatedSkills,
-            }),
-          },
-          {
-            key: "platforms",
-            label: t("dashboard.activePlatforms"),
-            value: `${summary.activePlatforms}/${summary.totalPlatforms}`,
-            detail: t("dashboard.activePlatformsSub", {
+            })}
+          />
+          <SummaryStat
+            label={t("dashboard.activePlatforms")}
+            value={`${summary.activePlatforms}/${summary.totalPlatforms}`}
+            detail={t("dashboard.activePlatformsSub", {
               count: summary.totalPlatforms,
-            }),
-          },
-        ]}
-      />
-    </Stack>
+            })}
+          />
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}
+
+function SummaryStat({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: ReactNode;
+  detail: string;
+}) {
+  return (
+    <Box sx={{ minWidth: 0, flex: "1 1 180px" }}>
+      <Typography variant="caption" sx={{ color: "var(--mcs-monitor-muted)" }}>
+        {label}
+      </Typography>
+      <Typography variant="h6" sx={{ mt: 0.2, letterSpacing: "-0.03em" }}>
+        {value}
+      </Typography>
+      <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
+        {detail}
+      </Typography>
+    </Box>
   );
 }
 
@@ -659,9 +682,9 @@ const PlatformCard = memo(function PlatformCard({
         height: "100%",
         borderRadius: 3.5,
         border: "1px solid var(--mcs-monitor-outline)",
-        background: emphasized
-          ? "linear-gradient(180deg, var(--mcs-monitor-accent-soft) 0%, var(--mcs-monitor-surface-strong) 70%)"
-          : "linear-gradient(180deg, var(--mcs-monitor-surface-muted) 0%, var(--mcs-monitor-surface) 100%)",
+        backgroundColor: emphasized
+          ? "var(--mcs-monitor-surface-strong)"
+          : "var(--mcs-monitor-surface)",
         boxShadow: "none",
       }}
     >

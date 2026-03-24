@@ -49,10 +49,20 @@ export function surfacePanelSx(surface: SurfaceTone) {
   const tone = surfaceTokens[surface];
 
   return {
+    position: "relative",
+    isolation: "isolate",
     borderRadius: 4,
     border: `1px solid ${tone.outline}`,
-    background: tone.fill,
+    backgroundColor: tone.fill,
     boxShadow: tone.shadow,
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      inset: 0,
+      borderRadius: "inherit",
+      pointerEvents: "none",
+      boxShadow: "inset 0 1px 0 var(--mcs-panel-highlight)",
+    },
   } as const;
 }
 

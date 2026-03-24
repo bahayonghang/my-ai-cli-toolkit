@@ -1,4 +1,6 @@
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import {
   Box,
   Button,
@@ -199,7 +201,7 @@ export function SkillCatalogStage({
             <Checkbox
               checked={defaultOnly}
               disabled={disabled}
-              onChange={(_, checked) => onDefaultOnlyChange(checked)}
+              onChange={(_event, checked) => onDefaultOnlyChange(checked)}
             />
           }
           label={t("installHub.onlyDefaultSkills")}
@@ -326,7 +328,7 @@ export function SkillCatalogStage({
                 sx={{
                   maxHeight: {
                     xs: "none",
-                    lg: "min(980px, calc(100vh - 280px))",
+                    lg: "min(980px, calc(100dvh - 280px))",
                   },
                   overflowY: { xs: "visible", lg: "auto" },
                 }}
@@ -520,164 +522,186 @@ function SkillRow({
   const metaId = `${skillDomId}-meta`;
 
   return (
-    <ListItem
-      disablePadding
-      divider
-      sx={{ borderColor: "var(--mcs-workbench-outline)" }}
-    >
-      <ListItemButton
-        selected={selected}
-        disabled={disabled}
-        onClick={onToggle}
-        role="checkbox"
-        aria-checked={selected}
-        aria-labelledby={titleId}
-        aria-describedby={`${descriptionId} ${metaId}`}
-        sx={{
-          alignItems: "flex-start",
-          px: { xs: 1.25, md: 1.75 },
-          py: 1.35,
-          transition:
-            "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), transform var(--mcs-duration) var(--mcs-ease)",
-          "&:hover": {
-            backgroundColor: "var(--mcs-workbench-surface-muted)",
-          },
-          "&.Mui-selected": {
-            background:
-              "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)",
-            boxShadow: "inset 0 0 0 1px var(--mcs-workbench-outline-strong)",
-          },
-          "&.Mui-selected:hover": {
-            background:
-              "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)",
-          },
-        }}
+      <ListItem
+        disablePadding
+        divider
+        sx={{ borderColor: "var(--mcs-workbench-outline)", display: "block" }}
       >
-        <Checkbox
-          edge="start"
-          checked={selected}
-          disableRipple
-          tabIndex={-1}
-          inputProps={{ "aria-hidden": true }}
-          sx={{ pointerEvents: "none" }}
-        />
-        <ListItemText
-          primary={
-            <Stack spacing={1}>
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                useFlexGap
-                flexWrap="wrap"
-              >
-                <Typography id={titleId} variant="body1" fontWeight={700}>
-                  {skill.name}
-                </Typography>
-                {skill.is_default ? (
-                  <Chip
-                    label={t("installHub.defaultTag")}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                ) : null}
-                {skill.category ? (
-                  <Chip
-                    label={skill.category}
-                    size="small"
-                    variant="outlined"
-                  />
-                ) : null}
-                <InstallStatusChip
-                  status={statusInfo.status}
-                  tooltip={statusInfo.tooltip}
-                  t={t}
-                />
-              </Stack>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: hasLongDescription ? "minmax(0, 1fr) auto" : "1fr",
+            alignItems: "stretch",
+          }}
+        >
+          <ListItemButton
+            selected={selected}
+            disabled={disabled}
+            onClick={onToggle}
+            role="checkbox"
+            aria-checked={selected}
+            aria-labelledby={titleId}
+            aria-describedby={`${descriptionId} ${metaId}`}
+            sx={{
+              alignItems: "flex-start",
+              px: { xs: 1.25, md: 1.75 },
+              py: 1.35,
+              minHeight: 44,
+              transition:
+                "background-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), transform var(--mcs-duration) var(--mcs-ease)",
+              "&:hover": {
+                backgroundColor: "var(--mcs-workbench-surface-muted)",
+              },
+              "&.Mui-selected": {
+                backgroundColor: "var(--mcs-workbench-accent-soft)",
+                boxShadow: "inset 0 0 0 1px var(--mcs-workbench-outline-strong)",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "var(--mcs-workbench-accent-soft)",
+              },
+            }}
+          >
+            <Box
+              aria-hidden="true"
+              sx={{
+                width: 28,
+                height: 28,
+                mt: 0.25,
+                mr: 1.5,
+                borderRadius: 999,
+                border: "1px solid",
+                borderColor: selected ? "var(--mcs-workbench-accent-strong)" : "var(--mcs-workbench-outline)",
+                backgroundColor: selected ? "var(--mcs-workbench-accent-soft)" : "transparent",
+                color: selected ? "var(--mcs-workbench-accent-strong)" : "var(--mcs-workbench-muted)",
+                display: "grid",
+                placeItems: "center",
+                flexShrink: 0,
+              }}
+            >
+              {selected ? <TaskAltIcon fontSize="small" /> : <RadioButtonUncheckedIcon fontSize="small" />}
+            </Box>
+            <ListItemText
+              primary={
+                <Stack spacing={1}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    useFlexGap
+                    flexWrap="wrap"
+                  >
+                    <Typography id={titleId} variant="body1" fontWeight={700}>
+                      {skill.name}
+                    </Typography>
+                    {skill.is_default ? (
+                      <Chip
+                        label={t("installHub.defaultTag")}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    ) : null}
+                    {skill.category ? (
+                      <Chip
+                        label={skill.category}
+                        size="small"
+                        variant="outlined"
+                      />
+                    ) : null}
+                    <InstallStatusChip
+                      status={statusInfo.status}
+                      tooltip={statusInfo.tooltip}
+                      t={t}
+                    />
+                  </Stack>
 
-              <Typography
-                id={descriptionId}
-                variant="body2"
+                  <Typography
+                    id={descriptionId}
+                    variant="body2"
+                    sx={{
+                      color: "var(--mcs-workbench-muted)",
+                      maxWidth: 920,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {summaryDescription}
+                  </Typography>
+
+                  <Stack
+                    id={metaId}
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    useFlexGap
+                    flexWrap="wrap"
+                  >
+                    {installedOnCount > 0 ? (
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "var(--mcs-workbench-muted)" }}
+                      >
+                        {t("installHub.installedOnCount", {
+                          count: installedOnCount,
+                        })}
+                      </Typography>
+                    ) : null}
+                    {hasLongDescription ? (
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "var(--mcs-workbench-muted)" }}
+                      >
+                        {expanded
+                          ? t("installHub.hideDetails")
+                          : t("installHub.skillDetails")}
+                      </Typography>
+                    ) : null}
+                  </Stack>
+                </Stack>
+              }
+            />
+          </ListItemButton>
+          {hasLongDescription ? (
+            <Box sx={{ px: 1, display: "flex", alignItems: "flex-start", pt: 1.2 }}>
+              <IconButton
+                size="small"
+                onClick={onToggleExpanded}
+                aria-label={
+                  expanded
+                    ? t("installHub.hideDetails")
+                    : t("installHub.skillDetails")
+                }
                 sx={{
                   color: "var(--mcs-workbench-muted)",
-                  maxWidth: 920,
-                  ...(expanded
-                    ? null
-                    : {
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }),
                 }}
               >
-                {expanded ? description : summaryDescription}
-              </Typography>
-
-              <Stack
-                id={metaId}
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                useFlexGap
-                flexWrap="wrap"
+                <ExpandMoreRoundedIcon
+                  fontSize="small"
+                  sx={{
+                    transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+                    transition:
+                      "transform var(--mcs-duration) var(--mcs-ease)",
+                  }}
+                />
+              </IconButton>
+            </Box>
+          ) : null}
+        </Box>
+        {hasLongDescription ? (
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <Box sx={{ px: { xs: 1.25, md: 1.75 }, pb: 1.35, ml: { xs: 5.5, md: 5.5 } }}>
+              <Typography
+                variant="caption"
+                sx={{ color: "var(--mcs-workbench-muted)" }}
               >
-                {installedOnCount > 0 ? (
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "var(--mcs-workbench-muted)" }}
-                  >
-                    {t("installHub.installedOnCount", {
-                      count: installedOnCount,
-                    })}
-                  </Typography>
-                ) : null}
-                {hasLongDescription ? (
-                  <IconButton
-                    size="small"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onToggleExpanded();
-                    }}
-                    aria-label={
-                      expanded
-                        ? t("installHub.hideDetails")
-                        : t("installHub.skillDetails")
-                    }
-                    sx={{
-                      ml: installedOnCount > 0 ? 0.5 : 0,
-                      color: "var(--mcs-workbench-muted)",
-                    }}
-                  >
-                    <ExpandMoreRoundedIcon
-                      fontSize="small"
-                      sx={{
-                        transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-                        transition:
-                          "transform var(--mcs-duration) var(--mcs-ease)",
-                      }}
-                    />
-                  </IconButton>
-                ) : null}
-              </Stack>
-              {hasLongDescription ? (
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "var(--mcs-workbench-muted)" }}
-                  >
-                    {expanded
-                      ? t("installHub.hideDetails")
-                      : t("installHub.skillDetails")}
-                  </Typography>
-                </Collapse>
-              ) : null}
-            </Stack>
-          }
-        />
-      </ListItemButton>
-    </ListItem>
+                {description}
+              </Typography>
+            </Box>
+          </Collapse>
+        ) : null}
+      </ListItem>
   );
 }
 

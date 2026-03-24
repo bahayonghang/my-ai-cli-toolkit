@@ -12,9 +12,6 @@ import {
   Alert,
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
   Checkbox,
   Chip,
   CircularProgress,
@@ -63,6 +60,7 @@ import {
   ResponsiveFilterRail,
   StickyActionBar,
 } from "@/components/shell/AppShell";
+import { SelectableSurfaceCard } from "@/components/common/SelectableSurfaceCard";
 import { getCategories, getSkillDetail, getSkills, installSkills } from "@/api/client";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
@@ -160,6 +158,7 @@ function FiltersSidebar({
             onClick={() =>
               onStatusFilterChange(statusFilter === status ? null : status)
             }
+            sx={{ minHeight: 44 }}
           >
             <ListItemText
               primary={statusLabel(status, t)}
@@ -200,7 +199,11 @@ function FiltersSidebar({
         {t("install.categories")}
       </Typography>
       <List dense disablePadding>
-        <ListItemButton selected={selectedCategory === null} onClick={() => onCategoryChange(null)}>
+        <ListItemButton
+          selected={selectedCategory === null}
+          onClick={() => onCategoryChange(null)}
+          sx={{ minHeight: 44 }}
+        >
           <ListItemText
             primary={t("install.totalSkills")}
             primaryTypographyProps={{ variant: "body2", fontWeight: 600 }}
@@ -212,6 +215,7 @@ function FiltersSidebar({
             key={category.name}
             selected={selectedCategory === category.name}
             onClick={() => onCategoryChange(category.name)}
+            sx={{ minHeight: 44 }}
           >
             <ListItemText
               primary={category.name}
@@ -278,9 +282,10 @@ function SearchToolbar({
         }}
         sx={{ width: 400, maxWidth: "100%" }}
       />
-
-      <Chip label={t("common.resultsCount", { count: visibleCount })} variant="outlined" />
-      <Chip label={t("common.categoryCount", { count: categoryCount })} variant="outlined" />
+      <Typography variant="body2" color="text.secondary">
+        {t("common.resultsCount", { count: visibleCount })} ·{" "}
+        {t("common.categoryCount", { count: categoryCount })}
+      </Typography>
 
       <Button
         size="small"
@@ -329,44 +334,16 @@ function SkillCard({
   onShowDetail: () => void;
 }) {
   const { t } = useI18n();
-  const theme = useTheme();
 
   return (
-    <Card
-      sx={{
-        transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1)",
-        boxShadow: selected
-          ? `0 0 0 2px ${alpha(theme.palette.primary.main, 0.4)}`
-          : undefined,
-        "&:hover": {
-          transform: "translateY(-2px)",
-          boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.12)}`,
-        },
-      }}
-    >
-      <CardActionArea onClick={onToggle} sx={{ height: "100%", alignItems: "stretch" }}>
-      <CardContent sx={{ "&:last-child": { pb: 2 } }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-          <Checkbox
-            checked={selected}
-            onChange={onToggle}
-            onClick={(event) => event.stopPropagation()}
-            inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
-          />
-          <Tooltip title={t("common.viewDetail")}>
-            <IconButton
-              aria-label={t("common.viewDetail")}
-              onClick={(event) => {
-                event.stopPropagation();
-                onShowDetail();
-              }}
-            >
-              <InfoOutlinedIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        <Box display="flex" flexWrap="wrap" gap={0.75} mb={1.25}>
+    <SelectableSurfaceCard
+      selected={selected}
+      onSelect={onToggle}
+      selectionLabel={t("common.selectItem", { name: item.name })}
+      selectedLabel={t("common.selected")}
+      title={item.name}
+      badges={
+        <>
           <Chip
             size="small"
             variant="outlined"
@@ -374,26 +351,14 @@ function SkillCard({
             icon={<StatusIcon status={item.status} />}
             label={statusLabel(item.status, t)}
           />
-          {item.category && <Chip size="small" variant="outlined" label={item.category} />}
-          {item.is_default && (
-            <Chip
-              size="small"
-              label={t("common.default")}
-              sx={{
-                bgcolor: alpha(theme.palette.primary.main, 0.12),
-                color: theme.palette.primary.main,
-                fontWeight: 700,
-              }}
-            />
-          )}
-        </Box>
-
-        <Typography variant="body1" fontWeight={700} sx={{ mb: 0.5 }}>
-          {item.name}
-        </Typography>
+          {item.category ? <Chip size="small" variant="outlined" label={item.category} /> : null}
+          {item.is_default ? <Chip size="small" variant="outlined" color="info" label={t("common.default")} /> : null}
+        </>
+      }
+      description={
         <Typography
           variant="body2"
-          color="text.secondary"
+          color="inherit"
           sx={{
             display: "-webkit-box",
             WebkitLineClamp: 3,
@@ -405,9 +370,20 @@ function SkillCard({
           {summarizeSkillDescription(item.description, "list") ||
             t("common.noDescriptionAvailable")}
         </Typography>
-      </CardContent>
-      </CardActionArea>
-    </Card>
+      }
+      footer={
+        <Stack direction="row" justifyContent="flex-end">
+          <Button
+            size="small"
+            variant="text"
+            startIcon={<InfoOutlinedIcon />}
+            onClick={onShowDetail}
+          >
+            {t("common.viewDetail")}
+          </Button>
+        </Stack>
+      }
+    />
   );
 }
 
@@ -580,7 +556,13 @@ function SkillDetailDialog({
   }, [open, platformId, skillName]);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      aria-labelledby="install-skill-detail-title"
+    >
       <Box
         sx={{
           display: "flex",
@@ -592,7 +574,7 @@ function SkillDetailDialog({
           borderColor: "divider",
         }}
       >
-        <Typography variant="h6" fontWeight={700}>
+        <Typography id="install-skill-detail-title" variant="h6" fontWeight={700}>
           {skillName ?? "SKILL.md"}
         </Typography>
         <Button onClick={onClose}>{t("common.close")}</Button>

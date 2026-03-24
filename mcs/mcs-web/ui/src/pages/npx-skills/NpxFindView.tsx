@@ -3,22 +3,17 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
   CardContent,
-  Checkbox,
   Chip,
   CircularProgress,
   FormControlLabel,
   Grid,
-  IconButton,
   InputAdornment,
   LinearProgress,
+  Stack,
   Switch,
   TextField,
-  Tooltip,
   Typography,
-  alpha,
-  useTheme,
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
@@ -26,6 +21,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
 
+import { SelectableSurfaceCard } from "@/components/common/SelectableSurfaceCard";
 import type { NpxSkillsCatalogItemDto, NpxSkillsInstallItemInput } from "@/types";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
 import type { TaxonomyGroupSummary, TranslationFn } from "./types";
@@ -85,8 +81,6 @@ export default function NpxFindView({
   installTargetScope,
   showNotification,
 }: NpxFindViewProps) {
-  const theme = useTheme();
-
   return (
     <>
       <Box
@@ -172,7 +166,7 @@ export default function NpxFindView({
           )}
 
           {(catalogLoading || installTargetLoading) && (
-            <LinearProgress aria-label="loading" sx={{ mb: 2, borderRadius: 999 }} />
+            <LinearProgress aria-label={t("common.loading")} sx={{ mb: 2, borderRadius: 999 }} />
           )}
 
           {catalogLoading && catalogItems.length === 0 ? (
@@ -184,165 +178,103 @@ export default function NpxFindView({
           ) : (
             <Grid container spacing={2}>
               {visibleCatalogItems.map((item) => {
-            const key = buildInstallKey(item);
-            const isSelected = selectedCatalogKeys.has(key);
-            const isDisabled = item.project_only && installTargetScope === "global";
+                const key = buildInstallKey(item);
+                const isSelected = selectedCatalogKeys.has(key);
+                const isDisabled = item.project_only && installTargetScope === "global";
+                const installCommand = item.skill_flag
+                  ? `npx skills add ${item.package_ref} --skill ${item.skill_flag}`
+                  : `npx skills add ${item.package_ref}`;
 
-            return (
-              <Grid key={key} size={{ xs: 12, sm: 6, lg: 4 }}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    height: "100%",
-                    opacity: isDisabled ? 0.55 : 1,
-                    borderColor: isSelected ? "primary.main" : "divider",
-                    boxShadow: isSelected
-                      ? `0 8px 24px ${alpha(theme.palette.primary.main, 0.16)}`
-                      : "none",
-                    transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms cubic-bezier(0.16, 1, 0.3, 1)",
-                  }}
-                >
-                  <CardActionArea
-                    disabled={isDisabled}
-                    onClick={() => {
-                      setSelectedCatalogKeys((previous) => {
-                        const next = new Set(previous);
-                        if (next.has(key)) {
-                          next.delete(key);
-                        } else {
-                          next.add(key);
-                        }
-                        return next;
-                      });
-                    }}
-                    aria-pressed={isSelected}
-                    sx={{
-                      height: "100%",
-                      alignItems: "stretch",
-                      "&:hover": isDisabled
-                        ? undefined
-                        : {
-                            borderColor: "primary.main",
-                            transform: "translateY(-2px)",
-                          },
-                    }}
-                  >
-                    <CardContent>
-                    <Box
-                      display="flex"
-                      alignItems="flex-start"
-                      justifyContent="space-between"
-                      gap={1}
-                      mb={1}
-                    >
-                      <Box>
-                        <Typography variant="body1" fontWeight={700}>
-                          {item.name}
-                        </Typography>
+                return (
+                  <Grid key={key} size={{ xs: 12, sm: 6, lg: 4 }}>
+                    <SelectableSurfaceCard
+                      selected={isSelected}
+                      disabled={isDisabled}
+                      onSelect={() => {
+                        setSelectedCatalogKeys((previous) => {
+                          const next = new Set(previous);
+                          if (next.has(key)) {
+                            next.delete(key);
+                          } else {
+                            next.add(key);
+                          }
+                          return next;
+                        });
+                      }}
+                      selectionLabel={t("common.selectItem", { name: item.name })}
+                      selectedLabel={t("common.selected")}
+                      title={item.name}
+                      subtitle={item.package_ref}
+                      badges={
+                        <>
+                          <Chip
+                            size="small"
+                            color={installStatusColor(item.installed_state)}
+                            variant="outlined"
+                            label={
+                              item.installed_state === "installed"
+                                ? t("status.installed")
+                                : t("status.notInstalled")
+                            }
+                          />
+                          <Chip size="small" variant="outlined" label={item.category_label} />
+                          <Chip size="small" variant="outlined" label={item.install_provider} />
+                          {item.project_only ? (
+                            <Chip
+                              size="small"
+                              color="warning"
+                              variant="outlined"
+                              label={t("npxSkills.projectOnly")}
+                            />
+                          ) : null}
+                        </>
+                      }
+                      description={
                         <Typography
-                          variant="caption"
-                          color="text.secondary"
+                          variant="body2"
+                          color="inherit"
                           sx={{
-                            fontFamily: '"Fira Code", monospace',
-                            overflowWrap: "anywhere",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            minHeight: "4.2em",
                           }}
                         >
-                          {item.package_ref}
+                          {summarizeSkillDescription(item.description, "list") ||
+                            t("npxSkills.noDescription")}
                         </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center">
-                        <Tooltip title={t("npxSkills.copyInstallCommand")} arrow>
-                          <IconButton
+                      }
+                      meta={
+                        item.usage ? (
+                          <Typography variant="caption" sx={{ color: "info.main" }}>
+                            {item.usage}
+                          </Typography>
+                        ) : null
+                      }
+                      footer={
+                        <Stack direction="row" justifyContent="space-between" spacing={1.5} alignItems="center">
+                          <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                            {isDisabled ? t("npxSkills.projectOnly") : installCommand}
+                          </Typography>
+                          <Button
                             size="small"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              const cmd = item.skill_flag
-                                ? `npx skills add ${item.package_ref} --skill ${item.skill_flag}`
-                                : `npx skills add ${item.package_ref}`;
-                              navigator.clipboard.writeText(cmd).then(
+                            variant="text"
+                            startIcon={<ContentCopyIcon />}
+                            onClick={() => {
+                              navigator.clipboard.writeText(installCommand).then(
                                 () => showNotification(t("npxSkills.copySuccess"), "success"),
                                 () => showNotification(t("npxSkills.copyFailed"), "error"),
                               );
                             }}
-                            aria-label={t("npxSkills.copyInstallCommand")}
-                            sx={{ mr: 0.5 }}
                           >
-                            <ContentCopyIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Checkbox
-                          checked={isSelected}
-                          disabled={isDisabled}
-                          inputProps={{
-                            "aria-label": t("common.selectItem", { name: item.name }),
-                          }}
-                          onClick={(event) => event.stopPropagation()}
-                          onChange={() => {
-                            setSelectedCatalogKeys((previous) => {
-                              const next = new Set(previous);
-                              if (next.has(key)) {
-                                next.delete(key);
-                              } else {
-                                next.add(key);
-                              }
-                              return next;
-                            });
-                          }}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Box display="flex" gap={0.75} flexWrap="wrap" mb={1.5}>
-                      <Chip
-                        size="small"
-                        color={installStatusColor(item.installed_state)}
-                        variant="outlined"
-                        label={
-                          item.installed_state === "installed"
-                            ? t("status.installed")
-                            : t("status.notInstalled")
-                        }
-                      />
-                      <Chip size="small" variant="outlined" label={item.category_label} />
-                      <Chip size="small" variant="outlined" label={item.install_provider} />
-                      {item.project_only && (
-                        <Chip
-                          size="small"
-                          color="warning"
-                          variant="outlined"
-                          label={t("npxSkills.projectOnly")}
-                        />
-                      )}
-                    </Box>
-
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        minHeight: "4.2em",
-                      }}
-                    >
-                      {summarizeSkillDescription(item.description, "list") ||
-                        t("npxSkills.noDescription")}
-                    </Typography>
-
-                    {item.usage && (
-                      <Typography
-                        variant="caption"
-                        sx={{ display: "block", mt: 1.25, color: "info.main" }}
-                      >
-                        {item.usage}
-                      </Typography>
-                    )}
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            );
+                            {t("npxSkills.copyInstallCommand")}
+                          </Button>
+                        </Stack>
+                      }
+                    />
+                  </Grid>
+                );
               })}
             </Grid>
           )}

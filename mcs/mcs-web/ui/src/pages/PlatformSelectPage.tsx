@@ -1,5 +1,12 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import {
+  ArrowsClockwise,
+  ChartPieSlice,
+  Command,
+  DownloadSimple,
+  WarningCircle,
+} from "@phosphor-icons/react";
+import {
   Alert,
   Box,
   Button,
@@ -8,11 +15,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import TerminalIcon from "@mui/icons-material/Terminal";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import { useLegacyDirs } from "@/hooks/useLegacyDirs";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
@@ -20,8 +22,6 @@ import { usePlatformStore } from "@/stores/platformStore";
 import {
   AppShell,
   ListSurface,
-  MetaChips,
-  MetricStrip,
   SectionHero,
 } from "@/components/shell/AppShell";
 import {
@@ -62,31 +62,9 @@ export default function PlatformSelectPage() {
     return counts;
   }, [platforms]);
 
-  const metricItems = [
-    {
-      key: "platforms",
-      label: t("platformSelect.availablePlatforms"),
-      value: platforms.length,
-      detail: t("platformSelect.libraryTitle"),
-      emphasis: true,
-    },
-    {
-      key: "hub",
-      label: t("platformSelect.unifiedInstallLabel"),
-      value: t("platformSelect.unifiedInstallTitle"),
-      detail: t("platformSelect.subtitle"),
-    },
-    {
-      key: "npx",
-      label: t("platformSelect.npxSkillsLabel"),
-      value: t("platformSelect.npxSkillsTitle"),
-      detail: t("platformSelect.librarySubtitle"),
-    },
-  ];
-
   if (loading && platforms.length === 0) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100dvh">
         <CircularProgress />
       </Box>
     );
@@ -100,22 +78,28 @@ export default function PlatformSelectPage() {
       headerMode="hero"
       actions={
         <>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              void refreshPlatforms();
-              refreshLegacyCount();
-            }}
-            startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <RefreshIcon />}
-            disabled={loading}
-          >
-            {t("platformSelect.refreshButton")}
-          </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                void refreshPlatforms();
+                refreshLegacyCount();
+              }}
+              startIcon={
+                loading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <ArrowsClockwise size={16} weight="bold" />
+                )
+              }
+              disabled={loading}
+            >
+              {t("platformSelect.refreshButton")}
+            </Button>
           {legacyCount > 0 ? (
             <Button
               variant="outlined"
               color="warning"
-              startIcon={<WarningAmberIcon />}
+              startIcon={<WarningCircle size={16} weight="bold" />}
               onClick={() => setLegacyOpen(true)}
             >
               {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
@@ -131,21 +115,12 @@ export default function PlatformSelectPage() {
           eyebrow={t("platformSelect.heroEyebrow")}
           title={t("platformSelect.title")}
           description={t("platformSelect.subtitle")}
-          meta={
-            <MetaChips
-              items={[
-                t("platformSelect.availablePlatforms"),
-                t("platformSelect.unifiedInstallLabel"),
-                t("platformSelect.npxSkillsLabel"),
-              ]}
-            />
-          }
           actions={
             <>
               <Button
                 variant="contained"
                 size="large"
-                startIcon={<InstallDesktopIcon />}
+                startIcon={<DownloadSimple size={18} weight="bold" />}
                 onClick={() => navigateDeferred("/install-hub")}
               >
                 {t("platformSelect.primaryAction")}
@@ -153,7 +128,7 @@ export default function PlatformSelectPage() {
               <Button
                 variant="outlined"
                 size="large"
-                startIcon={<DashboardCustomizeIcon />}
+                startIcon={<ChartPieSlice size={18} weight="bold" />}
                 onClick={() => navigateDeferred("/dashboard")}
               >
                 {t("platformSelect.dashboardAction")}
@@ -161,7 +136,7 @@ export default function PlatformSelectPage() {
               <Button
                 variant="text"
                 size="large"
-                startIcon={<TerminalIcon />}
+                startIcon={<Command size={18} weight="bold" />}
                 disabled={!firstPlatformId}
                 onClick={() => {
                   if (firstPlatformId) {
@@ -175,8 +150,6 @@ export default function PlatformSelectPage() {
             </>
           }
         />
-
-        <MetricStrip items={metricItems} tone="entry" />
 
         {error ? <Alert severity="error">{error}</Alert> : null}
 

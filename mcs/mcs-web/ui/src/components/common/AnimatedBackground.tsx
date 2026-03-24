@@ -40,32 +40,43 @@ export default function AnimatedBackground({
         background: (paletteTheme) =>
           isMonitor
             ? softenEffects
-              ? `linear-gradient(180deg, var(--mcs-monitor-surface-strong) 0%, var(--mcs-monitor-panel-fill) 28%, ${paletteTheme.palette.background.default} 72%, ${paletteTheme.palette.background.default} 100%)`
-              : `linear-gradient(180deg, var(--mcs-monitor-surface-strong) 0%, var(--mcs-monitor-panel-fill) 26%, ${paletteTheme.palette.background.default} 72%, ${paletteTheme.palette.background.default} 100%)`
+              ? `linear-gradient(180deg, var(--mcs-monitor-surface-strong) 0%, var(--mcs-monitor-panel-fill) 26%, ${paletteTheme.palette.background.default} 74%, ${paletteTheme.palette.background.default} 100%)`
+              : `radial-gradient(circle at 16% -4%, var(--mcs-monitor-warm-soft) 0%, transparent 30%), radial-gradient(circle at 88% 0%, var(--mcs-monitor-accent-soft) 0%, transparent 26%), linear-gradient(180deg, var(--mcs-monitor-surface-strong) 0%, var(--mcs-monitor-panel-fill) 26%, ${paletteTheme.palette.background.default} 74%, ${paletteTheme.palette.background.default} 100%)`
             : isEntry
               ? softenEffects
                 ? `linear-gradient(180deg, var(--mcs-entry-band) 0%, transparent 22%), ${paletteTheme.palette.background.default}`
-                : `linear-gradient(180deg, var(--mcs-entry-band) 0%, transparent 26%), radial-gradient(circle at 16% 0%, var(--mcs-entry-accent-soft) 0, transparent 34%), ${paletteTheme.palette.background.default}`
+                : `radial-gradient(circle at 14% -6%, var(--mcs-entry-band) 0%, transparent 34%), radial-gradient(circle at 86% 0%, var(--mcs-entry-accent-soft) 0%, transparent 28%), linear-gradient(180deg, var(--mcs-entry-band) 0%, transparent 26%), ${paletteTheme.palette.background.default}`
               : isWorkbench
                 ? softenEffects
                   ? `linear-gradient(180deg, var(--mcs-workbench-surface-subtle) 0%, transparent 18%), ${paletteTheme.palette.background.default}`
-                  : `linear-gradient(180deg, var(--mcs-workbench-surface-subtle) 0%, transparent 22%), radial-gradient(circle at 88% 0%, var(--mcs-workbench-accent-soft) 0, transparent 22%), ${paletteTheme.palette.background.default}`
+                  : `radial-gradient(circle at 14% 0%, var(--mcs-workbench-warm-soft) 0%, transparent 30%), linear-gradient(180deg, var(--mcs-workbench-surface-subtle) 0%, transparent 22%), ${paletteTheme.palette.background.default}`
                 : softenEffects
                   ? `linear-gradient(180deg, var(--mcs-entry-band) 0%, transparent 20%), ${paletteTheme.palette.background.default}`
-                  : `linear-gradient(180deg, var(--mcs-entry-band) 0%, transparent 24%), ${paletteTheme.palette.background.default}`,
+                  : `radial-gradient(circle at 16% -4%, var(--mcs-entry-band) 0%, transparent 32%), radial-gradient(circle at 84% 0%, var(--mcs-entry-accent-soft) 0%, transparent 26%), linear-gradient(180deg, var(--mcs-entry-band) 0%, transparent 24%), ${paletteTheme.palette.background.default}`,
         "&::before":
-          softenEffects || (!isMonitor && !isEntry && !isWorkbench)
+          softenEffects || isWorkbench || (!isMonitor && !isEntry && !isWorkbench)
             ? undefined
             : {
                 content: '""',
                 position: "absolute",
                 inset: 0,
                 background: isMonitor
-                  ? "radial-gradient(circle at 20% 0%, var(--mcs-monitor-accent-soft) 0%, transparent 38%)"
+                  ? "radial-gradient(circle at 24% 10%, var(--mcs-monitor-accent-soft) 0%, transparent 40%)"
                   : isEntry
-                    ? "radial-gradient(circle at 14% 0%, var(--mcs-entry-accent-soft) 0%, transparent 36%)"
-                    : "radial-gradient(circle at 86% 0%, var(--mcs-workbench-accent-soft) 0%, transparent 30%)",
-                opacity: isMonitor ? 0.34 : 0.26,
+                    ? "radial-gradient(circle at 20% 8%, var(--mcs-entry-accent-soft) 0%, transparent 38%)"
+                    : "radial-gradient(circle at 82% 6%, var(--mcs-workbench-accent-soft) 0%, transparent 30%)",
+                opacity: isMonitor ? 0.3 : 0.24,
+              },
+        "&::after":
+          softenEffects || isWorkbench || (!isMonitor && !isEntry && !isWorkbench)
+            ? undefined
+            : {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 28%)",
+                opacity: theme.palette.mode === "dark" ? 1 : 0.9,
               },
       }}
     />

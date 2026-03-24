@@ -46,20 +46,20 @@ export function InstallStagePanel({
             : locked
               ? "var(--mcs-workbench-outline)"
               : "var(--mcs-workbench-outline)",
-        background: active
-          ? "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill-strong) 48%, var(--mcs-panel-fill) 100%)"
+        backgroundColor: active
+          ? "var(--mcs-panel-fill-strong)"
           : complete
-            ? "linear-gradient(180deg, var(--mcs-success-surface) 0%, var(--mcs-summary-tile-fill) 100%)"
+            ? "var(--mcs-success-surface)"
             : locked
-              ? "linear-gradient(180deg, var(--mcs-workbench-surface-subtle) 0%, var(--mcs-panel-fill) 100%)"
-              : "linear-gradient(180deg, var(--mcs-workbench-surface-strong) 0%, var(--mcs-panel-fill) 100%)",
+              ? "var(--mcs-workbench-surface-subtle)"
+              : "var(--mcs-panel-fill)",
         boxShadow: active
           ? "var(--mcs-summary-tile-shadow)"
           : complete
-            ? "0 14px 32px rgba(15, 23, 42, 0.12)"
+            ? "var(--mcs-shadow-sm)"
             : locked
               ? "none"
-              : "0 14px 32px rgba(15, 23, 42, 0.1)",
+              : "var(--mcs-shadow-sm)",
         opacity: locked ? 0.9 : 1,
         overflow: "hidden",
         isolation: "isolate",
@@ -75,16 +75,6 @@ export function InstallStagePanel({
               ? "linear-gradient(90deg, var(--mcs-success-border), var(--mcs-workbench-accent-soft))"
               : "transparent",
         },
-        "&::after": active
-          ? {
-              content: '""',
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 26%)",
-              pointerEvents: "none",
-            }
-          : undefined,
       }}
     >
       <Stack spacing={2.5} sx={{ p: { xs: 2, md: 2.75 } }}>
@@ -202,10 +192,8 @@ export function InstallStagePanel({
               px: 1.9,
               py: 1.65,
               borderRadius: 3,
-              background:
-                "linear-gradient(180deg, var(--mcs-workbench-surface-strong) 0%, var(--mcs-workbench-surface-subtle) 100%)",
+              backgroundColor: "var(--mcs-workbench-surface-subtle)",
               border: "1px dashed var(--mcs-workbench-outline)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
               color: "var(--mcs-workbench-muted)",
             }}
           >

@@ -39,7 +39,7 @@ class ErrorBoundaryInner extends Component<ErrorBoundaryInnerProps, State> {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "100vh",
+            minHeight: "100dvh",
             gap: 2,
             p: 3,
           }}
