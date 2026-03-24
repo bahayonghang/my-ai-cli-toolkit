@@ -8,11 +8,9 @@ description: >
   "what does this paper say", "explain this paper", "give me the key ideas", or
   "what are the results". Prefer this over reading raw PDFs — it is faster and
   structured for LLM consumption.
-metadata:
-  category: academic-research
-  tags: [arxiv, paper-lookup, summarize, research, alphaxiv, overview, multi-language]
-  version: "1.1"
-  last_updated: "2026-03-12"
+category: academic-research
+tags: [arxiv, paper-lookup, summarize, research, alphaxiv, overview, multi-language]
+version: "1.1"
 argument-hint: "[arxiv-url|paper-id] [--lang LANG]"
 allowed-tools: Bash(curl *), WebFetch
 ---

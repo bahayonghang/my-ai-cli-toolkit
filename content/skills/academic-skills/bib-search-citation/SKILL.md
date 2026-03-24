@@ -5,14 +5,13 @@ description: >-
   research workflows. Use when a user wants to find papers, search a
   bibliography, filter a library, or look up references by topic, author, year,
   venue, DOI, arXiv ID, keywords, annotation, abstract, or entry type. Handles
-  Zotero-exported libraries. Supports compact search expressions (author:,
-  year>=, type:, has:), combined filters, research-oriented output fields, raw
+  Zotero-exported libraries. Supports compact search expressions such as
+  author:, year-gte, type:, and has:, combined filters, research-oriented
+  output fields, raw
   BibTeX export, and LaTeX/Typst citation snippet generation.
-metadata:
-  category: academic-skills
-  tags: [bibtex, biblatex, citation, latex, typst, bibliography, research, zotero, bib]
-  version: "1.1.0"
-  last_updated: "2026-03-20"
+category: academic-skills
+tags: [bibtex, biblatex, citation, latex, typst, bibliography, research, zotero, bib]
+version: "1.1.0"
 allowed-tools: Read, Bash
 ---
 
