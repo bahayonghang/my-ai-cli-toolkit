@@ -9,7 +9,6 @@ import {
   Chip,
   Drawer,
   FormControlLabel,
-  Grid,
   Stack,
   Switch,
   Tab,
@@ -20,11 +19,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import BuildCircleOutlinedIcon from "@mui/icons-material/BuildCircleOutlined";
-import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import SettingsIcon from "@mui/icons-material/Settings";
-import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
 
 import {
   getNpxInstalledSkills,
@@ -38,6 +34,7 @@ import { workbenchPanelSx } from "@/components/common/glassPanel";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import {
   AppShell,
+  ListSurface,
   MobileFilterButton,
   PlatformShellIdentity,
 } from "@/components/shell/AppShell";
@@ -99,9 +96,7 @@ import NpxFindView from "./npx-skills/NpxFindView";
 import NpxInstalledView from "./npx-skills/NpxInstalledView";
 import NpxInstalledSkillDrawer from "./npx-skills/NpxInstalledSkillDrawer";
 import NpxMaintenanceView from "./npx-skills/NpxMaintenanceView";
-import NpxSummaryCard from "./npx-skills/NpxSummaryCard";
 import NpxSkillsFilters from "./npx-skills/NpxSkillsFilters";
-import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 
 export default function NpxSkillsPage() {
   const { t } = useI18n();
@@ -935,247 +930,43 @@ export default function NpxSkillsPage() {
       }
     >
       <Box sx={{ position: "relative", zIndex: 1 }}>
-        <Box
-          sx={[
-            workbenchPanelSx,
-            {
-              mb: 3,
-              px: { xs: 2.25, md: 3 },
-              py: { xs: 2, md: 2.5 },
-              background:
-                "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-panel-fill-strong) 42%, var(--mcs-panel-fill) 100%)",
-              borderColor: "var(--mcs-workbench-outline-strong)",
-            },
-          ]}
-        >
-          <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">
-            <Grid size={{ xs: 12, lg: 7 }}>
-              <Stack
-                spacing={1.1}
-                sx={{ height: "100%", justifyContent: "center" }}
-              >
-                <Typography
-                  variant="overline"
-                  sx={{ color: "var(--mcs-workbench-accent-strong)" }}
-                >
-                  {t("npxSkills.workspaceLabel")}
+        <ListSurface tone="workbench">
+          <Stack spacing={1.25}>
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={1.25}
+              justifyContent="space-between"
+              alignItems={{ xs: "flex-start", md: "center" }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="h5" sx={{ letterSpacing: "-0.04em" }}>
+                  {t("npxSkills.pageTitle", {
+                    platform: platform?.name ?? platformId ?? t("common.unknown"),
+                  })}
                 </Typography>
-                <Stack direction="row" spacing={1.4} alignItems="center" sx={{ minWidth: 0 }}>
-                  <PlatformBadge
-                    platformId={platform?.id ?? platformId}
-                    name={platform?.name ?? platformId ?? t("common.unknown")}
-                    fallbackIcon={platform?.icon}
-                    size={58}
-                  />
-                  <Typography
-                    variant="h3"
-                    sx={{
-                      letterSpacing: "-0.05em",
-                      fontSize: { xs: "2rem", md: "2.75rem" },
-                      lineHeight: 1.04,
-                    }}
-                  >
-                    {t("npxSkills.pageTitle", {
-                      platform: platform?.name ?? platformId ?? t("common.unknown"),
-                    })}
-                  </Typography>
-                </Stack>
                 <Typography
-                  variant="body1"
+                  variant="body2"
                   color="text.secondary"
-                  sx={{ maxWidth: 760, lineHeight: 1.75 }}
+                  sx={{ mt: 0.5 }}
                 >
                   {t("npxSkills.settingsDefaultsNote")}
                 </Typography>
+              </Box>
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Chip label={installTargetModeLabel} color="info" variant="outlined" />
+                <Chip label={`${agents.length} agents`} color="warning" variant="outlined" />
+                <Chip label={cliMode.toUpperCase()} variant="outlined" />
               </Stack>
-            </Grid>
-            <Grid size={{ xs: 12, lg: 5 }}>
-              <Stack
-                spacing={1.25}
-                sx={{ height: "100%", justifyContent: "space-between" }}
-              >
-                <Box
-                  sx={{
-                    borderRadius: 3,
-                    p: 1.6,
-                    border: "1px solid var(--mcs-workbench-outline)",
-                    background:
-                      "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-summary-tile-fill) 100%)",
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "var(--mcs-workbench-muted)",
-                      display: "block",
-                      mb: 0.5,
-                    }}
-                  >
-                    {t("common.installTarget")}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 700, letterSpacing: "-0.02em", mb: 0.35 }}
-                  >
-                    {installTargetModeLabel}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ overflowWrap: "anywhere" }}
-                  >
-                    {installTargetPath}
-                  </Typography>
-                </Box>
-
-                <Stack
-                  direction={{ xs: "column", sm: "row", lg: "column" }}
-                  spacing={1.1}
-                >
-                  <Button
-                    variant="outlined"
-                    startIcon={<SettingsIcon />}
-                    onClick={() => setSettingsOpen(true)}
-                    sx={{ justifyContent: "flex-start" }}
-                  >
-                    {t("npxSkills.settings")}
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<FolderOpenOutlinedIcon />}
-                    onClick={openInstallTargetDialog}
-                    sx={{ justifyContent: "flex-start" }}
-                  >
-                    {t("common.installTarget")}
-                  </Button>
-                </Stack>
-              </Stack>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Box
-          sx={{
-            mb: 3,
-            display: "grid",
-            gap: 1.5,
-            gridTemplateColumns: {
-              xs: "1fr",
-              lg: "minmax(0, 1.3fr) minmax(320px, 0.9fr)",
-            },
-          }}
-        >
-          <Box
-            sx={{
-              position: "relative",
-              overflow: "hidden",
-              borderRadius: 3.5,
-              border: "1px solid var(--mcs-workbench-outline)",
-              background:
-                "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 22%, var(--mcs-panel-fill) 100%)",
-              boxShadow: "var(--mcs-summary-tile-shadow)",
-              px: { xs: 1.75, md: 2.25 },
-              py: { xs: 1.5, md: 1.75 },
-            }}
-          >
-            <Stack spacing={0.9}>
-              <Typography
-                variant="overline"
-                sx={{ color: "var(--mcs-workbench-accent-strong)" }}
-              >
-                {view === "find"
-                  ? t("npxSkills.viewFind")
-                  : view === "installed"
-                    ? t("npxSkills.viewInstalled")
-                    : t("npxSkills.viewMaintenance")}
-              </Typography>
-              <Typography variant="h6" sx={{ letterSpacing: "-0.03em" }}>
-                {t("common.selectedCount", {
-                  count:
-                    view === "find"
-                      ? selectedCatalogItems.length
-                      : view === "installed"
-                      ? selectedInstalledIds.size
-                        : jobTotal,
-                })}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "var(--mcs-workbench-muted)", lineHeight: 1.7 }}
-              >
-                {resolvedTarget?.skills_path ??
-                  t("installed.installTargetLoading")}
-              </Typography>
             </Stack>
-          </Box>
-
-          <Box
-            sx={{
-              position: "relative",
-              overflow: "hidden",
-              borderRadius: 3.5,
-              border: "1px solid var(--mcs-workbench-outline)",
-              background:
-                "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-workbench-surface-strong) 24%, var(--mcs-panel-fill) 100%)",
-              boxShadow: "var(--mcs-summary-tile-shadow)",
-              px: { xs: 1.75, md: 2 },
-              py: { xs: 1.5, md: 1.75 },
-            }}
-          >
-            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-              <Chip
-                label={
-                  installTarget.scope === "project"
-                    ? t("installed.installTargetProject")
-                    : t("installed.installTargetGlobal")
-                }
-                color="info"
-                variant="outlined"
-              />
-              <Chip
-                label={`${agents.length} agents`}
-                color="warning"
-                variant="outlined"
-              />
-              <Chip
-                label={cliMode.toUpperCase()}
-                color="default"
-                variant="outlined"
-              />
-            </Stack>
-          </Box>
-        </Box>
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid size={{ xs: 6, md: 3 }}>
-            <NpxSummaryCard
-              label={t("npxSkills.summaryInstalled")}
-              value={installedSummary?.total ?? installedItems.length}
-              icon={<Inventory2OutlinedIcon color="success" />}
-            />
-          </Grid>
-          <Grid size={{ xs: 6, md: 3 }}>
-            <NpxSummaryCard
-              label={t("npxSkills.summaryCurated")}
-              value={installedSummary?.curated ?? 0}
-              icon={<TipsAndUpdatesOutlinedIcon color="info" />}
-            />
-          </Grid>
-          <Grid size={{ xs: 6, md: 3 }}>
-            <NpxSummaryCard
-              label={t("npxSkills.summaryManual")}
-              value={installedSummary?.manual ?? 0}
-              icon={<BuildCircleOutlinedIcon color="warning" />}
-            />
-          </Grid>
-          <Grid size={{ xs: 6, md: 3 }}>
-            <NpxSummaryCard
-              label={t("npxSkills.summaryUpdates")}
-              value={installedSummary?.update_available ?? 0}
-              icon={<SettingsIcon color="action" />}
-            />
-          </Grid>
-        </Grid>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ overflowWrap: "anywhere" }}
+            >
+              {installTargetPath}
+            </Typography>
+          </Stack>
+        </ListSurface>
 
         <Card
           elevation={0}
@@ -1183,10 +974,9 @@ export default function NpxSkillsPage() {
             workbenchPanelSx,
             {
               mb: 3,
-              background:
-                "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 20%, var(--mcs-panel-fill) 100%)",
+              background: "var(--mcs-panel-fill)",
               borderColor: "var(--mcs-workbench-outline)",
-              boxShadow: "var(--mcs-summary-tile-shadow)",
+              boxShadow: "var(--mcs-shadow-sm)",
             },
           ]}
         >
@@ -1203,30 +993,11 @@ export default function NpxSkillsPage() {
 
         <Box
           sx={{
-            position: "relative",
-            overflow: "hidden",
             borderRadius: 4,
             border: "1px solid var(--mcs-workbench-outline)",
-            background:
-              "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 20%, var(--mcs-panel-fill) 100%)",
-            boxShadow: "var(--mcs-panel-shadow)",
+            background: "var(--mcs-panel-fill)",
+            boxShadow: "var(--mcs-shadow-sm)",
             p: { xs: 1.25, md: 1.5 },
-            isolation: "isolate",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              insetInline: 20,
-              top: 0,
-              height: 1,
-              background:
-                "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 22%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 78%, transparent 100%)",
-              opacity: 0.88,
-              pointerEvents: "none",
-            },
-            "& > *": {
-              position: "relative",
-              zIndex: 1,
-            },
           }}
         >
           {view === "find" && (

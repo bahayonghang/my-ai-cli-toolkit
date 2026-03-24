@@ -126,14 +126,16 @@ afterEach(() => {
 });
 
 describe("InstalledSkillsPage", () => {
-  it("renders the workspace summary and focused result controls", () => {
+  it("renders the compact workspace controls above the installed table", () => {
     const markup = renderPage();
 
-    expect(markup).toContain("Manage the installed skills library for Codex");
+    expect(markup).toContain("Codex");
     expect(markup).toContain("Install target");
+    expect(markup).toContain("Search installed skills");
     expect(markup).toContain("2 skills in view");
     expect(markup).toContain("2 categories");
     expect(markup).toContain("npx skills");
+    expect(markup).toContain("frontend-design");
   });
 
   it("renders an inline error while keeping the workspace shell", () => {
@@ -142,6 +144,6 @@ describe("InstalledSkillsPage", () => {
     const markup = renderPage();
 
     expect(markup).toContain("Installed skills failed to load");
-    expect(markup).toContain("Manage the installed skills library for Codex");
+    expect(markup).toContain("Search installed skills");
   });
 });

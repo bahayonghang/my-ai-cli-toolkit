@@ -25,9 +25,9 @@ import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
-import TuneIcon from "@mui/icons-material/Tune";
 
 import type { NpxSkillsCatalogItemDto, NpxSkillsInstallItemInput } from "@/types";
+import { summarizeSkillDescription } from "@/utils/skillDescription";
 import type { TaxonomyGroupSummary, TranslationFn } from "./types";
 import { buildInstallKey, installStatusColor } from "./utils";
 import NpxSkillsFilters from "./NpxSkillsFilters";
@@ -66,7 +66,7 @@ export default function NpxFindView({
   setCatalogSearch,
   installedOnly,
   setInstalledOnly,
-  setFiltersOpen,
+  setFiltersOpen: _setFiltersOpen,
   fetchCatalog,
   openQuickInstallDialog,
   openInstallSelectedDialog,
@@ -113,14 +113,6 @@ export default function NpxFindView({
           }}
           sx={{ width: 360, maxWidth: "100%" }}
         />
-        {isMobile && (
-          <IconButton
-            aria-label={t("common.openFilters")}
-            onClick={() => setFiltersOpen(true)}
-          >
-            <TuneIcon />
-          </IconButton>
-        )}
         <FormControlLabel
           control={
             <Switch
@@ -130,14 +122,6 @@ export default function NpxFindView({
           }
           label={t("npxSkills.installedOnly")}
         />
-        {isMobile && (
-          <IconButton
-            aria-label={t("common.openFilters")}
-            onClick={() => setFiltersOpen(true)}
-          >
-            <TuneIcon />
-          </IconButton>
-        )}
         <Button
           variant="outlined"
           startIcon={<RefreshIcon />}
@@ -342,7 +326,8 @@ export default function NpxFindView({
                         minHeight: "4.2em",
                       }}
                     >
-                      {item.description ?? t("npxSkills.noDescription")}
+                      {summarizeSkillDescription(item.description, "list") ||
+                        t("npxSkills.noDescription")}
                     </Typography>
 
                     {item.usage && (

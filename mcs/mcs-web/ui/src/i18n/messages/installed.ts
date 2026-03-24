@@ -3,7 +3,7 @@ export const enInstalledMessages = {
   "installed.workspaceEyebrow": "Platform skills workspace",
   "installed.workspaceTitle": "Manage the installed skills library for {platform}",
   "installed.workspaceSubtitle":
-    "Review the current library, switch install target when needed, and move into install or registry flows without losing context.",
+    "Search the current library, adjust filters, and move straight into install or registry work.",
   "installed.categories": "CATEGORIES",
   "installed.allSkills": "All Skills",
   "installed.searchLabel": "Search installed skills",
@@ -41,7 +41,7 @@ export const zhInstalledMessages: Record<
   "installed.workspaceEyebrow": "平台技能工作区",
   "installed.workspaceTitle": "管理 {platform} 的已安装技能库",
   "installed.workspaceSubtitle":
-    "在同一个工作面里检查当前技能库、切换安装目标，并快速进入安装或 registry 流程。",
+    "搜索当前技能库、调整筛选条件，并直接进入安装或 registry 工作。",
   "installed.categories": "分类",
   "installed.allSkills": "全部技能",
   "installed.searchLabel": "搜索已安装技能",

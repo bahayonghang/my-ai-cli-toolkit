@@ -39,13 +39,10 @@ import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import {
   AppShell,
-  FilterRail,
   ListSurface,
-  MetaChips,
-  MetricStrip,
   MobileFilterButton,
   PlatformShellIdentity,
-  SectionHero,
+  ResponsiveFilterRail,
 } from "@/components/shell/AppShell";
 import { useI18n } from "@/i18n";
 import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
@@ -54,6 +51,7 @@ import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useUiStore } from "@/stores/uiStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
+import { summarizeSkillDescription } from "@/utils/skillDescription";
 
 const SkillEditorDrawer = lazy(() =>
   import("@/components/dialogs/SkillEditorDrawer").then((module) => ({
@@ -227,7 +225,7 @@ export default function InstalledSkillsPage() {
         </>
       }
       filterRail={
-        <FilterRail
+        <ResponsiveFilterRail
           title={t("installed.categories")}
           sections={[
             {
@@ -245,75 +243,31 @@ export default function InstalledSkillsPage() {
         />
       }
     >
-      <FilterRail
-        title={t("installed.categories")}
-        mobileOpen={filterDrawerOpen}
-        onCloseMobile={() => setFilterDrawerOpen(false)}
-        sections={[
-          {
-            id: "installed-filters-mobile",
-            content: (
-              <InstalledFilters
-                categories={skillCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={(value) => {
-                  setSelectedCategory(value);
-                  setFilterDrawerOpen(false);
-                }}
-                t={t}
-              />
-            ),
-          },
-        ]}
-      />
-
-      <Stack spacing={3}>
-        <SectionHero
-          variant="workbench"
-          eyebrow={t("installed.workspaceEyebrow")}
-          title={t("installed.workspaceTitle", {
-            platform: platform?.name ?? platformId ?? t("common.unknown"),
-          })}
-          description={t("installed.workspaceSubtitle")}
-          meta={
-            <MetaChips
-              items={[
-                t("installed.filteredSummary", { count: items.length }),
-                t("installed.categoriesSummary", { count: skillCategories.length }),
-                activeFilterLabel ?? t("common.all"),
-              ]}
-            />
-          }
-        />
-
-        <MetricStrip
-          items={[
+      {isMobile ? (
+        <ResponsiveFilterRail
+          title={t("installed.categories")}
+          mobileOpen={filterDrawerOpen}
+          onCloseMobile={() => setFilterDrawerOpen(false)}
+          sections={[
             {
-              key: "skills",
-              label: t("common.skills"),
-              value: t("installed.filteredSummary", { count: items.length }),
-              detail: t("installed.searchLabel"),
-            },
-            {
-              key: "categories",
-              label: t("common.category"),
-              value: t("installed.categoriesSummary", {
-                count: skillCategories.length,
-              }),
-              detail: activeFilterLabel ?? t("common.all"),
-            },
-            {
-              key: "target",
-              label: t("common.installTarget"),
-              value:
-                installTarget.scope === "project"
-                  ? t("installed.installTargetProject")
-                  : t("installed.installTargetGlobal"),
-              detail: resolvedTarget?.skills_path ?? t("installed.installTargetLoading"),
+              id: "installed-filters-mobile",
+              content: (
+                <InstalledFilters
+                  categories={skillCategories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={(value) => {
+                    setSelectedCategory(value);
+                    setFilterDrawerOpen(false);
+                  }}
+                  t={t}
+                />
+              ),
             },
           ]}
         />
+      ) : null}
 
+      <Stack spacing={2.5}>
         <ListSurface tone="workbench">
           <Stack
             direction={{ xs: "column", lg: "row" }}
@@ -337,6 +291,12 @@ export default function InstalledSkillsPage() {
             />
             <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ flexGrow: 1 }}>
               <Chip label={t("installed.filteredSummary", { count: items.length })} variant="outlined" />
+              <Chip
+                label={t("installed.categoriesSummary", {
+                  count: skillCategories.length,
+                })}
+                variant="outlined"
+              />
               {activeFilterLabel ? <Chip label={activeFilterLabel} color="primary" variant="outlined" /> : null}
             </Stack>
             {search || selectedCategory ? (
@@ -397,7 +357,8 @@ export default function InstalledSkillsPage() {
                       ) : null}
                     </Stack>
                     <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                      {item.description || t("common.noDescriptionAvailable")}
+                      {summarizeSkillDescription(item.description, "list") ||
+                        t("common.noDescriptionAvailable")}
                     </Typography>
                   </Box>
 
@@ -461,7 +422,8 @@ export default function InstalledSkillsPage() {
                             overflowWrap: "anywhere",
                           }}
                         >
-                          {item.description || t("common.noDescriptionAvailable")}
+                          {summarizeSkillDescription(item.description, "list") ||
+                            t("common.noDescriptionAvailable")}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">

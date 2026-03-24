@@ -28,6 +28,7 @@ import type {
   NpxSkillsCapabilitiesDto,
   NpxSkillsInstalledSummaryDto,
 } from "@/types";
+import { summarizeSkillDescription } from "@/utils/skillDescription";
 import type {
   InstalledSourceFilter,
   InstalledTrackingFilter,
@@ -396,7 +397,7 @@ export default function NpxInstalledView({
                             color="text.secondary"
                             sx={{ mt: 1, overflowWrap: "anywhere" }}
                           >
-                            {item.description ?? "\u2014"}
+                            {summarizeSkillDescription(item.description, "list") || "\u2014"}
                           </Typography>
                         </Box>
                       </Stack>
@@ -501,7 +502,7 @@ export default function NpxInstalledView({
                               color="text.secondary"
                               sx={{ display: "block", mt: 0.9, maxWidth: 300, overflowWrap: "anywhere" }}
                             >
-                              {item.description ?? "\u2014"}
+                              {summarizeSkillDescription(item.description, "list") || "\u2014"}
                             </Typography>
                           </Box>
                           <Box component="td">

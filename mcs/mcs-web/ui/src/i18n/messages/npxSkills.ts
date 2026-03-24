@@ -1,7 +1,7 @@
 export const enNpxSkillsMessages = {
   "npxSkills.pageButton": "npx skills",
-  "npxSkills.pageTitle": "Registry workspace · {platform}",
-  "npxSkills.workspaceLabel": "External registry workspace",
+  "npxSkills.pageTitle": "Manage registry skills for {platform}",
+  "npxSkills.workspaceLabel": "Registry workspace",
   "npxSkills.summaryInstalled": "Installed",
   "npxSkills.summaryCatalog": "Catalog",
   "npxSkills.summaryAgents": "Agents",
@@ -22,7 +22,7 @@ export const enNpxSkillsMessages = {
   "npxSkills.refreshInstalled": "Refresh Installed",
   "npxSkills.settings": "Settings",
   "npxSkills.settingsDefaultsNote":
-    "Saved defaults for future runs. Each job can override them temporarily before it starts.",
+    "Saved defaults apply to future runs. You can still override them for a single job.",
   "npxSkills.targetAgents": "Target Agents",
   "npxSkills.targetAgentsHelp": "Skills will be installed for these agents",
   "npxSkills.cliModeAuto": "Auto",
@@ -172,8 +172,8 @@ export const zhNpxSkillsMessages: Record<
   string
 > = {
   "npxSkills.pageButton": "npx skills",
-  "npxSkills.pageTitle": "Registry 工作区 · {platform}",
-  "npxSkills.workspaceLabel": "外部 registry 工作区",
+  "npxSkills.pageTitle": "管理 {platform} 的 registry 技能",
+  "npxSkills.workspaceLabel": "Registry 工作区",
   "npxSkills.summaryInstalled": "已安装",
   "npxSkills.summaryCatalog": "目录",
   "npxSkills.summaryAgents": "代理",
@@ -193,7 +193,7 @@ export const zhNpxSkillsMessages: Record<
   "npxSkills.refreshCatalog": "刷新目录",
   "npxSkills.refreshInstalled": "刷新已安装",
   "npxSkills.settings": "设置",
-  "npxSkills.settingsDefaultsNote": "这里保存的是默认偏好；每次任务启动前都可以临时覆盖。",
+  "npxSkills.settingsDefaultsNote": "这里保存的是默认偏好；单次任务仍可临时覆盖。",
   "npxSkills.targetAgents": "目标代理",
   "npxSkills.targetAgentsHelp": "技能只会安装到这些代理目录",
   "npxSkills.cliModeAuto": "自动",
