@@ -1,43 +1,22 @@
 import os
 import sys
-import subprocess
 import argparse
-import tempfile
 import time
 import re
-
-# ==========================================
-# AUTO-DEPENDENCY INSTALLER
-# ==========================================
-def install_dependencies():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    req_path = os.path.abspath(os.path.join(script_dir, "..", "requirements.txt"))
-    
-    print(f"[System] Missing dependencies detected. Installing from {req_path}...")
-    
-    if not os.path.exists(req_path):
-        print(f"[Error] requirements.txt not found at {req_path}")
-        sys.exit(1)
-        
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", req_path])
-        print("[System] Dependencies installed. Restarting script...")
-        os.execv(sys.executable, [sys.executable] + sys.argv)
-    except subprocess.CalledProcessError as e:
-        print(f"[Error] Failed to install dependencies: {e}")
-        sys.exit(1)
 
 try:
     import requests
     from bs4 import BeautifulSoup
     import html2text
-except ImportError:
-    install_dependencies()
-
-# Re-import after ensure
-import requests
-from bs4 import BeautifulSoup
-import html2text
+except ImportError as exc:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    req_path = os.path.abspath(os.path.join(script_dir, "..", "requirements.txt"))
+    print(
+        "[Error] Missing dependencies. Install them manually with:\n"
+        f"  {sys.executable} -m pip install -r \"{req_path}\"\n"
+        f"Original import error: {exc}"
+    )
+    sys.exit(1)
 
 # ==========================================
 # CONFIGURATION

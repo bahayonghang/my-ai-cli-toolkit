@@ -20,6 +20,8 @@ tags: [interview, planning, requirements, design, architecture]
    - **步骤 2.5 — 范围分解检查**：若检测到 3+ 独立子系统或需求文档超 500 行，按协议提议拆分。
 4. 读取 `resources/INTERVIEW_PRINCIPLES.md`，按其提问原则进行苏格拉底式访谈。
    - **步骤 3.5 — 可视化伴侣提议**：若项目涉及 UI/前端开发，按协议提议启用浏览器可视化伴侣（参考 `resources/VISUAL_COMPANION.md` 和 `scripts/`）。
+     - 仅在用户明确接受后才启动服务器。
+     - 默认绑定 `127.0.0.1` / `localhost`；没有明确远程访问需求时，不要放宽监听范围。
 5. 读取 `resources/INTERVIEW_DIMENSIONS.md`，按 A-G 维度框架逐项向用户提问：
    - 必须覆盖 A（工程原则审查），其余按项目类型选择性覆盖。
    - **必须使用 `AskUserQuestion` 工具**呈现每轮问题，将 2-3 个收敛性选项映射为可点击的交互式选项卡（`options`），禁止以纯文本 A/B/C 形式输出。

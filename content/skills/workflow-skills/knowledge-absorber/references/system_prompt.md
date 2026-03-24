@@ -132,13 +132,12 @@
 HTML 文件必须包含完整的 CSS 样式块 `<style>...</style>`。
 
 **交互增强 (Mermaid)**：
-若内容包含 Mermaid 图表，**必须**遵循以下规范：
-1.  **引入库**：在 `<head>` 中引入 Mermaid CDN 并初始化：
-    `<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs'; mermaid.initialize({ startOnLoad: true });</script>`
-2.  **容器结构**：Mermaid 代码块必须包裹在 `<div class="mermaid">` 中。
+若内容包含 Mermaid 图表，默认输出 Mermaid 源码本身，不要在 HTML 中注入远程脚本或 CDN 运行时。
+1.  **默认方式**：Markdown 中使用带 `mermaid` info string 的 fenced code block，HTML 中使用 `<pre class="mermaid-source">...</pre>` 保留源码。
+2.  **容器结构**：如果环境已经提供本地 Mermaid 渲染器，再由宿主环境自行渲染；skill 本身不负责加载远程运行时。
 3.  **格式化**：代码块内部必须保留**清晰的换行符**，并显式声明图表类型（如 `graph TD`）。
-    *   ✅ 正确：`<div class="mermaid">\ngraph TD\nA-->B\n</div>`
-    *   ❌ 错误：`<div class="mermaid">graph TD A-->B</div>`
+    *   ✅ 正确：```mermaid\ngraph TD\nA-->B\n```
+    *   ❌ 错误：`graph TD A-->B`
 
 **初始化指令**：从以下预设中**随机选择一种** (除非内容显式要求特定风格，如国学强制用 B)，并在开头注释中标注 `<!-- Style: [Style Name] -->`。
 
