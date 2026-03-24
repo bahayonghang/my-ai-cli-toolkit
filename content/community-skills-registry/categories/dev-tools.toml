@@ -87,3 +87,12 @@ stars = 5
 usage = "安装后使用 /skill-audit <路径> 启动 10 维度专项审计，自动检测反模式并生成符合 Anthropic 官方规范的优化版 SKILL.md"
 tags = ["skills", "optimization", "audit", "linter", "token-efficiency"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/skill_optimizer", skill_flag = "skill-audit" }
+
+[[skills]]
+id = "firecrawl-cli"
+name = "firecrawl-cli"
+description = "Firecrawl CLI — 高效的网页抓取、爬虫与数据提取工具（专为大语言模型优化）"
+stars = 5
+usage = "安装后使用 firecrawl/cli 进行网页爬取、搜索与数据提取"
+tags = ["scraping", "crawler", "data-extraction"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "firecrawl/cli" }

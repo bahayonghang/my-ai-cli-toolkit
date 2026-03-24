@@ -24,3 +24,12 @@ stars = 5
 usage = "安装后提供 AI 生成与处理 PPT 的能力"
 tags = ["ppt", "presentation", "productivity", "ai"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/AIPPT", skill_flag = "AIPPT" }
+
+[[skills]]
+id = "gws-docs"
+name = "Google Workspace Docs CLI"
+description = "Google Workspace Docs 命令行工具 — 提供在 AI Agent 或光标内直接管理、读写 Google Docs 的能力"
+stars = 5
+usage = "安装后通过命令与 AI Agent 协助对 Google Docs 进行读取、修改及排版相关操作"
+tags = ["google-workspace", "google-docs", "productivity", "documents"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "googleworkspace/cli", skill_flag = "gws-docs" }
