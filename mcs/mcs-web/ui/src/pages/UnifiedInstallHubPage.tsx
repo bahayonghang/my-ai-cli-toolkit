@@ -1,7 +1,3 @@
-import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
-import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
-import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
-import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
 import {
   Alert,
   Box,
@@ -26,7 +22,7 @@ import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
 import type { InstallHubStage } from "@/components/install-hub/types";
-import { AppShell, MetricStrip, SectionHero as ShellHero } from "@/components/shell/AppShell";
+import { AppShell } from "@/components/shell/AppShell";
 import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 
 export default function UnifiedInstallHubPage() {
@@ -54,6 +50,7 @@ export default function UnifiedInstallHubPage() {
       subtitle={t("installHub.heroSubtitle")}
       onBack={() => navigate(-1)}
       onHome={() => navigate("/")}
+      summaryMode="rail"
     >
       <PageBody model={model} platforms={platforms} />
       <NotificationSnackbar />
@@ -82,245 +79,14 @@ function PageBody({
   platforms: PlatformDisplay[];
 }) {
   return (
-    <Box
-      sx={{
-        pb: { xs: 2, md: 0 },
-      }}
-    >
+    <Box sx={{ pb: { xs: 2, md: 0 } }}>
       {model.catalogError ? (
         <Alert severity="error" sx={{ mb: 2.5 }}>
           {model.catalogError}
         </Alert>
       ) : null}
 
-      <Stack spacing={3}>
-        <InstallHero model={model} platformCount={platforms.length} />
-        <InstallWorkbench model={model} platforms={platforms} />
-      </Stack>
-    </Box>
-  );
-}
-
-function InstallHero({
-  model,
-  platformCount,
-}: {
-  model: ReturnType<typeof useUnifiedInstallHub>;
-  platformCount: number;
-}) {
-  const { t } = useI18n();
-  const activeStageTitle = t(`installHub.stageTitle.${model.activeStage}`);
-
-  return (
-    <Stack spacing={2}>
-      <ShellHero
-        variant="workbench"
-        eyebrow={t("installHub.heroEyebrow")}
-        title={t("installHub.heroTitle")}
-        description={t("installHub.heroSubtitle")}
-        meta={
-          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-            {(["skills", "platforms", "review"] as InstallHubStage[]).map(
-              (stage, index) => (
-                <Box
-                  key={stage}
-                  sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 1,
-                    px: 1.5,
-                    py: 0.85,
-                    borderRadius: 999,
-                    border: "1px solid",
-                    borderColor:
-                      stage === model.activeStage
-                        ? "var(--mcs-workbench-outline-strong)"
-                        : "var(--mcs-workbench-outline)",
-                    bgcolor:
-                      stage === model.activeStage
-                        ? "var(--mcs-workbench-accent-soft)"
-                        : "var(--mcs-workbench-surface-muted)",
-                  }}
-                >
-                  <Typography variant="caption" fontWeight={700}>
-                    {String(index + 1).padStart(2, "0")}
-                  </Typography>
-                  <Typography variant="body2" fontWeight={600}>
-                    {t(`installHub.stageTitle.${stage}`)}
-                  </Typography>
-                </Box>
-              ),
-            )}
-          </Stack>
-        }
-      />
-
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <MetricStrip
-            tone="workbench"
-            items={[
-              {
-                key: "catalog",
-                label: t("installHub.metricCatalog"),
-                value: model.summary.totalSkillCount,
-                detail: t("installHub.filteredTotal", {
-                  filtered: model.summary.filteredSkillCount,
-                  total: model.summary.totalSkillCount,
-                }),
-                emphasis: true,
-              },
-              {
-                key: "categories",
-                label: t("installHub.metricCategories"),
-                value: model.categories.length,
-                detail: t("installHub.categoryRailTitle"),
-              },
-              {
-                key: "targets",
-                label: t("installHub.metricTargets"),
-                value: platformCount,
-                detail: t("installHub.selectedPlatformsPreview", {
-                  count: model.summary.selectedPlatforms.length,
-                }),
-              },
-              {
-                key: "actions",
-                label: t("installHub.metricActions"),
-                value: model.summary.plannedActionCount,
-                detail: activeStageTitle,
-              },
-            ]}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Stack
-            spacing={1.25}
-            sx={{ height: "100%", justifyContent: "space-between" }}
-          >
-            <Box
-              sx={{
-                borderRadius: 3,
-                border: "1px solid var(--mcs-workbench-outline-strong)",
-                bgcolor: "var(--mcs-workbench-accent-soft)",
-                px: 2,
-                py: 1.5,
-              }}
-            >
-              <Typography
-                variant="overline"
-                sx={{ color: "var(--mcs-workbench-muted)" }}
-              >
-                {t("installHub.summaryEyebrow")}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{ mt: 0.35, letterSpacing: "-0.03em" }}
-              >
-                {activeStageTitle}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ mt: 0.75, color: "var(--mcs-workbench-muted)" }}
-              >
-                {t(`installHub.stageDescription.${model.activeStage}`)}
-              </Typography>
-            </Box>
-
-            <Grid container spacing={1.25}>
-              <Grid size={{ xs: 6, sm: 3, lg: 6 }}>
-                <MetricPlate
-                  icon={<Inventory2OutlinedIcon fontSize="small" />}
-                  label={t("installHub.metricCatalog")}
-                  value={model.summary.totalSkillCount}
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 3, lg: 6 }}>
-                <MetricPlate
-                  icon={<LayersOutlinedIcon fontSize="small" />}
-                  label={t("installHub.metricCategories")}
-                  value={model.categories.length}
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 3, lg: 6 }}>
-                <MetricPlate
-                  icon={<TravelExploreOutlinedIcon fontSize="small" />}
-                  label={t("installHub.metricTargets")}
-                  value={platformCount}
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 3, lg: 6 }}>
-                <MetricPlate
-                  icon={<PlayCircleOutlineRoundedIcon fontSize="small" />}
-                  label={t("installHub.metricActions")}
-                  value={model.summary.plannedActionCount}
-                  tone="accent"
-                />
-              </Grid>
-            </Grid>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Stack>
-  );
-}
-
-function MetricPlate({
-  icon,
-  label,
-  value,
-  tone = "neutral",
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  tone?: "neutral" | "accent";
-}) {
-  return (
-    <Box
-      sx={{
-        height: "100%",
-        borderRadius: 3,
-        border: "1px solid",
-        borderColor:
-          tone === "accent"
-            ? "var(--mcs-workbench-outline-strong)"
-            : "var(--mcs-workbench-outline)",
-        bgcolor:
-          tone === "accent"
-            ? "var(--mcs-workbench-accent-soft)"
-            : "var(--mcs-workbench-surface-muted)",
-        p: 1.5,
-      }}
-    >
-      <Stack spacing={1.1}>
-        <Box
-          sx={{
-            width: 34,
-            height: 34,
-            borderRadius: 2,
-            display: "grid",
-            placeItems: "center",
-            bgcolor:
-              tone === "accent"
-                ? "var(--mcs-workbench-accent-soft)"
-                : "var(--mcs-workbench-surface-muted)",
-          }}
-        >
-          {icon}
-        </Box>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{ color: "var(--mcs-workbench-muted)" }}
-          >
-            {label}
-          </Typography>
-          <Typography variant="h5" sx={{ mt: 0.3 }}>
-            {value}
-          </Typography>
-        </Box>
-      </Stack>
+      <InstallWorkbench model={model} platforms={platforms} />
     </Box>
   );
 }

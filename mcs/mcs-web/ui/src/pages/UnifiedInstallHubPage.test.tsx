@@ -180,14 +180,14 @@ afterEach(() => {
 });
 
 describe("UnifiedInstallHubPage", () => {
-  it("renders the staged workbench hero, summary, and three guided steps", () => {
+  it("renders the staged workbench with one summary rail and three guided steps", () => {
     const markup = renderPage();
 
-    expect(markup).toContain("Guide every skills rollout with one clear operational path.");
+    expect(markup).toContain("Unified Skill Install Hub");
+    expect(markup).toContain("Keep the run in view");
     expect(markup).toContain("Choose Skills");
     expect(markup).toContain("Choose Targets");
     expect(markup).toContain("Review &amp; Execute");
-    expect(markup).toContain("Keep the run in view");
     expect(markup).toContain("Category Jump");
     expect(markup).toContain("frontend-design");
   });

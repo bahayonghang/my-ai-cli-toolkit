@@ -77,41 +77,18 @@ export function MobileInstallSummaryBar({
     <Box
       sx={{
         display: { xs: "block", lg: "none" },
-        position: "sticky",
-        bottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
-        zIndex: 5,
-        mt: 2,
-        pb: "env(safe-area-inset-bottom, 0px)",
+        mt: 2.5,
       }}
     >
       <Box
         sx={{
-          position: "relative",
-          overflow: "hidden",
           borderRadius: 3.5,
           border: "1px solid var(--mcs-workbench-outline-strong)",
           background:
-            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill-strong) 34%, var(--mcs-panel-fill) 100%)",
-          boxShadow: "var(--mcs-panel-shadow)",
+            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+          boxShadow: "var(--mcs-shadow-sm)",
           px: 1.75,
-          pt: 1.75,
-          pb: "calc(env(safe-area-inset-bottom, 0px) + 14px)",
-          isolation: "isolate",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            insetInline: 16,
-            top: 0,
-            height: 1,
-            background:
-              "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 22%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 78%, transparent 100%)",
-            opacity: 0.9,
-            pointerEvents: "none",
-          },
-          "& > *": {
-            position: "relative",
-            zIndex: 1,
-          },
+          py: 1.75,
         }}
       >
         <Stack spacing={1.25}>
@@ -206,45 +183,16 @@ function SummarySurface({
         borderRadius: 4,
         border: "1px solid var(--mcs-workbench-outline-strong)",
         background:
-          "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 18%, var(--mcs-panel-fill-strong) 48%, var(--mcs-panel-fill) 100%)",
-        boxShadow: "0 18px 40px rgba(15, 23, 42, 0.14)",
+          "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+        boxShadow: "var(--mcs-shadow-sm)",
         p: { xs: 2, md: 2.5 },
-        overflow: "hidden",
-        isolation: "isolate",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          insetInline: 24,
-          top: 0,
-          height: 1,
-          background:
-            "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
-          pointerEvents: "none",
-        },
-        "&::after": {
-          content: '""',
-          position: "absolute",
-          insetInline: "16%",
-          top: 18,
-          height: 140,
-          borderRadius: "999px",
-          background:
-            "radial-gradient(circle, var(--mcs-workbench-accent-soft) 0%, transparent 72%)",
-          filter: "blur(28px)",
-          opacity: 0.72,
-          pointerEvents: "none",
-        },
-        "& > *": {
-          position: "relative",
-          zIndex: 1,
-        },
       }}
     >
       <Stack spacing={2.25}>
         <Box>
           <Typography
             variant="overline"
-            sx={{ color: "var(--mcs-workbench-accent-strong)" }}
+            sx={{ color: "var(--mcs-workbench-muted)" }}
           >
             {t("installHub.summaryEyebrow")}
           </Typography>

@@ -1,5 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+function trackCssImportErrors(page: import("@playwright/test").Page) {
+  const messages: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      messages.push(message.text());
+    }
+  });
+  return messages;
+}
+
 const platformsResponse = [
   {
     id: "claude",
@@ -44,6 +54,7 @@ const catalogResponse = [
 
 test("unified install hub walks through the staged install flow", async ({ page }) => {
   const installRequests: Array<{ platformId: string; names: string[] }> = [];
+  const consoleErrors = trackCssImportErrors(page);
 
   await page.route("**/api/platforms", (route) =>
     route.fulfill({ json: { data: platformsResponse } }),
@@ -83,12 +94,10 @@ test("unified install hub walks through the staged install flow", async ({ page 
   await page.setViewportSize({ width: 1600, height: 1100 });
 
   await page.goto("/install-hub");
+  await expect(page.locator("main")).toHaveCount(1);
 
-  await expect(
-    page.getByRole("heading", {
-      name: /guide every skills rollout with one clear operational path/i,
-    }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Unified Skill Install Hub/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Choose Skills/i }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: /continue to targets/i })).toBeDisabled();
 
   await page.getByRole("checkbox", { name: /frontend-design/i }).click();
@@ -116,4 +125,45 @@ test("unified install hub walks through the staged install flow", async ({ page 
       names: ["frontend-design"],
     },
   ]);
+  expect(
+    consoleErrors.filter((message) => message.includes("@import rules can't be after other rules"))
+  ).toEqual([]);
+});
+
+test("unified install hub keeps the mobile summary in flow without covering the first step", async ({
+  page,
+}) => {
+  const consoleErrors = trackCssImportErrors(page);
+  await page.route("**/api/platforms", (route) =>
+    route.fulfill({ json: { data: platformsResponse } }),
+  );
+  await page.route("**/api/skills/catalog", (route) =>
+    route.fulfill({ json: { data: catalogResponse } }),
+  );
+  await page.addInitScript(() => {
+    window.localStorage.setItem("mcs-locale", "en");
+    window.localStorage.setItem("mcs-color-mode", "light");
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto("/install-hub");
+  await expect(page.locator("main")).toHaveCount(1);
+
+  const stageHeading = page.getByRole("heading", { name: /Choose Skills/i }).first();
+  const primaryAction = page.getByRole("button", { name: /select all filtered/i });
+  const summaryText = page.getByText(/will run 0 install actions/i).last();
+  await expect(stageHeading).toBeVisible();
+  await expect(primaryAction).toBeVisible();
+  await expect(summaryText).not.toBeInViewport();
+
+  const categoryJumpHeights = await page.locator("button").evaluateAll((elements) =>
+    elements
+      .filter((element) => /frontend|workflow/i.test(element.textContent ?? ""))
+      .map((element) => Math.round(element.getBoundingClientRect().height))
+  );
+  expect(categoryJumpHeights.length).toBeGreaterThan(0);
+  expect(Math.min(...categoryJumpHeights)).toBeGreaterThanOrEqual(44);
+  expect(
+    consoleErrors.filter((message) => message.includes("@import rules can't be after other rules"))
+  ).toEqual([]);
 });

@@ -20,7 +20,6 @@ import {
   CircularProgress,
   Dialog,
   Divider,
-  Drawer,
   Grid,
   IconButton,
   InputAdornment,
@@ -30,6 +29,12 @@ import {
   ListItemText,
   Stack,
   Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Tooltip,
   Typography,
@@ -53,12 +58,11 @@ import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import {
   AppShell,
   ListSurface,
-  MetricStrip,
   MobileFilterButton,
   PlatformShellIdentity,
-  SectionHero,
+  ResponsiveFilterRail,
+  StickyActionBar,
 } from "@/components/shell/AppShell";
-import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 import { getCategories, getSkillDetail, getSkills, installSkills } from "@/api/client";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
@@ -67,10 +71,9 @@ import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { CategoryDto, InstallStatus, ItemDetailDto, ItemDto } from "@/types";
+import { summarizeSkillDescription } from "@/utils/skillDescription";
 
 const Markdown = lazy(() => import("react-markdown"));
-
-const SIDEBAR_WIDTH = 260;
 
 function statusLabel(status: InstallStatus, t: ReturnType<typeof useI18n>["t"]): string {
   switch (status) {
@@ -233,6 +236,8 @@ function SearchToolbar({
   onClearSelection,
   selectedCount,
   outdatedCount,
+  visibleCount,
+  categoryCount,
   onUpdateAll,
 }: {
   search: string;
@@ -241,6 +246,8 @@ function SearchToolbar({
   onClearSelection: () => void;
   selectedCount: number;
   outdatedCount: number;
+  visibleCount: number;
+  categoryCount: number;
   onUpdateAll: () => void;
 }) {
   const { t } = useI18n();
@@ -250,7 +257,6 @@ function SearchToolbar({
       sx={{
         display: "flex",
         gap: 1.5,
-        mb: 3,
         alignItems: "center",
         flexWrap: "wrap",
       }}
@@ -272,6 +278,9 @@ function SearchToolbar({
         }}
         sx={{ width: 400, maxWidth: "100%" }}
       />
+
+      <Chip label={t("common.resultsCount", { count: visibleCount })} variant="outlined" />
+      <Chip label={t("common.categoryCount", { count: categoryCount })} variant="outlined" />
 
       <Button
         size="small"
@@ -393,7 +402,8 @@ function SkillCard({
             minHeight: "4.2em",
           }}
         >
-          {item.description ?? t("common.noDescriptionAvailable")}
+          {summarizeSkillDescription(item.description, "list") ||
+            t("common.noDescriptionAvailable")}
         </Typography>
       </CardContent>
       </CardActionArea>
@@ -431,6 +441,114 @@ function SkillCardGrid({
         </Grid>
       ))}
     </Grid>
+  );
+}
+
+function SkillInventoryTable({
+  skills,
+  selectedNames,
+  onToggle,
+  onShowDetail,
+}: {
+  skills: ItemDto[];
+  selectedNames: Set<string>;
+  onToggle: (name: string) => void;
+  onShowDetail: (name: string) => void;
+}) {
+  const { t } = useI18n();
+
+  if (skills.length === 0) {
+    return <Alert severity="info">{t("install.noSkillsFound")}</Alert>;
+  }
+
+  return (
+    <ListSurface tone="workbench" padded={false}>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox" />
+              <TableCell>{t("install.status")}</TableCell>
+              <TableCell>{t("common.name")}</TableCell>
+              <TableCell>{t("common.category")}</TableCell>
+              <TableCell>{t("common.description")}</TableCell>
+              <TableCell align="right">{t("common.actions")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {skills.map((item) => (
+              <TableRow
+                key={item.name}
+                hover
+                selected={selectedNames.has(item.name)}
+                sx={{ cursor: "pointer" }}
+                onClick={() => onToggle(item.name)}
+              >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedNames.has(item.name)}
+                    onChange={() => onToggle(item.name)}
+                    onClick={(event) => event.stopPropagation()}
+                    inputProps={{ "aria-label": t("common.selectItem", { name: item.name }) }}
+                  />
+                </TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap" }}>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    color={statusColor(item.status)}
+                    icon={<StatusIcon status={item.status} />}
+                    label={statusLabel(item.status, t)}
+                  />
+                </TableCell>
+                <TableCell sx={{ minWidth: 220 }}>
+                  <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
+                    <Typography variant="body2" fontWeight={700}>
+                      {item.name}
+                    </Typography>
+                    {item.is_default ? (
+                      <Chip size="small" label={t("common.default")} color="info" variant="outlined" />
+                    ) : null}
+                  </Stack>
+                </TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap" }}>
+                  <Chip size="small" variant="outlined" label={item.category ?? "—"} />
+                </TableCell>
+                <TableCell sx={{ maxWidth: 440 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      overflowWrap: "anywhere",
+                    }}
+                  >
+                    {summarizeSkillDescription(item.description, "list") ||
+                      t("common.noDescriptionAvailable")}
+                  </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Tooltip title={t("common.viewDetail")}>
+                    <IconButton
+                      aria-label={t("common.viewDetail")}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onShowDetail(item.name);
+                      }}
+                    >
+                      <InfoOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </ListSurface>
   );
 }
 
@@ -713,125 +831,56 @@ export default function InstallPage() {
         </>
       }
       filterRail={
-        !isMobile ? (
-          <Card elevation={0} sx={{ overflow: "hidden", borderRadius: 4 }}>
-            <FiltersSidebar
-              categories={categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              statusCounts={statusCounts}
-              showDefaultOnly={showDefaultOnly}
-              onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
-              totalSkills={skills.length}
-            />
-          </Card>
-        ) : undefined
-      }
-    >
-      {isMobile ? (
-        <Drawer
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          PaperProps={{ sx: { width: SIDEBAR_WIDTH, pt: 2 } }}
-        >
-          <FiltersSidebar
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            statusCounts={statusCounts}
-            showDefaultOnly={showDefaultOnly}
-            onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
-            totalSkills={skills.length}
-          />
-        </Drawer>
-      ) : null}
-
-      <Stack spacing={3}>
-        <SectionHero
-          variant="workbench"
-          eyebrow={t("install.workspaceEyebrow")}
-          title={
-            <Stack direction="row" spacing={1.25} alignItems="center">
-              <PlatformBadge
-                platformId={platform?.id ?? platformId}
-                name={platform?.name ?? platformId ?? t("common.unknown")}
-                fallbackIcon={platform?.icon}
-                size={58}
-              />
-              <Box component="span">
-                {t("install.pageTitle", {
-                  platform: platform?.name ?? platformId ?? t("common.unknown"),
-                })}
-              </Box>
-            </Stack>
-          }
-          description={t("install.pageSubtitle")}
-          meta={
-            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-              <Chip
-                label={t("common.resultsCount", { count: filteredSkills.length })}
-                variant="outlined"
-              />
-              <Chip
-                label={t("common.categoryCount", { count: categories.length })}
-                variant="outlined"
-              />
-              <Chip label={installTargetLabel} color="info" variant="outlined" />
-            </Stack>
-          }
-          actions={
-            selectedInstallable.length > 0 ? (
-              <>
-                <Button
-                  variant="contained"
-                  startIcon={<InstallDesktopIcon />}
-                  onClick={() => setInstallOpen(true)}
-                >
-                  {t("common.install")}
-                </Button>
-                <Button variant="text" onClick={() => setSelectedNames(new Set())}>
-                  {t("common.clear")}
-                </Button>
-              </>
-            ) : undefined
-          }
-        />
-
-        <MetricStrip
-          tone="workbench"
-          items={[
+        <ResponsiveFilterRail
+          title={t("install.categories")}
+          sections={[
             {
-              key: "visible",
-              label: t("common.results"),
-              value: filteredSkills.length,
-              detail: t("install.searchPlaceholder"),
-              emphasis: true,
-            },
-            {
-              key: "categories",
-              label: t("common.categories"),
-              value: categories.length,
-              detail: selectedCategory ?? t("common.all"),
-            },
-            {
-              key: "selected",
-              label: t("common.selectedCount", { count: selectedNames.size }),
-              value: selectedNames.size,
-              detail: t("install.selectAll"),
-            },
-            {
-              key: "updates",
-              label: t("common.updateAll"),
-              value: statusCounts.outdated,
-              detail: t("status.outdated"),
+              id: "install-filters-desktop",
+              content: (
+                <FiltersSidebar
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  statusCounts={statusCounts}
+                  showDefaultOnly={showDefaultOnly}
+                  onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
+                  totalSkills={skills.length}
+                />
+              ),
             },
           ]}
         />
+      }
+    >
+      {isMobile ? (
+        <ResponsiveFilterRail
+          title={t("install.categories")}
+          mobileOpen={drawerOpen}
+          onCloseMobile={() => setDrawerOpen(false)}
+          sections={[
+            {
+              id: "install-filters-mobile",
+              content: (
+                <FiltersSidebar
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  statusCounts={statusCounts}
+                  showDefaultOnly={showDefaultOnly}
+                  onDefaultToggle={() => setShowDefaultOnly((value) => !value)}
+                  totalSkills={skills.length}
+                />
+              ),
+            },
+          ]}
+        />
+      ) : null}
 
+      <Stack spacing={2.5}>
         <ListSurface tone="workbench">
           <SearchToolbar
             search={search}
@@ -842,40 +891,11 @@ export default function InstallPage() {
             onClearSelection={() => setSelectedNames(new Set())}
             selectedCount={selectedNames.size}
             outdatedCount={statusCounts.outdated}
+            visibleCount={filteredSkills.length}
+            categoryCount={categories.length}
             onUpdateAll={() => void handleBatchUpdate()}
           />
         </ListSurface>
-
-        {selectedInstallable.length > 0 ? (
-          <ListSurface tone="workbench">
-            <Stack
-              direction={{ xs: "column", md: "row" }}
-              spacing={1.25}
-              justifyContent="space-between"
-              alignItems={{ xs: "stretch", md: "center" }}
-            >
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                <Chip
-                  label={t("common.selectedCount", { count: selectedInstallable.length })}
-                  color="primary"
-                />
-                <Chip label={installTargetLabel} variant="outlined" />
-              </Stack>
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                <Button
-                  variant="contained"
-                  startIcon={<InstallDesktopIcon />}
-                  onClick={() => setInstallOpen(true)}
-                >
-                  {t("common.install")}
-                </Button>
-                <Button variant="text" onClick={() => setSelectedNames(new Set())}>
-                  {t("common.clear")}
-                </Button>
-              </Stack>
-            </Stack>
-          </ListSurface>
-        ) : null}
 
         {error ? <Alert severity="error">{error}</Alert> : null}
 
@@ -887,7 +907,7 @@ export default function InstallPage() {
           <Box display="flex" justifyContent="center" py={8}>
             <CircularProgress />
           </Box>
-        ) : (
+        ) : isMobile ? (
           <SkillCardGrid
             skills={filteredSkills}
             selectedNames={selectedNames}
@@ -904,7 +924,49 @@ export default function InstallPage() {
             }
             onShowDetail={setDetailName}
           />
+        ) : (
+          <SkillInventoryTable
+            skills={filteredSkills}
+            selectedNames={selectedNames}
+            onToggle={(name) =>
+              setSelectedNames((previous) => {
+                const next = new Set(previous);
+                if (next.has(name)) {
+                  next.delete(name);
+                } else {
+                  next.add(name);
+                }
+                return next;
+              })
+            }
+            onShowDetail={setDetailName}
+          />
         )}
+
+        {selectedInstallable.length > 0 ? (
+          <StickyActionBar
+            summary={
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Chip
+                  label={t("common.selectedCount", { count: selectedInstallable.length })}
+                  color="primary"
+                />
+                <Chip label={installTargetLabel} variant="outlined" />
+              </Stack>
+            }
+          >
+            <Button
+              variant="contained"
+              startIcon={<InstallDesktopIcon />}
+              onClick={() => setInstallOpen(true)}
+            >
+              {t("common.install")}
+            </Button>
+            <Button variant="text" onClick={() => setSelectedNames(new Set())}>
+              {t("install.clear")}
+            </Button>
+          </StickyActionBar>
+        ) : null}
       </Stack>
 
       <InstallDialog

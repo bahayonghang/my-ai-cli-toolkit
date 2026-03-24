@@ -1,9 +1,9 @@
 export const enInstallHubMessages = {
   "installHub.pageTitle": "Unified Skill Install Hub",
   "installHub.heroEyebrow": "Install workbench",
-  "installHub.heroTitle": "Guide every skills rollout with one clear operational path.",
+  "installHub.heroTitle": "Choose skills, choose targets, then run the install.",
   "installHub.heroSubtitle":
-    "Move from bundle selection to target selection to execution without losing context. The workbench keeps the brief, next action, and live result visible together.",
+    "Keep bundle selection, target selection, and execution in one workbench without losing context.",
   "installHub.skillCatalog": "Skill Catalog",
   "installHub.filteredTotal": "Filtered {filtered} / Total {total}",
   "installHub.targetPlatforms": "Target Platforms",
@@ -113,9 +113,9 @@ export const zhInstallHubMessages: Record<
 > = {
   "installHub.pageTitle": "统一技能安装中心",
   "installHub.heroEyebrow": "安装工作台",
-  "installHub.heroTitle": "用一条清晰主线完成每一次 skills 下发。",
+  "installHub.heroTitle": "先选技能，再选目标，然后执行安装。",
   "installHub.heroSubtitle":
-    "从技能包选择、目标选择到执行确认，始终保持上下文可见。页面会持续显示安装简报、下一步动作和实时结果。",
+    "把技能选择、目标选择和执行确认放在同一个工作台里，始终保持上下文可见。",
   "installHub.skillCatalog": "技能目录",
   "installHub.filteredTotal": "筛选 {filtered} / 总计 {total}",
   "installHub.targetPlatforms": "目标平台",

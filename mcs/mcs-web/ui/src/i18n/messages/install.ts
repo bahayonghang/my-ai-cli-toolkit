@@ -2,7 +2,7 @@ export const enInstallMessages = {
   "install.workspaceEyebrow": "Install library",
   "install.pageTitle": "Install skills for {platform}",
   "install.pageSubtitle":
-    "Build the next skills bundle for this platform, compare status at a glance, and install into the right target without leaving the workspace.",
+    "Filter the catalog, compare install status, and send the selected skills to the right target.",
   "install.status": "STATUS",
   "install.defaultSection": "DEFAULT",
   "install.onlyDefaultSkills": "Only default skills",
@@ -41,7 +41,7 @@ export const zhInstallMessages: Record<
   "install.workspaceEyebrow": "安装库",
   "install.pageTitle": "为 {platform} 安装技能",
   "install.pageSubtitle":
-    "在同一个工作区里组装下一批 skills、快速比较当前状态，并把内容安装到正确目标路径。",
+    "筛选目录、比较安装状态，并把所选技能安装到正确目标路径。",
   "install.status": "状态",
   "install.defaultSection": "默认",
   "install.onlyDefaultSkills": "仅显示默认技能",

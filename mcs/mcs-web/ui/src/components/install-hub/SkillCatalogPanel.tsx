@@ -23,6 +23,7 @@ import type { SkillCatalogDto } from "@/types";
 import type { SkillSelection } from "./types";
 import { useI18n } from "@/i18n";
 import { getAggregatedStatus } from "@/utils/statusAggregation";
+import { summarizeSkillDescription } from "@/utils/skillDescription";
 import { InstallStatusChip } from "./InstallStatusChip";
 
 interface Props {
@@ -233,7 +234,18 @@ function SkillRow({ skill, selected, onToggle }: SkillRowProps) {
               <InstallStatusChip status={statusInfo.status} tooltip={statusInfo.tooltip} t={t} />
             </Stack>
           }
-          secondary={skill.description ?? t("installHub.noDescription")}
+          secondary={
+            summarizeSkillDescription(skill.description, "list") ||
+            t("installHub.noDescription")
+          }
+          secondaryTypographyProps={{
+            sx: {
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            },
+          }}
         />
       </ListItemButton>
     </ListItem>

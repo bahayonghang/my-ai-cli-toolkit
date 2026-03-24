@@ -23,6 +23,10 @@ import {
 import { useMemo, useState } from "react";
 import { useI18n } from "@/i18n";
 import type { SkillCatalogDto } from "@/types";
+import {
+  sanitizeSkillDescription,
+  summarizeSkillDescription,
+} from "@/utils/skillDescription";
 import type { SkillSelection } from "./types";
 import { getAggregatedStatus } from "@/utils/statusAggregation";
 import { InstallStatusChip } from "./InstallStatusChip";
@@ -160,27 +164,9 @@ export function SkillCatalogStage({
           alignItems: "center",
           borderRadius: 3,
           border: "1px solid var(--mcs-workbench-outline)",
-          background:
-            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 42%, var(--mcs-panel-fill) 100%)",
-          boxShadow:
-            "inset 0 1px 0 var(--mcs-glass-highlight), 0 18px 40px rgba(15, 23, 42, 0.12)",
+          background: "var(--mcs-panel-fill)",
+          boxShadow: "var(--mcs-shadow-sm)",
           p: { xs: 1.25, md: 1.5 },
-          isolation: "isolate",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            insetInline: 18,
-            top: 0,
-            height: 1,
-            background:
-              "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
-            opacity: 0.9,
-            pointerEvents: "none",
-          },
-          "& > *": {
-            position: "relative",
-            zIndex: 1,
-          },
         }}
       >
         <TextField
@@ -225,9 +211,8 @@ export function SkillCatalogStage({
         sx={{
           borderRadius: 3.5,
           border: "1px solid var(--mcs-workbench-outline)",
-          background:
-            "linear-gradient(180deg, var(--mcs-workbench-surface-strong) 0%, var(--mcs-panel-fill) 100%)",
-          boxShadow: "var(--mcs-glass-shadow)",
+          background: "var(--mcs-workbench-surface-strong)",
+          boxShadow: "var(--mcs-shadow-sm)",
           px: { xs: 1.5, md: 2 },
           py: 1.5,
         }}
@@ -309,9 +294,8 @@ export function SkillCatalogStage({
           sx={{
             borderRadius: 3.5,
             border: "1px solid var(--mcs-workbench-outline)",
-            background:
-              "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 24%, var(--mcs-panel-fill) 100%)",
-            boxShadow: "var(--mcs-panel-shadow)",
+            background: "var(--mcs-panel-fill)",
+            boxShadow: "var(--mcs-shadow-sm)",
             overflow: "hidden",
           }}
         >
@@ -354,12 +338,10 @@ export function SkillCatalogStage({
                         sx={{
                           px: 2.25,
                           py: 1.15,
-                          background:
-                            "linear-gradient(180deg, var(--mcs-workbench-surface-muted) 0%, var(--mcs-workbench-surface-subtle) 100%)",
+                          background: "var(--mcs-workbench-surface-subtle)",
                           borderTop: "1px solid var(--mcs-workbench-outline)",
                           borderBottom:
                             "1px solid var(--mcs-workbench-outline)",
-                          boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
                           scrollMarginTop: 112,
                           position: { lg: "sticky" },
                           top: { lg: 0 },
@@ -438,9 +420,8 @@ function CategoryQuickNav({
         top: { lg: 108 },
         borderRadius: 3.5,
         border: "1px solid var(--mcs-workbench-outline)",
-        background:
-          "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-summary-tile-fill-strong) 24%, var(--mcs-panel-fill) 100%)",
-        boxShadow: "var(--mcs-summary-tile-shadow)",
+        background: "var(--mcs-panel-fill)",
+        boxShadow: "var(--mcs-shadow-sm)",
         p: 1.25,
         overflow: "hidden",
       }}
@@ -475,7 +456,8 @@ function CategoryQuickNav({
                   width: "100%",
                   borderRadius: 2.5,
                   px: 1,
-                  py: 0.9,
+                  py: 1,
+                  minHeight: 44,
                   justifyContent: "space-between",
                   textAlign: "left",
                   border: "1px solid",
@@ -527,8 +509,11 @@ function SkillRow({
   const installedOnCount = Object.values(skill.platform_status ?? {}).filter(
     (status) => status === "installed",
   ).length;
-  const description = skill.description ?? t("installHub.noDescription");
-  const hasLongDescription = description.length > 110;
+  const description =
+    sanitizeSkillDescription(skill.description) ?? t("installHub.noDescription");
+  const summaryDescription =
+    summarizeSkillDescription(skill.description, "list") || t("installHub.noDescription");
+  const hasLongDescription = description.length > summaryDescription.length;
   const skillDomId = toSafeDomId(skill.name);
   const titleId = `${skillDomId}-title`;
   const descriptionId = `${skillDomId}-description`;
@@ -617,17 +602,17 @@ function SkillRow({
                 sx={{
                   color: "var(--mcs-workbench-muted)",
                   maxWidth: 920,
-                  ...(hasLongDescription && !expanded
-                    ? {
+                  ...(expanded
+                    ? null
+                    : {
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                      }
-                    : null),
+                      }),
                 }}
               >
-                {description}
+                {expanded ? description : summaryDescription}
               </Typography>
 
               <Stack
