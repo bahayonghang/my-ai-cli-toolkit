@@ -97,6 +97,7 @@ export default function PlatformSelectPage() {
       variant="entry"
       title={t("platformSelect.title")}
       subtitle={t("platformSelect.subtitle")}
+      headerMode="hero"
       actions={
         <>
           <Button

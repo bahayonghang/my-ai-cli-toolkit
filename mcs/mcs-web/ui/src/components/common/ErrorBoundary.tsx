@@ -1,5 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Box, Typography, Button } from "@mui/material";
+import { useI18n } from "@/i18n";
+import type { TranslateFn } from "@/i18n";
 
 interface Props {
   children: ReactNode;
@@ -10,8 +12,12 @@ interface State {
   error: Error | null;
 }
 
-export default class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+interface ErrorBoundaryInnerProps extends Props {
+  t: TranslateFn;
+}
+
+class ErrorBoundaryInner extends Component<ErrorBoundaryInnerProps, State> {
+  constructor(props: ErrorBoundaryInnerProps) {
     super(props);
     this.state = { hasError: false, error: null };
   }
@@ -39,21 +45,26 @@ export default class ErrorBoundary extends Component<Props, State> {
           }}
         >
           <Typography variant="h5" color="error">
-            Something went wrong
+            {this.props.t("common.somethingWentWrong")}
           </Typography>
           <Typography
             variant="body2"
             color="text.secondary"
             sx={{ maxWidth: 480, textAlign: "center" }}
           >
-            {this.state.error?.message ?? "An unexpected error occurred."}
+            {this.state.error?.message ?? this.props.t("common.unexpectedError")}
           </Typography>
           <Button variant="contained" onClick={() => window.location.reload()}>
-            Reload
+            {this.props.t("common.reload")}
           </Button>
         </Box>
       );
     }
     return this.props.children;
   }
+}
+
+export default function ErrorBoundary({ children }: Props) {
+  const { t } = useI18n();
+  return <ErrorBoundaryInner t={t}>{children}</ErrorBoundaryInner>;
 }

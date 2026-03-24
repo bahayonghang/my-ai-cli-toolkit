@@ -2,7 +2,7 @@ export const enPlatformSelectMessages = {
   "platformSelect.heroEyebrow": "Agent skills control plane",
   "platformSelect.title": "MyClaude Skills",
   "platformSelect.subtitle":
-    "Coordinate shared skills, platform workspaces, and external registry flows from one modern control plane.",
+    "Check shared libraries, compare platform paths, and jump straight into install or registry work.",
   "platformSelect.availablePlatforms": "Available platforms",
   "platformSelect.quickAccess": "Quick access",
   "platformSelect.refreshTooltip": "Refresh content and platform list",
@@ -23,7 +23,7 @@ export const enPlatformSelectMessages = {
   "platformSelect.npxSkillsTitle": "Browse external packages, curated picks, and maintenance runs",
   "platformSelect.libraryTitle": "Platform workspaces",
   "platformSelect.librarySubtitle":
-    "Inspect each platform's skill library, command surface, guidance path, and agent-ready capabilities from one place.",
+    "Open any platform workspace to review its skills path, command surface, and next action.",
   "platformSelect.platformWorkspaceLabel": "Workspace directory map",
   "platformSelect.skillsPathLabel": "Skills path",
   "platformSelect.sharedLibrary": "Shared library",
@@ -37,7 +37,7 @@ export const zhPlatformSelectMessages: Record<
   "platformSelect.heroEyebrow": "Agent Skills 控制平面",
   "platformSelect.title": "MyClaude Skills",
   "platformSelect.subtitle":
-    "在一个现代控制平面里统一协调共享技能、平台工作区与外部 registry 流程。",
+    "检查共享技能库、比较各平台路径，并直接进入安装或 registry 工作。",
   "platformSelect.availablePlatforms": "可用平台",
   "platformSelect.quickAccess": "快捷入口",
   "platformSelect.refreshTooltip": "刷新内容与平台列表",
@@ -58,7 +58,7 @@ export const zhPlatformSelectMessages: Record<
   "platformSelect.npxSkillsTitle": "浏览外部包、推荐目录与维护任务",
   "platformSelect.libraryTitle": "平台工作区",
   "platformSelect.librarySubtitle":
-    "在同一个地方检查每个平台的技能库、命令面、指导文件路径与 agent-ready 能力。",
+    "打开任一平台工作区，查看技能路径、命令入口和下一步动作。",
   "platformSelect.platformWorkspaceLabel": "工作区目录映射",
   "platformSelect.skillsPathLabel": "技能路径",
   "platformSelect.sharedLibrary": "共享库",

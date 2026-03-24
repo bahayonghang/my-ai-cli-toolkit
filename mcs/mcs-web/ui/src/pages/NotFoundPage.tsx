@@ -1,12 +1,13 @@
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n";
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <Box
-      component="main"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -20,10 +21,10 @@ export default function NotFoundPage() {
         404
       </Typography>
       <Typography variant="body1" color="text.secondary">
-        Page not found
+        {t("common.pageNotFound")}
       </Typography>
       <Button variant="contained" onClick={() => navigate("/")}>
-        Go Home
+        {t("common.goHome")}
       </Button>
     </Box>
   );

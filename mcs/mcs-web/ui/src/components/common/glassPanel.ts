@@ -49,36 +49,10 @@ export function surfacePanelSx(surface: SurfaceTone) {
   const tone = surfaceTokens[surface];
 
   return {
-    position: "relative",
     borderRadius: 4,
     border: `1px solid ${tone.outline}`,
-    background: `linear-gradient(180deg, ${tone.fillEmphasis} 0%, ${tone.fillStrong} 18%, ${tone.fill} 100%)`,
-    boxShadow: `${tone.shadow}, inset 0 1px 0 0 var(--mcs-shell-highlight), inset 0 0 0 1px var(--mcs-panel-stroke-soft)`,
-    overflow: "hidden",
-    isolation: "isolate",
-    "&::before": {
-      content: '""',
-      position: "absolute",
-      inset: 0,
-      background: `linear-gradient(180deg, var(--mcs-shell-highlight) 0%, transparent 28%), linear-gradient(90deg, ${tone.grid} 0, ${tone.grid} 1px, transparent 1px, transparent 96px)`,
-      backgroundSize: "100% 100%, 96px 100%",
-      pointerEvents: "none",
-      opacity: surface === "workbench" ? 0.52 : 0.72,
-    },
-    "&::after": {
-      content: '""',
-      position: "absolute",
-      insetInline: 18,
-      top: 0,
-      height: 2,
-      background: `linear-gradient(90deg, transparent 0%, ${tone.accentSoft} 16%, ${tone.accent} 50%, ${tone.accentSoft} 84%, transparent 100%)`,
-      opacity: surface === "workbench" ? 0.82 : 0.96,
-      pointerEvents: "none",
-    },
-    "& > *": {
-      position: "relative",
-      zIndex: 1,
-    },
+    background: tone.fill,
+    boxShadow: tone.shadow,
   } as const;
 }
 

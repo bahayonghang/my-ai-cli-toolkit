@@ -106,8 +106,8 @@ const tokens = {
     warning: catppuccin.light.peach,
     error: catppuccin.light.red,
     selection: alpha(catppuccin.light.blue, 0.22),
-    shadowSm: `0 12px 32px ${alpha(catppuccin.light.surface2, 0.18)}`,
-    shadowMd: `0 24px 60px ${alpha(catppuccin.light.surface2, 0.22)}`,
+    shadowSm: `0 8px 20px ${alpha(catppuccin.light.surface2, 0.14)}`,
+    shadowMd: `0 16px 36px ${alpha(catppuccin.light.surface2, 0.18)}`,
   },
   dark: {
     primary: catppuccin.dark.blue,
@@ -124,8 +124,8 @@ const tokens = {
     warning: catppuccin.dark.peach,
     error: catppuccin.dark.red,
     selection: alpha(catppuccin.dark.blue, 0.24),
-    shadowSm: `0 14px 36px ${alpha(catppuccin.dark.crust, 0.38)}`,
-    shadowMd: `0 26px 72px ${alpha(catppuccin.dark.crust, 0.5)}`,
+    shadowSm: `0 10px 24px ${alpha(catppuccin.dark.crust, 0.3)}`,
+    shadowMd: `0 18px 42px ${alpha(catppuccin.dark.crust, 0.4)}`,
   },
 } as const;
 
@@ -184,8 +184,6 @@ function buildTheme(mode: Mode) {
     components: {
       MuiCssBaseline: {
         styleOverrides: () => `
-          @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
-
           :root {
             color-scheme: ${mode};
             --mcs-duration-fast: ${fastDuration};
@@ -199,19 +197,19 @@ function buildTheme(mode: Mode) {
             --mcs-toolbar-overlay: ${alpha(palette.mantle, mode === "dark" ? 0.9 : 0.82)};
             --mcs-shell-fill: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.78 : 0.58)};
             --mcs-shell-fill-strong: ${alpha(mode === "dark" ? palette.surface1 : palette.surface0, mode === "dark" ? 0.92 : 0.74)};
-            --mcs-shell-stroke: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.38 : 0.3)};
-            --mcs-shell-stroke-strong: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.34 : 0.26)};
+            --mcs-shell-stroke: ${alpha(mode === "dark" ? palette.overlay1 : palette.overlay2, mode === "dark" ? 0.42 : 0.38)};
+            --mcs-shell-stroke-strong: ${alpha(mode === "dark" ? palette.lavender : palette.sapphire, mode === "dark" ? 0.3 : 0.22)};
             --mcs-shell-divider: ${alpha(mode === "dark" ? palette.overlay0 : palette.overlay1, mode === "dark" ? 0.24 : 0.18)};
-            --mcs-shell-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.12 : 0.3)};
+            --mcs-shell-highlight: ${alpha(mode === "dark" ? palette.rosewater : "#ffffff", mode === "dark" ? 0.08 : 0.18)};
             --mcs-shell-shadow: ${
               mode === "dark"
-                ? `0 14px 36px ${alpha(palette.crust, 0.26)}`
-                : `0 12px 32px ${alpha(palette.surface2, 0.14)}`
+                ? `0 10px 24px ${alpha(palette.crust, 0.22)}`
+                : `0 8px 20px ${alpha(palette.surface2, 0.12)}`
             };
             --mcs-shell-shadow-strong: ${
               mode === "dark"
-                ? `0 18px 44px ${alpha(palette.crust, 0.34)}`
-                : `0 16px 40px ${alpha(palette.surface2, 0.18)}`
+                ? `0 14px 32px ${alpha(palette.crust, 0.28)}`
+                : `0 12px 28px ${alpha(palette.surface2, 0.14)}`
             };
             --mcs-entry-accent: ${palette.sapphire};
             --mcs-entry-accent-strong: ${mode === "dark" ? palette.lavender : palette.blue};
@@ -271,11 +269,11 @@ function buildTheme(mode: Mode) {
             --mcs-workbench-surface-strong: ${alpha(palette.surface0, mode === "dark" ? 0.9 : 0.8)};
             --mcs-workbench-surface-muted: ${alpha(palette.surface0, mode === "dark" ? 0.76 : 0.58)};
             --mcs-workbench-surface-subtle: ${alpha(palette.surface0, mode === "dark" ? 0.62 : 0.4)};
-            --mcs-workbench-outline: ${alpha(palette.overlay1, mode === "dark" ? 0.3 : 0.28)};
-            --mcs-workbench-outline-strong: ${alpha(mode === "dark" ? palette.teal : palette.sapphire, mode === "dark" ? 0.34 : 0.26)};
+            --mcs-workbench-outline: ${alpha(palette.overlay1, mode === "dark" ? 0.34 : 0.34)};
+            --mcs-workbench-outline-strong: ${alpha(mode === "dark" ? palette.teal : palette.sapphire, mode === "dark" ? 0.28 : 0.22)};
             --mcs-workbench-accent: ${mode === "dark" ? palette.teal : palette.sapphire};
             --mcs-workbench-accent-strong: ${mode === "dark" ? palette.sky : palette.blue};
-            --mcs-workbench-accent-soft: ${alpha(mode === "dark" ? palette.teal : palette.sapphire, mode === "dark" ? 0.18 : 0.12)};
+            --mcs-workbench-accent-soft: ${alpha(mode === "dark" ? palette.teal : palette.sapphire, mode === "dark" ? 0.12 : 0.08)};
             --mcs-workbench-warm-soft: ${alpha(palette.peach, mode === "dark" ? 0.18 : 0.14)};
             --mcs-workbench-warm-strong: ${mode === "dark" ? palette.peach : palette.yellow};
             --mcs-workbench-progress-track: ${alpha(palette.overlay0, mode === "dark" ? 0.24 : 0.18)};
@@ -292,7 +290,7 @@ function buildTheme(mode: Mode) {
                 : `0 16px 36px ${alpha(palette.surface2, 0.14)}`
             };
             --mcs-summary-tile-fill: ${alpha(palette.mantle, mode === "dark" ? 0.8 : 0.84)};
-            --mcs-summary-tile-fill-strong: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.86 : 0.72)};
+            --mcs-summary-tile-fill-strong: ${alpha(mode === "dark" ? palette.surface0 : palette.surface1, mode === "dark" ? 0.82 : 0.68)};
             --mcs-summary-tile-stroke: ${alpha(mode === "dark" ? palette.teal : palette.sapphire, mode === "dark" ? 0.22 : 0.18)};
             --mcs-summary-tile-shadow: ${
               mode === "dark"
@@ -481,42 +479,12 @@ function buildTheme(mode: Mode) {
             backgroundImage: "none",
             backgroundColor: "var(--mcs-panel-fill)",
             border: "1px solid var(--mcs-panel-stroke)",
-            boxShadow:
-              "var(--mcs-shadow-sm), inset 0 1px 0 0 var(--mcs-panel-highlight)",
-            position: "relative",
-            overflow: "hidden",
-            isolation: "isolate",
+            boxShadow: "var(--mcs-shadow-sm)",
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
-            "&::before": {
-              content: '\"\"',
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(180deg, var(--mcs-panel-highlight) 0%, transparent 26%), linear-gradient(90deg, var(--mcs-panel-grid) 0, var(--mcs-panel-grid) 1px, transparent 1px, transparent 88px)",
-              backgroundSize: "100% 100%, 88px 100%",
-              pointerEvents: "none",
-              opacity: 0.64,
-            },
-            "&::after": {
-              content: '\"\"',
-              position: "absolute",
-              insetInline: 18,
-              top: 0,
-              height: 2,
-              background:
-                "linear-gradient(90deg, transparent 0%, var(--mcs-panel-accent-soft) 24%, var(--mcs-panel-accent) 50%, var(--mcs-panel-accent-soft) 76%, transparent 100%)",
-              opacity: 0.44,
-              pointerEvents: "none",
-            },
-            "& > *": {
-              position: "relative",
-              zIndex: 1,
-            },
             "&:hover": {
               backgroundColor: "var(--mcs-panel-fill-strong)",
-              borderColor: "var(--mcs-glass-stroke)",
-              boxShadow:
-                "var(--mcs-glass-shadow), inset 0 1px 0 0 var(--mcs-panel-highlight)",
+              borderColor: "var(--mcs-panel-stroke-soft)",
+              boxShadow: "var(--mcs-shadow-md)",
               transform: "translateY(-1px)",
             },
           },

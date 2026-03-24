@@ -34,6 +34,8 @@ import { usePlatformStore } from "@/stores/platformStore";
 
 export type ShellVariant = "entry" | "workbench" | "monitor";
 export type PageSectionTone = ShellVariant | "subtle";
+export type HeaderMode = "hero" | "compact";
+export type SummaryMode = "none" | "strip" | "rail";
 
 export interface MetricItem {
   key: string;
@@ -47,6 +49,11 @@ export interface FilterRailSection {
   id: string;
   title?: string;
   content: ReactNode;
+}
+
+export interface StickyActionBarProps {
+  summary?: ReactNode;
+  children: ReactNode;
 }
 
 const surfaceMap = {
@@ -265,6 +272,8 @@ export function AppShell({
   children,
   maxWidth = 1520,
   filterRail,
+  headerMode = "compact",
+  summaryMode = "none",
 }: {
   variant: ShellVariant;
   title: ReactNode;
@@ -275,6 +284,8 @@ export function AppShell({
   children: ReactNode;
   maxWidth?: number;
   filterRail?: ReactNode;
+  headerMode?: HeaderMode;
+  summaryMode?: SummaryMode;
 }) {
   const { t } = useI18n();
   const theme = useTheme();
@@ -432,26 +443,6 @@ export function AppShell({
         </Stack>
       </Stack>
 
-      <Stack spacing={1.2}>
-        <LanguageToggle sx={{ width: "100%", justifyContent: "center" }} />
-        <Box
-          sx={{
-            borderRadius: 3,
-            border: "1px solid var(--mcs-shell-divider)",
-            background:
-              "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
-            px: 1.2,
-            py: 0.85,
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              {t("common.themeMode")}
-            </Typography>
-            <ThemeToggleButton />
-          </Stack>
-        </Box>
-      </Stack>
     </Stack>
   );
 
@@ -535,10 +526,9 @@ export function AppShell({
               px: { xs: 2, sm: 2.5, md: 3 },
               py: { xs: 1.35, md: 1.75 },
               borderBottom: "1px solid var(--mcs-shell-divider)",
-              backdropFilter: "blur(18px)",
               backgroundColor: alpha(
                 theme.palette.background.default,
-                theme.palette.mode === "dark" ? 0.92 : 0.82,
+                theme.palette.mode === "dark" ? 0.96 : 0.92,
               ),
             }}
           >
@@ -569,7 +559,19 @@ export function AppShell({
                   </IconButton>
                 ) : null}
                 <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                  {renderHeading(title, subtitle, t(routeSectionMessageKey[routeSection]))}
+                  {headerMode === "hero" ? (
+                    <Typography
+                      variant="overline"
+                      sx={{
+                        color: "text.secondary",
+                        letterSpacing: "0.14em",
+                      }}
+                    >
+                      {t(routeSectionMessageKey[routeSection])}
+                    </Typography>
+                  ) : (
+                    renderHeading(title, subtitle, t(routeSectionMessageKey[routeSection]))
+                  )}
                 </Box>
               </Stack>
 
@@ -582,7 +584,7 @@ export function AppShell({
                 sx={{ justifyContent: { xs: "flex-start", lg: "flex-end" } }}
               >
                 {actions}
-                {!isMobile ? <LanguageToggle /> : null}
+                <LanguageToggle />
                 <ThemeToggleButton />
               </Stack>
             </Stack>
@@ -604,7 +606,7 @@ export function AppShell({
                 maxWidth,
                 mx: "auto",
                 display: "grid",
-                gap: 3,
+                gap: summaryMode === "rail" ? 2.5 : 3,
                 gridTemplateColumns:
                   filterRail && !isMobile
                     ? "minmax(250px, 290px) minmax(0, 1fr)"
@@ -709,9 +711,11 @@ export function SectionHero({
 export function MetricStrip({
   items,
   tone = "subtle",
+  density = "feature",
 }: {
   items: MetricItem[];
   tone?: PageSectionTone;
+  density?: "feature" | "compact";
 }) {
   return (
     <Box
@@ -731,31 +735,62 @@ export function MetricStrip({
           sx={{
             ...toneSurface(tone),
             borderRadius: 3.25,
-            px: 2,
-            py: 1.8,
-            minHeight: 124,
+            px: density === "compact" ? 1.6 : 2,
+            py: density === "compact" ? 1.25 : 1.8,
+            minHeight: density === "compact" ? 84 : 124,
           }}
         >
-          <Stack spacing={0.75} justifyContent="space-between" sx={{ height: "100%" }}>
-            <Typography variant="caption" color="text.secondary">
-              {item.label}
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: item.emphasis ? 800 : 700,
-                letterSpacing: "-0.04em",
-                overflowWrap: "anywhere",
-              }}
-            >
-              {item.value}
-            </Typography>
-            {item.detail ? (
-              <Typography variant="body2" color="text.secondary">
-                {item.detail}
+          {density === "compact" ? (
+            <Stack spacing={0.75} sx={{ height: "100%", justifyContent: "space-between" }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                justifyContent="space-between"
+                alignItems="flex-start"
+              >
+                <Typography variant="body2" color="text.secondary">
+                  {item.label}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: item.emphasis ? 800 : 700,
+                    letterSpacing: "-0.04em",
+                    overflowWrap: "anywhere",
+                    textAlign: "right",
+                  }}
+                >
+                  {item.value}
+                </Typography>
+              </Stack>
+              {item.detail ? (
+                <Typography variant="caption" color="text.secondary">
+                  {item.detail}
+                </Typography>
+              ) : null}
+            </Stack>
+          ) : (
+            <Stack spacing={0.75} justifyContent="space-between" sx={{ height: "100%" }}>
+              <Typography variant="caption" color="text.secondary">
+                {item.label}
               </Typography>
-            ) : null}
-          </Stack>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: item.emphasis ? 800 : 700,
+                  letterSpacing: "-0.04em",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {item.value}
+              </Typography>
+              {item.detail ? (
+                <Typography variant="body2" color="text.secondary">
+                  {item.detail}
+                </Typography>
+              ) : null}
+            </Stack>
+          )}
         </Box>
       ))}
     </Box>
@@ -837,6 +872,15 @@ export function FilterRail({
   );
 }
 
+export function ResponsiveFilterRail(props: {
+  title?: ReactNode;
+  sections: FilterRailSection[];
+  mobileOpen?: boolean;
+  onCloseMobile?: () => void;
+}) {
+  return <FilterRail {...props} />;
+}
+
 export function MobileFilterButton({
   onClick,
 }: {
@@ -856,6 +900,61 @@ export function MetaChips({ items }: { items: ReactNode[] }) {
         <Chip key={index} label={item} variant="outlined" />
       ))}
     </Stack>
+  );
+}
+
+export function StickyActionBar({
+  summary,
+  children,
+}: StickyActionBarProps) {
+  return (
+    <Box
+      sx={{
+        position: "sticky",
+        bottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
+        zIndex: 6,
+        pb: "env(safe-area-inset-bottom, 0px)",
+      }}
+    >
+      <Box
+        sx={{
+          ...workbenchPanelSx,
+          px: { xs: 1.5, md: 2 },
+          py: 1.35,
+          borderColor: "var(--mcs-workbench-outline-strong)",
+          background:
+            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill-strong) 100%)",
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={1.25}
+          justifyContent="space-between"
+          alignItems={{ xs: "stretch", md: "center" }}
+        >
+          {summary ? (
+            <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+              {typeof summary === "string" ? (
+                <Typography variant="body2" color="text.secondary">
+                  {summary}
+                </Typography>
+              ) : (
+                summary
+              )}
+            </Box>
+          ) : null}
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ justifyContent: { xs: "stretch", md: "flex-end" } }}
+          >
+            {children}
+          </Stack>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
 

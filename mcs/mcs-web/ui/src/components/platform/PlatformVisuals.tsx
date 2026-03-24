@@ -12,85 +12,97 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
 import { useI18n } from "@/i18n";
 import type { PlatformDisplay } from "@/types";
 
 interface PlatformVisualDefinition {
   glyph: string;
-  accent: string;
-  accentSecondary: string;
-  glow: string;
+  tone: "primary" | "warning" | "secondary" | "success" | "info" | "neutral";
+  toneSecondary?: "primary" | "warning" | "secondary" | "success" | "info" | "neutral";
 }
 
 const defaultVisual: PlatformVisualDefinition = {
   glyph: "MC",
-  accent: "#2563EB",
-  accentSecondary: "#14B8A6",
-  glow: "#DBEAFE",
+  tone: "primary",
+  toneSecondary: "info",
 };
 
 const platformVisualRegistry: Record<string, PlatformVisualDefinition> = {
   claude: {
     glyph: "CL",
-    accent: "#D97706",
-    accentSecondary: "#F97316",
-    glow: "#FFEDD5",
+    tone: "warning",
+    toneSecondary: "primary",
   },
   codex: {
     glyph: "</>",
-    accent: "#2563EB",
-    accentSecondary: "#7C3AED",
-    glow: "#DBEAFE",
+    tone: "primary",
+    toneSecondary: "secondary",
   },
   gemini: {
     glyph: "GM",
-    accent: "#0EA5E9",
-    accentSecondary: "#10B981",
-    glow: "#CCFBF1",
+    tone: "info",
+    toneSecondary: "success",
   },
   cursor: {
     glyph: "CS",
-    accent: "#1D4ED8",
-    accentSecondary: "#22C55E",
-    glow: "#DCFCE7",
+    tone: "primary",
+    toneSecondary: "success",
   },
   copilot: {
     glyph: "CP",
-    accent: "#0F172A",
-    accentSecondary: "#2563EB",
-    glow: "#E2E8F0",
+    tone: "neutral",
+    toneSecondary: "primary",
   },
   amp: {
     glyph: "AM",
-    accent: "#7C3AED",
-    accentSecondary: "#2563EB",
-    glow: "#EDE9FE",
+    tone: "secondary",
+    toneSecondary: "primary",
   },
   kimi: {
     glyph: "KM",
-    accent: "#DB2777",
-    accentSecondary: "#8B5CF6",
-    glow: "#FCE7F3",
+    tone: "secondary",
+    toneSecondary: "warning",
   },
   qwen: {
     glyph: "QW",
-    accent: "#0F766E",
-    accentSecondary: "#14B8A6",
-    glow: "#CCFBF1",
+    tone: "success",
+    toneSecondary: "info",
   },
   cline: {
     glyph: "CN",
-    accent: "#1D4ED8",
-    accentSecondary: "#38BDF8",
-    glow: "#E0F2FE",
+    tone: "primary",
+    toneSecondary: "info",
   },
   opencode: {
     glyph: "OC",
-    accent: "#334155",
-    accentSecondary: "#0EA5E9",
-    glow: "#E2E8F0",
+    tone: "neutral",
+    toneSecondary: "info",
   },
 };
+
+function resolveToneColor(
+  theme: Theme,
+  tone: PlatformVisualDefinition["tone"],
+) {
+  switch (tone) {
+    case "warning":
+      return theme.palette.warning.main;
+    case "secondary":
+      return theme.palette.secondary.main;
+    case "success":
+      return theme.palette.success.main;
+    case "info":
+      return theme.palette.info.main;
+    case "neutral":
+      return theme.palette.mode === "dark"
+        ? alpha(theme.palette.common.white, 0.78)
+        : alpha(theme.palette.text.primary, 0.78);
+    case "primary":
+    default:
+      return theme.palette.primary.main;
+  }
+}
 
 function getPlatformVisual(platformId: string | null | undefined, fallback?: string) {
   if (platformId) {
@@ -185,6 +197,12 @@ export function PlatformBadge({
   const theme = useTheme();
   const visual = getPlatformVisual(platformId, fallbackIcon ?? name);
   const label = `${platformId ?? name}-badge`;
+  const accent = resolveToneColor(theme, visual.tone);
+  const accentSecondary = resolveToneColor(
+    theme,
+    visual.toneSecondary ?? (visual.tone === "primary" ? "secondary" : "primary"),
+  );
+  const glow = alpha(accent, theme.palette.mode === "dark" ? 0.22 : 0.16);
 
   return (
     <Box
@@ -197,23 +215,23 @@ export function PlatformBadge({
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        border: `1px solid ${alpha(visual.accent, theme.palette.mode === "dark" ? 0.34 : 0.16)}`,
+        border: `1px solid ${alpha(accent, theme.palette.mode === "dark" ? 0.26 : 0.18)}`,
         background:
           theme.palette.mode === "dark"
-            ? `linear-gradient(180deg, ${alpha(visual.glow, 0.08)} 0%, ${alpha(visual.accent, 0.16)} 100%)`
-            : `linear-gradient(180deg, ${alpha(visual.glow, 0.92)} 0%, ${alpha(visual.accent, 0.16)} 100%)`,
+            ? `linear-gradient(180deg, ${alpha(accent, 0.14)} 0%, ${alpha(accentSecondary, 0.08)} 100%)`
+            : `linear-gradient(180deg, ${alpha(accent, 0.12)} 0%, ${alpha(accentSecondary, 0.06)} 100%)`,
         boxShadow:
           theme.palette.mode === "dark"
-            ? `0 14px 32px ${alpha(visual.accent, 0.22)}`
-            : `0 10px 24px ${alpha(visual.accent, 0.14)}`,
+            ? `0 10px 24px ${alpha(accent, 0.14)}`
+            : `0 8px 18px ${alpha(accent, 0.1)}`,
         overflow: "hidden",
       }}
     >
       <PlatformBadgeSvg
         glyph={visual.glyph}
-        accent={visual.accent}
-        accentSecondary={visual.accentSecondary}
-        glow={visual.glow}
+        accent={accent}
+        accentSecondary={accentSecondary}
+        glow={glow}
         label={label}
       />
     </Box>

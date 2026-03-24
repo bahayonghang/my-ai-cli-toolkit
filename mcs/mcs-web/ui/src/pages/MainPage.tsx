@@ -56,6 +56,7 @@ import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
+import { summarizeSkillDescription } from "@/utils/skillDescription";
 import {
   PlatformBadge,
   PlatformCapabilityChips,
@@ -278,7 +279,7 @@ export default function MainPage() {
         </Drawer>
       )}
 
-      <Box component="main" sx={{ display: "flex", gap: 3, alignItems: "flex-start" }}>
+      <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start" }}>
         {!isMobile && (
           <Card
             sx={{
@@ -549,7 +550,8 @@ export default function MainPage() {
                               {item.category && <Chip size="small" label={item.category} variant="outlined" />}
                             </Stack>
                             <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                              {item.description || t("common.noDescriptionAvailable")}
+                              {summarizeSkillDescription(item.description, "list") ||
+                                t("common.noDescriptionAvailable")}
                             </Typography>
                           </Box>
                         </Stack>
@@ -625,7 +627,8 @@ export default function MainPage() {
                               overflowWrap: "anywhere",
                             }}
                           >
-                            {item.description || t("common.noDescriptionAvailable")}
+                            {summarizeSkillDescription(item.description, "list") ||
+                              t("common.noDescriptionAvailable")}
                           </Typography>
                         </TableCell>
                         <TableCell align="right">

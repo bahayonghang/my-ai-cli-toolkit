@@ -18,9 +18,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { monitorPanelSx } from "@/components/common/glassPanel";
 import {
   AppShell,
-  MetaChips,
   MetricStrip,
-  SectionHero as ShellHero,
 } from "@/components/shell/AppShell";
 import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 import { useI18n } from "@/i18n";
@@ -96,7 +94,7 @@ export default function DashboardPage() {
         </>
       }
     >
-      <Box component="main">
+      <Box>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -176,14 +174,34 @@ function HeroSection({
 
   return (
     <Stack spacing={2}>
-      <ShellHero
-        variant="monitor"
-        eyebrow={t("dashboard.heroEyebrow")}
-        title={t("dashboard.heroTitle")}
-        description={t("dashboard.heroSubtitle")}
-        meta={<MetaChips items={[heroStatus]} />}
-        actions={
-          legacyCount > 0 ? (
+      <Box
+        sx={{
+          ...monitorPanelSx,
+          p: { xs: 2, md: 2.5 },
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", lg: "row" }}
+          spacing={1.5}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", lg: "center" }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="body1" sx={{ fontWeight: 700, letterSpacing: "-0.02em" }}>
+              {heroStatus}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ mt: 0.5, color: "var(--mcs-monitor-muted)" }}
+            >
+              {t("dashboard.commandsCoverageSub", {
+                installed: summary.installedCommands,
+                total: summary.totalCommands,
+              })}{" "}
+              · {summary.commandCoverage}% {t("dashboard.commandsCoverage").toLowerCase()}
+            </Typography>
+          </Box>
+          {legacyCount > 0 ? (
             <Button
               variant="outlined"
               color="warning"
@@ -192,90 +210,42 @@ function HeroSection({
             >
               {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
             </Button>
-          ) : undefined
-        }
-      />
+          ) : null}
+        </Stack>
+      </Box>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, xl: 8 }}>
-          <MetricStrip
-            tone="monitor"
-            items={[
-              {
-                key: "installed",
-                label: t("dashboard.installedSkills"),
-                value: `${summary.installedSkills}/${summary.totalSkills}`,
-                detail: t("dashboard.skillCoverageSub", {
-                  installed: summary.installedSkills,
-                  total: summary.totalSkills,
-                }),
-                emphasis: true,
-              },
-              {
-                key: "updates",
-                label: t("dashboard.outdated"),
-                value: summary.outdatedSkills,
-                detail: t("dashboard.updatesAvailable", {
-                  count: summary.outdatedSkills,
-                }),
-              },
-              {
-                key: "platforms",
-                label: t("dashboard.activePlatforms"),
-                value: `${summary.activePlatforms}/${summary.totalPlatforms}`,
-                detail: t("dashboard.activePlatformsSub", {
-                  count: summary.totalPlatforms,
-                }),
-              },
-            ]}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, xl: 4 }}>
-          <Box
-            sx={{
-              ...monitorPanelSx,
-              p: 2.25,
-              height: "100%",
-            }}
-          >
-            <Stack spacing={1.25}>
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                spacing={1}
-                justifyContent="space-between"
-                alignItems={{ xs: "flex-start", sm: "center" }}
-              >
-                <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
-                  {t("dashboard.commandsCoverage")}
-                </Typography>
-                <Typography variant="body2" fontWeight={700}>
-                  {summary.commandCoverage}%
-                </Typography>
-              </Stack>
-              <LinearProgress
-                variant="determinate"
-                value={summary.commandCoverage}
-                aria-label={t("dashboard.commandsCoverage")}
-                sx={{
-                  height: 10,
-                  borderRadius: 999,
-                  bgcolor: "var(--mcs-monitor-progress-track)",
-                  "& .MuiLinearProgress-bar": {
-                    borderRadius: 999,
-                    bgcolor: "var(--mcs-monitor-warm-strong)",
-                  },
-                }}
-              />
-              <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
-                {t("dashboard.commandsCoverageSub", {
-                  installed: summary.installedCommands,
-                  total: summary.totalCommands,
-                })}
-              </Typography>
-            </Stack>
-          </Box>
-        </Grid>
-      </Grid>
+      <MetricStrip
+        tone="monitor"
+        density="compact"
+        items={[
+          {
+            key: "installed",
+            label: t("dashboard.installedSkills"),
+            value: `${summary.installedSkills}/${summary.totalSkills}`,
+            detail: t("dashboard.skillCoverageSub", {
+              installed: summary.installedSkills,
+              total: summary.totalSkills,
+            }),
+            emphasis: true,
+          },
+          {
+            key: "updates",
+            label: t("dashboard.outdated"),
+            value: summary.outdatedSkills,
+            detail: t("dashboard.updatesAvailable", {
+              count: summary.outdatedSkills,
+            }),
+          },
+          {
+            key: "platforms",
+            label: t("dashboard.activePlatforms"),
+            value: `${summary.activePlatforms}/${summary.totalPlatforms}`,
+            detail: t("dashboard.activePlatformsSub", {
+              count: summary.totalPlatforms,
+            }),
+          },
+        ]}
+      />
     </Stack>
   );
 }
