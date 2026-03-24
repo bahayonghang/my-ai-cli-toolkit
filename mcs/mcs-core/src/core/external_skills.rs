@@ -382,9 +382,7 @@ impl ExternalSkillFragmentEntry {
 }
 
 fn external_skills_registry_dir(project_root: &Path) -> PathBuf {
-    project_root
-        .join("content")
-        .join(EXTERNAL_SKILLS_DIR)
+    project_root.join("content").join(EXTERNAL_SKILLS_DIR)
 }
 
 fn read_toml_file<T: DeserializeOwned>(path: &Path, label: &str) -> Result<T, ExternalSkillsError> {
@@ -695,9 +693,7 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
         index: &str,
         fragments: &[(&str, &str)],
     ) -> PathBuf {
-        let registry_dir = project_root
-            .join("content")
-            .join(EXTERNAL_SKILLS_DIR);
+        let registry_dir = project_root.join("content").join(EXTERNAL_SKILLS_DIR);
         let categories_dir = registry_dir.join(EXTERNAL_SKILLS_CATEGORY_DIR);
         std::fs::create_dir_all(&categories_dir).unwrap();
         std::fs::write(registry_dir.join(EXTERNAL_SKILLS_INDEX_FILE), index).unwrap();
