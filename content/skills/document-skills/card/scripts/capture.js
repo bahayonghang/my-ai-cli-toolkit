@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
 const path = require('path');
 
 async function main() {
@@ -19,9 +20,11 @@ async function main() {
   try {
     chromium = require('playwright').chromium;
   } catch {
-    console.error('Playwright not found. Run: npx playwright install chromium');
+    console.error('Playwright not found. Run npm install in the skill directory, then npx playwright install chromium');
     process.exit(1);
   }
+
+  fs.mkdirSync(path.dirname(path.resolve(outputPath)), { recursive: true });
 
   const browser = await chromium.launch();
   const page = await browser.newPage();

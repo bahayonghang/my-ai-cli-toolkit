@@ -12,13 +12,15 @@
 根据模具自动调整：
 - `-l` 长图：DESIGN_VARIANCE=5, VISUAL_DENSITY=3（阅读舒适优先）。变化通过**色调感知**实现——不同内容气质对应不同背景底色和强调色（见 mode-long.md 步骤 2.5）
 - `-i` 信息图：DESIGN_VARIANCE=7, VISUAL_DENSITY=8（数据密度优先）。变化通过**动态 REF 编码**和**内容驱动的自定义布局**实现
-- `-c` 海报：DESIGN_VARIANCE=9, VISUAL_DENSITY=2（视觉冲击优先）。与长图共享色调系统，结尾标记仅在末页出现
+- `-m` 多卡：DESIGN_VARIANCE=6, VISUAL_DENSITY=5（分页阅读优先）。与长图共享色调系统，但每张卡都要保持连续节奏
+- `-v` 视觉笔记：DESIGN_VARIANCE=8, VISUAL_DENSITY=4（手绘关系优先）。重点不是规整排版，而是概念之间的连线与手写痕迹
+- `-c` 漫画：DESIGN_VARIANCE=9, VISUAL_DENSITY=2（戏剧冲击优先）。黑白对比、分格节奏与留白张力高于信息密度
 
 ## 2. 排版工程
 
 ### 标题
 - 大标题：`tracking-tighter`（字间距紧凑），`leading-none`（行高极小）
-- **禁用 Inter 字体**。长图/海报用衬线体（Noto Serif SC），信息图用等宽+无衬线混排
+- **禁用 Inter 字体**。长图/多卡优先用衬线体（Noto Serif SC），信息图用等宽+无衬线混排；视觉笔记和漫画遵循各自模具的专用字体系统
 - 仪表盘/技术类场景严禁衬线体——只用高端无衬线（Geist、Satoshi、Cabinet Grotesk）
 
 ### 正文

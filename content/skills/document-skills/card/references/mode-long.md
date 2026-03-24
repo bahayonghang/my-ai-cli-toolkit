@@ -1,15 +1,21 @@
 # 模具：长图（-l / 默认）
 
+## 核心信条
+
+**长图首先是阅读容器，其次才是视觉容器。**
+
+它适合保留原文的论证推进、节奏和转折。不要把线性阅读内容硬改成信息图，也不要为了“设计感”把正文切成很多同权重小块。
+
 ## 步骤 1：读取模板
 
-Read `~/.claude/skills/ljg-card/assets/long_template.html`
+Read `$SKILL_DIR/assets/long_template.html`
 
 ## 步骤 2：内容预处理
 
 - 识别标题行（`#`/`##`/`###` 开头，或独立短行）
 - 识别引用块（`>` 开头）
 - 识别加粗（`**text**`）
-- **识别金句**：独立成段的短句（通常 < 25 字），承载核心洞察，用 `.highlight` 渲染
+- 识别金句：独立成段的短句（通常 < 25 字），承载核心洞察，用 `.highlight` 渲染
 - 按空行分割为段落列表
 - **不做切分**：所有内容放在一张卡内
 
@@ -25,31 +31,38 @@ Read `~/.claude/skills/ljg-card/assets/long_template.html`
 | 科学/研究 | `#F4F8F6` | `#2D6A4F` | 实验、数据、发现、论文、研究 |
 | 默认 | `#FAFAF8` | `#4A4A4A` | 无法归类时 |
 
-判断依据：扫描内容中的高频关键词和主题，匹配最贴近的一组。不需要精确——宁可用默认也不要错配。
+判断依据：扫描内容中的高频关键词和主题，匹配最贴近的一组。不需要精确，宁可用默认也不要错配。
 
 ## 步骤 3：格式化为 HTML
 
-**基础元素：**
+基础元素：
+
 - 普通段落 → `<p>文本</p>`
-- 章节标题（##/### 级别） → `<h2>标题</h2>`
+- 章节标题（`##` / `###` 级别） → `<h2>标题</h2>`
 - 引用 → `<blockquote><p>引用</p></blockquote>`
 - 加粗 → `<strong>文本</strong>`
 - 列表 → `<ul><li>...</li></ul>`
 
-**金句（独立成段的核心洞察短句，视觉突出）：**
+金句（独立成段的核心洞察短句，视觉突出）：
+
 ```html
 <p class="highlight">金句文本</p>
 ```
-判断标准：独立成段、< 25 字、承载关键洞察。用 `.highlight` 而非 `<p><strong>`。
 
-**首字下沉（第一个正文段落）：**
+判断标准：独立成段、`< 25` 字、承载关键洞察。用 `.highlight` 而非 `<p><strong>`。
+
+首字下沉（第一个正文段落）：
+
 第一个普通段落（非 `.subtitle`、`.highlight`、`.item`）添加 `dropcap` 类：
+
 ```html
 <p class="dropcap">段落正文...</p>
 ```
+
 仅首个正文段落使用，营造经典编辑排版的开篇仪式感。
 
-**条目组（有标题+正文的并列条目）：**
+条目组（有标题 + 正文的并列条目）：
+
 ```html
 <div class="item">
   <p class="label">条目标题</p>
@@ -57,12 +70,14 @@ Read `~/.claude/skills/ljg-card/assets/long_template.html`
 </div>
 ```
 
-**副标题标签：**
+副标题标签：
+
 ```html
 <p class="subtitle">标签文字</p>
 ```
 
-**分割线（章节之间）：**
+分割线（章节之间）：
+
 ```html
 <div class="divider"></div>
 ```
@@ -77,13 +92,32 @@ Read `~/.claude/skills/ljg-card/assets/long_template.html`
 | `{{ACCENT_COLOR}}` | 步骤 2.5 确定的强调色 |
 | `{{TITLE_BLOCK}}` | 有标题时：`<div class="title-area"><h1>标题</h1></div>`；无标题时：空字符串 |
 | `{{BODY_HTML}}` | 步骤 3 生成的全部 HTML |
+| `{{LOGO_SRC}}` | `file://` 指向当前 Skill 目录内 `assets/logo.png` 的绝对路径 |
 | `{{SOURCE}}` | 来源/作者信息（用户提供则填入，否则 `李继刚`） |
 | `{{ARXIV_LINE}}` | 内容来自 arxiv 论文时：`<span class="arxiv">arxiv: XXXX.XXXXX</span>`；否则空字符串 |
 
-写入：`/tmp/ljg_cast_long_{name}.html`
+写入：`{output_dir}/{name}.html`
 
-## 步骤 5：截图
+## 步骤 5：自检
+
+- [ ] 读者是否能沿着自然顺序一路往下读，而不是在很多同权重模块间跳来跳去？
+- [ ] 标题区是否有呼吸感，没有压住正文？
+- [ ] 金句和条目是否起到了层级变化，而不是把所有段落都做成同一种视觉重量？
+- [ ] 首字下沉只出现一次，且没有装饰过度？
+- [ ] 如果内容其实更适合结构对比，是否应该改用 `-i` 而不是硬做成长图？
+- [ ] 手机缩放后正文是否仍可连续阅读？
+
+## 步骤 6：截图
 
 ```bash
-node ~/.claude/skills/ljg-card/assets/capture.js /tmp/ljg_cast_long_{name}.html ~/Downloads/{name}.png 1080 800 fullpage
+node "$SKILL_DIR/scripts/capture.js" "{output_dir}/{name}.html" "{output_dir}/{name}.png" 1080 800 fullpage
 ```
+
+## 步骤 7：交付
+
+交付时报告：
+
+- mode：`-l`
+- HTML 路径
+- PNG 路径
+- 如适用，说明 arXiv ID 已写入 footer

@@ -8,7 +8,7 @@
 
 ## 步骤 1：读取模板
 
-Read `~/.claude/skills/ljg-card/assets/infograph_template.html`
+Read `$SKILL_DIR/assets/infograph_template.html`
 
 模板极简，只提供：
 - 字体加载（DM Serif Display + DM Sans + KingHwa_OldSong）
@@ -268,10 +268,11 @@ Read `~/.claude/skills/ljg-card/assets/infograph_template.html`
 |------|------|
 | `{{CUSTOM_CSS}}` | 这张图的全部 CSS |
 | `{{CONTENT_HTML}}` | 这张图的全部 HTML |
+| `{{LOGO_SRC}}` | `file://` 指向当前 Skill 目录内 `assets/logo.png` 的绝对路径 |
 | `{{SOURCE}}` | 署名 |
 | `{{ARXIV_LINE}}` | arxiv 时 `<span class="arxiv">arxiv: XXXX.XXXXX</span>`，否则空 |
 
-写入：`/tmp/ljg_cast_infograph_{name}.html`
+写入：`{output_dir}/{name}.html`
 
 ## 步骤 5：自检
 
@@ -290,5 +291,14 @@ Read `~/.claude/skills/ljg-card/assets/infograph_template.html`
 ## 步骤 6：截图
 
 ```bash
-node ~/.claude/skills/ljg-card/assets/capture.js /tmp/ljg_cast_infograph_{name}.html ~/Downloads/{name}.png 1080 800 fullpage
+node "$SKILL_DIR/scripts/capture.js" "{output_dir}/{name}.html" "{output_dir}/{name}.png" 1080 800 fullpage
 ```
+
+## 步骤 7：交付
+
+交付时报告：
+
+- mode：`-i`
+- HTML 路径
+- PNG 路径
+- 如适用，说明 arXiv ID 已写入 footer
