@@ -12,10 +12,17 @@ diff 感知代码审查、对抗式 challenge、second opinion、实时技术调
 - 主审查命令：`codex review`
 - 主通用命令：`codex exec`
 - 默认模型：`gpt-5.4`
-- 审查与咨询推理强度：`xhigh`
-- 调研推理强度：`high`
+- 审查与咨询推理配置：`-c model_reasoning_effort=xhigh`
+- 调研推理配置：`-c model_reasoning_effort=high`
 - 实时搜索入口：顶层 `--search`
 - 默认安全策略：先 review-only，再按明确要求进入写入模式
+
+## 当前 CLI 兼容性
+
+- 如果示例命令看起来过时，先检查 `codex --help`、`codex exec --help`、`codex review --help`、`codex resume --help`。
+- 不要再使用 `--reasoning`。当前 Codex CLI 使用 `-c model_reasoning_effort=<level>`。
+- `codex review` 只能二选一：要么带审查目标标志，要么带自定义 prompt，不能同时使用。
+- 如果你既要固定审查目标，又要指定自定义关注点，应切换到 `codex exec`。
 
 ## 模式说明
 
@@ -39,6 +46,15 @@ codex -m gpt-5.4 -s read-only review "Focus on security, regressions, and missin
 
 - `codex review` 不能把自定义 prompt 和 `--uncommitted`、`--base`、`--commit` 一起使用。
 - 如果你既要固定审查目标，又要自定义重点，要么先对目标做普通 `codex review`，要么改用 `codex exec` 的 consult / challenge 路径。
+
+对未提交改动做“定向重点审查”的合法写法：
+
+```bash
+codex -m gpt-5.4 -s read-only exec \
+  -c model_reasoning_effort=xhigh \
+  -C <workdir> \
+  "Review the current repository's uncommitted changes. Focus on security, regressions, and missing tests. Do not modify files."
+```
 
 ### Challenge
 
@@ -150,6 +166,7 @@ web_search = "live"
 
 - 对于 diff 感知的审查任务，优先使用 `codex review`，而不是手写 `codex exec "Review ..."`。
 - `codex review` 的自定义 prompt 与 `--uncommitted`、`--base`、`--commit` 互斥。
+- `--full-auto` 仍然是受沙箱约束的低摩擦模式，不等于无限制写入。
 - 对于实时网络调研，优先使用顶层 `--search`，不要继续沿用旧的 feature toggle 示例。
 - `@file` 表示相对当前工作目录引用文件。
 - `@.` 表示引用当前工作树。

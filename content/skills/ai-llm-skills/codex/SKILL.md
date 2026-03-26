@@ -31,8 +31,8 @@ Run Codex CLI for `$ARGUMENTS`.
 - Primary review command: `codex review`
 - Primary general command: `codex exec`
 - Default model: `gpt-5.4` (referred to as `$MODEL` in recipes below)
-- Default review / consult reasoning: `xhigh`
-- Default research reasoning: `high`
+- Default review / consult reasoning config: `-c model_reasoning_effort=xhigh`
+- Default research reasoning config: `-c model_reasoning_effort=high`
 - Default research search path: top-level `--search`
 - Default posture: review-only first, write only when the user explicitly wants Codex to apply changes
 - Preferred automation path for writes: `--full-auto` before `--dangerously-bypass-approvals-and-sandbox`
@@ -48,6 +48,16 @@ Run Codex CLI for `$ARGUMENTS`.
 2. Verify authentication: `codex login status`
    - If not authenticated, tell the user to run `codex login`
 3. If Codex is unavailable and the task is mainly research or docs lookup, fall back to the host's native web or documentation tools instead of blocking.
+
+## Current CLI Compatibility
+
+Treat current local CLI help as the source of truth before constructing commands:
+
+- Check `codex --help`, `codex exec --help`, `codex review --help`, and `codex resume --help` when a recipe looks stale.
+- Never emit a `--reasoning` flag. Current Codex CLI exposes reasoning through `-c model_reasoning_effort=<level>`.
+- `codex review` accepts either a review target flag (`--uncommitted`, `--base`, `--commit`) or a custom prompt, not both in the same command.
+- If the user wants a targeted review plus custom instructions, switch from `codex review` to `codex exec` with an explicit prompt over the repo or files.
+- Do not rely on undocumented commands like `codex sessions list` or `codex --print-config`; prefer `codex resume --all`, the session id printed by `codex exec`, or reading `~/.codex/config.toml` directly.
 
 ## Bypass Confirmation Gate
 
@@ -123,7 +133,7 @@ Planned AI Run
 - Tool: Codex CLI
 - Mode: <review | challenge | consult | research | apply/fix | resume>
 - Model: <literal model id>
-- Runtime: <reasoning=xhigh | reasoning=high | reasoning=<level>; sandbox=<mode>>
+- Runtime: <model_reasoning_effort=xhigh | model_reasoning_effort=high | model_reasoning_effort=<level>; sandbox=<mode>>
 - Search: <off | live>
 - Access: <review-safe | workspace-write | confirmed danger-full-access | confirmed bypassed sandbox/approvals>
 - Workdir: <path or current>
@@ -134,6 +144,8 @@ Rules:
 - Keep the header and the final command aligned.
 - Use the same literal model id in the header and the actual Codex invocation when you override the model explicitly.
 - For `codex review`, pass model or sandbox overrides as top-level Codex options before the subcommand, for example `codex -m $MODEL -s read-only review ...`.
+- If you set reasoning, surface it as `-c model_reasoning_effort=<level>` in the final command. Never invent a `--reasoning` flag.
+- Do not combine `codex review` target selectors with a prompt. Use `codex exec` when the user needs both a fixed scope and custom focus.
 - Use `Search: live` only for runs started with top-level `--search`.
 - `review`, `challenge`, and `consult` should default to read-only or another review-safe posture.
 - `apply/fix` should default to `workspace-write` / `--full-auto`.
@@ -145,10 +157,10 @@ Rules:
 | Mode      | Command                          | Default flags              |
 |-----------|----------------------------------|----------------------------|
 | Review    | `codex review`                   | `-m $MODEL -s read-only`   |
-| Challenge | `codex exec`                     | `-s read-only`, xhigh      |
-| Consult   | `codex exec`                     | `-s read-only`, xhigh      |
-| Research  | `codex --search exec`            | `--skip-git-repo-check`    |
-| Apply/Fix | `codex exec`                     | `--full-auto`, xhigh       |
+| Challenge | `codex exec`                     | `-s read-only -c model_reasoning_effort=xhigh` |
+| Consult   | `codex exec`                     | `-s read-only -c model_reasoning_effort=xhigh` |
+| Research  | `codex --search exec`            | `--skip-git-repo-check -c model_reasoning_effort=high` |
+| Apply/Fix | `codex exec`                     | `--full-auto -c model_reasoning_effort=xhigh` |
 | Resume    | `codex exec resume <id> "<msg>"` | inherits previous session  |
 
 For full command recipes, prompt templates, and shell-quoting notes, read `$SKILL_DIR/references/REFERENCE.md`.
@@ -185,7 +197,7 @@ error: cannot open '.git/FETCH_HEAD': Permission denied
 |--------------|----------|-----------|-------------|
 | `read-only` (default) | Yes | **No** | review, challenge, consult |
 | `workspace-write` | Yes | **No** (`.git/` stays read-only) | editing files only |
-| `--full-auto` | Yes | **No** (same sandbox, auto-approve only) | unattended file edits |
+| `--full-auto` | Yes | **No** (same sandbox; sets `-a on-request` + `-s workspace-write`) | low-friction file edits |
 | `danger-full-access` | Yes | **Yes** | apply/fix that needs git write |
 | `--dangerously-bypass-approvals-and-sandbox` | Yes | **Yes** | last resort, unrestricted |
 
@@ -197,7 +209,7 @@ Do not switch to either mode until the user has explicitly confirmed the bypasse
 
 - **Review / Challenge / Consult**: `-s read-only` (default, safe)
 - **Research**: `--skip-git-repo-check` (no repo context needed)
-- **Apply/Fix without git writes**: `--full-auto` (auto-approve file edits)
+- **Apply/Fix without git writes**: `--full-auto` (low-friction, sandboxed)
 - **Apply/Fix with git writes**: `danger-full-access` after confirmation; use full bypass only as a confirmed last resort
 
 ### Platform-specific sandbox issues

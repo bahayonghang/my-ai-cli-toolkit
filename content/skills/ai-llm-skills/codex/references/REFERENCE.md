@@ -6,6 +6,14 @@ prompt, and checklist library you load after the mode is already chosen.
 > `$MODEL` refers to the default model set in SKILL.md (currently `gpt-5.4`).
 > Substitute the literal model id in actual commands.
 
+## Compatibility Guardrails
+
+- Verify command shape against current local help before running anything non-trivial: `codex --help`, `codex exec --help`, `codex review --help`, `codex resume --help`.
+- Do not use `--reasoning`. Current Codex CLI expects `-c model_reasoning_effort=<level>`.
+- `codex review` does not support combining `--uncommitted`, `--base`, or `--commit` with a custom prompt.
+- When the user wants a fixed review target plus a custom focus, switch to `codex exec` and state the target explicitly in the prompt.
+- Do not rely on undocumented commands such as `codex sessions list` or `codex --print-config`.
+
 ## Command Matrix
 
 | Mode | Primary command | Default posture | When to use |
@@ -51,6 +59,17 @@ Constraint:
 - If you need both a fixed review target and a custom focus, use one of these paths:
   - run `codex review` with the target flag and accept Codex's default review behavior
   - use `consult` or `challenge` via `codex exec` with an explicit prompt over the relevant files or repo scope
+
+### Focused review of uncommitted changes via `exec`
+
+Use this when the user wants both the uncommitted diff and a custom review lens.
+
+```bash
+codex -m $MODEL -s read-only exec \
+  -c model_reasoning_effort=xhigh \
+  -C <workdir> \
+  "Review the current repository's uncommitted changes. Focus on security, regressions, and missing tests. Do not modify files."
+```
 
 ### File-level second opinion
 
@@ -210,7 +229,7 @@ Good uses:
 ### Finding the session ID
 
 - After any `codex exec` run, the CLI prints the session ID in its output
-- List recent sessions: `codex sessions list`
+- For interactive browsing, use `codex resume --all`
 - The most recent session can usually be found in Codex CLI output or `~/.codex/sessions/`
 
 ## Post-Run Safety Checklist
@@ -231,11 +250,11 @@ working tree is writable.
 
 ### Sandbox modes
 
-| Mode | CLI flag | Config key | Behavior |
-|------|----------|------------|----------|
+| Mode | CLI flag | Config equivalent | Behavior |
+|------|----------|-------------------|----------|
 | Read-only | `-s read-only` | `sandbox_policy = "read-only"` | No writes anywhere |
 | Workspace-write | `-s workspace-write` | `sandbox_policy = "workspace-write"` | Writes to workdir and `/tmp`; `.git/` stays read-only |
-| Full-auto | `--full-auto` | `approval_policy = "full-auto"` | Auto-approve writes; sandbox still applies |
+| Full-auto | `--full-auto` | `approval_policy = "on-request"` plus `sandbox_policy = "workspace-write"` | Low-friction sandboxed execution; model may still ask for approval |
 | Danger full access | n/a | `sandbox_policy = "danger-full-access"` | Full FS access including `.git/` |
 | Bypass all | `--dangerously-bypass-approvals-and-sandbox` | n/a | No sandbox, no approval prompts |
 
@@ -255,11 +274,11 @@ sandbox_policy = "workspace-write"
 [projects."/path/to/project"]
 trust_level = "trusted"
 
-# Profile with full access for automation
-[profiles.git-automation]
+# Reusable equivalent of --full-auto
+[profiles.workspace-auto]
 model                  = "gpt-5.4"
-approval_policy        = "full-auto"
-sandbox_policy         = "danger-full-access"
+approval_policy        = "on-request"
+sandbox_policy         = "workspace-write"
 model_reasoning_effort = "high"
 
 # Windows-specific sandbox (set to "off" if bash fails)
@@ -268,7 +287,7 @@ sandbox = "unelevated"          # "unelevated" | "elevated" | "off"
 sandbox_private_desktop = false
 ```
 
-Use a profile: `codex -p git-automation exec "..."`.
+Use a profile: `codex -p workspace-auto exec "..."`.
 
 ### Rules-based command allowlisting
 
@@ -342,8 +361,8 @@ codex -p git-automation exec \
 codex sandbox macos --log-denials git fetch
 codex sandbox linux --log-denials git commit -m "test"
 
-# Check effective configuration
-codex --print-config
+# Inspect local config directly
+cat ~/.codex/config.toml
 
 # Verify sandbox mode inside a session
 # Use the /status slash command in interactive mode

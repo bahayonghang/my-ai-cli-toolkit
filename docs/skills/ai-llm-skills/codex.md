@@ -12,10 +12,17 @@ most Codex coding tasks, so this skill defaults to `gpt-5.4`.
 - Primary review command: `codex review`
 - Primary general command: `codex exec`
 - Default model: `gpt-5.4`
-- Review and consult reasoning: `xhigh`
-- Research reasoning: `high`
+- Review and consult reasoning config: `-c model_reasoning_effort=xhigh`
+- Research reasoning config: `-c model_reasoning_effort=high`
 - Live search entrypoint: top-level `--search`
 - Default safety posture: review-only first, write only when explicitly requested
+
+## Current CLI Compatibility
+
+- Check `codex --help`, `codex exec --help`, `codex review --help`, and `codex resume --help` first if a recipe looks stale.
+- Do not use `--reasoning`. Current Codex CLI expects `-c model_reasoning_effort=<level>`.
+- `codex review` accepts either a review target flag or a custom prompt, not both together.
+- If you need a fixed review target and a custom focus, switch to `codex exec`.
 
 ## Mode Guide
 
@@ -39,6 +46,15 @@ Constraint:
 
 - `codex review` does not allow a custom prompt together with `--uncommitted`, `--base`, or `--commit`.
 - If you need both a fixed review target and a custom focus, use plain `codex review` for the target first or switch to `codex exec` in consult or challenge mode.
+
+Focused review of uncommitted changes with custom instructions:
+
+```bash
+codex -m gpt-5.4 -s read-only exec \
+  -c model_reasoning_effort=xhigh \
+  -C <workdir> \
+  "Review the current repository's uncommitted changes. Focus on security, regressions, and missing tests. Do not modify files."
+```
 
 ### Challenge
 
@@ -150,6 +166,7 @@ web_search = "live"
 
 - Prefer `codex review` for diff-aware review tasks instead of a hand-written `codex exec "Review ..."` prompt.
 - `codex review` custom prompts are mutually exclusive with `--uncommitted`, `--base`, and `--commit`.
+- `--full-auto` is a low-friction sandboxed mode, not an unrestricted write mode.
 - Prefer top-level `--search` for live web research instead of older feature-toggle examples.
 - `@file` references files relative to the working directory.
 - `@.` references the current working tree.
