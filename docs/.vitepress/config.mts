@@ -1,5 +1,9 @@
 import { defineConfig } from 'vitepress'
-import { generateSidebarByDir } from './sidebar'
+import {
+  generateSidebarByDir,
+  SIDEBAR_OPTIONS_EN,
+  SIDEBAR_OPTIONS_ZH,
+} from './sidebar.mts'
 
 export default defineConfig({
   title: 'My Claude Code Settings',
@@ -62,7 +66,11 @@ export default defineConfig({
               ],
             },
           ],
-          '/skills/': generateSidebarByDir('docs/skills', '/skills/'),
+          '/skills/': generateSidebarByDir(
+            'docs/skills',
+            '/skills/',
+            SIDEBAR_OPTIONS_EN,
+          ),
           '/agents/': [
             {
               text: 'Agents',
@@ -155,7 +163,11 @@ export default defineConfig({
               ],
             },
           ],
-          '/zh/skills/': generateSidebarByDir('docs/zh/skills', '/zh/skills/'),
+          '/zh/skills/': generateSidebarByDir(
+            'docs/zh/skills',
+            '/zh/skills/',
+            SIDEBAR_OPTIONS_ZH,
+          ),
           '/zh/agents/': [
             {
               text: '代理',

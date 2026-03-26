@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const CATEGORY_LABELS: Record<string, string> = {
+export const CATEGORY_LABELS_EN: Record<string, string> = {
   'academic-skills': 'Academic',
   'ai-llm-skills': 'AI & LLM',
   'diagram-skills': 'Diagram',
@@ -12,6 +12,40 @@ const CATEGORY_LABELS: Record<string, string> = {
   'skill-meta-skills': 'Skill Meta',
   'tech-stack-skills': 'Tech Stack',
   'workflow-skills': 'Workflow',
+}
+
+export const CATEGORY_LABELS_ZH: Record<string, string> = {
+  'academic-skills': '学术',
+  'ai-llm-skills': 'AI & LLM',
+  'diagram-skills': '图表',
+  'document-skills': '文档',
+  'git-github-skills': 'Git & GitHub',
+  'learning-skills': '学习',
+  'media-skills': '媒体',
+  'skill-meta-skills': 'Skill 元工具',
+  'tech-stack-skills': '技术栈',
+  'workflow-skills': '工作流',
+}
+
+export type SidebarByDirOptions = {
+  sidebarTitle?: string
+  overviewText?: string
+  categoryLabels?: Record<string, string>
+  collapsed?: boolean
+}
+
+export const SIDEBAR_OPTIONS_EN: SidebarByDirOptions = {
+  sidebarTitle: 'Skills',
+  overviewText: 'Overview',
+  categoryLabels: CATEGORY_LABELS_EN,
+  collapsed: true,
+}
+
+export const SIDEBAR_OPTIONS_ZH: SidebarByDirOptions = {
+  sidebarTitle: '技能',
+  overviewText: '概览',
+  categoryLabels: CATEGORY_LABELS_ZH,
+  collapsed: true,
 }
 
 function contentSkillsRoot() {
@@ -46,15 +80,24 @@ function readSourceSkills(category: string) {
 }
 
 function formatCategory(category: string) {
-  return CATEGORY_LABELS[category] ?? category
+  return category
 }
 
-export function generateSidebarByDir(dir: string, basePath = '/skills/') {
+export function generateSidebarByDir(
+  dir: string,
+  basePath = '/skills/',
+  options: SidebarByDirOptions = {},
+) {
+  const sidebarTitle = options.sidebarTitle ?? 'Skills'
+  const overviewText = options.overviewText ?? 'Overview'
+  const categoryLabels = options.categoryLabels ?? CATEGORY_LABELS_EN
+  const collapsed = options.collapsed ?? true
+
   const items: Array<Record<string, unknown>> = []
   const overviewPath = path.join(dir, 'index.md')
 
   if (fs.existsSync(overviewPath)) {
-    items.push({ text: 'Overview', link: basePath })
+    items.push({ text: overviewText, link: basePath })
   }
 
   for (const category of readSourceCategories()) {
@@ -94,11 +137,11 @@ export function generateSidebarByDir(dir: string, basePath = '/skills/') {
     }
 
     items.push({
-      text: formatCategory(category),
-      collapsed: false,
+      text: categoryLabels[category] ?? formatCategory(category),
+      collapsed,
       items: subItems,
     })
   }
 
-  return [{ text: 'Skills', items }]
+  return [{ text: sidebarTitle, items }]
 }
