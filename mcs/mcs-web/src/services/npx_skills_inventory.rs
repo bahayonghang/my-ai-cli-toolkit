@@ -1309,13 +1309,6 @@ mod tests {
     use super::*;
     use std::fs;
 
-    fn clear_inventory_cache_for_tests() {
-        inventory_cache()
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .clear();
-    }
-
     fn temp_dir(label: &str) -> PathBuf {
         let dir = std::env::temp_dir().join(format!(
             "mcs_npx_inventory_{}_{}_{}",
@@ -1722,8 +1715,7 @@ mod tests {
 
     #[test]
     fn inventory_cache_returns_cached_snapshot_for_matching_key() {
-        clear_inventory_cache_for_tests();
-        let skills_path = PathBuf::from("/tmp/skills");
+        let skills_path = temp_dir("inventory_cache_hit");
         let key = inventory_cache_key(
             &skills_path,
             InstallTargetScopeDto::Global,
@@ -1744,8 +1736,7 @@ mod tests {
 
     #[test]
     fn inventory_cache_expires_after_ttl() {
-        clear_inventory_cache_for_tests();
-        let skills_path = PathBuf::from("/tmp/skills-expiry");
+        let skills_path = temp_dir("inventory_cache_expiry");
         let key = inventory_cache_key(
             &skills_path,
             InstallTargetScopeDto::Global,
@@ -1759,8 +1750,7 @@ mod tests {
 
     #[test]
     fn inventory_cache_invalidation_clears_matching_scope_and_path() {
-        clear_inventory_cache_for_tests();
-        let skills_path = PathBuf::from("/tmp/skills-invalidate");
+        let skills_path = temp_dir("inventory_cache_invalidate");
         let global_key = inventory_cache_key(
             &skills_path,
             InstallTargetScopeDto::Global,
@@ -1927,8 +1917,6 @@ mod tests {
 
     #[tokio::test]
     async fn resolve_inventory_page_sorts_before_paginating() {
-        clear_inventory_cache_for_tests();
-
         let project_root = temp_dir("inventory_page");
         let skills_path = project_root.join("skills");
         let cache_key = inventory_cache_key(
