@@ -12,19 +12,19 @@ Example:
 
 ```text
 content/skills/workflow-skills/my-skill/
-└── SKILL.md
+`-- SKILL.md
 ```
 
 ## Recommended directory structure
 
 ```text
 content/skills/<category>/<skill-name>/
-├── SKILL.md
-├── references/
-├── scripts/
-├── assets/
-├── docs/
-└── tests/
+|-- SKILL.md
+|-- references/
+|-- scripts/
+|-- assets/
+|-- docs/
+`-- tests/
 ```
 
 Only `SKILL.md` is required. Reuse existing patterns from neighboring skills before adding new subfolders.
@@ -72,3 +72,4 @@ Before publishing a new skill:
 
 - The docs site does not mirror every reference file under a skill. Document the skill itself, then link or describe the major supporting assets.
 - If a skill is intentionally local-only or experimental, keep it out of the public docs until it is ready to be treated as catalog content.
+- If a public skill is renamed or removed, rename the live docs page to the new slug or move the old page out of the live catalog instead of leaving stale pages in place.

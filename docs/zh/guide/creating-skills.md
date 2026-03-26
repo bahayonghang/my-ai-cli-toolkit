@@ -12,19 +12,19 @@ content/skills/<category>/<skill-name>/
 
 ```text
 content/skills/workflow-skills/my-skill/
-└── SKILL.md
+`-- SKILL.md
 ```
 
 ## 推荐目录结构
 
 ```text
 content/skills/<category>/<skill-name>/
-├── SKILL.md
-├── references/
-├── scripts/
-├── assets/
-├── docs/
-└── tests/
+|-- SKILL.md
+|-- references/
+|-- scripts/
+|-- assets/
+|-- docs/
+`-- tests/
 ```
 
 只有 `SKILL.md` 是必需的。新增子目录之前，优先复用同类技能已有模式。
@@ -72,3 +72,4 @@ version: 0.1.0
 
 - 文档站点不会把技能内部所有 reference 文件逐个镜像成页面。重点是文档化“技能本身”，并说明关键支撑资源。
 - 如果某个技能只用于本地实验或尚未准备公开展示，不要过早加入公开 docs catalog。
+- 如果公开 skill 被重命名或下线，要同步重命名 live docs 页面，或把旧页面移出 live catalog，不要让历史页继续留在主目录里。

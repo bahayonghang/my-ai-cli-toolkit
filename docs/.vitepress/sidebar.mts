@@ -7,6 +7,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   'diagram-skills': 'Diagram',
   'document-skills': 'Document',
   'git-github-skills': 'Git & GitHub',
+  'learning-skills': 'Learning',
   'media-skills': 'Media',
   'skill-meta-skills': 'Skill Meta',
   'tech-stack-skills': 'Tech Stack',

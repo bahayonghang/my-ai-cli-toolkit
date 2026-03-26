@@ -21,11 +21,11 @@ Top-level metadata like `default.toml` is not an installable skill. The third-pa
 - `diagram-skills`
 - `document-skills`
 - `git-github-skills`
+- `learning-skills`
 - `media-skills`
 - `skill-meta-skills`
 - `tech-stack-skills`
 - `workflow-skills`
-- `frontend-skills`
 
 ## Metadata
 
@@ -48,3 +48,4 @@ For MCS compatibility, prefer top-level frontmatter fields:
 2. add `SKILL.md`
 3. verify discoverability via `just mcs`
 4. add English and Chinese docs pages if the skill is part of the public catalog
+5. if a public skill is renamed or removed, rename or archive the matching docs pages so the live catalog stays aligned with directory slugs
