@@ -8,9 +8,20 @@ allowed-tools: Bash(*), AskUserQuestion(*), Read(*)
 # Codex Review Command (/cli:codex-review)
 
 ## Overview
-Interactive code review command that invokes `codex review` via ccw cli endpoint with guided parameter selection.
 
-**Codex Review Parameters** (from `codex review --help`):
+Interactive code review command routed through `ccw cli`.
+
+Use two execution paths:
+
+- `ccw cli --tool codex --mode review` for plain `codex review` flows
+- `ccw cli --tool codex --mode analysis` for read-only `codex exec` style review when the user needs both a fixed target and custom review instructions
+
+This split is required because current `codex review` rejects a positional prompt when used with `--uncommitted`, `--base`, or `--commit`.
+
+## Codex Review Parameters
+
+From `codex review --help`:
+
 | Parameter | Description |
 |-----------|-------------|
 | `[PROMPT]` | Custom review instructions (positional) |
@@ -24,34 +35,35 @@ Interactive code review command that invokes `codex review` via ccw cli endpoint
 
 Follow the standard ccw cli prompt template:
 
-```
+```text
 PURPOSE: [what] + [why] + [success criteria] + [constraints/scope]
-TASK: • [step 1] • [step 2] • [step 3]
-MODE: review
+TASK: - [step 1] - [step 2] - [step 3]
+MODE: [review|analysis]
 CONTEXT: [review target description] | Memory: [relevant context]
 EXPECTED: [deliverable format] + [quality criteria]
 CONSTRAINTS: [focus constraints]
 ```
 
-## EXECUTION INSTRUCTIONS - START HERE
+## Execution Instructions
 
-**When this command is triggered, follow these exact steps:**
+When this command is triggered, follow these steps.
 
 ### Step 1: Parse Arguments
 
-Check if user provided arguments directly:
-- `--uncommitted` → Record target = uncommitted
-- `--base <branch>` → Record target = base, branch name
-- `--commit <sha>` → Record target = commit, sha value
-- `--model <model>` → Record model selection
-- `--title <title>` → Record title
-- Remaining text → Use as custom focus/prompt
+Check whether the user provided arguments directly:
 
-If no target specified → Continue to Step 2 for interactive selection.
+- `--uncommitted` -> `target = uncommitted`
+- `--base <branch>` -> `target = base`, store branch name
+- `--commit <sha>` -> `target = commit`, store sha
+- `--model <model>` -> store model selection
+- `--title <title>` -> store title
+- remaining text -> `custom_focus`
+
+If no target is specified, continue to interactive selection.
 
 ### Step 2: Interactive Parameter Selection
 
-**2.1 Review Target Selection**
+#### 2.1 Review Target
 
 ```javascript
 AskUserQuestion({
@@ -60,7 +72,7 @@ AskUserQuestion({
     header: "Review Target",
     options: [
       { label: "Uncommitted changes (Recommended)", description: "Review staged, unstaged, and untracked changes" },
-      { label: "Compare to branch", description: "Review changes against a base branch (e.g., main)" },
+      { label: "Compare to branch", description: "Review changes against a base branch such as main" },
       { label: "Specific commit", description: "Review changes introduced by a specific commit" }
     ],
     multiSelect: false
@@ -68,47 +80,49 @@ AskUserQuestion({
 })
 ```
 
-**2.2 Branch/Commit Input (if needed)**
+#### 2.2 Branch or Commit
 
-If "Compare to branch" selected:
+If "Compare to branch" is selected:
+
 ```javascript
 AskUserQuestion({
   questions: [{
-    question: "Which base branch to compare against?",
+    question: "Which base branch should be reviewed against?",
     header: "Base Branch",
     options: [
-      { label: "main", description: "Compare against main branch" },
-      { label: "master", description: "Compare against master branch" },
-      { label: "develop", description: "Compare against develop branch" }
+      { label: "main", description: "Compare against main" },
+      { label: "master", description: "Compare against master" },
+      { label: "develop", description: "Compare against develop" }
     ],
     multiSelect: false
   }]
 })
 ```
 
-If "Specific commit" selected:
-- Run `git log --oneline -10` to show recent commits
-- Ask user to provide commit SHA or select from list
+If "Specific commit" is selected:
 
-**2.3 Model Selection (Optional)**
+- Run `git log --oneline -10`
+- Ask the user for the SHA if needed
+
+#### 2.3 Model
 
 ```javascript
 AskUserQuestion({
   questions: [{
-    question: "Which model to use for review?",
+    question: "Which model should be used for review?",
     header: "Model",
     options: [
-      { label: "Default", description: "Use codex default model (gpt-5.2)" },
-      { label: "o3", description: "OpenAI o3 reasoning model" },
-      { label: "gpt-4.1", description: "GPT-4.1 model" },
-      { label: "o4-mini", description: "OpenAI o4-mini (faster)" }
+      { label: "Default", description: "Use codex default model" },
+      { label: "o3", description: "Use o3 reasoning model" },
+      { label: "gpt-4.1", description: "Use GPT-4.1" },
+      { label: "o4-mini", description: "Use o4-mini for faster review" }
     ],
     multiSelect: false
   }]
 })
 ```
 
-**2.4 Review Focus Selection**
+#### 2.4 Focus Area
 
 ```javascript
 AskUserQuestion({
@@ -116,85 +130,110 @@ AskUserQuestion({
     question: "What should the review focus on?",
     header: "Focus Area",
     options: [
-      { label: "General review (Recommended)", description: "Comprehensive review: correctness, style, bugs, docs" },
-      { label: "Security focus", description: "Security vulnerabilities, input validation, auth issues" },
-      { label: "Performance focus", description: "Performance bottlenecks, complexity, resource usage" },
-      { label: "Code quality", description: "Readability, maintainability, SOLID principles" }
+      { label: "General review (Recommended)", description: "Correctness, style, bugs, and docs" },
+      { label: "Security focus", description: "Vulnerabilities, validation, auth, and exposure" },
+      { label: "Performance focus", description: "Complexity, memory, queries, and blocking work" },
+      { label: "Code quality", description: "Maintainability, naming, duplication, and tests" }
     ],
     multiSelect: false
   }]
 })
 ```
 
-### Step 3: Build Prompt and Command
+### Step 3: Route the Execution Path
 
-**3.1 Construct Prompt Based on Focus**
+Choose the route before building the final command.
 
-**General Review Prompt:**
-```
-PURPOSE: Comprehensive code review to identify issues, improve quality, and ensure best practices; success = actionable feedback with clear priorities
-TASK: • Review code correctness and logic errors • Check coding standards and consistency • Identify potential bugs and edge cases • Evaluate documentation completeness
-MODE: review
+| Inputs | Route | Reason |
+|--------|-------|--------|
+| target only | `--mode review` | Maps cleanly to `codex review --target` |
+| prompt only | `--mode review` | Maps to `codex review "<prompt>"` on default uncommitted scope |
+| target + prompt | `--mode analysis` | Avoids invalid `codex review --target "<prompt>"` and uses read-only `codex exec` behavior |
+
+Additional rule:
+
+- `--title` is only meaningful on the `review` route
+- if `target + prompt + title` is provided, keep the title in prompt context and do not pass `--title`
+
+### Step 4: Build Prompt
+
+#### 4.1 Target Description
+
+Build `target_description` from the selected target:
+
+- uncommitted -> `Reviewing the repository's uncommitted changes`
+- base -> `Reviewing changes against base branch {branch}`
+- commit -> `Reviewing changes introduced by commit {sha}`
+
+If a title exists and the route is `analysis`, append it to context as:
+
+`Title: {title}`
+
+#### 4.2 Focus Prompt
+
+General:
+
+```text
+PURPOSE: Comprehensive code review to identify issues, improve quality, and ensure best practices; success = actionable findings with clear priorities
+TASK: - Review correctness and logic errors - Check coding standards and consistency - Identify potential bugs and edge cases - Evaluate documentation completeness
+MODE: {mode}
 CONTEXT: {target_description} | Memory: Project conventions from CLAUDE.md
-EXPECTED: Structured review report with: severity levels (Critical/High/Medium/Low), file:line references, specific improvement suggestions, priority ranking
-CONSTRAINTS: Focus on actionable feedback
+EXPECTED: Structured review report with severity levels, file:line references, specific fixes, and priority ranking
+CONSTRAINTS: Focus on actionable feedback | Do not modify files
 ```
 
-**Security Focus Prompt:**
-```
-PURPOSE: Security-focused code review to identify vulnerabilities and security risks; success = all security issues documented with remediation
-TASK: • Scan for injection vulnerabilities (SQL, XSS, command) • Check authentication and authorization logic • Evaluate input validation and sanitization • Identify sensitive data exposure risks
-MODE: review
-CONTEXT: {target_description} | Memory: Security best practices, OWASP Top 10
-EXPECTED: Security report with: vulnerability classification, CVE references where applicable, remediation code snippets, risk severity matrix
-CONSTRAINTS: Security-first analysis | Flag all potential vulnerabilities
+Security:
+
+```text
+PURPOSE: Security-focused code review to identify vulnerabilities and security risks; success = concrete findings with remediation guidance
+TASK: - Scan for injection vulnerabilities - Check authentication and authorization logic - Evaluate input validation and sanitization - Identify sensitive data exposure risks
+MODE: {mode}
+CONTEXT: {target_description} | Memory: Security best practices and OWASP guidance
+EXPECTED: Structured security review with severity, evidence, impact, and remediation steps
+CONSTRAINTS: Security-first analysis | Do not modify files
 ```
 
-**Performance Focus Prompt:**
-```
+Performance:
+
+```text
 PURPOSE: Performance-focused code review to identify bottlenecks and optimization opportunities; success = measurable improvement recommendations
-TASK: • Analyze algorithmic complexity (Big-O) • Identify memory allocation issues • Check for N+1 queries and blocking operations • Evaluate caching opportunities
-MODE: review
+TASK: - Analyze algorithmic complexity - Identify memory allocation issues - Check for N+1 queries and blocking operations - Evaluate caching opportunities
+MODE: {mode}
 CONTEXT: {target_description} | Memory: Performance patterns and anti-patterns
-EXPECTED: Performance report with: complexity analysis, bottleneck identification, optimization suggestions with expected impact, benchmark recommendations
-CONSTRAINTS: Performance optimization focus
+EXPECTED: Structured performance review with bottlenecks, expected impact, and next-step recommendations
+CONSTRAINTS: Performance optimization focus | Do not modify files
 ```
 
-**Code Quality Focus Prompt:**
-```
-PURPOSE: Code quality review to improve maintainability and readability; success = cleaner, more maintainable code
-TASK: • Assess SOLID principles adherence • Identify code duplication and abstraction opportunities • Review naming conventions and clarity • Evaluate test coverage implications
-MODE: review
+Code quality:
+
+```text
+PURPOSE: Code quality review to improve maintainability and readability; success = concrete refactoring and testing recommendations
+TASK: - Assess SOLID adherence - Identify duplication and abstraction gaps - Review naming and clarity - Evaluate testing implications
+MODE: {mode}
 CONTEXT: {target_description} | Memory: Project coding standards
-EXPECTED: Quality report with: principle violations, refactoring suggestions, naming improvements, maintainability score
-CONSTRAINTS: Code quality and maintainability focus
+EXPECTED: Structured quality review with maintainability findings and refactoring suggestions
+CONSTRAINTS: Maintainability focus | Do not modify files
 ```
 
-**3.2 Build Target Description**
+Set `{mode}` to:
 
-Based on selection, set `{target_description}`:
-- Uncommitted: `Reviewing uncommitted changes (staged + unstaged + untracked)`
-- Base branch: `Reviewing changes against {branch} branch`
-- Commit: `Reviewing changes introduced by commit {sha}`
+- `review` on the `review` route
+- `analysis` on the `analysis` route
 
-### Step 4: Execute via CCW CLI
+### Step 5: Build the CCW Command
 
-Build and execute the ccw cli command:
+Use these variables:
 
 ```bash
-# Base structure
-ccw cli -p "<PROMPT>" --tool codex --mode review [OPTIONS]
+TARGET_FLAG=""
+MODEL_FLAG=""
+TITLE_FLAG=""
+COMMAND=""
 ```
 
-**Command Construction:**
+Construct flags:
 
 ```bash
-# Variables from user selection
-TARGET_FLAG=""      # --uncommitted | --base <branch> | --commit <sha>
-MODEL_FLAG=""       # --model <model> (if not default)
-TITLE_FLAG=""       # --title "<title>" (if provided)
-
-# Build target flag
 if [ "$target" = "uncommitted" ]; then
   TARGET_FLAG="--uncommitted"
 elif [ "$target" = "base" ]; then
@@ -203,159 +242,109 @@ elif [ "$target" = "commit" ]; then
   TARGET_FLAG="--commit $sha"
 fi
 
-# Build model flag (only if not default)
 if [ "$model" != "default" ] && [ -n "$model" ]; then
   MODEL_FLAG="--model $model"
 fi
 
-# Build title flag (if provided)
 if [ -n "$title" ]; then
   TITLE_FLAG="--title \"$title\""
 fi
-
-# Execute
-ccw cli -p "$PROMPT" --tool codex --mode review $TARGET_FLAG $MODEL_FLAG $TITLE_FLAG
 ```
 
-**Full Example Commands:**
+Route-specific command construction:
 
-**Option 1: With custom prompt (reviews uncommitted by default):**
 ```bash
-ccw cli -p "
-PURPOSE: Comprehensive code review to identify issues and improve quality; success = actionable feedback with priorities
-TASK: • Review correctness and logic • Check standards compliance • Identify bugs and edge cases • Evaluate documentation
-MODE: review
-CONTEXT: Reviewing uncommitted changes | Memory: Project conventions
-EXPECTED: Structured report with severity levels, file:line refs, improvement suggestions
-CONSTRAINTS: Actionable feedback
-" --tool codex --mode review --rule analysis-review-code-quality
+if [ -n "$TARGET_FLAG" ] && [ -n "$custom_focus" ]; then
+  COMMAND="ccw cli -p \"$PROMPT\" --tool codex --mode analysis $MODEL_FLAG"
+elif [ -n "$TARGET_FLAG" ]; then
+  COMMAND="ccw cli --tool codex --mode review $TARGET_FLAG $MODEL_FLAG $TITLE_FLAG"
+else
+  COMMAND="ccw cli -p \"$PROMPT\" --tool codex --mode review $MODEL_FLAG $TITLE_FLAG --rule analysis-review-code-quality"
+fi
 ```
 
-**Option 2: Target flag only (no prompt allowed):**
-```bash
-ccw cli --tool codex --mode review --uncommitted
-```
-
-### Step 5: Execute and Display Results
+### Step 6: Execute and Display Results
 
 ```bash
 Bash({
-  command: "ccw cli -p \"$PROMPT\" --tool codex --mode review $FLAGS",
+  command: COMMAND,
   run_in_background: true
 })
 ```
 
-Wait for completion and display formatted results.
+Wait for completion and display the formatted review.
 
 ## Quick Usage Examples
 
-### Direct Execution (No Interaction)
+### Direct Execution
 
 ```bash
-# Review uncommitted changes with default settings
 /cli:codex-review --uncommitted
-
-# Review against main branch
 /cli:codex-review --base main
-
-# Review specific commit
 /cli:codex-review --commit abc123
-
-# Review with custom model
 /cli:codex-review --uncommitted --model o3
-
-# Review with security focus
 /cli:codex-review --uncommitted security
-
-# Full options
 /cli:codex-review --base main --model o3 --title "Auth Feature" security
 ```
 
-### Interactive Mode
+### Resulting Command Shapes
 
 ```bash
-# Start interactive selection (guided flow)
-/cli:codex-review
+# target only
+ccw cli --tool codex --mode review --uncommitted
+
+# prompt only
+ccw cli -p "Focus on security" --tool codex --mode review
+
+# target plus prompt
+ccw cli -p "Review the current repository's uncommitted changes. Focus on security." --tool codex --mode analysis
 ```
-
-## Focus Area Mapping
-
-| User Selection | Prompt Focus | Key Checks |
-|----------------|--------------|------------|
-| General review | Comprehensive | Correctness, style, bugs, docs |
-| Security focus | Security-first | Injection, auth, validation, exposure |
-| Performance focus | Optimization | Complexity, memory, queries, caching |
-| Code quality | Maintainability | SOLID, duplication, naming, tests |
 
 ## Error Handling
 
 ### No Changes to Review
-```
+
+```text
 No changes found for review target. Suggestions:
-- For --uncommitted: Make some code changes first
-- For --base: Ensure branch exists and has diverged
-- For --commit: Verify commit SHA exists
+- For --uncommitted: make some code changes first
+- For --base: ensure the branch exists and has diverged
+- For --commit: verify the commit SHA exists
 ```
 
 ### Invalid Branch
+
 ```bash
-# Show available branches
 git branch -a --list | head -20
 ```
 
 ### Invalid Commit
+
 ```bash
-# Show recent commits
 git log --oneline -10
 ```
 
 ## Integration Notes
 
-- Uses `ccw cli --tool codex --mode review` endpoint
-- Model passed via prompt (codex uses `-c model=` internally)
-- Target flags (`--uncommitted`, `--base`, `--commit`) passed through to codex
-- Prompt follows standard ccw cli template format for consistency
+- `--mode review` is the `codex review` path
+- `--mode analysis` is the read-only `codex exec` path
+- Target flags are forwarded only on the `review` path
+- On the `analysis` path, target intent must be expressed inside the prompt
+- `--title` is passed only on the `review` path
 
 ## Validation Constraints
 
-**IMPORTANT: Target flags and prompt are mutually exclusive**
+Current `codex review` rejects target flags combined with a positional prompt:
 
-The codex CLI has a constraint where target flags (`--uncommitted`, `--base`, `--commit`) cannot be used with a positional `[PROMPT]` argument:
-
-```
+```text
 error: the argument '--uncommitted' cannot be used with '[PROMPT]'
 error: the argument '--base <BRANCH>' cannot be used with '[PROMPT]'
 error: the argument '--commit <SHA>' cannot be used with '[PROMPT]'
 ```
 
-**Behavior:**
-- When ANY target flag is specified, ccw cli automatically skips template concatenation (systemRules/roles)
-- The review uses codex's default review behavior for the specified target
-- Custom prompts are only supported WITHOUT target flags (reviews uncommitted changes by default)
+Treat these combinations as routing input, not as executable `review` commands.
 
-**Valid combinations:**
-| Command | Result |
-|---------|--------|
-| `codex review "Focus on security"` | ✓ Custom prompt, reviews uncommitted (default) |
-| `codex review --uncommitted` | ✓ No prompt, uses default review |
-| `codex review --base main` | ✓ No prompt, uses default review |
-| `codex review --commit abc123` | ✓ No prompt, uses default review |
-| `codex review --uncommitted "prompt"` | ✗ Invalid - mutually exclusive |
-| `codex review --base main "prompt"` | ✗ Invalid - mutually exclusive |
-| `codex review --commit abc123 "prompt"` | ✗ Invalid - mutually exclusive |
-
-**Examples:**
-```bash
-# ✓ Valid: prompt only (reviews uncommitted by default)
-ccw cli -p "Focus on security" --tool codex --mode review
-
-# ✓ Valid: target flag only (no prompt)
-ccw cli --tool codex --mode review --uncommitted
-ccw cli --tool codex --mode review --base main
-ccw cli --tool codex --mode review --commit abc123
-
-# ✗ Invalid: target flag with prompt (will fail)
-ccw cli -p "Review this" --tool codex --mode review --uncommitted
-ccw cli -p "Review this" --tool codex --mode review --base main
-ccw cli -p "Review this" --tool codex --mode review --commit abc123
-```
+| Intent | Correct route |
+|--------|---------------|
+| custom prompt only | `ccw cli -p "<prompt>" --tool codex --mode review` |
+| target only | `ccw cli --tool codex --mode review <target flag>` |
+| target + custom prompt | `ccw cli -p "<prompt describing target>" --tool codex --mode analysis` |

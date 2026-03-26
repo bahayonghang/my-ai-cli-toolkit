@@ -36,15 +36,16 @@ Initialize CLI tool configurations and perform code reviews using external CLI t
 
 ### `codex-review`
 
-**Description**: Interactive code review using Codex CLI with configurable review target, model, and custom instructions.
+**Description**: Interactive code review using Codex CLI with configurable review target, model, and custom instructions. Uses `codex review` for standard review flows and switches to `codex exec` when a fixed target and custom focus must be combined.
 **Usage**: `/cli:codex-review [--uncommitted|--base branch|--commit sha] [--model model] [prompt]`
 
 #### How It Works
 
 1. **Parse Arguments** - Detect target flags and options from input
 2. **Interactive Selection** - If no target specified, guide user through review target, model, and focus area selection
-3. **Build Prompt** - Construct review prompt based on selected focus area (general, security, performance, code quality)
-4. **Execute Review** - Run `codex review` via ccw cli endpoint
+3. **Route Mode** - Use `codex review` for plain target-based review, or `codex exec` when target flags and custom focus need to coexist
+4. **Build Prompt** - Construct review prompt based on selected focus area (general, security, performance, code quality)
+5. **Execute Review** - Run the selected Codex CLI command via ccw cli endpoint
 
 #### Options
 
@@ -91,4 +92,5 @@ Initialize CLI tool configurations and perform code reviews using external CLI t
 - `cli-init` backs up existing config files before overwriting
 - Ignore files use gitignore syntax and include base rules (VCS, OS, IDE, logs) plus technology-specific rules
 - `codex-review` target flags (`--uncommitted`, `--base`, `--commit`) and custom prompts are mutually exclusive
-- When a target flag is specified, codex uses its default review behavior without custom prompts
+- When a target flag is specified without extra focus, the command can stay on `codex review`
+- When a target flag is specified with custom focus, the command should switch to `codex exec`
