@@ -10,6 +10,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTENT_SKILLS = REPO_ROOT / "content" / "skills"
 DOCS_SKILLS = REPO_ROOT / "docs" / "skills"
 DOCS_ZH_SKILLS = REPO_ROOT / "docs" / "zh" / "skills"
+DOCS_ROOT = REPO_ROOT / "docs"
+
+FORBIDDEN_DOC_REFERENCES = {
+    "content/agents/": "stale agents layout (current: content/platforms/<platform>/agents/)",
+    "content/commands/": "stale commands layout (current: content/platforms/<platform>/commands/)",
+    "content/memorys/": "stale prompts/memory layout (current: content/platforms/*/guidance/)",
+}
 
 
 def skill_categories() -> list[str]:
@@ -116,11 +123,61 @@ def stale_reference_checks() -> list[str]:
     return issues
 
 
+def forbidden_doc_reference_checks() -> list[str]:
+    issues: list[str] = []
+
+    for file in DOCS_ROOT.rglob("*.md"):
+        if not file.is_file():
+            continue
+        text = file.read_text(encoding="utf-8")
+        for needle, reason in FORBIDDEN_DOC_REFERENCES.items():
+            if needle in text:
+                issues.append(
+                    f"[docs] {file.relative_to(REPO_ROOT)} contains {needle!r} ({reason})"
+                )
+
+    return issues
+
+
+def compare_i18n_section(section: str) -> list[str]:
+    issues: list[str] = []
+    en_root = DOCS_ROOT / section
+    zh_root = DOCS_ROOT / "zh" / section
+
+    if not en_root.exists() or not zh_root.exists():
+        return issues
+
+    en_files = sorted(
+        file.relative_to(en_root)
+        for file in en_root.rglob("*.md")
+        if file.is_file()
+    )
+    zh_files = sorted(
+        file.relative_to(zh_root)
+        for file in zh_root.rglob("*.md")
+        if file.is_file()
+    )
+
+    en_set = set(en_files)
+    zh_set = set(zh_files)
+
+    for rel in sorted(en_set - zh_set):
+        issues.append(f"[i18n] missing zh page: zh/{section}/{rel}")
+    for rel in sorted(zh_set - en_set):
+        issues.append(f"[i18n] extra zh page without en peer: zh/{section}/{rel}")
+
+    return issues
+
+
 def main() -> int:
     issues: list[str] = []
     issues.extend(compare_skill_docs(DOCS_SKILLS, "en"))
     issues.extend(compare_skill_docs(DOCS_ZH_SKILLS, "zh"))
     issues.extend(stale_reference_checks())
+    issues.extend(forbidden_doc_reference_checks())
+    issues.extend(compare_i18n_section("commands"))
+    issues.extend(compare_i18n_section("agents"))
+    issues.extend(compare_i18n_section("legacy"))
 
     if issues:
         print("Documentation audit failed:\n")

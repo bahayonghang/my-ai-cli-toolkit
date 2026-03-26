@@ -118,6 +118,10 @@ docs-build:
 docs-preview:
     cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} run preview
 
+# 运行文档审计（skills 同步 + stale references）
+docs-audit:
+    python3 {{ docs_dir }}/scripts/audit_sync.py
+
 # 一键启动文档开发
 docs: docs-install docs-dev
 
@@ -283,24 +287,27 @@ ci:
     @echo "  🚀 开始执行本地 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📦 步骤 1/6: 安装 MCS Web UI 依赖 (npm ci)..."
+    @echo "📚 步骤 1/7: 文档审计 (docs/scripts/audit_sync.py)..."
+    {{ just_cmd }} docs-audit
+    @echo ""
+    @echo "📦 步骤 2/7: 安装 MCS Web UI 依赖 (npm ci)..."
     {{ just_cmd }} mcs-web-ci-install
     @echo ""
-    @echo "📘 步骤 2/6: MCS Web UI TypeScript 检查..."
+    @echo "📘 步骤 3/7: MCS Web UI TypeScript 检查..."
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
     @echo ""
-    @echo "🧪 步骤 3/6: MCS Web UI 测试..."
+    @echo "🧪 步骤 4/7: MCS Web UI 测试..."
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
     @echo ""
-    @echo "🦀 步骤 4/6: Rust 格式检查（必要时自动修复）..."
+    @echo "🦀 步骤 5/7: Rust 格式检查（必要时自动修复）..."
     {{ just_cmd }} rust-format
     {{ just_cmd }} rust-format-check
     @echo ""
-    @echo "🦀 步骤 5/6: Rust Clippy 自动修复并严格校验..."
+    @echo "🦀 步骤 6/7: Rust Clippy 自动修复并严格校验..."
     {{ just_cmd }} rust-clippy-fix
     {{ just_cmd }} rust-clippy
     @echo ""
-    @echo "🦀 步骤 6/6: Rust 单元测试..."
+    @echo "🦀 步骤 7/7: Rust 单元测试..."
     {{ just_cmd }} rust-test
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
