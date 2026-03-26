@@ -1,16 +1,16 @@
 # Commands Overview
 
-This section documents the command catalog shipped from `content/commands/`.
+This section documents the command catalog shipped from `content/platforms/*/commands/`.
 
 ## How the command catalog works
 
-- Source files live under `content/commands/`
+- Source files live under `content/platforms/<platform>/commands/`
 - Install targets and destination folders are resolved through `platforms.toml` and `mcs-core`
 - Some platforms reuse another platform's source directory through `fallback_commands_source`
 
 ## Read this section with two layers in mind
 
-1. **Source directories**: what the repository currently stores under `content/commands/`
+1. **Source directories**: what the repository currently stores under `content/platforms/*/commands/`
 2. **Installed platforms**: where MCS installs those commands for a specific target
 
 The two are related, but they are not always one-to-one.

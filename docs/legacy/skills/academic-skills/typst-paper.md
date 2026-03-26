@@ -1,5 +1,9 @@
 # Typst 学术论文助手
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 ## 核心原则
 
 1. 绝不修改 `@cite`、`@ref`、`@label`、数学环境内的内容

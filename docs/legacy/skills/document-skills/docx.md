@@ -1,5 +1,9 @@
 # DOCX creation, editing, and analysis
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 ## Overview
 
 A .docx file is a ZIP archive containing XML files.

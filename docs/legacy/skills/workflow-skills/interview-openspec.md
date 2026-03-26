@@ -1,5 +1,9 @@
 # interview-openspec
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 Create complete OpenSpec artifacts through a phased Socratic interview. Each interview phase produces one artifact, enabling incremental progress.
 
 ## Overview

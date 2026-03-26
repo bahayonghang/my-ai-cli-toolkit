@@ -12,7 +12,7 @@ Use these pages instead:
 
 - contributor and repository guidance lives in the root `CLAUDE.md`
 - runtime hook assets live in `content/hooks/`
-- platform-specific runtime memory/prompt files live in `content/memorys/`
+- platform guidance/runtime seeds live in `content/platforms/*/guidance/`
 - prompt diff/update logic lives in `mcs-core`
 
 Keep this page only as a compatibility pointer for older links.

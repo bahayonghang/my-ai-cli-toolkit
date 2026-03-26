@@ -8,4 +8,4 @@ The current repository source-of-truth for agents is:
 - [CCW Family](/agents/ccw)
 - [Specialist Family](/agents/specialist)
 
-Historical `@frontend-engineer`, `@document-writer`, `@oracle`, and related pages documented an older multi-agent surface that is not the current `content/agents/` layout.
+Historical `@frontend-engineer`, `@document-writer`, `@oracle`, and related pages documented an older multi-agent surface that is not the current `content/platforms/claude/agents/` layout.

@@ -1,5 +1,9 @@
 # PDF Processing Guide
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 ## Overview
 
 This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see REFERENCE.md. If you need to fill out a PDF form, read FORMS.md and follow its instructions.

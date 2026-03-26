@@ -1,5 +1,9 @@
 # Install Dialog Redesign — Implementation Plan
 
+::: warning Plan document
+This is a design/implementation document maintained for the repository. It is not end-user documentation.
+:::
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Replace the bare `ConfirmDialog` install flow with a rich three-phase dialog (Confirm → Installing → Results) featuring a real per-item progress bar.

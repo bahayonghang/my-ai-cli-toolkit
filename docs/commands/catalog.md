@@ -15,7 +15,7 @@
 | Installed platform | Command source | Fallback source | Installed folder |
 |--------------------|----------------|-----------------|------------------|
 | Claude | `claude` | none | `~/.claude/commands/` |
-| Codex | not managed in v1 | n/a | guidance only (`~/.codex/AGENTS.md`) |
+| Codex | `codex` | `claude` | `~/.codex/prompts/` |
 | Gemini | `gemini` | none | `~/.agents/commands/` |
 | Qwen | `qwen` | `claude` | `~/.qwen/commands/` |
 | Kiro | `kiro` | `claude` | `~/.kiro/steering/` |
@@ -60,3 +60,4 @@
 - The command catalog is broader than the three standalone command docs in this section.
 - For exact file-level truth, inspect `content/platforms/*/commands/` directly.
 - For how MCS resolves target paths and fallbacks, inspect `platforms.toml` and `mcs-core/src/config/platform.rs`.
+- The `codex` command source currently falls back to `claude` because `content/platforms/codex/commands/` is not present in this repository.

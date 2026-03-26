@@ -36,7 +36,7 @@ Instead, each platform declares:
 
 Examples from `platforms.toml`:
 
-- Codex does not install managed commands in v1; it uses guidance plus shared skills
+- Codex installs commands into `prompts/` and currently falls back to `claude` because `content/platforms/codex/commands/` is not present
 - Qwen falls back to `claude`
 - Trae CN reuses `trae`
 - App-style platforms such as Antigravity and Windsurf install to `workflows/`

@@ -1,6 +1,6 @@
 # Specialist Family
 
-`content/agents/specialist/` currently contains focused domain agents such as:
+`content/platforms/claude/agents/specialist/` currently contains focused domain agents such as:
 
 - `code-simplifier`
 - `css`
@@ -28,5 +28,4 @@
 
 For the authoritative source summary, inspect:
 
-- `content/agents/CLAUDE.md`
-- the individual markdown files under `content/agents/specialist/`
+- the individual markdown files under `content/platforms/claude/agents/specialist/`

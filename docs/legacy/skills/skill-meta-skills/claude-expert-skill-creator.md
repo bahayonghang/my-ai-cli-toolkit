@@ -1,5 +1,9 @@
 # Expert Skill Creation
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 Transform expert knowledge into production-ready skills that combine domain expertise with system-specific understanding.
 
 ## Why Skills Fail in Production

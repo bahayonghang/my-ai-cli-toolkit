@@ -72,7 +72,7 @@ Commands, agents, or guidance still install into platform-specific locations.
 | Platform | Skills path | Platform-managed extras |
 |----------|-------------|-------------------------|
 | Claude | `~/.claude/skills/` | commands: `~/.claude/commands/`, agents: `~/.claude/agents/`, guidance: `~/.claude/CLAUDE.md` |
-| Codex | `~/.agents/skills/` | guidance: `~/.codex/AGENTS.md` |
+| Codex | `~/.agents/skills/` | commands: `~/.codex/prompts/`, guidance: `~/.codex/AGENTS.md` |
 | Gemini | `~/.agents/skills/` | commands: `~/.agents/commands/` |
 | Qwen | `~/.qwen/skills/` | commands: `~/.qwen/commands/` |
 | Kiro | `~/.kiro/skills/` | commands: `~/.kiro/steering/` |

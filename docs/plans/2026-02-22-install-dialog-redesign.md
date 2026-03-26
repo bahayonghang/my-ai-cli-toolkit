@@ -1,5 +1,9 @@
 # Install Dialog Redesign — Design Document
 
+::: warning Plan document
+This is a design/implementation document maintained for the repository. It is not end-user documentation.
+:::
+
 **Date:** 2026-02-22
 **Status:** Approved
 **Scope:** `mcs/mcs-web/ui/src/`

@@ -1,6 +1,6 @@
 # CCW Family
 
-`content/agents/ccw/` currently contains workflow-facing agents such as:
+`content/platforms/claude/agents/ccw/` currently contains workflow-facing agents such as:
 
 - `action-planning-agent`
 - `cli-discuss-agent`
@@ -32,5 +32,4 @@
 
 For the authoritative source summary, inspect:
 
-- `content/agents/CLAUDE.md`
-- the individual markdown files under `content/agents/ccw/`
+- the individual markdown files under `content/platforms/claude/agents/ccw/`

@@ -1,5 +1,9 @@
 # PPTX Skill
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 ## Quick Reference
 
 | Task | Guide |

@@ -1,5 +1,9 @@
 # IEEE Writing Assistant
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 Expert assistance for drafting, refining, and validating IEEE conference and transaction papers.
 
 ## Capabilities

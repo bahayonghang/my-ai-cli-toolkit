@@ -1,5 +1,9 @@
 # Industrial AI Research
 
+::: warning Legacy documentation
+This page is kept for historical reference and link compatibility. The corresponding skill is no longer shipped from `content/skills/` in this repository.
+:::
+
 Industrial AI literature research with mandatory intake questions, venue-aware source prioritization, and structured report outputs.
 
 ## When to use it
