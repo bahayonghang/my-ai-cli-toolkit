@@ -6,19 +6,19 @@
 
 | 分类 | 覆盖内容 |
 |------|----------|
-| `academic-skills` | 读论文、论文写作、质检、幻灯片、学位论文、复现、文献检索 |
-| `ai-llm-skills` | Codex、Gemini |
-| `diagram-skills` | draw.io、Excalidraw、Mermaid |
-| `document-skills` | Office 文档、PDF/LaTeX、Typst、Touying、标书、截图、视觉卡片、主题套用 |
+| `academic-skills` | 论文检索、论文阅读、书目检索、幻灯片、复现与论文拆解 |
+| `ai-llm-skills` | Codex、Gemini CLI 与 Gemini 图像能力 |
+| `diagram-skills` | Excalidraw 与 Mermaid 图表编写 |
+| `document-skills` | 标书、视觉卡片、文档生成、Typst、Touying、截图与主题套用 |
 | `git-github-skills` | GitHub 审查与仓库工作流 |
-| `learning-skills` | 概念解剖与概念学习流 |
+| `learning-skills` | 概念解剖、白话改写、秩约简、圆桌讨论与单词学习 |
 | `media-skills` | 文章封面与媒体下载 |
-| `skill-meta-skills` | skill 创建、MCP 转换、skill 审计 |
-| `tech-stack-skills` | Slint、LSP、Rust CLI/TUI、uv、Vue |
-| `workflow-skills` | 访谈工作流、memory、review、编码准则 |
+| `skill-meta-skills` | MCP 转换与 skill 目录映射 |
+| `tech-stack-skills` | Slint、LSP、Rust CLI/TUI 与 uv |
+| `workflow-skills` | 计划访谈、架构改进、memory、review 与 web 访问 |
 
 ## 说明
 
 - 文档目录只覆盖当前 `content/skills/` 中真实存在的可安装技能目录。
 - 技能页关注“技能本身”和关键支撑资源，不会把技能内部每个 vendored reference 文件都镜像成单独页面。
-- 如果历史页面已经没有对应源码目录，就不会继续出现在主 catalog 中。
+- 已经没有对应 live skill 的历史页面会迁到 `docs/zh/legacy/skills/`，不再出现在主 catalog 中。
