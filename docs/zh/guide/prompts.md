@@ -12,7 +12,7 @@
 
 - 仓库贡献者说明位于根目录 `CLAUDE.md`
 - 运行时 hook 资源位于 `content/hooks/`
-- 平台相关 memory / prompt 文件位于 `content/memorys/`
+- 平台 guidance/runtime seed 文件位于 `content/platforms/*/guidance/`
 - prompt diff / update 逻辑位于 `mcs-core`
 
 本页仅用于兼容旧链接。

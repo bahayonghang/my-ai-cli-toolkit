@@ -1,5 +1,9 @@
 # interview-openspec
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 通过分阶段苏格拉底式访谈，创建完整的 OpenSpec artifacts。每个访谈阶段生成一个 artifact，支持增量进度和随时退出。
 
 ## 概述

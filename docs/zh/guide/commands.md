@@ -36,7 +36,7 @@ MCS 根据平台配置读取：
 
 `platforms.toml` 中的典型例子：
 
-- Codex 在 v1 不托管 commands，主要使用 guidance 与共享 skills
+- Codex 的 commands 会安装到 `prompts/`，且在当前仓库会回退到 `claude`（因为没有 `content/platforms/codex/commands/`）
 - Qwen 回退到 `claude`
 - Trae CN 复用 `trae`
 - Antigravity、Windsurf 这类 app 型平台安装到 `workflows/`

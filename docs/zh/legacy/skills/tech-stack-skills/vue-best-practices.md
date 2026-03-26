@@ -1,5 +1,9 @@
 # vue-best-practices
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 Vue 3 和 TypeScript 最佳实践指南。
 
 ## 概述

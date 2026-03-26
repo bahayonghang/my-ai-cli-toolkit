@@ -1,5 +1,9 @@
 # Paper Audit
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 统一的中英文论文审计技能，支持 `.tex`、`.typ`、`.pdf` 输入。
 
 ## 适用场景

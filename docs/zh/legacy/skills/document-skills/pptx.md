@@ -1,5 +1,9 @@
 # pptx
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 创建、读取、编辑和设计 PowerPoint 演示文稿（.pptx 文件）。
 
 ## 使用场景

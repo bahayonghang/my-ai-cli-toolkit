@@ -1,5 +1,9 @@
 # IEEE-writing-skills
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 IEEE 论文翻译、润色与验证技能。
 
 ## 概述

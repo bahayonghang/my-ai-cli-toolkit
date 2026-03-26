@@ -15,8 +15,8 @@
 `mcs-core` 把当前仓库视为 `content/` 驱动的项目：
 
 - skills：`content/skills/`
-- commands：`content/commands/`
-- prompts 辅助路径在代码里仍有封装，但当前仓库的 runtime 文件体系还包括 `content/hooks/` 和 `content/memorys/`
+- platform content：`content/platforms/<platform>/{commands,agents,guidance}/`
+- runtime support：`content/hooks/`
 
 只要向上找到 `content/skills/`，项目根检测就会成功。
 

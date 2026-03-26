@@ -1,6 +1,6 @@
 # Specialist 家族
 
-`content/agents/specialist/` 当前包含的领域专家型 agent 主要有：
+`content/platforms/claude/agents/specialist/` 当前包含的领域专家型 agent 主要有：
 
 - `code-simplifier`
 - `css`
@@ -28,5 +28,4 @@
 
 建议同时阅读：
 
-- `content/agents/CLAUDE.md`
-- `content/agents/specialist/` 下的各个 markdown 文件
+- `content/platforms/claude/agents/specialist/` 下的各个 markdown 文件

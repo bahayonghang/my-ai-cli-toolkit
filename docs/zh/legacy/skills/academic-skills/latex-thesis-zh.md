@@ -1,5 +1,9 @@
 # latex-thesis-zh
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 中文学位论文 LaTeX 助手，支持博士/硕士论文写作。
 
 ## 概述

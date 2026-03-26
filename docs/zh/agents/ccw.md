@@ -1,6 +1,6 @@
 # CCW 家族
 
-`content/agents/ccw/` 当前包含的 workflow 型 agent 主要有：
+`content/platforms/claude/agents/ccw/` 当前包含的 workflow 型 agent 主要有：
 
 - `action-planning-agent`
 - `cli-discuss-agent`
@@ -32,5 +32,4 @@
 
 建议同时阅读：
 
-- `content/agents/CLAUDE.md`
-- `content/agents/ccw/` 下的各个 markdown 文件
+- `content/platforms/claude/agents/ccw/` 下的各个 markdown 文件

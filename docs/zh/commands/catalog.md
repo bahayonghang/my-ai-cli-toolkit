@@ -1,14 +1,14 @@
 # 命令目录
 
-## `content/commands/` 中的源目录
+## `content/platforms/*/commands/` 中的源目录
 
 | 源目录 | 说明 |
 |--------|------|
-| `claude/` | 最大的一棵命令树，包含核心命令以及 `cc`、`gh`、`issue`、`kiro`、`memory`、`task`、`workflow`、`zcf` 等家族 |
-| `gemini/` | summary 命令，以及 `plan`、`zcf` 家族 |
-| `antigravity/` | workflow 风格的 summary 命令 |
-| `trae/` | summary 命令，以及 `zcf` 家族 |
-| `windsurf/` | summary workflow 命令 |
+| `content/platforms/claude/commands/` | 最大的一棵命令树，包含核心命令以及 `cc`、`gh`、`issue`、`kiro`、`memory`、`task`、`workflow`、`zcf` 等家族 |
+| `content/platforms/gemini/commands/` | summary 命令，以及 `plan`、`zcf` 家族 |
+| `content/platforms/antigravity/commands/` | workflow 风格的 summary 命令 |
+| `content/platforms/trae/commands/` | summary 命令，以及 `zcf` 家族 |
+| `content/platforms/windsurf/commands/` | summary workflow 命令 |
 
 ## 安装平台映射
 
@@ -58,5 +58,6 @@
 ## 说明
 
 - 命令目录远大于当前文档站点中那几个独立命令页。
-- 如果你需要逐文件核对，请直接查看 `content/commands/`。
+- 如果你需要逐文件核对，请直接查看 `content/platforms/*/commands/`。
 - 若要理解 MCS 如何决定 fallback 和目标路径，请查看 `platforms.toml` 与 `mcs-core/src/config/platform.rs`。
+- `codex` 命令源在当前仓库会回退到 `claude`，因为仓库中没有 `content/platforms/codex/commands/`。

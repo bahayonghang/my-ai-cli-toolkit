@@ -1,5 +1,9 @@
 # Skill Audit
 
+::: warning 历史文档
+此页仅用于历史参考与兼容旧链接；对应的 skill 已不再由本仓库的 `content/skills/` 一方目录提供。
+:::
+
 用于 skill 合规性、重叠度与 token 效率分析的审计技能。
 
 ## 适用场景

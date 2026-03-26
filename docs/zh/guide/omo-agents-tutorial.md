@@ -8,4 +8,4 @@
 - [CCW 家族](/zh/agents/ccw)
 - [Specialist 家族](/zh/agents/specialist)
 
-历史上的 `@frontend-engineer`、`@document-writer`、`@oracle` 等页面描述的是旧的 multi-agent 表面，不再对应当前的 `content/agents/` 结构。
+历史上的 `@frontend-engineer`、`@document-writer`、`@oracle` 等页面描述的是旧的 multi-agent 表面，不再对应当前的 `content/platforms/claude/agents/` 结构。
