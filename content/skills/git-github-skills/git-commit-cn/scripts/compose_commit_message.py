@@ -41,6 +41,28 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Issue number or reference to close. May be supplied multiple times.",
     )
+    parser.add_argument(
+        "--refs",
+        action="append",
+        default=[],
+        help="Issue number or reference to mention without closing. May be supplied multiple times.",
+    )
+    parser.add_argument(
+        "--footer-line",
+        action="append",
+        default=[],
+        help="Raw footer/trailer line. May be supplied multiple times.",
+    )
+    parser.add_argument(
+        "--breaking-header",
+        action="store_true",
+        help="Append ! to the commit header before the colon.",
+    )
+    parser.add_argument(
+        "--no-emoji",
+        action="store_true",
+        help="Omit the emoji prefix from the header.",
+    )
     parser.add_argument("--output", default=None, help="Write the composed message to a file instead of stdout.")
     return parser.parse_args()
 
@@ -55,7 +77,14 @@ def main() -> int:
     header = f"{args.type}"
     if args.scope:
         header += f"({args.scope})"
-    header += f": {TYPE_EMOJIS[args.type]} {summary}"
+    if args.breaking_header:
+        header += "!"
+    header += ": "
+    header_parts = []
+    if not args.no_emoji:
+        header_parts.append(TYPE_EMOJIS[args.type])
+    header_parts.append(summary)
+    header += " ".join(header_parts)
 
     lines = [header]
     body_lines = [line.strip() for line in args.body_line if line.strip()]
@@ -63,13 +92,15 @@ def main() -> int:
 
     if args.breaking:
         trailer_lines.append(f"BREAKING CHANGE: {args.breaking.strip()}")
+    trailer_lines.extend(normalize_trailer_lines(args.footer_line))
     for close_ref in args.closes:
-        close_ref = close_ref.strip()
-        if close_ref:
-            if close_ref.startswith("#"):
-                trailer_lines.append(f"Closes {close_ref}")
-            else:
-                trailer_lines.append(f"Closes #{close_ref}")
+        normalized = normalize_issue_ref(close_ref)
+        if normalized:
+            trailer_lines.append(f"Closes {normalized}")
+    for ref in args.refs:
+        normalized = normalize_issue_ref(ref)
+        if normalized:
+            trailer_lines.append(f"Refs {normalized}")
 
     if body_lines or trailer_lines:
         lines.append("")
@@ -93,6 +124,21 @@ def normalize_summary(summary: str) -> str:
     if summary.endswith(("。", ".", "!", "！")):
         summary = summary[:-1].rstrip()
     return summary
+
+
+def normalize_issue_ref(ref: str) -> str | None:
+    ref = ref.strip()
+    if not ref:
+        return None
+    if ref.startswith("#"):
+        return ref
+    if ref.isdigit():
+        return f"#{ref}"
+    return ref
+
+
+def normalize_trailer_lines(lines: list[str]) -> list[str]:
+    return [line.strip() for line in lines if line.strip()]
 
 
 if __name__ == "__main__":
