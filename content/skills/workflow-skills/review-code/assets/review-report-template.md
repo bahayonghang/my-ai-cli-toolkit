@@ -1,62 +1,66 @@
 # Review Report Template
 
-审查报告模板。
+Use this template as a structure reference. Localize headings, summaries, and severity labels to the user's language instead of copying the wording literally.
+
+- In Chinese mode, prefer `[必须修复] / [建议修改] / [仅供参考] / [问题]`.
+- In English mode, prefer `Must Fix / Should Fix / Nice to Have / Question`.
+- Findings come before the closing summary.
 
 ## Template Structure
 
 ```markdown
 # Code Review Report
 
-## 审查概览
+## Review Overview
 
-| 项目 | 值 |
+| Field | Value |
 |------|------|
-| 目标路径 | `{{target_path}}` |
-| 文件数量 | {{file_count}} |
-| 代码行数 | {{total_lines}} |
-| 主要语言 | {{language}} |
-| 框架 | {{framework}} |
-| 审查时间 | {{review_duration}} |
+| Target Path | `{{target_path}}` |
+| File Count | {{file_count}} |
+| Total Lines | {{total_lines}} |
+| Primary Language | {{language}} |
+| Framework | {{framework}} |
+| Review Duration | {{review_duration}} |
 
-## 问题统计
+## Issue Summary
 
-| 严重程度 | 数量 |
+| Severity | Count |
 |----------|------|
 | 🔴 Critical | {{critical_count}} |
 | 🟠 High | {{high_count}} |
 | 🟡 Medium | {{medium_count}} |
 | 🔵 Low | {{low_count}} |
 | ⚪ Info | {{info_count}} |
-| **总计** | **{{total_issues}}** |
+| **Total** | **{{total_issues}}** |
 
-### 按维度统计
+### Dimension Breakdown
 
-| 维度 | 问题数 |
+| Dimension | Count |
 |------|--------|
-| Correctness (正确性) | {{correctness_count}} |
-| Security (安全性) | {{security_count}} |
-| Performance (性能) | {{performance_count}} |
-| Readability (可读性) | {{readability_count}} |
-| Testing (测试) | {{testing_count}} |
-| Architecture (架构) | {{architecture_count}} |
+| Correctness | {{correctness_count}} |
+| Security | {{security_count}} |
+| Performance | {{performance_count}} |
+| Readability | {{readability_count}} |
+| Testing | {{testing_count}} |
+| Architecture | {{architecture_count}} |
 
 ---
 
-## 高风险区域
+## High-Risk Areas
 
 {{#if risk_areas}}
-| 文件 | 原因 | 优先级 |
+| File | Why It Is Risky | Priority |
 |------|------|--------|
 {{#each risk_areas}}
 | `{{this.file}}` | {{this.reason}} | {{this.priority}} |
 {{/each}}
 {{else}}
-未发现明显的高风险区域。
+No obvious high-risk areas were identified.
 {{/if}}
 
 ---
 
-## 问题详情
+## Findings
 
 {{#each dimensions}}
 ### {{this.name}}
@@ -64,21 +68,21 @@
 {{#each this.findings}}
 #### {{severity_emoji this.severity}} [{{this.id}}] {{this.category}}
 
-- **严重程度**: {{this.severity}}
-- **文件**: `{{this.file}}`{{#if this.line}}:{{this.line}}{{/if}}
-- **描述**: {{this.description}}
+- **Severity**: {{this.severity}}
+- **File**: `{{this.file}}`{{#if this.line}}:{{this.line}}{{/if}}
+- **Description**: {{this.description}}
 
 {{#if this.code_snippet}}
-```
+```{{this.language}}
 {{this.code_snippet}}
 ```
 {{/if}}
 
-**建议**: {{this.recommendation}}
+**Recommendation**: {{this.recommendation}}
 
 {{#if this.fix_example}}
-**修复示例**:
-```
+**Fix Example**:
+```{{this.language}}
 {{this.fix_example}}
 ```
 {{/if}}
@@ -88,23 +92,23 @@
 {{/each}}
 {{/each}}
 
-## 审查建议
+## Closing Summary
 
-### 必须修复 (Must Fix)
+### Must Fix
 
 {{must_fix_summary}}
 
-### 建议改进 (Should Fix)
+### Should Fix
 
 {{should_fix_summary}}
 
-### 可选优化 (Nice to Have)
+### Nice to Have
 
 {{nice_to_have_summary}}
 
 ---
 
-*报告生成时间: {{generated_at}}*
+*Generated At: {{generated_at}}*
 ```
 
 ## Variable Definitions
@@ -144,18 +148,7 @@ function severity_emoji(severity) {
 function formatDuration(ms) {
   const minutes = Math.floor(ms / 60000);
   const seconds = Math.floor((ms % 60000) / 1000);
-  return `${minutes}分${seconds}秒`;
-}
-
-function generateMustFixSummary(findings) {
-  const critical = findings.filter(f => f.severity === 'critical');
-  const high = findings.filter(f => f.severity === 'high');
-  
-  if (critical.length + high.length === 0) {
-    return '未发现必须立即修复的问题。';
-  }
-  
-  return `发现 ${critical.length} 个严重问题和 ${high.length} 个高优先级问题，建议在合并前修复。`;
+  return `${minutes}m ${seconds}s`;
 }
 ```
 
