@@ -1,46 +1,59 @@
 ---
 name: excalidraw
 description: >-
-  Generate hand-drawn style diagrams as Excalidraw JSON (.excalidraw.json).
-  Use when user wants visual diagrams, architecture diagrams, flowcharts,
-  sequence diagrams, system design visuals, or mentions Excalidraw.
-  Also use when the user needs an editable diagram file rather than
-  text-based markup. Trigger even for general "draw me a diagram" requests
-  when a hand-drawn or editable file format is appropriate.
-version: 1.0.0
+  Create editable Excalidraw diagrams for architecture views, flowcharts,
+  sequence flows, dependency maps, and other visuals that need a freeform
+  canvas instead of text-only markup. Use when the user wants an Excalidraw
+  file, an editable diagram, a whiteboard or sketch, or a spatial visual for
+  a system with 3+ components or a multi-step flow. Prefer this over Mermaid
+  when layout freedom or post-editing matters. Do not trigger for simple
+  lists, quick explanations, or documentation-native Mermaid requests.
+version: 1.1.0
 argument-hint: [diagram-description]
-allowed-tools: Read, Write, Bash(python *), Glob, Grep
-category: visual-design
+allowed-tools: Read, Write, Glob, Grep, Bash(curl *, excalidraw-brute-export-cli *, python *)
+category: visualization
 tags:
   - diagram
-  - flowchart
-  - architecture
   - excalidraw
-  - hand-drawn
+  - architecture
+  - flowchart
+  - sequence-diagram
+  - editable
 ---
 
-Generate an Excalidraw JSON diagram based on `$ARGUMENTS`.
+Generate an Excalidraw diagram from `$ARGUMENTS`.
 
-## Steps
+## Workflow
 
-1. Read `$SKILL_DIR/references/EXCALIDRAW_GUIDE.md` for component structures, layout rules, and patterns.
-2. Analyze the arrow paths based on `$ARGUMENTS` and identify crossing risks (e.g., return arrows).
-3. Choose an appropriate layout strategy based on crossings: horizontal/vertical for none, bypass paths for 1-2, 2D layout (grid, diamond) for 3+.
-4. Generate the JSON diagram following the required structural templates.
-5. Enforce arrow binding bidirectionally by ensuring `startBinding` and `endBinding` on arrows, and `boundElements` on source/target rectangles.
-6. Set `width` and `height` for all text elements to ensure rendering.
-7. Ensure background regions fully cover all contained elements with 40px padding.
-8. Enforce proper sibling layout horizontally; use fork arrows for child elements to reflect parallel paths.
-9. Verify no arrow passes through unrelated components and no label overlaps. Adjust spacing or routing if violations occur.
-10. Save the JSON file as `<descriptive-name>.excalidraw.json` in the active directory.
-11. Instruct the user to drag the file into https://excalidraw.com/ or open with the VS Code Excalidraw extension.
+1. Read `$SKILL_DIR/references/EXCALIDRAW_GUIDE.md` before doing layout work. For complex diagrams or exports, use the relevant sections instead of improvising structure.
+2. Classify the request: architecture, flowchart, sequence, hub-and-spoke, hierarchy, ER-style, swimlane, or freeform concept map.
+3. Choose a style mode:
+   - `professional` by default for architecture, systems, APIs, workflows, and most technical diagrams
+   - `sketch` only when the user explicitly asks for a whiteboard, brainstorm, rough draft, or hand-drawn look
+4. Perform arrow-path analysis before placing components. If return arrows or non-adjacent connections would cross intermediate nodes, switch to a bypass path or 2D layout.
+5. Generate the JSON with descriptive IDs, explicit text sizing and colors, bidirectional bindings, and containers that fully cover grouped children.
+6. Save the result as `<descriptive-name>.excalidraw.json` in the active directory.
+7. If the user asked for PNG or SVG, or a rendered preview would materially help, try an export:
+   - SVG via Kroki when `curl` is available
+   - PNG or SVG via `excalidraw-brute-export-cli` when the local CLI is available
+   - If export tooling is unavailable, still deliver the JSON and explain what was missing
+8. Return the created file paths, chosen diagram type, chosen style mode, and export status.
 
-## Output
+## Rules
 
-A valid `.excalidraw.json` file.
+- `.excalidraw.json` is the required deliverable. Rendered exports are optional enhancements.
+- Use the professional palette, typography, and spacing defaults from the guide unless the request explicitly calls for a sketch or workshop feel.
+- Arrows and contained text must be bound bidirectionally.
+- Set `width`, `height`, and `strokeColor` on every text element.
+- External arrows target the outer container for grouped structures, not the internal steps.
+- Siblings that represent parallel branches stay on the same row.
+- For 10+ elements, plan sections first and then write the file.
+- Prefer concise delivery. Do not dump large JSON blobs in chat when a file output is the real artifact.
+- Do not use this skill when Mermaid is explicitly requested for Markdown or docs, or when a simple explanation is clearer than a diagram.
 
-## Error Handling & Troubleshooting
+## Troubleshooting
 
-- If arrows fail to snap to components, check that BOTH `startBinding`/`endBinding` and `boundElements` are configured properly.
-- If text is missing or garbled, verify that `width`, `height`, and `fontFamily: 4` are set.
-- If crossing logic fails, switch to a more spacious 2D layout rather than using complex crisscross connections.
+- Missing text: check `width`, `height`, `strokeColor`, and the selected font.
+- Arrows not snapping: verify both arrow bindings and shape `boundElements`.
+- Spaghetti layout: widen spacing, route return arrows around the perimeter, or switch to a 2D layout.
+- Export failure: keep the JSON output, report the failed tool or command, and tell the user how to open the file manually.

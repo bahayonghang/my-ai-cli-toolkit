@@ -1,17 +1,186 @@
 # Excalidraw Reference Guide
 
+Use this guide when authoring or reviewing `.excalidraw.json` files for this skill.
+
+## Output Contract
+
+- Required artifact: `<descriptive-name>.excalidraw.json`
+- Optional artifacts:
+  - `.svg` via Kroki and `curl`
+  - `.png` or `.svg` via `excalidraw-brute-export-cli`
+- PDF is not supported by this skill
+- If rendering fails, keep the JSON output and report the failure instead of treating the whole task as blocked
+
+## When Excalidraw Is the Right Tool
+
+Use Excalidraw when the user needs:
+- an editable diagram file
+- a freeform spatial layout that would feel cramped in Mermaid
+- a canvas or whiteboard style diagram
+- a system or process with 3+ components, groups, or feedback arrows
+
+Prefer Mermaid when the user explicitly wants Markdown-native diagram syntax, a README example, or a small doc-friendly chart with little need for post-editing.
+
+## Style Modes
+
+| Mode | Use when | Defaults |
+|------|----------|----------|
+| Professional | Architecture, APIs, process flows, technical explainers | `roughness: 0`, `fontFamily: 2`, `fillStyle: "solid"` |
+| Sketch | Whiteboard, brainstorm, workshop, rough draft | `roughness: 1`, `fontFamily: 1`, `fillStyle: "solid"` |
+| Code accent | Code snippets or file paths inside labels | `fontFamily: 3` for the relevant text only |
+| Handwritten accent | Explicit playful or comic labeling | `fontFamily: 4` only when the request clearly wants it |
+
+Do not mix professional and sketch styles casually. Pick one primary style per diagram.
+
 ## Supported Diagram Types
 
 - **Flowchart** — process flows, decision trees, pipelines
 - **Sequence diagram** — multi-phase message flows between participants
-- **Architecture diagram** — system components, microservices, layers
-- **Hub-and-spoke** — central component connecting to multiple peers
+- **Architecture diagram** — services, layers, clients, storage, external systems
+- **Hub-and-spoke** — central component with many peers
 - **ER-style / relationship** — entities with labeled connections
-- **Tree / hierarchy** — org charts, category breakdowns, file structures
+- **Tree / hierarchy** — org charts, file trees, topic breakdowns
+- **Swimlane** — cross-team or cross-role workflows
+- **Concept map** — freeform relationships that need a spatial canvas
 
-## Core Elements
+## Mandatory Planning Workflow
+
+### 1. Determine the diagram type
+
+Classify the request before placing anything. The layout strategy depends on the diagram type.
+
+### 2. List all nodes and arrows
+
+Write the connections first:
+
+```text
+Arrow 1: API Gateway -> Auth Service
+Arrow 2: Auth Service -> User DB
+Arrow 3: Auth Service -> API Gateway (response)
+```
+
+### 3. Identify crossing risks
+
+For each arrow, ask: "Would a straight path from source to target pass through another component?"
+
+Common danger signs:
+- return arrows in a single horizontal row
+- non-adjacent bidirectional connections
+- hub-and-spoke layouts with spokes in a line
+- nested containers that are too close to the next target
+
+### 4. Choose the layout strategy
+
+- No crossing risk: simple left-to-right or top-to-bottom layout
+- 1-2 crossing risks: keep the main layout and use bypass paths
+- 3+ crossing risks or many feedback loops: switch to a 2D layout such as triangle, diamond, grid, or split rows
+
+### 5. Plan sections for large diagrams
+
+For diagrams with 10+ elements:
+- plan sections first
+- namespace element IDs and seeds by section
+- add elements in batches instead of improvising the whole canvas at once
+
+## Layout Rules
+
+- Align `x` and `y` coordinates to multiples of 20
+- Standard component size: `160x60` minimum for single-line labels
+- Minimum gap between unrelated elements: `40px`
+- Container or background padding: `50-60px`
+- Container opacity: `25-40`
+- Render order matters: background regions appear earlier in the `elements` array
+
+### Spacing Reference
+
+| Scenario | Spacing |
+|----------|---------|
+| Labeled arrow gap | `150-200px` |
+| Unlabeled arrow gap | `100-120px` |
+| Column spacing with labeled arrows | `400px` |
+| Column spacing with unlabeled arrows | `340px` |
+| Row spacing | `280-350px` |
+| Container padding | `50-60px` |
+
+### Hierarchy Rules
+
+- External arrows target the outer container for grouped structures, not the inner steps
+- Siblings that represent parallel or alternative paths stay on the same row
+- Nested structures need extra vertical room so arrows can connect to edges without cutting through boxes
+- Reference notes such as file paths or line numbers should sit outside the main box, not inside the core label area
+
+### Return Arrow Strategies
+
+**3 components with a return arrow (`A -> B -> C`, `C -> A`)**
+- Prefer a triangle layout
+- Or keep the row and route the return arrow above or below everything else
+
+**4 components with a return arrow (`A -> B -> C -> D`, `D -> A`)**
+- Prefer a diamond or 2x2 grid
+- Or use a perimeter bypass path
+
+**4+ components with return arrows**
+- Put the forward flow on the top row and return flow on the bottom row
+- Or route return arrows around the perimeter rather than through the middle
+
+**Hub-and-spoke**
+- Put the hub near the center
+- Spread spokes around it radially
+- Avoid placing spokes in a straight line with the hub in the middle
+
+## Visual System
+
+Follow the 60-30-10 rule: mostly neutral space, a smaller set of primary accents, and only a little highlight color.
+
+### Semantic Palette
+
+| Category | Fill | Stroke | Use for |
+|----------|------|--------|---------|
+| Primary / Input | `#dbeafe` | `#1e40af` | Entry points, APIs, user-facing surfaces |
+| Success / Data | `#dcfce7` | `#166534` | Data stores, success states |
+| Warning / Decision | `#fef9c3` | `#854d0e` | Decisions, conditions |
+| Error / Critical | `#fee2e2` | `#991b1b` | Errors, alerts, critical paths |
+| External / Storage | `#f3e8ff` | `#6b21a8` | External services, storage, third parties |
+| Process / Default | `#e0f2fe` | `#0369a1` | Standard process steps |
+| Trigger / Start | `#fed7aa` | `#c2410c` | Start nodes, triggers, events |
+| Neutral / Container | `#f1f5f9` | `#475569` | Groups, swimlanes, backgrounds |
+
+### Text Colors
+
+| Level | Color |
+|-------|-------|
+| Title | `#1e293b` |
+| Label | `#334155` |
+| Description | `#64748b` |
+
+### Font Size Hierarchy
+
+| Level | Size | Use for |
+|-------|------|---------|
+| Title | `28px` | Diagram title |
+| Section header | `24px` | Group or phase header |
+| Label | `20px` | Main element labels |
+| Description | `16px` | Secondary text |
+| Note | `14px` | Annotations and helper text |
+
+### Arrow Semantics
+
+| Style | Meaning |
+|-------|---------|
+| Solid | Primary flow |
+| Dashed | Response, async, callback |
+| Dotted | Optional, weak dependency, reference |
+
+### Stroke Width Guidance
+
+- `1` for containers or secondary lines
+- `2` for normal components and main arrows
+- `4` for emphasis only
+
+## JSON Structure
 
 ### Base Template
+
 ```json
 {
   "type": "excalidraw",
@@ -23,177 +192,190 @@
 }
 ```
 
-### Element Templates
+### Element Types
 
-**Rectangle (Component Box)**
+| Type | Use for |
+|------|---------|
+| `rectangle` | Components, containers, steps |
+| `ellipse` | Start or end nodes |
+| `diamond` | Decisions |
+| `arrow` | Directed connections |
+| `line` | Undirected links |
+| `text` | Labels, notes, free-standing headings |
+
+### Sizing Rules
+
+Calculate width from label length to avoid truncation:
+
+- Latin text: `max(160, charCount * 9)`
+- CJK text: `max(160, charCount * 18)`
+- Mixed text: estimate per character type and sum
+
+Height:
+- `60` for single-line labels
+- add `24` for each extra line
+
+### Rectangle Template
+
 ```json
 {
-  "id": "unique-id",
+  "id": "api_gateway",
   "type": "rectangle",
-  "x": 100, "y": 100,
-  "width": 140, "height": 60,
-  "strokeColor": "#1e1e1e",
-  "backgroundColor": "#a5d8ff",
+  "x": 100,
+  "y": 100,
+  "width": 180,
+  "height": 60,
+  "strokeColor": "#1e40af",
+  "backgroundColor": "#dbeafe",
+  "fillStyle": "solid",
+  "strokeWidth": 2,
+  "roughness": 0,
   "roundness": { "type": 3 },
-  "boundElements": [{"id": "arrow-id", "type": "arrow"}]
+  "opacity": 100,
+  "seed": 100001,
+  "boundElements": [
+    { "id": "arrow_gateway_to_auth", "type": "arrow" },
+    { "id": "label_api_gateway", "type": "text" }
+  ]
 }
 ```
 
-**Text** (width/height required, fontFamily: 4 required)
+### Text Template
+
 ```json
 {
-  "id": "unique-id",
+  "id": "label_api_gateway",
   "type": "text",
-  "x": 120, "y": 120,
-  "width": 80, "height": 24,
-  "text": "Label",
-  "fontSize": 16,
-  "fontFamily": 4,
-  "textAlign": "center"
+  "text": "API Gateway",
+  "x": 120,
+  "y": 118,
+  "width": 140,
+  "height": 24,
+  "fontSize": 20,
+  "fontFamily": 2,
+  "textAlign": "center",
+  "verticalAlign": "middle",
+  "strokeColor": "#334155",
+  "containerId": "api_gateway"
 }
 ```
 
-Text centering formula (to center text inside a rectangle):
-- `text.x = rect.x + (rect.width - text.width) / 2`
-- `text.y = rect.y + (rect.height - text.height) / 2`
+Always set `width`, `height`, and `strokeColor` on text. Text `strokeColor` is the visible text color.
 
-**Arrow**
+### Arrow Template
+
 ```json
 {
-  "id": "unique-id",
+  "id": "arrow_gateway_to_auth",
   "type": "arrow",
-  "x": 240, "y": 130,
-  "points": [[0, 0], [100, 0]],
-  "startBinding": { "elementId": "source-id", "focus": 0, "gap": 5 },
-  "endBinding": { "elementId": "target-id", "focus": 0, "gap": 5 },
+  "x": 285,
+  "y": 130,
+  "points": [[0, 0], [115, 0]],
+  "strokeWidth": 2,
+  "roughness": 0,
+  "startBinding": { "elementId": "api_gateway", "focus": 0, "gap": 5 },
+  "endBinding": { "elementId": "auth_service", "focus": 0, "gap": 5 },
   "endArrowhead": "arrow"
 }
 ```
 
-Arrow coordinate system:
-- `x`, `y`: absolute position of arrow start point
-- `points`: relative offsets from (x, y). First point is always [0, 0]
-- Example: `x: 100, y: 200, points: [[0,0], [50, 0], [50, 100]]` draws L-shaped arrow starting at (100, 200)
+`points` are relative to the arrow origin. The first point is always `[0, 0]`.
 
-**Background Region** - Use rectangle with `"opacity": 30`
+### Field Rules
 
-### Default Values (can be omitted)
-```json
-"fillStyle": "solid", "strokeWidth": 2, "roughness": 1,
-"opacity": 100, "angle": 0, "seed": 1, "version": 1
+- Use descriptive string IDs, not random hashes
+- Use unique positive integer `seed` values
+- Use `boundElements: null` when there are no bound elements
+- Use `updated: 1` when you need the field
+- Do not include `frameId`, `index`, `versionNonce`, or `rawText`
+
+### Binding Rules
+
+- Arrows need `startBinding` and `endBinding`
+- Shapes referenced by arrows need those arrow IDs in `boundElements`
+- Contained text needs `containerId`
+- Shapes that contain text should list that text in `boundElements`
+
+### Container Rules
+
+- Use background or group rectangles with reduced opacity for zones and swimlanes
+- Do not bind the zone title text to the zone rectangle
+- Zone titles should be free-standing text near the top-left of the zone
+- Containers must fully cover all children with padding
+
+Bounding box formula:
+- `width = (maxX + maxWidth) - minX + 2 * padding`
+- `height = (maxY + maxHeight) - minY + 2 * padding`
+
+## Diagram Pattern Notes
+
+### Flowchart
+
+- Use ellipse for start/end
+- Use diamond for decisions
+- Use left-to-right unless a top-to-bottom layout is clearly easier to read
+
+### Architecture Diagram
+
+- Entry points on the left or top
+- Processing/services in the middle
+- Data stores and external systems on the right or bottom
+- Group related services in neutral containers
+
+### Sequence Diagram
+
+- Participants across the top
+- Duplicate participants by phase for multi-phase flows instead of drawing one huge diagram with long lifelines
+- Use solid arrows for requests and dashed arrows for responses
+
+### Swimlane
+
+- Use large neutral rectangles with reduced opacity as lanes
+- Put lane labels as free-standing text near the top-left
+- Keep most flow within lanes and route cross-lane handoffs cleanly
+
+## Export
+
+### Option A: Kroki (`curl`) for SVG
+
+```bash
+curl -s -X POST https://kroki.io/excalidraw/svg \
+  -H "Content-Type: application/json" \
+  --data-binary "@diagram.excalidraw.json" \
+  -o diagram.svg
 ```
 
-## Color System
+### Option B: Local CLI for PNG or SVG
 
-| Purpose | Background | Stroke |
-|---------|------------|--------|
-| Primary / Phase 1 | `#a5d8ff` | `#1971c2` |
-| Secondary / Phase 2 | `#b2f2bb` | `#2f9e44` |
-| Accent / Shared | `#fff3bf` | `#e67700` |
-| Storage / State | `#d0bfff` | `#7048e8` |
-
-## Layout Rules
-
-- Align coordinates to multiples of 20
-- Component spacing: 100-150px
-- Standard component size: `140×60`
-- Background regions: `opacity: 30`
-- Render order: earlier elements in array appear behind
-
-## Common Diagram Patterns
-
-### Sequence Diagram Layout
-For sequence diagrams (multiple participants with message flows):
-- Place participants horizontally at top (y = 100)
-- Each phase/stage gets its own vertical section below
-- Use background regions to separate phases
-- Vertical lifelines are implicit (not drawn as elements)
-- Messages flow left-to-right or right-to-left between participants
-
-Layout strategy:
-```
-Phase 1 (y: 80-300):   [A] -----> [B] -----> [C]
-                            msg1       msg2
-                       [A] <----- [B]
-                            response
-
-Phase 2 (y: 320-500):  [A'] ----> [B'] ----> [C']
-                       (duplicate participants at new y)
+```bash
+excalidraw-brute-export-cli -i diagram.excalidraw.json -o diagram.png -f png -s 2
+excalidraw-brute-export-cli -i diagram.excalidraw.json -o diagram.svg -f svg -s 1
 ```
 
-Key insight: For multi-phase sequence diagrams, duplicate participant boxes in each phase rather than drawing long vertical lifelines. This avoids arrow crossing issues.
+If the CLI is missing, install:
 
-## Layout Optimization (Avoiding Overlaps)
-
-### Prevent Arrow Overlap
-When multiple arrows connect to the same component:
-- Use `focus` parameter to offset arrow positions on component edge
-- `focus: -0.5` = upper half, `focus: 0.5` = lower half, `focus: 0` = center
-- Example: two horizontal arrows can use `focus: -0.5` and `focus: 0.5` to separate vertically
-
-### Prevent Arrows Crossing Components
-When arrows would cross unrelated components, restructure the layout:
-
-**3 components with return arrow (A→B→C, C→A)**:
-- Triangle layout: A at top, B bottom-left, C bottom-right
-- All arrows flow along triangle edges, no crossings
-
-**4 components with return arrow (A→B→C→D, D→A)**:
-- Diamond layout: A at top, B left, C bottom, D right
-- Or 2×2 grid with diagonal return arrow
-- Or use bypass path for return arrow (route above/below the row)
-
-**4+ components in sequence with return arrows**:
-- Split into rows: forward flow on top row, return flow on bottom row
-- Or use vertical bypass: return arrows route above/below all components
-  ```json
-  "points": [[0, 0], [0, -80], [-400, -80], [-400, 0]]
-  ```
-
-**Hub-and-spoke (central component connects to many)**:
-- Place hub in center, spokes radially around it
-- Avoid placing spokes in a line with hub in middle
-
-**Default assumption**: If there's a return arrow, horizontal layout will likely fail—plan for bypass or 2D layout upfront.
-
-## Complete Example
-
-**Flow with Return Arrow (using bypass path)**
-A → B → C, then C → A (return arrow routes above to avoid crossing B)
-
-Arrow analysis:
-- Arrow 1: A → B (horizontal) ✓
-- Arrow 2: B → C (horizontal) ✓
-- Arrow 3: C → A (return) ⚠️ Would cross B → use bypass path above
-
-```json
-{
-  "type": "excalidraw",
-  "version": 2,
-  "source": "https://excalidraw.com",
-  "elements": [
-    {"id": "a", "type": "rectangle", "x": 100, "y": 150, "width": 140, "height": 60, "backgroundColor": "#a5d8ff", "strokeColor": "#1971c2", "roundness": {"type": 3}, "boundElements": [{"id": "arr1", "type": "arrow"}, {"id": "arr3", "type": "arrow"}]},
-    {"id": "a-label", "type": "text", "x": 155, "y": 168, "width": 30, "height": 24, "text": "A", "fontSize": 16, "fontFamily": 4, "textAlign": "center"},
-    {"id": "b", "type": "rectangle", "x": 340, "y": 150, "width": 140, "height": 60, "backgroundColor": "#b2f2bb", "strokeColor": "#2f9e44", "roundness": {"type": 3}, "boundElements": [{"id": "arr1", "type": "arrow"}, {"id": "arr2", "type": "arrow"}]},
-    {"id": "b-label", "type": "text", "x": 395, "y": 168, "width": 30, "height": 24, "text": "B", "fontSize": 16, "fontFamily": 4, "textAlign": "center"},
-    {"id": "c", "type": "rectangle", "x": 580, "y": 150, "width": 140, "height": 60, "backgroundColor": "#d0bfff", "strokeColor": "#7048e8", "roundness": {"type": 3}, "boundElements": [{"id": "arr2", "type": "arrow"}, {"id": "arr3", "type": "arrow"}]},
-    {"id": "c-label", "type": "text", "x": 635, "y": 168, "width": 30, "height": 24, "text": "C", "fontSize": 16, "fontFamily": 4, "textAlign": "center"},
-    {"id": "arr1", "type": "arrow", "x": 245, "y": 180, "points": [[0, 0], [90, 0]], "endArrowhead": "arrow", "startBinding": {"elementId": "a", "focus": 0, "gap": 5}, "endBinding": {"elementId": "b", "focus": 0, "gap": 5}},
-    {"id": "arr2", "type": "arrow", "x": 485, "y": 180, "points": [[0, 0], [90, 0]], "endArrowhead": "arrow", "startBinding": {"elementId": "b", "focus": 0, "gap": 5}, "endBinding": {"elementId": "c", "focus": 0, "gap": 5}},
-    {"id": "arr3", "type": "arrow", "x": 650, "y": 145, "points": [[0, 0], [0, -60], [-480, -60], [-480, 0]], "endArrowhead": "arrow", "strokeStyle": "dashed", "startBinding": {"elementId": "c", "focus": 0, "gap": 5}, "endBinding": {"elementId": "a", "focus": 0, "gap": 5}},
-    {"id": "arr3-label", "type": "text", "x": 380, "y": 60, "width": 60, "height": 20, "text": "return", "fontSize": 12, "fontFamily": 4, "textAlign": "center"}
-  ],
-  "appState": {"viewBackgroundColor": "#ffffff"},
-  "files": {}
-}
+```bash
+npm install -g excalidraw-brute-export-cli
+npx playwright install firefox
 ```
 
-## Notes
+## Anti-Patterns
 
-- IDs must be unique across the file
-- `fontFamily`: 1=Virgil, 2=Helvetica, 3=Cascadia, 4=Comic Shanns (MUST use for hand-drawn style)
-- `strokeWidth` usage in software diagrams:
-  - `1` (thin): background regions, container borders, secondary connections
-  - `2` (normal/default): primary components, main flow arrows
-  - `4` (bold): emphasis, critical paths, highlighted elements
-- Dashed arrows: add `"strokeStyle": "dashed"`
+- Do not put the zone title text inside a large background rectangle
+- Do not let arrows pass through unrelated components if a bypass or 2D layout would fix it
+- Do not connect external arrows to an internal step when the outer container is the real target
+- Do not stack sibling branches vertically when they represent parallel paths
+- Do not omit `strokeColor` on text
+- Do not invent arbitrary colors unless the user explicitly wants a custom palette
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Text is invisible | Set `strokeColor` to a dark text color |
+| Text is truncated | Use the width formula and a taller box for multi-line text |
+| Arrows do not snap | Add both bindings on the arrow and `boundElements` on the shapes |
+| Background overlaps content | Use a free-standing zone title and a larger padded container |
+| Export fails | Keep the JSON, report the missing command or dependency, and tell the user how to open the file manually |
+| Diagram looks cramped | Increase spacing or switch to a 2D layout |
+| Return arrows create spaghetti | Route them around the perimeter or restructure the layout |
