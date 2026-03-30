@@ -96,3 +96,12 @@ stars = 5
 usage = "安装后使用 firecrawl/cli 进行网页爬取、搜索与数据提取"
 tags = ["scraping", "crawler", "data-extraction"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "firecrawl/cli" }
+
+[[skills]]
+id = "web-access"
+name = "web-access"
+description = "强大的 Agent Web 访问能力扩展（支持基础爬虫、CDP 浏览器控制及并行页面处理）"
+stars = 5
+usage = "提供三层访问策略（Lightweight/CDP/并列执行），安装后让 Agent 拥有登录态操作及动态交互能力"
+tags = ["browser", "web", "scraping", "automation"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "eze-is/web-access" }
