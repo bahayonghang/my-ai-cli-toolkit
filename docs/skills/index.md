@@ -15,10 +15,10 @@ This section tracks the installable catalog under `content/skills/`.
 | `media-skills` | article covers and media download |
 | `skill-meta-skills` | MCP-to-skill conversion and skill catalog mapping |
 | `tech-stack-skills` | Slint, LSP, Rust CLI/TUI, and uv |
-| `workflow-skills` | planning, architecture improvement, memory, review, and web access |
+| `workflow-skills` | planning, architecture improvement, memory, and code auditing |
 
 ## Notes
 
 - The docs catalog covers the installable skill directories that currently exist under `content/skills/`.
 - Skill pages describe the skill surface and major support assets, not every vendored reference file contained inside a skill directory.
-- Historical pages that no longer map to a live skill are archived under `docs/legacy/skills/` and excluded from the main catalog.
+- The docs catalog only covers live installable skills that still exist under `content/skills/`.

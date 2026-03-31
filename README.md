@@ -123,6 +123,8 @@ The VitePress site in `docs/` covers:
 
 For the Codex CLI skill specifically, see `docs/skills/ai-llm-skills/codex.md` and `docs/zh/skills/ai-llm-skills/codex.md`. Those pages track the current Codex CLI syntax and now document the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
 
+For structured code review and audit workflows, see `docs/skills/workflow-skills/code-auditor.md` and `docs/zh/skills/workflow-skills/code-auditor.md`. Those pages document the renamed `code-auditor` skill, including language-adaptive reporting and severity-based findings.
+
 ## License
 
 MIT

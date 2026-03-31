@@ -177,8 +177,6 @@ def main() -> int:
     issues.extend(forbidden_doc_reference_checks())
     issues.extend(compare_i18n_section("commands"))
     issues.extend(compare_i18n_section("agents"))
-    issues.extend(compare_i18n_section("legacy"))
-
     if issues:
         print("Documentation audit failed:\n")
         for issue in issues:

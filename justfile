@@ -120,7 +120,7 @@ docs-preview:
 
 # 运行文档审计（skills 同步 + stale references）
 docs-audit:
-    python3 {{ docs_dir }}/scripts/audit_sync.py
+    {{ node_cmd }} {{ docs_dir }}/scripts/run-python.mjs {{ docs_dir }}/scripts/audit_sync.py
 
 # 一键启动文档开发
 docs: docs-install docs-dev

@@ -123,6 +123,8 @@ just mcs-web-test
 
 其中 Codex CLI skill 的说明见 `docs/skills/ai-llm-skills/codex.md` 与 `docs/zh/skills/ai-llm-skills/codex.md`。这两页会同步维护当前 Codex CLI 写法，并已更新为默认模型 `gpt-5.4` 以及推荐的 `codex exec` 与实时网络搜索用法。
 
+如果要查看结构化代码审计与 review 工作流，请参见 `docs/skills/workflow-skills/code-auditor.md` 与 `docs/zh/skills/workflow-skills/code-auditor.md`。这两页对应已经改名后的 `code-auditor` skill，包含语言自适应输出和按严重级别组织 findings 的说明。
+
 ## License
 
 MIT
