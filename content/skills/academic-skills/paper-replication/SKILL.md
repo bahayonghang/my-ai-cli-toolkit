@@ -1,14 +1,11 @@
 ---
 name: paper-replication
-description: "深度学习论文复现技能。将学术论文中的模型架构转化为工业级 PyTorch 代码，包含论文解构、架构可视化(Mermaid)、代码实现和模块文档生成。当用户提供深度学习论文(PDF/文本)需要复现、实现模型、理解网络架构时使用。触发场景：帮我复现这篇论文、论文复现、实现这个模型、replicate this paper、reproduce this paper、implement this architecture、把论文里的网络写成代码。即使用户没有明确说复现，只要提供了深度学习论文并希望得到代码实现，也应触发此技能。"
+description: "Deep learning paper replication skill. Transforms model architectures from academic papers into production-grade PyTorch code, including paper deconstruction, architecture visualization (Mermaid), code implementation, and module documentation generation. Use when the user provides a deep learning paper (PDF/text) and wants to replicate it, implement the model, or understand the network architecture. Trigger on: replicate this paper, reproduce this paper, implement this architecture, convert paper network to code, or when a deep learning paper is provided with a request for code implementation."
 version: "1.0.0"
 argument-hint: [paper-pdf-or-text]
-allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 category: academic-skills
 tags: [paper, deep-learning, pytorch, replication, research, model-implementation, transformer, cnn]
-metadata:
-  category: academic-skills
-  tags: [paper, deep-learning, pytorch, replication, research, model-implementation, transformer, cnn]
 ---
 
 # Deep Learning Paper Replication Skill

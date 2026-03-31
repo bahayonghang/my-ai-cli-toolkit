@@ -1,18 +1,11 @@
 ---
 name: gemini
-description: >-
-  Execute Gemini CLI for code generation, review, analysis, and web research.
-  Use when tasks need a second AI perspective, Google Search grounding, codebase
-  architecture analysis, or current web information. Trigger whenever the user
-  mentions gemini, asks for Google Search results, needs real-time web data,
-  wants codebase investigation, or requests a different AI's opinion on code.
+description: "Execute Gemini CLI for code generation, review, analysis, and web research. Use when tasks need a second AI perspective, Google Search grounding, codebase architecture analysis, or current web information. Trigger whenever the user mentions gemini, asks for Google Search results, needs real-time web data, wants codebase investigation, or requests a different AI's opinion on code."
 version: 1.1.1
 category: development-tools
 tags: [cli, gemini, code-generation, web-search, google, code-review]
 argument-hint: [task-description]
-allowed-tools:
-  - Bash(gemini *)
-  - Read
+allowed-tools: Bash(gemini *), Read
 ---
 
 Run Gemini CLI for `$ARGUMENTS`.

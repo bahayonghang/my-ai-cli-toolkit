@@ -1,27 +1,11 @@
 ---
 name: codex
-description: >-
-  OpenAI Codex CLI wrapper — five modes: `codex review` for PR/diff/commit
-  review, adversarial challenge for edge cases and security, consult for
-  second opinions on code or architecture, live research with citations via
-  `--search`, and apply/fix for approved code changes. Use when the user
-  invokes /codex or explicitly wants the local Codex CLI.
+description: "OpenAI Codex CLI wrapper with five modes: codex review for PR/diff/commit review, adversarial challenge for edge cases and security, consult for second opinions on code or architecture, live research with citations via --search, and apply/fix for approved code changes. Use when the user invokes /codex or explicitly wants the local Codex CLI."
 version: 1.5.0
 category: development-tools
-tags:
-  - openai-codex
-  - codex-cli
-  - gpt-5.4
-  - second-opinion
-  - code-review
-  - adversarial-review
-  - technical-research
+tags: [openai-codex, codex-cli, gpt-5.4, second-opinion, code-review, adversarial-review, technical-research]
 argument-hint: [task-description]
-allowed-tools:
-  - Bash(codex *)
-  - Bash(command -v codex)
-  - Bash(Get-Command codex*)
-  - Read
+allowed-tools: Bash(codex *), Bash(command -v codex), Bash(Get-Command codex*), Read
 ---
 
 Run Codex CLI for `$ARGUMENTS`.

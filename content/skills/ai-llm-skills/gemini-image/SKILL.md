@@ -1,17 +1,11 @@
 ---
 name: gemini-image
-description: >-
-  Generate images using AI image generation API. Use when user wants to create,
-  draw, paint, illustrate, or edit images. Supports text-to-image and
-  image-to-image workflows. Trigger whenever the user asks to generate an image,
-  create artwork, draw something, or edit an existing image.
+description: "Generate images using AI image generation API. Supports text-to-image and image-to-image workflows via Google Gemini or proxy providers. Use when the user wants to create, draw, paint, illustrate, or edit images. Trigger whenever the user asks to generate an image, create artwork, draw something, or edit an existing image."
 version: 1.0.0
 category: content-creation
 tags: [image-generation, ai-art, text-to-image, gemini, illustration]
 argument-hint: [prompt-text]
-allowed-tools:
-  - Read
-  - Bash(curl *)
+allowed-tools: Read, Bash(curl *)
 ---
 
 Generate images via API using `$ARGUMENTS` as prompt or interactively.

@@ -1,10 +1,10 @@
 ---
 name: touying
-description: Author Typst slide decks with Touying. Use when working with .typ presentations, themes, or animations.
+description: "Author Typst slide decks with Touying: create slides, apply themes, configure animations, add speaker notes, and manage multi-file layouts. Use when working with .typ presentations, Touying themes, slide decks, or typst presentation animations."
 category: document-processing
 tags: [typst, touying, slide-deck, animation, theme]
 argument-hint: path-to-typ-file
-allowed-tools: [Read, Write, Glob, Grep]
+allowed-tools: Read, Write, Glob, Grep
 ---
 
 # Touying Author
@@ -14,6 +14,20 @@ allowed-tools: [Read, Write, Glob, Grep]
 1. Import Touying + theme, apply with `#show: <theme>.with(...)`.
 2. Use headings for slides; `#slide` only for custom layout/animation.
 3. Centralize config in `globals.typ`, include content from separate files.
+4. Compile and verify: `typst compile deck.typ` — fix errors before iterating.
+
+```typst
+#import "@preview/touying:0.6.1": *
+#import themes.university: *
+#show: university-theme.with(config-info(title: [My Talk], author: [Author]))
+
+= Introduction
+Content for the first slide.
+
+= Details
+- Point one
+- Point two
+```
 
 ## Task routing
 
