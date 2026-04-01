@@ -1,13 +1,11 @@
 # Codex
 
-> [!WARNING]
-> 本 skill 已经逐步弃用，请改为使用官方 codex 插件安装方式。
+这个 skill 继续保留，用于**直接驱动本地 Codex CLI**。
 
-官方 codex 插件安装方式如下：
+如果你想在 Codex 里使用更接近 `codex-plugin-cc` 的工作流，例如：
 
-```bash
-/plugin marketplace add openai/codex-plugin-cc
-/plugin install codex@openai-codex
-/reload-plugins
-/codex:setup
-```
+- 后台任务
+- `status / result / cancel`
+- 可恢复的 Codex task 委派
+
+请改用 sibling skill：`codex-companion`。

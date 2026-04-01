@@ -121,7 +121,10 @@ The VitePress site in `docs/` covers:
 - external skills
 - skill catalog pages in English and Chinese
 
-For the Codex CLI skill specifically, see `docs/skills/ai-llm-skills/codex.md` and `docs/zh/skills/ai-llm-skills/codex.md`. Those pages track the current Codex CLI syntax and now document the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
+For Codex-related skills:
+
+- `docs/skills/ai-llm-skills/codex.md` and `docs/zh/skills/ai-llm-skills/codex.md` cover the direct Codex CLI workflow, including the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
+- `docs/skills/ai-llm-skills/codex-companion.md` and `docs/zh/skills/ai-llm-skills/codex-companion.md` cover the plugin-style companion runtime for background jobs, resumable tasks, and `status / result / cancel` lifecycle management inside Codex.
 
 For structured code review and audit workflows, see `docs/skills/workflow-skills/code-auditor.md` and `docs/zh/skills/workflow-skills/code-auditor.md`. Those pages document the renamed `code-auditor` skill, including language-adaptive reporting and severity-based findings.
 

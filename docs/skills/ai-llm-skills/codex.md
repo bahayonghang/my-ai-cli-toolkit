@@ -7,6 +7,10 @@ opinion analysis, live research, or Codex-applied fixes.
 Starting with GPT-5.4, OpenAI recommends the general-purpose GPT-5.4 model for
 most Codex coding tasks, so this skill defaults to `gpt-5.4`.
 
+If you want plugin-style background jobs, resumable task delegation, or
+`status / result / cancel` lifecycle commands, use
+[codex-companion](./codex-companion.md) instead.
+
 ## Default Configuration
 
 - Primary review command: `codex review`

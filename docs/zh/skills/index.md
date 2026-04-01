@@ -7,7 +7,7 @@
 | 分类 | 覆盖内容 |
 |------|----------|
 | `academic-skills` | 论文检索、论文阅读、书目检索、幻灯片、复现与论文拆解 |
-| `ai-llm-skills` | Codex、Gemini CLI 与 Gemini 图像能力 |
+| `ai-llm-skills` | Codex CLI、Codex companion runtime、Gemini CLI 与 Gemini 图像能力 |
 | `diagram-skills` | Excalidraw 与 Mermaid 图表编写 |
 | `document-skills` | 标书、视觉卡片、文档生成、Typst、Touying、截图与主题套用 |
 | `git-github-skills` | GitHub 审查与仓库工作流 |

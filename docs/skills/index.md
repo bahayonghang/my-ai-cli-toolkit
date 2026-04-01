@@ -7,7 +7,7 @@ This section tracks the installable catalog under `content/skills/`.
 | Category | What it covers |
 |----------|----------------|
 | `academic-skills` | paper lookup, reading, bibliography search, slides, replication, and paper analysis workflows |
-| `ai-llm-skills` | Codex, Gemini CLI, and Gemini image workflows |
+| `ai-llm-skills` | Codex CLI, Codex companion runtime, Gemini CLI, and Gemini image workflows |
 | `diagram-skills` | Excalidraw and Mermaid diagram authoring |
 | `document-skills` | bid writing, visual cards, document generation, Typst, Touying, screenshots, and themed artifacts |
 | `git-github-skills` | GitHub review and repository workflows |

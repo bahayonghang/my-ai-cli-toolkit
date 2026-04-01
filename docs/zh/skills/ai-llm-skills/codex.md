@@ -7,6 +7,10 @@ diff 感知代码审查、对抗式 challenge、second opinion、实时技术调
 从 GPT-5.4 开始，OpenAI 推荐在大多数 Codex 编码任务中优先使用通用模型
 `gpt-5.4`，因此这个 skill 默认也使用它。
 
+如果你想要更接近插件的后台任务、可恢复 task 委派，或者
+`status / result / cancel` 这类生命周期管理，请改用
+[codex-companion](./codex-companion.md)。
+
 ## 默认配置
 
 - 主审查命令：`codex review`
