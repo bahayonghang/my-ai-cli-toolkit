@@ -73,8 +73,45 @@ export function loadState(cwd) {
       jobs: Array.isArray(parsed.jobs) ? parsed.jobs : []
     };
   } catch {
-    return defaultState();
+    process.stderr.write(`Warning: Corrupt state file at ${stateFile}. Attempting recovery from job files.\n`);
+    return recoverStateFromJobFiles(cwd);
   }
+}
+
+function recoverStateFromJobFiles(cwd) {
+  const jobsDir = resolveJobsDir(cwd);
+  const state = defaultState();
+  try {
+    if (!fs.existsSync(jobsDir)) {
+      return state;
+    }
+    const files = fs.readdirSync(jobsDir).filter((f) => f.endsWith(".json"));
+    for (const file of files) {
+      try {
+        const job = JSON.parse(fs.readFileSync(path.join(jobsDir, file), "utf8"));
+        if (job && job.id) {
+          state.jobs.push({
+            id: job.id,
+            status: job.status ?? "completed",
+            kind: job.kind ?? "task",
+            title: job.title ?? job.id,
+            summary: job.summary ?? "",
+            jobClass: job.jobClass ?? "task",
+            threadId: job.threadId ?? null,
+            createdAt: job.createdAt ?? job.startedAt ?? null,
+            updatedAt: job.updatedAt ?? job.completedAt ?? null,
+            completedAt: job.completedAt ?? null,
+            logFile: job.logFile ?? null
+          });
+        }
+      } catch {
+        // Skip unreadable individual job files
+      }
+    }
+  } catch {
+    // If recovery fails entirely, return empty state
+  }
+  return state;
 }
 
 function pruneJobs(jobs) {

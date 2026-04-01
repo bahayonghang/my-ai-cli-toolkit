@@ -291,7 +291,7 @@ async function resolveLatestTrackedTaskThread(cwd, options = {}) {
   const jobs = sortJobsNewestFirst(listJobs(workspaceRoot)).filter((job) => job.id !== options.excludeJobId);
   const activeTask = jobs.find((job) => job.jobClass === "task" && (job.status === "queued" || job.status === "running"));
   if (activeTask) {
-    throw new Error(`Task ${activeTask.id} is still running. Use the companion status command before continuing it.`);
+    throw new Error(`Task ${activeTask.id} is still running. Wait for it to complete, check progress with the companion status command, or cancel it with the companion cancel command before resuming.`);
   }
 
   const trackedTask = jobs.find((job) => job.jobClass === "task" && job.status === "completed" && job.threadId);
@@ -974,5 +974,8 @@ async function main() {
 main().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
   process.stderr.write(`${message}\n`);
+  if (error instanceof Error && error.stack && process.env.DEBUG) {
+    process.stderr.write(`${error.stack}\n`);
+  }
   process.exitCode = 1;
 });
