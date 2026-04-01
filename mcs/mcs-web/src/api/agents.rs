@@ -7,7 +7,7 @@ use mcs_core::core::installer::{install_agent, uninstall_agent};
 
 use crate::api::error::AppError;
 use crate::dto::{
-    ApiResponse, BatchResultDto, DiffDto, EditContentRequest, InstallRequest,
+    ApiResponse, BatchResultDto, DiffDto, EditContentRequest, InstallRequest, InstallTargetQuery,
     InstallTargetScopeDto, ItemDetailDto, ItemDto, ItemQuery, SimpleSuccess,
 };
 use crate::state::AppState;
@@ -44,12 +44,25 @@ pub async fn list(
 pub async fn detail(
     State(state): State<AppState>,
     Path((id, name)): Path<(String, String)>,
+    Query(query): Query<InstallTargetQuery>,
 ) -> Result<Json<ApiResponse<ItemDetailDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.to_install_target();
 
-    let agents = state.agents(&id).await;
+    let agents = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        state.agents(&id).await
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        state.agents_for_platform_config(&resolved.platform).await
+    };
     let item = agents
         .into_iter()
         .find(|agent| agent.name == name)
@@ -77,12 +90,25 @@ pub async fn detail(
 pub async fn diff(
     State(state): State<AppState>,
     Path((id, name)): Path<(String, String)>,
+    Query(query): Query<InstallTargetQuery>,
 ) -> Result<Json<ApiResponse<DiffDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.to_install_target();
 
-    let agents = state.agents(&id).await;
+    let agents = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        state.agents(&id).await
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        state.agents_for_platform_config(&resolved.platform).await
+    };
     let item = agents
         .into_iter()
         .find(|agent| agent.name == name)

@@ -198,7 +198,8 @@ export async function getSkillDetail(
 
 export async function getSkillDiff(
   platformId: string,
-  name: string
+  name: string,
+  _installTarget?: InstallTarget,
 ): Promise<DiffDto> {
   return fetchJson(`${BASE}/platforms/${platformId}/skills/${name}/diff`);
 }
@@ -254,9 +255,28 @@ export async function getCommands(
 
 export async function getCommandDiff(
   platformId: string,
-  name: string
+  name: string,
+  installTarget?: InstallTarget,
 ): Promise<DiffDto> {
-  return fetchJson(`${BASE}/platforms/${platformId}/commands/${name}/diff`);
+  const query = new URLSearchParams();
+  applyInstallTargetQuery(query, installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/commands/${name}/diff${qs ? `?${qs}` : ""}`
+  );
+}
+
+export async function getCommandDetail(
+  platformId: string,
+  name: string,
+  installTarget?: InstallTarget,
+): Promise<ItemDetailDto> {
+  const query = new URLSearchParams();
+  applyInstallTargetQuery(query, installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/commands/${name}${qs ? `?${qs}` : ""}`
+  );
 }
 
 export async function installCommands(
@@ -309,9 +329,28 @@ export async function getAgents(
 
 export async function getAgentDiff(
   platformId: string,
-  name: string
+  name: string,
+  installTarget?: InstallTarget,
 ): Promise<DiffDto> {
-  return fetchJson(`${BASE}/platforms/${platformId}/agents/${name}/diff`);
+  const query = new URLSearchParams();
+  applyInstallTargetQuery(query, installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/agents/${name}/diff${qs ? `?${qs}` : ""}`
+  );
+}
+
+export async function getAgentDetail(
+  platformId: string,
+  name: string,
+  installTarget?: InstallTarget,
+): Promise<ItemDetailDto> {
+  const query = new URLSearchParams();
+  applyInstallTargetQuery(query, installTarget);
+  const qs = query.toString();
+  return fetchJson(
+    `${BASE}/platforms/${platformId}/agents/${name}${qs ? `?${qs}` : ""}`
+  );
 }
 
 export async function installAgents(
@@ -336,6 +375,16 @@ export async function uninstallAgents(
     `${BASE}/platforms/${platformId}/agents/uninstall`,
     withInstallTargetBody({ names }, installTarget)
   );
+}
+
+export async function updateAgentContent(
+  platformId: string,
+  name: string,
+  content: string,
+): Promise<{ success: boolean }> {
+  return putJson(`${BASE}/platforms/${platformId}/agents/${name}/content`, {
+    content,
+  });
 }
 
 // ── Guidance ───────────────────────────────────────────────────────

@@ -96,6 +96,10 @@ pub fn router() -> Router<AppState> {
             axum::routing::get(commands::list),
         )
         .route(
+            "/api/platforms/{id}/commands/{name}",
+            axum::routing::get(commands::detail),
+        )
+        .route(
             "/api/platforms/{id}/commands/{name}/diff",
             axum::routing::get(commands::diff),
         )

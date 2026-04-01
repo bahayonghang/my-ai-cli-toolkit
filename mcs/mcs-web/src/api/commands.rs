@@ -7,7 +7,8 @@ use mcs_core::core::installer::{install_command, uninstall_command};
 
 use crate::api::error::AppError;
 use crate::dto::{
-    ApiResponse, BatchResultDto, DiffDto, InstallRequest, InstallTargetScopeDto, ItemDto, ItemQuery,
+    ApiResponse, BatchResultDto, DiffDto, InstallRequest, InstallTargetQuery,
+    InstallTargetScopeDto, ItemDetailDto, ItemDto, ItemQuery,
 };
 use crate::state::AppState;
 
@@ -69,16 +70,75 @@ pub async fn list(
     Ok(Json(ApiResponse::ok(filtered)))
 }
 
+/// GET /api/platforms/:id/commands/:name — command detail + content
+pub async fn detail(
+    State(state): State<AppState>,
+    Path((id, name)): Path<(String, String)>,
+    Query(query): Query<InstallTargetQuery>,
+) -> Result<Json<ApiResponse<ItemDetailDto>>, AppError> {
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.to_install_target();
+
+    let commands = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        state.commands(&id).await
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        state.commands_for_platform_config(&resolved.platform).await
+    };
+    let item = commands
+        .into_iter()
+        .find(|command| command.name == name)
+        .ok_or_else(|| AppError::NotFound(format!("Command '{name}' not found")))?;
+
+    let content = read_file_text(item.source_path.clone(), "Failed to read command file").await?;
+
+    Ok(Json(ApiResponse::ok(ItemDetailDto {
+        name: item.name,
+        item_type: item.item_type,
+        description: item.description,
+        status: item.status,
+        category: item.category,
+        tags: item.tags,
+        is_default: item.is_default,
+        content: Some(content),
+        source_path: item.source_path.to_string_lossy().into_owned(),
+        target_path: item.target_path.to_string_lossy().into_owned(),
+        source_mtime_ms: item.source_mtime_ms,
+        target_mtime_ms: item.target_mtime_ms,
+    })))
+}
+
 /// GET /api/platforms/:id/commands/:name/diff — source vs installed diff
 pub async fn diff(
     State(state): State<AppState>,
     Path((id, name)): Path<(String, String)>,
+    Query(query): Query<InstallTargetQuery>,
 ) -> Result<Json<ApiResponse<DiffDto>>, AppError> {
-    if state.platform(&id).await.is_none() {
-        return Err(AppError::NotFound(format!("Platform '{id}' not found")));
-    }
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.to_install_target();
 
-    let commands = state.commands(&id).await;
+    let commands = if matches!(install_target.scope, InstallTargetScopeDto::Global) {
+        state.commands(&id).await
+    } else {
+        let resolved = resolve_target_platform(
+            &base_platform,
+            &install_target.to_core(),
+            InstallTargetAccessMode::Read,
+        )
+        .map_err(AppError::BadRequest)?;
+        state.commands_for_platform_config(&resolved.platform).await
+    };
     let item = commands
         .into_iter()
         .find(|c| c.name == name)
@@ -217,4 +277,12 @@ async fn build_command_diff_async(source: PathBuf, target: PathBuf) -> Result<St
         .await
         .map_err(|e| AppError::Internal(format!("Failed to execute command diff task: {e}")))?
         .map_err(|e| AppError::Internal(format!("Failed to build command diff: {e}")))
+}
+
+async fn read_file_text(path: PathBuf, label: &'static str) -> Result<String, AppError> {
+    let display = path.display().to_string();
+    tokio::task::spawn_blocking(move || std::fs::read_to_string(&path))
+        .await
+        .map_err(|e| AppError::Internal(format!("{label} ({display}): {e}")))?
+        .map_err(|e| AppError::Internal(format!("{label} ({display}): {e}")))
 }
