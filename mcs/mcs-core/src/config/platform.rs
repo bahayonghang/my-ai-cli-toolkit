@@ -400,8 +400,8 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 "~/.codex",
                 Some("~/.agents"),
                 "skills",
-                ("", "", None),
-                ("", "", None),
+                ("prompts", "codex", None),
+                ("agents", "codex", None),
                 Some(("AGENTS.md", "codex", None)),
             ),
         ),
@@ -715,11 +715,15 @@ fn capability_source_dir(
 }
 
 pub fn commands_source_dir(platform: &PlatformConfig, platforms_base: &Path) -> PathBuf {
+    let source_kind = match platform.commands_subdir.as_str() {
+        "prompts" => "prompts",
+        _ => "commands",
+    };
     capability_source_dir(
         platforms_base,
         &platform.commands_source,
         platform.fallback_commands_source.as_deref(),
-        "commands",
+        source_kind,
     )
 }
 
@@ -737,7 +741,7 @@ pub fn guidance_source_dir(platform: &PlatformConfig, platforms_base: &Path) -> 
         platforms_base,
         &platform.guidance_source,
         platform.fallback_guidance_source.as_deref(),
-        "guidance",
+        "rules",
     )
 }
 
@@ -868,5 +872,53 @@ mod tests {
             platform.guidance_display_path(),
             Some("~/.claude/CLAUDE.md".into())
         );
+    }
+
+    #[test]
+    fn commands_source_dir_uses_prompts_when_target_subdir_is_prompts() {
+        let root = temp_dir("prompts_source_dir");
+        let platforms_base = root.join("content").join("platforms");
+        let prompts_dir = platforms_base.join("codex").join("prompts");
+        std::fs::create_dir_all(&prompts_dir).expect("create prompts dir");
+
+        let mut platform = test_platform(
+            "~/.codex".to_string(),
+            Some("~/.agents".to_string()),
+            "codex",
+        );
+        platform.commands_subdir = "prompts".to_string();
+
+        assert_eq!(commands_source_dir(&platform, &platforms_base), prompts_dir);
+    }
+
+    #[test]
+    fn guidance_source_dir_uses_rules_directory() {
+        let root = temp_dir("rules_source_dir");
+        let platforms_base = root.join("content").join("platforms");
+        let rules_dir = platforms_base.join("codex").join("rules");
+        std::fs::create_dir_all(&rules_dir).expect("create rules dir");
+
+        let mut platform = test_platform(
+            "~/.codex".to_string(),
+            Some("~/.agents".to_string()),
+            "codex",
+        );
+        platform.guidance_file = Some("AGENTS.md".to_string());
+        platform.guidance_source = "codex".to_string();
+
+        assert_eq!(guidance_source_dir(&platform, &platforms_base), rules_dir);
+    }
+
+    #[test]
+    fn default_platforms_configure_codex_prompts_and_agents() {
+        let platforms = default_platforms();
+        let codex = platforms.get("codex").expect("codex platform");
+
+        assert_eq!(codex.commands_subdir, "prompts");
+        assert_eq!(codex.commands_source, "codex");
+        assert_eq!(codex.agents_subdir, "agents");
+        assert_eq!(codex.agents_source, "codex");
+        assert!(codex.supports_commands());
+        assert!(codex.supports_agents());
     }
 }
