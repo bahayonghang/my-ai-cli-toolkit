@@ -27,6 +27,20 @@ Re-run the relevant checks after any fix and report concrete evidence.
 </verification_loop>
 ```
 
+## Good vs Bad Prompts
+
+**Bad** — vague, no success criteria:
+> fix the tests
+
+**Good** — specific goal, clear “done” condition:
+> Investigate why `test_retry_backoff` fails intermittently. Find the root cause, apply the smallest safe fix, and verify the test passes 3 times in a row.
+
+**Bad** — multiple goals in one run:
+> Review the auth changes, then refactor the middleware, then update the docs
+
+**Good** — one goal per run:
+> Review the auth changes in `src/auth/` against `main`. Focus on token validation and session handling.
+
 ## When to Add More Structure
 
 - Debugging or implementation:
@@ -38,6 +52,30 @@ Re-run the relevant checks after any fix and report concrete evidence.
 - Research:
   - require dates and source attribution
   - constrain to official docs when the topic is a vendor SDK or API
+
+## Multi-Turn Patterns (Resume)
+
+When resuming a task thread with `--resume-last`, send only the delta instruction:
+
+**First run:**
+> Investigate the flaky CI test in `tests/integration/retry.test.ts`. Identify the root cause.
+
+**Resume (delta only):**
+> Good analysis. Now apply the fix you proposed and verify it passes.
+
+If the direction changed materially, include the full context again instead of a delta.
+
+## Model and Effort Flags
+
+| Flag | Effect | When to use |
+|------|--------|-------------|
+| `--model spark` | Uses `gpt-5.3-codex-spark` (fast, cheaper) | Quick lookups, simple tasks |
+| `--model <name>` | Specific model override | When you need a particular capability |
+| `--effort none` | Minimal reasoning | Trivial tasks, echoing context |
+| `--effort low` | Light reasoning | Simple code changes |
+| `--effort medium` | Default balanced reasoning | Most tasks |
+| `--effort high` | Deep reasoning | Complex debugging, architecture |
+| `--effort xhigh` | Maximum reasoning | Critical security review, hard bugs |
 
 ## Good Defaults
 

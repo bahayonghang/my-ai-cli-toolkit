@@ -1,23 +1,29 @@
 ---
 name: codex-companion
 description: >-
-  Run the Codex companion runtime when the user wants plugin-style Codex task
-  delegation from inside Codex itself: setup checks, background Codex jobs,
-  resumable task handoff, built-in review and adversarial review, or job
-  lifecycle commands like status, result, and cancel. Use this whenever the
-  user wants Codex to keep working in the background or asks for the
-  codex-plugin-cc style workflow inside Codex.
-version: 1.0.0
+  Manage Codex background tasks, persistent job threads, adversarial code
+  reviews, and job lifecycle (status, result, cancel) from inside any AI
+  coding session. Use this skill proactively whenever the user wants to
+  delegate work to Codex and check back later, run a security-focused or
+  attack-minded code review, resume a previous Codex task, check on running
+  Codex jobs, or set up and verify Codex CLI readiness. Also use when the
+  user mentions "background task", "Codex job", "adversarial review",
+  "diff review", or wants Codex to keep working while they do something else.
+version: 1.1.0
 category: development-tools
 tags:
   - codex
   - codex-cli
   - background-jobs
+  - background-task
   - job-control
   - code-review
   - adversarial-review
+  - security-review
+  - diff-review
   - task-delegation
-argument-hint: [task-description]
+  - persistent-thread
+argument-hint: "[task-description | review | adversarial-review | status | result | cancel]"
 allowed-tools:
   - Bash(node *)
   - Bash(command -v codex)
@@ -34,10 +40,25 @@ Script path:
 $SKILL_DIR/scripts/codex-companion.mjs
 ```
 
-This skill is the plugin-style sibling to the direct [codex] skill. Use:
+## Quick Start
 
-- `codex` for one-off `codex review` / `codex exec` CLI calls you want to drive manually
-- `codex-companion` for setup checks, background jobs, resumable delegated work, and job lifecycle commands
+```bash
+node "$SKILL_DIR/scripts/codex-companion.mjs" setup                    # 1. Check readiness
+node "$SKILL_DIR/scripts/codex-companion.mjs" review --base main       # 2. Review changes
+node "$SKILL_DIR/scripts/codex-companion.mjs" task "fix the bug"       # 3. Delegate work
+node "$SKILL_DIR/scripts/codex-companion.mjs" status                   # 4. Check progress
+node "$SKILL_DIR/scripts/codex-companion.mjs" result <job-id>          # 5. Get output
+```
+
+## When to Use This vs the `codex` Skill
+
+| Scenario | Use |
+|----------|-----|
+| One-off `codex review` or `codex exec` you drive manually | `codex` skill |
+| Background jobs you check on later | `codex-companion` |
+| Resumable multi-turn task threads | `codex-companion` |
+| Structured adversarial review with JSON findings | `codex-companion` |
+| Job lifecycle: status, result, cancel | `codex-companion` |
 
 ## Prerequisites
 
@@ -55,13 +76,15 @@ node "$SKILL_DIR/scripts/codex-companion.mjs" setup
 
 Choose one primary subcommand:
 
-- `setup`: readiness checks for `codex`, auth, npm, and app-server capability
-- `review`: built-in diff-aware review of the current repo or a base branch
-- `adversarial-review`: structured attack-minded review with findings first
-- `task`: delegate diagnosis, research, or implementation work to a persistent Codex thread
-- `status`: inspect running or recent jobs
-- `result`: fetch the stored output for a finished job
-- `cancel`: stop an active job
+| Subcommand | Purpose | Read-only? |
+|------------|---------|------------|
+| `setup` | Readiness checks for `codex`, auth, npm, and app-server capability | Yes |
+| `review` | Built-in diff-aware review of the current repo or a base branch | Yes |
+| `adversarial-review` | Structured attack-minded review with findings first | Yes |
+| `task` | Delegate diagnosis, research, or implementation to a persistent Codex thread | Configurable |
+| `status` | Inspect running or recent jobs | Yes |
+| `result` | Fetch the stored output for a finished job | Yes |
+| `cancel` | Stop an active job | N/A |
 
 If the user asks to "continue", "resume", "keep going", or "follow up" on prior Codex work, prefer `task --resume-last`.
 
@@ -105,15 +128,35 @@ node "$COMPANION" cancel <job-id>
 - When the user did not explicitly ask for backgrounding, keep clearly bounded work in the foreground.
 - If `result` shows touched files, inspect the diff or run follow-up verification before claiming the work is complete.
 
+## Structured Output
+
+All commands support `--json` for machine-readable output. The adversarial review returns findings matching the schema in `$SKILL_DIR/schemas/review-output.schema.json`:
+
+- **verdict**: `approve` or `needs-attention`
+- **findings[]**: each with `severity`, `title`, `body`, `file`, `line_start`, `line_end`, `confidence`, `recommendation`
+- **summary**: terse ship/no-ship assessment
+- **next_steps**: suggested follow-up actions
+
 ## Prompting
 
 For delegated `task` runs, prefer compact, block-structured prompts. Read:
 
-- `$SKILL_DIR/references/COMMANDS.md` for the command surface
+- `$SKILL_DIR/references/COMMANDS.md` for the full command surface and exit codes
 - `$SKILL_DIR/references/PROMPTING.md` for prompt contracts and XML block patterns
+
+## Error Recovery
+
+| Problem | Solution |
+|---------|----------|
+| `setup` reports Codex not installed | Run `npm install -g @openai/codex` |
+| `setup` reports not authenticated | Run `codex login` (or `codex login --device-auth` if browser is blocked) |
+| Task fails mid-execution | Check `status <job-id>` for error details; use `task --resume-last` to retry from the last thread |
+| `state.json` corrupt or missing | The runtime auto-recovers from individual job files; if all state is lost, start fresh with a new `task` |
+| Broker process not responding | Kill stale processes (`ps aux | grep codex-companion`) and retry; the broker restarts automatically |
 
 ## Notes
 
-- The companion runtime stores per-workspace job state under the OS temp directory by default.
+- The companion runtime stores per-workspace job state under the OS temp directory by default (`$TMPDIR/codex-companion/`).
 - `status`, `result`, and `cancel` operate on those persisted job records.
 - The companion skill deliberately does not implement Claude-only hooks or stop-time review gates.
+- Maximum 50 jobs retained per workspace; older jobs are pruned automatically.

@@ -7,21 +7,40 @@
 | Skill | 定位 | 适合场景 |
 |---|---|---|
 | `codex` | 一次性 Codex CLI 包装 | 直接跑 `codex review` / `codex exec` |
-| `codex-companion` | companion runtime | 后台任务、可恢复 task 线程、job 生命周期管理 |
+| `codex-companion` | companion runtime | 后台任务、可恢复 task 线程、job 生命周期管理、结构化对抗审查 |
+
+## 快速开始
+
+```bash
+node "$SKILL_DIR/scripts/codex-companion.mjs" setup                    # 1. 检查就绪状态
+node "$SKILL_DIR/scripts/codex-companion.mjs" review --base main       # 2. 审查变更
+node "$SKILL_DIR/scripts/codex-companion.mjs" task "fix the bug"       # 3. 委派任务
+node "$SKILL_DIR/scripts/codex-companion.mjs" status                   # 4. 查看进度
+node "$SKILL_DIR/scripts/codex-companion.mjs" result <job-id>          # 5. 获取输出
+```
 
 ## 功能说明
 
 核心能力由 `scripts/codex-companion.mjs` 提供：
 
-| 子命令 | 作用 | 常见参数 | 典型用法 |
+| 子命令 | 作用 | 只读？ | 常见参数 |
 |---|---|---|---|
-| `setup` | 检查本机 `codex` CLI、登录状态、`npm`、app-server 能力 | `--json` | `node "$SKILL_DIR/scripts/codex-companion.mjs" setup` |
-| `review` | 对当前工作区或 `--base <ref>` 做内置只读 review | `--base <ref>` `--scope ...` | `node "$SKILL_DIR/scripts/codex-companion.mjs" review --base main` |
-| `adversarial-review` | findings-first 的对抗式 review，找隐藏回归、竞态、边界条件、缺失测试 | `--base <ref>` `--scope ...` `[focus text]` | `node "$SKILL_DIR/scripts/codex-companion.mjs" adversarial-review --base main` |
-| `task` | 把诊断、研究或实现任务委派给持久化 Codex 线程 | `--write` `--background` `--resume-last` `--model` `--effort` | `node "$SKILL_DIR/scripts/codex-companion.mjs" task --background --write "implement the approved refactor"` |
-| `status` | 查看当前 workspace 的运行中和最近任务 | `[job-id]` `--wait` `--json` | `node "$SKILL_DIR/scripts/codex-companion.mjs" status` |
-| `result` | 读取已完成任务的持久化输出 | `[job-id]` `--json` | `node "$SKILL_DIR/scripts/codex-companion.mjs" result <job-id>` |
-| `cancel` | 中断并取消运行中的任务 | `[job-id]` `--json` | `node "$SKILL_DIR/scripts/codex-companion.mjs" cancel <job-id>` |
+| `setup` | 检查本机 `codex` CLI、登录状态、`npm`、app-server 能力 | 是 | `--json` |
+| `review` | 对当前工作区或 `--base <ref>` 做内置只读 review | 是 | `--base <ref>` `--scope ...` |
+| `adversarial-review` | findings-first 的对抗式 review，找隐藏回归、竞态、边界条件、缺失测试 | 是 | `--base <ref>` `--scope ...` `[focus text]` |
+| `task` | 把诊断、研究或实现任务委派给持久化 Codex 线程 | 可配置 | `--write` `--background` `--resume-last` `--model` `--effort` |
+| `status` | 查看当前 workspace 的运行中和最近任务 | 是 | `[job-id]` `--wait` `--json` |
+| `result` | 读取已完成任务的持久化输出 | 是 | `[job-id]` `--json` |
+| `cancel` | 中断并取消运行中的任务 | N/A | `[job-id]` `--json` |
+
+## 结构化输出
+
+所有命令都支持 `--json` 以获得机器可读输出。对抗审查返回匹配 `schemas/review-output.schema.json` 的结构化结果：
+
+- **verdict**: `approve` 或 `needs-attention`
+- **findings[]**: 包含 `severity`、`title`、`body`、`file`、`line_start`、`line_end`、`confidence`、`recommendation`
+- **summary**: 简洁的 ship/no-ship 评估
+- **next_steps**: 建议后续操作
 
 ## 调用方式表
 
@@ -39,11 +58,22 @@
 | 后台任务 | ``$codex-companion 把这个修复任务交给 Codex 后台执行，之后我要能看 status 和 result`` |
 | 继续任务 | ``$codex-companion 继续上一次 Codex task，完成下一步最高价值动作`` |
 
+## 错误恢复
+
+| 问题 | 解决方案 |
+|---|---|
+| `setup` 报告 Codex 未安装 | 运行 `npm install -g @openai/codex` |
+| `setup` 报告未认证 | 运行 `codex login`（浏览器被阻止时用 `codex login --device-auth`） |
+| 任务执行中失败 | 用 `status <job-id>` 查看错误详情；用 `task --resume-last` 从上次线程重试 |
+| `state.json` 损坏或丢失 | runtime 会自动从独立 job 文件恢复；若全部丢失，开始新的 `task` |
+| Broker 进程无响应 | 终止残留进程后重试，broker 会自动重启 |
+
 ## 设计边界
 
 | 边界 | 说明 |
 |---|---|
 | `review` / `adversarial-review` | 始终保持只读 |
 | `task --write` | 只在用户明确要求 Codex 改文件时使用 |
-| Job state | 默认按 workspace 存在系统临时目录 |
+| Job state | 默认按 workspace 存在系统临时目录，最多保留 50 个 job |
 | 非目标范围 | 不包含 Claude 专属 `.claude-plugin`、hooks、stop-time review gate |
+| 调试模式 | 设置 `DEBUG=1` 环境变量可在错误时输出完整堆栈跟踪 |
