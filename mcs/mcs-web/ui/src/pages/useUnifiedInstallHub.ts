@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getSkillCatalog, installSkills } from "@/api/client";
-import { useI18n } from "@/i18n";
-import type { TranslateFn } from "@/i18n";
+import {
+  getAgents,
+  getCommands,
+  getSkillCatalog,
+  installAgents,
+  installCommands,
+  installSkills,
+} from "@/api/client";
 import type {
   ExecutionState,
   InstallHubStage,
@@ -9,7 +14,17 @@ import type {
   PlatformSelection,
   SkillSelection,
 } from "@/components/install-hub/types";
-import type { PlatformDisplay, SkillCatalogDto } from "@/types";
+import { useI18n } from "@/i18n";
+import type { TranslateFn } from "@/i18n";
+import type {
+  InstallCatalogItemDto,
+  ItemType,
+  PlatformDisplay,
+} from "@/types";
+import {
+  mergePlatformItemsIntoCatalog,
+  platformSupportsItemType,
+} from "@/utils/installHubContent";
 import {
   buildInstallHubSummary,
   coerceInstallHubStage,
@@ -31,20 +46,34 @@ interface Dependencies {
   platforms: PlatformDisplay[];
   fetchPlatforms: () => Promise<void>;
   refreshPlatforms: () => Promise<void>;
-  notify: (message: string, severity?: "success" | "error" | "info" | "warning") => void;
+  notify: (
+    message: string,
+    severity?: "success" | "error" | "info" | "warning",
+  ) => void;
 }
 
 interface RunnerDependencies {
   platforms: PlatformDisplay[];
   refreshPlatforms: () => Promise<void>;
   refreshCatalog: () => Promise<void>;
-  notify: (message: string, severity?: "success" | "error" | "info" | "warning") => void;
+  notify: (
+    message: string,
+    severity?: "success" | "error" | "info" | "warning",
+  ) => void;
+  itemType: ItemType;
+  catalog: InstallCatalogItemDto[];
   selectedPlatforms: PlatformSelection;
   selectedSkills: SkillSelection;
   setExecution: (state: ExecutionState) => void;
   setResults: (results: PlatformInstallResult[]) => void;
   setActiveStage: (stage: InstallHubStage) => void;
   t: TranslateFn;
+}
+
+interface PlatformInstallTask {
+  platform: PlatformDisplay;
+  itemType: ItemType;
+  itemNames: string[];
 }
 
 export function useUnifiedInstallHub({
@@ -54,28 +83,62 @@ export function useUnifiedInstallHub({
   notify,
 }: Dependencies) {
   const { t } = useI18n();
-  const catalogState = useCatalogState(fetchPlatforms);
-  const selectionState = useSelectionState(platforms);
+  const catalogState = useCatalogState(platforms);
+  const selectionState = useSelectionState(platforms.length);
   const [execution, setExecution] = useState<ExecutionState>(INITIAL_EXECUTION);
   const [results, setResults] = useState<PlatformInstallResult[]>([]);
   const [activeStage, setActiveStage] = useState<InstallHubStage>("skills");
+
+  useEffect(() => {
+    void fetchPlatforms();
+  }, [fetchPlatforms]);
+
+  useEffect(() => {
+    selectionState.setSelectedSkills(new Set());
+    selectionState.setSelectedPlatforms((previous) => {
+      const next = new Set(
+        [...previous].filter((platformId) =>
+          platforms.some(
+            (platform) =>
+              platform.id === platformId &&
+              platformSupportsItemType(platform, catalogState.itemType),
+          ),
+        ),
+      );
+      return next;
+    });
+  }, [catalogState.itemType, platforms]);
+
+  const availablePlatforms = useMemo(
+    () =>
+      platforms.filter((platform) =>
+        platformSupportsItemType(platform, catalogState.itemType),
+      ),
+    [platforms, catalogState.itemType],
+  );
+
   const summary = useMemo(
     () =>
       buildInstallHubSummary({
-        platforms,
+        platforms: availablePlatforms,
         selectedPlatforms: selectionState.selectedPlatforms,
         selectedSkills: selectionState.selectedSkills,
+        catalog: catalogState.catalog,
+        itemType: catalogState.itemType,
         filteredSkillCount: catalogState.filteredSkills.length,
         totalSkillCount: catalogState.catalog.length,
       }),
     [
-      platforms,
+      availablePlatforms,
       selectionState.selectedPlatforms,
       selectionState.selectedSkills,
+      catalogState.catalog,
+      catalogState.itemType,
       catalogState.filteredSkills.length,
       catalogState.catalog.length,
     ],
   );
+
   const steps = useMemo(
     () =>
       resolveInstallHubSteps(
@@ -107,11 +170,14 @@ export function useUnifiedInstallHub({
     },
     [execution.running, steps],
   );
+
   const runInstall = useInstallRunner({
-    platforms,
+    platforms: availablePlatforms,
     refreshPlatforms,
     refreshCatalog: catalogState.refreshCatalog,
     notify,
+    itemType: catalogState.itemType,
+    catalog: catalogState.catalog,
     selectedPlatforms: selectionState.selectedPlatforms,
     selectedSkills: selectionState.selectedSkills,
     setExecution,
@@ -124,6 +190,7 @@ export function useUnifiedInstallHub({
     ...catalogState,
     ...selectionState,
     activeStage,
+    availablePlatforms,
     goToStage,
     steps,
     summary,
@@ -135,10 +202,11 @@ export function useUnifiedInstallHub({
   };
 }
 
-function useCatalogState(fetchPlatforms: () => Promise<void>) {
-  const [catalog, setCatalog] = useState<SkillCatalogDto[]>([]);
+function useCatalogState(platforms: PlatformDisplay[]) {
+  const [catalog, setCatalog] = useState<InstallCatalogItemDto[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [itemType, setItemType] = useState<ItemType>("skill");
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [defaultOnly, setDefaultOnly] = useState(false);
@@ -146,20 +214,31 @@ function useCatalogState(fetchPlatforms: () => Promise<void>) {
   const categories = useMemo(() => collectSkillCategories(catalog), [catalog]);
   const filteredSkills = useMemo(
     () => filterSkillCatalog(catalog, search, selectedCategory, defaultOnly),
-    [catalog, search, selectedCategory, defaultOnly]
+    [catalog, search, selectedCategory, defaultOnly],
   );
 
-  useEffect(() => {
-    fetchPlatforms();
-    loadCatalog(setCatalog, setCatalogError, setLoadingCatalog);
-  }, [fetchPlatforms]);
-
   const refreshCatalog = useCallback(async () => {
-    await loadCatalog(setCatalog, setCatalogError, setLoadingCatalog);
-  }, []);
+    await loadCatalog(
+      itemType,
+      platforms,
+      setCatalog,
+      setCatalogError,
+      setLoadingCatalog,
+    );
+  }, [itemType, platforms]);
+
+  useEffect(() => {
+    void refreshCatalog();
+  }, [refreshCatalog]);
+
+  useEffect(() => {
+    setSelectedCategory(null);
+    setDefaultOnly(false);
+  }, [itemType]);
 
   return {
     catalog,
+    itemType,
     loadingCatalog,
     catalogError,
     search,
@@ -167,6 +246,7 @@ function useCatalogState(fetchPlatforms: () => Promise<void>) {
     defaultOnly,
     categories,
     filteredSkills,
+    setItemType,
     setSearch,
     setSelectedCategory,
     setDefaultOnly,
@@ -174,14 +254,15 @@ function useCatalogState(fetchPlatforms: () => Promise<void>) {
   };
 }
 
-function useSelectionState(platforms: PlatformDisplay[]) {
+function useSelectionState(platformCount: number) {
   const [selectedSkills, setSelectedSkills] = useState<SkillSelection>(new Set());
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformSelection>(new Set());
+
   useEffect(() => {
-    if (platforms.length === 0 && selectedPlatforms.size > 0) {
+    if (platformCount === 0 && selectedPlatforms.size > 0) {
       setSelectedPlatforms(new Set());
     }
-  }, [platforms.length, selectedPlatforms.size]);
+  }, [platformCount, selectedPlatforms.size]);
 
   return { selectedSkills, selectedPlatforms, setSelectedSkills, setSelectedPlatforms };
 }
@@ -191,6 +272,8 @@ function useInstallRunner({
   refreshPlatforms,
   refreshCatalog,
   notify,
+  itemType,
+  catalog,
   selectedPlatforms,
   selectedSkills,
   setExecution,
@@ -199,16 +282,26 @@ function useInstallRunner({
   t,
 }: RunnerDependencies) {
   return useCallback(async () => {
-    const selection = resolveInstallSelection(platforms, selectedPlatforms, selectedSkills);
-    if (!selection) return;
-    const totalPlatforms = selection.platforms.length;
+    const selection = resolveInstallSelection(
+      platforms,
+      selectedPlatforms,
+      selectedSkills,
+      catalog,
+      itemType,
+    );
+    if (!selection) {
+      notify(t("installHub.noCompatibleSelections"), "warning");
+      return;
+    }
+
+    const totalPlatforms = selection.tasks.length;
     setActiveStage("review");
 
     const runResults = await installAcrossPlatforms(
       selection,
       setExecution,
       setResults,
-      t
+      t,
     );
     setExecution({
       running: false,
@@ -225,6 +318,8 @@ function useInstallRunner({
     refreshPlatforms,
     refreshCatalog,
     notify,
+    itemType,
+    catalog,
     selectedPlatforms,
     selectedSkills,
     setExecution,
@@ -235,14 +330,45 @@ function useInstallRunner({
 }
 
 async function loadCatalog(
-  setCatalog: (value: SkillCatalogDto[]) => void,
+  itemType: ItemType,
+  platforms: PlatformDisplay[],
+  setCatalog: (value: InstallCatalogItemDto[]) => void,
   setError: (value: string | null) => void,
-  setLoading: (value: boolean) => void
+  setLoading: (value: boolean) => void,
 ) {
   setLoading(true);
   setError(null);
   try {
-    setCatalog(await getSkillCatalog());
+    if (itemType === "skill") {
+      const skills = await getSkillCatalog();
+      setCatalog(
+        skills.map((skill) => ({
+          ...skill,
+          item_type: "skill",
+        })),
+      );
+      return;
+    }
+
+    const supportedPlatforms = platforms.filter((platform) =>
+      platformSupportsItemType(platform, itemType),
+    );
+    const itemsByPlatform = await Promise.all(
+      supportedPlatforms.map(async (platform) => ({
+        platform,
+        items:
+          itemType === "command"
+            ? await getCommands(platform.id)
+            : await getAgents(platform.id),
+      })),
+    );
+
+    setCatalog(
+      mergePlatformItemsIntoCatalog(
+        itemType as Extract<ItemType, "command" | "agent">,
+        itemsByPlatform,
+      ),
+    );
   } catch (error) {
     setError((error as Error).message);
   } finally {
@@ -253,22 +379,40 @@ async function loadCatalog(
 function resolveInstallSelection(
   platforms: PlatformDisplay[],
   selectedPlatforms: PlatformSelection,
-  selectedSkills: SkillSelection
-): { platforms: PlatformDisplay[]; skills: string[] } | null {
-  if (selectedSkills.size === 0 || selectedPlatforms.size === 0) return null;
-  return {
-    platforms: platforms.filter((platform) => selectedPlatforms.has(platform.id)),
-    skills: Array.from(selectedSkills),
-  };
+  selectedSkills: SkillSelection,
+  catalog: InstallCatalogItemDto[],
+  itemType: ItemType,
+): { tasks: PlatformInstallTask[] } | null {
+  if (selectedSkills.size === 0 || selectedPlatforms.size === 0) {
+    return null;
+  }
+
+  const catalogByName = new Map(catalog.map((item) => [item.name, item]));
+  const tasks = platforms
+    .filter((platform) => selectedPlatforms.has(platform.id))
+    .map((platform) => ({
+      platform,
+      itemType,
+      itemNames: Array.from(selectedSkills).filter((name) => {
+        const item = catalogByName.get(name);
+        return item?.item_type === itemType && Boolean(item.platform_status?.[platform.id]);
+      }),
+    }));
+
+  if (tasks.every((task) => task.itemNames.length === 0)) {
+    return null;
+  }
+
+  return { tasks };
 }
 
 export async function installAcrossPlatforms(
-  selection: { platforms: PlatformDisplay[]; skills: string[] },
+  selection: { tasks: PlatformInstallTask[] },
   setExecution: (state: ExecutionState) => void,
   setResults: (results: PlatformInstallResult[]) => void,
-  t: TranslateFn
+  t: TranslateFn,
 ): Promise<PlatformInstallResult[]> {
-  const totalPlatforms = selection.platforms.length;
+  const totalPlatforms = selection.tasks.length;
   const runResultsByPlatform = new Map<string, PlatformInstallResult>();
   setResults([]);
   setExecution({
@@ -276,17 +420,24 @@ export async function installAcrossPlatforms(
     currentStep: 0,
     totalSteps: totalPlatforms,
     phase: "running",
-    activePlatformId: selection.platforms[0]?.id ?? null,
+    activePlatformId: selection.tasks[0]?.platform.id ?? null,
   });
 
   let completedCount = 0;
 
-  const promises = selection.platforms.map(async (platform) => {
-    const result = await installOnPlatform(platform, selection.skills, t);
-    runResultsByPlatform.set(platform.id, result);
+  const promises = selection.tasks.map(async (task) => {
+    const result = await installOnPlatform(
+      task.platform,
+      task.itemNames,
+      task.itemType,
+      t,
+    );
+    runResultsByPlatform.set(task.platform.id, result);
     completedCount++;
     const nextActivePlatform =
-      selection.platforms.find((candidate) => !runResultsByPlatform.has(candidate.id))?.id ?? null;
+      selection.tasks.find(
+        (candidate) => !runResultsByPlatform.has(candidate.platform.id),
+      )?.platform.id ?? null;
     setExecution({
       running: true,
       currentStep: completedCount,
@@ -294,21 +445,37 @@ export async function installAcrossPlatforms(
       phase: "running",
       activePlatformId: nextActivePlatform,
     });
-    setResults(resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform));
+    setResults(resolveResultsInSelectionOrder(selection.tasks, runResultsByPlatform));
     return result;
   });
 
   await Promise.allSettled(promises);
-  return resolveResultsInSelectionOrder(selection.platforms, runResultsByPlatform);
+  return resolveResultsInSelectionOrder(selection.tasks, runResultsByPlatform);
 }
 
 export async function installOnPlatform(
   platform: PlatformDisplay,
   names: string[],
-  t: TranslateFn
+  itemType: ItemType,
+  t: TranslateFn,
 ): Promise<PlatformInstallResult> {
+  if (names.length === 0) {
+    return {
+      platform,
+      successCount: 0,
+      failureCount: 0,
+      results: [],
+      requestError: null,
+    };
+  }
+
   try {
-    const response = await installSkills(platform.id, names);
+    const response =
+      itemType === "skill"
+        ? await installSkills(platform.id, names)
+        : itemType === "command"
+          ? await installCommands(platform.id, names)
+          : await installAgents(platform.id, names);
     return {
       platform,
       successCount: response.success_count,
@@ -338,18 +505,21 @@ function buildInstallError(name: string, error: string, t: TranslateFn) {
 }
 
 function resolveResultsInSelectionOrder(
-  selectionPlatforms: PlatformDisplay[],
-  resultsByPlatform: Map<string, PlatformInstallResult>
+  selectionTasks: PlatformInstallTask[],
+  resultsByPlatform: Map<string, PlatformInstallResult>,
 ): PlatformInstallResult[] {
-  return selectionPlatforms
-    .map((platform) => resultsByPlatform.get(platform.id))
+  return selectionTasks
+    .map((task) => resultsByPlatform.get(task.platform.id))
     .filter((result): result is PlatformInstallResult => result !== undefined);
 }
 
 function notifySummary(
   results: PlatformInstallResult[],
-  notify: (message: string, severity?: "success" | "error" | "info" | "warning") => void,
-  t: TranslateFn
+  notify: (
+    message: string,
+    severity?: "success" | "error" | "info" | "warning",
+  ) => void,
+  t: TranslateFn,
 ) {
   const summary = summarizeInstallResults(results);
   const suffix =
@@ -364,6 +534,6 @@ function notifySummary(
       failed: summary.totalFailure,
       suffix,
     }),
-    summary.totalFailure > 0 ? "warning" : "success"
+    summary.totalFailure > 0 ? "warning" : "success",
   );
 }

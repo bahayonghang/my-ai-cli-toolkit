@@ -20,11 +20,13 @@ import {
   Select,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useI18n } from "@/i18n";
-import type { SkillCatalogDto } from "@/types";
+import type { InstallCatalogItemDto, ItemType } from "@/types";
 import {
   sanitizeSkillDescription,
   summarizeSkillDescription,
@@ -32,9 +34,12 @@ import {
 import type { SkillSelection } from "./types";
 import { getAggregatedStatus } from "@/utils/statusAggregation";
 import { InstallStatusChip } from "./InstallStatusChip";
+import { getInstallHubItemTypeLabel } from "@/utils/installHubContent";
 
 interface SkillCatalogStageProps {
-  skills: SkillCatalogDto[];
+  skills: InstallCatalogItemDto[];
+  itemType: ItemType;
+  availableItemTypes: ItemType[];
   totalCount: number;
   selectedSkills: SkillSelection;
   categories: string[];
@@ -42,6 +47,7 @@ interface SkillCatalogStageProps {
   selectedCategory: string | null;
   defaultOnly: boolean;
   disabled?: boolean;
+  onItemTypeChange: (itemType: ItemType) => void;
   onSearchChange: (value: string) => void;
   onCategoryChange: (value: string | null) => void;
   onDefaultOnlyChange: (value: boolean) => void;
@@ -52,6 +58,8 @@ interface SkillCatalogStageProps {
 
 export function SkillCatalogStage({
   skills,
+  itemType,
+  availableItemTypes,
   totalCount,
   selectedSkills,
   categories,
@@ -59,6 +67,7 @@ export function SkillCatalogStage({
   selectedCategory,
   defaultOnly,
   disabled = false,
+  onItemTypeChange,
   onSearchChange,
   onCategoryChange,
   onDefaultOnlyChange,
@@ -68,6 +77,7 @@ export function SkillCatalogStage({
 }: SkillCatalogStageProps) {
   const { t } = useI18n();
   const [expandedSkills, setExpandedSkills] = useState<Set<string>>(new Set());
+  const itemTypeLabel = getInstallHubItemTypeLabel(itemType, t);
   const groupedSkills = useMemo(
     () => groupSkillsByCategory(skills, t("installHub.uncategorizedCategory")),
     [skills, t],
@@ -152,6 +162,48 @@ export function SkillCatalogStage({
         </Stack>
       </Stack>
 
+      {availableItemTypes.length > 1 ? (
+        <Box
+          sx={{
+            borderRadius: 3,
+            border: "1px solid var(--mcs-workbench-outline)",
+            background: "var(--mcs-panel-fill)",
+            boxShadow: "var(--mcs-shadow-sm)",
+            p: { xs: 1.25, md: 1.5 },
+          }}
+        >
+          <Stack spacing={1.1}>
+            <Typography
+              variant="overline"
+              sx={{ color: "var(--mcs-workbench-muted)" }}
+            >
+              {t("installHub.itemTypeLabel")}
+            </Typography>
+            <ToggleButtonGroup
+              exclusive
+              value={itemType}
+              size="small"
+              onChange={(_event, nextValue: ItemType | null) => {
+                if (nextValue) {
+                  onItemTypeChange(nextValue);
+                }
+              }}
+              sx={{ alignSelf: "flex-start", flexWrap: "wrap" }}
+            >
+              {(["skill", "command", "agent"] as ItemType[]).map((candidate) => (
+                <ToggleButton
+                  key={candidate}
+                  value={candidate}
+                  disabled={!availableItemTypes.includes(candidate) || disabled}
+                >
+                  {getInstallHubItemTypeLabel(candidate, t)}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Stack>
+        </Box>
+      ) : null}
+
       <Box
         sx={{
           position: "relative",
@@ -196,17 +248,19 @@ export function SkillCatalogStage({
             ))}
           </Select>
         </FormControl>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={defaultOnly}
-              disabled={disabled}
-              onChange={(_event, checked) => onDefaultOnlyChange(checked)}
-            />
-          }
-          label={t("installHub.onlyDefaultSkills")}
-          sx={{ ml: { xs: 0.5, xl: 0 } }}
-        />
+        {itemType === "skill" ? (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={defaultOnly}
+                disabled={disabled}
+                onChange={(_event, checked) => onDefaultOnlyChange(checked)}
+              />
+            }
+            label={t("installHub.onlyDefaultSkills")}
+            sx={{ ml: { xs: 0.5, xl: 0 } }}
+          />
+        ) : null}
       </Box>
 
       <Box
@@ -321,7 +375,7 @@ export function SkillCatalogStage({
                   variant="caption"
                   sx={{ color: "var(--mcs-workbench-muted)" }}
                 >
-                  {t("installHub.catalogScrollHint")}
+                  {itemTypeLabel} · {t("installHub.catalogScrollHint")}
                 </Typography>
               </Box>
               <Box
@@ -499,7 +553,7 @@ function SkillRow({
   onToggle,
   onToggleExpanded,
 }: {
-  skill: SkillCatalogDto;
+  skill: InstallCatalogItemDto;
   selected: boolean;
   expanded: boolean;
   disabled: boolean;
@@ -593,7 +647,7 @@ function SkillRow({
                     <Typography id={titleId} variant="body1" fontWeight={700}>
                       {skill.name}
                     </Typography>
-                    {skill.is_default ? (
+                    {skill.item_type === "skill" && skill.is_default ? (
                       <Chip
                         label={t("installHub.defaultTag")}
                         size="small"
@@ -706,10 +760,10 @@ function SkillRow({
 }
 
 function groupSkillsByCategory(
-  skills: SkillCatalogDto[],
+  skills: InstallCatalogItemDto[],
   uncategorizedLabel: string,
 ) {
-  const groups = new Map<string, SkillCatalogDto[]>();
+  const groups = new Map<string, InstallCatalogItemDto[]>();
   for (const skill of skills) {
     const category = skill.category ?? uncategorizedLabel;
     const group = groups.get(category);

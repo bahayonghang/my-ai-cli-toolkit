@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   CaretRight,
   ChartPieSlice,
+  Command,
   DownloadSimple,
   House,
   List,
@@ -101,6 +102,12 @@ function inferRouteSection(
   if (pathname.startsWith("/install-hub")) {
     return "installHub";
   }
+  if (pathname.startsWith("/manage/commands")) {
+    return "commandsWorkspace";
+  }
+  if (pathname.startsWith("/manage/agents")) {
+    return "agentsWorkspace";
+  }
   if (pathname.includes("/npx-skills")) {
     return "registry";
   }
@@ -120,6 +127,8 @@ const routeSectionMessageKey = {
   overview: "common.routeSection.overview",
   dashboard: "common.routeSection.dashboard",
   installHub: "common.routeSection.installHub",
+  commandsWorkspace: "common.routeSection.commandsWorkspace",
+  agentsWorkspace: "common.routeSection.agentsWorkspace",
   registry: "common.routeSection.registry",
   legacy: "common.routeSection.legacy",
   install: "common.routeSection.install",
@@ -387,6 +396,28 @@ export function AppShell({
           ariaCurrent="page"
           onClick={() => {
             navigateDeferred("/install-hub");
+            setNavOpen(false);
+          }}
+        />
+        <ShellNavButton
+          label={t("common.commandsWorkspace")}
+          subtitle={t("common.commandsWorkspaceSubtitle")}
+          icon={<Command size={18} weight="bold" />}
+          active={location.pathname.startsWith("/manage/commands")}
+          ariaCurrent="page"
+          onClick={() => {
+            navigateDeferred("/manage/commands");
+            setNavOpen(false);
+          }}
+        />
+        <ShellNavButton
+          label={t("common.agentsWorkspace")}
+          subtitle={t("common.agentsWorkspaceSubtitle")}
+          icon={<List size={18} weight="bold" />}
+          active={location.pathname.startsWith("/manage/agents")}
+          ariaCurrent="page"
+          onClick={() => {
+            navigateDeferred("/manage/agents");
             setNavOpen(false);
           }}
         />

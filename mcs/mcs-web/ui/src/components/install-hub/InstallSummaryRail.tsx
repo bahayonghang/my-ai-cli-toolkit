@@ -118,7 +118,7 @@ export function MobileInstallSummaryBar({
             <Stack direction="row" spacing={0.75}>
               <Chip
                 label={t("installHub.skillsChip", {
-                  count: summary.selectedSkillNames.length,
+                  count: summary.selectedItemNames.length,
                 })}
                 size="small"
               />
@@ -219,9 +219,9 @@ function SummarySurface({
           }}
         >
           <SummaryMetric
-            value={summary.selectedSkillNames.length}
+            value={summary.selectedItemNames.length}
             label={t("installHub.skillsChip", {
-              count: summary.selectedSkillNames.length,
+              count: summary.selectedItemNames.length,
             })}
           />
           <SummaryMetric
@@ -307,7 +307,7 @@ function SummarySurface({
           <SummaryList
             title={t("installHub.selectedSkillsTitle")}
             emptyLabel={t("installHub.summaryEmptySkills")}
-            items={summary.selectedSkillNames}
+            items={summary.selectedItemNames}
           />
           <SummaryList
             title={t("installHub.selectedPlatformsTitle")}

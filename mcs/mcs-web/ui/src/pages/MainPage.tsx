@@ -57,6 +57,7 @@ import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
+import { getPlatformCommandsLabel } from "@/utils/platformLabels";
 import {
   PlatformBadge,
   PlatformCapabilityChips,
@@ -158,7 +159,7 @@ export default function MainPage() {
     activeTab === "skills"
       ? t("common.skills")
       : activeTab === "commands"
-        ? t("common.commands")
+        ? getPlatformCommandsLabel(platform, t)
         : t("common.agents");
   const totalVisibleCount = items.length;
   const totalCategoryCount = visibleCategories.reduce((sum, category) => sum + category.count, 0);
@@ -660,7 +661,7 @@ export default function MainPage() {
             activeTab === "skills"
               ? t("common.skills")
               : activeTab === "commands"
-                ? t("common.commands")
+                ? getPlatformCommandsLabel(platform, t)
                 : t("common.agents"),
           platform: platform?.name ?? platformId ?? "",
         })}
@@ -761,7 +762,7 @@ function FiltersPanel({
         >
           <Tab label={t("common.skills")} value="skills" />
           <Tab
-            label={t("common.commands")}
+            label={getPlatformCommandsLabel(platform, t)}
             value="commands"
             disabled={platform?.supports_commands === false}
           />

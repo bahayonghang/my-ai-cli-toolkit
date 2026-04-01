@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
 import UnifiedInstallHubPage from "./UnifiedInstallHubPage";
 import { lightTheme } from "@/theme";
-import type { PlatformDisplay, SkillCatalogDto } from "@/types";
+import type { InstallCatalogItemDto, PlatformDisplay } from "@/types";
 
 const platforms: PlatformDisplay[] = [
   {
@@ -23,8 +23,9 @@ const platforms: PlatformDisplay[] = [
   },
 ];
 
-const catalog: SkillCatalogDto[] = [
+const catalog: InstallCatalogItemDto[] = [
   {
+    item_type: "skill",
     name: "frontend-design",
     description: "Design distinctive UIs",
     category: "frontend",
@@ -33,6 +34,7 @@ const catalog: SkillCatalogDto[] = [
     platform_status: { claude: "installed", codex: "outdated" },
   },
   {
+    item_type: "skill",
     name: "research",
     description: "Run grounded research",
     category: "workflow",
@@ -58,14 +60,16 @@ const uiState = {
 
 const modelState: {
   loadingCatalog: boolean;
-  catalog: SkillCatalogDto[];
+  catalog: InstallCatalogItemDto[];
   catalogError: string | null;
   categories: string[];
   defaultOnly: boolean;
   search: string;
   selectedCategory: string | null;
   selectedSkills: Set<string>;
-  filteredSkills: SkillCatalogDto[];
+  filteredSkills: InstallCatalogItemDto[];
+  itemType: "skill" | "command" | "agent";
+  availablePlatforms: PlatformDisplay[];
   selectedPlatforms: Set<string>;
   activeStage: "skills" | "platforms" | "review";
   steps: {
@@ -74,10 +78,11 @@ const modelState: {
     review: { stage: "review"; available: boolean; complete: boolean };
   };
   summary: {
-    selectedSkillNames: string[];
+    itemType: "skill" | "command" | "agent";
+    selectedItemNames: string[];
     selectedPlatforms: PlatformDisplay[];
-    filteredSkillCount: number;
-    totalSkillCount: number;
+    filteredItemCount: number;
+    totalItemCount: number;
     plannedActionCount: number;
   };
   execution: {
@@ -96,6 +101,7 @@ const modelState: {
   }>;
   setSelectedCategory: () => void;
   setSelectedSkills: () => void;
+  setItemType: () => void;
   setDefaultOnly: () => void;
   setSearch: () => void;
   setSelectedPlatforms: () => void;
@@ -112,6 +118,8 @@ const modelState: {
   selectedCategory: null as string | null,
   selectedSkills: new Set<string>(["frontend-design"]),
   filteredSkills: catalog,
+  itemType: "skill",
+  availablePlatforms: platforms,
   selectedPlatforms: new Set<string>(["claude"]),
   activeStage: "skills",
   steps: {
@@ -120,10 +128,11 @@ const modelState: {
     review: { stage: "review" as const, available: true, complete: false },
   },
   summary: {
-    selectedSkillNames: ["frontend-design"],
+    itemType: "skill",
+    selectedItemNames: ["frontend-design"],
     selectedPlatforms: [platforms[0]],
-    filteredSkillCount: 2,
-    totalSkillCount: 2,
+    filteredItemCount: 2,
+    totalItemCount: 2,
     plannedActionCount: 1,
   },
   execution: {
@@ -136,6 +145,7 @@ const modelState: {
   results: [],
   setSelectedCategory: () => {},
   setSelectedSkills: () => {},
+  setItemType: () => {},
   setDefaultOnly: () => {},
   setSearch: () => {},
   setSelectedPlatforms: () => {},

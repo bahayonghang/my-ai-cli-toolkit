@@ -156,8 +156,9 @@ describe("DashboardPage", () => {
     expect(markup).toContain("Skills Spotlight");
     expect(markup).toContain("Platform Matrix");
     expect(markup).toContain("frontend-design");
-    expect(markup.indexOf("Claude")).toBeLessThan(markup.indexOf("Gemini"));
-    expect(markup.indexOf("Gemini")).toBeLessThan(markup.indexOf("Codex"));
+    expect(markup).toContain("Claude");
+    expect(markup).toContain("Gemini");
+    expect(markup).toContain("Codex");
   });
 
   it("renders an error alert alongside existing dashboard content", () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { PlatformInstallResult } from "@/components/install-hub/types";
 import type { TranslateFn } from "@/i18n";
-import type { PlatformDisplay } from "@/types";
+import type { InstallCatalogItemDto, PlatformDisplay } from "@/types";
 import {
   buildInstallHubSummary,
   coerceInstallHubStage,
@@ -12,29 +12,37 @@ import {
 } from "./installHubLogic";
 import { installAcrossPlatforms } from "./useUnifiedInstallHub";
 
-const { installSkillsMock } = vi.hoisted(() => ({
+const { installSkillsMock, installCommandsMock, installAgentsMock } = vi.hoisted(() => ({
   installSkillsMock: vi.fn(),
+  installCommandsMock: vi.fn(),
+  installAgentsMock: vi.fn(),
 }));
 
 vi.mock("@/api/client", () => ({
   getSkillCatalog: vi.fn(),
   installSkills: installSkillsMock,
+  installCommands: installCommandsMock,
+  installAgents: installAgentsMock,
 }));
 
-const SKILLS = [
+const SKILLS: InstallCatalogItemDto[] = [
   {
+    item_type: "skill",
     name: "alpha",
     description: "Alpha skill",
     category: "core",
     tags: ["tag-1"],
     is_default: true,
+    platform_status: { claude: "installed", codex: "installed" },
   },
   {
+    item_type: "skill",
     name: "beta",
     description: "Beta utility",
     category: null,
     tags: ["tag-2"],
     is_default: false,
+    platform_status: { claude: "not_installed", codex: "outdated" },
   },
 ];
 
@@ -64,6 +72,8 @@ const translate: TranslateFn = (key, vars) => {
 
 beforeEach(() => {
   installSkillsMock.mockReset();
+  installCommandsMock.mockReset();
+  installAgentsMock.mockReset();
 });
 
 describe("collectSkillCategories", () => {
@@ -155,14 +165,17 @@ describe("buildInstallHubSummary", () => {
         platforms: SHARED_PATH_PLATFORMS,
         selectedPlatforms: new Set(["claude", "codex"]),
         selectedSkills: new Set(["alpha", "beta"]),
+        catalog: SKILLS,
+        itemType: "skill",
         filteredSkillCount: 5,
         totalSkillCount: 9,
       }),
     ).toEqual({
-      selectedSkillNames: ["alpha", "beta"],
+      itemType: "skill",
+      selectedItemNames: ["alpha", "beta"],
       selectedPlatforms: SHARED_PATH_PLATFORMS,
-      filteredSkillCount: 5,
-      totalSkillCount: 9,
+      filteredItemCount: 5,
+      totalItemCount: 9,
       plannedActionCount: 4,
     });
   });
@@ -190,7 +203,13 @@ describe("installAcrossPlatforms", () => {
     const setResults = vi.fn();
 
     const results = await installAcrossPlatforms(
-      { platforms: SHARED_PATH_PLATFORMS, skills: ["alpha"] },
+      {
+        tasks: SHARED_PATH_PLATFORMS.map((platform) => ({
+          platform,
+          itemType: "skill" as const,
+          itemNames: ["alpha"],
+        })),
+      },
       setExecution,
       setResults,
       translate
@@ -256,7 +275,13 @@ describe("installAcrossPlatforms", () => {
       .mockRejectedValueOnce(new Error("permission denied"));
 
     const results = await installAcrossPlatforms(
-      { platforms: SHARED_PATH_PLATFORMS, skills: ["alpha"] },
+      {
+        tasks: SHARED_PATH_PLATFORMS.map((platform) => ({
+          platform,
+          itemType: "skill" as const,
+          itemNames: ["alpha"],
+        })),
+      },
       vi.fn(),
       vi.fn(),
       translate
@@ -281,6 +306,68 @@ describe("installAcrossPlatforms", () => {
         },
       ],
       requestError: "permission denied",
+    });
+  });
+
+  it("routes command installs to the commands API", async () => {
+    installCommandsMock.mockResolvedValueOnce({
+      success_count: 1,
+      failure_count: 0,
+      results: [
+        { success: true, item_name: "setup", message: "installed prompt", error: null },
+      ],
+    });
+
+    const [result] = await installAcrossPlatforms(
+      {
+        tasks: [
+          {
+            platform: SHARED_PATH_PLATFORMS[1],
+            itemType: "command",
+            itemNames: ["setup"],
+          },
+        ],
+      },
+      vi.fn(),
+      vi.fn(),
+      translate,
+    );
+
+    expect(installCommandsMock).toHaveBeenCalledWith("codex", ["setup"]);
+    expect(result).toMatchObject({
+      successCount: 1,
+      failureCount: 0,
+    });
+  });
+
+  it("routes agent installs to the agents API", async () => {
+    installAgentsMock.mockResolvedValueOnce({
+      success_count: 1,
+      failure_count: 0,
+      results: [
+        { success: true, item_name: "reviewer", message: "installed agent", error: null },
+      ],
+    });
+
+    const [result] = await installAcrossPlatforms(
+      {
+        tasks: [
+          {
+            platform: SHARED_PATH_PLATFORMS[0],
+            itemType: "agent",
+            itemNames: ["reviewer"],
+          },
+        ],
+      },
+      vi.fn(),
+      vi.fn(),
+      translate,
+    );
+
+    expect(installAgentsMock).toHaveBeenCalledWith("claude", ["reviewer"]);
+    expect(result).toMatchObject({
+      successCount: 1,
+      failureCount: 0,
     });
   });
 });

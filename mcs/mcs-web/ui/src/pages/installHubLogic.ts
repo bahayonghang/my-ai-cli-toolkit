@@ -1,4 +1,4 @@
-import type { SkillCatalogDto, PlatformDisplay } from "@/types";
+import type { InstallCatalogItemDto, ItemType, PlatformDisplay } from "@/types";
 import type {
   InstallHubSelectionSummary,
   InstallHubStage,
@@ -10,7 +10,7 @@ import type {
 
 const EMPTY_CATEGORY = "uncategorized";
 
-export function collectSkillCategories(skills: SkillCatalogDto[]): string[] {
+export function collectSkillCategories(skills: InstallCatalogItemDto[]): string[] {
   const categories = new Set<string>();
   for (const skill of skills) {
     categories.add(skill.category ?? EMPTY_CATEGORY);
@@ -19,14 +19,15 @@ export function collectSkillCategories(skills: SkillCatalogDto[]): string[] {
 }
 
 export function filterSkillCatalog(
-  skills: SkillCatalogDto[],
+  skills: InstallCatalogItemDto[],
   search: string,
   category: string | null,
   defaultOnly: boolean
-): SkillCatalogDto[] {
+): InstallCatalogItemDto[] {
   const loweredSearch = search.trim().toLowerCase();
   return skills.filter((skill) => {
-    if (defaultOnly && !skill.is_default) return false;
+    if (defaultOnly && skill.item_type === "skill" && !skill.is_default) return false;
+    if (defaultOnly && skill.item_type !== "skill") return false;
     if (category && (skill.category ?? EMPTY_CATEGORY) !== category) return false;
     if (!loweredSearch) return true;
 
@@ -99,18 +100,31 @@ export function buildInstallHubSummary(args: {
   platforms: PlatformDisplay[];
   selectedPlatforms: PlatformSelection;
   selectedSkills: SkillSelection;
+  catalog: InstallCatalogItemDto[];
+  itemType: ItemType;
   filteredSkillCount: number;
   totalSkillCount: number;
 }): InstallHubSelectionSummary {
   const selectedPlatformItems = args.platforms.filter((platform) =>
     args.selectedPlatforms.has(platform.id),
   );
+  const selectedItemNames = Array.from(args.selectedSkills);
+  const catalogByName = new Map(args.catalog.map((item) => [item.name, item]));
+  const plannedActionCount = selectedPlatformItems.reduce(
+    (count, platform) =>
+      count +
+      selectedItemNames.filter((name) =>
+        Boolean(catalogByName.get(name)?.platform_status?.[platform.id]),
+      ).length,
+    0,
+  );
 
   return {
-    selectedSkillNames: Array.from(args.selectedSkills),
+    itemType: args.itemType,
+    selectedItemNames,
     selectedPlatforms: selectedPlatformItems,
-    filteredSkillCount: args.filteredSkillCount,
-    totalSkillCount: args.totalSkillCount,
-    plannedActionCount: selectedPlatformItems.length * args.selectedSkills.size,
+    filteredItemCount: args.filteredSkillCount,
+    totalItemCount: args.totalSkillCount,
+    plannedActionCount,
   };
 }

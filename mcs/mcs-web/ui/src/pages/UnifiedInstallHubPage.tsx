@@ -19,7 +19,6 @@ import { useI18n } from "@/i18n";
 import type { TranslateFn } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
-import type { PlatformDisplay } from "@/types";
 import type { InstallHubStage } from "@/components/install-hub/types";
 import { AppShell } from "@/components/shell/AppShell";
 import PageLoadingState from "@/components/common/PageLoadingState";
@@ -52,7 +51,7 @@ export default function UnifiedInstallHubPage() {
       onHome={() => navigate("/")}
       summaryMode="rail"
     >
-      <PageBody model={model} platforms={platforms} />
+      <PageBody model={model} />
       <NotificationSnackbar />
     </AppShell>
   );
@@ -65,10 +64,8 @@ function LoadingScreen() {
 
 function PageBody({
   model,
-  platforms,
 }: {
   model: ReturnType<typeof useUnifiedInstallHub>;
-  platforms: PlatformDisplay[];
 }) {
   return (
     <Box sx={{ pb: { xs: 2, md: 0 } }}>
@@ -78,17 +75,15 @@ function PageBody({
         </Alert>
       ) : null}
 
-      <InstallWorkbench model={model} platforms={platforms} />
+      <InstallWorkbench model={model} />
     </Box>
   );
 }
 
 function InstallWorkbench({
   model,
-  platforms,
 }: {
   model: ReturnType<typeof useUnifiedInstallHub>;
-  platforms: PlatformDisplay[];
 }) {
   const { t } = useI18n();
 
@@ -108,6 +103,8 @@ function InstallWorkbench({
               preview={buildSkillsPreview(model, t)}
             >
               <SkillCatalogStage
+                itemType={"skill"}
+                availableItemTypes={["skill"]}
                 categories={model.categories}
                 defaultOnly={model.defaultOnly}
                 disabled={model.execution.running}
@@ -116,6 +113,7 @@ function InstallWorkbench({
                 selectedSkills={model.selectedSkills}
                 skills={model.filteredSkills}
                 totalCount={model.catalog.length}
+                onItemTypeChange={model.setItemType}
                 onCategoryChange={model.setSelectedCategory}
                 onClearSelection={() => model.setSelectedSkills(new Set())}
                 onDefaultOnlyChange={model.setDefaultOnly}
@@ -148,12 +146,15 @@ function InstallWorkbench({
               <PlatformTargetStage
                 disabled={model.execution.running}
                 locked={!model.steps.platforms.available}
-                platforms={platforms}
+                itemType={model.itemType}
+                platforms={model.availablePlatforms}
                 selectedPlatforms={model.selectedPlatforms}
                 onClearSelection={() => model.setSelectedPlatforms(new Set())}
                 onSelectAll={() =>
                   model.setSelectedPlatforms(
-                    new Set(platforms.map((platform) => platform.id)),
+                    new Set(
+                      model.availablePlatforms.map((platform) => platform.id),
+                    ),
                   )
                 }
                 onTogglePlatform={(platformId) =>
@@ -184,8 +185,9 @@ function InstallWorkbench({
                 execution={model.execution}
                 plannedActionCount={model.summary.plannedActionCount}
                 results={model.results}
+                itemType={model.itemType}
                 selectedPlatforms={model.summary.selectedPlatforms}
-                selectedSkillNames={model.summary.selectedSkillNames}
+                selectedSkillNames={model.summary.selectedItemNames}
                 onClearResults={() => model.setResults([])}
                 onInstall={model.runInstall}
               />
@@ -250,14 +252,14 @@ function buildSkillsPreview(
     <Stack spacing={0.75}>
       <Typography variant="body2">
         {t("installHub.filteredTotal", {
-          filtered: model.summary.filteredSkillCount,
-          total: model.summary.totalSkillCount,
+          filtered: model.summary.filteredItemCount,
+          total: model.summary.totalItemCount,
         })}
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        {model.summary.selectedSkillNames.length > 0
+        {model.summary.selectedItemNames.length > 0
           ? t("installHub.selectedSkillsPreview", {
-              count: model.summary.selectedSkillNames.length,
+              count: model.summary.selectedItemNames.length,
             })
           : t("installHub.summaryEmptySkills")}
       </Typography>

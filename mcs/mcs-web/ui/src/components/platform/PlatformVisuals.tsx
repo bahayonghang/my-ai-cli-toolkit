@@ -15,6 +15,7 @@ import {
 import type { Theme } from "@mui/material/styles";
 import { useI18n } from "@/i18n";
 import type { PlatformDisplay } from "@/types";
+import { getPlatformCommandsLabel } from "@/utils/platformLabels";
 
 interface PlatformVisualDefinition {
   glyph: string;
@@ -279,7 +280,7 @@ export function PlatformCapabilityChips({
 }: {
   platform: Pick<
     PlatformDisplay,
-    "supports_agents" | "supports_commands" | "supports_guidance"
+    "id" | "commands_path" | "supports_agents" | "supports_commands" | "supports_guidance"
   >;
   compact?: boolean;
 }) {
@@ -294,7 +295,7 @@ export function PlatformCapabilityChips({
     },
     {
       key: "commands",
-      label: t("common.commands"),
+      label: getPlatformCommandsLabel(platform, t),
       icon: <TerminalRoundedIcon fontSize="inherit" />,
       visible: Boolean(platform.supports_commands),
     },

@@ -14,11 +14,13 @@ import { useMemo } from "react";
 import { useI18n } from "@/i18n";
 import { summarizeInstallResults } from "@/pages/installHubLogic";
 import type { ExecutionState, PlatformInstallResult } from "./types";
-import type { PlatformDisplay } from "@/types";
+import type { ItemType, PlatformDisplay } from "@/types";
 import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
+import { getPlatformInstallPath } from "@/utils/installHubContent";
 
 interface InstallReviewStageProps {
   selectedSkillNames: string[];
+  itemType: ItemType;
   selectedPlatforms: PlatformDisplay[];
   plannedActionCount: number;
   execution: ExecutionState;
@@ -29,6 +31,7 @@ interface InstallReviewStageProps {
 
 export function InstallReviewStage({
   selectedSkillNames,
+  itemType,
   selectedPlatforms,
   plannedActionCount,
   execution,
@@ -113,6 +116,7 @@ export function InstallReviewStage({
       >
         <ReviewPreviewBlock
           selectedSkillNames={selectedSkillNames}
+          itemType={itemType}
           selectedPlatforms={selectedPlatforms}
           plannedActionCount={plannedActionCount}
         />
@@ -132,10 +136,12 @@ export function InstallReviewStage({
 
 function ReviewPreviewBlock({
   selectedSkillNames,
+  itemType,
   selectedPlatforms,
   plannedActionCount,
 }: {
   selectedSkillNames: string[];
+  itemType: ItemType;
   selectedPlatforms: PlatformDisplay[];
   plannedActionCount: number;
 }) {
@@ -217,7 +223,7 @@ function ReviewPreviewBlock({
                     platformId={platform.id}
                     name={platform.name}
                     fallbackIcon={platform.icon}
-                    subtitle={platform.skills_path}
+                    subtitle={getPlatformInstallPath(platform, itemType, t)}
                     size={42}
                   />
                 </Box>

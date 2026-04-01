@@ -11,6 +11,7 @@ export const enInstallHubMessages = {
   "installHub.execution": "Execution",
   "installHub.willRunActions": "Will run {count} install actions",
   "installHub.searchSkills": "Search skills",
+  "installHub.itemTypeLabel": "Content type",
   "installHub.category": "Category",
   "installHub.allCategories": "All categories",
   "installHub.onlyDefaultSkills": "Only default skills",
@@ -105,6 +106,8 @@ export const enInstallHubMessages = {
   "installHub.selectedSkillsPreview": "{count} skills selected",
   "installHub.selectedPlatformsPreview": "{count} platforms selected",
   "installHub.reviewLockedHint": "Choose at least one skill and one platform before reviewing the run.",
+  "installHub.noCompatibleSelections":
+    "The selected items are not available on the selected platforms.",
 } as const;
 
 export const zhInstallHubMessages: Record<
@@ -123,6 +126,7 @@ export const zhInstallHubMessages: Record<
   "installHub.execution": "执行",
   "installHub.willRunActions": "将执行 {count} 个安装动作",
   "installHub.searchSkills": "搜索技能",
+  "installHub.itemTypeLabel": "内容类型",
   "installHub.category": "分类",
   "installHub.allCategories": "全部分类",
   "installHub.onlyDefaultSkills": "仅默认技能",
@@ -215,4 +219,5 @@ export const zhInstallHubMessages: Record<
   "installHub.selectedSkillsPreview": "已选 {count} 个技能",
   "installHub.selectedPlatformsPreview": "已选 {count} 个平台",
   "installHub.reviewLockedHint": "至少选择 1 个技能和 1 个平台后，才能进入执行确认。",
+  "installHub.noCompatibleSelections": "所选内容在当前目标平台上都不可安装。",
 };

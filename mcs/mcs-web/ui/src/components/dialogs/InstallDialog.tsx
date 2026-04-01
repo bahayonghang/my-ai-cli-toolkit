@@ -19,6 +19,7 @@ import { installAgents, installCommands, installSkills } from "@/api/client";
 import type { InstallTarget, PlatformDisplay } from "@/types";
 import { useI18n } from "@/i18n";
 import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
+import { getPlatformCommandsLabel } from "@/utils/platformLabels";
 
 type Phase = "confirm" | "installing" | "completed";
 type LinkMode = "auto" | "symlink" | "copy";
@@ -214,7 +215,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
     itemType === "skills"
       ? t("dialogs.itemTypeSkills")
       : itemType === "commands"
-        ? t("dialogs.itemTypeCommands")
+        ? getPlatformCommandsLabel(platform, t)
         : t("dialogs.itemTypeAgents");
 
   return (

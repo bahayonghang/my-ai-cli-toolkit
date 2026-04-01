@@ -9,7 +9,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import type { DiffDto } from "@/types";
+import type { DiffDto, InstallTarget } from "@/types";
 import { getAgentDiff, getCommandDiff, getSkillDiff } from "@/api/client";
 import { useI18n } from "@/i18n";
 
@@ -18,10 +18,18 @@ interface Props {
   platformId: string;
   itemName: string | null;
   itemType: "skill" | "command" | "agent";
+  installTarget?: InstallTarget;
   onClose: () => void;
 }
 
-export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Props) {
+export function DiffDialog({
+  open,
+  platformId,
+  itemName,
+  itemType,
+  installTarget,
+  onClose,
+}: Props) {
   const { t } = useI18n();
   const [diff, setDiff] = useState<DiffDto | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,11 +43,11 @@ export function DiffDialog({ open, platformId, itemName, itemType, onClose }: Pr
         : itemType === "command"
           ? getCommandDiff
           : getAgentDiff;
-    fetcher(platformId, itemName)
+    fetcher(platformId, itemName, installTarget)
       .then(setDiff)
       .catch(() => setDiff(null))
       .finally(() => setLoading(false));
-  }, [open, platformId, itemName, itemType]);
+  }, [open, platformId, itemName, itemType, installTarget]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>

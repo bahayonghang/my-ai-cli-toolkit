@@ -20,6 +20,7 @@ import type { PlatformDisplay, ItemType } from "@/types";
 import { getPlatforms, multiSync } from "@/api/client";
 import { useI18n } from "@/i18n";
 import { extractInvalidPlatforms } from "@/utils/errorDetails";
+import { getPlatformCommandsLabel } from "@/utils/platformLabels";
 
 interface Props {
   open: boolean;
@@ -114,7 +115,10 @@ export function MultiSyncDialog({
     itemType === "skill"
       ? t("common.skills")
       : itemType === "command"
-        ? t("common.commands")
+        ? getPlatformCommandsLabel(
+            platforms.find((platform) => platform.id === currentPlatformId),
+            t
+          )
         : t("common.agents");
 
   return (

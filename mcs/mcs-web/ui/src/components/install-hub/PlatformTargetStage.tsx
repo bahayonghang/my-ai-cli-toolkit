@@ -11,12 +11,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useI18n } from "@/i18n";
-import type { PlatformDisplay } from "@/types";
+import type { ItemType, PlatformDisplay } from "@/types";
 import type { PlatformSelection } from "./types";
 import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
+import { getPlatformInstallPath } from "@/utils/installHubContent";
 
 interface PlatformTargetStageProps {
   platforms: PlatformDisplay[];
+  itemType: ItemType;
   selectedPlatforms: PlatformSelection;
   disabled?: boolean;
   locked?: boolean;
@@ -27,6 +29,7 @@ interface PlatformTargetStageProps {
 
 export function PlatformTargetStage({
   platforms,
+  itemType,
   selectedPlatforms,
   disabled = false,
   locked = false,
@@ -220,7 +223,7 @@ export function PlatformTargetStage({
                           fontFamily: "var(--font-family-mono, inherit)",
                         }}
                       >
-                        {platform.skills_path}
+                        {getPlatformInstallPath(platform, itemType, t)}
                       </Typography>
                     </Box>
                   </Stack>

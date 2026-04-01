@@ -13,6 +13,8 @@ const InstalledSkillsPage = lazy(() => import("@/pages/InstalledSkillsPage"));
 const InstallPage = lazy(() => import("@/pages/InstallPage"));
 const NpxSkillsPage = lazy(() => import("@/pages/NpxSkillsPage"));
 const UnifiedInstallHubPage = lazy(() => import("@/pages/UnifiedInstallHubPage"));
+const CommandsWorkspacePage = lazy(() => import("@/pages/CommandsWorkspacePage"));
+const AgentsWorkspacePage = lazy(() => import("@/pages/AgentsWorkspacePage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 function Fallback() {
@@ -59,6 +61,8 @@ export default function App() {
               <Route path="/platform/:platformId/legacy" element={<MainPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/install-hub" element={<UnifiedInstallHubPage />} />
+              <Route path="/manage/commands" element={<CommandsWorkspacePage />} />
+              <Route path="/manage/agents" element={<AgentsWorkspacePage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>

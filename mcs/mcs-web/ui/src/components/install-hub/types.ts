@@ -1,6 +1,12 @@
-import type { InstallResult, PlatformDisplay, SkillCatalogDto } from "@/types";
+import type {
+  InstallCatalogItemDto,
+  InstallResult,
+  ItemType,
+  PlatformDisplay,
+} from "@/types";
 
 export interface InstallHubFilters {
+  itemType: ItemType;
   search: string;
   category: string | null;
   defaultOnly: boolean;
@@ -15,10 +21,11 @@ export interface InstallHubStepState {
 }
 
 export interface InstallHubSelectionSummary {
-  selectedSkillNames: string[];
+  itemType: ItemType;
+  selectedItemNames: string[];
   selectedPlatforms: PlatformDisplay[];
-  filteredSkillCount: number;
-  totalSkillCount: number;
+  filteredItemCount: number;
+  totalItemCount: number;
   plannedActionCount: number;
 }
 
@@ -40,5 +47,5 @@ export interface ExecutionState {
   activePlatformId: string | null;
 }
 
-export type SkillSelection = Set<SkillCatalogDto["name"]>;
+export type SkillSelection = Set<InstallCatalogItemDto["name"]>;
 export type PlatformSelection = Set<PlatformDisplay["id"]>;

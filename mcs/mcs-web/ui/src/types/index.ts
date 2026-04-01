@@ -87,6 +87,10 @@ export interface SkillCatalogDto {
   platform_status?: Record<string, InstallStatus>;
 }
 
+export interface InstallCatalogItemDto extends SkillCatalogDto {
+  item_type: ItemType;
+}
+
 export interface ItemDetailDto {
   name: string;
   item_type: ItemType;

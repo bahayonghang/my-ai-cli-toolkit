@@ -5,6 +5,10 @@ import { enDialogMessages, zhDialogMessages } from "./dialogs";
 import { enInstallMessages, zhInstallMessages } from "./install";
 import { enInstalledMessages, zhInstalledMessages } from "./installed";
 import { enInstallHubMessages, zhInstallHubMessages } from "./installHub";
+import {
+  enManageContentMessages,
+  zhManageContentMessages,
+} from "./manageContent";
 import { enNpxSkillsMessages, zhNpxSkillsMessages } from "./npxSkills";
 import {
   enPlatformSelectMessages,
@@ -18,6 +22,7 @@ const enMessages = {
   ...enInstallMessages,
   ...enDashboardMessages,
   ...enInstallHubMessages,
+  ...enManageContentMessages,
   ...enNpxSkillsMessages,
   ...enDialogMessages,
 } as const;
@@ -33,6 +38,7 @@ const zhMessages: LocaleMessages = {
   ...zhInstallMessages,
   ...zhDashboardMessages,
   ...zhInstallHubMessages,
+  ...zhManageContentMessages,
   ...zhNpxSkillsMessages,
   ...zhDialogMessages,
 };
