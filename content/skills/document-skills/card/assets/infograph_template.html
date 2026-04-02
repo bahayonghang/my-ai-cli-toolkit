@@ -2,8 +2,11 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<script>
+  window.__CAPTURE_REQUIRED_FONTS__ = ['TsangerJinKai'];
+</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap');
+  {{LOCAL_FONT_FACE}}
 
   :root {
     --bg: #F2F2F2;
@@ -13,9 +16,9 @@
     --ink: #2D2926;
     --ink-light: #5C5350;
     --white: #FFFFFF;
-    --serif: 'DM Serif Display', 'KingHwa_OldSong', Georgia, 'Noto Serif SC', serif;
-    --sans: 'DM Sans', 'KingHwa_OldSong', -apple-system, 'PingFang SC', system-ui, sans-serif;
-    --mono: 'SF Mono', 'Menlo', monospace;
+    --serif: 'TsangerJinKai', 'KingHwa_OldSong', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    --sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+    --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }

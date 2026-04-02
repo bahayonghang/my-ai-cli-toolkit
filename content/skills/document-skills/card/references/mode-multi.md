@@ -8,7 +8,7 @@
 
 ## 步骤 1：读取模板
 
-Read `$SKILL_DIR/assets/poster_template.html`
+Read `$SKILL_DIR/references/editorial-typography.md` + `$SKILL_DIR/assets/poster_template.html`
 
 ## 步骤 1.5：色调感知
 
@@ -104,6 +104,7 @@ Read `$SKILL_DIR/assets/poster_template.html`
 
 | 变量 | 规则 |
 |------|------|
+| `{{LOCAL_FONT_FACE}}` | 注入 editorial-typography 里定义的本地 `@font-face`，指向 `assets/fonts/TsangerJinKai02-W04.ttf` 的绝对 `file://` URL |
 | `{{BG_COLOR}}` | 步骤 1.5 确定的背景底色 |
 | `{{ACCENT_COLOR}}` | 步骤 1.5 确定的强调色 |
 | `{{HEADER_BLOCK}}` | 续页卡：`<div class="header"><span class="running-title">文章标题</span></div>`；首卡或单卡：空字符串 |

@@ -27,6 +27,7 @@
 ## 主要资源
 
 - `references/taste.md`：统一视觉质量基线
+- `references/editorial-typography.md`：`-l/-m/-i` 的本地 editorial 字体协议
 - 各模具说明文件，例如 `references/mode-long.md`
 - `assets/` 下的 HTML 模板
 - 基于 Playwright 的截图脚本
@@ -35,4 +36,6 @@
 
 - 输出为 PNG，因此不遵循 Org-mode 或 ASCII-only 约束。
 - 对 arXiv 来源内容，部分模具会在页脚展示 arXiv ID。
+- `-l`、`-m`、`-i` 现在使用 Skill 自带的本地仓耳今楷，保证 `file://` 截图时字体稳定。
+- `-v` 视觉笔记与 `-c` 漫画仍保留各自专用字体系统。
 - 渲染完成后会汇报生成文件路径。

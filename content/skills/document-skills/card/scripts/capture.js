@@ -32,7 +32,30 @@ async function main() {
 
   const fileUrl = 'file://' + path.resolve(htmlPath);
   await page.goto(fileUrl, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(500);
+  const fontStatus = await page.evaluate(async () => {
+    if (!document.fonts) {
+      return { supported: false, unresolved: [] };
+    }
+
+    try {
+      await document.fonts.ready;
+    } catch {
+      // Ignore and inspect required fonts below.
+    }
+
+    const requiredFonts = Array.isArray(window.__CAPTURE_REQUIRED_FONTS__)
+      ? window.__CAPTURE_REQUIRED_FONTS__
+      : [];
+    const unresolved = requiredFonts.filter((family) => !document.fonts.check(`16px "${family}"`));
+    return { supported: true, unresolved };
+  });
+  await page.waitForTimeout(300);
+
+  if (fontStatus.supported && fontStatus.unresolved.length > 0) {
+    throw new Error(
+      `Required fonts did not load: ${fontStatus.unresolved.join(', ')}. Check local font file paths in the HTML before capturing.`
+    );
+  }
 
   if (fullpage) {
     const bodyHeight = await page.evaluate(() => document.body.scrollHeight);

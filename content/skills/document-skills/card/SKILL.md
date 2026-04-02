@@ -3,7 +3,7 @@ name: card
 description: "Turn URLs, pasted text, Markdown, or article files into PNG knowledge cards and visual explainers. Supports five modes: `-l` long reading card, `-i` infographic, `-m` multi-card carousel, `-v` sketchnote, and `-c` black-and-white manga comic. Use whenever the user asks to make content into a card, long image, infographic, visual note, sketchnote, comic, manga page, or says '铸' / 'cast' / '做成图' / '做成卡片' / '视觉化一下', even if they do not specify a mode. Choose the best-fit mode automatically when no flag is given. Do not use it for generic photo illustration, slide decks, or editable diagram authoring."
 category: document-skills
 tags: [card, png, infographic, sketchnote, comic, visualization, longform]
-version: "1.7.0"
+version: "1.8.0"
 ---
 
 # card: 铸
@@ -82,6 +82,8 @@ cd "$SKILL_DIR" && npm install && npx playwright install chromium
 
 核心：反 AI 生成痕迹。禁 Inter 字体默认方案、禁纯黑、禁三等分卡片、禁居中 Hero、禁 AI 文案腔、禁假数据。
 
+`-l/-m/-i` 另外必须 Read `$SKILL_DIR/references/editorial-typography.md`。这三个 editorial mode 使用 Skill 自带的本地仓耳今楷，不依赖远程字体。
+
 ## Mode 选择
 
 显式参数优先。若用户已经给出 `-l/-i/-m/-v/-c`，不要擅自改模具。
@@ -102,6 +104,7 @@ cd "$SKILL_DIR" && npm install && npx playwright install chromium
 2. 提取标题、核心命题、来源信息与 `{name}`。
 3. 决定 mode。
 4. Read `$SKILL_DIR/references/taste.md` 与对应 mode 文档。
+   `-l/-m/-i` 还要 Read `$SKILL_DIR/references/editorial-typography.md`。
 5. 用 mode 文档指导生成完整 HTML。
 6. 先做 mode 自检，再做根 Skill 统一质检。
 7. 保存 HTML 到 `output_dir`。
@@ -142,19 +145,19 @@ cd "$SKILL_DIR" && npm install && npx playwright install chromium
 
 ### -l（默认）：长图
 
-Read `$SKILL_DIR/references/mode-long.md`，按其步骤执行。
+Read `$SKILL_DIR/references/editorial-typography.md` + `$SKILL_DIR/references/mode-long.md`，按其步骤执行。
 
 模板：`$SKILL_DIR/assets/long_template.html`
 
 ### -i：信息图
 
-Read `$SKILL_DIR/references/mode-infograph.md`，按其步骤执行。
+Read `$SKILL_DIR/references/editorial-typography.md` + `$SKILL_DIR/references/mode-infograph.md`，按其步骤执行。
 
 模板：`$SKILL_DIR/assets/infograph_template.html`
 
 ### -m：多卡
 
-Read `$SKILL_DIR/references/mode-multi.md`，按其步骤执行。
+Read `$SKILL_DIR/references/editorial-typography.md` + `$SKILL_DIR/references/mode-multi.md`，按其步骤执行。
 
 模板：`$SKILL_DIR/assets/poster_template.html`
 

@@ -33,6 +33,7 @@ Visual content-casting skill that turns source material into PNG outputs using o
 ## Main supporting assets
 
 - `references/taste.md` for the visual quality baseline
+- `references/editorial-typography.md` for the bundled editorial font contract used by `-l`, `-m`, and `-i`
 - mode-specific guides such as `references/mode-long.md`
 - HTML templates under `assets/`
 - Playwright-based capture script referenced by the skill
@@ -46,4 +47,6 @@ Visual content-casting skill that turns source material into PNG outputs using o
 ## Notes
 
 - arXiv sources can surface the arXiv ID in the footer for supported modes.
+- `-l`, `-m`, and `-i` now use a bundled local Tsanger JinKai font for stable `file://` screenshot rendering.
+- `-v` sketchnote and `-c` comic keep their dedicated font systems.
 - The skill replaces plain-text summarization with a designed visual deliverable.

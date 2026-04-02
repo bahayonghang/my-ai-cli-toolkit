@@ -8,10 +8,10 @@
 
 ## 步骤 1：读取模板
 
-Read `$SKILL_DIR/assets/infograph_template.html`
+Read `$SKILL_DIR/references/editorial-typography.md` + `$SKILL_DIR/assets/infograph_template.html`
 
 模板极简，只提供：
-- 字体加载（DM Serif Display + DM Sans + KingHwa_OldSong）
+- `{{LOCAL_FONT_FACE}}` 插槽，用于注入本地仓耳今楷
 - CSS 变量（`--bg`, `--green`, `--pink`, `--yellow`, `--ink`, `--ink-light`, `--white`, `--serif`, `--sans`, `--mono`）
 - SVG 噪点纹理（自动叠加）
 - `.colophon` 署名栏
@@ -104,11 +104,17 @@ Read `$SKILL_DIR/assets/infograph_template.html`
 
 | 变量 | 值 | 用途 |
 |------|------|------|
-| `--serif` | DM Serif Display → KingHwa_OldSong | 标题、大字、金句 |
-| `--sans` | DM Sans → KingHwa_OldSong | 正文、标签 |
+| `--serif` | TsangerJinKai → 中文 serif fallback | 标题、大字、核心概念 |
+| `--sans` | UI sans stack | 正文标签、图例、密集说明 |
 | `--mono` | SF Mono | 数据标注、REF 编码 |
 | `--ink` | `#2D2926` | 主文字色 |
 | `--ink-light` | `#5C5350` | 次要文字 |
+
+**信息图排版约束**：
+
+- 书卷气来自标题和关键概念，而不是整张图都楷体化
+- 当内容密度高时，正文标签、图例、编号优先用 `--sans`
+- 数字、代码、REF 编码优先用 `--mono`
 
 **动态色调**（由步骤 2.4 决定）：
 
@@ -266,6 +272,7 @@ Read `$SKILL_DIR/assets/infograph_template.html`
 
 | 变量 | 内容 |
 |------|------|
+| `{{LOCAL_FONT_FACE}}` | 注入 editorial-typography 里定义的本地 `@font-face`，指向 `assets/fonts/TsangerJinKai02-W04.ttf` 的绝对 `file://` URL |
 | `{{CUSTOM_CSS}}` | 这张图的全部 CSS |
 | `{{CONTENT_HTML}}` | 这张图的全部 HTML |
 | `{{LOGO_SRC}}` | `file://` 指向当前 Skill 目录内 `assets/logo.png` 的绝对路径 |

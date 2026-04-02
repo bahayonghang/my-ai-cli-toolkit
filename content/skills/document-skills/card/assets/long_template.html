@@ -2,7 +2,12 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<script>
+  window.__CAPTURE_REQUIRED_FONTS__ = ['TsangerJinKai'];
+</script>
 <style>
+  {{LOCAL_FONT_FACE}}
+
   :root {
     --bg: {{BG_COLOR}};
     --text: #1D1D1F;
@@ -10,7 +15,11 @@
     --text-dim: #ACACB0;
     --accent: {{ACCENT_COLOR}};
     --rule: #E5E5EA;
-    --font: 'KingHwa_OldSong', 'PingFang SC', system-ui, sans-serif;
+    --font-title: 'TsangerJinKai', 'KingHwa_OldSong', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    --font-body: 'TsangerJinKai', 'KingHwa_OldSong', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    --font-label: 'TsangerJinKai', 'KingHwa_OldSong', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    --font-ui: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+    --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,7 +44,7 @@
   }
 
   .title-area h1 {
-    font: 700 84px/1.15 var(--font);
+    font: 400 84px/1.15 var(--font-title);
     color: var(--text);
     letter-spacing: -0.03em;
     margin-bottom: 22px;
@@ -57,13 +66,13 @@
   }
 
   .content p {
-    font: 400 36px/1.7 var(--font);
+    font: 400 36px/1.7 var(--font-body);
     color: var(--text);
     margin-bottom: 28px;
   }
 
   .content .highlight {
-    font: 500 40px/1.55 var(--font);
+    font: 400 40px/1.55 var(--font-title);
     color: var(--text);
     padding: 14px 0 14px 26px;
     border-left: 3px solid var(--accent);
@@ -71,7 +80,7 @@
   }
 
   .content h2 {
-    font: 600 42px/1.4 var(--font);
+    font: 400 42px/1.4 var(--font-title);
     color: var(--text);
     margin: 44px 0 22px;
     letter-spacing: -0.02em;
@@ -82,7 +91,7 @@
   }
 
   .content .subtitle {
-    font: 400 22px/2 var(--font);
+    font: 400 22px/2 var(--font-label);
     color: var(--text-dim);
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -98,13 +107,13 @@
   }
 
   .content .item .label {
-    font: 500 36px/1.5 var(--font);
+    font: 400 36px/1.5 var(--font-title);
     color: var(--text);
     margin-bottom: 6px;
   }
 
   .content .item p {
-    font: 400 32px/1.65 var(--font);
+    font: 400 32px/1.65 var(--font-body);
     color: var(--text-mid);
     margin-bottom: 0;
   }
@@ -116,7 +125,7 @@
   }
 
   .content blockquote p {
-    font: 300 36px/1.7 var(--font);
+    font: 400 36px/1.7 var(--font-body);
     color: var(--text-mid);
     margin-bottom: 6px;
   }
@@ -138,7 +147,7 @@
   }
 
   .content ul li {
-    font: 400 36px/1.7 var(--font);
+    font: 400 36px/1.7 var(--font-body);
     color: var(--text);
     padding: 4px 0 4px 28px;
     position: relative;
@@ -153,7 +162,7 @@
 
   /* ── Drop Cap ── */
   .content .dropcap::first-letter {
-    font: 700 128px/0.82 'KingHwa_OldSong', Georgia, serif;
+    font: 400 128px/0.82 var(--font-title);
     float: left;
     margin: 4px 16px 0 -4px;
     color: var(--accent);
@@ -195,13 +204,13 @@
   }
 
   .footer .author-name {
-    font: 400 24px/1.5 var(--font);
+    font: 400 24px/1.5 var(--font-label);
     color: var(--text-mid);
     letter-spacing: 0.03em;
   }
 
   .footer .arxiv {
-    font: 400 22px/1.5 'Menlo', 'SF Mono', monospace;
+    font: 400 22px/1.5 var(--font-mono);
     color: var(--text-dim);
     letter-spacing: 0.02em;
   }
