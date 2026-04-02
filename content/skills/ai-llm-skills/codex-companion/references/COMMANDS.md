@@ -10,21 +10,6 @@ All commands support `--json` for machine-readable output and `-C <dir>` / `--cw
 
 ## Command Reference
 
-### `setup`
-
-Readiness checks for `node`, `npm`, `codex`, login state, and app-server capability.
-
-```bash
-node "$COMPANION" setup [--json]
-```
-
-**Exit codes:** 0 = all checks passed; 1 = one or more checks failed (details in output).
-
-**JSON output shape:**
-```json
-{ "ready": true, "node": {...}, "npm": {...}, "codex": {...}, "auth": {...}, "nextSteps": [] }
-```
-
 ### `review`
 
 Built-in read-only review of uncommitted changes or a base branch.
@@ -111,12 +96,6 @@ Without job-id, cancels the most recent active job.
 **Exit codes:** 0 = cancellation processed.
 
 ## Common Patterns
-
-### Setup
-
-```bash
-node "$COMPANION" setup
-```
 
 ### Read-only review
 

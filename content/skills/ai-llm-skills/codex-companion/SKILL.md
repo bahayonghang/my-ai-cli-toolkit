@@ -6,9 +6,9 @@ description: >-
   coding session. Use this skill proactively whenever the user wants to
   delegate work to Codex and check back later, run a security-focused or
   attack-minded code review, resume a previous Codex task, check on running
-  Codex jobs, or set up and verify Codex CLI readiness. Also use when the
-  user mentions "background task", "Codex job", "adversarial review",
-  "diff review", or wants Codex to keep working while they do something else.
+  Codex jobs. Also use when the user mentions "background task", "Codex
+  job", "adversarial review", "diff review", or wants Codex to keep
+  working while they do something else.
 version: 1.1.0
 category: development-tools
 tags:
@@ -43,11 +43,10 @@ $SKILL_DIR/scripts/codex-companion.mjs
 ## Quick Start
 
 ```bash
-node "$SKILL_DIR/scripts/codex-companion.mjs" setup                    # 1. Check readiness
-node "$SKILL_DIR/scripts/codex-companion.mjs" review --base main       # 2. Review changes
-node "$SKILL_DIR/scripts/codex-companion.mjs" task "fix the bug"       # 3. Delegate work
-node "$SKILL_DIR/scripts/codex-companion.mjs" status                   # 4. Check progress
-node "$SKILL_DIR/scripts/codex-companion.mjs" result <job-id>          # 5. Get output
+node "$SKILL_DIR/scripts/codex-companion.mjs" review --base main       # 1. Review changes
+node "$SKILL_DIR/scripts/codex-companion.mjs" task "fix the bug"       # 2. Delegate work
+node "$SKILL_DIR/scripts/codex-companion.mjs" status                   # 3. Check progress
+node "$SKILL_DIR/scripts/codex-companion.mjs" result <job-id>          # 4. Get output
 ```
 
 ## When to Use This vs the `codex` Skill
@@ -66,11 +65,8 @@ node "$SKILL_DIR/scripts/codex-companion.mjs" result <job-id>          # 5. Get 
    - Bash / zsh: `command -v codex`
    - PowerShell: `Get-Command codex`
    - If missing, tell the user to install it: `npm install -g @openai/codex`
-2. Verify authentication with the companion setup command before the first real run:
-
-```bash
-node "$SKILL_DIR/scripts/codex-companion.mjs" setup
-```
+2. If Codex is installed but not authenticated, run `codex login`.
+   - If browser login is blocked, retry with `codex login --device-auth` or `codex login --with-api-key`
 
 ## Mode Router
 
@@ -78,7 +74,6 @@ Choose one primary subcommand:
 
 | Subcommand | Purpose | Read-only? |
 |------------|---------|------------|
-| `setup` | Readiness checks for `codex`, auth, npm, and app-server capability | Yes |
 | `review` | Built-in diff-aware review of the current repo or a base branch | Yes |
 | `adversarial-review` | Structured attack-minded review with findings first | Yes |
 | `task` | Delegate diagnosis, research, or implementation to a persistent Codex thread | Configurable |
@@ -107,7 +102,6 @@ $COMPANION = "$SKILL_DIR/scripts/codex-companion.mjs"
 Then use:
 
 ```bash
-node "$COMPANION" setup
 node "$COMPANION" review --base main
 node "$COMPANION" adversarial-review --base main
 node "$COMPANION" task "investigate why the flaky test started failing"
@@ -148,8 +142,8 @@ For delegated `task` runs, prefer compact, block-structured prompts. Read:
 
 | Problem | Solution |
 |---------|----------|
-| `setup` reports Codex not installed | Run `npm install -g @openai/codex` |
-| `setup` reports not authenticated | Run `codex login` (or `codex login --device-auth` if browser is blocked) |
+| Codex is not installed | Run `npm install -g @openai/codex` |
+| Codex is not authenticated | Run `codex login` (or `codex login --device-auth` if browser is blocked) |
 | Task fails mid-execution | Check `status <job-id>` for error details; use `task --resume-last` to retry from the last thread |
 | `state.json` corrupt or missing | The runtime auto-recovers from individual job files; if all state is lost, start fresh with a new `task` |
 | Broker process not responding | Kill stale processes (`ps aux | grep codex-companion`) and retry; the broker restarts automatically |

@@ -169,39 +169,6 @@ function appendReasoningSection(lines, reasoningSummary) {
   }
 }
 
-export function renderSetupReport(report) {
-  const lines = [
-    "# Codex Setup",
-    "",
-    `Status: ${report.ready ? "ready" : "needs attention"}`,
-    "",
-    "Checks:",
-    `- node: ${report.node.detail}`,
-    `- npm: ${report.npm.detail}`,
-    `- codex: ${report.codex.detail}`,
-    `- auth: ${report.auth.detail}`,
-    `- session runtime: ${report.sessionRuntime.label}`,
-    ""
-  ];
-
-  if (report.actionsTaken.length > 0) {
-    lines.push("Actions taken:");
-    for (const action of report.actionsTaken) {
-      lines.push(`- ${action}`);
-    }
-    lines.push("");
-  }
-
-  if (report.nextSteps.length > 0) {
-    lines.push("Next steps:");
-    for (const step of report.nextSteps) {
-      lines.push(`- ${step}`);
-    }
-  }
-
-  return `${lines.join("\n").trimEnd()}\n`;
-}
-
 export function renderReviewResult(parsedResult, meta) {
   if (!parsedResult.parsed) {
     const lines = [

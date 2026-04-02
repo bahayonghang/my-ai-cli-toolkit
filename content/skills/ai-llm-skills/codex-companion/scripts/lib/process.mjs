@@ -79,20 +79,31 @@ export function terminateProcessTree(pid, options = {}) {
     if (result.error?.code === "ENOENT") {
       try {
         killImpl(pid);
-        return { attempted: true, delivered: true, method: "kill" };
+        return { attempted: true, delivered: true, method: "kill", result };
       } catch (error) {
         if (error?.code === "ESRCH") {
-          return { attempted: true, delivered: false, method: "kill" };
+          return { attempted: true, delivered: false, method: "kill", result };
         }
         throw error;
       }
     }
 
-    if (result.error) {
-      throw result.error;
+    try {
+      killImpl(pid);
+      return { attempted: true, delivered: true, method: "kill", result };
+    } catch (error) {
+      if (error?.code === "ESRCH") {
+        return { attempted: true, delivered: false, method: "kill", result };
+      }
+      if (result.error) {
+        throw result.error;
+      }
+      try {
+        throw new Error(formatCommandFailure(result), { cause: error });
+      } catch (wrappedError) {
+        throw wrappedError;
+      }
     }
-
-    throw new Error(formatCommandFailure(result));
   }
 
   try {

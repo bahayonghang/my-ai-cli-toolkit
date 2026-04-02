@@ -21,7 +21,6 @@ If none of those exist, the prompt stops and tells the user that `codex-companio
 
 | Prompt file | Expected slash name | Underlying runtime call | Typical usage |
 |---|---|---|---|
-| `setup.md` | `/codex-companion:setup` | `node "<script>" setup` | Check Codex CLI, auth, npm, app-server capability |
 | `review.md` | `/codex-companion:review` | `node "<script>" review ...` | Read-only review of current repo or `--base <ref>` |
 | `adversarial-review.md` | `/codex-companion:adversarial-review` | `node "<script>" adversarial-review ...` | Attack-minded review for regressions, race conditions, edge cases, missing tests |
 | `task.md` | `/codex-companion:task` | `node "<script>" task ...` | Delegate diagnosis, research, or implementation to a Codex task thread |
@@ -37,7 +36,6 @@ Common outcomes are:
 
 | Category | Visible prompt name |
 |---|---|
-| Setup | `/codex-companion:setup` |
 | Review | `/codex-companion:review` |
 | Adversarial review | `/codex-companion:adversarial-review` |
 | Task delegation | `/codex-companion:task` |

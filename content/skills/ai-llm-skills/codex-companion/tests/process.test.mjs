@@ -53,3 +53,31 @@ test("terminateProcessTree treats missing Windows processes as already stopped",
   assert.equal(outcome.result.status, 128);
   assert.match(outcome.result.stdout, /not found/i);
 });
+
+test("terminateProcessTree falls back to process.kill when taskkill cannot terminate the tree", () => {
+  let killCalls = 0;
+  const outcome = terminateProcessTree(1234, {
+    platform: "win32",
+    runCommandImpl(command, args) {
+      return {
+        command,
+        args,
+        status: 128,
+        signal: null,
+        stdout: "",
+        stderr: "ERROR: The operation attempted is not supported.",
+        error: null
+      };
+    },
+    killImpl(pid) {
+      killCalls += 1;
+      assert.equal(pid, 1234);
+    }
+  });
+
+  assert.equal(killCalls, 1);
+  assert.equal(outcome.attempted, true);
+  assert.equal(outcome.delivered, true);
+  assert.equal(outcome.method, "kill");
+  assert.equal(outcome.result.status, 128);
+});

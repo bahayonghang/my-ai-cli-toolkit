@@ -13,7 +13,6 @@ import {
     findLatestTaskThread,
     getCodexAvailability,
     getCodexLoginStatus,
-    getSessionRuntimeStatus,
     interruptAppServerTurn,
     parseStructuredOutput,
     readOutputSchema,
@@ -22,7 +21,7 @@ import {
   } from "./lib/codex.mjs";
 import { readStdinIfPiped } from "./lib/fs.mjs";
 import { collectReviewContext, ensureGitRepository, resolveReviewTarget } from "./lib/git.mjs";
-import { binaryAvailable, terminateProcessTree } from "./lib/process.mjs";
+import { terminateProcessTree } from "./lib/process.mjs";
 import { loadPromptTemplate, interpolateTemplate } from "./lib/prompts.mjs";
 import {
   generateJobId,
@@ -55,7 +54,6 @@ import {
   renderStoredJobResult,
   renderCancelReport,
   renderJobStatusReport,
-  renderSetupReport,
   renderStatusReport,
   renderTaskResult
 } from "./lib/render.mjs";
@@ -71,7 +69,6 @@ function printUsage() {
   console.log(
     [
       "Usage:",
-      "  node scripts/codex-companion.mjs setup [--json]",
       "  node scripts/codex-companion.mjs review [--wait|--background] [--base <ref>] [--scope <auto|working-tree|branch>]",
       "  node scripts/codex-companion.mjs adversarial-review [--wait|--background] [--base <ref>] [--scope <auto|working-tree|branch>] [focus text]",
       "  node scripts/codex-companion.mjs task [--background] [--write] [--resume-last|--resume|--fresh] [--model <model|spark>] [--effort <none|minimal|low|medium|high|xhigh>] [prompt]",
@@ -173,46 +170,6 @@ function firstMeaningfulLine(text, fallback) {
   return line ?? fallback;
 }
 
-function buildSetupReport(cwd, actionsTaken = []) {
-  const nodeStatus = binaryAvailable("node", ["--version"], { cwd });
-  const npmStatus = binaryAvailable("npm", ["--version"], { cwd });
-  const codexStatus = getCodexAvailability(cwd);
-  const authStatus = getCodexLoginStatus(cwd);
-
-  const nextSteps = [];
-  if (!codexStatus.available) {
-    nextSteps.push("Install Codex with `npm install -g @openai/codex`.");
-  }
-  if (codexStatus.available && !authStatus.loggedIn) {
-    nextSteps.push("Run `codex login`.");
-    nextSteps.push("If browser login is blocked, retry with `codex login --device-auth` or `codex login --with-api-key`.");
-  }
-
-  return {
-    ready: nodeStatus.available && codexStatus.available && authStatus.loggedIn,
-    node: nodeStatus,
-    npm: npmStatus,
-    codex: codexStatus,
-    auth: authStatus,
-    sessionRuntime: getSessionRuntimeStatus(),
-    actionsTaken,
-    nextSteps
-  };
-}
-
-function handleSetup(argv) {
-  const { options } = parseCommandInput(argv, {
-    valueOptions: ["cwd"],
-    booleanOptions: ["json"]
-  });
-
-  const cwd = resolveCommandCwd(options);
-  const actionsTaken = [];
-
-  const finalReport = buildSetupReport(cwd, actionsTaken);
-  outputResult(options.json ? finalReport : renderSetupReport(finalReport), options.json);
-}
-
 function buildAdversarialReviewPrompt(context, focusText) {
   const template = loadPromptTemplate(ROOT_DIR, "adversarial-review");
   return interpolateTemplate(template, {
@@ -226,7 +183,7 @@ function buildAdversarialReviewPrompt(context, focusText) {
 function ensureCodexReady(cwd) {
   const authStatus = getCodexLoginStatus(cwd);
   if (!authStatus.available) {
-    throw new Error("Codex CLI is not installed or is missing required runtime support. Install it with `npm install -g @openai/codex`, then rerun the companion setup command.");
+    throw new Error("Codex CLI is not installed or is missing required runtime support. Install it with `npm install -g @openai/codex`, then retry.");
   }
   if (!authStatus.loggedIn) {
     throw new Error("Codex CLI is not authenticated. Run `codex login` and retry.");
@@ -891,7 +848,19 @@ async function handleCancel(argv) {
     );
   }
 
-  terminateProcessTree(job.pid ?? Number.NaN);
+  try {
+    const termination = terminateProcessTree(job.pid ?? Number.NaN);
+    if (termination.attempted) {
+      appendLogLine(
+        job.logFile,
+        termination.delivered
+          ? `Requested worker termination via ${termination.method}.`
+          : `Worker termination via ${termination.method} found no running process.`
+      );
+    }
+  } catch (error) {
+    appendLogLine(job.logFile, `Worker termination failed: ${error.message}`);
+  }
   appendLogLine(job.logFile, "Cancelled by user.");
 
   const completedAt = nowIso();
@@ -937,9 +906,6 @@ async function main() {
   }
 
   switch (subcommand) {
-    case "setup":
-      handleSetup(argv);
-      break;
     case "review":
       await handleReview(argv);
       break;

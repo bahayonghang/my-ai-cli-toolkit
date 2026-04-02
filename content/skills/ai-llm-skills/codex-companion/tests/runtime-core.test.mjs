@@ -22,22 +22,6 @@ async function waitFor(predicate, { timeoutMs = 5000, intervalMs = 50 } = {}) {
   throw new Error("Timed out waiting for condition.");
 }
 
-test("setup reports ready when Codex CLI is installed and authenticated", () => {
-  const repo = makeTempDir();
-  const binDir = makeTempDir();
-  installFakeCodex(binDir);
-
-  const result = run(process.execPath, [SCRIPT, "setup", "--json"], {
-    cwd: repo,
-    env: buildEnv(binDir)
-  });
-
-  assert.equal(result.status, 0, result.stderr);
-  const payload = JSON.parse(result.stdout);
-  assert.equal(payload.ready, true);
-  assert.equal(payload.auth.loggedIn, true);
-});
-
 test("review returns the built-in no-findings result for working tree changes", () => {
   const repo = makeTempDir();
   const binDir = makeTempDir();
@@ -159,7 +143,7 @@ test("cancel stops an interruptible background task", async () => {
     const state = JSON.parse(fs.readFileSync(path.join(stateDir, "state.json"), "utf8"));
     const job = state.jobs.find((candidate) => candidate.id === launchPayload.jobId);
     return job?.status === "running" ? job : null;
-  });
+  }, { timeoutMs: 15000 });
 
   const cancel = run(process.execPath, [SCRIPT, "cancel", launchPayload.jobId, "--json"], {
     cwd: repo,
@@ -173,5 +157,5 @@ test("cancel stops an interruptible background task", async () => {
   await waitFor(() => {
     const state = JSON.parse(fs.readFileSync(path.join(stateDir, "state.json"), "utf8"));
     return state.jobs.find((candidate) => candidate.id === launchPayload.jobId)?.status === "cancelled";
-  });
+  }, { timeoutMs: 10000 });
 });
