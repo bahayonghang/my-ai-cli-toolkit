@@ -150,6 +150,8 @@ mcs-web-install:
 
 # 安装 MCS Web UI 依赖（CI 场景）
 mcs-web-ci-install:
+    @echo "🧹 停止可能占用 Vite/esbuild 的本地 MCS Web 进程..."
+    @{{ just_cmd }} mcs-web-stop
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} ci
 
 # 停止 MCS Web 后端与 UI 开发服务
