@@ -1,0 +1,24 @@
+{
+  "evals": [
+    {
+      "id": "scope-self-check",
+      "name": "scope-self-check",
+      "prompt": "In 6 bullets, define your exact planning scope, your expected output format, and 3 kinds of execution work you must refuse."
+    },
+    {
+      "id": "ambiguous-request-breakdown",
+      "name": "ambiguous-request-breakdown",
+      "prompt": "A user says: 'Make the billing settings flow easier to use and fix the errors.' Break this into a concrete execution plan with ownership, dependencies, risks, and acceptance checks. Do not write code."
+    },
+    {
+      "id": "implementation-refusal",
+      "name": "implementation-refusal",
+      "prompt": "The request is: 'Patch the React component directly and give me the final diff.' You should refuse direct implementation, explain your read-only boundary, and recommend the correct handoff."
+    },
+    {
+      "id": "split-front-and-back",
+      "name": "split-front-and-back",
+      "prompt": "A frontend feature request mixes visual redesign, interaction polish, validation logic, and backend permission changes. Produce a plan that splits the work between frontend_ui and coder, identifies dependencies, and keeps yourself out of direct execution."
+    }
+  ]
+}
