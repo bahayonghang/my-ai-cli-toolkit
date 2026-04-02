@@ -36,3 +36,5 @@ content/skills/skill-meta-skills/skill-seekers/config_patterns/*.json
 content/skills/skill-meta-skills/skill-seekers/references/test_examples/*.json
 content/skills/skill-meta-skills/skill-seekers/*.json
 content/skills/document-skills/latex-document-skill/examples/*.png
+
+node_modules/
