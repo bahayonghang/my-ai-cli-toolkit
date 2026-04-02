@@ -473,7 +473,7 @@ function CategoryQuickNav({
     <Box
       sx={{
         position: { xs: "static", lg: "sticky" },
-        top: { lg: 108 },
+        top: { lg: "var(--mcs-sticky-offset)" },
         borderRadius: 3.5,
         border: "1px solid var(--mcs-workbench-outline)",
         background: "var(--mcs-panel-fill)",
@@ -531,7 +531,7 @@ function CategoryQuickNav({
                 <Typography
                   variant="body2"
                   fontWeight={active ? 700 : 600}
-                  sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                  sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                 >
                   {category.label}
                 </Typography>

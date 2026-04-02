@@ -290,7 +290,7 @@ export default function MainPage() {
               width: 292,
               flexShrink: 0,
               position: "sticky",
-              top: 96,
+              top: "var(--mcs-sticky-offset)",
               overflow: "hidden",
               backgroundColor: "var(--mcs-panel-fill)",
               borderColor: "var(--mcs-control-stroke)",

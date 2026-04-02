@@ -293,7 +293,7 @@ function ShellNavButton({
         <Box sx={{ minWidth: 0, flexGrow: 1 }}>
           <Typography
             variant="body2"
-            sx={{ fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis" }}
+            sx={{ fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
           >
             {label}
           </Typography>
@@ -301,7 +301,7 @@ function ShellNavButton({
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ display: "block", overflow: "hidden", textOverflow: "ellipsis" }}
+              sx={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
             >
               {subtitle}
             </Typography>
@@ -517,7 +517,7 @@ export function AppShell({
                 <Box sx={{ minWidth: 0, flexGrow: 1 }}>
                   <Typography
                     variant="body2"
-                    sx={{ fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis" }}
+                    sx={{ fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                   >
                     {platform.name}
                   </Typography>
@@ -621,10 +621,10 @@ export function AppShell({
                 py: { xs: 1.35, md: 1.75 },
                 borderBottom: "1px solid var(--mcs-shell-divider)",
                 backgroundColor: "var(--mcs-toolbar-overlay)",
-                backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(140%)" },
+                backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(120%)" },
                 WebkitBackdropFilter: {
                   xs: "none",
-                  sm: "blur(var(--mcs-glass-blur)) saturate(140%)",
+                  sm: "blur(var(--mcs-glass-blur)) saturate(120%)",
                 },
               }}
           >
@@ -711,7 +711,7 @@ export function AppShell({
               }}
             >
               {filterRail && !isMobile ? (
-                <Box sx={{ position: "sticky", top: 112 }}>{filterRail}</Box>
+                <Box sx={{ position: "sticky", top: "var(--mcs-sticky-offset)" }}>{filterRail}</Box>
               ) : null}
               <Box sx={{ minWidth: 0 }}>{children}</Box>
             </Box>
@@ -753,7 +753,7 @@ export function SectionHero({
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 30%)",
+            "linear-gradient(180deg, var(--mcs-shell-highlight) 0%, transparent 30%)",
           pointerEvents: "none",
         },
       }}
@@ -1075,10 +1075,10 @@ export function StickyActionBar({
           borderColor: "var(--mcs-workbench-outline-strong)",
           background:
             "linear-gradient(180deg, var(--mcs-glass-fill-strong) 0%, var(--mcs-panel-fill-strong) 100%)",
-          backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(140%)" },
+          backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(120%)" },
           WebkitBackdropFilter: {
             xs: "none",
-            sm: "blur(var(--mcs-glass-blur)) saturate(140%)",
+            sm: "blur(var(--mcs-glass-blur)) saturate(120%)",
           },
         }}
       >

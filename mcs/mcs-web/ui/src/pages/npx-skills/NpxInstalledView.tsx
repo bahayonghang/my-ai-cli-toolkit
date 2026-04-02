@@ -295,7 +295,7 @@ export default function NpxInstalledView({
         {!isMobile && (
           <Card
             variant="outlined"
-            sx={{ width: 280, flexShrink: 0, position: "sticky", top: 96 }}
+            sx={{ width: 280, flexShrink: 0, position: "sticky", top: "var(--mcs-sticky-offset)" }}
           >
             <CardContent sx={{ p: 2 }}>
               <NpxSkillsFilters

@@ -75,7 +75,7 @@ export default function AnimatedBackground({
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 28%)",
+                  "linear-gradient(180deg, var(--mcs-glass-highlight) 0%, transparent 28%)",
                 opacity: theme.palette.mode === "dark" ? 1 : 0.9,
               },
       }}

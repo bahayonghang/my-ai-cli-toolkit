@@ -1,7 +1,6 @@
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import { Box, Button, Chip, Divider, Stack, Typography } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import { useI18n } from "@/i18n";
 import type { TranslateFn } from "@/i18n";
 import type {
@@ -179,7 +178,7 @@ function SummarySurface({
     <Box
       sx={{
         position: "sticky",
-        top: 94,
+        top: "var(--mcs-sticky-offset-tight)",
         borderRadius: 4,
         border: "1px solid var(--mcs-workbench-outline-strong)",
         background:
@@ -266,7 +265,7 @@ function SummarySurface({
                       : "var(--mcs-workbench-outline)",
                     bgcolor: isActive
                       ? "var(--mcs-workbench-accent-soft)"
-                      : alpha("#000", 0),
+                      : "transparent",
                     background: isActive
                       ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)"
                       : "transparent",

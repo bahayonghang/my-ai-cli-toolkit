@@ -167,6 +167,9 @@ function buildTheme(mode: Mode) {
         styleOverrides: () => `
           :root {
             color-scheme: ${mode};
+            --mcs-header-height: 64px;
+            --mcs-sticky-offset: calc(var(--mcs-header-height) + 32px);
+            --mcs-sticky-offset-tight: calc(var(--mcs-header-height) + 30px);
             --font-family-display: "Outfit", "Noto Sans SC", sans-serif;
             --font-family-body: "Outfit", "Noto Sans SC", sans-serif;
             --font-family-mono: "JetBrains Mono", monospace;
@@ -562,8 +565,8 @@ function buildTheme(mode: Mode) {
             color: tone.text,
             borderBottom: "1px solid var(--mcs-border)",
             boxShadow: "none",
-            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(120%)",
+            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(120%)",
           },
         },
       },
