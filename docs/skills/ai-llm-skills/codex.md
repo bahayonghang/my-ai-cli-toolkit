@@ -21,6 +21,21 @@ If you want plugin-style background jobs, resumable task delegation, or
 - Live search entrypoint: top-level `--search`
 - Default safety posture: review-only first, write only when explicitly requested
 
+## Project-local custom agents
+
+This repository also ships a small triangle of Codex custom agents under
+`content/platforms/codex/agents/`:
+
+- `orchestrator`: read-only task clarification, decomposition, dependency mapping, and handoff guidance
+- `coder`: implementation, bug fixing, scoped refactors, and relevant verification
+- `frontend_ui`: component, styling, interaction, and design-fidelity execution
+
+Use `orchestrator` first when a request is ambiguous or mixes frontend and logic work.
+Use `coder` when the target change is clear and primarily code behavior.
+Use `frontend_ui` when the target change is clear and primarily UI structure, states, or styling.
+
+See `content/platforms/codex/agents/README.md` for the local handoff rules and eval datasets.
+
 ## Current CLI Compatibility
 
 - Check `codex --help`, `codex exec --help`, `codex review --help`, and `codex resume --help` first if a recipe looks stale.

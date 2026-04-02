@@ -21,6 +21,21 @@ diff 感知代码审查、对抗式 challenge、second opinion、实时技术调
 - 实时搜索入口：顶层 `--search`
 - 默认安全策略：先 review-only，再按明确要求进入写入模式
 
+## 仓库内置自定义 agents
+
+这个仓库另外维护了一组三角分工的 Codex custom agents，路径在
+`content/platforms/codex/agents/`：
+
+- `orchestrator`：只读的需求澄清、任务拆解、依赖识别和 handoff 建议
+- `coder`：实现、修 bug、最小重构，以及相关验证
+- `frontend_ui`：组件、样式、交互细节和设计一致性落地
+
+当需求不清、需要拆解，或前端任务同时混有逻辑工作时，先用 `orchestrator`。
+当目标已经明确且主要是代码行为变更时，用 `coder`。
+当目标已经明确且主要是 UI 结构、状态、样式或交互时，用 `frontend_ui`。
+
+本地分工规则和评测数据见 `content/platforms/codex/agents/README.md`。
+
 ## 当前 CLI 兼容性
 
 - 如果示例命令看起来过时，先检查 `codex --help`、`codex exec --help`、`codex review --help`、`codex resume --help`。
