@@ -232,6 +232,10 @@ export default function MainPage() {
           subtitle={currentTabLabel}
         />
       }
+      pageHeading={t("common.platformWorkspaceTitle", {
+        content: currentTabLabel,
+        platform: platform?.name ?? platformId ?? t("common.unknown"),
+      })}
       subtitle={currentTabLabel}
       onBack={() => navigateDeferred("/")}
       onHome={() => navigateDeferred("/")}

@@ -111,6 +111,7 @@ export default function PlatformSelectPage() {
           variant="entry"
           eyebrow={t("platformSelect.heroEyebrow")}
           title={t("platformSelect.title")}
+          titleComponent="h1"
           description={t("platformSelect.subtitle")}
           actions={
             <>
@@ -154,7 +155,7 @@ export default function PlatformSelectPage() {
           <Typography variant="overline" color="text.secondary">
             {t("platformSelect.platformWorkspaceLabel")}
           </Typography>
-          <Typography variant="h4" sx={{ letterSpacing: "-0.05em" }}>
+          <Typography variant="h4" component="h2" sx={{ letterSpacing: "-0.05em" }}>
             {t("platformSelect.libraryTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 760 }}>
@@ -188,7 +189,7 @@ export default function PlatformSelectPage() {
                       width: "100%",
                       display: "grid",
                       gap: 2,
-                      gridTemplateColumns: { xs: "1fr", lg: "82px minmax(0, 1fr) minmax(300px, 0.7fr)" },
+                      gridTemplateColumns: { xs: "1fr", lg: "82px minmax(0, 1fr) minmax(240px, 0.7fr)" },
                       alignItems: "start",
                     }}
                   >

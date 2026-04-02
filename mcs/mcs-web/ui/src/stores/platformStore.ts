@@ -10,12 +10,14 @@ interface PlatformState {
   selectedId: string | null;
   loading: boolean;
   error: string | null;
+  lastFetchedAt: number | null;
   fetchPlatforms: () => Promise<void>;
   refreshPlatforms: () => Promise<void>;
   selectPlatform: (id: string) => void;
 }
 
 export const usePlatformStore = create<PlatformState>((set, get) => {
+  const PLATFORMS_TTL_MS = 60_000;
   let fetchPromise: Promise<void> | null = null;
 
   const loadPlatforms = async (blocking: boolean) => {
@@ -32,7 +34,7 @@ export const usePlatformStore = create<PlatformState>((set, get) => {
     fetchPromise = (async () => {
       try {
         const platforms = await getPlatforms();
-        set({ platforms, loading: false });
+        set({ platforms, loading: false, lastFetchedAt: Date.now() });
       } catch (e) {
         set({ error: (e as Error).message, loading: false });
       } finally {
@@ -48,12 +50,21 @@ export const usePlatformStore = create<PlatformState>((set, get) => {
     selectedId: null,
     loading: false,
     error: null,
+    lastFetchedAt: null,
 
     fetchPlatforms: async () => {
-      if (get().platforms.length > 0) {
+      const { lastFetchedAt, platforms } = get();
+      if (platforms.length === 0) {
+        await loadPlatforms(true);
         return;
       }
-      await loadPlatforms(true);
+
+      if (
+        lastFetchedAt === null ||
+        Date.now() - lastFetchedAt > PLATFORMS_TTL_MS
+      ) {
+        void loadPlatforms(false);
+      }
     },
 
     refreshPlatforms: async () => {
@@ -61,7 +72,7 @@ export const usePlatformStore = create<PlatformState>((set, get) => {
       try {
         await refreshContentApi();
         const platforms = await getPlatforms();
-        set({ platforms, loading: false });
+        set({ platforms, loading: false, lastFetchedAt: Date.now() });
       } catch (e) {
         set({ error: (e as Error).message, loading: false });
       }

@@ -17,7 +17,7 @@ export default function NotFoundPage() {
         gap: 2,
       }}
     >
-      <Typography variant="h3" fontWeight={700}>
+      <Typography variant="h3" component="h1" fontWeight={700}>
         404
       </Typography>
       <Typography variant="body1" color="text.secondary">

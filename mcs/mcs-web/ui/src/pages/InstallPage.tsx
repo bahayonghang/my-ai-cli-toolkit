@@ -795,6 +795,9 @@ export default function InstallPage() {
           subtitle={t("common.install")}
         />
       }
+      pageHeading={t("install.pageTitle", {
+        platform: platform?.name ?? platformId ?? t("common.unknown"),
+      })}
       subtitle={installTargetLabel}
       onBack={() => navigateDeferred(`/platform/${platformId}`)}
       onHome={() => navigateDeferred("/")}

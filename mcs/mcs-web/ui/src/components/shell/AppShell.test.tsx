@@ -1,3 +1,4 @@
+import { type ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { ThemeProvider } from "@mui/material";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -37,11 +38,14 @@ vi.mock("@/hooks/useNavigateDeferred", () => ({
   useNavigateDeferred: () => () => {},
 }));
 
-function renderShell(initialEntries: string[]) {
+function renderShell(
+  initialEntries: string[],
+  props?: Partial<ComponentProps<typeof AppShell>>,
+) {
   return renderToStaticMarkup(
     <ThemeProvider theme={lightTheme}>
       <MemoryRouter initialEntries={initialEntries}>
-        <AppShell variant="workbench" title="Demo" subtitle="Demo subtitle">
+        <AppShell variant="workbench" title="Demo" subtitle="Demo subtitle" {...props}>
           <div>content</div>
         </AppShell>
       </MemoryRouter>
@@ -55,6 +59,7 @@ describe("AppShell", () => {
 
     expect(markup).toContain('aria-current="page"');
     expect(markup).toContain("Dashboard");
+    expect(markup).toContain('href="/dashboard"');
   });
 
   it("marks the active platform workspace with aria-current location", () => {
@@ -62,5 +67,23 @@ describe("AppShell", () => {
 
     expect(markup).toContain('aria-current="location"');
     expect(markup).toContain("Claude Code");
+    expect(markup).toContain('href="/platform/claude"');
+  });
+
+  it("renders a visible h1 when the shell title is a plain string", () => {
+    const markup = renderShell(["/dashboard"]);
+
+    expect(markup).toMatch(/<h1[^>]*>Demo<\/h1>/);
+  });
+
+  it("renders a hidden semantic h1 when the visual title is custom content", () => {
+    const markup = renderShell(["/dashboard"], {
+      title: <span>Custom header</span>,
+      pageHeading: "Semantic dashboard title",
+    });
+
+    expect(markup).toContain("Semantic dashboard title");
+    expect(markup).toContain("Custom header");
+    expect(markup).toMatch(/<h1[^>]*>Semantic dashboard title<\/h1>/);
   });
 });

@@ -10,6 +10,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  type TypographyProps,
   useTheme,
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
@@ -332,12 +333,14 @@ export function PlatformIdentity({
   name,
   fallbackIcon,
   subtitle,
+  titleComponent = "div",
   size = 48,
 }: {
   platformId?: string | null;
   name: string;
   fallbackIcon?: string | null;
   subtitle?: ReactNode;
+  titleComponent?: TypographyProps["component"];
   size?: number;
 }) {
   return (
@@ -351,6 +354,7 @@ export function PlatformIdentity({
       <Box sx={{ minWidth: 0 }}>
         <Typography
           variant="body1"
+          component={titleComponent}
           sx={{ fontWeight: 700, lineHeight: 1.1, overflowWrap: "anywhere" }}
         >
           {name}

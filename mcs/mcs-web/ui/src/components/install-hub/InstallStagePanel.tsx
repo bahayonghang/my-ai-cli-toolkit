@@ -126,7 +126,7 @@ export function InstallStagePanel({
                 useFlexGap
                 flexWrap="wrap"
               >
-                <Typography variant="h5" sx={{ letterSpacing: "-0.03em" }}>
+                <Typography variant="h5" component="h2" sx={{ letterSpacing: "-0.03em" }}>
                   {title}
                 </Typography>
                 <Chip

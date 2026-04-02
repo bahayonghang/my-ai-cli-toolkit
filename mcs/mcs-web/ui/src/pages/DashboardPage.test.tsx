@@ -11,11 +11,13 @@ const dashboardState: {
   loading: boolean;
   error: string | null;
   fetchDashboard: () => Promise<void>;
+  refreshDashboard: () => Promise<void>;
 } = {
   data: null,
   loading: false,
   error: null,
   fetchDashboard: async () => {},
+  refreshDashboard: async () => {},
 };
 
 const uiState = {
@@ -159,6 +161,8 @@ describe("DashboardPage", () => {
     expect(markup).toContain("Claude");
     expect(markup).toContain("Gemini");
     expect(markup).toContain("Codex");
+    expect(markup).toMatch(/<h1[^>]*>Operations Dashboard<\/h1>/);
+    expect(markup).toMatch(/<h3[^>]*>Top Skills<\/h3>/);
   });
 
   it("renders an error alert alongside existing dashboard content", () => {

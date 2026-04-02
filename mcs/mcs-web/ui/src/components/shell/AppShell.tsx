@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from "react";
 import {
   ArrowLeft,
   CaretRight,
@@ -21,8 +21,9 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  type TypographyProps,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
@@ -31,7 +32,6 @@ import {
   PlatformBadge,
   PlatformIdentity,
 } from "@/components/platform/PlatformVisuals";
-import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 
@@ -75,6 +75,18 @@ const headerAccentMap = {
   entry: "var(--mcs-entry-accent-strong)",
   workbench: "var(--mcs-workbench-accent-strong)",
   monitor: "var(--mcs-monitor-accent-strong)",
+} as const;
+
+const visuallyHiddenHeadingSx = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
 } as const;
 
 function toneSurface(tone: PageSectionTone) {
@@ -139,11 +151,13 @@ function renderHeading(
   title: ReactNode,
   subtitle?: ReactNode,
   eyebrow?: ReactNode,
+  pageHeading?: string,
 ) {
   const titleNode =
     typeof title === "string" ? (
       <Typography
         variant="h5"
+        component={pageHeading ? "div" : "h1"}
         sx={{
           fontWeight: 700,
           letterSpacing: "-0.04em",
@@ -168,6 +182,11 @@ function renderHeading(
 
   return (
     <Stack spacing={0.45} sx={{ minWidth: 0 }}>
+      {pageHeading ? (
+        <Typography component="h1" sx={visuallyHiddenHeadingSx}>
+          {pageHeading}
+        </Typography>
+      ) : null}
       {eyebrow ? (
         <Typography
           variant="overline"
@@ -189,20 +208,38 @@ function ShellNavButton({
   label,
   subtitle,
   icon,
+  to,
   active,
   ariaCurrent,
-  onClick,
+  onAfterNavigate,
 }: {
   label: ReactNode;
   subtitle?: ReactNode;
   icon: ReactNode;
+  to: string;
   active: boolean;
   ariaCurrent?: "page" | "location";
-  onClick: () => void;
+  onAfterNavigate?: () => void;
 }) {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    if (
+      event.button === 0 &&
+      !event.defaultPrevented &&
+      !event.metaKey &&
+      !event.altKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      event.currentTarget.getAttribute("target") !== "_blank"
+    ) {
+      onAfterNavigate?.();
+    }
+  };
+
   return (
     <ButtonBase
-      onClick={onClick}
+      component={RouterLink}
+      to={to}
+      onClick={handleClick}
       aria-current={active ? ariaCurrent : undefined}
       sx={{
         width: "100%",
@@ -221,9 +258,10 @@ function ShellNavButton({
         px: 1.5,
         py: 1.3,
         transition:
-          "transform var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), background-color var(--mcs-duration) var(--mcs-ease)",
+          "border-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), background-color var(--mcs-duration) var(--mcs-ease)",
+        textDecoration: "none",
+        color: "inherit",
         "&:hover": {
-          transform: "translateY(-1px)",
           borderColor: active
             ? "var(--mcs-workbench-outline-strong)"
             : "var(--mcs-control-stroke-strong)",
@@ -282,6 +320,7 @@ function ShellNavButton({
 export function AppShell({
   variant,
   title,
+  pageHeading,
   subtitle,
   onBack,
   onHome,
@@ -294,6 +333,7 @@ export function AppShell({
 }: {
   variant: ShellVariant;
   title: ReactNode;
+  pageHeading?: string;
   subtitle?: ReactNode;
   onBack?: () => void;
   onHome?: () => void;
@@ -308,7 +348,6 @@ export function AppShell({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isWorkbenchShell = variant === "workbench";
-  const navigateDeferred = useNavigateDeferred();
   const location = useLocation();
   const platforms = usePlatformStore((state) => state.platforms);
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
@@ -370,56 +409,46 @@ export function AppShell({
           label={t("common.overview")}
           subtitle={t("common.overviewSubtitle")}
           icon={<SquaresFour size={18} weight="bold" />}
+          to="/"
           active={location.pathname === "/"}
           ariaCurrent="page"
-          onClick={() => {
-            navigateDeferred("/");
-            setNavOpen(false);
-          }}
+          onAfterNavigate={() => setNavOpen(false)}
         />
         <ShellNavButton
           label={t("common.dashboard")}
           subtitle={t("common.dashboardSubtitle")}
           icon={<ChartPieSlice size={18} weight="bold" />}
+          to="/dashboard"
           active={location.pathname.startsWith("/dashboard")}
           ariaCurrent="page"
-          onClick={() => {
-            navigateDeferred("/dashboard");
-            setNavOpen(false);
-          }}
+          onAfterNavigate={() => setNavOpen(false)}
         />
         <ShellNavButton
           label={t("common.installHub")}
           subtitle={t("common.installHubSubtitle")}
           icon={<DownloadSimple size={18} weight="bold" />}
+          to="/install-hub"
           active={location.pathname.startsWith("/install-hub")}
           ariaCurrent="page"
-          onClick={() => {
-            navigateDeferred("/install-hub");
-            setNavOpen(false);
-          }}
+          onAfterNavigate={() => setNavOpen(false)}
         />
         <ShellNavButton
           label={t("common.commandsWorkspace")}
           subtitle={t("common.commandsWorkspaceSubtitle")}
           icon={<Command size={18} weight="bold" />}
+          to="/manage/commands"
           active={location.pathname.startsWith("/manage/commands")}
           ariaCurrent="page"
-          onClick={() => {
-            navigateDeferred("/manage/commands");
-            setNavOpen(false);
-          }}
+          onAfterNavigate={() => setNavOpen(false)}
         />
         <ShellNavButton
           label={t("common.agentsWorkspace")}
           subtitle={t("common.agentsWorkspaceSubtitle")}
           icon={<List size={18} weight="bold" />}
+          to="/manage/agents"
           active={location.pathname.startsWith("/manage/agents")}
           ariaCurrent="page"
-          onClick={() => {
-            navigateDeferred("/manage/agents");
-            setNavOpen(false);
-          }}
+          onAfterNavigate={() => setNavOpen(false)}
         />
       </Stack>
 
@@ -433,10 +462,21 @@ export function AppShell({
           {platforms.map((platform) => (
             <ButtonBase
               key={platform.id}
+              component={RouterLink}
+              to={`/platform/${platform.id}`}
               aria-current={activePlatformId === platform.id ? "location" : undefined}
-              onClick={() => {
-                navigateDeferred(`/platform/${platform.id}`);
-                setNavOpen(false);
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                if (
+                  event.button === 0 &&
+                  !event.defaultPrevented &&
+                  !event.metaKey &&
+                  !event.altKey &&
+                  !event.ctrlKey &&
+                  !event.shiftKey &&
+                  event.currentTarget.getAttribute("target") !== "_blank"
+                ) {
+                  setNavOpen(false);
+                }
               }}
               sx={{
                 width: "100%",
@@ -456,9 +496,10 @@ export function AppShell({
                 px: 1.2,
                 py: 1.05,
                 transition:
-                  "transform var(--mcs-duration) var(--mcs-ease), border-color var(--mcs-duration) var(--mcs-ease)",
+                  "border-color var(--mcs-duration) var(--mcs-ease)",
+                textDecoration: "none",
+                color: "inherit",
                 "&:hover": {
-                  transform: "translateY(-1px)",
                   borderColor:
                     activePlatformId === platform.id
                       ? "var(--mcs-workbench-outline-strong)"
@@ -580,8 +621,11 @@ export function AppShell({
                 py: { xs: 1.35, md: 1.75 },
                 borderBottom: "1px solid var(--mcs-shell-divider)",
                 backgroundColor: "var(--mcs-toolbar-overlay)",
-                backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-                WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+                backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(140%)" },
+                WebkitBackdropFilter: {
+                  xs: "none",
+                  sm: "blur(var(--mcs-glass-blur)) saturate(140%)",
+                },
               }}
           >
             <Stack
@@ -622,7 +666,7 @@ export function AppShell({
                       {t(routeSectionMessageKey[routeSection])}
                     </Typography>
                   ) : (
-                    renderHeading(title, subtitle, t(routeSectionMessageKey[routeSection]))
+                    renderHeading(title, subtitle, t(routeSectionMessageKey[routeSection]), pageHeading)
                   )}
                 </Box>
               </Stack>
@@ -682,6 +726,7 @@ export function SectionHero({
   variant,
   eyebrow,
   title,
+  titleComponent = "h2",
   description,
   actions,
   meta,
@@ -689,6 +734,7 @@ export function SectionHero({
   variant: ShellVariant;
   eyebrow?: ReactNode;
   title: ReactNode;
+  titleComponent?: TypographyProps["component"];
   description?: ReactNode;
   actions?: ReactNode;
   meta?: ReactNode;
@@ -732,6 +778,7 @@ export function SectionHero({
           ) : null}
           <Typography
             variant="h3"
+            component={titleComponent}
             sx={{
               fontSize: { xs: "2.1rem", md: "3rem" },
               lineHeight: 1.02,
@@ -1028,8 +1075,11 @@ export function StickyActionBar({
           borderColor: "var(--mcs-workbench-outline-strong)",
           background:
             "linear-gradient(180deg, var(--mcs-glass-fill-strong) 0%, var(--mcs-panel-fill-strong) 100%)",
-          backdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
-          WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(140%)",
+          backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(140%)" },
+          WebkitBackdropFilter: {
+            xs: "none",
+            sm: "blur(var(--mcs-glass-blur)) saturate(140%)",
+          },
         }}
       >
         <Stack

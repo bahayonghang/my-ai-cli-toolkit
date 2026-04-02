@@ -190,6 +190,9 @@ export default function InstalledSkillsPage() {
           subtitle={t("common.skills")}
         />
       }
+      pageHeading={t("installed.workspaceTitle", {
+        platform: platform?.name ?? platformId ?? t("common.unknown"),
+      })}
       subtitle={installTargetLabel}
       onBack={() => navigateDeferred("/")}
       onHome={() => navigateDeferred("/")}

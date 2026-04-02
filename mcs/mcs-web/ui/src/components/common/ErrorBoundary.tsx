@@ -44,7 +44,7 @@ class ErrorBoundaryInner extends Component<ErrorBoundaryInnerProps, State> {
             p: 3,
           }}
         >
-          <Typography variant="h5" color="error">
+          <Typography variant="h5" component="h1" color="error">
             {this.props.t("common.somethingWentWrong")}
           </Typography>
           <Typography

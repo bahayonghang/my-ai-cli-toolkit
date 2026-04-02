@@ -110,6 +110,8 @@ describe("PlatformSelectPage", () => {
     expect(markup).toContain("Shared library");
     expect(markup).toContain("Dedicated library");
     expect(markup).toContain("Skills path");
+    expect((markup.match(/<h1/g) ?? [])).toHaveLength(1);
+    expect(markup).toMatch(/<h2[^>]*>Platform workspaces<\/h2>/);
   });
 
   it("renders an error alert while keeping the page shell", () => {

@@ -1002,6 +1002,9 @@ export default function NpxSkillsPage() {
           subtitle={t("npxSkills.workspaceLabel")}
         />
       }
+      pageHeading={t("npxSkills.pageTitle", {
+        platform: platform?.name ?? platformId ?? t("common.unknown"),
+      })}
       subtitle={`${installTargetModeLabel} · ${installTargetPath}`}
       onBack={() => navigateDeferred(`/platform/${platformId}`)}
       onHome={() => navigateDeferred("/")}

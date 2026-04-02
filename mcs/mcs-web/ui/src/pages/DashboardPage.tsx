@@ -47,6 +47,7 @@ export default function DashboardPage() {
   const loading = useDashboardStore((state) => state.loading);
   const error = useDashboardStore((state) => state.error);
   const fetchDashboard = useDashboardStore((state) => state.fetchDashboard);
+  const refreshDashboard = useDashboardStore((state) => state.refreshDashboard);
   const { legacyCount, refreshLegacyCount } = useLegacyDirs();
   const [legacyOpen, setLegacyOpen] = useState(false);
   const navigateDeferred = useNavigateDeferred();
@@ -81,7 +82,7 @@ export default function DashboardPage() {
                 <ArrowsClockwise size={16} weight="bold" />
               )
             }
-            onClick={() => void fetchDashboard()}
+            onClick={() => void refreshDashboard()}
             disabled={loading}
           >
             {t("dashboard.refreshAction")}
@@ -355,7 +356,7 @@ function SkillsSpotlight({
 
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 7 }}>
-            <Typography variant="h6" sx={{ mb: 1.5 }}>
+            <Typography variant="h6" component="h3" sx={{ mb: 1.5 }}>
               {t("dashboard.topSkillsTitle")}
             </Typography>
             {topSkills.length > 0 ? (
@@ -372,7 +373,7 @@ function SkillsSpotlight({
           </Grid>
 
           <Grid size={{ xs: 12, md: 5 }}>
-            <Typography variant="h6" sx={{ mb: 1.5 }}>
+            <Typography variant="h6" component="h3" sx={{ mb: 1.5 }}>
               {t("dashboard.topCategoriesTitle")}
             </Typography>
             {topCategories.length > 0 ? (

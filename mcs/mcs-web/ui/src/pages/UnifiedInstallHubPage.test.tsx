@@ -200,6 +200,8 @@ describe("UnifiedInstallHubPage", () => {
     expect(markup).toContain("Review &amp; Execute");
     expect(markup).toContain("Category Jump");
     expect(markup).toContain("frontend-design");
+    expect(markup).toMatch(/<h1[^>]*>Unified Skill Install Hub<\/h1>/);
+    expect(markup).toMatch(/<h2[^>]*>Choose Skills<\/h2>/);
   });
 
   it("renders running execution context when the review stage is active", () => {

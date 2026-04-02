@@ -419,9 +419,6 @@ function buildTheme(mode: Mode) {
             letterSpacing: "-0.02em",
             boxShadow: "none",
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
-            "&:hover": {
-              transform: "translateY(-1px)",
-            },
             "&:active": {
               transform: "translateY(0) scale(0.98)",
             },
@@ -433,6 +430,7 @@ function buildTheme(mode: Mode) {
             "&:hover": {
               background: tone.accentStrong,
               boxShadow: `0 16px 26px ${alpha(tone.accent, mode === "dark" ? 0.18 : 0.14)}`,
+              transform: "translateY(-1px)",
             },
           },
           outlined: {
@@ -466,7 +464,6 @@ function buildTheme(mode: Mode) {
             "&:hover": {
               backgroundColor: alpha(tone.paper, mode === "dark" ? 0.28 : 0.72),
               borderColor: tone.borderStrong,
-              transform: "translateY(-1px)",
             },
             "&:active": {
               transform: "translateY(0) scale(0.98)",
