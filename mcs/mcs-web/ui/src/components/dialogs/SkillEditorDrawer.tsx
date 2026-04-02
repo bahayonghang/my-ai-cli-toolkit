@@ -131,7 +131,7 @@ export function SkillEditorDrawer({
       onClose={handleClose}
       PaperProps={{
         sx: {
-          width: 640,
+          width: { xs: "100vw", sm: 640 },
           display: "flex",
           flexDirection: "column",
         },
