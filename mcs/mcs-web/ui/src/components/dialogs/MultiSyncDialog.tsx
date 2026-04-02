@@ -122,8 +122,8 @@ export function MultiSyncDialog({
         : t("common.agents");
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth aria-labelledby="multi-sync-dialog-title">
+      <DialogTitle id="multi-sync-dialog-title" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h6" component="span">
           {t("dialogs.syncPlatformsTitle")}
         </Typography>

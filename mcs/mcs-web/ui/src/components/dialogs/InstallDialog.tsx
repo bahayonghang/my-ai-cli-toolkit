@@ -159,6 +159,7 @@ export function InstallDialog({
       onClose={handleDialogClose}
       maxWidth="sm"
       fullWidth
+      aria-labelledby="install-dialog-title"
       TransitionProps={{ onEnter: handleEnter }}
     >
       {phase === "confirm" && (
@@ -220,7 +221,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
 
   return (
     <>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <DialogTitle id="install-dialog-title" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <InstallDesktopIcon color="primary" />
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
           {t("dialogs.installItemsTitle")}
@@ -271,6 +272,7 @@ function ConfirmPhase({ platform, results, itemType, linkMode, onLinkModeChange,
               value={linkMode}
               exclusive
               onChange={(_, v) => v && onLinkModeChange(v as LinkMode)}
+              aria-label={t("dialogs.installLinkMode")}
             >
               <ToggleButton value="auto">{t("dialogs.linkModeAuto")}</ToggleButton>
               <ToggleButton value="symlink">{t("dialogs.linkModeSymlink")}</ToggleButton>
@@ -369,7 +371,7 @@ function InstallingPhase({
 
   return (
     <>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <DialogTitle id="install-dialog-title" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <CircularProgress size={20} thickness={4} />
         <Typography variant="h6" component="span" sx={{ flexGrow: 1 }}>
           {t("dialogs.installingTitle")}
@@ -490,7 +492,7 @@ function CompletedPhase({
 
   return (
     <>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <DialogTitle id="install-dialog-title" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         {hasErrors ? (
           <WarningAmberIcon color="warning" />
         ) : (

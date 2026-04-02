@@ -173,13 +173,14 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
             onClose={cleaning ? undefined : onClose}
             maxWidth="sm"
             fullWidth
+            aria-labelledby="legacy-cleanup-dialog-title"
             PaperProps={{
                 sx: {
                     overflow: "hidden",
                 },
             }}
         >
-            <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <DialogTitle id="legacy-cleanup-dialog-title" sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <FolderDeleteIcon color="warning" />
                 {t("dialogs.legacyCleanupTitle")}
             </DialogTitle>

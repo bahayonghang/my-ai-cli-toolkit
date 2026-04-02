@@ -50,8 +50,8 @@ export function DiffDialog({
   }, [open, platformId, itemName, itemType, installTarget]);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth aria-labelledby="diff-dialog-title">
+      <DialogTitle id="diff-dialog-title" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h6" component="span">
           {t("dialogs.diffTitle", { name: itemName ?? "" })}
         </Typography>

@@ -117,8 +117,8 @@ export function NpxRunConfigDialog({
   };
 
   return (
-    <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
+    <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="md" fullWidth aria-labelledby="npx-run-config-dialog-title">
+      <DialogTitle id="npx-run-config-dialog-title" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
         <Box>
           <Typography variant="h6">{title}</Typography>
           <Typography variant="body2" color="text.secondary">

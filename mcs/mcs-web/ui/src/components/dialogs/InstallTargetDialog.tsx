@@ -79,8 +79,8 @@ export function InstallTargetDialog({
   };
 
   return (
-    <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t("dialogs.installTargetTitle")}</DialogTitle>
+    <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="sm" fullWidth aria-labelledby="install-target-dialog-title">
+      <DialogTitle id="install-target-dialog-title">{t("dialogs.installTargetTitle")}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2}>
           <ToggleButtonGroup

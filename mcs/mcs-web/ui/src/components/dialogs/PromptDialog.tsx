@@ -58,8 +58,8 @@ export function PromptDialog({ open, platformId, onClose, onUpdated }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth aria-labelledby="prompt-dialog-title">
+      <DialogTitle id="prompt-dialog-title" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h6" component="span">
           {t("dialogs.guidanceDiffTitle")}
         </Typography>
