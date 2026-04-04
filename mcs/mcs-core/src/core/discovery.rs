@@ -277,6 +277,18 @@ fn discover_platform_file_items(
     files.sort();
 
     for file_path in files {
+        if let Some(file_name) = file_path.file_name() {
+            let safe_name = file_name.to_string_lossy().to_lowercase();
+            if safe_name.starts_with('.')
+                || safe_name.starts_with("readme")
+                || safe_name.starts_with("license")
+                || safe_name.starts_with("changelog")
+                || safe_name.starts_with("contributing")
+            {
+                continue;
+            }
+        }
+
         let rel = file_path.strip_prefix(&src_dir).unwrap();
         let item_name = rel.with_extension("").to_string_lossy().replace('\\', "/");
         let target = target_dir.join(rel);
