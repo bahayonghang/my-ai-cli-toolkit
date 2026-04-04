@@ -15,6 +15,7 @@ This section tracks the installable catalog under `content/skills/`.
 | `media-skills` | article covers and media download |
 | `skill-meta-skills` | MCP-to-skill conversion and skill catalog mapping |
 | `tech-stack-skills` | Slint, LSP, Rust CLI/TUI, and uv |
+| `work-skills` | daily reports, project rollups, and end-of-session wrap-ups |
 | `workflow-skills` | planning, architecture improvement, memory, and code auditing |
 
 ## Notes

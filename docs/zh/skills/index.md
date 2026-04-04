@@ -15,6 +15,7 @@
 | `media-skills` | 文章封面与媒体下载 |
 | `skill-meta-skills` | MCP 转换与 skill 目录映射 |
 | `tech-stack-skills` | Slint、LSP、Rust CLI/TUI 与 uv |
+| `work-skills` | 日报、跨项目汇总与会话收尾 |
 | `workflow-skills` | 计划访谈、架构改进、memory 与代码审计 |
 
 ## 说明

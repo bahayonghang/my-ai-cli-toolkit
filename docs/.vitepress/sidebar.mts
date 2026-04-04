@@ -11,6 +11,7 @@ export const CATEGORY_LABELS_EN: Record<string, string> = {
   'media-skills': 'Media',
   'skill-meta-skills': 'Skill Meta',
   'tech-stack-skills': 'Tech Stack',
+  'work-skills': 'Work',
   'workflow-skills': 'Workflow',
 }
 
@@ -24,6 +25,7 @@ export const CATEGORY_LABELS_ZH: Record<string, string> = {
   'media-skills': '媒体',
   'skill-meta-skills': 'Skill 元工具',
   'tech-stack-skills': '技术栈',
+  'work-skills': '工作总结',
   'workflow-skills': '工作流',
 }
 
