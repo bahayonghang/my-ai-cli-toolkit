@@ -50,7 +50,7 @@ cd mcs && cargo test -p mcs-core <name>   # target a specific crate
 
 ### Content (`content/`)
 The installable content, organized by type:
-- **`content/skills/<category>/<skill-name>/`** — Each skill is a directory with a `SKILL.md` definition. Categories: `academic-skills`, `ai-llm-skills`, `devtools-skills`, `diagram-skills`, `document-skills`, `git-github-skills`, `media-skills`, `obsidian-skills`, `skill-meta-skills`, `tech-stack-skills`, `development-skills`, `workflow-skills`.
+- **`content/skills/<category>/<skill-name>/`** — Each skill is a directory with a `SKILL.md` definition. Categories: `academic-skills`, `ai-llm-skills`, `diagram-skills`, `document-skills`, `git-github-skills`, `learning-skills`, `media-skills`, `meta-skills`, `tech-stack-skills`, `work-skills`, `workflow-skills`.
 - **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
 - **`content/agents/`** — AI agent definitions (CCW and specialist agents).
 - **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).
@@ -91,8 +91,8 @@ A skill is a directory containing at minimum a `SKILL.md` file. The file's YAML 
 
 ## Key Conventions
 
-- **Rust edition 2024**, minimum toolchain `1.85`. Release builds use `opt-level = "z"`, `lto = true`, `strip = true`.
-- **UI**: React + TypeScript strict mode, MUI v6 (Grid v2 API with `size` prop). No CSS files — all styling via MUI `sx` prop.
+- **Rust edition 2024**, minimum toolchain `1.88`. Release builds use `opt-level = "z"`, `lto = true`, `strip = true`.
+- **UI**: React + TypeScript strict mode, MUI v7 (Grid v2 API with `size` prop). No CSS files — all styling via MUI `sx` prop.
 - **Commands source fallback**: Platforms can declare a `fallback_commands_source` (e.g., `codex` falls back to `claude` commands if no codex-specific commands exist).
 - **No root `CLAUDE.md` for OMC config**: The OMC multi-agent orchestration config lives in `.claude/CLAUDE.md`, not the project root.
 

@@ -23,8 +23,9 @@ Top-level metadata like `default.toml` is not an installable skill. The third-pa
 - `git-github-skills`
 - `learning-skills`
 - `media-skills`
-- `skill-meta-skills`
+- `meta-skills`
 - `tech-stack-skills`
+- `work-skills`
 - `workflow-skills`
 
 ## Metadata
