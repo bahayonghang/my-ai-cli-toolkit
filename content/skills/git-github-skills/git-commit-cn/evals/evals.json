@@ -36,6 +36,24 @@
       "prompt": "不要真的提交，只帮我起草一个中文 commit message。内容是把列表页虚拟滚动性能问题修掉，别带 Co-Author。",
       "expected_output": "只生成草稿 message，不执行 git commit，不包含 Co-Author 或 attribution。",
       "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "帮我拆分提交所有改动，不管现在有没有 staged，也把未跟踪文件算进来。先判断应该拆成几个 commit，再按方案执行。",
+      "expected_output": "进入 all-changes 模式，基于 staged/unstaged/untracked 的全集做拆分规划；边界清晰时可按文件或路径边界逐个提交。",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "当前没有 staged，但我要把所有改动直接提交，包括新文件。请生成并执行一个中文 Conventional Commit。",
+      "expected_output": "进入 all-changes 模式，不要求用户先手动暂存；可先 git add -A 再提交。",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "把所有改动拆分提交，但其中一个文件里混了两个不相关目的的修改。请直接处理。",
+      "expected_output": "识别为 all-changes 模式，但因为需要同文件细粒度拆分而停在拆分方案层，不盲目重组 index 或直接提交。",
+      "files": []
     }
   ]
 }

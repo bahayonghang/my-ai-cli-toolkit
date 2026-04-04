@@ -1,17 +1,18 @@
 # Git Commit CN
 
-Safely plan, draft, or execute Chinese Conventional Commits for staged Git changes, without pushing by default.
+Safely plan, draft, or execute Chinese Conventional Commits for staged Git changes and, when explicitly requested, for all working-tree changes, without pushing by default.
 
 ## Overview
 
 This skill now behaves like a safe commit orchestrator instead of a bare message formatter:
 
-1. Run a preflight check on `git status` and `git diff --staged`
-2. Decide whether the staged set is safe as-is or needs a split plan
-3. Classify the change with Chinese Conventional Commit rules
-4. Compose the final message with the helper script
-5. Either draft the message or run `git commit -F ...`
-6. Read the commit output and stop on hook failures
+1. Decide whether `staged-only` or `all-changes` mode applies
+2. Run a preflight check on `git status` and the relevant diffs
+3. Decide whether the active change set is safe as-is or needs a split plan
+4. Classify the change with Chinese Conventional Commit rules
+5. Compose the final message with the helper script
+6. Either draft the message or run `git commit -F ...`
+7. Read the commit output and stop on hook failures
 
 The helper script builds multi-line commit messages safely across shells:
 
@@ -30,20 +31,28 @@ git commit -F .git/COMMIT_EDITMSG.codex
 
 ## Workflow
 
-1. Inspect `git status`, `git diff --staged --stat`, and `git diff --staged`.
-2. Stop immediately if there are no staged changes.
-3. If the staged set mixes unrelated work and cannot be split safely, output a split plan instead of committing.
-4. Choose the correct Conventional Commit type, scope, emoji policy, and breaking-change trailers.
-5. Generate the message with the helper script.
-6. Draft only when the user asked only for message text.
-7. When committing, use `git commit -F ...` and read the result before claiming success.
+1. Default to `staged-only`. Switch to `all-changes` only when the user explicitly asks to include everything, regardless of stage state, including untracked files.
+2. In `staged-only`, inspect `git status`, `git diff --staged --stat`, and `git diff --staged`.
+3. In `all-changes`, also inspect `git diff --stat` and `git diff`, and treat staged, unstaged, and untracked non-ignored files as the candidate commit set.
+4. Stop immediately when `staged-only` has no staged changes.
+5. Stop immediately when `all-changes` has no changes anywhere in the working tree.
+6. If the active set mixes unrelated work and cannot be split safely, output a split plan instead of committing.
+7. Choose the correct Conventional Commit type, scope, emoji policy, and breaking-change trailers.
+8. Generate the message with the helper script.
+9. Draft only when the user asked only for message text.
+10. When committing:
+    - `staged-only` commits only the safe staged set
+    - `all-changes` may run `git add -A` for a single atomic commit
+    - `all-changes` split commits may rebuild the index only by file/path boundaries; stop if hunk-level surgery would be required
+11. Use `git commit -F ...` and read the result before claiming success.
 
 ## RTK Fast Path
 
-If `rtk` is installed, prefer it for staged-diff exploration:
+If `rtk` is installed, prefer it for change-set exploration:
 
 - `rtk git status`
 - `rtk git diff --staged`
+- `rtk git diff`
 - `rtk git commit -F ...` when you want compact feedback for the final commit step
 
 ## Guardrails
@@ -51,4 +60,6 @@ If `rtk` is installed, prefer it for staged-diff exploration:
 - Do not push by default.
 - Never include `Co-Authored-By` or AI attribution lines.
 - If a commit hook fails, report the original error and stop.
+- Enable `all-changes` only under explicit user language that authorizes including everything.
+- Stop at the plan if the split would require hunk-level reconstruction inside the same file.
 - Keep `type` in English and prefer Chinese for `scope`, `subject`, and `body`.
