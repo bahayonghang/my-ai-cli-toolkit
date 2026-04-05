@@ -15,10 +15,12 @@
 7. 视用户要求决定只起草还是实际执行 `git commit`
 8. 读取提交输出，hook 失败时立即停止
 
-脚本仍然负责跨 shell 安全地生成多行 commit message：
+包装脚本会自动寻找 `python3`、`python` 或 `py`，并继续负责跨 shell 安全地生成多行 commit message：
 
 ```bash
-python content/skills/git-github-skills/git-commit-cn/scripts/compose_commit_message.py \
+COMMIT_COMPOSER=content/skills/git-github-skills/git-commit-cn/scripts/compose_commit_message
+
+bash "$COMMIT_COMPOSER" \
   --type feat \
   --scope auth \
   --summary 添加双因素认证 \
@@ -39,7 +41,7 @@ git commit -F .git/COMMIT_EDITMSG.codex
 5. `all-changes` 下如果工作区没有任何改动，直接停止。
 6. 如果活动变更集合混杂且无法安全拆分，只输出拆分计划，不盲目提交。
 7. 选择正确的 Conventional Commit 类型、scope、emoji 策略和 breaking change 标记。
-8. 用脚本生成 commit message。
+8. 用包装脚本生成 commit message，不要把 `python` 写死在命令里。
 9. 如果用户只要文案，就只返回草稿。
 10. 如果真正提交：
     - `staged-only` 只提交当前安全的暂存区集合

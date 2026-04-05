@@ -7,7 +7,7 @@ tags:
   - conventional-commits
   - commit-message
   - chinese
-version: 1.3.0
+version: 1.3.1
 allowed-tools:
   - Bash
   - python
@@ -59,8 +59,14 @@ Decide the active change authority before doing anything else:
 
 ## 4. Compose
 
-1. Generate the final message with `python "$SKILL_DIR/scripts/compose_commit_message.py" ...`.
-2. Use:
+1. Resolve the helper path once instead of hardcoding an interpreter name:
+   - Bash / zsh / macOS / Linux: `COMMIT_COMPOSER="$SKILL_DIR/scripts/compose_commit_message"`
+   - PowerShell: `$COMMIT_COMPOSER = "$SKILL_DIR/scripts/compose_commit_message.ps1"`
+2. Generate the final message with the wrapper script:
+   - Bash / zsh / macOS / Linux: `bash "$COMMIT_COMPOSER" ...`
+   - PowerShell: `& "$COMMIT_COMPOSER" ...`
+   The wrapper auto-detects `python3`, `python`, or `py`, so do not write `python ...` directly in the compose step.
+3. Use:
    - `--body-line` for body content
    - `--closes` for closing issues
    - `--refs` for non-closing issue references
@@ -68,8 +74,8 @@ Decide the active change authority before doing anything else:
    - `--breaking-header` when the header itself must include `!`
    - `--breaking` when a `BREAKING CHANGE:` trailer is needed
    - `--no-emoji` only when the user explicitly opts out
-3. Never hand-roll a multiline commit message when the script can express it safely.
-4. **PROHIBITED**: Never include `Co-Authored-By`, attribution lines, or push commands by default.
+4. Never hand-roll a multiline commit message when the script can express it safely.
+5. **PROHIBITED**: Never include `Co-Authored-By`, attribution lines, or push commands by default.
 
 ## 5. Commit Or Draft
 

@@ -14,10 +14,12 @@ This skill now behaves like a safe commit orchestrator instead of a bare message
 6. Either draft the message or run `git commit -F ...`
 7. Read the commit output and stop on hook failures
 
-The helper script builds multi-line commit messages safely across shells:
+The helper wrapper builds multi-line commit messages safely across shells and auto-detects `python3`, `python`, or `py`, so the caller no longer needs to know which interpreter name is available:
 
 ```bash
-python content/skills/git-github-skills/git-commit-cn/scripts/compose_commit_message.py \
+COMMIT_COMPOSER=content/skills/git-github-skills/git-commit-cn/scripts/compose_commit_message
+
+bash "$COMMIT_COMPOSER" \
   --type feat \
   --scope auth \
   --summary 添加双因素认证 \
@@ -38,7 +40,7 @@ git commit -F .git/COMMIT_EDITMSG.codex
 5. Stop immediately when `all-changes` has no changes anywhere in the working tree.
 6. If the active set mixes unrelated work and cannot be split safely, output a split plan instead of committing.
 7. Choose the correct Conventional Commit type, scope, emoji policy, and breaking-change trailers.
-8. Generate the message with the helper script.
+8. Generate the message with the helper wrapper instead of hardcoding `python`.
 9. Draft only when the user asked only for message text.
 10. When committing:
     - `staged-only` commits only the safe staged set
