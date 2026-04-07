@@ -141,6 +141,19 @@ pub fn is_universal_shared_skills_platform(platform_id: &str) -> bool {
     universal_shared_skills_platform_ids().contains(&platform_id)
 }
 
+fn removed_platform_ids() -> &'static [&'static str] {
+    static IDS: [&str; 1] = ["iflow"];
+    &IDS
+}
+
+fn is_removed_platform(platform_id: &str) -> bool {
+    removed_platform_ids().contains(&platform_id)
+}
+
+fn remove_removed_platforms(platforms: &mut HashMap<String, PlatformConfig>) {
+    platforms.retain(|platform_id, _| !is_removed_platform(platform_id));
+}
+
 pub fn detect_legacy_skill_dirs(
     platforms: &HashMap<String, PlatformConfig>,
 ) -> Vec<LegacySkillsDir> {
@@ -274,13 +287,6 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
                 icon: "🌊",
                 base_dir: "~/.trae-cn/",
                 skills_dir: "~/.trae-cn/skills/",
-            },
-            PlatformDisplay {
-                id: "iflow",
-                name: "iFlow",
-                icon: "🌀",
-                base_dir: "~/.iflow/",
-                skills_dir: "~/.iflow/skills/",
             },
             PlatformDisplay {
                 id: "antigravity",
@@ -526,18 +532,6 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
             ),
         ),
         (
-            "iflow".into(),
-            p(
-                "iflow",
-                "~/.iflow",
-                None,
-                "skills",
-                ("commands", "iflow", Some("claude")),
-                ("", "", None),
-                None,
-            ),
-        ),
-        (
             "antigravity".into(),
             p(
                 "antigravity",
@@ -638,6 +632,15 @@ fn apply_toml_overrides(
 
     let override_count = toml_platforms.len();
     for (name, tp) in toml_platforms {
+        if is_removed_platform(&name) {
+            tracing::warn!(
+                source,
+                path = %path.display(),
+                platform = %name,
+                "Ignored removed platform override"
+            );
+            continue;
+        }
         let entry = platforms
             .entry(name.clone())
             .or_insert_with(|| PlatformConfig {
@@ -692,6 +695,7 @@ fn apply_toml_overrides(
             entry.fallback_guidance_source = Some(v);
         }
     }
+    remove_removed_platforms(platforms);
     tracing::info!(source, path = %path.display(), count = override_count, "Applied platform override file");
 }
 
@@ -920,5 +924,46 @@ mod tests {
         assert_eq!(codex.agents_source, "codex");
         assert!(codex.supports_commands());
         assert!(codex.supports_agents());
+    }
+
+    #[test]
+    fn default_platforms_do_not_include_removed_platforms() {
+        let platforms = default_platforms();
+
+        assert!(!platforms.contains_key("iflow"));
+    }
+
+    #[test]
+    fn apply_toml_overrides_ignores_removed_platforms_and_keeps_other_entries() {
+        let root = temp_dir("removed_platform_override");
+        let config_path = root.join("platforms.toml");
+        std::fs::write(
+            &config_path,
+            r#"
+[platforms.iflow]
+base_dir = "~/.revived-iflow"
+commands_source = "iflow"
+
+[platforms.qwen]
+base_dir = "~/.qwen-next"
+
+[platforms.custom]
+base_dir = "~/.custom-platform"
+"#,
+        )
+        .expect("write platform override");
+
+        let mut platforms = default_platforms();
+        apply_toml_overrides(&mut platforms, &config_path, "test");
+
+        assert!(!platforms.contains_key("iflow"));
+        assert_eq!(
+            platforms.get("qwen").expect("qwen platform").base_dir,
+            "~/.qwen-next"
+        );
+        assert_eq!(
+            platforms.get("custom").expect("custom platform").base_dir,
+            "~/.custom-platform"
+        );
     }
 }

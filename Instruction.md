@@ -63,7 +63,7 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 如果你希望把本仓库一方 skills 无交互式安装到指定 Agent，可直接执行：
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
 这条命令只覆盖本仓库的一方 skills，不包含 `community-skills-registry` 的第三方 registry 选择流程。

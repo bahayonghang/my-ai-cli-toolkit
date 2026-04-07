@@ -24,7 +24,7 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 把全部一方 skills 无交互式安装到指定 Agent：
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
 ### 在需要 MCS、文档或本地工作流时再克隆仓库

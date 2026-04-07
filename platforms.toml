@@ -146,15 +146,6 @@ commands_subdir = "commands"
 commands_source = "opencode"
 fallback_commands_source = "claude"
 
-[platforms.iflow]
-type = "cli"
-base_dir = "~/.iflow"
-skills_subdir = "skills"
-commands_subdir = "commands"
-# prompt_file = null  # iFlow uses IFLOW.md but managed by /init command
-commands_source = "iflow"
-fallback_commands_source = "claude"
-
 # ============================================================================
 # App 类型平台 - 桌面/GUI 应用
 # ============================================================================
@@ -210,10 +201,6 @@ commands_subdir = "prompts"
 
 [project_install.overrides.opencode]
 platform_dir = ".opencode"
-commands_subdir = "commands"
-
-[project_install.overrides.iflow]
-platform_dir = ".iflow"
 commands_subdir = "commands"
 
 [project_install.overrides.qoder]

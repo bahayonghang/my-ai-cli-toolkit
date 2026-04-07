@@ -23,7 +23,6 @@
 | Trae | `trae` | `claude` | `~/.trae/commands/` |
 | Trae CN | `trae` | `claude` | `~/.trae-cn/commands/` |
 | OpenCode | `opencode` | `claude` | `~/.config/opencode/commands/` |
-| iFlow | `iflow` | `claude` | `~/.iflow/commands/` |
 | Antigravity | `antigravity` | none | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `windsurf` | none | `~/.codeium/windsurf/workflows/` |
 

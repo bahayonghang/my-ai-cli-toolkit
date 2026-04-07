@@ -28,7 +28,7 @@ This is the lightweight path when you only want the first-party skill folders an
 ### Install all first-party skills non-interactively
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
 ## Clone the repository when you need local tooling
@@ -80,7 +80,6 @@ Commands, agents, or guidance still install into platform-specific locations.
 | Trae | `~/.trae/skills/` | commands: `~/.trae/commands/` |
 | Trae CN | `~/.trae-cn/skills/` | commands: `~/.trae-cn/commands/` |
 | OpenCode | `~/.agents/skills/` | commands: `~/.config/opencode/commands/` |
-| iFlow | `~/.iflow/skills/` | commands: `~/.iflow/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | workflows: `~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | workflows: `~/.codeium/windsurf/workflows/` |
 

@@ -28,7 +28,7 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 ### 无交互式安装全部一方 skills
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
 ## 需要本地工具时再克隆仓库
@@ -80,7 +80,6 @@ just doc
 | Trae | `~/.trae/skills/` | commands：`~/.trae/commands/` |
 | Trae CN | `~/.trae-cn/skills/` | commands：`~/.trae-cn/commands/` |
 | OpenCode | `~/.agents/skills/` | commands：`~/.config/opencode/commands/` |
-| iFlow | `~/.iflow/skills/` | commands：`~/.iflow/commands/` |
 | Antigravity | `~/.gemini/antigravity/skills/` | workflows：`~/.gemini/antigravity/workflows/` |
 | Windsurf | `~/.codeium/windsurf/skills/` | workflows：`~/.codeium/windsurf/workflows/` |
 

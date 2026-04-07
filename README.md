@@ -24,7 +24,7 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 Install all first-party skills non-interactively to specific agents:
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a iflow-cli -a kiro-cli -a qwen-code -a trae -a trae-cn
+npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
 ### Clone the repository for MCS, docs, or local workflows
