@@ -24,3 +24,12 @@ stars = 4
 usage = "安装后在 Vue.js 项目中自动生效，提供官方推荐的开发实践"
 tags = ["vue", "official"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "vuejs-ai/skills" }
+
+[[skills]]
+id = "frontend-slides"
+name = "frontend-slides"
+description = "创建精美动画丰富的 HTML 演示文稿，支持 PPT 转换（12 种风格预设，零依赖单文件输出）"
+stars = 5
+usage = "npx skills add zarazhangrui/frontend-slides -g -y"
+tags = ["slides", "presentation", "html", "pptx"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "zarazhangrui/frontend-slides" }
