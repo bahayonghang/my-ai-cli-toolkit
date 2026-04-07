@@ -105,3 +105,12 @@ stars = 5
 usage = "提供三层访问策略（Lightweight/CDP/并列执行），安装后让 Agent 拥有登录态操作及动态交互能力"
 tags = ["browser", "web", "scraping", "automation"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "eze-is/web-access" }
+
+[[skills]]
+id = "waza"
+name = "Waza"
+description = "Waza (技) - Engineering habits you already know, turned into skills Claude can run. 包含 think, design, check, hunt, write, learn, read, health 等 8 个核心开发习惯技能"
+stars = 5
+usage = "安装后即可使用 /think, /design, /check, /hunt, /write, /learn, /read, /health 指令来规范研发流程"
+tags = ["engineering-habits", "workflow", "productivity", "best-practices"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "tw93/Waza" }
