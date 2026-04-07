@@ -71,6 +71,10 @@ pub fn router() -> Router<AppState> {
             axum::routing::get(npx_skills::installed),
         )
         .route(
+            "/api/platforms/{id}/npx-skills/packages/preview",
+            axum::routing::post(npx_skills::package_preview),
+        )
+        .route(
             "/api/platforms/{id}/npx-skills/install/jobs",
             axum::routing::post(npx_skills::install_jobs_start),
         )

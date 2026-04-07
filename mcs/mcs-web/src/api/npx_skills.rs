@@ -2,7 +2,7 @@ use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::response::sse::{Event, KeepAlive, Sse};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::convert::Infallible;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -24,11 +24,12 @@ use crate::dto::{
     NpxCatalogInstalledStateDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto,
     NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest, NpxSkillsInstalledInventoryDto,
     NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest, NpxSkillsOperation,
-    NpxSkillsRemoveJobRequest, ResolvedInstallTargetDto,
+    NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewRequest, NpxSkillsRemoveJobRequest,
+    ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{
     build_check_args, build_install_args, build_remove_args, build_update_args,
-    execute_skills_command,
+    clear_package_preview_cache, execute_skills_command, preview_package_skills,
 };
 use crate::services::npx_skills_inventory::{
     InventoryQuery, apply_catalog_install_state_with_lookup, clear_check_cache,
@@ -199,6 +200,29 @@ struct JobFailedPayload {
     message: String,
 }
 
+fn installed_query_is_filtered(query: &NpxSkillsInstalledQuery) -> bool {
+    query
+        .search
+        .as_ref()
+        .is_some_and(|value| !value.trim().is_empty())
+        || query.group_id.is_some()
+        || query.category_id.is_some()
+        || query
+            .source_filter
+            .as_ref()
+            .is_some_and(|value| !value.trim().is_empty())
+        || query
+            .tracking_filter
+            .as_ref()
+            .is_some_and(|value| !value.trim().is_empty())
+        || query
+            .update_filter
+            .as_ref()
+            .is_some_and(|value| !value.trim().is_empty())
+        || query.page.is_some()
+        || query.page_size.is_some()
+}
+
 pub async fn catalog(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -293,25 +317,57 @@ pub async fn installed(
             .await
             .map_err(AppError::Internal)?,
     )?;
-    let inventory = resolve_inventory_page(
+    if installed_query_is_filtered(&query) {
+        let inventory = resolve_inventory_page(
+            &project_root,
+            &install_target,
+            resolved_target,
+            &catalog_entries,
+            NpxSkillsCliConfigDto::default().cli_mode,
+            &InventoryQuery {
+                search: query.search.clone(),
+                group_id: query.group_id.clone(),
+                category_id: query.category_id.clone(),
+                source_filter: query.source_filter.clone(),
+                tracking_filter: query.tracking_filter.clone(),
+                update_filter: query.update_filter.clone(),
+                page: query.page,
+                page_size: query.page_size,
+            },
+        )
+        .await?;
+        return Ok(Json(ApiResponse::ok(inventory.into_dto())));
+    }
+
+    let inventory = resolve_inventory(
         &project_root,
         &install_target,
         resolved_target,
         &catalog_entries,
         NpxSkillsCliConfigDto::default().cli_mode,
-        &InventoryQuery {
-            search: query.search.clone(),
-            group_id: query.group_id.clone(),
-            category_id: query.category_id.clone(),
-            source_filter: query.source_filter.clone(),
-            tracking_filter: query.tracking_filter.clone(),
-            update_filter: query.update_filter.clone(),
-            page: query.page,
-            page_size: query.page_size,
-        },
     )
     .await?;
-    Ok(Json(ApiResponse::ok(inventory.into_dto())))
+    Ok(Json(ApiResponse::ok(inventory)))
+}
+
+pub async fn package_preview(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(body): Json<NpxSkillsPackagePreviewRequest>,
+) -> Result<Json<ApiResponse<NpxSkillsPackagePreviewDto>>, AppError> {
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = body.install_target.clone();
+    resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Read,
+    )
+    .map_err(AppError::BadRequest)?;
+    let preview = preview_package_skills(&body.package_ref, &body.config, &install_target).await?;
+    Ok(Json(ApiResponse::ok(preview)))
 }
 
 pub async fn install_jobs_start(
@@ -920,6 +976,7 @@ fn catalog_item_matches(item: &NpxSkillsCatalogItemDto, search: &str) -> bool {
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
         || item.group_label.to_lowercase().contains(search)
+        || item.category_slug.to_lowercase().contains(search)
         || item.category_label.to_lowercase().contains(search)
         || item
             .usage
@@ -940,6 +997,7 @@ fn installed_item_matches(item: &crate::dto::NpxInstalledSkillInstanceDto, searc
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
         || item.group_label.to_lowercase().contains(search)
+        || item.category_slug.to_lowercase().contains(search)
         || item.category_label.to_lowercase().contains(search)
         || item.source.display.to_lowercase().contains(search)
         || item
@@ -1035,20 +1093,41 @@ fn sanitize_page(page: Option<usize>, total_pages: usize) -> usize {
 fn normalize_install_items(
     items: Vec<NpxSkillsInstallItemRequest>,
 ) -> Result<Vec<NpxSkillsInstallItemRequest>, AppError> {
-    let mut normalized = Vec::with_capacity(items.len());
+    let mut normalized = Vec::<NpxSkillsInstallItemRequest>::with_capacity(items.len());
+    let mut package_index = HashMap::<String, usize>::new();
     for item in items {
         let package_ref = item.package_ref.trim();
         if package_ref.is_empty() {
             continue;
         }
+        let mut skill_flags = item
+            .skill_flags
+            .into_iter()
+            .map(|flag| flag.trim().to_string())
+            .filter(|flag| !flag.is_empty())
+            .collect::<Vec<_>>();
+
+        if let Some(index) = package_index.get(package_ref).copied() {
+            let existing = normalized
+                .get_mut(index)
+                .expect("existing grouped install item");
+            if skill_flags.is_empty() {
+                existing.skill_flags.clear();
+            } else if !existing.skill_flags.is_empty() {
+                let mut seen = existing.skill_flags.iter().cloned().collect::<HashSet<_>>();
+                for flag in skill_flags.drain(..) {
+                    if seen.insert(flag.clone()) {
+                        existing.skill_flags.push(flag);
+                    }
+                }
+            }
+            continue;
+        }
+
+        package_index.insert(package_ref.to_string(), normalized.len());
         normalized.push(NpxSkillsInstallItemRequest {
             package_ref: package_ref.to_string(),
-            skill_flags: item
-                .skill_flags
-                .into_iter()
-                .map(|flag| flag.trim().to_string())
-                .filter(|flag| !flag.is_empty())
-                .collect(),
+            skill_flags,
             catalog_entry_id: item.catalog_entry_id,
         });
     }
@@ -1106,6 +1185,7 @@ async fn apply_state_update(
 ) -> Result<(), AppError> {
     match state_update {
         StateUpdate::ClearCheckCache => {
+            clear_package_preview_cache();
             clear_check_cache(&target_ctx.project_root, &target_ctx.skills_path)?;
             clear_persisted_list_cache(
                 &target_ctx.project_root,
@@ -1275,6 +1355,7 @@ mod tests {
             group_label: "Engineering".into(),
             group_order: 10,
             category_id: "tools".into(),
+            category_slug: "dev-tools".into(),
             category_label: "Tools".into(),
             category_order: 20,
             tags: vec!["tag".into()],
@@ -1305,6 +1386,7 @@ mod tests {
         };
         assert!(installed_item_matches(&item, "engineering"));
         assert!(installed_item_matches(&item, "tools"));
+        assert!(installed_item_matches(&item, "dev-tools"));
         assert!(installed_item_matches(&item, "vercel-labs/skills"));
     }
 
@@ -1319,6 +1401,7 @@ mod tests {
             group_label: "Manual".into(),
             group_order: 1,
             category_id: "manual_local".into(),
+            category_slug: "manual-local".into(),
             category_label: "Local".into(),
             category_order: 1,
             tags: vec![],
@@ -1379,5 +1462,55 @@ mod tests {
         assert_eq!(total_pages(101, 50), 3);
         assert_eq!(sanitize_page(Some(9), 3), 3);
         assert_eq!(sanitize_page(Some(0), 3), 1);
+    }
+
+    #[test]
+    fn normalize_install_items_groups_package_refs_and_preserves_full_package_installs() {
+        let items = normalize_install_items(vec![
+            NpxSkillsInstallItemRequest {
+                package_ref: "vercel-labs/agent-skills".into(),
+                skill_flags: vec!["deploy-to-vercel".into()],
+                catalog_entry_id: Some("deploy".into()),
+            },
+            NpxSkillsInstallItemRequest {
+                package_ref: "vercel-labs/agent-skills".into(),
+                skill_flags: vec!["web-design-guidelines".into()],
+                catalog_entry_id: Some("web".into()),
+            },
+            NpxSkillsInstallItemRequest {
+                package_ref: "vercel-labs/skills".into(),
+                skill_flags: vec![],
+                catalog_entry_id: None,
+            },
+            NpxSkillsInstallItemRequest {
+                package_ref: "vercel-labs/skills".into(),
+                skill_flags: vec!["find-skills".into()],
+                catalog_entry_id: Some("find".into()),
+            },
+        ])
+        .expect("normalized items");
+
+        assert_eq!(items.len(), 2);
+        assert_eq!(items[0].package_ref, "vercel-labs/agent-skills");
+        assert_eq!(
+            items[0].skill_flags,
+            vec![
+                "deploy-to-vercel".to_string(),
+                "web-design-guidelines".to_string()
+            ]
+        );
+        assert_eq!(items[1].package_ref, "vercel-labs/skills");
+        assert!(items[1].skill_flags.is_empty());
+    }
+
+    #[test]
+    fn installed_query_detection_defaults_to_full_snapshot() {
+        assert!(!installed_query_is_filtered(
+            &NpxSkillsInstalledQuery::default()
+        ));
+        assert!(installed_query_is_filtered(&NpxSkillsInstalledQuery {
+            category_id: Some("dev-tools".into()),
+            ..NpxSkillsInstalledQuery::default()
+        }));
     }
 }

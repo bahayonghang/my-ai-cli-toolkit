@@ -19,13 +19,16 @@ use crate::dto::{
     NpxSkillsInstalledInventoryDto, NpxSkillsInstalledSummaryDto, NpxTaxonomyCategoryDto,
     NpxTaxonomyGroupDto, ResolvedInstallTargetDto,
 };
-use crate::services::npx_skills_cli::{build_list_args, execute_skills_command};
+use crate::services::npx_skills_cli::{
+    build_list_args, execute_skills_command, format_skills_command_preview,
+};
 
 const CHECK_CACHE_VERSION: u32 = 1;
 const CHECK_CACHE_DIR: &str = "check-cache";
-const INVENTORY_CACHE_TTL_MS: u64 = 60_000;
+const INVENTORY_CACHE_TTL_MS: u64 = 5 * 60_000;
 const LIST_CACHE_VERSION: u32 = 1;
 const LIST_CACHE_DIR: &str = "list-cache";
+const LIST_CACHE_TTL_MS: u64 = 10 * 60_000;
 const GLOBAL_LOCK_FILE: &str = ".skill-lock.json";
 const PROJECT_LOCK_FILE: &str = "skills-lock.json";
 const MANUAL_GROUP_ID: &str = "manual";
@@ -339,6 +342,7 @@ pub fn apply_catalog_install_state_with_lookup(
                 group_label: entry.group_label,
                 group_order: entry.group_order,
                 category_id: entry.category_id,
+                category_slug: entry.category_slug,
                 category_label: entry.category_label,
                 category_order: entry.category_order,
                 tags: entry.tags,
@@ -379,7 +383,7 @@ async fn resolve_inventory_source_data(
     }
 
     let listed_skills = if let Some(cached) =
-        read_persisted_list_cache(project_root, &cache_key, now_ms, INVENTORY_CACHE_TTL_MS)
+        read_persisted_list_cache(project_root, &cache_key, now_ms, LIST_CACHE_TTL_MS)
     {
         cached
     } else {
@@ -451,6 +455,7 @@ fn item_matches_search(item: &NpxInstalledSkillInstanceDto, search: &str) -> boo
             .as_ref()
             .is_some_and(|value| value.to_lowercase().contains(search))
         || item.group_label.to_lowercase().contains(search)
+        || item.category_slug.to_lowercase().contains(search)
         || item.category_label.to_lowercase().contains(search)
         || item.source.display.to_lowercase().contains(search)
         || item
@@ -522,6 +527,7 @@ fn build_taxonomy_groups(items: &[NpxInstalledSkillInstanceDto]) -> Vec<NpxTaxon
                 .entry(item.category_id.clone())
                 .or_insert_with(|| NpxTaxonomyCategoryDto {
                     id: item.category_id.clone(),
+                    slug: item.category_slug.clone(),
                     label: item.category_label.clone(),
                     count: 0,
                     group_id: item.group_id.clone(),
@@ -678,6 +684,9 @@ fn build_inventory_item<'a>(
         category_id: catalog_entry
             .map(|entry| entry.category_id.clone())
             .unwrap_or_else(|| synthetic.category_id),
+        category_slug: catalog_entry
+            .map(|entry| entry.category_slug.clone())
+            .unwrap_or_else(|| synthetic.category_slug),
         category_label: catalog_entry
             .map(|entry| entry.category_label.clone())
             .unwrap_or_else(|| synthetic.category_label),
@@ -751,7 +760,7 @@ async fn list_installed_skills(
             message: "Unable to load installed npx skills inventory".into(),
             details: json!({
                 "remediation": "Ensure `skills list --json` is available through either the local `skills` binary or `npx skills`.",
-                "command": format_command_preview(&args),
+                "command": format_skills_command_preview(&args),
                 "output": result.output,
             }),
         });
@@ -763,7 +772,7 @@ async fn list_installed_skills(
             message: "Unable to parse installed npx skills inventory".into(),
             details: json!({
                 "remediation": "The installed skills inventory must be valid JSON. Verify the local skills CLI version supports `skills list --json`.",
-                "command": format_command_preview(&args),
+                "command": format_skills_command_preview(&args),
                 "parse_error": error.to_string(),
                 "output": output,
             }),
@@ -956,6 +965,7 @@ fn synthetic_taxonomy(lock: Option<&LockMetadata>) -> SyntheticTaxonomy {
     match classify_manual_kind(lock, "") {
         NpxInstalledSourceKindDto::ManualGithub => SyntheticTaxonomy {
             category_id: "manual_github".into(),
+            category_slug: "manual-github".into(),
             category_label: "GitHub".into(),
             category_order: CATEGORY_ORDER_GITHUB,
             description: Some("Installed from a GitHub or well-known source.".into()),
@@ -963,6 +973,7 @@ fn synthetic_taxonomy(lock: Option<&LockMetadata>) -> SyntheticTaxonomy {
         },
         NpxInstalledSourceKindDto::ManualGit => SyntheticTaxonomy {
             category_id: "manual_git".into(),
+            category_slug: "manual-git".into(),
             category_label: "Git URL".into(),
             category_order: CATEGORY_ORDER_GIT,
             description: Some("Installed from a Git URL source.".into()),
@@ -970,6 +981,7 @@ fn synthetic_taxonomy(lock: Option<&LockMetadata>) -> SyntheticTaxonomy {
         },
         NpxInstalledSourceKindDto::ManualLocal => SyntheticTaxonomy {
             category_id: "manual_local".into(),
+            category_slug: "manual-local".into(),
             category_label: "Local".into(),
             category_order: CATEGORY_ORDER_LOCAL,
             description: Some("Installed from a local path or node_modules source.".into()),
@@ -977,6 +989,7 @@ fn synthetic_taxonomy(lock: Option<&LockMetadata>) -> SyntheticTaxonomy {
         },
         _ => SyntheticTaxonomy {
             category_id: "manual_unknown".into(),
+            category_slug: "manual-unknown".into(),
             category_label: "Unknown".into(),
             category_order: CATEGORY_ORDER_UNKNOWN,
             description: Some("Installed from an unknown or untracked source.".into()),
@@ -1258,10 +1271,6 @@ fn catalog_installed_name(entry: &ResolvedExternalSkillEntry) -> String {
         .unwrap_or_else(|| entry.name.clone())
 }
 
-fn format_command_preview(args: &[String]) -> String {
-    format!("skills {}", args.join(" "))
-}
-
 fn strip_ansi(input: &str) -> String {
     let mut result = String::with_capacity(input.len());
     let mut chars = input.chars().peekable();
@@ -1285,6 +1294,7 @@ fn strip_ansi(input: &str) -> String {
 #[derive(Clone, Debug)]
 struct SyntheticTaxonomy {
     category_id: String,
+    category_slug: String,
     category_label: String,
     category_order: i32,
     description: Option<String>,
@@ -1333,6 +1343,7 @@ mod tests {
             group_label: "Engineering".into(),
             group_order: 10,
             category_id: "tools".into(),
+            category_slug: "dev-tools".into(),
             category_label: "Tools".into(),
             category_order: 20,
             install_kind: "skills_cli".into(),
@@ -1370,6 +1381,7 @@ mod tests {
                 order: 10,
                 categories: vec![NpxTaxonomyCategoryDto {
                     id: "tools".into(),
+                    slug: "dev-tools".into(),
                     label: "Tools".into(),
                     count: 1,
                     group_id: "engineering".into(),
@@ -1468,6 +1480,7 @@ mod tests {
                 group_label: "Engineering".into(),
                 group_order: 10,
                 category_id: "tools".into(),
+                category_slug: "dev-tools".into(),
                 category_label: "Tools".into(),
                 category_order: 20,
                 tags: vec![],
@@ -1508,6 +1521,7 @@ mod tests {
             group_label: "Engineering".into(),
             group_order: 10,
             category_id: "tools".into(),
+            category_slug: "dev-tools".into(),
             category_label: "Tools".into(),
             category_order: 20,
             tags: vec![],
@@ -1540,6 +1554,7 @@ mod tests {
         let groups = build_taxonomy_groups(&items);
         assert_eq!(groups.len(), 1);
         assert_eq!(groups[0].categories.len(), 1);
+        assert_eq!(groups[0].categories[0].slug, "dev-tools");
         assert_eq!(groups[0].categories[0].count, 2);
     }
 
@@ -1618,6 +1633,7 @@ mod tests {
                     group_label: "Engineering".into(),
                     group_order: 1,
                     category_id: "tools".into(),
+                    category_slug: "dev-tools".into(),
                     category_label: "Tools".into(),
                     category_order: 1,
                     tags: vec![],
@@ -1655,6 +1671,7 @@ mod tests {
                     group_label: "Manual".into(),
                     group_order: 2,
                     category_id: "manual_local".into(),
+                    category_slug: "manual-local".into(),
                     category_label: "Local".into(),
                     category_order: 2,
                     tags: vec![],
@@ -1745,7 +1762,7 @@ mod tests {
 
         write_inventory_cache(key.clone(), source_data_with_names(&["expiring"]), 1_000);
 
-        assert!(read_inventory_cache(&key, 61_500, INVENTORY_CACHE_TTL_MS).is_none());
+        assert!(read_inventory_cache(&key, 301_500, INVENTORY_CACHE_TTL_MS).is_none());
     }
 
     #[test]
@@ -1788,7 +1805,7 @@ mod tests {
 
         write_persisted_list_cache(&project_root, &key, &listed_skills, 1_000);
 
-        let cached = read_persisted_list_cache(&project_root, &key, 5_000, INVENTORY_CACHE_TTL_MS)
+        let cached = read_persisted_list_cache(&project_root, &key, 5_000, LIST_CACHE_TTL_MS)
             .expect("persisted list cache should exist");
         assert_eq!(cached.len(), 2);
         assert_eq!(cached[0].name, "find-skills");
@@ -1810,8 +1827,7 @@ mod tests {
         write_persisted_list_cache(&project_root, &key, &listed_skills, 1_000);
 
         assert!(
-            read_persisted_list_cache(&project_root, &key, 61_500, INVENTORY_CACHE_TTL_MS)
-                .is_none()
+            read_persisted_list_cache(&project_root, &key, 601_500, LIST_CACHE_TTL_MS).is_none()
         );
     }
 
@@ -1838,11 +1854,11 @@ mod tests {
         clear_persisted_list_cache(&project_root, &skills_path, InstallTargetScopeDto::Global);
 
         assert!(
-            read_persisted_list_cache(&project_root, &global_key, 2_000, INVENTORY_CACHE_TTL_MS)
+            read_persisted_list_cache(&project_root, &global_key, 2_000, LIST_CACHE_TTL_MS)
                 .is_none()
         );
         assert!(
-            read_persisted_list_cache(&project_root, &project_key, 2_000, INVENTORY_CACHE_TTL_MS)
+            read_persisted_list_cache(&project_root, &project_key, 2_000, LIST_CACHE_TTL_MS)
                 .is_some()
         );
     }
@@ -1870,6 +1886,7 @@ mod tests {
                 group_label: "Engineering".into(),
                 group_order: 1,
                 category_id: "tools".into(),
+                category_slug: "dev-tools".into(),
                 category_label: "Tools".into(),
                 category_order: 1,
                 tags: vec![],

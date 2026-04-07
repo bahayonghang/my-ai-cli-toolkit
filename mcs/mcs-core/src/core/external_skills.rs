@@ -125,6 +125,7 @@ pub struct ResolvedExternalSkillEntry {
     pub group_label: String,
     pub group_order: i32,
     pub category_id: String,
+    pub category_slug: String,
     pub category_label: String,
     pub category_order: i32,
     pub install_kind: String,
@@ -291,6 +292,7 @@ impl ExternalSkillsRegistry {
                     category.id.as_str(),
                     (
                         category.group_id.clone(),
+                        category_slug(category),
                         category.label.clone(),
                         category.order.unwrap_or(index as i32),
                     ),
@@ -303,7 +305,7 @@ impl ExternalSkillsRegistry {
             .iter()
             .filter(|skill| skill.install.kind == install_kind)
             .filter_map(|skill| {
-                let (group_id, category_label, category_order) =
+                let (group_id, category_slug, category_label, category_order) =
                     category_meta.get(skill.category_id.as_str())?.clone();
                 let (group_label, group_order) = group_orders
                     .get(group_id.as_str())
@@ -321,6 +323,7 @@ impl ExternalSkillsRegistry {
                     group_label,
                     group_order,
                     category_id: skill.category_id.clone(),
+                    category_slug,
                     category_label,
                     category_order,
                     install_kind: skill.install.kind.clone(),
@@ -424,6 +427,21 @@ fn normalize_registry_relative_path(path: &str) -> Result<PathBuf, &'static str>
     }
 
     Ok(normalized)
+}
+
+fn category_slug(category: &ExternalSkillCategory) -> String {
+    category
+        .file
+        .as_deref()
+        .and_then(|file| normalize_registry_relative_path(file).ok())
+        .and_then(|normalized| {
+            normalized
+                .file_stem()
+                .and_then(|stem| stem.to_str())
+                .map(|stem| stem.trim().to_string())
+        })
+        .filter(|stem| !stem.is_empty())
+        .unwrap_or_else(|| category.id.clone())
 }
 
 fn resolve_category_fragment_path(
@@ -577,6 +595,7 @@ pub fn uncategorized_skill(
         group_label: FALLBACK_GROUP_LABEL.to_string(),
         group_order: FALLBACK_ORDER,
         category_id: FALLBACK_GROUP_ID.to_string(),
+        category_slug: FALLBACK_GROUP_ID.to_string(),
         category_label: FALLBACK_GROUP_LABEL.to_string(),
         category_order: FALLBACK_ORDER,
         install_kind: EXTERNAL_SKILLS_KIND_SKILLS_CLI.to_string(),
@@ -717,8 +736,45 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
         assert_eq!(resolved.len(), 1);
         assert_eq!(resolved[0].group_id, "engineering");
         assert_eq!(resolved[0].category_id, "frontend");
+        assert_eq!(resolved[0].category_slug, "frontend");
         assert_eq!(resolved[0].package_ref, "vercel-labs/skills");
         assert_eq!(resolved[0].skill_flag.as_deref(), Some("find-skills"));
+    }
+
+    #[test]
+    fn category_slug_prefers_fragment_file_stem_over_category_id() {
+        let parsed: ExternalSkillsRegistry = toml::from_str(
+            r#"
+[schema]
+version = 2
+
+[[groups]]
+id = "engineering"
+label = "Engineering"
+
+[[categories]]
+id = "design_systems"
+group_id = "engineering"
+label = "Design Systems"
+file = "categories/ui-ux.toml"
+
+[[skills]]
+id = "design-dna"
+name = "design-dna"
+category_id = "design_systems"
+[skills.install]
+kind = "skills_cli"
+provider = "vercel"
+package_ref = "vercel-labs/design"
+"#,
+        )
+        .unwrap();
+
+        let resolved = parsed
+            .resolved_skills_for_kind(EXTERNAL_SKILLS_KIND_SKILLS_CLI)
+            .unwrap();
+        assert_eq!(resolved[0].category_id, "design_systems");
+        assert_eq!(resolved[0].category_slug, "ui-ux");
     }
 
     #[test]

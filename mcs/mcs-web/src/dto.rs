@@ -316,6 +316,15 @@ pub struct NpxSkillsInstallJobRequest {
 }
 
 #[derive(Deserialize)]
+pub struct NpxSkillsPackagePreviewRequest {
+    pub package_ref: String,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: NpxSkillsCliConfigDto,
+}
+
+#[derive(Deserialize)]
 pub struct NpxSkillsRemoveJobRequest {
     pub item_ids: Vec<String>,
     #[serde(default)]
@@ -342,6 +351,7 @@ pub struct NpxSkillsCatalogItemDto {
     pub group_label: String,
     pub group_order: i32,
     pub category_id: String,
+    pub category_slug: String,
     pub category_label: String,
     pub category_order: i32,
     pub tags: Vec<String>,
@@ -379,6 +389,7 @@ pub struct NpxSkillsInstalledInventoryDto {
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub struct NpxTaxonomyCategoryDto {
     pub id: String,
+    pub slug: String,
     pub label: String,
     pub count: usize,
     pub group_id: String,
@@ -498,6 +509,7 @@ pub struct NpxInstalledSkillInstanceDto {
     pub group_label: String,
     pub group_order: i32,
     pub category_id: String,
+    pub category_slug: String,
     pub category_label: String,
     pub category_order: i32,
     pub tags: Vec<String>,
@@ -514,6 +526,30 @@ pub struct NpxInstalledSkillInstanceDto {
 pub struct NpxSkillsCliResult {
     pub success: bool,
     pub output: String,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxSkillsPackagePreviewModeDto {
+    ListedSkills,
+    PackageOnly,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+pub struct NpxSkillsPackagePreviewSkillDto {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsPackagePreviewDto {
+    pub package_ref: String,
+    pub source_ref: String,
+    pub mode: NpxSkillsPackagePreviewModeDto,
+    pub skills: Vec<NpxSkillsPackagePreviewSkillDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fallback_reason: Option<String>,
 }
 
 #[derive(Serialize)]
