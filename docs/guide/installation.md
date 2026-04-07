@@ -65,6 +65,8 @@ These platforms install skills into the shared `~/.agents/skills/` root:
 - Kimi
 - OpenCode
 
+This is the default MCS install mapping for the shared-library group, not an exclusive statement about each platform's native discovery rules. For example, GitHub Copilot can still recognize its own supported skill locations; MCS standardizes installs into the shared library for this group.
+
 Commands, agents, or guidance still install into platform-specific locations.
 
 ### Native platform paths
@@ -72,8 +74,13 @@ Commands, agents, or guidance still install into platform-specific locations.
 | Platform | Skills path | Platform-managed extras |
 |----------|-------------|-------------------------|
 | Claude | `~/.claude/skills/` | commands: `~/.claude/commands/`, agents: `~/.claude/agents/`, guidance: `~/.claude/CLAUDE.md` |
+| Amp | `~/.agents/skills/` | no additional managed surfaces |
+| Cline | `~/.agents/skills/` | no additional managed surfaces |
 | Codex | `~/.agents/skills/` | commands: `~/.codex/prompts/`, guidance: `~/.codex/AGENTS.md` |
+| Cursor | `~/.agents/skills/` | commands: `~/.cursor/commands/` |
 | Gemini | `~/.agents/skills/` | commands: `~/.agents/commands/` |
+| GitHub Copilot | `~/.agents/skills/` | no additional managed surfaces |
+| Kimi | `~/.agents/skills/` | no additional managed surfaces |
 | Qwen | `~/.qwen/skills/` | commands: `~/.qwen/commands/` |
 | Kiro | `~/.kiro/skills/` | commands: `~/.kiro/steering/` |
 | Qoder | `~/.qoder/skills/` | commands: `~/.qoder/commands/` |

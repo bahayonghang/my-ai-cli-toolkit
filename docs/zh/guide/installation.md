@@ -65,6 +65,8 @@ just doc
 - Kimi
 - OpenCode
 
+这表示 MCS 对共享库平台组的默认安装映射，不代表这些平台只识别这一条原生技能发现路径。以 GitHub Copilot 为例，它仍可识别自己支持的原生 skills 位置；MCS 只是把这一组平台统一安装到共享库。
+
 它们的 commands、agents 或 guidance 仍然使用各自平台目录。
 
 ### 平台路径总览
@@ -72,8 +74,13 @@ just doc
 | 平台 | Skills 路径 | 平台托管附加内容 |
 |------|-------------|------------------|
 | Claude | `~/.claude/skills/` | commands：`~/.claude/commands/`，agents：`~/.claude/agents/`，guidance：`~/.claude/CLAUDE.md` |
+| Amp | `~/.agents/skills/` | 无额外托管入口 |
+| Cline | `~/.agents/skills/` | 无额外托管入口 |
 | Codex | `~/.agents/skills/` | commands：`~/.codex/prompts/`，guidance：`~/.codex/AGENTS.md` |
+| Cursor | `~/.agents/skills/` | commands：`~/.cursor/commands/` |
 | Gemini | `~/.agents/skills/` | commands：`~/.agents/commands/` |
+| GitHub Copilot | `~/.agents/skills/` | 无额外托管入口 |
+| Kimi | `~/.agents/skills/` | 无额外托管入口 |
 | Qwen | `~/.qwen/skills/` | commands：`~/.qwen/commands/` |
 | Kiro | `~/.kiro/skills/` | commands：`~/.kiro/steering/` |
 | Qoder | `~/.qoder/skills/` | commands：`~/.qoder/commands/` |
