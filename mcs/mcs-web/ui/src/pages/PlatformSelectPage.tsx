@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   ArrowsClockwise,
   ChartPieSlice,
@@ -19,6 +19,7 @@ import { useLegacyDirs } from "@/hooks/useLegacyDirs";
 import { useI18n } from "@/i18n";
 import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { usePlatformStore } from "@/stores/platformStore";
+import { getSkillsLibrarySupportText } from "@/utils/platformLibrary";
 import {
   AppShell,
   ListSurface,
@@ -37,7 +38,7 @@ const LegacyCleanupDialog = lazy(() =>
 );
 
 export default function PlatformSelectPage() {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const navigateDeferred = useNavigateDeferred();
   const platforms = usePlatformStore((state) => state.platforms);
   const loading = usePlatformStore((state) => state.loading);
@@ -52,16 +53,6 @@ export default function PlatformSelectPage() {
   }, [fetchPlatforms]);
 
   const firstPlatformId = platforms[0]?.id ?? null;
-  const sharedPathCounts = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const platform of platforms) {
-      counts.set(
-        platform.skills_path,
-        (counts.get(platform.skills_path) ?? 0) + 1,
-      );
-    }
-    return counts;
-  }, [platforms]);
 
   if (loading && platforms.length === 0) {
     return <PageLoadingState message={t("common.loading")} />;
@@ -166,9 +157,15 @@ export default function PlatformSelectPage() {
         <Stack spacing={1.5}>
           {platforms.map((platform) => {
             const libraryScope =
-              (sharedPathCounts.get(platform.skills_path) ?? 0) > 1
+              platform.skills_library_kind === "shared"
                 ? t("platformSelect.sharedLibrary")
                 : t("platformSelect.dedicatedLibrary");
+            const librarySupport = getSkillsLibrarySupportText({
+              platform,
+              platforms,
+              locale,
+              t,
+            });
 
             return (
               <ListSurface key={platform.id} tone="entry">
@@ -216,9 +213,6 @@ export default function PlatformSelectPage() {
                       <Typography variant="h5" sx={{ letterSpacing: "-0.04em", textAlign: "left" }}>
                         {platform.name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ textAlign: "left" }}>
-                        {t("platformSelect.librarySubtitle")}
-                      </Typography>
                       <PlatformCapabilityChips platform={platform} />
                     </Stack>
 
@@ -228,6 +222,12 @@ export default function PlatformSelectPage() {
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
                         {platform.skills_path}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                        {t("common.skillsLibraryLabel")}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                        {librarySupport}
                       </Typography>
                     </Stack>
                   </Box>

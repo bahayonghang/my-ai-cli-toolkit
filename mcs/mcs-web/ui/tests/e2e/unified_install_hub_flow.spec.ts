@@ -17,13 +17,17 @@ const platformsResponse = [
     icon: "C",
     base_dir: "/Users/demo/.claude",
     skills_path: "/Users/demo/.claude/skills",
+    skills_library_kind: "dedicated",
+    skills_library_platform_ids: ["claude"],
   },
   {
     id: "codex",
     name: "Codex",
     icon: "X",
     base_dir: "/Users/demo/.codex",
-    skills_path: "/Users/demo/.codex/skills",
+    skills_path: "/Users/demo/.agents/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["codex", "gemini"],
   },
 ];
 

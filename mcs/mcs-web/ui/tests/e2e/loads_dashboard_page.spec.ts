@@ -87,6 +87,8 @@ const platformsResponse = [
     icon: "C",
     base_dir: "/Users/demo/.claude",
     skills_path: "/Users/demo/.claude/skills",
+    skills_library_kind: "dedicated",
+    skills_library_platform_ids: ["claude"],
   },
 ];
 

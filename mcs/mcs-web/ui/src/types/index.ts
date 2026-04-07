@@ -41,6 +41,8 @@ export interface PlatformDisplay {
   icon: string;
   base_dir: string;
   skills_path: string;
+  skills_library_kind: "shared" | "dedicated";
+  skills_library_platform_ids: string[];
   commands_path?: string | null;
   agents_path?: string | null;
   guidance_path?: string | null;

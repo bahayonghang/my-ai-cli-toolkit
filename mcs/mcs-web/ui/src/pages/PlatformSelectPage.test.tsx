@@ -51,6 +51,8 @@ const platformsFixture: PlatformDisplay[] = [
     icon: "C",
     base_dir: "~/.codex",
     skills_path: "~/.agents/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["codex", "gemini"],
     commands_path: "~/.codex/prompts",
     guidance_path: "~/.codex/AGENTS.md",
     supports_commands: true,
@@ -62,6 +64,8 @@ const platformsFixture: PlatformDisplay[] = [
     icon: "G",
     base_dir: "~/.agents",
     skills_path: "~/.agents/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["codex", "gemini"],
     commands_path: "~/.agents/commands",
     supports_commands: true,
   },
@@ -71,6 +75,8 @@ const platformsFixture: PlatformDisplay[] = [
     icon: "A",
     base_dir: "~/.claude",
     skills_path: "~/.claude/skills",
+    skills_library_kind: "dedicated",
+    skills_library_platform_ids: ["claude"],
     commands_path: "~/.claude/commands",
     agents_path: "~/.claude/agents",
     supports_commands: true,
@@ -107,9 +113,12 @@ describe("PlatformSelectPage", () => {
 
     expect(markup).toContain("Open install workbench");
     expect(markup).toContain("Platform workspaces");
-    expect(markup).toContain("Shared library");
-    expect(markup).toContain("Dedicated library");
+    expect(markup).toContain("Shared skills library");
+    expect(markup).toContain("Dedicated skills library");
     expect(markup).toContain("Skills path");
+    expect(markup).toContain("Library support");
+    expect(markup).toContain("Shared with Codex and Gemini");
+    expect(markup).toContain("Platform-specific skills library");
     expect((markup.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(markup).toMatch(/<h2[^>]*>Platform workspaces<\/h2>/);
   });

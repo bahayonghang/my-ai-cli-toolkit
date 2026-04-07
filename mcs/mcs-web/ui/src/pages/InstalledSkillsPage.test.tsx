@@ -13,6 +13,8 @@ const platforms: PlatformDisplay[] = [
     icon: "X",
     base_dir: "/Users/demo/.codex",
     skills_path: "/Users/demo/.agents/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["codex", "gemini"],
     commands_path: "/Users/demo/.codex/prompts",
     guidance_path: "/Users/demo/.codex/AGENTS.md",
     supports_commands: true,

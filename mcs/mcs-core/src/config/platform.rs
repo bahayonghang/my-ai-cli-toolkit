@@ -141,6 +141,37 @@ pub fn is_universal_shared_skills_platform(platform_id: &str) -> bool {
     universal_shared_skills_platform_ids().contains(&platform_id)
 }
 
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum SkillsLibraryKind {
+    Shared,
+    Dedicated,
+}
+
+pub fn skills_library_kind(platform_id: &str) -> SkillsLibraryKind {
+    if is_universal_shared_skills_platform(platform_id) {
+        SkillsLibraryKind::Shared
+    } else {
+        SkillsLibraryKind::Dedicated
+    }
+}
+
+pub fn skills_library_platform_ids(
+    platforms: &HashMap<String, PlatformConfig>,
+    platform_id: &str,
+) -> Vec<String> {
+    let mut ids = match skills_library_kind(platform_id) {
+        SkillsLibraryKind::Shared => platforms
+            .keys()
+            .filter(|id| is_universal_shared_skills_platform(id.as_str()))
+            .cloned()
+            .collect(),
+        SkillsLibraryKind::Dedicated => vec![platform_id.to_string()],
+    };
+    ids.sort();
+    ids
+}
+
 fn removed_platform_ids() -> &'static [&'static str] {
     static IDS: [&str; 1] = ["iflow"];
     &IDS
@@ -221,6 +252,8 @@ pub struct PlatformDisplayOwned {
     pub icon: String,
     pub base_dir: String,
     pub skills_path: String,
+    pub skills_library_kind: SkillsLibraryKind,
+    pub skills_library_platform_ids: Vec<String>,
     pub commands_path: Option<String>,
     pub agents_path: Option<String>,
     pub guidance_path: Option<String>,
@@ -308,27 +341,33 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
 }
 
 pub fn platform_displays_owned() -> Vec<PlatformDisplayOwned> {
-    default_platforms()
-        .into_iter()
-        .map(|(id, platform)| {
+    let platforms = default_platforms();
+    let mut ids: Vec<String> = platforms.keys().cloned().collect();
+    ids.sort();
+
+    ids.into_iter()
+        .filter_map(|id| {
+            let platform = platforms.get(&id)?;
             let skills_path = if is_universal_shared_skills_platform(&id) {
                 universal_shared_skills_display_path().to_string()
             } else {
                 platform.skills_display_path()
             };
-            PlatformDisplayOwned {
+            Some(PlatformDisplayOwned {
                 id: id.clone(),
                 name: platform.name.clone(),
                 icon: "📁".to_string(),
                 base_dir: platform.base_dir.clone(),
                 skills_path,
+                skills_library_kind: skills_library_kind(&id),
+                skills_library_platform_ids: skills_library_platform_ids(&platforms, &id),
                 commands_path: platform.commands_display_path(),
                 agents_path: platform.agents_display_path(),
                 guidance_path: platform.guidance_display_path(),
                 supports_commands: platform.supports_commands(),
                 supports_agents: platform.supports_agents(),
                 supports_guidance: platform.supports_guidance(),
-            }
+            })
         })
         .collect()
 }
@@ -931,6 +970,62 @@ mod tests {
         let platforms = default_platforms();
 
         assert!(!platforms.contains_key("iflow"));
+    }
+
+    #[test]
+    fn shared_skills_library_metadata_groups_universal_platforms() {
+        let platforms = default_platforms();
+
+        assert_eq!(skills_library_kind("copilot"), SkillsLibraryKind::Shared);
+        assert_eq!(skills_library_kind("claude"), SkillsLibraryKind::Dedicated);
+
+        let shared_ids = skills_library_platform_ids(&platforms, "copilot");
+        assert_eq!(
+            shared_ids,
+            vec![
+                "amp".to_string(),
+                "cline".to_string(),
+                "codex".to_string(),
+                "copilot".to_string(),
+                "cursor".to_string(),
+                "gemini".to_string(),
+                "kimi".to_string(),
+                "opencode".to_string(),
+            ]
+        );
+
+        let dedicated_ids = skills_library_platform_ids(&platforms, "claude");
+        assert_eq!(dedicated_ids, vec!["claude".to_string()]);
+    }
+
+    #[test]
+    fn platform_displays_owned_include_library_metadata() {
+        let displays = platform_displays_owned();
+        let copilot = displays
+            .iter()
+            .find(|display| display.id == "copilot")
+            .expect("copilot display");
+        let claude = displays
+            .iter()
+            .find(|display| display.id == "claude")
+            .expect("claude display");
+
+        assert_eq!(copilot.skills_library_kind, SkillsLibraryKind::Shared);
+        assert!(
+            copilot
+                .skills_library_platform_ids
+                .contains(&"copilot".to_string())
+        );
+        assert!(
+            copilot
+                .skills_library_platform_ids
+                .contains(&"codex".to_string())
+        );
+        assert_eq!(claude.skills_library_kind, SkillsLibraryKind::Dedicated);
+        assert_eq!(
+            claude.skills_library_platform_ids,
+            vec!["claude".to_string()]
+        );
     }
 
     #[test]

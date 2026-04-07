@@ -2,13 +2,13 @@ export const enPlatformSelectMessages = {
   "platformSelect.heroEyebrow": "Agent skills control plane",
   "platformSelect.title": "MyClaude Skills",
   "platformSelect.subtitle":
-    "Check shared libraries, compare platform paths, and jump straight into install or registry work.",
+    "See which platforms share a skills library, review platform-specific extras, and jump straight into install or registry work.",
   "platformSelect.availablePlatforms": "Available platforms",
   "platformSelect.quickAccess": "Quick access",
   "platformSelect.refreshTooltip": "Refresh content and platform list",
   "platformSelect.refreshButton": "Refresh",
   "platformSelect.universalGroupTitle": "Universal Agents",
-  "platformSelect.universalGroupDesc": "Manage shared skills for Amp, Cline, Codex, Cursor, Gemini, Copilot, Kimi, and OpenCode",
+  "platformSelect.universalGroupDesc": "Shared skills library for Amp, Cline, Codex, Cursor, Gemini, GitHub Copilot, Kimi, and OpenCode, with platform-specific commands, agents, and guidance where supported.",
   "platformSelect.alternativePlatforms": "Alternative Platforms",
   "platformSelect.unifiedInstallTitle": "Batch install across platforms",
   "platformSelect.unifiedInstallLabel": "Skills Hub",
@@ -23,11 +23,11 @@ export const enPlatformSelectMessages = {
   "platformSelect.npxSkillsTitle": "Browse external packages, curated picks, and maintenance runs",
   "platformSelect.libraryTitle": "Platform workspaces",
   "platformSelect.librarySubtitle":
-    "Open any platform workspace to review its skills path, command surface, and next action.",
+    "Open any platform workspace to review its skills path, library support, platform-specific surfaces, and next action.",
   "platformSelect.platformWorkspaceLabel": "Workspace directory map",
   "platformSelect.skillsPathLabel": "Skills path",
-  "platformSelect.sharedLibrary": "Shared library",
-  "platformSelect.dedicatedLibrary": "Dedicated library",
+  "platformSelect.sharedLibrary": "Shared skills library",
+  "platformSelect.dedicatedLibrary": "Dedicated skills library",
 } as const;
 
 export const zhPlatformSelectMessages: Record<
@@ -37,13 +37,13 @@ export const zhPlatformSelectMessages: Record<
   "platformSelect.heroEyebrow": "Agent Skills 控制平面",
   "platformSelect.title": "MyClaude Skills",
   "platformSelect.subtitle":
-    "检查共享技能库、比较各平台路径，并直接进入安装或 registry 工作。",
+    "查看哪些平台共享同一个技能库，核对平台专属扩展入口，并直接进入安装或 registry 工作。",
   "platformSelect.availablePlatforms": "可用平台",
   "platformSelect.quickAccess": "快捷入口",
   "platformSelect.refreshTooltip": "刷新内容与平台列表",
   "platformSelect.refreshButton": "刷新",
   "platformSelect.universalGroupTitle": "通用智能体 (Universal Agents)",
-  "platformSelect.universalGroupDesc": "统一管理 Amp, Cline, Codex, Cursor, Gemini, Copilot, Kimi 与 OpenCode 等平台的共享技能",
+  "platformSelect.universalGroupDesc": "Amp、Cline、Codex、Cursor、Gemini、GitHub Copilot、Kimi 与 OpenCode 共用同一个技能库；命令、agents 与 guidance 仍按平台分别管理。",
   "platformSelect.alternativePlatforms": "其他独立平台",
   "platformSelect.unifiedInstallTitle": "跨平台批量安装",
   "platformSelect.unifiedInstallLabel": "技能中心",
@@ -58,9 +58,9 @@ export const zhPlatformSelectMessages: Record<
   "platformSelect.npxSkillsTitle": "浏览外部包、推荐目录与维护任务",
   "platformSelect.libraryTitle": "平台工作区",
   "platformSelect.librarySubtitle":
-    "打开任一平台工作区，查看技能路径、命令入口和下一步动作。",
+    "打开任一平台工作区，查看技能路径、库支持范围、平台专属入口与下一步动作。",
   "platformSelect.platformWorkspaceLabel": "工作区目录映射",
   "platformSelect.skillsPathLabel": "技能路径",
-  "platformSelect.sharedLibrary": "共享库",
-  "platformSelect.dedicatedLibrary": "独立库",
+  "platformSelect.sharedLibrary": "共享技能库",
+  "platformSelect.dedicatedLibrary": "独立技能库",
 };

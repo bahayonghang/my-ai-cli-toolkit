@@ -3,7 +3,7 @@ use axum::extract::{Path, Query, State};
 
 use mcs_core::config::platform::{
     PlatformDisplayOwned, is_universal_shared_skills_platform, platform_displays,
-    universal_shared_skills_display_path,
+    skills_library_kind, skills_library_platform_ids, universal_shared_skills_display_path,
 };
 use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 
@@ -33,6 +33,8 @@ pub async fn list(State(state): State<AppState>) -> Json<ApiResponse<Vec<Platfor
                 icon: display.icon.to_string(),
                 base_dir: platform.base_dir.clone(),
                 skills_path,
+                skills_library_kind: skills_library_kind(display.id),
+                skills_library_platform_ids: skills_library_platform_ids(&platforms, display.id),
                 commands_path: platform.commands_display_path(),
                 agents_path: platform.agents_display_path(),
                 guidance_path: platform.guidance_display_path(),
@@ -65,6 +67,8 @@ pub async fn list(State(state): State<AppState>) -> Json<ApiResponse<Vec<Platfor
                 icon: "📁".to_string(),
                 base_dir: platform.base_dir.clone(),
                 skills_path,
+                skills_library_kind: skills_library_kind(&id),
+                skills_library_platform_ids: skills_library_platform_ids(&platforms, &id),
                 commands_path: platform.commands_display_path(),
                 agents_path: platform.agents_display_path(),
                 guidance_path: platform.guidance_display_path(),

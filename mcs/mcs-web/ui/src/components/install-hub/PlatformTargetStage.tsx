@@ -15,6 +15,7 @@ import type { ItemType, PlatformDisplay } from "@/types";
 import type { PlatformSelection } from "./types";
 import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 import { getPlatformInstallPath } from "@/utils/installHubContent";
+import { getSkillsLibrarySupportText } from "@/utils/platformLibrary";
 
 interface PlatformTargetStageProps {
   platforms: PlatformDisplay[];
@@ -37,7 +38,7 @@ export function PlatformTargetStage({
   onSelectAll,
   onClearSelection,
 }: PlatformTargetStageProps) {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const stageDisabled = disabled || locked;
 
   return (
@@ -118,6 +119,13 @@ export function PlatformTargetStage({
             const titleId = `${platformDomId}-title`;
             const pathId = `${platformDomId}-path`;
             const statusId = `${platformDomId}-status`;
+            const supportId = `${platformDomId}-support`;
+            const librarySupport = getSkillsLibrarySupportText({
+              platform,
+              platforms,
+              locale,
+              t,
+            });
 
             return (
               <Grid key={platform.id} size={{ xs: 12, md: 6 }}>
@@ -126,7 +134,7 @@ export function PlatformTargetStage({
                   disabled={stageDisabled}
                   aria-pressed={selected}
                   aria-labelledby={titleId}
-                  aria-describedby={`${statusId} ${pathId}`}
+                  aria-describedby={`${statusId} ${pathId} ${supportId}`}
                   sx={{
                     width: "100%",
                     textAlign: "left",
@@ -224,6 +232,26 @@ export function PlatformTargetStage({
                         }}
                       >
                         {getPlatformInstallPath(platform, itemType, t)}
+                      </Typography>
+                      <Typography
+                        variant="overline"
+                        sx={{
+                          color: "var(--mcs-workbench-muted)",
+                          display: "block",
+                          mt: 1.1,
+                        }}
+                      >
+                        {t("installHub.platformLibraryLabel")}
+                      </Typography>
+                      <Typography
+                        id={supportId}
+                        variant="body2"
+                        sx={{
+                          color: "var(--mcs-workbench-muted)",
+                          overflowWrap: "anywhere",
+                        }}
+                      >
+                        {librarySupport}
                       </Typography>
                     </Box>
                   </Stack>

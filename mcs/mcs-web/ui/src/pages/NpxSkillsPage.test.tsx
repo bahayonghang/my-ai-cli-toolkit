@@ -21,6 +21,8 @@ const platformState: {
       icon: "C",
       base_dir: "/tmp/claude",
       skills_path: "/tmp/claude/skills",
+      skills_library_kind: "dedicated",
+      skills_library_platform_ids: ["claude"],
     },
   ],
   fetchPlatforms: async () => {},

@@ -13,13 +13,17 @@ const platforms: PlatformDisplay[] = [
     icon: "C",
     base_dir: "/Users/demo/.claude",
     skills_path: "/Users/demo/.claude/skills",
+    skills_library_kind: "dedicated",
+    skills_library_platform_ids: ["claude"],
   },
   {
     id: "codex",
     name: "Codex",
     icon: "X",
     base_dir: "/Users/demo/.codex",
-    skills_path: "/Users/demo/.codex/skills",
+    skills_path: "/Users/demo/.agents/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["codex", "gemini"],
   },
 ];
 
@@ -199,6 +203,7 @@ describe("UnifiedInstallHubPage", () => {
     expect(markup).toContain("Choose Targets");
     expect(markup).toContain("Review &amp; Execute");
     expect(markup).toContain("Category Jump");
+    expect(markup).toContain("shared or dedicated library support");
     expect(markup).toContain("frontend-design");
     expect(markup).toMatch(/<h1[^>]*>Unified Skill Install Hub<\/h1>/);
     expect(markup).toMatch(/<h2[^>]*>Choose Skills<\/h2>/);

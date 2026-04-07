@@ -18,6 +18,8 @@ const platformState: {
       icon: "C",
       base_dir: "/tmp/claude",
       skills_path: "/tmp/claude/skills",
+      skills_library_kind: "dedicated",
+      skills_library_platform_ids: ["claude"],
     },
     {
       id: "codex",
@@ -25,6 +27,8 @@ const platformState: {
       icon: "X",
       base_dir: "/tmp/codex",
       skills_path: "/tmp/codex/skills",
+      skills_library_kind: "shared",
+      skills_library_platform_ids: ["codex", "gemini"],
     },
   ],
   fetchPlatforms: async () => {},

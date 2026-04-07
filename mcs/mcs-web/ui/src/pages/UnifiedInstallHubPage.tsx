@@ -186,6 +186,7 @@ function InstallWorkbench({
                 plannedActionCount={model.summary.plannedActionCount}
                 results={model.results}
                 itemType={model.itemType}
+                allPlatforms={model.availablePlatforms}
                 selectedPlatforms={model.summary.selectedPlatforms}
                 selectedSkillNames={model.summary.selectedItemNames}
                 onClearResults={() => model.setResults([])}

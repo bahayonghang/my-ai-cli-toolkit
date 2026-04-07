@@ -3,7 +3,7 @@ export const enInstallHubMessages = {
   "installHub.heroEyebrow": "Install workbench",
   "installHub.heroTitle": "Choose skills, choose targets, then run the install.",
   "installHub.heroSubtitle":
-    "Keep bundle selection, target selection, and execution in one workbench without losing context.",
+    "Keep bundle selection, target selection, shared or dedicated library support, and execution in one workbench without losing context.",
   "installHub.skillCatalog": "Skill Catalog",
   "installHub.filteredTotal": "Filtered {filtered} / Total {total}",
   "installHub.targetPlatforms": "Target Platforms",
@@ -57,7 +57,7 @@ export const enInstallHubMessages = {
   "installHub.stageDescription.skills":
     "Filter the catalog, compare install coverage, and build the exact skill bundle you want to ship.",
   "installHub.stageDescription.platforms":
-    "Pick the destinations for this run. Every tile shows the live target path so the install scope stays obvious.",
+    "Pick the destinations for this run. Every tile shows the live target path and library support so the install scope stays obvious.",
   "installHub.stageDescription.review":
     "Confirm the install coverage, then follow progress and results without leaving the workbench.",
   "installHub.stepStatus.current": "Current",
@@ -70,7 +70,7 @@ export const enInstallHubMessages = {
     "The right rail mirrors the current stage, selected scope, and next action so the workflow never feels split.",
   "installHub.summaryEmptySkills": "No skills selected yet",
   "installHub.summaryEmptyPlatforms": "No targets selected yet",
-  "installHub.summaryResultsHint": "Review the platform result blocks below to inspect failures or reused paths.",
+  "installHub.summaryResultsHint": "Review the platform result blocks below to inspect failures or shared-library reuse.",
   "installHub.metricCatalog": "Catalog",
   "installHub.metricCategories": "Categories",
   "installHub.metricTargets": "Targets",
@@ -89,6 +89,7 @@ export const enInstallHubMessages = {
   "installHub.platformSelected": "Selected",
   "installHub.platformReady": "Ready",
   "installHub.platformPathLabel": "Install path",
+  "installHub.platformLibraryLabel": "Library support",
   "installHub.reviewSelection": "Execution Preview",
   "installHub.executionScopeTitle": "Run coverage",
   "installHub.reviewSelectionHint": "This run will execute {count} install actions across the chosen targets.",
@@ -118,7 +119,7 @@ export const zhInstallHubMessages: Record<
   "installHub.heroEyebrow": "安装工作台",
   "installHub.heroTitle": "先选技能，再选目标，然后执行安装。",
   "installHub.heroSubtitle":
-    "把技能选择、目标选择和执行确认放在同一个工作台里，始终保持上下文可见。",
+    "把技能选择、目标选择、共享/独立库支持信息和执行确认放在同一个工作台里，始终保持上下文可见。",
   "installHub.skillCatalog": "技能目录",
   "installHub.filteredTotal": "筛选 {filtered} / 总计 {total}",
   "installHub.targetPlatforms": "目标平台",
@@ -170,7 +171,7 @@ export const zhInstallHubMessages: Record<
   "installHub.stageDescription.skills":
     "筛选技能目录、比较安装覆盖范围，并组装这次要下发的技能集合。",
   "installHub.stageDescription.platforms":
-    "选择本次安装的目标平台。每张磁贴都直接展示真实安装路径，避免范围感知出错。",
+    "选择本次安装的目标平台。每张磁贴都直接展示真实安装路径和库支持范围，避免范围感知出错。",
   "installHub.stageDescription.review":
     "确认安装覆盖范围后直接执行，并在同一工作台内查看进度与结果。",
   "installHub.stepStatus.current": "当前步骤",
@@ -183,7 +184,7 @@ export const zhInstallHubMessages: Record<
     "右侧摘要会持续同步当前步骤、所选范围和下一步动作，让安装流程始终保持连贯。",
   "installHub.summaryEmptySkills": "暂未选择技能",
   "installHub.summaryEmptyPlatforms": "暂未选择目标平台",
-  "installHub.summaryResultsHint": "向下查看各平台结果块，可快速定位失败项或复用路径信息。",
+  "installHub.summaryResultsHint": "向下查看各平台结果块，可快速定位失败项或共享库复用情况。",
   "installHub.metricCatalog": "技能总数",
   "installHub.metricCategories": "分类数",
   "installHub.metricTargets": "目标数",
@@ -202,6 +203,7 @@ export const zhInstallHubMessages: Record<
   "installHub.platformSelected": "已选择",
   "installHub.platformReady": "可选",
   "installHub.platformPathLabel": "安装路径",
+  "installHub.platformLibraryLabel": "库支持范围",
   "installHub.reviewSelection": "执行预览",
   "installHub.executionScopeTitle": "本次覆盖范围",
   "installHub.reviewSelectionHint": "本次将对所选目标执行 {count} 个安装动作。",

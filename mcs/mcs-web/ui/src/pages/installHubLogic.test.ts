@@ -53,6 +53,8 @@ const SHARED_PATH_PLATFORMS: PlatformDisplay[] = [
     icon: "🤖",
     base_dir: "~/.claude",
     skills_path: "~/.shared/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["claude", "codex"],
   },
   {
     id: "codex",
@@ -60,6 +62,8 @@ const SHARED_PATH_PLATFORMS: PlatformDisplay[] = [
     icon: "📦",
     base_dir: "~/.codex",
     skills_path: "~/.shared/skills",
+    skills_library_kind: "shared",
+    skills_library_platform_ids: ["claude", "codex"],
   },
 ];
 
@@ -105,6 +109,8 @@ describe("summarizeInstallResults", () => {
           icon: "🤖",
           base_dir: "~/.claude",
           skills_path: "~/.claude/skills",
+          skills_library_kind: "dedicated",
+          skills_library_platform_ids: ["claude"],
         },
         successCount: 2,
         failureCount: 0,
@@ -118,6 +124,8 @@ describe("summarizeInstallResults", () => {
           icon: "📦",
           base_dir: "~/.codex",
           skills_path: "~/.agents/skills",
+          skills_library_kind: "shared",
+          skills_library_platform_ids: ["codex"],
         },
         successCount: 1,
         failureCount: 1,

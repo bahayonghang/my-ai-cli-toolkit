@@ -17,10 +17,12 @@ import type { ExecutionState, PlatformInstallResult } from "./types";
 import type { ItemType, PlatformDisplay } from "@/types";
 import { PlatformIdentity } from "@/components/platform/PlatformVisuals";
 import { getPlatformInstallPath } from "@/utils/installHubContent";
+import { getSkillsLibrarySupportText } from "@/utils/platformLibrary";
 
 interface InstallReviewStageProps {
   selectedSkillNames: string[];
   itemType: ItemType;
+  allPlatforms: PlatformDisplay[];
   selectedPlatforms: PlatformDisplay[];
   plannedActionCount: number;
   execution: ExecutionState;
@@ -32,6 +34,7 @@ interface InstallReviewStageProps {
 export function InstallReviewStage({
   selectedSkillNames,
   itemType,
+  allPlatforms,
   selectedPlatforms,
   plannedActionCount,
   execution,
@@ -117,6 +120,7 @@ export function InstallReviewStage({
         <ReviewPreviewBlock
           selectedSkillNames={selectedSkillNames}
           itemType={itemType}
+          allPlatforms={allPlatforms}
           selectedPlatforms={selectedPlatforms}
           plannedActionCount={plannedActionCount}
         />
@@ -137,15 +141,17 @@ export function InstallReviewStage({
 function ReviewPreviewBlock({
   selectedSkillNames,
   itemType,
+  allPlatforms,
   selectedPlatforms,
   plannedActionCount,
 }: {
   selectedSkillNames: string[];
   itemType: ItemType;
+  allPlatforms: PlatformDisplay[];
   selectedPlatforms: PlatformDisplay[];
   plannedActionCount: number;
 }) {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
 
   return (
     <Box
@@ -219,13 +225,34 @@ function ReviewPreviewBlock({
                     bgcolor: "var(--mcs-workbench-surface-muted)",
                   }}
                 >
-                  <PlatformIdentity
-                    platformId={platform.id}
-                    name={platform.name}
-                    fallbackIcon={platform.icon}
-                    subtitle={getPlatformInstallPath(platform, itemType, t)}
-                    size={42}
-                  />
+                  <Stack spacing={1.1}>
+                    <PlatformIdentity
+                      platformId={platform.id}
+                      name={platform.name}
+                      fallbackIcon={platform.icon}
+                      subtitle={getPlatformInstallPath(platform, itemType, t)}
+                      size={42}
+                    />
+                    <Box>
+                      <Typography
+                        variant="overline"
+                        sx={{ color: "var(--mcs-workbench-muted)", display: "block" }}
+                      >
+                        {t("installHub.platformLibraryLabel")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "var(--mcs-workbench-muted)", overflowWrap: "anywhere" }}
+                      >
+                        {getSkillsLibrarySupportText({
+                          platform,
+                          platforms: allPlatforms,
+                          locale,
+                          t,
+                        })}
+                      </Typography>
+                    </Box>
+                  </Stack>
                 </Box>
               ))
             )}
