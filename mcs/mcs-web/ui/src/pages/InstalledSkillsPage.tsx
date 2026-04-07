@@ -221,9 +221,11 @@ export default function InstalledSkillsPage() {
           <Button
             variant="outlined"
             startIcon={<TerminalIcon />}
-            onClick={() => navigateDeferred(`/platform/${platformId}/npx-skills`)}
+            onClick={() =>
+              navigateDeferred(`/registry?workspace=${encodeURIComponent(platformId ?? "")}`)
+            }
           >
-            {t("npxSkills.pageButton")}
+            {t("installed.openRegistry")}
           </Button>
           <Button
             variant="contained"

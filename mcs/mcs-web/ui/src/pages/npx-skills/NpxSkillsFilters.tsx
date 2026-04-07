@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { TaxonomyGroupSummary, TranslationFn } from "./types";
+import { formatCategoryLabel } from "./utils";
 
 export interface NpxSkillsFiltersProps {
   groups: TaxonomyGroupSummary[];
@@ -58,7 +59,7 @@ export default function NpxSkillsFilters({
                 sx={{ minHeight: 44 }}
               >
                 <ListItemText
-                  primary={category.label}
+                  primary={formatCategoryLabel(category.slug, category.label)}
                   secondary={String(category.count)}
                 />
               </ListItemButton>

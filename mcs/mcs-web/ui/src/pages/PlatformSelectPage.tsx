@@ -129,7 +129,7 @@ export default function PlatformSelectPage() {
                 disabled={!firstPlatformId}
                 onClick={() => {
                   if (firstPlatformId) {
-                    navigateDeferred(`/platform/${firstPlatformId}/npx-skills`);
+                    navigateDeferred(`/registry?workspace=${encodeURIComponent(firstPlatformId)}`);
                   }
                 }}
                 sx={{ justifyContent: "flex-start" }}

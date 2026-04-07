@@ -21,6 +21,7 @@ function installedItem(
     group_label: "Engineering",
     group_order: 10,
     category_id: "tools",
+    category_slug: "dev-tools",
     category_label: "Tools",
     category_order: 20,
     tags: ["search"],

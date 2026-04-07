@@ -38,6 +38,7 @@ import type {
   TranslationFn,
 } from "./types";
 import NpxSkillsFilters from "./NpxSkillsFilters";
+import { formatCategoryLabel } from "./utils";
 
 export interface NpxInstalledViewProps {
   t: TranslationFn;
@@ -309,6 +310,19 @@ export default function NpxInstalledView({
         )}
 
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          {isMobile ? (
+            <Card variant="outlined" sx={{ mb: 2 }}>
+              <CardContent sx={{ p: 2 }}>
+                <NpxSkillsFilters
+                  groups={installedGroups}
+                  selectedCategoryId={selectedInstalledCategoryId}
+                  onCategoryChange={setSelectedInstalledCategoryId}
+                  t={t}
+                />
+              </CardContent>
+            </Card>
+          ) : null}
+
           {installedError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               <Typography variant="body2">{installedError}</Typography>
@@ -386,7 +400,11 @@ export default function NpxInstalledView({
                               variant="outlined"
                               label={t(`npxSkills.updateState.${item.update.kind}`)}
                             />
-                            <Chip size="small" variant="outlined" label={item.category_label} />
+                            <Chip
+                              size="small"
+                              variant="outlined"
+                              label={formatCategoryLabel(item.category_slug, item.category_label)}
+                            />
                           </Box>
                           <Typography
                             variant="caption"
@@ -493,7 +511,11 @@ export default function NpxInstalledView({
                             </Typography>
                             <Box display="flex" gap={0.75} flexWrap="wrap" mt={0.75}>
                               <Chip size="small" variant="outlined" label={sourceLabel(item, t)} />
-                              <Chip size="small" variant="outlined" label={item.category_label} />
+                              <Chip
+                                size="small"
+                                variant="outlined"
+                                label={formatCategoryLabel(item.category_slug, item.category_label)}
+                              />
                               <Chip
                                 size="small"
                                 variant="outlined"

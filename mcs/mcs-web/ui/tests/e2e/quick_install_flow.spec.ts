@@ -77,24 +77,18 @@ test("quick install starts a job and renders progress", async ({ page }) => {
   const api = await mockNpxSkillsApi(page);
   await seedNpxSkillsRunConfig(page, runConfig);
 
-  await page.goto("/platform/claude/npx-skills");
-  await page.getByRole("tab", { name: /find/i }).click();
+  await page.goto("/registry?workspace=claude");
   await setNpxSkillsInstallTarget(page, installTarget);
-  await page.getByRole("button", { name: /quick install/i }).click();
-  const dialog = page.locator('[role="dialog"]:visible').last();
-  await dialog.getByLabel(/package/i).fill("vercel-labs/agent-skills");
-  await dialog.getByLabel(/skill flags/i).fill("find-skills\nreview");
+  await page.getByLabel(/package/i).fill("vercel-labs/agent-skills");
+  await page.getByRole("button", { name: /preview repo/i }).click();
+  await page.getByRole("button", { name: /select all previewed/i }).click();
+  await page.getByRole("button", { name: /install selected from repo/i }).click();
   await maybeSubmitNpxSkillsRunDialog(page, {
     installTarget,
     submitButtons: [/^start quick install$/i, /^start install$/i, /^install$/i, /^run$/i, /^confirm$/i],
   });
 
-  await expect(page.getByRole("tab", { name: /maintenance/i })).toHaveAttribute(
-    "aria-selected",
-    "true"
-  );
   await expect.poll(() => api.requests.installJobs.length).toBe(1);
-  await expect(page.getByText("vercel-labs/agent-skills")).toBeVisible();
   expect(api.requests.installJobs[0]).toEqual({
     items: [
       {

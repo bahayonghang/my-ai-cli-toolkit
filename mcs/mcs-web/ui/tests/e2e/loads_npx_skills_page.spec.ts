@@ -8,13 +8,11 @@ test("loads the npx skills page and summary", async ({ page }) => {
 
   await page.goto("/platform/claude/npx-skills");
 
-  await expect(
-    page.getByRole("heading", { name: /manage registry skills for claude code/i }),
-  ).toBeVisible();
-  await expect(page.getByRole("tab", { name: /find/i })).toBeVisible();
-  await expect(page.getByRole("tab", { name: /installed/i })).toBeVisible();
-  await expect(page.getByRole("tab", { name: /maintenance/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^registry$/i })).toBeVisible();
+  await expect(page.getByText(/^Install from Repo$/i)).toBeVisible();
+  await expect(page.getByText(/^Discover$/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Maintenance$/i })).toBeVisible();
   await expect(page.getByText("Claude Code", { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/Installed: 2/i)).toBeVisible();
-  await expect(page.getByText(/Scoped to current target/i)).toBeVisible();
+  await expect(page.getByLabel(/workspace anchor/i)).toBeVisible();
 });

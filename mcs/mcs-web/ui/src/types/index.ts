@@ -226,6 +226,7 @@ export interface NpxSkillsCatalogItemDto {
   group_label: string;
   group_order: number;
   category_id: string;
+  category_slug: string;
   category_label: string;
   category_order: number;
   tags: string[];
@@ -293,6 +294,7 @@ export interface NpxInstalledActionsDto {
 
 export interface NpxTaxonomyCategoryDto {
   id: string;
+  slug: string;
   label: string;
   count: number;
   group_id: string;
@@ -316,6 +318,7 @@ export interface NpxInstalledSkillInstanceDto {
   group_label: string;
   group_order: number;
   category_id: string;
+  category_slug: string;
   category_label: string;
   category_order: number;
   tags: string[];
@@ -343,6 +346,21 @@ export interface NpxSkillsInstallItemInput {
   package_ref: string;
   skill_flags?: string[];
   catalog_entry_id?: string | null;
+}
+
+export type NpxSkillsPackagePreviewMode = "listed_skills" | "package_only";
+
+export interface NpxSkillsPackagePreviewSkillDto {
+  name: string;
+  description: string | null;
+}
+
+export interface NpxSkillsPackagePreviewDto {
+  package_ref: string;
+  source_ref: string;
+  mode: NpxSkillsPackagePreviewMode;
+  skills: NpxSkillsPackagePreviewSkillDto[];
+  fallback_reason: string | null;
 }
 
 export interface NpxSkillsJobStartDto {

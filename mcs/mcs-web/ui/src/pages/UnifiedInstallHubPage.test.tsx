@@ -197,7 +197,7 @@ describe("UnifiedInstallHubPage", () => {
   it("renders the staged workbench with one summary rail and three guided steps", () => {
     const markup = renderPage();
 
-    expect(markup).toContain("Unified Skill Install Hub");
+    expect(markup).toContain("Local Skill Install Hub");
     expect(markup).toContain("Keep the run in view");
     expect(markup).toContain("Choose Skills");
     expect(markup).toContain("Choose Targets");
@@ -205,7 +205,7 @@ describe("UnifiedInstallHubPage", () => {
     expect(markup).toContain("Category Jump");
     expect(markup).toContain("shared or dedicated library support");
     expect(markup).toContain("frontend-design");
-    expect(markup).toMatch(/<h1[^>]*>Unified Skill Install Hub<\/h1>/);
+    expect(markup).toMatch(/<h1[^>]*>Local Skill Install Hub<\/h1>/);
     expect(markup).toMatch(/<h2[^>]*>Choose Skills<\/h2>/);
   });
 

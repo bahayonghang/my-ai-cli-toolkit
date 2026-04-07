@@ -4,12 +4,16 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   FormControlLabel,
   Grid,
   InputAdornment,
   LinearProgress,
+  List,
+  ListItemButton,
+  ListItemText,
   Stack,
   Switch,
   TextField,
@@ -17,15 +21,20 @@ import {
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import LinkIcon from "@mui/icons-material/Link";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
-import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 
 import { SelectableSurfaceCard } from "@/components/common/SelectableSurfaceCard";
-import type { NpxSkillsCatalogItemDto, NpxSkillsInstallItemInput } from "@/types";
+import type {
+  NpxSkillsCatalogItemDto,
+  NpxSkillsInstallItemInput,
+  NpxSkillsPackagePreviewDto,
+} from "@/types";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
 import type { TaxonomyGroupSummary, TranslationFn } from "./types";
-import { buildInstallKey, installStatusColor } from "./utils";
+import { buildInstallKey, formatCategoryLabel, installStatusColor } from "./utils";
 import NpxSkillsFilters from "./NpxSkillsFilters";
 
 export interface NpxFindViewProps {
@@ -35,9 +44,7 @@ export interface NpxFindViewProps {
   setCatalogSearch: (value: string) => void;
   installedOnly: boolean;
   setInstalledOnly: (value: boolean) => void;
-  setFiltersOpen: (value: boolean) => void;
   fetchCatalog: () => void;
-  openQuickInstallDialog: () => void;
   openInstallSelectedDialog: () => void;
   selectedInstallPayload: NpxSkillsInstallItemInput[];
   jobRunning: boolean;
@@ -53,6 +60,16 @@ export interface NpxFindViewProps {
   setSelectedCatalogKeys: React.Dispatch<React.SetStateAction<Set<string>>>;
   installTargetScope: string;
   showNotification: (message: string, severity: "success" | "error" | "warning" | "info") => void;
+  packagePreviewInput: string;
+  setPackagePreviewInput: (value: string) => void;
+  packagePreviewLoading: boolean;
+  packagePreviewError: string | null;
+  packagePreview: NpxSkillsPackagePreviewDto | null;
+  selectedPreviewSkills: Set<string>;
+  setSelectedPreviewSkills: React.Dispatch<React.SetStateAction<Set<string>>>;
+  previewPackage: () => void;
+  installPreviewSelection: () => void;
+  openPackagePreviewForItem: (item: NpxSkillsCatalogItemDto) => void;
 }
 
 export default function NpxFindView({
@@ -62,9 +79,7 @@ export default function NpxFindView({
   setCatalogSearch,
   installedOnly,
   setInstalledOnly,
-  setFiltersOpen: _setFiltersOpen,
   fetchCatalog,
-  openQuickInstallDialog,
   openInstallSelectedDialog,
   selectedInstallPayload,
   jobRunning,
@@ -80,16 +95,264 @@ export default function NpxFindView({
   setSelectedCatalogKeys,
   installTargetScope,
   showNotification,
+  packagePreviewInput,
+  setPackagePreviewInput,
+  packagePreviewLoading,
+  packagePreviewError,
+  packagePreview,
+  selectedPreviewSkills,
+  setSelectedPreviewSkills,
+  previewPackage,
+  installPreviewSelection,
+  openPackagePreviewForItem,
 }: NpxFindViewProps) {
+  const previewedSkills = packagePreview?.skills ?? [];
+  const previewSupportsSelection = packagePreview?.mode === "listed_skills";
+  const previewSelectionCount = selectedPreviewSkills.size;
+  const allPreviewSelected =
+    previewSupportsSelection &&
+    previewedSkills.length > 0 &&
+    previewSelectionCount === previewedSkills.length;
+
   return (
-    <>
+    <Stack spacing={2.5}>
+      <Card
+        variant="outlined"
+        sx={{
+          borderRadius: 3.5,
+          borderColor: "var(--mcs-workbench-outline-strong)",
+          background:
+            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+        }}
+      >
+        <CardContent sx={{ p: { xs: 2, md: 2.5 } }}>
+          <Stack spacing={2}>
+            <Stack
+              direction={{ xs: "column", lg: "row" }}
+              spacing={1.25}
+              justifyContent="space-between"
+              alignItems={{ xs: "flex-start", lg: "center" }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
+                  {t("npxSkills.sectionInstallFromRepo")}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 0.45, letterSpacing: "-0.03em" }}>
+                  {t("npxSkills.repoInstallTitle")}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75, maxWidth: 780 }}>
+                  {t("npxSkills.repoInstallSubtitle")}
+                </Typography>
+              </Box>
+              <Chip
+                size="small"
+                variant="outlined"
+                color="info"
+                label={t("npxSkills.repoInstallChip")}
+              />
+            </Stack>
+
+            <Stack direction={{ xs: "column", lg: "row" }} spacing={1.25}>
+              <TextField
+                label={t("npxSkills.packageRef")}
+                placeholder={t("npxSkills.packageRefPlaceholder")}
+                value={packagePreviewInput}
+                onChange={(event) => setPackagePreviewInput(event.target.value)}
+                fullWidth
+                disabled={jobRunning || packagePreviewLoading}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LinkIcon />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+              <Button
+                variant="outlined"
+                startIcon={packagePreviewLoading ? <CircularProgress size={16} /> : <TravelExploreIcon />}
+                onClick={previewPackage}
+                disabled={jobRunning || packagePreviewLoading || !packagePreviewInput.trim()}
+                sx={{ minWidth: { xs: "100%", lg: 190 } }}
+              >
+                {t("npxSkills.previewRepo")}
+              </Button>
+            </Stack>
+
+            {packagePreviewError ? (
+              <Alert severity="error">{packagePreviewError}</Alert>
+            ) : null}
+
+            {packagePreview ? (
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  border: "1px solid var(--mcs-workbench-outline)",
+                  background: "var(--mcs-workbench-surface-strong)",
+                  p: { xs: 1.5, md: 1.75 },
+                }}
+              >
+                <Stack spacing={1.5}>
+                  <Stack
+                    direction={{ xs: "column", lg: "row" }}
+                    spacing={1}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "flex-start", lg: "center" }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        {t("npxSkills.repoPreviewTitle")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mt: 0.4, overflowWrap: "anywhere" }}
+                      >
+                        {packagePreview.source_ref}
+                      </Typography>
+                    </Box>
+                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        label={t("npxSkills.repoPreviewPackage", {
+                          packageRef: packagePreview.package_ref,
+                        })}
+                      />
+                      <Chip
+                        size="small"
+                        color={previewSupportsSelection ? "success" : "warning"}
+                        variant="outlined"
+                        label={
+                          previewSupportsSelection
+                            ? t("npxSkills.repoPreviewSkillCount", {
+                                count: previewedSkills.length,
+                              })
+                            : t("npxSkills.repoPreviewPackageOnly")
+                        }
+                      />
+                    </Stack>
+                  </Stack>
+
+                  {packagePreview.fallback_reason ? (
+                    <Alert severity="info">{packagePreview.fallback_reason}</Alert>
+                  ) : null}
+
+                  {previewSupportsSelection ? (
+                    <>
+                      <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() =>
+                            setSelectedPreviewSkills(new Set(previewedSkills.map((skill) => skill.name)))
+                          }
+                          disabled={jobRunning || previewedSkills.length === 0 || allPreviewSelected}
+                        >
+                          {t("npxSkills.selectAllPreviewed")}
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="text"
+                          onClick={() => setSelectedPreviewSkills(new Set())}
+                          disabled={jobRunning || previewSelectionCount === 0}
+                        >
+                          {t("npxSkills.clearPreviewSelection")}
+                        </Button>
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          label={t("common.selectedCount", { count: previewSelectionCount })}
+                        />
+                      </Stack>
+
+                      <List dense disablePadding sx={{ borderRadius: 2.5, overflow: "hidden" }}>
+                        {previewedSkills.map((skill) => {
+                          const selected = selectedPreviewSkills.has(skill.name);
+                          return (
+                            <ListItemButton
+                              key={skill.name}
+                              selected={selected}
+                              onClick={() =>
+                                setSelectedPreviewSkills((previous) => {
+                                  const next = new Set(previous);
+                                  if (next.has(skill.name)) {
+                                    next.delete(skill.name);
+                                  } else {
+                                    next.add(skill.name);
+                                  }
+                                  return next;
+                                })
+                              }
+                              sx={{
+                                mb: 0.75,
+                                borderRadius: 2,
+                                border: "1px solid var(--mcs-workbench-outline)",
+                                alignItems: "flex-start",
+                              }}
+                            >
+                              <Checkbox checked={selected} tabIndex={-1} sx={{ mt: -0.5 }} />
+                              <ListItemText
+                                primary={skill.name}
+                                secondary={skill.description ?? t("npxSkills.noDescription")}
+                                secondaryTypographyProps={{
+                                  sx: {
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  },
+                                }}
+                              />
+                            </ListItemButton>
+                          );
+                        })}
+                      </List>
+                    </>
+                  ) : null}
+
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25}>
+                    <Button
+                      variant="contained"
+                      startIcon={<InstallDesktopIcon />}
+                      disabled={
+                        jobRunning ||
+                        (previewSupportsSelection && previewSelectionCount === 0)
+                      }
+                      onClick={installPreviewSelection}
+                    >
+                      {previewSupportsSelection
+                        ? t("npxSkills.installSelectedFromRepo")
+                        : t("npxSkills.installPackage")}
+                    </Button>
+                  </Stack>
+                </Stack>
+              </Box>
+            ) : null}
+          </Stack>
+        </CardContent>
+      </Card>
+
+      <Box>
+        <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
+          {t("npxSkills.sectionDiscover")}
+        </Typography>
+        <Typography variant="h6" sx={{ mt: 0.45, letterSpacing: "-0.03em" }}>
+          {t("npxSkills.discoverTitle")}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75, maxWidth: 820 }}>
+          {t("npxSkills.discoverSubtitle")}
+        </Typography>
+      </Box>
+
       <Box
         sx={{
           display: "flex",
           flexWrap: "wrap",
           gap: 1.5,
           alignItems: "center",
-          mb: 3,
         }}
       >
         <TextField
@@ -123,13 +386,13 @@ export default function NpxFindView({
         >
           {t("npxSkills.refreshCatalog")}
         </Button>
-        <Button
+        <Chip
+          size="small"
           variant="outlined"
-          startIcon={<TipsAndUpdatesOutlinedIcon />}
-          onClick={openQuickInstallDialog}
-        >
-          {t("npxSkills.quickInstall")}
-        </Button>
+          label={t("npxSkills.catalogSelectionCount", {
+            count: selectedCatalogKeys.size,
+          })}
+        />
         <Box sx={{ flexGrow: 1 }} />
         <Button
           variant="contained"
@@ -159,6 +422,19 @@ export default function NpxFindView({
         )}
 
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          {isMobile ? (
+            <Card variant="outlined" sx={{ mb: 2 }}>
+              <CardContent sx={{ p: 2 }}>
+                <NpxSkillsFilters
+                  groups={catalogGroups}
+                  selectedCategoryId={selectedCatalogCategoryId}
+                  onCategoryChange={setSelectedCatalogCategoryId}
+                  t={t}
+                />
+              </CardContent>
+            </Card>
+          ) : null}
+
           {catalogError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {catalogError}
@@ -186,7 +462,7 @@ export default function NpxFindView({
                   : `npx skills add ${item.package_ref}`;
 
                 return (
-                  <Grid key={key} size={{ xs: 12, sm: 6, lg: 4 }}>
+                  <Grid key={key} size={{ xs: 12, sm: 6, xl: 4 }}>
                     <SelectableSurfaceCard
                       selected={isSelected}
                       disabled={isDisabled}
@@ -217,7 +493,11 @@ export default function NpxFindView({
                                 : t("status.notInstalled")
                             }
                           />
-                          <Chip size="small" variant="outlined" label={item.category_label} />
+                          <Chip
+                            size="small"
+                            variant="outlined"
+                            label={formatCategoryLabel(item.category_slug, item.category_label)}
+                          />
                           <Chip size="small" variant="outlined" label={item.install_provider} />
                           {item.project_only ? (
                             <Chip
@@ -253,23 +533,33 @@ export default function NpxFindView({
                         ) : null
                       }
                       footer={
-                        <Stack direction="row" justifyContent="space-between" spacing={1.5} alignItems="center">
+                        <Stack spacing={1.25}>
                           <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
                             {isDisabled ? t("npxSkills.projectOnly") : installCommand}
                           </Typography>
-                          <Button
-                            size="small"
-                            variant="text"
-                            startIcon={<ContentCopyIcon />}
-                            onClick={() => {
-                              navigator.clipboard.writeText(installCommand).then(
-                                () => showNotification(t("npxSkills.copySuccess"), "success"),
-                                () => showNotification(t("npxSkills.copyFailed"), "error"),
-                              );
-                            }}
-                          >
-                            {t("npxSkills.copyInstallCommand")}
-                          </Button>
+                          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                            <Button
+                              size="small"
+                              variant="text"
+                              startIcon={<TravelExploreIcon />}
+                              onClick={() => openPackagePreviewForItem(item)}
+                            >
+                              {t("npxSkills.openRepoInstall")}
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="text"
+                              startIcon={<ContentCopyIcon />}
+                              onClick={() => {
+                                navigator.clipboard.writeText(installCommand).then(
+                                  () => showNotification(t("npxSkills.copySuccess"), "success"),
+                                  () => showNotification(t("npxSkills.copyFailed"), "error"),
+                                );
+                              }}
+                            >
+                              {t("npxSkills.copyInstallCommand")}
+                            </Button>
+                          </Stack>
                         </Stack>
                       }
                     />
@@ -280,6 +570,6 @@ export default function NpxFindView({
           )}
         </Box>
       </Box>
-    </>
+    </Stack>
   );
 }

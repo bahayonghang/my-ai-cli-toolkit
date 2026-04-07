@@ -24,6 +24,7 @@ function catalogItem(
     group_label: overrides.group_label ?? "Engineering",
     group_order: overrides.group_order ?? 10,
     category_id: overrides.category_id ?? "tools",
+    category_slug: overrides.category_slug ?? "dev-tools",
     category_label: overrides.category_label ?? "Tools",
     category_order: overrides.category_order ?? 20,
     tags: overrides.tags ?? ["search"],
@@ -50,6 +51,7 @@ function installedItem(
     group_label: overrides.group_label ?? "Engineering",
     group_order: overrides.group_order ?? 10,
     category_id: overrides.category_id ?? "tools",
+    category_slug: overrides.category_slug ?? "dev-tools",
     category_label: overrides.category_label ?? "Tools",
     category_order: overrides.category_order ?? 20,
     tags: overrides.tags ?? ["search"],
@@ -112,6 +114,7 @@ describe("npx-skills utils", () => {
         id: "theme-factory",
         name: "Theme Factory",
         category_id: "design",
+        category_slug: "ui-ux",
         category_label: "Design",
         tags: ["branding"],
       }),
@@ -185,12 +188,14 @@ describe("npx-skills utils", () => {
       catalogItem({
         id: "c",
         category_id: "design",
+        category_slug: "ui-ux",
         category_label: "Design",
         category_order: 5,
       }),
     ]);
 
     expect(groups).toHaveLength(1);
+    expect(groups[0]?.categories[0]?.slug).toBe("ui-ux");
     expect(groups[0]?.categories.map((category) => [category.id, category.count])).toEqual([
       ["design", 1],
       ["tools", 2],

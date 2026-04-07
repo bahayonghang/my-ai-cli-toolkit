@@ -100,7 +100,7 @@ test("unified install hub walks through the staged install flow", async ({ page 
   await page.goto("/install-hub");
   await expect(page.locator("main")).toHaveCount(1);
 
-  await expect(page.getByRole("heading", { name: /Unified Skill Install Hub/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Local Skill Install Hub/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Choose Skills/i }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: /continue to targets/i })).toBeDisabled();
 

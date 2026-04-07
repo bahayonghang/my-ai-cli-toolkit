@@ -15,6 +15,7 @@ type ManagedSkill = {
   group_label: string;
   group_order: number;
   category_id: string;
+  category_slug: string;
   category_label: string;
   category_order: number;
   tags: string[];
@@ -124,6 +125,7 @@ function buildInstalledGroups(items: ManagedSkill[]) {
         string,
         {
           id: string;
+          slug: string;
           label: string;
           count: number;
           group_id: string;
@@ -149,6 +151,7 @@ function buildInstalledGroups(items: ManagedSkill[]) {
       group.categories.get(item.category_id)
       ?? {
         id: item.category_id,
+        slug: item.category_slug,
         label: item.category_label,
         count: 0,
         group_id: item.group_id,
@@ -348,6 +351,7 @@ export async function mockNpxSkillsApi(page: Page) {
       group_label: "Engineering",
       group_order: 10,
       category_id: "discovery",
+      category_slug: "dev-tools",
       category_label: "Discovery",
       category_order: 10,
       tags: ["search"],
@@ -389,6 +393,7 @@ export async function mockNpxSkillsApi(page: Page) {
       group_label: "Manual",
       group_order: 999,
       category_id: "manual_local",
+      category_slug: "manual-local",
       category_label: "Local",
       category_order: 999,
       tags: [],
@@ -457,6 +462,7 @@ export async function mockNpxSkillsApi(page: Page) {
         group_label: "Engineering",
         group_order: 10,
         category_id: "discovery",
+        category_slug: "dev-tools",
         category_label: "Discovery",
         category_order: 10,
         tags: ["search"],
@@ -478,6 +484,7 @@ export async function mockNpxSkillsApi(page: Page) {
         group_label: "Engineering",
         group_order: 10,
         category_id: "quality",
+        category_slug: "code-quality",
         category_label: "Quality",
         category_order: 20,
         tags: ["review"],
@@ -497,6 +504,31 @@ export async function mockNpxSkillsApi(page: Page) {
     jsonResponse(route, buildInstalledInventoryResponse(installedItems))
   );
 
+  await page.route("**/api/platforms/claude/npx-skills/packages/preview", async (route) => {
+    const body = parseRequestBody<{ package_ref: string }>(route);
+    if (body.package_ref === "vercel-labs/agent-skills") {
+      return jsonResponse(route, {
+        package_ref: body.package_ref,
+        source_ref: "https://github.com/vercel-labs/agent-skills.git",
+        mode: "listed_skills",
+        skills: [
+          { name: "find-skills", description: "Find skills quickly" },
+          { name: "review", description: "Review code and changes" },
+        ],
+        fallback_reason: null,
+      });
+    }
+
+    return jsonResponse(route, {
+      package_ref: body.package_ref,
+      source_ref: body.package_ref,
+      mode: "package_only",
+      skills: [],
+      fallback_reason:
+        "Unable to enumerate skills from this package; install will target the whole package.",
+    });
+  });
+
   await page.route("**/api/platforms/claude/npx-skills/install/jobs", async (route) => {
     requests.installJobs.push(parseRequestBody<InstallJobRequest>(route));
     installedItems = [
@@ -510,6 +542,7 @@ export async function mockNpxSkillsApi(page: Page) {
         group_label: "Engineering",
         group_order: 10,
         category_id: "quality",
+        category_slug: "code-quality",
         category_label: "Quality",
         category_order: 20,
         tags: ["review"],

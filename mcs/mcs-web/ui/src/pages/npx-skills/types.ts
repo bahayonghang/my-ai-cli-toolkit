@@ -47,6 +47,7 @@ export type RunResultStatus = "idle" | "running" | "success" | "warning" | "erro
 
 export interface TaxonomyCategorySummary {
   id: string;
+  slug: string;
   label: string;
   count: number;
   groupId: string;

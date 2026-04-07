@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getCategories,
   getNpxInstalledSkills,
+  previewNpxSkillsPackage,
   getNpxSkillsCatalog,
   getSkills,
   installCommands,
@@ -225,6 +226,7 @@ describe("api/client install target", () => {
             group_label: "Engineering",
             group_order: 10,
             category_id: "discovery",
+            category_slug: "dev-tools",
             category_label: "Discovery",
             category_order: 10,
             tags: [],
@@ -305,5 +307,31 @@ describe("api/client install target", () => {
     expect(String(fetchMock.mock.calls[2][0])).toBe("/api/platforms/claude/npx-skills/remove/jobs");
     const removeBody = JSON.parse(String(fetchMock.mock.calls[2][1]?.body));
     expect(removeBody.item_ids).toEqual(["find-skills"]);
+  });
+
+  it("previews package skills with install target and config", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        package_ref: "vercel-labs/skills",
+        source_ref: "https://github.com/vercel-labs/skills.git",
+        mode: "listed_skills",
+        skills: [{ name: "find-skills", description: "Find skills quickly" }],
+        fallback_reason: null,
+      }),
+    );
+
+    await previewNpxSkillsPackage("claude", {
+      packageRef: "vercel-labs/skills",
+      installTarget: { scope: "project", project_path: "/tmp/project" },
+      config: { agents: ["codex"], cli_mode: "auto" },
+    });
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe("/api/platforms/claude/npx-skills/packages/preview");
+    expect(JSON.parse(String(init.body))).toEqual({
+      package_ref: "vercel-labs/skills",
+      config: { agents: ["codex"], cli_mode: "auto" },
+      install_target: { scope: "project", project_path: "/tmp/project" },
+    });
   });
 });

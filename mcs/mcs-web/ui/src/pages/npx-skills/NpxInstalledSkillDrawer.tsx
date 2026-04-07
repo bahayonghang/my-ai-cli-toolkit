@@ -12,6 +12,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 import type { NpxInstalledSkillInstanceDto } from "@/types";
 import type { TranslationFn } from "./types";
+import { formatCategoryLabel } from "./utils";
 
 export interface NpxInstalledSkillDrawerProps {
   t: TranslationFn;
@@ -78,7 +79,11 @@ export default function NpxInstalledSkillDrawer({
             </Box>
 
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              <Chip size="small" label={item.category_label} variant="outlined" />
+              <Chip
+                size="small"
+                label={formatCategoryLabel(item.category_slug, item.category_label)}
+                variant="outlined"
+              />
               <Chip
                 size="small"
                 label={t(

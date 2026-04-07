@@ -1,6 +1,6 @@
 export const enDashboardMessages = {
   "dashboard.systemTitle": "Operations Dashboard",
-  "dashboard.unifiedInstallHub": "Unified Install Hub",
+  "dashboard.unifiedInstallHub": "Local Install Hub",
   "dashboard.homeAction": "All platforms",
   "dashboard.refreshAction": "Refresh",
   "dashboard.heroEyebrow": "Operations view",
@@ -9,7 +9,7 @@ export const enDashboardMessages = {
     "Use this view to find the platforms that need attention and jump into the right workspace.",
   "dashboard.heroReady": "Everything looks steady across active platforms.",
   "dashboard.heroAttention": "{count} updates are waiting for review.",
-  "dashboard.heroEmpty": "No skills are installed yet. Start from the shared install hub.",
+  "dashboard.heroEmpty": "No skills are installed yet. Start from the local install hub.",
   "dashboard.installedSkills": "Installed Skills",
   "dashboard.outdated": "Update Queue",
   "dashboard.activePlatforms": "Active Platforms",
@@ -44,7 +44,7 @@ export const zhDashboardMessages: Record<
   string
 > = {
   "dashboard.systemTitle": "运营仪表盘",
-  "dashboard.unifiedInstallHub": "统一安装中心",
+  "dashboard.unifiedInstallHub": "本地安装中心",
   "dashboard.homeAction": "全部平台",
   "dashboard.refreshAction": "刷新",
   "dashboard.heroEyebrow": "运营视图",
@@ -52,7 +52,7 @@ export const zhDashboardMessages: Record<
   "dashboard.heroSubtitle": "用这个视图快速定位需要关注的平台，并跳转到对应工作区。",
   "dashboard.heroReady": "当前活跃平台整体运行平稳。",
   "dashboard.heroAttention": "有 {count} 个更新等待处理。",
-  "dashboard.heroEmpty": "目前还没有已安装的技能，可从统一安装中心开始。",
+  "dashboard.heroEmpty": "目前还没有已安装的技能，可从本地安装中心开始。",
   "dashboard.installedSkills": "已安装技能",
   "dashboard.outdated": "更新队列",
   "dashboard.activePlatforms": "活跃平台",

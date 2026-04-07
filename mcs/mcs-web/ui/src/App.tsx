@@ -12,6 +12,7 @@ const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const InstalledSkillsPage = lazy(() => import("@/pages/InstalledSkillsPage"));
 const InstallPage = lazy(() => import("@/pages/InstallPage"));
 const NpxSkillsPage = lazy(() => import("@/pages/NpxSkillsPage"));
+const LegacyRegistryRedirectPage = lazy(() => import("@/pages/LegacyRegistryRedirectPage"));
 const UnifiedInstallHubPage = lazy(() => import("@/pages/UnifiedInstallHubPage"));
 const CommandsWorkspacePage = lazy(() => import("@/pages/CommandsWorkspacePage"));
 const AgentsWorkspacePage = lazy(() => import("@/pages/AgentsWorkspacePage"));
@@ -57,9 +58,10 @@ export default function App() {
               <Route path="/" element={<PlatformSelectPage />} />
               <Route path="/platform/:platformId" element={<InstalledSkillsPage />} />
               <Route path="/platform/:platformId/install" element={<InstallPage />} />
-              <Route path="/platform/:platformId/npx-skills" element={<NpxSkillsPage />} />
+              <Route path="/platform/:platformId/npx-skills" element={<LegacyRegistryRedirectPage />} />
               <Route path="/platform/:platformId/legacy" element={<MainPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/registry" element={<NpxSkillsPage />} />
               <Route path="/install-hub" element={<UnifiedInstallHubPage />} />
               <Route path="/manage/commands" element={<CommandsWorkspacePage />} />
               <Route path="/manage/agents" element={<AgentsWorkspacePage />} />

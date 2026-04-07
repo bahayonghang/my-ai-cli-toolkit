@@ -144,10 +144,10 @@ test("loads the dashboard and keeps main navigation flows working", async ({ pag
   await expect(page.getByText("frontend-design")).toBeVisible();
   await expect(page.getByText("Platform Matrix")).toBeVisible();
 
-  await page.getByRole("button", { name: /Unified Install Hub/i }).click();
+  await page.getByRole("button", { name: /Local Install Hub/i }).click();
   await expect(page).toHaveURL(/\/install-hub$/);
   await expectSingleMain(page);
-  await expect(page.getByRole("heading", { name: /Unified Skill Install Hub/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Local Skill Install Hub/i })).toBeVisible();
 
   await page.goto("/dashboard");
   await page.locator(".MuiCardActionArea-root").first().click();

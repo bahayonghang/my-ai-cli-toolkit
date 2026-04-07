@@ -10,6 +10,7 @@ import type {
   NpxSkillsInstallItemInput,
   NpxSkillsJobStartDto,
   NpxSkillsInstalledInventoryDto,
+  NpxSkillsPackagePreviewDto,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
@@ -505,6 +506,26 @@ export async function getNpxInstalledSkills(
     { signal }
   );
   return normalizeNpxInstalledInventory(data);
+}
+
+export async function previewNpxSkillsPackage(
+  platformId: string,
+  body: {
+    packageRef: string;
+    installTarget?: InstallTarget;
+    config?: NpxSkillsCliConfig;
+  }
+): Promise<NpxSkillsPackagePreviewDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/npx-skills/packages/preview`,
+    withInstallTargetBody(
+      {
+        package_ref: body.packageRef,
+        ...(body.config ? { config: body.config } : {}),
+      },
+      body.installTarget
+    )
+  );
 }
 
 export async function startNpxSkillsInstallJob(

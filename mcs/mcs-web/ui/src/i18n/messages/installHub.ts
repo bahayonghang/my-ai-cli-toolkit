@@ -1,5 +1,5 @@
 export const enInstallHubMessages = {
-  "installHub.pageTitle": "Unified Skill Install Hub",
+  "installHub.pageTitle": "Local Skill Install Hub",
   "installHub.heroEyebrow": "Install workbench",
   "installHub.heroTitle": "Choose skills, choose targets, then run the install.",
   "installHub.heroSubtitle":
@@ -115,7 +115,7 @@ export const zhInstallHubMessages: Record<
   keyof typeof enInstallHubMessages,
   string
 > = {
-  "installHub.pageTitle": "统一技能安装中心",
+  "installHub.pageTitle": "本地技能安装中心",
   "installHub.heroEyebrow": "安装工作台",
   "installHub.heroTitle": "先选技能，再选目标，然后执行安装。",
   "installHub.heroSubtitle":

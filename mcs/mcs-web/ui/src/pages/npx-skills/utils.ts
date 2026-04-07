@@ -129,6 +129,7 @@ export function buildTaxonomyGroups<
     group_label: string;
     group_order: number;
     category_id: string;
+    category_slug: string;
     category_label: string;
     category_order: number;
   },
@@ -159,6 +160,7 @@ export function buildTaxonomyGroups<
     } else {
       group.categories.set(item.category_id, {
         id: item.category_id,
+        slug: item.category_slug,
         label: item.category_label,
         count: 1,
         groupId: item.group_id,
@@ -220,6 +222,7 @@ export function filterCatalogItems(
       item.package_ref.toLowerCase().includes(search) ||
       item.description?.toLowerCase().includes(search) === true ||
       item.group_label.toLowerCase().includes(search) ||
+      item.category_slug.toLowerCase().includes(search) ||
       item.category_label.toLowerCase().includes(search) ||
       item.usage?.toLowerCase().includes(search) === true ||
       item.tags.some((tag) => tag.toLowerCase().includes(search))
@@ -262,11 +265,18 @@ export function filterInstalledItems(
       item.source.ref.toLowerCase().includes(search) ||
       item.description?.toLowerCase().includes(search) === true ||
       item.group_label.toLowerCase().includes(search) ||
+      item.category_slug.toLowerCase().includes(search) ||
       item.category_label.toLowerCase().includes(search) ||
       item.source.display.toLowerCase().includes(search) ||
       item.tags.some((tag) => tag.toLowerCase().includes(search))
     );
   });
+}
+
+export function formatCategoryLabel(categorySlug: string, categoryLabel: string) {
+  return categorySlug === categoryLabel
+    ? categoryLabel
+    : `${categorySlug} · ${categoryLabel}`;
 }
 
 export function paginateItems<T>(items: T[], page: number, pageSize: number) {

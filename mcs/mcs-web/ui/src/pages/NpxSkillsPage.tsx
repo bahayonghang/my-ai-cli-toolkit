@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import {
   Alert,
   Autocomplete,
@@ -8,12 +8,8 @@ import {
   Card,
   CardContent,
   Chip,
-  Drawer,
-  FormControlLabel,
+  Divider,
   Stack,
-  Switch,
-  Tab,
-  Tabs,
   TextField,
   Tooltip,
   Typography,
@@ -21,29 +17,23 @@ import {
   useTheme,
 } from "@mui/material";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 import {
   getNpxInstalledSkills,
   getNpxSkillsCatalog,
+  previewNpxSkillsPackage,
   startNpxSkillsCheckJob,
   startNpxSkillsInstallJob,
   startNpxSkillsRemoveJob,
   startNpxSkillsUpdateJob,
 } from "@/api/client";
-import { workbenchPanelSx } from "@/components/common/glassPanel";
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
-import {
-  AppShell,
-  ListSurface,
-  MobileFilterButton,
-  PlatformShellIdentity,
-} from "@/components/shell/AppShell";
+import { ListSurface, AppShell } from "@/components/shell/AppShell";
 import { InstallTargetDialog } from "@/components/dialogs/InstallTargetDialog";
 import { NpxRunConfigDialog } from "@/components/dialogs/NpxRunConfigDialog";
-import { useDebounce } from "@/hooks/useDebounce";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
-import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useI18n } from "@/i18n";
 import type {
   NpxInstalledSkillInstanceDto,
@@ -60,22 +50,27 @@ import type {
   NpxSkillsJobProgressPayload,
   NpxSkillsJobStartDto,
   NpxSkillsOperation,
+  NpxSkillsPackagePreviewDto,
   NpxSkillsRunConfig,
+  PlatformDisplay,
 } from "@/types";
-import { useUiStore } from "@/stores/uiStore";
 import { usePlatformStore } from "@/stores/platformStore";
+import { useUiStore } from "@/stores/uiStore";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { finalizeInterruptedJob } from "@/utils/npxJobState";
 import {
   buildNpxJobNotification,
   buildNpxRunConfigSummary,
 } from "./npxSkillsFeedback";
-
+import NpxFindView from "./npx-skills/NpxFindView";
+import NpxInstalledSkillDrawer from "./npx-skills/NpxInstalledSkillDrawer";
+import NpxInstalledView from "./npx-skills/NpxInstalledView";
+import NpxMaintenanceView from "./npx-skills/NpxMaintenanceView";
 import type {
-  ViewMode,
-  JobItemState,
   InstalledSourceFilter,
   InstalledTrackingFilter,
   InstalledUpdateFilter,
+  JobItemState,
   PendingRunAction,
   RunResultStatus,
   TaxonomyGroupSummary,
@@ -86,36 +81,201 @@ import {
   LS_KEY_CLI_MODE,
 } from "./npx-skills/types";
 import {
+  buildInstallKey,
+  filterCatalogItems,
+  filterInstalledItems,
   loadAgents,
   loadCliMode,
+  operationLabel,
+  paginateItems,
+  parseSkillFlags,
   persistNpxSkillsPreference,
   safeParseEvent,
-  operationLabel,
-  buildInstallKey,
-  parseSkillFlags,
-  buildTaxonomyGroups,
-  filterCatalogItems,
-  shouldLoadCatalog,
 } from "./npx-skills/utils";
-import NpxFindView from "./npx-skills/NpxFindView";
-import NpxInstalledView from "./npx-skills/NpxInstalledView";
-import NpxInstalledSkillDrawer from "./npx-skills/NpxInstalledSkillDrawer";
-import NpxMaintenanceView from "./npx-skills/NpxMaintenanceView";
-import NpxSkillsFilters from "./npx-skills/NpxSkillsFilters";
+
+function upsertWorkspaceParam(current: URLSearchParams, workspaceId: string) {
+  const next = new URLSearchParams(current);
+  next.set("workspace", workspaceId);
+  return next;
+}
+
+function mapTaxonomyGroups(
+  groups: Array<{
+    id: string;
+    label: string;
+    order: number;
+    categories: Array<{
+      id: string;
+      slug: string;
+      label: string;
+      count: number;
+      group_id: string;
+      group_order: number;
+      category_order: number;
+    }>;
+  }>,
+): TaxonomyGroupSummary[] {
+  return groups.map((group) => ({
+    id: group.id,
+    label: group.label,
+    order: group.order,
+    categories: group.categories.map((category) => ({
+      id: category.id,
+      slug: category.slug,
+      label: category.label,
+      count: category.count,
+      groupId: category.group_id,
+      groupOrder: category.group_order,
+      categoryOrder: category.category_order,
+    })),
+  }));
+}
+
+function groupCatalogInstallPayload(
+  items: NpxSkillsCatalogItemDto[],
+): NpxSkillsInstallItemInput[] {
+  const grouped = new Map<
+    string,
+    {
+      package_ref: string;
+      skill_flags: string[];
+      catalog_entry_id: string | null;
+    }
+  >();
+
+  for (const item of items) {
+    const existing = grouped.get(item.package_ref);
+    if (!existing) {
+      grouped.set(item.package_ref, {
+        package_ref: item.package_ref,
+        skill_flags: item.skill_flag ? [item.skill_flag] : [],
+        catalog_entry_id: item.id,
+      });
+      continue;
+    }
+
+    if (!item.skill_flag) {
+      existing.skill_flags = [];
+      existing.catalog_entry_id = null;
+      continue;
+    }
+
+    if (!existing.skill_flags.includes(item.skill_flag)) {
+      existing.skill_flags.push(item.skill_flag);
+    }
+  }
+
+  return Array.from(grouped.values()).map((item) => ({
+    package_ref: item.package_ref,
+    skill_flags: item.skill_flags,
+    catalog_entry_id: item.catalog_entry_id,
+  }));
+}
+
+function buildGroupedInstallLabels(items: NpxSkillsCatalogItemDto[]) {
+  return groupCatalogInstallPayload(items).map((item) => {
+    let label = item.package_ref;
+    for (const flag of item.skill_flags ?? []) {
+      label += ` --skill ${flag}`;
+    }
+    return label;
+  });
+}
+
+function buildGroupedTaxonomyFromCatalog(items: NpxSkillsCatalogItemDto[]) {
+  const groups = new Map<
+    string,
+    {
+      label: string;
+      order: number;
+      categories: Map<
+        string,
+        {
+          id: string;
+          slug: string;
+          label: string;
+          count: number;
+          group_id: string;
+          group_order: number;
+          category_order: number;
+        }
+      >;
+    }
+  >();
+
+  for (const item of items) {
+    let group = groups.get(item.group_id);
+    if (!group) {
+      group = {
+        label: item.group_label,
+        order: item.group_order,
+        categories: new Map(),
+      };
+      groups.set(item.group_id, group);
+    }
+
+    const existing = group.categories.get(item.category_id);
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+
+    group.categories.set(item.category_id, {
+      id: item.category_id,
+      slug: item.category_slug,
+      label: item.category_label,
+      count: 1,
+      group_id: item.group_id,
+      group_order: item.group_order,
+      category_order: item.category_order,
+    });
+  }
+
+  return Array.from(groups.entries())
+    .map(([id, group]) => ({
+      id,
+      label: group.label,
+      order: group.order,
+      categories: Array.from(group.categories.values()).sort(
+        (left, right) =>
+          left.category_order - right.category_order ||
+          left.label.localeCompare(right.label),
+      ),
+    }))
+    .sort(
+      (left, right) =>
+        left.order - right.order || left.label.localeCompare(right.label),
+    );
+}
 
 export default function NpxSkillsPage() {
   const { t } = useI18n();
-  const { platformId } = useParams<{ platformId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigateDeferred = useNavigateDeferred();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const platform = usePlatformStore((state) =>
-    state.platforms.find((item) => item.id === platformId),
-  );
+  const platforms = usePlatformStore((state) => state.platforms);
   const fetchPlatforms = usePlatformStore((state) => state.fetchPlatforms);
-  const { showNotification } = useUiStore();
+  const requestedWorkspaceId = searchParams.get("workspace");
+  const currentWorkspaceId = useMemo(() => {
+    if (
+      requestedWorkspaceId &&
+      platforms.some((platform) => platform.id === requestedWorkspaceId)
+    ) {
+      return requestedWorkspaceId;
+    }
+    return platforms[0]?.id ?? null;
+  }, [platforms, requestedWorkspaceId]);
+  const platform = useMemo(
+    () =>
+      currentWorkspaceId
+        ? platforms.find((item) => item.id === currentWorkspaceId) ?? null
+        : null,
+    [currentWorkspaceId, platforms],
+  );
 
+  const { showNotification } = useUiStore();
   const {
     loading: installTargetLoading,
     dialogOpen: installTargetDialogOpen,
@@ -126,14 +286,13 @@ export default function NpxSkillsPage() {
     openDialog: openInstallTargetDialog,
     closeDialog: closeInstallTargetDialog,
     applyTarget: applyInstallTarget,
-  } = useInstallTarget(platformId);
+  } = useInstallTarget(currentWorkspaceId ?? undefined);
   const installTargetBlocked = Boolean(resolutionError);
 
-  const [view, setView] = useState<ViewMode>("installed");
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [pendingRunAction, setPendingRunAction] =
     useState<PendingRunAction | null>(null);
+
   const [catalogSearch, setCatalogSearch] = useState("");
   const [installedSearch, setInstalledSearch] = useState("");
   const [installedOnly, setInstalledOnly] = useState(false);
@@ -143,27 +302,21 @@ export default function NpxSkillsPage() {
   const [selectedInstalledCategoryId, setSelectedInstalledCategoryId] =
     useState<string | null>(null);
 
-  const [catalogItems, setCatalogItems] = useState<NpxSkillsCatalogItemDto[]>(
-    [],
-  );
-  const [catalogLoaded, setCatalogLoaded] = useState(false);
-  const [catalogStale, setCatalogStale] = useState(true);
+  const [catalogItems, setCatalogItems] = useState<NpxSkillsCatalogItemDto[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [catalogSyncedAt, setCatalogSyncedAt] = useState<number | null>(null);
 
-  const [installedItems, setInstalledItems] = useState<NpxInstalledSkillInstanceDto[]>(
-    [],
-  );
+  const [installedItems, setInstalledItems] = useState<NpxInstalledSkillInstanceDto[]>([]);
   const [installedCapabilities, setInstalledCapabilities] =
     useState<NpxSkillsCapabilitiesDto | null>(null);
   const [installedSummary, setInstalledSummary] =
     useState<NpxSkillsInstalledSummaryDto | null>(null);
   const [installedGroups, setInstalledGroups] = useState<TaxonomyGroupSummary[]>([]);
-  const [installedFilteredTotal, setInstalledFilteredTotal] = useState(0);
-  const [installedTotalPages, setInstalledTotalPages] = useState(1);
   const [installedLoading, setInstalledLoading] = useState(false);
   const [installedError, setInstalledError] = useState<string | null>(null);
   const [installedErrorHint, setInstalledErrorHint] = useState<string | null>(null);
+  const [installedSyncedAt, setInstalledSyncedAt] = useState<number | null>(null);
 
   const [selectedCatalogKeys, setSelectedCatalogKeys] = useState<Set<string>>(
     new Set(),
@@ -171,19 +324,27 @@ export default function NpxSkillsPage() {
   const [selectedInstalledIds, setSelectedInstalledIds] = useState<
     Set<string>
   >(new Set());
+  const [selectedInstalledItem, setSelectedInstalledItem] =
+    useState<NpxInstalledSkillInstanceDto | null>(null);
   const [installedSourceFilter, setInstalledSourceFilter] =
     useState<InstalledSourceFilter>("all");
   const [installedTrackingFilter, setInstalledTrackingFilter] =
     useState<InstalledTrackingFilter>("all");
   const [installedUpdateFilter, setInstalledUpdateFilter] =
     useState<InstalledUpdateFilter>("all");
-  const [selectedInstalledItem, setSelectedInstalledItem] =
-    useState<NpxInstalledSkillInstanceDto | null>(null);
   const [installedPage, setInstalledPage] = useState(1);
   const [installedPageSize, setInstalledPageSize] = useState(
     isMobile ? 20 : 50,
   );
-  const debouncedInstalledSearch = useDebounce(installedSearch, 300);
+
+  const [packagePreviewInput, setPackagePreviewInput] = useState("");
+  const [packagePreviewLoading, setPackagePreviewLoading] = useState(false);
+  const [packagePreviewError, setPackagePreviewError] = useState<string | null>(null);
+  const [packagePreview, setPackagePreview] =
+    useState<NpxSkillsPackagePreviewDto | null>(null);
+  const [selectedPreviewSkills, setSelectedPreviewSkills] = useState<Set<string>>(
+    new Set(),
+  );
 
   const [agents, setAgents] = useState<string[]>(loadAgents);
   const [cliMode, setCliMode] = useState<NpxSkillsCliMode>(loadCliMode);
@@ -214,8 +375,7 @@ export default function NpxSkillsPage() {
   const streamWarnedRef = useRef(false);
   const catalogAbortRef = useRef<AbortController | null>(null);
   const installedAbortRef = useRef<AbortController | null>(null);
-  const catalogRequestActiveRef = useRef(false);
-  const installedRequestActiveRef = useRef(false);
+  const previewAbortRef = useRef<AbortController | null>(null);
   const jobItemsRef = useRef<JobItemState[]>([]);
 
   useEffect(() => {
@@ -223,42 +383,32 @@ export default function NpxSkillsPage() {
   }, [fetchPlatforms]);
 
   useEffect(() => {
-    return () => {
-      catalogAbortRef.current?.abort();
-      catalogAbortRef.current = null;
-      catalogRequestActiveRef.current = false;
-      installedAbortRef.current?.abort();
-      installedAbortRef.current = null;
-      installedRequestActiveRef.current = false;
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isMobile) {
-      setFiltersOpen(false);
+    if (!currentWorkspaceId || requestedWorkspaceId === currentWorkspaceId) {
+      return;
     }
-  }, [isMobile]);
+    setSearchParams((current) => upsertWorkspaceParam(current, currentWorkspaceId), {
+      replace: true,
+    });
+  }, [currentWorkspaceId, requestedWorkspaceId, setSearchParams]);
 
   useEffect(() => {
     setInstalledPageSize(isMobile ? 20 : 50);
   }, [isMobile]);
 
   useEffect(() => {
+    return () => {
+      catalogAbortRef.current?.abort();
+      installedAbortRef.current?.abort();
+      previewAbortRef.current?.abort();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     jobItemsRef.current = jobItems;
   }, [jobItems]);
-
-  const defaultRunConfig = useMemo<NpxSkillsRunConfig>(
-    () => ({
-      agents,
-      cliMode,
-      installTarget,
-    }),
-    [agents, cliMode, installTarget],
-  );
 
   const updateAgents = useCallback((next: string[]) => {
     setAgents(next);
@@ -271,234 +421,201 @@ export default function NpxSkillsPage() {
   }, []);
 
   const installTargetKey = useMemo(
-    () => `${platformId ?? ""}::${installTarget.scope}::${installTarget.project_path ?? ""}`,
-    [platformId, installTarget.project_path, installTarget.scope],
+    () =>
+      `${currentWorkspaceId ?? ""}::${installTarget.scope}::${installTarget.project_path ?? ""}`,
+    [currentWorkspaceId, installTarget.project_path, installTarget.scope],
   );
 
   const requestCatalog = useCallback(async () => {
-    if (!platformId || !resolvedTarget || installTargetLoading) {
+    if (!currentWorkspaceId || !resolvedTarget || installTargetLoading) {
       return;
     }
     catalogAbortRef.current?.abort();
     const controller = new AbortController();
     catalogAbortRef.current = controller;
-    catalogRequestActiveRef.current = true;
     setCatalogLoading(true);
     setCatalogError(null);
     try {
       const data = await getNpxSkillsCatalog(
-        platformId,
-        {
-          installTarget,
-        },
+        currentWorkspaceId,
+        { installTarget },
         controller.signal,
       );
       setCatalogItems(data);
+      setCatalogSyncedAt(Date.now());
     } catch (error) {
-      if ((error as Error).name === "AbortError") {
-        return;
+      if ((error as Error).name !== "AbortError") {
+        setCatalogError((error as Error).message);
       }
-      setCatalogError((error as Error).message);
     } finally {
       if (catalogAbortRef.current === controller) {
         catalogAbortRef.current = null;
-        catalogRequestActiveRef.current = false;
       }
       if (!controller.signal.aborted) {
         setCatalogLoading(false);
-        setCatalogLoaded(true);
-        setCatalogStale(false);
       }
     }
-  }, [installTarget, installTargetLoading, platformId, resolvedTarget]);
+  }, [currentWorkspaceId, installTarget, installTargetLoading, resolvedTarget]);
 
   const requestInstalled = useCallback(async () => {
-    if (!platformId || !resolvedTarget || installTargetLoading) {
+    if (!currentWorkspaceId || !resolvedTarget || installTargetLoading) {
       return;
     }
     installedAbortRef.current?.abort();
     const controller = new AbortController();
     installedAbortRef.current = controller;
-    installedRequestActiveRef.current = true;
     setInstalledLoading(true);
     setInstalledError(null);
     setInstalledErrorHint(null);
     try {
       const data = await getNpxInstalledSkills(
-        platformId,
-        {
-          search: debouncedInstalledSearch,
-          categoryId: selectedInstalledCategoryId ?? undefined,
-          sourceFilter: installedSourceFilter,
-          trackingFilter: installedTrackingFilter,
-          updateFilter: installedUpdateFilter,
-          page: installedPage,
-          pageSize: installedPageSize,
-          installTarget,
-        },
+        currentWorkspaceId,
+        { installTarget },
         controller.signal,
       );
       setInstalledItems(data.items);
       setInstalledCapabilities(data.capabilities);
       setInstalledSummary(data.summary);
-      setInstalledGroups(
-        data.groups.map((group) => ({
-          id: group.id,
-          label: group.label,
-          order: group.order,
-          categories: group.categories.map((category) => ({
-            id: category.id,
-            label: category.label,
-            count: category.count,
-            groupId: category.group_id,
-            groupOrder: category.group_order,
-            categoryOrder: category.category_order,
-          })),
-        })),
-      );
-      setInstalledFilteredTotal(data.filtered_total);
-      setInstalledTotalPages(data.total_pages);
-      setInstalledPage((previous) => (previous === data.page ? previous : data.page));
+      setInstalledGroups(mapTaxonomyGroups(data.groups));
+      setInstalledSyncedAt(Date.now());
     } catch (error) {
-      if ((error as Error).name === "AbortError") {
-        return;
+      if ((error as Error).name !== "AbortError") {
+        const typedError = error as Error & {
+          details?: { remediation?: string; reason?: string };
+        };
+        setInstalledError(typedError.message);
+        setInstalledErrorHint(
+          typedError.details?.remediation ?? typedError.details?.reason ?? null,
+        );
       }
-      const typedError = error as Error & {
-        details?: { remediation?: string; reason?: string };
-      };
-      setInstalledError(typedError.message);
-      setInstalledErrorHint(
-        typedError.details?.remediation ?? typedError.details?.reason ?? null,
-      );
     } finally {
       if (installedAbortRef.current === controller) {
         installedAbortRef.current = null;
-        installedRequestActiveRef.current = false;
       }
       if (!controller.signal.aborted) {
         setInstalledLoading(false);
       }
     }
-  }, [
-    debouncedInstalledSearch,
-    installTarget,
-    installTargetLoading,
-    installedPage,
-    installedPageSize,
-    installedSourceFilter,
-    installedTrackingFilter,
-    installedUpdateFilter,
-    platformId,
-    resolvedTarget,
-    selectedInstalledCategoryId,
-  ]);
+  }, [currentWorkspaceId, installTarget, installTargetLoading, resolvedTarget]);
 
-  const fetchCatalog = useCallback(() => {
-    setCatalogStale(true);
-    void requestCatalog();
-  }, [requestCatalog]);
-
-  const fetchInstalled = useCallback(() => {
-    void requestInstalled();
-  }, [requestInstalled]);
+  const loadPackagePreview = useCallback(
+    async (packageRef: string, preferredSelection: string[] | null) => {
+      if (!currentWorkspaceId || !resolvedTarget || installTargetLoading) {
+        return;
+      }
+      previewAbortRef.current?.abort();
+      const controller = new AbortController();
+      previewAbortRef.current = controller;
+      setPackagePreviewInput(packageRef);
+      setPackagePreviewLoading(true);
+      setPackagePreviewError(null);
+      try {
+        const preview = await previewNpxSkillsPackage(currentWorkspaceId, {
+          packageRef,
+          installTarget,
+          config: {
+            agents,
+            cli_mode: cliMode,
+          },
+        });
+        if (controller.signal.aborted) {
+          return;
+        }
+        setPackagePreview(preview);
+        if (preview.mode === "listed_skills") {
+          const nextSelection = new Set<string>();
+          if (preferredSelection?.length) {
+            const available = new Set(preview.skills.map((skill) => skill.name));
+            for (const name of preferredSelection) {
+              if (available.has(name)) {
+                nextSelection.add(name);
+              }
+            }
+          } else if (preview.skills.length === 1) {
+            nextSelection.add(preview.skills[0].name);
+          }
+          setSelectedPreviewSkills(nextSelection);
+        } else {
+          setSelectedPreviewSkills(new Set());
+        }
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setPackagePreview(null);
+          setSelectedPreviewSkills(new Set());
+          setPackagePreviewError((error as Error).message);
+        }
+      } finally {
+        if (previewAbortRef.current === controller) {
+          previewAbortRef.current = null;
+        }
+        if (!controller.signal.aborted) {
+          setPackagePreviewLoading(false);
+        }
+      }
+    },
+    [
+      agents,
+      cliMode,
+      currentWorkspaceId,
+      installTarget,
+      installTargetLoading,
+      resolvedTarget,
+    ],
+  );
 
   useEffect(() => {
     catalogAbortRef.current?.abort();
-    catalogAbortRef.current = null;
-    catalogRequestActiveRef.current = false;
     installedAbortRef.current?.abort();
-    installedAbortRef.current = null;
-    installedRequestActiveRef.current = false;
+    previewAbortRef.current?.abort();
     setCatalogItems([]);
     setCatalogLoading(false);
     setCatalogError(null);
-    setCatalogLoaded(false);
-    setCatalogStale(true);
+    setCatalogSyncedAt(null);
     setInstalledItems([]);
     setInstalledCapabilities(null);
     setInstalledSummary(null);
     setInstalledGroups([]);
-    setInstalledFilteredTotal(0);
-    setInstalledTotalPages(1);
     setInstalledLoading(false);
     setInstalledError(null);
     setInstalledErrorHint(null);
+    setInstalledSyncedAt(null);
     setInstalledPage(1);
+    setSelectedCatalogKeys(new Set());
+    setSelectedInstalledIds(new Set());
+    setSelectedInstalledItem(null);
+    setPackagePreview(null);
+    setPackagePreviewError(null);
+    setSelectedPreviewSkills(new Set());
   }, [installTargetKey]);
 
   useEffect(() => {
-    if (!resolvedTarget || installTargetLoading || !shouldLoadCatalog(view, catalogLoaded, catalogStale)) {
+    if (!currentWorkspaceId || !resolvedTarget || installTargetLoading) {
       return;
     }
-    void requestCatalog();
+    void Promise.all([requestCatalog(), requestInstalled()]);
   }, [
-    catalogLoaded,
-    catalogStale,
+    currentWorkspaceId,
+    installTargetKey,
     installTargetLoading,
     requestCatalog,
-    resolvedTarget,
-    view,
-  ]);
-
-  useEffect(() => {
-    if (
-      !resolvedTarget ||
-      installTargetLoading ||
-      (view !== "installed" && view !== "maintenance")
-    ) {
-      return;
-    }
-    void requestInstalled();
-  }, [
-    installTargetLoading,
     requestInstalled,
     resolvedTarget,
-    view,
   ]);
 
   useEffect(() => {
-    setSelectedCatalogKeys(new Set());
+    setInstalledPage(1);
   }, [
-    catalogSearch,
-    installedOnly,
-    installTarget.scope,
-    installTarget.project_path,
-  ]);
-
-  useEffect(() => {
-    setSelectedInstalledIds(new Set());
-    setSelectedInstalledItem(null);
-  }, [
+    currentWorkspaceId,
+    installedPageSize,
     installedSearch,
-    installTarget.scope,
-    installTarget.project_path,
-    selectedInstalledCategoryId,
     installedSourceFilter,
     installedTrackingFilter,
     installedUpdateFilter,
+    selectedInstalledCategoryId,
   ]);
-
-  useEffect(() => {
-    setSelectedCatalogCategoryId(null);
-  }, [
-    catalogSearch,
-    installedOnly,
-    installTarget.scope,
-    installTarget.project_path,
-  ]);
-
-  useEffect(() => {
-    setSelectedInstalledCategoryId(null);
-  }, [installedSearch, installTarget.scope, installTarget.project_path]);
-
-  useEffect(() => {
-    setInstalledSourceFilter("all");
-    setInstalledTrackingFilter("all");
-    setInstalledUpdateFilter("all");
-  }, [installTarget.scope, installTarget.project_path]);
 
   const catalogGroups = useMemo(
-    () => buildTaxonomyGroups(catalogItems),
+    () => mapTaxonomyGroups(buildGroupedTaxonomyFromCatalog(catalogItems)),
     [catalogItems],
   );
 
@@ -508,38 +625,61 @@ export default function NpxSkillsPage() {
         search: catalogSearch,
         categoryId: selectedCatalogCategoryId,
         installedOnly,
-    }),
+      }),
     [catalogItems, catalogSearch, installedOnly, selectedCatalogCategoryId],
   );
 
-  useEffect(() => {
-    setInstalledPage(1);
-  }, [
-    installTargetKey,
-    installedPageSize,
-    installedSearch,
-    installedSourceFilter,
-    installedTrackingFilter,
-    installedUpdateFilter,
-    selectedInstalledCategoryId,
-  ]);
-
   const selectedCatalogItems = useMemo(
     () =>
-      visibleCatalogItems.filter((item) =>
-        selectedCatalogKeys.has(buildInstallKey(item)),
-      ),
-    [visibleCatalogItems, selectedCatalogKeys],
+      catalogItems.filter((item) => selectedCatalogKeys.has(buildInstallKey(item))),
+    [catalogItems, selectedCatalogKeys],
   );
 
-  const selectedInstallPayload = useMemo<NpxSkillsInstallItemInput[]>(
-    () =>
-      selectedCatalogItems.map((item) => ({
-        package_ref: item.package_ref,
-        skill_flags: item.skill_flag ? [item.skill_flag] : [],
-        catalog_entry_id: item.id,
-      })),
+  const selectedInstallPayload = useMemo(
+    () => groupCatalogInstallPayload(selectedCatalogItems),
     [selectedCatalogItems],
+  );
+
+  const filteredInstalledItems = useMemo(
+    () =>
+      filterInstalledItems(installedItems, {
+        search: installedSearch,
+        categoryId: selectedInstalledCategoryId,
+        sourceFilter: installedSourceFilter,
+        trackingFilter: installedTrackingFilter,
+        updateFilter: installedUpdateFilter,
+      }),
+    [
+      installedItems,
+      installedSearch,
+      selectedInstalledCategoryId,
+      installedSourceFilter,
+      installedTrackingFilter,
+      installedUpdateFilter,
+    ],
+  );
+  const installedFilteredTotal = filteredInstalledItems.length;
+  const installedTotalPages = Math.max(
+    1,
+    Math.ceil(installedFilteredTotal / Math.max(1, installedPageSize)),
+  );
+  useEffect(() => {
+    if (installedPage > installedTotalPages) {
+      setInstalledPage(installedTotalPages);
+    }
+  }, [installedPage, installedTotalPages]);
+  const visibleInstalledItems = useMemo(
+    () => paginateItems(filteredInstalledItems, installedPage, installedPageSize),
+    [filteredInstalledItems, installedPage, installedPageSize],
+  );
+
+  const defaultRunConfig = useMemo<NpxSkillsRunConfig>(
+    () => ({
+      agents,
+      cliMode,
+      installTarget,
+    }),
+    [agents, cliMode, installTarget],
   );
 
   const closeEventStream = useCallback(() => {
@@ -563,12 +703,8 @@ export default function NpxSkillsPage() {
   }, []);
 
   const refreshAfterJob = useCallback(() => {
-    setCatalogStale(true);
-    void requestInstalled();
-    if (catalogLoaded) {
-      void requestCatalog();
-    }
-  }, [catalogLoaded, requestCatalog, requestInstalled]);
+    void Promise.all([requestCatalog(), requestInstalled()]);
+  }, [requestCatalog, requestInstalled]);
 
   const toggleJobItemExpanded = useCallback((id: string) => {
     setExpandedJobItemIds((previous) => {
@@ -588,7 +724,7 @@ export default function NpxSkillsPage() {
       starter: () => Promise<NpxSkillsJobStartDto>,
       runConfig: NpxSkillsRunConfig,
     ) => {
-      if (!platformId || labels.length === 0 || jobRunning) {
+      if (!currentWorkspaceId || labels.length === 0 || jobRunning) {
         return;
       }
       streamWarnedRef.current = false;
@@ -607,7 +743,6 @@ export default function NpxSkillsPage() {
       setJobStatusMessage(null);
       initializeJobItems(labels);
       closeEventStream();
-      setView("maintenance");
 
       try {
         const started = await starter();
@@ -616,7 +751,7 @@ export default function NpxSkillsPage() {
         setJobTotal(started.total);
 
         const streamUrl = `/api/platforms/${encodeURIComponent(
-          platformId,
+          currentWorkspaceId,
         )}/npx-skills/jobs/${encodeURIComponent(started.job_id)}/stream`;
         const source = new EventSource(streamUrl);
         eventSourceRef.current = source;
@@ -628,9 +763,7 @@ export default function NpxSkillsPage() {
           }
           setJobItems((previous) =>
             previous.map((item) =>
-              item.id === payload.item_id
-                ? { ...item, status: "running" }
-                : item,
+              item.id === payload.item_id ? { ...item, status: "running" } : item,
             ),
           );
         });
@@ -705,12 +838,7 @@ export default function NpxSkillsPage() {
             }),
           );
           closeEventStream();
-          const notification = buildNpxJobNotification(
-            payload.operation,
-            0,
-            1,
-            t,
-          );
+          const notification = buildNpxJobNotification(payload.operation, 0, 1, t);
           showNotification(notification.message, notification.severity);
         });
 
@@ -751,49 +879,62 @@ export default function NpxSkillsPage() {
     },
     [
       closeEventStream,
+      currentWorkspaceId,
       initializeJobItems,
       jobRunning,
-      platformId,
       refreshAfterJob,
       showNotification,
       t,
     ],
   );
 
-  const openInstallSelectedDialog = () => {
-    if (selectedInstallPayload.length === 0 || !resolvedTarget) {
+  const openInstallSelectedDialog = useCallback(() => {
+    if (selectedInstallPayload.length === 0) {
       return;
     }
     setPendingRunAction({
       kind: "install",
       items: selectedInstallPayload,
-      labels: selectedCatalogItems.map((item) => {
-        let label = item.package_ref;
-        if (item.skill_flag) {
-          label += ` --skill ${item.skill_flag}`;
-        }
-        return label;
-      }),
+      labels: buildGroupedInstallLabels(selectedCatalogItems),
       itemCount: selectedCatalogItems.length,
     });
-  };
+  }, [selectedCatalogItems, selectedInstallPayload]);
 
-  const openQuickInstallDialog = () => {
-    if (!resolvedTarget) {
+  const openPackagePreviewForItem = useCallback(
+    (item: NpxSkillsCatalogItemDto) => {
+      void loadPackagePreview(
+        item.package_ref,
+        item.skill_flag ? [item.skill_flag] : null,
+      );
+    },
+    [loadPackagePreview],
+  );
+
+  const previewPackage = useCallback(() => {
+    if (!packagePreviewInput.trim()) {
+      return;
+    }
+    void loadPackagePreview(packagePreviewInput.trim(), null);
+  }, [loadPackagePreview, packagePreviewInput]);
+
+  const installPreviewSelection = useCallback(() => {
+    if (!packagePreview) {
       return;
     }
     setPendingRunAction({
       kind: "quick-install",
-      packageRef: "",
-      skillFlagsInput: "",
+      packageRef: packagePreview.package_ref,
+      skillFlagsInput:
+        packagePreview.mode === "listed_skills"
+          ? Array.from(selectedPreviewSkills).join("\n")
+          : "",
     });
-  };
+  }, [packagePreview, selectedPreviewSkills]);
 
-  const openInstalledDetail = (item: NpxInstalledSkillInstanceDto) => {
+  const openInstalledDetail = useCallback((item: NpxInstalledSkillInstanceDto) => {
     setSelectedInstalledItem(item);
-  };
-
-  const closeInstalledDetail = () => setSelectedInstalledItem(null);
+  }, []);
+  const closeInstalledDetail = useCallback(() => setSelectedInstalledItem(null), []);
 
   const copyInstalledSourceRef = useCallback(
     (value: string) => {
@@ -805,29 +946,24 @@ export default function NpxSkillsPage() {
     [showNotification, t],
   );
 
-  const openRemoveDialog = (itemIds: string[]) => {
-    if (itemIds.length === 0 || !resolvedTarget) {
+  const openRemoveDialog = useCallback((itemIds: string[]) => {
+    if (itemIds.length === 0) {
       return;
     }
     setPendingRunAction({ kind: "remove", itemIds });
-  };
+  }, []);
 
-  const openRemoveSelected = () => {
+  const openRemoveSelected = useCallback(() => {
     openRemoveDialog(Array.from(selectedInstalledIds));
-  };
+  }, [openRemoveDialog, selectedInstalledIds]);
 
-  const openCheckDialog = () => {
-    if (!resolvedTarget) {
-      return;
-    }
+  const openCheckDialog = useCallback(() => {
     setPendingRunAction({ kind: "check" });
-  };
-  const openUpdateDialog = () => {
-    if (!resolvedTarget) {
-      return;
-    }
+  }, []);
+
+  const openUpdateDialog = useCallback(() => {
     setPendingRunAction({ kind: "update" });
-  };
+  }, []);
 
   const handleRunDialogConfirm = useCallback(
     async (payload: {
@@ -835,7 +971,7 @@ export default function NpxSkillsPage() {
       packageRef: string;
       skillFlagsInput: string;
     }) => {
-      if (!platformId || !pendingRunAction) {
+      if (!currentWorkspaceId || !pendingRunAction) {
         return;
       }
 
@@ -849,7 +985,7 @@ export default function NpxSkillsPage() {
           pendingRunAction.labels,
           () =>
             startNpxSkillsInstallJob(
-              platformId,
+              currentWorkspaceId,
               pendingRunAction.items,
               payload.config.installTarget,
               runCliConfig,
@@ -866,7 +1002,7 @@ export default function NpxSkillsPage() {
           [item.package_ref],
           () =>
             startNpxSkillsInstallJob(
-              platformId,
+              currentWorkspaceId,
               [item],
               payload.config.installTarget,
               runCliConfig,
@@ -879,7 +1015,7 @@ export default function NpxSkillsPage() {
           itemIds,
           () =>
             startNpxSkillsRemoveJob(
-              platformId,
+              currentWorkspaceId,
               itemIds,
               payload.config.installTarget,
               runCliConfig,
@@ -893,7 +1029,7 @@ export default function NpxSkillsPage() {
           [t("npxSkills.operationCheck")],
           () =>
             startNpxSkillsCheckJob(
-              platformId,
+              currentWorkspaceId,
               payload.config.installTarget,
               runCliConfig,
             ),
@@ -904,7 +1040,7 @@ export default function NpxSkillsPage() {
           [t("npxSkills.operationUpdate")],
           () =>
             startNpxSkillsUpdateJob(
-              platformId,
+              currentWorkspaceId,
               payload.config.installTarget,
               runCliConfig,
             ),
@@ -914,14 +1050,13 @@ export default function NpxSkillsPage() {
 
       setPendingRunAction(null);
     },
-    [pendingRunAction, platformId, startJob, t],
+    [currentWorkspaceId, pendingRunAction, startJob, t],
   );
 
   const pendingRunDialogContent = useMemo(() => {
     if (!pendingRunAction) {
       return null;
     }
-
     switch (pendingRunAction.kind) {
       case "install":
         return {
@@ -975,6 +1110,7 @@ export default function NpxSkillsPage() {
     () => (jobRunConfig ? buildNpxRunConfigSummary(jobRunConfig, t) : null),
     [jobRunConfig, t],
   );
+
   const installTargetModeLabel =
     installTarget.scope === "project"
       ? t("installed.installTargetProject")
@@ -985,34 +1121,27 @@ export default function NpxSkillsPage() {
       : t("installed.installTargetLoading"));
   const runConfigPath = useMemo(() => {
     if (jobRunConfig?.installTarget.scope === "project") {
-      return (
-        jobRunConfig.installTarget.project_path?.trim() || installTargetPath
-      );
+      return jobRunConfig.installTarget.project_path?.trim() || installTargetPath;
     }
     return installTargetPath;
   }, [jobRunConfig, installTargetPath]);
+
+  const currentWorkspaceName = platform?.name ?? currentWorkspaceId ?? t("common.unknown");
+
   return (
     <AppShell
       variant="workbench"
-      title={
-        <PlatformShellIdentity
-          platformId={platform?.id ?? platformId}
-          name={platform?.name ?? platformId ?? t("common.unknown")}
-          fallbackIcon={platform?.icon}
-          subtitle={t("npxSkills.workspaceLabel")}
-        />
+      title={t("npxSkills.registryTitle")}
+      pageHeading={t("npxSkills.registryTitle")}
+      subtitle={t("npxSkills.registrySubtitle")}
+      onBack={
+        currentWorkspaceId
+          ? () => navigateDeferred(`/platform/${currentWorkspaceId}`)
+          : () => navigateDeferred("/")
       }
-      pageHeading={t("npxSkills.pageTitle", {
-        platform: platform?.name ?? platformId ?? t("common.unknown"),
-      })}
-      subtitle={`${installTargetModeLabel} · ${installTargetPath}`}
-      onBack={() => navigateDeferred(`/platform/${platformId}`)}
       onHome={() => navigateDeferred("/")}
       actions={
         <>
-          {isMobile ? (
-            <MobileFilterButton onClick={() => setFiltersOpen(true)} />
-          ) : null}
           <Tooltip title={installTargetPath}>
             <Chip
               icon={<FolderOpenOutlinedIcon />}
@@ -1037,176 +1166,238 @@ export default function NpxSkillsPage() {
             variant="outlined"
             startIcon={<SettingsIcon />}
             onClick={() => setSettingsOpen(true)}
-            sx={{ display: { xs: "none", sm: "inline-flex" } }}
           >
             {t("npxSkills.settings")}
           </Button>
         </>
       }
     >
-      <Box sx={{ position: "relative", zIndex: 1 }}>
+      <Stack spacing={2.5}>
         {installTargetBlocked ? (
-          <Alert severity="error" sx={{ mb: 2.5 }}>
-            {resolutionError}
-          </Alert>
+          <Alert severity="error">{resolutionError}</Alert>
         ) : null}
+
         <ListSurface tone="workbench">
-          <Stack spacing={1.25}>
+          <Stack spacing={2}>
             <Stack
-              direction={{ xs: "column", md: "row" }}
-              spacing={1.25}
+              direction={{ xs: "column", xl: "row" }}
+              spacing={1.5}
               justifyContent="space-between"
-              alignItems={{ xs: "flex-start", md: "center" }}
+              alignItems={{ xs: "flex-start", xl: "center" }}
             >
               <Box sx={{ minWidth: 0 }}>
-                <Typography variant="h5" sx={{ letterSpacing: "-0.04em" }}>
-                  {t("npxSkills.pageTitle", {
-                    platform: platform?.name ?? platformId ?? t("common.unknown"),
-                  })}
+                <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
+                  {t("npxSkills.registryEyebrow")}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 0.5 }}
-                >
-                  {t("npxSkills.settingsDefaultsNote")}
+                <Typography variant="h5" sx={{ mt: 0.45, letterSpacing: "-0.04em" }}>
+                  {t("npxSkills.registryHeroTitle")}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8, maxWidth: 860 }}>
+                  {t("npxSkills.registryHeroSubtitle")}
                 </Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary">
-                {installTargetModeLabel} · {t("npxSkills.runConfigAgentsSummary", { count: agents.length })} ·{" "}
-                {cliMode.toUpperCase()}
-              </Typography>
+              {currentWorkspaceId ? (
+                <Button
+                  variant="outlined"
+                  startIcon={<OpenInNewIcon />}
+                  onClick={() => navigateDeferred(`/platform/${currentWorkspaceId}`)}
+                >
+                  {t("npxSkills.openLocalLibrary")}
+                </Button>
+              ) : null}
             </Stack>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ overflowWrap: "anywhere" }}
+
+            <Stack
+              direction={{ xs: "column", lg: "row" }}
+              spacing={1.5}
+              alignItems={{ xs: "stretch", lg: "center" }}
             >
-              {installTargetPath}
+              <Autocomplete
+                options={platforms}
+                value={platform}
+                getOptionLabel={(option: PlatformDisplay) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(_, nextValue) => {
+                  if (!nextValue) {
+                    return;
+                  }
+                  setSearchParams((current) => upsertWorkspaceParam(current, nextValue.id));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t("npxSkills.workspaceAnchorLabel")}
+                    placeholder={t("npxSkills.workspaceAnchorPlaceholder")}
+                  />
+                )}
+                sx={{ minWidth: { xs: "100%", lg: 260 } }}
+              />
+
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Chip
+                  variant="outlined"
+                  label={t("npxSkills.contextInstallTarget", {
+                    mode: installTargetModeLabel,
+                  })}
+                />
+                <Chip
+                  variant="outlined"
+                  label={t("npxSkills.contextAgents", { count: agents.length })}
+                />
+                <Chip
+                  variant="outlined"
+                  label={
+                    cliMode === "auto"
+                      ? t("npxSkills.cliModeAuto")
+                      : t("npxSkills.cliModeNpx")
+                  }
+                />
+                {catalogSyncedAt ? (
+                  <Chip
+                    size="small"
+                    color="info"
+                    variant="outlined"
+                    label={t("npxSkills.lastSyncedAt", {
+                      value: new Date(catalogSyncedAt).toLocaleTimeString(),
+                    })}
+                  />
+                ) : null}
+              </Stack>
+            </Stack>
+
+            <Typography variant="body2" color="text.secondary">
+              {t("npxSkills.workspaceAnchorSummary", { workspace: currentWorkspaceName })}
             </Typography>
           </Stack>
         </ListSurface>
 
-        <Card
-          elevation={0}
-          sx={[
-            workbenchPanelSx,
-            {
-              mb: 3,
-              background: "var(--mcs-panel-fill)",
-              borderColor: "var(--mcs-workbench-outline)",
-              boxShadow: "var(--mcs-shadow-sm)",
-            },
-          ]}
-        >
-          <Tabs
-            value={view}
-            onChange={(_, next) => setView(next)}
-            variant={isMobile ? "fullWidth" : "standard"}
-          >
-            <Tab label={t("npxSkills.viewInstalled")} value="installed" />
-            <Tab label={t("npxSkills.viewFind")} value="find" />
-            <Tab label={t("npxSkills.viewMaintenance")} value="maintenance" />
-          </Tabs>
-        </Card>
+        <NpxFindView
+          t={t}
+          isMobile={isMobile}
+          catalogSearch={catalogSearch}
+          setCatalogSearch={setCatalogSearch}
+          installedOnly={installedOnly}
+          setInstalledOnly={setInstalledOnly}
+          fetchCatalog={() => void requestCatalog()}
+          openInstallSelectedDialog={openInstallSelectedDialog}
+          selectedInstallPayload={selectedInstallPayload}
+          jobRunning={jobRunning}
+          catalogGroups={catalogGroups}
+          selectedCatalogCategoryId={selectedCatalogCategoryId}
+          setSelectedCatalogCategoryId={setSelectedCatalogCategoryId}
+          catalogError={catalogError}
+          catalogLoading={catalogLoading}
+          installTargetLoading={installTargetLoading}
+          catalogItems={catalogItems}
+          visibleCatalogItems={visibleCatalogItems}
+          selectedCatalogKeys={selectedCatalogKeys}
+          setSelectedCatalogKeys={setSelectedCatalogKeys}
+          installTargetScope={installTarget.scope}
+          showNotification={showNotification}
+          packagePreviewInput={packagePreviewInput}
+          setPackagePreviewInput={setPackagePreviewInput}
+          packagePreviewLoading={packagePreviewLoading}
+          packagePreviewError={packagePreviewError}
+          packagePreview={packagePreview}
+          selectedPreviewSkills={selectedPreviewSkills}
+          setSelectedPreviewSkills={setSelectedPreviewSkills}
+          previewPackage={previewPackage}
+          installPreviewSelection={installPreviewSelection}
+          openPackagePreviewForItem={openPackagePreviewForItem}
+        />
 
-        <Box
-          sx={{
-            borderRadius: 4,
-            border: "1px solid var(--mcs-workbench-outline)",
-            background: "var(--mcs-panel-fill)",
-            boxShadow: "var(--mcs-shadow-sm)",
-            p: { xs: 1.25, md: 1.5 },
-          }}
-        >
-          {view === "find" && (
-            <NpxFindView
-              t={t}
-              isMobile={isMobile}
-              catalogSearch={catalogSearch}
-              setCatalogSearch={setCatalogSearch}
-              installedOnly={installedOnly}
-              setInstalledOnly={setInstalledOnly}
-              setFiltersOpen={setFiltersOpen}
-              fetchCatalog={() => void fetchCatalog()}
-              openQuickInstallDialog={openQuickInstallDialog}
-              openInstallSelectedDialog={openInstallSelectedDialog}
-              selectedInstallPayload={selectedInstallPayload}
-              jobRunning={jobRunning}
-              catalogGroups={catalogGroups}
-              selectedCatalogCategoryId={selectedCatalogCategoryId}
-              setSelectedCatalogCategoryId={setSelectedCatalogCategoryId}
-              catalogError={catalogError}
-              catalogLoading={catalogLoading}
-              installTargetLoading={installTargetLoading}
-              catalogItems={catalogItems}
-              visibleCatalogItems={visibleCatalogItems}
-              selectedCatalogKeys={selectedCatalogKeys}
-              setSelectedCatalogKeys={setSelectedCatalogKeys}
-              installTargetScope={installTarget.scope}
-              showNotification={showNotification}
-            />
-          )}
-          {view === "installed" && (
-            <NpxInstalledView
-              t={t}
-              isMobile={isMobile}
-              installedSearch={installedSearch}
-              setInstalledSearch={setInstalledSearch}
-              fetchInstalled={() => void fetchInstalled()}
-              jobRunning={jobRunning}
-              installedItems={installedItems}
-              installedSummary={installedSummary}
-              selectedInstalledIds={selectedInstalledIds}
-              setSelectedInstalledIds={setSelectedInstalledIds}
-              openRemoveSelected={openRemoveSelected}
-              openRemoveDialog={openRemoveDialog}
-              openInstalledDetail={openInstalledDetail}
-              installedGroups={installedGroups}
-              selectedInstalledCategoryId={selectedInstalledCategoryId}
-              setSelectedInstalledCategoryId={setSelectedInstalledCategoryId}
-              installedError={installedError}
-              installedErrorHint={installedErrorHint}
-              installedLoading={installedLoading}
-              installTargetLoading={installTargetLoading}
-              filteredInstalledTotal={installedFilteredTotal}
-              installedPage={installedPage}
-              setInstalledPage={setInstalledPage}
-              installedTotalPages={installedTotalPages}
-              sourceFilter={installedSourceFilter}
-              setSourceFilter={setInstalledSourceFilter}
-              trackingFilter={installedTrackingFilter}
-              setTrackingFilter={setInstalledTrackingFilter}
-              updateFilter={installedUpdateFilter}
-              setUpdateFilter={setInstalledUpdateFilter}
-              capabilities={installedCapabilities}
-            />
-          )}
-          {view === "maintenance" && (
-            <NpxMaintenanceView
-              t={t}
-              jobRunning={jobRunning}
-              openCheckDialog={openCheckDialog}
-              openUpdateDialog={openUpdateDialog}
-              capabilities={installedCapabilities}
-              jobOperation={jobOperation}
-              jobStatusMessage={jobStatusMessage}
-              jobResultStatus={jobResultStatus}
-              jobItems={jobItems}
-              jobCompleted={jobCompleted}
-              jobTotal={jobTotal}
-              jobSuccessCount={jobSuccessCount}
-              jobFailureCount={jobFailureCount}
-              jobPercent={jobPercent}
-              jobId={jobId}
-              streamDisconnected={streamDisconnected}
-              expandedJobItemIds={expandedJobItemIds}
-              toggleJobItemExpanded={toggleJobItemExpanded}
-              runConfigSummary={runConfigSummary}
-              runConfigPath={runConfigPath}
-            />
-          )}
+        <Divider />
+
+        <Box>
+          <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
+            {t("npxSkills.sectionInstalled")}
+          </Typography>
+          <Typography variant="h6" sx={{ mt: 0.45, letterSpacing: "-0.03em" }}>
+            {t("npxSkills.installedSectionTitle")}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75, maxWidth: 860 }}>
+            {t("npxSkills.installedSectionSubtitle")}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+            {installedSyncedAt
+              ? t("npxSkills.inventorySnapshotHint", {
+                  value: new Date(installedSyncedAt).toLocaleTimeString(),
+                })
+              : t("npxSkills.inventorySnapshotPending")}
+          </Typography>
         </Box>
+
+        <NpxInstalledView
+          t={t}
+          isMobile={isMobile}
+          installedSearch={installedSearch}
+          setInstalledSearch={setInstalledSearch}
+          fetchInstalled={() => void requestInstalled()}
+          jobRunning={jobRunning}
+          installedItems={visibleInstalledItems}
+          installedSummary={installedSummary}
+          selectedInstalledIds={selectedInstalledIds}
+          setSelectedInstalledIds={setSelectedInstalledIds}
+          openRemoveSelected={openRemoveSelected}
+          openRemoveDialog={openRemoveDialog}
+          openInstalledDetail={openInstalledDetail}
+          installedGroups={installedGroups}
+          selectedInstalledCategoryId={selectedInstalledCategoryId}
+          setSelectedInstalledCategoryId={setSelectedInstalledCategoryId}
+          installedError={installedError}
+          installedErrorHint={installedErrorHint}
+          installedLoading={installedLoading}
+          installTargetLoading={installTargetLoading}
+          filteredInstalledTotal={installedFilteredTotal}
+          installedPage={installedPage}
+          setInstalledPage={setInstalledPage}
+          installedTotalPages={installedTotalPages}
+          sourceFilter={installedSourceFilter}
+          setSourceFilter={setInstalledSourceFilter}
+          trackingFilter={installedTrackingFilter}
+          setTrackingFilter={setInstalledTrackingFilter}
+          updateFilter={installedUpdateFilter}
+          setUpdateFilter={setInstalledUpdateFilter}
+          capabilities={installedCapabilities}
+        />
+
+        <Divider />
+
+        <Box>
+          <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
+            {t("npxSkills.sectionMaintenance")}
+          </Typography>
+          <Typography variant="h6" sx={{ mt: 0.45, letterSpacing: "-0.03em" }}>
+            {t("npxSkills.maintenanceSectionTitle")}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75, maxWidth: 860 }}>
+            {t("npxSkills.maintenanceSectionSubtitle")}
+          </Typography>
+        </Box>
+
+        <NpxMaintenanceView
+          t={t}
+          jobRunning={jobRunning}
+          openCheckDialog={openCheckDialog}
+          openUpdateDialog={openUpdateDialog}
+          capabilities={installedCapabilities}
+          jobOperation={jobOperation}
+          jobStatusMessage={jobStatusMessage}
+          jobResultStatus={jobResultStatus}
+          jobItems={jobItems}
+          jobCompleted={jobCompleted}
+          jobTotal={jobTotal}
+          jobSuccessCount={jobSuccessCount}
+          jobFailureCount={jobFailureCount}
+          jobPercent={jobPercent}
+          jobId={jobId}
+          streamDisconnected={streamDisconnected}
+          expandedJobItemIds={expandedJobItemIds}
+          toggleJobItemExpanded={toggleJobItemExpanded}
+          runConfigSummary={runConfigSummary}
+          runConfigPath={runConfigPath}
+        />
+
         <NpxInstalledSkillDrawer
           t={t}
           item={selectedInstalledItem}
@@ -1218,130 +1409,26 @@ export default function NpxSkillsPage() {
           }}
           onCopySource={copyInstalledSourceRef}
         />
-      </Box>
+      </Stack>
 
-      <Drawer
-        anchor="left"
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        PaperProps={{ sx: { width: 300, p: 2 } }}
-      >
-        {view !== "maintenance" && (
-          <NpxSkillsFilters
-            groups={view === "find" ? catalogGroups : installedGroups}
-            selectedCategoryId={
-              view === "find"
-                ? selectedCatalogCategoryId
-                : selectedInstalledCategoryId
-            }
-            onCategoryChange={(categoryId) => {
-              if (view === "find") {
-                setSelectedCatalogCategoryId(categoryId);
-              } else {
-                setSelectedInstalledCategoryId(categoryId);
-              }
-              setFiltersOpen(false);
-            }}
-            t={t}
-          />
-        )}
-      </Drawer>
-
-      <Drawer
-        anchor="right"
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        PaperProps={{
-          sx: {
-            width: { xs: "100%", sm: 420 },
-            p: 3,
-          },
+      <InstallTargetDialog
+        open={installTargetDialogOpen}
+        loading={installTargetLoading}
+        currentTarget={installTarget}
+        recentProjects={recentProjects}
+        onClose={closeInstallTargetDialog}
+        onApply={async (nextTarget) => {
+          const applied = await applyInstallTarget(nextTarget);
+          if (applied) {
+            closeInstallTargetDialog();
+          }
+          return applied;
         }}
-      >
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h6" fontWeight={700}>
-              {t("npxSkills.settings")}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {t("npxSkills.settingsDefaultsNote")}
-            </Typography>
-          </Box>
+      />
 
-          <Autocomplete
-            multiple
-            freeSolo
-            options={COMMON_AGENTS}
-            value={agents}
-            onChange={(_, next) => updateAgents(next)}
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const { key, ...rest } = getTagProps({ index });
-                return (
-                  <Chip
-                    key={key}
-                    label={option}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                    {...rest}
-                  />
-                );
-              })
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={t("npxSkills.targetAgents")}
-                placeholder={t("npxSkills.targetAgents")}
-                helperText={t("npxSkills.targetAgentsHelp")}
-              />
-            )}
-          />
-
-          <Card variant="outlined">
-            <CardContent>
-              <Stack spacing={1.25}>
-                <Typography variant="subtitle2" fontWeight={700}>
-                  {t("npxSkills.summaryCliMode")}
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={cliMode === "auto"}
-                      onChange={(_, checked) =>
-                        updateCliMode(checked ? "auto" : "npx")
-                      }
-                    />
-                  }
-                  label={
-                    <Box>
-                      <Typography variant="body2" fontWeight={700}>
-                        {cliMode === "auto"
-                          ? t("npxSkills.cliModeAuto")
-                          : t("npxSkills.cliModeNpx")}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {cliMode === "auto"
-                          ? t("npxSkills.cliModeAutoHelp")
-                          : t("npxSkills.cliModeNpxHelp")}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </Stack>
-            </CardContent>
-          </Card>
-
-          <Button variant="contained" onClick={() => setSettingsOpen(false)}>
-            {t("common.close")}
-          </Button>
-        </Stack>
-      </Drawer>
-
-      {pendingRunAction && pendingRunDialogContent && (
+      {pendingRunDialogContent ? (
         <NpxRunConfigDialog
-          open
+          open={Boolean(pendingRunAction)}
           loading={jobRunning}
           title={pendingRunDialogContent.title}
           description={pendingRunDialogContent.description}
@@ -1355,16 +1442,94 @@ export default function NpxSkillsPage() {
           onClose={() => setPendingRunAction(null)}
           onConfirm={handleRunDialogConfirm}
         />
-      )}
+      ) : null}
 
-      <InstallTargetDialog
-        open={installTargetDialogOpen}
-        loading={installTargetLoading}
-        currentTarget={installTarget}
-        recentProjects={recentProjects}
-        onClose={closeInstallTargetDialog}
-        onApply={applyInstallTarget}
-      />
+      <Card
+        variant="outlined"
+        sx={{
+          display: settingsOpen ? "block" : "none",
+          position: "fixed",
+          right: 24,
+          bottom: 24,
+          width: { xs: "calc(100vw - 32px)", sm: 420 },
+          maxHeight: "70vh",
+          overflow: "auto",
+          zIndex: 1200,
+          boxShadow: "var(--mcs-shadow-lg)",
+        }}
+      >
+        <CardContent>
+          <Stack spacing={3}>
+            <Box>
+              <Typography variant="h6" fontWeight={700}>
+                {t("npxSkills.settings")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {t("npxSkills.settingsDefaultsNote")}
+              </Typography>
+            </Box>
+
+            <Autocomplete
+              multiple
+              freeSolo
+              options={COMMON_AGENTS}
+              value={agents}
+              onChange={(_, next) => updateAgents(next)}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => {
+                  const { key, ...rest } = getTagProps({ index });
+                  return (
+                    <Chip
+                      key={key}
+                      label={option}
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                      {...rest}
+                    />
+                  );
+                })
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t("npxSkills.targetAgents")}
+                  placeholder={t("npxSkills.targetAgents")}
+                  helperText={t("npxSkills.targetAgentsHelp")}
+                />
+              )}
+            />
+
+            <Autocomplete
+              disableClearable
+              options={[
+                { value: "auto" as const, label: t("npxSkills.cliModeAuto") },
+                { value: "npx" as const, label: t("npxSkills.cliModeNpx") },
+              ]}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              value={
+                cliMode === "auto"
+                  ? { value: "auto" as const, label: t("npxSkills.cliModeAuto") }
+                  : { value: "npx" as const, label: t("npxSkills.cliModeNpx") }
+              }
+              onChange={(_, nextValue) => updateCliMode(nextValue.value)}
+              renderInput={(params) => (
+                <TextField {...params} label={t("npxSkills.summaryCliMode")} />
+              )}
+            />
+
+            <Typography variant="caption" color="text.secondary">
+              {cliMode === "auto"
+                ? t("npxSkills.cliModeAutoHelp")
+                : t("npxSkills.cliModeNpxHelp")}
+            </Typography>
+
+            <Button variant="contained" onClick={() => setSettingsOpen(false)}>
+              {t("common.close")}
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
 
       <NotificationSnackbar />
     </AppShell>

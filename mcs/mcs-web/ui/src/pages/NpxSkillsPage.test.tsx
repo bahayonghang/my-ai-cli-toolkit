@@ -86,9 +86,9 @@ vi.mock("@/hooks/useInstallTarget", () => ({
 function renderPage() {
   return renderToStaticMarkup(
     <ThemeProvider theme={lightTheme}>
-      <MemoryRouter initialEntries={["/platform/claude/npx-skills"]}>
+      <MemoryRouter initialEntries={["/registry?workspace=claude"]}>
         <Routes>
-          <Route path="/platform/:platformId/npx-skills" element={<NpxSkillsPage />} />
+          <Route path="/registry" element={<NpxSkillsPage />} />
         </Routes>
       </MemoryRouter>
     </ThemeProvider>
@@ -96,14 +96,15 @@ function renderPage() {
 }
 
 describe("NpxSkillsPage", () => {
-  it("renders the registry workspace shell and all three tabs", () => {
+  it("renders the top-level registry workspace and core sections", () => {
     installTargetState.resolutionError = null;
 
     const markup = renderPage();
 
-    expect(markup).toContain("Manage registry skills for Claude Code");
+    expect(markup).toContain("Registry");
+    expect(markup).toContain("Install from Repo");
+    expect(markup).toContain("Discover");
     expect(markup).toContain("Installed");
-    expect(markup).toContain("Find");
     expect(markup).toContain("Maintenance");
   });
 
@@ -114,7 +115,7 @@ describe("NpxSkillsPage", () => {
     const markup = renderPage();
 
     expect(markup).toContain("Project target is invalid");
-    expect(markup).toContain("Resolve the install target to continue");
+    expect(markup).toContain("Registry");
 
     installTargetState.resolutionError = null;
     installTargetState.resolvedTarget = {

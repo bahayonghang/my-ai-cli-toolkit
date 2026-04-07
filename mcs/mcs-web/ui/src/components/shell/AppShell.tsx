@@ -114,6 +114,9 @@ function inferRouteSection(
   if (pathname.startsWith("/install-hub")) {
     return "installHub";
   }
+  if (pathname.startsWith("/registry")) {
+    return "registry";
+  }
   if (pathname.startsWith("/manage/commands")) {
     return "commandsWorkspace";
   }
@@ -429,6 +432,15 @@ export function AppShell({
           icon={<DownloadSimple size={18} weight="bold" />}
           to="/install-hub"
           active={location.pathname.startsWith("/install-hub")}
+          ariaCurrent="page"
+          onAfterNavigate={() => setNavOpen(false)}
+        />
+        <ShellNavButton
+          label={t("common.registry")}
+          subtitle={t("common.registrySubtitle")}
+          icon={<List size={18} weight="bold" />}
+          to="/registry"
+          active={location.pathname.startsWith("/registry") || location.pathname.includes("/npx-skills")}
           ariaCurrent="page"
           onAfterNavigate={() => setNavOpen(false)}
         />
