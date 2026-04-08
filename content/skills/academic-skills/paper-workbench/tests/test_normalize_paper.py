@@ -13,6 +13,7 @@ from pathlib import Path
 SKILL_DIR = Path(__file__).parent.parent
 SCRIPTS_DIR = SKILL_DIR / "scripts"
 SCRIPT = SCRIPTS_DIR / "normalize_paper.py"
+WORKBENCH_IO_SCRIPT = SCRIPTS_DIR / "workbench_io.py"
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 SAMPLE_LOCAL_PAPER = FIXTURES_DIR / "sample_local_paper.pdf"
 
@@ -20,7 +21,6 @@ spec = importlib.util.spec_from_file_location("normalize_paper", SCRIPT)
 assert spec is not None and spec.loader is not None
 normalize_paper = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(normalize_paper)
-
 
 def run_python_script(script: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
@@ -53,6 +53,9 @@ def test_local_pdf_normalizes_sample_fixture():
     assert payload["bibliography"]["doi"] is None
     assert payload["document"]["document_type"] == "conference-paper"
     assert payload["content"]["full_text_included"] is False
+    assert payload["content"]["page_chunks"]
+    assert payload["content"]["page_chunks"][0]["anchor"] == "p1"
+    assert payload["content"]["page_chunks"][0]["text"] is None
 
 
 def test_master_thesis_fixture_sets_thesis_type():
@@ -96,6 +99,16 @@ def test_normalized_json_is_passthrough(tmp_path: Path):
     payload = normalize_paper.normalize_source(str(json_path))
 
     assert payload == existing
+
+
+def test_fulltext_prefer_keeps_page_chunk_text():
+    payload = normalize_paper.normalize_source(
+        str(SAMPLE_LOCAL_PAPER),
+        fulltext_mode="prefer",
+    )
+
+    assert payload["content"]["full_text_included"] is True
+    assert payload["content"]["page_chunks"][0]["text"]
 
 
 def test_doi_source_uses_crossref_metadata(monkeypatch):
@@ -190,3 +203,69 @@ def test_generic_page_without_pdf_returns_unresolved(monkeypatch):
     assert payload["status"] == "unresolved"
     assert payload["bibliography"]["title"] == "Paper"
     assert payload["errors"]
+
+
+def test_init_profile_writes_researcher_profile(tmp_path: Path):
+    profile_path = tmp_path / "researcher-profile.json"
+
+    payload = json.loads(
+        run_python_script(
+            WORKBENCH_IO_SCRIPT,
+            "init-profile",
+            "--path",
+            str(profile_path),
+            "--research-field",
+            "科技社会学",
+            "--core-question",
+            "平台化协作如何改变学术写作劳动？",
+            "--stage",
+            "文献梳理",
+        ).stdout
+    )
+
+    assert payload["artifact_type"] == "researcher-profile"
+    assert payload["research_field"] == "科技社会学"
+    assert payload["core_question"] == "平台化协作如何改变学术写作劳动？"
+    assert profile_path.exists()
+
+
+def test_save_artifact_writes_json_and_sidecar(tmp_path: Path):
+    workspace = tmp_path / "workspace"
+    payload_path = tmp_path / "payload.json"
+    payload_path.write_text(
+        json.dumps({"summary": "deep read result"}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    sidecar_path = tmp_path / "artifact.md"
+    sidecar_path.write_text("# Deep Read\n", encoding="utf-8")
+
+    result = json.loads(
+        run_python_script(
+            WORKBENCH_IO_SCRIPT,
+            "save-artifact",
+            "--workspace",
+            str(workspace),
+            "--artifact-type",
+            "paper-deep-read",
+            "--title",
+            "Attention Is All You Need",
+            "--payload-file",
+            str(payload_path),
+            "--sidecar-file",
+            str(sidecar_path),
+            "--sidecar-ext",
+            "md",
+            "--source-record",
+            "records/paper.json",
+        ).stdout
+    )
+
+    artifact_path = Path(result["artifact_path"])
+    generated_sidecar = Path(result["sidecar_path"])
+    saved_payload = json.loads(artifact_path.read_text(encoding="utf-8"))
+
+    assert artifact_path.exists()
+    assert generated_sidecar.exists()
+    assert saved_payload["artifact_type"] == "paper-deep-read"
+    assert saved_payload["source_records"] == ["records/paper.json"]
+    assert saved_payload["payload"]["summary"] == "deep read result"

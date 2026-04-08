@@ -54,6 +54,7 @@ just web
 - [运行时文件](/zh/guide/runtime-files)：hooks 与平台 guidance/runtime 文件
 - [外部技能](/zh/guide/community-skills-registry)：第三方技能注册表与安装流程
 - [创建技能](/zh/guide/creating-skills)：新增 `content/skills/<category>/<skill-name>/`
+- [论文工作流](/zh/guide/paper-workflows)：如何用 `paper-workbench` 从论文接入走到快速预判、精读、多篇整合与综述规划
 
 ## 关于历史页面
 

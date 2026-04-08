@@ -1,6 +1,7 @@
 # Interpret mode
 
 Interpret mode consumes a normalized `paper-record` payload as its fact source.
+It is the lightweight, profile-optional explanation path.
 
 ## Handoff fields
 
@@ -15,6 +16,12 @@ Prefer these normalized fields:
 - `content.method`
 - `content.results`
 - `content.sections`
+
+## Output shape
+
+- 1 short orientation paragraph
+- 3-5 bullets on problem, method, findings, and why the paper matters
+- explicit limitations when normalized facts are sparse
 
 ## Rules
 

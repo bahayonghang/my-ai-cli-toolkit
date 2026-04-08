@@ -55,6 +55,7 @@ just web
 - [Runtime Files](/guide/runtime-files): hooks and platform guidance/runtime assets
 - [External Skills](/guide/community-skills-registry): registry format and install flow for third-party skills
 - [Creating Skills](/guide/creating-skills): adding new `content/skills/<category>/<skill-name>/`
+- [Paper Workflows](/guide/paper-workflows): how to move from paper intake to scan, deep-read, synthesis, and review planning with `paper-workbench`
 
 ## Notes on legacy pages
 

@@ -1,7 +1,7 @@
 # JSON mode
 
-Use JSON mode when the user wants a structured record, reusable machine-readable
-facts, or an artifact to pass into another paper-analysis skill.
+Use JSON mode when the user wants a structured record, reusable
+machine-readable facts, a saved artifact, or an input for another skill.
 
 ## Behavior
 
@@ -11,5 +11,6 @@ facts, or an artifact to pass into another paper-analysis skill.
 
 ## Save behavior
 
-If the user asks to save the normalized JSON, pass `--save PATH` to the normalizer
-and then return the same payload in chat unless they asked for silent save only.
+If the user asks to save the normalized JSON, pass `--save PATH` to
+`normalize_paper.py` and then return the same payload unless they explicitly
+asked for silent save only.

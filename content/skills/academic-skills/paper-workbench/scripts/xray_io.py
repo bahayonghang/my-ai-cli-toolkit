@@ -8,6 +8,7 @@ import pathlib
 import re
 import sys
 from datetime import datetime
+from typing import Any
 
 
 TEXT_SUFFIXES = {".txt", ".md", ".org"}
@@ -20,14 +21,39 @@ def slugify_title(title: str) -> str:
     return "-".join(words[:5])
 
 
-def extract_text(source: str) -> str:
+def normalize_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def make_chunk(
+    *,
+    anchor: str,
+    text: str,
+    page_number: int,
+) -> dict[str, Any]:
+    clean_text = text.strip()
+    excerpt = normalize_text(clean_text)[:280]
+    return {
+        "anchor": anchor,
+        "page_start": page_number,
+        "page_end": page_number,
+        "label": anchor,
+        "excerpt": excerpt or None,
+        "text": clean_text,
+    }
+
+
+def extract_pages(source: str) -> list[dict[str, Any]]:
     path = pathlib.Path(source).expanduser()
     if not path.exists():
         raise FileNotFoundError(f"Local source does not exist: {path}")
 
     suffix = path.suffix.lower()
     if suffix in TEXT_SUFFIXES:
-        return path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            raise RuntimeError(f"No extractable text found in text file: {path}")
+        return [make_chunk(anchor="p1", text=text, page_number=1)]
     if suffix != ".pdf":
         raise ValueError(
             f"Unsupported local file type: {suffix or '<no suffix>'}. "
@@ -47,13 +73,24 @@ def extract_text(source: str) -> str:
 
     doc = pymupdf.open(path)
     try:
-        pages = [page.get_text("text").strip() for page in doc]
+        pages = []
+        for page_number, page in enumerate(doc, start=1):
+            page_text = page.get_text("text").strip()
+            if page_text:
+                pages.append(make_chunk(anchor=f"p{page_number}", text=page_text, page_number=page_number))
     finally:
         doc.close()
 
-    text = "\n\n".join(page for page in pages if page)
-    if not text.strip():
+    if not pages:
         raise RuntimeError(f"No extractable text found in PDF: {path}")
+    return pages
+
+
+def extract_text(source: str) -> str:
+    pages = extract_pages(source)
+    text = "\n\n".join(page["text"] for page in pages if page.get("text"))
+    if not text.strip():
+        raise RuntimeError(f"No extractable text found in file: {source}")
     return text
 
 

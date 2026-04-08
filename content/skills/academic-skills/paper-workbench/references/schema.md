@@ -1,4 +1,4 @@
-# paper-record schema
+# `paper-record` schema
 
 Canonical top-level fields:
 
@@ -18,20 +18,20 @@ Canonical top-level fields:
 
 ## Required shape
 
-### source
+### `source`
 
 - `input`
 - `input_kind`
 - `resolved_pdf_url`
 - `canonical_url`
 
-### document
+### `document`
 
 - `document_type`
 - `degree_level`
 - `language`
 
-### bibliography
+### `bibliography`
 
 - `title`
 - `authors`
@@ -42,17 +42,39 @@ Canonical top-level fields:
 - `abstract`
 - `keywords`
 
-### content
+### `content`
 
 - `summary`
 - `problem`
 - `method`
 - `results`
 - `sections`
+- `page_chunks`
 - `full_text_markdown`
 - `full_text_included`
 
-### arxiv_enhancement
+### `content.page_chunks`
+
+Optional page-level anchors for downstream citation or quote lookup.
+
+```json
+{
+  "anchor": "p3",
+  "page_start": 3,
+  "page_end": 3,
+  "label": "p3",
+  "excerpt": "Short preview of the page text.",
+  "text": "Full page text when full_text_included=true, otherwise null."
+}
+```
+
+Rules:
+
+- `page_chunks` may be empty when the source only resolved to metadata.
+- `text` may be `null` when full text retention is disabled.
+- Downstream modes must output `[信息待核实]` instead of inventing page numbers or verbatim quotations when the needed anchor is missing.
+
+### `arxiv_enhancement`
 
 - `arxiv_id`
 - `alphaxiv_available`
@@ -60,7 +82,7 @@ Canonical top-level fields:
 - `key_insights`
 - `citations`
 
-### provenance
+### `provenance`
 
 - `metadata_sources`
 - `content_sources`

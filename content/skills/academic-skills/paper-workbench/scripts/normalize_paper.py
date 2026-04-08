@@ -115,6 +115,7 @@ def make_base_record(source: str, input_kind: str) -> dict[str, Any]:
             "method": None,
             "results": None,
             "sections": [],
+            "page_chunks": [],
             "full_text_markdown": None,
             "full_text_included": False,
         },
@@ -375,6 +376,39 @@ def clean_line(value: str) -> str:
     value = unescape(value)
     value = re.sub(r"\s+", " ", value).strip(" \t\r\n-:|")
     return value
+
+
+def build_page_chunks(
+    raw_chunks: list[dict[str, Any]] | None,
+    *,
+    include_text: bool,
+) -> list[dict[str, Any]]:
+    if not raw_chunks:
+        return []
+
+    normalized: list[dict[str, Any]] = []
+    for index, chunk in enumerate(raw_chunks, start=1):
+        text = str(chunk.get("text") or "").strip()
+        if not text:
+            continue
+
+        anchor = str(chunk.get("anchor") or f"p{index}").strip() or f"p{index}"
+        page_start = chunk.get("page_start") or index
+        page_end = chunk.get("page_end") or page_start
+        label = clean_line(str(chunk.get("label") or anchor)) or anchor
+        excerpt = clean_line(str(chunk.get("excerpt") or text[:280])) or None
+        normalized.append(
+            {
+                "anchor": anchor,
+                "page_start": page_start,
+                "page_end": page_end,
+                "label": label,
+                "excerpt": excerpt,
+                "text": text if include_text else None,
+            }
+        )
+
+    return normalized
 
 
 def normalize_whitespace(text: str) -> str:
@@ -706,7 +740,13 @@ def authors_from_bibtex(bibtex: str | None) -> list[dict[str, Any]]:
     return [{"name": part, "affiliation": None} for part in parts]
 
 
-def enrich_from_text_record(record: dict[str, Any], text: str, *, fulltext_mode: str) -> dict[str, Any]:
+def enrich_from_text_record(
+    record: dict[str, Any],
+    text: str,
+    *,
+    fulltext_mode: str,
+    page_chunks: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     text = normalize_whitespace(text)
     language = infer_language(text)
     title = record["bibliography"]["title"] or extract_title(text)
@@ -754,6 +794,7 @@ def enrich_from_text_record(record: dict[str, Any], text: str, *, fulltext_mode:
         fulltext_mode,
         summary_present=bool(record["content"]["summary"]),
     )
+    record["content"]["page_chunks"] = build_page_chunks(page_chunks, include_text=include_full_text)
     record["content"]["full_text_included"] = include_full_text
     record["content"]["full_text_markdown"] = text if include_full_text else None
 
@@ -780,16 +821,17 @@ def enrich_from_text_record(record: dict[str, Any], text: str, *, fulltext_mode:
     return record
 
 
-def extract_text_from_downloaded_pdf(url: str) -> tuple[str, str]:
+def extract_text_from_downloaded_pdf(url: str) -> tuple[str, str, list[dict[str, Any]]]:
     binary, _, final_url = fetch_binary(url)
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as handle:
         handle.write(binary)
         temp_path = pathlib.Path(handle.name)
     try:
-        text = XRAY_IO.extract_text(str(temp_path))
+        pages = XRAY_IO.extract_pages(str(temp_path))
     finally:
         temp_path.unlink(missing_ok=True)
-    return text, final_url
+    text = "\n\n".join(page["text"] for page in pages if page.get("text"))
+    return text, final_url, pages
 
 
 def normalize_generic_pdf_source(source: str, *, input_kind: str, fulltext_mode: str) -> dict[str, Any]:
@@ -797,25 +839,26 @@ def normalize_generic_pdf_source(source: str, *, input_kind: str, fulltext_mode:
     record["source"]["canonical_url"] = source if is_url(source) else None
 
     if input_kind in {"local_pdf", "local_text"}:
-        text = XRAY_IO.extract_text(source)
+        pages = XRAY_IO.extract_pages(source)
+        text = "\n\n".join(page["text"] for page in pages if page.get("text"))
         record["provenance"]["content_sources"].append("local-file")
-        return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode)
+        return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode, page_chunks=pages)
 
     if input_kind == "web_pdf":
-        text, final_url = extract_text_from_downloaded_pdf(source)
+        text, final_url, pages = extract_text_from_downloaded_pdf(source)
         record["source"]["resolved_pdf_url"] = final_url
         record["source"]["canonical_url"] = final_url
         record["provenance"]["content_sources"].append("remote-pdf")
-        return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode)
+        return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode, page_chunks=pages)
 
     if input_kind == "generic_paper_url":
         html, content_type, final_url = http_get(source)
         if content_type == "application/pdf":
-            text, resolved_final_url = extract_text_from_downloaded_pdf(final_url)
+            text, resolved_final_url, pages = extract_text_from_downloaded_pdf(final_url)
             record["source"]["resolved_pdf_url"] = resolved_final_url
             record["source"]["canonical_url"] = resolved_final_url
             record["provenance"]["content_sources"].append("remote-pdf")
-            return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode)
+            return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode, page_chunks=pages)
 
         assert isinstance(html, str)
         pdf_url, html_title = resolve_pdf_from_html(final_url, html)
@@ -824,10 +867,10 @@ def normalize_generic_pdf_source(source: str, *, input_kind: str, fulltext_mode:
             record["provenance"]["metadata_sources"].append("page-metadata")
         if pdf_url:
             record["source"]["resolved_pdf_url"] = pdf_url
-            text, resolved_final_url = extract_text_from_downloaded_pdf(pdf_url)
+            text, resolved_final_url, pages = extract_text_from_downloaded_pdf(pdf_url)
             record["source"]["resolved_pdf_url"] = resolved_final_url
             record["provenance"]["content_sources"].append("resolved-page-pdf")
-            return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode)
+            return enrich_from_text_record(record, text, fulltext_mode=fulltext_mode, page_chunks=pages)
 
         record["status"] = "unresolved"
         record["provenance"]["warnings"].append("The page did not expose a PDF link.")
@@ -903,13 +946,15 @@ def normalize_arxiv_source(source: str, *, input_kind: str, lang: str, fulltext_
 
     if alphaxiv_markdown:
         record["provenance"]["content_sources"].append("alphaxiv-markdown")
-        enrich_from_text_record(record, alphaxiv_markdown, fulltext_mode="prefer")
+        synthetic_page = [{"anchor": "p1", "page_start": 1, "page_end": 1, "label": "p1", "excerpt": alphaxiv_markdown[:280], "text": alphaxiv_markdown}]
+        enrich_from_text_record(record, alphaxiv_markdown, fulltext_mode="prefer", page_chunks=synthetic_page)
     else:
         summary, problem, method, results = summarize_from_abstract(record["bibliography"]["abstract"])
         record["content"]["summary"] = record["content"]["summary"] or summary
         record["content"]["problem"] = record["content"]["problem"] or problem
         record["content"]["method"] = record["content"]["method"] or method
         record["content"]["results"] = record["content"]["results"] or results
+        record["content"]["page_chunks"] = []
         record["content"]["full_text_markdown"] = None
         record["content"]["full_text_included"] = False
         if record["bibliography"]["title"] and record["content"]["summary"]:
