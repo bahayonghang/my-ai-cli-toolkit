@@ -1,4 +1,4 @@
-# tech-design-doc
+# Tech Design Doc
 
 生成结构化的技术设计文档。
 

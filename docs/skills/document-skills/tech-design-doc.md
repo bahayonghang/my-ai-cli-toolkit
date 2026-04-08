@@ -1,5 +1,7 @@
 # Technical Design Document Skill
 
+Generate technical design documents that are concrete enough to guide implementation, review architecture tradeoffs, and capture decisions for future maintainers.
+
 ## When to Use
 
 - Designing a new feature or system

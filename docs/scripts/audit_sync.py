@@ -32,7 +32,9 @@ def source_skill_names(category: str) -> set[str]:
     return {
         entry.name
         for entry in category_dir.iterdir()
-        if entry.is_dir() and not entry.name.startswith(".")
+        if entry.is_dir()
+        and not entry.name.startswith(".")
+        and (entry / "SKILL.md").is_file()
     }
 
 
@@ -47,8 +49,23 @@ def docs_skill_names(root: Path, category: str) -> set[str]:
     }
 
 
+def docs_category_names(root: Path) -> set[str]:
+    if not root.exists():
+        return set()
+    return {
+        entry.name
+        for entry in root.iterdir()
+        if entry.is_dir() and not entry.name.startswith(".")
+    }
+
+
 def compare_skill_docs(root: Path, label: str) -> list[str]:
     issues: list[str] = []
+    source_categories = set(skill_categories())
+    docs_categories = docs_category_names(root)
+
+    for category in sorted(docs_categories - source_categories):
+        issues.append(f"[{label}] extra doc category without source category: {category}/")
 
     for category in skill_categories():
         source = source_skill_names(category)
@@ -109,6 +126,7 @@ def stale_reference_checks() -> list[str]:
         "src/install.py": "stale CLI install path",
         "install.sh": "stale shell installer reference",
         "install.ps1": "stale shell installer reference",
+        "skill-meta-skills": "stale skills category name (current: meta-skills)",
     }
 
     issues: list[str] = []

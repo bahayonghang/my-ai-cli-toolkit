@@ -73,9 +73,11 @@ The first-party catalog under `content/skills/` currently uses these categories:
 - `diagram-skills`
 - `document-skills`
 - `git-github-skills`
+- `learning-skills`
 - `media-skills`
-- `skill-meta-skills`
+- `meta-skills`
 - `tech-stack-skills`
+- `work-skills`
 - `workflow-skills`
 
 For the browsable catalog, use the docs site or MCS.

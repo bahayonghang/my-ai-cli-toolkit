@@ -73,9 +73,11 @@ just doc
 - `diagram-skills`
 - `document-skills`
 - `git-github-skills`
+- `learning-skills`
 - `media-skills`
-- `skill-meta-skills`
+- `meta-skills`
 - `tech-stack-skills`
+- `work-skills`
 - `workflow-skills`
 
 完整可浏览目录请使用文档站点或 MCS。

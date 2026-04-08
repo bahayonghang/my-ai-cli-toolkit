@@ -3,7 +3,7 @@
 # Edit this list to customize which skills are installed by default.
 
 categories = [
-    "skill-meta-skills",
+    "meta-skills",
     "tech-stack-skills",
     "workflow-skills",
     "git-github-skills",

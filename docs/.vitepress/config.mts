@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 import {
-  generateSidebarByDir,
+  generateSkillsSidebar,
   SIDEBAR_OPTIONS_EN,
   SIDEBAR_OPTIONS_ZH,
 } from './sidebar.mts'
@@ -57,6 +57,12 @@ export default defineConfig({
               ],
             },
             {
+              text: 'Workflow Guides',
+              items: [
+                { text: 'Paper Workflows', link: '/guide/paper-workflows' },
+              ],
+            },
+            {
               text: 'Legacy',
               items: [
                 { text: 'TUI Alias', link: '/guide/tui' },
@@ -66,11 +72,7 @@ export default defineConfig({
               ],
             },
           ],
-          '/skills/': generateSidebarByDir(
-            'docs/skills',
-            '/skills/',
-            SIDEBAR_OPTIONS_EN,
-          ),
+          '/skills/': generateSkillsSidebar('en', '/skills/', SIDEBAR_OPTIONS_EN),
           '/agents/': [
             {
               text: 'Agents',
@@ -154,6 +156,12 @@ export default defineConfig({
               ],
             },
             {
+              text: '工作流指南',
+              items: [
+                { text: '论文工作流', link: '/zh/guide/paper-workflows' },
+              ],
+            },
+            {
               text: '兼容与历史',
               items: [
                 { text: 'TUI 别名', link: '/zh/guide/tui' },
@@ -163,8 +171,8 @@ export default defineConfig({
               ],
             },
           ],
-          '/zh/skills/': generateSidebarByDir(
-            'docs/zh/skills',
+          '/zh/skills/': generateSkillsSidebar(
+            'zh',
             '/zh/skills/',
             SIDEBAR_OPTIONS_ZH,
           ),

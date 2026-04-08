@@ -92,3 +92,55 @@ blockquote {
 .dark .VPNavBar {
   background-color: rgba(30, 30, 32, 0.8);
 }
+
+.skills-catalog {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.skills-catalog-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.skills-catalog-header h2 {
+  margin-bottom: 0.25rem;
+}
+
+.skills-catalog-header p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+}
+
+.skills-catalog-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.skills-catalog-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  background: var(--vp-c-bg-soft);
+}
+
+.skills-catalog-card h3 {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.skills-catalog-card p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+}
+
+.skills-catalog-link {
+  font-weight: 600;
+}

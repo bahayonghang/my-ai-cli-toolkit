@@ -15,8 +15,9 @@ content/skills/
 |-- git-github-skills/
 |-- learning-skills/
 |-- media-skills/
-|-- skill-meta-skills/
+|-- meta-skills/
 |-- tech-stack-skills/
+|-- work-skills/
 |-- workflow-skills/
 |-- CLAUDE.md
 |-- README.md

@@ -1,6 +1,6 @@
 # Gemini Image Generation
 
-Use this skill when user expresses intent to generate images (e.g., "draw a...", "generate an image...", "create a picture...").
+Use this skill when the task is to generate or transform images through the Gemini image API. It covers text-to-image, image-to-image, and multi-reference prompting, with the minimum configuration needed to return a usable image URL.
 
 ## Steps
 

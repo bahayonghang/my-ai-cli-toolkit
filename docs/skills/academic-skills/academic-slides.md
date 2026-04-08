@@ -1,6 +1,6 @@
 # Academic Slides
 
-Generate/edit/compile/review academic slides. Supports **Typst Touying** and **LaTeX Beamer**.
+Generate, edit, compile, and review academic slide decks with a single workflow surface. The skill supports both **Typst Touying** and **LaTeX Beamer**, so it works for fast iteration as well as more traditional conference-slide pipelines.
 
 ## Workflows
 

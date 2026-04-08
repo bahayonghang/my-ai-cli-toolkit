@@ -1,6 +1,6 @@
 # LSP Manager
 
-自动检测项目编程语言并配置 Language Server Protocol (LSP) 支持,为 Claude 提供实时代码智能、诊断和导航能力。
+Detect project languages, configure the right Language Server Protocol (LSP) setup, and troubleshoot server/runtime issues so Claude has reliable diagnostics, navigation, and code intelligence.
 
 ## 核心能力
 

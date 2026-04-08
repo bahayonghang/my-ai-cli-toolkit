@@ -1,6 +1,6 @@
-# academic-slides
+# Academic Slides
 
-学术幻灯片生成，支持双引擎：**Typst Touying** 和 **LaTeX Beamer**。
+统一处理学术幻灯片的生成、编辑、编译与审查，兼容 **Typst Touying** 和 **LaTeX Beamer** 两条主路线，适合快速迭代也适合正式投稿或答辩场景。
 
 ## 概述
 

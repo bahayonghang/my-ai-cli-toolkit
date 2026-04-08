@@ -1,22 +1,8 @@
 # Skills Overview
 
-This section tracks the installable catalog under `content/skills/`.
+This section tracks the installable catalog under `content/skills/`. Every live skill listed below links to its detail page, and the sidebar mirrors the same catalog.
 
-## Categories currently documented
-
-| Category | What it covers |
-|----------|----------------|
-| `academic-skills` | paper lookup, `paper-workbench`, reading, bibliography search, slides, replication, and paper analysis workflows |
-| `ai-llm-skills` | Codex CLI, Codex companion runtime, Gemini CLI, and Gemini image workflows |
-| `diagram-skills` | Excalidraw and Mermaid diagram authoring |
-| `document-skills` | bid writing, visual cards, document generation, Typst, Touying, screenshots, and themed artifacts |
-| `git-github-skills` | GitHub review and repository workflows |
-| `learning-skills` | concept anatomy, plain rewriting, rank reduction, roundtables, and word study workflows |
-| `media-skills` | article covers and media download |
-| `skill-meta-skills` | MCP-to-skill conversion and skill catalog mapping |
-| `tech-stack-skills` | Slint, LSP, Rust CLI/TUI, and uv |
-| `work-skills` | daily reports, project rollups, and end-of-session wrap-ups |
-| `workflow-skills` | planning, architecture improvement, memory, and code auditing |
+<SkillsCatalog locale="en" />
 
 ## Notes
 

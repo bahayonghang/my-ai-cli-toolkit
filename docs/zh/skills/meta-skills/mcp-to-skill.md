@@ -1,4 +1,4 @@
-# mcp-to-skill
+# MCP to Skill
 
 将 MCP (Model Context Protocol) 服务器转换为 Claude Code 技能。
 
