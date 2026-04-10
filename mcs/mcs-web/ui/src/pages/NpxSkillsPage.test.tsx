@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { ThemeProvider } from "@mui/material";
 import { renderToStaticMarkup } from "react-dom/server";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import NpxSkillsPage from "./NpxSkillsPage";
+import { MemoryRouter, Route, Routes, Navigate } from "react-router-dom";
+import NpxSkillsLayout from "./NpxSkillsLayout";
+import NpxDiscoverPage from "./NpxDiscoverPage";
+import NpxManagePage from "./NpxManagePage";
 import { lightTheme } from "@/theme";
 import type {
   InstallTarget,
@@ -83,36 +85,38 @@ vi.mock("@/hooks/useInstallTarget", () => ({
   useInstallTarget: () => installTargetState,
 }));
 
-function renderPage() {
+function renderPage(initialEntry = "/registry?workspace=claude") {
   return renderToStaticMarkup(
     <ThemeProvider theme={lightTheme}>
-      <MemoryRouter initialEntries={["/registry?workspace=claude"]}>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <Routes>
-          <Route path="/registry" element={<NpxSkillsPage />} />
+          <Route path="/registry" element={<NpxSkillsLayout />}>
+            <Route index element={<Navigate to="discover" replace />} />
+            <Route path="discover" element={<NpxDiscoverPage />} />
+            <Route path="manage" element={<NpxManagePage />} />
+          </Route>
         </Routes>
       </MemoryRouter>
     </ThemeProvider>
   );
 }
 
-describe("NpxSkillsPage", () => {
-  it("renders the top-level registry workspace and core sections", () => {
+describe("NpxSkillsLayout", () => {
+  it("renders the registry workspace with navigation pills", () => {
     installTargetState.resolutionError = null;
 
-    const markup = renderPage();
+    const markup = renderPage("/registry/discover?workspace=claude");
 
     expect(markup).toContain("Registry");
-    expect(markup).toContain("Install from Repo");
     expect(markup).toContain("Discover");
-    expect(markup).toContain("Installed");
-    expect(markup).toContain("Maintenance");
+    expect(markup).toContain("Manage");
   });
 
   it("renders a blocking alert when the install target cannot be resolved", () => {
     installTargetState.resolutionError = "Project target is invalid";
     installTargetState.resolvedTarget = null;
 
-    const markup = renderPage();
+    const markup = renderPage("/registry/discover?workspace=claude");
 
     expect(markup).toContain("Project target is invalid");
     expect(markup).toContain("Registry");

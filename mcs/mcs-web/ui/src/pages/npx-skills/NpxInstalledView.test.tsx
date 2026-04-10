@@ -20,10 +20,10 @@ function installedItem(
     group_id: "engineering",
     group_label: "Engineering",
     group_order: 10,
-    category_id: "tools",
-    category_slug: "dev-tools",
-    category_label: "Tools",
-    category_order: 20,
+    category_id: "engineering",
+    category_slug: "engineering",
+    category_label: "Engineering",
+    category_order: 10,
     tags: ["search"],
     description: `${name} description`,
     source: {
@@ -34,7 +34,7 @@ function installedItem(
     catalog_match: {
       id,
       name,
-      category_label: "Tools",
+      category_label: "Engineering",
     },
     tracking: {
       kind: "tracked",

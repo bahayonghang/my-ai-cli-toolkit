@@ -1354,9 +1354,9 @@ mod tests {
             group_id: "engineering".into(),
             group_label: "Engineering".into(),
             group_order: 10,
-            category_id: "tools".into(),
-            category_slug: "dev-tools".into(),
-            category_label: "Tools".into(),
+            category_id: "design".into(),
+            category_slug: "design".into(),
+            category_label: "Design".into(),
             category_order: 20,
             tags: vec!["tag".into()],
             description: Some("Find skills quickly".into()),
@@ -1385,8 +1385,7 @@ mod tests {
             },
         };
         assert!(installed_item_matches(&item, "engineering"));
-        assert!(installed_item_matches(&item, "tools"));
-        assert!(installed_item_matches(&item, "dev-tools"));
+        assert!(installed_item_matches(&item, "design"));
         assert!(installed_item_matches(&item, "vercel-labs/skills"));
     }
 
@@ -1509,7 +1508,7 @@ mod tests {
             &NpxSkillsInstalledQuery::default()
         ));
         assert!(installed_query_is_filtered(&NpxSkillsInstalledQuery {
-            category_id: Some("dev-tools".into()),
+            category_id: Some("engineering".into()),
             ..NpxSkillsInstalledQuery::default()
         }));
     }

@@ -23,10 +23,10 @@ function catalogItem(
     group_id: overrides.group_id ?? "engineering",
     group_label: overrides.group_label ?? "Engineering",
     group_order: overrides.group_order ?? 10,
-    category_id: overrides.category_id ?? "tools",
-    category_slug: overrides.category_slug ?? "dev-tools",
-    category_label: overrides.category_label ?? "Tools",
-    category_order: overrides.category_order ?? 20,
+    category_id: overrides.category_id ?? "engineering",
+    category_slug: overrides.category_slug ?? "engineering",
+    category_label: overrides.category_label ?? "Engineering",
+    category_order: overrides.category_order ?? 10,
     tags: overrides.tags ?? ["search"],
     install_kind: overrides.install_kind ?? "skills_cli",
     install_provider: overrides.install_provider ?? "vercel",
@@ -50,10 +50,10 @@ function installedItem(
     group_id: overrides.group_id ?? "engineering",
     group_label: overrides.group_label ?? "Engineering",
     group_order: overrides.group_order ?? 10,
-    category_id: overrides.category_id ?? "tools",
-    category_slug: overrides.category_slug ?? "dev-tools",
-    category_label: overrides.category_label ?? "Tools",
-    category_order: overrides.category_order ?? 20,
+    category_id: overrides.category_id ?? "engineering",
+    category_slug: overrides.category_slug ?? "engineering",
+    category_label: overrides.category_label ?? "Engineering",
+    category_order: overrides.category_order ?? 10,
     tags: overrides.tags ?? ["search"],
     description: overrides.description ?? "Search and discovery helpers",
     source:
@@ -66,7 +66,7 @@ function installedItem(
       overrides.catalog_match ?? {
         id: "find-skills",
         name: "Find Skills",
-        category_label: "Tools",
+        category_label: "Engineering",
       },
     tracking:
       overrides.tracking ?? {
@@ -114,7 +114,7 @@ describe("npx-skills utils", () => {
         id: "theme-factory",
         name: "Theme Factory",
         category_id: "design",
-        category_slug: "ui-ux",
+        category_slug: "design",
         category_label: "Design",
         tags: ["branding"],
       }),
@@ -131,7 +131,7 @@ describe("npx-skills utils", () => {
     expect(
       filterCatalogItems(items, {
         search: "",
-        categoryId: "tools",
+        categoryId: "engineering",
         installedOnly: true,
       }).map((item) => item.id),
     ).toEqual(["find-skills"]);
@@ -183,22 +183,22 @@ describe("npx-skills utils", () => {
 
   it("aggregates taxonomy counts without linear category scans", () => {
     const groups = buildTaxonomyGroups([
-      catalogItem({ id: "a", category_id: "tools", category_label: "Tools" }),
-      catalogItem({ id: "b", category_id: "tools", category_label: "Tools" }),
+      catalogItem({ id: "a" }),
+      catalogItem({ id: "b" }),
       catalogItem({
         id: "c",
         category_id: "design",
-        category_slug: "ui-ux",
+        category_slug: "design",
         category_label: "Design",
         category_order: 5,
       }),
     ]);
 
     expect(groups).toHaveLength(1);
-    expect(groups[0]?.categories[0]?.slug).toBe("ui-ux");
+    expect(groups[0]?.categories[0]?.slug).toBe("design");
     expect(groups[0]?.categories.map((category) => [category.id, category.count])).toEqual([
       ["design", 1],
-      ["tools", 2],
+      ["engineering", 2],
     ]);
   });
 

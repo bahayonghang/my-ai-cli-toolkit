@@ -619,15 +619,15 @@ id = "engineering"
 label = "Engineering"
 
 [[categories]]
-id = "frontend"
+id = "engineering"
 group_id = "engineering"
-label = "Frontend"
+label = "Engineering"
 
 [[skills]]
 id = "find-skills"
 name = "find-skills"
 description = "Find skills quickly"
-category_id = "frontend"
+category_id = "engineering"
 tags = ["search"]
 
 [skills.install]
@@ -649,22 +649,22 @@ label = "Engineering"
 order = 10
 
 [[categories]]
-id = "frontend"
+id = "engineering"
 group_id = "engineering"
-label = "Frontend"
+label = "Engineering"
 order = 10
-file = "categories/frontend.toml"
+file = "categories/engineering.toml"
 
 [[categories]]
-id = "dev-tools"
+id = "design"
 group_id = "engineering"
-label = "Developer Tools"
+label = "Design"
 order = 20
-file = "categories/dev-tools.toml"
+file = "categories/design.toml"
 "#
     }
 
-    fn sample_frontend_fragment() -> &'static str {
+    fn sample_engineering_fragment() -> &'static str {
         r#"
 [[skills]]
 id = "find-skills"
@@ -684,7 +684,7 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
 "#
     }
 
-    fn sample_dev_tools_fragment() -> &'static str {
+    fn sample_design_fragment() -> &'static str {
         r#"
 [[skills]]
 id = "zeta-tool"
@@ -735,8 +735,8 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
             .unwrap();
         assert_eq!(resolved.len(), 1);
         assert_eq!(resolved[0].group_id, "engineering");
-        assert_eq!(resolved[0].category_id, "frontend");
-        assert_eq!(resolved[0].category_slug, "frontend");
+        assert_eq!(resolved[0].category_id, "engineering");
+        assert_eq!(resolved[0].category_slug, "engineering");
         assert_eq!(resolved[0].package_ref, "vercel-labs/skills");
         assert_eq!(resolved[0].skill_flag.as_deref(), Some("find-skills"));
     }
@@ -756,7 +756,7 @@ label = "Engineering"
 id = "design_systems"
 group_id = "engineering"
 label = "Design Systems"
-file = "categories/ui-ux.toml"
+file = "categories/design.toml"
 
 [[skills]]
 id = "design-dna"
@@ -774,7 +774,7 @@ package_ref = "vercel-labs/design"
             .resolved_skills_for_kind(EXTERNAL_SKILLS_KIND_SKILLS_CLI)
             .unwrap();
         assert_eq!(resolved[0].category_id, "design_systems");
-        assert_eq!(resolved[0].category_slug, "ui-ux");
+        assert_eq!(resolved[0].category_slug, "design");
     }
 
     #[test]
@@ -789,14 +789,14 @@ id = "engineering"
 label = "Engineering"
 
 [[categories]]
-id = "frontend"
+id = "engineering"
 group_id = "engineering"
-label = "Frontend"
+label = "Engineering"
 
 [[skills]]
 id = "duplicate"
 name = "duplicate"
-category_id = "frontend"
+category_id = "engineering"
 [skills.install]
 kind = "skills_cli"
 provider = "vercel"
@@ -805,7 +805,7 @@ package_ref = "a/b"
 [[skills]]
 id = "duplicate"
 name = "duplicate-2"
-category_id = "frontend"
+category_id = "engineering"
 [skills.install]
 kind = "skills_cli"
 provider = "vercel"
@@ -861,14 +861,14 @@ id = "engineering"
 label = "Engineering"
 
 [[categories]]
-id = "frontend"
+id = "engineering"
 group_id = "engineering"
-label = "Frontend"
+label = "Engineering"
 
 [[skills]]
 id = "find-skills"
 name = "find-skills"
-category_id = "frontend"
+category_id = "engineering"
 [skills.install]
 kind = "skills_cli"
 provider = "unknown"
@@ -888,8 +888,8 @@ package_ref = "vercel-labs/skills"
             &project_root,
             sample_split_index(),
             &[
-                ("categories/frontend.toml", sample_frontend_fragment()),
-                ("categories/dev-tools.toml", sample_dev_tools_fragment()),
+                ("categories/engineering.toml", sample_engineering_fragment()),
+                ("categories/design.toml", sample_design_fragment()),
             ],
         );
 
@@ -907,9 +907,9 @@ package_ref = "vercel-labs/skills"
             registry
                 .categories
                 .iter()
-                .find(|category| category.id == "frontend")
+                .find(|category| category.id == "engineering")
                 .and_then(|category| category.file.as_deref()),
-            Some("categories/frontend.toml")
+            Some("categories/engineering.toml")
         );
 
         let _ = std::fs::remove_dir_all(project_root);
@@ -922,7 +922,7 @@ package_ref = "vercel-labs/skills"
 
         let error = load_external_skills(&project_root).unwrap_err();
         assert!(error.to_string().contains("references missing file"));
-        assert!(error.to_string().contains("categories/frontend.toml"));
+        assert!(error.to_string().contains("categories/engineering.toml"));
 
         let _ = std::fs::remove_dir_all(project_root);
     }
@@ -941,18 +941,18 @@ id = "engineering"
 label = "Engineering"
 
 [[categories]]
-id = "frontend"
+id = "engineering"
 group_id = "engineering"
-label = "Frontend"
+label = "Engineering"
 file = "categories/shared.toml"
 
 [[categories]]
-id = "dev-tools"
+id = "design"
 group_id = "engineering"
-label = "Developer Tools"
+label = "Design"
 file = "categories/shared.toml"
 "#,
-            &[("categories/shared.toml", sample_frontend_fragment())],
+            &[("categories/shared.toml", sample_engineering_fragment())],
         );
 
         let error = load_external_skills(&project_root).unwrap_err();
@@ -973,17 +973,17 @@ file = "categories/shared.toml"
             sample_split_index(),
             &[
                 (
-                    "categories/frontend.toml",
+                    "categories/engineering.toml",
                     r#"
 [[skills]]
 id = "shared-skill"
 name = "shared-skill"
-tags = ["frontend"]
+tags = ["engineering"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/shared", skill_flag = "shared-skill" }
 "#,
                 ),
                 (
-                    "categories/dev-tools.toml",
+                    "categories/design.toml",
                     r#"
 [[skills]]
 id = "shared-skill"
@@ -1001,8 +1001,8 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
                 .to_string()
                 .contains("Duplicate external skills entry id 'shared-skill'")
         );
-        assert!(error.to_string().contains("categories/frontend.toml"));
-        assert!(error.to_string().contains("categories/dev-tools.toml"));
+        assert!(error.to_string().contains("categories/engineering.toml"));
+        assert!(error.to_string().contains("categories/design.toml"));
 
         let _ = std::fs::remove_dir_all(project_root);
     }
@@ -1014,8 +1014,8 @@ install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs
             &project_root,
             sample_split_index(),
             &[
-                ("categories/frontend.toml", sample_frontend_fragment()),
-                ("categories/dev-tools.toml", sample_dev_tools_fragment()),
+                ("categories/engineering.toml", sample_engineering_fragment()),
+                ("categories/design.toml", sample_design_fragment()),
                 (
                     "categories/extra.toml",
                     r#"

@@ -209,6 +209,8 @@ export const enNpxSkillsMessages = {
   "npxSkills.installedAt": "Installed: {value}",
   "npxSkills.updatedAt": "Updated: {value}",
   "npxSkills.jobProgressLabel": "Job progress",
+  "npxSkills.navDiscover": "Discover",
+  "npxSkills.navManage": "Manage",
 } as const;
 
 export const zhNpxSkillsMessages: Record<
@@ -412,4 +414,6 @@ export const zhNpxSkillsMessages: Record<
   "npxSkills.installedAt": "安装时间：{value}",
   "npxSkills.updatedAt": "更新时间：{value}",
   "npxSkills.jobProgressLabel": "任务进度",
+  "npxSkills.navDiscover": "发现",
+  "npxSkills.navManage": "管理",
 };
