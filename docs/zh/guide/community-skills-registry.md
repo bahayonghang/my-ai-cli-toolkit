@@ -40,25 +40,40 @@ MCS 会通过 `mcs-core` 读取这份注册表，并在 Web API 中暴露 extern
 
 ## 注册表示例
 
+当前整理后的 taxonomy 只保留 5 个一级分类：
+
+- `engineering`
+- `design`
+- `research`
+- `knowledge`
+- `productivity`
+
+像 `python`、`database`、`translation`、`obsidian`、`video` 这类更细的主题，默认应通过 `tags` 表达，而不是继续拆成独立 category。
+
 ```toml
 # index.toml
 [schema]
 version = 2
 
-[[categories]]
-id = "frontend"
-group_id = "engineering"
-label = "Frontend"
+[[groups]]
+id = "engineering"
+label = "Engineering"
 order = 10
-file = "categories/frontend.toml"
+
+[[categories]]
+id = "engineering"
+group_id = "engineering"
+label = "Engineering"
+order = 10
+file = "categories/engineering.toml"
 ```
 
 ```toml
-# categories/frontend.toml
+# categories/engineering.toml
 [[skills]]
 id = "find-skills"
 name = "find-skills"
-tags = ["discovery", "registry"]
+tags = ["discovery", "registry", "workflow"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/skills", skill_flag = "find-skills" }
 ```
 

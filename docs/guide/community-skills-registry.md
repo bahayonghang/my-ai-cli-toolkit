@@ -40,25 +40,40 @@ Use external skills when:
 
 ## Registry examples
 
+The current curated taxonomy keeps five top-level categories:
+
+- `engineering`
+- `design`
+- `research`
+- `knowledge`
+- `productivity`
+
+Narrower themes such as `python`, `database`, `translation`, `obsidian`, or `video` should usually live in `tags` instead of becoming standalone categories.
+
 ```toml
 # index.toml
 [schema]
 version = 2
 
-[[categories]]
-id = "frontend"
-group_id = "engineering"
-label = "Frontend"
+[[groups]]
+id = "engineering"
+label = "Engineering"
 order = 10
-file = "categories/frontend.toml"
+
+[[categories]]
+id = "engineering"
+group_id = "engineering"
+label = "Engineering"
+order = 10
+file = "categories/engineering.toml"
 ```
 
 ```toml
-# categories/frontend.toml
+# categories/engineering.toml
 [[skills]]
 id = "find-skills"
 name = "find-skills"
-tags = ["discovery", "registry"]
+tags = ["discovery", "registry", "workflow"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/skills", skill_flag = "find-skills" }
 ```
 

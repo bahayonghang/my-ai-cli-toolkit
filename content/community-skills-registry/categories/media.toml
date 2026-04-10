@@ -1,8 +1,0 @@
-[[skills]]
-id = "remotion-best-practices"
-name = "remotion-best-practices"
-description = "Remotion 视频创建最佳实践（React 编程视频的动画/音频/资源管理）"
-stars = 3
-usage = "安装后在 Remotion 项目中自动生效，指导视频编程开发"
-tags = ["video", "react", "remotion"]
-install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/remotion-dev/skills", skill_flag = "remotion-best-practices" }

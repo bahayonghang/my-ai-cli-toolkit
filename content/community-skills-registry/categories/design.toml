@@ -1,4 +1,49 @@
 [[skills]]
+id = "vercel-react-best-practices"
+name = "vercel-react-best-practices"
+description = "Vercel React 和 Next.js 性能优化最佳实践（57 条规则, 8 大类别）"
+stars = 4
+usage = "安装后在 React/Next.js 项目中自动生效，提供组件设计与性能优化指导"
+tags = ["frontend", "react", "nextjs", "performance"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/vercel-labs/agent-skills", skill_flag = "vercel-react-best-practices" }
+
+[[skills]]
+id = "vue-best-practices"
+name = "vue-best-practices"
+description = "Vue 3 开发最佳实践（Composition API / 响应式 / 组件设计指南）"
+stars = 3
+usage = "安装后在 Vue 3 项目中自动生效，提供 Composition API 开发指导"
+tags = ["vue", "frontend"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/hyf0/vue-skills", skill_flag = "vue-best-practices" }
+
+[[skills]]
+id = "vuejs-ai-skills"
+name = "vuejs-ai-skills"
+description = "Vue.js 官方 AI 技能集（Vue 核心团队维护的 AI 辅助开发技能）"
+stars = 4
+usage = "安装后在 Vue.js 项目中自动生效，提供官方推荐的开发实践"
+tags = ["vue", "frontend", "official"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "vuejs-ai/skills" }
+
+[[skills]]
+id = "frontend-slides"
+name = "frontend-slides"
+description = "创建精美动画丰富的 HTML 演示文稿，支持 PPT 转换（12 种风格预设，零依赖单文件输出）"
+stars = 5
+usage = "npx skills add zarazhangrui/frontend-slides -g -y"
+tags = ["frontend", "slides", "presentation", "html", "pptx"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "zarazhangrui/frontend-slides" }
+
+[[skills]]
+id = "remotion-best-practices"
+name = "remotion-best-practices"
+description = "Remotion 视频创建最佳实践（React 编程视频的动画/音频/资源管理）"
+stars = 3
+usage = "安装后在 Remotion 项目中自动生效，指导视频编程开发"
+tags = ["video", "react", "remotion"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "https://github.com/remotion-dev/skills", skill_flag = "remotion-best-practices" }
+
+[[skills]]
 id = "ui-ux-pro-max"
 name = "ui-ux-pro-max"
 description = "UI/UX Pro Max 设计专家 — 60+ 审美风格 / 百套配色 / 企业页面向导"
@@ -13,7 +58,7 @@ name = "better-icons"
 description = "Better Icons — 图标搜索与管理专家（支持 150+ 图标集 / 20万+ 图标 / 自动同步项目）"
 stars = 5
 usage = "安装后通过自然语言搜索图标，支持 React/Vue/SVG 等多种框架导出并自动同步到项目"
-tags = ["icons", "design", "assets"]
+tags = ["icons", "design", "assets", "visual"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "better-auth/better-icons" }
 
 [[skills]]
@@ -40,7 +85,7 @@ name = "full-output-enforcement"
 description = "Taste-Skill (Full Output) — 强制完整代码输出，拒绝任何占位符或简化，确保生成的代码可直接使用"
 stars = 5
 usage = "安装后自动生效，确保 AI 在生成前端代码时不会跳过细节，提供 100% 完整且立即可用的实现"
-tags = ["reliability", "frontend", "code-quality"]
+tags = ["reliability", "frontend", "design", "code-quality"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill", skill_flag = "full-output-enforcement" }
 
 [[skills]]
@@ -58,7 +103,7 @@ name = "redesign-existing-projects"
 description = "Taste-Skill (Project Redesign) — 项目重构与重设计专家，擅长将老旧或平庸的界面升级为现代高端风格"
 stars = 5
 usage = "安装后对现有项目进行扫描，提供美学升级建议并辅助执行重构工作"
-tags = ["redesign", "modernization", "refactor"]
+tags = ["design", "redesign", "modernization", "refactor"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill", skill_flag = "redesign-existing-projects" }
 
 [[skills]]
@@ -67,7 +112,7 @@ name = "drawio-skills"
 description = "Draw.io 图表技能包（流程图、架构图与可视化编辑辅助）"
 stars = 4
 usage = "安装后可为 draw.io 图表创建、编辑与可视化建模提供辅助能力"
-tags = ["drawio", "diagram", "visualization"]
+tags = ["design", "drawio", "diagram", "visual", "visualization"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/drawio-skills" }
 
 [[skills]]
@@ -76,5 +121,5 @@ name = "design-dna"
 description = "Design DNA — 将参考 UI（图片、截图、网页链接）转换为量化的 Design DNA JSON（包含 Token、定性样式和视觉特效），从而生成风格匹配的 UI 界面"
 stars = 5
 usage = "提供参考 UI 即可提取设计基因，用于后续准确还原项目设计语言与快速生成对应界面的代码"
-tags = ["design", "ui", "dna", "vision", "generator"]
+tags = ["design", "ui", "dna", "vision", "generator", "visual"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "zanwei/design-dna" }
