@@ -89,6 +89,10 @@ test("quick install starts a job and renders progress", async ({ page }) => {
   });
 
   await expect.poll(() => api.requests.installJobs.length).toBe(1);
+  await expect(page.getByRole("progressbar", { name: /install job progress/i })).toBeVisible();
+  await expect(page.getByText(/1\/1 complete|已完成 1\/1/i).first()).toBeVisible();
+  await expect(page.getByText(/1 succeeded|成功 1/i).first()).toBeVisible();
+  await expect(page.getByRole("alert").getByText(/installed 1 items|已安装 1 个条目/i)).toBeVisible();
   expect(api.requests.installJobs[0]).toEqual({
     items: [
       {

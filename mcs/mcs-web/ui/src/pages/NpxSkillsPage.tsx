@@ -1282,6 +1282,17 @@ export default function NpxSkillsPage() {
           openInstallSelectedDialog={openInstallSelectedDialog}
           selectedInstallPayload={selectedInstallPayload}
           jobRunning={jobRunning}
+          jobOperation={jobOperation}
+          jobStatusMessage={jobStatusMessage}
+          jobResultStatus={jobResultStatus}
+          jobItems={jobItems}
+          jobCompleted={jobCompleted}
+          jobTotal={jobTotal}
+          jobSuccessCount={jobSuccessCount}
+          jobFailureCount={jobFailureCount}
+          jobPercent={jobPercent}
+          jobId={jobId}
+          streamDisconnected={streamDisconnected}
           catalogGroups={catalogGroups}
           selectedCatalogCategoryId={selectedCatalogCategoryId}
           setSelectedCatalogCategoryId={setSelectedCatalogCategoryId}
@@ -1475,9 +1486,9 @@ export default function NpxSkillsPage() {
               options={COMMON_AGENTS}
               value={agents}
               onChange={(_, next) => updateAgents(next)}
-              renderTags={(value, getTagProps) =>
+              renderValue={(value, getItemProps) =>
                 value.map((option, index) => {
-                  const { key, ...rest } = getTagProps({ index });
+                  const { key, ...rest } = getItemProps({ index });
                   return (
                     <Chip
                       key={key}

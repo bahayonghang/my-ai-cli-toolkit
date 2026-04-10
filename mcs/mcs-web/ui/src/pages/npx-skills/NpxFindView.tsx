@@ -30,11 +30,12 @@ import { SelectableSurfaceCard } from "@/components/common/SelectableSurfaceCard
 import type {
   NpxSkillsCatalogItemDto,
   NpxSkillsInstallItemInput,
+  NpxSkillsOperation,
   NpxSkillsPackagePreviewDto,
 } from "@/types";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
-import type { TaxonomyGroupSummary, TranslationFn } from "./types";
-import { buildInstallKey, formatCategoryLabel, installStatusColor } from "./utils";
+import type { JobItemState, RunResultStatus, TaxonomyGroupSummary, TranslationFn } from "./types";
+import { buildInstallKey, formatCategoryLabel, installStatusColor, operationLabel } from "./utils";
 import NpxSkillsFilters from "./NpxSkillsFilters";
 
 export interface NpxFindViewProps {
@@ -48,6 +49,17 @@ export interface NpxFindViewProps {
   openInstallSelectedDialog: () => void;
   selectedInstallPayload: NpxSkillsInstallItemInput[];
   jobRunning: boolean;
+  jobOperation: NpxSkillsOperation | null;
+  jobStatusMessage: string | null;
+  jobResultStatus: RunResultStatus;
+  jobItems: JobItemState[];
+  jobCompleted: number;
+  jobTotal: number;
+  jobSuccessCount: number;
+  jobFailureCount: number;
+  jobPercent: number;
+  jobId: string | null;
+  streamDisconnected: boolean;
   catalogGroups: TaxonomyGroupSummary[];
   selectedCatalogCategoryId: string | null;
   setSelectedCatalogCategoryId: (value: string | null) => void;
@@ -83,6 +95,17 @@ export default function NpxFindView({
   openInstallSelectedDialog,
   selectedInstallPayload,
   jobRunning,
+  jobOperation,
+  jobStatusMessage,
+  jobResultStatus,
+  jobItems,
+  jobCompleted,
+  jobTotal,
+  jobSuccessCount,
+  jobFailureCount,
+  jobPercent,
+  jobId,
+  streamDisconnected,
   catalogGroups,
   selectedCatalogCategoryId,
   setSelectedCatalogCategoryId,
@@ -113,6 +136,31 @@ export default function NpxFindView({
     previewSupportsSelection &&
     previewedSkills.length > 0 &&
     previewSelectionCount === previewedSkills.length;
+  const runningItem = jobItems.find((item) => item.status === "running") ?? null;
+  const showJobProgress = jobRunning || jobTotal > 0 || jobResultStatus !== "idle";
+  const progressValue = Math.max(0, Math.min(100, jobPercent));
+  const statusSeverity =
+    jobResultStatus === "success"
+      ? "success"
+      : jobResultStatus === "warning"
+        ? "warning"
+        : jobResultStatus === "error" || jobResultStatus === "interrupted"
+          ? "error"
+          : jobResultStatus === "running"
+            ? "info"
+            : null;
+  const statusLabel =
+    jobResultStatus === "success"
+      ? t("npxSkills.runResultSuccess")
+      : jobResultStatus === "warning"
+        ? t("npxSkills.runResultWarning")
+        : jobResultStatus === "error"
+          ? t("npxSkills.runResultError")
+          : jobResultStatus === "interrupted"
+            ? t("npxSkills.runResultInterrupted")
+            : jobResultStatus === "running"
+              ? t("npxSkills.runResultRunning")
+              : null;
 
   return (
     <Stack spacing={2.5}>
@@ -151,6 +199,67 @@ export default function NpxFindView({
                 label={t("npxSkills.repoInstallChip")}
               />
             </Stack>
+
+            {showJobProgress ? (
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  border: "1px solid var(--mcs-workbench-outline)",
+                  background: "var(--mcs-workbench-surface-strong)",
+                  p: { xs: 1.5, md: 1.75 },
+                }}
+              >
+                <Stack spacing={1.25}>
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        {jobOperation ? operationLabel(jobOperation, t) : t("npxSkills.operationInstall")}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {jobStatusMessage ?? t("npxSkills.jobEmpty")}
+                      </Typography>
+                    </Box>
+                    {statusLabel ? (
+                      <Chip size="small" color={statusSeverity ?? "default"} label={statusLabel} />
+                    ) : null}
+                  </Stack>
+
+                  <LinearProgress
+                    aria-label={
+                      jobOperation
+                        ? `${operationLabel(jobOperation, t)} ${t("npxSkills.jobProgressLabel")}`
+                        : t("npxSkills.jobProgressLabel")
+                    }
+                    variant="determinate"
+                    value={progressValue}
+                    sx={{ height: 8, borderRadius: 999 }}
+                  />
+
+                  <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                    <Chip size="small" variant="outlined" label={t("npxSkills.jobCurrent", { completed: jobCompleted, total: jobTotal })} />
+                    <Chip size="small" variant="outlined" label={`${Math.round(progressValue)}%`} />
+                    <Chip size="small" color="success" variant="outlined" label={t("npxSkills.jobSuccess", { count: jobSuccessCount })} />
+                    <Chip size="small" color="error" variant="outlined" label={t("npxSkills.jobFailed", { count: jobFailureCount })} />
+                    {jobId ? <Chip size="small" variant="outlined" label={`Job: ${jobId}`} /> : null}
+                  </Stack>
+
+                  {runningItem ? (
+                    <Typography variant="body2" color="text.secondary">
+                      {t("npxSkills.itemStatusRunning")}: {runningItem.label}
+                    </Typography>
+                  ) : null}
+
+                  {streamDisconnected ? (
+                    <Alert severity="warning">{t("npxSkills.jobConnectionLost")}</Alert>
+                  ) : null}
+                </Stack>
+              </Box>
+            ) : null}
 
             <Stack direction={{ xs: "column", lg: "row" }} spacing={1.25}>
               <TextField
@@ -296,15 +405,20 @@ export default function NpxFindView({
                               <Checkbox checked={selected} tabIndex={-1} sx={{ mt: -0.5 }} />
                               <ListItemText
                                 primary={skill.name}
-                                secondary={skill.description ?? t("npxSkills.noDescription")}
-                                secondaryTypographyProps={{
-                                  sx: {
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    overflow: "hidden",
-                                  },
-                                }}
+                                secondary={
+                                  <Typography
+                                    variant="body2"
+                                    component="span"
+                                    sx={{
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                    }}
+                                  >
+                                    {skill.description ?? t("npxSkills.noDescription")}
+                                  </Typography>
+                                }
                               />
                             </ListItemButton>
                           );
