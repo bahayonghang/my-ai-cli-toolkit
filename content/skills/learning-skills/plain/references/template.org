@@ -1,7 +1,0 @@
-#+title:      plain-{简短标题}
-#+date:       [{YYYY-MM-DD Day HH:MM}]
-#+filetags:   :plain:atom:
-#+identifier: {YYYYMMDDTHHMMSS}
-#+source:     {URL、文件路径或 conversation}
-
-{正文}

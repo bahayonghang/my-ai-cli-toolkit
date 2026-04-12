@@ -1,4 +1,0 @@
-interface:
-  display_name: "GitHub Bootstrap"
-  short_description: "Bootstrap GitHub templates and repo automation safely"
-  default_prompt: "Use $gh-bootstrap to scan this repository, choose GitHub templates, and materialize the selected configuration safely."
