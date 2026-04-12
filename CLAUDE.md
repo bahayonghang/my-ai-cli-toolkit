@@ -50,7 +50,7 @@ cd mcs && cargo test -p mcs-core <name>   # target a specific crate
 
 ### Content (`content/`)
 The installable content, organized by type:
-- **`content/skills/<category>/<skill-name>/`** — Each skill is a directory with a `SKILL.md` definition. Categories: `academic-skills`, `ai-llm-skills`, `diagram-skills`, `document-skills`, `git-github-skills`, `learning-skills`, `media-skills`, `meta-skills`, `tech-stack-skills`, `work-skills`, `workflow-skills`.
+- **`content/skills/<category>/<skill-name>/`** — Each skill is a directory with a `SKILL.md` definition. Categories: `development-workflows`, `developer-tools-integrations`, `git-github-collaboration`, `docs-writing-publishing`, `research-learning-knowledge`, `visual-media-design`.
 - **`content/commands/<platform>/`** — Slash commands for each platform (claude, codex, gemini, antigravity, windsurf, trae).
 - **`content/agents/`** — AI agent definitions (CCW and specialist agents).
 - **`content/prompts/`** — Global prompts, including platform-specific `CLAUDE.md` templates (`Windows/`, `Unix/`).

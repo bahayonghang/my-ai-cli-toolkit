@@ -66,19 +66,14 @@ The curated third-party registry lives at `content/community-skills-registry/`.
 
 ## Skill categories
 
-The first-party catalog under `content/skills/` currently uses these categories:
+The first-party catalog under `content/skills/` currently uses these canonical categories:
 
-- `academic-skills`
-- `ai-llm-skills`
-- `diagram-skills`
-- `document-skills`
-- `git-github-skills`
-- `learning-skills`
-- `media-skills`
-- `meta-skills`
-- `tech-stack-skills`
-- `work-skills`
-- `workflow-skills`
+- `development-workflows`
+- `developer-tools-integrations`
+- `git-github-collaboration`
+- `docs-writing-publishing`
+- `research-learning-knowledge`
+- `visual-media-design`
 
 For the browsable catalog, use the docs site or MCS.
 
@@ -125,10 +120,10 @@ The VitePress site in `docs/` covers:
 
 For Codex-related skills:
 
-- `docs/skills/ai-llm-skills/codex.md` and `docs/zh/skills/ai-llm-skills/codex.md` cover the direct Codex CLI workflow, including the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
-- `docs/skills/ai-llm-skills/codex-companion.md` and `docs/zh/skills/ai-llm-skills/codex-companion.md` cover the plugin-style companion runtime for background jobs, resumable tasks, and `status / result / cancel` lifecycle management inside Codex.
+- `docs/skills/developer-tools-integrations/codex.md` and `docs/zh/skills/developer-tools-integrations/codex.md` cover the direct Codex CLI workflow, including the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
+- `docs/skills/developer-tools-integrations/codex-companion.md` and `docs/zh/skills/developer-tools-integrations/codex-companion.md` cover the plugin-style companion runtime for background jobs, resumable tasks, and `status / result / cancel` lifecycle management inside Codex.
 
-For structured code review and audit workflows, see `docs/skills/workflow-skills/code-auditor.md` and `docs/zh/skills/workflow-skills/code-auditor.md`. Those pages document the renamed `code-auditor` skill, including language-adaptive reporting and severity-based findings.
+For structured code review and audit workflows, see `docs/skills/development-workflows/code-auditor.md` and `docs/zh/skills/development-workflows/code-auditor.md`. Those pages document the renamed `code-auditor` skill, including language-adaptive reporting and severity-based findings.
 
 ## License
 

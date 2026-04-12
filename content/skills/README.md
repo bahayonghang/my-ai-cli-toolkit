@@ -8,17 +8,12 @@ It contains first-party installable skill directories. The curated third-party r
 
 ```text
 content/skills/
-|-- academic-skills/
-|-- ai-llm-skills/
-|-- diagram-skills/
-|-- document-skills/
-|-- git-github-skills/
-|-- learning-skills/
-|-- media-skills/
-|-- meta-skills/
-|-- tech-stack-skills/
-|-- work-skills/
-|-- workflow-skills/
+|-- development-workflows/
+|-- developer-tools-integrations/
+|-- git-github-collaboration/
+|-- docs-writing-publishing/
+|-- research-learning-knowledge/
+|-- visual-media-design/
 |-- CLAUDE.md
 |-- README.md
 |-- check.py
@@ -56,8 +51,8 @@ Prefer those top-level fields when adding new skills.
 
 - `default.toml` controls which categories are part of default install flows
 - `content/community-skills-registry/` stores the curated external registry used by the Web `npx skills` flow
-- `check.py` helps validate `SKILL.md` metadata coverage
-  - Example: `python content/skills/check.py content/skills/git-github-skills`
+- `check.py` validates `SKILL.md` metadata, including canonical category values and top-level category-to-directory alignment
+  - Example: `python content/skills/check.py content/skills/git-github-collaboration`
 - `just mcs` is the quickest way to verify that a skill is discoverable
 
 ## Public docs

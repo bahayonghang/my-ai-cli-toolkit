@@ -13,7 +13,7 @@ node "<resolved-script-path>" result <arguments>
 Execution rules:
 
 1. Resolve the runtime script by checking these paths in order:
-   - `./content/skills/ai-llm-skills/codex-companion/scripts/codex-companion.mjs`
+   - `./content/skills/developer-tools-integrations/codex-companion/scripts/codex-companion.mjs`
    - `~/.agents/skills/codex-companion/scripts/codex-companion.mjs`
    - `./.agents/skills/codex-companion/scripts/codex-companion.mjs`
    - `./.codex/skills/codex-companion/scripts/codex-companion.mjs`
