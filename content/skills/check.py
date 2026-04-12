@@ -12,6 +12,14 @@ from typing import Any
 import yaml
 
 MAX_SKILL_NAME_LENGTH = 64
+CANONICAL_CATEGORY_SLUGS = {
+    "development-workflows",
+    "developer-tools-integrations",
+    "git-github-collaboration",
+    "docs-writing-publishing",
+    "research-learning-knowledge",
+    "visual-media-design",
+}
 ALLOWED_FRONTMATTER_KEYS = {
     "name",
     "description",
@@ -139,7 +147,7 @@ def validate_skill(skill_dir: Path) -> ValidationResult:
     validate_keys(frontmatter, result)
     validate_name(frontmatter.get("name"), result)
     validate_description(frontmatter.get("description"), result)
-    validate_category(frontmatter.get("category"), frontmatter.get("metadata"), result)
+    validate_category(skill_dir, frontmatter.get("category"), frontmatter.get("metadata"), result)
     validate_tags(frontmatter.get("tags"), frontmatter.get("metadata"), result)
 
     if result.errors:
@@ -187,7 +195,11 @@ def validate_description(description: Any, result: ValidationResult) -> None:
         result.errors.append(f"Description is too long ({len(normalized)} > 1024)")
 
 
-def validate_category(category: Any, metadata: Any, result: ValidationResult) -> None:
+def validate_category(
+    skill_dir: Path, category: Any, metadata: Any, result: ValidationResult
+) -> None:
+    expected_category = infer_directory_category(skill_dir)
+
     if category is None:
         if metadata_category(metadata):
             result.warnings.append(
@@ -196,8 +208,26 @@ def validate_category(category: Any, metadata: Any, result: ValidationResult) ->
         else:
             result.warnings.append("Top-level category is missing")
         return
+
     if not isinstance(category, str):
         result.errors.append("category must be a string")
+        return
+
+    normalized = category.strip()
+    if not normalized:
+        result.errors.append("category must not be empty")
+        return
+
+    if normalized not in CANONICAL_CATEGORY_SLUGS:
+        result.errors.append(
+            "category must be one of: " + ", ".join(sorted(CANONICAL_CATEGORY_SLUGS))
+        )
+        return
+
+    if expected_category and normalized != expected_category:
+        result.errors.append(
+            f"category '{normalized}' does not match directory category '{expected_category}'"
+        )
 
 
 def validate_tags(tags: Any, metadata: Any, result: ValidationResult) -> None:
@@ -234,6 +264,18 @@ def metadata_tags(metadata: Any) -> list[str]:
     if isinstance(value, str) and value.strip():
         return [value.strip()]
     return []
+
+
+def infer_directory_category(skill_dir: Path) -> str | None:
+    parts = skill_dir.parts
+    try:
+        skills_index = parts.index("content")
+    except ValueError:
+        return skill_dir.parent.name or None
+
+    if len(parts) > skills_index + 2 and parts[skills_index + 1] == "skills":
+        return parts[skills_index + 2]
+    return skill_dir.parent.name or None
 
 
 def render_results(results: list[ValidationResult]) -> None:

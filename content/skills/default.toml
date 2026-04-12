@@ -3,12 +3,8 @@
 # Edit this list to customize which skills are installed by default.
 
 categories = [
-    "meta-skills",
-    "tech-stack-skills",
-    "workflow-skills",
-    "git-github-skills",
-    "document-skills",
-    "ai-llm-skills",
-    "diagram-skills",
-    "academic-skills",
+    "development-workflows",
+    "developer-tools-integrations",
+    "git-github-collaboration",
+    "docs-writing-publishing",
 ]
