@@ -1,0 +1,11 @@
+{
+  "name": "uv-expert",
+  "description": "Expert guidance for uv Python package and project manager. Use when working with uv, Python dependency management, project setup, virtual environments, or when users mention uv commands, pip alternatives, or fast Python package management.",
+  "version": "1.0.0",
+  "author": {
+    "name": "StrayDragon",
+    "url": "https://github.com/StrayDragon/straydragon-claude-skills"
+  },
+  "categories": ["development", "python", "tools"],
+  "tags": ["uv", "python", "package-management", "pip", "virtual-environments"]
+}

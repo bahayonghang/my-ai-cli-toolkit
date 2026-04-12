@@ -1,0 +1,16 @@
+Title: Robust Memory Routing for Long-Horizon Fault Diagnosis
+Author: Mei Chen
+Doctoral Dissertation
+School of Mechanical Engineering
+2023
+
+Abstract
+Fault diagnosis in long-horizon industrial monitoring streams is difficult because useful evidence is sparse and delayed. We develop a routing-based memory architecture that compresses repeated observations and preserves fault-relevant context. Experiments show consistent gains in F1 and latency over transformer and recurrent baselines.
+
+Keywords: fault diagnosis; memory routing; industrial AI
+
+1 Introduction
+2 Method
+3 Results
+4 Discussion
+References

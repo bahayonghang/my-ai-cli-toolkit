@@ -1,0 +1,12 @@
+{
+  "name": "rust-cli-tui-developer",
+  "description": "Expert guidance for Rust CLI and TUI development with official examples from clap, inquire, and ratatui libraries. Use when building command-line interfaces, terminal user interfaces, or console applications in Rust. Provides structured patterns, best practices, and real code implementations from official sources.",
+  "version": "1.0.0",
+  "author": {
+    "name": "StrayDragon",
+    "url": "https://github.com/StrayDragon/straydragon-claude-skills"
+  },
+  "categories": ["development", "rust", "cli"],
+  "tags": ["rust", "cli", "tui", "clap", "inquire", "ratatui", "terminal"]
+}
+

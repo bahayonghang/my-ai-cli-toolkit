@@ -1,0 +1,91 @@
+// Info Card Component
+// A reusable card component with title, content, and action button
+
+export component InfoCard inherits Rectangle {
+    // Public properties
+    property <string> title: "Card Title";
+    property <string> content: "Card content goes here";
+    property <string> button-text: "Action";
+    property <length> width: 200px;
+    property <length> height: 150px;
+
+    // Public callback
+    callback button-clicked;
+
+    // Card styling
+    background: white;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: #e9ecef;
+    width: width;
+    height: height;
+    elevation: 2dp;
+
+    // Hover effect
+    private property <bool> hover: false;
+
+    animate elevation { duration: 200ms; }
+    animate border-color { duration: 200ms; }
+
+    // Update hover state
+    init => {
+        elevation = hover ? 4dp : 2dp;
+        border-color = hover ? #3498db : #e9ecef;
+    }
+
+    // Card content layout
+    VerticalLayout {
+        spacing: 12px;
+        padding: 16px;
+        height: 100%;
+
+        // Card title
+        Text {
+            text: title;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            wrap: word-wrap;
+        }
+
+        // Card content
+        Text {
+            text: content;
+            font-size: 14px;
+            color: #7f8c8d;
+            wrap: word-wrap;
+        }
+
+        // Spacer
+        Rectangle {
+            height: 0px;
+        }
+
+        // Action button
+        Rectangle {
+            background: #3498db;
+            border-radius: 4px;
+            height: 32px;
+
+            Text {
+                text: button-text;
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                mouse-cursor: pointer;
+                clicked => { root.button-clicked(); }
+            }
+        }
+    }
+
+    // Card interaction
+    TouchArea {
+        mouse-entered => { root.hover = true; }
+        mouse-exited => { root.hover = false; }
+    }
+}

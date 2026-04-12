@@ -1,0 +1,63 @@
+// Toggle Switch Component
+// A customizable toggle switch with smooth animations
+
+export component ToggleSwitch inherits Rectangle {
+    // Public properties
+    property <bool> checked: false;
+    property <bool> enabled: true;
+    property <length> width: 50px;
+    property <height> height: 26px;
+    property <color> active-color: #3498db;
+    property <color> inactive-color: #bdc3c7;
+
+    // Public callback
+    callback toggled;
+
+    // Track styling
+    background: enabled ?
+        (checked ? active-color : inactive-color) :
+        #ecf0f1;
+    border-radius: height / 2;
+    width: width;
+    height: height;
+
+    // Animation for background color
+    animate background { duration: 200ms; easing: ease-out; }
+
+    // Toggle thumb
+    Rectangle {
+        width: height - 6px;
+        height: height - 6px;
+        background: white;
+        border-radius: (height - 6px) / 2;
+        x: checked ? (root.width - width - 3px) : 3px;
+        y: 3px;
+
+        // Animation for thumb position
+        animate x { duration: 200ms; easing: ease-out; }
+
+        // Shadow effect
+        drop-shadow-blur: 2px;
+        drop-shadow-color: #00000040;
+        drop-shadow-offset-y: 1px;
+    }
+
+    // Interaction area
+    TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: enabled ? pointer : default;
+
+        clicked => {
+            if (root.enabled) {
+                root.checked = !root.checked;
+                root.toggled();
+            }
+        }
+    }
+
+    // Update visual state when property changes
+    init => {
+        // Ensure thumb position matches checked state
+        // (handled by property binding in x position)
+    }
+}

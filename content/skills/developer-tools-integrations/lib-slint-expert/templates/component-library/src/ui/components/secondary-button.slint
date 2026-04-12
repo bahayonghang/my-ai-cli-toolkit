@@ -1,0 +1,57 @@
+// Secondary Button Component
+// A styled secondary action button with outline style
+
+export component SecondaryButton inherits Rectangle {
+    // Public properties
+    property <string> text: "Secondary Button";
+    property <bool> enabled: true;
+    property <length> width: 120px;
+    property <length> height: 40px;
+    property <color> border-color: #3498db;
+    property <color> text-color: #3498db;
+
+    // Public callback
+    callback clicked;
+
+    // Private state
+    private property <bool> hover: false;
+    private property <bool> pressed: false;
+
+    // Button styling
+    background: enabled ?
+        (pressed ? #e8f4fd : (hover ? #f0f8ff : white)) :
+        #f8f9fa;
+    border-width: 2px;
+    border-color: enabled ? border-color : #bdc3c7;
+    border-radius: 6px;
+    width: width;
+    height: height;
+
+    // Animation
+    animate background { duration: 150ms; }
+    animate border-color { duration: 150ms; }
+
+    // Button content
+    Text {
+        text: root.text;
+        color: enabled ? text-color : #6c757d;
+        font-size: 16px;
+        font-weight: 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    // Interaction area
+    TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: enabled ? pointer : default;
+
+        mouse-entered => { root.hover = true; }
+        mouse-exited => { root.hover = false; }
+
+        mouse-pressed => { root.pressed = true; }
+        mouse-released => { root.pressed = false; }
+
+        clicked => { root.clicked(); }
+    }
+}

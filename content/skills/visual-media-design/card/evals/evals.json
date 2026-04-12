@@ -1,0 +1,101 @@
+{
+  "skill_name": "card",
+  "evals": [
+    {
+      "id": 1,
+      "should_trigger": true,
+      "prompt": "把这篇关于“为什么大模型评测会失真”的中文短文做成一张可读的长图阅读卡。不要做成信息图，保留原文的论证推进和几个关键金句。",
+      "expected_output": "自动或明确选择 -l，生成单张阅读卡，保留线性阅读节奏，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务被识别为长图阅读卡而不是信息图或多卡。",
+        "输出包含单张 HTML 路径与 PNG 路径。",
+        "结果强调阅读节奏与金句，而不是平均切块。"
+      ]
+    },
+    {
+      "id": 2,
+      "should_trigger": true,
+      "prompt": "我有一段关于 RAG、Agent、Workflow 三者差异的结构化说明，帮我视觉化成信息图。重点是对比关系、边界和适用场景，不要做成长文章卡。",
+      "expected_output": "自动或明确选择 -i，生成结构化信息图，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务被识别为信息图场景。",
+        "画面强调对比、结构和框架，而不是线性长文阅读。",
+        "输出包含 HTML 与 PNG 路径。"
+      ]
+    },
+    {
+      "id": 3,
+      "should_trigger": true,
+      "prompt": "把这篇 2500 字左右的读书笔记拆成多张 1080x1440 的阅读卡轮播，适合我发朋友圈连载。每张都要有自然的分页节奏。",
+      "expected_output": "自动或明确选择 -m，多卡分页输出多个 HTML 与 PNG 文件，并报告卡片数量。",
+      "files": [],
+      "expectations": [
+        "任务被识别为多卡分页，而不是把所有内容塞进单张长图。",
+        "输出包含卡片数量与多张文件路径。",
+        "分页依据是内容节奏，而不是机械平均切字数。"
+      ]
+    },
+    {
+      "id": 4,
+      "should_trigger": true,
+      "prompt": "把这段讲‘注意力机制如何一步步把词和词连起来’的内容做成视觉笔记，像课堂上边想边画出来的 sketchnote。",
+      "expected_output": "自动或明确选择 -v，生成带关系线、手绘元素和概念节点的 sketchnote，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务被识别为 sketchnote 而不是普通排版卡片。",
+        "结果包含概念连接、手绘痕迹或简笔元素。",
+        "输出包含 HTML 与 PNG 路径。"
+      ]
+    },
+    {
+      "id": 5,
+      "should_trigger": true,
+      "prompt": "把这段创业复盘改编成一页黑白漫画：从盲目扩张、现金流崩掉到重新收缩聚焦，要有冲突和转折，不要彩色。",
+      "expected_output": "自动或明确选择 -c，生成黑白漫画风格页面，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务被识别为漫画表达而不是信息图或长图。",
+        "结果体现分格、黑白对比和叙事张力。",
+        "输出不依赖旧的历史 skill 路径。"
+      ]
+    },
+    {
+      "id": 6,
+      "should_trigger": true,
+      "prompt": "把我下面这段‘如何搭建个人知识系统’的内容做成图，适合手机上看。你自己选最合适的 card 模式，但请在结果里告诉我为什么这么选。",
+      "expected_output": "无显式参数时，基于内容自动选择模式，说明选择原因，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务触发了 card skill 的自动路由能力。",
+        "结果明确说明选择了哪个 mode 以及原因。",
+        "输出包含 HTML 与 PNG 路径，而不是只给一句完成提示。"
+      ]
+    },
+    {
+      "id": 7,
+      "should_trigger": true,
+      "prompt": "把这篇中文商业长文做成一张长图阅读卡。标题和正文都要有纸面感，不要常见网页无衬线的感觉，但也别牺牲手机阅读清晰度。",
+      "expected_output": "选择 -l，生成使用本地 editorial 字体体系的单张阅读卡，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务被识别为长图阅读卡场景。",
+        "结果体现本地仓耳今楷的阅读型排版，而不是依赖远程字体或默认 sans。",
+        "输出包含 HTML 与 PNG 路径。"
+      ]
+    },
+    {
+      "id": 8,
+      "should_trigger": true,
+      "prompt": "把这份关于 agent workflow 的结构化对比做成信息图。主标题想要更有书卷气，但图例、编号和密集标签必须一眼扫清，不要全部都写成一种字体。",
+      "expected_output": "选择 -i，生成标题使用 editorial 字体、密集标签保持 sans/mono 可读性的结构化信息图，并返回 HTML 与 PNG 路径。",
+      "files": [],
+      "expectations": [
+        "任务被识别为信息图场景。",
+        "结果体现混合字体策略：主标题有书卷感，标签和编号依然清晰可扫读。",
+        "输出包含 HTML 与 PNG 路径。"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit CN"
+  short_description: "Safely plan, draft, or execute Chinese Conventional Commits for staged changes or explicit all-changes commits"
+  default_prompt: "Use $git-commit-cn to inspect the repo changes, decide whether staged-only or all-changes mode applies, split commits safely when needed, and then draft or execute a Chinese Conventional Commit without pushing."

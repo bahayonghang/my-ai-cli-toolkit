@@ -1,0 +1,119 @@
+// Based on official Slint tutorial
+// Reference: @source/docs/astro/src/content/docs/tutorial/
+
+import { Button, VerticalLayout, HorizontalLayout } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "Basic Slint App";
+    width: 400px;
+    height: 300px;
+
+    // Properties
+    property <int> counter: 0;
+    property <string> message: "Hello, Slint!";
+
+    // Layout
+    VerticalLayout {
+        spacing: 20px;
+        padding: 20px;
+
+        // Title
+        Text {
+            text: root.message;
+            font-size: 24px;
+            horizontal-alignment: center;
+            color: #3498db;
+        }
+
+        // Counter display
+        Text {
+            text: "Count: " + root.counter;
+            font-size: 18px;
+            horizontal-alignment: center;
+        }
+
+        // Buttons
+        HorizontalLayout {
+            spacing: 10px;
+            alignment: center;
+
+            Button {
+                text: "+";
+                width: 60px;
+                height: 40px;
+                clicked => {
+                    root.counter += 1;
+                    root.check_counter();
+                }
+            }
+
+            Button {
+                text: "-";
+                width: 60px;
+                height: 40px;
+                clicked => {
+                    root.counter -= 1;
+                    root.check_counter();
+                }
+            }
+
+            Button {
+                text: "Reset";
+                width: 80px;
+                height: 40px;
+                clicked => {
+                    root.counter = 0;
+                    root.message = "Counter reset!";
+                }
+            }
+        }
+
+        // Status message area
+        Rectangle {
+            height: 40px;
+            background: #ecf0f1;
+            border-radius: 8px;
+
+            Text {
+                text: root.status_text;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+                color: #2c3e50;
+            }
+        }
+    }
+
+    // Computed property for status
+    property <string> status_text: {
+        if (counter > 10) {
+            "Counter is high! " + counter;
+        } else if (counter < 0) {
+            "Counter is negative! " + counter;
+        } else {
+            "Counter is normal: " + counter;
+        }
+    };
+
+    // Functions
+    function check_counter() {
+        if (counter == 10) {
+            root.message = "Reached 10!";
+        } else if (counter == -10) {
+            root.message = "Reached -10!";
+        } else if (counter == 0) {
+            root.message = "Back to zero!";
+        }
+    }
+}
+
+// Alternative component structure for more complex apps
+export component AppScreen inherits Rectangle {
+    // This demonstrates how to create reusable screens
+    property <string> title;
+    property <int> padding: 20px;
+
+    background: white;
+
+    // Content will be provided by child components
+    @children
+}

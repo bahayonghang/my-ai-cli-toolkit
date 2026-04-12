@@ -1,0 +1,153 @@
+import {
+    PrimaryButton,
+    SecondaryButton,
+    InfoCard,
+    ToggleSwitch
+} from "components";
+
+export component ComponentLibraryDemo inherits Window {
+    title: "Component Library Demo";
+    width: 600px;
+    height: 500px;
+
+    property <string> notification-text: "";
+
+    callback primary-button-clicked;
+    callback secondary-button-clicked;
+    callback card-button-clicked(int);
+    callback switch-toggled(bool);
+
+    VerticalLayout {
+        spacing: 20px;
+        padding: 30px;
+
+        Text {
+            text: "Component Library";
+            font-size: 28px;
+            font-weight: bold;
+            horizontal-alignment: center;
+            color: #2c3e50;
+        }
+
+        Rectangle {
+            background: #ecf0f1;
+            border-radius: 12px;
+            height: 40px;
+
+            Text {
+                text: notification-text;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                color: #34495e;
+                font-size: 16px;
+            }
+        }
+
+        // Button Components Section
+        Rectangle {
+            background: white;
+            border-radius: 8px;
+            border-width: 1px;
+            border-color: #bdc3c7;
+            padding: 20px;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Button Components";
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: #34495e;
+                }
+
+                HorizontalLayout {
+                    spacing: 15px;
+
+                    PrimaryButton {
+                        text: "Primary Action";
+                        clicked => { root.primary-button-clicked(); }
+                    }
+
+                    SecondaryButton {
+                        text: "Secondary Action";
+                        clicked => { root.secondary-button-clicked(); }
+                    }
+                }
+            }
+        }
+
+        // Card Component Section
+        Rectangle {
+            background: white;
+            border-radius: 8px;
+            border-width: 1px;
+            border-color: #bdc3c7;
+            padding: 20px;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Card Components";
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: #34495e;
+                }
+
+                HorizontalLayout {
+                    spacing: 15px;
+
+                    InfoCard {
+                        title: "Card 1";
+                        content: "This is the first info card";
+                        button-text: "Learn More";
+                        button-clicked => { root.card-button-clicked(1); }
+                    }
+
+                    InfoCard {
+                        title: "Card 2";
+                        content: "This is the second info card";
+                        button-text: "Explore";
+                        button-clicked => { root.card-button-clicked(2); }
+                    }
+                }
+            }
+        }
+
+        // Switch Component Section
+        Rectangle {
+            background: white;
+            border-radius: 8px;
+            border-width: 1px;
+            border-color: #bdc3c7;
+            padding: 20px;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Toggle Components";
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: #34495e;
+                }
+
+                HorizontalLayout {
+                    spacing: 20px;
+                    alignment: center;
+
+                    Text {
+                        text: "Feature Toggle:";
+                        font-size: 16px;
+                        color: #34495e;
+                    }
+
+                    ToggleSwitch {
+                        toggled => { root.switch-toggled(self.checked); }
+                    }
+                }
+            }
+        }
+    }
+}

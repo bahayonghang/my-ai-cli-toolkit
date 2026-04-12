@@ -1,0 +1,20 @@
+[package]
+name = "slint-cross-platform"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+slint = { version = "1.13", features = ["backend-default"] }
+
+# WebAssembly dependencies
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { version = "0.2" }
+getrandom = { version = "0.2.2", features = ["js"] }
+console_error_panic_hook = "0.1"
+
+[build-dependencies]
+slint-build = "1.13"
+
+[lib]
+path = "src/main.rs"
+crate-type = ["cdylib"]
