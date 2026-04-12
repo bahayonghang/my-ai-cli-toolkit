@@ -38,3 +38,4 @@ content/skills/skill-meta-skills/skill-seekers/*.json
 content/skills/document-skills/latex-document-skill/examples/*.png
 
 node_modules/
+.learnings/
