@@ -120,39 +120,45 @@ function extractFrontmatterDescription(markdown) {
 function buildCatalog(localePrefix = '') {
   const docsSkillsRoot = path.join(docsRoot, localePrefix, 'skills')
 
-  return listDirectories(contentSkillsRoot).map((category) => {
-    const categoryDir = path.join(contentSkillsRoot, category)
-    const skills = listDirectories(categoryDir)
-      .filter((skill) =>
-        fs.existsSync(path.join(categoryDir, skill, 'SKILL.md')),
-      )
-      .map((skill) => {
-        const docPath = path.join(docsSkillsRoot, category, `${skill}.md`)
-        const skillPath = path.join(categoryDir, skill, 'SKILL.md')
-        const docMarkdown = fs.existsSync(docPath) ? readText(docPath) : ''
-        const skillMarkdown = readText(skillPath)
-        const extractedTitle = extractTitle(docMarkdown, skill)
-        const title =
-          extractedTitle === skill ? formatSlugTitle(skill) : extractedTitle
-        const summary =
-          extractFirstParagraph(docMarkdown) ||
-          extractFrontmatterDescription(skillMarkdown) ||
-          title
+  return listDirectories(contentSkillsRoot)
+    .map((category) => {
+      const categoryDir = path.join(contentSkillsRoot, category)
+      const skills = listDirectories(categoryDir)
+        .filter((skill) =>
+          fs.existsSync(path.join(categoryDir, skill, 'SKILL.md')),
+        )
+        .map((skill) => {
+          const docPath = path.join(docsSkillsRoot, category, `${skill}.md`)
+          const skillPath = path.join(categoryDir, skill, 'SKILL.md')
+          const docMarkdown = fs.existsSync(docPath) ? readText(docPath) : ''
+          const skillMarkdown = readText(skillPath)
+          const extractedTitle = extractTitle(docMarkdown, skill)
+          const title =
+            extractedTitle === skill ? formatSlugTitle(skill) : extractedTitle
+          const summary =
+            extractFirstParagraph(docMarkdown) ||
+            extractFrontmatterDescription(skillMarkdown) ||
+            title
 
-        return {
-          slug: skill,
-          title,
-          summary,
-          path: `${localePrefix ? `/${localePrefix}` : ''}/skills/${category}/${skill}`,
-        }
-      })
-      .sort((left, right) => left.title.localeCompare(right.title, 'en'))
+          return {
+            slug: skill,
+            title,
+            summary,
+            path: `${localePrefix ? `/${localePrefix}` : ''}/skills/${category}/${skill}`,
+          }
+        })
+        .sort((left, right) => left.title.localeCompare(right.title, 'en'))
 
-    return {
-      slug: category,
-      skills,
-    }
-  })
+      if (skills.length === 0) {
+        return null
+      }
+
+      return {
+        slug: category,
+        skills,
+      }
+    })
+    .filter(Boolean)
 }
 
 function writeGeneratedCatalog() {

@@ -217,5 +217,5 @@ What to do:
 
 ## Related pages
 
-- [Paper Workbench skill reference](/skills/academic-skills/paper-workbench)
+- [Paper Workbench skill reference](/skills/research-learning-knowledge/paper-workbench)
 - [Skills overview](/skills/)

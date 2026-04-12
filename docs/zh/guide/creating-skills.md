@@ -11,7 +11,7 @@ content/skills/<category>/<skill-name>/
 例如：
 
 ```text
-content/skills/workflow-skills/my-skill/
+content/skills/development-workflows/my-skill/
 `-- SKILL.md
 ```
 

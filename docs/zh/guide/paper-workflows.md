@@ -217,5 +217,5 @@ workspace/
 
 ## 相关页面
 
-- [Paper Workbench 技能说明](/zh/skills/academic-skills/paper-workbench)
+- [Paper Workbench 技能说明](/zh/skills/research-learning-knowledge/paper-workbench)
 - [技能概览](/zh/skills/)
