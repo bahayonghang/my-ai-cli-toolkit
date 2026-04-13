@@ -138,7 +138,7 @@ export function LegacyCleanupDialog({ open, onClose }: Props) {
                 const res = await cleanupLegacyDirs([path]);
                 removedPaths.push(...res.removed);
                 failedCount += res.failed.length;
-            } catch (e) {
+            } catch (_error) {
                 failedCount += 1;
             } finally {
                 setProgress((prev) =>

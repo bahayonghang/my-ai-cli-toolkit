@@ -85,6 +85,8 @@ export function useUnifiedInstallHub({
   const { t } = useI18n();
   const catalogState = useCatalogState(platforms);
   const selectionState = useSelectionState(platforms.length);
+  const { selectedSkills, selectedPlatforms, setSelectedSkills, setSelectedPlatforms } =
+    selectionState;
   const [execution, setExecution] = useState<ExecutionState>(INITIAL_EXECUTION);
   const [results, setResults] = useState<PlatformInstallResult[]>([]);
   const [activeStage, setActiveStage] = useState<InstallHubStage>("skills");
@@ -94,8 +96,8 @@ export function useUnifiedInstallHub({
   }, [fetchPlatforms]);
 
   useEffect(() => {
-    selectionState.setSelectedSkills(new Set());
-    selectionState.setSelectedPlatforms((previous) => {
+    setSelectedSkills(new Set());
+    setSelectedPlatforms((previous) => {
       const next = new Set(
         [...previous].filter((platformId) =>
           platforms.some(
@@ -107,7 +109,7 @@ export function useUnifiedInstallHub({
       );
       return next;
     });
-  }, [catalogState.itemType, platforms]);
+  }, [catalogState.itemType, platforms, setSelectedPlatforms, setSelectedSkills]);
 
   const availablePlatforms = useMemo(
     () =>
@@ -121,8 +123,8 @@ export function useUnifiedInstallHub({
     () =>
       buildInstallHubSummary({
         platforms: availablePlatforms,
-        selectedPlatforms: selectionState.selectedPlatforms,
-        selectedSkills: selectionState.selectedSkills,
+        selectedPlatforms,
+        selectedSkills,
         catalog: catalogState.catalog,
         itemType: catalogState.itemType,
         filteredSkillCount: catalogState.filteredSkills.length,
@@ -130,33 +132,24 @@ export function useUnifiedInstallHub({
       }),
     [
       availablePlatforms,
-      selectionState.selectedPlatforms,
-      selectionState.selectedSkills,
+      selectedPlatforms,
+      selectedSkills,
       catalogState.catalog,
       catalogState.itemType,
       catalogState.filteredSkills.length,
-      catalogState.catalog.length,
     ],
   );
 
   const steps = useMemo(
-    () =>
-      resolveInstallHubSteps(
-        selectionState.selectedSkills.size,
-        selectionState.selectedPlatforms.size,
-      ),
-    [selectionState.selectedSkills.size, selectionState.selectedPlatforms.size],
+    () => resolveInstallHubSteps(selectedSkills.size, selectedPlatforms.size),
+    [selectedSkills.size, selectedPlatforms.size],
   );
 
   useEffect(() => {
     setActiveStage((previous) =>
-      coerceInstallHubStage(
-        previous,
-        selectionState.selectedSkills.size,
-        selectionState.selectedPlatforms.size,
-      ),
+      coerceInstallHubStage(previous, selectedSkills.size, selectedPlatforms.size),
     );
-  }, [selectionState.selectedPlatforms.size, selectionState.selectedSkills.size]);
+  }, [selectedPlatforms.size, selectedSkills.size]);
 
   const goToStage = useCallback(
     (stage: InstallHubStage) => {
@@ -178,8 +171,8 @@ export function useUnifiedInstallHub({
     notify,
     itemType: catalogState.itemType,
     catalog: catalogState.catalog,
-    selectedPlatforms: selectionState.selectedPlatforms,
-    selectedSkills: selectionState.selectedSkills,
+    selectedPlatforms,
+    selectedSkills,
     setExecution,
     setResults,
     setActiveStage,

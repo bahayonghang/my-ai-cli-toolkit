@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
   useMediaQuery,
@@ -27,6 +27,8 @@ interface LayoutContext {
   selectedCatalogItems: NpxSkillsCatalogItemDto[];
 }
 
+const npxSkillsStore = useNpxSkillsStore;
+
 export default function NpxDiscoverPage() {
   const { t } = useI18n();
   const theme = useTheme();
@@ -34,45 +36,40 @@ export default function NpxDiscoverPage() {
   const { showNotification } = useUiStore();
   const ctx = useOutletContext<LayoutContext>();
 
-  const store = useNpxSkillsStore;
-
   // Store state
-  const catalogSearch = store((s) => s.catalogSearch);
-  const installedOnly = store((s) => s.installedOnly);
-  const catalogItems = store((s) => s.catalogItems);
-  const catalogGroups = store((s) => s.catalogGroups);
-  const catalogLoading = store((s) => s.catalogLoading);
-  const catalogError = store((s) => s.catalogError);
-  const selectedCatalogCategoryId = store((s) => s.selectedCatalogCategoryId);
-  const selectedCatalogKeys = store((s) => s.selectedCatalogKeys);
-  const packagePreviewInput = store((s) => s.packagePreviewInput);
-  const packagePreviewLoading = store((s) => s.packagePreviewLoading);
-  const packagePreviewError = store((s) => s.packagePreviewError);
-  const packagePreview = store((s) => s.packagePreview);
-  const selectedPreviewSkills = store((s) => s.selectedPreviewSkills);
-  const jobRunning = store((s) => s.jobRunning);
-  const jobOperation = store((s) => s.jobOperation);
-  const jobStatusMessage = store((s) => s.jobStatusMessage);
-  const jobResultStatus = store((s) => s.jobResultStatus);
-  const jobItems = store((s) => s.jobItems);
-  const jobCompleted = store((s) => s.jobCompleted);
-  const jobTotal = store((s) => s.jobTotal);
-  const jobSuccessCount = store((s) => s.jobSuccessCount);
-  const jobFailureCount = store((s) => s.jobFailureCount);
-  const jobPercent = store((s) => s.jobPercent);
-  const jobId = store((s) => s.jobId);
-  const streamDisconnected = store((s) => s.streamDisconnected);
-  const agents = store((s) => s.agents);
-  const cliMode = store((s) => s.cliMode);
+  const catalogSearch = npxSkillsStore((s) => s.catalogSearch);
+  const installedOnly = npxSkillsStore((s) => s.installedOnly);
+  const catalogItems = npxSkillsStore((s) => s.catalogItems);
+  const catalogGroups = npxSkillsStore((s) => s.catalogGroups);
+  const catalogLoading = npxSkillsStore((s) => s.catalogLoading);
+  const catalogError = npxSkillsStore((s) => s.catalogError);
+  const selectedCatalogCategoryId = npxSkillsStore((s) => s.selectedCatalogCategoryId);
+  const selectedCatalogKeys = npxSkillsStore((s) => s.selectedCatalogKeys);
+  const packagePreviewInput = npxSkillsStore((s) => s.packagePreviewInput);
+  const packagePreviewLoading = npxSkillsStore((s) => s.packagePreviewLoading);
+  const packagePreviewError = npxSkillsStore((s) => s.packagePreviewError);
+  const packagePreview = npxSkillsStore((s) => s.packagePreview);
+  const selectedPreviewSkills = npxSkillsStore((s) => s.selectedPreviewSkills);
+  const jobRunning = npxSkillsStore((s) => s.jobRunning);
+  const jobOperation = npxSkillsStore((s) => s.jobOperation);
+  const jobStatusMessage = npxSkillsStore((s) => s.jobStatusMessage);
+  const jobResultStatus = npxSkillsStore((s) => s.jobResultStatus);
+  const jobItems = npxSkillsStore((s) => s.jobItems);
+  const jobCompleted = npxSkillsStore((s) => s.jobCompleted);
+  const jobTotal = npxSkillsStore((s) => s.jobTotal);
+  const jobSuccessCount = npxSkillsStore((s) => s.jobSuccessCount);
+  const jobFailureCount = npxSkillsStore((s) => s.jobFailureCount);
+  const jobPercent = npxSkillsStore((s) => s.jobPercent);
+  const jobId = npxSkillsStore((s) => s.jobId);
+  const streamDisconnected = npxSkillsStore((s) => s.streamDisconnected);
+  const agents = npxSkillsStore((s) => s.agents);
+  const cliMode = npxSkillsStore((s) => s.cliMode);
 
-  const visibleCatalogItems = useMemo(
-    () => selectVisibleCatalogItems(store.getState()),
-    [catalogItems, catalogSearch, installedOnly, selectedCatalogCategoryId],
-  );
+  const visibleCatalogItems = selectVisibleCatalogItems(npxSkillsStore.getState());
 
   const openInstallSelectedDialog = useCallback(() => {
     if (ctx.selectedInstallPayload.length === 0) return;
-    store.getState().setPendingRunAction({
+    npxSkillsStore.getState().setPendingRunAction({
       kind: "install",
       items: ctx.selectedInstallPayload,
       labels: ctx.selectedCatalogItems.map((item) => {
@@ -87,7 +84,7 @@ export default function NpxDiscoverPage() {
   const openPackagePreviewForItem = useCallback(
     (item: NpxSkillsCatalogItemDto) => {
       if (!ctx.currentWorkspaceId || !ctx.resolvedTarget || ctx.installTargetLoading) return;
-      void store
+      void npxSkillsStore
         .getState()
         .loadPackagePreview(
           ctx.currentWorkspaceId,
@@ -108,7 +105,7 @@ export default function NpxDiscoverPage() {
       !ctx.resolvedTarget ||
       ctx.installTargetLoading
     ) return;
-    void store
+    void npxSkillsStore
       .getState()
       .loadPackagePreview(
         ctx.currentWorkspaceId,
@@ -130,7 +127,7 @@ export default function NpxDiscoverPage() {
 
   const installPreviewSelection = useCallback(() => {
     if (!packagePreview) return;
-    store.getState().setPendingRunAction({
+    npxSkillsStore.getState().setPendingRunAction({
       kind: "quick-install",
       packageRef: packagePreview.package_ref,
       skillFlagsInput:
@@ -145,9 +142,9 @@ export default function NpxDiscoverPage() {
       t={t}
       isMobile={isMobile}
       catalogSearch={catalogSearch}
-      setCatalogSearch={store.getState().setCatalogSearch}
+      setCatalogSearch={npxSkillsStore.getState().setCatalogSearch}
       installedOnly={installedOnly}
-      setInstalledOnly={store.getState().setInstalledOnly}
+      setInstalledOnly={npxSkillsStore.getState().setInstalledOnly}
       fetchCatalog={() => void ctx.requestCatalog()}
       openInstallSelectedDialog={openInstallSelectedDialog}
       selectedInstallPayload={ctx.selectedInstallPayload}
@@ -165,23 +162,23 @@ export default function NpxDiscoverPage() {
       streamDisconnected={streamDisconnected}
       catalogGroups={catalogGroups}
       selectedCatalogCategoryId={selectedCatalogCategoryId}
-      setSelectedCatalogCategoryId={store.getState().setSelectedCatalogCategoryId}
+      setSelectedCatalogCategoryId={npxSkillsStore.getState().setSelectedCatalogCategoryId}
       catalogError={catalogError}
       catalogLoading={catalogLoading}
       installTargetLoading={ctx.installTargetLoading}
       catalogItems={catalogItems}
       visibleCatalogItems={visibleCatalogItems}
       selectedCatalogKeys={selectedCatalogKeys}
-      setSelectedCatalogKeys={store.getState().setSelectedCatalogKeys}
+      setSelectedCatalogKeys={npxSkillsStore.getState().setSelectedCatalogKeys}
       installTargetScope={ctx.installTarget.scope}
       showNotification={showNotification}
       packagePreviewInput={packagePreviewInput}
-      setPackagePreviewInput={store.getState().setPackagePreviewInput}
+      setPackagePreviewInput={npxSkillsStore.getState().setPackagePreviewInput}
       packagePreviewLoading={packagePreviewLoading}
       packagePreviewError={packagePreviewError}
       packagePreview={packagePreview}
       selectedPreviewSkills={selectedPreviewSkills}
-      setSelectedPreviewSkills={store.getState().setSelectedPreviewSkills}
+      setSelectedPreviewSkills={npxSkillsStore.getState().setSelectedPreviewSkills}
       previewPackage={previewPackage}
       installPreviewSelection={installPreviewSelection}
       openPackagePreviewForItem={openPackagePreviewForItem}

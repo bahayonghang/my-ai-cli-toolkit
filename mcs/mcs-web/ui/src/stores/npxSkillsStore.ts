@@ -403,7 +403,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       });
       if (signal?.aborted) return;
 
-      let nextSelection = new Set<string>();
+      const nextSelection = new Set<string>();
       if (preview.mode === "listed_skills") {
         if (preferredSelection?.length) {
           const available = new Set(preview.skills.map((s) => s.name));

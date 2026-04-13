@@ -59,6 +59,7 @@ import {
   startNpxSkillsRemoveJob,
   startNpxSkillsUpdateJob,
 } from "@/api/client";
+const npxSkillsStore = useNpxSkillsStore;
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -153,16 +154,15 @@ export default function NpxSkillsLayout() {
   const installTargetBlocked = Boolean(resolutionError);
 
   // Store state
-  const store = useNpxSkillsStore;
-  const agents = store((s) => s.agents);
-  const cliMode = store((s) => s.cliMode);
-  const settingsOpen = store((s) => s.settingsOpen);
-  const pendingRunAction = store((s) => s.pendingRunAction);
-  const jobRunning = store((s) => s.jobRunning);
-  const jobRunConfig = store((s) => s.jobRunConfig);
-  const catalogSyncedAt = store((s) => s.catalogSyncedAt);
-  const catalogItems = store((s) => s.catalogItems);
-  const selectedCatalogKeys = store((s) => s.selectedCatalogKeys);
+  const agents = npxSkillsStore((s) => s.agents);
+  const cliMode = npxSkillsStore((s) => s.cliMode);
+  const settingsOpen = npxSkillsStore((s) => s.settingsOpen);
+  const pendingRunAction = npxSkillsStore((s) => s.pendingRunAction);
+  const jobRunning = npxSkillsStore((s) => s.jobRunning);
+  const jobRunConfig = npxSkillsStore((s) => s.jobRunConfig);
+  const catalogSyncedAt = npxSkillsStore((s) => s.catalogSyncedAt);
+  const catalogItems = npxSkillsStore((s) => s.catalogItems);
+  const selectedCatalogKeys = npxSkillsStore((s) => s.selectedCatalogKeys);
 
   const eventSourceRef = useRef<EventSource | null>(null);
   const streamWarnedRef = useRef(false);
@@ -171,7 +171,7 @@ export default function NpxSkillsLayout() {
   const jobItemsRef = useRef<JobItemState[]>([]);
 
   // Sync jobItems ref
-  const jobItems = store((s) => s.jobItems);
+  const jobItems = npxSkillsStore((s) => s.jobItems);
   useEffect(() => {
     jobItemsRef.current = jobItems;
   }, [jobItems]);
@@ -191,7 +191,7 @@ export default function NpxSkillsLayout() {
   }, [currentWorkspaceId, requestedWorkspaceId, setSearchParams]);
 
   useEffect(() => {
-    store.getState().setInstalledPageSize(isMobile ? 20 : 50);
+    npxSkillsStore.getState().setInstalledPageSize(isMobile ? 20 : 50);
   }, [isMobile]);
 
   // Cleanup on unmount
@@ -215,7 +215,7 @@ export default function NpxSkillsLayout() {
   useEffect(() => {
     catalogAbortRef.current?.abort();
     installedAbortRef.current?.abort();
-    store.getState().resetForWorkspaceChange();
+    npxSkillsStore.getState().resetForWorkspaceChange();
   }, [installTargetKey]);
 
   const requestCatalog = useCallback(async () => {
@@ -223,7 +223,7 @@ export default function NpxSkillsLayout() {
     catalogAbortRef.current?.abort();
     const controller = new AbortController();
     catalogAbortRef.current = controller;
-    await store
+    await npxSkillsStore
       .getState()
       .fetchCatalog(currentWorkspaceId, installTarget, controller.signal);
     if (catalogAbortRef.current === controller) {
@@ -236,7 +236,7 @@ export default function NpxSkillsLayout() {
     installedAbortRef.current?.abort();
     const controller = new AbortController();
     installedAbortRef.current = controller;
-    await store
+    await npxSkillsStore
       .getState()
       .fetchInstalled(currentWorkspaceId, installTarget, controller.signal);
     if (installedAbortRef.current === controller) {
@@ -294,12 +294,12 @@ export default function NpxSkillsLayout() {
     ) => {
       if (!currentWorkspaceId || labels.length === 0 || jobRunning) return;
       streamWarnedRef.current = false;
-      store.getState().initializeJob(labels, runConfig);
+      npxSkillsStore.getState().initializeJob(labels, runConfig);
       closeEventStream();
 
       try {
         const started = await starter();
-        store.getState().setJobStarted(started as any);
+        npxSkillsStore.getState().setJobStarted(started as any);
 
         const streamUrl = `/api/platforms/${encodeURIComponent(
           currentWorkspaceId,
@@ -310,7 +310,7 @@ export default function NpxSkillsLayout() {
         source.addEventListener("item_started", (event) => {
           const payload = safeParseEvent<NpxSkillsItemStartedPayload>(event);
           if (!payload) return;
-          store
+          npxSkillsStore
             .getState()
             .updateJobItemStatus(payload.item_id, "running");
         });
@@ -318,7 +318,7 @@ export default function NpxSkillsLayout() {
         source.addEventListener("item_finished", (event) => {
           const payload = safeParseEvent<NpxSkillsItemFinishedPayload>(event);
           if (!payload) return;
-          store.getState().updateJobItemStatus(
+          npxSkillsStore.getState().updateJobItemStatus(
             payload.item_id,
             payload.success ? "success" : "error",
             payload.output,
@@ -330,7 +330,7 @@ export default function NpxSkillsLayout() {
         source.addEventListener("job_progress", (event) => {
           const payload = safeParseEvent<NpxSkillsJobProgressPayload>(event);
           if (!payload) return;
-          store.getState().updateJobProgress(
+          npxSkillsStore.getState().updateJobProgress(
             payload.completed,
             payload.total,
             payload.success_count,
@@ -342,7 +342,7 @@ export default function NpxSkillsLayout() {
         source.addEventListener("job_completed", (event) => {
           const payload = safeParseEvent<NpxSkillsJobCompletedPayload>(event);
           if (!payload) return;
-          store.getState().completeJob(
+          npxSkillsStore.getState().completeJob(
             payload.total,
             payload.success_count,
             payload.failure_count,
@@ -356,7 +356,7 @@ export default function NpxSkillsLayout() {
             payload.failure_count,
             t,
           );
-          store.getState().jobStatusMessage = notification.message;
+          npxSkillsStore.getState().jobStatusMessage = notification.message;
           useNpxSkillsStore.setState({ jobStatusMessage: notification.message });
           showNotification(notification.message, notification.severity);
         });
@@ -368,7 +368,7 @@ export default function NpxSkillsLayout() {
             operation: operationLabel(payload.operation, t),
             message: payload.message,
           });
-          store.getState().failJob(msg, payload.operation);
+          npxSkillsStore.getState().failJob(msg, payload.operation);
           closeEventStream();
           const notification = buildNpxJobNotification(
             payload.operation,
@@ -387,7 +387,7 @@ export default function NpxSkillsLayout() {
             }),
           );
           closeEventStream();
-          store.getState().interruptJob(
+          npxSkillsStore.getState().interruptJob(
             interrupted.items,
             interrupted.completed,
             interrupted.total,
@@ -404,7 +404,7 @@ export default function NpxSkillsLayout() {
           }
         };
       } catch (error) {
-        store.getState().failJob((error as Error).message, "install");
+        npxSkillsStore.getState().failJob((error as Error).message, "install");
         closeEventStream();
         showNotification((error as Error).message, "error");
       }
@@ -444,7 +444,7 @@ export default function NpxSkillsLayout() {
             ),
           payload.config,
         );
-        store.getState().setSelectedCatalogKeys(new Set());
+        npxSkillsStore.getState().setSelectedCatalogKeys(new Set());
       } else if (pendingRunAction.kind === "quick-install") {
         const item: NpxSkillsInstallItemInput = {
           package_ref: payload.packageRef,
@@ -474,8 +474,8 @@ export default function NpxSkillsLayout() {
             ),
           payload.config,
         );
-        store.getState().setSelectedInstalledIds(new Set());
-        store.getState().setSelectedInstalledItem(null);
+        npxSkillsStore.getState().setSelectedInstalledIds(new Set());
+        npxSkillsStore.getState().setSelectedInstalledItem(null);
       } else if (pendingRunAction.kind === "check") {
         await startJob(
           [t("npxSkills.operationCheck")],
@@ -500,7 +500,7 @@ export default function NpxSkillsLayout() {
         );
       }
 
-      store.getState().setPendingRunAction(null);
+      npxSkillsStore.getState().setPendingRunAction(null);
     },
     [currentWorkspaceId, pendingRunAction, startJob, t],
   );
@@ -612,7 +612,7 @@ export default function NpxSkillsLayout() {
           <Button
             variant="outlined"
             startIcon={<SettingsIcon />}
-            onClick={() => store.getState().setSettingsOpen(true)}
+            onClick={() => npxSkillsStore.getState().setSettingsOpen(true)}
           >
             {t("npxSkills.settings")}
           </Button>
@@ -851,7 +851,7 @@ export default function NpxSkillsLayout() {
           recentProjects={recentProjects}
           packageRef={pendingRunDialogContent.packageRef}
           skillFlagsInput={pendingRunDialogContent.skillFlagsInput}
-          onClose={() => store.getState().setPendingRunAction(null)}
+          onClose={() => npxSkillsStore.getState().setPendingRunAction(null)}
           onConfirm={handleRunDialogConfirm}
         />
       ) : null}
@@ -860,7 +860,7 @@ export default function NpxSkillsLayout() {
       <Drawer
         anchor="right"
         open={settingsOpen}
-        onClose={() => store.getState().setSettingsOpen(false)}
+        onClose={() => npxSkillsStore.getState().setSettingsOpen(false)}
         PaperProps={{
           sx: {
             width: { xs: "100vw", sm: 420 },
@@ -883,7 +883,7 @@ export default function NpxSkillsLayout() {
             freeSolo
             options={COMMON_AGENTS}
             value={agents}
-            onChange={(_, next) => store.getState().updateAgents(next)}
+            onChange={(_, next) => npxSkillsStore.getState().updateAgents(next)}
             renderValue={(value, getItemProps) =>
               value.map((option, index) => {
                 const { key, ...rest } = getItemProps({ index });
@@ -933,7 +933,7 @@ export default function NpxSkillsLayout() {
                   }
             }
             onChange={(_, nextValue) =>
-              store.getState().updateCliMode(nextValue.value)
+              npxSkillsStore.getState().updateCliMode(nextValue.value)
             }
             renderInput={(params) => (
               <TextField
@@ -951,7 +951,7 @@ export default function NpxSkillsLayout() {
 
           <Button
             variant="contained"
-            onClick={() => store.getState().setSettingsOpen(false)}
+            onClick={() => npxSkillsStore.getState().setSettingsOpen(false)}
           >
             {t("common.close")}
           </Button>

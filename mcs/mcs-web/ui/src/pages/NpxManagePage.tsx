@@ -45,6 +45,8 @@ interface LayoutContext {
   jobRunConfig: NpxSkillsRunConfig | null;
 }
 
+const npxSkillsStore = useNpxSkillsStore;
+
 export default function NpxManagePage() {
   const { t } = useI18n();
   const theme = useTheme();
@@ -52,69 +54,42 @@ export default function NpxManagePage() {
   const { showNotification } = useUiStore();
   const ctx = useOutletContext<LayoutContext>();
 
-  const store = useNpxSkillsStore;
-
   // Store state
-  const installedSearch = store((s) => s.installedSearch);
-  const installedItems = store((s) => s.installedItems);
-  const installedSummary = store((s) => s.installedSummary);
-  const installedCapabilities = store((s) => s.installedCapabilities);
-  const installedGroups = store((s) => s.installedGroups);
-  const installedLoading = store((s) => s.installedLoading);
-  const installedError = store((s) => s.installedError);
-  const installedErrorHint = store((s) => s.installedErrorHint);
-  const installedSyncedAt = store((s) => s.installedSyncedAt);
-  const selectedInstalledCategoryId = store((s) => s.selectedInstalledCategoryId);
-  const selectedInstalledIds = store((s) => s.selectedInstalledIds);
-  const selectedInstalledItem = store((s) => s.selectedInstalledItem);
-  const installedSourceFilter = store((s) => s.installedSourceFilter);
-  const installedTrackingFilter = store((s) => s.installedTrackingFilter);
-  const installedUpdateFilter = store((s) => s.installedUpdateFilter);
-  const installedPage = store((s) => s.installedPage);
-  const jobRunning = store((s) => s.jobRunning);
-  const jobOperation = store((s) => s.jobOperation);
-  const jobStatusMessage = store((s) => s.jobStatusMessage);
-  const jobResultStatus = store((s) => s.jobResultStatus);
-  const jobItems = store((s) => s.jobItems);
-  const jobCompleted = store((s) => s.jobCompleted);
-  const jobTotal = store((s) => s.jobTotal);
-  const jobSuccessCount = store((s) => s.jobSuccessCount);
-  const jobFailureCount = store((s) => s.jobFailureCount);
-  const jobPercent = store((s) => s.jobPercent);
-  const jobId = store((s) => s.jobId);
-  const streamDisconnected = store((s) => s.streamDisconnected);
-  const expandedJobItemIds = store((s) => s.expandedJobItemIds);
-  const jobRunConfig = store((s) => s.jobRunConfig);
+  const installedSearch = npxSkillsStore((s) => s.installedSearch);
+  const installedItems = npxSkillsStore((s) => s.installedItems);
+  const installedSummary = npxSkillsStore((s) => s.installedSummary);
+  const installedCapabilities = npxSkillsStore((s) => s.installedCapabilities);
+  const installedGroups = npxSkillsStore((s) => s.installedGroups);
+  const installedLoading = npxSkillsStore((s) => s.installedLoading);
+  const installedError = npxSkillsStore((s) => s.installedError);
+  const installedErrorHint = npxSkillsStore((s) => s.installedErrorHint);
+  const installedSyncedAt = npxSkillsStore((s) => s.installedSyncedAt);
+  const selectedInstalledCategoryId = npxSkillsStore((s) => s.selectedInstalledCategoryId);
+  const selectedInstalledIds = npxSkillsStore((s) => s.selectedInstalledIds);
+  const selectedInstalledItem = npxSkillsStore((s) => s.selectedInstalledItem);
+  const installedSourceFilter = npxSkillsStore((s) => s.installedSourceFilter);
+  const installedTrackingFilter = npxSkillsStore((s) => s.installedTrackingFilter);
+  const installedUpdateFilter = npxSkillsStore((s) => s.installedUpdateFilter);
+  const installedPage = npxSkillsStore((s) => s.installedPage);
+  const jobRunning = npxSkillsStore((s) => s.jobRunning);
+  const jobOperation = npxSkillsStore((s) => s.jobOperation);
+  const jobStatusMessage = npxSkillsStore((s) => s.jobStatusMessage);
+  const jobResultStatus = npxSkillsStore((s) => s.jobResultStatus);
+  const jobItems = npxSkillsStore((s) => s.jobItems);
+  const jobCompleted = npxSkillsStore((s) => s.jobCompleted);
+  const jobTotal = npxSkillsStore((s) => s.jobTotal);
+  const jobSuccessCount = npxSkillsStore((s) => s.jobSuccessCount);
+  const jobFailureCount = npxSkillsStore((s) => s.jobFailureCount);
+  const jobPercent = npxSkillsStore((s) => s.jobPercent);
+  const jobId = npxSkillsStore((s) => s.jobId);
+  const streamDisconnected = npxSkillsStore((s) => s.streamDisconnected);
+  const expandedJobItemIds = npxSkillsStore((s) => s.expandedJobItemIds);
+  const jobRunConfig = npxSkillsStore((s) => s.jobRunConfig);
 
   // Derived state
-  const filteredInstalledTotal = useMemo(
-    () => selectFilteredInstalledTotal(store.getState()),
-    [
-      installedItems,
-      installedSearch,
-      selectedInstalledCategoryId,
-      installedSourceFilter,
-      installedTrackingFilter,
-      installedUpdateFilter,
-    ],
-  );
-  const visibleInstalledItems = useMemo(
-    () => selectVisibleInstalledItems(store.getState()),
-    [
-      installedItems,
-      installedSearch,
-      selectedInstalledCategoryId,
-      installedSourceFilter,
-      installedTrackingFilter,
-      installedUpdateFilter,
-      installedPage,
-      store.getState().installedPageSize,
-    ],
-  );
-  const installedTotalPages = useMemo(
-    () => selectInstalledTotalPages(store.getState()),
-    [filteredInstalledTotal, store.getState().installedPageSize],
-  );
+  const filteredInstalledTotal = selectFilteredInstalledTotal(npxSkillsStore.getState());
+  const visibleInstalledItems = selectVisibleInstalledItems(npxSkillsStore.getState());
+  const installedTotalPages = selectInstalledTotalPages(npxSkillsStore.getState());
 
   const runConfigSummary = useMemo(
     () => (jobRunConfig ? buildNpxRunConfigSummary(jobRunConfig, t) : null),
@@ -134,7 +109,7 @@ export default function NpxManagePage() {
   // Callbacks
   const openRemoveDialog = useCallback((itemIds: string[]) => {
     if (itemIds.length === 0) return;
-    store.getState().setPendingRunAction({ kind: "remove", itemIds });
+    npxSkillsStore.getState().setPendingRunAction({ kind: "remove", itemIds });
   }, []);
 
   const openRemoveSelected = useCallback(() => {
@@ -142,22 +117,22 @@ export default function NpxManagePage() {
   }, [openRemoveDialog, selectedInstalledIds]);
 
   const openCheckDialog = useCallback(() => {
-    store.getState().setPendingRunAction({ kind: "check" });
+    npxSkillsStore.getState().setPendingRunAction({ kind: "check" });
   }, []);
 
   const openUpdateDialog = useCallback(() => {
-    store.getState().setPendingRunAction({ kind: "update" });
+    npxSkillsStore.getState().setPendingRunAction({ kind: "update" });
   }, []);
 
   const openInstalledDetail = useCallback(
     (item: NpxInstalledSkillInstanceDto) => {
-      store.getState().setSelectedInstalledItem(item);
+      npxSkillsStore.getState().setSelectedInstalledItem(item);
     },
     [],
   );
 
   const closeInstalledDetail = useCallback(
-    () => store.getState().setSelectedInstalledItem(null),
+    () => npxSkillsStore.getState().setSelectedInstalledItem(null),
     [],
   );
 
@@ -244,20 +219,20 @@ export default function NpxManagePage() {
         t={t}
         isMobile={isMobile}
         installedSearch={installedSearch}
-        setInstalledSearch={store.getState().setInstalledSearch}
+        setInstalledSearch={npxSkillsStore.getState().setInstalledSearch}
         fetchInstalled={() => void ctx.requestInstalled()}
         jobRunning={jobRunning}
         installedItems={visibleInstalledItems}
         installedSummary={installedSummary}
         selectedInstalledIds={selectedInstalledIds}
-        setSelectedInstalledIds={store.getState().setSelectedInstalledIds}
+        setSelectedInstalledIds={npxSkillsStore.getState().setSelectedInstalledIds}
         openRemoveSelected={openRemoveSelected}
         openRemoveDialog={openRemoveDialog}
         openInstalledDetail={openInstalledDetail}
         installedGroups={installedGroups}
         selectedInstalledCategoryId={selectedInstalledCategoryId}
         setSelectedInstalledCategoryId={
-          store.getState().setSelectedInstalledCategoryId
+          npxSkillsStore.getState().setSelectedInstalledCategoryId
         }
         installedError={installedError}
         installedErrorHint={installedErrorHint}
@@ -265,14 +240,14 @@ export default function NpxManagePage() {
         installTargetLoading={ctx.installTargetLoading}
         filteredInstalledTotal={filteredInstalledTotal}
         installedPage={installedPage}
-        setInstalledPage={store.getState().setInstalledPage}
+        setInstalledPage={npxSkillsStore.getState().setInstalledPage}
         installedTotalPages={installedTotalPages}
         sourceFilter={installedSourceFilter}
-        setSourceFilter={store.getState().setInstalledSourceFilter}
+        setSourceFilter={npxSkillsStore.getState().setInstalledSourceFilter}
         trackingFilter={installedTrackingFilter}
-        setTrackingFilter={store.getState().setInstalledTrackingFilter}
+        setTrackingFilter={npxSkillsStore.getState().setInstalledTrackingFilter}
         updateFilter={installedUpdateFilter}
-        setUpdateFilter={store.getState().setInstalledUpdateFilter}
+        setUpdateFilter={npxSkillsStore.getState().setInstalledUpdateFilter}
         capabilities={installedCapabilities}
       />
 
@@ -320,7 +295,7 @@ export default function NpxManagePage() {
         jobId={jobId}
         streamDisconnected={streamDisconnected}
         expandedJobItemIds={expandedJobItemIds}
-        toggleJobItemExpanded={store.getState().toggleJobItemExpanded}
+        toggleJobItemExpanded={npxSkillsStore.getState().toggleJobItemExpanded}
         runConfigSummary={runConfigSummary}
         runConfigPath={runConfigPath}
       />
