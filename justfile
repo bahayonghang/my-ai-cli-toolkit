@@ -56,6 +56,7 @@ help:
     @echo ""
     @echo "📚 文档相关："
     @echo "  just docs-install           - 安装文档站点依赖"
+    @echo "  just docs-ci-install        - 以 CI 模式安装文档站点依赖"
     @echo "  just docs-dev               - 启动文档开发服务器 (http://localhost:4000)"
     @echo "  just docs-build             - 构建生产版本文档"
     @echo "  just docs-preview           - 预览构建后的文档"
@@ -108,6 +109,10 @@ help:
 # 安装文档站点依赖
 docs-install:
     cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} install
+
+# 安装文档站点依赖（CI 场景）
+docs-ci-install:
+    cd {{ docs_dir }}; {{ npm_cmd }} --cache {{ docs_npm_cache_dir }} ci
 
 # 启动文档开发服务器
 docs-dev:
@@ -306,27 +311,30 @@ ci:
     @echo "📚 步骤 1/8: 文档审计 (docs/scripts/audit_sync.py)..."
     {{ just_cmd }} docs-audit
     @echo ""
-    @echo "🧹 步骤 2/8: 文档与 UI lint..."
-    {{ just_cmd }} lint
+    @echo "📦 步骤 2/8: 安装文档站点依赖 (npm ci)..."
+    {{ just_cmd }} docs-ci-install
     @echo ""
     @echo "📦 步骤 3/8: 安装 MCS Web UI 依赖 (npm ci)..."
     {{ just_cmd }} mcs-web-ci-install
     @echo ""
-    @echo "📘 步骤 4/8: MCS Web UI TypeScript 检查..."
+    @echo "🧹 步骤 4/8: 文档与 UI lint..."
+    {{ just_cmd }} lint
+    @echo ""
+    @echo "📘 步骤 5/8: MCS Web UI TypeScript 检查..."
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
     @echo ""
-    @echo "🧪 步骤 5/8: MCS Web UI 测试..."
+    @echo "🧪 步骤 6/8: MCS Web UI 测试..."
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
     @echo ""
-    @echo "🦀 步骤 6/8: Rust 格式检查（必要时自动修复）..."
+    @echo "🦀 步骤 7/8: Rust 格式检查（必要时自动修复）..."
     {{ just_cmd }} rust-format
     {{ just_cmd }} rust-format-check
     @echo ""
-    @echo "🦀 步骤 7/8: Rust Clippy 自动修复并严格校验..."
+    @echo "🦀 步骤 8/8: Rust Clippy 自动修复并严格校验..."
     {{ just_cmd }} rust-clippy-fix
     {{ just_cmd }} rust-clippy
     @echo ""
-    @echo "🦀 步骤 8/8: Rust 单元测试..."
+    @echo "🦀 附加验证: Rust 单元测试..."
     {{ just_cmd }} rust-test
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
