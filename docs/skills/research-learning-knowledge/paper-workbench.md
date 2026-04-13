@@ -14,7 +14,7 @@ Primary literature-workbench entrypoint for the current academic skill catalog.
 ## When not to use it
 
 - use `bib-search-citation` when the main job is searching or filtering a `.bib` library
-- use `paper-replication` when the main job is turning a model paper into implementation code
+- use an implementation-focused workflow when the main job is turning a model paper into runnable code
 - use `academic-slides` after paper analysis is already done and the next job is presentation output
 
 ## Public interfaces
