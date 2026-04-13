@@ -26,6 +26,15 @@ tags = ["ppt", "presentation", "productivity", "ai"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/AIPPT", skill_flag = "AIPPT" }
 
 [[skills]]
+id = "my-claude-code-settings"
+name = "my-claude-code-settings"
+description = "My Claude Code Settings（跨平台 AI 编码助手通用配置与技能注册中心）"
+stars = 4
+usage = "安装后为 Claude Code、Qwen Code 等 AI 编码助手提供通用配置、技能发现与跨平台同步能力"
+tags = ["claude-code", "configuration", "skills-registry", "productivity"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/my-claude-code-settings" }
+
+[[skills]]
 id = "gws-docs"
 name = "Google Workspace Docs CLI"
 description = "Google Workspace Docs 命令行工具 — 提供在 AI Agent 或光标内直接管理、读写 Google Docs 的能力"

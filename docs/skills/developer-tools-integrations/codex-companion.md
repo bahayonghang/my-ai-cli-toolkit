@@ -4,6 +4,12 @@ Use the Codex companion runtime when you want the `codex-plugin-cc` style workfl
 
 This skill is the plugin-style sibling to the direct [codex](./codex.md) skill.
 
+If you need companion-style workflows for other CLIs instead of Codex-specific runtime lifecycle control, see:
+
+- [claude-code-companion](./claude-code-companion.md)
+- [gemini-companion](./gemini-companion.md)
+- [qwen-companion](./qwen-companion.md)
+
 | Skill | Positioning | Best for |
 |---|---|---|
 | `codex` | Direct Codex CLI wrapper | One-off `codex review` or `codex exec` runs |

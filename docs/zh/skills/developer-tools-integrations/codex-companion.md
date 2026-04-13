@@ -4,6 +4,12 @@
 
 这个 skill 是直接 [codex](./codex.md) skill 的 plugin-style 兄弟版本。
 
+如果你需要的是其他 CLI 的 companion 式工作流，而不是 Codex 专属 runtime 生命周期控制，可以参考：
+
+- [claude-code-companion](./claude-code-companion.md)
+- [gemini-companion](./gemini-companion.md)
+- [qwen-companion](./qwen-companion.md)
+
 | Skill | 定位 | 最适合的场景 |
 |---|---|---|
 | `codex` | 直接 Codex CLI 包装 | 一次性 `codex review` / `codex exec` |

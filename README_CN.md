@@ -118,10 +118,13 @@ just mcs-web-test
 - 外部技能
 - 中英文技能目录页
 
-其中与 Codex 相关的技能说明包括：
+其中与 Codex / companion 相关的技能说明包括：
 
 - `docs/skills/developer-tools-integrations/codex.md` 与 `docs/zh/skills/developer-tools-integrations/codex.md`：面向直接 Codex CLI 工作流，维护当前 Codex CLI 写法、默认模型 `gpt-5.4`、推荐的 `codex exec` 与实时网络搜索用法。
 - `docs/skills/developer-tools-integrations/codex-companion.md` 与 `docs/zh/skills/developer-tools-integrations/codex-companion.md`：面向 plugin 风格的 companion runtime，覆盖后台任务、可恢复 task，以及 `status / result / cancel` 生命周期管理。
+- `docs/skills/developer-tools-integrations/claude-code-companion.md` 与 `docs/zh/skills/developer-tools-integrations/claude-code-companion.md`：面向 Claude Code 原生 companion 工作流，强调 review-first、后续执行与显式续接。
+- `docs/skills/developer-tools-integrations/gemini-companion.md` 与 `docs/zh/skills/developer-tools-integrations/gemini-companion.md`：面向 Gemini CLI 的 companion 工作流，强调 review-first 编排与有边界的 follow-up。
+- `docs/skills/developer-tools-integrations/qwen-companion.md` 与 `docs/zh/skills/developer-tools-integrations/qwen-companion.md`：面向 Qwen CLI 的 companion 工作流，强调分阶段执行与明确的续接边界。
 
 如果要查看结构化代码审计与 review 工作流，请参见 `docs/skills/development-workflows/code-auditor.md` 与 `docs/zh/skills/development-workflows/code-auditor.md`。这两页对应已经改名后的 `code-auditor` skill，包含语言自适应输出和按严重级别组织 findings 的说明。
 

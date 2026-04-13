@@ -122,6 +122,9 @@ For Codex-related skills:
 
 - `docs/skills/developer-tools-integrations/codex.md` and `docs/zh/skills/developer-tools-integrations/codex.md` cover the direct Codex CLI workflow, including the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
 - `docs/skills/developer-tools-integrations/codex-companion.md` and `docs/zh/skills/developer-tools-integrations/codex-companion.md` cover the plugin-style companion runtime for background jobs, resumable tasks, and `status / result / cancel` lifecycle management inside Codex.
+- `docs/skills/developer-tools-integrations/claude-code-companion.md` and `docs/zh/skills/developer-tools-integrations/claude-code-companion.md` describe a Claude Code-native companion workflow for staged review, follow-up execution, and explicit continuation.
+- `docs/skills/developer-tools-integrations/gemini-companion.md` and `docs/zh/skills/developer-tools-integrations/gemini-companion.md` describe a Gemini CLI companion workflow for review-first orchestration and bounded follow-up work.
+- `docs/skills/developer-tools-integrations/qwen-companion.md` and `docs/zh/skills/developer-tools-integrations/qwen-companion.md` describe a Qwen CLI companion workflow for staged execution and explicit continuation boundaries.
 
 For structured code review and audit workflows, see `docs/skills/development-workflows/code-auditor.md` and `docs/zh/skills/development-workflows/code-auditor.md`. Those pages document the renamed `code-auditor` skill, including language-adaptive reporting and severity-based findings.
 

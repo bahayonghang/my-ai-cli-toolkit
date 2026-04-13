@@ -2,12 +2,15 @@
 
 `codex-companion` 是给 Codex 使用的 companion runtime skill，用来在 Codex 会话里提供更接近 `codex-plugin-cc` 的运行能力，而不是单次 `codex review` / `codex exec` 包装。
 
-它和同目录下的 `codex` skill 分工不同：
+它和同目录下的相关 skill 分工不同：
 
 | Skill | 定位 | 适合场景 |
 |---|---|---|
 | `codex` | 一次性 Codex CLI 包装 | 直接跑 `codex review` / `codex exec` |
 | `codex-companion` | companion runtime | 后台任务、可恢复 task 线程、job 生命周期管理、结构化对抗审查 |
+| `claude-code-companion` | Claude Code companion workflow | 在 Claude Code 内做分阶段 review / 实现 / 续接 |
+| `gemini-companion` | Gemini companion workflow | 在 Gemini CLI 内做 review-first 与 bounded follow-up |
+| `qwen-companion` | Qwen companion workflow | 在 Qwen CLI 内做分阶段执行与显式续接 |
 
 ## 快速开始
 
