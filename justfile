@@ -82,8 +82,11 @@ help:
     @echo "  just mcs-web                - 启动生产版本服务"
     @echo "  just mcs-web-test           - 运行 UI 测试"
     @echo "  just mcs-web-test-watch     - 监听模式运行 UI 测试"
+    @echo "  just mcs-web-lint           - 运行 UI lint"
     @echo ""
     @echo "✅ 代码检查："
+    @echo "  just docs-lint              - 运行文档站点 lint"
+    @echo "  just lint                   - 运行文档与 UI lint"
     @echo "  just ts-check               - 运行 TypeScript 类型检查"
     @echo "  just rust-format-check      - 检查 Rust 代码格式"
     @echo "  just rust-format            - 自动格式化 Rust 代码"
@@ -121,6 +124,10 @@ docs-preview:
 # 运行文档审计（skills 同步 + stale references）
 docs-audit:
     {{ node_cmd }} {{ docs_dir }}/scripts/run-python.mjs {{ docs_dir }}/scripts/audit_sync.py
+
+# 运行文档站点 lint
+docs-lint:
+    {{ npm_cmd }} --prefix {{ docs_dir }} run lint
 
 # 一键启动文档开发
 docs: docs-install docs-dev
@@ -233,6 +240,10 @@ mcs-web-test: mcs-web-install
 mcs-web-test-watch: mcs-web-install
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run test:watch
 
+# 运行 MCS Web UI lint
+mcs-web-lint:
+    {{ npm_cmd }} --prefix {{ mcs_web_ui_dir }} run lint
+
 # 构建 MCS Web 生产版本
 mcs-web-build: mcs-web-build-ui
     cd {{ mcs_dir }}; {{ cargo_cmd }} build --release --bin mcs-web
@@ -280,6 +291,9 @@ rust-fix:
 ts-check:
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
 
+# 运行仓库前端 lint（docs + MCS Web UI）
+lint: docs-lint mcs-web-lint
+
 # ============ CI ============
 # 在本地执行完整 CI 流程
 
@@ -289,27 +303,30 @@ ci:
     @echo "  🚀 开始执行本地 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📚 步骤 1/7: 文档审计 (docs/scripts/audit_sync.py)..."
+    @echo "📚 步骤 1/8: 文档审计 (docs/scripts/audit_sync.py)..."
     {{ just_cmd }} docs-audit
     @echo ""
-    @echo "📦 步骤 2/7: 安装 MCS Web UI 依赖 (npm ci)..."
+    @echo "🧹 步骤 2/8: 文档与 UI lint..."
+    {{ just_cmd }} lint
+    @echo ""
+    @echo "📦 步骤 3/8: 安装 MCS Web UI 依赖 (npm ci)..."
     {{ just_cmd }} mcs-web-ci-install
     @echo ""
-    @echo "📘 步骤 3/7: MCS Web UI TypeScript 检查..."
+    @echo "📘 步骤 4/8: MCS Web UI TypeScript 检查..."
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
     @echo ""
-    @echo "🧪 步骤 4/7: MCS Web UI 测试..."
+    @echo "🧪 步骤 5/8: MCS Web UI 测试..."
     cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
     @echo ""
-    @echo "🦀 步骤 5/7: Rust 格式检查（必要时自动修复）..."
+    @echo "🦀 步骤 6/8: Rust 格式检查（必要时自动修复）..."
     {{ just_cmd }} rust-format
     {{ just_cmd }} rust-format-check
     @echo ""
-    @echo "🦀 步骤 6/7: Rust Clippy 自动修复并严格校验..."
+    @echo "🦀 步骤 7/8: Rust Clippy 自动修复并严格校验..."
     {{ just_cmd }} rust-clippy-fix
     {{ just_cmd }} rust-clippy
     @echo ""
-    @echo "🦀 步骤 7/7: Rust 单元测试..."
+    @echo "🦀 步骤 8/8: Rust 单元测试..."
     {{ just_cmd }} rust-test
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
