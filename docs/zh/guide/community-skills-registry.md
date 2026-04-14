@@ -50,6 +50,11 @@ MCS 会通过 `mcs-core` 读取这份注册表，并在 Web API 中暴露 extern
 
 像 `python`、`database`、`translation`、`obsidian`、`video` 这类更细的主题，默认应通过 `tags` 表达，而不是继续拆成独立 category。
 
+注册表也可以描述“整包仓库入口”，也就是一个仓库里同时提供多个 skill，但对外仍以一个安装入口呈现。此时：
+
+- `install.package_ref` 保持机器可读，只指向仓库或包本身
+- `usage` 负责展示给用户看的推荐安装命令，因此像 `-g` 这样的参数应写在这里，而不是写进 `install`
+
 ```toml
 # index.toml
 [schema]
@@ -76,6 +81,20 @@ name = "find-skills"
 tags = ["discovery", "registry", "workflow"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/skills", skill_flag = "find-skills" }
 ```
+
+```toml
+# categories/knowledge.toml
+[[skills]]
+id = "khazix-skills"
+name = "Khazix Skills"
+description = "数字生命卡兹克技能包（横纵分析深度研究 + 公众号长文写作）"
+stars = 5
+usage = "npx skills add KKKKhazix/khazix-skills -g"
+tags = ["analysis", "research", "writing"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "KKKKhazix/khazix-skills" }
+```
+
+这种写法适合一个仓库里打包多个强关联 skill 的场景，比如 `KKKKhazix/khazix-skills` 同时提供了 `hv-analysis` 和 `khazix-writer`。
 
 `category_id` 现在由 loader 根据 `index.toml` 中选中的分片文件自动注入。
 

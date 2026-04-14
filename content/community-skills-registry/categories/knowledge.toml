@@ -37,6 +37,15 @@ tags = ["academic", "writing", "research"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/academic-writing-skills" }
 
 [[skills]]
+id = "khazix-skills"
+name = "Khazix Skills"
+description = "数字生命卡兹克技能包（横纵分析深度研究 + 公众号长文写作）"
+stars = 5
+usage = "npx skills add KKKKhazix/khazix-skills -g"
+tags = ["analysis", "research", "writing"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "KKKKhazix/khazix-skills" }
+
+[[skills]]
 id = "baoyu-translate"
 name = "baoyu-translate"
 description = "宝玉翻译技能 (baoyu-translate)"

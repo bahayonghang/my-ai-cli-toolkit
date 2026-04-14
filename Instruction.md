@@ -68,6 +68,16 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -
 
 这条命令只覆盖本仓库的一方 skills，不包含 `community-skills-registry` 的第三方 registry 选择流程。
 
+### 一个第三方 skill 示例
+
+如果你想直接安装 `community-skills-registry` 里收录的整包第三方 skill，例如数字生命卡兹克技能包，可以执行：
+
+```bash
+npx skills add KKKKhazix/khazix-skills -g
+```
+
+更多第三方条目与说明见 `docs/guide/community-skills-registry.md` 和 `docs/zh/guide/community-skills-registry.md`。
+
 ## 6. 后续所有 skills 的推荐安装顺序
 
 建议按下面顺序逐步补齐：

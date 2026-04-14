@@ -31,6 +31,16 @@ This is the lightweight path when you only want the first-party skill folders an
 npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
+### Install a curated third-party skill package
+
+For a package-level external skill entry from `content/community-skills-registry/`, you can install it directly with the recommended command:
+
+```bash
+npx skills add KKKKhazix/khazix-skills -g
+```
+
+See [External Skills](/guide/community-skills-registry) for the registry format and more curated third-party examples.
+
 ## Clone the repository when you need local tooling
 
 Clone the repository when you want the Rust TUI, the web app, the local docs site, or local `just` wrappers for the installer scripts.

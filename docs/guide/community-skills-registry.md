@@ -50,6 +50,11 @@ The current curated taxonomy keeps five top-level categories:
 
 Narrower themes such as `python`, `database`, `translation`, `obsidian`, or `video` should usually live in `tags` instead of becoming standalone categories.
 
+The registry can also describe a package-level entry that represents a repository with multiple skills. In that case:
+
+- `install.package_ref` stays machine-readable and points to the repository/package itself
+- `usage` is the user-facing install example, so flags such as `-g` belong there rather than in `install`
+
 ```toml
 # index.toml
 [schema]
@@ -76,6 +81,20 @@ name = "find-skills"
 tags = ["discovery", "registry", "workflow"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "vercel-labs/skills", skill_flag = "find-skills" }
 ```
+
+```toml
+# categories/knowledge.toml
+[[skills]]
+id = "khazix-skills"
+name = "Khazix Skills"
+description = "数字生命卡兹克技能包（横纵分析深度研究 + 公众号长文写作）"
+stars = 5
+usage = "npx skills add KKKKhazix/khazix-skills -g"
+tags = ["analysis", "research", "writing"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "KKKKhazix/khazix-skills" }
+```
+
+This pattern is useful when one repository ships several related skills under a single install surface, such as `hv-analysis` and `khazix-writer` in `KKKKhazix/khazix-skills`.
 
 `category_id` is injected by the loader based on the fragment selected in `index.toml`.
 

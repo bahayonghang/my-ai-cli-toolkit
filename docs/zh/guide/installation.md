@@ -31,6 +31,16 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
+### 安装 curated 第三方技能包
+
+如果你要安装 `content/community-skills-registry/` 里维护的整包第三方 skill，可以直接使用推荐命令：
+
+```bash
+npx skills add KKKKhazix/khazix-skills -g
+```
+
+更多注册表格式和第三方示例，见 [外部技能](/zh/guide/community-skills-registry)。
+
 ## 需要本地工具时再克隆仓库
 
 只有当你要使用 Rust TUI、Web、文档站点，或本地 `just` 包装命令时，才需要克隆仓库。
