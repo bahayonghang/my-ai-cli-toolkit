@@ -1,7 +1,7 @@
 ---
 name: improve-codebase-architecture
 description: Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies. Use when the user wants to improve architecture, identify refactoring seams, consolidate tightly coupled modules, deepen shallow modules, redesign an interface around a core concept, replace brittle unit tests with boundary tests, or turn an architecture review into an RFC or issue draft.
-version: 1.1.0
+version: 1.2.0
 category: development-workflows
 tags:
   - architecture
@@ -9,6 +9,8 @@ tags:
   - testability
   - modularity
   - rfc
+argument-hint: "[path-or-subsystem]"
+allowed-tools: Read, Glob, Grep, Bash, Write, Agent
 ---
 
 # Improve Codebase Architecture
