@@ -1,191 +1,143 @@
 ---
 name: brand-design-md
-description: 根据品牌名称从 getdesign.md 自动获取设计规范并生成匹配风格的 UI 代码。支持 62 个顶级品牌风格（苹果/Apple、Notion、Claude、Stripe 等），支持中英文品牌名、混搭风格。当用户提到"XX风格"、"做成XX的感觉"、"参考XX设计"时触发。
+description: 当用户明确点名真实品牌、产品或媒体站点的视觉语言，并希望先从 getdesign.md 拉取结构化设计规范，再据此生成或改造 UI 代码时使用。适用于“做成 Apple/Stripe/Notion/WIRED 的感觉”“参考某品牌官网风格做页面”“把现有 React 组件改成 Vercel 风格”这类请求，即使用户没提 getdesign.md 也应优先触发。不要用于泛化的“更现代一点”、logo 设计、图片/海报生成、幻灯片换皮、图表/流程图或纯设计分析。
+category: visual-media-design
+tags: [brand-style, design-system, getdesign, ui-code, html, react, vue]
+version: 1.0.0
+argument-hint: [brand-style-ui-request]
 ---
 
-# Brand Design MD Skill
+# Brand Design MD
 
-当用户提到某个品牌的设计风格，你需要：
+让模型先拿到真实品牌的结构化设计规范，再去写 UI，而不是靠“像某某风格”盲猜。
 
-1. 识别品牌名称并映射到正确的 slug
-2. 通过 `npx getdesign@latest add <slug>` 获取完整的 DESIGN.md 规范
-3. 读取内容，作为设计上下文生成 UI 代码
+## 何时使用
 
-## 品牌 Slug 注册表
+优先用于这些场景：
 
-### 科技 / AI 产品
+- 用户明确点名某个品牌、产品或媒体站点的视觉语言
+- 用户要“参考某品牌官网风格”生成新页面、新组件或新原型
+- 用户要把现有 React/Vue/HTML 组件改造成某品牌风格
+- 用户要混搭两个明确品牌，并希望说明各自负责哪一层设计语言
 
-| 用户可能说的 | Slug |
-|---|---|
-| 苹果、Apple | `apple` |
-| Claude、Anthropic、Claude AI | `claude` |
-| Cursor、AI编辑器 | `cursor` |
-| ElevenLabs、11Labs、语音AI | `elevenlabs` |
-| Figma、设计工具 | `figma` |
-| Framer、建站工具 | `framer` |
-| Lovable | `lovable` |
-| Meta、Facebook | `meta` |
-| MiniMax | `minimax` |
-| Mintlify、文档平台 | `mintlify` |
-| Mistral、Mistral AI | `mistral.ai` |
-| Notion、笔记工具 | `notion` |
-| Ollama | `ollama` |
-| OpenCode | `opencode.ai` |
-| PostHog | `posthog` |
-| Raycast | `raycast` |
-| Replicate | `replicate` |
-| Resend | `resend` |
-| Runway、RunwayML、AI视频 | `runwayml` |
-| Sanity、CMS | `sanity` |
-| Sentry | `sentry` |
-| Supabase | `supabase` |
-| Superhuman、邮件客户端 | `superhuman` |
-| Together AI、together | `together.ai` |
-| Vercel | `vercel` |
-| VoltAgent | `voltagent` |
-| Warp、终端 | `warp` |
-| Webflow | `webflow` |
-| X.AI、Grok | `x.ai` |
-| Zapier | `zapier` |
+不要用于这些场景：
 
-### 开发者工具 / 基础设施
+- 只说“现代一点”“高级一点”“更有设计感”
+- logo 设计、图片/海报生成、视觉卡片、流程图/架构图、幻灯片主题替换
+- 纯设计分析或品牌研究，而不需要产出 UI 代码
 
-| 用户可能说的 | Slug |
-|---|---|
-| Airtable | `airtable` |
-| Cal.com、Cal | `cal` |
-| Clay | `clay` |
-| ClickHouse | `clickhouse` |
-| Cohere | `cohere` |
-| Composio | `composio` |
-| Expo | `expo` |
-| HashiCorp | `hashicorp` |
-| IBM | `ibm` |
-| Intercom | `intercom` |
-| Linear、项目管理 | `linear.app` |
-| Miro、在线白板 | `miro` |
-| MongoDB | `mongodb` |
-| NVIDIA、英伟达 | `nvidia` |
-| Pinterest | `pinterest` |
-| Stripe、支付 | `stripe` |
+## 运行入口
 
-### 金融 / 加密
+先使用本地 helper，不要在 `SKILL.md` 里手工维护品牌主表，也不要假设固定的 `/tmp/.../DESIGN.md` 路径。
 
-| 用户可能说的 | Slug |
-|---|---|
-| Binance、币安 | `binance` |
-| Coinbase | `coinbase` |
-| Kraken | `kraken` |
-| Revolut | `revolut` |
-| Wise | `wise` |
-
-### 消费品 / 汽车
-
-| 用户可能说的 | Slug |
-|---|---|
-| Airbnb、爱彼迎 | `airbnb` |
-| BMW、宝马 | `bmw` |
-| Ferrari、法拉利 | `ferrari` |
-| Lamborghini、兰博基尼 | `lamborghini` |
-| Nike、耐克 | `nike` |
-| Renault、雷诺 | `renault` |
-| Shopify | `shopify` |
-| SpaceX | `spacex` |
-| Spotify | `spotify` |
-| Tesla、特斯拉 | `tesla` |
-| Uber | `uber` |
-
-## 操作步骤
-
-### Step 1：识别品牌
-
-从用户的输入中识别品牌名称，对照上方注册表找到对应的 slug。
-
-- 用户说「苹果风格」→ slug = `apple`
-- 用户说「Notion 那种感觉」→ slug = `notion`
-- 用户说「做成 Stripe 的极简风」→ slug = `stripe`
-- 用户说「BMW + Linear 混搭」→ slugs = `bmw`, `linear.app`（多品牌混搭）
-
-如果品牌名无法识别，直接告知用户并列出可用品牌列表。
-
-### Step 2：获取 DESIGN.md
-
-在终端运行以下命令（在临时目录中执行，避免污染用户项目）：
+### Helper commands
 
 ```bash
-cd /tmp && mkdir -p design-md-tmp && cd design-md-tmp && npx getdesign@latest add <slug> 2>&1
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" list --json
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" resolve --query "<user request>"
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" fetch --slug <brand-slug>
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" fetch --slug <brand-slug> --out <target-file>
 ```
 
-然后读取生成的 DESIGN.md 文件：
+这个 helper 负责：
 
-```bash
-cat /tmp/design-md-tmp/DESIGN.md
-```
+- 用 `npx getdesign@latest list` 获取官方实时品牌目录
+- 维护小型 alias 层（中文名、常见别称、易混写法）
+- 按固定顺序做品牌解析：`alias -> slug -> fuzzy`
+- 用 `npx getdesign@latest add <slug> --out <path>` 固定输出文件路径
 
-如果是多品牌混搭，依次获取每个品牌的 DESIGN.md，合并关键设计 token。
+## 工作流
 
-### Step 3：解析设计规范
+### 1. 先判断是“新建原型”还是“改现有项目”
 
-从 DESIGN.md 中提取关键信息：
+- 如果用户是在现有 repo/组件里改造，先读当前框架、组件结构、样式组织方式，再输出该栈里的增量代码。
+- 如果用户没有给现成代码或没有指定框架，默认输出完整单文件 HTML。
 
-- **颜色系统**：背景色、文字色、强调色、边框色
-- **字体规范**：字体家族、字号层级、字重、行高、字间距
-- **组件样式**：按钮、卡片、导航、输入框的具体 CSS 值
-- **间距系统**：基础单位和比例
-- **圆角体系**：各组件的 border-radius 值
-- **阴影系统**：各层级的 box-shadow 值
+不要把“改 React 组件”重写成脱离上下文的新 HTML 原型。
 
-### Step 4：生成 UI
+### 2. 解析品牌
 
-根据提取的设计规范，生成用户请求的 UI 代码（HTML/CSS/React/Vue 等）。
+把完整用户请求传给 helper 的 `resolve` 命令。
 
-**严格执行规范中的具体数值**，不要自由发挥或用近似值替代。如果规范中写的是 `rgba(0,0,0,0.95)` 就不要用 `#000000`，如果字间距是 `-2.125px` 就不要四舍五入。
+- 如果 `resolution` 是 `exact`，直接使用返回的 `matches`
+- 如果 `resolution` 是 `fuzzy` 且只有一个高置信命中，可以继续并在回复里说明这个假设
+- 如果 `resolution` 是 `none`，或模糊结果不够稳，直接展示 helper 返回的 `suggestions`，不要瞎猜
 
-## 混搭风格指南
+默认最多支持 2 个品牌：
 
-当用户要求混搭多个品牌风格时：
+- 1 个品牌：直接采用该品牌规范
+- 2 个品牌：第一个品牌负责布局、密度、组件结构；第二个品牌负责强调色、排版气质或用户明确指定的维度
+- 3 个以上品牌：先要求用户收敛到 1-2 个，否则输出质量和归因都会失真
 
-1. 分别获取各品牌的 DESIGN.md
-2. 以用户指定的主品牌为基础
-3. 从副品牌中提取指定维度（颜色/排版/布局/组件）进行融合
-4. 在生成代码中注释说明哪部分来自哪个品牌
+### 3. 获取 DESIGN 规范
 
-示例混搭逻辑：
-- "Notion 暖色 + Linear 极简排版" → 用 Notion 的颜色 token + Linear 的字体排版规则
-- "Apple 留白 + Claude 暖橙强调色" → 用 Apple 的间距系统 + Claude 的 `#d97757` 强调色
+对每个选中的品牌运行 helper `fetch`：
 
-## 输出格式
+- 未指定输出路径时，让 helper 写入临时文件
+- 只有当用户明确要求“把规范保存到项目里”时，才传 `--out <project path>`
 
-- 默认输出完整的单文件 HTML（含内联 CSS）
-- 用户明确指定 React/Vue 时输出对应格式
-- 代码顶部注释品牌来源和关键设计 token，方便后续维护
-- 可选：是否将 DESIGN.md 保存到用户的项目目录（询问用户）
+然后读取 helper 返回的 `outPath` 指向的文件内容。
 
-## 错误处理
+## 如何使用 DESIGN 内容
 
-- **npx 命令失败**：提示用户确认 Node.js 环境，或手动访问 https://getdesign.md 查看规范
-- **品牌不存在**：列出所有可用品牌，建议最相近的替代方案
-- **网络问题**：使用品牌注册表中的简要描述作为降级设计方向
+从 DESIGN 文本里至少提取并核对这 4 类 token：
 
-## 快速参考：各品牌风格一句话描述
+- 颜色：背景、正文、强调、边框
+- 排版：字体、字号、字重、行高、字距
+- 间距：section spacing、组件 padding、布局密度
+- 形状：圆角、描边、阴影
 
-```
-apple      → 极致留白 + SF Pro + 电影质感
-notion     → 暖色极简 + 衬线标题 + 柔和表面
-claude     → 赭石强调色 + 编辑排版 + 温暖智识感
-stripe     → 紫色渐变 + 300 字重优雅 + 精致细节
-linear     → 超级极简 + 精准 + 紫色强调
-figma      → 多彩活泼 + 专业 + 协作感
-cursor     → 深色 + 渐变强调 + AI原生
-spotify    → 深色底 + 荧光绿 + 音乐封面驱动
-tesla      → 激进减法 + 全屏摄影 + 近零UI
-ferrari    → 黑底电影感 + Ferrari红 + 奢华排版
-vercel     → 黑白精准 + Geist字体 + 极简
-supabase   → 深色翠绿 + 代码优先 + 开发者感
-raycast    → 深色铬面 + 渐变强调 + 效率感
-airbnb     → 珊瑚暖色 + 摄影驱动 + 圆润UI
-stripe     → 紫色渐变 + 精致 + 金融质感
-nike       → 单色 + 大写字体 + 全出血摄影
-bmw        → 深色溢价面 + 精准德式美学
-shopify    → 深色电影感 + 荧光绿 + 超细字重
-```
+如果规范里给了精确值，就直接复用，不要自由近似。
+
+错误示例：
+
+- 把 `rgba(...)` 自作主张改成近似 hex
+- 把负字距四舍五入
+- 只复用主色，却把整体密度和排版节奏改成通用 AI 模板
+
+## 混搭规则
+
+只有两个品牌时，按这个顺序处理：
+
+1. 先确定主品牌和副品牌
+2. 主品牌负责页面结构、组件骨架、间距密度
+3. 副品牌负责强调色、排版情绪或用户点名的维度
+4. 如果用户明确点名“Apple 留白 + Claude 强调色”这类组合，按用户指定维度覆盖默认规则
+
+混搭输出里必须解释：
+
+- 选择了哪些 slug
+- 哪些 token 来自主品牌
+- 哪些 token 来自副品牌
+
+## 输出契约
+
+无论输出 HTML、React 还是 Vue，都要满足：
+
+1. 先说明最终使用的品牌和 slug
+2. 说明是“新建原型”还是“改现有项目”路径
+3. 代码注释或交付说明里列出关键 token 来源
+4. 至少点名 4 类被直接复用的 token
+5. 混搭时明确写出“哪部分来自哪个品牌”
+
+默认输出：
+
+- 绿地场景：单文件 HTML
+- 已给定框架：沿用原框架
+- 只有在用户明确要求时，才把 DESIGN 文件保存进项目目录
+
+## 失败与降级
+
+- `getdesign` 不可用或 `npx` 失败：明确报错，并建议用户检查 Node.js / `npx`
+- 品牌未命中：优先展示 helper 的前 3 个建议，不要自己编造品牌支持列表
+- 上游品牌目录变化：以 `list` 实时结果为准，本 skill 不应因为 README 里的静态数字而失效
+
+## 最后自检
+
+在交付前，快速核对：
+
+- 品牌解析是否来自 helper，而不是手写猜测
+- 选中的 slug 是否真实存在于 `getdesign list`
+- 至少 4 类 token 是否能在 DESIGN 文本中找到直接证据
+- 现有项目请求是否保持了原框架和原组件形态
+- 混搭时是否说清了主品牌、副品牌和各自负责的层次

@@ -1,11 +1,6 @@
 # brand-design-md
 
-> A Claude Code Skill powered by [getdesign.md](https://getdesign.md) — give your AI agent the design language of world-class brands, on demand.
-
-![Brands](https://img.shields.io/badge/brands-62-533afd?style=flat-square)
-![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-d97757?style=flat-square)
-![Last Update](https://img.shields.io/github/last-commit/zephyrwang6/brand-design-md?style=flat-square&label=last%20update)
-![License](https://img.shields.io/github/license/zephyrwang6/brand-design-md?style=flat-square)
+> A Claude Code skill that turns real brand design systems from [getdesign.md](https://getdesign.md) into concrete UI code, not vague “inspired by” prompting.
 
 [English](#english) · [中文](#中文)
 
@@ -13,203 +8,198 @@
 
 <a name="english"></a>
 
-## The Problem
+## What This Version Fixes
 
-Vibecoding has a style problem.
+This repository version upgrades the original idea from a static prompt into a catalog-safe skill:
 
-You can ask AI to build a landing page in minutes. But the result looks like... AI built it. Random primary colors. System fonts. Buttons that could belong to any company on earth.
-
-The fix isn't better prompting — it's better context. Design systems like Apple's, Notion's, and Stripe's aren't "minimalist" or "clean" in the abstract. They're defined by exact values: `letter-spacing: -2.125px`, `font-weight: 300`, `rgba(50,50,93,0.25) 0px 30px 45px -30px`. That precision is what makes them recognizable.
-
-This skill gives Claude Code access to all of it.
-
----
+- it no longer trusts a hard-coded brand table as the source of truth
+- it resolves brands through the live `getdesign list` catalog
+- it fetches specs with deterministic `--out` paths instead of assuming a fixed temp file
+- it separates greenfield prototype generation from existing-project component edits
+- it ships eval prompts and trigger-eval samples so the skill can be tested and iterated
 
 ## What It Does
 
-This Claude Code Skill wraps [getdesign.md](https://getdesign.md) — a project that distills 62 top brand design systems into structured `DESIGN.md` files — and makes it available as a conversational interface.
+When a user asks for UI that should feel like a real brand or product, the skill:
 
-**Say this:**
-> "Build a login page in Stripe style"
-> "Make it look like Linear"
-> "Notion warm colors + Linear minimal layout, build a card component"
+1. resolves the requested brand through `scripts/getdesign-helper.mjs`
+2. fetches the corresponding `DESIGN.md` with `npx getdesign@latest add <slug> --out <path>`
+3. extracts exact tokens such as color, typography, spacing, radius, and shadow rules
+4. generates UI code that follows those values directly
 
-**The skill will:**
-1. Recognize the brand name (Chinese or English)
-2. Run `npx getdesign@latest add <slug>` to fetch the latest design spec
-3. Extract exact color tokens, typography rules, spacing systems, shadow formulas
-4. Generate UI code that strictly follows the spec — no approximations
+Example prompts:
 
-Because it calls `npx` at runtime, it always fetches the **latest version** of the design spec. If getdesign.md updates a brand's rules, you get the update automatically.
+> “Build a hero section in Apple style”  
+> “Turn this React pricing card into Stripe style”  
+> “Notion warm colors + Linear layout, build a feature section”  
+> “Make an editorial landing page that feels like WIRED”
 
----
+## Live Brand Catalog
 
-## Supported Brands (62 total)
+The supported brand set is dynamic. This skill treats `npx getdesign@latest list` as the source of truth.
 
-### Tech / AI
-Apple · Claude · Cursor · ElevenLabs · Figma · Framer · Lovable · Meta · MiniMax · Mintlify · Mistral · Notion · Ollama · OpenCode · PostHog · Raycast · Replicate · Resend · Runway · Sanity · Sentry · Supabase · Superhuman · Together AI · Vercel · VoltAgent · Warp · Webflow · X.AI · Zapier
+As of **2026-04-14**, the live catalog returned **66 brands**, including newer entries such as:
 
-### Dev Tools / Infrastructure
-Airtable · Cal.com · Clay · ClickHouse · Cohere · Composio · Expo · HashiCorp · IBM · Intercom · Linear · Miro · MongoDB · NVIDIA · Pinterest · Stripe
+- `bugatti`
+- `playstation`
+- `theverge`
+- `wired`
 
-### Fintech / Crypto
-Binance · Coinbase · Kraken · Revolut · Wise
+Check the current catalog:
 
-### Consumer / Automotive
-Airbnb · BMW · Ferrari · Lamborghini · Nike · Renault · Shopify · SpaceX · Spotify · Tesla · Uber
-
----
-
-## Quick Reference
-
-```
-apple      → extreme whitespace + SF Pro + cinematic quality
-notion     → warm minimal + serif headings + soft surfaces
-claude     → terracotta accent + editorial layout + warm intellect
-stripe     → purple + weight-300 elegance + refined detail
-linear     → ultra minimal + precise + purple accent
-vercel     → black & white precision + Geist font + pure minimal
-cursor     → dark + gradient accent + AI-native
-spotify    → dark base + neon green + album-art driven
-tesla      → radical reduction + full-bleed photography + near-zero UI
-ferrari    → cinematic black + Ferrari red + luxury typography
-airbnb     → coral warmth + photography-first + rounded UI
+```bash
+npx getdesign@latest list
+node scripts/getdesign-helper.mjs list --json
 ```
 
----
+Representative brands:
+
+- Tech / AI: Apple, Claude, Cursor, Figma, Notion, Supabase, Vercel, X.AI
+- Dev tools / infra: Airtable, IBM, Linear, MongoDB, Stripe
+- Editorial / consumer: Airbnb, BMW, Ferrari, Nike, PlayStation, Spotify, Tesla, The Verge, WIRED
+
+## Helper Script
+
+This version includes a small cross-platform Node helper at:
+
+```text
+scripts/getdesign-helper.mjs
+```
+
+It handles:
+
+- live brand discovery via `getdesign list`
+- Chinese aliases and common nicknames
+- deterministic fetch output paths
+- simple fuzzy suggestions when the requested brand is unknown
+
+Examples:
+
+```bash
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" resolve --query "参考 WIRED 做一个 editorial landing page"
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" fetch --slug wired
+node "$SKILL_DIR/scripts/getdesign-helper.mjs" fetch --slug stripe --out ./docs/stripe-design.md
+```
 
 ## Installation
 
 ### Prerequisites
-- [Claude Code](https://claude.ai/code) installed
-- Node.js (for `npx`)
 
-### Install the Skill
+- [Claude Code](https://claude.ai/code)
+- Node.js with `npx`
+
+### Install the whole skill directory
+
+Do not copy only `SKILL.md`. This version includes a helper script and eval assets.
 
 ```bash
-# Clone this repo
-git clone https://github.com/zephyrwang6/brand-design-md.git
-
-# Create the skill directory and copy the file
 mkdir -p ~/.claude/skills/brand-design-md
-cp brand-design-md/SKILL.md ~/.claude/skills/brand-design-md/SKILL.md
+cp -R brand-design-md/* ~/.claude/skills/brand-design-md/
 ```
 
-Restart Claude Code and the skill is live.
+PowerShell:
 
----
-
-## Usage
-
-### Single brand
-```
-Build a Hero section in Apple style
-Make a pricing page that looks like Stripe
-Create a Notion-style card component
+```powershell
+New-Item -ItemType Directory -Force "$HOME\\.claude\\skills\\brand-design-md" | Out-Null
+Copy-Item -Recurse ".\\brand-design-md\\*" "$HOME\\.claude\\skills\\brand-design-md\\"
 ```
 
-### Multi-brand mix
-```
-Notion warm colors + Linear minimal layout, build a Feature section
-Apple whitespace system + Claude terracotta accent
-```
+Restart Claude Code after installation.
 
-### Output formats
-- Default: single-file HTML with inline CSS
-- Specify React, Vue, or Tailwind if needed
-- Code includes comments showing which brand each token comes from
+## Output Behavior
 
----
+- Greenfield requests default to a single-file HTML prototype
+- Existing project requests should stay in the original stack when possible
+- Mixed-brand requests are capped at 2 brands by default
+- The output should always report the chosen slug(s) and the key token sources
 
-## How It Works
+## Included Evaluation Assets
 
-The skill runs `npx getdesign@latest add <slug>` in a temp directory, reads the generated `DESIGN.md`, and uses its contents as the design context for code generation.
+This skill directory now includes:
 
-This means:
-- **No stale specs** — fetches from getdesign.md at runtime
-- **No manual file management** — nothing gets committed to your project
-- **Exact fidelity** — the spec contains precise CSS values, not vague descriptions
-
----
-
-## Demo
-
-The following pages were generated using this skill + [getdesign.md](https://getdesign.md):
-
-| Style | Characteristics |
-|-------|----------------|
-| Apple | 80px hero type, full-bleed Cinematic Band, pill buttons in `#0071e3` |
-| Notion | Warm `#fffdf9` background, Georgia serif headings, numbered feature list |
-| Claude | `#faf8f5` base, terracotta `#d97757` accent, 720px editorial column |
-| Stripe | `sohne-var` font, weight 300, `#533afd` purple, layered blue shadows |
-
----
-
-## Credits
-
-Design specs sourced from [getdesign.md](https://getdesign.md) by [VoltAgent](https://github.com/VoltAgent/awesome-design-md). This skill is a Claude Code wrapper — all design system content belongs to the respective brand owners.
-
----
+- `evals/evals.json` for end-to-end qualitative test prompts
+- `evals/trigger-evals.json` for should-trigger / should-not-trigger description tests
 
 ## License
 
 MIT
 
+Design specs are sourced from [getdesign.md](https://getdesign.md) / [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md). Brand identities remain the property of their respective owners.
+
 ---
 
 <a name="中文"></a>
 
-## 中文说明
+## 这个版本修了什么
 
-**一个 Claude Code Skill，让你的 AI 直接调用 62 个顶级品牌的设计规范。**
+这个仓库版本把原来的“静态 prompt”升级成了更稳定的 skill：
 
-不再是"AI 默认风格"。告诉 Claude Code "用 Stripe 风格做一个登录页"，它会自动拉取真实设计规范，提取精确的设计 Token，生成高度还原的 UI 代码。
+- 不再把手写品牌表当成真值源
+- 品牌支持集实时来自 `getdesign list`
+- 用 `--out` 固定 DESIGN 文件输出路径，不再假设固定临时路径
+- 区分“新建原型”和“改现有项目组件”两条路径
+- 自带评估样例，方便后续做触发与效果迭代
 
-### 背景
+## 它会做什么
 
-Vibecoding 有个通病：AI 做出来的 UI 没有风格。
+当用户要“某个真实品牌/产品/媒体站点的视觉语言”时，这个 skill 会：
 
-不是写错了，是没有参照物。苹果、Notion、Stripe 的设计系统不是什么"简约"或"精致"的抽象概念，而是一堆精确的数值：`letter-spacing: -2.125px`、`font-weight: 300`、`rgba(50,50,93,0.25) 0px 30px 45px -30px`。正是这些精确值让它们一眼可辨。
+1. 用 `scripts/getdesign-helper.mjs` 解析品牌
+2. 用 `npx getdesign@latest add <slug> --out <path>` 获取对应 `DESIGN.md`
+3. 提取颜色、排版、间距、圆角、阴影等精确 token
+4. 基于这些 token 生成或改造 UI 代码
 
-这个 Skill 把这些精确值全部交给 Claude Code。
+示例：
 
-### 工作原理
+> “做一个 Apple 风格 hero”  
+> “把这个 React pricing card 改成 Stripe 风格”  
+> “Notion 暖色 + Linear 排版，做个 feature section”  
+> “参考 WIRED 做一个 editorial landing page”
 
-Skill 在运行时调用 `npx getdesign@latest add <slug>`，实时拉取指定品牌的 `DESIGN.md`，提取颜色、字体、间距、阴影等设计 Token，作为上下文生成 UI。
+## 动态品牌目录
 
-**因为是实时调用，所以永远获取最新版本的设计规范。**
+支持品牌不是写死的，而是以上游 `getdesign list` 为准。
 
-### 安装
+截至 **2026-04-14**，实时目录返回 **66 个品牌**，其中包括较新的：
+
+- `bugatti`
+- `playstation`
+- `theverge`
+- `wired`
+
+查看当前目录：
 
 ```bash
-git clone https://github.com/zephyrwang6/brand-design-md.git
+npx getdesign@latest list
+node scripts/getdesign-helper.mjs list --json
+```
+
+## 安装方式
+
+不要只复制 `SKILL.md`。这个版本还依赖 helper 脚本和评估资源。
+
+```bash
 mkdir -p ~/.claude/skills/brand-design-md
-cp brand-design-md/SKILL.md ~/.claude/skills/brand-design-md/SKILL.md
+cp -R brand-design-md/* ~/.claude/skills/brand-design-md/
 ```
 
-重启 Claude Code 即可使用。
+PowerShell:
 
-### 使用示例
-
-**单品牌**
-```
-用 Apple 风格帮我做一个 Hero 区块
-做一个 Stripe 风格的定价页
-Notion 风格的卡片组件
+```powershell
+New-Item -ItemType Directory -Force "$HOME\\.claude\\skills\\brand-design-md" | Out-Null
+Copy-Item -Recurse ".\\brand-design-md\\*" "$HOME\\.claude\\skills\\brand-design-md\\"
 ```
 
-**多品牌混搭**
-```
-Notion 的暖色调 + Linear 的极简排版，做个 Feature 区
-用 Apple 的留白系统 + Claude 的橙赭强调色
-```
+## 输出策略
 
-支持中英文品牌名，均可正确识别。
+- 绿地请求默认输出单文件 HTML
+- 现有项目请求优先保持原技术栈和组件形态
+- 混搭默认最多 2 个品牌
+- 输出时要明确说明最终使用的 slug 和关键 token 来源
 
-### 支持品牌
+## 附带评估资源
 
-共 62 个，覆盖科技、AI、开发工具、金融、消费品、汽车等品类。完整列表及一句话风格描述见上方英文部分。
+目录中已包含：
 
----
-
-设计规范来源：[getdesign.md](https://getdesign.md) · [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)
+- `evals/evals.json`：端到端测试提示词
+- `evals/trigger-evals.json`：触发 / 不触发测试集
