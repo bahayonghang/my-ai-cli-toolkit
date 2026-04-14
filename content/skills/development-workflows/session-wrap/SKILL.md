@@ -40,6 +40,10 @@ Clarify only when needed:
 - Whether to include commit advice
 - Whether to produce a handoff note or just a chat summary
 
+**Large or multi-topic sessions:**
+- If the session covered 3+ unrelated topics, group by topic rather than by time. Ask the user which topics matter most if grouping is ambiguous.
+- If the conversation context is very long (compacted multiple times), rely more on git evidence and less on conversation recall. State which portions are based on git vs memory.
+
 ### Step 2: Inspect the working tree
 
 Collect the minimum evidence needed for an accurate summary:
