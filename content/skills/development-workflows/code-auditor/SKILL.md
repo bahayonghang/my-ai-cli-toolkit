@@ -74,7 +74,11 @@ Do not promote pure formatting or taste disagreements above `low` unless the pro
 
 ## Workflow
 
-1. If `$ARGUMENTS` is empty, default to current git changes or the working directory.
+1. Determine the review target:
+   - If `$ARGUMENTS` contains a PR number or URL, fetch the PR diff via `gh pr diff <number>` and use it as the review target. If `gh` is unavailable, ask the user to provide the diff manually.
+   - If `$ARGUMENTS` mentions "PR" or "MR" without a specific number, check for an active PR on the current branch via `gh pr view`. If none exists, ask the user to specify the PR number.
+   - If `$ARGUMENTS` is a file path or directory, review that target directly.
+   - If `$ARGUMENTS` is empty, default to current git changes (`git diff` + `git diff --staged`). If there are no changes, prompt for a path.
 2. Read `$SKILL_DIR/references/review-dimensions.md`, `$SKILL_DIR/references/issue-classification.md`, `$SKILL_DIR/references/workflow-guide.md`, and `$SKILL_DIR/references/communication-guide.md`.
 3. Detect languages in the target and load matching guides from `$SKILL_DIR/references/languages/`.
 4. Load the quick checklist at `$SKILL_DIR/assets/quick-checklist.md` when you need a fast pass or a review warm-up.
@@ -97,6 +101,8 @@ Do not promote pure formatting or taste disagreements above `low` unless the pro
 ## Error Handling
 
 - Empty target: review current git changes; if there are none, prompt for a path.
+- PR reference without number: attempt `gh pr view` on current branch; if no PR found, ask the user explicitly.
+- `gh` unavailable for PR review: ask the user to paste the diff or provide a local diff file path.
 - Workspace too large (>200 files): ask the user to narrow the scope before continuing.
 - Missing language guide: fall back to general best practices and the dimension rules.
 - Mixed-language repositories: keep one consistent human-facing language per response instead of switching tone mid-report.
