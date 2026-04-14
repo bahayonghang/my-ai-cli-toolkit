@@ -136,7 +136,7 @@ describe("InstalledSkillsPage", () => {
     expect(markup).toContain("Search installed skills");
     expect(markup).toContain("2 skills in view");
     expect(markup).toContain("2 categories");
-    expect(markup).toContain("Open Registry &amp; Package Installs");
+    expect(markup).toContain("Open NPX Skills &amp; Package Installs");
     expect(markup).toContain("frontend-design");
   });
 

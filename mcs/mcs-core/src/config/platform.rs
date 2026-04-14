@@ -173,7 +173,7 @@ pub fn skills_library_platform_ids(
 }
 
 fn removed_platform_ids() -> &'static [&'static str] {
-    static IDS: [&str; 1] = ["iflow"];
+    static IDS: [&str; 3] = ["iflow", "qoder", "qwen"];
     &IDS
 }
 
@@ -285,20 +285,6 @@ pub fn platform_displays() -> &'static [PlatformDisplay] {
                 icon: "🌌",
                 base_dir: "~/.agents/",
                 skills_dir: "~/.agents/skills/",
-            },
-            PlatformDisplay {
-                id: "qwen",
-                name: "Qwen",
-                icon: "🔮",
-                base_dir: "~/.qwen/",
-                skills_dir: "~/.qwen/skills/",
-            },
-            PlatformDisplay {
-                id: "qoder",
-                name: "Qoder",
-                icon: "⚡",
-                base_dir: "~/.qoder/",
-                skills_dir: "~/.qoder/skills/",
             },
             PlatformDisplay {
                 id: "kiro",
@@ -494,30 +480,6 @@ pub fn default_platforms() -> HashMap<String, PlatformConfig> {
                 Some("~/.agents"),
                 "skills",
                 ("", "", None),
-                ("", "", None),
-                None,
-            ),
-        ),
-        (
-            "qwen".into(),
-            p(
-                "qwen",
-                "~/.qwen",
-                None,
-                "skills",
-                ("commands", "qwen", Some("claude")),
-                ("", "", None),
-                None,
-            ),
-        ),
-        (
-            "qoder".into(),
-            p(
-                "qoder",
-                "~/.qoder",
-                None,
-                "skills",
-                ("commands", "qoder", Some("claude")),
                 ("", "", None),
                 None,
             ),
@@ -1042,6 +1004,12 @@ commands_source = "iflow"
 [platforms.qwen]
 base_dir = "~/.qwen-next"
 
+[platforms.qoder]
+base_dir = "~/.qoder-next"
+
+[platforms.kiro]
+base_dir = "~/.kiro-next"
+
 [platforms.custom]
 base_dir = "~/.custom-platform"
 "#,
@@ -1052,9 +1020,11 @@ base_dir = "~/.custom-platform"
         apply_toml_overrides(&mut platforms, &config_path, "test");
 
         assert!(!platforms.contains_key("iflow"));
+        assert!(!platforms.contains_key("qoder"));
+        assert!(!platforms.contains_key("qwen"));
         assert_eq!(
-            platforms.get("qwen").expect("qwen platform").base_dir,
-            "~/.qwen-next"
+            platforms.get("kiro").expect("kiro platform").base_dir,
+            "~/.kiro-next"
         );
         assert_eq!(
             platforms.get("custom").expect("custom platform").base_dir,

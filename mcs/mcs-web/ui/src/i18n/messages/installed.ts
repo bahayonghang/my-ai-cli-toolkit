@@ -3,8 +3,8 @@ export const enInstalledMessages = {
   "installed.workspaceEyebrow": "Platform skills workspace",
   "installed.workspaceTitle": "Local skills library for {platform}",
   "installed.workspaceSubtitle":
-    "Search the current local library, adjust filters, and move straight into local installs or registry package work.",
-  "installed.openRegistry": "Open Registry & Package Installs",
+    "Search the current local library, adjust filters, and move straight into local installs or the npx skills workspace.",
+  "installed.openRegistry": "Open NPX Skills & Package Installs",
   "installed.categories": "CATEGORIES",
   "installed.allSkills": "All Skills",
   "installed.searchLabel": "Search installed skills",
@@ -43,8 +43,8 @@ export const zhInstalledMessages: Record<
   "installed.workspaceEyebrow": "平台技能工作区",
   "installed.workspaceTitle": "{platform} 的本地技能库",
   "installed.workspaceSubtitle":
-    "搜索当前本地技能库、调整筛选条件，并直接进入本地安装或 Registry 包管理。",
-  "installed.openRegistry": "打开 Registry 与包安装",
+    "搜索当前本地技能库、调整筛选条件，并直接进入本地安装或 npx skills 安装管理。",
+  "installed.openRegistry": "打开 NPX Skills 与包安装",
   "installed.categories": "分类",
   "installed.allSkills": "全部技能",
   "installed.searchLabel": "搜索已安装技能",

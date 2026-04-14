@@ -222,7 +222,7 @@ export default function InstalledSkillsPage() {
             variant="outlined"
             startIcon={<TerminalIcon />}
             onClick={() =>
-              navigateDeferred(`/registry?workspace=${encodeURIComponent(platformId ?? "")}`)
+              navigateDeferred(`/npx-skills?workspace=${encodeURIComponent(platformId ?? "")}`)
             }
           >
             {t("installed.openRegistry")}

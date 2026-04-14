@@ -47,14 +47,14 @@ vi.mock("@/hooks/useLegacyDirs", () => ({
 const dashboardFixture: DashboardDto = {
   summary: {
     activePlatforms: 3,
-    totalPlatforms: 4,
-    installedSkills: 18,
-    totalSkills: 40,
-    installedCommands: 12,
-    totalCommands: 20,
+    totalPlatforms: 3,
+    installedSkills: 15,
+    totalSkills: 32,
+    installedCommands: 11,
+    totalCommands: 18,
     outdatedSkills: 5,
-    skillCoverage: 45,
-    commandCoverage: 60,
+    skillCoverage: 47,
+    commandCoverage: 61,
   },
   skillSpotlight: {
     topSkills: [
@@ -114,16 +114,6 @@ const dashboardFixture: DashboardDto = {
       outdated_skills: 0,
       total_commands: 4,
       installed_commands: 3,
-    },
-    {
-      id: "qwen",
-      name: "Qwen",
-      icon: "Q",
-      total_skills: 8,
-      installed_skills: 3,
-      outdated_skills: 0,
-      total_commands: 2,
-      installed_commands: 1,
     },
   ],
 };

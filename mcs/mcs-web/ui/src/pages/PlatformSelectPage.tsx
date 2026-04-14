@@ -23,6 +23,7 @@ import { getSkillsLibrarySupportText } from "@/utils/platformLibrary";
 import {
   AppShell,
   ListSurface,
+  MetricStrip,
   SectionHero,
 } from "@/components/shell/AppShell";
 import {
@@ -104,6 +105,36 @@ export default function PlatformSelectPage() {
           title={t("platformSelect.title")}
           titleComponent="h1"
           description={t("platformSelect.subtitle")}
+          meta={
+            <MetricStrip
+              tone="entry"
+              density="compact"
+              items={[
+                {
+                  key: "platforms",
+                  label: t("common.platformWorkspaces"),
+                  value: platforms.length,
+                  detail: t("common.controlPlaneLabel"),
+                  emphasis: true,
+                },
+                {
+                  key: "shared",
+                  label: t("common.skillsLibraryLabel"),
+                  value: platforms.filter((platform) => platform.skills_library_kind === "shared").length,
+                  detail: t("platformSelect.sharedLibrary"),
+                },
+                {
+                  key: "legacy",
+                  label: t("dialogs.legacyCleanupTitle"),
+                  value: legacyCount,
+                  detail:
+                    legacyCount > 0
+                      ? t("platformSelect.legacyCleanupTooltip")
+                      : t("dialogs.legacyCleanupEmpty"),
+                },
+              ]}
+            />
+          }
           actions={
             <>
               <Button
@@ -129,7 +160,7 @@ export default function PlatformSelectPage() {
                 disabled={!firstPlatformId}
                 onClick={() => {
                   if (firstPlatformId) {
-                    navigateDeferred(`/registry?workspace=${encodeURIComponent(firstPlatformId)}`);
+                    navigateDeferred(`/npx-skills?workspace=${encodeURIComponent(firstPlatformId)}`);
                   }
                 }}
                 sx={{ justifyContent: "flex-start" }}
@@ -186,7 +217,10 @@ export default function PlatformSelectPage() {
                       width: "100%",
                       display: "grid",
                       gap: 2,
-                      gridTemplateColumns: { xs: "1fr", lg: "82px minmax(0, 1fr) minmax(240px, 0.7fr)" },
+                      gridTemplateColumns: {
+                        xs: "1fr",
+                        lg: "72px minmax(0, 1.1fr) minmax(240px, 0.7fr) auto",
+                      },
                       alignItems: "start",
                     }}
                   >
@@ -199,7 +233,7 @@ export default function PlatformSelectPage() {
                         platformId={platform.id}
                         name={platform.name}
                         fallbackIcon={platform.icon}
-                        size={68}
+                        size={60}
                       />
                     </Box>
 
@@ -228,6 +262,28 @@ export default function PlatformSelectPage() {
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
                         {librarySupport}
+                      </Typography>
+                    </Stack>
+
+                    <Stack
+                      spacing={0.6}
+                      sx={{
+                        minWidth: 0,
+                        alignItems: { xs: "flex-start", lg: "flex-end" },
+                        textAlign: { xs: "left", lg: "right" },
+                      }}
+                    >
+                      <Typography variant="overline" color="text.secondary">
+                        {t("common.platform")}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 590 }}>
+                        {t("common.platformWorkspaces")}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("common.platformWorkspaceTitle", {
+                          content: t("common.skills"),
+                          platform: platform.name,
+                        })}
                       </Typography>
                     </Stack>
                   </Box>

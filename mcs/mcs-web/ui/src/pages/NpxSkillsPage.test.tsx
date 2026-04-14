@@ -85,12 +85,12 @@ vi.mock("@/hooks/useInstallTarget", () => ({
   useInstallTarget: () => installTargetState,
 }));
 
-function renderPage(initialEntry = "/registry?workspace=claude") {
+function renderPage(initialEntry = "/npx-skills?workspace=claude") {
   return renderToStaticMarkup(
     <ThemeProvider theme={lightTheme}>
       <MemoryRouter initialEntries={[initialEntry]}>
         <Routes>
-          <Route path="/registry" element={<NpxSkillsLayout />}>
+          <Route path="/npx-skills" element={<NpxSkillsLayout />}>
             <Route index element={<Navigate to="discover" replace />} />
             <Route path="discover" element={<NpxDiscoverPage />} />
             <Route path="manage" element={<NpxManagePage />} />
@@ -102,12 +102,12 @@ function renderPage(initialEntry = "/registry?workspace=claude") {
 }
 
 describe("NpxSkillsLayout", () => {
-  it("renders the registry workspace with navigation pills", () => {
+  it("renders the npx skills workspace with navigation pills", () => {
     installTargetState.resolutionError = null;
 
-    const markup = renderPage("/registry/discover?workspace=claude");
+    const markup = renderPage("/npx-skills/discover?workspace=claude");
 
-    expect(markup).toContain("Registry");
+    expect(markup).toContain("npx skills install and management");
     expect(markup).toContain("Discover");
     expect(markup).toContain("Manage");
   });
@@ -116,10 +116,10 @@ describe("NpxSkillsLayout", () => {
     installTargetState.resolutionError = "Project target is invalid";
     installTargetState.resolvedTarget = null;
 
-    const markup = renderPage("/registry/discover?workspace=claude");
+    const markup = renderPage("/npx-skills/discover?workspace=claude");
 
     expect(markup).toContain("Project target is invalid");
-    expect(markup).toContain("Registry");
+    expect(markup).toContain("npx skills install and management");
 
     installTargetState.resolutionError = null;
     installTargetState.resolvedTarget = {

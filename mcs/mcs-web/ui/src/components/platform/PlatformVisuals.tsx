@@ -66,11 +66,6 @@ const platformVisualRegistry: Record<string, PlatformVisualDefinition> = {
     tone: "secondary",
     toneSecondary: "warning",
   },
-  qwen: {
-    glyph: "QW",
-    tone: "success",
-    toneSecondary: "info",
-  },
   cline: {
     glyph: "CN",
     tone: "primary",
@@ -150,24 +145,23 @@ function PlatformBadgeSvg({
       <defs>
         <linearGradient id={`${safeId}-surface`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor={glow} />
-          <stop offset="58%" stopColor={alpha(accent, 0.22)} />
-          <stop offset="100%" stopColor={alpha(accentSecondary, 0.3)} />
+          <stop offset="100%" stopColor={alpha(accentSecondary, 0.08)} />
         </linearGradient>
         <linearGradient id={`${safeId}-accent`} x1="6%" y1="6%" x2="94%" y2="94%">
           <stop offset="0%" stopColor={accent} />
           <stop offset="100%" stopColor={accentSecondary} />
         </linearGradient>
       </defs>
-      <rect x="4" y="4" width="56" height="56" rx="18" fill={`url(#${safeId}-surface)`} />
+      <rect x="4" y="4" width="56" height="56" rx="16" fill={`url(#${safeId}-surface)`} />
       <path
-        d="M14 25C14 17.82 19.82 12 27 12H49C51.7614 12 54 14.2386 54 17V39C54 46.18 48.18 52 41 52H19C16.2386 52 14 49.7614 14 47V25Z"
+        d="M12 18C12 14.6863 14.6863 12 18 12H46C50.4183 12 54 15.5817 54 20V46C54 50.4183 50.4183 54 46 54H18C14.6863 54 12 51.3137 12 48V18Z"
         fill={`url(#${safeId}-accent)`}
-        opacity="0.94"
+        opacity="0.92"
       />
       <path
-        d="M18 14H33C24.1634 15.3053 17.3053 22.1634 16 31V16C16 14.8954 16.8954 14 18 14Z"
+        d="M17 13H33C26.461 14.132 21.132 19.461 20 26H15V15C15 13.8954 15.8954 13 17 13Z"
         fill="#FFFFFF"
-        opacity="0.18"
+        opacity="0.12"
       />
       <text
         x="32"
@@ -212,20 +206,20 @@ export function PlatformBadge({
       sx={{
         width: size,
         height: size,
-        borderRadius: Math.max(14, Math.round(size * 0.34)),
+        borderRadius: Math.max(12, Math.round(size * 0.26)),
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        border: `1px solid ${alpha(accent, theme.palette.mode === "dark" ? 0.26 : 0.18)}`,
-        background:
+        border: `1px solid ${alpha(accent, theme.palette.mode === "dark" ? 0.3 : 0.2)}`,
+        backgroundColor:
           theme.palette.mode === "dark"
-            ? `linear-gradient(180deg, ${alpha(accent, 0.14)} 0%, ${alpha(accentSecondary, 0.08)} 100%)`
-            : `linear-gradient(180deg, ${alpha(accent, 0.12)} 0%, ${alpha(accentSecondary, 0.06)} 100%)`,
+            ? alpha(theme.palette.common.white, 0.03)
+            : alpha(theme.palette.common.white, 0.96),
         boxShadow:
           theme.palette.mode === "dark"
-            ? `0 10px 24px ${alpha(accent, 0.14)}`
-            : `0 8px 18px ${alpha(accent, 0.1)}`,
+            ? `0 1px 0 ${alpha(theme.palette.common.white, 0.04)} inset`
+            : `0 1px 0 ${alpha(theme.palette.common.white, 0.96)} inset`,
         overflow: "hidden",
       }}
     >
@@ -257,7 +251,7 @@ function CapabilityChip({
           sx={{
             width: 28,
             height: 28,
-            borderRadius: 999,
+            borderRadius: 2,
             border: "1px solid var(--mcs-panel-stroke-soft)",
             backgroundColor: "var(--mcs-panel-fill-emphasis)",
             display: "inline-flex",
@@ -355,7 +349,7 @@ export function PlatformIdentity({
         <Typography
           variant="body1"
           component={titleComponent}
-          sx={{ fontWeight: 700, lineHeight: 1.1, overflowWrap: "anywhere" }}
+          sx={{ fontWeight: 590, lineHeight: 1.1, overflowWrap: "anywhere" }}
         >
           {name}
         </Typography>

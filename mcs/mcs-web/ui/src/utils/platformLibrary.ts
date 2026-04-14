@@ -10,8 +10,6 @@ const FALLBACK_PLATFORM_NAMES: Record<string, string> = {
   gemini: "Gemini",
   kimi: "Kimi",
   opencode: "OpenCode",
-  qoder: "Qoder",
-  qwen: "Qwen",
   "trae-cn": "Trae CN",
 };
 
