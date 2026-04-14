@@ -50,7 +50,35 @@ tags: [interview, planning, requirements, design, architecture]
        - 输出提示：`📋 检测到 planning-with-files，使用文件计划模式`
        - 先将访谈结论以 notes.md 模板格式写入工作目录的 `notes.md`
        - 调用 `Skill(skill="planning-with-files:plan", args="基于访谈结论创建实施计划，访谈结论已写入 notes.md")`
-       - task_plan.md 应包含：业务目标(Goal)、带 checkbox 的阶段(Phases)、关键问题(Key Questions)、架构决策及理由(Decisions Made)、风险项、当前状态(Status)
+       - task_plan.md 按以下模板结构生成：
+
+         ```markdown
+         # Implementation Plan
+
+         ## Goal
+         <从访谈提取的核心业务目标>
+
+         ## Phases
+         - [ ] Phase 1: <阶段名> — <关键交付物>
+         - [ ] Phase 2: ...
+
+         ## Key Questions Resolved
+         | 问题 | 决策 | 理由 |
+         |------|------|------|
+         | ... | ... | ... |
+
+         ## Decisions Made
+         - **选定方案**: <方案名> — <一句话理由>
+         - **被拒方案**: <方案名> — <为什么不选>
+
+         ## Risks
+         - [ ] <风险描述> → 缓解措施: <措施>
+
+         ## Status
+         - 当前阶段: Phase 1
+         - 创建时间: YYYY-MM-DD
+         ```
+
        - 完成后告知用户计划文件位置，流程结束
     c. **若 planning-with-files 不可用（降级路径）**：
        - 输出提示：`📋 planning-with-files 不可用，使用平台原生 Plan 模式`
