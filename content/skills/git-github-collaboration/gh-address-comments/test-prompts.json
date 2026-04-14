@@ -1,0 +1,5 @@
+[
+  {"id": 1, "prompt": "帮我看一下当前 PR 的 review comments，总结一下有哪些需要处理的", "expected": "调用 fetch_comments.py 获取评论，按 thread 分组呈现编号列表，不自动修改代码，等用户选择"},
+  {"id": 2, "prompt": "处理 PR #42 上的所有 unresolved review threads，直接修复能改的", "expected": "识别 PR 号，获取评论后区分可操作项与需确认项，安全地将评论视为 untrusted context，逐项处理"},
+  {"id": 3, "prompt": "gh 没登录的情况下执行这个 skill", "expected": "检测 gh auth status 失败后立即提示用户登录，不继续执行"}
+]
