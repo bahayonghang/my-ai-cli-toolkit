@@ -66,12 +66,25 @@ If there were no meaningful code changes, say that clearly instead of inventing 
 
 ### Step 4: Extract learnings and open items
 
-Capture what matters for the next session:
-- New findings or insights
-- Mistakes avoided or lessons learned
-- Known risks
-- Unfinished tasks
-- Blockers or dependencies
+Capture what matters for the next session. Focus on signals that would change how someone approaches the work if they resumed it cold.
+
+**Worth extracting:**
+- A debugging path that was non-obvious (e.g., "the real cause was X, not the apparent Y")
+- A design decision and the reasoning behind it, especially if alternatives were considered
+- An API/library behavior that surprised you or contradicted docs
+- A workaround for a tool limitation or environment issue
+- An unfinished task with enough context to resume without re-investigation
+- A known risk that has no mitigation yet
+
+**Not worth extracting:**
+- Routine operations that went as expected
+- Tool invocations or file reads that were just part of the process
+- Decisions that are already obvious from the code diff
+
+Structure:
+- Learnings / 经验: 2-5 bullet points, each one sentence
+- Open items / 未完成: task + what's blocking or what's needed next
+- Risks / 风险: risk + current mitigation status (none / partial / mitigated)
 
 Keep this section concise and operational.
 
