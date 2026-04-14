@@ -7,7 +7,7 @@ tags:
   - conventional-commits
   - commit-message
   - chinese
-version: 1.3.1
+version: 1.4.0
 allowed-tools:
   - Bash
   - python
@@ -80,11 +80,12 @@ Decide the active change authority before doing anything else:
 ## 5. Commit Or Draft
 
 1. If the user asked only for a draft, return the proposed commit text and stop.
-2. If the user asked to commit and `staged-only` is active, commit only the safe staged set. Write the message to a file and commit with `git commit -F <message-file>` so PowerShell and POSIX shells behave consistently.
-3. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` first so tracked, deleted, and untracked non-ignored files all enter the commit set.
-4. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
-5. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
-6. Do not push by default. Only discuss or run `git push` if the user explicitly asked for it.
+2. **Confirmation checkpoint**: Before any `git commit`, display the final commit message (header + body + footer) and the list of files to be committed. If the user has been interactive in this session, wait for explicit confirmation. If the user pre-approved (e.g. "直接提交", "commit it"), proceed without pausing.
+3. If the user asked to commit and `staged-only` is active, commit only the safe staged set. Write the message to a file and commit with `git commit -F <message-file>` so PowerShell and POSIX shells behave consistently.
+4. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` first so tracked, deleted, and untracked non-ignored files all enter the commit set.
+5. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
+6. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
+7. Do not push by default. Only discuss or run `git push` if the user explicitly asked for it.
 
 ## 6. Verify
 
