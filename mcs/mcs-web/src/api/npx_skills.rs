@@ -21,20 +21,23 @@ use crate::api::error::AppError;
 use crate::dto::NpxInstalledSkillInstanceDto;
 use crate::dto::{
     ApiResponse, InstallTargetDto, InstallTargetQuery, InstallTargetScopeDto,
-    NpxCatalogInstalledStateDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto,
-    NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest, NpxSkillsInstalledInventoryDto,
-    NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest, NpxSkillsOperation,
-    NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewRequest, NpxSkillsRemoveJobRequest,
+    NpxCatalogInstalledStateDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
+    NpxSkillsCliVersionDto, NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest,
+    NpxSkillsInstalledInventoryDto, NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest,
+    NpxSkillsOperation, NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewRequest,
+    NpxSkillsPackageUpdateJobRequest, NpxSkillsPackagesInventoryDto, NpxSkillsRemoveJobRequest,
     ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{
     build_check_args, build_install_args, build_remove_args, build_update_args,
-    clear_package_preview_cache, execute_skills_command, preview_package_skills,
+    build_update_args_for_skills, clear_package_preview_cache, execute_skills_command,
+    preview_package_skills, resolve_cli_version_info,
 };
 use crate::services::npx_skills_inventory::{
-    InventoryQuery, apply_catalog_install_state_with_lookup, clear_check_cache,
-    clear_persisted_list_cache, invalidate_inventory_cache, resolve_catalog_install_state,
-    resolve_inventory, resolve_inventory_page, write_check_cache,
+    InventoryQuery, PackageInventoryQuery, apply_catalog_install_state_with_lookup,
+    clear_check_cache, clear_persisted_list_cache, invalidate_inventory_cache,
+    resolve_catalog_install_state, resolve_inventory, resolve_inventory_page,
+    resolve_package_inventory_page, write_check_cache,
 };
 use crate::state::AppState;
 
@@ -141,6 +144,21 @@ pub struct NpxSkillsInstalledQuery {
     pub page_size: Option<usize>,
     #[serde(flatten)]
     pub install_target: InstallTargetQuery,
+}
+
+#[derive(Deserialize, Default)]
+pub struct NpxSkillsPackagesQuery {
+    pub search: Option<String>,
+    pub page: Option<usize>,
+    pub page_size: Option<usize>,
+    pub refresh_remote: Option<bool>,
+    #[serde(flatten)]
+    pub install_target: InstallTargetQuery,
+}
+
+#[derive(Deserialize, Default)]
+pub struct NpxSkillsCliVersionQuery {
+    pub cli_mode: Option<NpxSkillsCliMode>,
 }
 
 #[derive(Serialize)]
@@ -348,6 +366,58 @@ pub async fn installed(
     )
     .await?;
     Ok(Json(ApiResponse::ok(inventory)))
+}
+
+pub async fn packages(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Query(query): Query<NpxSkillsPackagesQuery>,
+) -> Result<Json<ApiResponse<NpxSkillsPackagesInventoryDto>>, AppError> {
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.install_target.to_install_target();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Read,
+    )
+    .map_err(AppError::BadRequest)?;
+
+    let resolved_target = resolved_install_target_dto(&resolved);
+    let project_root = state.project_root().await;
+    let catalog_entries = resolved_catalog_entries(
+        state
+            .external_skill_catalog()
+            .await
+            .map_err(AppError::Internal)?,
+    )?;
+    let inventory = resolve_package_inventory_page(
+        &project_root,
+        &install_target,
+        resolved_target,
+        &catalog_entries,
+        NpxSkillsCliConfigDto::default().cli_mode,
+        &PackageInventoryQuery {
+            search: query.search.clone(),
+            page: query.page,
+            page_size: query.page_size,
+            force_remote_refresh: query.refresh_remote.unwrap_or(false),
+        },
+    )
+    .await?;
+
+    Ok(Json(ApiResponse::ok(inventory.into_dto())))
+}
+
+pub async fn cli_version(
+    Path(_id): Path<String>,
+    Query(query): Query<NpxSkillsCliVersionQuery>,
+) -> Result<Json<ApiResponse<NpxSkillsCliVersionDto>>, AppError> {
+    let cli_mode = query.cli_mode.unwrap_or_default();
+    let version = resolve_cli_version_info(cli_mode).await?;
+    Ok(Json(ApiResponse::ok(version)))
 }
 
 pub async fn package_preview(
@@ -623,6 +693,104 @@ pub async fn update_jobs_start(
         vec![NpxSkillsJobTask {
             label: "update".into(),
             args: build_update_args(is_global),
+            state_update: StateUpdate::ClearCheckCache,
+        }],
+        target_ctx,
+        install_target,
+        body.config,
+    )
+    .await?;
+
+    Ok(Json(ApiResponse::ok(result)))
+}
+
+pub async fn update_package_jobs_start(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(body): Json<NpxSkillsPackageUpdateJobRequest>,
+) -> Result<Json<ApiResponse<NpxSkillsJobStartDto>>, AppError> {
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = body.install_target.clone();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Write,
+    )
+    .map_err(AppError::BadRequest)?;
+    let target_ctx = TargetContext {
+        project_root: state.project_root().await,
+        skills_path: resolved.platform.skills_path(),
+        install_target_scope: install_target.scope,
+    };
+    let catalog_entries = resolved_catalog_entries(
+        state
+            .external_skill_catalog()
+            .await
+            .map_err(AppError::Internal)?,
+    )?;
+    let inventory = resolve_package_inventory_page(
+        &target_ctx.project_root,
+        &install_target,
+        resolved_install_target_dto(&resolved),
+        &catalog_entries,
+        NpxSkillsCliConfigDto::default().cli_mode,
+        &PackageInventoryQuery {
+            page: Some(NPX_SKILLS_MAX_ITEMS),
+            page_size: Some(NPX_SKILLS_MAX_ITEMS),
+            force_remote_refresh: false,
+            ..PackageInventoryQuery::default()
+        },
+    )
+    .await?;
+
+    let item_ids = normalize_names(body.item_ids)?;
+    if item_ids.len() > NPX_SKILLS_MAX_ITEMS {
+        return Err(AppError::BadRequest(format!(
+            "Too many package update items ({}); max allowed is {NPX_SKILLS_MAX_ITEMS}",
+            item_ids.len()
+        )));
+    }
+
+    let package_lookup = inventory
+        .items
+        .into_iter()
+        .map(|item| (item.id.clone(), item))
+        .collect::<HashMap<_, _>>();
+
+    let mut skill_names = Vec::<String>::new();
+    let mut labels = Vec::<String>::new();
+    for item_id in &item_ids {
+        let Some(package) = package_lookup.get(item_id) else {
+            return Err(AppError::BadRequest(format!(
+                "Installed package '{item_id}' cannot be updated from this page"
+            )));
+        };
+        if !package.actions.updatable {
+            return Err(AppError::BadRequest(format!(
+                "Installed package '{}' does not currently expose an update action",
+                package.package_ref
+            )));
+        }
+        labels.push(package.package_ref.clone());
+        for skill in &package.installed_skill_names {
+            if !skill_names.iter().any(|existing| existing == skill) {
+                skill_names.push(skill.clone());
+            }
+        }
+    }
+
+    let is_global = !matches!(install_target.scope, InstallTargetScopeDto::Project);
+    let args = build_update_args_for_skills(&skill_names, is_global);
+    let result = start_job(
+        state,
+        id,
+        NpxSkillsOperation::Update,
+        vec![NpxSkillsJobTask {
+            label: labels.join(", "),
+            args,
             state_update: StateUpdate::ClearCheckCache,
         }],
         target_ctx,

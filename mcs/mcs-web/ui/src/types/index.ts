@@ -252,6 +252,14 @@ export interface NpxSkillsCapabilitiesDto {
   update: NpxSkillsCapabilityDto;
 }
 
+export interface NpxSkillsCliVersionDto {
+  current: string | null;
+  latest: string | null;
+  status: "up_to_date" | "update_available" | "unknown";
+  checked_at_ms: number | null;
+  reason: string | null;
+}
+
 export interface NpxSkillsInstalledSummaryDto {
   total: number;
   curated: number;
@@ -290,6 +298,55 @@ export interface NpxInstalledActionsDto {
   removable: boolean;
   reinstallable: boolean;
   batch_updatable: boolean;
+}
+
+export interface NpxInstalledPackageActionsDto {
+  removable: boolean;
+  reinstallable: boolean;
+  updatable: boolean;
+}
+
+export interface NpxInstalledPackageDto {
+  id: string;
+  package_ref: string;
+  source_ref: string;
+  source_kind: "curated" | "manual_github" | "manual_git" | "manual_local" | "manual_unknown";
+  installed_skill_names: string[];
+  installed_skill_count: number;
+  agents: string[];
+  local_version: string | null;
+  remote_version: string | null;
+  comparison_status:
+    | "up_to_date"
+    | "update_available"
+    | "not_recorded"
+    | "incomparable"
+    | "unknown";
+  version_basis: string;
+  checked_at_ms: number | null;
+  installed_at: string | null;
+  updated_at: string | null;
+  reason: string | null;
+  actions: NpxInstalledPackageActionsDto;
+}
+
+export interface NpxSkillsPackagesSummaryDto {
+  total_packages: number;
+  total_skills: number;
+  update_available: number;
+  incomparable: number;
+  not_recorded: number;
+}
+
+export interface NpxSkillsPackagesInventoryDto {
+  target: ResolvedInstallTarget;
+  capabilities: NpxSkillsCapabilitiesDto;
+  summary: NpxSkillsPackagesSummaryDto;
+  filtered_total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  items: NpxInstalledPackageDto[];
 }
 
 export interface NpxTaxonomyCategoryDto {

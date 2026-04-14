@@ -12,12 +12,14 @@ use mcs_core::core::external_skills::ResolvedExternalSkillEntry;
 use crate::api::error::AppError;
 use crate::dto::{
     InstallTargetDto, InstallTargetScopeDto, NpxCatalogInstalledStateDto, NpxCatalogMatchDto,
-    NpxInstalledActionsDto, NpxInstalledSkillInstanceDto, NpxInstalledSourceDto,
-    NpxInstalledSourceKindDto, NpxInstalledTrackingDto, NpxInstalledTrackingKindDto,
-    NpxInstalledUpdateDto, NpxInstalledUpdateKindDto, NpxSkillsCapabilitiesDto,
+    NpxInstalledActionsDto, NpxInstalledPackageActionsDto, NpxInstalledPackageDto,
+    NpxInstalledSkillInstanceDto, NpxInstalledSourceDto, NpxInstalledSourceKindDto,
+    NpxInstalledTrackingDto, NpxInstalledTrackingKindDto, NpxInstalledUpdateDto,
+    NpxInstalledUpdateKindDto, NpxPackageComparisonStatusDto, NpxSkillsCapabilitiesDto,
     NpxSkillsCapabilityDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
-    NpxSkillsInstalledInventoryDto, NpxSkillsInstalledSummaryDto, NpxTaxonomyCategoryDto,
-    NpxTaxonomyGroupDto, ResolvedInstallTargetDto,
+    NpxSkillsInstalledInventoryDto, NpxSkillsInstalledSummaryDto, NpxSkillsPackagesInventoryDto,
+    NpxSkillsPackagesSummaryDto, NpxTaxonomyCategoryDto, NpxTaxonomyGroupDto,
+    ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{
     build_list_args, execute_skills_command, format_skills_command_preview,
@@ -65,6 +67,8 @@ struct GlobalLockEntry {
     source_type: Option<String>,
     #[serde(default)]
     source: Option<String>,
+    #[serde(default)]
+    r#ref: Option<String>,
     #[serde(default, rename = "sourceUrl")]
     source_url: Option<String>,
     #[serde(default, rename = "skillPath")]
@@ -97,6 +101,11 @@ struct ProjectLockEntry {
 struct LockMetadata {
     source_type: Option<String>,
     source_ref: Option<String>,
+    source_url: Option<String>,
+    source_git_ref: Option<String>,
+    skill_path: Option<String>,
+    skill_folder_hash: Option<String>,
+    computed_hash: Option<String>,
     installed_at: Option<String>,
     updated_at: Option<String>,
     update_supported: bool,
@@ -152,6 +161,14 @@ pub struct InventoryQuery {
     pub page_size: Option<usize>,
 }
 
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct PackageInventoryQuery {
+    pub search: Option<String>,
+    pub page: Option<usize>,
+    pub page_size: Option<usize>,
+    pub force_remote_refresh: bool,
+}
+
 #[derive(Clone, Debug)]
 pub struct InventoryPageResult {
     pub target: ResolvedInstallTargetDto,
@@ -182,9 +199,94 @@ impl InventoryPageResult {
 }
 
 #[derive(Clone, Debug)]
+pub struct PackageInventoryPageResult {
+    pub target: ResolvedInstallTargetDto,
+    pub capabilities: NpxSkillsCapabilitiesDto,
+    pub summary: NpxSkillsPackagesSummaryDto,
+    pub filtered_total: usize,
+    pub page: usize,
+    pub page_size: usize,
+    pub total_pages: usize,
+    pub items: Vec<NpxInstalledPackageDto>,
+}
+
+impl PackageInventoryPageResult {
+    pub fn into_dto(self) -> NpxSkillsPackagesInventoryDto {
+        NpxSkillsPackagesInventoryDto {
+            target: self.target,
+            capabilities: self.capabilities,
+            summary: self.summary,
+            filtered_total: self.filtered_total,
+            page: self.page,
+            page_size: self.page_size,
+            total_pages: self.total_pages,
+            items: self.items,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 struct InventoryCacheEntry {
     cached_at_ms: u64,
     data: Arc<InstalledInventorySourceData>,
+}
+
+const REMOTE_VERSION_CACHE_TTL_MS: u64 = 10 * 60_000;
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+struct GithubTreeCacheKey {
+    owner_repo: String,
+    git_ref: Option<String>,
+}
+
+#[derive(Clone, Debug)]
+struct GithubTreeCacheEntry {
+    cached_at_ms: u64,
+    tree: Result<GithubRepoTree, String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct GithubRepoTreeResponse {
+    sha: String,
+    #[serde(default)]
+    tree: Vec<GithubRepoTreeEntry>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct GithubRepoTreeEntry {
+    path: String,
+    #[serde(rename = "type")]
+    entry_type: String,
+    #[serde(default)]
+    sha: Option<String>,
+}
+
+#[derive(Clone, Debug)]
+struct GithubRepoTree {
+    sha: String,
+    tree: Vec<GithubRepoTreeEntry>,
+}
+
+#[derive(Clone, Debug)]
+struct PackageGroupDraft {
+    id: String,
+    package_ref: String,
+    source_ref: String,
+    source_kind: NpxInstalledSourceKindDto,
+    installed_skill_names: Vec<String>,
+    agents: Vec<String>,
+    local_version_full: Option<String>,
+    local_version_display: Option<String>,
+    remote_key: Option<GithubTreeCacheKey>,
+    git_skill_paths: Vec<String>,
+    version_basis: String,
+    installed_at: Option<String>,
+    updated_at: Option<String>,
+    reason: Option<String>,
+    removable: bool,
+    reinstallable: bool,
+    updatable: bool,
+    local_version_ready: bool,
 }
 
 pub async fn resolve_inventory(
@@ -293,6 +395,701 @@ pub async fn resolve_inventory_page(
         total_pages,
         items,
     })
+}
+
+pub async fn resolve_package_inventory_page(
+    project_root: &Path,
+    install_target: &InstallTargetDto,
+    resolved_target: ResolvedInstallTargetDto,
+    catalog_entries: &[ResolvedExternalSkillEntry],
+    cli_mode: NpxSkillsCliMode,
+    query: &PackageInventoryQuery,
+) -> Result<PackageInventoryPageResult, AppError> {
+    let source_data =
+        resolve_inventory_source_data(project_root, install_target, &resolved_target, cli_mode)
+            .await?;
+    let capabilities = build_capabilities(install_target.scope);
+    let catalog_by_installed_name = catalog_entries
+        .iter()
+        .map(|entry| (catalog_installed_name(entry), entry))
+        .collect::<HashMap<_, _>>();
+
+    let drafts = build_package_group_drafts(
+        &source_data.listed_skills,
+        &source_data.lock_entries,
+        &catalog_by_installed_name,
+        &capabilities,
+    );
+    let filtered = filter_package_group_drafts(drafts, query.search.as_deref());
+    let filtered_total = filtered.len();
+    let total_skills = filtered
+        .iter()
+        .map(|item| item.installed_skill_names.len())
+        .sum::<usize>();
+    let page_size = sanitize_page_size(query.page_size);
+    let total_pages = total_pages(filtered_total, page_size);
+    let page = sanitize_page(query.page, total_pages);
+    let start = (page - 1) * page_size;
+    let page_items = filtered
+        .into_iter()
+        .skip(start)
+        .take(page_size)
+        .collect::<Vec<_>>();
+
+    let mut items = Vec::with_capacity(page_items.len());
+    for draft in page_items {
+        items.push(resolve_package_group_draft(draft, query.force_remote_refresh).await);
+    }
+
+    let summary = NpxSkillsPackagesSummaryDto {
+        total_packages: filtered_total,
+        total_skills,
+        update_available: items
+            .iter()
+            .filter(|item| {
+                matches!(
+                    item.comparison_status,
+                    NpxPackageComparisonStatusDto::UpdateAvailable
+                )
+            })
+            .count(),
+        incomparable: items
+            .iter()
+            .filter(|item| {
+                matches!(
+                    item.comparison_status,
+                    NpxPackageComparisonStatusDto::Incomparable
+                )
+            })
+            .count(),
+        not_recorded: items
+            .iter()
+            .filter(|item| {
+                matches!(
+                    item.comparison_status,
+                    NpxPackageComparisonStatusDto::NotRecorded
+                )
+            })
+            .count(),
+    };
+
+    Ok(PackageInventoryPageResult {
+        target: resolved_target,
+        capabilities,
+        summary,
+        filtered_total,
+        page,
+        page_size,
+        total_pages,
+        items,
+    })
+}
+
+fn build_package_group_drafts(
+    listed_skills: &[CliListedSkill],
+    lock_entries: &HashMap<String, LockMetadata>,
+    catalog_by_installed_name: &HashMap<String, &ResolvedExternalSkillEntry>,
+    capabilities: &NpxSkillsCapabilitiesDto,
+) -> Vec<PackageGroupDraft> {
+    #[derive(Default)]
+    struct PackageAccumulator {
+        package_ref: String,
+        source_ref: String,
+        source_kind: Option<NpxInstalledSourceKindDto>,
+        installed_skill_names: Vec<String>,
+        agents: HashSet<String>,
+        local_hashes: Vec<(String, String)>,
+        remote_key: Option<GithubTreeCacheKey>,
+        remote_key_conflict: bool,
+        git_skill_paths: Vec<String>,
+        installed_at: Option<String>,
+        updated_at: Option<String>,
+        removable: bool,
+        reinstallable: bool,
+        updatable: bool,
+        missing_hash_count: usize,
+        reasons: Vec<String>,
+    }
+
+    let mut groups = HashMap::<String, PackageAccumulator>::new();
+
+    for listed in listed_skills {
+        let skill_name = listed.name.trim().to_string();
+        let lock = lock_entries.get(skill_name.as_str());
+        let catalog_entry = catalog_by_installed_name.get(skill_name.as_str()).copied();
+        let source = build_source(listed.path.as_str(), lock, catalog_entry);
+        let package_ref = catalog_entry
+            .map(|entry| entry.package_ref.clone())
+            .unwrap_or_else(|| source.r#ref.clone());
+        let group_key = format!("{:?}|{}|{}", source.kind, package_ref, source.r#ref);
+        let group = groups
+            .entry(group_key)
+            .or_insert_with(|| PackageAccumulator {
+                package_ref: package_ref.clone(),
+                source_ref: source.r#ref.clone(),
+                source_kind: Some(source.kind),
+                installed_skill_names: Vec::new(),
+                agents: HashSet::new(),
+                local_hashes: Vec::new(),
+                remote_key: None,
+                remote_key_conflict: false,
+                git_skill_paths: Vec::new(),
+                installed_at: None,
+                updated_at: None,
+                removable: true,
+                reinstallable: lock
+                    .and_then(|entry| entry.source_ref.as_ref())
+                    .is_some_and(|value| !value.trim().is_empty()),
+                updatable: capabilities.update.supported,
+                missing_hash_count: 0,
+                reasons: Vec::new(),
+            });
+
+        group.installed_skill_names.push(skill_name.clone());
+        for agent in &listed.agents {
+            group.agents.insert(agent.clone());
+        }
+
+        if let Some(lock) = lock {
+            let maybe_hash = lock
+                .skill_folder_hash
+                .as_deref()
+                .filter(|value| !value.trim().is_empty())
+                .map(ToOwned::to_owned)
+                .or_else(|| {
+                    lock.computed_hash
+                        .as_deref()
+                        .filter(|value| !value.trim().is_empty())
+                        .map(ToOwned::to_owned)
+                });
+            if let Some(hash) = maybe_hash {
+                let hash_key = lock
+                    .skill_path
+                    .as_deref()
+                    .filter(|value| !value.trim().is_empty())
+                    .map(ToOwned::to_owned)
+                    .unwrap_or_else(|| skill_name.clone());
+                group.local_hashes.push((hash_key, hash));
+            } else {
+                group.missing_hash_count += 1;
+            }
+
+            if let Some(skill_path) = lock
+                .skill_path
+                .as_deref()
+                .filter(|value| !value.trim().is_empty())
+                .map(ToOwned::to_owned)
+                && let Some(remote_key) = build_github_tree_cache_key(lock)
+            {
+                match &group.remote_key {
+                    Some(existing) if existing != &remote_key => {
+                        group.remote_key_conflict = true;
+                    }
+                    None => {
+                        group.remote_key = Some(remote_key);
+                    }
+                    _ => {}
+                }
+                group.git_skill_paths.push(skill_path);
+            }
+
+            if let Some(installed_at) = lock.installed_at.as_ref() {
+                group.installed_at = Some(match group.installed_at.take() {
+                    Some(existing) if existing <= *installed_at => existing,
+                    _ => installed_at.clone(),
+                });
+            }
+            if let Some(updated_at) = lock.updated_at.as_ref() {
+                group.updated_at = Some(match group.updated_at.take() {
+                    Some(existing) if existing >= *updated_at => existing,
+                    _ => updated_at.clone(),
+                });
+            }
+            if let Some(reason) = lock.update_reason.as_ref() {
+                group.reasons.push(reason.clone());
+            }
+            group.reinstallable = group.reinstallable
+                || lock
+                    .source_ref
+                    .as_ref()
+                    .is_some_and(|value| !value.trim().is_empty());
+        } else {
+            group.missing_hash_count += 1;
+            group
+                .reasons
+                .push("No lock metadata found for one or more installed skills.".into());
+        }
+    }
+
+    let mut drafts = groups
+        .into_values()
+        .map(|group| {
+            let mut installed_skill_names = group.installed_skill_names;
+            installed_skill_names.sort();
+            let mut git_skill_paths = group.git_skill_paths;
+            git_skill_paths.sort();
+            git_skill_paths.dedup();
+            let mut agents = group.agents.into_iter().collect::<Vec<_>>();
+            agents.sort();
+
+            let local_hash_count = group.local_hashes.len();
+            let local_version_full = if local_hash_count == 0 {
+                None
+            } else if local_hash_count == 1 && installed_skill_names.len() == 1 {
+                group.local_hashes.first().map(|(_, hash)| hash.clone())
+            } else if local_hash_count == installed_skill_names.len() {
+                Some(aggregate_group_hashes(&group.local_hashes))
+            } else {
+                None
+            };
+
+            let (version_basis, reason, local_version_ready) = if local_hash_count == 0 {
+                (
+                    "No recorded version hash for the installed package.".to_string(),
+                    Some("No recorded version hash for the installed package.".to_string()),
+                    false,
+                )
+            } else if local_hash_count == 1 && installed_skill_names.len() == 1 {
+                (
+                    "Current version is based on the installed skill folder hash.".to_string(),
+                    None,
+                    true,
+                )
+            } else if local_hash_count == installed_skill_names.len() {
+                (
+                    format!(
+                        "Current version is a digest of {} installed skill folder hashes.",
+                        installed_skill_names.len()
+                    ),
+                    None,
+                    true,
+                )
+            } else {
+                (
+                    format!(
+                        "Some installed skills are missing recorded hashes ({}/{} tracked).",
+                        local_hash_count,
+                        installed_skill_names.len()
+                    ),
+                    Some(format!(
+                        "Some installed skills are missing recorded hashes ({}/{} tracked).",
+                        local_hash_count,
+                        installed_skill_names.len()
+                    )),
+                    false,
+                )
+            };
+
+            let id = stable_hash(&format!(
+                "{}|{}|{:?}",
+                group.package_ref, group.source_ref, group.source_kind
+            ));
+
+            PackageGroupDraft {
+                id,
+                package_ref: group.package_ref,
+                source_ref: group.source_ref,
+                source_kind: group
+                    .source_kind
+                    .unwrap_or(NpxInstalledSourceKindDto::ManualUnknown),
+                installed_skill_names,
+                agents,
+                local_version_full: local_version_full.clone(),
+                local_version_display: local_version_full.as_deref().map(short_hash),
+                remote_key: if group.remote_key_conflict {
+                    None
+                } else {
+                    group.remote_key
+                },
+                git_skill_paths,
+                version_basis,
+                installed_at: group.installed_at,
+                updated_at: group.updated_at,
+                reason: reason.or_else(|| group.reasons.into_iter().next()),
+                removable: group.removable,
+                reinstallable: group.reinstallable,
+                updatable: group.updatable,
+                local_version_ready,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    drafts.sort_by(|left, right| {
+        left.package_ref
+            .cmp(&right.package_ref)
+            .then_with(|| left.source_ref.cmp(&right.source_ref))
+    });
+    drafts
+}
+
+fn filter_package_group_drafts(
+    drafts: Vec<PackageGroupDraft>,
+    search: Option<&str>,
+) -> Vec<PackageGroupDraft> {
+    let search = search
+        .map(|value| value.trim().to_lowercase())
+        .filter(|value| !value.is_empty());
+    drafts
+        .into_iter()
+        .filter(|item| {
+            let Some(search) = search.as_deref() else {
+                return true;
+            };
+            item.package_ref.to_lowercase().contains(search)
+                || item.source_ref.to_lowercase().contains(search)
+                || item
+                    .installed_skill_names
+                    .iter()
+                    .any(|name| name.to_lowercase().contains(search))
+                || item
+                    .local_version_display
+                    .as_ref()
+                    .is_some_and(|value| value.to_lowercase().contains(search))
+                || item
+                    .remote_key
+                    .as_ref()
+                    .is_some_and(|key| key.owner_repo.to_lowercase().contains(search))
+        })
+        .collect()
+}
+
+async fn resolve_package_group_draft(
+    draft: PackageGroupDraft,
+    force_remote_refresh: bool,
+) -> NpxInstalledPackageDto {
+    let PackageGroupDraft {
+        id,
+        package_ref,
+        source_ref,
+        source_kind,
+        installed_skill_names,
+        agents,
+        local_version_full,
+        local_version_display,
+        remote_key,
+        git_skill_paths,
+        version_basis,
+        installed_at,
+        updated_at,
+        reason,
+        removable,
+        reinstallable,
+        updatable,
+        local_version_ready,
+    } = draft;
+
+    if !local_version_ready {
+        return NpxInstalledPackageDto {
+            id,
+            package_ref,
+            source_ref,
+            source_kind,
+            installed_skill_names: installed_skill_names.clone(),
+            installed_skill_count: installed_skill_names.len(),
+            agents,
+            local_version: local_version_display,
+            remote_version: None,
+            comparison_status: NpxPackageComparisonStatusDto::NotRecorded,
+            version_basis,
+            checked_at_ms: None,
+            installed_at,
+            updated_at,
+            reason,
+            actions: NpxInstalledPackageActionsDto {
+                removable,
+                reinstallable,
+                updatable: false,
+            },
+        };
+    }
+
+    let remote_result = match source_kind {
+        NpxInstalledSourceKindDto::ManualLocal => {
+            Err("Local path packages do not have a comparable remote latest version.".to_string())
+        }
+        _ => match remote_key {
+            Some(ref key) if !git_skill_paths.is_empty() => {
+                resolve_remote_package_version(key, &git_skill_paths, force_remote_refresh).await
+            }
+            _ => Err("No remote repository metadata is available for this package.".to_string()),
+        },
+    };
+
+    let (remote_version, comparison_status, checked_at_ms, resolved_reason) = match remote_result {
+        Ok((remote_full, checked_at_ms)) => {
+            let status = if local_version_full.as_deref() == Some(remote_full.as_str()) {
+                NpxPackageComparisonStatusDto::UpToDate
+            } else {
+                NpxPackageComparisonStatusDto::UpdateAvailable
+            };
+            (
+                Some(short_hash(&remote_full)),
+                status,
+                Some(checked_at_ms),
+                None,
+            )
+        }
+        Err(error) => {
+            let status = if matches!(source_kind, NpxInstalledSourceKindDto::ManualLocal) {
+                NpxPackageComparisonStatusDto::Incomparable
+            } else {
+                NpxPackageComparisonStatusDto::Unknown
+            };
+            (None, status, None, Some(error))
+        }
+    };
+
+    NpxInstalledPackageDto {
+        id,
+        package_ref,
+        source_ref,
+        source_kind,
+        installed_skill_names: installed_skill_names.clone(),
+        installed_skill_count: installed_skill_names.len(),
+        agents,
+        local_version: local_version_display,
+        remote_version,
+        comparison_status,
+        version_basis,
+        checked_at_ms,
+        installed_at,
+        updated_at,
+        reason: resolved_reason.or(reason),
+        actions: NpxInstalledPackageActionsDto {
+            removable,
+            reinstallable,
+            updatable: updatable
+                && matches!(
+                    comparison_status,
+                    NpxPackageComparisonStatusDto::UpdateAvailable
+                ),
+        },
+    }
+}
+
+fn build_github_tree_cache_key(lock: &LockMetadata) -> Option<GithubTreeCacheKey> {
+    let owner_repo = lock
+        .source_ref
+        .as_deref()
+        .and_then(parse_github_owner_repo)
+        .or_else(|| lock.source_url.as_deref().and_then(parse_github_owner_repo))?;
+    Some(GithubTreeCacheKey {
+        owner_repo,
+        git_ref: lock
+            .source_git_ref
+            .clone()
+            .filter(|value| !value.trim().is_empty()),
+    })
+}
+
+fn parse_github_owner_repo(value: &str) -> Option<String> {
+    let trimmed = value.trim().trim_start_matches("git+");
+    if trimmed.is_empty() {
+        return None;
+    }
+    if let Some((_, repo)) = trimmed.split_once("github.com/") {
+        let repo = repo.trim_end_matches(".git").trim_matches('/');
+        let mut parts = repo.split('/');
+        let owner = parts.next()?;
+        let repo = parts.next()?;
+        if owner.is_empty() || repo.is_empty() {
+            return None;
+        }
+        return Some(format!("{owner}/{repo}"));
+    }
+    if let Some(repo) = trimmed.strip_prefix("git@github.com:") {
+        let repo = repo.trim_end_matches(".git").trim_matches('/');
+        let mut parts = repo.split('/');
+        let owner = parts.next()?;
+        let repo = parts.next()?;
+        if owner.is_empty() || repo.is_empty() {
+            return None;
+        }
+        return Some(format!("{owner}/{repo}"));
+    }
+    let mut parts = trimmed.split('/');
+    let owner = parts.next()?;
+    let repo = parts.next()?;
+    if owner.is_empty() || repo.is_empty() || trimmed.contains("://") {
+        return None;
+    }
+    Some(format!("{owner}/{}", repo.trim_end_matches(".git")))
+}
+
+fn aggregate_group_hashes(values: &[(String, String)]) -> String {
+    let mut sorted = values.to_vec();
+    sorted.sort_by(|left, right| left.0.cmp(&right.0).then_with(|| left.1.cmp(&right.1)));
+    let combined = sorted
+        .iter()
+        .map(|(name, hash)| format!("{name}:{hash}"))
+        .collect::<Vec<_>>()
+        .join("|");
+    stable_hash(&combined)
+}
+
+fn short_hash(value: &str) -> String {
+    value.chars().take(12).collect()
+}
+
+async fn resolve_remote_package_version(
+    key: &GithubTreeCacheKey,
+    skill_paths: &[String],
+    force_refresh: bool,
+) -> Result<(String, u64), String> {
+    let checked_at_ms = unix_time_ms();
+    let tree = resolve_github_repo_tree(key, force_refresh).await?;
+    let mut remote_hashes = Vec::with_capacity(skill_paths.len());
+    for skill_path in skill_paths {
+        let Some(hash) = get_skill_folder_hash_from_tree(&tree, skill_path) else {
+            return Err(format!(
+                "Unable to resolve the latest remote hash for {skill_path} in {}.",
+                key.owner_repo
+            ));
+        };
+        remote_hashes.push((skill_path.clone(), hash));
+    }
+    let version = if remote_hashes.len() == 1 {
+        remote_hashes
+            .first()
+            .map(|(_, hash)| hash.clone())
+            .unwrap_or_else(|| tree.sha.clone())
+    } else {
+        aggregate_group_hashes(&remote_hashes)
+    };
+    Ok((version, checked_at_ms))
+}
+
+async fn resolve_github_repo_tree(
+    key: &GithubTreeCacheKey,
+    force_refresh: bool,
+) -> Result<GithubRepoTree, String> {
+    let now_ms = unix_time_ms();
+    if !force_refresh {
+        let cache = github_tree_cache()
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        if let Some(entry) = cache.get(key)
+            && now_ms.saturating_sub(entry.cached_at_ms) <= REMOTE_VERSION_CACHE_TTL_MS
+        {
+            return entry.tree.clone();
+        }
+    }
+
+    let tree = fetch_github_repo_tree(key).await;
+    github_tree_cache()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner())
+        .insert(
+            key.clone(),
+            GithubTreeCacheEntry {
+                cached_at_ms: now_ms,
+                tree: tree.clone(),
+            },
+        );
+    tree
+}
+
+fn github_tree_cache() -> &'static Mutex<HashMap<GithubTreeCacheKey, GithubTreeCacheEntry>> {
+    static CACHE: OnceLock<Mutex<HashMap<GithubTreeCacheKey, GithubTreeCacheEntry>>> =
+        OnceLock::new();
+    CACHE.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+async fn fetch_github_repo_tree(key: &GithubTreeCacheKey) -> Result<GithubRepoTree, String> {
+    let mut refs = Vec::new();
+    if let Some(git_ref) = key
+        .git_ref
+        .as_ref()
+        .filter(|value| !value.trim().is_empty())
+    {
+        refs.push(git_ref.clone());
+    }
+    for fallback in ["HEAD", "main", "master"] {
+        if !refs.iter().any(|value| value == fallback) {
+            refs.push(fallback.to_string());
+        }
+    }
+
+    let curl = if cfg!(windows) { "curl.exe" } else { "curl" };
+    let mut last_error = None;
+    for git_ref in refs {
+        let encoded_ref = encode_uri_component(&git_ref);
+        let url = format!(
+            "https://api.github.com/repos/{}/git/trees/{}?recursive=1",
+            key.owner_repo, encoded_ref
+        );
+        let mut command = tokio::process::Command::new(curl);
+        command
+            .arg("-sS")
+            .arg("-L")
+            .arg("-H")
+            .arg("Accept: application/vnd.github+json")
+            .arg("-H")
+            .arg("User-Agent: mcs-web")
+            .arg(url);
+        command.kill_on_drop(true);
+        let output = tokio::time::timeout(std::time::Duration::from_secs(20), command.output())
+            .await
+            .map_err(|_| "Timed out while requesting GitHub tree metadata.".to_string())?
+            .map_err(|error| format!("Failed to execute curl: {error}"))?;
+
+        if !output.status.success() {
+            last_error = Some(String::from_utf8_lossy(&output.stderr).trim().to_string());
+            continue;
+        }
+
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let response: GithubRepoTreeResponse =
+            serde_json::from_str(stdout.trim()).map_err(|error| error.to_string())?;
+        return Ok(GithubRepoTree {
+            sha: response.sha,
+            tree: response.tree,
+        });
+    }
+
+    Err(last_error.unwrap_or_else(|| {
+        format!(
+            "Unable to resolve remote metadata for GitHub repository {}.",
+            key.owner_repo
+        )
+    }))
+}
+
+fn encode_uri_component(value: &str) -> String {
+    let mut encoded = String::new();
+    for ch in value.chars() {
+        match ch {
+            'A'..='Z' | 'a'..='z' | '0'..='9' | '-' | '_' | '.' | '~' => encoded.push(ch),
+            _ => {
+                let mut buffer = [0; 4];
+                for byte in ch.encode_utf8(&mut buffer).as_bytes() {
+                    encoded.push('%');
+                    encoded.push_str(&format!("{byte:02X}"));
+                }
+            }
+        }
+    }
+    encoded
+}
+
+fn get_skill_folder_hash_from_tree(tree: &GithubRepoTree, skill_path: &str) -> Option<String> {
+    let mut folder_path = skill_path.replace('\\', "/");
+    if folder_path.ends_with("/SKILL.md") {
+        folder_path.truncate(folder_path.len().saturating_sub(9));
+    } else if folder_path.ends_with("SKILL.md") {
+        folder_path.truncate(folder_path.len().saturating_sub(8));
+    }
+    if folder_path.ends_with('/') {
+        folder_path.pop();
+    }
+    if folder_path.is_empty() {
+        return Some(tree.sha.clone());
+    }
+
+    tree.tree
+        .iter()
+        .find(|entry| entry.entry_type == "tree" && entry.path == folder_path)
+        .and_then(|entry| entry.sha.clone())
 }
 
 #[cfg(test)]
@@ -856,6 +1653,11 @@ fn global_lock_metadata(entry: GlobalLockEntry) -> LockMetadata {
     LockMetadata {
         source_type,
         source_ref,
+        source_url: entry.source_url,
+        source_git_ref: entry.r#ref,
+        skill_path: entry.skill_path,
+        skill_folder_hash: entry.skill_folder_hash,
+        computed_hash: None,
         installed_at: entry.installed_at,
         updated_at: entry.updated_at,
         update_supported,
@@ -873,6 +1675,11 @@ fn project_lock_metadata(entry: ProjectLockEntry) -> LockMetadata {
     LockMetadata {
         source_type: entry.source_type,
         source_ref: entry.source,
+        source_url: None,
+        source_git_ref: None,
+        skill_path: None,
+        skill_folder_hash: None,
+        computed_hash: entry.computed_hash,
         installed_at: None,
         updated_at: None,
         update_supported: false,
@@ -1564,6 +2371,7 @@ mod tests {
             source_type: Some("github".into()),
             source: Some("owner/repo".into()),
             source_url: Some("https://github.com/owner/repo".into()),
+            r#ref: None,
             skill_path: Some("skills/find-skills".into()),
             skill_folder_hash: Some("abc123".into()),
             installed_at: Some("2026-03-23T00:00:00Z".into()),

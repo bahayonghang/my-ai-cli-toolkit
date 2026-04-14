@@ -41,6 +41,11 @@ export type PendingRunAction =
     }
   | {
       kind: "update";
+    }
+  | {
+      kind: "update-packages";
+      itemIds: string[];
+      labels: string[];
     };
 
 export type RunResultStatus = "idle" | "running" | "success" | "warning" | "error" | "interrupted";

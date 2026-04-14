@@ -341,6 +341,15 @@ pub struct NpxSkillsMaintenanceJobRequest {
     pub config: NpxSkillsCliConfigDto,
 }
 
+#[derive(Deserialize)]
+pub struct NpxSkillsPackageUpdateJobRequest {
+    pub item_ids: Vec<String>,
+    #[serde(default)]
+    pub install_target: InstallTargetDto,
+    #[serde(default)]
+    pub config: NpxSkillsCliConfigDto,
+}
+
 #[derive(Clone, Debug, Serialize)]
 pub struct NpxSkillsCatalogItemDto {
     pub id: String,
@@ -420,6 +429,27 @@ pub struct NpxSkillsCapabilitiesDto {
     pub update: NpxSkillsCapabilityDto,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxSkillsCliVersionStatusDto {
+    UpToDate,
+    UpdateAvailable,
+    Unknown,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsCliVersionDto {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub current: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub latest: Option<String>,
+    pub status: NpxSkillsCliVersionStatusDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checked_at_ms: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NpxSkillsInstalledSummaryDto {
     pub total: usize,
@@ -497,6 +527,70 @@ pub struct NpxInstalledActionsDto {
     pub removable: bool,
     pub reinstallable: bool,
     pub batch_updatable: bool,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxPackageComparisonStatusDto {
+    UpToDate,
+    UpdateAvailable,
+    NotRecorded,
+    Incomparable,
+    Unknown,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxInstalledPackageActionsDto {
+    pub removable: bool,
+    pub reinstallable: bool,
+    pub updatable: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxInstalledPackageDto {
+    pub id: String,
+    pub package_ref: String,
+    pub source_ref: String,
+    pub source_kind: NpxInstalledSourceKindDto,
+    pub installed_skill_names: Vec<String>,
+    pub installed_skill_count: usize,
+    pub agents: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub local_version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub remote_version: Option<String>,
+    pub comparison_status: NpxPackageComparisonStatusDto,
+    pub version_basis: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checked_at_ms: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub installed_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    pub actions: NpxInstalledPackageActionsDto,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxSkillsPackagesSummaryDto {
+    pub total_packages: usize,
+    pub total_skills: usize,
+    pub update_available: usize,
+    pub incomparable: usize,
+    pub not_recorded: usize,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct NpxSkillsPackagesInventoryDto {
+    pub target: ResolvedInstallTargetDto,
+    pub capabilities: NpxSkillsCapabilitiesDto,
+    pub summary: NpxSkillsPackagesSummaryDto,
+    pub filtered_total: usize,
+    pub page: usize,
+    pub page_size: usize,
+    pub total_pages: usize,
+    pub items: Vec<NpxInstalledPackageDto>,
 }
 
 #[derive(Clone, Debug, Serialize)]

@@ -7,10 +7,13 @@ import type {
   SkillCatalogDto,
   NpxSkillsCatalogItemDto,
   NpxSkillsCliConfig,
+  NpxSkillsCliMode,
+  NpxSkillsCliVersionDto,
   NpxSkillsInstallItemInput,
   NpxSkillsJobStartDto,
   NpxSkillsInstalledInventoryDto,
   NpxSkillsPackagePreviewDto,
+  NpxSkillsPackagesInventoryDto,
   ItemDetailDto,
   DiffDto,
   CategoryDto,
@@ -108,6 +111,29 @@ function normalizeNpxInstalledInventory(
       ...group,
       categories: Array.isArray(group.categories) ? group.categories : [],
     })),
+    filtered_total: filteredTotal,
+    page: typeof data.page === "number" && data.page > 0 ? data.page : 1,
+    page_size: pageSize,
+    total_pages: totalPages,
+    items,
+  };
+}
+
+function normalizeNpxPackagesInventory(
+  data: NpxSkillsPackagesInventoryDto
+): NpxSkillsPackagesInventoryDto {
+  const items = Array.isArray(data.items) ? data.items : [];
+  const filteredTotal =
+    typeof data.filtered_total === "number" ? data.filtered_total : items.length;
+  const pageSize =
+    typeof data.page_size === "number" && data.page_size > 0
+      ? data.page_size
+      : Math.max(items.length, 1);
+  const totalPages =
+    typeof data.total_pages === "number" && data.total_pages > 0 ? data.total_pages : 1;
+
+  return {
+    ...data,
     filtered_total: filteredTotal,
     page: typeof data.page === "number" && data.page > 0 ? data.page : 1,
     page_size: pageSize,
@@ -508,6 +534,44 @@ export async function getNpxInstalledSkills(
   return normalizeNpxInstalledInventory(data);
 }
 
+export async function getNpxInstalledPackages(
+  platformId: string,
+  params?: {
+    search?: string;
+    page?: number;
+    pageSize?: number;
+    refreshRemote?: boolean;
+    installTarget?: InstallTarget;
+  },
+  signal?: AbortSignal
+): Promise<NpxSkillsPackagesInventoryDto> {
+  const query = new URLSearchParams();
+  if (params?.search) query.set("search", params.search);
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.pageSize) query.set("page_size", String(params.pageSize));
+  if (params?.refreshRemote) query.set("refresh_remote", "true");
+  applyInstallTargetQuery(query, params?.installTarget);
+  const qs = query.toString();
+  const data = await fetchJson<NpxSkillsPackagesInventoryDto>(
+    `${BASE}/platforms/${platformId}/npx-skills/packages${qs ? `?${qs}` : ""}`,
+    { signal }
+  );
+  return normalizeNpxPackagesInventory(data);
+}
+
+export async function getNpxSkillsCliVersion(
+  platformId: string,
+  cliMode: NpxSkillsCliMode,
+  signal?: AbortSignal
+): Promise<NpxSkillsCliVersionDto> {
+  const query = new URLSearchParams();
+  query.set("cli_mode", cliMode);
+  return fetchJson<NpxSkillsCliVersionDto>(
+    `${BASE}/platforms/${platformId}/npx-skills/cli-version?${query.toString()}`,
+    { signal }
+  );
+}
+
 export async function previewNpxSkillsPackage(
   platformId: string,
   body: {
@@ -589,6 +653,24 @@ export async function startNpxSkillsUpdateJob(
     `${BASE}/platforms/${platformId}/npx-skills/update/jobs`,
     withInstallTargetBody(
       {
+        ...(config ? { config } : {}),
+      },
+      installTarget
+    )
+  );
+}
+
+export async function startNpxSkillsPackageUpdateJob(
+  platformId: string,
+  itemIds: string[],
+  installTarget?: InstallTarget,
+  config?: NpxSkillsCliConfig
+): Promise<NpxSkillsJobStartDto> {
+  return postJson(
+    `${BASE}/platforms/${platformId}/npx-skills/packages/update/jobs`,
+    withInstallTargetBody(
+      {
+        item_ids: itemIds,
         ...(config ? { config } : {}),
       },
       installTarget

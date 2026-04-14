@@ -1,18 +1,23 @@
 import { create } from "zustand";
 import type {
+  NpxInstalledPackageDto,
   NpxInstalledSkillInstanceDto,
   NpxSkillsCatalogItemDto,
   NpxSkillsCapabilitiesDto,
   NpxSkillsCliMode,
+  NpxSkillsCliVersionDto,
   NpxSkillsInstalledSummaryDto,
   NpxSkillsJobStartDto,
   NpxSkillsOperation,
   NpxSkillsPackagePreviewDto,
+  NpxSkillsPackagesSummaryDto,
   NpxSkillsRunConfig,
   InstallTarget,
 } from "@/types";
 import {
+  getNpxInstalledPackages,
   getNpxInstalledSkills,
+  getNpxSkillsCliVersion,
   getNpxSkillsCatalog,
   previewNpxSkillsPackage,
 } from "@/api/client";
@@ -158,6 +163,25 @@ export interface NpxSkillsState {
   packagePreview: NpxSkillsPackagePreviewDto | null;
   selectedPreviewSkills: Set<string>;
 
+  // ── Package inventory + CLI version ───────────────────────────
+  packageItems: NpxInstalledPackageDto[];
+  packageCapabilities: NpxSkillsCapabilitiesDto | null;
+  packageSummary: NpxSkillsPackagesSummaryDto | null;
+  packageLoading: boolean;
+  packageError: string | null;
+  packageSyncedAt: number | null;
+  packageQueryKey: string | null;
+  packageSearch: string;
+  packagePage: number;
+  packagePageSize: number;
+  packageTotalPages: number;
+  packageFilteredTotal: number;
+  selectedPackageIds: Set<string>;
+  selectedPackageItem: NpxInstalledPackageDto | null;
+  cliVersionInfo: NpxSkillsCliVersionDto | null;
+  cliVersionLoading: boolean;
+  cliVersionError: string | null;
+
   // ── Installed data (cached) ───────────────────────────────────
   installedItems: NpxInstalledSkillInstanceDto[];
   installedCapabilities: NpxSkillsCapabilitiesDto | null;
@@ -228,6 +252,24 @@ export interface NpxSkillsState {
   ) => Promise<void>;
   clearPackagePreview: () => void;
 
+  // Package inventory + CLI version
+  setPackageSearch: (value: string) => void;
+  setPackagePage: (page: number) => void;
+  setPackagePageSize: (size: number) => void;
+  setSelectedPackageIds: (update: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
+  setSelectedPackageItem: (item: NpxInstalledPackageDto | null) => void;
+  fetchPackages: (
+    workspaceId: string,
+    installTarget: InstallTarget,
+    refreshRemote?: boolean,
+    signal?: AbortSignal,
+  ) => Promise<void>;
+  fetchCliVersion: (
+    workspaceId: string,
+    cliMode: NpxSkillsCliMode,
+    signal?: AbortSignal,
+  ) => Promise<void>;
+
   // Installed
   setInstalledSearch: (value: string) => void;
   setSelectedInstalledCategoryId: (value: string | null) => void;
@@ -292,6 +334,24 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
   packagePreviewError: null,
   packagePreview: null,
   selectedPreviewSkills: new Set(),
+
+  packageItems: [],
+  packageCapabilities: null,
+  packageSummary: null,
+  packageLoading: false,
+  packageError: null,
+  packageSyncedAt: null,
+  packageQueryKey: null,
+  packageSearch: "",
+  packagePage: 1,
+  packagePageSize: 20,
+  packageTotalPages: 1,
+  packageFilteredTotal: 0,
+  selectedPackageIds: new Set(),
+  selectedPackageItem: null,
+  cliVersionInfo: null,
+  cliVersionLoading: false,
+  cliVersionError: null,
 
   installedItems: [],
   installedCapabilities: null,
@@ -439,6 +499,112 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       packagePreviewError: null,
       selectedPreviewSkills: new Set(),
     }),
+
+  // ── Package inventory + CLI version actions ───────────────────
+
+  setPackageSearch: (value) => set({ packageSearch: value, packagePage: 1 }),
+  setPackagePage: (page) => set({ packagePage: page }),
+  setPackagePageSize: (size) => set({ packagePageSize: size, packagePage: 1 }),
+  setSelectedPackageIds: (update) =>
+    set((state) => ({
+      selectedPackageIds:
+        typeof update === "function" ? update(state.selectedPackageIds) : update,
+    })),
+  setSelectedPackageItem: (item) => set({ selectedPackageItem: item }),
+
+  fetchPackages: async (workspaceId, installTarget, refreshRemote = false, signal) => {
+    const state = useNpxSkillsStore.getState();
+    const requestKey = [
+      workspaceId,
+      installTarget.scope,
+      installTarget.project_path ?? "",
+      state.packageSearch.trim(),
+      state.packagePage,
+      state.packagePageSize,
+    ].join("::");
+
+    if (
+      !refreshRemote &&
+      state.packageQueryKey === requestKey &&
+      state.packageSyncedAt !== null &&
+      state.packageError === null
+    ) {
+      return;
+    }
+
+    set({ packageLoading: true, packageError: null });
+    try {
+      const data = await getNpxInstalledPackages(
+        workspaceId,
+        {
+          search: state.packageSearch || undefined,
+          page: state.packagePage,
+          pageSize: state.packagePageSize,
+          refreshRemote,
+          installTarget,
+        },
+        signal,
+      );
+      set((current) => {
+        const availableIds = new Set(data.items.map((item) => item.id));
+        const selectedPackageIds = new Set(
+          [...current.selectedPackageIds].filter((id) => availableIds.has(id)),
+        );
+        const selectedPackageItem = current.selectedPackageItem
+          ? data.items.find((item) => item.id === current.selectedPackageItem?.id) ?? null
+          : null;
+
+        return {
+          packageItems: data.items,
+          packageCapabilities: data.capabilities,
+          packageSummary: data.summary,
+          packageSyncedAt: Date.now(),
+          packageQueryKey: requestKey,
+          packageFilteredTotal: data.filtered_total,
+          packageTotalPages: data.total_pages,
+          packagePage: data.page,
+          packagePageSize: data.page_size,
+          selectedPackageIds,
+          selectedPackageItem,
+        };
+      });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        const typedError = error as Error & {
+          details?: { remediation?: string; reason?: string };
+        };
+        set({
+          packageError:
+            typedError.details?.remediation ??
+            typedError.details?.reason ??
+            typedError.message,
+        });
+      }
+    } finally {
+      if (!signal?.aborted) {
+        set({ packageLoading: false });
+      }
+    }
+  },
+
+  fetchCliVersion: async (workspaceId, cliMode, signal) => {
+    set({ cliVersionLoading: true, cliVersionError: null });
+    try {
+      const data = await getNpxSkillsCliVersion(workspaceId, cliMode, signal);
+      set({ cliVersionInfo: data });
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        set({
+          cliVersionError: (error as Error).message,
+          cliVersionInfo: null,
+        });
+      }
+    } finally {
+      if (!signal?.aborted) {
+        set({ cliVersionLoading: false });
+      }
+    }
+  },
 
   // ── Installed actions ─────────────────────────────────────────
 
@@ -614,6 +780,23 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       catalogError: null,
       catalogSyncedAt: null,
       catalogGroups: [],
+      packageItems: [],
+      packageCapabilities: null,
+      packageSummary: null,
+      packageLoading: false,
+      packageError: null,
+      packageSyncedAt: null,
+      packageQueryKey: null,
+      packageSearch: "",
+      packagePage: 1,
+      packagePageSize: 20,
+      packageTotalPages: 1,
+      packageFilteredTotal: 0,
+      selectedPackageIds: new Set(),
+      selectedPackageItem: null,
+      cliVersionInfo: null,
+      cliVersionLoading: false,
+      cliVersionError: null,
       installedItems: [],
       installedCapabilities: null,
       installedSummary: null,
@@ -629,6 +812,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       packagePreview: null,
       packagePreviewError: null,
       selectedPreviewSkills: new Set(),
+      pendingRunAction: null,
     }),
 }));
 

@@ -8,8 +8,9 @@ use tokio::process::Command;
 use crate::api::error::AppError;
 use crate::dto::{
     InstallTargetDto, InstallTargetScopeDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
-    NpxSkillsCliResult, NpxSkillsInstallItemRequest, NpxSkillsPackagePreviewDto,
-    NpxSkillsPackagePreviewModeDto, NpxSkillsPackagePreviewSkillDto,
+    NpxSkillsCliResult, NpxSkillsCliVersionDto, NpxSkillsCliVersionStatusDto,
+    NpxSkillsInstallItemRequest, NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewModeDto,
+    NpxSkillsPackagePreviewSkillDto,
 };
 
 const NPX_SKILLS_TIMEOUT_SECS: u64 = 120;
@@ -121,6 +122,18 @@ pub fn build_update_args(is_global: bool) -> Vec<String> {
     args
 }
 
+pub fn build_update_args_for_skills(skills: &[String], is_global: bool) -> Vec<String> {
+    let mut args = build_update_args(is_global);
+    args.extend(
+        skills
+            .iter()
+            .map(|skill| skill.trim())
+            .filter(|skill| !skill.is_empty())
+            .map(ToOwned::to_owned),
+    );
+    args
+}
+
 pub async fn preview_package_skills(
     package_ref: &str,
     config: &NpxSkillsCliConfigDto,
@@ -223,6 +236,35 @@ pub async fn execute_skills_command(
     };
 
     Ok(NpxSkillsCliResult { success, output })
+}
+
+pub async fn resolve_cli_version_info(
+    cli_mode: NpxSkillsCliMode,
+) -> Result<NpxSkillsCliVersionDto, AppError> {
+    let checked_at_ms = unix_time_ms();
+    let current = read_cli_current_version(cli_mode).await;
+    let latest = read_cli_latest_version().await;
+
+    let (status, reason) = match (current.as_deref(), latest.as_deref()) {
+        (Some(current), Some(latest)) if current == latest => {
+            (NpxSkillsCliVersionStatusDto::UpToDate, None)
+        }
+        (Some(_), Some(_)) => (NpxSkillsCliVersionStatusDto::UpdateAvailable, None),
+        _ => (
+            NpxSkillsCliVersionStatusDto::Unknown,
+            Some(
+                "Unable to resolve either the active CLI version or the npm latest version.".into(),
+            ),
+        ),
+    };
+
+    Ok(NpxSkillsCliVersionDto {
+        current,
+        latest,
+        status,
+        checked_at_ms: Some(checked_at_ms),
+        reason,
+    })
 }
 
 pub fn format_skills_command_preview(args: &[String]) -> String {
@@ -421,6 +463,56 @@ fn unix_time_ms() -> u64 {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_millis() as u64)
         .unwrap_or(0)
+}
+
+async fn read_cli_current_version(cli_mode: NpxSkillsCliMode) -> Option<String> {
+    let (program, prefix_args) = resolve_cli_program(cli_mode);
+    let mut command = Command::new(&program);
+    command.args(&prefix_args).arg("--version");
+    command.kill_on_drop(true);
+    let output = tokio::time::timeout(Duration::from_secs(15), command.output())
+        .await
+        .ok()?
+        .ok()?;
+
+    if !output.status.success() {
+        return None;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let version = stdout.trim();
+    if version.is_empty() {
+        None
+    } else {
+        Some(version.to_string())
+    }
+}
+
+async fn read_cli_latest_version() -> Option<String> {
+    let npm = if cfg!(windows) { "npm.cmd" } else { "npm" };
+    let mut command = Command::new(npm);
+    command
+        .arg("view")
+        .arg("skills")
+        .arg("dist-tags.latest")
+        .arg("--json");
+    command.kill_on_drop(true);
+    let output = tokio::time::timeout(Duration::from_secs(20), command.output())
+        .await
+        .ok()?
+        .ok()?;
+
+    if !output.status.success() {
+        return None;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let version = stdout.trim().trim_matches('"').trim();
+    if version.is_empty() {
+        None
+    } else {
+        Some(version.to_string())
+    }
 }
 
 fn which_exists(cmd: &str) -> bool {

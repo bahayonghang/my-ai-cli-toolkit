@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getCategories,
+  getNpxInstalledPackages,
   getNpxInstalledSkills,
+  getNpxSkillsCliVersion,
   previewNpxSkillsPackage,
   getNpxSkillsCatalog,
   getSkills,
@@ -9,6 +11,7 @@ import {
   resolveInstallTarget,
   startNpxSkillsCheckJob,
   startNpxSkillsInstallJob,
+  startNpxSkillsPackageUpdateJob,
   startNpxSkillsRemoveJob,
   startNpxSkillsUpdateJob,
 } from "./client";
@@ -191,6 +194,95 @@ describe("api/client install target", () => {
     expect(String(url)).toContain("target_scope=global");
   });
 
+  it("queries npx installed packages and normalizes paging defaults", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        target: {
+          scope: "global",
+          project_path: null,
+          base_dir: "/tmp/claude",
+          skills_path: "/tmp/claude/skills",
+          commands_path: null,
+          agents_path: null,
+          guidance_path: null,
+        },
+        capabilities: {
+          list: { supported: true, reason: null },
+          remove: { supported: true, reason: null },
+          check: { supported: true, reason: null },
+          update: { supported: true, reason: null },
+        },
+        summary: {
+          total_packages: 1,
+          total_skills: 2,
+          update_available: 1,
+          incomparable: 0,
+          not_recorded: 0,
+        },
+        items: [
+          {
+            id: "pkg-1",
+            package_ref: "vercel-labs/agent-skills",
+            source_ref: "https://github.com/vercel-labs/agent-skills",
+            source_kind: "curated",
+            installed_skill_names: ["find-skills", "review"],
+            installed_skill_count: 2,
+            agents: ["codex"],
+            local_version: "abc1234",
+            remote_version: "def5678",
+            comparison_status: "update_available",
+            version_basis: "Digest of installed skill folder hashes.",
+            checked_at_ms: 123,
+            installed_at: null,
+            updated_at: null,
+            reason: null,
+            actions: {
+              removable: true,
+              reinstallable: true,
+              updatable: true,
+            },
+          },
+        ],
+      }),
+    );
+
+    const inventory = await getNpxInstalledPackages("claude", {
+      search: "agent",
+      page: 2,
+      pageSize: 20,
+      refreshRemote: true,
+      installTarget: { scope: "global" },
+    });
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("/api/platforms/claude/npx-skills/packages?");
+    expect(String(url)).toContain("search=agent");
+    expect(String(url)).toContain("page=2");
+    expect(String(url)).toContain("page_size=20");
+    expect(String(url)).toContain("refresh_remote=true");
+    expect(inventory.filtered_total).toBe(1);
+    expect(inventory.page_size).toBe(1);
+    expect(inventory.total_pages).toBe(1);
+  });
+
+  it("queries cli version state for the selected mode", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        current: "1.5.0",
+        latest: "1.5.0",
+        status: "up_to_date",
+        checked_at_ms: 123,
+        reason: null,
+      }),
+    );
+
+    const version = await getNpxSkillsCliVersion("claude", "npx");
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe("/api/platforms/claude/npx-skills/cli-version?cli_mode=npx");
+    expect(version.status).toBe("up_to_date");
+  });
+
   it("normalizes partial npx installed inventory payloads", async () => {
     fetchMock.mockResolvedValue(
       mockSuccess({
@@ -307,6 +399,27 @@ describe("api/client install target", () => {
     expect(String(fetchMock.mock.calls[2][0])).toBe("/api/platforms/claude/npx-skills/remove/jobs");
     const removeBody = JSON.parse(String(fetchMock.mock.calls[2][1]?.body));
     expect(removeBody.item_ids).toEqual(["find-skills"]);
+  });
+
+  it("starts package-scoped npx update jobs", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({ job_id: "npx-skills-3", operation: "update", total: 1, status: "running" }),
+    );
+
+    await startNpxSkillsPackageUpdateJob(
+      "claude",
+      ["pkg-1"],
+      { scope: "project", project_path: "/tmp/project" },
+      { agents: ["codex"], cli_mode: "auto" },
+    );
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe("/api/platforms/claude/npx-skills/packages/update/jobs");
+    expect(JSON.parse(String(init.body))).toEqual({
+      item_ids: ["pkg-1"],
+      config: { agents: ["codex"], cli_mode: "auto" },
+      install_target: { scope: "project", project_path: "/tmp/project" },
+    });
   });
 
   it("previews package skills with install target and config", async () => {

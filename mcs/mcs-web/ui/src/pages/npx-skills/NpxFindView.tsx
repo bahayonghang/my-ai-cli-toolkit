@@ -450,9 +450,6 @@ export default function NpxFindView({
       </Card>
 
       <Box>
-        <Typography variant="overline" sx={{ color: "var(--mcs-workbench-muted)" }}>
-          {t("npxSkills.sectionDiscover")}
-        </Typography>
         <Typography variant="h6" sx={{ mt: 0.45, letterSpacing: "-0.03em" }}>
           {t("npxSkills.discoverTitle")}
         </Typography>

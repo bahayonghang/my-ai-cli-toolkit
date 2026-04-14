@@ -130,8 +130,9 @@ test("managed items are removable and maintenance jobs run", async ({ page }) =>
   const api = await mockNpxSkillsApi(page);
   await seedNpxSkillsRunConfig(page, runConfig);
 
-  await page.goto("/registry?workspace=claude");
+  await page.goto("/registry/manage?workspace=claude");
   await setNpxSkillsInstallTarget(page, installTarget);
+  await expect(page.getByRole("heading", { name: /^Maintenance$/i })).toBeVisible();
 
   const unmanagedRow = page.getByRole("row").filter({ hasText: "legacy-unmanaged" });
   await expect(unmanagedRow.getByRole("checkbox")).toBeDisabled();
