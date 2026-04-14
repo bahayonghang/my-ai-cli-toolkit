@@ -50,7 +50,16 @@ If multiple sources are available, combine them. If none are available, report t
 For each project in scope:
 
 **Session evidence** (platform-specific, see loaded reference):
-- Extract: session goal, plan state, completed items, changed files, tests run, risks
+
+Extract these signal types in priority order:
+1. **Goal / intent** — what the user set out to do (from session start, plan files, or first prompt)
+2. **Completed items** — tasks marked done, files written, tests passing
+3. **Key decisions** — architecture choices, library selections, approach changes
+4. **Changed files** — from session context or git diff
+5. **Validation state** — tests run and their results, build status
+6. **Open risks / blockers** — unresolved issues, known failures
+
+If a session source is available but parsing fails or returns empty, fall back to git evidence for that project and note `(session data unavailable)` in the output. Do not silently drop a project because session parsing failed.
 
 **Git evidence** (universal):
 ```bash
@@ -58,6 +67,8 @@ git -C <repo> log --since="YYYY-MM-DD 00:00" --until="YYYY-MM-DD+1 00:00" --pret
 git -C <repo> status --short
 git -C <repo> diff --stat
 ```
+
+**Pre-check:** Verify the directory is a git repository before running git commands. If not a repo, skip git evidence and rely on session evidence alone.
 
 Read `$SKILL_DIR/references/session-parsing.md` for the universal signal extraction template and noise filtering rules.
 
