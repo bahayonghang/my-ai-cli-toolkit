@@ -19,9 +19,9 @@ export function ThemeToggleButton() {
         aria-label={label}
         onClick={toggleColorMode}
         sx={{
-          borderRadius: 999,
-          px: 1.1,
-          minWidth: 46,
+          borderRadius: 2,
+          minWidth: 40,
+          minHeight: 40,
         }}
       >
         {colorMode === "dark" ? <SunDim size={18} weight="bold" /> : <MoonStars size={18} weight="bold" />}

@@ -51,10 +51,11 @@ export function surfacePanelSx(surface: SurfaceTone) {
   return {
     position: "relative",
     isolation: "isolate",
-    borderRadius: 4,
+    borderRadius: 3,
     border: `1px solid ${tone.outline}`,
     backgroundColor: tone.fill,
     boxShadow: tone.shadow,
+    overflow: "hidden",
     "&::before": {
       content: '""',
       position: "absolute",
@@ -62,6 +63,21 @@ export function surfacePanelSx(surface: SurfaceTone) {
       borderRadius: "inherit",
       pointerEvents: "none",
       boxShadow: "inset 0 1px 0 var(--mcs-panel-highlight)",
+    },
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      insetInline: 0,
+      top: 0,
+      height: 1,
+      background:
+        surface === "entry"
+          ? "linear-gradient(90deg, transparent 0%, var(--mcs-entry-accent-soft) 22%, transparent 100%)"
+          : surface === "monitor"
+            ? "linear-gradient(90deg, transparent 0%, var(--mcs-monitor-accent-soft) 22%, transparent 100%)"
+            : "linear-gradient(90deg, transparent 0%, var(--mcs-workbench-accent-soft) 22%, transparent 100%)",
+      opacity: 0.9,
+      pointerEvents: "none",
     },
   } as const;
 }

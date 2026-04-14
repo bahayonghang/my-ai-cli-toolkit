@@ -37,7 +37,7 @@ export function InstallStagePanel({
       component="section"
       sx={{
         position: "relative",
-        borderRadius: 4,
+        borderRadius: 3,
         border: "1px solid",
         borderColor: active
           ? "var(--mcs-workbench-outline-strong)"
@@ -70,9 +70,9 @@ export function InstallStagePanel({
           top: 0,
           height: 2,
           background: active
-            ? "linear-gradient(90deg, var(--mcs-workbench-accent-strong), var(--mcs-workbench-warm-strong))"
+            ? "linear-gradient(90deg, var(--mcs-workbench-accent-strong), transparent)"
             : complete
-              ? "linear-gradient(90deg, var(--mcs-success-border), var(--mcs-workbench-accent-soft))"
+              ? "linear-gradient(90deg, var(--mcs-success-border), transparent)"
               : "transparent",
         },
       }}
@@ -94,7 +94,7 @@ export function InstallStagePanel({
               sx={{
                 width: 46,
                 height: 46,
-                borderRadius: 3,
+                borderRadius: 2.5,
                 display: "grid",
                 placeItems: "center",
                 bgcolor: active

@@ -27,15 +27,15 @@ export function LanguageToggle({ sx }: LanguageToggleProps) {
         aria-label={t("common.languageSwitch")}
         color="primary"
         sx={{
-          borderRadius: 999,
+          borderRadius: 2,
           px: 0.25,
           "& .MuiToggleButton-root": {
             border: 0,
-            px: 1.5,
-            minHeight: 44,
+            px: 1.25,
+            minHeight: 40,
             color: "text.secondary",
-            fontSize: "0.82rem",
-            fontWeight: 700,
+            fontSize: "0.78rem",
+            fontWeight: 510,
             textTransform: "none",
             gap: 0.5,
           },

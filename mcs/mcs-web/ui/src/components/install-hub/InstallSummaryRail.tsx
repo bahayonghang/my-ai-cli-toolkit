@@ -81,10 +81,9 @@ export function MobileInstallSummaryBar({
     >
       <Box
         sx={{
-          borderRadius: 3.5,
+          borderRadius: 3,
           border: "1px solid var(--mcs-workbench-outline-strong)",
-          background:
-            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+          backgroundColor: "var(--mcs-panel-fill-strong)",
           boxShadow: "var(--mcs-shadow-sm)",
           px: 1.75,
           py: 1.75,
@@ -179,10 +178,9 @@ function SummarySurface({
       sx={{
         position: "sticky",
         top: "var(--mcs-sticky-offset-tight)",
-        borderRadius: 4,
+        borderRadius: 3,
         border: "1px solid var(--mcs-workbench-outline-strong)",
-        background:
-          "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+        backgroundColor: "var(--mcs-panel-fill-strong)",
         boxShadow: "var(--mcs-shadow-sm)",
         p: { xs: 2, md: 2.5 },
       }}
@@ -266,9 +264,6 @@ function SummarySurface({
                     bgcolor: isActive
                       ? "var(--mcs-workbench-accent-soft)"
                       : "transparent",
-                    background: isActive
-                      ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-workbench-surface-muted) 100%)"
-                      : "transparent",
                     boxShadow: isActive
                       ? "var(--mcs-summary-tile-shadow)"
                       : "none",
@@ -350,10 +345,8 @@ function SummaryMetric({ value, label }: { value: number; label: string }) {
         px: 1.25,
         py: 1.1,
         border: "1px solid var(--mcs-workbench-outline)",
-        background:
-          "linear-gradient(180deg, var(--mcs-summary-tile-fill-strong) 0%, var(--mcs-workbench-surface-muted) 100%)",
-        boxShadow:
-          "inset 0 1px 0 var(--mcs-glass-highlight), var(--mcs-shadow-sm)",
+        backgroundColor: "var(--mcs-summary-tile-fill-strong)",
+        boxShadow: "var(--mcs-shadow-sm)",
       }}
     >
       <Typography

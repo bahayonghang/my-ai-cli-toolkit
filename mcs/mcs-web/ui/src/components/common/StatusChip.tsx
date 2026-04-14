@@ -1,4 +1,5 @@
-import { Chip } from "@mui/material";
+import { Chip, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -32,8 +33,31 @@ const config: Record<
 };
 
 export function StatusChip({ status }: { status: InstallStatus }) {
+  const theme = useTheme();
   const { t } = useI18n();
   const { labelKey, color, icon } = config[status];
   const label = t(labelKey);
-  return <Chip label={label} color={color} icon={icon} size="small" variant="outlined" />;
+  const tone =
+    color === "success"
+      ? theme.palette.success.main
+      : color === "warning"
+        ? theme.palette.warning.main
+        : theme.palette.text.secondary;
+
+  return (
+    <Chip
+      label={label}
+      icon={icon}
+      size="small"
+      variant="outlined"
+      sx={{
+        borderColor: alpha(tone, theme.palette.mode === "dark" ? 0.32 : 0.2),
+        backgroundColor: alpha(tone, theme.palette.mode === "dark" ? 0.12 : 0.08),
+        color: color === "default" ? "text.secondary" : tone,
+        "& .MuiChip-icon": {
+          color: "inherit",
+        },
+      }}
+    />
+  );
 }

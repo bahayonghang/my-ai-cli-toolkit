@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from "react";
+import { lazy, memo, Suspense, useEffect, useState } from "react";
 import {
   ArrowsClockwise,
   DownloadSimple,
@@ -21,6 +21,8 @@ import { monitorPanelSx } from "@/components/common/glassPanel";
 import PageLoadingState from "@/components/common/PageLoadingState";
 import {
   AppShell,
+  MetricStrip,
+  SectionHero,
 } from "@/components/shell/AppShell";
 import { PlatformBadge } from "@/components/platform/PlatformVisuals";
 import { useI18n } from "@/i18n";
@@ -174,35 +176,17 @@ function HeroSection({
   const { t } = useI18n();
 
   return (
-    <Box
-      sx={{
-        ...monitorPanelSx,
-        p: { xs: 2, md: 2.5 },
-      }}
-    >
-      <Stack spacing={2}>
-        <Stack
-          direction={{ xs: "column", lg: "row" }}
-          spacing={1.5}
-          justifyContent="space-between"
-          alignItems={{ xs: "flex-start", lg: "center" }}
-        >
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="body1" sx={{ fontWeight: 700, letterSpacing: "-0.02em" }}>
-              {heroStatus}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ mt: 0.5, color: "var(--mcs-monitor-muted)" }}
-            >
-              {t("dashboard.commandsCoverageSub", {
-                installed: summary.installedCommands,
-                total: summary.totalCommands,
-              })}{" "}
-              · {summary.commandCoverage}% {t("dashboard.commandsCoverage").toLowerCase()}
-            </Typography>
-          </Box>
-          {legacyCount > 0 ? (
+    <Stack spacing={2}>
+      <SectionHero
+        variant="monitor"
+        eyebrow={t("dashboard.systemTitle")}
+        title={heroStatus}
+        description={`${t("dashboard.commandsCoverageSub", {
+          installed: summary.installedCommands,
+          total: summary.totalCommands,
+        })} · ${summary.commandCoverage}% ${t("dashboard.commandsCoverage").toLowerCase()}`}
+        actions={
+          legacyCount > 0 ? (
             <Button
               variant="outlined"
               color="warning"
@@ -211,65 +195,42 @@ function HeroSection({
             >
               {t("platformSelect.legacyCleanupLabel", { count: legacyCount })}
             </Button>
-          ) : null}
-        </Stack>
+          ) : undefined
+        }
+      />
 
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={{ xs: 1, md: 2 }}
-          useFlexGap
-          flexWrap="wrap"
-          divider={<Divider flexItem sx={{ borderColor: "var(--mcs-monitor-outline)" }} />}
-        >
-          <SummaryStat
-            label={t("dashboard.installedSkills")}
-            value={`${summary.installedSkills}/${summary.totalSkills}`}
-            detail={t("dashboard.skillCoverageSub", {
+      <MetricStrip
+        tone="monitor"
+        items={[
+          {
+            key: "skills",
+            label: t("dashboard.installedSkills"),
+            value: `${summary.installedSkills}/${summary.totalSkills}`,
+            detail: t("dashboard.skillCoverageSub", {
               installed: summary.installedSkills,
               total: summary.totalSkills,
-            })}
-          />
-          <SummaryStat
-            label={t("dashboard.outdated")}
-            value={summary.outdatedSkills}
-            detail={t("dashboard.updatesAvailable", {
+            }),
+            emphasis: true,
+          },
+          {
+            key: "outdated",
+            label: t("dashboard.outdated"),
+            value: summary.outdatedSkills,
+            detail: t("dashboard.updatesAvailable", {
               count: summary.outdatedSkills,
-            })}
-          />
-          <SummaryStat
-            label={t("dashboard.activePlatforms")}
-            value={`${summary.activePlatforms}/${summary.totalPlatforms}`}
-            detail={t("dashboard.activePlatformsSub", {
+            }),
+          },
+          {
+            key: "platforms",
+            label: t("dashboard.activePlatforms"),
+            value: `${summary.activePlatforms}/${summary.totalPlatforms}`,
+            detail: t("dashboard.activePlatformsSub", {
               count: summary.totalPlatforms,
-            })}
-          />
-        </Stack>
-      </Stack>
-    </Box>
-  );
-}
-
-function SummaryStat({
-  label,
-  value,
-  detail,
-}: {
-  label: string;
-  value: ReactNode;
-  detail: string;
-}) {
-  return (
-    <Box sx={{ minWidth: 0, flex: "1 1 180px" }}>
-      <Typography variant="caption" sx={{ color: "var(--mcs-monitor-muted)" }}>
-        {label}
-      </Typography>
-      <Typography variant="h6" sx={{ mt: 0.2, letterSpacing: "-0.03em" }}>
-        {value}
-      </Typography>
-      <Typography variant="body2" sx={{ color: "var(--mcs-monitor-muted)" }}>
-        {detail}
-      </Typography>
-    </Box>
+            }),
+          },
+        ]}
+      />
+    </Stack>
   );
 }
 

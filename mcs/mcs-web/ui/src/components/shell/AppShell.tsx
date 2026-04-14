@@ -93,8 +93,7 @@ function toneSurface(tone: PageSectionTone) {
   if (tone === "subtle") {
     return {
       border: "1px solid var(--mcs-shell-divider)",
-      background:
-        "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-shell-fill) 100%)",
+      backgroundColor: "var(--mcs-shell-fill)",
       boxShadow: "var(--mcs-shadow-sm)",
     } as const;
   }
@@ -114,7 +113,7 @@ function inferRouteSection(
   if (pathname.startsWith("/install-hub")) {
     return "installHub";
   }
-  if (pathname.startsWith("/registry")) {
+  if (pathname.startsWith("/registry") || pathname.startsWith("/npx-skills")) {
     return "registry";
   }
   if (pathname.startsWith("/manage/commands")) {
@@ -122,9 +121,6 @@ function inferRouteSection(
   }
   if (pathname.startsWith("/manage/agents")) {
     return "agentsWorkspace";
-  }
-  if (pathname.includes("/npx-skills")) {
-    return "registry";
   }
   if (pathname.includes("/legacy")) {
     return "legacy";
@@ -162,7 +158,7 @@ function renderHeading(
         variant="h5"
         component={pageHeading ? "div" : "h1"}
         sx={{
-          fontWeight: 700,
+          fontWeight: 590,
           letterSpacing: "-0.04em",
           textWrap: "balance",
           overflowWrap: "anywhere",
@@ -247,19 +243,19 @@ function ShellNavButton({
       sx={{
         width: "100%",
         textAlign: "left",
-        borderRadius: 3,
+        borderRadius: 2.5,
         alignItems: "stretch",
         justifyContent: "stretch",
         border: "1px solid",
         borderColor: active
           ? "var(--mcs-workbench-outline-strong)"
           : "var(--mcs-shell-divider)",
-        background: active
-          ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill-emphasis) 100%)"
-          : "linear-gradient(180deg, var(--mcs-panel-fill) 0%, var(--mcs-panel-fill-emphasis) 100%)",
-        boxShadow: active ? "var(--mcs-shadow-sm)" : "inset 0 1px 0 var(--mcs-glass-highlight)",
+        backgroundColor: active
+          ? "var(--mcs-workbench-accent-soft)"
+          : "var(--mcs-panel-fill)",
+        boxShadow: active ? "var(--mcs-shadow-sm)" : "none",
         px: 1.5,
-        py: 1.3,
+        py: 1.1,
         transition:
           "border-color var(--mcs-duration) var(--mcs-ease), box-shadow var(--mcs-duration) var(--mcs-ease), background-color var(--mcs-duration) var(--mcs-ease)",
         textDecoration: "none",
@@ -277,14 +273,12 @@ function ShellNavButton({
           sx={{
             width: 38,
             height: 38,
-            borderRadius: 2.75,
+            borderRadius: 2,
             border: "1px solid var(--mcs-panel-stroke-soft)",
-            background:
-              active
-                ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill-emphasis) 100%)"
-                : "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+            backgroundColor: active
+              ? "var(--mcs-panel-fill-strong)"
+              : "var(--mcs-panel-fill-emphasis)",
             color: active ? "var(--mcs-panel-accent)" : "text.secondary",
-            boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -373,12 +367,11 @@ export function AppShell({
     <Stack spacing={2.25} sx={{ height: "100%" }}>
       <Box
         sx={{
-          borderRadius: 4,
+          borderRadius: 3,
           border: "1px solid var(--mcs-control-stroke)",
-          background:
-            "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 56%, var(--mcs-entry-band) 100%)",
-          boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 var(--mcs-glass-highlight)",
-          p: 2.2,
+          backgroundColor: "var(--mcs-panel-fill-strong)",
+          boxShadow: "var(--mcs-shadow-sm)",
+          p: 2,
         }}
       >
         <Stack spacing={1.5}>
@@ -398,7 +391,7 @@ export function AppShell({
             variant="outlined"
             sx={{
               alignSelf: "flex-start",
-              backgroundColor: "var(--mcs-panel-fill-emphasis)",
+              backgroundColor: "var(--mcs-panel-fill)",
             }}
           />
         </Stack>
@@ -439,8 +432,8 @@ export function AppShell({
           label={t("common.registry")}
           subtitle={t("common.registrySubtitle")}
           icon={<List size={18} weight="bold" />}
-          to="/registry"
-          active={location.pathname.startsWith("/registry") || location.pathname.includes("/npx-skills")}
+          to="/npx-skills"
+          active={location.pathname.startsWith("/registry") || location.pathname.startsWith("/npx-skills")}
           ariaCurrent="page"
           onAfterNavigate={() => setNavOpen(false)}
         />
@@ -493,7 +486,7 @@ export function AppShell({
               sx={{
                 width: "100%",
                 textAlign: "left",
-                borderRadius: 3,
+                borderRadius: 2.5,
                 alignItems: "stretch",
                 justifyContent: "stretch",
                 border: "1px solid",
@@ -501,12 +494,12 @@ export function AppShell({
                   activePlatformId === platform.id
                     ? "var(--mcs-workbench-outline-strong)"
                     : "var(--mcs-shell-divider)",
-                background:
+                backgroundColor:
                   activePlatformId === platform.id
-                    ? "linear-gradient(180deg, var(--mcs-workbench-accent-soft) 0%, var(--mcs-panel-fill) 100%)"
-                    : "linear-gradient(180deg, var(--mcs-panel-fill-emphasis) 0%, var(--mcs-panel-fill) 100%)",
+                    ? "var(--mcs-workbench-accent-soft)"
+                    : "var(--mcs-panel-fill)",
                 px: 1.2,
-                py: 1.05,
+                py: 0.95,
                 transition:
                   "border-color var(--mcs-duration) var(--mcs-ease)",
                 textDecoration: "none",
@@ -593,14 +586,13 @@ export function AppShell({
               px: 2,
               py: 2.5,
               borderRight: "1px solid var(--mcs-shell-divider)",
-              background:
-                "linear-gradient(180deg, var(--mcs-page-rail) 0%, var(--mcs-page-edge) 100%)",
+              backgroundColor: "var(--mcs-page-rail)",
               backdropFilter: isWorkbenchShell
                 ? "none"
-                : "blur(calc(var(--mcs-glass-blur) * 0.66)) saturate(130%)",
+                : "blur(calc(var(--mcs-glass-blur) * 0.5)) saturate(115%)",
               WebkitBackdropFilter: isWorkbenchShell
                 ? "none"
-                : "blur(calc(var(--mcs-glass-blur) * 0.66)) saturate(130%)",
+                : "blur(calc(var(--mcs-glass-blur) * 0.5)) saturate(115%)",
             }}
           >
             {navContent}
@@ -633,10 +625,10 @@ export function AppShell({
                 py: { xs: 1.35, md: 1.75 },
                 borderBottom: "1px solid var(--mcs-shell-divider)",
                 backgroundColor: "var(--mcs-toolbar-overlay)",
-                backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(120%)" },
+                backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(110%)" },
                 WebkitBackdropFilter: {
                   xs: "none",
-                  sm: "blur(var(--mcs-glass-blur)) saturate(120%)",
+                  sm: "blur(var(--mcs-glass-blur)) saturate(110%)",
                 },
               }}
           >
@@ -757,15 +749,14 @@ export function SectionHero({
         ...surfaceMap[variant],
         position: "relative",
         overflow: "hidden",
-        px: { xs: 2.5, md: 3.2 },
-        py: { xs: 2.4, md: 3 },
+        px: { xs: 2.25, md: 3 },
+        py: { xs: 2.2, md: 2.8 },
         animation: "mcs-shell-rise 260ms cubic-bezier(0.16, 1, 0.3, 1)",
         "&::after": {
           content: '""',
           position: "absolute",
           inset: 0,
-          background:
-            "linear-gradient(180deg, var(--mcs-shell-highlight) 0%, transparent 30%)",
+          background: "linear-gradient(180deg, var(--mcs-shell-highlight) 0%, transparent 22%)",
           pointerEvents: "none",
         },
       }}
@@ -792,8 +783,8 @@ export function SectionHero({
             variant="h3"
             component={titleComponent}
             sx={{
-              fontSize: { xs: "2.1rem", md: "3rem" },
-              lineHeight: 1.02,
+              fontSize: { xs: "2rem", md: "3.25rem" },
+              lineHeight: 1,
               letterSpacing: "-0.06em",
               textWrap: "balance",
             }}
@@ -817,11 +808,10 @@ export function SectionHero({
             sx={{
               minWidth: { xs: "100%", xl: 300 },
               width: { xs: "100%", xl: "auto" },
-              borderRadius: 3.5,
+              borderRadius: 3,
               border: "1px solid var(--mcs-shell-stroke)",
-              background:
-                "linear-gradient(180deg, var(--mcs-shell-fill-strong) 0%, var(--mcs-shell-fill) 100%)",
-              boxShadow: "inset 0 1px 0 var(--mcs-glass-highlight)",
+              backgroundColor: "var(--mcs-shell-fill)",
+              boxShadow: "var(--mcs-shadow-sm)",
               p: 1,
             }}
           >
@@ -869,10 +859,10 @@ export function MetricStrip({
         <Box
           key={item.key}
           sx={{
-            ...toneSurface(tone),
-            borderRadius: 3.25,
-            px: density === "compact" ? 1.6 : 2,
-            py: density === "compact" ? 1.25 : 1.8,
+        ...toneSurface(tone),
+        borderRadius: 3,
+        px: density === "compact" ? 1.6 : 2,
+        py: density === "compact" ? 1.25 : 1.8,
             minHeight: density === "compact" ? 84 : 124,
             position: "relative",
             overflow: "hidden",
@@ -965,9 +955,9 @@ export function ListSurface({
     <Box
       sx={{
         ...toneSurface(tone),
-        borderRadius: 3.5,
+        borderRadius: 3,
         overflow: "hidden",
-        boxShadow: "var(--mcs-shadow-sm), inset 0 1px 0 var(--mcs-glass-highlight)",
+        boxShadow: "var(--mcs-shadow-sm)",
         p: padded ? { xs: 1.5, md: 2 } : 0,
       }}
     >
@@ -1085,12 +1075,11 @@ export function StickyActionBar({
           px: { xs: 1.5, md: 2 },
           py: 1.35,
           borderColor: "var(--mcs-workbench-outline-strong)",
-          background:
-            "linear-gradient(180deg, var(--mcs-glass-fill-strong) 0%, var(--mcs-panel-fill-strong) 100%)",
-          backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(120%)" },
+          backgroundColor: "var(--mcs-panel-fill-strong)",
+          backdropFilter: { xs: "none", sm: "blur(var(--mcs-glass-blur)) saturate(110%)" },
           WebkitBackdropFilter: {
             xs: "none",
-            sm: "blur(var(--mcs-glass-blur)) saturate(120%)",
+            sm: "blur(var(--mcs-glass-blur)) saturate(110%)",
           },
         }}
       >
