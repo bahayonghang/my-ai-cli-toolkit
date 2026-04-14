@@ -247,7 +247,7 @@ mcs-web-test-watch: mcs-web-install
 
 # 运行 MCS Web UI lint
 mcs-web-lint:
-    {{ npm_cmd }} --prefix {{ mcs_web_ui_dir }} run lint
+    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} run lint
 
 # 构建 MCS Web 生产版本
 mcs-web-build: mcs-web-build-ui
