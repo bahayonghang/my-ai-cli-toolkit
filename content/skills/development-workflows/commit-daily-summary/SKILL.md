@@ -44,6 +44,8 @@ Clarify only when necessary:
 
 ### Step 2: Collect commits
 
+**Pre-check:** Verify the target directory is a git repository (`git rev-parse --is-inside-work-tree`). If git is not available or the directory is not a repo, report the error and stop — do not guess or fabricate commits.
+
 Single repository:
 
 ```bash
@@ -60,7 +62,12 @@ for repo in /path/to/repo-a /path/to/repo-b; do
 done
 ```
 
-If no commits are found, state that clearly and stop.
+**Shared repository:** If the repo has multiple contributors and the user likely wants only their own commits, add `--author="<user>"` to the git log command. Detect the current user via `git config user.name` or `git config user.email`.
+
+**Edge cases:**
+- If no commits are found, state that clearly and stop.
+- If the date range is ambiguous or unparseable, confirm with the user before defaulting.
+- If a repo path does not exist or is not accessible, skip it with a warning and continue with remaining repos.
 
 ### Step 3: Group into workstreams
 
