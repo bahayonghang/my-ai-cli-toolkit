@@ -3,7 +3,12 @@ name: card
 description: "Turn URLs, pasted text, Markdown, or article files into PNG knowledge cards and visual explainers. Supports five modes: `-l` long reading card, `-i` infographic, `-m` multi-card carousel, `-v` sketchnote, and `-c` black-and-white manga comic. Use whenever the user asks to make content into a card, long image, infographic, visual note, sketchnote, comic, manga page, or says '铸' / 'cast' / '做成图' / '做成卡片' / '视觉化一下', even if they do not specify a mode. Choose the best-fit mode automatically when no flag is given. Do not use it for generic photo illustration, slide decks, or editable diagram authoring."
 category: visual-media-design
 tags: [card, png, infographic, sketchnote, comic, visualization, longform]
-version: "1.8.0"
+version: "1.9.0"
+argument-hint: "[mode] [url-or-text-or-file]"
+allowed-tools:
+  - Read
+  - Write
+  - Bash(node *, npm install, npx playwright install chromium)
 ---
 
 # card: 铸
@@ -28,6 +33,12 @@ version: "1.8.0"
 - 粘贴文本
 - Markdown / 文章文件路径
 - 已经整理好的提纲、要点、框架说明
+
+### 不适用场景
+
+- 通用海报或单张插画生成
+- 可编辑流程图 / 架构图 / 白板草图
+- 幻灯片 deck 设计或整套主题替换
 
 ### 输出策略
 
@@ -123,6 +134,14 @@ cd "$SKILL_DIR" && npm install && npx playwright install chromium
 - 结果带明显 AI 味：默认字体、默认阴影、默认渐变、均匀模板感、空洞文案
 
 先调整结构与层级，再考虑删减内容。不要一上来就砍信息量。
+
+## 失败与恢复
+
+- URL 读取失败或遇到明显 paywall：立刻告诉用户抓取失败原因，并请求粘贴正文或提供可读版本，不要假装拿到了正文。
+- 内容过短：不要硬做“满版信息图”，改走更轻的 `-l` 或 `-v`，并说明为什么。
+- 内容过长：优先改为 `-m` 多卡，或在保持信息密度的前提下分层裁剪，不要直接截断核心结论。
+- Playwright / 截图失败：先按文档安装依赖并重试一次；如果仍失败，至少交付 HTML 并明确 PNG 未生成。
+- mode 明显不合适：在生成前改路由；不要生成后再用解释为糟糕版式找补。
 
 ## 交付契约
 

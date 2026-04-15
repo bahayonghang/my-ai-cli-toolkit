@@ -3,15 +3,18 @@ name: brand-design-md
 description: 当用户明确点名真实品牌、产品或媒体站点的视觉语言，并希望先从 getdesign.md 拉取结构化设计规范，再据此生成或改造 UI 代码时使用。适用于“做成 Apple/Stripe/Notion/WIRED 的感觉”“参考某品牌官网风格做页面”“把现有 React 组件改成 Vercel 风格”这类请求，即使用户没提 getdesign.md 也应优先触发。不要用于泛化的“更现代一点”、logo 设计、图片/海报生成、幻灯片换皮、图表/流程图或纯设计分析。
 category: visual-media-design
 tags: [brand-style, design-system, getdesign, ui-code, html, react, vue]
-version: 1.0.0
+version: 1.1.0
 argument-hint: [brand-style-ui-request]
+allowed-tools:
+  - Read
+  - Bash(node *, npx getdesign@latest *)
 ---
 
 # Brand Design MD
 
 让模型先拿到真实品牌的结构化设计规范，再去写 UI，而不是靠“像某某风格”盲猜。
 
-## 何时使用
+## 快速判断
 
 优先用于这些场景：
 
@@ -25,6 +28,21 @@ argument-hint: [brand-style-ui-request]
 - 只说“现代一点”“高级一点”“更有设计感”
 - logo 设计、图片/海报生成、视觉卡片、流程图/架构图、幻灯片主题替换
 - 纯设计分析或品牌研究，而不需要产出 UI 代码
+
+## 输入与产物
+
+输入通常包括：
+
+- 用户原始请求
+- 现有项目代码或组件路径（如果是改现有项目）
+- 可选的输出路径或目标文件
+
+产物必须是：
+
+- 基于真实品牌规范生成的 UI 代码，或
+- 对现有 UI 的增量改造方案与代码
+
+不要把结果退化成抽象风格建议；要么给代码，要么给明确到 token 来源的改造说明。
 
 ## 运行入口
 
@@ -126,11 +144,20 @@ node "$SKILL_DIR/scripts/getdesign-helper.mjs" fetch --slug <brand-slug> --out <
 - 已给定框架：沿用原框架
 - 只有在用户明确要求时，才把 DESIGN 文件保存进项目目录
 
+交付时至少明确这 4 件事：
+
+1. 解析出的品牌 slug
+2. 走的是“新建原型”还是“改现有项目”路径
+3. 直接复用的 token 证据
+4. 代码最终落点（回复内、目标文件、或 helper 输出文件）
+
 ## 失败与降级
 
 - `getdesign` 不可用或 `npx` 失败：明确报错，并建议用户检查 Node.js / `npx`
 - 品牌未命中：优先展示 helper 的前 3 个建议，不要自己编造品牌支持列表
 - 上游品牌目录变化：以 `list` 实时结果为准，本 skill 不应因为 README 里的静态数字而失效
+- 用户给了 3 个以上品牌：先收敛，再输出；不要做“全都来一点”的混搭
+- 用户只给模糊词（如“更现代一点”）：直接说明这个 skill 不适用，并转向更泛化的设计 skill
 
 ## 最后自检
 
@@ -141,3 +168,4 @@ node "$SKILL_DIR/scripts/getdesign-helper.mjs" fetch --slug <brand-slug> --out <
 - 至少 4 类 token 是否能在 DESIGN 文本中找到直接证据
 - 现有项目请求是否保持了原框架和原组件形态
 - 混搭时是否说清了主品牌、副品牌和各自负责的层次
+- 最终输出是否仍然是 UI 代码，而不是空泛的风格评论

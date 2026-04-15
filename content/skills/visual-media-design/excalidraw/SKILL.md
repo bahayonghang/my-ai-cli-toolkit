@@ -19,9 +19,17 @@ tags:
   - flowchart
   - sequence-diagram
   - editable
+version: 1.2.0
 ---
 
 Generate an Excalidraw diagram from `$ARGUMENTS`.
+
+## Inputs
+
+- Required: diagram description, system/process notes, or a structured outline
+- Optional: output path, export format, style preference, grouping hints
+
+If `$ARGUMENTS` is empty or too vague to identify the subject, ask for the missing diagram description before proceeding.
 
 ## Workflow
 
@@ -32,12 +40,25 @@ Generate an Excalidraw diagram from `$ARGUMENTS`.
    - `sketch` only when the user explicitly asks for a whiteboard, brainstorm, rough draft, or hand-drawn look
 4. Perform arrow-path analysis before placing components. If return arrows or non-adjacent connections would cross intermediate nodes, switch to a bypass path or 2D layout.
 5. Generate the JSON with descriptive IDs, explicit text sizing and colors, bidirectional bindings, and containers that fully cover grouped children.
-6. Save the result as `<descriptive-name>.excalidraw.json` in the active directory.
+6. Resolve the output path:
+   - if the user supplied a filename, use it
+   - otherwise save as `<descriptive-name>.excalidraw.json` in the active directory
 7. If the user asked for PNG or SVG, or a rendered preview would materially help, try an export:
    - SVG via Kroki when `curl` is available
    - PNG or SVG via `excalidraw-brute-export-cli` when the local CLI is available
    - If export tooling is unavailable, still deliver the JSON and explain what was missing
 8. Return the created file paths, chosen diagram type, chosen style mode, and export status.
+
+## Output Contract
+
+Always deliver:
+
+- the `.excalidraw.json` path
+- the chosen diagram type
+- the chosen style mode
+- export status for each requested preview format
+
+Do not dump the full JSON into chat unless the user explicitly asks for inline content.
 
 ## Rules
 
@@ -57,3 +78,11 @@ Generate an Excalidraw diagram from `$ARGUMENTS`.
 - Arrows not snapping: verify both arrow bindings and shape `boundElements`.
 - Spaghetti layout: widen spacing, route return arrows around the perimeter, or switch to a 2D layout.
 - Export failure: keep the JSON output, report the failed tool or command, and tell the user how to open the file manually.
+- If the request is better served by Mermaid or a static SVG, say so instead of forcing a freeform canvas.
+
+## Final Checklist
+
+- Diagram type matches the request
+- Grouped elements are visually enclosed and externally targetable
+- Arrow routing is readable without crossing core nodes
+- Output file path is explicit

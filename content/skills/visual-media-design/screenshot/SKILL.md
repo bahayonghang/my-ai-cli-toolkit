@@ -1,12 +1,36 @@
 ---
 name: "screenshot"
-description: "Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed."
+description: "Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed. Prefer a more specialized capture tool first for browsers, Figma, or other supported apps."
 category: visual-media-design
 tags: [screenshot, desktop, screen-capture, window, os-level]
+version: 1.1.0
+argument-hint: [capture-request-or-output-path]
 ---
 
 
 # Screenshot Capture
+
+Use this skill for OS-level capture when the user explicitly wants a screenshot or when a more specialized capture tool cannot reach the target.
+
+## Workflow
+
+1. Classify the request: full screen, specific app/window, active window, or pixel region.
+2. Resolve the save target:
+   - explicit user path -> save there
+   - user asked for a screenshot with no path -> use the OS default screenshot location
+   - Codex needs the capture for its own inspection -> use the temp directory
+3. Prefer a tool-specific capture path when it exists and can reach the target cleanly.
+4. Otherwise run the bundled helper for the current platform.
+5. If multiple files are produced, inspect or report them in order instead of pretending there was only one output.
+6. Always return the saved path or paths and the capture mode used.
+
+## Output Contract
+
+Return:
+
+- capture mode used
+- saved file path or paths
+- any important caveat such as multi-display output or app-window matching behavior
 
 Follow these save-location rules every time:
 
@@ -33,7 +57,7 @@ to avoid extra sandbox module-cache prompts.
 bash <path-to-skill>/scripts/ensure_macos_permissions.sh
 ```
 
-To avoid multiple sandbox approval prompts, combine preflight + capture in one
+To avoid repeated permission checks, combine preflight + capture in one
 command when possible:
 
 ```bash
@@ -262,8 +286,8 @@ gnome-screenshot -w -f output/window.png
 ## Error handling
 
 - On macOS, run `bash <path-to-skill>/scripts/ensure_macos_permissions.sh` first to request Screen Recording in one place.
-- If you see "screen capture checks are blocked in the sandbox", "could not create image from display", or Swift `ModuleCache` permission errors in a sandboxed run, rerun the command with escalated permissions.
+- If the current runtime blocks the helper, or you hit Swift `ModuleCache` / display-access errors, report that the helper could not run and fall back to the direct OS command or ask the user to run it locally.
 - If macOS app/window capture returns no matches, run `--list-windows --app "AppName"` and retry with `--window-id`, and make sure the app is visible on screen.
 - If Linux region/window capture fails, check tool availability with `command -v scrot`, `command -v gnome-screenshot`, and `command -v import`.
-- If saving to the OS default location fails with permission errors in a sandbox, rerun the command with escalated permissions.
+- If saving to the OS default location fails, switch to an explicit path or temp path and tell the user where the file was saved.
 - Always report the saved file path in the response.

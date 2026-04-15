@@ -22,9 +22,20 @@ tags:
   - visualization
   - agents
 argument-hint: [diagram-description]
+allowed-tools:
+  - Read
+  - Write
+  - Bash(curl *, rsvg-convert *, python *)
 ---
 
 Generate a production-quality technical diagram from `$ARGUMENTS`.
+
+## Inputs
+
+- Required: diagram description, system/process structure, or comparison axes
+- Optional: output path, requested style, PNG export requirement, brand/product names
+
+If the prompt is too vague to identify nodes and edges, ask for the missing structure before drawing.
 
 ## Workflow
 
@@ -38,9 +49,23 @@ Follow this order:
    - load another `style-*.md` file only when the user explicitly requests a different look
 5. Map each concept to a consistent shape.
 6. If branded products appear, read `$SKILL_DIR/references/icons.md`.
-7. Write the SVG to the requested path, or the current working directory if no path was provided.
-8. If PNG was requested or would materially help, export PNG when local tooling is available.
-9. Return the created file paths and clearly report whether PNG export succeeded, was skipped, or failed.
+7. Resolve the output path:
+   - use the user-provided file path when present
+   - otherwise save the SVG in the current working directory with a descriptive filename
+8. Write the SVG to disk.
+9. If PNG was requested or would materially help, export PNG when local tooling is available.
+10. Return the created file paths and clearly report whether PNG export succeeded, was skipped, or failed.
+
+## Output Contract
+
+Always return:
+
+- the SVG path
+- the requested or inferred diagram type
+- the style reference used
+- PNG export status
+
+If only SVG was produced, say so explicitly.
 
 ## Diagram Types
 
@@ -180,6 +205,13 @@ When a diagram uses 2 or more arrow meanings, add a legend.
 - If export fails, keep the SVG and report the exact output path.
 - If only SVG was produced, say so explicitly instead of implying a full export succeeded.
 - Do not invent download URLs or package-manager instructions you cannot verify from local context.
+
+## Final Checklist
+
+- Main structure is readable at a glance
+- Arrow semantics are consistent and labeled when needed
+- Requested style reference was actually loaded
+- SVG exists at the reported path
 
 ## Styles
 
