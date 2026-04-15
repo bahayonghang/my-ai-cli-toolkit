@@ -1,0 +1,15 @@
+timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
+2026-04-14T10:00	baseline	interview-plan	-	73	baseline	-	.5步编号增加理解成本,条件路径多	dry_run
+2026-04-14T10:00	baseline	session-wrap	-	74	baseline	-	边界条件/learnings提取缺具体标准	dry_run
+2026-04-14T10:00	baseline	commit-daily-summary	-	76	baseline	-	资源整合度低,完全自包含无外部文件	dry_run
+2026-04-14T10:00	baseline	project-daily-summary	-	76	baseline	-	检查点设计弱,缺分组确认	dry_run
+2026-04-14T10:00	baseline	code-auditor	-	77	baseline	-	检查点设计弱,PR专属处理路径缺失	dry_run
+2026-04-14T10:00	baseline	improve-codebase-architecture	-	83	baseline	-	资源整合度较低,仅1个reference	dry_run
+2026-04-14T10:10	R1	interview-plan	73	79	keep	D7整体架构	消除.5编号,四阶段分组	dry_run
+2026-04-14T10:15	R2	interview-plan	79	81	keep	D5指令具体性	补充task_plan.md输出模板	dry_run
+2026-04-14T10:20	R1	session-wrap	74	79	keep	D5指令具体性	learnings提取正例/反例信号清单	dry_run
+2026-04-14T10:25	R2	session-wrap	79	80	keep	D3边界条件	大会话/多主题场景处理	dry_run
+2026-04-14T10:30	R1	commit-daily-summary	76	78	keep	D3边界条件	git不可用/共享仓库/日期歧义	dry_run
+2026-04-14T10:35	R1	project-daily-summary	76	81	keep	D5指令具体性+D3边界	会话信号清单+解析失败降级+git预检	dry_run
+2026-04-14T10:40	R1	code-auditor	77	82	keep	D8实测表现	PR/MR专属处理路径+gh降级	dry_run
+2026-04-14T10:45	R1	improve-codebase-architecture	83	84	keep	D1 Frontmatter	补充argument-hint和allowed-tools	dry_run
