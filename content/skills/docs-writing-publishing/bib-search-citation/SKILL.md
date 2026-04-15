@@ -12,6 +12,7 @@ description: >-
 category: docs-writing-publishing
 tags: [bibtex, biblatex, citation, latex, typst, bibliography, research, zotero, bib]
 version: "1.1.0"
+argument-hint: [path-to-.bib and search/filter request]
 allowed-tools: Read, Bash
 ---
 
@@ -26,8 +27,8 @@ Follow this workflow:
 1. Identify the `.bib` file to use.
 2. If `rtk` is available, prefer it for exploratory steps such as locating `.bib` files and inspecting representative fields.
 3. Translate the user's request into either a JSON search spec or a compact query expression.
-4. Run `scripts/search_bib.py` on the `.bib` file and keep its JSON output uncompressed.
-5. Optionally pipe the JSON into `scripts/preview_bib_search.py` for a compact human-readable summary.
+4. Run `$SKILL_DIR/scripts/search_bib.py` on the `.bib` file and keep its JSON output uncompressed.
+5. Optionally pipe the JSON into `$SKILL_DIR/scripts/preview_bib_search.py` for a compact human-readable summary.
 6. Review the results and present the best matches clearly.
 7. Include LaTeX and/or Typst citation snippets whenever the user asks for them or would benefit from them.
 
@@ -42,6 +43,12 @@ The typical input is:
 - optional output preferences such as `latex`, `typst`, `both`, or raw BibTeX
 
 If the user gives a natural-language request only, infer a reasonable search spec and say what assumptions you made. If the user writes a compact filter expression directly, preserve it as closely as possible instead of converting it into vague prose.
+
+If the request does not identify a `.bib` file:
+
+1. look for likely candidates in the current workspace,
+2. prefer the only `.bib` file if exactly one exists,
+3. otherwise ask one focused question instead of guessing across multiple libraries.
 
 ## Search planning
 
@@ -109,11 +116,27 @@ The script supports these useful `has` values:
 
 `code` is inferred from fields such as `url`, `abstract`, `keywords`, `annotation`, `note`, or `howpublished` that mention GitHub, GitLab, code, repository, or source.
 
-For more examples, see `references/query-syntax.md`.
+For more examples, see `$SKILL_DIR/references/query-syntax.md`.
 
 ## Running the script
 
 Run the script with a JSON spec, a spec file, or a compact query.
+
+## Result handling
+
+After search execution:
+
+1. verify the top matches really satisfy the user request instead of trusting raw ranking,
+2. surface why each match qualified,
+3. include citation snippets only when requested or clearly useful,
+4. say explicitly when the result set is empty or ambiguous and suggest the next-best filter to try.
+
+## Rules
+
+- Do not silently switch to a different `.bib` library once one has been selected.
+- Do not drop structured filters such as year bounds, `has:` constraints, or excluded authors unless the user approves that relaxation.
+- Preserve exact BibTeX content when the user asks for raw export.
+- Keep JSON intermediate output intact for downstream tooling; summarize separately for humans.
 
 ## RTK Fast Path
 
