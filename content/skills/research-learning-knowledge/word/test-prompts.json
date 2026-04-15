@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "prompt": "Deeply explain the word \"serendipity\".",
+    "expected": "用固定结构完成单词深解，而不是给词典释义。"
+  },
+  {
+    "id": 2,
+    "prompt": "Explain \"discipline\" with contrast to \"self-control\" and give natural examples.",
+    "expected": "说明语义边界、近邻词差异和自然例句。"
+  },
+  {
+    "id": 3,
+    "prompt": "In this sentence, what does \"yield\" really mean?",
+    "expected": "利用上下文锁定当前义项，而不是平均展开所有义项。"
+  }
+]

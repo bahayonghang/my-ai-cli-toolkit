@@ -1,0 +1,23 @@
+timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
+2026-04-15T10:45:02	baseline	deep-research-pro	-	62	baseline	-	旧版依赖宿主绝对路径与特定搜索脚本	dry_run
+2026-04-15T10:45:02	pending-commit	deep-research-pro	62	84	keep	workflow/portability	改为环境无关研究流程与输出契约	dry_run
+2026-04-15T10:45:02	baseline	knowledge-absorber	-	69	baseline	-	旧版主流程对宿主能力和参考提示依赖过强	dry_run
+2026-04-15T10:45:02	pending-commit	knowledge-absorber	69	86	keep	boundary/fallback	补齐输入路由、host-specific 护栏与失败回退	dry_run
+2026-04-15T10:45:02	baseline	learn	-	84	baseline	-	概念歧义与文件输出分支说明不足	dry_run
+2026-04-15T10:45:02	pending-commit	learn	84	88	keep	edge-cases	补齐概念抽取、义项锁定与 no-save 分支	dry_run
+2026-04-15T10:45:02	baseline	memory-system	-	72	baseline	-	脚本路由有，但人类可读输出与清理语义较弱	dry_run
+2026-04-15T10:45:02	pending-commit	memory-system	72	86	keep	output-contract	补齐人类可读输出、目录规则与 cleanup 语义	dry_run
+2026-04-15T10:45:02	baseline	paper-workbench	-	84	baseline	-	模式默认值与边界情况处理不够显式	dry_run
+2026-04-15T10:45:02	pending-commit	paper-workbench	84	90	keep	routing	补齐 defaulting、comparison fallback 与 profile-light 分支	dry_run
+2026-04-15T10:45:02	baseline	paper2code	-	78	baseline	-	依赖安装与 early-stop gate 不够诚实	dry_run
+2026-04-15T10:45:02	pending-commit	paper2code	78	89	keep	dependency-gate	补齐依赖门、失败阶段报告与 honesty rules	dry_run
+2026-04-15T10:45:02	baseline	plain	-	86	baseline	-	多材料输入与是否落盘的分支未写明	dry_run
+2026-04-15T10:45:02	pending-commit	plain	86	89	keep	scope-control	补齐多输入判断与 no-save 分支	dry_run
+2026-04-15T10:45:02	baseline	rank	-	83	baseline	-	适用边界与“秩未定”诚实出口不够显式	dry_run
+2026-04-15T10:45:02	pending-commit	rank	83	87	keep	honesty	补齐 applicability 与未定出口	dry_run
+2026-04-15T10:45:02	baseline	roundtable	-	88	baseline	-	人物选择保守性和一次性输出分支不足	dry_run
+2026-04-15T10:45:02	pending-commit	roundtable	88	91	keep	guardrails	补齐虚构人物边界与 one-shot 完整讨论分支	dry_run
+2026-04-15T10:45:02	baseline	word	-	84	baseline	-	多义项锁定和例句要求不够明确	dry_run
+2026-04-15T10:45:02	pending-commit	word	84	89	keep	specificity	补齐义项锁定、自然例句与误区处理	dry_run
+2026-04-15T10:45:02	baseline	word-flow	-	80	baseline	-	依赖声明与失败回退不完整	dry_run
+2026-04-15T10:45:02	pending-commit	word-flow	80	88	keep	failure-handling	补齐 card 依赖、partial completion 与路径诚实性	dry_run
