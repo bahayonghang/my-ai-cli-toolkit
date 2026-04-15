@@ -12,13 +12,13 @@ category: research-learning-knowledge
 tags: [paper, implementation, replication, arxiv, openreview, pdf, pytorch, research]
 version: "0.1.0"
 argument-hint: "[paper-source] [--mode minimal|full|educational] [--framework pytorch|jax|numpy]"
-allowed-tools: Read, Write, WebFetch, Bash(python *), Bash(pip install *)
+allowed-tools: Read, Write, WebFetch, Bash(python *), Bash(pytest *)
 ---
 
 # paper2code
 
 Repo-native successor to the arXiv-only reference workflow. Keep the original
-paper2code principles:
+paper2code discipline:
 
 - cite every non-trivial implementation choice back to the paper
 - audit ambiguities before writing code
@@ -41,8 +41,8 @@ Reject these explicitly:
 - generic landing pages outside OpenReview
 - pasted raw paper text as the primary source
 
-If the user already has a paper PDF locally, prefer the local PDF path over DOI
-lookup.
+If the user already has a paper PDF locally, prefer the local PDF path over
+network retrieval.
 
 ## Parse arguments
 
@@ -60,8 +60,27 @@ Normalize the source into one of these internal source kinds:
 - `openreview_page`
 - `openreview_pdf`
 
-If the source is unsupported, fail fast with a clear message. Do not silently
+If the source is unsupported, fail fast with a clear reason. Do not silently
 fall back to unrelated fetch logic.
+
+## Dependency gate
+
+This workflow depends on the bundled Python scripts and their parser packages.
+Before running the pipeline:
+
+1. verify the relevant files under `scripts/`, `pipeline/`, `guardrails/`,
+   `knowledge/`, and `scaffolds/` exist
+2. verify Python dependencies are available
+
+If dependencies are missing, report the missing packages and the install command
+needed. Do not silently install new dependencies unless the user explicitly
+asked for environment setup.
+
+Suggested command when setup is approved:
+
+```bash
+python -m pip install pymupdf4llm pdfplumber pymupdf requests pyyaml
+```
 
 ## Set up working directory
 
@@ -70,20 +89,12 @@ temporary directory of the form:
 
 `.paper2code_work/{PAPER_KEY}/`
 
-All intermediate artifacts live there. The final generated project still goes in
-the current directory under `{paper_slug}/`.
-
-## Install dependencies
-
-Run:
-
-```bash
-pip install pymupdf4llm pdfplumber pymupdf requests pyyaml
-```
+All intermediate artifacts live there. The final generated project goes in the
+current directory under `{paper_slug}/`.
 
 ## Execute pipeline
 
-### Stage 1 — Paper Acquisition and Parsing
+### Stage 1 — Paper acquisition and parsing
 
 Read and follow: `pipeline/01_paper_acquisition.md`
 
@@ -93,7 +104,7 @@ Run:
 python "$SKILL_DIR/scripts/fetch_paper.py" "$PAPER_SOURCE" ".paper2code_work"
 ```
 
-The script will:
+The script should:
 
 - classify the source kind
 - create `.paper2code_work/{PAPER_KEY}/`
@@ -109,18 +120,20 @@ python "$SKILL_DIR/scripts/extract_structure.py" \
   ".paper2code_work/{PAPER_KEY}"
 ```
 
-Verify the outputs exist before moving on. If acquisition or extraction fails,
-follow the fallback protocol in `pipeline/01_paper_acquisition.md`.
+Stop here if acquisition artifacts are missing. Do not continue into codegen
+with partial paper text unless the pipeline document explicitly allows it.
 
-### Stage 2 — Contribution Identification
+### Stage 2 — Contribution identification
 
 Read and follow: `pipeline/02_contribution_identification.md`
 
-Write the contribution analysis to:
+Write:
 
 `.paper2code_work/{PAPER_KEY}/contribution.md`
 
-### Stage 3 — Ambiguity Audit
+The output must isolate the single core contribution that will define scope.
+
+### Stage 3 — Ambiguity audit
 
 Read and follow: `pipeline/03_ambiguity_audit.md`
 
@@ -128,11 +141,14 @@ Before that stage, also read:
 
 - `guardrails/hallucination_prevention.md`
 
-Write the audit to:
+Write:
 
 `.paper2code_work/{PAPER_KEY}/ambiguity_audit.md`
 
-### Stage 4 — Code Generation
+If the ambiguity audit says a detail is unspecified, preserve that uncertainty.
+Do not "fill the gap" with a confident guess.
+
+### Stage 4 — Code generation
 
 Read and follow: `pipeline/04_code_generation.md`
 
@@ -145,7 +161,7 @@ Before writing code, also read:
 
 Generate the project under `{paper_slug}/` in the current working directory.
 
-### Stage 5 — Walkthrough Notebook
+### Stage 5 — Walkthrough notebook
 
 Read and follow: `pipeline/05_walkthrough_notebook.md`
 
@@ -153,9 +169,31 @@ Generate:
 
 `{paper_slug}/notebooks/walkthrough.ipynb`
 
+## Mode-specific behavior
+
+- `minimal`
+  - implement only the core contribution
+  - include a training loop only when the contribution itself is a training
+    method
+- `full`
+  - include the core contribution plus the full training/data/evaluation
+    skeletons that are within scope
+- `educational`
+  - same scope as `minimal`, but add extra teaching comments and a richer
+    walkthrough notebook
+
+## Honesty rules
+
+- never claim parity with the original paper unless it was actually reproduced
+- never invent missing hyperparameters without marking them
+- never let unrelated engineering polish expand the scope
+- if official code exists, treat it as a reference, not unquestioned ground
+  truth
+
 ## Cleanup
 
-Remove `.paper2code_work/` after successful completion.
+Remove `.paper2code_work/` only after successful completion. If the workflow
+fails midstream, keep the work directory so the user can inspect artifacts.
 
 ## Final output
 
@@ -170,18 +208,8 @@ Print:
   Mode: {MODE} | Framework: {FRAMEWORK}
 ```
 
-## Mode-specific behavior
-
-- `minimal`
-  - implement only the core contribution
-  - include a training loop only when the contribution itself is a training
-    method
-- `full`
-  - include the core contribution plus the full training/data/evaluation
-    skeletons that are within scope
-- `educational`
-  - same scope as `minimal`, but add extra teaching comments and a richer
-    walkthrough notebook
+If the run stopped early, replace the success marker with a failure summary that
+names the exact failing stage and the artifact or dependency that blocked it.
 
 ## Guardrails
 

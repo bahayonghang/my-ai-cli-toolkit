@@ -1,157 +1,154 @@
 ---
 name: deep-research-pro
 version: 1.0.0
-description: "Multi-source deep research agent. Searches the web, synthesizes findings, and delivers cited reports. No API keys required."
+description: "Multi-source deep research skill for current-topic investigation, comparison, and cited report writing. Use when the user asks to research, compare, or deep-dive a topic with current web sources and citations, including phrases like research, deep dive, latest, 调研, 做个深度研究, or 带来源总结. Do not use for offline-only codebase questions, casual opinion requests, or when the user explicitly forbids web access."
 category: research-learning-knowledge
+tags: [research, web, citations, synthesis, report-writing, current-events]
 homepage: https://github.com/paragshah/deep-research-pro
 metadata: {"clawdbot":{"emoji":"🔬","category":"research"}}
 ---
 
-# Deep Research Pro 🔬
+# Deep Research Pro
 
-A powerful, self-contained deep research skill that produces thorough, cited reports from multiple web sources. No paid APIs required — uses DuckDuckGo search.
+Use this skill to turn an open-ended topic into a grounded, cited research
+deliverable. The goal is not to dump links. The goal is to answer the user's
+real question with evidence, recency awareness, and explicit uncertainty.
 
-## How It Works
+## When to use
 
-When the user asks for research on any topic, follow this workflow:
+Use this skill when the user wants:
 
-### Step 1: Understand the Goal (30 seconds)
+- current information
+- topic comparison or landscape mapping
+- a cited briefing, memo, or report
+- decision support backed by multiple sources
+- research on markets, companies, policy, science, or technology
 
-Ask 1-2 quick clarifying questions:
-- "What's your goal — learning, making a decision, or writing something?"
-- "Any specific angle or depth you want?"
+Do not use this skill when:
 
-If the user says "just research it" — skip ahead with reasonable defaults.
+- the task is purely local to the repo or codebase
+- the user explicitly says not to browse
+- the user only wants a quick opinion with no sourcing
 
-### Step 2: Plan the Research (think before searching)
+## Workflow
 
-Break the topic into 3-5 research sub-questions. For example:
-- Topic: "Impact of AI on healthcare"
-  - What are the main AI applications in healthcare today?
-  - What clinical outcomes have been measured?
-  - What are the regulatory challenges?
-  - What companies are leading this space?
-  - What's the market size and growth trajectory?
+### 1. Lock the research objective
 
-### Step 3: Execute Multi-Source Search
+Extract or infer:
 
-For EACH sub-question, run the DDG search script:
+- topic
+- user goal: learn, decide, write, compare, or monitor
+- preferred depth: quick brief, standard report, or deep dive
+- expected output: chat answer, outline, memo, or saved file
 
-```bash
-# Web search
-/home/clawdbot/clawd/skills/ddg-search/scripts/ddg "<sub-question keywords>" --max 8
+Ask at most 1-2 clarifying questions only if the answer would materially change
+the search plan or final deliverable. If not, proceed with reasonable defaults
+and state them.
 
-# News search (for current events)
-/home/clawdbot/clawd/skills/ddg-search/scripts/ddg news "<topic>" --max 5
-```
+### 2. Break the topic into sub-questions
 
-**Search strategy:**
-- Use 2-3 different keyword variations per sub-question
-- Mix web + news searches
-- Aim for 15-30 unique sources total
-- Prioritize: academic, official, reputable news > blogs > forums
+Create 3-5 sub-questions that cover the topic from different angles, such as:
 
-### Step 4: Deep-Read Key Sources
+- definition and scope
+- current state and recent developments
+- evidence, metrics, or outcomes
+- major players or competing schools
+- risks, limitations, or open questions
 
-For the most promising URLs, fetch full content:
+Do not search blindly for the top-level topic only.
 
-```bash
-curl -sL "<url>" | python3 -c "
-import sys, re
-html = sys.stdin.read()
-# Strip tags, get text
-text = re.sub('<[^>]+>', ' ', html)
-text = re.sub(r'\s+', ' ', text).strip()
-print(text[:5000])
-"
-```
+### 3. Search with source discipline
 
-Read 3-5 key sources in full for depth. Don't just rely on search snippets.
+Use the current environment's available web tools. Prefer primary and
+high-signal sources in this order:
 
-### Step 5: Synthesize & Write Report
+1. official documentation, regulators, standards bodies, company filings,
+   papers, or datasets
+2. reputable journalism or domain publications
+3. expert analysis and industry commentary
 
-Structure the report as:
+For each sub-question:
+
+- try 2-3 focused query variants
+- collect multiple independent sources
+- prefer recent sources when the topic is time-sensitive
+- capture source title, publisher, URL, and date
+
+Aim for roughly 8-20 unique sources total unless the user requested a very
+lightweight answer.
+
+### 4. Deep-read the strongest sources
+
+Do not rely on snippets alone. Open and read the most relevant pages in full.
+
+For each key source, extract:
+
+- the core claim
+- the concrete evidence or data point
+- publication date
+- why it matters to the user's goal
+
+If a claim appears only once, treat it as provisional instead of established.
+
+### 5. Synthesize, do not concatenate
+
+Combine the evidence into a structured answer that:
+
+- answers the user's actual question
+- distinguishes fact, inference, and uncertainty
+- highlights disagreements across sources
+- calls out missing data when evidence is thin
+
+If the user asks for recommendations, make it explicit which parts come from
+sources and which parts are your synthesis.
+
+### 6. Deliver in the right format
+
+Default output structure:
 
 ```markdown
-# [Topic]: Deep Research Report
-*Generated: [date] | Sources: [N] | Confidence: [High/Medium/Low]*
+# {Topic}
 
 ## Executive Summary
-[3-5 sentence overview of key findings]
+- 3-5 high-signal findings
 
-## 1. [First Major Theme]
-[Findings with inline citations]
-- Key point ([Source Name](url))
-- Supporting data ([Source Name](url))
-
-## 2. [Second Major Theme]
+## Key Findings
+### {Theme 1}
+...
+### {Theme 2}
 ...
 
-## 3. [Third Major Theme]
+## Risks / Open Questions
 ...
-
-## Key Takeaways
-- [Actionable insight 1]
-- [Actionable insight 2]
-- [Actionable insight 3]
 
 ## Sources
-1. [Title](url) — [one-line summary]
-2. ...
-
-## Methodology
-Searched [N] queries across web and news. Analyzed [M] sources.
-Sub-questions investigated: [list]
+1. [Title](url) — source type, date
 ```
 
-### Step 6: Save & Deliver
+If the user asked for a saved report, write it to a user-specified path or a
+workspace-relative path. Do not assume a personal home-directory convention.
 
-Save the full report:
-```bash
-mkdir -p ~/clawd/research/[slug]
-# Write report to ~/clawd/research/[slug]/report.md
-```
+## Quality rules
 
-Then deliver:
-- **Short topics**: Post the full report in chat
-- **Long reports**: Post the executive summary + key takeaways, offer full report as file
+1. Every non-trivial factual claim should be source-backed.
+2. Prefer exact dates over vague recency words like "recently".
+3. Mark single-source claims, missing numbers, and unresolved conflicts.
+4. Do not invent statistics, quotes, or consensus.
+5. If browsing is unavailable, say that current verification could not be
+   completed instead of pretending the answer is current.
 
-## Quality Rules
+## Failure and fallback
 
-1. **Every claim needs a source.** No unsourced assertions.
-2. **Cross-reference.** If only one source says it, flag it as unverified.
-3. **Recency matters.** Prefer sources from the last 12 months.
-4. **Acknowledge gaps.** If you couldn't find good info on a sub-question, say so.
-5. **No hallucination.** If you don't know, say "insufficient data found."
+- If the topic is too broad, narrow it to the user's likely goal and state the
+  narrowed scope.
+- If relevant sources are low quality, say the evidence base is weak.
+- If the topic is highly time-sensitive, explicitly date-stamp the conclusion.
+- If the user wants a simple answer after the research pass, compress the report
+  into a short briefing instead of dumping the full notes.
 
-## Examples
+## Example prompts
 
-```
-"Research the current state of nuclear fusion energy"
-"Deep dive into Rust vs Go for backend services in 2026"
-"Research the best strategies for bootstrapping a SaaS business"
-"What's happening with the US housing market right now?"
-```
-
-## For Sub-Agent Usage
-
-When spawning as a sub-agent, include the full research request and context:
-
-```
-sessions_spawn(
-  task: "Run deep research on [TOPIC]. Follow the deep-research-pro SKILL.md workflow.
-  Read /home/clawdbot/clawd/skills/deep-research-pro/SKILL.md first.
-  Goal: [user's goal]
-  Specific angles: [any specifics]
-  Save report to ~/clawd/research/[slug]/report.md
-  When done, wake the main session with key findings.",
-  label: "research-[slug]",
-  model: "opus"
-)
-```
-
-## Requirements
-
-- DDG search script: `/home/clawdbot/clawd/skills/ddg-search/scripts/ddg`
-- curl (for fetching full pages)
-- No API keys needed!
+- `Research the current state of nuclear fusion commercialization`
+- `Compare Rust vs Go for backend services in 2026 with sources`
+- `帮我调研一下 AI coding agent 的市场格局，给出带来源总结`
+- `What's the latest on the US housing market?`

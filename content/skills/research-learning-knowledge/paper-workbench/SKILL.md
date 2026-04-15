@@ -24,6 +24,19 @@ and review construction.
 Keep `paper-record` as the normalization layer. Do not merge high-level
 analysis back into the normalized record.
 
+## When to use
+
+Use this skill when the job is to:
+
+- read one paper quickly
+- deeply deconstruct one paper
+- compare or synthesize multiple papers
+- build a review outline or gap map
+- normalize paper sources into reusable machine-readable artifacts
+
+Do not use this skill when the primary job is to implement a paper. In that
+case, route to `paper2code`.
+
 ## Public interfaces
 
 - `paper-record` — normalized single-paper facts
@@ -32,9 +45,7 @@ analysis back into the normalized record.
 - `literature-synthesis` — cross-paper integration artifact
 - `review-outline` — literature-review planning artifact
 
-## Source intake
-
-Accept all of these:
+## Accepted inputs
 
 - arXiv IDs and arXiv URLs
 - AlphaXiv URLs
@@ -46,19 +57,19 @@ Accept all of these:
 - existing `researcher-profile`, `paper-deep-read`, `literature-synthesis`, or
   `review-outline` JSON
 
-## Core routing rule
+## Routing workflow
 
 1. Resolve the input class from `$ARGUMENTS`, the latest user message, or a
    pasted JSON artifact.
 2. If the request is paper-level and not already normalized, run
    `scripts/normalize_paper.py` first.
-3. If the request is profile-sensitive and no `researcher-profile` is available,
-   ask only for the missing profile fields.
-4. Route into the requested mode.
-5. If the user wants persistence, use `scripts/workbench_io.py` to save the
-   profile or analysis artifact.
+3. Determine the mode from explicit user intent or the defaulting rules below.
+4. If the chosen mode is profile-sensitive, load the supplied
+   `researcher-profile` or collect only the missing fields.
+5. Produce the requested mode output.
+6. Persist artifacts only when the user asked to save them.
 
-## Mode selection
+## Mode quick guide
 
 ### Single-paper modes
 
@@ -90,6 +101,8 @@ Accept all of these:
   more specific mode, default to `scan`
 - If the user provides 3 or more papers and asks for integration, default to
   `synthesis`
+- If the user provides exactly 2 papers and asks for integration, run a
+  comparison-oriented `synthesis` and mark any gap mapping as provisional
 
 ## Normalize first
 
@@ -116,6 +129,9 @@ If missing, collect only these fields:
 - `thesis` (optional)
 - `target_tier`
 - `stage`
+
+If the user clearly wants no back-and-forth, proceed with a generic
+profile-light analysis and explicitly mark that personalization is limited.
 
 If the user wants persistence, create or update the profile with:
 
@@ -154,6 +170,17 @@ python "$SKILL_DIR/scripts/workbench_io.py" save-artifact \
   serially summarizing each paper
 - `review` paragraphs must use PEEL as a micro-argument structure, not a
   citation list
+- If the input evidence is too thin for the requested mode, downgrade the claim
+  strength instead of pretending full coverage
+
+## Edge cases
+
+- Mixed raw sources + existing JSON artifacts:
+  - normalize raw sources first, then merge at the artifact layer
+- More than one paper but user asks for `deep-read`:
+  - either choose the clearly primary paper or ask which one to focus on
+- DOI metadata only and no reachable full text:
+  - return the strongest metadata available and mark missing full-text facts
 
 ## References
 
