@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "prompt": "调研一下 2026 年 AI 编程代理市场格局，给我带来源结论和主要玩家对比。",
+    "expected": "拆成多个子问题，使用当前网页来源做调研，输出带来源和日期的市场格局总结。"
+  },
+  {
+    "id": 2,
+    "prompt": "Compare Rust vs Go for backend services in 2026 with citations and a clear recommendation.",
+    "expected": "给出带引用的对比、适用场景和明确建议，而不是泛泛而谈。"
+  },
+  {
+    "id": 3,
+    "prompt": "研究美国住房市场近一年的关键变化，给投资者一个简报。",
+    "expected": "优先近期来源，输出简洁 briefing，并明确数据口径和不确定点。"
+  }
+]
