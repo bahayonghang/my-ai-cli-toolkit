@@ -4,7 +4,6 @@ description: Write or update technical documentation from the real codebase and 
 category: docs-writing-publishing
 tags: [documentation, technical-writing, readme, api-docs, architecture, user-guide, contributing, jsdoc, chinese-docs]
 argument-hint: [target-path-and-doc-task]
-version: 1.1.0
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -40,7 +39,6 @@ Use the actual project files as the source of truth:
 3. Trace important flows from input to output when documenting behavior, not just file names.
 4. For API or architecture docs, verify routes, config keys, environment variables, and defaults against code.
 5. For JSDoc or comments, read the concrete symbol implementation before writing anything.
-6. Prefer surgical edits with `Edit` when updating an existing artifact; reserve full rewrites for clearly broken or missing docs.
 
 ### 3. Decide language, audience, and output location
 
@@ -69,7 +67,6 @@ Use the actual project files as the source of truth:
 3. In Chinese docs, prefer natural Chinese phrasing over literal translation.
 4. Use `TODO:` only for facts that cannot be derived from the repo and are necessary for completeness.
 5. For comments and JSDoc, document public contracts, side effects, invariants, errors, or non-obvious behavior. Do not add boilerplate comments that restate the code.
-6. If evidence is incomplete but the doc still needs a placeholder, label it explicitly with `TODO:` and explain the missing source.
 
 ### 6. Verify before handoff
 
@@ -87,5 +84,4 @@ Walk through `VERIFICATION_CHECKLIST.md` and confirm:
 - Do not copy stale wording from old docs without checking whether the code still matches.
 - Do not translate common technical terms into unnatural Chinese when the English form is the norm.
 - Keep the tone concise, direct, and professional.
-- If the requested target path does not exist yet, create it in the most conventional repo location and state that choice in the artifact when needed.
 - Output the documentation artifact only. Avoid extra conversational explanation unless the user explicitly asks for it.
