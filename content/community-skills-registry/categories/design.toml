@@ -123,3 +123,12 @@ stars = 5
 usage = "提供参考 UI 即可提取设计基因，用于后续准确还原项目设计语言与快速生成对应界面的代码"
 tags = ["design", "ui", "dna", "vision", "generator", "visual"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "zanwei/design-dna" }
+
+[[skills]]
+id = "claude-infographic-charts"
+name = "claude-infographic-charts"
+description = "Claude 信息图表技能包（生成 infographic 风格图表、流程图、架构图与交互式 SVG/HTML 可视化）"
+stars = 3
+usage = "npx skills add huangzhenhao90/claude-infographic-charts -g"
+tags = ["infographic", "charts", "diagram", "svg", "html", "visualization"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "huangzhenhao90/claude-infographic-charts" }
