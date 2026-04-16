@@ -24,3 +24,12 @@ stars = 4
 usage = "使用此技能辅助分析论文并生成高质量的学术图表 Prompt"
 tags = ["research", "graphics"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "LigphiDonk/academic-figure-generator" }
+
+[[skills]]
+id = "zotero-cli"
+name = "zotero-cli"
+description = "Zotero CLI 技能（文献库检索、引用导出、PDF 附件与阅读工作流）"
+stars = 4
+usage = "npx skills add bahayonghang/zotero-cli -g"
+tags = ["zotero", "bibliography", "research"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/zotero-cli" }
