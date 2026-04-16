@@ -42,3 +42,12 @@ stars = 5
 usage = "安装后通过命令与 AI Agent 协助对 Google Docs 进行读取、修改及排版相关操作"
 tags = ["google-workspace", "google-docs", "productivity", "documents"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "googleworkspace/cli", skill_flag = "gws-docs" }
+
+[[skills]]
+id = "pptx-deck-builder"
+name = "pptx-deck-builder"
+description = "PPTX Deck Builder — 基于 PptxGenJS 的专业幻灯片生成技能包，支持结构化大纲、叙事框架与主题化演示文稿输出"
+stars = 4
+usage = "npx skills add huangzhenhao90/pptx-deck-builder"
+tags = ["presentation", "pptx", "pptxgenjs", "slides", "storytelling", "design-system"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "huangzhenhao90/pptx-deck-builder" }
