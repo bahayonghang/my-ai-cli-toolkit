@@ -1,12 +1,12 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import {
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
 
 import { useI18n } from "@/i18n";
-import { useNpxSkillsStore, selectVisibleCatalogItems } from "@/stores/npxSkillsStore";
+import {
+  useNpxSkillsStore,
+  selectCatalogSections,
+  selectVisibleCatalogItems,
+} from "@/stores/npxSkillsStore";
 import type {
   InstallTarget,
   NpxSkillsCatalogItemDto,
@@ -15,35 +15,37 @@ import type {
 } from "@/types";
 import NpxFindView from "./npx-skills/NpxFindView";
 import { useUiStore } from "@/stores/uiStore";
+import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
+import { buildActivityRunPath } from "@/utils/activityNavigation";
+import { describeInstallItemInput, resolveRepoUrl } from "./npx-skills/utils";
 
 interface LayoutContext {
   currentWorkspaceId: string | null;
   installTarget: InstallTarget;
   installTargetLoading: boolean;
   resolvedTarget: ResolvedInstallTarget | null;
-  isMobile: boolean;
+  installTargetPath: string;
   requestCatalog: () => Promise<void>;
   selectedInstallPayload: NpxSkillsInstallItemInput[];
   selectedCatalogItems: NpxSkillsCatalogItemDto[];
+  jobRunConfig: { installTarget: InstallTarget } | null;
 }
 
 const npxSkillsStore = useNpxSkillsStore;
 
 export default function NpxDiscoverPage() {
   const { t } = useI18n();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { showNotification } = useUiStore();
+  const navigateDeferred = useNavigateDeferred();
   const ctx = useOutletContext<LayoutContext>();
 
   // Store state
   const catalogSearch = npxSkillsStore((s) => s.catalogSearch);
   const installedOnly = npxSkillsStore((s) => s.installedOnly);
   const catalogItems = npxSkillsStore((s) => s.catalogItems);
-  const catalogGroups = npxSkillsStore((s) => s.catalogGroups);
   const catalogLoading = npxSkillsStore((s) => s.catalogLoading);
   const catalogError = npxSkillsStore((s) => s.catalogError);
-  const selectedCatalogCategoryId = npxSkillsStore((s) => s.selectedCatalogCategoryId);
+  const activeCatalogAnchorId = npxSkillsStore((s) => s.activeCatalogAnchorId);
   const selectedCatalogKeys = npxSkillsStore((s) => s.selectedCatalogKeys);
   const packagePreviewInput = npxSkillsStore((s) => s.packagePreviewInput);
   const packagePreviewLoading = npxSkillsStore((s) => s.packagePreviewLoading);
@@ -51,6 +53,7 @@ export default function NpxDiscoverPage() {
   const packagePreview = npxSkillsStore((s) => s.packagePreview);
   const selectedPreviewSkills = npxSkillsStore((s) => s.selectedPreviewSkills);
   const jobRunning = npxSkillsStore((s) => s.jobRunning);
+  const jobId = npxSkillsStore((s) => s.jobId);
   const jobOperation = npxSkillsStore((s) => s.jobOperation);
   const jobStatusMessage = npxSkillsStore((s) => s.jobStatusMessage);
   const jobResultStatus = npxSkillsStore((s) => s.jobResultStatus);
@@ -60,42 +63,57 @@ export default function NpxDiscoverPage() {
   const jobSuccessCount = npxSkillsStore((s) => s.jobSuccessCount);
   const jobFailureCount = npxSkillsStore((s) => s.jobFailureCount);
   const jobPercent = npxSkillsStore((s) => s.jobPercent);
-  const jobId = npxSkillsStore((s) => s.jobId);
+  const jobLogEntries = npxSkillsStore((s) => s.jobLogEntries);
   const streamDisconnected = npxSkillsStore((s) => s.streamDisconnected);
   const agents = npxSkillsStore((s) => s.agents);
   const cliMode = npxSkillsStore((s) => s.cliMode);
 
-  const visibleCatalogItems = selectVisibleCatalogItems(npxSkillsStore.getState());
+  const visibleCatalogItems = npxSkillsStore(selectVisibleCatalogItems);
+  const catalogSections = npxSkillsStore(selectCatalogSections);
+  const selectedNamesPreview = useMemo(
+    () => ctx.selectedCatalogItems.slice(0, 3).map((item) => item.name),
+    [ctx.selectedCatalogItems],
+  );
+  const effectiveInstallTarget = ctx.jobRunConfig?.installTarget ?? ctx.installTarget;
+  const installTargetSummary = useMemo(
+    () => ({
+      mode: effectiveInstallTarget.scope,
+      path:
+        effectiveInstallTarget.scope === "project"
+          ? effectiveInstallTarget.project_path ?? ctx.installTargetPath
+          : ctx.installTargetPath,
+    }),
+    [ctx.installTargetPath, effectiveInstallTarget],
+  );
+  const queuedInstallLabels = useMemo(
+    () => ctx.selectedInstallPayload.map((item) => describeInstallItemInput(item)),
+    [ctx.selectedInstallPayload],
+  );
 
   const openInstallSelectedDialog = useCallback(() => {
     if (ctx.selectedInstallPayload.length === 0) return;
     npxSkillsStore.getState().setPendingRunAction({
       kind: "install",
       items: ctx.selectedInstallPayload,
-      labels: ctx.selectedCatalogItems.map((item) => {
-        let label = item.package_ref;
-        if (item.skill_flag) label += ` --skill ${item.skill_flag}`;
-        return label;
-      }),
+      labels: queuedInstallLabels,
       itemCount: ctx.selectedCatalogItems.length,
     });
-  }, [ctx.selectedInstallPayload, ctx.selectedCatalogItems]);
+  }, [ctx.selectedCatalogItems.length, ctx.selectedInstallPayload, queuedInstallLabels]);
 
-  const openPackagePreviewForItem = useCallback(
+  const openRepoForItem = useCallback(
     (item: NpxSkillsCatalogItemDto) => {
-      if (!ctx.currentWorkspaceId || !ctx.resolvedTarget || ctx.installTargetLoading) return;
-      void npxSkillsStore
-        .getState()
-        .loadPackagePreview(
-          ctx.currentWorkspaceId,
-          item.package_ref,
-          ctx.installTarget,
-          agents,
-          cliMode,
-          item.skill_flag ? [item.skill_flag] : null,
-        );
+      const repoUrl = resolveRepoUrl(item.package_ref);
+      if (!repoUrl) {
+        showNotification(t("npxSkills.openRepoUnavailable"), "warning");
+        return;
+      }
+
+      const opened = window.open(repoUrl, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        showNotification(t("npxSkills.openRepoFailed"), "error");
+      }
     },
-    [ctx.currentWorkspaceId, ctx.resolvedTarget, ctx.installTargetLoading, ctx.installTarget, agents, cliMode],
+    [showNotification, t],
   );
 
   const previewPackage = useCallback(() => {
@@ -138,9 +156,8 @@ export default function NpxDiscoverPage() {
   }, [packagePreview, selectedPreviewSkills]);
 
   return (
-    <NpxFindView
+      <NpxFindView
       t={t}
-      isMobile={isMobile}
       catalogSearch={catalogSearch}
       setCatalogSearch={npxSkillsStore.getState().setCatalogSearch}
       installedOnly={installedOnly}
@@ -149,6 +166,7 @@ export default function NpxDiscoverPage() {
       openInstallSelectedDialog={openInstallSelectedDialog}
       selectedInstallPayload={ctx.selectedInstallPayload}
       jobRunning={jobRunning}
+      activityRunId={jobId}
       jobOperation={jobOperation}
       jobStatusMessage={jobStatusMessage}
       jobResultStatus={jobResultStatus}
@@ -158,11 +176,10 @@ export default function NpxDiscoverPage() {
       jobSuccessCount={jobSuccessCount}
       jobFailureCount={jobFailureCount}
       jobPercent={jobPercent}
-      jobId={jobId}
       streamDisconnected={streamDisconnected}
-      catalogGroups={catalogGroups}
-      selectedCatalogCategoryId={selectedCatalogCategoryId}
-      setSelectedCatalogCategoryId={npxSkillsStore.getState().setSelectedCatalogCategoryId}
+      catalogSections={catalogSections}
+      activeCatalogAnchorId={activeCatalogAnchorId}
+      setActiveCatalogAnchorId={npxSkillsStore.getState().setActiveCatalogAnchorId}
       catalogError={catalogError}
       catalogLoading={catalogLoading}
       installTargetLoading={ctx.installTargetLoading}
@@ -171,6 +188,11 @@ export default function NpxDiscoverPage() {
       selectedCatalogKeys={selectedCatalogKeys}
       setSelectedCatalogKeys={npxSkillsStore.getState().setSelectedCatalogKeys}
       installTargetScope={ctx.installTarget.scope}
+      selectedNamesPreview={selectedNamesPreview}
+      selectedPackageCount={ctx.selectedInstallPayload.length}
+      selectedSkillCount={ctx.selectedCatalogItems.length}
+      installTargetSummary={installTargetSummary}
+      jobLogEntries={jobLogEntries}
       showNotification={showNotification}
       packagePreviewInput={packagePreviewInput}
       setPackagePreviewInput={npxSkillsStore.getState().setPackagePreviewInput}
@@ -181,7 +203,10 @@ export default function NpxDiscoverPage() {
       setSelectedPreviewSkills={npxSkillsStore.getState().setSelectedPreviewSkills}
       previewPackage={previewPackage}
       installPreviewSelection={installPreviewSelection}
-      openPackagePreviewForItem={openPackagePreviewForItem}
+      openRepoForItem={openRepoForItem}
+      onViewActivity={(runId) =>
+        navigateDeferred(buildActivityRunPath(runId, ctx.currentWorkspaceId))
+      }
     />
   );
 }

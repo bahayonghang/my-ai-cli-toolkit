@@ -44,6 +44,7 @@ import { useUiStore } from "@/stores/uiStore";
 import type {
   InstallTarget,
   NpxInstalledPackageDto,
+  NpxSkillsOperation,
   NpxSkillsCliVersionDto,
   NpxSkillsRunConfig,
   ResolvedInstallTarget,
@@ -118,7 +119,7 @@ function formatTimestamp(value: string | null | undefined) {
 }
 
 function jobOperationLabel(
-  value: "install" | "remove" | "check" | "update" | null,
+  value: NpxSkillsOperation | null,
   t: ReturnType<typeof useI18n>["t"],
 ) {
   switch (value) {
@@ -130,6 +131,8 @@ function jobOperationLabel(
       return t("npxSkills.jobOperation.check");
     case "update":
       return t("npxSkills.jobOperation.update");
+    case "update_packages":
+      return t("npxSkills.jobOperation.update_packages");
     default:
       return t("npxSkills.viewMaintenance");
   }

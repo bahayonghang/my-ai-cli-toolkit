@@ -4,10 +4,13 @@ import type {
   NpxSkillsCatalogItemDto,
 } from "@/types";
 import {
+  buildCatalogSections,
+  describeInstallItemInput,
   buildTaxonomyGroups,
   filterCatalogItems,
   filterInstalledItems,
   paginateItems,
+  resolveRepoUrl,
   shouldLoadCatalog,
   shouldLoadInstalled,
 } from "./utils";
@@ -200,6 +203,70 @@ describe("npx-skills utils", () => {
       ["design", 1],
       ["engineering", 2],
     ]);
+  });
+
+  it("builds visible catalog sections in taxonomy order", () => {
+    const visible = [
+      catalogItem({
+        id: "theme-factory",
+        name: "Theme Factory",
+        category_id: "design",
+        category_slug: "design",
+        category_label: "Design",
+        category_order: 5,
+      }),
+      catalogItem({
+        id: "find-skills",
+        name: "Find Skills",
+      }),
+      catalogItem({
+        id: "learn",
+        name: "Learn",
+        group_id: "research",
+        group_label: "Research",
+        group_order: 20,
+        category_id: "research",
+        category_slug: "research",
+        category_label: "Research",
+        category_order: 5,
+      }),
+    ];
+    const groups = buildTaxonomyGroups(visible);
+
+    expect(buildCatalogSections(visible, groups).map((section) => section.id)).toEqual([
+      "design",
+      "engineering",
+      "research",
+    ]);
+  });
+
+  it("describes grouped install payloads without duplicating package runs", () => {
+    expect(
+      describeInstallItemInput({
+        package_ref: "vercel-labs/skills",
+        skill_flags: ["find-skills", "learn"],
+      }),
+    ).toBe("vercel-labs/skills · 2 skills");
+
+    expect(
+      describeInstallItemInput({
+        package_ref: "vercel-labs/skills",
+        skill_flags: ["find-skills"],
+      }),
+    ).toBe("vercel-labs/skills --skill find-skills");
+  });
+
+  it("resolves package refs into openable repository urls", () => {
+    expect(resolveRepoUrl("laurigates/claude-plugins")).toBe(
+      "https://github.com/laurigates/claude-plugins",
+    );
+    expect(resolveRepoUrl("https://github.com/vercel-labs/skills.git")).toBe(
+      "https://github.com/vercel-labs/skills",
+    );
+    expect(resolveRepoUrl("git@github.com:vercel-labs/skills.git")).toBe(
+      "https://github.com/vercel-labs/skills",
+    );
+    expect(resolveRepoUrl("not a repo ref")).toBeNull();
   });
 
   it("paginates the filtered installed slice on the client", () => {

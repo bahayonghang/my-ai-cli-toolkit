@@ -110,6 +110,7 @@ describe("NpxSkillsLayout", () => {
     expect(markup).toContain("npx skills install and management");
     expect(markup).toContain("Discover");
     expect(markup).toContain("Manage");
+    expect(markup).toContain("Choose skills from the catalog to stage a batch install here.");
   });
 
   it("renders a blocking alert when the install target cannot be resolved", () => {

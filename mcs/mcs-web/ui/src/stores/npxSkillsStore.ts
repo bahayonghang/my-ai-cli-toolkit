@@ -22,15 +22,19 @@ import {
   previewNpxSkillsPackage,
 } from "@/api/client";
 import type {
+  CatalogSection,
   InstalledSourceFilter,
   InstalledTrackingFilter,
   InstalledUpdateFilter,
+  JobLogEntry,
   JobItemState,
   PendingRunAction,
   RunResultStatus,
   TaxonomyGroupSummary,
 } from "@/pages/npx-skills/types";
 import {
+  buildCatalogSections,
+  buildTaxonomyGroups,
   loadAgents,
   loadCliMode,
   paginateItems,
@@ -155,6 +159,7 @@ export interface NpxSkillsState {
   installedOnly: boolean;
   selectedCatalogCategoryId: string | null;
   selectedCatalogKeys: Set<string>;
+  activeCatalogAnchorId: string | null;
 
   // ── Package preview ───────────────────────────────────────────
   packagePreviewInput: string;
@@ -214,6 +219,7 @@ export interface NpxSkillsState {
   jobFailureCount: number;
   streamDisconnected: boolean;
   jobItems: JobItemState[];
+  jobLogEntries: JobLogEntry[];
   expandedJobItemIds: Set<string>;
   jobRunConfig: NpxSkillsRunConfig | null;
   jobResultStatus: RunResultStatus;
@@ -232,6 +238,7 @@ export interface NpxSkillsState {
   setInstalledOnly: (value: boolean) => void;
   setSelectedCatalogCategoryId: (value: string | null) => void;
   setSelectedCatalogKeys: (update: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
+  setActiveCatalogAnchorId: (value: string | null) => void;
   fetchCatalog: (
     workspaceId: string,
     installTarget: InstallTarget,
@@ -300,6 +307,7 @@ export interface NpxSkillsState {
   completeJob: (total: number, successCount: number, failureCount: number, operation: NpxSkillsOperation) => void;
   failJob: (message: string, operation: NpxSkillsOperation) => void;
   interruptJob: (items: JobItemState[], completed: number, total: number, successCount: number, failureCount: number, percent: number, message: string) => void;
+  appendJobLogEntry: (entry: JobLogEntry) => void;
   toggleJobItemExpanded: (id: string) => void;
   setStreamDisconnected: (value: boolean) => void;
 
@@ -328,6 +336,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
   installedOnly: false,
   selectedCatalogCategoryId: null,
   selectedCatalogKeys: new Set(),
+  activeCatalogAnchorId: null,
 
   packagePreviewInput: "",
   packagePreviewLoading: false,
@@ -382,6 +391,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
   jobFailureCount: 0,
   streamDisconnected: false,
   jobItems: [],
+  jobLogEntries: [],
   expandedJobItemIds: new Set(),
   jobRunConfig: null,
   jobResultStatus: "idle",
@@ -402,6 +412,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       selectedCatalogKeys:
         typeof update === "function" ? update(state.selectedCatalogKeys) : update,
     })),
+  setActiveCatalogAnchorId: (value) => set({ activeCatalogAnchorId: value }),
 
   fetchCatalog: async (workspaceId, installTarget, signal) => {
     set({ catalogLoading: true, catalogError: null });
@@ -676,6 +687,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       jobRunConfig: runConfig,
       jobResultStatus: "running",
       jobStatusMessage: null,
+      jobLogEntries: [],
       jobItems: labels.map((label, index) => ({
         id: String(index),
         label,
@@ -743,6 +755,11 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       jobStatusMessage: message,
     }),
 
+  appendJobLogEntry: (entry) =>
+    set((state) => ({
+      jobLogEntries: [...state.jobLogEntries, entry],
+    })),
+
   toggleJobItemExpanded: (id) =>
     set((state) => {
       const next = new Set(state.expandedJobItemIds);
@@ -806,6 +823,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       installedErrorHint: null,
       installedSyncedAt: null,
       installedPage: 1,
+      activeCatalogAnchorId: null,
       selectedCatalogKeys: new Set(),
       selectedInstalledIds: new Set(),
       selectedInstalledItem: null,
@@ -813,6 +831,7 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       packagePreviewError: null,
       selectedPreviewSkills: new Set(),
       pendingRunAction: null,
+      jobLogEntries: [],
     }),
 }));
 
@@ -821,9 +840,18 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
 export function selectVisibleCatalogItems(state: NpxSkillsState) {
   return filterCatalogItems(state.catalogItems, {
     search: state.catalogSearch,
-    categoryId: state.selectedCatalogCategoryId,
+    categoryId: null,
     installedOnly: state.installedOnly,
   });
+}
+
+export function selectCatalogSections(state: NpxSkillsState): CatalogSection[] {
+  const visibleItems = selectVisibleCatalogItems(state);
+  const groups =
+    state.catalogGroups.length > 0
+      ? state.catalogGroups
+      : buildTaxonomyGroups(visibleItems);
+  return buildCatalogSections(visibleItems, groups);
 }
 
 export function selectFilteredInstalledItems(state: NpxSkillsState) {

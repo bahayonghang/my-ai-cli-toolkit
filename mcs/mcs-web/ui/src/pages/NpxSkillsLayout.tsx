@@ -34,6 +34,7 @@ import type {
   NpxSkillsJobCompletedPayload,
   NpxSkillsJobFailedPayload,
   NpxSkillsJobProgressPayload,
+  NpxSkillsOperation,
   NpxSkillsRunConfig,
   PlatformDisplay,
 } from "@/types";
@@ -316,6 +317,7 @@ export default function NpxSkillsLayout() {
   const startJob = useCallback(
     async (
       labels: string[],
+      operationHint: NpxSkillsOperation,
       starter: () => Promise<{ job_id: string; operation: string; total: number }>,
       runConfig: NpxSkillsRunConfig,
     ) => {
@@ -327,6 +329,13 @@ export default function NpxSkillsLayout() {
       try {
         const started = await starter();
         npxSkillsStore.getState().setJobStarted(started as any);
+        npxSkillsStore.getState().appendJobLogEntry({
+          id: `job-started-${started.job_id}`,
+          timestampMs: Date.now(),
+          level: "info",
+          label: operationLabel(started.operation as any, t),
+          message: t("npxSkills.jobQueue", { count: started.total }),
+        });
 
         const streamUrl = `/api/platforms/${encodeURIComponent(
           currentWorkspaceId,
@@ -340,6 +349,14 @@ export default function NpxSkillsLayout() {
           npxSkillsStore
             .getState()
             .updateJobItemStatus(payload.item_id, "running");
+          npxSkillsStore.getState().appendJobLogEntry({
+            id: `item-started-${payload.job_id}-${payload.item_id}`,
+            timestampMs: Date.now(),
+            level: "info",
+            itemId: payload.item_id,
+            label: payload.label,
+            message: t("npxSkills.itemStatusRunning"),
+          });
         });
 
         source.addEventListener("item_finished", (event) => {
@@ -352,6 +369,17 @@ export default function NpxSkillsLayout() {
             payload.error,
             payload.duration_ms,
           );
+          npxSkillsStore.getState().appendJobLogEntry({
+            id: `item-finished-${payload.job_id}-${payload.item_id}-${payload.success ? "success" : "error"}`,
+            timestampMs: Date.now(),
+            level: payload.success ? "success" : "error",
+            itemId: payload.item_id,
+            label: payload.label,
+            message: payload.success ? t("npxSkills.itemStatusSuccess") : t("npxSkills.itemStatusError"),
+            output: payload.output,
+            error: payload.error,
+            durationMs: payload.duration_ms,
+          });
         });
 
         source.addEventListener("job_progress", (event) => {
@@ -375,6 +403,21 @@ export default function NpxSkillsLayout() {
             payload.failure_count,
             payload.operation,
           );
+          const completionMessage = t("npxSkills.jobCompleted", {
+            operation: operationLabel(payload.operation, t),
+            success: payload.success_count,
+            failedSuffix:
+              payload.failure_count > 0
+                ? ` · ${t("npxSkills.jobFailed", { count: payload.failure_count })}`
+                : "",
+          });
+          npxSkillsStore.getState().appendJobLogEntry({
+            id: `job-completed-${payload.job_id}`,
+            timestampMs: payload.completed_at_ms,
+            level: payload.failure_count > 0 ? "warning" : "success",
+            label: operationLabel(payload.operation, t),
+            message: completionMessage,
+          });
           closeEventStream();
           refreshAfterJob();
           const notification = buildNpxJobNotification(
@@ -396,6 +439,13 @@ export default function NpxSkillsLayout() {
             message: payload.message,
           });
           npxSkillsStore.getState().failJob(msg, payload.operation);
+          npxSkillsStore.getState().appendJobLogEntry({
+            id: `job-failed-${payload.job_id}`,
+            timestampMs: Date.now(),
+            level: "error",
+            label: operationLabel(payload.operation, t),
+            message: msg,
+          });
           closeEventStream();
           const notification = buildNpxJobNotification(
             payload.operation,
@@ -407,8 +457,9 @@ export default function NpxSkillsLayout() {
         });
 
         source.onerror = () => {
+          const previousItems = jobItemsRef.current;
           const interrupted = finalizeInterruptedJob(
-            jobItemsRef.current,
+            previousItems,
             t("npxSkills.jobInterrupted", {
               operation: operationLabel(started.operation as any, t),
             }),
@@ -425,13 +476,39 @@ export default function NpxSkillsLayout() {
               operation: operationLabel(started.operation as any, t),
             }),
           );
+          interrupted.items.forEach((item) => {
+            const previous = previousItems.find((candidate) => candidate.id === item.id);
+            if (!previous || previous.status === "error" || item.status !== "error") {
+              return;
+            }
+            npxSkillsStore.getState().appendJobLogEntry({
+              id: `job-interrupted-item-${started.job_id}-${item.id}`,
+              timestampMs: Date.now(),
+              level: "error",
+              itemId: item.id,
+              label: item.label,
+              message: t("npxSkills.itemStatusError"),
+              output: item.output,
+              error: item.error,
+              durationMs: item.durationMs,
+            });
+          });
+          npxSkillsStore.getState().appendJobLogEntry({
+            id: `job-interrupted-${started.job_id}`,
+            timestampMs: Date.now(),
+            level: "warning",
+            label: operationLabel(started.operation as any, t),
+            message: t("npxSkills.jobInterruptedMessage", {
+              operation: operationLabel(started.operation as any, t),
+            }),
+          });
           if (!streamWarnedRef.current) {
             streamWarnedRef.current = true;
             showNotification(t("npxSkills.jobConnectionLost"), "warning");
           }
         };
       } catch (error) {
-        npxSkillsStore.getState().failJob((error as Error).message, "install");
+        npxSkillsStore.getState().failJob((error as Error).message, operationHint);
         closeEventStream();
         showNotification((error as Error).message, "error");
       }
@@ -462,6 +539,7 @@ export default function NpxSkillsLayout() {
       if (pendingRunAction.kind === "install") {
         await startJob(
           pendingRunAction.labels,
+          "install",
           () =>
             startNpxSkillsInstallJob(
               currentWorkspaceId,
@@ -471,7 +549,6 @@ export default function NpxSkillsLayout() {
             ),
           payload.config,
         );
-        npxSkillsStore.getState().setSelectedCatalogKeys(new Set());
       } else if (pendingRunAction.kind === "quick-install") {
         const item: NpxSkillsInstallItemInput = {
           package_ref: payload.packageRef,
@@ -479,6 +556,7 @@ export default function NpxSkillsLayout() {
         };
         await startJob(
           [item.package_ref],
+          "install",
           () =>
             startNpxSkillsInstallJob(
               currentWorkspaceId,
@@ -492,6 +570,7 @@ export default function NpxSkillsLayout() {
         const itemIds = [...pendingRunAction.itemIds];
         await startJob(
           itemIds,
+          "remove",
           () =>
             startNpxSkillsRemoveJob(
               currentWorkspaceId,
@@ -506,6 +585,7 @@ export default function NpxSkillsLayout() {
       } else if (pendingRunAction.kind === "check") {
         await startJob(
           [t("npxSkills.operationCheck")],
+          "check",
           () =>
             startNpxSkillsCheckJob(
               currentWorkspaceId,
@@ -517,6 +597,7 @@ export default function NpxSkillsLayout() {
       } else if (pendingRunAction.kind === "update") {
         await startJob(
           [t("npxSkills.operationUpdate")],
+          "update",
           () =>
             startNpxSkillsUpdateJob(
               currentWorkspaceId,
@@ -528,6 +609,7 @@ export default function NpxSkillsLayout() {
       } else if (pendingRunAction.kind === "update-packages") {
         await startJob(
           pendingRunAction.labels,
+          "update_packages",
           () =>
             startNpxSkillsPackageUpdateJob(
               currentWorkspaceId,

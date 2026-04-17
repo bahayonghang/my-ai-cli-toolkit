@@ -1,4 +1,8 @@
-import type { NpxSkillsCliMode, NpxSkillsInstallItemInput } from "@/types";
+import type {
+  NpxSkillsCatalogItemDto,
+  NpxSkillsCliMode,
+  NpxSkillsInstallItemInput,
+} from "@/types";
 import type { useI18n } from "@/i18n";
 
 export type ViewMode = "find" | "installed" | "maintenance";
@@ -18,6 +22,18 @@ export interface JobItemState {
   output: string;
   error: string | null;
   durationMs: number | null;
+}
+
+export interface JobLogEntry {
+  id: string;
+  timestampMs: number;
+  level: "info" | "success" | "warning" | "error";
+  label: string;
+  message: string;
+  itemId?: string;
+  output?: string;
+  error?: string | null;
+  durationMs?: number | null;
 }
 
 export type PendingRunAction =
@@ -65,6 +81,17 @@ export interface TaxonomyGroupSummary {
   label: string;
   order: number;
   categories: TaxonomyCategorySummary[];
+}
+
+export interface CatalogSection {
+  id: string;
+  anchorId: string;
+  slug: string;
+  label: string;
+  groupId: string;
+  groupLabel: string;
+  count: number;
+  items: NpxSkillsCatalogItemDto[];
 }
 
 export type TranslationFn = ReturnType<typeof useI18n>["t"];

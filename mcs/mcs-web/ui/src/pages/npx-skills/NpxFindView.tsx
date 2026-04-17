@@ -1,16 +1,20 @@
+import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
+import LinkIcon from "@mui/icons-material/Link";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import SearchIcon from "@mui/icons-material/Search";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import {
   Alert,
   Box,
   Button,
+  ButtonBase,
   Card,
   CardContent,
   Checkbox,
   Chip,
   CircularProgress,
   FormControlLabel,
-  Grid,
   InputAdornment,
-  LinearProgress,
   List,
   ListItemButton,
   ListItemText,
@@ -19,28 +23,27 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
-import LinkIcon from "@mui/icons-material/Link";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import SearchIcon from "@mui/icons-material/Search";
-import TravelExploreIcon from "@mui/icons-material/TravelExplore";
+import { useEffect, useMemo, useRef } from "react";
 
-import { SelectableSurfaceCard } from "@/components/common/SelectableSurfaceCard";
 import type {
   NpxSkillsCatalogItemDto,
   NpxSkillsInstallItemInput,
   NpxSkillsOperation,
   NpxSkillsPackagePreviewDto,
 } from "@/types";
-import { summarizeSkillDescription } from "@/utils/skillDescription";
-import type { JobItemState, RunResultStatus, TaxonomyGroupSummary, TranslationFn } from "./types";
-import { buildInstallKey, formatCategoryLabel, installStatusColor, operationLabel } from "./utils";
-import NpxSkillsFilters from "./NpxSkillsFilters";
+import type {
+  CatalogSection,
+  JobLogEntry,
+  JobItemState,
+  RunResultStatus,
+  TranslationFn,
+} from "./types";
+import NpxDiscoverActionBar from "./NpxDiscoverActionBar";
+import NpxDiscoverSkillCard from "./NpxDiscoverSkillCard";
+import { formatCategoryLabel } from "./utils";
 
 export interface NpxFindViewProps {
   t: TranslationFn;
-  isMobile: boolean;
   catalogSearch: string;
   setCatalogSearch: (value: string) => void;
   installedOnly: boolean;
@@ -49,6 +52,7 @@ export interface NpxFindViewProps {
   openInstallSelectedDialog: () => void;
   selectedInstallPayload: NpxSkillsInstallItemInput[];
   jobRunning: boolean;
+  activityRunId: string | null;
   jobOperation: NpxSkillsOperation | null;
   jobStatusMessage: string | null;
   jobResultStatus: RunResultStatus;
@@ -58,11 +62,10 @@ export interface NpxFindViewProps {
   jobSuccessCount: number;
   jobFailureCount: number;
   jobPercent: number;
-  jobId: string | null;
   streamDisconnected: boolean;
-  catalogGroups: TaxonomyGroupSummary[];
-  selectedCatalogCategoryId: string | null;
-  setSelectedCatalogCategoryId: (value: string | null) => void;
+  catalogSections: CatalogSection[];
+  activeCatalogAnchorId: string | null;
+  setActiveCatalogAnchorId: (value: string | null) => void;
   catalogError: string | null;
   catalogLoading: boolean;
   installTargetLoading: boolean;
@@ -71,6 +74,14 @@ export interface NpxFindViewProps {
   selectedCatalogKeys: Set<string>;
   setSelectedCatalogKeys: React.Dispatch<React.SetStateAction<Set<string>>>;
   installTargetScope: string;
+  selectedNamesPreview: string[];
+  selectedPackageCount: number;
+  selectedSkillCount: number;
+  installTargetSummary: {
+    mode: "global" | "project";
+    path: string;
+  };
+  jobLogEntries: JobLogEntry[];
   showNotification: (message: string, severity: "success" | "error" | "warning" | "info") => void;
   packagePreviewInput: string;
   setPackagePreviewInput: (value: string) => void;
@@ -81,12 +92,14 @@ export interface NpxFindViewProps {
   setSelectedPreviewSkills: React.Dispatch<React.SetStateAction<Set<string>>>;
   previewPackage: () => void;
   installPreviewSelection: () => void;
-  openPackagePreviewForItem: (item: NpxSkillsCatalogItemDto) => void;
+  openRepoForItem: (item: NpxSkillsCatalogItemDto) => void;
+  onViewActivity?: (runId: string) => void;
 }
+
+const TOP_ANCHOR_ID = "npx-skills-catalog-top";
 
 export default function NpxFindView({
   t,
-  isMobile,
   catalogSearch,
   setCatalogSearch,
   installedOnly,
@@ -95,6 +108,7 @@ export default function NpxFindView({
   openInstallSelectedDialog,
   selectedInstallPayload,
   jobRunning,
+  activityRunId,
   jobOperation,
   jobStatusMessage,
   jobResultStatus,
@@ -104,11 +118,10 @@ export default function NpxFindView({
   jobSuccessCount,
   jobFailureCount,
   jobPercent,
-  jobId,
   streamDisconnected,
-  catalogGroups,
-  selectedCatalogCategoryId,
-  setSelectedCatalogCategoryId,
+  catalogSections,
+  activeCatalogAnchorId,
+  setActiveCatalogAnchorId,
   catalogError,
   catalogLoading,
   installTargetLoading,
@@ -117,6 +130,11 @@ export default function NpxFindView({
   selectedCatalogKeys,
   setSelectedCatalogKeys,
   installTargetScope,
+  selectedNamesPreview,
+  selectedPackageCount,
+  selectedSkillCount,
+  installTargetSummary,
+  jobLogEntries,
   showNotification,
   packagePreviewInput,
   setPackagePreviewInput,
@@ -127,7 +145,8 @@ export default function NpxFindView({
   setSelectedPreviewSkills,
   previewPackage,
   installPreviewSelection,
-  openPackagePreviewForItem,
+  openRepoForItem,
+  onViewActivity,
 }: NpxFindViewProps) {
   const previewedSkills = packagePreview?.skills ?? [];
   const previewSupportsSelection = packagePreview?.mode === "listed_skills";
@@ -137,33 +156,65 @@ export default function NpxFindView({
     previewedSkills.length > 0 &&
     previewSelectionCount === previewedSkills.length;
   const runningItem = jobItems.find((item) => item.status === "running") ?? null;
-  const showJobProgress = jobRunning || jobTotal > 0 || jobResultStatus !== "idle";
-  const progressValue = Math.max(0, Math.min(100, jobPercent));
-  const statusSeverity =
-    jobResultStatus === "success"
-      ? "success"
-      : jobResultStatus === "warning"
-        ? "warning"
-        : jobResultStatus === "error" || jobResultStatus === "interrupted"
-          ? "error"
-          : jobResultStatus === "running"
-            ? "info"
-            : null;
-  const statusLabel =
-    jobResultStatus === "success"
-      ? t("npxSkills.runResultSuccess")
-      : jobResultStatus === "warning"
-        ? t("npxSkills.runResultWarning")
-        : jobResultStatus === "error"
-          ? t("npxSkills.runResultError")
-          : jobResultStatus === "interrupted"
-            ? t("npxSkills.runResultInterrupted")
-            : jobResultStatus === "running"
-              ? t("npxSkills.runResultRunning")
-              : null;
+  const totalVisibleCount = useMemo(
+    () => catalogSections.reduce((sum, section) => sum + section.count, 0),
+    [catalogSections],
+  );
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const topAnchorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) {
+            continue;
+          }
+
+          if (entry.target.id === TOP_ANCHOR_ID) {
+            setActiveCatalogAnchorId(null);
+          } else {
+            setActiveCatalogAnchorId(entry.target.id);
+          }
+        }
+      },
+      {
+        rootMargin: "-16% 0px -68% 0px",
+        threshold: [0.15, 0.45, 0.7],
+      },
+    );
+
+    if (topAnchorRef.current) {
+      observer.observe(topAnchorRef.current);
+    }
+    for (const section of catalogSections) {
+      const node = sectionRefs.current[section.anchorId];
+      if (node) {
+        observer.observe(node);
+      }
+    }
+
+    return () => observer.disconnect();
+  }, [catalogSections, setActiveCatalogAnchorId]);
+
+  const scrollToAnchor = (anchorId: string | null) => {
+    const target =
+      anchorId === null
+        ? topAnchorRef.current
+        : sectionRefs.current[anchorId] ?? document.getElementById(anchorId);
+    if (!target) {
+      return;
+    }
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveCatalogAnchorId(anchorId);
+  };
 
   return (
-    <Stack spacing={2.5}>
+    <Stack spacing={2.5} sx={{ pb: { xs: "9.5rem", md: "10.5rem" } }}>
       <Card
         variant="outlined"
         sx={{
@@ -199,67 +250,6 @@ export default function NpxFindView({
                 label={t("npxSkills.repoInstallChip")}
               />
             </Stack>
-
-            {showJobProgress ? (
-              <Box
-                sx={{
-                  borderRadius: 3,
-                  border: "1px solid var(--mcs-workbench-outline)",
-                  background: "var(--mcs-workbench-surface-strong)",
-                  p: { xs: 1.5, md: 1.75 },
-                }}
-              >
-                <Stack spacing={1.25}>
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={1}
-                    justifyContent="space-between"
-                    alignItems={{ xs: "flex-start", sm: "center" }}
-                  >
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography variant="subtitle1" fontWeight={700}>
-                        {jobOperation ? operationLabel(jobOperation, t) : t("npxSkills.operationInstall")}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {jobStatusMessage ?? t("npxSkills.jobEmpty")}
-                      </Typography>
-                    </Box>
-                    {statusLabel ? (
-                      <Chip size="small" color={statusSeverity ?? "default"} label={statusLabel} />
-                    ) : null}
-                  </Stack>
-
-                  <LinearProgress
-                    aria-label={
-                      jobOperation
-                        ? `${operationLabel(jobOperation, t)} ${t("npxSkills.jobProgressLabel")}`
-                        : t("npxSkills.jobProgressLabel")
-                    }
-                    variant="determinate"
-                    value={progressValue}
-                    sx={{ height: 8, borderRadius: 999 }}
-                  />
-
-                  <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                    <Chip size="small" variant="outlined" label={t("npxSkills.jobCurrent", { completed: jobCompleted, total: jobTotal })} />
-                    <Chip size="small" variant="outlined" label={`${Math.round(progressValue)}%`} />
-                    <Chip size="small" color="success" variant="outlined" label={t("npxSkills.jobSuccess", { count: jobSuccessCount })} />
-                    <Chip size="small" color="error" variant="outlined" label={t("npxSkills.jobFailed", { count: jobFailureCount })} />
-                    {jobId ? <Chip size="small" variant="outlined" label={`Job: ${jobId}`} /> : null}
-                  </Stack>
-
-                  {runningItem ? (
-                    <Typography variant="body2" color="text.secondary">
-                      {t("npxSkills.itemStatusRunning")}: {runningItem.label}
-                    </Typography>
-                  ) : null}
-
-                  {streamDisconnected ? (
-                    <Alert severity="warning">{t("npxSkills.jobConnectionLost")}</Alert>
-                  ) : null}
-                </Stack>
-              </Box>
-            ) : null}
 
             <Stack direction={{ xs: "column", lg: "row" }} spacing={1.25}>
               <TextField
@@ -431,10 +421,7 @@ export default function NpxFindView({
                     <Button
                       variant="contained"
                       startIcon={<InstallDesktopIcon />}
-                      disabled={
-                        jobRunning ||
-                        (previewSupportsSelection && previewSelectionCount === 0)
-                      }
+                      disabled={jobRunning || (previewSupportsSelection && previewSelectionCount === 0)}
                       onClick={installPreviewSelection}
                     >
                       {previewSupportsSelection
@@ -449,238 +436,284 @@ export default function NpxFindView({
         </CardContent>
       </Card>
 
-      <Box>
-        <Typography variant="h6" sx={{ mt: 0.45, letterSpacing: "-0.03em" }}>
+      <Stack spacing={0.75}>
+        <Typography variant="h6" sx={{ letterSpacing: "-0.03em" }}>
           {t("npxSkills.discoverTitle")}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75, maxWidth: 820 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 860 }}>
           {t("npxSkills.discoverSubtitle")}
         </Typography>
-      </Box>
+      </Stack>
 
-      <Box
+      <Card
+        variant="outlined"
         sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 1.5,
-          alignItems: "center",
+          borderRadius: 3.5,
+          borderColor: "var(--mcs-workbench-outline)",
+          backgroundColor: "var(--mcs-panel-fill)",
         }}
       >
-        <TextField
-          placeholder={t("npxSkills.searchCatalogPlaceholder")}
-          value={catalogSearch}
-          onChange={(event) => setCatalogSearch(event.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{ width: 360, maxWidth: "100%" }}
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={installedOnly}
-              onChange={(_, checked) => setInstalledOnly(checked)}
-            />
-          }
-          label={t("npxSkills.installedOnly")}
-        />
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
-          onClick={() => void fetchCatalog()}
-        >
-          {t("npxSkills.refreshCatalog")}
-        </Button>
-        <Chip
-          size="small"
-          variant="outlined"
-          label={t("npxSkills.catalogSelectionCount", {
-            count: selectedCatalogKeys.size,
-          })}
-        />
-        <Box sx={{ flexGrow: 1 }} />
-        <Button
-          variant="contained"
-          startIcon={<InstallDesktopIcon />}
-          disabled={selectedInstallPayload.length === 0 || jobRunning}
-          onClick={openInstallSelectedDialog}
-        >
-          {t("npxSkills.installSelected")}
-        </Button>
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-        {!isMobile && (
-          <Card
-            variant="outlined"
-            sx={{ width: 280, flexShrink: 0, position: "sticky", top: "var(--mcs-sticky-offset)" }}
+        <CardContent sx={{ p: { xs: 1.5, md: 2 } }}>
+          <Stack
+            direction={{ xs: "column", xl: "row" }}
+            spacing={1.25}
+            justifyContent="space-between"
+            alignItems={{ xs: "stretch", xl: "center" }}
           >
-            <CardContent sx={{ p: 2 }}>
-              <NpxSkillsFilters
-                groups={catalogGroups}
-                selectedCategoryId={selectedCatalogCategoryId}
-                onCategoryChange={setSelectedCatalogCategoryId}
-                t={t}
+            <Stack direction={{ xs: "column", md: "row" }} spacing={1.25} sx={{ minWidth: 0, flexGrow: 1 }}>
+              <TextField
+                placeholder={t("npxSkills.searchCatalogPlaceholder")}
+                value={catalogSearch}
+                onChange={(event) => setCatalogSearch(event.target.value)}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{ width: { xs: "100%", md: 360 }, maxWidth: "100%" }}
               />
-            </CardContent>
-          </Card>
-        )}
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={installedOnly}
+                    onChange={(_, checked) => setInstalledOnly(checked)}
+                  />
+                }
+                label={t("npxSkills.installedOnly")}
+              />
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={() => void fetchCatalog()}
+              >
+                {t("npxSkills.refreshCatalog")}
+              </Button>
+            </Stack>
 
-        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-          {isMobile ? (
-            <Card variant="outlined" sx={{ mb: 2 }}>
-              <CardContent sx={{ p: 2 }}>
-                <NpxSkillsFilters
-                  groups={catalogGroups}
-                  selectedCategoryId={selectedCatalogCategoryId}
-                  onCategoryChange={setSelectedCatalogCategoryId}
-                  t={t}
-                />
-              </CardContent>
-            </Card>
+            <Stack direction="row" spacing={0.75} useFlexGap flexWrap="wrap">
+              <Chip
+                size="small"
+                variant="outlined"
+                label={t("npxSkills.discoverVisibleSummary", {
+                  skills: totalVisibleCount,
+                  categories: catalogSections.length,
+                })}
+              />
+              <Chip
+                size="small"
+                variant="outlined"
+                label={t("npxSkills.catalogSelectionCount", {
+                  count: selectedCatalogKeys.size,
+                })}
+              />
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
+
+      <Box ref={topAnchorRef} id={TOP_ANCHOR_ID} sx={{ height: 1, mt: "-1px" }} />
+
+      <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", lg: "268px minmax(0, 1fr)" } }}>
+        <Card
+          variant="outlined"
+          sx={{
+            display: catalogSections.length === 0 && !catalogLoading ? "none" : "block",
+            height: "fit-content",
+            position: { lg: "sticky" },
+            top: { lg: "var(--mcs-sticky-offset)" },
+            borderRadius: 3.5,
+            borderColor: "var(--mcs-workbench-outline)",
+            backgroundColor: "var(--mcs-panel-fill)",
+          }}
+        >
+          <CardContent sx={{ p: 1.25 }}>
+            <Stack spacing={0.9}>
+              <Typography variant="overline" color="text.secondary">
+                {t("common.category")}
+              </Typography>
+              <ButtonBase
+                onClick={() => scrollToAnchor(null)}
+                sx={{
+                  px: 1.2,
+                  py: 1.05,
+                  borderRadius: 2.5,
+                  justifyContent: "space-between",
+                  border: "1px solid",
+                  borderColor:
+                    activeCatalogAnchorId === null
+                      ? "var(--mcs-workbench-outline-strong)"
+                      : "var(--mcs-panel-stroke-soft)",
+                  backgroundColor:
+                    activeCatalogAnchorId === null
+                      ? "var(--mcs-workbench-accent-soft)"
+                      : "var(--mcs-panel-fill)",
+                }}
+              >
+                <Box sx={{ textAlign: "left" }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    {t("common.all")}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("npxSkills.discoverJumpAll")}
+                  </Typography>
+                </Box>
+                <Chip size="small" variant="outlined" label={totalVisibleCount} />
+              </ButtonBase>
+
+              {catalogSections.map((section) => (
+                <ButtonBase
+                  key={section.id}
+                  onClick={() => scrollToAnchor(section.anchorId)}
+                  sx={{
+                    px: 1.2,
+                    py: 1.05,
+                    borderRadius: 2.5,
+                    justifyContent: "space-between",
+                    border: "1px solid",
+                    borderColor:
+                      activeCatalogAnchorId === section.anchorId
+                        ? "var(--mcs-workbench-outline-strong)"
+                        : "var(--mcs-panel-stroke-soft)",
+                    backgroundColor:
+                      activeCatalogAnchorId === section.anchorId
+                        ? "var(--mcs-workbench-accent-soft)"
+                        : "var(--mcs-panel-fill)",
+                  }}
+                >
+                  <Box sx={{ textAlign: "left", minWidth: 0 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      {section.groupLabel}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, overflowWrap: "anywhere" }}
+                    >
+                      {formatCategoryLabel(section.slug, section.label)}
+                    </Typography>
+                  </Box>
+                  <Chip size="small" variant="outlined" label={section.count} />
+                </ButtonBase>
+              ))}
+            </Stack>
+          </CardContent>
+        </Card>
+
+        <Stack spacing={2.5} sx={{ minWidth: 0 }}>
+          {catalogError ? (
+            <Alert severity="error">{catalogError}</Alert>
           ) : null}
 
-          {catalogError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {catalogError}
-            </Alert>
-          )}
-
-          {(catalogLoading || installTargetLoading) && (
-            <LinearProgress aria-label={t("common.loading")} sx={{ mb: 2, borderRadius: 999 }} />
-          )}
-
-          {catalogLoading && catalogItems.length === 0 ? (
+          {(catalogLoading || installTargetLoading) && catalogItems.length === 0 ? (
             <Box display="flex" justifyContent="center" py={8}>
               <CircularProgress />
             </Box>
           ) : visibleCatalogItems.length === 0 ? (
             <Alert severity="info">{t("npxSkills.noCatalogResults")}</Alert>
           ) : (
-            <Grid container spacing={2}>
-              {visibleCatalogItems.map((item) => {
-                const key = buildInstallKey(item);
-                const isSelected = selectedCatalogKeys.has(key);
-                const isDisabled = item.project_only && installTargetScope === "global";
-                const installCommand = item.skill_flag
-                  ? `npx skills add ${item.package_ref} --skill ${item.skill_flag}`
-                  : `npx skills add ${item.package_ref}`;
+            catalogSections.map((section, index) => (
+              <Stack
+                key={section.id}
+                spacing={1.5}
+                ref={(node: HTMLDivElement | null) => {
+                  sectionRefs.current[section.anchorId] = node;
+                }}
+                id={section.anchorId}
+              >
+                {index > 0 ? (
+                  <Box sx={{ borderTop: "1px dashed var(--mcs-divider-strong)" }} />
+                ) : null}
 
-                return (
-                  <Grid key={key} size={{ xs: 12, sm: 6, xl: 4 }}>
-                    <SelectableSurfaceCard
-                      selected={isSelected}
-                      disabled={isDisabled}
-                      onSelect={() => {
-                        setSelectedCatalogKeys((previous) => {
-                          const next = new Set(previous);
-                          if (next.has(key)) {
-                            next.delete(key);
-                          } else {
-                            next.add(key);
-                          }
-                          return next;
-                        });
-                      }}
-                      selectionLabel={t("common.selectItem", { name: item.name })}
-                      selectedLabel={t("common.selected")}
-                      title={item.name}
-                      subtitle={item.package_ref}
-                      badges={
-                        <>
-                          <Chip
-                            size="small"
-                            color={installStatusColor(item.installed_state)}
-                            variant="outlined"
-                            label={
-                              item.installed_state === "installed"
-                                ? t("status.installed")
-                                : t("status.notInstalled")
+                <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  spacing={1}
+                  justifyContent="space-between"
+                  alignItems={{ xs: "flex-start", md: "flex-end" }}
+                >
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="overline" color="text.secondary">
+                      {section.groupLabel}
+                    </Typography>
+                    <Typography variant="h6" sx={{ mt: 0.25, letterSpacing: "-0.03em" }}>
+                      {formatCategoryLabel(section.slug, section.label)}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    label={t("npxSkills.discoverSectionCount", { count: section.count })}
+                  />
+                </Stack>
+
+                <Stack spacing={1.25}>
+                  {section.items.map((item) => {
+                    const key = `${item.package_ref}::${item.skill_flag ?? ""}`;
+                    const isSelected = selectedCatalogKeys.has(key);
+                    const isDisabled = item.project_only && installTargetScope === "global";
+
+                    return (
+                      <NpxDiscoverSkillCard
+                        key={key}
+                        item={item}
+                        selected={isSelected}
+                        disabled={isDisabled}
+                        t={t}
+                        onToggle={() => {
+                          setSelectedCatalogKeys((previous) => {
+                            const next = new Set(previous);
+                            if (next.has(key)) {
+                              next.delete(key);
+                            } else {
+                              next.add(key);
                             }
-                          />
-                          <Chip
-                            size="small"
-                            variant="outlined"
-                            label={formatCategoryLabel(item.category_slug, item.category_label)}
-                          />
-                          <Chip size="small" variant="outlined" label={item.install_provider} />
-                          {item.project_only ? (
-                            <Chip
-                              size="small"
-                              color="warning"
-                              variant="outlined"
-                              label={t("npxSkills.projectOnly")}
-                            />
-                          ) : null}
-                        </>
-                      }
-                      description={
-                        <Typography
-                          variant="body2"
-                          color="inherit"
-                          sx={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            minHeight: "4.2em",
-                          }}
-                        >
-                          {summarizeSkillDescription(item.description, "list") ||
-                            t("npxSkills.noDescription")}
-                        </Typography>
-                      }
-                      meta={
-                        item.usage ? (
-                          <Typography variant="caption" sx={{ color: "info.main" }}>
-                            {item.usage}
-                          </Typography>
-                        ) : null
-                      }
-                      footer={
-                        <Stack spacing={1.25}>
-                          <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                            {isDisabled ? t("npxSkills.projectOnly") : installCommand}
-                          </Typography>
-                          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                            <Button
-                              size="small"
-                              variant="text"
-                              startIcon={<TravelExploreIcon />}
-                              onClick={() => openPackagePreviewForItem(item)}
-                            >
-                              {t("npxSkills.openRepoInstall")}
-                            </Button>
-                            <Button
-                              size="small"
-                              variant="text"
-                              startIcon={<ContentCopyIcon />}
-                              onClick={() => {
-                                navigator.clipboard.writeText(installCommand).then(
-                                  () => showNotification(t("npxSkills.copySuccess"), "success"),
-                                  () => showNotification(t("npxSkills.copyFailed"), "error"),
-                                );
-                              }}
-                            >
-                              {t("npxSkills.copyInstallCommand")}
-                            </Button>
-                          </Stack>
-                        </Stack>
-                      }
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
+                            return next;
+                          });
+                        }}
+                        onOpenRepo={() => openRepoForItem(item)}
+                        onCopyInstallCommand={(installCommand) => {
+                          navigator.clipboard.writeText(installCommand).then(
+                            () => showNotification(t("npxSkills.copySuccess"), "success"),
+                            () => showNotification(t("npxSkills.copyFailed"), "error"),
+                          );
+                        }}
+                      />
+                    );
+                  })}
+                </Stack>
+              </Stack>
+            ))
           )}
-        </Box>
+        </Stack>
       </Box>
+
+      <NpxDiscoverActionBar
+        t={t}
+        selectedSkillCount={selectedSkillCount}
+        selectedPackageCount={selectedPackageCount}
+        selectedNamesPreview={selectedNamesPreview}
+        installTargetSummary={installTargetSummary}
+        installDisabled={jobRunning || selectedInstallPayload.length === 0 || installTargetLoading}
+        jobRunning={jobRunning}
+        activityRunId={activityRunId}
+        jobOperation={jobOperation}
+        jobStatusMessage={jobStatusMessage}
+        jobResultStatus={jobResultStatus}
+        jobCompleted={jobCompleted}
+        jobTotal={jobTotal}
+        jobSuccessCount={jobSuccessCount}
+        jobFailureCount={jobFailureCount}
+        jobPercent={jobPercent}
+        runningItemLabel={runningItem?.label ?? null}
+        streamDisconnected={streamDisconnected}
+        jobItems={jobItems}
+        jobLogEntries={jobLogEntries}
+        onInstall={openInstallSelectedDialog}
+        onClearSelection={() => setSelectedCatalogKeys(new Set())}
+        onViewActivity={onViewActivity}
+      />
     </Stack>
   );
 }

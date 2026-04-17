@@ -26,21 +26,31 @@ export function buildNpxJobNotification(
     };
   }
 
-  if (operation === "update") {
+  if (operation === "update" || operation === "update_packages") {
     if (successCount === 0 && failureCount > 0) {
       return {
-        message: t("npxSkills.toastUpdateFailed"),
+        message:
+          operation === "update_packages"
+            ? t("npxSkills.toastUpdatePackagesFailed")
+            : t("npxSkills.toastUpdateFailed"),
         severity: "error",
       };
     }
     return {
       message:
         failureCount > 0
-          ? t("npxSkills.toastUpdatePartial", {
-              success: successCount,
-              failed: failureCount,
-            })
-          : t("npxSkills.toastUpdateSuccess", { success: successCount }),
+          ? operation === "update_packages"
+            ? t("npxSkills.toastUpdatePackagesPartial", {
+                success: successCount,
+                failed: failureCount,
+              })
+            : t("npxSkills.toastUpdatePartial", {
+                success: successCount,
+                failed: failureCount,
+              })
+          : operation === "update_packages"
+            ? t("npxSkills.toastUpdatePackagesSuccess", { success: successCount })
+            : t("npxSkills.toastUpdateSuccess", { success: successCount }),
       severity: failureCount > 0 ? "warning" : "success",
     };
   }

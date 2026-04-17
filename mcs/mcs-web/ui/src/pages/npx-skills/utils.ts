@@ -5,6 +5,7 @@ import type {
   NpxSkillsOperation,
 } from "@/types";
 import type {
+  CatalogSection,
   InstalledSourceFilter,
   InstalledTrackingFilter,
   InstalledUpdateFilter,
@@ -98,6 +99,8 @@ export function operationLabel(operation: NpxSkillsOperation, t: TranslationFn) 
       return t("npxSkills.operationCheck");
     case "update":
       return t("npxSkills.operationUpdate");
+    case "update_packages":
+      return t("npxSkills.operationUpdatePackages");
   }
 }
 
@@ -114,6 +117,47 @@ export function installStatusColor(
 
 export function buildInstallKey(item: NpxSkillsCatalogItemDto) {
   return `${item.package_ref}::${item.skill_flag ?? ""}`;
+}
+
+export function describeInstallItemInput(item: {
+  package_ref: string;
+  skill_flags?: string[];
+}) {
+  if (!item.skill_flags || item.skill_flags.length === 0) {
+    return item.package_ref;
+  }
+  if (item.skill_flags.length === 1) {
+    return `${item.package_ref} --skill ${item.skill_flags[0]}`;
+  }
+  return `${item.package_ref} · ${item.skill_flags.length} skills`;
+}
+
+export function resolveRepoUrl(packageRef: string): string | null {
+  const trimmed = packageRef.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\.git$/i, "");
+  }
+
+  const sshMatch = trimmed.match(/^git@github\.com:(.+?)(?:\.git)?$/i);
+  if (sshMatch?.[1]) {
+    return `https://github.com/${sshMatch[1]}`;
+  }
+
+  const githubPrefixMatch = trimmed.match(/^github:(.+)$/i);
+  if (githubPrefixMatch?.[1]) {
+    return `https://github.com/${githubPrefixMatch[1].replace(/\.git$/i, "")}`;
+  }
+
+  const ownerRepoMatch = trimmed.match(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/);
+  if (ownerRepoMatch) {
+    return `https://github.com/${trimmed.replace(/\.git$/i, "")}`;
+  }
+
+  return null;
 }
 
 export function parseSkillFlags(input: string): string[] {
@@ -184,6 +228,44 @@ export function buildTaxonomyGroups<
       ...group,
     }))
     .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label));
+}
+
+export function buildCatalogSections(
+  items: NpxSkillsCatalogItemDto[],
+  groups: TaxonomyGroupSummary[],
+): CatalogSection[] {
+  const itemsByCategory = new Map<string, NpxSkillsCatalogItemDto[]>();
+  for (const item of items) {
+    const bucket = itemsByCategory.get(item.category_id);
+    if (bucket) {
+      bucket.push(item);
+    } else {
+      itemsByCategory.set(item.category_id, [item]);
+    }
+  }
+
+  const sections: CatalogSection[] = [];
+  for (const group of groups) {
+    for (const category of group.categories) {
+      const sectionItems = itemsByCategory.get(category.id);
+      if (!sectionItems || sectionItems.length === 0) {
+        continue;
+      }
+
+      sections.push({
+        id: category.id,
+        anchorId: `npx-skills-category-${category.id}`,
+        slug: category.slug,
+        label: category.label,
+        groupId: group.id,
+        groupLabel: group.label,
+        count: sectionItems.length,
+        items: sectionItems,
+      });
+    }
+  }
+
+  return sections;
 }
 
 function normalizeSearchQuery(value: string) {
