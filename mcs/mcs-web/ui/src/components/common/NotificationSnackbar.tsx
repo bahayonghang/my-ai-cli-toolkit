@@ -1,4 +1,4 @@
-import { Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert, Button } from "@mui/material";
 import { useUiStore } from "@/stores/uiStore";
 
 export function NotificationSnackbar() {
@@ -21,6 +21,20 @@ export function NotificationSnackbar() {
           onClose={clearNotification}
           severity={notification.severity}
           variant="outlined"
+          action={
+            notification.action ? (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  notification.action?.onClick();
+                  clearNotification();
+                }}
+              >
+                {notification.action.label}
+              </Button>
+            ) : undefined
+          }
           sx={{
             width: "100%",
             minWidth: { xs: 280, sm: 340 },

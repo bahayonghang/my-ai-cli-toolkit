@@ -50,6 +50,7 @@ import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useUiStore } from "@/stores/uiStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInstallTarget } from "@/hooks/useInstallTarget";
+import { buildActivityRunPath } from "@/utils/activityNavigation";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
 import PageLoadingState from "@/components/common/PageLoadingState";
 
@@ -124,10 +125,16 @@ export default function InstalledSkillsPage() {
     setDeleteName(null);
 
     try {
-      await uninstallSkills(platformId, [nameToDelete], installTarget);
+      const result = await uninstallSkills(platformId, [nameToDelete], installTarget);
       showNotification(
         t("installed.uninstalledNotification", { name: nameToDelete }),
         "success",
+        result.run_id
+          ? {
+              label: t("activity.viewRun"),
+              onClick: () => navigateDeferred(buildActivityRunPath(result.run_id!, platformId)),
+            }
+          : undefined,
       );
       await refresh();
     } catch (errorValue) {
@@ -141,10 +148,16 @@ export default function InstalledSkillsPage() {
     }
 
     try {
-      await installSkills(platformId, [name], "auto", installTarget);
+      const result = await installSkills(platformId, [name], "auto", installTarget);
       showNotification(
         t("installed.reinstalledNotification", { name }),
         "success",
+        result.run_id
+          ? {
+              label: t("activity.viewRun"),
+              onClick: () => navigateDeferred(buildActivityRunPath(result.run_id!, platformId)),
+            }
+          : undefined,
       );
       await refresh();
     } catch (errorValue) {

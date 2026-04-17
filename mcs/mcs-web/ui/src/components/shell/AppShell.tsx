@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   CaretRight,
   ChartPieSlice,
+  ClockCounterClockwise,
   Command,
   DownloadSimple,
   House,
@@ -113,6 +114,9 @@ function inferRouteSection(
   if (pathname.startsWith("/install-hub")) {
     return "installHub";
   }
+  if (pathname.startsWith("/activity")) {
+    return "activity";
+  }
   if (pathname.startsWith("/registry") || pathname.startsWith("/npx-skills")) {
     return "registry";
   }
@@ -138,6 +142,7 @@ const routeSectionMessageKey = {
   overview: "common.routeSection.overview",
   dashboard: "common.routeSection.dashboard",
   installHub: "common.routeSection.installHub",
+  activity: "common.routeSection.activity",
   commandsWorkspace: "common.routeSection.commandsWorkspace",
   agentsWorkspace: "common.routeSection.agentsWorkspace",
   registry: "common.routeSection.registry",
@@ -425,6 +430,15 @@ export function AppShell({
           icon={<DownloadSimple size={18} weight="bold" />}
           to="/install-hub"
           active={location.pathname.startsWith("/install-hub")}
+          ariaCurrent="page"
+          onAfterNavigate={() => setNavOpen(false)}
+        />
+        <ShellNavButton
+          label={t("common.activity")}
+          subtitle={t("common.activitySubtitle")}
+          icon={<ClockCounterClockwise size={18} weight="bold" />}
+          to="/activity"
+          active={location.pathname.startsWith("/activity")}
           ariaCurrent="page"
           onAfterNavigate={() => setNavOpen(false)}
         />

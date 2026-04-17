@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/locale";
+import { enActivityMessages, zhActivityMessages } from "./activity";
 import { enCommonMessages, zhCommonMessages } from "./common";
 import { enDashboardMessages, zhDashboardMessages } from "./dashboard";
 import { enDialogMessages, zhDialogMessages } from "./dialogs";
@@ -22,6 +23,7 @@ const enMessages = {
   ...enInstallMessages,
   ...enDashboardMessages,
   ...enInstallHubMessages,
+  ...enActivityMessages,
   ...enManageContentMessages,
   ...enNpxSkillsMessages,
   ...enDialogMessages,
@@ -38,6 +40,7 @@ const zhMessages: LocaleMessages = {
   ...zhInstallMessages,
   ...zhDashboardMessages,
   ...zhInstallHubMessages,
+  ...zhActivityMessages,
   ...zhManageContentMessages,
   ...zhNpxSkillsMessages,
   ...zhDialogMessages,

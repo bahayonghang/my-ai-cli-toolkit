@@ -22,6 +22,7 @@ import { useUiStore } from "@/stores/uiStore";
 import type { InstallHubStage } from "@/components/install-hub/types";
 import { AppShell } from "@/components/shell/AppShell";
 import PageLoadingState from "@/components/common/PageLoadingState";
+import { buildActivityRunPath } from "@/utils/activityNavigation";
 import { useUnifiedInstallHub } from "./useUnifiedInstallHub";
 
 export default function UnifiedInstallHubPage() {
@@ -86,6 +87,7 @@ function InstallWorkbench({
   model: ReturnType<typeof useUnifiedInstallHub>;
 }) {
   const { t } = useI18n();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -191,6 +193,9 @@ function InstallWorkbench({
                 selectedSkillNames={model.summary.selectedItemNames}
                 onClearResults={() => model.setResults([])}
                 onInstall={model.runInstall}
+                onViewActivity={(runId, platformId) =>
+                  navigate(buildActivityRunPath(runId, platformId))
+                }
               />
             </InstallStagePanel>
           </Stack>

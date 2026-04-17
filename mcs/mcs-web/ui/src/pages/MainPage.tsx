@@ -56,6 +56,7 @@ import { usePlatformItemsData } from "@/hooks/usePlatformItemsData";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { PlatformDisplay } from "@/types";
+import { buildActivityRunPath } from "@/utils/activityNavigation";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
 import { getPlatformCommandsLabel } from "@/utils/platformLabels";
 import {
@@ -209,7 +210,13 @@ export default function MainPage() {
               ? `, ${t("npxSkills.jobFailed", { count: result.failure_count })}`
               : "",
         }),
-        result.failure_count > 0 ? "warning" : "success"
+        result.failure_count > 0 ? "warning" : "success",
+        result.run_id
+          ? {
+              label: t("activity.viewRun"),
+              onClick: () => navigateDeferred(buildActivityRunPath(result.run_id!, platformId)),
+            }
+          : undefined,
       );
       clearSelection();
       await refresh();
@@ -639,7 +646,7 @@ export default function MainPage() {
           )}
           itemType={activeTab}
           onClose={() => setInstallOpen(false)}
-          onCompleted={(successCount, failureCount) => {
+          onCompleted={({ successCount, failureCount, runId }) => {
             showNotification(
               t("dialogs.installCompletedSummary", {
                 success: successCount,
@@ -648,11 +655,18 @@ export default function MainPage() {
                     ? `, ${t("npxSkills.jobFailed", { count: failureCount })}`
                     : "",
               }),
-              failureCount > 0 ? "warning" : "success"
+              failureCount > 0 ? "warning" : "success",
+              runId
+                ? {
+                    label: t("activity.viewRun"),
+                    onClick: () => navigateDeferred(buildActivityRunPath(runId, platformId)),
+                  }
+                : undefined,
             );
             clearSelection();
             void refresh();
           }}
+          onViewActivity={(runId) => navigateDeferred(buildActivityRunPath(runId, platformId))}
         />
       )}
 

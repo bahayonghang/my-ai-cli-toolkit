@@ -35,6 +35,7 @@ export interface PlatformInstallResult {
   failureCount: number;
   results: InstallResult[];
   requestError: string | null;
+  runId?: string | null;
 }
 
 export type ExecutionPhase = "idle" | "running" | "complete";

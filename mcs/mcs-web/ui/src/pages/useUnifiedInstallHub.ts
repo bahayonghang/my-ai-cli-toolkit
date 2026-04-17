@@ -475,6 +475,7 @@ export async function installOnPlatform(
       failureCount: response.failure_count,
       results: response.results,
       requestError: null,
+      runId: response.run_id ?? null,
     };
   } catch (error) {
     const message = (error as Error).message;
@@ -484,6 +485,7 @@ export async function installOnPlatform(
       failureCount: names.length,
       results: names.map((name) => buildInstallError(name, message, t)),
       requestError: message,
+      runId: null,
     };
   }
 }

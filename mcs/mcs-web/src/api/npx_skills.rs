@@ -11,10 +11,15 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::sync::{RwLock, Semaphore, broadcast};
 use tokio_stream::{StreamExt as TokioStreamExt, wrappers::BroadcastStream};
 
+use mcs_core::activity::{
+    ActivityItem, ActivityOperation as ActivityLogOperation, ActivityRun, ActivitySurface,
+    append_run,
+};
 use mcs_core::core::external_skills::{
     EXTERNAL_SKILLS_KIND_SKILLS_CLI, ResolvedExternalSkillEntry,
 };
 use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
+use mcs_core::model::ItemType;
 
 use crate::api::error::AppError;
 #[cfg(test)]
@@ -27,6 +32,9 @@ use crate::dto::{
     NpxSkillsOperation, NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewRequest,
     NpxSkillsPackageUpdateJobRequest, NpxSkillsPackagesInventoryDto, NpxSkillsRemoveJobRequest,
     ResolvedInstallTargetDto,
+};
+use crate::services::activity_log::{
+    activity_status_from_counts, current_time_ms, install_target_to_activity, npx_run_config,
 };
 use crate::services::npx_skills_cli::{
     build_check_args, build_install_args, build_remove_args, build_update_args,
@@ -68,6 +76,8 @@ struct NpxSkillsJob {
     success_count: usize,
     failure_count: usize,
     completed: bool,
+    started_at_ms: u64,
+    recorded_items: Vec<Option<ActivityItem>>,
     history: Vec<NpxSkillsSseEnvelope>,
     sender: broadcast::Sender<NpxSkillsSseEnvelope>,
 }
@@ -87,6 +97,8 @@ struct NpxSkillsJobTask {
     label: String,
     args: Vec<String>,
     state_update: StateUpdate,
+    package_ref: Option<String>,
+    skill_flags: Vec<String>,
 }
 
 #[derive(Clone)]
@@ -477,6 +489,8 @@ pub async fn install_jobs_start(
             label: install_label(item),
             args: build_install_args(item, &body.config, is_global)?,
             state_update: StateUpdate::ClearCheckCache,
+            package_ref: Some(item.package_ref.clone()),
+            skill_flags: item.skill_flags.clone(),
         });
     }
 
@@ -563,6 +577,8 @@ pub async fn remove_jobs_start(
             label: name.clone(),
             args: build_remove_args(name, is_global)?,
             state_update: StateUpdate::ClearCheckCache,
+            package_ref: None,
+            skill_flags: Vec::new(),
         });
     }
 
@@ -632,6 +648,8 @@ pub async fn check_jobs_start(
             label: "check".into(),
             args: build_check_args(is_global),
             state_update: StateUpdate::WriteCheckCache,
+            package_ref: None,
+            skill_flags: Vec::new(),
         }],
         target_ctx,
         install_target,
@@ -694,6 +712,8 @@ pub async fn update_jobs_start(
             label: "update".into(),
             args: build_update_args(is_global),
             state_update: StateUpdate::ClearCheckCache,
+            package_ref: None,
+            skill_flags: Vec::new(),
         }],
         target_ctx,
         install_target,
@@ -787,11 +807,13 @@ pub async fn update_package_jobs_start(
     let result = start_job(
         state,
         id,
-        NpxSkillsOperation::Update,
+        NpxSkillsOperation::UpdatePackages,
         vec![NpxSkillsJobTask {
             label: labels.join(", "),
             args,
             state_update: StateUpdate::ClearCheckCache,
+            package_ref: None,
+            skill_flags: Vec::new(),
         }],
         target_ctx,
         install_target,
@@ -864,6 +886,8 @@ async fn start_job(
         success_count: 0,
         failure_count: 0,
         completed: false,
+        started_at_ms: current_time_ms(),
+        recorded_items: vec![None; total],
         history: Vec::new(),
         sender,
     }));
@@ -950,12 +974,19 @@ async fn run_job(
         }
     }
 
-    let (success_count, failure_count, total) = {
+    let (success_count, failure_count, total, started_at_ms, recorded_items, completed_at_ms) = {
         let mut guard = job.write().await;
         guard.completed = true;
         let success_count = guard.success_count;
         let failure_count = guard.failure_count;
         let total = guard.total;
+        let started_at_ms = guard.started_at_ms;
+        let recorded_items = guard
+            .recorded_items
+            .iter()
+            .filter_map(|item| item.clone())
+            .collect::<Vec<_>>();
+        let completed_at_ms = current_time_ms();
         guard.push_event(build_sse_envelope(
             "job_completed",
             &JobCompletedPayload {
@@ -964,14 +995,51 @@ async fn run_job(
                 total,
                 success_count,
                 failure_count,
-                completed_at_ms: unix_time_ms(),
+                completed_at_ms: completed_at_ms.into(),
             },
         ));
-        (success_count, failure_count, total)
+        (
+            success_count,
+            failure_count,
+            total,
+            started_at_ms,
+            recorded_items,
+            completed_at_ms,
+        )
     };
 
     if is_mutating_operation(operation) && success_count > 0 {
         invalidate_install_target(&ctx.state, &ctx.platform_id, &ctx.install_target).await;
+    }
+
+    let platform_name = ctx
+        .state
+        .platform(&ctx.platform_id)
+        .await
+        .map(|platform| platform.name)
+        .unwrap_or_else(|| ctx.platform_id.clone());
+    if let Err(error) = append_run(&ActivityRun {
+        run_id: job_id.clone(),
+        surface: ActivitySurface::NpxSkills,
+        operation: activity_operation(operation),
+        status: activity_status_from_counts(success_count, failure_count),
+        platform_id: ctx.platform_id.clone(),
+        platform_name,
+        install_target: install_target_to_activity(&ctx.install_target),
+        started_at_ms,
+        completed_at_ms,
+        duration_ms: completed_at_ms.saturating_sub(started_at_ms),
+        item_count: recorded_items.len(),
+        success_count,
+        failure_count,
+        run_config: npx_run_config(&ctx.config),
+        items: recorded_items,
+    }) {
+        tracing::warn!(
+            job_id = job_id.as_str(),
+            error = %error,
+            "Failed to persist npx skills activity log"
+        );
     }
 
     tracing::info!(
@@ -1060,6 +1128,23 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
     };
 
     let mut guard = ctx.job.write().await;
+    guard.recorded_items[index] = Some(ActivityItem {
+        label: task.label.clone(),
+        item_type: ItemType::Skill,
+        success: payload.success,
+        message: if payload.success {
+            format!("Completed {}", task.label)
+        } else {
+            format!("Failed {}", task.label)
+        },
+        error: payload.error.clone(),
+        output: (!payload.output.is_empty()).then_some(payload.output.clone()),
+        duration_ms: u64::try_from(payload.duration_ms).unwrap_or(u64::MAX),
+        source_path: None,
+        target_path: None,
+        package_ref: task.package_ref.clone(),
+        skill_flags: task.skill_flags.clone(),
+    });
     guard.push_event(build_sse_envelope("item_finished", &payload));
     if payload.success {
         guard.success_count += 1;
@@ -1088,6 +1173,16 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
             percent,
         },
     ));
+}
+
+fn activity_operation(operation: NpxSkillsOperation) -> ActivityLogOperation {
+    match operation {
+        NpxSkillsOperation::Install => ActivityLogOperation::Install,
+        NpxSkillsOperation::Remove => ActivityLogOperation::Remove,
+        NpxSkillsOperation::Check => ActivityLogOperation::Check,
+        NpxSkillsOperation::Update => ActivityLogOperation::Update,
+        NpxSkillsOperation::UpdatePackages => ActivityLogOperation::UpdatePackages,
+    }
 }
 
 fn resolved_catalog_entries(
@@ -1341,7 +1436,10 @@ fn install_label(item: &NpxSkillsInstallItemRequest) -> String {
 fn is_mutating_operation(operation: NpxSkillsOperation) -> bool {
     matches!(
         operation,
-        NpxSkillsOperation::Install | NpxSkillsOperation::Remove | NpxSkillsOperation::Update
+        NpxSkillsOperation::Install
+            | NpxSkillsOperation::Remove
+            | NpxSkillsOperation::Update
+            | NpxSkillsOperation::UpdatePackages
     )
 }
 

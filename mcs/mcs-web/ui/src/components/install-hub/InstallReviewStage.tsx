@@ -29,6 +29,7 @@ interface InstallReviewStageProps {
   results: PlatformInstallResult[];
   onInstall: () => void;
   onClearResults: () => void;
+  onViewActivity?: (runId: string, platformId: string) => void;
 }
 
 export function InstallReviewStage({
@@ -41,6 +42,7 @@ export function InstallReviewStage({
   results,
   onInstall,
   onClearResults,
+  onViewActivity,
 }: InstallReviewStageProps) {
   const { t } = useI18n();
   const canInstall =
@@ -133,7 +135,7 @@ export function InstallReviewStage({
         />
       </Box>
 
-      <ResultsView results={results} />
+      <ResultsView results={results} onViewActivity={onViewActivity} />
     </Stack>
   );
 }
@@ -362,7 +364,13 @@ function ExecutionStatusBlock({
   );
 }
 
-function ResultsView({ results }: { results: PlatformInstallResult[] }) {
+function ResultsView({
+  results,
+  onViewActivity,
+}: {
+  results: PlatformInstallResult[];
+  onViewActivity?: (runId: string, platformId: string) => void;
+}) {
   if (results.length === 0) {
     return null;
   }
@@ -370,13 +378,23 @@ function ResultsView({ results }: { results: PlatformInstallResult[] }) {
   return (
     <Stack spacing={1.5}>
       {results.map((result) => (
-        <PlatformResultBlock key={result.platform.id} result={result} />
+        <PlatformResultBlock
+          key={result.platform.id}
+          result={result}
+          onViewActivity={onViewActivity}
+        />
       ))}
     </Stack>
   );
 }
 
-function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
+function PlatformResultBlock({
+  result,
+  onViewActivity,
+}: {
+  result: PlatformInstallResult;
+  onViewActivity?: (runId: string, platformId: string) => void;
+}) {
   const { t } = useI18n();
   const severity = resolveSeverity(result);
   const failedItems = result.results.filter((item) => !item.success);
@@ -417,7 +435,16 @@ function PlatformResultBlock({ result }: { result: PlatformInstallResult }) {
             fallbackIcon={result.platform.icon}
             size={40}
           />
-          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
+            {result.runId && onViewActivity ? (
+              <Button
+                size="small"
+                variant="text"
+                onClick={() => onViewActivity(result.runId!, result.platform.id)}
+              >
+                {t("activity.viewRun")}
+              </Button>
+            ) : null}
             <Chip
               label={t("installHub.successCount", {
                 count: result.successCount,

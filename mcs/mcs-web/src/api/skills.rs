@@ -1,14 +1,23 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use std::path::PathBuf;
+use std::time::Instant;
 
+use mcs_core::activity::{
+    ActivityOperation, ActivityRun, ActivitySurface, append_run, generate_run_id,
+};
 use mcs_core::core::install_target::{InstallTargetAccessMode, resolve_target_platform};
 use mcs_core::core::installer::{install_skill, uninstall_skill};
+use mcs_core::model::ItemType;
 
 use crate::api::error::AppError;
 use crate::dto::{
     ApiResponse, BatchResultDto, DiffDto, EditContentRequest, InstallRequest,
     InstallTargetScopeDto, ItemDetailDto, ItemDto, ItemQuery, SimpleSuccess,
+};
+use crate::services::activity_log::{
+    activity_status_from_counts, current_time_ms, install_target_to_activity, item_path_lookup,
+    local_activity_items, local_link_mode_config,
 };
 use crate::state::AppState;
 
@@ -126,6 +135,9 @@ pub async fn install(
     .map_err(AppError::BadRequest)?;
     let platform = resolved.platform;
     let should_invalidate_global = matches!(install_target.scope, InstallTargetScopeDto::Global);
+    let started_at_ms = current_time_ms();
+    let activity_run_id = generate_run_id("local-skill-install");
+    let path_lookup = item_path_lookup(state.skills_for_platform_config(&platform).await);
 
     // 并行安装：每个 skill 使用独立的 spawn_blocking 任务
     let mut set = tokio::task::JoinSet::new();
@@ -133,15 +145,46 @@ pub async fn install(
         let root = root.clone();
         let platform = platform.clone();
         let link_mode = body.link_mode;
-        set.spawn_blocking(move || install_skill(&root, &platform, &name, link_mode));
+        set.spawn_blocking(move || {
+            let started = Instant::now();
+            let result = install_skill(&root, &platform, &name, link_mode);
+            (result, started.elapsed().as_millis() as u64)
+        });
     }
     let mut results = Vec::with_capacity(body.names.len());
     while let Some(res) = set.join_next().await {
         results.push(res.map_err(|e| AppError::Internal(format!("Install task failed: {e}")))?);
     }
 
-    let success_count = results.iter().filter(|r| r.success).count();
+    let success_count = results.iter().filter(|(r, _)| r.success).count();
     let failure_count = results.len() - success_count;
+    let completed_at_ms = current_time_ms();
+    let items = local_activity_items(ItemType::Skill, &results, &path_lookup);
+    let mut persisted_run_id = Some(activity_run_id.clone());
+    if let Err(error) = append_run(&ActivityRun {
+        run_id: activity_run_id,
+        surface: ActivitySurface::Local,
+        operation: ActivityOperation::Install,
+        status: activity_status_from_counts(success_count, failure_count),
+        platform_id: id.clone(),
+        platform_name: base_platform.name.clone(),
+        install_target: install_target_to_activity(&install_target),
+        started_at_ms,
+        completed_at_ms,
+        duration_ms: completed_at_ms.saturating_sub(started_at_ms),
+        item_count: items.len(),
+        success_count,
+        failure_count,
+        run_config: local_link_mode_config(body.link_mode),
+        items,
+    }) {
+        tracing::warn!(
+            platform = id.as_str(),
+            error = %error,
+            "Failed to persist local skill install activity log"
+        );
+        persisted_run_id = None;
+    }
 
     // Invalidate cache (including platforms sharing the same skills path)
     if should_invalidate_global {
@@ -151,9 +194,10 @@ pub async fn install(
     }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
-        results,
+        results: results.into_iter().map(|(result, _)| result).collect(),
         success_count,
         failure_count,
+        run_id: persisted_run_id,
     })))
 }
 
@@ -176,20 +220,54 @@ pub async fn uninstall(
     .map_err(AppError::BadRequest)?;
     let platform = resolved.platform;
     let should_invalidate_global = matches!(install_target.scope, InstallTargetScopeDto::Global);
+    let started_at_ms = current_time_ms();
+    let activity_run_id = generate_run_id("local-skill-uninstall");
+    let path_lookup = item_path_lookup(state.skills_for_platform_config(&platform).await);
 
     // 并行卸载
     let mut set = tokio::task::JoinSet::new();
     for name in body.names.clone() {
         let platform = platform.clone();
-        set.spawn_blocking(move || uninstall_skill(&platform, &name));
+        set.spawn_blocking(move || {
+            let started = Instant::now();
+            let result = uninstall_skill(&platform, &name);
+            (result, started.elapsed().as_millis() as u64)
+        });
     }
     let mut results = Vec::with_capacity(body.names.len());
     while let Some(res) = set.join_next().await {
         results.push(res.map_err(|e| AppError::Internal(format!("Uninstall task failed: {e}")))?);
     }
 
-    let success_count = results.iter().filter(|r| r.success).count();
+    let success_count = results.iter().filter(|(r, _)| r.success).count();
     let failure_count = results.len() - success_count;
+    let completed_at_ms = current_time_ms();
+    let items = local_activity_items(ItemType::Skill, &results, &path_lookup);
+    let mut persisted_run_id = Some(activity_run_id.clone());
+    if let Err(error) = append_run(&ActivityRun {
+        run_id: activity_run_id,
+        surface: ActivitySurface::Local,
+        operation: ActivityOperation::Uninstall,
+        status: activity_status_from_counts(success_count, failure_count),
+        platform_id: id.clone(),
+        platform_name: base_platform.name.clone(),
+        install_target: install_target_to_activity(&install_target),
+        started_at_ms,
+        completed_at_ms,
+        duration_ms: completed_at_ms.saturating_sub(started_at_ms),
+        item_count: items.len(),
+        success_count,
+        failure_count,
+        run_config: None,
+        items,
+    }) {
+        tracing::warn!(
+            platform = id.as_str(),
+            error = %error,
+            "Failed to persist local skill uninstall activity log"
+        );
+        persisted_run_id = None;
+    }
 
     // Invalidate cache (including platforms sharing the same skills path)
     if should_invalidate_global {
@@ -199,9 +277,10 @@ pub async fn uninstall(
     }
 
     Ok(Json(ApiResponse::ok(BatchResultDto {
-        results,
+        results: results.into_iter().map(|(result, _)| result).collect(),
         success_count,
         failure_count,
+        run_id: persisted_run_id,
     })))
 }
 

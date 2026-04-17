@@ -2,6 +2,7 @@ use axum::Router;
 
 use crate::state::AppState;
 
+pub mod activity;
 pub mod agents;
 pub mod commands;
 pub mod dashboard;
@@ -18,6 +19,7 @@ pub mod system;
 /// Assemble the complete API router
 pub fn router() -> Router<AppState> {
     Router::new()
+        .route("/api/activity/runs", axum::routing::get(activity::runs))
         // Global skills catalog
         .route(
             "/api/skills/catalog",

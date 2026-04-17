@@ -40,7 +40,8 @@ interface Props {
   itemType: "skills" | "commands" | "agents";
   installTarget?: InstallTarget;
   onClose: () => void;
-  onCompleted: (successCount: number, failureCount: number) => void;
+  onCompleted: (summary: { successCount: number; failureCount: number; runId?: string | null }) => void;
+  onViewActivity?: (runId: string) => void;
 }
 
 export function InstallDialog({
@@ -53,11 +54,13 @@ export function InstallDialog({
   installTarget,
   onClose,
   onCompleted,
+  onViewActivity,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("confirm");
   const [linkMode, setLinkMode] = useState<LinkMode>("auto");
   const [results, setResults] = useState<ItemResult[]>([]);
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
+  const [completedRunId, setCompletedRunId] = useState<string | null>(null);
   const installAbortRef = useRef<AbortController | null>(null);
 
   const handleEnter = () => {
@@ -72,6 +75,7 @@ export function InstallDialog({
         status: "pending",
       }))
     );
+    setCompletedRunId(null);
     setExpandedErrors(new Set());
   };
 
@@ -137,6 +141,7 @@ export function InstallDialog({
           };
         })
       );
+      setCompletedRunId(response.run_id ?? null);
       setPhase("completed");
     } catch (e) {
       if (isAbortError(e) || controller.signal.aborted) return;
@@ -186,12 +191,18 @@ export function InstallDialog({
           results={results}
           successCount={successCount}
           failureCount={failureCount}
+          runId={completedRunId}
           expandedErrors={expandedErrors}
           onToggleError={toggleError}
           onClose={() => {
-            onCompleted(successCount, failureCount);
+            onCompleted({
+              successCount,
+              failureCount,
+              runId: completedRunId,
+            });
             onClose();
           }}
+          onViewActivity={onViewActivity}
         />
       )}
     </Dialog>
@@ -474,18 +485,22 @@ interface CompletedPhaseProps {
   results: ItemResult[];
   successCount: number;
   failureCount: number;
+  runId: string | null;
   expandedErrors: Set<string>;
   onToggleError: (name: string) => void;
   onClose: () => void;
+  onViewActivity?: (runId: string) => void;
 }
 
 function CompletedPhase({
   results,
   successCount,
   failureCount,
+  runId,
   expandedErrors,
   onToggleError,
   onClose,
+  onViewActivity,
 }: CompletedPhaseProps) {
   const { t } = useI18n();
   const hasErrors = failureCount > 0;
@@ -636,6 +651,17 @@ function CompletedPhase({
       </DialogContent>
 
       <DialogActions>
+        {runId && onViewActivity ? (
+          <Button
+            variant="text"
+            onClick={() => {
+              onClose();
+              onViewActivity(runId);
+            }}
+          >
+            {t("activity.viewRun")}
+          </Button>
+        ) : null}
         <Button variant="contained" onClick={onClose}>
           {t("common.close")}
         </Button>

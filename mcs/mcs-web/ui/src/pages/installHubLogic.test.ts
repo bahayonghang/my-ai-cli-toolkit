@@ -256,6 +256,7 @@ describe("installAcrossPlatforms", () => {
           { success: true, item_name: "alpha", message: "installed for claude", error: null },
         ],
         requestError: null,
+        runId: null,
       },
       {
         platform: SHARED_PATH_PLATFORMS[1],
@@ -265,6 +266,7 @@ describe("installAcrossPlatforms", () => {
           { success: false, item_name: "alpha", message: "install failed", error: "disk full" },
         ],
         requestError: null,
+        runId: null,
       },
     ]);
     expect(setResults).toHaveBeenLastCalledWith(results);
@@ -314,6 +316,7 @@ describe("installAcrossPlatforms", () => {
         },
       ],
       requestError: "permission denied",
+      runId: null,
     });
   });
 

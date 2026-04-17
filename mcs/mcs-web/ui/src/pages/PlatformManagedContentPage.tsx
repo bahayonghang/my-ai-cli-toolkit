@@ -65,6 +65,7 @@ import {
   getPlatformScopedItemTypeLabel,
   platformSupportsItemType,
 } from "@/utils/installHubContent";
+import { buildActivityRunPath } from "@/utils/activityNavigation";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
 
 const ManagedItemDetailDrawer = lazy(() =>
@@ -255,6 +256,13 @@ export default function PlatformManagedContentPage({ contentType }: Props) {
               : "",
         }),
         response.failure_count > 0 ? "warning" : "success",
+        response.run_id
+          ? {
+              label: t("activity.viewRun"),
+              onClick: () =>
+                navigateDeferred(buildActivityRunPath(response.run_id!, activePlatform.id)),
+            }
+          : undefined,
       );
       setSelectedNames(new Set());
       await refresh();
@@ -637,7 +645,7 @@ export default function PlatformManagedContentPage({ contentType }: Props) {
           itemType={contentType === "command" ? "commands" : "agents"}
           installTarget={installTarget}
           onClose={() => setInstallOpen(false)}
-          onCompleted={async (successCount, failureCount) => {
+          onCompleted={async ({ successCount, failureCount, runId }) => {
             showNotification(
               t("dialogs.installCompletedSummary", {
                 success: successCount,
@@ -647,10 +655,20 @@ export default function PlatformManagedContentPage({ contentType }: Props) {
                     : "",
               }),
               failureCount > 0 ? "warning" : "success",
+              runId
+                ? {
+                    label: t("activity.viewRun"),
+                    onClick: () =>
+                      navigateDeferred(buildActivityRunPath(runId, activePlatform.id)),
+                  }
+                : undefined,
             );
             setSelectedNames(new Set());
             await refresh();
           }}
+          onViewActivity={(runId) =>
+            navigateDeferred(buildActivityRunPath(runId, activePlatform.id))
+          }
         />
       ) : null}
 

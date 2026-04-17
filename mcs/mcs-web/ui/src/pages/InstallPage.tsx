@@ -70,6 +70,7 @@ import { useI18n } from "@/i18n";
 import { usePlatformStore } from "@/stores/platformStore";
 import { useUiStore } from "@/stores/uiStore";
 import type { CategoryDto, InstallStatus, ItemDetailDto, ItemDto } from "@/types";
+import { buildActivityRunPath } from "@/utils/activityNavigation";
 import { summarizeSkillDescription } from "@/utils/skillDescription";
 
 const Markdown = lazy(() => import("react-markdown"));
@@ -764,7 +765,13 @@ export default function InstallPage() {
               ? `, ${t("common.uninstall")} ${result.failure_count}`
               : "",
         }),
-        result.failure_count > 0 ? "warning" : "success"
+        result.failure_count > 0 ? "warning" : "success",
+        result.run_id
+          ? {
+              label: t("activity.viewRun"),
+              onClick: () => navigateDeferred(buildActivityRunPath(result.run_id!, platformId)),
+            }
+          : undefined,
       );
       void fetchSkills();
     } catch (error) {
@@ -987,17 +994,24 @@ export default function InstallPage() {
         itemType="skills"
         installTarget={installTarget}
         onClose={() => setInstallOpen(false)}
-        onCompleted={(successCount, failureCount) => {
+        onCompleted={({ successCount, failureCount, runId }) => {
           showNotification(
             t("install.installedSkillsNotification", {
               success: successCount,
               failedSuffix: failureCount > 0 ? `, ${failureCount}` : "",
             }),
-            failureCount > 0 ? "warning" : "success"
+            failureCount > 0 ? "warning" : "success",
+            runId
+              ? {
+                  label: t("activity.viewRun"),
+                  onClick: () => navigateDeferred(buildActivityRunPath(runId, platformId)),
+                }
+              : undefined,
           );
           setSelectedNames(new Set());
           void fetchSkills();
         }}
+        onViewActivity={(runId) => navigateDeferred(buildActivityRunPath(runId, platformId))}
       />
 
       {platformId && (

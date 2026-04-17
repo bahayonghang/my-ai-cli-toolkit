@@ -208,6 +208,7 @@ pub async fn install(
         results,
         success_count,
         failure_count,
+        run_id: None,
     })))
 }
 
@@ -256,6 +257,7 @@ pub async fn uninstall(
         results,
         success_count,
         failure_count,
+        run_id: None,
     })))
 }
 

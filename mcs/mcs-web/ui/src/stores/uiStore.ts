@@ -23,11 +23,21 @@ interface UiState {
   colorMode: ColorMode;
   locale: Locale;
   drawerOpen: boolean;
-  notification: { message: string; severity: "success" | "error" | "info" | "warning" } | null;
+  notification:
+    | {
+        message: string;
+        severity: "success" | "error" | "info" | "warning";
+        action?: { label: string; onClick: () => void };
+      }
+    | null;
   toggleColorMode: () => void;
   setLocale: (locale: Locale) => void;
   setDrawerOpen: (open: boolean) => void;
-  showNotification: (message: string, severity?: "success" | "error" | "info" | "warning") => void;
+  showNotification: (
+    message: string,
+    severity?: "success" | "error" | "info" | "warning",
+    action?: { label: string; onClick: () => void },
+  ) => void;
   clearNotification: () => void;
 }
 
@@ -60,8 +70,8 @@ export const useUiStore = create<UiState>((set) => ({
 
   setDrawerOpen: (open) => set({ drawerOpen: open }),
 
-  showNotification: (message, severity = "info") => {
-    set({ notification: { message, severity } });
+  showNotification: (message, severity = "info", action) => {
+    set({ notification: { message, severity, action } });
   },
 
   clearNotification: () => set({ notification: null }),

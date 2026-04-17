@@ -191,6 +191,80 @@ export interface BatchResultDto {
   results: InstallResult[];
   success_count: number;
   failure_count: number;
+  run_id?: string | null;
+}
+
+// ── Activity ───────────────────────────────────────────────────────
+
+export type ActivitySurface = "local" | "npx_skills";
+export type ActivityOperation =
+  | "install"
+  | "uninstall"
+  | "remove"
+  | "check"
+  | "update"
+  | "update_packages";
+export type ActivityRunStatus = "success" | "warning" | "error";
+
+export interface ActivityInstallTargetDto {
+  scope: InstallTargetScope;
+  project_path?: string | null;
+}
+
+export interface ActivityRunConfigDto {
+  link_mode?: "auto" | "symlink" | "copy" | null;
+  agents?: string[];
+  cli_mode?: NpxSkillsCliMode | null;
+}
+
+export interface ActivityItemDto {
+  label: string;
+  item_type: ItemType;
+  success: boolean;
+  message: string;
+  error?: string | null;
+  output?: string | null;
+  duration_ms: number;
+  source_path?: string | null;
+  target_path?: string | null;
+  package_ref?: string | null;
+  skill_flags?: string[];
+}
+
+export interface ActivityRunDto {
+  run_id: string;
+  surface: ActivitySurface;
+  operation: ActivityOperation;
+  status: ActivityRunStatus;
+  platform_id: string;
+  platform_name: string;
+  install_target: ActivityInstallTargetDto;
+  started_at_ms: number;
+  completed_at_ms: number;
+  duration_ms: number;
+  item_count: number;
+  success_count: number;
+  failure_count: number;
+  run_config?: ActivityRunConfigDto | null;
+  items: ActivityItemDto[];
+}
+
+export interface ActivityRunsSummaryDto {
+  total_runs: number;
+  success_runs: number;
+  warning_runs: number;
+  error_runs: number;
+  local_runs: number;
+  npx_runs: number;
+}
+
+export interface ActivityRunsPageDto {
+  summary: ActivityRunsSummaryDto;
+  filtered_total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  runs: ActivityRunDto[];
 }
 
 // ── Prompt ─────────────────────────────────────────────────────────
@@ -204,7 +278,12 @@ export interface PromptDiffDto {
 // ── npx skills ─────────────────────────────────────────────────────
 
 export type NpxSkillsCliMode = "auto" | "npx";
-export type NpxSkillsOperation = "install" | "remove" | "check" | "update";
+export type NpxSkillsOperation =
+  | "install"
+  | "remove"
+  | "check"
+  | "update"
+  | "update_packages";
 
 export interface NpxSkillsCliConfig {
   agents: string[];

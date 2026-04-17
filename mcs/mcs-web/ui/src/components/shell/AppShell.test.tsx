@@ -66,6 +66,14 @@ describe("AppShell", () => {
     expect(markup).toContain('href="/dashboard"');
   });
 
+  it("renders the activity workspace navigation entry", () => {
+    const markup = renderShell(["/activity"]);
+
+    expect(markup).toContain("Activity");
+    expect(markup).toContain('href="/activity"');
+    expect(markup).toContain('aria-current="page"');
+  });
+
   it("marks the active platform workspace with aria-current location", () => {
     const markup = renderShell(["/platform/claude/npx-skills"]);
 

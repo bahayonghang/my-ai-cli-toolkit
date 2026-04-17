@@ -148,6 +148,7 @@ pub async fn multi_sync(
         results,
         success_count,
         failure_count,
+        run_id: None,
     })))
 }
 

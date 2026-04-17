@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 /// User-facing preference for how a skill directory is linked to the platform target.
 /// Distinct from `SkillInstallMode` which records the *result* of an install operation.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LinkMode {
     /// Try symlink first; fall back to copy if symlink is unsupported (default / backward-compatible).

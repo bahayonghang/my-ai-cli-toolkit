@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use mcs_core::activity::ActivityRunQueryResult;
 use mcs_core::core::install_target::{InstallTarget, InstallTargetScope};
 use mcs_core::model::{InstallResult, InstallStatus, ItemType, LinkMode};
 
@@ -258,7 +259,11 @@ pub struct BatchResultDto {
     pub results: Vec<InstallResult>,
     pub success_count: usize,
     pub failure_count: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub run_id: Option<String>,
 }
+
+pub type ActivityRunsPageDto = ActivityRunQueryResult;
 
 #[derive(Serialize)]
 pub struct PromptDiffDto {
@@ -295,6 +300,7 @@ pub enum NpxSkillsOperation {
     Remove,
     Check,
     Update,
+    UpdatePackages,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

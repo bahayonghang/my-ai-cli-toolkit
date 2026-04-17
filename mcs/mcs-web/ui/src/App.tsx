@@ -9,6 +9,7 @@ import PlatformSelectPage from "@/pages/PlatformSelectPage";
 
 const MainPage = lazy(() => import("@/pages/MainPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const ActivityPage = lazy(() => import("@/pages/ActivityPage"));
 const InstalledSkillsPage = lazy(() => import("@/pages/InstalledSkillsPage"));
 const InstallPage = lazy(() => import("@/pages/InstallPage"));
 const NpxSkillsLayout = lazy(() => import("@/pages/NpxSkillsLayout"));
@@ -63,6 +64,7 @@ export default function App() {
               <Route path="/platform/:platformId/npx-skills/*" element={<LegacyRegistryRedirectPage />} />
               <Route path="/platform/:platformId/legacy" element={<MainPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/activity" element={<ActivityPage />} />
               <Route path="/registry/*" element={<LegacyRegistryRedirectPage />} />
               <Route path="/npx-skills" element={<NpxSkillsLayout />}>
                 <Route index element={<Navigate to="discover" replace />} />

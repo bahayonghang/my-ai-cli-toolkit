@@ -19,10 +19,12 @@ import type {
   CategoryDto,
   DashboardDto,
   BatchResultDto,
+  ActivityRunsPageDto,
   PromptDiffDto,
   ItemType,
   InstallStatus,
   InstallTarget,
+  InstallTargetScope,
   ResolvedInstallTarget,
   PickedFolderDto,
   LegacyDirDto,
@@ -187,6 +189,36 @@ export async function resolveInstallTarget(
 
 export async function getDashboard(signal?: AbortSignal): Promise<DashboardDto> {
   return fetchJson(`${BASE}/dashboard`, { signal });
+}
+
+export async function getActivityRuns(
+  params?: {
+    runId?: string;
+    platformId?: string;
+    surface?: "local" | "npx_skills";
+    operation?: "install" | "uninstall" | "remove" | "check" | "update" | "update_packages";
+    itemType?: ItemType;
+    status?: "success" | "warning" | "error";
+    targetScope?: InstallTargetScope;
+    search?: string;
+    page?: number;
+    pageSize?: number;
+  },
+  signal?: AbortSignal,
+): Promise<ActivityRunsPageDto> {
+  const query = new URLSearchParams();
+  if (params?.runId) query.set("run_id", params.runId);
+  if (params?.platformId) query.set("platform_id", params.platformId);
+  if (params?.surface) query.set("surface", params.surface);
+  if (params?.operation) query.set("operation", params.operation);
+  if (params?.itemType) query.set("item_type", params.itemType);
+  if (params?.status) query.set("status", params.status);
+  if (params?.targetScope) query.set("target_scope", params.targetScope);
+  if (params?.search) query.set("search", params.search);
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.pageSize) query.set("page_size", String(params.pageSize));
+  const qs = query.toString();
+  return fetchJson(`${BASE}/activity/runs${qs ? `?${qs}` : ""}`, { signal });
 }
 
 export async function getSkillCatalog(): Promise<SkillCatalogDto[]> {
