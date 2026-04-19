@@ -13,6 +13,7 @@ use crate::model::{ItemType, LinkMode};
 
 const ACTIVITY_DIR: &str = "activity";
 const RUN_FILE_PREFIX: &str = "runs-";
+const EVENT_FILE_PREFIX: &str = "events-";
 const RUN_FILE_SUFFIX: &str = ".jsonl";
 const DEFAULT_PAGE_SIZE: usize = 20;
 const MAX_PAGE_SIZE: usize = 100;
@@ -20,6 +21,7 @@ const OUTPUT_MAX_BYTES: usize = 8 * 1024;
 const RETENTION_DAYS: u64 = 90;
 
 static RUN_COUNTER: AtomicU64 = AtomicU64::new(1);
+static EVENT_SEQ_COUNTER: AtomicU64 = AtomicU64::new(1);
 static APPEND_MUTEX: OnceLock<Mutex<()>> = OnceLock::new();
 
 #[cfg(test)]
@@ -499,6 +501,171 @@ pub(crate) fn set_test_activity_root(path: Option<PathBuf>) {
     if let Ok(mut guard) = TEST_ACTIVITY_ROOT.lock() {
         *guard = path;
     }
+}
+
+// ── Event-level activity log ──────────────────────────────────────
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ActivityEventKind {
+    JobStarted,
+    ItemStarted,
+    ItemFinished,
+    JobCompleted,
+    JobFailed,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ActivityEventLevel {
+    Info,
+    Warning,
+    Error,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ActivityEvent {
+    pub run_id: String,
+    pub seq: u64,
+    pub ts_ms: u64,
+    pub kind: ActivityEventKind,
+    pub level: ActivityEventLevel,
+    pub surface: ActivitySurface,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub platform_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub operation: Option<ActivityOperation>,
+    pub payload: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ActivityEventQuery {
+    pub run_id: Option<String>,
+    pub after_seq: Option<u64>,
+    pub limit: Option<usize>,
+}
+
+pub fn next_event_seq() -> u64 {
+    EVENT_SEQ_COUNTER.fetch_add(1, Ordering::Relaxed)
+}
+
+pub fn append_event(event: &ActivityEvent) -> Result<()> {
+    let _guard = append_mutex()
+        .lock()
+        .map_err(|_| AppError::Validation("Failed to lock activity writer".into()))?;
+    prune_old_event_files()?;
+
+    let root = activity_root();
+    fs::create_dir_all(&root)?;
+
+    let file_path = event_file_path_for_ms(event.ts_ms);
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(file_path)?;
+
+    let payload = serde_json::to_string(event).map_err(|error| {
+        AppError::Validation(format!("Failed to serialize activity event: {error}"))
+    })?;
+    file.write_all(payload.as_bytes())?;
+    file.write_all(b"\n")?;
+    Ok(())
+}
+
+pub fn query_events(query: &ActivityEventQuery) -> Result<Vec<ActivityEvent>> {
+    let root = activity_root();
+    if !root.exists() {
+        return Ok(Vec::new());
+    }
+    let mut events = Vec::new();
+    for file_path in event_files(&root)? {
+        let file = fs::File::open(&file_path)?;
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            let line = line?;
+            if line.trim().is_empty() {
+                continue;
+            }
+            match serde_json::from_str::<ActivityEvent>(&line) {
+                Ok(event) => {
+                    if let Some(ref run_id) = query.run_id
+                        && event.run_id != *run_id
+                    {
+                        continue;
+                    }
+                    if let Some(after) = query.after_seq
+                        && event.seq <= after
+                    {
+                        continue;
+                    }
+                    events.push(event);
+                }
+                Err(error) => {
+                    tracing::warn!(
+                        path = %file_path.display(),
+                        error = %error,
+                        "Skipping unreadable activity event"
+                    );
+                }
+            }
+        }
+    }
+    events.sort_by_key(|event| event.seq);
+    if let Some(limit) = query.limit
+        && events.len() > limit
+    {
+        let start = events.len() - limit;
+        events = events[start..].to_vec();
+    }
+    Ok(events)
+}
+
+fn event_files(root: &Path) -> Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+    for entry in fs::read_dir(root)? {
+        let entry = entry?;
+        let path = entry.path();
+        let Some(file_name) = path.file_name().and_then(|value| value.to_str()) else {
+            continue;
+        };
+        if !file_name.starts_with(EVENT_FILE_PREFIX) || !file_name.ends_with(RUN_FILE_SUFFIX) {
+            continue;
+        }
+        files.push(path);
+    }
+    files.sort();
+    Ok(files)
+}
+
+fn event_file_path_for_ms(timestamp_ms: u64) -> PathBuf {
+    let date = utc_date_string_from_ms(timestamp_ms);
+    activity_root().join(format!("{EVENT_FILE_PREFIX}{date}{RUN_FILE_SUFFIX}"))
+}
+
+fn prune_old_event_files() -> Result<()> {
+    let root = activity_root();
+    if !root.exists() {
+        return Ok(());
+    }
+
+    let retention = Duration::from_secs(RETENTION_DAYS * 24 * 60 * 60);
+    let cutoff = SystemTime::now()
+        .checked_sub(retention)
+        .unwrap_or(UNIX_EPOCH);
+
+    for file_path in event_files(&root)? {
+        let Ok(metadata) = fs::metadata(&file_path) else {
+            continue;
+        };
+        let Ok(modified) = metadata.modified() else {
+            continue;
+        };
+        if modified < cutoff {
+            let _ = fs::remove_file(&file_path);
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]

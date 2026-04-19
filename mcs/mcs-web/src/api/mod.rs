@@ -20,6 +20,7 @@ pub mod system;
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/api/activity/runs", axum::routing::get(activity::runs))
+        .route("/api/activity/live", axum::routing::get(activity::live))
         // Global skills catalog
         .route(
             "/api/skills/catalog",
@@ -67,6 +68,10 @@ pub fn router() -> Router<AppState> {
         .route(
             "/api/platforms/{id}/npx-skills/catalog",
             axum::routing::get(npx_skills::catalog),
+        )
+        .route(
+            "/api/platforms/{id}/npx-skills/catalog-install-state",
+            axum::routing::get(npx_skills::catalog_install_state),
         )
         .route(
             "/api/platforms/{id}/npx-skills/installed",

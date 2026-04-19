@@ -9,15 +9,11 @@ use mcs_core::config::platform::platform_displays;
 pub fn handle_platform_select_key(state: &mut AppState, key: KeyEvent) {
     let count = platform_displays().len();
     match key.code {
-        KeyCode::Up | KeyCode::Char('k') => {
-            if state.platform_cursor > 0 {
-                state.platform_cursor -= 1;
-            }
+        KeyCode::Up | KeyCode::Char('k') if state.platform_cursor > 0 => {
+            state.platform_cursor -= 1;
         }
-        KeyCode::Down | KeyCode::Char('j') => {
-            if state.platform_cursor + 1 < count {
-                state.platform_cursor += 1;
-            }
+        KeyCode::Down | KeyCode::Char('j') if state.platform_cursor + 1 < count => {
+            state.platform_cursor += 1;
         }
         KeyCode::Enter => {
             let displays = platform_displays();

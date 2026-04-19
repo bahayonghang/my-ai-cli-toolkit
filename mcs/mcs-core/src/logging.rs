@@ -34,7 +34,8 @@ fn default_log_dir() -> PathBuf {
 }
 
 fn init_web_logging() -> Result<(), AppError> {
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
+    let filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new("warn,mcs::skills=info"));
 
     tracing_subscriber::fmt()
         .with_env_filter(filter)

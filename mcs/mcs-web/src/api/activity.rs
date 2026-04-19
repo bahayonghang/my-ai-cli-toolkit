@@ -1,10 +1,16 @@
+use std::convert::Infallible;
+use std::time::Duration;
+
 use axum::Json;
 use axum::extract::{Query, State};
+use axum::response::sse::{Event, KeepAlive, Sse};
 use serde::Deserialize;
+use tokio_stream::wrappers::BroadcastStream;
+use tokio_stream::{Stream, StreamExt};
 
 use mcs_core::activity::{
-    ActivityOperation, ActivityRunQuery, ActivityStatus, ActivitySurface, ActivityTargetScope,
-    query_runs,
+    ActivityEvent, ActivityOperation, ActivityRunQuery, ActivityStatus, ActivitySurface,
+    ActivityTargetScope, query_runs,
 };
 use mcs_core::model::ItemType;
 
@@ -45,4 +51,71 @@ pub async fn runs(
     .map_err(|error| AppError::Internal(error.to_string()))?;
 
     Ok(Json(ApiResponse::ok(result)))
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct ActivityLiveQuery {
+    pub platform_id: Option<String>,
+    pub surface: Option<ActivitySurface>,
+    pub operation: Option<ActivityOperation>,
+    pub run_id: Option<String>,
+}
+
+fn event_matches_filter(event: &ActivityEvent, filter: &ActivityLiveQuery) -> bool {
+    if let Some(ref platform_id) = filter.platform_id
+        && event.platform_id.as_deref() != Some(platform_id.as_str())
+    {
+        return false;
+    }
+    if let Some(surface) = filter.surface
+        && event.surface != surface
+    {
+        return false;
+    }
+    if let Some(operation) = filter.operation
+        && event.operation != Some(operation)
+    {
+        return false;
+    }
+    if let Some(ref run_id) = filter.run_id
+        && event.run_id != *run_id
+    {
+        return false;
+    }
+    true
+}
+
+pub async fn live(
+    State(state): State<AppState>,
+    Query(filter): Query<ActivityLiveQuery>,
+) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+    let receiver = state.subscribe_activity_events();
+    let stream = BroadcastStream::new(receiver).filter_map(move |item| match item {
+        Ok(event) => {
+            if !event_matches_filter(&event, &filter) {
+                return None;
+            }
+            match serde_json::to_string(&event) {
+                Ok(data) => Some(Ok(Event::default().event("activity_event").data(data))),
+                Err(error) => {
+                    tracing::warn!(
+                        run_id = event.run_id.as_str(),
+                        error = %error,
+                        "Failed to serialize activity event for SSE"
+                    );
+                    None
+                }
+            }
+        }
+        Err(error) => {
+            tracing::warn!(error = %error, "Activity live stream lagged or closed");
+            None
+        }
+    });
+
+    Sse::new(stream).keep_alive(
+        KeepAlive::new()
+            .interval(Duration::from_secs(15))
+            .text("keep-alive"),
+    )
 }

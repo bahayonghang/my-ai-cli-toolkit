@@ -11,15 +11,16 @@ use mcs_core::core::external_skills::ResolvedExternalSkillEntry;
 
 use crate::api::error::AppError;
 use crate::dto::{
-    InstallTargetDto, InstallTargetScopeDto, NpxCatalogInstalledStateDto, NpxCatalogMatchDto,
-    NpxInstalledActionsDto, NpxInstalledPackageActionsDto, NpxInstalledPackageDto,
-    NpxInstalledSkillInstanceDto, NpxInstalledSourceDto, NpxInstalledSourceKindDto,
-    NpxInstalledTrackingDto, NpxInstalledTrackingKindDto, NpxInstalledUpdateDto,
-    NpxInstalledUpdateKindDto, NpxPackageComparisonStatusDto, NpxSkillsCapabilitiesDto,
-    NpxSkillsCapabilityDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
+    InstallTargetDto, InstallTargetScopeDto, NpxCatalogInstallStateDto,
+    NpxCatalogInstalledStateDto, NpxCatalogMatchDto, NpxInstalledActionsDto,
+    NpxInstalledPackageActionsDto, NpxInstalledPackageDto, NpxInstalledSkillInstanceDto,
+    NpxInstalledSourceDto, NpxInstalledSourceKindDto, NpxInstalledTrackingDto,
+    NpxInstalledTrackingKindDto, NpxInstalledUpdateDto, NpxInstalledUpdateKindDto,
+    NpxPackageComparisonStatusDto, NpxSkillsCapabilitiesDto, NpxSkillsCapabilityDto,
+    NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
     NpxSkillsInstalledInventoryDto, NpxSkillsInstalledSummaryDto, NpxSkillsPackagesInventoryDto,
-    NpxSkillsPackagesSummaryDto, NpxTaxonomyCategoryDto, NpxTaxonomyGroupDto,
-    ResolvedInstallTargetDto,
+    NpxSkillsPackagesSummaryDto, NpxSnapshotFreshnessDto, NpxTaxonomyCategoryDto,
+    NpxTaxonomyGroupDto, ResolvedInstallTargetDto,
 };
 use crate::services::npx_skills_cli::{
     build_list_args, execute_skills_command, format_skills_command_preview,
@@ -31,6 +32,9 @@ const INVENTORY_CACHE_TTL_MS: u64 = 5 * 60_000;
 const LIST_CACHE_VERSION: u32 = 1;
 const LIST_CACHE_DIR: &str = "list-cache";
 const LIST_CACHE_TTL_MS: u64 = 10 * 60_000;
+const CATALOG_INSTALL_STATE_TTL_MS: u64 = 60_000;
+const CATALOG_INSTALL_STATE_SNAPSHOT_VERSION: u32 = 1;
+const CATALOG_INSTALL_STATE_DIR: &str = "catalog-install-state";
 const GLOBAL_LOCK_FILE: &str = ".skill-lock.json";
 const PROJECT_LOCK_FILE: &str = "skills-lock.json";
 const MANUAL_GROUP_ID: &str = "manual";
@@ -140,6 +144,32 @@ struct InventoryCacheKey {
     normalized_skills_path: String,
     install_target_scope: InstallTargetScopeDto,
     cli_mode: NpxSkillsCliMode,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CatalogInstallStateCacheEntry {
+    loaded_from_disk: bool,
+    snapshot: Option<CatalogInstallStateSnapshotRecord>,
+    last_error: Option<String>,
+    last_attempt_ms: Option<u64>,
+    refresh_in_flight: bool,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+struct CatalogInstallStateSnapshotFile {
+    version: u32,
+    snapshot: Option<CatalogInstallStateSnapshotRecord>,
+    last_error: Option<String>,
+    last_attempt_ms: Option<u64>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+struct CatalogInstallStateSnapshotRecord {
+    #[serde(default)]
+    installed_ids_by_name: HashMap<String, String>,
+    checked_at_ms: u64,
+    #[serde(default)]
+    reason: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -1093,6 +1123,7 @@ fn get_skill_folder_hash_from_tree(tree: &GithubRepoTree, skill_path: &str) -> O
 }
 
 #[cfg(test)]
+#[cfg(test)]
 pub fn apply_catalog_install_state(
     catalog_entries: Vec<ResolvedExternalSkillEntry>,
     inventory: &NpxSkillsInstalledInventoryDto,
@@ -1105,56 +1136,134 @@ pub fn apply_catalog_install_state(
     apply_catalog_install_state_with_lookup(catalog_entries, &installed_ids)
 }
 
-pub async fn resolve_catalog_install_state(
+pub fn catalog_entries_to_static_dto(
+    catalog_entries: Vec<ResolvedExternalSkillEntry>,
+) -> Vec<NpxSkillsCatalogItemDto> {
+    catalog_entries
+        .into_iter()
+        .map(|entry| NpxSkillsCatalogItemDto {
+            id: entry.id,
+            name: entry.name,
+            package_ref: entry.package_ref,
+            skill_flag: entry.skill_flag,
+            group_id: entry.group_id,
+            group_label: entry.group_label,
+            group_order: entry.group_order,
+            category_id: entry.category_id,
+            category_slug: entry.category_slug,
+            category_label: entry.category_label,
+            category_order: entry.category_order,
+            tags: entry.tags,
+            install_kind: entry.install_kind,
+            install_provider: entry.install_provider,
+            description: entry.description,
+            stars: entry.stars,
+            project_only: entry.project_only,
+            usage: entry.usage,
+            installed_state: NpxCatalogInstalledStateDto::Unknown,
+            installed_instance_id: None,
+        })
+        .collect()
+}
+
+pub async fn resolve_catalog_install_state_snapshot(
     project_root: &Path,
     install_target: &InstallTargetDto,
     resolved_target: &ResolvedInstallTargetDto,
     cli_mode: NpxSkillsCliMode,
-) -> Result<HashMap<String, String>, AppError> {
-    let source_data =
-        resolve_inventory_source_data(project_root, install_target, resolved_target, cli_mode)
-            .await?;
-    Ok(source_data
-        .listed_skills
-        .iter()
-        .map(|skill| (skill.name.clone(), skill.name.clone()))
-        .collect())
+) -> Result<NpxCatalogInstallStateDto, AppError> {
+    let cache_key = inventory_cache_key(
+        Path::new(&resolved_target.skills_path),
+        install_target.scope,
+        cli_mode,
+    );
+    let entry = load_catalog_install_state_cache_entry(project_root, &cache_key);
+    let now_ms = unix_time_ms();
+    let is_fresh = entry.snapshot.as_ref().is_some_and(|snapshot| {
+        now_ms.saturating_sub(snapshot.checked_at_ms) <= CATALOG_INSTALL_STATE_TTL_MS
+    });
+
+    if !is_fresh {
+        maybe_spawn_catalog_install_state_refresh(
+            project_root.to_path_buf(),
+            cache_key.clone(),
+            install_target.clone(),
+            cli_mode,
+        );
+    }
+
+    let current = load_catalog_install_state_cache_entry(project_root, &cache_key);
+    if let Some(snapshot) = current.snapshot.as_ref() {
+        return Ok(NpxCatalogInstallStateDto {
+            installed_ids_by_name: snapshot.installed_ids_by_name.clone(),
+            freshness: if is_fresh && !current.refresh_in_flight {
+                NpxSnapshotFreshnessDto::Fresh
+            } else {
+                NpxSnapshotFreshnessDto::Stale
+            },
+            checked_at_ms: Some(snapshot.checked_at_ms),
+            reason: snapshot.reason.clone(),
+        });
+    }
+
+    if current.refresh_in_flight {
+        return Ok(NpxCatalogInstallStateDto {
+            installed_ids_by_name: HashMap::new(),
+            freshness: NpxSnapshotFreshnessDto::Pending,
+            checked_at_ms: current.last_attempt_ms,
+            reason: current.last_error.clone(),
+        });
+    }
+
+    if current.last_error.is_some() {
+        return Ok(NpxCatalogInstallStateDto {
+            installed_ids_by_name: HashMap::new(),
+            freshness: NpxSnapshotFreshnessDto::Failed,
+            checked_at_ms: current.last_attempt_ms,
+            reason: current.last_error.clone(),
+        });
+    }
+
+    Ok(NpxCatalogInstallStateDto {
+        installed_ids_by_name: HashMap::new(),
+        freshness: NpxSnapshotFreshnessDto::Pending,
+        checked_at_ms: current.last_attempt_ms,
+        reason: None,
+    })
 }
 
-pub fn apply_catalog_install_state_with_lookup(
+pub fn warm_catalog_install_state_snapshot(
+    project_root: PathBuf,
+    install_target: InstallTargetDto,
+    resolved_target: ResolvedInstallTargetDto,
+    cli_mode: NpxSkillsCliMode,
+) {
+    let cache_key = inventory_cache_key(
+        Path::new(&resolved_target.skills_path),
+        install_target.scope,
+        cli_mode,
+    );
+    maybe_spawn_catalog_install_state_refresh(project_root, cache_key, install_target, cli_mode);
+}
+
+#[cfg(test)]
+fn apply_catalog_install_state_with_lookup(
     catalog_entries: Vec<ResolvedExternalSkillEntry>,
     installed_ids: &HashMap<String, String>,
 ) -> Vec<NpxSkillsCatalogItemDto> {
-    let mut items = catalog_entries
+    let mut items = catalog_entries_to_static_dto(catalog_entries)
         .into_iter()
-        .map(|entry| {
-            let installed_name = catalog_installed_name(&entry);
+        .map(|item| {
+            let installed_name = item.skill_flag.clone().unwrap_or_else(|| item.name.clone());
             let installed_instance_id = installed_ids.get(&installed_name).cloned();
             NpxSkillsCatalogItemDto {
-                id: entry.id,
-                name: entry.name,
-                package_ref: entry.package_ref,
-                skill_flag: entry.skill_flag,
-                group_id: entry.group_id,
-                group_label: entry.group_label,
-                group_order: entry.group_order,
-                category_id: entry.category_id,
-                category_slug: entry.category_slug,
-                category_label: entry.category_label,
-                category_order: entry.category_order,
-                tags: entry.tags,
-                install_kind: entry.install_kind,
-                install_provider: entry.install_provider,
-                description: entry.description,
-                stars: entry.stars,
-                project_only: entry.project_only,
-                usage: entry.usage,
                 installed_state: if installed_instance_id.is_some() {
                     NpxCatalogInstalledStateDto::Installed
                 } else {
                     NpxCatalogInstalledStateDto::NotInstalled
                 },
                 installed_instance_id,
+                ..item
             }
         })
         .collect::<Vec<_>>();
@@ -1930,6 +2039,13 @@ fn inventory_cache() -> &'static Mutex<HashMap<InventoryCacheKey, InventoryCache
     INVENTORY_CACHE.get_or_init(|| Mutex::new(HashMap::new()))
 }
 
+fn catalog_install_state_cache()
+-> &'static Mutex<HashMap<InventoryCacheKey, CatalogInstallStateCacheEntry>> {
+    static CACHE: OnceLock<Mutex<HashMap<InventoryCacheKey, CatalogInstallStateCacheEntry>>> =
+        OnceLock::new();
+    CACHE.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
 fn inventory_cache_key(
     skills_path: &Path,
     install_target_scope: InstallTargetScopeDto,
@@ -2024,6 +2140,149 @@ fn write_persisted_list_cache(
         return;
     };
     let _ = std::fs::write(path, content);
+}
+
+fn load_catalog_install_state_cache_entry(
+    project_root: &Path,
+    key: &InventoryCacheKey,
+) -> CatalogInstallStateCacheEntry {
+    let mut cache = catalog_install_state_cache()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    let entry = cache.entry(key.clone()).or_default();
+    if !entry.loaded_from_disk {
+        *entry = read_catalog_install_state_snapshot(project_root, key);
+    }
+    entry.clone()
+}
+
+fn maybe_spawn_catalog_install_state_refresh(
+    project_root: PathBuf,
+    cache_key: InventoryCacheKey,
+    install_target: InstallTargetDto,
+    cli_mode: NpxSkillsCliMode,
+) {
+    let should_spawn = {
+        let mut cache = catalog_install_state_cache()
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        let entry = cache.entry(cache_key.clone()).or_default();
+        if !entry.loaded_from_disk {
+            *entry = read_catalog_install_state_snapshot(&project_root, &cache_key);
+        }
+        if entry.refresh_in_flight {
+            false
+        } else {
+            entry.refresh_in_flight = true;
+            true
+        }
+    };
+
+    if !should_spawn {
+        return;
+    }
+
+    tokio::spawn(async move {
+        let outcome = refresh_catalog_install_state_snapshot(&install_target, cli_mode).await;
+        let persisted = {
+            let mut cache = catalog_install_state_cache()
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+            let entry = cache.entry(cache_key.clone()).or_default();
+            entry.loaded_from_disk = true;
+            entry.refresh_in_flight = false;
+            entry.snapshot = outcome.snapshot.clone();
+            entry.last_error = outcome.last_error.clone();
+            entry.last_attempt_ms = Some(outcome.last_attempt_ms);
+            CatalogInstallStateSnapshotFile {
+                version: CATALOG_INSTALL_STATE_SNAPSHOT_VERSION,
+                snapshot: entry.snapshot.clone(),
+                last_error: entry.last_error.clone(),
+                last_attempt_ms: entry.last_attempt_ms,
+            }
+        };
+        write_catalog_install_state_snapshot(&project_root, &cache_key, &persisted);
+    });
+}
+
+fn read_catalog_install_state_snapshot(
+    project_root: &Path,
+    key: &InventoryCacheKey,
+) -> CatalogInstallStateCacheEntry {
+    let path = catalog_install_state_snapshot_path(project_root, key);
+    let snapshot_file = std::fs::read_to_string(&path)
+        .ok()
+        .and_then(|content| serde_json::from_str::<CatalogInstallStateSnapshotFile>(&content).ok())
+        .filter(|snapshot| snapshot.version == CATALOG_INSTALL_STATE_SNAPSHOT_VERSION);
+    CatalogInstallStateCacheEntry {
+        loaded_from_disk: true,
+        snapshot: snapshot_file
+            .as_ref()
+            .and_then(|snapshot| snapshot.snapshot.clone()),
+        last_error: snapshot_file
+            .as_ref()
+            .and_then(|snapshot| snapshot.last_error.clone()),
+        last_attempt_ms: snapshot_file.and_then(|snapshot| snapshot.last_attempt_ms),
+        refresh_in_flight: false,
+    }
+}
+
+fn write_catalog_install_state_snapshot(
+    project_root: &Path,
+    key: &InventoryCacheKey,
+    snapshot: &CatalogInstallStateSnapshotFile,
+) {
+    let path = catalog_install_state_snapshot_path(project_root, key);
+    if let Some(parent) = path.parent()
+        && std::fs::create_dir_all(parent).is_err()
+    {
+        return;
+    }
+    let Ok(content) = serde_json::to_string(snapshot) else {
+        return;
+    };
+    let _ = std::fs::write(path, content);
+}
+
+fn catalog_install_state_snapshot_path(project_root: &Path, key: &InventoryCacheKey) -> PathBuf {
+    project_root
+        .join(".omx")
+        .join("state")
+        .join("npx-skills")
+        .join(CATALOG_INSTALL_STATE_DIR)
+        .join(format!("{}.json", stable_key_hash(key)))
+}
+
+struct CatalogInstallStateRefreshOutcome {
+    snapshot: Option<CatalogInstallStateSnapshotRecord>,
+    last_error: Option<String>,
+    last_attempt_ms: u64,
+}
+
+async fn refresh_catalog_install_state_snapshot(
+    install_target: &InstallTargetDto,
+    cli_mode: NpxSkillsCliMode,
+) -> CatalogInstallStateRefreshOutcome {
+    let checked_at_ms = unix_time_ms();
+    match list_installed_skills(install_target, cli_mode).await {
+        Ok(listed) => CatalogInstallStateRefreshOutcome {
+            snapshot: Some(CatalogInstallStateSnapshotRecord {
+                installed_ids_by_name: listed
+                    .into_iter()
+                    .map(|skill| (skill.name.clone(), skill.name))
+                    .collect(),
+                checked_at_ms,
+                reason: None,
+            }),
+            last_error: None,
+            last_attempt_ms: checked_at_ms,
+        },
+        Err(error) => CatalogInstallStateRefreshOutcome {
+            snapshot: None,
+            last_error: Some(format!("{error:?}")),
+            last_attempt_ms: checked_at_ms,
+        },
+    }
 }
 
 fn stable_path_hash(path: &Path) -> String {
@@ -2738,6 +2997,18 @@ mod tests {
             items[0].installed_instance_id.as_deref(),
             Some("find-skills")
         );
+    }
+
+    #[test]
+    fn catalog_entries_to_static_dto_marks_state_unknown() {
+        let items =
+            catalog_entries_to_static_dto(vec![catalog_entry("find-skills", Some("find-skills"))]);
+        assert_eq!(items.len(), 1);
+        assert!(matches!(
+            items[0].installed_state,
+            NpxCatalogInstalledStateDto::Unknown
+        ));
+        assert_eq!(items[0].installed_instance_id, None);
     }
 
     #[tokio::test]

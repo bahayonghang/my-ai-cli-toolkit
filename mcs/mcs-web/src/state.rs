@@ -3,8 +3,9 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use tokio::sync::RwLock;
+use tokio::sync::{RwLock, broadcast};
 
+use mcs_core::activity::ActivityEvent;
 use mcs_core::config::platform::PlatformConfig;
 use mcs_core::core::discovery::{
     SkillSource, discover_agents, discover_commands, discover_skill_sources,
@@ -13,11 +14,14 @@ use mcs_core::core::discovery::{
 use mcs_core::core::external_skills::{ExternalSkillsRegistry, load_external_skills};
 use mcs_core::model::ItemInfo;
 
+const ACTIVITY_EVENT_CHANNEL_CAPACITY: usize = 1024;
+
 /// Shared application state accessible by all handlers
 #[derive(Clone)]
 pub struct AppState {
     inner: Arc<RwLock<AppStateInner>>,
     cache: Arc<RwLock<DiscoveryCache>>,
+    activity_events_tx: broadcast::Sender<ActivityEvent>,
 }
 
 struct AppStateInner {
@@ -47,13 +51,26 @@ struct DiscoveryCache {
 
 impl AppState {
     pub fn new(project_root: PathBuf, platforms: HashMap<String, PlatformConfig>) -> Self {
+        let (activity_events_tx, _) = broadcast::channel(ACTIVITY_EVENT_CHANNEL_CAPACITY);
         Self {
             inner: Arc::new(RwLock::new(AppStateInner {
                 project_root,
                 platforms,
             })),
             cache: Arc::new(RwLock::new(DiscoveryCache::default())),
+            activity_events_tx,
         }
+    }
+
+    /// Subscribe to activity event broadcast stream.
+    pub fn subscribe_activity_events(&self) -> broadcast::Receiver<ActivityEvent> {
+        self.activity_events_tx.subscribe()
+    }
+
+    /// Broadcast an activity event to all current subscribers. Returns the number
+    /// of active receivers (0 is fine — nobody is listening, event still persisted).
+    pub fn broadcast_activity_event(&self, event: ActivityEvent) -> usize {
+        self.activity_events_tx.send(event).unwrap_or(0)
     }
 
     pub async fn project_root(&self) -> PathBuf {

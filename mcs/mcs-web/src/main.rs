@@ -5,6 +5,7 @@ mod state;
 
 use std::net::SocketAddr;
 use std::time::Duration;
+use std::{collections::HashSet, path::Path};
 
 use axum::extract::MatchedPath;
 use axum::response::IntoResponse;
@@ -13,10 +14,15 @@ use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::TraceLayer;
 
 use mcs_core::config::paths::detect_project_root;
-use mcs_core::config::platform::load_platforms;
+use mcs_core::config::platform::{PlatformConfig, load_platforms};
 use mcs_core::core::skill_migration::run_one_time_skill_migration;
 use mcs_core::logging::{AppLogKind, init_logging};
 
+use crate::dto::{
+    InstallTargetDto, InstallTargetScopeDto, NpxSkillsCliMode, ResolvedInstallTargetDto,
+};
+use crate::services::npx_skills_cli::warm_cli_version_snapshot;
+use crate::services::npx_skills_inventory::warm_catalog_install_state_snapshot;
 use crate::state::AppState;
 
 #[tokio::main]
@@ -140,6 +146,29 @@ async fn main() {
     tokio::spawn(async move {
         warm_state.warm_cache().await;
         tracing::info!("Discovery cache ready");
+        let project_root = warm_state.project_root().await;
+        let platforms = warm_state.platforms().await;
+
+        for cli_mode in [NpxSkillsCliMode::Auto, NpxSkillsCliMode::Npx] {
+            warm_cli_version_snapshot(project_root.clone(), cli_mode);
+        }
+
+        let mut warmed_global_targets = HashSet::<String>::new();
+        for platform in platforms.values() {
+            let key = normalize_path_key(&platform.skills_path());
+            if !warmed_global_targets.insert(key) {
+                continue;
+            }
+            warm_catalog_install_state_snapshot(
+                project_root.clone(),
+                InstallTargetDto {
+                    scope: InstallTargetScopeDto::Global,
+                    project_path: None,
+                },
+                resolved_global_install_target(platform),
+                NpxSkillsCliMode::Auto,
+            );
+        }
     });
 
     // Auto-open browser (only in production mode when UI is built)
@@ -157,6 +186,37 @@ async fn main() {
     }
 
     axum::serve(listener, app).await.unwrap();
+}
+
+fn normalize_path_key(path: &Path) -> String {
+    let raw = path
+        .canonicalize()
+        .unwrap_or_else(|_| path.to_path_buf())
+        .to_string_lossy()
+        .replace('\\', "/");
+    if cfg!(windows) {
+        raw.to_lowercase()
+    } else {
+        raw
+    }
+}
+
+fn resolved_global_install_target(platform: &PlatformConfig) -> ResolvedInstallTargetDto {
+    ResolvedInstallTargetDto {
+        scope: InstallTargetScopeDto::Global,
+        project_path: None,
+        base_dir: platform.base_path().to_string_lossy().into_owned(),
+        skills_path: platform.skills_path().to_string_lossy().into_owned(),
+        commands_path: platform
+            .supports_commands()
+            .then(|| platform.commands_path().to_string_lossy().into_owned()),
+        agents_path: platform
+            .supports_agents()
+            .then(|| platform.agents_path().to_string_lossy().into_owned()),
+        guidance_path: platform
+            .guidance_path()
+            .map(|path| path.to_string_lossy().into_owned()),
+    }
 }
 
 fn report_legacy_skill_dirs(

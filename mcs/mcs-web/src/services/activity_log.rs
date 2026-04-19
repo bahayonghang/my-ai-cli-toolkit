@@ -2,11 +2,14 @@ use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use mcs_core::activity::{
-    ActivityInstallTarget, ActivityItem, ActivityRunConfig, ActivityStatus, ActivityTargetScope,
+    ActivityEvent, ActivityEventKind, ActivityEventLevel, ActivityInstallTarget, ActivityItem,
+    ActivityOperation, ActivityRunConfig, ActivityStatus, ActivitySurface, ActivityTargetScope,
+    append_event, next_event_seq,
 };
 use mcs_core::model::{InstallResult, ItemInfo, ItemType, LinkMode};
 
 use crate::dto::{InstallTargetDto, InstallTargetScopeDto, NpxSkillsCliConfigDto};
+use crate::state::AppState;
 
 pub fn install_target_to_activity(target: &InstallTargetDto) -> ActivityInstallTarget {
     ActivityInstallTarget {
@@ -91,4 +94,41 @@ pub fn current_time_ms() -> u64 {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_millis() as u64)
         .unwrap_or_default()
+}
+
+/// Persist + broadcast an activity event. Failures to persist are logged as warnings;
+/// broadcast failures (no subscribers) are silently ignored.
+pub fn emit_activity_event(state: &AppState, event: ActivityEvent) {
+    if let Err(error) = append_event(&event) {
+        tracing::warn!(
+            run_id = event.run_id.as_str(),
+            seq = event.seq,
+            kind = ?event.kind,
+            error = %error,
+            "Failed to persist activity event"
+        );
+    }
+    state.broadcast_activity_event(event);
+}
+
+pub fn build_activity_event(
+    run_id: &str,
+    kind: ActivityEventKind,
+    level: ActivityEventLevel,
+    surface: ActivitySurface,
+    platform_id: Option<String>,
+    operation: Option<ActivityOperation>,
+    payload: serde_json::Value,
+) -> ActivityEvent {
+    ActivityEvent {
+        run_id: run_id.to_string(),
+        seq: next_event_seq(),
+        ts_ms: current_time_ms(),
+        kind,
+        level,
+        surface,
+        platform_id,
+        operation,
+        payload,
+    }
 }

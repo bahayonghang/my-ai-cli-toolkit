@@ -115,10 +115,8 @@ fn main_loop(
                         }
                     }
                 }
-                Event::Mouse(mouse) => {
-                    if state.popup.is_none() {
-                        handle_mouse(state, mouse, terminal.size()?.into());
-                    }
+                Event::Mouse(mouse) if state.popup.is_none() => {
+                    handle_mouse(state, mouse, terminal.size()?.into());
                 }
                 _ => {}
             }

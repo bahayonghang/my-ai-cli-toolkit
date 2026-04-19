@@ -386,6 +386,16 @@ pub struct NpxSkillsCatalogItemDto {
 pub enum NpxCatalogInstalledStateDto {
     Installed,
     NotInstalled,
+    Unknown,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum NpxSnapshotFreshnessDto {
+    Fresh,
+    Stale,
+    Pending,
+    Failed,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -450,6 +460,18 @@ pub struct NpxSkillsCliVersionDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub latest: Option<String>,
     pub status: NpxSkillsCliVersionStatusDto,
+    pub freshness: NpxSnapshotFreshnessDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checked_at_ms: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NpxCatalogInstallStateDto {
+    #[serde(default, skip_serializing_if = "std::collections::HashMap::is_empty")]
+    pub installed_ids_by_name: std::collections::HashMap<String, String>,
+    pub freshness: NpxSnapshotFreshnessDto,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub checked_at_ms: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]

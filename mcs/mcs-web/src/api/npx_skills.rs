@@ -12,8 +12,8 @@ use tokio::sync::{RwLock, Semaphore, broadcast};
 use tokio_stream::{StreamExt as TokioStreamExt, wrappers::BroadcastStream};
 
 use mcs_core::activity::{
-    ActivityItem, ActivityOperation as ActivityLogOperation, ActivityRun, ActivitySurface,
-    append_run,
+    ActivityEventKind, ActivityEventLevel, ActivityItem, ActivityOperation as ActivityLogOperation,
+    ActivityRun, ActivitySurface, append_run,
 };
 use mcs_core::core::external_skills::{
     EXTERNAL_SKILLS_KIND_SKILLS_CLI, ResolvedExternalSkillEntry,
@@ -26,15 +26,15 @@ use crate::api::error::AppError;
 use crate::dto::NpxInstalledSkillInstanceDto;
 use crate::dto::{
     ApiResponse, InstallTargetDto, InstallTargetQuery, InstallTargetScopeDto,
-    NpxCatalogInstalledStateDto, NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode,
-    NpxSkillsCliVersionDto, NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest,
-    NpxSkillsInstalledInventoryDto, NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest,
-    NpxSkillsOperation, NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewRequest,
-    NpxSkillsPackageUpdateJobRequest, NpxSkillsPackagesInventoryDto, NpxSkillsRemoveJobRequest,
-    ResolvedInstallTargetDto,
+    NpxSkillsCatalogItemDto, NpxSkillsCliConfigDto, NpxSkillsCliMode, NpxSkillsCliVersionDto,
+    NpxSkillsInstallItemRequest, NpxSkillsInstallJobRequest, NpxSkillsInstalledInventoryDto,
+    NpxSkillsJobStartDto, NpxSkillsMaintenanceJobRequest, NpxSkillsOperation,
+    NpxSkillsPackagePreviewDto, NpxSkillsPackagePreviewRequest, NpxSkillsPackageUpdateJobRequest,
+    NpxSkillsPackagesInventoryDto, NpxSkillsRemoveJobRequest, ResolvedInstallTargetDto,
 };
 use crate::services::activity_log::{
-    activity_status_from_counts, current_time_ms, install_target_to_activity, npx_run_config,
+    activity_status_from_counts, build_activity_event, current_time_ms, emit_activity_event,
+    install_target_to_activity, npx_run_config,
 };
 use crate::services::npx_skills_cli::{
     build_check_args, build_install_args, build_remove_args, build_update_args,
@@ -42,10 +42,9 @@ use crate::services::npx_skills_cli::{
     preview_package_skills, resolve_cli_version_info,
 };
 use crate::services::npx_skills_inventory::{
-    InventoryQuery, PackageInventoryQuery, apply_catalog_install_state_with_lookup,
-    clear_check_cache, clear_persisted_list_cache, invalidate_inventory_cache,
-    resolve_catalog_install_state, resolve_inventory, resolve_inventory_page,
-    resolve_package_inventory_page, write_check_cache,
+    InventoryQuery, PackageInventoryQuery, catalog_entries_to_static_dto, clear_check_cache,
+    clear_persisted_list_cache, invalidate_inventory_cache, resolve_catalog_install_state_snapshot,
+    resolve_inventory, resolve_inventory_page, resolve_package_inventory_page, write_check_cache,
 };
 use crate::state::AppState;
 
@@ -119,6 +118,8 @@ struct JobExecutionContext {
 
 #[derive(Clone)]
 struct TaskExecutionContext {
+    state: AppState,
+    platform_id: String,
     job: Arc<RwLock<NpxSkillsJob>>,
     job_id: String,
     operation: NpxSkillsOperation,
@@ -171,6 +172,13 @@ pub struct NpxSkillsPackagesQuery {
 #[derive(Deserialize, Default)]
 pub struct NpxSkillsCliVersionQuery {
     pub cli_mode: Option<NpxSkillsCliMode>,
+    pub refresh: Option<bool>,
+}
+
+#[derive(Deserialize, Default)]
+pub struct NpxSkillsCatalogInstallStateQuery {
+    #[serde(flatten)]
+    pub install_target: InstallTargetQuery,
 }
 
 #[derive(Serialize)]
@@ -263,60 +271,45 @@ pub async fn catalog(
         .await
         .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
     let install_target = query.install_target.to_install_target();
-    let resolved = resolve_target_platform(
+    let _resolved = resolve_target_platform(
         &base_platform,
         &install_target.to_core(),
         InstallTargetAccessMode::Read,
     )
     .map_err(AppError::BadRequest)?;
 
-    let resolved_target = resolved_install_target_dto(&resolved);
     let catalog_entries = resolved_catalog_entries(
         state
             .external_skill_catalog()
             .await
             .map_err(AppError::Internal)?,
     )?;
-    let project_root = state.project_root().await;
-    let installed_ids = resolve_catalog_install_state(
-        &project_root,
-        &install_target,
-        &resolved_target,
-        NpxSkillsCliConfigDto::default().cli_mode,
-    )
-    .await?;
+    // Static catalog responses intentionally defer installed-state filtering until
+    // the follow-up install-state snapshot arrives on the client.
+    let _ignored_installed_only = query.installed_only.unwrap_or(false);
     let search = query.search.as_ref().map(|value| value.to_lowercase());
 
-    let mut items: Vec<NpxSkillsCatalogItemDto> =
-        apply_catalog_install_state_with_lookup(catalog_entries, &installed_ids)
-            .into_iter()
-            .filter_map(|entry| {
-                if let Some(ref search) = search
-                    && !catalog_item_matches(&entry, search)
-                {
-                    return None;
-                }
-                if let Some(ref group_id) = query.group_id
-                    && entry.group_id != *group_id
-                {
-                    return None;
-                }
-                if let Some(ref category_id) = query.category_id
-                    && entry.category_id != *category_id
-                {
-                    return None;
-                }
-                if query.installed_only.unwrap_or(false)
-                    && !matches!(
-                        entry.installed_state,
-                        NpxCatalogInstalledStateDto::Installed
-                    )
-                {
-                    return None;
-                }
-                Some(entry)
-            })
-            .collect();
+    let mut items: Vec<NpxSkillsCatalogItemDto> = catalog_entries_to_static_dto(catalog_entries)
+        .into_iter()
+        .filter_map(|entry| {
+            if let Some(ref search) = search
+                && !catalog_item_matches(&entry, search)
+            {
+                return None;
+            }
+            if let Some(ref group_id) = query.group_id
+                && entry.group_id != *group_id
+            {
+                return None;
+            }
+            if let Some(ref category_id) = query.category_id
+                && entry.category_id != *category_id
+            {
+                return None;
+            }
+            Some(entry)
+        })
+        .collect();
 
     items.sort_by(|left, right| left.name.cmp(&right.name));
     Ok(Json(ApiResponse::ok(items)))
@@ -424,12 +417,43 @@ pub async fn packages(
 }
 
 pub async fn cli_version(
+    State(state): State<AppState>,
     Path(_id): Path<String>,
     Query(query): Query<NpxSkillsCliVersionQuery>,
 ) -> Result<Json<ApiResponse<NpxSkillsCliVersionDto>>, AppError> {
+    let project_root = state.project_root().await;
     let cli_mode = query.cli_mode.unwrap_or_default();
-    let version = resolve_cli_version_info(cli_mode).await?;
+    let version =
+        resolve_cli_version_info(&project_root, cli_mode, query.refresh.unwrap_or(false)).await?;
     Ok(Json(ApiResponse::ok(version)))
+}
+
+pub async fn catalog_install_state(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Query(query): Query<NpxSkillsCatalogInstallStateQuery>,
+) -> Result<Json<ApiResponse<crate::dto::NpxCatalogInstallStateDto>>, AppError> {
+    let base_platform = state
+        .platform(&id)
+        .await
+        .ok_or_else(|| AppError::NotFound(format!("Platform '{id}' not found")))?;
+    let install_target = query.install_target.to_install_target();
+    let resolved = resolve_target_platform(
+        &base_platform,
+        &install_target.to_core(),
+        InstallTargetAccessMode::Read,
+    )
+    .map_err(AppError::BadRequest)?;
+
+    let project_root = state.project_root().await;
+    let snapshot = resolve_catalog_install_state_snapshot(
+        &project_root,
+        &install_target,
+        &resolved_install_target_dto(&resolved),
+        NpxSkillsCliConfigDto::default().cli_mode,
+    )
+    .await?;
+    Ok(Json(ApiResponse::ok(snapshot)))
 }
 
 pub async fn package_preview(
@@ -879,6 +903,15 @@ async fn start_job(
 
     let job_id = generate_job_id();
     let total = tasks.len();
+    tracing::info!(
+        target: "mcs::skills::job",
+        job_id = job_id.as_str(),
+        platform_id = platform_id.as_str(),
+        operation = ?operation,
+        items = total,
+        scope = ?install_target.scope,
+        "start"
+    );
     let (sender, _) = broadcast::channel(512);
     let job = Arc::new(RwLock::new(NpxSkillsJob {
         platform_id: platform_id.clone(),
@@ -940,8 +973,26 @@ async fn run_job(
     )
     .await;
 
+    emit_activity_event(
+        &ctx.state,
+        build_activity_event(
+            &job_id,
+            ActivityEventKind::JobStarted,
+            ActivityEventLevel::Info,
+            ActivitySurface::NpxSkills,
+            Some(ctx.platform_id.clone()),
+            Some(activity_operation(operation)),
+            serde_json::json!({
+                "total": tasks.len(),
+                "scope": format!("{:?}", ctx.install_target.scope),
+            }),
+        ),
+    );
+
     let semaphore = Arc::new(Semaphore::new(NPX_SKILLS_MAX_CONCURRENCY));
     let task_ctx = TaskExecutionContext {
+        state: ctx.state.clone(),
+        platform_id: ctx.platform_id.clone(),
         job: job.clone(),
         job_id: job_id.clone(),
         operation,
@@ -1043,9 +1094,36 @@ async fn run_job(
     }
 
     tracing::info!(
-        "npx skills job completed: job_id={job_id} platform={platform_id} operation={:?} total={total} success={success_count} failure={failure_count}",
-        operation,
-        platform_id = ctx.platform_id
+        target: "mcs::skills::job",
+        job_id = job_id.as_str(),
+        platform_id = ctx.platform_id.as_str(),
+        operation = ?operation,
+        total,
+        success = success_count,
+        failure = failure_count,
+        duration_ms = completed_at_ms.saturating_sub(started_at_ms),
+        "job_completed"
+    );
+    emit_activity_event(
+        &ctx.state,
+        build_activity_event(
+            &job_id,
+            ActivityEventKind::JobCompleted,
+            if failure_count > 0 {
+                ActivityEventLevel::Warning
+            } else {
+                ActivityEventLevel::Info
+            },
+            ActivitySurface::NpxSkills,
+            Some(ctx.platform_id.clone()),
+            Some(activity_operation(operation)),
+            serde_json::json!({
+                "total": total,
+                "success_count": success_count,
+                "failure_count": failure_count,
+                "duration_ms": completed_at_ms.saturating_sub(started_at_ms),
+            }),
+        ),
     );
     schedule_job_cleanup(job_id);
 }
@@ -1066,6 +1144,13 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
     };
 
     let item_id = index.to_string();
+    tracing::info!(
+        target: "mcs::skills::job",
+        job_id = ctx.job_id.as_str(),
+        item = task.label.as_str(),
+        operation = ?ctx.operation,
+        "item_started"
+    );
     let _ = emit_job_event(
         &ctx.job,
         "item_started",
@@ -1077,6 +1162,22 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
         },
     )
     .await;
+
+    emit_activity_event(
+        &ctx.state,
+        build_activity_event(
+            &ctx.job_id,
+            ActivityEventKind::ItemStarted,
+            ActivityEventLevel::Info,
+            ActivitySurface::NpxSkills,
+            Some(ctx.platform_id.clone()),
+            Some(activity_operation(ctx.operation)),
+            serde_json::json!({
+                "item_id": item_id,
+                "label": task.label,
+            }),
+        ),
+    );
 
     let started = tokio::time::Instant::now();
     let result = execute_skills_command(&task.args, &ctx.config, &ctx.install_target).await;
@@ -1148,9 +1249,51 @@ async fn run_task(ctx: TaskExecutionContext, index: usize, task: NpxSkillsJobTas
     guard.push_event(build_sse_envelope("item_finished", &payload));
     if payload.success {
         guard.success_count += 1;
+        tracing::info!(
+            target: "mcs::skills::job",
+            job_id = ctx.job_id.as_str(),
+            item = task.label.as_str(),
+            duration_ms = payload.duration_ms,
+            "item_finished"
+        );
     } else {
         guard.failure_count += 1;
+        tracing::error!(
+            target: "mcs::skills::job",
+            job_id = ctx.job_id.as_str(),
+            item = task.label.as_str(),
+            duration_ms = payload.duration_ms,
+            error = payload.error.as_deref().unwrap_or("<none>"),
+            "item_failed"
+        );
     }
+    drop(guard);
+
+    emit_activity_event(
+        &ctx.state,
+        build_activity_event(
+            &ctx.job_id,
+            ActivityEventKind::ItemFinished,
+            if payload.success {
+                ActivityEventLevel::Info
+            } else {
+                ActivityEventLevel::Error
+            },
+            ActivitySurface::NpxSkills,
+            Some(ctx.platform_id.clone()),
+            Some(activity_operation(ctx.operation)),
+            serde_json::json!({
+                "item_id": item_id,
+                "label": task.label,
+                "success": payload.success,
+                "duration_ms": payload.duration_ms,
+                "error": payload.error,
+                "package_ref": task.package_ref,
+                "skill_flags": task.skill_flags,
+            }),
+        ),
+    );
+    let mut guard = ctx.job.write().await;
 
     let completed = guard.success_count + guard.failure_count;
     let total = guard.total;
