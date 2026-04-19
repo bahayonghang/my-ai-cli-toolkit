@@ -5,7 +5,12 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
-import { renderSkillMap } from "../scripts/skill-map.mjs";
+import {
+  defaultSkillRoots,
+  inferGroupKey,
+  parseCliArgs,
+  renderSkillMap
+} from "../scripts/skill-map.mjs";
 
 const SCRIPT_PATH = path.resolve(
   "content/skills/developer-tools-integrations/skill-map/scripts/skill-map.mjs"
@@ -34,6 +39,67 @@ function parseJsonOutput(args) {
   return JSON.parse(runCli(["--json", ...args]));
 }
 
+test("defaultSkillRoots detects Codex before Claude when both env families are present", () => {
+  const configRoot = makeTempRoot("skill-map-config-");
+  try {
+    const roots = defaultSkillRoots({
+      env: {
+        CODEX_THREAD_ID: "019da0ab",
+        CLAUDE_CODE_SSE_PORT: "29104"
+      },
+      userConfigPath: path.join(configRoot, "platforms.toml")
+    });
+
+    assert.deepEqual(roots, [path.join(os.homedir(), ".agents", "skills")]);
+  } finally {
+    fs.rmSync(configRoot, { recursive: true, force: true });
+  }
+});
+
+test("defaultSkillRoots falls back to the shared skills root when no CLI is detected", () => {
+  const configRoot = makeTempRoot("skill-map-config-");
+  try {
+    const roots = defaultSkillRoots({
+      env: {},
+      userConfigPath: path.join(configRoot, "platforms.toml")
+    });
+    assert.deepEqual(roots, [path.join(os.homedir(), ".agents", "skills")]);
+  } finally {
+    fs.rmSync(configRoot, { recursive: true, force: true });
+  }
+});
+
+test("defaultSkillRoots respects myclaude user platform overrides", () => {
+  const configRoot = makeTempRoot("skill-map-config-");
+  const configPath = path.join(configRoot, "platforms.toml");
+  try {
+    fs.writeFileSync(
+      configPath,
+      `
+[platforms.claude]
+base_dir = "~/.claude-custom"
+`,
+      "utf8"
+    );
+
+    const roots = defaultSkillRoots({
+      env: {
+        CLAUDE_CODE_SSE_PORT: "29104"
+      },
+      userConfigPath: configPath
+    });
+
+    assert.deepEqual(roots, [path.join(os.homedir(), ".claude-custom", "skills")]);
+  } finally {
+    fs.rmSync(configRoot, { recursive: true, force: true });
+  }
+});
+
+test("--platform is parsed as a first-class CLI override", () => {
+  const options = parseCliArgs(["--platform", "claude"]);
+  assert.equal(options.platform, "claude");
+});
+
 test("json output is valid and every record includes group_key", () => {
   const root = makeTempRoot();
   try {
@@ -52,6 +118,7 @@ version: "1.0.0"
     const rows = parseJsonOutput(["--root", root]);
     assert.equal(rows.length, 1);
     assert.equal(rows[0].group_key, "cognitive-analysis");
+    assert.equal(typeof rows[0].instance_id, "string");
     assert.equal(typeof rows[0].install_root, "string");
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
@@ -191,7 +258,7 @@ test("single skill output keeps the full ASCII template", () => {
   assert.match(output, /╚/);
 });
 
-test("duplicate names across roots keep the first root's version and source", () => {
+test("duplicate names across roots are preserved as separate instances", () => {
   const firstRoot = makeTempRoot("skill-map-first-");
   const secondRoot = makeTempRoot("skill-map-second-");
   try {
@@ -218,9 +285,14 @@ version: "2.0.0"
 `
     );
 
-    const [row] = parseJsonOutput(["--root", firstRoot, "--root", secondRoot]);
-    assert.equal(row.version, "1.0.0");
-    assert.match(row.install_root, new RegExp(firstRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    const rows = parseJsonOutput(["--root", firstRoot, "--root", secondRoot]);
+    assert.equal(rows.length, 2);
+    assert.deepEqual(rows.map((row) => row.version), ["1.0.0", "2.0.0"]);
+    assert.notEqual(rows[0].instance_id, rows[1].instance_id);
+    assert.notEqual(rows[0].install_root, rows[1].install_root);
+
+    const ascii = runCli(["--root", firstRoot, "--root", secondRoot]);
+    assert.match(ascii, /shared-skill@/);
   } finally {
     fs.rmSync(firstRoot, { recursive: true, force: true });
     fs.rmSync(secondRoot, { recursive: true, force: true });
@@ -250,6 +322,40 @@ category: developer-tools-integrations
   }
 });
 
+test("inferGroupKey avoids known substring-based misclassifications", () => {
+  assert.equal(
+    inferGroupKey(
+      "code-auditor",
+      "Structured code review across correctness, security, performance, readability, testing, and architecture."
+    ),
+    "development-implementation"
+  );
+
+  assert.equal(
+    inferGroupKey(
+      "browse",
+      "Fast headless browser for QA testing and site dogfooding. Navigate pages, take screenshots, and verify flows."
+    ),
+    "workflow-integration"
+  );
+
+  assert.equal(
+    inferGroupKey(
+      "git-commit-cn",
+      "Safely orchestrate Chinese Conventional Commits for staged Git changes and commit workflows."
+    ),
+    "development-implementation"
+  );
+
+  assert.equal(
+    inferGroupKey(
+      "skill-map",
+      "Skill inventory viewer for locally installed skills that renders a stable ASCII map and helps deduplicate overlaps."
+    ),
+    "system-maintenance"
+  );
+});
+
 test("--root overrides default roots for isolated scans", () => {
   const root = makeTempRoot();
   try {
@@ -270,4 +376,158 @@ description: "Dedicated test root"
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("--analyze --json emits the documented similarity schema", () => {
+  const root = makeTempRoot();
+  try {
+    writeSkill(
+      root,
+      "code-reviewer",
+      `---
+name: code-reviewer
+description: "Review code for quality security and maintainability"
+---
+# body
+`
+    );
+    writeSkill(
+      root,
+      "code-reviewer-low",
+      `---
+name: code-reviewer-low
+description: "Review code for quality security and maintainability (haiku)"
+---
+# body
+`
+    );
+    writeSkill(
+      root,
+      "paper-helper",
+      `---
+name: paper-helper
+description: "Research helper for reading academic papers"
+---
+# body
+`
+    );
+
+    const analysis = JSON.parse(runCli(["--analyze", "--json", "--root", root]));
+
+    assert.equal(typeof analysis.generated_at, "string");
+    assert.match(analysis.generated_at, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(typeof analysis.threshold, "number");
+    assert.ok(Array.isArray(analysis.clusters));
+    assert.ok(Array.isArray(analysis.pairs));
+    assert.equal(typeof analysis.summary, "object");
+    assert.equal(analysis.summary.total_skills, 3);
+
+    const duplicate = analysis.clusters.find((cluster) =>
+      cluster.members.some((member) => member.name === "code-reviewer") &&
+      cluster.members.some((member) => member.name === "code-reviewer-low")
+    );
+    assert.ok(duplicate, "code-reviewer / code-reviewer-low should cluster");
+    assert.ok(typeof duplicate.id === "string" && duplicate.id.length > 0);
+    assert.ok(["likely-duplicate", "consider-merge", "review"].includes(duplicate.action));
+    assert.ok(Array.isArray(duplicate.shared_tokens));
+    assert.ok(Array.isArray(duplicate.group_keys));
+    assert.equal(typeof duplicate.max_score, "number");
+    assert.equal(typeof duplicate.members[0].instance_id, "string");
+    assert.equal(typeof analysis.pairs[0].left_id, "string");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("--analyze ASCII output includes expected headers and disclaimer", () => {
+  const root = makeTempRoot();
+  try {
+    writeSkill(
+      root,
+      "code-reviewer",
+      `---
+name: code-reviewer
+description: "Review code for quality security and maintainability"
+---
+# body
+`
+    );
+    writeSkill(
+      root,
+      "code-reviewer-low",
+      `---
+name: code-reviewer-low
+description: "Review code for quality security and maintainability (haiku)"
+---
+# body
+`
+    );
+
+    const output = runCli(["--analyze", "--root", root]);
+
+    assert.match(output, /^╔/);
+    assert.match(output, /SKILL SIMILARITY REPORT/);
+    assert.match(output, /Suggestions only — this tool never deletes/);
+    assert.match(output, /code-reviewer/);
+    assert.match(output, /╚/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("--analyze on an empty root renders the threshold empty-state", () => {
+  const root = makeTempRoot();
+  try {
+    const output = runCli(["--analyze", "--root", root]);
+    assert.match(output, /No similar skills detected above threshold/);
+    assert.match(output, /Clusters: 0  Skills in clusters: 0 \/ 0/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("--min-score filters out low-similarity clusters", () => {
+  const root = makeTempRoot();
+  try {
+    writeSkill(
+      root,
+      "alpha",
+      `---
+name: alpha
+description: "database migration runner"
+---
+# body
+`
+    );
+    writeSkill(
+      root,
+      "beta",
+      `---
+name: beta
+description: "database migration checker"
+---
+# body
+`
+    );
+
+    const strict = JSON.parse(
+      runCli(["--analyze", "--json", "--min-score", "0.95", "--root", root])
+    );
+    assert.equal(strict.clusters.length, 0);
+
+    const loose = JSON.parse(
+      runCli(["--analyze", "--json", "--min-score", "0.3", "--root", root])
+    );
+    assert.equal(loose.clusters.length, 1);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("--min-score rejects out-of-range values", () => {
+  const result = spawnSync(process.execPath, [SCRIPT_PATH, "--analyze", "--min-score", "2"], {
+    encoding: "utf8"
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /--min-score/);
 });

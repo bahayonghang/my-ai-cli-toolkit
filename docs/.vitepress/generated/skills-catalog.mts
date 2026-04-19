@@ -8,10 +8,10 @@ export const SKILLS_CATALOG_EN = [
     "slug": "developer-tools-integrations",
     "skills": [
       {
-        "slug": "codex",
-        "title": "Codex CLI Integration",
-        "summary": "Run the local Codex CLI when you want an explicit Codex-powered workflow instead of a generic shell command: diff-aware review, adversarial challenge, second opinion analysis, live research, or Codex-applied fixes.",
-        "path": "/skills/developer-tools-integrations/codex"
+        "slug": "claude-code-companion",
+        "title": "Claude Code Companion",
+        "summary": "Use this skill when the user wants a **companion-style Claude Code workflow** rather than a single direct action.",
+        "path": "/skills/developer-tools-integrations/claude-code-companion"
       },
       {
         "slug": "codex-companion",
@@ -20,10 +20,10 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/developer-tools-integrations/codex-companion"
       },
       {
-        "slug": "gemini",
-        "title": "Gemini CLI Integration Skill",
-        "summary": "This skill helps Claude Code orchestrate Gemini CLI for code generation, review, architecture analysis, and web research. The skill now defaults to `gemini-3.1-pro-preview`, with a shared variable convention so future model swaps happen in one place instead of across many hard-coded examples.",
-        "path": "/skills/developer-tools-integrations/gemini"
+        "slug": "gemini-companion",
+        "title": "Gemini Companion",
+        "summary": "Use this skill when the user wants a **Gemini CLI companion workflow** with explicit stages and boundaries.",
+        "path": "/skills/developer-tools-integrations/gemini-companion"
       },
       {
         "slug": "lsp-manager",
@@ -38,6 +38,12 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/developer-tools-integrations/mcp-to-skill"
       },
       {
+        "slug": "qwen-companion",
+        "title": "Qwen Companion",
+        "summary": "Use this skill when the user wants a **Qwen CLI companion workflow** with explicit phases, bounded next steps, and careful continuation claims.",
+        "path": "/skills/developer-tools-integrations/qwen-companion"
+      },
+      {
         "slug": "rust-cli-tui-developer",
         "title": "Rust CLI/TUI Developer",
         "summary": "Expert guidance for building modern command-line interfaces and terminal user interfaces in Rust, using the most popular libraries: **clap** for CLI argument parsing, **inquire** for interactive prompts, and **ratatui** for rich terminal UIs.",
@@ -46,14 +52,8 @@ export const SKILLS_CATALOG_EN = [
       {
         "slug": "skill-map",
         "title": "Skill Map",
-        "summary": "Skill inventory viewer that scans installed skills and renders a compact ASCII map of what is available.",
+        "summary": "Skill inventory viewer that detects the current CLI, resolves that platform's installed-skills root, and renders a compact ASCII map of what is available on the current machine.",
         "path": "/skills/developer-tools-integrations/skill-map"
-      },
-      {
-        "slug": "lib-slint-expert",
-        "title": "Slint GUI Expert",
-        "summary": "A comprehensive guide for developing modern GUI applications using Slint with Rust. This skill is built directly from the official Slint repository and covers everything from basic component creation to advanced performance optimization and cross-platform deployment.",
-        "path": "/skills/developer-tools-integrations/lib-slint-expert"
       },
       {
         "slug": "uv-expert",
@@ -89,12 +89,6 @@ export const SKILLS_CATALOG_EN = [
         "title": "Interview Plan",
         "summary": "通过苏格拉底式访谈细化需求，直接调用原生 Plan 模式生成可执行计划。",
         "path": "/skills/development-workflows/interview-plan"
-      },
-      {
-        "slug": "karpathy-guidelines",
-        "title": "Karpathy Guidelines",
-        "summary": "Behavioral guidelines to reduce common LLM coding mistakes, derived from [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876) on LLM coding pitfalls.",
-        "path": "/skills/development-workflows/karpathy-guidelines"
       },
       {
         "slug": "project-daily-summary",
@@ -142,12 +136,6 @@ export const SKILLS_CATALOG_EN = [
         "title": "LaTeX Document Skill",
         "summary": "General-purpose LaTeX and PDF workflow skill for authoring, compiling, converting, diffing, and extracting document content.",
         "path": "/skills/docs-writing-publishing/latex-document-skill"
-      },
-      {
-        "slug": "paper-replication",
-        "title": "Paper Replication",
-        "summary": "Deep learning paper replication skill that transforms academic papers into industrial-grade PyTorch code with comprehensive module documentation.",
-        "path": "/skills/docs-writing-publishing/paper-replication"
       },
       {
         "slug": "tech-blog",
@@ -238,6 +226,12 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/research-learning-knowledge/paper-workbench"
       },
       {
+        "slug": "paper2code",
+        "title": "Paper2code",
+        "summary": "Repo-native paper-to-code skill for turning one research paper into a citation-anchored implementation scaffold.",
+        "path": "/skills/research-learning-knowledge/paper2code"
+      },
+      {
         "slug": "plain",
         "title": "Plain",
         "summary": "Plain-language rewrite skill that turns source content or questions into natural prose a smart 12-year-old can retell.",
@@ -273,16 +267,34 @@ export const SKILLS_CATALOG_EN = [
     "slug": "visual-media-design",
     "skills": [
       {
+        "slug": "architecture-diagram",
+        "title": "Architecture Diagram",
+        "summary": "Create dark-themed standalone HTML architecture diagrams with inline SVG.",
+        "path": "/skills/visual-media-design/architecture-diagram"
+      },
+      {
         "slug": "article-cover",
         "title": "Article Cover SVG Generation",
         "summary": "Generate professional, visually striking article cover images in SVG format for technical blogs, documentation, and articles.",
         "path": "/skills/visual-media-design/article-cover"
       },
       {
+        "slug": "brand-design-md",
+        "title": "Brand Design MD",
+        "summary": "Use this skill when the user wants UI output that matches a **specific real brand, product, or media site's design language** and expects the model to pull structured guidance from `getdesign.md` before generating code.",
+        "path": "/skills/visual-media-design/brand-design-md"
+      },
+      {
         "slug": "card",
         "title": "Card",
         "summary": "Visual content-casting skill that turns source material into PNG outputs using one of five rendering modes.",
         "path": "/skills/visual-media-design/card"
+      },
+      {
+        "slug": "design-artifact-html",
+        "title": "Design Artifact HTML",
+        "summary": "Use this skill when the user wants an **HTML-first web product prototype** rather than a themed deck, diagram, or image.",
+        "path": "/skills/visual-media-design/design-artifact-html"
       },
       {
         "slug": "excalidraw",
@@ -335,10 +347,10 @@ export const SKILLS_CATALOG_ZH = [
     "slug": "developer-tools-integrations",
     "skills": [
       {
-        "slug": "codex",
-        "title": "Codex CLI Integration",
-        "summary": "当你希望明确走 Codex CLI 工作流，而不是普通 shell 调用时，使用这个 skill： diff 感知代码审查、对抗式 challenge、second opinion、实时技术调研，或让 Codex 直接修改代码。",
-        "path": "/zh/skills/developer-tools-integrations/codex"
+        "slug": "claude-code-companion",
+        "title": "Claude Code Companion",
+        "summary": "当用户希望使用 **Claude Code 原生的 companion 式工作流**，而不是一次性直接执行时，使用这个 skill。",
+        "path": "/zh/skills/developer-tools-integrations/claude-code-companion"
       },
       {
         "slug": "codex-companion",
@@ -347,16 +359,10 @@ export const SKILLS_CATALOG_ZH = [
         "path": "/zh/skills/developer-tools-integrations/codex-companion"
       },
       {
-        "slug": "gemini",
-        "title": "Gemini CLI 集成 Skill",
-        "summary": "这个 skill 用于让 Claude Code 更稳定地编排 Gemini CLI，覆盖代码生成、代码审查、架构分析和联网研究等场景。当前默认模型改为 `gemini-3.1-pro-preview`，并采用统一变量约定，后续切换新模型时只需要改一处默认值。",
-        "path": "/zh/skills/developer-tools-integrations/gemini"
-      },
-      {
-        "slug": "lib-slint-expert",
-        "title": "Lib Slint Expert",
-        "summary": "全面的 Slint GUI 开发专家指导。",
-        "path": "/zh/skills/developer-tools-integrations/lib-slint-expert"
+        "slug": "gemini-companion",
+        "title": "Gemini Companion",
+        "summary": "当用户希望使用 **Gemini CLI 的 companion 式工作流**，并要求阶段清晰、边界明确时，使用这个 skill。",
+        "path": "/zh/skills/developer-tools-integrations/gemini-companion"
       },
       {
         "slug": "lsp-manager",
@@ -369,6 +375,12 @@ export const SKILLS_CATALOG_ZH = [
         "title": "MCP to Skill",
         "summary": "将 MCP (Model Context Protocol) 服务器转换为 Claude Code 技能。",
         "path": "/zh/skills/developer-tools-integrations/mcp-to-skill"
+      },
+      {
+        "slug": "qwen-companion",
+        "title": "Qwen Companion",
+        "summary": "当用户希望使用 **Qwen CLI 的 companion 式工作流**，并要求阶段明确、下一步受控、续接说明准确时，使用这个 skill。",
+        "path": "/zh/skills/developer-tools-integrations/qwen-companion"
       },
       {
         "slug": "rust-cli-tui-developer",
@@ -385,7 +397,7 @@ export const SKILLS_CATALOG_ZH = [
       {
         "slug": "skill-map",
         "title": "技能地图 (Skill Map)",
-        "summary": "扫描已安装的技能目录，生成一张按类别组织的 ASCII 技能地图，方便快速查看\"装了什么、能不能触发、分别属于哪一类\"。",
+        "summary": "检测当前 CLI，并解析该平台对应的 installed-skills 根目录，生成一张按固定展示分组组织的 ASCII 技能地图，方便快速查看“装了什么、能不能触发、分别属于哪一组”。",
         "path": "/zh/skills/developer-tools-integrations/skill-map"
       }
     ]
@@ -410,12 +422,6 @@ export const SKILLS_CATALOG_ZH = [
         "title": "Interview Plan",
         "summary": "通过苏格拉底式访谈细化需求，直接调用原生 Plan 模式生成可执行计划。",
         "path": "/zh/skills/development-workflows/interview-plan"
-      },
-      {
-        "slug": "karpathy-guidelines",
-        "title": "Karpathy Guidelines",
-        "summary": "Behavioral guidelines to reduce common LLM coding mistakes, derived from [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876) on LLM coding pitfalls.",
-        "path": "/zh/skills/development-workflows/karpathy-guidelines"
       },
       {
         "slug": "project-daily-summary",
@@ -493,12 +499,6 @@ export const SKILLS_CATALOG_ZH = [
         "title": "Typst",
         "summary": "通用的 Typst 编写技能，用于生成和编辑符合惯用法的 `.typ` 文档。",
         "path": "/zh/skills/docs-writing-publishing/typst"
-      },
-      {
-        "slug": "paper-replication",
-        "title": "论文复现 (Paper Replication)",
-        "summary": "深度学习论文复现技能，将学术论文转化为工业级 PyTorch 代码。",
-        "path": "/zh/skills/docs-writing-publishing/paper-replication"
       }
     ]
   },
@@ -565,6 +565,12 @@ export const SKILLS_CATALOG_ZH = [
         "path": "/zh/skills/research-learning-knowledge/paper-workbench"
       },
       {
+        "slug": "paper2code",
+        "title": "Paper2code",
+        "summary": "仓库内置的单篇论文到代码技能，用来把一篇论文转成带引用锚点的实现脚手架。",
+        "path": "/zh/skills/research-learning-knowledge/paper2code"
+      },
+      {
         "slug": "plain",
         "title": "plain: 白话改写",
         "summary": "把复杂内容改写成聪明 12 岁也能复述的版本。它不规定形式，只卡低线：口语、具体、少术语、少废话。",
@@ -600,10 +606,28 @@ export const SKILLS_CATALOG_ZH = [
     "slug": "visual-media-design",
     "skills": [
       {
+        "slug": "architecture-diagram",
+        "title": "Architecture Diagram",
+        "summary": "生成深色主题的独立 HTML 架构图，图形内容使用 inline SVG。",
+        "path": "/zh/skills/visual-media-design/architecture-diagram"
+      },
+      {
         "slug": "article-cover",
         "title": "Article Cover",
         "summary": "生成专业的文章封面图（SVG 格式）。",
         "path": "/zh/skills/visual-media-design/article-cover"
+      },
+      {
+        "slug": "brand-design-md",
+        "title": "Brand Design MD",
+        "summary": "当用户希望生成的 UI **贴近某个真实品牌、产品或媒体站点的设计语言**，并且希望先从 `getdesign.md` 获取结构化设计规范，再据此产出代码时，使用这个 skill。",
+        "path": "/zh/skills/visual-media-design/brand-design-md"
+      },
+      {
+        "slug": "design-artifact-html",
+        "title": "Design Artifact HTML",
+        "summary": "当用户要的是 **HTML-first 的 web 前端产品原型**，而不是换主题的 deck、图表或图片时，使用这个 skill。",
+        "path": "/zh/skills/visual-media-design/design-artifact-html"
       },
       {
         "slug": "excalidraw",

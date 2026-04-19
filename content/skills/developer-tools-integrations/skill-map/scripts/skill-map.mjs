@@ -6,6 +6,14 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
+import {
+  defaultSkillRoots as resolveDefaultSkillRoots,
+  loadPlatformConfigs,
+  normalizePlatformId,
+  rootLabelForPath
+} from "./lib/platforms.mjs";
+import { analyzeSkills, SCORE_THRESHOLDS, tokenizeForSimilarity } from "./lib/similarity.mjs";
+
 const DESCRIPTION_LIMIT = 80;
 const MAP_INNER_WIDTH = 58;
 const NAME_COLUMN_WIDTH = 22;
@@ -41,45 +49,73 @@ const GROUPS = [
 const GROUP_RULES = [
   {
     key: "cognitive-analysis",
-    pattern: /analy|research|read|paper|study|learn|summar|interpret/
+    priority: 4,
+    keywords: new Set([
+      "analysis", "analyze", "analyses", "research", "read", "reading", "reader",
+      "paper", "papers", "study", "studies", "learn", "learning",
+      "summary", "summaries", "summarize", "interpret", "explain",
+      "论文", "研究", "学习", "总结", "解释"
+    ])
   },
   {
     key: "document-expression",
-    pattern: /write|card|slide|doc|screenshot|theme|format|present/
+    priority: 3,
+    keywords: new Set([
+      "write", "writing", "writer", "document", "documentation", "docs",
+      "card", "cards", "slide", "slides", "screenshot", "screenshots",
+      "theme", "themes", "format", "formatting", "present", "presentation",
+      "presentations", "article", "articles", "blog", "blogs",
+      "文档", "写作", "截图", "主题", "排版", "文章", "幻灯片"
+    ])
   },
   {
     key: "development-implementation",
-    pattern: /code|build|debug|test|refactor|lint|api|tool|script/
+    priority: 2,
+    keywords: new Set([
+      "code", "coding", "build", "building", "debug", "debugging",
+      "test", "tests", "testing", "refactor", "refactoring", "lint",
+      "api", "apis", "script", "scripts", "cli", "git", "commit", "commits",
+      "开发", "构建", "调试", "测试", "脚本", "提交"
+    ])
   },
   {
     key: "workflow-integration",
-    pattern: /workflow|sync|web|browser|fetch|search|agent|automation/
+    priority: 1,
+    keywords: new Set([
+      "workflow", "workflows", "sync", "web", "browser", "browsers",
+      "fetch", "search", "automation", "integrate", "integration", "integrations",
+      "联网", "浏览器", "同步", "自动化", "集成", "搜索"
+    ])
   },
   {
     key: "system-maintenance",
-    pattern: /setup|install|config|memory|skill|meta|manage|review/
+    priority: 0,
+    keywords: new Set([
+      "setup", "install", "installed", "config", "configuration",
+      "memory", "meta", "manage", "management", "inventory", "map",
+      "duplicate", "duplicates", "deduplicate", "cleanup", "stocktake",
+      "安装", "配置", "管理", "盘点", "地图", "重复", "去重", "清理"
+    ])
   }
 ];
-
-export function defaultSkillRoots() {
-  const home = os.homedir();
-  return [
-    path.join(home, ".claude", "skills"),
-    path.join(home, ".agents", "skills")
-  ];
-}
 
 function usage() {
   return [
     "Usage:",
     "  node scripts/skill-map.mjs",
     "  node scripts/skill-map.mjs --json",
+    "  node scripts/skill-map.mjs --analyze",
+    "  node scripts/skill-map.mjs --analyze --json --min-score 0.4",
+    "  node scripts/skill-map.mjs --platform codex",
     "  node scripts/skill-map.mjs --root <path> [--root <path> ...]",
     "",
     "Options:",
-    "  --json          Emit structured JSON instead of the ASCII map",
-    "  --root <path>   Scan only the provided root(s)",
-    "  --help          Show this help text"
+    "  --json             Emit structured JSON instead of the ASCII map",
+    "  --platform <id>    Force a platform-specific installed-skills root",
+    "  --root <path>      Scan only the provided root(s)",
+    "  --analyze          Render a similarity report (suggestions only, never deletes)",
+    "  --min-score <num>  Minimum Jaccard score for the report (default 0.3, range 0–1)",
+    "  --help             Show this help text"
   ].join("\n");
 }
 
@@ -250,14 +286,50 @@ function normalizeInvocable(raw) {
   return null;
 }
 
-export function inferGroupKey(name, description) {
-  const haystack = `${name ?? ""} ${description ?? ""}`.toLowerCase();
-  for (const rule of GROUP_RULES) {
-    if (rule.pattern.test(haystack)) {
-      return rule.key;
+export function defaultSkillRoots(options = {}) {
+  return resolveDefaultSkillRoots(options);
+}
+
+function countKeywordMatches(tokens, keywords) {
+  let matches = 0;
+  const matched = new Set();
+  for (const token of tokens) {
+    if (keywords.has(token) && !matched.has(token)) {
+      matched.add(token);
+      matches += 1;
     }
   }
-  return "uncategorized";
+  return matches;
+}
+
+export function inferGroupKey(name, description) {
+  const nameTokens = tokenizeForSimilarity(name);
+  const descriptionTokens = tokenizeForSimilarity(description);
+  let bestRule = null;
+
+  for (const rule of GROUP_RULES) {
+    const score =
+      countKeywordMatches(nameTokens, rule.keywords) * 3
+      + countKeywordMatches(descriptionTokens, rule.keywords);
+
+    if (score === 0) {
+      continue;
+    }
+
+    if (
+      bestRule == null
+      || score > bestRule.score
+      || (score === bestRule.score && rule.priority < bestRule.priority)
+    ) {
+      bestRule = {
+        key: rule.key,
+        priority: rule.priority,
+        score
+      };
+    }
+  }
+
+  return bestRule?.key ?? "uncategorized";
 }
 
 function safeReadFile(filePath) {
@@ -279,9 +351,35 @@ function listSkillDirectories(root) {
   }
 }
 
+function buildInstanceId(root, dirName) {
+  return `${root.replace(/\\/g, "/")}::${dirName}`;
+}
+
+function sortRows(left, right) {
+  const nameComparison = left.name.localeCompare(right.name, undefined, {
+    sensitivity: "base",
+    numeric: true
+  });
+  if (nameComparison !== 0) {
+    return nameComparison;
+  }
+
+  const rootComparison = left.install_root.localeCompare(right.install_root, undefined, {
+    sensitivity: "base",
+    numeric: true
+  });
+  if (rootComparison !== 0) {
+    return rootComparison;
+  }
+
+  return left.instance_id.localeCompare(right.instance_id, undefined, {
+    sensitivity: "base",
+    numeric: true
+  });
+}
+
 export function scanRoots(roots) {
   const resolvedRoots = roots.map((root) => path.resolve(expandHome(root)));
-  const seenNames = new Set();
   const results = [];
 
   for (const root of resolvedRoots) {
@@ -314,14 +412,9 @@ export function scanRoots(roots) {
 
       const metadata = parseFrontmatter(fileContent);
       const name = String(metadata.name ?? dirName).trim() || dirName;
-      if (seenNames.has(name)) {
-        continue;
-      }
-
-      seenNames.add(name);
-
       const fullDescription = String(metadata.description ?? "");
       results.push({
+        instance_id: buildInstanceId(root, dirName),
         name,
         version: normalizeVersion(metadata.version),
         invocable: normalizeInvocable(metadata.user_invocable),
@@ -333,12 +426,7 @@ export function scanRoots(roots) {
     }
   }
 
-  return results.sort((left, right) =>
-    left.name.localeCompare(right.name, undefined, {
-      sensitivity: "base",
-      numeric: true
-    })
-  );
+  return results.sort(sortRows);
 }
 
 function buildGroupMap(rows) {
@@ -367,24 +455,48 @@ function makeCell(text, width) {
   return ` ${trimmed.padEnd(width - 1, " ")}`;
 }
 
+function duplicateNameSet(rows) {
+  const counts = new Map();
+  for (const row of rows) {
+    counts.set(row.name, (counts.get(row.name) ?? 0) + 1);
+  }
+  return new Set(
+    [...counts.entries()]
+      .filter(([, count]) => count > 1)
+      .map(([name]) => name)
+  );
+}
+
+function decorateRowsForDisplay(rows) {
+  const duplicateNames = duplicateNameSet(rows);
+  const configs = loadPlatformConfigs();
+  return rows.map((row) => ({
+    ...row,
+    display_name: duplicateNames.has(row.name)
+      ? `${row.name}@${rootLabelForPath(row.install_root, configs)}`
+      : row.name
+  }));
+}
+
 function renderNameLabel(row) {
   const versionLabel = row.version === "-" ? "-" : `v${row.version}`;
-  return `${row.name}${row.invocable === true ? "/" : ""} ${versionLabel}`;
+  return `${row.display_name}${row.invocable === true ? "/" : ""} ${versionLabel}`;
 }
 
 export function renderSkillMap(rows) {
-  const grouped = buildGroupMap(rows);
+  const displayRows = decorateRowsForDisplay(rows);
+  const grouped = buildGroupMap(displayRows);
   const nonEmptyGroups = GROUPS.filter((group) => (grouped.get(group.key) ?? []).length > 0);
-  const invocableCount = rows.filter((row) => row.invocable === true).length;
-  const unknownCount = rows.filter((row) => row.invocable == null).length;
+  const invocableCount = displayRows.filter((row) => row.invocable === true).length;
+  const unknownCount = displayRows.filter((row) => row.invocable == null).length;
   const lines = [];
 
   lines.push(makeBorder("╔", "═", "╗"));
-  lines.push(makeBoxLine(`             SKILL MAP  ·  ${rows.length} skills installed`));
+  lines.push(makeBoxLine(`             SKILL MAP  ·  ${displayRows.length} skills installed`));
   lines.push(makeBorder("╠", "═", "╣"));
   lines.push(makeBoxLine(""));
 
-  if (rows.length === 0) {
+  if (displayRows.length === 0) {
     lines.push(makeBoxLine("  No installed skills found under configured skill roots"));
     lines.push(makeBoxLine(""));
   } else {
@@ -409,7 +521,100 @@ export function renderSkillMap(rows) {
   lines.push(makeBorder("╠", "═", "╣"));
   lines.push(
     makeBoxLine(
-      ` Total: ${rows.length}  Invocable: ${invocableCount}  Unknown: ${unknownCount}  Groups: ${nonEmptyGroups.length}`
+      ` Total: ${displayRows.length}  Invocable: ${invocableCount}  Unknown: ${unknownCount}  Groups: ${nonEmptyGroups.length}`
+    )
+  );
+  lines.push(makeBorder("╚", "═", "╝"));
+
+  return lines.join("\n");
+}
+
+const SIMILARITY_SECTIONS = [
+  { action: "likely-duplicate", title: "▲ 疑似重复 (likely-duplicate)" },
+  { action: "consider-merge", title: "◆ 建议合并 (consider-merge)" },
+  { action: "review", title: "· 人工复查 (review)" }
+];
+
+function formatClusterRows(cluster) {
+  const rows = [];
+  const scoreLabel = `score ${cluster.max_score.toFixed(2)}`;
+  rows.push({ left: cluster.members[0]?.display_name ?? "", right: scoreLabel });
+
+  const tail = cluster.members.slice(1);
+  const sharedSummary = cluster.shared_tokens.length > 0
+    ? `共享: ${cluster.shared_tokens.slice(0, 4).join(", ")}`
+    : "共享: —";
+
+  if (tail.length === 0) {
+    rows.push({ left: "", right: sharedSummary });
+    return rows;
+  }
+
+  rows.push({ left: tail[0]?.display_name ?? "", right: sharedSummary });
+  for (let i = 1; i < tail.length; i += 1) {
+    rows.push({ left: tail[i]?.display_name ?? "", right: "" });
+  }
+  return rows;
+}
+
+export function renderSimilarityReport(analysis) {
+  const lines = [];
+  const clusterCount = analysis?.clusters?.length ?? 0;
+
+  lines.push(makeBorder("╔", "═", "╗"));
+  lines.push(
+    makeBoxLine(`       SKILL SIMILARITY REPORT  ·  ${clusterCount} clusters`)
+  );
+  lines.push(makeBorder("╠", "═", "╣"));
+  lines.push(makeBoxLine(""));
+
+  if (clusterCount === 0) {
+    const thresholdLabel = typeof analysis?.threshold === "number"
+      ? analysis.threshold.toFixed(2)
+      : SCORE_THRESHOLDS.review.toFixed(2);
+    lines.push(
+      makeBoxLine(
+        `  No similar skills detected above threshold ${thresholdLabel}`
+      )
+    );
+    lines.push(makeBoxLine(""));
+  } else {
+    for (const section of SIMILARITY_SECTIONS) {
+      const sectionClusters = analysis.clusters.filter(
+        (cluster) => cluster.action === section.action
+      );
+      if (sectionClusters.length === 0) {
+        continue;
+      }
+
+      lines.push(makeBoxLine(`  ${section.title}`));
+      lines.push(makeBoxLine(makeTableBorder()));
+      for (const cluster of sectionClusters) {
+        for (const { left, right } of formatClusterRows(cluster)) {
+          lines.push(
+            makeBoxLine(
+              `  |${makeCell(left, NAME_COLUMN_WIDTH)}|${makeCell(right, DESC_COLUMN_WIDTH)}|  `
+            )
+          );
+        }
+      }
+      lines.push(makeBoxLine(makeTableBorder()));
+      lines.push(makeBoxLine(""));
+    }
+  }
+
+  lines.push(makeBorder("╠", "═", "╣"));
+  const summary = analysis?.summary ?? {};
+  const totalSkills = summary.total_skills ?? 0;
+  const skillsInClusters = summary.skills_in_clusters ?? 0;
+  lines.push(
+    makeBoxLine(
+      ` Clusters: ${clusterCount}  Skills in clusters: ${skillsInClusters} / ${totalSkills}`
+    )
+  );
+  lines.push(
+    makeBoxLine(
+      "  Suggestions only — this tool never deletes, moves, or archives files."
     )
   );
   lines.push(makeBorder("╚", "═", "╝"));
@@ -420,7 +625,10 @@ export function renderSkillMap(rows) {
 export function parseCliArgs(argv) {
   const options = {
     json: false,
-    roots: []
+    roots: [],
+    platform: "",
+    analyze: false,
+    minScore: null
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -431,6 +639,35 @@ export function parseCliArgs(argv) {
     }
     if (arg === "--help" || arg === "-h") {
       options.help = true;
+      continue;
+    }
+    if (arg === "--analyze") {
+      options.analyze = true;
+      continue;
+    }
+    if (arg === "--platform") {
+      const next = argv[index + 1];
+      if (!next) {
+        throw new Error("Missing value for --platform");
+      }
+      options.platform = normalizePlatformId(next);
+      if (!options.platform) {
+        throw new Error(`Unsupported platform value: ${JSON.stringify(next)}`);
+      }
+      index += 1;
+      continue;
+    }
+    if (arg === "--min-score") {
+      const next = argv[index + 1];
+      if (next == null) {
+        throw new Error("Missing value for --min-score");
+      }
+      const parsed = Number(next);
+      if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
+        throw new Error(`--min-score must be a number in [0, 1], got ${JSON.stringify(next)}`);
+      }
+      options.minScore = parsed;
+      index += 1;
       continue;
     }
     if (arg === "--root") {
@@ -449,6 +686,25 @@ export function parseCliArgs(argv) {
   return options;
 }
 
+function resolveSelectedRoots(options) {
+  if (options.roots.length > 0) {
+    return options.roots;
+  }
+
+  if (options.platform) {
+    const configs = loadPlatformConfigs();
+    const config = configs[options.platform];
+    if (!config) {
+      throw new Error(`Unsupported platform id: ${JSON.stringify(options.platform)}`);
+    }
+    return [path.resolve(expandHome(config.skills_base_dir || config.base_dir), config.skills_subdir || "skills")];
+  }
+
+  return defaultSkillRoots({
+    env: process.env
+  });
+}
+
 export function runCli(argv = process.argv.slice(2)) {
   const options = parseCliArgs(argv);
   if (options.help) {
@@ -456,8 +712,19 @@ export function runCli(argv = process.argv.slice(2)) {
     return 0;
   }
 
-  const roots = options.roots.length > 0 ? options.roots : defaultSkillRoots();
+  const roots = resolveSelectedRoots(options);
   const rows = scanRoots(roots);
+
+  if (options.analyze) {
+    const threshold = options.minScore ?? SCORE_THRESHOLDS.review;
+    const analysis = analyzeSkills(decorateRowsForDisplay(rows), { threshold });
+    if (options.json) {
+      process.stdout.write(`${JSON.stringify(analysis, null, 2)}\n`);
+    } else {
+      process.stdout.write(`${renderSimilarityReport(analysis)}\n`);
+    }
+    return 0;
+  }
 
   if (options.json) {
     process.stdout.write(`${JSON.stringify(rows, null, 2)}\n`);
