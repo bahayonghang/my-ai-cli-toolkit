@@ -33,6 +33,7 @@ Runtime ports:
 - Some platforms use command fallbacks instead of their own command directories; check platform config before assuming commands live only under their platform folder.
 - Public skill changes usually require doc updates in both `docs/` and `docs/zh/`.
 - The curated third-party registry lives under `content/community-skills-registry/`, not `content/skills/`.
+- Zustand selectors in `mcs/mcs-web/ui/src/stores/` must return referentially stable values; see `mcs/mcs-web/ui/src/stores/README.md` for the rules.
 
 ## Validation and commits
 

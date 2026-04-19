@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getCategories,
+  getNpxSkillsCatalogInstallState,
   getNpxInstalledPackages,
   getNpxInstalledSkills,
   getNpxSkillsCliVersion,
@@ -271,6 +272,7 @@ describe("api/client install target", () => {
         current: "1.5.0",
         latest: "1.5.0",
         status: "up_to_date",
+        freshness: "fresh",
         checked_at_ms: 123,
         reason: null,
       }),
@@ -281,6 +283,45 @@ describe("api/client install target", () => {
     const [url] = fetchMock.mock.calls[0];
     expect(String(url)).toBe("/api/platforms/claude/npx-skills/cli-version?cli_mode=npx");
     expect(version.status).toBe("up_to_date");
+  });
+
+  it("supports forced cli version refresh", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        current: "1.5.0",
+        latest: "1.5.1",
+        status: "update_available",
+        freshness: "stale",
+        checked_at_ms: 123,
+        reason: null,
+      }),
+    );
+
+    await getNpxSkillsCliVersion("claude", "auto", true);
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe(
+      "/api/platforms/claude/npx-skills/cli-version?cli_mode=auto&refresh=true",
+    );
+  });
+
+  it("queries catalog install state for the selected target", async () => {
+    fetchMock.mockResolvedValue(
+      mockSuccess({
+        installed_ids_by_name: { "find-skills": "find-skills" },
+        freshness: "fresh",
+        checked_at_ms: 456,
+        reason: null,
+      }),
+    );
+
+    const data = await getNpxSkillsCatalogInstallState("claude", { scope: "global" });
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe(
+      "/api/platforms/claude/npx-skills/catalog-install-state?target_scope=global",
+    );
+    expect(data.installed_ids_by_name["find-skills"]).toBe("find-skills");
   });
 
   it("normalizes partial npx installed inventory payloads", async () => {

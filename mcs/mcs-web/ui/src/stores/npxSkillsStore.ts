@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type {
+  NpxCatalogInstallStateDto,
   NpxInstalledPackageDto,
   NpxInstalledSkillInstanceDto,
   NpxSkillsCatalogItemDto,
@@ -15,6 +16,7 @@ import type {
   InstallTarget,
 } from "@/types";
 import {
+  getNpxSkillsCatalogInstallState,
   getNpxInstalledPackages,
   getNpxInstalledSkills,
   getNpxSkillsCliVersion,
@@ -144,6 +146,58 @@ function buildGroupedTaxonomyFromCatalog(items: NpxSkillsCatalogItemDto[]) {
     );
 }
 
+// ── Derived recompute helper ──────────────────────────────────────
+
+type CatalogDerivedInputs = Pick<
+  NpxSkillsState,
+  "catalogItems" | "catalogSearch" | "installedOnly" | "catalogGroups"
+>;
+
+function recomputeCatalogDerived(inputs: CatalogDerivedInputs): {
+  visibleCatalogItems: NpxSkillsCatalogItemDto[];
+  catalogSections: CatalogSection[];
+} {
+  const visibleCatalogItems = filterCatalogItems(inputs.catalogItems, {
+    search: inputs.catalogSearch,
+    categoryId: null,
+    installedOnly: inputs.installedOnly,
+  });
+  const groups =
+    inputs.catalogGroups.length > 0
+      ? inputs.catalogGroups
+      : buildTaxonomyGroups(visibleCatalogItems);
+  const catalogSections = buildCatalogSections(visibleCatalogItems, groups);
+  return { visibleCatalogItems, catalogSections };
+}
+
+function applyCatalogInstallState(
+  items: NpxSkillsCatalogItemDto[],
+  installedIdsByName: Record<string, string>,
+): NpxSkillsCatalogItemDto[] {
+  return items.map((item) => {
+    const installedName = item.skill_flag ?? item.name;
+    const installedInstanceId = installedIdsByName[installedName] ?? null;
+    return {
+      ...item,
+      installed_state: installedInstanceId ? "installed" : "not_installed",
+      installed_instance_id: installedInstanceId,
+    };
+  });
+}
+
+function mergeCatalogInstallStateResponse(
+  items: NpxSkillsCatalogItemDto[],
+  response: NpxCatalogInstallStateDto | null,
+): NpxSkillsCatalogItemDto[] {
+  if (
+    !response ||
+    (response.freshness !== "fresh" && response.freshness !== "stale")
+  ) {
+    return items;
+  }
+  return applyCatalogInstallState(items, response.installed_ids_by_name);
+}
+
 // ── Store interface ───────────────────────────────────────────────
 
 export interface NpxSkillsState {
@@ -153,6 +207,16 @@ export interface NpxSkillsState {
   catalogError: string | null;
   catalogSyncedAt: number | null;
   catalogGroups: TaxonomyGroupSummary[];
+  catalogRequestKey: string | null;
+  catalogInstallState: NpxCatalogInstallStateDto | null;
+  catalogInstallStateLoading: boolean;
+  catalogInstallStateError: string | null;
+  catalogInstallStateSyncedAt: number | null;
+  catalogInstallStateRequestKey: string | null;
+
+  // ── Catalog derived (referentially stable — recomputed only on input change) ─
+  visibleCatalogItems: NpxSkillsCatalogItemDto[];
+  catalogSections: CatalogSection[];
 
   // ── Catalog UI filters ────────────────────────────────────────
   catalogSearch: string;
@@ -186,6 +250,8 @@ export interface NpxSkillsState {
   cliVersionInfo: NpxSkillsCliVersionDto | null;
   cliVersionLoading: boolean;
   cliVersionError: string | null;
+  cliVersionSyncedAt: number | null;
+  cliVersionRequestKey: string | null;
 
   // ── Installed data (cached) ───────────────────────────────────
   installedItems: NpxInstalledSkillInstanceDto[];
@@ -244,6 +310,11 @@ export interface NpxSkillsState {
     installTarget: InstallTarget,
     signal?: AbortSignal,
   ) => Promise<void>;
+  fetchCatalogInstallState: (
+    workspaceId: string,
+    installTarget: InstallTarget,
+    signal?: AbortSignal,
+  ) => Promise<void>;
 
   // Package preview
   setPackagePreviewInput: (value: string) => void;
@@ -274,6 +345,7 @@ export interface NpxSkillsState {
   fetchCliVersion: (
     workspaceId: string,
     cliMode: NpxSkillsCliMode,
+    refresh?: boolean,
     signal?: AbortSignal,
   ) => Promise<void>;
 
@@ -323,7 +395,15 @@ export interface NpxSkillsState {
 
 // ── Store implementation ──────────────────────────────────────────
 
-export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
+export const useNpxSkillsStore = create<NpxSkillsState>((set, get) => {
+  const CLI_VERSION_TTL_MS = 60_000;
+  const CATALOG_INSTALL_STATE_TTL_MS = 60_000;
+  let cliVersionFetchPromise: Promise<void> | null = null;
+  let cliVersionFetchKey: string | null = null;
+  let catalogInstallStateFetchPromise: Promise<void> | null = null;
+  let catalogInstallStateFetchKey: string | null = null;
+
+  return {
   // ── Initial state ─────────────────────────────────────────────
 
   catalogItems: [],
@@ -331,6 +411,15 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
   catalogError: null,
   catalogSyncedAt: null,
   catalogGroups: [],
+  catalogRequestKey: null,
+  catalogInstallState: null,
+  catalogInstallStateLoading: false,
+  catalogInstallStateError: null,
+  catalogInstallStateSyncedAt: null,
+  catalogInstallStateRequestKey: null,
+
+  visibleCatalogItems: [],
+  catalogSections: [],
 
   catalogSearch: "",
   installedOnly: false,
@@ -361,6 +450,8 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
   cliVersionInfo: null,
   cliVersionLoading: false,
   cliVersionError: null,
+  cliVersionSyncedAt: null,
+  cliVersionRequestKey: null,
 
   installedItems: [],
   installedCapabilities: null,
@@ -404,17 +495,41 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
 
   // ── Catalog actions ───────────────────────────────────────────
 
-  setCatalogSearch: (value) => set({ catalogSearch: value }),
-  setInstalledOnly: (value) => set({ installedOnly: value }),
+  setCatalogSearch: (value) =>
+    set((state) => ({
+      catalogSearch: value,
+      ...recomputeCatalogDerived({ ...state, catalogSearch: value }),
+    })),
+  setInstalledOnly: (value) =>
+    set((state) => ({
+      installedOnly: value,
+      ...recomputeCatalogDerived({ ...state, installedOnly: value }),
+    })),
   setSelectedCatalogCategoryId: (value) => set({ selectedCatalogCategoryId: value }),
   setSelectedCatalogKeys: (update) =>
     set((state) => ({
       selectedCatalogKeys:
         typeof update === "function" ? update(state.selectedCatalogKeys) : update,
     })),
-  setActiveCatalogAnchorId: (value) => set({ activeCatalogAnchorId: value }),
+  setActiveCatalogAnchorId: (value) =>
+    set((state) =>
+      state.activeCatalogAnchorId === value ? state : { activeCatalogAnchorId: value },
+    ),
 
   fetchCatalog: async (workspaceId, installTarget, signal) => {
+    const requestKey = [
+      workspaceId,
+      installTarget.scope,
+      installTarget.project_path ?? "",
+    ].join("::");
+    const state = get();
+    if (
+      state.catalogRequestKey === requestKey &&
+      state.catalogSyncedAt !== null &&
+      state.catalogError === null
+    ) {
+      return;
+    }
     set({ catalogLoading: true, catalogError: null });
     try {
       const data = await getNpxSkillsCatalog(
@@ -425,11 +540,18 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       const catalogGroups = mapTaxonomyGroups(
         buildGroupedTaxonomyFromCatalog(data),
       );
-      set({
-        catalogItems: data,
+      set((state) => ({
+        catalogItems: mergeCatalogInstallStateResponse(data, state.catalogInstallState),
         catalogGroups,
         catalogSyncedAt: Date.now(),
-      });
+        catalogRequestKey: requestKey,
+        ...recomputeCatalogDerived({
+          catalogItems: mergeCatalogInstallStateResponse(data, state.catalogInstallState),
+          catalogSearch: state.catalogSearch,
+          installedOnly: state.installedOnly,
+          catalogGroups,
+        }),
+      }));
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
         set({ catalogError: (error as Error).message });
@@ -439,6 +561,69 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
         set({ catalogLoading: false });
       }
     }
+  },
+
+  fetchCatalogInstallState: async (workspaceId, installTarget, signal) => {
+    const requestKey = [
+      workspaceId,
+      installTarget.scope,
+      installTarget.project_path ?? "",
+    ].join("::");
+    const state = get();
+    const canReuse =
+      state.catalogInstallStateRequestKey === requestKey &&
+      state.catalogInstallStateSyncedAt !== null &&
+      Date.now() - state.catalogInstallStateSyncedAt <= CATALOG_INSTALL_STATE_TTL_MS &&
+      state.catalogInstallState?.freshness === "fresh";
+    if (canReuse) {
+      return;
+    }
+    if (catalogInstallStateFetchPromise && catalogInstallStateFetchKey === requestKey) {
+      return catalogInstallStateFetchPromise;
+    }
+
+    set({ catalogInstallStateLoading: true, catalogInstallStateError: null });
+    catalogInstallStateFetchKey = requestKey;
+    catalogInstallStateFetchPromise = (async () => {
+      try {
+        const data = await getNpxSkillsCatalogInstallState(
+          workspaceId,
+          installTarget,
+          signal,
+        );
+        set((current) => {
+          const catalogItems = mergeCatalogInstallStateResponse(
+            current.catalogItems,
+            data,
+          );
+          return {
+            catalogItems,
+            catalogInstallState: data,
+            catalogInstallStateSyncedAt: Date.now(),
+            catalogInstallStateRequestKey: requestKey,
+            ...recomputeCatalogDerived({
+              catalogItems,
+              catalogSearch: current.catalogSearch,
+              installedOnly: current.installedOnly,
+              catalogGroups: current.catalogGroups,
+            }),
+          };
+        });
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          set({ catalogInstallStateError: (error as Error).message });
+        }
+      } finally {
+        if (catalogInstallStateFetchKey === requestKey) {
+          catalogInstallStateFetchKey = null;
+          catalogInstallStateFetchPromise = null;
+        }
+        if (!signal?.aborted) {
+          set({ catalogInstallStateLoading: false });
+        }
+      }
+    })();
+    return catalogInstallStateFetchPromise;
   },
 
   // ── Package preview actions ───────────────────────────────────
@@ -598,23 +783,50 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
     }
   },
 
-  fetchCliVersion: async (workspaceId, cliMode, signal) => {
-    set({ cliVersionLoading: true, cliVersionError: null });
-    try {
-      const data = await getNpxSkillsCliVersion(workspaceId, cliMode, signal);
-      set({ cliVersionInfo: data });
-    } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        set({
-          cliVersionError: (error as Error).message,
-          cliVersionInfo: null,
-        });
-      }
-    } finally {
-      if (!signal?.aborted) {
-        set({ cliVersionLoading: false });
-      }
+  fetchCliVersion: async (workspaceId, cliMode, refresh = false, signal) => {
+    const requestKey = [workspaceId, cliMode].join("::");
+    const state = get();
+    const canReuse =
+      !refresh &&
+      state.cliVersionRequestKey === requestKey &&
+      state.cliVersionSyncedAt !== null &&
+      Date.now() - state.cliVersionSyncedAt <= CLI_VERSION_TTL_MS &&
+      state.cliVersionInfo?.freshness === "fresh";
+    if (canReuse) {
+      return;
     }
+    if (cliVersionFetchPromise && cliVersionFetchKey === requestKey) {
+      return cliVersionFetchPromise;
+    }
+
+    set({ cliVersionLoading: true, cliVersionError: null });
+    cliVersionFetchKey = requestKey;
+    cliVersionFetchPromise = (async () => {
+      try {
+        const data = await getNpxSkillsCliVersion(workspaceId, cliMode, refresh, signal);
+        set({
+          cliVersionInfo: data,
+          cliVersionSyncedAt: Date.now(),
+          cliVersionRequestKey: requestKey,
+        });
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          set({
+            cliVersionError: (error as Error).message,
+            cliVersionInfo: null,
+          });
+        }
+      } finally {
+        if (cliVersionFetchKey === requestKey) {
+          cliVersionFetchKey = null;
+          cliVersionFetchPromise = null;
+        }
+        if (!signal?.aborted) {
+          set({ cliVersionLoading: false });
+        }
+      }
+    })();
+    return cliVersionFetchPromise;
   },
 
   // ── Installed actions ─────────────────────────────────────────
@@ -797,6 +1009,14 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       catalogError: null,
       catalogSyncedAt: null,
       catalogGroups: [],
+      catalogRequestKey: null,
+      catalogInstallState: null,
+      catalogInstallStateLoading: false,
+      catalogInstallStateError: null,
+      catalogInstallStateSyncedAt: null,
+      catalogInstallStateRequestKey: null,
+      visibleCatalogItems: [],
+      catalogSections: [],
       packageItems: [],
       packageCapabilities: null,
       packageSummary: null,
@@ -814,6 +1034,8 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       cliVersionInfo: null,
       cliVersionLoading: false,
       cliVersionError: null,
+      cliVersionSyncedAt: null,
+      cliVersionRequestKey: null,
       installedItems: [],
       installedCapabilities: null,
       installedSummary: null,
@@ -833,7 +1055,8 @@ export const useNpxSkillsStore = create<NpxSkillsState>((set) => ({
       pendingRunAction: null,
       jobLogEntries: [],
     }),
-}));
+  };
+});
 
 // ── Derived data selectors ────────────────────────────────────────
 

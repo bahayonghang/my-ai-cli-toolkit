@@ -114,6 +114,11 @@ describe("npx-skills utils", () => {
         installed_state: "installed",
       }),
       catalogItem({
+        id: "unknown-skill",
+        name: "Unknown Skill",
+        installed_state: "unknown",
+      }),
+      catalogItem({
         id: "theme-factory",
         name: "Theme Factory",
         category_id: "design",

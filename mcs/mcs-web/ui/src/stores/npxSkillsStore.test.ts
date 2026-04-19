@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import type { NpxSkillsCatalogItemDto } from "@/types";
 import { buildTaxonomyGroups } from "@/pages/npx-skills/utils";
-import { selectCatalogSections, type NpxSkillsState } from "./npxSkillsStore";
+import {
+  selectCatalogSections,
+  useNpxSkillsStore,
+  type NpxSkillsState,
+} from "./npxSkillsStore";
 
 function catalogItem(
   overrides: Partial<NpxSkillsCatalogItemDto> = {},
@@ -88,5 +92,107 @@ describe("npxSkillsStore selectors", () => {
       "design",
       "engineering",
     ]);
+  });
+});
+
+describe("npxSkillsStore referential stability", () => {
+  it("keeps catalogSections reference when unrelated state updates occur", () => {
+    const items: NpxSkillsCatalogItemDto[] = [
+      {
+        id: "find-skills",
+        name: "Find Skills",
+        package_ref: "vercel-labs/skills",
+        skill_flag: "find-skills",
+        group_id: "engineering",
+        group_label: "Engineering",
+        group_order: 10,
+        category_id: "engineering",
+        category_slug: "engineering",
+        category_label: "Engineering",
+        category_order: 10,
+        tags: [],
+        install_kind: "skills_cli",
+        install_provider: "vercel",
+        description: null,
+        stars: 0,
+        project_only: false,
+        usage: null,
+        installed_state: "not_installed",
+        installed_instance_id: null,
+      },
+    ];
+    const store = useNpxSkillsStore;
+    store.setState({
+      catalogItems: items,
+      catalogGroups: buildTaxonomyGroups(items),
+      catalogSections: selectCatalogSections({
+        catalogItems: items,
+        catalogGroups: buildTaxonomyGroups(items),
+        catalogSearch: "",
+        installedOnly: false,
+      } as NpxSkillsState),
+    });
+
+    const initial = store.getState().catalogSections;
+    expect(initial).not.toHaveLength(0);
+
+    // Unrelated updates must not rebuild catalogSections
+    store.getState().setSelectedCatalogKeys(new Set(["vercel-labs/skills::find-skills"]));
+    store.getState().setSettingsOpen(true);
+    store.getState().setSettingsOpen(false);
+
+    expect(store.getState().catalogSections).toBe(initial);
+  });
+
+  it("setActiveCatalogAnchorId short-circuits when value is unchanged", () => {
+    const store = useNpxSkillsStore;
+    store.setState({ activeCatalogAnchorId: "section-a" });
+    const snapshot = store.getState();
+
+    store.getState().setActiveCatalogAnchorId("section-a");
+    expect(store.getState()).toBe(snapshot);
+
+    store.getState().setActiveCatalogAnchorId("section-b");
+    expect(store.getState().activeCatalogAnchorId).toBe("section-b");
+  });
+
+  it("recomputes catalogSections when catalogSearch changes", () => {
+    const items: NpxSkillsCatalogItemDto[] = [
+      {
+        id: "find-skills",
+        name: "Find Skills",
+        package_ref: "vercel-labs/skills",
+        skill_flag: "find-skills",
+        group_id: "engineering",
+        group_label: "Engineering",
+        group_order: 10,
+        category_id: "engineering",
+        category_slug: "engineering",
+        category_label: "Engineering",
+        category_order: 10,
+        tags: ["search"],
+        install_kind: "skills_cli",
+        install_provider: "vercel",
+        description: null,
+        stars: 0,
+        project_only: false,
+        usage: null,
+        installed_state: "not_installed",
+        installed_instance_id: null,
+      },
+    ];
+    const store = useNpxSkillsStore;
+    store.setState({
+      catalogItems: items,
+      catalogGroups: buildTaxonomyGroups(items),
+      catalogSearch: "",
+      installedOnly: false,
+    });
+
+    store.getState().setCatalogSearch("find");
+    expect(store.getState().catalogSections).toHaveLength(1);
+
+    store.getState().setCatalogSearch("no-such-skill");
+    expect(store.getState().catalogSections).toHaveLength(0);
   });
 });

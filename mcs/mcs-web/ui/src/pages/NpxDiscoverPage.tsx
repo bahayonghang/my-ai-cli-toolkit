@@ -2,11 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import { useI18n } from "@/i18n";
-import {
-  useNpxSkillsStore,
-  selectCatalogSections,
-  selectVisibleCatalogItems,
-} from "@/stores/npxSkillsStore";
+import { useNpxSkillsStore } from "@/stores/npxSkillsStore";
 import type {
   InstallTarget,
   NpxSkillsCatalogItemDto,
@@ -68,8 +64,8 @@ export default function NpxDiscoverPage() {
   const agents = npxSkillsStore((s) => s.agents);
   const cliMode = npxSkillsStore((s) => s.cliMode);
 
-  const visibleCatalogItems = npxSkillsStore(selectVisibleCatalogItems);
-  const catalogSections = npxSkillsStore(selectCatalogSections);
+  const visibleCatalogItems = npxSkillsStore((s) => s.visibleCatalogItems);
+  const catalogSections = npxSkillsStore((s) => s.catalogSections);
   const selectedNamesPreview = useMemo(
     () => ctx.selectedCatalogItems.slice(0, 3).map((item) => item.name),
     [ctx.selectedCatalogItems],

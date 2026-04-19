@@ -173,6 +173,8 @@ export default function NpxDiscoverSkillCard({
                 label={
                   item.installed_state === "installed"
                     ? t("status.installed")
+                    : item.installed_state === "unknown"
+                    ? t("npxSkills.packageState.unknown")
                     : t("status.notInstalled")
                 }
               />

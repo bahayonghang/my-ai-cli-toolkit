@@ -54,6 +54,14 @@ export const enActivityMessages = {
   "activity.allStatuses": "All statuses",
   "activity.allItemTypes": "All item types",
   "activity.allScopes": "All scopes",
+  "activity.liveOn": "Live on",
+  "activity.liveOff": "Live",
+  "activity.liveConnecting": "Connecting…",
+  "activity.liveConnected": "Connected",
+  "activity.liveTitle": "Live events",
+  "activity.liveEventCount": "{count} events",
+  "activity.liveEmpty": "Waiting for activity events…",
+  "activity.liveClear": "Clear",
 } as const;
 
 export const zhActivityMessages: Record<keyof typeof enActivityMessages, string> = {
@@ -112,4 +120,12 @@ export const zhActivityMessages: Record<keyof typeof enActivityMessages, string>
   "activity.allStatuses": "全部状态",
   "activity.allItemTypes": "全部类型",
   "activity.allScopes": "全部范围",
+  "activity.liveOn": "实时已开",
+  "activity.liveOff": "实时",
+  "activity.liveConnecting": "连接中…",
+  "activity.liveConnected": "已连接",
+  "activity.liveTitle": "实时事件流",
+  "activity.liveEventCount": "{count} 条事件",
+  "activity.liveEmpty": "等待新事件…",
+  "activity.liveClear": "清空",
 };

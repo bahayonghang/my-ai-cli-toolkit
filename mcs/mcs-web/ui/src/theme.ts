@@ -32,70 +32,72 @@ interface BasePalette {
   shadowLg: string;
 }
 
+// Claude (Anthropic) palette — Parchment canvas, Ivory cards, Terracotta CTAs,
+// exclusively warm-toned neutrals. Every gray carries a yellow-brown undertone.
 const palettes: Record<Mode, BasePalette> = {
   light: {
-    accent: "#5E6AD2",
-    accentStrong: "#7170FF",
-    accentContrast: "#FFFFFF",
-    success: "#10B981",
-    warning: "#C8822F",
-    error: "#D35D6E",
-    info: "#5E6AD2",
-    canvas: "#F7F8F8",
-    canvasSoft: "#F3F4F5",
-    paper: "#FFFFFF",
-    panel: "#F5F6F7",
-    panelStrong: "#ECEEF3",
-    panelMuted: "#E7E9EE",
-    panelSubtle: "#F1F2F5",
-    rail: "#F3F4F6",
-    edge: "#E8EAF0",
-    text: "#111318",
-    textSecondary: "#4E5561",
-    textSoft: "#707681",
-    border: "#D9DEE8",
-    borderSoft: alpha("#111318", 0.08),
-    borderStrong: alpha("#5E6AD2", 0.28),
-    selection: alpha("#7170FF", 0.18),
-    overlay: alpha("#0A0B0F", 0.22),
+    accent: "#C96442", // Terracotta Brand — primary CTA
+    accentStrong: "#D97757", // Coral Accent — hover / emphasis
+    accentContrast: "#FAF9F5", // Ivory
+    success: "#6F8F4D",
+    warning: "#C58B31",
+    error: "#B53333", // Error Crimson
+    info: "#3898EC", // Focus Blue — accessibility only
+    canvas: "#F5F4ED", // Parchment
+    canvasSoft: "#EFEDE3",
+    paper: "#FAF9F5", // Ivory
+    panel: "#FAF9F5",
+    panelStrong: "#F0EEE6", // Border Cream as elevated container
+    panelMuted: "#EFEDE3",
+    panelSubtle: "#F5F4ED",
+    rail: "#F0EEE6",
+    edge: "#E8E6DC", // Warm Sand
+    text: "#141413", // Anthropic Near Black
+    textSecondary: "#5E5D59", // Olive Gray
+    textSoft: "#87867F", // Stone Gray
+    border: "#E8E6DC", // Border Warm
+    borderSoft: "#F0EEE6", // Border Cream
+    borderStrong: alpha("#C96442", 0.32),
+    selection: alpha("#C96442", 0.18),
+    overlay: alpha("#141413", 0.38),
     shadowSm:
-      "0 1px 1px rgba(15, 17, 21, 0.04), 0 8px 20px rgba(15, 17, 21, 0.06)",
+      "0 0 0 1px #F0EEE6, 0 1px 2px rgba(20, 20, 19, 0.04)",
     shadowMd:
-      "0 1px 1px rgba(15, 17, 21, 0.06), 0 16px 36px rgba(15, 17, 21, 0.1)",
+      "0 0 0 1px #E8E6DC, 0 4px 24px rgba(20, 20, 19, 0.05)",
     shadowLg:
-      "0 1px 1px rgba(15, 17, 21, 0.08), 0 24px 56px rgba(15, 17, 21, 0.12)",
+      "0 0 0 1px #E8E6DC, 0 12px 40px rgba(20, 20, 19, 0.08)",
   },
   dark: {
-    accent: "#5E6AD2",
-    accentStrong: "#7170FF",
-    accentContrast: "#FFFFFF",
-    success: "#10B981",
-    warning: "#C58B31",
-    error: "#E06C7B",
-    info: "#7170FF",
-    canvas: "#08090A",
-    canvasSoft: "#0B0C0E",
-    paper: "#0F1011",
-    panel: "#141516",
-    panelStrong: "#191A1B",
-    panelMuted: "#15171A",
-    panelSubtle: "#111214",
-    rail: "#0C0D0F",
-    edge: "#050607",
-    text: "#F7F8F8",
-    textSecondary: "#D0D6E0",
-    textSoft: "#8A8F98",
-    border: alpha("#FFFFFF", 0.08),
-    borderSoft: alpha("#FFFFFF", 0.05),
-    borderStrong: alpha("#7170FF", 0.34),
-    selection: alpha("#7170FF", 0.28),
-    overlay: alpha("#000000", 0.85),
+    accent: "#D97757", // Coral reads warmer on dark canvases
+    accentStrong: "#C96442",
+    accentContrast: "#FAF9F5",
+    success: "#8FAD66",
+    warning: "#D69C48",
+    error: "#D15454",
+    info: "#5FA8F5",
+    canvas: "#141413", // Deep Dark
+    canvasSoft: "#1A1A18",
+    paper: "#1E1E1C",
+    panel: "#23221F",
+    panelStrong: "#30302E", // Dark Surface
+    panelMuted: "#1D1D1B",
+    panelSubtle: "#18181611",
+    rail: "#141413",
+    edge: "#0E0E0D",
+    text: "#FAF9F5", // Ivory
+    textSecondary: "#B0AEA5", // Warm Silver
+    textSoft: "#87867F",
+    border: "#30302E", // Border Dark
+    borderSoft: alpha("#FAF9F5", 0.06),
+    borderStrong: alpha("#D97757", 0.4),
+    selection: alpha("#D97757", 0.28),
+    overlay: alpha("#000000", 0.82),
     shadowSm:
-      "0 0 0 1px rgba(255, 255, 255, 0.03), 0 16px 36px rgba(0, 0, 0, 0.28)",
+      "0 0 0 1px #30302E, 0 1px 2px rgba(0, 0, 0, 0.32)",
     shadowMd:
-      "0 0 0 1px rgba(255, 255, 255, 0.04), 0 20px 48px rgba(0, 0, 0, 0.36)",
+      "0 0 0 1px #30302E, 0 12px 32px rgba(0, 0, 0, 0.44)",
     shadowLg:
-      "0 0 0 1px rgba(255, 255, 255, 0.04), 0 28px 72px rgba(0, 0, 0, 0.46)",
+      "0 0 0 1px #30302E, 0 24px 56px rgba(0, 0, 0, 0.55)",
   },
 } as const;
 
@@ -103,103 +105,109 @@ const easing = "cubic-bezier(0.16, 1, 0.3, 1)";
 const fastDuration = "150ms";
 const duration = "220ms";
 const slowDuration = "320ms";
-const displayFont = '"Inter", "Noto Sans SC", "PingFang SC", sans-serif';
+// Anthropic Serif substitute — editorial weight 500 for headlines.
+const serifFont =
+  '"Source Serif 4", "Noto Serif SC", Georgia, "Times New Roman", serif';
+// Anthropic Sans substitute — Inter covers the warm geometric sans feel.
+const sansFont =
+  '"Inter", "Noto Sans SC", "PingFang SC", system-ui, sans-serif';
 const monoFont =
   '"Berkeley Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace';
 
 function buildTheme(mode: Mode) {
   const tone = palettes[mode];
 
-  const accentSoft = alpha(tone.accentStrong, mode === "dark" ? 0.18 : 0.12);
-  const accentFaint = alpha(tone.accentStrong, mode === "dark" ? 0.1 : 0.08);
-  const successSoft = alpha(tone.success, mode === "dark" ? 0.14 : 0.1);
-  const warningSoft = alpha(tone.warning, mode === "dark" ? 0.16 : 0.1);
+  const accentSoft = alpha(tone.accent, mode === "dark" ? 0.22 : 0.14);
+  const accentFaint = alpha(tone.accent, mode === "dark" ? 0.12 : 0.07);
+  const successSoft = alpha(tone.success, mode === "dark" ? 0.18 : 0.12);
+  const warningSoft = alpha(tone.warning, mode === "dark" ? 0.18 : 0.12);
   const shellHighlight =
-    mode === "dark" ? alpha("#FFFFFF", 0.04) : alpha("#FFFFFF", 0.72);
+    mode === "dark" ? alpha("#FAF9F5", 0.03) : alpha("#FFFFFF", 0.6);
   const toolbarOverlay =
-    mode === "dark" ? alpha(tone.paper, 0.9) : alpha(tone.paper, 0.92);
-  const subtleWhite = alpha("#FFFFFF", mode === "dark" ? 0.04 : 0.9);
-  const controlFill =
-    mode === "dark" ? alpha("#FFFFFF", 0.03) : alpha("#111318", 0.03);
+    mode === "dark" ? alpha(tone.canvas, 0.9) : alpha(tone.canvas, 0.88);
+  const controlFill = mode === "dark" ? alpha("#FAF9F5", 0.04) : "#F0EEE6";
   const controlFillStrong =
-    mode === "dark" ? alpha("#FFFFFF", 0.05) : alpha("#111318", 0.05);
+    mode === "dark" ? alpha("#FAF9F5", 0.08) : "#E8E6DC";
+  const ringSubtle = mode === "dark" ? "#30302E" : "#D1CFC5";
+  const ringSoft = mode === "dark" ? alpha("#FAF9F5", 0.06) : "#E8E6DC";
 
   const shared: ThemeOptions = {
     shape: {
-      borderRadius: 4,
+      borderRadius: 8, // Claude: comfortably rounded base
     },
     typography: {
-      fontFamily: displayFont,
+      fontFamily: sansFont,
       fontSize: 16,
-      allVariants: {
-        fontFeatureSettings: '"cv01", "ss03"',
-      },
+      // Editorial serif owns h1–h5; sans takes h6 and all UI text.
       h1: {
-        fontFamily: displayFont,
-        fontWeight: 510,
-        lineHeight: 1,
-        letterSpacing: "-0.099em",
+        fontFamily: serifFont,
+        fontWeight: 500,
+        lineHeight: 1.1,
+        letterSpacing: 0,
       },
       h2: {
-        fontFamily: displayFont,
-        fontWeight: 510,
-        lineHeight: 1,
-        letterSpacing: "-0.088em",
+        fontFamily: serifFont,
+        fontWeight: 500,
+        lineHeight: 1.15,
+        letterSpacing: 0,
       },
       h3: {
-        fontFamily: displayFont,
-        fontWeight: 510,
-        lineHeight: 1.04,
-        letterSpacing: "-0.066em",
+        fontFamily: serifFont,
+        fontWeight: 500,
+        lineHeight: 1.2,
+        letterSpacing: 0,
       },
       h4: {
-        fontFamily: displayFont,
-        fontWeight: 400,
-        lineHeight: 1.13,
-        letterSpacing: "-0.044em",
+        fontFamily: serifFont,
+        fontWeight: 500,
+        lineHeight: 1.25,
+        letterSpacing: 0,
       },
       h5: {
-        fontFamily: displayFont,
-        fontWeight: 590,
-        lineHeight: 1.2,
-        letterSpacing: "-0.03em",
+        fontFamily: serifFont,
+        fontWeight: 500,
+        lineHeight: 1.3,
+        letterSpacing: 0,
       },
       h6: {
-        fontFamily: displayFont,
-        fontWeight: 590,
-        lineHeight: 1.28,
-        letterSpacing: "-0.02em",
+        fontFamily: sansFont,
+        fontWeight: 600,
+        lineHeight: 1.35,
+        letterSpacing: "-0.01em",
       },
       subtitle1: {
-        fontWeight: 590,
-        letterSpacing: "-0.015em",
+        fontFamily: sansFont,
+        fontWeight: 500,
+        letterSpacing: 0,
       },
       subtitle2: {
-        fontWeight: 510,
+        fontFamily: sansFont,
+        fontWeight: 500,
       },
       body1: {
-        lineHeight: 1.5,
+        lineHeight: 1.6,
       },
       body2: {
         lineHeight: 1.6,
       },
       button: {
-        fontFamily: displayFont,
-        fontWeight: 510,
-        letterSpacing: "-0.01em",
+        fontFamily: sansFont,
+        fontWeight: 500,
+        letterSpacing: 0,
         textTransform: "none",
       },
       caption: {
-        fontFamily: displayFont,
-        fontSize: "0.8125rem",
-        lineHeight: 1.5,
-        letterSpacing: "-0.01em",
+        fontFamily: sansFont,
+        fontSize: "0.875rem",
+        lineHeight: 1.45,
+        letterSpacing: 0,
       },
       overline: {
-        fontFamily: monoFont,
-        fontWeight: 400,
-        lineHeight: 1.4,
-        letterSpacing: "0.04em",
+        fontFamily: sansFont,
+        fontWeight: 500,
+        fontSize: "0.75rem",
+        lineHeight: 1.6,
+        letterSpacing: "0.12em",
         textTransform: "uppercase",
       },
     },
@@ -211,8 +219,8 @@ function buildTheme(mode: Mode) {
             --mcs-header-height: 64px;
             --mcs-sticky-offset: calc(var(--mcs-header-height) + 28px);
             --mcs-sticky-offset-tight: calc(var(--mcs-header-height) + 24px);
-            --font-family-display: ${displayFont};
-            --font-family-body: ${displayFont};
+            --font-family-display: ${serifFont};
+            --font-family-body: ${sansFont};
             --font-family-mono: ${monoFont};
             --mcs-duration-fast: ${fastDuration};
             --mcs-duration: ${duration};
@@ -239,7 +247,7 @@ function buildTheme(mode: Mode) {
             --mcs-warning: ${tone.warning};
             --mcs-warning-soft: ${warningSoft};
             --mcs-error: ${tone.error};
-            --mcs-focus: ${tone.accentStrong};
+            --mcs-focus: ${tone.info};
             --mcs-shadow-sm: ${tone.shadowSm};
             --mcs-shadow-md: ${tone.shadowMd};
             --mcs-shadow-lg: ${tone.shadowLg};
@@ -251,7 +259,7 @@ function buildTheme(mode: Mode) {
             --mcs-glass-highlight: ${shellHighlight};
             --mcs-glass-shadow: ${tone.shadowSm};
             --mcs-glass-shadow-hover: ${tone.shadowMd};
-            --mcs-glass-blur: ${mode === "dark" ? "6px" : "4px"};
+            --mcs-glass-blur: ${mode === "dark" ? "2px" : "0px"};
             --mcs-shell-fill: ${tone.paper};
             --mcs-shell-fill-strong: ${tone.panelStrong};
             --mcs-shell-stroke: ${tone.border};
@@ -273,7 +281,7 @@ function buildTheme(mode: Mode) {
             --mcs-panel-fill-emphasis: ${tone.panel};
             --mcs-panel-stroke: ${tone.border};
             --mcs-panel-stroke-soft: ${tone.borderSoft};
-            --mcs-panel-accent: ${tone.accentStrong};
+            --mcs-panel-accent: ${tone.accent};
             --mcs-panel-accent-soft: ${accentSoft};
             --mcs-panel-highlight: ${shellHighlight};
             --mcs-panel-grid: ${tone.borderSoft};
@@ -282,14 +290,14 @@ function buildTheme(mode: Mode) {
             --mcs-summary-tile-fill-strong: ${tone.panelStrong};
             --mcs-summary-tile-stroke: ${tone.borderStrong};
             --mcs-summary-tile-shadow: ${tone.shadowSm};
-            --mcs-diff-add-bg: ${alpha(tone.success, mode === "dark" ? 0.16 : 0.1)};
-            --mcs-diff-remove-bg: ${alpha(tone.error, mode === "dark" ? 0.16 : 0.1)};
+            --mcs-diff-add-bg: ${alpha(tone.success, mode === "dark" ? 0.18 : 0.12)};
+            --mcs-diff-remove-bg: ${alpha(tone.error, mode === "dark" ? 0.18 : 0.12)};
             --mcs-warning-progress: ${warningSoft};
             --mcs-warning-progress-strong: ${tone.warning};
             --mcs-success-surface: ${successSoft};
-            --mcs-success-border: ${alpha(tone.success, mode === "dark" ? 0.3 : 0.22)};
-            --mcs-error-surface: ${alpha(tone.error, mode === "dark" ? 0.14 : 0.1)};
-            --mcs-error-border: ${alpha(tone.error, mode === "dark" ? 0.28 : 0.2)};
+            --mcs-success-border: ${alpha(tone.success, mode === "dark" ? 0.32 : 0.24)};
+            --mcs-error-surface: ${alpha(tone.error, mode === "dark" ? 0.16 : 0.1)};
+            --mcs-error-border: ${alpha(tone.error, mode === "dark" ? 0.3 : 0.22)};
             --mcs-error-text: ${tone.error};
             --mcs-entry-accent: ${tone.accent};
             --mcs-entry-accent-strong: ${tone.accentStrong};
@@ -322,7 +330,7 @@ function buildTheme(mode: Mode) {
             --mcs-monitor-accent-soft: ${accentSoft};
             --mcs-monitor-warm-soft: ${warningSoft};
             --mcs-monitor-warm-strong: ${tone.warning};
-            --mcs-monitor-progress-track: ${alpha(tone.text, mode === "dark" ? 0.08 : 0.08)};
+            --mcs-monitor-progress-track: ${alpha(tone.text, mode === "dark" ? 0.1 : 0.08)};
             --mcs-monitor-muted: ${tone.textSecondary};
             --mcs-monitor-ink: ${tone.text};
             --mcs-monitor-grid: ${tone.borderSoft};
@@ -342,7 +350,7 @@ function buildTheme(mode: Mode) {
             --mcs-workbench-accent-soft: ${accentSoft};
             --mcs-workbench-warm-soft: ${warningSoft};
             --mcs-workbench-warm-strong: ${tone.warning};
-            --mcs-workbench-progress-track: ${alpha(tone.text, mode === "dark" ? 0.08 : 0.08)};
+            --mcs-workbench-progress-track: ${alpha(tone.text, mode === "dark" ? 0.1 : 0.08)};
             --mcs-workbench-muted: ${tone.textSecondary};
             --mcs-workbench-ink: ${tone.text};
             --mcs-workbench-grid: ${tone.borderSoft};
@@ -371,7 +379,7 @@ function buildTheme(mode: Mode) {
             --mcs-dashboard-accent-soft: ${accentSoft};
             --mcs-dashboard-warm-soft: ${warningSoft};
             --mcs-dashboard-warm-strong: ${tone.warning};
-            --mcs-dashboard-progress-track: ${alpha(tone.text, mode === "dark" ? 0.08 : 0.08)};
+            --mcs-dashboard-progress-track: ${alpha(tone.text, mode === "dark" ? 0.1 : 0.08)};
             --mcs-dashboard-muted: ${tone.textSecondary};
             --mcs-dashboard-ink: ${tone.text};
             --mcs-dashboard-grid: ${tone.borderSoft};
@@ -400,18 +408,16 @@ function buildTheme(mode: Mode) {
             margin: 0;
             color: ${tone.text};
             font-family: var(--font-family-body);
-            font-feature-settings: "cv01", "ss03";
             font-synthesis-weight: none;
             background:
-              radial-gradient(circle at 50% -12%, ${alpha(tone.accentStrong, mode === "dark" ? 0.12 : 0.08)} 0, transparent 32%),
+              radial-gradient(circle at 50% -12%, ${alpha(tone.accent, mode === "dark" ? 0.12 : 0.06)} 0, transparent 36%),
               linear-gradient(180deg, ${tone.canvas} 0%, ${tone.canvasSoft} 100%);
             scrollbar-width: thin;
-            scrollbar-color: ${alpha(tone.text, mode === "dark" ? 0.24 : 0.18)} transparent;
+            scrollbar-color: ${alpha(tone.text, mode === "dark" ? 0.22 : 0.16)} transparent;
           }
 
           button, input, textarea, select {
             font: inherit;
-            font-feature-settings: "cv01", "ss03";
           }
 
           code, pre, kbd, samp {
@@ -450,12 +456,6 @@ function buildTheme(mode: Mode) {
 
           @media (max-width: 900px) {
             :root {
-              --mcs-glass-blur: 2px;
-            }
-          }
-
-          @media (max-width: 600px) {
-            :root {
               --mcs-glass-blur: 0px;
             }
           }
@@ -477,8 +477,8 @@ function buildTheme(mode: Mode) {
           root: {
             minWidth: 40,
             minHeight: 40,
-            borderRadius: 8,
-            paddingInline: 14,
+            borderRadius: 12,
+            paddingInline: 16,
             paddingBlock: 8,
             boxShadow: "none",
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
@@ -489,19 +489,22 @@ function buildTheme(mode: Mode) {
           contained: {
             backgroundColor: tone.accent,
             color: tone.accentContrast,
-            boxShadow: `0 8px 22px ${alpha(tone.accent, mode === "dark" ? 0.24 : 0.16)}`,
+            // Ring shadow — Claude's signature border-as-shadow pattern.
+            boxShadow: `0 0 0 1px ${tone.accent}, 0 1px 2px ${alpha(tone.accent, 0.18)}`,
             "&:hover": {
               backgroundColor: tone.accentStrong,
-              boxShadow: `0 12px 28px ${alpha(tone.accentStrong, mode === "dark" ? 0.28 : 0.18)}`,
+              boxShadow: `0 0 0 1px ${tone.accentStrong}, 0 4px 14px ${alpha(tone.accent, 0.28)}`,
             },
           },
           outlined: {
-            borderColor: tone.border,
+            borderColor: "transparent",
             backgroundColor: controlFill,
             color: tone.text,
+            boxShadow: `0 0 0 1px ${ringSubtle}`,
             "&:hover": {
-              borderColor: tone.borderStrong,
+              borderColor: "transparent",
               backgroundColor: controlFillStrong,
+              boxShadow: `0 0 0 1px ${tone.borderStrong}`,
             },
           },
           text: {
@@ -519,12 +522,11 @@ function buildTheme(mode: Mode) {
             minWidth: 40,
             minHeight: 40,
             borderRadius: 10,
-            border: `1px solid ${tone.border}`,
+            border: `1px solid ${tone.borderSoft}`,
             backgroundColor: controlFill,
-            boxShadow: `inset 0 1px 0 ${subtleWhite}`,
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}, box-shadow ${duration} ${easing}, transform ${duration} ${easing}`,
             "&:hover": {
-              borderColor: tone.borderStrong,
+              borderColor: ringSubtle,
               backgroundColor: controlFillStrong,
             },
             "&:active": {
@@ -536,16 +538,15 @@ function buildTheme(mode: Mode) {
       MuiToggleButtonGroup: {
         styleOverrides: {
           root: {
-            borderRadius: 10,
+            borderRadius: 12,
             padding: 2,
-            border: `1px solid ${tone.border}`,
+            border: `1px solid ${tone.borderSoft}`,
             backgroundColor: controlFill,
-            boxShadow: `inset 0 1px 0 ${subtleWhite}`,
           },
           grouped: {
             margin: 0,
             border: 0,
-            borderRadius: 8,
+            borderRadius: 10,
           },
         },
       },
@@ -558,7 +559,7 @@ function buildTheme(mode: Mode) {
             "&.Mui-selected": {
               backgroundColor: accentSoft,
               color: tone.text,
-              boxShadow: `0 1px 1px ${alpha(tone.text, 0.06)}`,
+              boxShadow: `0 0 0 1px ${tone.borderStrong}`,
             },
           },
         },
@@ -566,15 +567,22 @@ function buildTheme(mode: Mode) {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 12,
+            borderRadius: 16,
             backgroundImage: "none",
             backgroundColor: "var(--mcs-panel-fill)",
-            border: "1px solid var(--mcs-panel-stroke)",
-            boxShadow: "var(--mcs-panel-shadow)",
+            border: `1px solid ${tone.borderSoft}`,
+            // Whisper shadow — barely-there lift per Claude's elevation model.
+            boxShadow:
+              mode === "dark"
+                ? "0 0 0 1px rgba(250,249,245,0.04), 0 4px 24px rgba(0,0,0,0.22)"
+                : "0 0 0 1px #F0EEE6, 0 4px 24px rgba(20,20,19,0.05)",
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, box-shadow ${duration} ${easing}`,
             "&:hover": {
-              borderColor: "var(--mcs-panel-stroke-soft)",
-              boxShadow: "var(--mcs-shadow-md)",
+              borderColor: tone.border,
+              boxShadow:
+                mode === "dark"
+                  ? "0 0 0 1px rgba(217,119,87,0.18), 0 12px 32px rgba(0,0,0,0.34)"
+                  : "0 0 0 1px #E8E6DC, 0 12px 32px rgba(20,20,19,0.08)",
             },
           },
         },
@@ -590,9 +598,9 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           root: {
             borderRadius: 999,
-            fontWeight: 510,
+            fontWeight: 500,
             backgroundColor: controlFill,
-            borderColor: tone.border,
+            borderColor: ringSoft,
             color: tone.textSecondary,
           },
           filled: {
@@ -600,7 +608,7 @@ function buildTheme(mode: Mode) {
             color: tone.text,
           },
           label: {
-            paddingInline: 10,
+            paddingInline: 12,
           },
         },
       },
@@ -608,7 +616,7 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           paper: {
             backgroundColor: tone.paper,
-            borderRight: `1px solid ${tone.border}`,
+            borderRight: `1px solid ${tone.borderSoft}`,
             boxShadow: tone.shadowMd,
           },
         },
@@ -620,16 +628,17 @@ function buildTheme(mode: Mode) {
             color: tone.text,
             borderBottom: `1px solid ${tone.borderSoft}`,
             boxShadow: "none",
-            backdropFilter: "blur(var(--mcs-glass-blur)) saturate(120%)",
-            WebkitBackdropFilter: "blur(var(--mcs-glass-blur)) saturate(120%)",
+            backdropFilter: "blur(var(--mcs-glass-blur))",
+            WebkitBackdropFilter: "blur(var(--mcs-glass-blur))",
           },
         },
       },
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: tone.panelStrong,
-            border: `1px solid ${tone.border}`,
+            borderRadius: 16,
+            backgroundColor: tone.paper,
+            border: `1px solid ${tone.borderSoft}`,
             boxShadow: tone.shadowLg,
           },
         },
@@ -637,6 +646,8 @@ function buildTheme(mode: Mode) {
       MuiDialogTitle: {
         styleOverrides: {
           root: {
+            fontFamily: serifFont,
+            fontWeight: 500,
             borderBottom: `1px solid ${tone.borderSoft}`,
           },
         },
@@ -661,7 +672,7 @@ function buildTheme(mode: Mode) {
             borderRadius: 10,
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, color ${duration} ${easing}`,
             "&:hover": {
-              backgroundColor: alpha(tone.accentStrong, mode === "dark" ? 0.08 : 0.05),
+              backgroundColor: accentFaint,
             },
             "&.Mui-selected": {
               backgroundColor: accentSoft,
@@ -677,7 +688,7 @@ function buildTheme(mode: Mode) {
           root: {
             transition: `background-color ${duration} ${easing}`,
             "&.MuiTableRow-hover:hover": {
-              backgroundColor: alpha(tone.accentStrong, mode === "dark" ? 0.06 : 0.04),
+              backgroundColor: accentFaint,
             },
           },
         },
@@ -688,7 +699,7 @@ function buildTheme(mode: Mode) {
             borderBottom: `1px solid ${tone.borderSoft}`,
           },
           head: {
-            fontWeight: 510,
+            fontWeight: 500,
             color: tone.textSecondary,
           },
         },
@@ -696,21 +707,20 @@ function buildTheme(mode: Mode) {
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 12,
             backgroundColor: controlFill,
-            boxShadow: `inset 0 1px 0 ${subtleWhite}`,
             transition: `background-color ${duration} ${easing}, border-color ${duration} ${easing}, box-shadow ${duration} ${easing}`,
             "& .MuiOutlinedInput-notchedOutline": {
               borderColor: tone.border,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: tone.borderStrong,
+              borderColor: ringSubtle,
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: tone.accentStrong,
+              borderColor: tone.info,
             },
             "&.Mui-focused": {
-              boxShadow: `0 0 0 4px ${alpha(tone.accentStrong, mode === "dark" ? 0.18 : 0.1)}`,
+              boxShadow: `0 0 0 3px ${alpha(tone.info, mode === "dark" ? 0.28 : 0.18)}`,
             },
           },
         },
@@ -720,7 +730,7 @@ function buildTheme(mode: Mode) {
           indicator: {
             height: 2,
             borderRadius: 999,
-            backgroundColor: tone.accentStrong,
+            backgroundColor: tone.accent,
           },
         },
       },
@@ -729,17 +739,17 @@ function buildTheme(mode: Mode) {
           root: {
             minHeight: 42,
             textTransform: "none",
-            fontWeight: 510,
-            letterSpacing: "-0.01em",
+            fontWeight: 500,
+            letterSpacing: 0,
           },
         },
       },
       MuiAlert: {
         styleOverrides: {
           root: {
-            borderRadius: 10,
-            border: `1px solid ${tone.border}`,
-            backgroundColor: tone.panelStrong,
+            borderRadius: 12,
+            border: `1px solid ${tone.borderSoft}`,
+            backgroundColor: tone.paper,
           },
         },
       },
@@ -747,18 +757,18 @@ function buildTheme(mode: Mode) {
         styleOverrides: {
           root: {
             borderRadius: 999,
-            backgroundColor: alpha(tone.text, mode === "dark" ? 0.08 : 0.08),
+            backgroundColor: alpha(tone.text, mode === "dark" ? 0.1 : 0.08),
           },
           bar: {
             borderRadius: 999,
-            backgroundColor: tone.accentStrong,
+            backgroundColor: tone.accent,
           },
         },
       },
       MuiSkeleton: {
         styleOverrides: {
           root: {
-            backgroundColor: alpha(tone.text, mode === "dark" ? 0.1 : 0.08),
+            backgroundColor: alpha(tone.text, mode === "dark" ? 0.1 : 0.06),
           },
         },
       },

@@ -14,6 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import BoltIcon from "@mui/icons-material/Bolt";
 
 import { NotificationSnackbar } from "@/components/common/NotificationSnackbar";
 import PageLoadingState from "@/components/common/PageLoadingState";
@@ -31,6 +32,7 @@ import { useNavigateDeferred } from "@/hooks/useNavigateDeferred";
 import { useActivityStore, type ActivityRunsFilters } from "@/stores/activityStore";
 import { usePlatformStore } from "@/stores/platformStore";
 import type {
+  ActivityEventDto,
   ActivityOperation,
   ActivityRunDto,
   ActivityRunStatus,
@@ -102,6 +104,13 @@ export default function ActivityPage() {
   const error = useActivityStore((state) => state.error);
   const fetchRuns = useActivityStore((state) => state.fetchRuns);
   const refreshRuns = useActivityStore((state) => state.refreshRuns);
+  const liveEvents = useActivityStore((state) => state.liveEvents);
+  const liveConnected = useActivityStore((state) => state.liveConnected);
+  const liveError = useActivityStore((state) => state.liveError);
+  const startLiveTail = useActivityStore((state) => state.startLiveTail);
+  const stopLiveTail = useActivityStore((state) => state.stopLiveTail);
+  const clearLiveEvents = useActivityStore((state) => state.clearLiveEvents);
+  const [liveEnabled, setLiveEnabled] = useState(false);
 
   useEffect(() => {
     if (platforms.length === 0) {
@@ -132,6 +141,28 @@ export default function ActivityPage() {
     void fetchRuns(filters, controller.signal);
     return () => controller.abort();
   }, [fetchRuns, filters]);
+
+  useEffect(() => {
+    if (!liveEnabled) {
+      stopLiveTail();
+      return;
+    }
+    startLiveTail({
+      platformId: filters.platformId,
+      surface: filters.surface,
+      operation: filters.operation,
+      runId: filters.runId,
+    });
+    return () => stopLiveTail();
+  }, [
+    liveEnabled,
+    filters.platformId,
+    filters.surface,
+    filters.operation,
+    filters.runId,
+    startLiveTail,
+    stopLiveTail,
+  ]);
 
   const preferredPlatform = useMemo(() => {
     const platformId = filters.platformId;
@@ -267,6 +298,18 @@ export default function ActivityPage() {
             <MobileFilterButton onClick={() => setFilterDrawerOpen(true)} />
           ) : null}
           <Button
+            variant={liveEnabled ? "contained" : "outlined"}
+            color={liveEnabled ? "primary" : "inherit"}
+            startIcon={<BoltIcon />}
+            onClick={() => setLiveEnabled((value) => !value)}
+          >
+            {liveEnabled
+              ? liveConnected
+                ? t("activity.liveOn")
+                : t("activity.liveConnecting")
+              : t("activity.liveOff")}
+          </Button>
+          <Button
             variant="outlined"
             startIcon={<RefreshIcon />}
             onClick={() => void refreshRuns(filters)}
@@ -364,6 +407,61 @@ export default function ActivityPage() {
         </ListSurface>
 
         {error ? <Alert severity="error">{error}</Alert> : null}
+
+        {liveEnabled ? (
+          <ListSurface tone="monitor">
+            <Stack spacing={1.25}>
+              <Stack direction="row" spacing={1} alignItems="center" useFlexGap flexWrap="wrap">
+                <Typography variant="overline" color="text.secondary">
+                  {t("activity.liveTitle")}
+                </Typography>
+                <Chip
+                  size="small"
+                  color={liveConnected ? "success" : "warning"}
+                  label={
+                    liveConnected
+                      ? t("activity.liveConnected")
+                      : t("activity.liveConnecting")
+                  }
+                />
+                <Chip
+                  size="small"
+                  variant="outlined"
+                  label={t("activity.liveEventCount", { count: liveEvents.length })}
+                />
+                <Box sx={{ flexGrow: 1 }} />
+                <Button size="small" variant="text" onClick={clearLiveEvents}>
+                  {t("activity.liveClear")}
+                </Button>
+              </Stack>
+              {liveError ? (
+                <Alert severity="warning">{liveError}</Alert>
+              ) : null}
+              {liveEvents.length === 0 ? (
+                <Alert severity="info">{t("activity.liveEmpty")}</Alert>
+              ) : (
+                <Box
+                  sx={{
+                    maxHeight: 320,
+                    overflowY: "auto",
+                    fontFamily: "var(--font-family-mono)",
+                    fontSize: 12,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 0.5,
+                  }}
+                >
+                  {liveEvents
+                    .slice()
+                    .reverse()
+                    .map((event) => (
+                      <LiveEventLine key={`${event.run_id}-${event.seq}`} event={event} />
+                    ))}
+                </Box>
+              )}
+            </Stack>
+          </ListSurface>
+        ) : null}
 
         {loading && !data ? (
           <PageLoadingState message={t("common.loading")} minHeight={320} />
@@ -634,4 +732,70 @@ function DetailBlock({ label, value }: { label: string; value: string }) {
       </Typography>
     </Box>
   );
+}
+
+function formatLiveTimestamp(ms: number): string {
+  const date = new Date(ms);
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  const ss = String(date.getSeconds()).padStart(2, "0");
+  const millis = String(date.getMilliseconds()).padStart(3, "0");
+  return `${hh}:${mm}:${ss}.${millis}`;
+}
+
+function liveEventColor(level: ActivityEventDto["level"]): string {
+  switch (level) {
+    case "error":
+      return "#f44336";
+    case "warning":
+      return "#ff9800";
+    default:
+      return "#90caf9";
+  }
+}
+
+function LiveEventLine({ event }: { event: ActivityEventDto }) {
+  const label = summarizeLivePayload(event);
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        gap: 1,
+        alignItems: "baseline",
+        borderBottom: "1px dashed var(--mcs-shell-divider)",
+        py: 0.25,
+      }}
+    >
+      <Typography component="span" sx={{ color: "text.secondary", fontFamily: "inherit" }}>
+        {formatLiveTimestamp(event.ts_ms)}
+      </Typography>
+      <Chip
+        size="small"
+        label={event.kind}
+        sx={{
+          height: 18,
+          fontSize: 10,
+          backgroundColor: liveEventColor(event.level),
+          color: "#0b0b0b",
+          fontFamily: "inherit",
+        }}
+      />
+      <Typography component="span" sx={{ fontFamily: "inherit", overflowWrap: "anywhere" }}>
+        {label}
+      </Typography>
+    </Box>
+  );
+}
+
+function summarizeLivePayload(event: ActivityEventDto): string {
+  const payload = event.payload ?? {};
+  const parts: string[] = [];
+  parts.push(event.run_id);
+  if (event.operation) parts.push(String(event.operation));
+  if (typeof payload.label === "string") parts.push(payload.label);
+  if (typeof payload.success === "boolean") parts.push(payload.success ? "ok" : "fail");
+  if (typeof payload.duration_ms === "number") parts.push(`${payload.duration_ms}ms`);
+  if (typeof payload.total === "number") parts.push(`n=${payload.total}`);
+  if (typeof payload.error === "string" && payload.error.length > 0) parts.push(`err=${payload.error}`);
+  return parts.join(" · ");
 }

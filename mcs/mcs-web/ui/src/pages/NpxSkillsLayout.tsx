@@ -7,6 +7,7 @@ import {
   ButtonBase,
   Chip,
   Drawer,
+  Skeleton,
   Stack,
   TextField,
   Tooltip,
@@ -163,6 +164,7 @@ export default function NpxSkillsLayout() {
   const jobRunning = npxSkillsStore((s) => s.jobRunning);
   const jobRunConfig = npxSkillsStore((s) => s.jobRunConfig);
   const catalogSyncedAt = npxSkillsStore((s) => s.catalogSyncedAt);
+  const catalogInstallState = npxSkillsStore((s) => s.catalogInstallState);
   const packageSyncedAt = npxSkillsStore((s) => s.packageSyncedAt);
   const packageLoading = npxSkillsStore((s) => s.packageLoading);
   const catalogItems = npxSkillsStore((s) => s.catalogItems);
@@ -174,9 +176,12 @@ export default function NpxSkillsLayout() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const streamWarnedRef = useRef(false);
   const catalogAbortRef = useRef<AbortController | null>(null);
+  const catalogInstallStateAbortRef = useRef<AbortController | null>(null);
   const packageAbortRef = useRef<AbortController | null>(null);
   const cliVersionAbortRef = useRef<AbortController | null>(null);
   const jobItemsRef = useRef<JobItemState[]>([]);
+  const cliVersionPollStartedAtRef = useRef<number | null>(null);
+  const catalogInstallStatePollStartedAtRef = useRef<number | null>(null);
 
   // Sync jobItems ref
   const jobItems = npxSkillsStore((s) => s.jobItems);
@@ -206,6 +211,7 @@ export default function NpxSkillsLayout() {
   useEffect(() => {
     return () => {
       catalogAbortRef.current?.abort();
+      catalogInstallStateAbortRef.current?.abort();
       packageAbortRef.current?.abort();
       cliVersionAbortRef.current?.abort();
       if (eventSourceRef.current) {
@@ -216,16 +222,22 @@ export default function NpxSkillsLayout() {
 
   const installTargetKey = useMemo(
     () =>
-      `${currentWorkspaceId ?? ""}::${installTarget.scope}::${installTarget.project_path ?? ""}`,
+      currentWorkspaceId
+        ? `${currentWorkspaceId}::${installTarget.scope}::${installTarget.project_path ?? ""}`
+        : null,
     [currentWorkspaceId, installTarget.project_path, installTarget.scope],
   );
 
   // Reset store when workspace changes
   useEffect(() => {
+    if (installTargetKey === null) return;
     catalogAbortRef.current?.abort();
+    catalogInstallStateAbortRef.current?.abort();
     packageAbortRef.current?.abort();
     cliVersionAbortRef.current?.abort();
     npxSkillsStore.getState().resetForWorkspaceChange();
+    cliVersionPollStartedAtRef.current = null;
+    catalogInstallStatePollStartedAtRef.current = null;
   }, [installTargetKey]);
 
   const requestCatalog = useCallback(async () => {
@@ -266,24 +278,81 @@ export default function NpxSkillsLayout() {
     cliVersionAbortRef.current = controller;
     await npxSkillsStore
       .getState()
-      .fetchCliVersion(currentWorkspaceId, cliMode, controller.signal);
+      .fetchCliVersion(currentWorkspaceId, cliMode, false, controller.signal);
     if (cliVersionAbortRef.current === controller) {
       cliVersionAbortRef.current = null;
     }
   }, [cliMode, currentWorkspaceId, installTargetLoading]);
 
-  // Initial data load
+  const requestCatalogInstallState = useCallback(async () => {
+    if (!currentWorkspaceId || !resolvedTarget || installTargetLoading) return;
+    catalogInstallStateAbortRef.current?.abort();
+    const controller = new AbortController();
+    catalogInstallStateAbortRef.current = controller;
+    await npxSkillsStore
+      .getState()
+      .fetchCatalogInstallState(currentWorkspaceId, installTarget, controller.signal);
+    if (catalogInstallStateAbortRef.current === controller) {
+      catalogInstallStateAbortRef.current = null;
+    }
+  }, [currentWorkspaceId, installTarget, installTargetLoading, resolvedTarget]);
+
   useEffect(() => {
     if (!currentWorkspaceId || !resolvedTarget || installTargetLoading) return;
-    void Promise.all([requestCatalog(), requestCliVersion()]);
+    void requestCatalog();
+  }, [currentWorkspaceId, installTargetKey, installTargetLoading, requestCatalog, resolvedTarget]);
+
+  useEffect(() => {
+    if (!currentWorkspaceId || installTargetLoading || installTargetKey === null) return;
+    void requestCliVersion();
+  }, [cliMode, currentWorkspaceId, installTargetKey, installTargetLoading, requestCliVersion]);
+
+  useEffect(() => {
+    if (!currentWorkspaceId || !resolvedTarget || installTargetLoading || !catalogSyncedAt) {
+      return;
+    }
+    void requestCatalogInstallState();
   }, [
     currentWorkspaceId,
-    installTargetKey,
+    catalogSyncedAt,
     installTargetLoading,
-    requestCatalog,
-    requestCliVersion,
+    requestCatalogInstallState,
     resolvedTarget,
   ]);
+
+  useEffect(() => {
+    const freshness = cliVersionInfo?.freshness;
+    if (freshness !== "pending" && freshness !== "stale") {
+      cliVersionPollStartedAtRef.current = null;
+      return;
+    }
+    const startedAt = cliVersionPollStartedAtRef.current ?? Date.now();
+    cliVersionPollStartedAtRef.current = startedAt;
+    if (Date.now() - startedAt >= 30_000) {
+      return;
+    }
+    const handle = window.setTimeout(() => {
+      void requestCliVersion();
+    }, 2_000);
+    return () => window.clearTimeout(handle);
+  }, [cliVersionInfo?.freshness, requestCliVersion]);
+
+  useEffect(() => {
+    const freshness = catalogInstallState?.freshness;
+    if (freshness !== "pending" && freshness !== "stale") {
+      catalogInstallStatePollStartedAtRef.current = null;
+      return;
+    }
+    const startedAt = catalogInstallStatePollStartedAtRef.current ?? Date.now();
+    catalogInstallStatePollStartedAtRef.current = startedAt;
+    if (Date.now() - startedAt >= 30_000) {
+      return;
+    }
+    const handle = window.setTimeout(() => {
+      void requestCatalogInstallState();
+    }, 2_000);
+    return () => window.clearTimeout(handle);
+  }, [catalogInstallState?.freshness, requestCatalogInstallState]);
 
   const defaultRunConfig = useMemo<NpxSkillsRunConfig>(
     () => ({ agents, cliMode, installTarget }),
@@ -298,8 +367,8 @@ export default function NpxSkillsLayout() {
   }, []);
 
   const refreshAfterJob = useCallback(() => {
-    void Promise.all([requestCatalog(), requestPackages()]);
-  }, [requestCatalog, requestPackages]);
+    void Promise.all([requestCatalog(), requestCatalogInstallState(), requestPackages()]);
+  }, [requestCatalog, requestCatalogInstallState, requestPackages]);
 
   // Selected catalog items derived
   const selectedCatalogItems = useMemo(
@@ -705,14 +774,16 @@ export default function NpxSkillsLayout() {
   const isManageActive = location.pathname.endsWith("/manage");
 
   const baseSearch = searchParams.toString() ? `?${searchParams.toString()}` : "";
-  const cliVersionLabel = cliVersionLoading
-    ? t("npxSkills.contextCliVersionLoading")
-    : t("npxSkills.contextCliVersionValue", {
-        current:
-          cliVersionInfo?.current ?? t("npxSkills.contextCliVersionUnknown"),
-        latest:
-          cliVersionInfo?.latest ?? t("npxSkills.contextCliVersionUnknown"),
-      });
+  const cliVersionLabel = t("npxSkills.contextCliVersionValue", {
+    current:
+      cliVersionInfo?.current ?? t("npxSkills.contextCliVersionUnknown"),
+    latest:
+      cliVersionInfo?.latest ?? t("npxSkills.contextCliVersionUnknown"),
+  });
+  const showCliVersionSkeleton =
+    cliVersionInfo?.freshness === "pending" ||
+    (cliVersionLoading && !cliVersionInfo);
+  const showCliVersionRefreshing = cliVersionInfo?.freshness === "stale";
   const navigateTab = useCallback(
     (path: string) => {
       startTransition(() => {
@@ -933,18 +1004,35 @@ export default function NpxSkillsLayout() {
                     count: agents.length,
                   })}
                 />
-                <Chip
-                  size="small"
-                  color={
-                    cliVersionInfo?.status === "update_available"
-                      ? "warning"
-                      : cliVersionInfo?.status === "up_to_date"
-                      ? "success"
-                      : "default"
-                  }
-                  variant="outlined"
-                  label={cliVersionLabel}
-                />
+                {showCliVersionSkeleton ? (
+                  <Skeleton
+                    variant="rounded"
+                    width={220}
+                    height={24}
+                    sx={{ flexShrink: 0 }}
+                  />
+                ) : (
+                  <Chip
+                    size="small"
+                    color={
+                      cliVersionInfo?.status === "update_available"
+                        ? "warning"
+                        : cliVersionInfo?.status === "up_to_date"
+                        ? "success"
+                        : "default"
+                    }
+                    variant="outlined"
+                    label={cliVersionLabel}
+                  />
+                )}
+                {showCliVersionRefreshing ? (
+                  <Chip
+                    size="small"
+                    color="info"
+                    variant="outlined"
+                    label={t("npxSkills.contextCliVersionRefreshing")}
+                  />
+                ) : null}
                 <Chip
                   size="small"
                   variant="outlined"

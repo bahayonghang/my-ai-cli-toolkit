@@ -5,6 +5,7 @@ import type {
   PlatformConfig,
   ItemDto,
   SkillCatalogDto,
+  NpxCatalogInstallStateDto,
   NpxSkillsCatalogItemDto,
   NpxSkillsCliConfig,
   NpxSkillsCliMode,
@@ -594,12 +595,28 @@ export async function getNpxInstalledPackages(
 export async function getNpxSkillsCliVersion(
   platformId: string,
   cliMode: NpxSkillsCliMode,
+  refresh = false,
   signal?: AbortSignal
 ): Promise<NpxSkillsCliVersionDto> {
   const query = new URLSearchParams();
   query.set("cli_mode", cliMode);
+  if (refresh) query.set("refresh", "true");
   return fetchJson<NpxSkillsCliVersionDto>(
     `${BASE}/platforms/${platformId}/npx-skills/cli-version?${query.toString()}`,
+    { signal }
+  );
+}
+
+export async function getNpxSkillsCatalogInstallState(
+  platformId: string,
+  installTarget?: InstallTarget,
+  signal?: AbortSignal
+): Promise<NpxCatalogInstallStateDto> {
+  const query = new URLSearchParams();
+  applyInstallTargetQuery(query, installTarget);
+  const qs = query.toString();
+  return fetchJson<NpxCatalogInstallStateDto>(
+    `${BASE}/platforms/${platformId}/npx-skills/catalog-install-state${qs ? `?${qs}` : ""}`,
     { signal }
   );
 }

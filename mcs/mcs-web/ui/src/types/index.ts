@@ -267,6 +267,27 @@ export interface ActivityRunsPageDto {
   runs: ActivityRunDto[];
 }
 
+export type ActivityEventKind =
+  | "job_started"
+  | "item_started"
+  | "item_finished"
+  | "job_completed"
+  | "job_failed";
+
+export type ActivityEventLevel = "info" | "warning" | "error";
+
+export interface ActivityEventDto {
+  run_id: string;
+  seq: number;
+  ts_ms: number;
+  kind: ActivityEventKind;
+  level: ActivityEventLevel;
+  surface: ActivitySurface;
+  platform_id?: string | null;
+  operation?: ActivityOperation | null;
+  payload: Record<string, unknown>;
+}
+
 // ── Prompt ─────────────────────────────────────────────────────────
 
 export interface PromptDiffDto {
@@ -315,9 +336,11 @@ export interface NpxSkillsCatalogItemDto {
   stars: number | null;
   project_only: boolean;
   usage: string | null;
-  installed_state: "installed" | "not_installed";
+  installed_state: "installed" | "not_installed" | "unknown";
   installed_instance_id: string | null;
 }
+
+export type NpxSnapshotFreshness = "fresh" | "stale" | "pending" | "failed";
 
 export interface NpxSkillsCapabilityDto {
   supported: boolean;
@@ -335,6 +358,14 @@ export interface NpxSkillsCliVersionDto {
   current: string | null;
   latest: string | null;
   status: "up_to_date" | "update_available" | "unknown";
+  freshness: NpxSnapshotFreshness;
+  checked_at_ms: number | null;
+  reason: string | null;
+}
+
+export interface NpxCatalogInstallStateDto {
+  installed_ids_by_name: Record<string, string>;
+  freshness: NpxSnapshotFreshness;
   checked_at_ms: number | null;
   reason: string | null;
 }

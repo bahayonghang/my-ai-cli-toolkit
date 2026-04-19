@@ -18,6 +18,7 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  Skeleton,
   Stack,
   Switch,
   TextField,
@@ -162,6 +163,8 @@ export default function NpxFindView({
   );
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const topAnchorRef = useRef<HTMLDivElement | null>(null);
+  const activeAnchorRef = useRef<string | null>(activeCatalogAnchorId);
+  activeAnchorRef.current = activeCatalogAnchorId;
 
   useEffect(() => {
     if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
@@ -175,11 +178,13 @@ export default function NpxFindView({
             continue;
           }
 
-          if (entry.target.id === TOP_ANCHOR_ID) {
-            setActiveCatalogAnchorId(null);
-          } else {
-            setActiveCatalogAnchorId(entry.target.id);
+          const nextAnchor =
+            entry.target.id === TOP_ANCHOR_ID ? null : entry.target.id;
+          if (activeAnchorRef.current === nextAnchor) {
+            continue;
           }
+          activeAnchorRef.current = nextAnchor;
+          setActiveCatalogAnchorId(nextAnchor);
         }
       },
       {
@@ -553,18 +558,45 @@ export default function NpxFindView({
                       : "var(--mcs-panel-fill)",
                 }}
               >
-                <Box sx={{ textAlign: "left" }}>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                    {t("common.all")}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {t("npxSkills.discoverJumpAll")}
-                  </Typography>
-                </Box>
-                <Chip size="small" variant="outlined" label={totalVisibleCount} />
+                {(catalogLoading || installTargetLoading) && catalogItems.length === 0 ? (
+                  <>
+                    <Box sx={{ textAlign: "left", width: "100%" }}>
+                      <Skeleton variant="text" width="55%" />
+                      <Skeleton variant="text" width="72%" />
+                    </Box>
+                    <Skeleton variant="rounded" width={28} height={20} />
+                  </>
+                ) : (
+                  <>
+                    <Box sx={{ textAlign: "left" }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {t("common.all")}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("npxSkills.discoverJumpAll")}
+                      </Typography>
+                    </Box>
+                    <Chip size="small" variant="outlined" label={totalVisibleCount} />
+                  </>
+                )}
               </ButtonBase>
 
-              {catalogSections.map((section) => (
+              {(catalogLoading || installTargetLoading) && catalogItems.length === 0
+                ? Array.from({ length: 4 }).map((_, index) => (
+                    <Box
+                      key={`catalog-skeleton-${index}`}
+                      sx={{
+                        px: 1.2,
+                        py: 1.05,
+                        borderRadius: 2.5,
+                        border: "1px solid var(--mcs-panel-stroke-soft)",
+                      }}
+                    >
+                      <Skeleton variant="text" width="35%" />
+                      <Skeleton variant="text" width="78%" />
+                    </Box>
+                  ))
+                : catalogSections.map((section) => (
                 <ButtonBase
                   key={section.id}
                   onClick={() => scrollToAnchor(section.anchorId)}
@@ -608,9 +640,36 @@ export default function NpxFindView({
           ) : null}
 
           {(catalogLoading || installTargetLoading) && catalogItems.length === 0 ? (
-            <Box display="flex" justifyContent="center" py={8}>
-              <CircularProgress />
-            </Box>
+            <Stack spacing={2}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Card
+                  key={`discover-card-skeleton-${index}`}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 3.5,
+                    borderColor: "var(--mcs-workbench-outline)",
+                    backgroundColor: "var(--mcs-panel-fill)",
+                  }}
+                >
+                  <CardContent sx={{ p: 2.25 }}>
+                    <Stack spacing={1.25}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Skeleton variant="rounded" width={88} height={24} />
+                        <Skeleton variant="rounded" width={72} height={24} />
+                      </Stack>
+                      <Skeleton variant="text" width="42%" height={32} />
+                      <Skeleton variant="text" width="88%" />
+                      <Skeleton variant="text" width="76%" />
+                      <Stack direction="row" spacing={0.75}>
+                        <Skeleton variant="rounded" width={90} height={24} />
+                        <Skeleton variant="rounded" width={82} height={24} />
+                        <Skeleton variant="rounded" width={76} height={24} />
+                      </Stack>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
           ) : visibleCatalogItems.length === 0 ? (
             <Alert severity="info">{t("npxSkills.noCatalogResults")}</Alert>
           ) : (

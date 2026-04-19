@@ -3,16 +3,18 @@ import { darkTheme, lightTheme } from "./theme";
 
 describe("theme", () => {
   it("exports the light theme contract", () => {
-    expect(lightTheme.palette.background.default).toBe("#F7F8F8");
-    expect(lightTheme.palette.background.paper).toBe("#FFFFFF");
-    expect(lightTheme.palette.primary.main).toBe("#5E6AD2");
-    expect(lightTheme.typography.h1?.fontFamily).toContain("Inter");
-    expect(lightTheme.shape.borderRadius).toBe(4);
+    // Claude brand: Parchment canvas, Ivory paper, Terracotta accent.
+    expect(lightTheme.palette.background.default).toBe("#F5F4ED");
+    expect(lightTheme.palette.background.paper).toBe("#FAF9F5");
+    expect(lightTheme.palette.primary.main).toBe("#C96442");
+    expect(lightTheme.typography.h1?.fontFamily).toContain("Source Serif 4");
+    expect(lightTheme.shape.borderRadius).toBe(8);
   });
 
   it("exports the dark theme contract and shared css variables", () => {
-    expect(darkTheme.palette.background.default).toBe("#08090A");
-    expect(darkTheme.palette.primary.main).toBe("#5E6AD2");
+    expect(darkTheme.palette.background.default).toBe("#141413");
+    // Dark reads Coral as accent — the warmer variant on dark canvases.
+    expect(darkTheme.palette.primary.main).toBe("#D97757");
 
     const styleOverrides = darkTheme.components?.MuiCssBaseline?.styleOverrides;
     expect(typeof styleOverrides).toBe("function");
@@ -21,7 +23,8 @@ describe("theme", () => {
       typeof styleOverrides === "function"
         ? (styleOverrides as unknown as () => string)()
         : "";
-    expect(css).toContain('--font-family-display: "Inter"');
+    expect(css).toContain('--font-family-display: "Source Serif 4"');
+    expect(css).toContain('--font-family-body: "Inter"');
     expect(css).toContain("--mcs-canvas");
     expect(css).toContain("--mcs-glass-blur");
     expect(css).toContain("--mcs-workbench-accent");
