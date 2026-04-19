@@ -1,0 +1,59 @@
+{
+  "skill_name": "git-commit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a staged auth change that adds SMS fallback to the login flow. Please generate and execute one Conventional Commit for it, and keep emoji enabled.",
+      "expected_output": "Treat it as a single-feature commit and produce or execute an English feat(auth) style commit with emoji, without pushing.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "The staged set mixes an order-service bug fix and a README update. Do not commit yet. Tell me whether it should split into two commits and draft both headers.",
+      "expected_output": "Prefer a split plan and English candidate headers instead of merging the mixed staged set into one vague commit.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "This change reshapes the /api/user/profile response and removes the old fields. Generate the commit message and mark it as a breaking change.",
+      "expected_output": "The header may include ! and the footer should include a BREAKING CHANGE note, with English scope/subject/body.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Write a commit message for fixing duplicate ledger writes in the payment callback, close #128, reference #130, and include Jira PROJ-456.",
+      "expected_output": "Correctly distinguish Closes #128, Refs #130, and an extra footer line such as Jira: PROJ-456.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "There are no staged changes in the repo, but I want to commit now. What should you do under this skill?",
+      "expected_output": "Stop clearly and tell the user to stage files first instead of inventing a commit or running git commit anyway.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Do not actually commit. Draft a commit message for fixing the virtualized list performance issue. Do not include any Co-Authored-By line.",
+      "expected_output": "Draft only, do not run git commit, and do not include Co-Authored-By or attribution lines.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "请使用中文拆分提交所有的改动。当前没有 staged，另外还有两个未跟踪文件。先判断应该拆成几个 commit，再按方案执行。",
+      "expected_output": "Enter all-changes mode and chinese-output mode together, plan the split against the full staged/unstaged/untracked set, and use Chinese for the resulting commit text or split plan.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "当前没有 staged，但我要把所有改动直接提交，包括新文件。请生成并执行一个 Conventional Commit。",
+      "expected_output": "Enter all-changes mode without asking the user to stage files manually first, but keep the commit text in English because the exact Chinese-output phrase was not used.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "Split and commit all changes, but one file mixes two unrelated purposes. Handle it directly.",
+      "expected_output": "Recognize all-changes mode, but stop at the split-plan layer because the split would require hunk-level surgery inside one file.",
+      "files": []
+    }
+  ]
+}

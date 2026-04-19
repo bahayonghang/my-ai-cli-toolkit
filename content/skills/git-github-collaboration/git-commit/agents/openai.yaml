@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit"
+  short_description: "Safely plan, draft, or execute Conventional Commits for staged changes or explicit all-changes commits"
+  default_prompt: "Use $git-commit to inspect the repo changes, decide whether staged-only or all-changes mode applies, split commits safely when needed, and then draft or execute a Conventional Commit without pushing. Default to English and switch to Chinese only when the user explicitly says `请使用中文拆分提交所有的改动`."

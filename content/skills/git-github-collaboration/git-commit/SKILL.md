@@ -1,13 +1,12 @@
 ---
-name: git-commit-cn
-description: Safely orchestrate Chinese Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, prepare a Chinese commit, draft a Conventional Commit, or generate structured commit text without pushing by default.
+name: git-commit
+description: Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Default to English. Switch to Chinese only when the user explicitly says `请使用中文拆分提交所有的改动`.
 category: git-github-collaboration
 tags:
   - git
   - conventional-commits
   - commit-message
-  - chinese
-version: 1.4.0
+version: 1.5.0
 allowed-tools:
   - Bash
   - python
@@ -15,10 +14,12 @@ allowed-tools:
 
 Use this workflow in order: `preflight -> split plan -> classify -> compose -> commit/draft -> verify`.
 
-Decide the active change authority before doing anything else:
+Decide the active change authority and output language before doing anything else:
 
 - `staged-only` is the default. Respect the current index and treat unstaged or untracked files as context only.
 - `all-changes` is allowed only when the user explicitly asks to include everything, such as "all changes", "所有改动", "全部改动", "不管有没有 stage", or "包括未跟踪文件". In this mode, the skill may rebuild the index from the full working tree and should treat any existing partial staging as intentionally overridden by the user.
+- `english-output` is the default. Use English for commit `scope`, `subject`, `body`, and explanatory output.
+- `chinese-output` is allowed only when the user explicitly says `请使用中文拆分提交所有的改动`. Treat other Chinese-language prompts as `english-output` unless they include that exact phrase.
 
 ## 1. Preflight
 
@@ -51,11 +52,13 @@ Decide the active change authority before doing anything else:
 
 ## 3. Classify
 
-1. Choose `type`, optional `scope`, emoji policy, and whether `!` / `BREAKING CHANGE` is required.
+1. Choose `type`, optional `scope`, emoji policy, output language, and whether `!` / `BREAKING CHANGE` is required.
 2. Use [references/commit-types.md](references/commit-types.md) for type and emoji mapping.
 3. Use [references/message-rules.md](references/message-rules.md) for subject, body, footer, issue, and breaking-change rules.
 4. Default to emoji because this repository expects it. Only opt out when the user explicitly requests no emoji.
-5. Keep `type` in English. Prefer Chinese for `scope`, `subject`, `body`, and explanatory output unless the user clearly asked for English.
+5. Keep `type` in English.
+6. Default `scope`, `subject`, `body`, and explanatory output to English.
+7. Switch `scope`, `subject`, `body`, and explanatory output to Chinese only when the user explicitly says `请使用中文拆分提交所有的改动`.
 
 ## 4. Compose
 
@@ -94,6 +97,7 @@ Decide the active change authority before doing anything else:
 3. After a successful commit, summarize:
    - the final header
    - whether `staged-only` or `all-changes` mode was used
+   - whether `english-output` or `chinese-output` was used
    - whether emoji was included
    - whether untracked files were included
    - whether issues or breaking changes were attached

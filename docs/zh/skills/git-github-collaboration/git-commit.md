@@ -1,6 +1,6 @@
-# Git Commit CN
+# Git Commit
 
-为 staged Git 变更安全地规划、起草或执行中文 Conventional Commit；当用户明确要求“包含所有改动”时，也可以基于整个工作区执行 all-changes 模式，并且默认不推送。
+为 staged Git 变更安全地规划、起草或执行 Conventional Commit；当用户明确要求“包含所有改动”时，也可以基于整个工作区执行 all-changes 模式，并且默认不推送。默认输出英文，只有用户明确说出 `请使用中文拆分提交所有的改动` 时才切到中文。
 
 ## 概览
 
@@ -10,7 +10,7 @@
 2. 检查 `git status` 以及对应模式需要的 diff
 3. 判断当前活动变更集合是否适合直接提交
 4. 不安全时先输出拆分计划
-5. 按中文 Conventional Commit 规则分类
+5. 按 Conventional Commit 规则和语言门槛分类
 6. 用脚本生成 message
 7. 视用户要求决定只起草还是实际执行 `git commit`
 8. 读取提交输出，hook 失败时立即停止
@@ -18,13 +18,13 @@
 包装脚本会自动寻找 `python3`、`python` 或 `py`，并继续负责跨 shell 安全地生成多行 commit message：
 
 ```bash
-COMMIT_COMPOSER=content/skills/git-github-collaboration/git-commit-cn/scripts/compose_commit_message
+COMMIT_COMPOSER=content/skills/git-github-collaboration/git-commit/scripts/compose_commit_message
 
 bash "$COMMIT_COMPOSER" \
   --type feat \
   --scope auth \
-  --summary 添加双因素认证 \
-  --body-line 支持 TOTP 和恢复码 \
+  --summary add dual-factor authentication \
+  --body-line support TOTP and recovery codes \
   --refs 128 \
   --footer-line "Jira: AUTH-42" \
   --output .git/COMMIT_EDITMSG.codex
@@ -40,7 +40,7 @@ git commit -F .git/COMMIT_EDITMSG.codex
 4. `staged-only` 下如果没有 staged changes，直接停止并提示先暂存。
 5. `all-changes` 下如果工作区没有任何改动，直接停止。
 6. 如果活动变更集合混杂且无法安全拆分，只输出拆分计划，不盲目提交。
-7. 选择正确的 Conventional Commit 类型、scope、emoji 策略和 breaking change 标记。
+7. 选择正确的 Conventional Commit 类型、scope、emoji 策略、breaking change 标记和输出语言。
 8. 用包装脚本生成 commit message，不要把 `python` 写死在命令里。
 9. 如果用户只要文案，就只返回草稿。
 10. 如果真正提交：
@@ -65,4 +65,6 @@ git commit -F .git/COMMIT_EDITMSG.codex
 - commit hook 失败时，直接报告原始错误并停止
 - `all-changes` 只在用户明确授权“包含所有改动”时启用
 - 需要同文件内细粒度拆分时，停在方案层，不做猜测式重组
-- `type` 保持英文，`scope`、`subject`、`body` 默认优先中文
+- `type` 保持英文
+- `scope`、`subject`、`body` 和说明性输出默认使用英文
+- 只有用户明确说出 `请使用中文拆分提交所有的改动` 时才切到中文

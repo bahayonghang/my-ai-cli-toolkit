@@ -341,8 +341,8 @@ test("inferGroupKey avoids known substring-based misclassifications", () => {
 
   assert.equal(
     inferGroupKey(
-      "git-commit-cn",
-      "Safely orchestrate Chinese Conventional Commits for staged Git changes and commit workflows."
+      "git-commit",
+      "Safely orchestrate Conventional Commits for staged Git changes and commit workflows."
     ),
     "development-implementation"
   );
