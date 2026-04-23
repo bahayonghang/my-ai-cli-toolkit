@@ -150,3 +150,12 @@ stars = 5
 usage = "使用此系统对现有的 Skill 进行自动化评估、改进、测试以及保留或回滚操作"
 tags = ["skills", "optimization", "automation", "testing"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "alchaincyf/darwin-skill" }
+
+[[skills]]
+id = "opencli"
+name = "opencli"
+description = "OpenCLI"
+stars = 5
+usage = "npx skills add jackwener/opencli"
+tags = ["cli", "engineering"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "jackwener/opencli" }

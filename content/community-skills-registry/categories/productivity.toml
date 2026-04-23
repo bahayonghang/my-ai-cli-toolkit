@@ -26,6 +26,15 @@ tags = ["ppt", "presentation", "productivity", "ai"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "bahayonghang/AIPPT", skill_flag = "AIPPT" }
 
 [[skills]]
+id = "kami"
+name = "Kami"
+description = "专业文档静谧设计系统（单页、长文档、简历、作品集与 Slides）"
+stars = 5
+usage = "npx skills add tw93/kami"
+tags = ["documents", "presentation", "resume", "whitepaper", "productivity"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "tw93/kami" }
+
+[[skills]]
 id = "my-claude-code-settings"
 name = "my-claude-code-settings"
 description = "My Claude Code Settings（跨平台 AI 编码助手通用配置与技能注册中心）"
@@ -51,3 +60,12 @@ stars = 4
 usage = "npx skills add huangzhenhao90/pptx-deck-builder"
 tags = ["presentation", "pptx", "pptxgenjs", "slides", "storytelling", "design-system"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "huangzhenhao90/pptx-deck-builder" }
+
+[[skills]]
+id = "ppt-master"
+name = "ppt-master"
+description = "PPT Master"
+stars = 5
+usage = "npx skills add hugohe3/ppt-master"
+tags = ["presentation", "ppt", "slides", "productivity"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "hugohe3/ppt-master" }

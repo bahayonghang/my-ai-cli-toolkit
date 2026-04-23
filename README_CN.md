@@ -27,6 +27,17 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills
 npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
+### 用 skills-manage 管理 skills
+
+如果你更想用桌面界面管理 skills，直接用 [skills-manage](https://github.com/iamzhihuix/skills-manage)。
+
+它可以统一管理 `~/.agents/skills/` 共享目录，从 GitHub 导入 skills，并把 skills 安装或链接到已支持的 agent 客户端。
+
+这个仓库可以直接接到这条链路里：
+
+- `content/skills/` 用作一方 skills 源
+- `content/community-skills-registry/` 用作第三方 skills 注册表元数据源
+
 ### 在需要 MCS、文档或本地工作流时再克隆仓库
 
 只有当你要使用 Rust TUI、Web、文档站点，或者本地 `just` 入口时，才需要克隆仓库：

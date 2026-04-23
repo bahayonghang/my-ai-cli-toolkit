@@ -132,3 +132,22 @@ stars = 3
 usage = "npx skills add huangzhenhao90/claude-infographic-charts -g"
 tags = ["infographic", "charts", "diagram", "svg", "html", "visualization"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "huangzhenhao90/claude-infographic-charts" }
+
+[[skills]]
+id = "huashu-design"
+name = "Huashu Design"
+description = "高保真设计交付技能包（原型、动画、可编辑 PPT 与信息图一体化生成）"
+stars = 5
+usage = "npx skills add alchaincyf/huashu-design"
+tags = ["design", "prototype", "animation", "slides", "infographic"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "alchaincyf/huashu-design" }
+
+[[skills]]
+id = "taste-skill"
+name = "taste-skill"
+description = "Taste Skill — 前端审美与高级界面生成技能包，面向高质量布局、排版、动效与视觉细节。"
+stars = 5
+usage = "npx skills add Leonxlnx/taste-skill"
+tags = ["design", "frontend", "ui", "animation", "visual"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "Leonxlnx/taste-skill" }
+

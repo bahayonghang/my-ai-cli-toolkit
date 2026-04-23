@@ -27,6 +27,17 @@ Install all first-party skills non-interactively to specific agents:
 npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
+### Manage skills with skills-manage
+
+If you prefer a desktop UI for skill management, use [skills-manage](https://github.com/iamzhihuix/skills-manage).
+
+It can manage a shared `~/.agents/skills/` library, import skills from GitHub, and install or link them into supported agent clients from one place.
+
+This repository fits that workflow:
+
+- use `content/skills/` as the first-party source
+- use `content/community-skills-registry/` as the third-party registry metadata source
+
 ### Clone the repository for MCS, docs, or local workflows
 
 Clone the repository when you want the Rust TUI, the web app, local docs, or local `just` entrypoints:
