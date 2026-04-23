@@ -18,6 +18,12 @@ FORBIDDEN_DOC_REFERENCES = {
     "content/memorys/": "stale prompts/memory layout (current: content/platforms/*/guidance/)",
 }
 
+ALLOWED_EXTRA_SKILL_DOCS = {
+    ("visual-media-design", "gemini-image"): (
+        "docs-only compatibility page kept after the in-repo skill removal"
+    ),
+}
+
 
 def skill_categories() -> list[str]:
     return sorted(
@@ -78,6 +84,8 @@ def compare_skill_docs(root: Path, label: str) -> list[str]:
             issues.append(f"[{label}] missing doc page: {category}/{name}.md")
 
         for name in extra:
+            if (category, name) in ALLOWED_EXTRA_SKILL_DOCS:
+                continue
             issues.append(f"[{label}] extra doc page without source skill: {category}/{name}.md")
 
     return issues

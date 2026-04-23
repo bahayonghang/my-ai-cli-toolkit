@@ -21,13 +21,13 @@ hero:
 features:
   - icon: 🧭
     title: Repository-Aligned Docs
-    details: The docs track the current `content/skills`, `content/platforms/*/{commands,agents,guidance}`, `content/hooks`, and `mcs/` workspace layout, including the external registry directory under `content/skills/`.
+    details: The docs track the current `content/skills`, `content/community-skills-registry`, `content/platforms/*/{commands,agents,guidance}`, `content/hooks`, and `mcs/` workspace layout.
   - icon: 🦀
     title: MCS TUI + Web
     details: Learn how `mcs-core`, `mcs-tui`, and `mcs-web` work together to discover, install, diff, and sync repository content.
   - icon: 📚
     title: Skills Catalog
-    details: Skill pages focus on the installable items under `content/skills` rather than older template-only or drifted documentation.
+    details: Skill pages focus on the live installable catalog rather than older template-only or drifted documentation.
   - icon: 🔌
     title: Runtime + External Content
     details: The guide also covers hooks, memory/runtime files, and the community-skills-registry used alongside the main catalog.

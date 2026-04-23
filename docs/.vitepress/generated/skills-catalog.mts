@@ -114,12 +114,6 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/docs-writing-publishing/academic-slides"
       },
       {
-        "slug": "bib-search-citation",
-        "title": "Bib Search Citation",
-        "summary": "Search, filter, and format entries from BibTeX/BibLaTeX `.bib` files with a compact query language and citation snippet generation.",
-        "path": "/skills/docs-writing-publishing/bib-search-citation"
-      },
-      {
         "slug": "bidwriter",
         "title": "BidWriter",
         "summary": "Bid-writing workflow for engineering consulting, architecture, municipal engineering, and related tender documents.",
@@ -167,10 +161,10 @@ export const SKILLS_CATALOG_EN = [
     "slug": "git-github-collaboration",
     "skills": [
       {
-        "slug": "git-commit-cn",
-        "title": "Git Commit CN",
-        "summary": "Safely plan, draft, or execute Chinese Conventional Commits for staged Git changes and, when explicitly requested, for all working-tree changes, without pushing by default.",
-        "path": "/skills/git-github-collaboration/git-commit-cn"
+        "slug": "git-commit",
+        "title": "Git Commit",
+        "summary": "Safely plan, draft, or execute Conventional Commits for staged Git changes and, when explicitly requested, for all working-tree changes, without pushing by default. The skill defaults to English and switches to Chinese only when the user explicitly says `请使用中文拆分提交所有的改动`.",
+        "path": "/skills/git-github-collaboration/git-commit"
       },
       {
         "slug": "gh-address-comments",
@@ -291,10 +285,10 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/visual-media-design/card"
       },
       {
-        "slug": "design-artifact-html",
-        "title": "Design Artifact HTML",
-        "summary": "Use this skill when the user wants an **HTML-first web product prototype** rather than a themed deck, diagram, or image.",
-        "path": "/skills/visual-media-design/design-artifact-html"
+        "slug": "design-artifact",
+        "title": "Design Artifact",
+        "summary": "Create HTML-first standalone design artifacts.",
+        "path": "/skills/visual-media-design/design-artifact"
       },
       {
         "slug": "excalidraw",
@@ -453,12 +447,6 @@ export const SKILLS_CATALOG_ZH = [
         "path": "/zh/skills/docs-writing-publishing/academic-slides"
       },
       {
-        "slug": "bib-search-citation",
-        "title": "Bib Search Citation",
-        "summary": "从 BibTeX/BibLaTeX `.bib` 文件中搜索、过滤和格式化条目，支持紧凑查询语法和引用片段生成。",
-        "path": "/zh/skills/docs-writing-publishing/bib-search-citation"
-      },
-      {
         "slug": "bidwriter",
         "title": "BidWriter",
         "summary": "面向工程咨询、建筑设计、市政工程等场景的标书编写技能。",
@@ -506,10 +494,10 @@ export const SKILLS_CATALOG_ZH = [
     "slug": "git-github-collaboration",
     "skills": [
       {
-        "slug": "git-commit-cn",
-        "title": "Git Commit CN",
-        "summary": "为 staged Git 变更安全地规划、起草或执行中文 Conventional Commit；当用户明确要求“包含所有改动”时，也可以基于整个工作区执行 all-changes 模式，并且默认不推送。",
-        "path": "/zh/skills/git-github-collaboration/git-commit-cn"
+        "slug": "git-commit",
+        "title": "Git Commit",
+        "summary": "为 staged Git 变更安全地规划、起草或执行 Conventional Commit；当用户明确要求“包含所有改动”时，也可以基于整个工作区执行 all-changes 模式，并且默认不推送。默认输出英文，只有用户明确说出 `请使用中文拆分提交所有的改动` 时才切到中文。",
+        "path": "/zh/skills/git-github-collaboration/git-commit"
       },
       {
         "slug": "gh-address-comments",
@@ -624,10 +612,10 @@ export const SKILLS_CATALOG_ZH = [
         "path": "/zh/skills/visual-media-design/brand-design-md"
       },
       {
-        "slug": "design-artifact-html",
-        "title": "Design Artifact HTML",
-        "summary": "当用户要的是 **HTML-first 的 web 前端产品原型**，而不是换主题的 deck、图表或图片时，使用这个 skill。",
-        "path": "/zh/skills/visual-media-design/design-artifact-html"
+        "slug": "design-artifact",
+        "title": "Design Artifact",
+        "summary": "生成 HTML-first 的独立设计产物。",
+        "path": "/zh/skills/visual-media-design/design-artifact"
       },
       {
         "slug": "excalidraw",

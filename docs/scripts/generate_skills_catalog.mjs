@@ -9,6 +9,12 @@ const contentSkillsRoot = path.join(repoRoot, 'content', 'skills')
 const docsRoot = path.join(repoRoot, 'docs')
 const generatedDir = path.join(docsRoot, '.vitepress', 'generated')
 const generatedFile = path.join(generatedDir, 'skills-catalog.mts')
+const extraSkillDocs = [
+  {
+    category: 'visual-media-design',
+    slug: 'gemini-image',
+  },
+]
 
 function listDirectories(dir) {
   return fs
@@ -119,19 +125,31 @@ function extractFrontmatterDescription(markdown) {
 
 function buildCatalog(localePrefix = '') {
   const docsSkillsRoot = path.join(docsRoot, localePrefix, 'skills')
+  const extraDocsByCategory = new Map()
+
+  for (const entry of extraSkillDocs) {
+    const values = extraDocsByCategory.get(entry.category) ?? []
+    values.push(entry.slug)
+    extraDocsByCategory.set(entry.category, values)
+  }
 
   return listDirectories(contentSkillsRoot)
     .map((category) => {
       const categoryDir = path.join(contentSkillsRoot, category)
-      const skills = listDirectories(categoryDir)
+      const sourceSkills = listDirectories(categoryDir)
         .filter((skill) =>
           fs.existsSync(path.join(categoryDir, skill, 'SKILL.md')),
         )
+      const extraDocs = (extraDocsByCategory.get(category) ?? []).filter(
+        (skill) =>
+          fs.existsSync(path.join(docsSkillsRoot, category, `${skill}.md`)),
+      )
+      const skills = [...new Set([...sourceSkills, ...extraDocs])]
         .map((skill) => {
           const docPath = path.join(docsSkillsRoot, category, `${skill}.md`)
           const skillPath = path.join(categoryDir, skill, 'SKILL.md')
           const docMarkdown = fs.existsSync(docPath) ? readText(docPath) : ''
-          const skillMarkdown = readText(skillPath)
+          const skillMarkdown = fs.existsSync(skillPath) ? readText(skillPath) : ''
           const extractedTitle = extractTitle(docMarkdown, skill)
           const title =
             extractedTitle === skill ? formatSlugTitle(skill) : extractedTitle
