@@ -159,3 +159,12 @@ stars = 5
 usage = "npx skills add jackwener/opencli"
 tags = ["cli", "engineering"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "jackwener/opencli" }
+
+[[skills]]
+id = "yao-open-skills"
+name = "yao-open-skills"
+description = "Yao Open Skills - 社区技能集合"
+stars = 4
+usage = "npx skills add yaojingang/yao-open-skills"
+tags = ["skills", "community", "workflow"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "yaojingang/yao-open-skills" }

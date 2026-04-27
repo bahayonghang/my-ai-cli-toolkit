@@ -69,3 +69,12 @@ stars = 5
 usage = "npx skills add hugohe3/ppt-master"
 tags = ["presentation", "ppt", "slides", "productivity"]
 install = { kind = "skills_cli", provider = "vercel", package_ref = "hugohe3/ppt-master" }
+
+[[skills]]
+id = "guizang-ppt-skill"
+name = "guizang-ppt-skill"
+description = "归藏 PPT Skill（面向演示文稿生成与编辑的技能包）"
+stars = 4
+usage = "npx skills add op7418/guizang-ppt-skill"
+tags = ["presentation", "ppt", "slides", "productivity"]
+install = { kind = "skills_cli", provider = "vercel", package_ref = "op7418/guizang-ppt-skill" }
