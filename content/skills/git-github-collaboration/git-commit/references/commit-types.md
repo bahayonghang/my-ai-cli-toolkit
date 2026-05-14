@@ -130,3 +130,83 @@ refactor: 重构用户权限检查逻辑
 refactor(api): 统一 API 错误处理格式
 refactor: 提取公共组件到 components 目录
 ```
+
+## Agent 提交（Agent-Aware Commits）
+
+Agent 生成的提交在标准 Conventional Commit 基础上追加两类元数据：header `[AI]` 标签 + 一组 trailer。
+
+### Header 形式
+
+```
+<type>(<scope>): [AI] <emoji> <subject>
+```
+
+- `[AI]` 位于冒号之后、emoji 之前
+- emoji 与 `[AI]` 正交：保留 emoji 不影响 `[AI]` 显示
+- 用户显式说「不要 AI 标记」时省略 `[AI]` 并跳过所有 agent trailer
+
+### Trailer 字段
+
+| 字段 | 用途 | 示例 |
+|------|------|------|
+| `Agent-Task` | 任务来源（issue URL / 任务 ID） | `Agent-Task: https://linear.app/x/issue/AUTH-42` |
+| `Agent-Model` | 模型标识 | `Agent-Model: claude-opus-4-7` |
+| `Agent-Prompt-Ref` | prompt 摘要 / hash / 短标签（可选） | `Agent-Prompt-Ref: prompt-2026-05-14-abc123` |
+| `Generated-By` | 固定 `agent`，审计哨兵 | `Generated-By: agent` |
+
+trailer 顺序：先 `BREAKING CHANGE` → 用户自定义 footer → `Closes` → `Refs` → `Agent-Task` → `Agent-Model` → `Agent-Prompt-Ref` → `Generated-By`。
+
+### 审计命令
+
+```bash
+# 列出所有 agent 提交
+git log --grep='^Generated-By: agent' --format='%H %s'
+
+# 按模型筛选
+git log --grep='^Agent-Model: claude-opus-4-7'
+
+# 按 `[AI]` 标签过滤
+git log --grep='\[AI\]' --format='%H %s'
+```
+
+### 端到端示例
+
+**示例 1：feat 含 Why + 完整 trailer**
+
+```
+feat(auth): [AI] ✨ 添加 SMS 兜底登录
+
+Why: 短信兜底降低验证码服务故障时的登录失败率
+
+Closes #88
+Agent-Task: https://linear.app/x/issue/AUTH-42
+Agent-Model: claude-opus-4-7
+Generated-By: agent
+```
+
+**示例 2：fix 含 Closes + Refs + 多 trailer**
+
+```
+fix(payment): [AI] 🐛 修复回调重复写入账本
+
+Why: 回调被网关重试，导致同一笔订单出现重复 ledger 行
+
+Closes #128
+Refs #130
+Jira: PROJ-456
+Agent-Task: PROJ-456
+Agent-Model: claude-opus-4-7
+Generated-By: agent
+```
+
+**示例 3：checkpoint（[WIP]）**
+
+```
+chore(wip): [AI] 🔧 [WIP] 抽取 refresh token 旋转逻辑
+
+Agent-Task: https://linear.app/x/issue/AUTH-42
+Agent-Model: claude-opus-4-7
+Generated-By: agent
+```
+
+checkpoint 跳过 Why 强制校验，仍保留 trailer。合并前由 interactive rebase 把多个 `[WIP]` squash 成一个 atomic commit。

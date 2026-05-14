@@ -39,6 +39,31 @@
 3. 每个 commit 的候选 `type(scope): subject`
 4. 为什么当前活动变更集合不适合直接提交
 
+## Atomic 校验三问
+
+每个候选 commit 在提交前用三问自检，三者皆 yes 才放行：
+
+1. **能否独立编译？** 该 commit 节点上代码可编译、测试可通过。
+2. **能否独立 revert？** `git revert <sha>` 撤回该 commit 不会让仓库进入不一致状态。
+3. **能否独立解释意图？** 一行 subject + 一行 Why 足够说清该 commit 干什么、为什么。
+
+任何一问答 no，回到拆分计划层。
+
+## Checkpoint vs Atomic
+
+两者互补，关注点不同：
+
+| 维度 | Checkpoint Commit | Atomic Commit |
+|------|-------------------|---------------|
+| 关注点 | 进度记录 | 语义边界 |
+| 触发时机 | 长任务的阶段性存档 | 单个完整变更 |
+| 是否要求可编译 | 不强制 | 必须 |
+| 是否进入最终历史 | 否（合并前 squash） | 是 |
+| Header 形式 | `chore(wip): [AI] 🔧 [WIP] <subject>` | `<type>(<scope>): [AI?] <emoji?> <subject>` |
+| Why 强制 | 否 | feat/fix/refactor/perf 强制 |
+
+checkpoint 在任务进行中保存现场，最终通过 interactive rebase 整理为一组语义清晰的 atomic commit 再合并到主干。本 skill 不直接执行 rebase，但会在 verify 阶段提示用户「该分支含 N 个 [WIP] commit，合并前需 squash」。
+
 ## 经验规则
 
 - 原子性优先于“提交数量少”
@@ -46,3 +71,4 @@
 - docs/test 可以跟随功能提交，但前提是它们直接服务于该功能
 - `all-changes` 模式可以覆盖当前 index，但不能覆盖不清晰的意图边界
 - 当不确定时，先停在计划层
+- checkpoint 不需要 atomic，但**最终留在历史里的 commit 必须 atomic**

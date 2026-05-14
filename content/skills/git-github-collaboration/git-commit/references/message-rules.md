@@ -5,19 +5,27 @@
 使用以下格式：
 
 ```text
-<type>(<scope>): <emoji?> <subject>
+<type>(<scope>): [AI?] <emoji?> <subject>
 ```
 
 - `type` 保持英文 Conventional Commit 关键字
 - `scope` 可选，推荐使用中文模块名
-- `subject` 使用中文动宾短语，不超过 50 个字符
+- `[AI]` 标签仅在 agent 生成提交时插入，位于冒号之后、emoji 之前
 - 默认保留 emoji；仅在用户明确要求时关闭
+- `subject` 使用动宾短语，不超过 50 个字符
 - 遇到不兼容变更时，可使用 `type(scope)!:` 头部形式
+
+示例：
+
+```text
+feat(auth): [AI] ✨ 添加 SMS 兜底登录
+fix(cart): 🐛 修复购物车总价未更新
+```
 
 ## Subject 规则
 
-- 写“添加”“修复”“优化”“重构”这类动宾短语
-- 不要写空泛表述，如“改了点东西”“更新代码”
+- 写「添加」「修复」「优化」「重构」这类动宾短语
+- 不要写空泛表述，如「改了点东西」「更新代码」
 - 去掉句末 `。 . ! ！`
 - 优先描述做了什么，不展开技术背景
 
@@ -30,6 +38,20 @@
   - 关键实现方式
   - 影响范围或验证方式
 
+### Why-line 强制规则
+
+对 `feat` / `fix` / `refactor` / `perf` 四类提交，body 首行必须是 `Why: <动机>`：
+
+```text
+feat(auth): [AI] ✨ 添加 SMS 兜底登录
+
+Why: 短信兜底降低验证码服务故障时的登录失败率
+```
+
+凑不出真实动机不要编造。Agent 应停在 split-plan 层，请求用户补充背景。
+
+`docs` / `style` / `chore` / `test` / `build` / `ci` / `revert` 可省略 Why。
+
 ## Footer 规则
 
 - `BREAKING CHANGE:` 用于不兼容变更说明
@@ -38,6 +60,25 @@
 - 其他 footer 通过通用 trailer 表达，例如：
   - `Jira: PROJ-123`
   - `禅道: #88`
+
+### Agent Trailer
+
+Agent 生成的提交追加以下 trailer，置于其他 footer 之后：
+
+| 字段 | 含义 | 必填 |
+|------|------|------|
+| `Agent-Task` | 任务 ID 或 issue URL，缺失时为 `unspecified` | 是 |
+| `Agent-Model` | 模型标识，例如 `claude-opus-4-7` | 是（与 `[AI]` 强绑定） |
+| `Agent-Prompt-Ref` | prompt 摘要 / hash / 短标签 | 否 |
+| `Generated-By` | 固定值 `agent`，作为审计哨兵 | 是 |
+
+审计示例：
+
+```bash
+git log --grep='^Generated-By: agent' --format='%H %s'
+git log --grep='\[AI\]' --format='%H %s'
+git log --grep='^Agent-Model: claude-opus-4-7'
+```
 
 ## Breaking Change 规则
 
@@ -51,11 +92,13 @@
 
 1. 头部可使用 `!`
 2. footer 中补 `BREAKING CHANGE: ...`
-3. 文案中说明迁移影响，而不是只写“有破坏性变更”
+3. 文案中说明迁移影响，而不是只写「有破坏性变更」
 
 ## 禁止项
 
 - 不要添加 `Co-Authored-By`
-- 不要附加 AI attribution
+- 不要附加 AI attribution 文案（例如 `🤖 Generated with Claude Code`）
 - 不要在 message 中讨论 `git push`
 - 不要为了凑格式写空洞 body
+
+注意：`Generated-By: agent` 是结构化 trailer，不是 attribution。前者是机器可解析的审计字段，后者是面向人的署名文案，两者不同。

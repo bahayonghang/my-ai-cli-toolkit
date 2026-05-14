@@ -54,6 +54,36 @@
       "prompt": "Split and commit all changes, but one file mixes two unrelated purposes. Handle it directly.",
       "expected_output": "Recognize all-changes mode, but stop at the split-plan layer because the split would require hunk-level surgery inside one file.",
       "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "I have a staged auth change that adds SMS fallback to the login flow. Please commit it. Use agent-mode defaults.",
+      "expected_output": "Header contains `[AI] ✨`, body starts with a `Why:` line explaining the motivation, trailers include Agent-Task (from branch or unspecified), Agent-Model matching the running model id, and Generated-By: agent. No Co-Authored-By, no attribution line.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "I'm midway through refactoring refresh token rotation. Just give me a checkpoint commit so I don't lose progress. Don't worry about polishing the message.",
+      "expected_output": "Recognize checkpoint-mode. Produce a single `chore(wip): [AI] 🔧 [WIP] <subject>` commit. Skip the Why-line requirement. Still attach Agent-Task / Agent-Model / Generated-By trailers. Remind the user to squash [WIP] commits before merging.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "Commit my staged bug fix to the cart total calculator. Don't add any AI tag or agent trailer — I want a normal Conventional Commit.",
+      "expected_output": "Disable agent-mode. Header has no `[AI]` tag, no Agent-Task / Agent-Model / Agent-Prompt-Ref / Generated-By trailers. Standard Conventional Commit with emoji preserved.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "Commit this staged feat change. The diff modifies the user profile API but I haven't said why I'm doing it.",
+      "expected_output": "Type is `feat`, Why is required. Since the agent cannot infer a real motivation from the diff alone, stop at the split-plan layer and ask the user to supply the Why before composing. Do not fabricate a Why line and do not run git commit.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "Write a commit message for fixing duplicate ledger writes in the payment callback, close #128, and link it to task tracker URL https://linear.app/x/issue/PAY-77.",
+      "expected_output": "Closes #128 stays in the standard footer. The task tracker URL is rendered as `Agent-Task: https://linear.app/x/issue/PAY-77`, not mixed into Closes. Agent-Model and Generated-By trailers attach. Header includes `[AI] 🐛` and body has a Why line.",
+      "files": []
     }
   ]
 }
