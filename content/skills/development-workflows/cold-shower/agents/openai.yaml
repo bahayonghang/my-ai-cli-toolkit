@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cold Shower"
+  short_description: "No-flattery adversarial idea review"
+  default_prompt: "Use $cold-shower to challenge my proposal before execution or commitment. Do not praise by default. Restate the idea, identify hidden assumptions, attack the weakest point, list likely failure modes and missing evidence, then propose the smallest falsification test and kill / revise / continue criteria."
