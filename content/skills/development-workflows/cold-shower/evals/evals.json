@@ -1,0 +1,71 @@
+{
+  "skill_name": "cold-shower",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我 challenge 一下这个缓存+队列方案，哪里会崩？我们准备在服务层加 Redis 缓存、异步队列和重试机制，目标是把峰值流量撑住。",
+      "expected_output": "中文冷水式技术方案审查；不使用先夸后否定；至少列出 3 个隐藏假设、最脆弱点、具体失败模式、证伪测试和 kill/revise/continue 标准。",
+      "files": [],
+      "assertions": [
+        "The response does not open with praise-sandwich wording.",
+        "The response names at least 3 hidden assumptions or equivalent assumption risks.",
+        "The response identifies one most fragile point before broad recommendations.",
+        "The response includes a concrete falsification test and kill/revise/continue criteria."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我要做一个自动整理技能的功能，先给我泼冷水，不要直接写代码。它会扫描本地 skills，然后自动合并重复项、改描述、顺便清理旧文件。",
+      "expected_output": "需求编码前审视；不得开始实现；明确参与者、输入输出、状态、错误、验收标准中的缺口，并指出最可能造成返工的假设。",
+      "files": [],
+      "assertions": [
+        "The response refuses to start coding or implementation.",
+        "The response exposes ambiguous actors, inputs, outputs, state, errors, and acceptance criteria.",
+        "The response names the assumption most likely to waste implementation effort."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "我想把这个工具改成订阅制，骂我这个定价想法有什么问题。现在设想是个人版每月 9 美元，团队版每席 29 美元。",
+      "expected_output": "产品/定价冷水；分开讨论需求、分发、付费意愿和维护成本；指出最经不起推敲的优势和规模化前需要的证据。",
+      "files": [],
+      "assertions": [
+        "The response separates demand, distribution, willingness to pay, and maintenance burden.",
+        "The response identifies the claimed advantage most likely to collapse.",
+        "The response states proof required before scaling pricing changes."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "假设你是我的对手，我要进 AI skills marketplace，这个判断哪里站不住？如果能举死亡案例就举，但不要编。",
+      "expected_output": "市场进入冷水；只有在有用户提供或已验证证据时才点名失败案例；否则按失败模式分类，不编公司名、数字或引文。",
+      "files": [],
+      "assertions": [
+        "The response does not fabricate failed companies, numbers, quotes, or statistics.",
+        "The response classifies failure patterns if verified death cases are unavailable.",
+        "The response states which failed pattern the plan most resembles."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "这是我的 BP 叙事：我们做一个 AI agent 技能平台，让每个人都能安装专家能力。挑刺，投资人最不想投我的理由是什么？",
+      "expected_output": "Pitch/BP 冷水；扮演有偏见的投资人，给出 3 个最不想投的理由，并分开市场、紧迫性、差异化、牵引和分发证据。",
+      "files": [],
+      "assertions": [
+        "The response acts from a skeptical investor or buyer frame.",
+        "The response gives 3 strongest reasons not to invest, buy, or believe.",
+        "The response separates market size, urgency, differentiation, traction, and distribution proof."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "请 review 这段 TypeScript diff 有没有 bug，重点看 hooks 依赖和类型错误。",
+      "expected_output": "普通代码审查近似负例；不应自动进入 cold-shower 的产品/决策冷水模式，除非用户明确要求挑战假设或失败模式。",
+      "files": [],
+      "assertions": [
+        "The skill description should not cause ordinary code review prompts to be handled as cold-shower decision review.",
+        "If answered by the skill, the response should redirect to normal code review rather than forcing hidden-assumption and kill-criteria framing."
+      ]
+    }
+  ]
+}
