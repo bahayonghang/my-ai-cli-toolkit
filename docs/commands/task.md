@@ -1,5 +1,8 @@
 # Task Management Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Commands for creating, decomposing, executing, and replanning workflow tasks. Tasks are stored as JSON files within workflow sessions and support dependency tracking, agent routing, and status management.
 
 ## Commands

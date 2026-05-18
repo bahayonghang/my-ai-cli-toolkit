@@ -2,17 +2,17 @@
 
 Use the Codex companion runtime when you want the `codex-plugin-cc` style workflow inside Codex itself: readiness checks, background jobs, resumable delegated work, or job lifecycle commands such as status, result, and cancel.
 
-This skill is the plugin-style sibling to the direct [codex](./codex.md) skill.
+This skill corresponds to the Codex companion prompt pack currently shipped under `content/platforms/codex/prompts/codex-companion/`.
 
 If you need companion-style workflows for other CLIs instead of Codex-specific runtime lifecycle control, see:
 
 - [claude-code-companion](./claude-code-companion.md)
 - [gemini-companion](./gemini-companion.md)
-- [qwen-companion](./qwen-companion.md)
+- [skill-map](./skill-map.md)
 
 | Skill | Positioning | Best for |
 |---|---|---|
-| `codex` | Direct Codex CLI wrapper | One-off `codex review` or `codex exec` runs |
+| Codex prompts | Codex CLI prompt pack | `task`, `review`, `status`, `result`, and `cancel` prompt flows |
 | `codex-companion` | Companion runtime | Persistent jobs, follow-up task threads, plugin-like review and task orchestration |
 
 ## Command Surface

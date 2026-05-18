@@ -6,7 +6,7 @@ Cross-platform AI content repository with a Rust management workspace.
 
 This repository is organized around two top-level areas:
 
-- `content/`: installable skills, commands, agent definitions, runtime files, and external-skill registry data
+- `content/`: installable skills, platform-scoped commands/agents/prompts/rules, hooks, and external-skill registry data
 - `mcs/`: the Rust workspace that powers discovery, install, diff, sync, TUI, and Web workflows
 
 ## Quick start
@@ -63,10 +63,13 @@ just doc
 ├── content/
 │   ├── skills/            # First-party skill catalog
 │   ├── community-skills-registry/  # Third-party skill registry (TOML metadata)
-│   ├── commands/          # Slash commands and workflow sources
-│   ├── agents/            # Markdown agent definitions
 │   ├── hooks/             # Runtime hook assets
-│   └── memorys/           # Platform-specific runtime memory / prompt files
+│   └── platforms/
+│       └── <platform>/
+│           ├── commands/  # Platform command / workflow sources when present
+│           ├── agents/    # Platform agent definitions when present
+│           ├── prompts/   # Platform prompt packs when present
+│           └── rules/     # Platform base guidance files when present
 ├── docs/                  # VitePress documentation site
 ├── mcs/                   # Rust workspace: mcs-core, mcs-tui, mcs-web
 ├── platforms.toml         # Platform install mapping
@@ -129,13 +132,13 @@ The VitePress site in `docs/` covers:
 - external skills
 - skill catalog pages in English and Chinese
 
-For Codex-related skills:
+For companion and developer-tool integrations:
 
-- `docs/skills/developer-tools-integrations/codex.md` and `docs/zh/skills/developer-tools-integrations/codex.md` cover the direct Codex CLI workflow, including the `gpt-5.4` default model plus the recommended `codex exec` and live web-search patterns.
-- `docs/skills/developer-tools-integrations/codex-companion.md` and `docs/zh/skills/developer-tools-integrations/codex-companion.md` cover the plugin-style companion runtime for background jobs, resumable tasks, and `status / result / cancel` lifecycle management inside Codex.
+- `docs/skills/developer-tools-integrations/codex-companion.md` and `docs/zh/skills/developer-tools-integrations/codex-companion.md` cover the Codex companion runtime for task, review, status, result, and cancel prompt flows.
 - `docs/skills/developer-tools-integrations/claude-code-companion.md` and `docs/zh/skills/developer-tools-integrations/claude-code-companion.md` describe a Claude Code-native companion workflow for staged review, follow-up execution, and explicit continuation.
 - `docs/skills/developer-tools-integrations/gemini-companion.md` and `docs/zh/skills/developer-tools-integrations/gemini-companion.md` describe a Gemini CLI companion workflow for review-first orchestration and bounded follow-up work.
-- `docs/skills/developer-tools-integrations/qwen-companion.md` and `docs/zh/skills/developer-tools-integrations/qwen-companion.md` describe a Qwen CLI companion workflow for staged execution and explicit continuation boundaries.
+- `docs/skills/developer-tools-integrations/lsp-manager.md` and `docs/zh/skills/developer-tools-integrations/lsp-manager.md` document LSP setup and management support.
+- `docs/skills/developer-tools-integrations/rust-cli-tui-developer.md` and `docs/zh/skills/developer-tools-integrations/rust-cli-tui-developer.md` document Rust CLI/TUI development workflows.
 
 For structured code review and audit workflows, see `docs/skills/development-workflows/code-auditor.md` and `docs/zh/skills/development-workflows/code-auditor.md`. Those pages document the renamed `code-auditor` skill, including language-adaptive reporting and severity-based findings.
 

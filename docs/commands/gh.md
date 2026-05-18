@@ -1,5 +1,8 @@
 # Git & GitHub Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Git operations and GitHub integration for commits, issue fixes, and pull request reviews.
 
 ## Commands

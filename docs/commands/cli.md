@@ -1,5 +1,8 @@
 # CLI Tools Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Initialize CLI tool configurations and perform code reviews using external CLI tools.
 
 ## Commands

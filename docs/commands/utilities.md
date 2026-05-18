@@ -1,5 +1,8 @@
 # Standalone Utility Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 General-purpose commands available at the root command level, not tied to a specific workflow family.
 
 ## Commands

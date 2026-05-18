@@ -1,5 +1,8 @@
 # Workflow Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 The `workflow` family is the largest command group, providing a structured development lifecycle from project initialization through planning, execution, debugging, testing, review, and cleanup. Commands are organized around a session-based workflow system that stores state in `.workflow/` directories.
 
 The workflow system follows a session-based model:

@@ -32,18 +32,6 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/developer-tools-integrations/lsp-manager"
       },
       {
-        "slug": "mcp-to-skill",
-        "title": "MCP to Skill Converter",
-        "summary": "Convert MCP servers into Claude Code Skills for easier distribution and usage.",
-        "path": "/skills/developer-tools-integrations/mcp-to-skill"
-      },
-      {
-        "slug": "qwen-companion",
-        "title": "Qwen Companion",
-        "summary": "Use this skill when the user wants a **Qwen CLI companion workflow** with explicit phases, bounded next steps, and careful continuation claims.",
-        "path": "/skills/developer-tools-integrations/qwen-companion"
-      },
-      {
         "slug": "rust-cli-tui-developer",
         "title": "Rust CLI/TUI Developer",
         "summary": "Expert guidance for building modern command-line interfaces and terminal user interfaces in Rust, using the most popular libraries: **clap** for CLI argument parsing, **inquire** for interactive prompts, and **ratatui** for rich terminal UIs.",
@@ -67,6 +55,12 @@ export const SKILLS_CATALOG_EN = [
     "slug": "development-workflows",
     "skills": [
       {
+        "slug": "brainstorming-baha",
+        "title": "Brainstorming Baha",
+        "summary": "Chinese-first brainstorming workflow that turns a rough creative request into an approved design before implementation begins. It includes an optional browser-based visual companion for prototypes, diagrams, and layout comparisons.",
+        "path": "/skills/development-workflows/brainstorming-baha"
+      },
+      {
         "slug": "code-auditor",
         "title": "Code Auditor",
         "summary": "Structured code-auditing workflow covering correctness, security, performance, readability, testing, and architecture. The skill adapts the human-facing report to the user's language while keeping findings concrete, severity-based, and easy to act on.",
@@ -83,12 +77,6 @@ export const SKILLS_CATALOG_EN = [
         "title": "Improve Codebase Architecture",
         "summary": "Architecture review skill that looks for friction in module boundaries, refactoring seams, and safer interfaces.",
         "path": "/skills/development-workflows/improve-codebase-architecture"
-      },
-      {
-        "slug": "interview-plan",
-        "title": "Interview Plan",
-        "summary": "通过苏格拉底式访谈细化需求，直接调用原生 Plan 模式生成可执行计划。",
-        "path": "/skills/development-workflows/interview-plan"
       },
       {
         "slug": "project-daily-summary",
@@ -321,12 +309,6 @@ export const SKILLS_CATALOG_EN = [
         "path": "/skills/visual-media-design/screenshot"
       },
       {
-        "slug": "theme-factory",
-        "title": "Theme Factory",
-        "summary": "Theme toolkit for styling generated artifacts such as slide decks, reports, documents, and HTML pages with a consistent visual identity.",
-        "path": "/skills/visual-media-design/theme-factory"
-      },
-      {
         "slug": "yt-dlp",
         "title": "yt-dlp 视频下载 Skill",
         "summary": "基于 yt-dlp 的专业视频下载工具，支持 YouTube、Bilibili、Twitter、Instagram 等 1000+ 网站。",
@@ -365,18 +347,6 @@ export const SKILLS_CATALOG_ZH = [
         "path": "/zh/skills/developer-tools-integrations/lsp-manager"
       },
       {
-        "slug": "mcp-to-skill",
-        "title": "MCP to Skill",
-        "summary": "将 MCP (Model Context Protocol) 服务器转换为 Claude Code 技能。",
-        "path": "/zh/skills/developer-tools-integrations/mcp-to-skill"
-      },
-      {
-        "slug": "qwen-companion",
-        "title": "Qwen Companion",
-        "summary": "当用户希望使用 **Qwen CLI 的 companion 式工作流**，并要求阶段明确、下一步受控、续接说明准确时，使用这个 skill。",
-        "path": "/zh/skills/developer-tools-integrations/qwen-companion"
-      },
-      {
         "slug": "rust-cli-tui-developer",
         "title": "Rust CLI TUI Developer",
         "summary": "Rust CLI 和 TUI 开发专家指导。",
@@ -400,6 +370,12 @@ export const SKILLS_CATALOG_ZH = [
     "slug": "development-workflows",
     "skills": [
       {
+        "slug": "brainstorming-baha",
+        "title": "Brainstorming Baha",
+        "summary": "中文优先的头脑风暴工作流，用于在实现前把粗略创意转化为已确认的设计方案。它还带有可选的浏览器视觉伴侣，可展示原型、图表和布局对比。",
+        "path": "/zh/skills/development-workflows/brainstorming-baha"
+      },
+      {
         "slug": "code-auditor",
         "title": "Code Auditor",
         "summary": "面向正确性、安全性、性能、可读性、测试和架构六个维度的结构化代码审计技能。它会根据用户语境自适应中文或英文输出，同时保持问题分级清晰、建议可执行、技术标识不被硬翻译。",
@@ -410,12 +386,6 @@ export const SKILLS_CATALOG_ZH = [
         "title": "Commit Daily Summary",
         "summary": "把一天内的 git 提交整理成按工作主题分组的日报，而不是简单罗列提交时间线。",
         "path": "/zh/skills/development-workflows/commit-daily-summary"
-      },
-      {
-        "slug": "interview-plan",
-        "title": "Interview Plan",
-        "summary": "通过苏格拉底式访谈细化需求，直接调用原生 Plan 模式生成可执行计划。",
-        "path": "/zh/skills/development-workflows/interview-plan"
       },
       {
         "slug": "project-daily-summary",
@@ -646,12 +616,6 @@ export const SKILLS_CATALOG_ZH = [
         "title": "yt-dlp 视频下载",
         "summary": "强大的视频下载工具，支持 1000+ 网站，包括 YouTube、Bilibili、Twitter、Instagram、TikTok 等。",
         "path": "/zh/skills/visual-media-design/yt-dlp"
-      },
-      {
-        "slug": "theme-factory",
-        "title": "主题工厂 (Theme Factory)",
-        "summary": "为幻灯片、报告、文档、HTML 页面等产物统一应用视觉主题的技能。",
-        "path": "/zh/skills/visual-media-design/theme-factory"
       },
       {
         "slug": "card",

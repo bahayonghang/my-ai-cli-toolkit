@@ -1,5 +1,8 @@
 # zcf
 
+> 历史 / 已下线说明：本页记录的是已经移除的命令家族。当前 `content/platforms/*/commands/` 中没有对应源树，因此本页只作为兼容参考保留，不进入 live sidebar。
+
+
 Git 工具集，提供分支清理、版本回滚、Worktree 管理和项目初始化能力。
 
 ## 概述

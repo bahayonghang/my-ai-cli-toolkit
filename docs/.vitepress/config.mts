@@ -92,22 +92,7 @@ export default defineConfig({
               ],
             },
             {
-              text: 'Command Families',
-              items: [
-                { text: 'cc (Authoring)', link: '/commands/cc' },
-                { text: 'cli (CLI Tools)', link: '/commands/cli' },
-                { text: 'gh (Git & GitHub)', link: '/commands/gh' },
-                { text: 'issue (Issue Management)', link: '/commands/issue' },
-                { text: 'kiro (Kiro Integration)', link: '/commands/kiro' },
-                { text: 'memory (Memory System)', link: '/commands/memory' },
-                { text: 'task (Task Management)', link: '/commands/task' },
-                { text: 'workflow (Workflows)', link: '/commands/workflow' },
-                { text: 'zcf (Git Utilities)', link: '/commands/zcf' },
-                { text: 'Utilities', link: '/commands/utilities' },
-              ],
-            },
-            {
-              text: 'Standalone',
+              text: 'Live Command Sources',
               items: [
                 { text: 'export-summary', link: '/commands/export-summary' },
                 { text: 'import-summary', link: '/commands/import-summary' },
@@ -195,22 +180,7 @@ export default defineConfig({
               ],
             },
             {
-              text: '命令家族',
-              items: [
-                { text: 'cc（命令创建）', link: '/zh/commands/cc' },
-                { text: 'cli（CLI 工具）', link: '/zh/commands/cli' },
-                { text: 'gh（Git & GitHub）', link: '/zh/commands/gh' },
-                { text: 'issue（Issue 管理）', link: '/zh/commands/issue' },
-                { text: 'kiro（Kiro 集成）', link: '/zh/commands/kiro' },
-                { text: 'memory（记忆系统）', link: '/zh/commands/memory' },
-                { text: 'task（任务管理）', link: '/zh/commands/task' },
-                { text: 'workflow（工作流）', link: '/zh/commands/workflow' },
-                { text: 'zcf（Git 工具集）', link: '/zh/commands/zcf' },
-                { text: '工具命令', link: '/zh/commands/utilities' },
-              ],
-            },
-            {
-              text: '独立命令',
+              text: '当前命令源',
               items: [
                 { text: 'export-summary', link: '/zh/commands/export-summary' },
                 { text: 'import-summary', link: '/zh/commands/import-summary' },

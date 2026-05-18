@@ -1,43 +1,39 @@
 # 命令概览
 
-本节文档围绕 `content/platforms/*/commands/` 中实际提供的命令源目录展开。
+本节文档只描述当前真实存在于 `content/platforms/*/commands/` 下的命令源。
 
 ## 如何理解这个命令目录
 
-- 源文件位于 `content/platforms/<platform>/commands/`
-- 安装目标和最终落盘目录由 `platforms.toml` 与 `mcs-core` 共同决定
-- 某些平台会通过 `fallback_commands_source` 复用其他平台的源目录
+- 当某个平台在仓库里有命令源时，源文件位于 `content/platforms/<platform>/commands/`。
+- 安装目标和最终落盘目录由 `platforms.toml` 与 `mcs-core` 共同决定。
+- 某些平台会声明 fallback 源，但 fallback 只有在对应源目录实际存在时才有意义。
+
+## 当前 live 源
+
+| 平台源 | 当前存在的命令 |
+|--------|----------------|
+| Claude | `init-projects.md` |
+| Gemini | `export-summary`、`import-summary`、`plan/new`、`plan/impl` |
+| Antigravity | `export-summary`、`import-summary` |
+| Trae | `export-summary`、`import-summary` |
+| Windsurf | `export-summary`、`import-summary` |
 
 ## 阅读时需要区分两层
 
-1. **源目录**：仓库当前在 `content/platforms/*/commands/` 里实际保存了什么
-2. **安装平台**：MCS 为某个平台安装时，会把这些命令放到哪里
+1. **源目录**：仓库当前在 `content/platforms/*/commands/` 里实际保存了什么。
+2. **安装平台**：MCS 为某个平台安装时，会把这些命令放到哪里。
 
-二者相关，但并不总是一一对应。
+二者相关，但并不总是一一对应。例如 Codex 的 prompt 源位于 `content/platforms/codex/prompts/`，而不是 live `commands/` 源树。
 
 ## 建议从这里开始
 
-- [目录](/zh/commands/catalog)：当前源目录、平台映射、命令家族
+- [目录](/zh/commands/catalog)：当前源目录、平台映射和命令清单。
+- [export-summary](/zh/commands/export-summary)：Gemini、Antigravity、Trae、Windsurf 使用的上下文导出流程。
+- [import-summary](/zh/commands/import-summary)：Gemini、Antigravity、Trae、Windsurf 使用的上下文导入流程。
 
-## 命令家族
+## 历史命令家族页面
 
-| 家族 | 说明 | 命令 |
-|------|------|------|
-| [cc](/zh/commands/cc) | 命令创建与代理编写 | create-command, meta-agent |
-| [cli](/zh/commands/cli) | CLI 工具初始化与代码审查 | cli-init, codex-review |
-| [gh](/zh/commands/gh) | Git 操作与 GitHub 集成 | commit, fix-issue, review-pr |
-| [issue](/zh/commands/issue) | GitHub Issue 管理 | discover, discover-by-prompt, execute, new, plan, queue |
-| [kiro](/zh/commands/kiro) | Kiro IDE 集成 | design, execute, spec, task, vibe |
-| [memory](/zh/commands/memory) | 记忆系统管理 | 14 个命令，涵盖记忆生成、加载和更新 |
-| [task](/zh/commands/task) | 任务管理 | breakdown, create, execute, replan |
-| [workflow](/zh/commands/workflow) | 开发工作流 | 约 30 个命令，包含 brainstorm、session、tools、ui-design 子族 |
-| [zcf](/zh/commands/zcf) | Git 工具集 | git-cleanBranches, git-rollback, git-worktree, init-project |
-
-## 独立命令
-
-- [export-summary](/zh/commands/export-summary)：会话上下文导出流程
-- [import-summary](/zh/commands/import-summary)：上下文导入流程
-- [工具命令](/zh/commands/utilities)：enhance-prompt, version
+`cc`、`cli`、`gh`、`issue`、`kiro`、`memory`、`task`、`workflow`、`zcf`、`utilities` 等旧页面仅作为历史参考保留。由于当前 `content/platforms/*/commands/` 中已没有对应命令源家族，它们不再进入 live sidebar。
 
 ## 相关指南
 

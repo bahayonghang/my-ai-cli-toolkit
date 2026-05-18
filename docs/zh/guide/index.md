@@ -5,9 +5,10 @@
 ## 仓库里实际有什么
 
 - `content/skills/`：按分类组织的可安装技能目录
-- `content/platforms/<platform>/commands/`：平台级 command / workflow 源文件
-- `content/platforms/claude/agents/`：按 `ccw` 与 `specialist` 分组的 Claude agent 定义
-- `content/platforms/<platform>/guidance/`：平台级指导文件种子，如 `CLAUDE.md`、`AGENTS.md`
+- `content/platforms/<platform>/commands/`：当前实际存在的平台级 command / workflow 源文件
+- `content/platforms/<platform>/agents/`：平台级 agent 定义，包括 Claude Markdown agents 与 Codex TOML agents
+- `content/platforms/<platform>/prompts/`：prompt 源，例如 Codex prompt packs
+- `content/platforms/<platform>/rules/`：基础指导文件，例如 Codex `AGENTS.md`
 - `content/community-skills-registry/`：供 MCS Web 使用的外部技能注册表元数据
 - `content/hooks/`：运行时支持文件
 - `mcs/`：Rust workspace，包含共享核心库、TUI 和 Web 应用
@@ -50,8 +51,8 @@ just web
 - [MCS TUI](/zh/guide/mcs)：快捷键、安装模型、迁移、排错
 - [MCS Web](/zh/guide/mcs-web)：后端/UI 启动、页面结构、安装流程
 - [MCS 架构](/zh/guide/mcs-architecture)：`mcs-core`、`mcs-tui`、`mcs-web`
-- [命令系统](/zh/guide/commands)：`content/platforms/*/commands` 如何映射到各平台
-- [运行时文件](/zh/guide/runtime-files)：hooks 与平台 guidance/runtime 文件
+- [命令系统](/zh/guide/commands)：当前 `content/platforms/*/commands` 源如何映射到各平台
+- [运行时文件](/zh/guide/runtime-files)：hooks、prompt packs 与平台 rules/runtime 文件
 - [外部技能](/zh/guide/community-skills-registry)：第三方技能注册表与安装流程
 - [创建技能](/zh/guide/creating-skills)：新增 `content/skills/<category>/<skill-name>/`
 - [论文工作流](/zh/guide/paper-workflows)：如何用 `paper-workbench` 从论文接入走到快速预判、精读、多篇整合与综述规划

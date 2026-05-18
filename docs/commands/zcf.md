@@ -1,5 +1,8 @@
 # ZCF Git Utility Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Git workflow utilities for branch management, rollback operations, worktree handling, and project initialization.
 
 ## Commands

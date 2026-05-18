@@ -1,5 +1,8 @@
 # Issue Lifecycle Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 GitHub issue lifecycle management -- discover, create, plan, queue, and execute issues through a structured workflow.
 
 ## Commands

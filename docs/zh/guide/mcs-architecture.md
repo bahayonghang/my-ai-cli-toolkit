@@ -15,7 +15,10 @@
 `mcs-core` 把当前仓库视为 `content/` 驱动的项目：
 
 - skills：`content/skills/`
-- platform content：`content/platforms/<platform>/{commands,agents,guidance}/`
+- platform commands：`content/platforms/<platform>/commands/`
+- platform agents：`content/platforms/<platform>/agents/`
+- platform prompt packs：`content/platforms/<platform>/prompts/`
+- platform base guidance：`content/platforms/<platform>/rules/`
 - runtime support：`content/hooks/`
 
 只要向上找到 `content/skills/`，项目根检测就会成功。
@@ -25,21 +28,21 @@
 ### Config
 
 - `config/paths.rs`：仓库根检测与 source-dir helper
-- `config/platform.rs`：内置平台配置、项目覆盖、用户覆盖、安装路径格式化
+- `config/platform.rs`：内置平台配置、项目覆盖、用户覆盖、安装路径格式化，以及各能力源目录解析
 
 ### 内容发现
 
-- `core/discovery.rs`：遍历 skills / commands 源目录，计算安装状态，读取 metadata
+- `core/discovery.rs`：遍历 skills、commands、agents 源目录，计算安装状态，读取 metadata
 - `core/skill_meta.rs`：解析 MCS 当前使用的顶层 skill frontmatter 字段
 - `core/external_skills.rs`：从 `content/community-skills-registry/`（`index.toml` + 分类分片）加载 external-skills 注册表
 
 ### 安装流水线
 
-- `core/installer.rs`：skills / commands 的安装与卸载
+- `core/installer.rs`：skills、commands、agents 的安装与卸载
 - `core/install_target.rs`：全局安装与项目级安装目标
 - `core/skill_store.rs`：`~/.mcs/skills/` 下的 canonical local store
 - `core/skill_migration.rs`：迁移到 canonical store + symlink 模型的一次性流程
-- `core/prompt.rs`：为定义了 prompt file 的平台提供 prompt diff / update
+- `core/guidance.rs`：为定义了 `CLAUDE.md` 或 `AGENTS.md` 的平台提供 guidance diff / update
 
 ## TUI 流程
 
@@ -50,7 +53,7 @@
 - popup 与 dialog
 - 渲染 widgets
 
-具体的 discovery、diff、prompt update、install、uninstall、sync 逻辑都调用 `mcs-core`。
+具体的 discovery、diff、guidance update、install、uninstall、sync 逻辑都调用 `mcs-core`。
 
 ## Web 流程
 

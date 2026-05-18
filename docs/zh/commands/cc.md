@@ -1,5 +1,8 @@
 # CC 命令创建工具 (Command Creation)
 
+> 历史 / 已下线说明：本页记录的是已经移除的命令家族。当前 `content/platforms/*/commands/` 中没有对应源树，因此本页只作为兼容参考保留，不进入 live sidebar。
+
+
 创建和管理 Claude Code 自定义命令及子代理配置。
 
 ## 命令

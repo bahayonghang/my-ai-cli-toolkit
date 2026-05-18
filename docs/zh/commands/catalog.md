@@ -2,61 +2,62 @@
 
 ## `content/platforms/*/commands/` 中的源目录
 
-| 源目录 | 说明 |
-|--------|------|
-| `content/platforms/claude/commands/` | 最大的一棵命令树，包含核心命令以及 `cc`、`gh`、`issue`、`kiro`、`memory`、`task`、`workflow`、`zcf` 等家族 |
-| `content/platforms/gemini/commands/` | summary 命令，以及 `plan`、`zcf` 家族 |
-| `content/platforms/antigravity/commands/` | workflow 风格的 summary 命令 |
-| `content/platforms/trae/commands/` | summary 命令，以及 `zcf` 家族 |
-| `content/platforms/windsurf/commands/` | summary workflow 命令 |
+| 源目录 | 当前命令文件 |
+|--------|--------------|
+| `content/platforms/claude/commands/` | `init-projects.md` |
+| `content/platforms/gemini/commands/` | `export-summary.toml`、`import-summary.toml`、`plan/new.toml`、`plan/impl.toml` |
+| `content/platforms/antigravity/commands/` | `export-summary.md`、`import-summary.md` |
+| `content/platforms/trae/commands/` | `export-summary.md`、`import-summary.md` |
+| `content/platforms/windsurf/commands/` | `export-summary.md`、`import-summary.md` |
+
+> 说明：仓库里还保留了 `content/platforms/gemini/commands/import- summary.toml` 这个兼容文件名。当前应把 `import-summary.toml` 视为规范 live 源。
 
 ## 安装平台映射
 
 | 安装平台 | 命令源 | fallback 源 | 安装目录 |
 |----------|--------|-------------|----------|
 | Claude | `claude` | 无 | `~/.claude/commands/` |
-| Codex | `codex` | `claude` | `~/.codex/prompts/` |
+| Codex | `codex` prompts，再按配置读取命令源 | 默认 `claude` | `~/.codex/prompts/` |
 | Gemini | `gemini` | 无 | `~/.agents/commands/` |
-| Qwen | `qwen` | `claude` | `~/.qwen/commands/` |
-| Kiro | `kiro` | `claude` | `~/.kiro/steering/` |
-| Qoder | `qoder` | `claude` | `~/.qoder/commands/` |
-| Trae | `trae` | `claude` | `~/.trae/commands/` |
-| Trae CN | `trae` | `claude` | `~/.trae-cn/commands/` |
-| OpenCode | `opencode` | `claude` | `~/.config/opencode/commands/` |
+| Qwen | `qwen` | 默认 `claude` | `~/.qwen/commands/` |
+| Kiro | `kiro` | 默认 `claude` | `~/.kiro/steering/` |
+| Qoder | `qoder` | 默认 `claude` | `~/.qoder/commands/` |
+| Trae | `trae` | 默认 `claude` | `~/.trae/commands/` |
+| Trae CN | `trae` | 默认 `claude` | `~/.trae-cn/commands/` |
+| OpenCode | `opencode` | 默认 `claude` | `~/.config/opencode/commands/` |
 | Antigravity | `antigravity` | 无 | `~/.gemini/antigravity/workflows/` |
 | Windsurf | `windsurf` | 无 | `~/.codeium/windsurf/workflows/` |
 
-## Claude 命令家族
+映射表描述的是安装配置，不代表当前 checkout 中每个命名的命令源目录都存在。
 
-- `export-summary`
-- `import-summary`
-- `enhance-prompt`
-- `version`
-- `cc/`：命令创建与 meta-agent 辅助
-- `gh/`：commit、fix-issue、review-pr
-- `issue/`：discover、new、plan、execute、queue
-- `kiro/`：design、execute、spec、task、vibe
-- `memory/`：memory load、docs、compact、workflow memory、swagger docs
-- `task/`：create、breakdown、execute、replan
-- `workflow/`：clean、debug、plan、execute、review、session、UI design、TDD、tool helpers
-- `zcf/`：git-cleanBranches、git-rollback、git-worktree、init-project
+## Live 命令清单
 
-## Gemini 命令家族
+### Claude
 
-- `export-summary`
-- `import-summary`
-- `plan/`：`impl`、`new`
-- `zcf/`：git-cleanBranches、git-commit、git-rollback、git-worktree、init-project
+- `init-projects.md`：用于创建仓库指导文件的项目初始化 prompt。
 
-## 其他源家族
+### Gemini
 
-- `antigravity/`：export-summary、import-summary
-- `trae/`：export-summary、import-summary、`zcf/`
-- `windsurf/`：export-summary、import-summary
+- `export-summary.toml`
+- `import-summary.toml`
+- `plan/new.toml`
+- `plan/impl.toml`
+
+### Antigravity / Trae / Windsurf
+
+- `export-summary.md`
+- `import-summary.md`
+
+## 相关的非 command prompt 源
+
+Codex 当前把 prompt 源放在 `content/platforms/codex/prompts/`，包括 `init-projects.md` 和 `codex-companion/` prompt 集。Codex 基础指导文件位于 `content/platforms/codex/rules/AGENTS.md`。
+
+## 历史页面
+
+旧的命令家族文档（`cc`、`cli`、`gh`、`issue`、`kiro`、`memory`、`task`、`workflow`、`zcf`、`utilities`）描述的是已经移除的源家族。它们仅作为兼容参考保留，不再进入 live sidebar，也不应被当作当前清单。
 
 ## 说明
 
-- 命令目录远大于当前文档站点中那几个独立命令页。
 - 如果你需要逐文件核对，请直接查看 `content/platforms/*/commands/`。
 - 若要理解 MCS 如何决定 fallback 和目标路径，请查看 `platforms.toml` 与 `mcs-core/src/config/platform.rs`。
-- `codex` 命令源在当前仓库会回退到 `claude`，因为仓库中没有 `content/platforms/codex/commands/`。
+- 新增或删除命令源后，请同步更新本页并运行 `python docs/scripts/audit_sync.py`。

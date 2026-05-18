@@ -1,5 +1,8 @@
 # CC (Command Creation) Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Create and manage custom Claude Code commands and sub-agent configurations.
 
 ## Commands

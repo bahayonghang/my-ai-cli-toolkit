@@ -1,5 +1,8 @@
 # Memory System Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Commands for managing project memory, documentation generation, session recovery, and skill packages. These commands handle context loading, memory compaction, and automated documentation workflows.
 
 ## Commands

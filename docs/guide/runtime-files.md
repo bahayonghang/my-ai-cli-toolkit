@@ -4,11 +4,13 @@
 
 The repository contains runtime-oriented assets beyond installable skills and commands.
 
-Current top-level runtime content lives under:
+Current runtime content lives under:
 
 - `content/hooks/`
-- `content/platforms/*/guidance/`
-- root-level `CLAUDE.md`
+- `content/platforms/codex/rules/AGENTS.md`
+- `content/platforms/codex/prompts/`
+- `content/platforms/claude/commands/init-projects.md`
+- root-level `CLAUDE.md` and `AGENTS.md` contributor guidance
 
 ## `content/hooks/`
 
@@ -37,7 +39,7 @@ The hook configuration file defines which Python scripts run at specific lifecyc
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "python3 ${CLAUDE_PLUGIN_ROOT}/pre-bash.py \"$CLAUDE_TOOL_INPUT\"" },
+          { "type": "command", "command": "python3 ${CLAUDE_PLUGIN_ROOT}/pre-bash.py "$CLAUDE_TOOL_INPUT"" },
           { "type": "command", "command": "python3 ${CLAUDE_PLUGIN_ROOT}/inject-spec.py" }
         ]
       }
@@ -83,49 +85,35 @@ Records user prompts to session-specific log files for later review. On each `Us
 
 Log files are session-isolated to handle concurrent sessions safely.
 
-## `content/platforms/*/guidance/`
+## Platform rules and prompts
 
-This directory stores platform-specific runtime prompt or memory files:
+Current platform runtime sources are split by capability:
 
-- `content/platforms/claude/guidance/Unix/CLAUDE.md`
-- `content/platforms/claude/guidance/Windows/CLAUDE.md`
-- `content/platforms/codex/guidance/AGENTS.md`
+| Source | Platform | Purpose |
+|--------|----------|---------|
+| `content/platforms/codex/rules/AGENTS.md` | Codex CLI | Base AGENTS.md guidance installed or diffed by MCS for Codex. |
+| `content/platforms/codex/prompts/init-projects.md` | Codex CLI | Project initialization prompt that creates root and scoped `AGENTS.md` guidance. |
+| `content/platforms/codex/prompts/codex-companion/` | Codex CLI | Companion prompt pack for task, review, status, result, and cancel flows. |
+| `content/platforms/claude/commands/init-projects.md` | Claude Code | Claude command prompt for initializing repository guidance. |
 
-Treat these as runtime seeds or templates, not as normal docs-site pages.
-
-### Platform prompt files
-
-| File | Platform | Purpose |
-|------|----------|---------|
-| `claude/Unix/CLAUDE.md` | Claude Code (Unix) | Linus Torvalds–style engineering principles with structured workflow (intake → context gathering → exploration → planning → execution → verification → handoff). Enforces KISS/YAGNI, backward compatibility, and Chinese final responses. |
-| `claude/Windows/CLAUDE.md` | Claude Code (Windows) | Same engineering principles adapted for Windows environments. |
-| `codex/AGENTS.md` | Codex CLI | Nekomata engineer persona with SOLID/KISS/DRY/YAGNI principles, dangerous operation confirmation mechanism, and structured response format. |
-
-These files are installed by MCS as the platform's base guidance file. Users can customize them after installation — MCS will detect modifications via mtime comparison and show an `Outdated` status.
-
-## Root `CLAUDE.md`
-
-The root `CLAUDE.md` documents repository contributor guidance and current architecture conventions for the codebase itself.
-
-It is not the same thing as:
-
-- an installed Claude user prompt
-- a skill definition
-- a generated runtime memory file
+Claude repository guidance currently lives at the root as `CLAUDE.md`. Codex repository guidance currently lives at the root as `AGENTS.md`. Those root files guide contributors in this repository; they are not the same as installed user-level runtime files.
 
 ## Guidance-related note
 
-The MCS codebase now manages platform guidance files for platforms that define `guidance_file`. If you are changing runtime guidance behavior, inspect:
+The MCS codebase resolves platform guidance sources through the `rules` capability directory for platforms that define `guidance_file` / legacy `prompt_file`. If you are changing runtime guidance behavior, inspect:
 
 - `platforms.toml`
+- `mcs/mcs-core/src/config/platform.rs`
 - `mcs/mcs-core/src/core/guidance.rs`
-- the runtime assets under `content/platforms/*/guidance/` and `content/hooks/`
+- `content/platforms/codex/rules/AGENTS.md`
+- `content/hooks/`
 
 ## Why this matters in docs
 
-Earlier docs treated `prompts/` as the primary runtime source directory. In this repository, the real picture is broader:
+Earlier docs treated a broad `guidance` directory as the primary runtime source. In this repository, the real picture is:
 
 - contributor instructions at the root
 - hooks under `content/hooks/`
-- platform guidance/runtime files under `content/platforms/*/guidance/`
+- platform prompt packs under `content/platforms/<platform>/prompts/`
+- platform base guidance under `content/platforms/<platform>/rules/`
 - guidance update logic in `mcs-core`

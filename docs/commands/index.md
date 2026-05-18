@@ -1,43 +1,39 @@
 # Commands Overview
 
-This section documents the command catalog shipped from `content/platforms/*/commands/`.
+This section documents the command sources that currently exist under `content/platforms/*/commands/`.
 
 ## How the command catalog works
 
-- Source files live under `content/platforms/<platform>/commands/`
-- Install targets and destination folders are resolved through `platforms.toml` and `mcs-core`
-- Some platforms reuse another platform's source directory through `fallback_commands_source`
+- Source files live under `content/platforms/<platform>/commands/` when that platform has command sources in this repository.
+- Install targets and destination folders are resolved through `platforms.toml` and `mcs-core`.
+- Some platforms declare fallback sources, but fallback only works when that source directory exists.
+
+## Current live sources
+
+| Platform source | Commands currently present |
+|-----------------|----------------------------|
+| Claude | `init-projects.md` |
+| Gemini | `export-summary`, `import-summary`, `plan/new`, `plan/impl` |
+| Antigravity | `export-summary`, `import-summary` |
+| Trae | `export-summary`, `import-summary` |
+| Windsurf | `export-summary`, `import-summary` |
 
 ## Read this section with two layers in mind
 
-1. **Source directories**: what the repository currently stores under `content/platforms/*/commands/`
-2. **Installed platforms**: where MCS installs those commands for a specific target
+1. **Source directories**: what the repository currently stores under `content/platforms/*/commands/`.
+2. **Installed platforms**: where MCS installs those commands for a specific target.
 
-The two are related, but they are not always one-to-one.
+The two are related, but they are not always one-to-one. For example, Codex has prompt sources under `content/platforms/codex/prompts/`, not a live `commands/` source tree.
 
 ## Start here
 
-- [Catalog](/commands/catalog): current source directories, platform mapping, and command families
+- [Catalog](/commands/catalog): current source directories, platform mapping, and command inventory.
+- [export-summary](/commands/export-summary): session context export flow used by Gemini, Antigravity, Trae, and Windsurf.
+- [import-summary](/commands/import-summary): summary import flow used by Gemini, Antigravity, Trae, and Windsurf.
 
-## Command Families
+## Historical command family pages
 
-| Family | Description | Commands |
-|--------|-------------|----------|
-| [cc](/commands/cc) | Command creation and agent authoring | create-command, meta-agent |
-| [cli](/commands/cli) | CLI tool initialization and code review | cli-init, codex-review |
-| [gh](/commands/gh) | Git operations and GitHub integration | commit, fix-issue, review-pr |
-| [issue](/commands/issue) | GitHub issue management | discover, discover-by-prompt, execute, new, plan, queue |
-| [kiro](/commands/kiro) | Kiro IDE integration | design, execute, spec, task, vibe |
-| [memory](/commands/memory) | Memory system management | 14 commands for memory generation, loading, and updates |
-| [task](/commands/task) | Task management | breakdown, create, execute, replan |
-| [workflow](/commands/workflow) | Development workflows | ~30 commands including brainstorm, session, tools, ui-design sub-families |
-| [zcf](/commands/zcf) | Git utilities | git-cleanBranches, git-rollback, git-worktree, init-project |
-
-## Standalone Commands
-
-- [export-summary](/commands/export-summary): session context export flow
-- [import-summary](/commands/import-summary): summary import flow
-- [Utilities](/commands/utilities): enhance-prompt, version
+Older pages for `cc`, `cli`, `gh`, `issue`, `kiro`, `memory`, `task`, `workflow`, `zcf`, and `utilities` remain as historical references only. They are no longer part of the live sidebar because the matching command source families are not present in `content/platforms/*/commands/`.
 
 ## Related guide pages
 

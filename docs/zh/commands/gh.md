@@ -1,5 +1,8 @@
 # Git 与 GitHub 命令
 
+> 历史 / 已下线说明：本页记录的是已经移除的命令家族。当前 `content/platforms/*/commands/` 中没有对应源树，因此本页只作为兼容参考保留，不进入 live sidebar。
+
+
 用于提交、修复 Issue 和审查 Pull Request 的 Git 操作与 GitHub 集成。
 
 ## 命令

@@ -2,17 +2,17 @@
 
 当你希望在 Codex 里获得接近 `codex-plugin-cc` 的工作流时，使用这个 skill：本机检查、后台任务、可恢复的 Codex 委派，以及 `status / result / cancel` 这类任务生命周期管理。
 
-这个 skill 是直接 [codex](./codex.md) skill 的 plugin-style 兄弟版本。
+这个 skill 对应当前 `content/platforms/codex/prompts/codex-companion/` 中的 Codex companion prompt pack。
 
 如果你需要的是其他 CLI 的 companion 式工作流，而不是 Codex 专属 runtime 生命周期控制，可以参考：
 
 - [claude-code-companion](./claude-code-companion.md)
 - [gemini-companion](./gemini-companion.md)
-- [qwen-companion](./qwen-companion.md)
+- [skill-map](./skill-map.md)
 
 | Skill | 定位 | 最适合的场景 |
 |---|---|---|
-| `codex` | 直接 Codex CLI 包装 | 一次性 `codex review` / `codex exec` |
+| Codex prompts | Codex CLI prompt pack | `task`、`review`、`status`、`result`、`cancel` 等 prompt 流程 |
 | `codex-companion` | companion runtime | 持久化后台任务、follow-up task 线程、plugin 风格的 review / task 编排 |
 
 ## 命令面

@@ -6,7 +6,7 @@
 
 当前仓库主要由两部分组成：
 
-- `content/`：可安装技能、命令、agent 定义、运行时文件、外部技能注册表
+- `content/`：可安装技能、平台级 commands/agents/prompts/rules、hooks、外部技能注册表
 - `mcs/`：负责 discovery、install、diff、sync、TUI、Web 的 Rust workspace
 
 ## 快速开始
@@ -63,10 +63,13 @@ just doc
 ├── content/
 │   ├── skills/            # 一方技能目录
 │   ├── community-skills-registry/  # 第三方技能注册表（TOML 元数据）
-│   ├── commands/          # Slash command / workflow 源文件
-│   ├── agents/            # Markdown agent 定义
 │   ├── hooks/             # 运行时 hook 资源
-│   └── memorys/           # 平台相关 runtime memory / prompt 文件
+│   └── platforms/
+│       └── <platform>/
+│           ├── commands/  # 平台 command / workflow 源（存在时）
+│           ├── agents/    # 平台 agent 定义（存在时）
+│           ├── prompts/   # 平台 prompt packs（存在时）
+│           └── rules/     # 平台基础指导文件（存在时）
 ├── docs/                  # VitePress 文档站点
 ├── mcs/                   # Rust workspace：mcs-core、mcs-tui、mcs-web
 ├── platforms.toml         # 平台安装映射
@@ -129,13 +132,13 @@ just mcs-web-test
 - 外部技能
 - 中英文技能目录页
 
-其中与 Codex / companion 相关的技能说明包括：
+其中与 companion / developer tools 相关的技能说明包括：
 
-- `docs/skills/developer-tools-integrations/codex.md` 与 `docs/zh/skills/developer-tools-integrations/codex.md`：面向直接 Codex CLI 工作流，维护当前 Codex CLI 写法、默认模型 `gpt-5.4`、推荐的 `codex exec` 与实时网络搜索用法。
-- `docs/skills/developer-tools-integrations/codex-companion.md` 与 `docs/zh/skills/developer-tools-integrations/codex-companion.md`：面向 plugin 风格的 companion runtime，覆盖后台任务、可恢复 task，以及 `status / result / cancel` 生命周期管理。
+- `docs/skills/developer-tools-integrations/codex-companion.md` 与 `docs/zh/skills/developer-tools-integrations/codex-companion.md`：面向 Codex companion runtime，覆盖 task、review、status、result、cancel prompt 流程。
 - `docs/skills/developer-tools-integrations/claude-code-companion.md` 与 `docs/zh/skills/developer-tools-integrations/claude-code-companion.md`：面向 Claude Code 原生 companion 工作流，强调 review-first、后续执行与显式续接。
 - `docs/skills/developer-tools-integrations/gemini-companion.md` 与 `docs/zh/skills/developer-tools-integrations/gemini-companion.md`：面向 Gemini CLI 的 companion 工作流，强调 review-first 编排与有边界的 follow-up。
-- `docs/skills/developer-tools-integrations/qwen-companion.md` 与 `docs/zh/skills/developer-tools-integrations/qwen-companion.md`：面向 Qwen CLI 的 companion 工作流，强调分阶段执行与明确的续接边界。
+- `docs/skills/developer-tools-integrations/lsp-manager.md` 与 `docs/zh/skills/developer-tools-integrations/lsp-manager.md`：记录 LSP 安装和管理支持。
+- `docs/skills/developer-tools-integrations/rust-cli-tui-developer.md` 与 `docs/zh/skills/developer-tools-integrations/rust-cli-tui-developer.md`：记录 Rust CLI/TUI 开发工作流。
 
 如果要查看结构化代码审计与 review 工作流，请参见 `docs/skills/development-workflows/code-auditor.md` 与 `docs/zh/skills/development-workflows/code-auditor.md`。这两页对应已经改名后的 `code-auditor` skill，包含语言自适应输出和按严重级别组织 findings 的说明。
 

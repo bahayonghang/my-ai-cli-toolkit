@@ -15,7 +15,10 @@ The Rust workspace in `mcs/` currently has three crates:
 `mcs-core` treats the repository as a `content/`-based project:
 
 - skills: `content/skills/`
-- platform content: `content/platforms/<platform>/{commands,agents,guidance}/`
+- platform commands: `content/platforms/<platform>/commands/`
+- platform agents: `content/platforms/<platform>/agents/`
+- platform prompt packs: `content/platforms/<platform>/prompts/`
+- platform base guidance: `content/platforms/<platform>/rules/`
 - runtime support: `content/hooks/`
 
 Project root detection succeeds when `content/skills/` is found.
@@ -25,7 +28,7 @@ Project root detection succeeds when `content/skills/` is found.
 ### Config
 
 - `config/paths.rs`: repository root detection and source-dir helpers
-- `config/platform.rs`: default platform config, project overrides, user overrides, and install-path formatting
+- `config/platform.rs`: default platform config, project overrides, user overrides, install-path formatting, and capability source directories
 
 ### Content discovery
 

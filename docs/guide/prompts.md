@@ -1,18 +1,10 @@
-# Prompts (Legacy Page)
+# Prompts and Runtime Text
 
-This repository no longer uses a simple top-level `prompts/` directory as its primary runtime model.
+This is a legacy guide page. Current prompt-like content is platform-scoped:
 
-Use these pages instead:
+- Codex prompt packs live in `content/platforms/codex/prompts/`.
+- Codex base rules live in `content/platforms/codex/rules/AGENTS.md`.
+- Claude project initialization is currently a command prompt at `content/platforms/claude/commands/init-projects.md`.
+- Repository contributor guidance lives in root `CLAUDE.md` and `AGENTS.md`.
 
-- [Runtime Files](/guide/runtime-files)
-- [MCS TUI](/guide/mcs)
-- [MCS Architecture](/guide/mcs-architecture)
-
-## Current reality
-
-- contributor and repository guidance lives in the root `CLAUDE.md`
-- runtime hook assets live in `content/hooks/`
-- platform guidance/runtime seeds live in `content/platforms/*/guidance/`
-- prompt diff/update logic lives in `mcs-core`
-
-Keep this page only as a compatibility pointer for older links.
+For the current runtime-file model, use [Runtime Files](/guide/runtime-files).

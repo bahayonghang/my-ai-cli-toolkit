@@ -1,5 +1,8 @@
 # Kiro Integration Commands
 
+> Historical / offline note: this page documents a removed command family. The matching source tree is not present in current `content/platforms/*/commands/`, and this page is intentionally kept outside the live sidebar.
+
+
 Spec-driven development workflow with iterative requirements, design, and task generation following Kiro's developer-friendly approach.
 
 ## Commands
