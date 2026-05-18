@@ -4,7 +4,7 @@
 
 | Source directory | Current command files |
 |------------------|-----------------------|
-| `content/platforms/claude/commands/` | `init-projects.md` |
+| `content/platforms/claude/commands/` | `archive-planning.md`, `init-projects.md` |
 | `content/platforms/gemini/commands/` | `export-summary.toml`, `import-summary.toml`, `plan/new.toml`, `plan/impl.toml` |
 | `content/platforms/antigravity/commands/` | `export-summary.md`, `import-summary.md` |
 | `content/platforms/trae/commands/` | `export-summary.md`, `import-summary.md` |
@@ -34,6 +34,7 @@ The mapping table describes install configuration. It does not imply that every 
 
 ### Claude
 
+- `archive-planning.md`: move active root planning files into `.plannings/<timestamp>-<feature>/`.
 - `init-projects.md`: project initialization prompt for creating repository guidance files.
 
 ### Gemini
@@ -50,7 +51,7 @@ The mapping table describes install configuration. It does not imply that every 
 
 ## Related non-command prompt sources
 
-Codex currently keeps prompt sources under `content/platforms/codex/prompts/`, including `init-projects.md` and the `codex-companion/` prompt set. Codex base guidance is stored under `content/platforms/codex/rules/AGENTS.md`.
+Codex currently keeps prompt sources under `content/platforms/codex/prompts/`, including `archive-planning.md`, `init-projects.md`, and the `codex-companion/` prompt set. Codex base guidance is stored under `content/platforms/codex/rules/AGENTS.md`.
 
 ## Historical pages
 

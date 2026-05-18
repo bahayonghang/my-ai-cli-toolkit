@@ -46,7 +46,7 @@ LIVE_COMMAND_DOCS = {
 }
 
 EXPECTED_COMMAND_SOURCES = {
-    "claude": {"init-projects"},
+    "claude": {"archive-planning", "init-projects"},
     "gemini": {"export-summary", "import-summary", "plan/new", "plan/impl"},
     "antigravity": {"export-summary", "import-summary"},
     "trae": {"export-summary", "import-summary"},

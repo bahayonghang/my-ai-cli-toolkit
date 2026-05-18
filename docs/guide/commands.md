@@ -14,11 +14,11 @@ Current live source directories are:
 
 Current live command files are intentionally small:
 
-- Claude: `init-projects.md`
+- Claude: `archive-planning.md`, `init-projects.md`
 - Gemini: `export-summary`, `import-summary`, `plan/new`, `plan/impl`
 - Antigravity / Trae / Windsurf: `export-summary`, `import-summary`
 
-Codex prompt sources live under `content/platforms/codex/prompts/`, not under `content/platforms/codex/commands/`.
+Codex prompt sources live under `content/platforms/codex/prompts/`, not under `content/platforms/codex/commands/`. They include Codex-specific prompt-style commands such as `archive-planning.md` and `init-projects.md`.
 
 ## Install model
 

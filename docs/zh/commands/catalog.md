@@ -4,7 +4,7 @@
 
 | 源目录 | 当前命令文件 |
 |--------|--------------|
-| `content/platforms/claude/commands/` | `init-projects.md` |
+| `content/platforms/claude/commands/` | `archive-planning.md`、`init-projects.md` |
 | `content/platforms/gemini/commands/` | `export-summary.toml`、`import-summary.toml`、`plan/new.toml`、`plan/impl.toml` |
 | `content/platforms/antigravity/commands/` | `export-summary.md`、`import-summary.md` |
 | `content/platforms/trae/commands/` | `export-summary.md`、`import-summary.md` |
@@ -34,6 +34,7 @@
 
 ### Claude
 
+- `archive-planning.md`：将根目录活跃规划文件移动到 `.plannings/<timestamp>-<feature>/`。
 - `init-projects.md`：用于创建仓库指导文件的项目初始化 prompt。
 
 ### Gemini
@@ -50,7 +51,7 @@
 
 ## 相关的非 command prompt 源
 
-Codex 当前把 prompt 源放在 `content/platforms/codex/prompts/`，包括 `init-projects.md` 和 `codex-companion/` prompt 集。Codex 基础指导文件位于 `content/platforms/codex/rules/AGENTS.md`。
+Codex 当前把 prompt 源放在 `content/platforms/codex/prompts/`，包括 `archive-planning.md`、`init-projects.md` 和 `codex-companion/` prompt 集。Codex 基础指导文件位于 `content/platforms/codex/rules/AGENTS.md`。
 
 ## 历史页面
 

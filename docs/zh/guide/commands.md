@@ -14,11 +14,11 @@
 
 当前 live 命令文件刻意保持很小：
 
-- Claude：`init-projects.md`
+- Claude：`archive-planning.md`、`init-projects.md`
 - Gemini：`export-summary`、`import-summary`、`plan/new`、`plan/impl`
 - Antigravity / Trae / Windsurf：`export-summary`、`import-summary`
 
-Codex prompt 源位于 `content/platforms/codex/prompts/`，而不是 `content/platforms/codex/commands/`。
+Codex prompt 源位于 `content/platforms/codex/prompts/`，而不是 `content/platforms/codex/commands/`。其中包含 `archive-planning.md`、`init-projects.md` 等 Codex 专属 prompt-style commands。
 
 ## 安装模型
 
