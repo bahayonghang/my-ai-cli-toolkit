@@ -1,0 +1,29 @@
+{
+  "skill_name": "archify",
+  "evals": [
+    {
+      "id": "workflow-ci-approval",
+      "prompt": "Create a polished standalone HTML diagram for our CI/CD approval workflow: developer opens PR, GitHub Actions runs tests, security review may block, release manager approves, deployment goes to staging and then production. I want lanes for Developer, CI, Security, Release, and Runtime, plus a short summary of the approval gates.",
+      "expected_output": "A workflow-mode Archify HTML artifact generated from JSON IR, with lanes, approval/security gate, deployment path, theme/export toolbar, and concise summary cards.",
+      "files": []
+    },
+    {
+      "id": "sequence-cache-fallback",
+      "prompt": "Draw a request lifecycle sequence diagram as a browser-openable HTML file. A user opens the dashboard, React calls the API, the API verifies JWT, checks Redis, falls back to Postgres on cache miss, writes cache, emits an async trace event, then returns 200 JSON.",
+      "expected_output": "A sequence-mode Archify HTML artifact generated from JSON IR, with participants ordered across the top, time flowing downward, return messages, async trace, activations, toolbar, and summary cards.",
+      "files": []
+    },
+    {
+      "id": "dataflow-pii-lineage",
+      "prompt": "Make a data-flow diagram for product analytics: browser and mobile SDK events go through an edge collector, consent filtering separates PII into an encrypted vault, non-PII events go to Kafka and then the warehouse, dashboards read warehouse metrics, and ML features are derived in batch. Highlight PII and governance boundaries.",
+      "expected_output": "A dataflow-mode Archify HTML artifact generated from JSON IR, with stages, labeled data assets, PII/security classification, downstream consumers, toolbar, and summary cards.",
+      "files": []
+    },
+    {
+      "id": "lifecycle-agent-run",
+      "prompt": "Create a lifecycle/state-machine diagram for an autonomous agent run. States: queued, planning, executing, needs approval, blocked waiting for user input, retrying after tool failure, completed, cancelled, and expired. Make terminal outcomes visually clear and include retry/cancel/timeout paths.",
+      "expected_output": "A lifecycle-mode Archify HTML artifact generated from JSON IR, with main lifecycle states, wait/recovery/terminal paths, clear terminal outcomes, toolbar, and summary cards.",
+      "files": []
+    }
+  ]
+}
