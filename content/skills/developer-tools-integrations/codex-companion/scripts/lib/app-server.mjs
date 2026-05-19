@@ -15,6 +15,7 @@ import { parseBrokerEndpoint } from "./broker-endpoint.mjs";
 import { ensureBrokerSession } from "./broker-lifecycle.mjs";
 
 export const BROKER_ENDPOINT_ENV = "CODEX_COMPANION_APP_SERVER_ENDPOINT";
+export const BROKER_DISABLED_ENV = "CODEX_COMPANION_DISABLE_APP_SERVER_BROKER";
 export const BROKER_BUSY_RPC_CODE = -32001;
 
 /** @type {ClientInfo} */
@@ -174,6 +175,11 @@ class AppServerClientBase {
   }
 }
 
+function brokerDisabled(env = process.env) {
+  const rawValue = env?.[BROKER_DISABLED_ENV];
+  return typeof rawValue === "string" && /^(1|true|yes|on)$/i.test(rawValue.trim());
+}
+
 class SpawnedCodexAppServerClient extends AppServerClientBase {
   constructor(cwd, options = {}) {
     super(cwd, options);
@@ -313,10 +319,11 @@ class BrokerCodexAppServerClient extends AppServerClientBase {
 export class CodexAppServerClient {
   static async connect(cwd, options = {}) {
     let brokerEndpoint = null;
-    if (!options.disableBroker) {
-      brokerEndpoint = options.brokerEndpoint ?? options.env?.[BROKER_ENDPOINT_ENV] ?? process.env[BROKER_ENDPOINT_ENV] ?? null;
+    const env = options.env ?? process.env;
+    if (!options.disableBroker && !brokerDisabled(env)) {
+      brokerEndpoint = options.brokerEndpoint ?? env?.[BROKER_ENDPOINT_ENV] ?? null;
       if (!brokerEndpoint) {
-        const brokerSession = await ensureBrokerSession(cwd, { env: options.env });
+        const brokerSession = await ensureBrokerSession(cwd, { env });
         brokerEndpoint = brokerSession?.endpoint ?? null;
       }
     }

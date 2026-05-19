@@ -515,6 +515,7 @@ rl.on("line", (line) => {
 export function buildEnv(binDir) {
   return {
     ...process.env,
+    CODEX_COMPANION_DISABLE_APP_SERVER_BROKER: "1",
     PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`
   };
 }

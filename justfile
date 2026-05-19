@@ -12,6 +12,7 @@ npm_cmd := if os_family() == "windows" { "npm.cmd" } else { "npm" }
 npx_cmd := if os_family() == "windows" { "npx.cmd" } else { "npx" }
 just_cmd := "just"
 node_cmd := "node"
+python_cmd := "python"
 cargo_cmd := "cargo"
 rustc_cmd := "rustc"
 # ============ 跨平台执行指令 ============
@@ -296,8 +297,20 @@ rust-fix:
 ts-check:
     cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
 
-# 运行仓库前端 lint（docs + MCS Web UI）
-lint: docs-lint mcs-web-lint
+# 校验当前保留的技能与脚本内容
+skills-check:
+    {{ python_cmd }} content/skills/check.py content/skills
+
+# 编译检查 Python 脚本；跳过带占位符的 scaffold 模板
+python-check:
+    {{ python_cmd }} -c "from pathlib import Path; import py_compile; paths=[p for p in Path('content').rglob('*.py') if 'scaffolds' not in p.parts and 'node_modules' not in p.parts]; [py_compile.compile(str(p), doraise=True) for p in paths]; print(f'Checked {len(paths)} Python files')"
+
+# 运行当前仍在仓库内的 Node.js 技能测试
+node-test:
+    {{ node_cmd }} --test content/skills/developer-tools-integrations/codex-companion/tests/*.mjs content/skills/developer-tools-integrations/skill-map/tests/*.mjs
+
+# 运行仓库内容 lint
+lint: skills-check python-check
 
 # ============ CI ============
 # 在本地执行完整 CI 流程
@@ -308,34 +321,17 @@ ci:
     @echo "  🚀 开始执行本地 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📚 步骤 1/8: 文档审计 (docs/scripts/audit_sync.py)..."
-    {{ just_cmd }} docs-audit
+    @echo "🧩 步骤 1/4: 技能元数据校验..."
+    {{ just_cmd }} skills-check
     @echo ""
-    @echo "📦 步骤 2/8: 安装文档站点依赖 (npm ci)..."
-    {{ just_cmd }} docs-ci-install
+    @echo "🐍 步骤 2/4: Python 脚本编译检查..."
+    {{ just_cmd }} python-check
     @echo ""
-    @echo "📦 步骤 3/8: 安装 MCS Web UI 依赖 (npm ci)..."
-    {{ just_cmd }} mcs-web-ci-install
+    @echo "🧪 步骤 3/4: Node.js 技能测试..."
+    {{ just_cmd }} node-test
     @echo ""
-    @echo "🧹 步骤 4/8: 文档与 UI lint..."
-    {{ just_cmd }} lint
-    @echo ""
-    @echo "📘 步骤 5/8: MCS Web UI TypeScript 检查..."
-    cd {{ mcs_web_ui_dir }}; {{ npx_cmd }} tsc --noEmit
-    @echo ""
-    @echo "🧪 步骤 6/8: MCS Web UI 测试..."
-    cd {{ mcs_web_ui_dir }}; {{ npm_cmd }} --cache {{ mcs_web_npm_cache_dir }} test
-    @echo ""
-    @echo "🦀 步骤 7/8: Rust 格式检查（必要时自动修复）..."
-    {{ just_cmd }} rust-format
-    {{ just_cmd }} rust-format-check
-    @echo ""
-    @echo "🦀 步骤 8/8: Rust Clippy 自动修复并严格校验..."
-    {{ just_cmd }} rust-clippy-fix
-    {{ just_cmd }} rust-clippy
-    @echo ""
-    @echo "🦀 附加验证: Rust 单元测试..."
-    {{ just_cmd }} rust-test
+    @echo "🧹 步骤 4/4: Git 空白检查..."
+    git diff --check
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
     @echo "  ✅ 本地 CI 流程执行完成！"

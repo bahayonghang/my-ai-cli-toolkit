@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [main, master]
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -30,21 +27,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: mcs/mcs-web/ui/package-lock.json
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          components: clippy, rustfmt
+          python-version: '3.12'
+
+      - name: Install Python validation dependencies
+        run: python -m pip install --upgrade pip PyYAML
 
       - name: Setup just
         uses: taiki-e/install-action@just
-
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: mcs
 
       - name: Run repo CI via just
         run: just ci
