@@ -47,7 +47,7 @@ python-check:
 
 # 运行仓库内 Node.js 技能测试
 node-test:
-    {{ node_cmd }} --test content/skills/developer-tools-integrations/codex-companion/tests/*.mjs content/skills/developer-tools-integrations/skill-map/tests/*.mjs
+    {{ node_cmd }} -e "const { readdirSync } = require('node:fs'); const { join } = require('node:path'); const { spawnSync } = require('node:child_process'); const dirs = ['content/skills/developer-tools-integrations/codex-companion/tests', 'content/skills/developer-tools-integrations/skill-map/tests']; const files = dirs.flatMap((dir) => readdirSync(dir).filter((name) => name.endsWith('.mjs')).map((name) => join(dir, name))); const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
 
 # 运行仓库内容 lint
 lint: skills-check python-check
