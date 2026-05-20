@@ -18,7 +18,6 @@ CANONICAL_CATEGORY_SLUGS = {
     "git-github-collaboration",
     "docs-writing-publishing",
     "research-learning-knowledge",
-    "visual-media-design",
 }
 ALLOWED_FRONTMATTER_KEYS = {
     "name",
