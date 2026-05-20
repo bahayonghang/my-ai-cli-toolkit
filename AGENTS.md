@@ -1,25 +1,22 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-This repository has two main areas. `content/` stores installable skills, commands, agent definitions, hooks, and platform memory files. `mcs/` is the Rust workspace for the shared core library, terminal UI, and web backend. The React frontend lives in `mcs/mcs-web/ui/src`, with unit tests in `mcs/mcs-web/ui/src/**/*.test.ts` and Playwright flows in `mcs/mcs-web/ui/tests/e2e`. Documentation lives in `docs/`. Check nested guidance files such as `content/CLAUDE.md` or deeper `AGENTS.md` files before editing scoped areas.
+This repository has a single working area: `content/`. It holds installable skills (`content/skills/<category>/<skill-name>/`), platform-scoped commands/agents/prompts/rules under `content/platforms/<platform>/`, runtime hook assets in `content/hooks/`, and the curated third-party registry at `content/community-skills-registry/`. Check nested guidance files such as `content/CLAUDE.md`, `content/skills/CLAUDE.md`, or deeper `AGENTS.md` files before editing a scoped area.
 
 ## Build, Test, and Development Commands
-Use `just` from the repository root for the standard workflow:
+Use `just` from the repository root:
 
-- `just mcs` runs the Rust TUI locally.
-- `just web` starts the Rust backend and Vite frontend together.
-- `just doc` serves the docs site on port `4000`.
-- `just mcs-web-test` runs the frontend Vitest suite.
-- `cd mcs/mcs-web/ui && npm run test:e2e` runs Playwright end-to-end tests.
-- `just rust-test` runs Rust tests across the workspace.
-- `just ts-check` runs TypeScript type checking.
-- `just ci` runs the local CI sequence: npm install/checks, TypeScript, Vitest, `cargo fmt`, Clippy, and Rust tests.
+- `just ci` — full local CI: skills metadata check, Python compile check, Node skill tests, `git diff --check`.
+- `just lint` — `skills-check` + `python-check`.
+- `just skills-check` — runs `content/skills/check.py` over `content/skills/`.
+- `just python-check` — byte-compiles every `*.py` under `content/` (skips `scaffolds`).
+- `just node-test` — runs `codex-companion` and `skill-map` Node test files.
 
 ## Coding Style & Naming Conventions
-Follow existing language conventions instead of introducing local variants. Rust must pass `cargo fmt` and `cargo clippy -- -D warnings`; use snake_case for modules and functions. React + TypeScript uses 2-space indentation, PascalCase for components and page files such as `NpxSkillsPage.tsx`, and camelCase for hooks, stores, and utilities such as `useUiStore`. Keep Markdown concise and use kebab-case for content directory names.
+Follow existing language conventions instead of introducing local variants. Markdown should stay concise; use kebab-case for content directory names and skill slugs. Python scripts under `content/` must remain byte-compilable (`just python-check`). Node skill scripts target plain Node ≥ 20 and live alongside their `tests/*.mjs`. Keep `SKILL.md` frontmatter in the documented top-level form: `name`, `description`, `category`, `tags`, `version`.
 
 ## Testing Guidelines
-Prefer targeted tests while iterating, then run `just ci` before opening a PR. After every code modification, run `just ci` once from the repository root. UI changes should include Vitest coverage and Playwright coverage for affected flows. Rust changes should add or update nearby `cargo test` coverage. When editing external registry loading or `npx skills` integration, update the closest Rust or web tests.
+Prefer targeted checks while iterating: `just skills-check` for metadata changes, `just node-test` for changes under `codex-companion` or `skill-map`, `just python-check` for Python edits. Run `just ci` once from the repository root before finishing or opening a PR. When adding or changing a Node skill, add or update a matching test file in its `tests/` directory.
 
 ## Commit & Pull Request Guidelines
-Use Conventional Commits with an optional scope and emoji, for example `feat(skills): ✨ add drawio skill` or `docs(guide): 📝 refresh runtime docs`. Keep subjects imperative and scoped. Before creating any commit, run `just ci` from the repository root and fix any failures. Pull requests should summarize the change, list verification commands, link related issues, and include screenshots or short recordings for `mcs-web`, TUI, or docs UI updates.
+Use Conventional Commits with an optional scope and emoji, for example `feat(skills): ✨ add drawio skill` or `chore(platforms): 🧹 prune dead command source`. Keep subjects imperative and scoped. Run `just ci` before committing and fix any failures. Pull requests should summarize the change, list the verification commands used (typically `just ci`), and link related issues; include screenshots only when a skill or platform asset has a visible artifact worth showing.

@@ -8,8 +8,6 @@ build
 .out
 .next
 target
-mcs.exe
-mcs/target
 
 # Test & cache
 coverage
@@ -42,9 +40,6 @@ Thumbs.db
 # Lock files (large, low value for context)
 uv.lock
 package-lock.json
-
-# Tauri build artifacts
-tools/agentkit-desktop/src-tauri/target
 
 # Reference / vendored code
 ref

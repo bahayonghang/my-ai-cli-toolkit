@@ -6,9 +6,6 @@ ref/
 openspec/
 .worktrees/
 
-
-mcs/target/
-
 *.pyc
 .hypothesis/
 .gemini/
@@ -20,8 +17,6 @@ mcs/target/
 .omcodex/
 .agents/
 .omx/
-mcs/mcs-web/ui/test-results/.last-run.json
-
 .playwright-mcp/
 
 .impeccable.md

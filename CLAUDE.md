@@ -4,39 +4,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo shape
 
-This repository has two main areas:
-- `content/` — installable skills, commands, prompts, agents, and the community skills registry
-- `mcs/` — the Rust workspace for MCS, including shared core logic, the TUI, and the web app
+This repository now contains a single working area: `content/` — installable skills, platform-scoped commands/agents/prompts/rules, hooks, and the curated third-party skill registry. The old `mcs/` Rust workspace and `docs/` site have been removed.
 
-Before editing a scoped area, check for nested guidance files such as `CLAUDE.md` or `AGENTS.md` inside that subtree.
+Before editing a scoped area, check the nested guidance files:
+
+- `content/CLAUDE.md` — overall content layout
+- `content/skills/CLAUDE.md` — skill authoring conventions and category list
 
 ## Core commands
 
-Use `just` from the repository root.
+Use `just` from the repository root:
 
-- `just mcs` — run the Rust TUI
-- `just web` — run the Rust backend and Vite frontend together
-- `just doc` — run the docs site
-- `just mcs-web-test` — run frontend Vitest tests
-- `just rust-test` — run Rust tests
-- `just ts-check` — run TypeScript checks
-- `just ci` — full validation
-
-Runtime ports:
-- backend: `23242`
-- frontend: `15173`
-- docs: `4000`
+- `just ci` — full local CI: skills metadata check, Python compile check, Node skill tests, `git diff --check`
+- `just lint` — `skills-check` + `python-check`
+- `just skills-check` — runs `content/skills/check.py`
+- `just python-check` — compiles every `*.py` under `content/` (skips `scaffolds`)
+- `just node-test` — runs `codex-companion` and `skill-map` Node tests
+- `just check-deps` / `just info` — environment diagnostics
 
 ## Non-obvious repo rules
 
-- `platforms.toml` is load-bearing: it defines install targets, prompt/command directories, and some platform-specific project install paths.
-- Some platforms use command fallbacks instead of their own command directories; check platform config before assuming commands live only under their platform folder.
-- Public skill changes usually require doc updates in both `docs/` and `docs/zh/`.
-- The curated third-party registry lives under `content/community-skills-registry/`, not `content/skills/`.
-- Zustand selectors in `mcs/mcs-web/ui/src/stores/` must return referentially stable values; see `mcs/mcs-web/ui/src/stores/README.md` for the rules.
+- `platforms.toml` is load-bearing: it defines install targets, base dirs, and the `skills_subdir` / `commands_subdir` for each platform. Don't add a new platform without updating it.
+- Some platforms have `commands_source = ""` (skills-only) or use a fallback command source; check `platforms.toml` before assuming a platform owns its own commands directory.
+- The curated third-party registry lives at `content/community-skills-registry/`. Do not put `SKILL.md` files there — installable skills belong under `content/skills/<category>/<skill-name>/`.
+- New skills must use the existing categories under `content/skills/` (`development-workflows`, `developer-tools-integrations`, `git-github-collaboration`, `docs-writing-publishing`, `research-learning-knowledge`, `visual-media-design`); don't invent new top-level folders casually.
 
 ## Validation and commits
 
-- During implementation, run targeted checks for the area you changed.
-- Before finishing or opening a PR, run `just ci`.
-- Use Conventional Commits; prefer adding a scope when it helps clarify the change.
+- Run targeted checks while iterating (`just skills-check` for metadata, `just node-test` for the affected test file).
+- Run `just ci` before finishing or opening a PR.
+- Use Conventional Commits; add a scope when it clarifies the change (e.g. `feat(skills):`, `chore(platforms):`).

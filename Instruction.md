@@ -7,7 +7,6 @@
 3. 安装 oh-my-claudecode
 4. 安装本仓库中的一方 skills
 5. 按需安装 `community-skills-registry` 中维护的第三方 skills
-6. 在需要时使用本仓库的 MCS、Web 和本地文档
 
 ## 1. 前置要求
 
@@ -17,10 +16,10 @@
   - Node.js
   - npm / npx
   - Claude Code
-- 需要本地仓库工作流时额外准备：
+- 需要在本地校验或贡献修改时额外准备：
   - Git
-  - 可选：Rust（仅当你要运行 `just mcs` / `just web` 时需要）
-  - 可选：`just`（推荐，用于统一执行仓库命令）
+  - `just`（推荐，用于跑仓库内的 CI 流程）
+  - Python 3.x（用于 `skills-check` 与 `python-check`）
 
 ## 2. 安装 Claude Code
 
@@ -34,7 +33,7 @@ npx zcf
 
 ## 3. 配置 Claude 全局记忆
 
-使用 `prompts` 中的 `CLAUDE.md` 作为全局记忆与指导文件基础版本。
+使用本仓库中的 `CLAUDE.md` 作为全局记忆与指导文件基础版本。
 
 ## 4. 安装 oh-my-claudecode
 
@@ -48,7 +47,7 @@ npx zcf
 
 ## 5. 推荐安装路径：直接从 GitHub 安装 skills
 
-这是后续安装”本仓库一方 skills + `community-skills-registry` 第三方 skills”最推荐的路径，不需要先克隆本仓库。
+这是后续安装“本仓库一方 skills + `community-skills-registry` 第三方 skills”最推荐的路径，不需要先克隆本仓库。
 
 ### 直接安装本仓库一方 skills catalog
 
@@ -76,8 +75,6 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -
 npx skills add KKKKhazix/khazix-skills -g
 ```
 
-更多第三方条目与说明见 `docs/guide/community-skills-registry.md` 和 `docs/zh/guide/community-skills-registry.md`。
-
 ## 6. 后续所有 skills 的推荐安装顺序
 
 建议按下面顺序逐步补齐：
@@ -88,34 +85,18 @@ npx skills add KKKKhazix/khazix-skills -g
 
 ## 7. 什么时候需要克隆本仓库
 
-只有在你需要以下能力时，才需要克隆本仓库：
-
-- 使用 `just mcs` 启动 Rust TUI 管理器
-- 使用 `just web` 启动 Web 管理界面
-- 使用 `just doc` 启动本地文档站点
+只有在你需要本地校验或贡献修改时，才克隆仓库：
 
 ```bash
 git clone https://github.com/bahayonghang/my-claude-code-settings.git
 cd my-claude-code-settings
+
+just ci
 ```
 
-## 8. 浏览与管理所有 skills
+`just ci` 跑完仓库的本地 CI（skills 元数据、Python 编译、Node 测试、`git diff --check`），等价于 GitHub Actions 上的检查。
 
-如果你希望在安装前后浏览 catalog、查看安装状态、做 diff 或批量管理，可使用仓库自带的 MCS。
-
-### 终端界面
-
-```bash
-just mcs
-```
-
-### Web 界面
-
-```bash
-just web
-```
-
-## 9. Hook 配置建议
+## 8. Hook 配置建议
 
 建议继续保留原有 Hook 规则，并补充到你的运行时配置中：
 
@@ -125,21 +106,18 @@ just web
   - 工作流修复建议
 - 当提示词 > 50 字时，让 Claude 检查期望结果是否清晰
 
-## 10. 推荐的后续使用顺序
+## 9. 推荐的后续使用顺序
 
 完成上述安装后，推荐按下面顺序使用：
 
 1. 先完成 Claude Code / OMC / 全局记忆的基础配置
 2. 通过 `npx skills add` 安装一方 skills
 3. 按需从 `community-skills-registry` 中补充第三方 skills
-4. 只有在需要本地管理能力时再克隆本仓库
-5. 需要统一浏览和管理时，再使用 `just mcs` 或 `just web`
+4. 只有在需要本地校验或贡献修改时再克隆本仓库
 
-## 11. 相关入口
+## 10. 相关入口
 
 - 仓库总说明：`README.md`
 - 中文说明：`README_CN.md`
-- 安装文档：`docs/guide/installation.md`
-- 中文安装文档：`docs/zh/guide/installation.md`
-- 外部技能说明：`docs/guide/community-skills-registry.md`
-- 中文外部技能说明：`docs/zh/guide/community-skills-registry.md`
+- 第三方注册表：`content/community-skills-registry/`
+- 平台映射：`platforms.toml`
