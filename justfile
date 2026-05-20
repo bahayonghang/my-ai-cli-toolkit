@@ -31,7 +31,6 @@ help:
     @echo ""
     @echo "🔧 其他："
     @echo "  just check-deps    - 检查运行依赖（just / node / npm / python）"
-    @echo "  just info          - 显示项目信息"
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
 
@@ -47,7 +46,7 @@ python-check:
 
 # 运行仓库内 Node.js 技能测试
 node-test:
-    {{ node_cmd }} -e "const { readdirSync } = require('node:fs'); const { join } = require('node:path'); const { spawnSync } = require('node:child_process'); const dirs = ['content/skills/developer-tools-integrations/codex-companion/tests', 'content/skills/developer-tools-integrations/skill-map/tests']; const files = dirs.flatMap((dir) => readdirSync(dir).filter((name) => name.endsWith('.mjs')).map((name) => join(dir, name))); const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
+    {{ node_cmd }} -e "const fs = require('node:fs'); const path = require('node:path'); const { spawnSync } = require('node:child_process'); const files = []; const walk = (dir) => { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const filePath = path.join(dir, entry.name); if (entry.isDirectory()) walk(filePath); else if (entry.isFile() && filePath.split(/[\\/]/).includes('tests') && entry.name.endsWith('.mjs')) files.push(filePath); } }; walk('content/skills'); if (files.length === 0) { console.log('No Node skill tests found'); process.exit(0); } const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
 
 # 运行仓库内容 lint
 lint: skills-check python-check
@@ -85,11 +84,3 @@ check-deps:
     @{{ npm_cmd }} --version
     @{{ python_cmd }} --version
     @echo "✓ 依赖检查完成"
-
-# 显示项目信息
-info:
-    @echo "项目: MyClaude Skills"
-    @echo "工作区: content/"
-    @echo "技能源: content/skills/"
-    @echo "第三方注册表: content/community-skills-registry/"
-    @echo "平台映射: platforms.toml"
