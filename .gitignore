@@ -34,3 +34,7 @@ content/skills/document-skills/latex-document-skill/examples/*.png
 
 node_modules/
 .learnings/
+
+# VitePress docs site
+docs/.vitepress/dist/
+docs/.vitepress/cache/
