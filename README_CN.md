@@ -2,16 +2,13 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-跨平台 AI 内容仓库：可安装技能、平台级 commands/agents/prompts/rules、hooks，以及一份精选的第三方技能注册表。
+跨平台 AI 内容仓库：可安装 skills、平台级 commands/agents/prompts/rules，以及运行时 hooks。
 
 仓库当前只有一个工作区：
 
 - `content/skills/`：一方技能目录
-- `content/community-skills-registry/`：第三方技能注册表（TOML 元数据）
 - `content/hooks/`：运行时 hook 资源
 - `content/platforms/<platform>/`：平台级 commands、agents、prompts、rules
-
-平台安装路径与目录结构由 `platforms.toml` 定义。
 
 ## 快速开始
 
@@ -37,10 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '*' -
 
 它可以统一管理 `~/.agents/skills/` 共享目录，从 GitHub 导入 skills，并把 skills 安装或链接到已支持的 agent 客户端。
 
-这个仓库可以直接接到这条链路里：
-
-- `content/skills/` 作为一方 skills 源
-- `content/community-skills-registry/` 作为第三方 skills 注册表元数据源
+本仓库的 `content/skills/` 可作为一方 skills 源使用。
 
 ### 本地校验时再克隆
 
@@ -53,46 +47,37 @@ cd my-claude-code-settings
 just ci
 ```
 
-`just ci` 跑的就是 GitHub Actions 上的同一套检查：skills 元数据校验、Python 编译检查、Node 技能测试、`git diff --check`。
+`just ci` 会执行 skills 元数据校验、Python 编译检查、Node 技能测试和 `git diff --check`。
 
 ## 仓库结构
 
 ```text
 .
 ├── content/
-│   ├── skills/                     # 一方技能目录
-│   ├── community-skills-registry/  # 第三方技能注册表（TOML 元数据）
-│   ├── hooks/                      # 运行时 hook 资源
+│   ├── skills/      # 一方技能目录
+│   ├── hooks/       # 运行时 hook 资源
 │   └── platforms/
 │       └── <platform>/
 │           ├── commands/  # 平台 command / workflow 源（存在时）
 │           ├── agents/    # 平台 agent 定义（存在时）
 │           ├── prompts/   # 平台 prompt packs（存在时）
 │           └── rules/     # 平台基础指导文件（存在时）
-├── platforms.toml                  # 平台安装映射
-└── justfile                        # 本地校验入口
+└── justfile         # 本地校验入口
 ```
 
-## 技能分类
+## 当前技能分类
 
-`content/skills/` 下的一方 catalog 使用以下规范分类：
+`content/skills/` 下的一方 catalog 当前使用以下分类目录：
 
 - `development-workflows`
 - `developer-tools-integrations`
 - `git-github-collaboration`
 - `docs-writing-publishing`
 - `research-learning-knowledge`
-- `visual-media-design`
 
-## 平台模型
+## 平台内容
 
-平台路径按以下三层叠加决定：
-
-1. 安装工具内置默认值
-2. 本仓库 `platforms.toml`
-3. 可选的用户覆盖 `~/.config/myclaude/platforms.toml`
-
-并不是每个平台都拥有完全独立的源目录。部分平台会从 fallback source 安装 commands，再落到平台专属路径下；新增平台前先看 `platforms.toml`。
+平台专属源文件位于 `content/platforms/<platform>/`。消费本仓库的运行时工具负责安装或链接目标解析，因此仓库内不再维护单独的 `platforms.toml` 映射文件。
 
 ## License
 

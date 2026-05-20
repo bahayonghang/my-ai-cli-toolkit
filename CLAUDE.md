@@ -4,12 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo shape
 
-This repository now contains a single working area: `content/` — installable skills, platform-scoped commands/agents/prompts/rules, hooks, and the curated third-party skill registry. The old `mcs/` Rust workspace and `docs/` site have been removed.
+This repository now contains a single working area: `content/` — installable skills, platform-scoped commands/agents/prompts/rules, and hooks. The old `mcs/` Rust workspace, docs site, repo-local platform mapping file, and large archived skill bundles have been removed.
 
-Before editing a scoped area, check the nested guidance files:
-
-- `content/CLAUDE.md` — overall content layout
-- `content/skills/CLAUDE.md` — skill authoring conventions and category list
+Before editing a scoped area, check any nested guidance file that still exists for that subtree, such as `content/platforms/codex/rules/AGENTS.md`.
 
 ## Core commands
 
@@ -19,18 +16,18 @@ Use `just` from the repository root:
 - `just lint` — `skills-check` + `python-check`
 - `just skills-check` — runs `content/skills/check.py`
 - `just python-check` — compiles every `*.py` under `content/` (skips `scaffolds`)
-- `just node-test` — runs `codex-companion` and `skill-map` Node tests
-- `just check-deps` / `just info` — environment diagnostics
+- `just node-test` — discovers and runs Node skill tests under `content/skills/**/tests/*.mjs`
+- `just check-deps` — checks local tool availability
 
 ## Non-obvious repo rules
 
-- `platforms.toml` is load-bearing: it defines install targets, base dirs, and the `skills_subdir` / `commands_subdir` for each platform. Don't add a new platform without updating it.
-- Some platforms have `commands_source = ""` (skills-only) or use a fallback command source; check `platforms.toml` before assuming a platform owns its own commands directory.
-- The curated third-party registry lives at `content/community-skills-registry/`. Do not put `SKILL.md` files there — installable skills belong under `content/skills/<category>/<skill-name>/`.
-- New skills must use the existing categories under `content/skills/` (`development-workflows`, `developer-tools-integrations`, `git-github-collaboration`, `docs-writing-publishing`, `research-learning-knowledge`, `visual-media-design`); don't invent new top-level folders casually.
+- Platform source assets live under `content/platforms/<platform>/`; do not assume a repo-local `platforms.toml` exists.
+- Installable skills belong under `content/skills/<category>/<skill-name>/`; keep `SKILL.md` as the required entrypoint.
+- Reuse the current category directories under `content/skills/` and avoid inventing new top-level folders casually.
+- New skills should use top-level frontmatter fields: `name`, `description`, `category`, `tags`, and `version`.
 
 ## Validation and commits
 
-- Run targeted checks while iterating (`just skills-check` for metadata, `just node-test` for the affected test file).
+- Run targeted checks while iterating (`just skills-check` for metadata, `just node-test` for Node skill tests, `just python-check` for Python scripts).
 - Run `just ci` before finishing or opening a PR.
 - Use Conventional Commits; add a scope when it clarifies the change (e.g. `feat(skills):`, `chore(platforms):`).
