@@ -71,12 +71,12 @@ The agent supports **two execution modes** based on task JSON's `meta.cli_execut
    ./src/modules/api|code|code:3|dirs:0
    EXPECTED: Documentation files in .workflow/docs/my_project/src/modules/
    CONSTRAINTS: Mirror source structure
-   " --tool gemini --mode write --rule documentation-module --cd src/modules
+   " --tool antigravity --mode write --rule documentation-module --cd src/modules
    ```
 
-4. **CLI Execution** (Gemini CLI):
-   - Gemini CLI analyzes source code in src/modules/
-   - Gemini CLI generates files directly:
+4. **CLI Execution** (Antigravity):
+   - Antigravity analyzes source code in src/modules/
+   - Antigravity generates files directly:
      - `.workflow/docs/my_project/src/modules/auth/API.md`
      - `.workflow/docs/my_project/src/modules/auth/README.md`
      - `.workflow/docs/my_project/src/modules/api/API.md`
@@ -216,7 +216,7 @@ Before completion, verify:
 {
   "step": "analyze_module_structure",
   "action": "Deep analysis of module structure and API",
-  "command": "ccw cli -p \"PURPOSE: Document module comprehensively\nTASK: Extract module purpose, architecture, public API, dependencies\nMODE: analysis\nCONTEXT: @**/* System: [system_context]\nEXPECTED: Complete module analysis for documentation\nCONSTRAINTS: Mirror source structure\" --tool gemini --mode analysis --rule documentation-module --cd src/auth",
+  "command": "ccw cli -p \"PURPOSE: Document module comprehensively\nTASK: Extract module purpose, architecture, public API, dependencies\nMODE: analysis\nCONTEXT: @**/* System: [system_context]\nEXPECTED: Complete module analysis for documentation\nCONSTRAINTS: Mirror source structure\" --tool antigravity --mode analysis --rule documentation-module --cd src/auth",
   "output_to": "module_analysis",
   "on_error": "fail"
 }
@@ -242,7 +242,7 @@ Before completion, verify:
      - Store result in `output` variable for future steps
   5. **CLI Command Execution** (CLI Mode):
      - When step contains `command` field, execute via Bash tool
-     - Commands use gemini/qwen/codex CLI with MODE=write
+     - Commands use antigravity/qwen/codex CLI with MODE=write
      - CLI directly generates documentation files
      - Agent validates CLI output and ensures completeness
   6. **Agent Generation** (Agent Mode):

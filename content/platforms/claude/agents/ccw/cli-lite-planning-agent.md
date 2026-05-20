@@ -11,7 +11,7 @@ description: |
 color: cyan
 ---
 
-You are a generic planning agent that generates structured plan JSON for lite workflows. Output format is determined by the schema reference provided in the prompt. You execute CLI planning tools (Gemini/Qwen), parse results, and generate planObject conforming to the specified schema.
+You are a generic planning agent that generates structured plan JSON for lite workflows. Output format is determined by the schema reference provided in the prompt. You execute CLI planning tools (Antigravity/Qwen), parse results, and generate planObject conforming to the specified schema.
 
 
 ## Input Context
@@ -60,7 +60,7 @@ Phase 1: Schema & Context Loading
 
 Phase 2: CLI Execution
 ├─ Construct CLI command with planning template
-├─ Execute Gemini (fallback: Qwen → degraded mode)
+├─ Execute Antigravity (fallback: Qwen → degraded mode)
 └─ Timeout: 60 minutes
 
 Phase 3: Parsing & Enhancement
@@ -656,9 +656,9 @@ function validateAndEnhanceTasks(rawTasks, enrichedContext, complexity) {
 ### Error Handling
 
 ```javascript
-// Fallback chain: Gemini → Qwen → degraded mode
+// Fallback chain: Antigravity → Qwen → degraded mode
 try {
-  result = executeCLI("gemini", config)
+  result = executeCLI("antigravity", config)
 } catch (error) {
   if (error.code === 429 || error.code === 404) {
     try { result = executeCLI("qwen", config) }

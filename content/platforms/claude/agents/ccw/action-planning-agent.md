@@ -278,7 +278,7 @@ function computeCliStrategy(task, allTasks) {
     "module": "frontend|backend|shared|null",
     "execution_config": {
       "method": "agent|hybrid|cli",
-      "cli_tool": "codex|gemini|qwen|auto",
+      "cli_tool": "codex|antigravity|qwen|auto",
       "enable_resume": true,
       "previous_cli_id": "string|null"
     }
@@ -293,7 +293,7 @@ function computeCliStrategy(task, allTasks) {
 - `module`: Module identifier for multi-module projects (e.g., `frontend`, `backend`, `shared`) or `null` for single-module
 - `execution_config`: CLI execution settings (MUST align with userConfig from task-generate-agent)
   - `method`: Execution method - `agent` (direct), `hybrid` (agent + CLI), `cli` (CLI only)
-  - `cli_tool`: Preferred CLI tool - `codex`, `gemini`, `qwen`, `auto`, or `null` (for agent-only)
+  - `cli_tool`: Preferred CLI tool - `codex`, `antigravity`, `qwen`, `auto`, or `null` (for agent-only)
   - `enable_resume`: Whether to use `--resume` for CLI continuity (default: true)
   - `previous_cli_id`: Previous task's CLI execution ID for resume (populated at runtime)
 
@@ -440,7 +440,7 @@ userConfig.executionMethod → meta.execution_config + implementation_approach
 **Dynamic Step Selection Guidelines**:
 - **Context Loading**: Always include context package and role analysis loading
 - **Architecture Analysis**: Add module structure analysis for complex projects
-- **Pattern Discovery**: Use CLI tools (gemini/qwen/bash) based on task complexity and available tools
+- **Pattern Discovery**: Use CLI tools (antigravity/qwen/bash) based on task complexity and available tools
 - **Tech-Specific Analysis**: Add language/framework-specific searches for specialized tasks
 - **MCP Integration**: Utilize MCP tools when available for enhanced context
 
@@ -489,17 +489,17 @@ userConfig.executionMethod → meta.execution_config + implementation_approach
     "output_to": "search_results"
   },
 
-  // Pattern: Gemini CLI deep analysis
+  // Pattern: Antigravity deep analysis
   {
     "step": "gemini_analyze_[aspect]",
-    "command": "ccw cli -p 'PURPOSE: [goal]\\nTASK: [tasks]\\nMODE: analysis\\nCONTEXT: @[paths]\\nEXPECTED: [output]\\nRULES: $(cat [template]) | [constraints] | analysis=READ-ONLY' --tool gemini --mode analysis --cd [path]",
+    "command": "ccw cli -p 'PURPOSE: [goal]\\nTASK: [tasks]\\nMODE: analysis\\nCONTEXT: @[paths]\\nEXPECTED: [output]\\nRULES: $(cat [template]) | [constraints] | analysis=READ-ONLY' --tool antigravity --mode analysis --cd [path]",
     "output_to": "analysis_result"
   },
 
   // Pattern: Qwen CLI analysis (fallback/alternative)
   {
     "step": "qwen_analyze_[aspect]",
-    "command": "ccw cli -p '[similar to gemini pattern]' --tool qwen --mode analysis --cd [path]",
+    "command": "ccw cli -p '[similar to antigravity pattern]' --tool qwen --mode analysis --cd [path]",
     "output_to": "analysis_result"
   },
 
@@ -532,7 +532,7 @@ The examples above demonstrate **patterns**, not fixed requirements. Agent MUST:
    Default: Include progressively based on planning requirements, not limited by task type.
 
 3. **Tool Selection Strategy**:
-   - **Gemini CLI**: Deep analysis (architecture, execution flow, patterns)
+   - **Antigravity**: Deep analysis (architecture, execution flow, patterns)
    - **Qwen CLI**: Fallback or code quality analysis
    - **Bash/rg/find**: Quick pattern matching and file discovery
    - **MCP tools**: Semantic search and external research
@@ -540,7 +540,7 @@ The examples above demonstrate **patterns**, not fixed requirements. Agent MUST:
 4. **Command Composition Patterns**:
    - **Single command**: `bash([simple_search])`
    - **Multiple commands**: `["bash([cmd1])", "bash([cmd2])"]`
-   - **CLI analysis**: `ccw cli -p '[prompt]' --tool gemini --mode analysis --cd [path]`
+   - **CLI analysis**: `ccw cli -p '[prompt]' --tool antigravity --mode analysis --cd [path]`
    - **MCP integration**: `mcp__[tool]__[function]([params])`
 
 **Key Principle**: Examples show **structure patterns**, not specific implementations. Agent must create task-appropriate steps dynamically.
@@ -560,13 +560,13 @@ The `implementation_approach` supports **two execution modes** based on the pres
 
 2. **CLI Mode (Command Execution)** - `command` field **included**:
    - Specified command executes the step directly
-   - Leverages specialized CLI tools (codex/gemini/qwen) for complex reasoning
+   - Leverages specialized CLI tools (codex/antigravity/qwen) for complex reasoning
    - **Use for**: Large-scale features, complex refactoring, or when user explicitly requests CLI tool usage
    - **Required fields**: Same as default mode **PLUS** `command`, `resume_from` (optional)
    - **Command patterns** (with resume support):
      - `ccw cli -p '[prompt]' --tool codex --mode write --cd [path]`
      - `ccw cli -p '[prompt]' --resume ${previousCliId} --tool codex --mode write` (resume from previous)
-     - `ccw cli -p '[prompt]' --tool gemini --mode write --cd [path]` (write mode)
+     - `ccw cli -p '[prompt]' --tool antigravity --mode write --cd [path]` (write mode)
    - **Resume mechanism**: When step depends on previous CLI execution, include `--resume` with previous execution ID
 
 **Semantic CLI Tool Selection**:
@@ -577,14 +577,14 @@ Agent determines CLI tool usage per-step based on user semantics and task nature
 
 **User Semantic Triggers** (patterns to detect in task_description):
 - "use Codex/codex" → Add `command` field with Codex CLI
-- "use Gemini/gemini" → Add `command` field with Gemini CLI
+- "use Antigravity/antigravity" → Add `command` field with Antigravity
 - "use Qwen/qwen" → Add `command` field with Qwen CLI
 - "CLI execution" / "automated" → Infer appropriate CLI tool
 
 **Task-Based Selection** (when no explicit user preference):
 - **Implementation/coding**: Codex preferred for autonomous development
-- **Analysis/exploration**: Gemini preferred for large context analysis
-- **Documentation**: Gemini/Qwen with write mode (`--mode write`)
+- **Analysis/exploration**: Antigravity preferred for large context analysis
+- **Documentation**: Antigravity/Qwen with write mode (`--mode write`)
 - **Testing**: Depends on complexity - simple=agent, complex=Codex
 
 **Default Behavior**: Agent always executes the workflow. CLI commands are embedded in `implementation_approach` steps:
@@ -642,7 +642,7 @@ Agent determines CLI tool usage per-step based on user semantics and task nature
   {
     "step": 3,
     "title": "Execute implementation using CLI tool",
-    "description": "Use Codex/Gemini for complex autonomous execution",
+    "description": "Use Codex/Antigravity for complex autonomous execution",
     "command": "ccw cli -p '[prompt]' --tool codex --mode write --cd [path]",
     "modification_points": ["[Same as default mode]"],
     "logic_flow": ["[Same as default mode]"],

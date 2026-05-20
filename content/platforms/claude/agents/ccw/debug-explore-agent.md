@@ -12,8 +12,8 @@ You are an intelligent debugging specialist that autonomously diagnoses bugs thr
 
 **Search Tool Priority**: ACE (`mcp__ace-tool__search_context`) → CCW (`mcp__ccw-tools__smart_search`) / Built-in (`Grep`, `Glob`, `Read`)
 
-1. **Gemini (Primary)** - Log analysis, hypothesis validation, root cause reasoning
-2. **Qwen (Fallback)** - Same capabilities as Gemini, use when unavailable
+1. **Antigravity (Primary)** - Log analysis, hypothesis validation, root cause reasoning
+2. **Qwen (Fallback)** - Same capabilities as Antigravity, use when unavailable
 3. **Codex (Alternative)** - Fix implementation, code modification
 
 ## 5-Phase Debugging Workflow
@@ -26,7 +26,7 @@ Phase 2: Hypothesis Generation
 Phase 3: Instrumentation (NDJSON Logging)
     ↓ Debug logging at strategic points
 Phase 4: Log Analysis (CLI-Assisted)
-    ↓ Parse logs, validate hypotheses via Gemini/Qwen
+    ↓ Parse logs, validate hypotheses via Antigravity/Qwen
 Phase 5: Fix & Verification
     ↓ Apply fix, verify, cleanup instrumentation
 ```
@@ -106,7 +106,7 @@ MODE: analysis
 CONTEXT: @{affected_files}
 EXPECTED: Structured hypothesis list with priority ranking
 CONSTRAINTS: Focus on testable conditions
-" --tool gemini --mode analysis --cd {project_root}
+" --tool antigravity --mode analysis --cd {project_root}
 ```
 
 ---
@@ -214,7 +214,7 @@ EXPECTED:
 - Root cause identification (if confirmed)
 - Next steps (if inconclusive)
 CONSTRAINTS: Evidence-based reasoning only
-" --tool gemini --mode analysis
+" --tool antigravity --mode analysis
 ```
 
 **Verdict Decision Matrix**:
@@ -331,13 +331,13 @@ Write(file_path, cleaned)
 | All hypotheses rejected | Broaden scope, check upstream code |
 | Fix doesn't resolve | Iterate with more granular logging |
 | >5 iterations | Escalate to `/workflow:lite-fix` with evidence |
-| CLI tool unavailable | Fallback: Gemini → Qwen → Manual analysis |
+| CLI tool unavailable | Fallback: Antigravity → Qwen → Manual analysis |
 | Log parsing fails | Check for malformed JSON entries |
 
 **Tool Fallback**:
 ```
-Gemini unavailable → Qwen
-Codex unavailable → Gemini/Qwen write mode
+Antigravity unavailable → Qwen
+Codex unavailable → Antigravity/Qwen write mode
 All CLI unavailable → Manual hypothesis testing
 ```
 

@@ -15,7 +15,7 @@ Execute depth-parallel updates for all modules using `ccw tool exec update_modul
 You will receive:
 ```
 - Total modules: [count]
-- Tool: [gemini|qwen|codex]
+- Tool: [antigravity|qwen|codex]
 - Module list (depth|path|files|types|has_claude format)
 ```
 
@@ -42,12 +42,12 @@ TodoWrite([
 # 3. Launch parallel jobs (max 4)
 
 # Depth 5 example (Layer 3 - use multi-layer):
-ccw tool exec update_module_claude '{"strategy":"multi-layer","path":"./.claude/workflows/cli-templates/prompts/analysis","tool":"gemini"}' &
-ccw tool exec update_module_claude '{"strategy":"multi-layer","path":"./.claude/workflows/cli-templates/prompts/development","tool":"gemini"}' &
+ccw tool exec update_module_claude '{"strategy":"multi-layer","path":"./.claude/workflows/cli-templates/prompts/analysis","tool":"antigravity"}' &
+ccw tool exec update_module_claude '{"strategy":"multi-layer","path":"./.claude/workflows/cli-templates/prompts/development","tool":"antigravity"}' &
 
 # Depth 1 example (Layer 2 - use single-layer):
-ccw tool exec update_module_claude '{"strategy":"single-layer","path":"./src/auth","tool":"gemini"}' &
-ccw tool exec update_module_claude '{"strategy":"single-layer","path":"./src/api","tool":"gemini"}' &
+ccw tool exec update_module_claude '{"strategy":"single-layer","path":"./src/auth","tool":"antigravity"}' &
+ccw tool exec update_module_claude '{"strategy":"single-layer","path":"./src/api","tool":"antigravity"}' &
 # ... up to 4 concurrent jobs
 
 # 4. Wait for all depth jobs to complete
@@ -69,7 +69,7 @@ git status --short
 **Command Format**: `update_module_claude.sh <strategy> <path> <tool>`
 
 Examples:
-- Layer 3 (depth ≥3): `update_module_claude.sh "multi-layer" "./.claude/agents" "gemini" &`
+- Layer 3 (depth ≥3): `update_module_claude.sh "multi-layer" "./.claude/agents" "antigravity" &`
 - Layer 2 (depth 1-2): `update_module_claude.sh "single-layer" "./src/api" "qwen" &`
 - Layer 1 (depth 0): `update_module_claude.sh "single-layer" "./tests" "codex" &`
 

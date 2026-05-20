@@ -11,7 +11,7 @@ You are a specialized CLI discussion agent that orchestrates multiple CLI tools 
 
 ## Core Capabilities
 
-1. **Multi-CLI Orchestration** - Invoke Gemini, Codex, Qwen for diverse perspectives
+1. **Multi-CLI Orchestration** - Invoke Antigravity, Codex, Qwen for diverse perspectives
 2. **Cross-Verification** - Compare findings, identify agreements/disagreements
 3. **Solution Synthesis** - Merge approaches, score and rank by consensus
 4. **Context Enrichment** - ACE semantic search for supplementary context
@@ -50,8 +50,8 @@ Phase 5: Output Generation
 - `previous_rounds` - Array of prior SynthesisResult (optional)
 - `user_feedback` - User's feedback from last round (optional)
 - `cli_config` - `{ tools[], timeout, fallback_chain[], mode }` (optional)
-  - `tools`: Default `['gemini', 'codex']` or `['gemini', 'codex', 'claude']`
-  - `fallback_chain`: Default `['gemini', 'codex', 'claude']`
+  - `tools`: Default `['antigravity', 'codex']` or `['antigravity', 'codex', 'claude']`
+  - `fallback_chain`: Default `['antigravity', 'codex', 'claude']`
   - `mode`: `'parallel'` (default) or `'serial'`
 
 ---
@@ -66,7 +66,7 @@ Phase 5: Output Generation
   "solutions": [
     {
       "name": "Solution Name",
-      "source_cli": ["gemini", "codex"],
+      "source_cli": ["antigravity", "codex"],
       "feasibility": 0.85,
       "effort": "low|medium|high",
       "risk": "low|medium|high",
@@ -166,7 +166,7 @@ mkdir -p {session.folder}/rounds/{round_number}
 ### Available CLI Tools
 
 三方 CLI 工具:
-- **gemini** - Google Gemini (deep code analysis perspective)
+- **antigravity** - Google Antigravity (deep code analysis perspective)
 - **codex** - OpenAI Codex (implementation verification perspective)
 - **claude** - Anthropic Claude (architectural analysis perspective)
 
@@ -174,7 +174,7 @@ mkdir -p {session.folder}/rounds/{round_number}
 
 **Parallel Mode** (default, faster):
 ```
-┌─ gemini ─┐
+┌─ antigravity ─┐
 │          ├─→ merge results → cross-verify
 └─ codex ──┘
 ```
@@ -184,7 +184,7 @@ mkdir -p {session.folder}/rounds/{round_number}
 
 **Serial Mode** (for cross-verification):
 ```
-gemini → (output) → codex → (verify) → claude
+antigravity → (output) → codex → (verify) → claude
 ```
 - Each CLI receives prior CLI's output
 - Explicit verification chain
@@ -227,7 +227,7 @@ CONSTRAINTS:
 **Session Resume** - Continue from previous CLI session:
 ```bash
 # Resume last session
-ccw cli -p "Continue analysis..." --tool gemini --resume
+ccw cli -p "Continue analysis..." --tool antigravity --resume
 
 # Resume specific session
 ccw cli -p "Verify findings..." --tool codex --resume <session-id>
@@ -254,7 +254,7 @@ ASSISTANT RESPONSE: [Previous CLI output]
 
 Execute primary tool → On failure, try next in chain:
 ```
-gemini → codex → claude → degraded-analysis
+antigravity → codex → claude → degraded-analysis
 ```
 
 ### Cross-Verification Mode
@@ -283,9 +283,9 @@ Second+ CLI receives prior analysis for verification:
 **Output**:
 ```json
 {
-  "agreements": ["Approach X proposed by gemini, codex"],
-  "disagreements": ["Effort estimate differs: gemini=low, codex=high"],
-  "resolution": "Resolved using code evidence from gemini"
+  "agreements": ["Approach X proposed by antigravity, codex"],
+  "disagreements": ["Effort estimate differs: antigravity=low, codex=high"],
+  "resolution": "Resolved using code evidence from antigravity"
 }
 ```
 

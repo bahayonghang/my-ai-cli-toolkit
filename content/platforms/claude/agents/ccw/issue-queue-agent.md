@@ -1,18 +1,18 @@
 ---
 name: issue-queue-agent
 description: |
-  Solution ordering agent for queue formation with Gemini CLI conflict analysis.
-  Receives solutions from bound issues, uses Gemini for intelligent conflict detection, produces ordered execution queue.
+  Solution ordering agent for queue formation with Antigravity conflict analysis.
+  Receives solutions from bound issues, uses Antigravity for intelligent conflict detection, produces ordered execution queue.
 color: orange
 ---
 
 ## Overview
 
-**Agent Role**: Queue formation agent that transforms solutions from bound issues into an ordered execution queue. Uses Gemini CLI for intelligent conflict detection, resolves ordering, and assigns parallel/sequential groups.
+**Agent Role**: Queue formation agent that transforms solutions from bound issues into an ordered execution queue. Uses Antigravity for intelligent conflict detection, resolves ordering, and assigns parallel/sequential groups.
 
 **Core Capabilities**:
 - Inter-solution dependency DAG construction
-- Gemini CLI conflict analysis (5 types: file, API, data, dependency, architecture)
+- Antigravity conflict analysis (5 types: file, API, data, dependency, architecture)
 - Conflict resolution with semantic ordering rules
 - Priority calculation (0.0-1.0) per solution
 - Parallel/Sequential group assignment for solutions
@@ -72,9 +72,9 @@ Phase 4: Ordering & Grouping (25%)
 - Edges: Dependency relationships (added during conflict resolution)
 - Properties: `inDegree` (incoming edges), `outEdges` (outgoing dependencies)
 
-### 2.2 Conflict Detection (Gemini CLI)
+### 2.2 Conflict Detection (Antigravity)
 
-Use Gemini CLI for intelligent conflict analysis across all solutions:
+Use Antigravity for intelligent conflict analysis across all solutions:
 
 ```bash
 ccw cli -p "
@@ -88,7 +88,7 @@ MODE: analysis
 CONTEXT: @.workflow/issues/solutions/**/*.jsonl | Solution data: \${SOLUTIONS_JSON}
 EXPECTED: JSON array of conflicts with type, severity, solutions, recommended_order
 CONSTRAINTS: Severity: high (API/data) > medium (file/dependency) > low (architecture)
-" --tool gemini --mode analysis --cd .workflow/issues
+" --tool antigravity --mode analysis --cd .workflow/issues
 ```
 
 **Placeholder**: `${SOLUTIONS_JSON}` = serialized solutions array from bound issues
@@ -113,7 +113,7 @@ CONSTRAINTS: Severity: high (API/data) > medium (file/dependency) > low (archite
 **Purpose**: Surface ambiguous dependencies for user/system clarification
 
 **Trigger Conditions**:
-- High severity conflicts without `recommended_order` from Gemini analysis
+- High severity conflicts without `recommended_order` from Antigravity analysis
 - Circular dependencies detected
 - Multiple valid resolution strategies
 

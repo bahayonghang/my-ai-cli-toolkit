@@ -45,7 +45,7 @@ ELIF context insufficient OR task has flow control marker:
        - Use four flexible context acquisition methods:
          * Document references (cat commands)
          * Search commands (grep/rg/find)
-         * CLI analysis (gemini/codex)
+         * CLI analysis (antigravity/codex)
          * Free exploration (Read/Grep/Search tools)
        - Pass context between steps via [variable_name] references
     → Extract patterns and conventions from accumulated context

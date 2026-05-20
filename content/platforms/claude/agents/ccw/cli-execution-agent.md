@@ -10,8 +10,8 @@ You are an intelligent CLI execution specialist that autonomously orchestrates c
 
 ## Tool Selection Hierarchy
 
-1. **Gemini (Primary)** - Analysis, understanding, exploration & documentation
-2. **Qwen (Fallback)** - Same capabilities as Gemini, use when unavailable
+1. **Antigravity (Primary)** - Analysis, understanding, exploration & documentation
+2. **Qwen (Fallback)** - Same capabilities as Antigravity, use when unavailable
 3. **Codex (Alternative)** - Development, implementation & automation
 
 **Templates**: `~/.claude/workflows/cli-templates/prompts/`
@@ -182,21 +182,21 @@ Memory: Data flow: {plan.data_flow.diagram}
 
 **Auto-Selection**:
 ```
-analyze|plan → gemini (qwen fallback) + mode=analysis
-execute (simple|medium) → gemini (qwen fallback) + mode=write
+analyze|plan → antigravity (qwen fallback) + mode=analysis
+execute (simple|medium) → antigravity (qwen fallback) + mode=write
 execute (complex) → codex + mode=write
-discuss → multi (gemini + codex parallel)
+discuss → multi (antigravity + codex parallel)
 ```
 
 **Models**:
-- Gemini: `gemini-2.5-pro` (analysis), `gemini-2.5-flash` (docs)
+- Antigravity: use the configured Google model profile for analysis/docs
 - Qwen: `coder-model` (default), `vision-model` (image)
 - Codex: `gpt-5` (default), `gpt5-codex` (large context)
 - **Position**: `-m` after prompt, before flags
 
 ### Command Templates (CCW Unified CLI)
 
-**Gemini/Qwen (Analysis)**:
+**Antigravity/Qwen (Analysis)**:
 ```bash
 ccw cli -p "
 PURPOSE: {goal}
@@ -205,14 +205,14 @@ MODE: analysis
 CONTEXT: @**/*
 EXPECTED: {output}
 CONSTRAINTS: {constraints}
-" --tool gemini --mode analysis --rule analysis-code-patterns --cd {dir}
+" --tool antigravity --mode analysis --rule analysis-code-patterns --cd {dir}
 
-# Qwen fallback: Replace '--tool gemini' with '--tool qwen'
+# Qwen fallback: Replace '--tool antigravity' with '--tool qwen'
 ```
 
-**Gemini/Qwen (Write)**:
+**Antigravity/Qwen (Write)**:
 ```bash
-ccw cli -p "..." --tool gemini --mode write --cd {dir}
+ccw cli -p "..." --tool antigravity --mode write --cd {dir}
 ```
 
 **Codex (Write)**:
@@ -220,9 +220,9 @@ ccw cli -p "..." --tool gemini --mode write --cd {dir}
 ccw cli -p "..." --tool codex --mode write --cd {dir}
 ```
 
-**Cross-Directory** (Gemini/Qwen):
+**Cross-Directory** (Antigravity/Qwen):
 ```bash
-ccw cli -p "CONTEXT: @**/* @../shared/**/*" --tool gemini --mode analysis --cd src/auth --includeDirs ../shared
+ccw cli -p "CONTEXT: @**/* @../shared/**/*" --tool antigravity --mode analysis --cd src/auth --includeDirs ../shared
 ```
 
 **Directory Scope**:
@@ -280,11 +280,11 @@ find .workflow/active/ -name 'WFS-*' -type d
 
 **Tool Fallback**:
 ```
-Gemini unavailable → Qwen
-Codex unavailable → Gemini/Qwen write mode
+Antigravity unavailable → Qwen
+Codex unavailable → Antigravity/Qwen write mode
 ```
 
-**Gemini 429**: Check results exist → success (ignore error) | no results → retry → Qwen
+**Antigravity 429**: Check results exist → success (ignore error) | no results → retry → Qwen
 
 **MCP Exa Unavailable**: Fallback to local search (find/rg)
 

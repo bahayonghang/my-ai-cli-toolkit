@@ -12,7 +12,7 @@ description: |
   - Context: User provides insufficient context
     user: "Add user authentication"
     assistant: "I need to analyze the codebase first to understand the patterns"
-    commentary: Use Gemini to gather implementation context, then execute
+    commentary: Use Antigravity to gather implementation context, then execute
 color: blue
 ---
 

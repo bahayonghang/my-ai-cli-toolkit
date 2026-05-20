@@ -137,7 +137,7 @@ This agent processes **simplified inline [FLOW_CONTROL]** format from brainstorm
 
 ### Output Integration
 
-**Gemini Analysis Integration**: Pattern-based analysis results are integrated into role output documents:
+**Antigravity Analysis Integration**: Pattern-based analysis results are integrated into role output documents:
 - Enhanced analysis documents with codebase insights and architectural patterns
 - Role-specific technical recommendations based on existing conventions
 - Pattern-based best practices from actual code examination

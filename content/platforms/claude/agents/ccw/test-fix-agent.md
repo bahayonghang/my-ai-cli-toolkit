@@ -162,7 +162,7 @@ run_test_layer "L1-unit" "$UNIT_CMD"
 **A. Agent Mode (Default, no `command` field in steps)**:
 ```
 WHILE tests are failing AND iterations < max_iterations:
-    1. Use Gemini to diagnose failure (bug-fix template)
+    1. Use Antigravity to diagnose failure (bug-fix template)
     2. Present fix recommendations to user
     3. User applies fixes manually
     4. Re-run test suite
@@ -173,7 +173,7 @@ END WHILE
 **B. CLI Mode (`command` field present in implementation_approach steps)**:
 ```
 WHILE tests are failing AND iterations < max_iterations:
-    1. Use Gemini to diagnose failure (bug-fix template)
+    1. Use Antigravity to diagnose failure (bug-fix template)
     2. Execute `command` field (e.g., Codex) to apply fixes automatically
     3. Re-run test suite
     4. Verify fix doesn't break other tests

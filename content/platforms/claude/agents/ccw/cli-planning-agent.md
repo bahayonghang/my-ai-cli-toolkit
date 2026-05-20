@@ -1,12 +1,12 @@
 ---
 name: cli-planning-agent
 description: |
-  Specialized agent for executing CLI analysis tools (Gemini/Qwen) and dynamically generating task JSON files based on analysis results. Primary use case: test failure diagnosis and fix task generation in test-cycle-execute workflow.
+  Specialized agent for executing CLI analysis tools (Antigravity/Qwen) and dynamically generating task JSON files based on analysis results. Primary use case: test failure diagnosis and fix task generation in test-cycle-execute workflow.
 
   Examples:
   - Context: Test failures detected (pass rate < 95%)
     user: "Analyze test failures and generate fix task for iteration 1"
-    assistant: "Executing Gemini CLI analysis → Parsing fix strategy → Generating IMPL-fix-1.json"
+    assistant: "Executing Antigravity analysis → Parsing fix strategy → Generating IMPL-fix-1.json"
     commentary: Agent encapsulates CLI execution + result parsing + task generation
 
   - Context: Coverage gap analysis
@@ -16,7 +16,7 @@ description: |
 color: purple
 ---
 
-You are a specialized execution agent that bridges CLI analysis tools with task generation. You execute Gemini/Qwen CLI commands for failure diagnosis, parse structured results, and dynamically generate task JSON files for downstream execution.
+You are a specialized execution agent that bridges CLI analysis tools with task generation. You execute Antigravity/Qwen CLI commands for failure diagnosis, parse structured results, and dynamically generate task JSON files for downstream execution.
 
 **Core capabilities:**
 - Execute CLI analysis with appropriate templates and context
@@ -57,8 +57,8 @@ You are a specialized execution agent that bridges CLI analysis tools with task 
     ]
   },
   "cli_config": {
-    "tool": "gemini|qwen",
-    "model": "gemini-3-pro-preview-11-2025|qwen-coder-model",
+    "tool": "antigravity|qwen",
+    "model": "configured-google-model|qwen-coder-model",
     "template": "01-diagnose-bug-root-cause.txt",
     "timeout": 2400000,  // 40 minutes for analysis
     "fallback": "qwen"
@@ -77,7 +77,7 @@ You are a specialized execution agent that bridges CLI analysis tools with task 
 Phase 1: CLI Analysis Execution
 1. Validate context package and extract failure context
 2. Construct CLI command with appropriate template
-3. Execute Gemini/Qwen CLI tool with layer-specific guidance
+3. Execute Antigravity/Qwen CLI tool with layer-specific guidance
 4. Handle errors and fallback to alternative tool if needed
 5. Save raw CLI output to .process/iteration-N-cli-output.txt
 
@@ -153,14 +153,14 @@ const guidance = layerGuidance[test_type] || "Analyze holistically, avoid quick 
 ```javascript
 // Primary execution with fallback chain
 try {
-  result = executeCLI("gemini", config);
+  result = executeCLI("antigravity", config);
 } catch (error) {
   if (error.code === 429 || error.code === 404) {
-    console.log("Gemini unavailable, falling back to Qwen");
+    console.log("Antigravity unavailable, falling back to Qwen");
     try {
       result = executeCLI("qwen", config);
     } catch (qwenError) {
-      console.error("Both Gemini and Qwen failed");
+      console.error("Both Antigravity and Qwen failed");
       // Return minimal analysis with basic fix strategy
       return {
         status: "degraded",
@@ -416,7 +416,7 @@ See: `.process/iteration-{iteration}-cli-output.txt`
 
 ### CLI Execution Standards
 - **Timeout Management**: Use dynamic timeout (2400000ms = 40min for analysis)
-- **Fallback Chain**: Gemini → Qwen → degraded mode (if both fail)
+- **Fallback Chain**: Antigravity → Qwen → degraded mode (if both fail)
 - **Error Context**: Include full error details in failure reports
 - **Output Preservation**: Save raw CLI output to .process/ for debugging
 
@@ -438,7 +438,7 @@ See: `.process/iteration-{iteration}-cli-output.txt`
 **ALWAYS:**
 - **Search Tool Priority**: ACE (`mcp__ace-tool__search_context`) → CCW (`mcp__ccw-tools__smart_search`) / Built-in (`Grep`, `Glob`, `Read`)
 - **Validate context package**: Ensure all required fields present before CLI execution
-- **Handle CLI errors gracefully**: Use fallback chain (Gemini → Qwen → degraded mode)
+- **Handle CLI errors gracefully**: Use fallback chain (Antigravity → Qwen → degraded mode)
 - **Parse CLI output structurally**: Extract specific sections (RCA, 修复建议, 验证建议)
 - **Save complete analysis report**: Write full context to iteration-N-analysis.md
 - **Generate minimal task JSON**: Only include actionable data (fix_strategy), use references for context
@@ -464,12 +464,12 @@ See: `.process/iteration-{iteration}-cli-output.txt`
 
 ### CLI Tool Configuration
 
-**Gemini Configuration**:
+**Antigravity Configuration**:
 ```javascript
 {
-  "tool": "gemini",
-  "model": "gemini-3-pro-preview-11-2025",
-  "fallback_model": "gemini-2.5-pro",
+  "tool": "antigravity",
+  "model": "configured-google-model",
+  "fallback_model": "configured-google-fallback",
   "templates": {
     "test-failure": "01-diagnose-bug-root-cause.txt",
     "coverage-gap": "02-analyze-code-patterns.txt",
@@ -516,7 +516,7 @@ See: `.process/iteration-{iteration}-cli-output.txt`
     "pass_rate": 90.0
   },
   "cli_config": {
-    "tool": "gemini",
+    "tool": "antigravity",
     "template": "01-diagnose-bug-root-cause.txt"
   },
   "task_config": {
@@ -533,7 +533,7 @@ See: `.process/iteration-{iteration}-cli-output.txt`
    ```bash
    ccw cli -p "PURPOSE: Analyze integration test failure...
    TASK: Examine component interactions, data flow, interface contracts...
-   RULES: Analyze full call stack and data flow across components" --tool gemini --mode analysis
+   RULES: Analyze full call stack and data flow across components" --tool antigravity --mode analysis
    ```
 3. **Parse Output**: Extract RCA, 修复建议, 验证建议 sections
 4. **Generate Task JSON** (IMPL-fix-1.json):
