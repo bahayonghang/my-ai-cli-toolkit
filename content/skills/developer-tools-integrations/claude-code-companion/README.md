@@ -45,5 +45,4 @@ use [codex-companion](../codex-companion/README.md) instead.
 |---|---|
 | `claude-code-companion` | Claude Code-native staged workflow |
 | `codex-companion` | Codex runtime lifecycle + task orchestration |
-| `gemini-companion` | Gemini CLI companion workflow |
-| `qwen-companion` | Qwen CLI companion workflow |
+| `antigravity-companion` | Antigravity companion workflow |

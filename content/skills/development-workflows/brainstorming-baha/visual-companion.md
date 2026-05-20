@@ -70,7 +70,7 @@ scripts/start-server.sh --project-dir /path/to/project
 scripts/start-server.sh --project-dir /path/to/project
 ```
 
-**Gemini CLI：**
+**Antigravity：**
 ```bash
 # 使用 --foreground 并在 shell 工具调用上设置 is_background: true，
 # 让进程在轮次之间存活

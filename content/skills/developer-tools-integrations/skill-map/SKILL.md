@@ -11,7 +11,7 @@ category: developer-tools-integrations
 
 只面向安装后的技能目录：
 - 默认扫描目标：
-  - 先检测当前 CLI（Claude / Codex / Gemini / Qwen / Kiro / Trae / OpenCode 等）
+  - 先检测当前 CLI（Claude / Codex / Antigravity / Qwen / Kiro / Trae / OpenCode 等）
   - 再使用该平台对应的 installed-skills 根目录
   - 若检测失败，兜底到共享安装根（通常是 `~/.agents/skills`）
 - builtin/system skills（例如 `~/.codex/skills`）不进入默认地图

@@ -11,7 +11,6 @@ const UNIVERSAL_SHARED_SKILLS_PLATFORM_IDS = Object.freeze([
   "cline",
   "codex",
   "cursor",
-  "gemini",
   "copilot",
   "kimi",
   "opencode"
@@ -23,7 +22,6 @@ const DEFAULT_PLATFORM_CONFIGS = Object.freeze({
   cline: { base_dir: "~/.cline", skills_base_dir: "~/.agents", skills_subdir: "skills" },
   codex: { base_dir: "~/.codex", skills_base_dir: "~/.agents", skills_subdir: "skills" },
   cursor: { base_dir: "~/.cursor", skills_base_dir: "~/.agents", skills_subdir: "skills" },
-  gemini: { base_dir: "~/.agents", skills_base_dir: "~/.agents", skills_subdir: "skills" },
   copilot: { base_dir: "~/.copilot", skills_base_dir: "~/.agents", skills_subdir: "skills" },
   kimi: { base_dir: "~/.kimi", skills_base_dir: "~/.agents", skills_subdir: "skills" },
   qwen: { base_dir: "~/.qwen", skills_subdir: "skills" },
@@ -46,7 +44,7 @@ const PLATFORM_ALIASES = Object.freeze({
   qodercli: "qoder",
   opencodecli: "opencode",
   "trae_cn": "trae-cn",
-  universal: "gemini"
+  universal: "codex"
 });
 
 const PLATFORM_ENV_SIGNALS = Object.freeze([
@@ -118,12 +116,6 @@ const PLATFORM_ENV_SIGNALS = Object.freeze([
     id: "antigravity",
     test(env) {
       return envHasPrefix(env, "ANTIGRAVITY_");
-    }
-  },
-  {
-    id: "gemini",
-    test(env) {
-      return envHasPrefix(env, "GEMINI_");
     }
   },
   {

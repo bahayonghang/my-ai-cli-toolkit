@@ -1,59 +1,58 @@
 ---
-name: gemini-companion
+name: antigravity-companion
 description: >-
-  Coordinate Gemini CLI companion workflows for staged review, focused task
+  Coordinate Antigravity companion workflows for staged review, focused task
   execution, follow-up analysis, and clear continuation boundaries. Use this
-  skill when the user explicitly wants a Gemini-native companion process,
-  wants help deciding how Gemini should review versus implement, or needs a
-  structured Gemini CLI workflow instead of ad-hoc shell usage. Prefer this
-  whenever the task is specifically about operating Gemini as a companion
+  skill when the user explicitly wants an Antigravity-native companion process,
+  wants help deciding how Antigravity should review versus implement, or needs a
+  structured Antigravity workflow instead of ad-hoc shell usage. Prefer this
+  whenever the task is specifically about operating Antigravity as a companion
   rather than a single one-off command.
 version: 0.1.0
 category: developer-tools-integrations
 tags:
-  - gemini
-  - gemini-cli
+  - antigravity
   - companion
   - workflow-orchestration
   - review-first
   - follow-up-analysis
 argument-hint: "[task-or-workflow-goal]"
 allowed-tools:
-  - Bash(gemini *)
+  - Bash(antigravity *)
   - Read
 ---
 
-Use this skill when the user wants a **Gemini CLI companion workflow** with explicit stages and boundaries.
+Use this skill when the user wants an **Antigravity companion workflow** with explicit stages and boundaries.
 
 ## Best fit
 
-Use `gemini-companion` when the user wants Gemini to:
+Use `antigravity-companion` when the user wants Antigravity to:
 
 - review or analyze before implementation
 - act as a structured second-pass companion rather than an ad-hoc command
-- continue a previous Gemini-guided effort with explicit scope
+- continue a previous Antigravity-guided effort with explicit scope
 - separate planning/review work from execution work
-- stay within a clear Gemini-native workflow instead of generic shell usage
+- stay within a clear Antigravity-native workflow instead of generic shell usage
 
 ## Positioning
 
 | Skill | Best for |
 |---|---|
-| `gemini-companion` | Structured Gemini CLI companion workflow |
+| `antigravity-companion` | Structured Antigravity companion workflow |
 | `codex-companion` | Codex runtime lifecycle and persistent Codex task handling |
 | `claude-code-companion` | Claude Code-native staged workflow |
-| direct Gemini CLI usage | short one-off Gemini commands |
+| direct Antigravity usage | short one-off Antigravity commands |
 
 ## Working model
 
-Treat this skill as a **workflow layer** around Gemini CLI.
+Treat this skill as a **workflow layer** around Antigravity.
 
-Do not promise hidden persistent threads, job ids, or provider-native runtime lifecycle features unless they are actually available in the concrete Gemini environment being used.
+Do not promise hidden persistent threads, job ids, or provider-native runtime lifecycle features unless they are actually available in the concrete Antigravity environment being used.
 
 ## Suggested flow
 
 1. Clarify the target and success criteria.
-2. Decide whether Gemini should:
+2. Decide whether Antigravity should:
    - review first,
    - provide a second opinion,
    - help stage follow-up work,
