@@ -22,20 +22,20 @@ Write or update technical documentation from the real codebase and project files
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill document-writer
+npx skills add bahayonghang/my-claude-code-settings/skills --skill document-writer
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/docs-writing-publishing/document-writer/references` | directory | 4 | Reference material |
+| `skills/docs-writing-publishing/document-writer/references` | directory | 4 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| references | `content/skills/docs-writing-publishing/document-writer/references` | Reference material |
+| references | `skills/docs-writing-publishing/document-writer/references` | Reference material |
 
 ## Validation
 
@@ -48,5 +48,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/docs-writing-publishing/document-writer/SKILL.md`
-- `content/skills/docs-writing-publishing/document-writer`
+- `skills/docs-writing-publishing/document-writer/SKILL.md`
+- `skills/docs-writing-publishing/document-writer`

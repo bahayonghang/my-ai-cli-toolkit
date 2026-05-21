@@ -352,6 +352,10 @@ export const zhCommandsSidebar = [
       {
         "text": "Commands (3)",
         "link": "/commands#claude"
+      },
+      {
+        "text": "Hooks (4)",
+        "link": "/commands#claude"
       }
     ]
   },
@@ -404,6 +408,10 @@ export const enCommandsSidebar = [
       },
       {
         "text": "Commands (3)",
+        "link": "/en/commands#claude"
+      },
+      {
+        "text": "Hooks (4)",
         "link": "/en/commands#claude"
       }
     ]

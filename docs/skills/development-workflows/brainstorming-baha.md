@@ -22,21 +22,21 @@
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill brainstorming-baha
+npx skills add bahayonghang/my-claude-code-settings/skills --skill brainstorming-baha
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/brainstorming-baha/scripts` | 目录 | 5 | 可执行脚本 |
-| `content/skills/development-workflows/brainstorming-baha/visual-companion.md` | 文件 | 1 | 顶层文件 |
+| `skills/development-workflows/brainstorming-baha/scripts` | 目录 | 5 | 可执行脚本 |
+| `skills/development-workflows/brainstorming-baha/visual-companion.md` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| scripts | `content/skills/development-workflows/brainstorming-baha/scripts` | 可执行脚本 |
+| scripts | `skills/development-workflows/brainstorming-baha/scripts` | 可执行脚本 |
 
 ## 验证方式
 
@@ -49,5 +49,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/development-workflows/brainstorming-baha/SKILL.md`
-- `content/skills/development-workflows/brainstorming-baha`
+- `skills/development-workflows/brainstorming-baha/SKILL.md`
+- `skills/development-workflows/brainstorming-baha`

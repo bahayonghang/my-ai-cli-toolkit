@@ -22,28 +22,28 @@ Debug and fix failing GitHub PR checks with GitHub CLI.
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill gh-fix-ci
+npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-fix-ci
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/gh-fix-ci/agents` | 目录 | 1 | 配套 agent |
-| `content/skills/git-github-collaboration/gh-fix-ci/assets` | 目录 | 2 | 素材资源 |
-| `content/skills/git-github-collaboration/gh-fix-ci/LICENSE.txt` | 文件 | 1 | 顶层文件 |
-| `content/skills/git-github-collaboration/gh-fix-ci/references` | 目录 | 1 | 引用资料 |
-| `content/skills/git-github-collaboration/gh-fix-ci/scripts` | 目录 | 1 | 可执行脚本 |
-| `content/skills/git-github-collaboration/gh-fix-ci/test-prompts.json` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-fix-ci/agents` | 目录 | 1 | 配套 agent |
+| `skills/git-github-collaboration/gh-fix-ci/assets` | 目录 | 2 | 素材资源 |
+| `skills/git-github-collaboration/gh-fix-ci/LICENSE.txt` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-fix-ci/references` | 目录 | 1 | 引用资料 |
+| `skills/git-github-collaboration/gh-fix-ci/scripts` | 目录 | 1 | 可执行脚本 |
+| `skills/git-github-collaboration/gh-fix-ci/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/gh-fix-ci/agents` | 配套 agent |
-| assets | `content/skills/git-github-collaboration/gh-fix-ci/assets` | 素材资源 |
-| references | `content/skills/git-github-collaboration/gh-fix-ci/references` | 引用资料 |
-| scripts | `content/skills/git-github-collaboration/gh-fix-ci/scripts` | 可执行脚本 |
+| agents | `skills/git-github-collaboration/gh-fix-ci/agents` | 配套 agent |
+| assets | `skills/git-github-collaboration/gh-fix-ci/assets` | 素材资源 |
+| references | `skills/git-github-collaboration/gh-fix-ci/references` | 引用资料 |
+| scripts | `skills/git-github-collaboration/gh-fix-ci/scripts` | 可执行脚本 |
 
 ## 验证方式
 
@@ -57,5 +57,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/git-github-collaboration/gh-fix-ci/SKILL.md`
-- `content/skills/git-github-collaboration/gh-fix-ci`
+- `skills/git-github-collaboration/gh-fix-ci/SKILL.md`
+- `skills/git-github-collaboration/gh-fix-ci`

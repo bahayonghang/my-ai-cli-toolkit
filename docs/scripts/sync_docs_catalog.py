@@ -14,15 +14,14 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-CONTENT_DIR = ROOT / "content"
-SKILLS_DIR = CONTENT_DIR / "skills"
-HOOKS_DIR = CONTENT_DIR / "hooks"
-PLATFORMS_DIR = CONTENT_DIR / "platforms"
+SKILLS_DIR = ROOT / "skills"
+HOOKS_DIR = ROOT / "platforms" / "claude" / "hooks"
+PLATFORMS_DIR = ROOT / "platforms"
 DOCS_DIR = ROOT / "docs"
 GENERATED_DIR = DOCS_DIR / ".vitepress" / "generated"
 CATALOG_MODULE = GENERATED_DIR / "catalog.mjs"
 
-REPO_SOURCE = "bahayonghang/my-claude-code-settings/content/skills"
+REPO_SOURCE = "bahayonghang/my-claude-code-settings/skills"
 
 CATEGORY_LABELS_ZH = {
     "developer-tools-integrations": "开发者工具集成",
@@ -490,9 +489,9 @@ def skills_index(skills: list[SkillEntry], lang: str) -> str:
         "# Skills",
         "",
         (
-            f"`content/skills/` 是一方 skill catalog。当前自动索引到 **{len(grouped)} 个分类、{len(skills)} 个 skill**；每个条目都有独立详情页。"
+            f"`skills/` 是一方 skill catalog。当前自动索引到 **{len(grouped)} 个分类、{len(skills)} 个 skill**；每个条目都有独立详情页。"
             if zh
-            else f"`content/skills/` is the first-party skill catalog. The generated catalog currently indexes **{len(grouped)} categories and {len(skills)} skills**; every entry has its own detail page."
+            else f"`skills/` is the first-party skill catalog. The generated catalog currently indexes **{len(grouped)} categories and {len(skills)} skills**; every entry has its own detail page."
         ),
         "",
         "## 快速安装" if zh else "## Quick install",
@@ -594,9 +593,9 @@ def hooks_page(hooks: list[HookEntry], lang: str) -> str:
         "# Hooks",
         "",
         (
-            "`content/hooks/` 保存运行时 hook 资产。它们描述 agent runtime 何时调用外部脚本，并把实际逻辑保持为小型、可审计的文件。"
+            "`platforms/claude/hooks/` 保存运行时 hook 资产。它们描述 agent runtime 何时调用外部脚本，并把实际逻辑保持为小型、可审计的文件。"
             if zh
-            else "`content/hooks/` stores runtime hook assets. They describe when an agent runtime invokes external scripts while keeping behavior in small, auditable files."
+            else "`platforms/claude/hooks/` stores runtime hook assets. They describe when an agent runtime invokes external scripts while keeping behavior in small, auditable files."
         ),
         "",
         "## 运行时触发点" if zh else "## Runtime trigger points",
@@ -683,9 +682,9 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
         "# Commands / Prompts",
         "",
         (
-            "平台内容位于 `content/platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 prompts、agents 或 rules。"
+            "平台内容位于 `platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 prompts、agents 或 rules。"
             if zh
-            else "Platform content lives under `content/platforms/<platform>/`. Each platform consumes content differently: some use command files, while others use prompts, agents, or rules."
+            else "Platform content lives under `platforms/<platform>/`. Each platform consumes content differently: some use command files, while others use prompts, agents, or rules."
         ),
         "",
         "## 何时添加 command / prompt / agent / rule" if zh else "## When to add a command, prompt, agent, or rule",
@@ -712,7 +711,7 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
     lines.extend(["", "## 平台目录" if zh else "## Platform catalog", ""])
     for platform in platforms:
         label = (PLATFORM_LABELS_ZH if zh else PLATFORM_LABELS_EN).get(platform.name, platform.name)
-        lines.extend([f"### {label}", "", f"`content/platforms/{platform.name}/`", ""])
+        lines.extend([f"### {label}", "", f"`platforms/{platform.name}/`", ""])
         for group, files in sorted(platform.groups.items()):
             lines.extend([f"#### {platform_group_label(group, lang)}", ""])
             for file_path in files:

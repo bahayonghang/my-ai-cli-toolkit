@@ -25,7 +25,7 @@ Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or appro
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill implementation-notes
+npx skills add bahayonghang/my-claude-code-settings/skills --skill implementation-notes
 ```
 
 ## 目录内容
@@ -47,5 +47,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/development-workflows/implementation-notes/SKILL.md`
-- `content/skills/development-workflows/implementation-notes`
+- `skills/development-workflows/implementation-notes/SKILL.md`
+- `skills/development-workflows/implementation-notes`

@@ -22,21 +22,21 @@ Multi-perspective roundtable discussion skill for exploring a topic through a tr
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill roundtable
+npx skills add bahayonghang/my-claude-code-settings/skills --skill roundtable
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/research-learning-knowledge/roundtable/references` | directory | 1 | Reference material |
-| `content/skills/research-learning-knowledge/roundtable/test-prompts.json` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/roundtable/references` | directory | 1 | Reference material |
+| `skills/research-learning-knowledge/roundtable/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| references | `content/skills/research-learning-knowledge/roundtable/references` | Reference material |
+| references | `skills/research-learning-knowledge/roundtable/references` | Reference material |
 
 ## Validation
 
@@ -49,5 +49,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/research-learning-knowledge/roundtable/SKILL.md`
-- `content/skills/research-learning-knowledge/roundtable`
+- `skills/research-learning-knowledge/roundtable/SKILL.md`
+- `skills/research-learning-knowledge/roundtable`

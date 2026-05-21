@@ -1,6 +1,6 @@
 # Commands / Prompts
 
-平台内容位于 `content/platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 prompts、agents 或 rules。
+平台内容位于 `platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 prompts、agents 或 rules。
 
 ## 何时添加 command / prompt / agent / rule
 
@@ -13,89 +13,96 @@
 
 ### Antigravity
 
-`content/platforms/antigravity/`
+`platforms/antigravity/`
 
 #### Commands
 
-- `content/platforms/antigravity/commands/export-summary.toml`
-- `content/platforms/antigravity/commands/import- summary.toml`
-- `content/platforms/antigravity/commands/import-summary.toml`
-- `content/platforms/antigravity/commands/plan/impl.toml`
-- `content/platforms/antigravity/commands/plan/new.toml`
+- `platforms/antigravity/commands/export-summary.toml`
+- `platforms/antigravity/commands/import- summary.toml`
+- `platforms/antigravity/commands/import-summary.toml`
+- `platforms/antigravity/commands/plan/impl.toml`
+- `platforms/antigravity/commands/plan/new.toml`
 
 ### Claude
 
-`content/platforms/claude/`
+`platforms/claude/`
 
 #### Agents
 
-- `content/platforms/claude/agents/ccw/action-planning-agent.md`
-- `content/platforms/claude/agents/ccw/cli-discuss-agent.md`
-- `content/platforms/claude/agents/ccw/cli-execution-agent.md`
-- `content/platforms/claude/agents/ccw/cli-explore-agent.md`
-- `content/platforms/claude/agents/ccw/cli-lite-planning-agent.md`
-- `content/platforms/claude/agents/ccw/cli-planning-agent.md`
-- `content/platforms/claude/agents/ccw/code-developer.md`
-- `content/platforms/claude/agents/ccw/conceptual-planning-agent.md`
-- `content/platforms/claude/agents/ccw/context-search-agent.md`
-- `content/platforms/claude/agents/ccw/debug-explore-agent.md`
-- `content/platforms/claude/agents/ccw/doc-generator.md`
-- `content/platforms/claude/agents/ccw/issue-plan-agent.md`
-- `content/platforms/claude/agents/ccw/issue-queue-agent.md`
-- `content/platforms/claude/agents/ccw/memory-bridge.md`
-- `content/platforms/claude/agents/ccw/test-context-search-agent.md`
-- `content/platforms/claude/agents/ccw/test-fix-agent.md`
-- `content/platforms/claude/agents/ccw/ui-design-agent.md`
-- `content/platforms/claude/agents/ccw/universal-executor.md`
-- `content/platforms/claude/agents/specialist/code-simplifier.md`
-- `content/platforms/claude/agents/specialist/css.md`
-- `content/platforms/claude/agents/specialist/deployment-specialist.md`
-- `content/platforms/claude/agents/specialist/performance-optimizer.md`
-- `content/platforms/claude/agents/specialist/python.md`
-- `content/platforms/claude/agents/specialist/spec-analyst.md`
-- `content/platforms/claude/agents/specialist/spec-architect.md`
-- `content/platforms/claude/agents/specialist/spec-developer.md`
-- `content/platforms/claude/agents/specialist/spec-planner.md`
-- `content/platforms/claude/agents/specialist/spec-reviewer.md`
-- `content/platforms/claude/agents/specialist/spec-task-reviewer.md`
-- `content/platforms/claude/agents/specialist/spec-tester.md`
-- `content/platforms/claude/agents/specialist/spec-validator.md`
-- `content/platforms/claude/agents/specialist/typescript-expert.md`
-- `content/platforms/claude/agents/specialist/ui-ux-designer.md`
+- `platforms/claude/agents/ccw/action-planning-agent.md`
+- `platforms/claude/agents/ccw/cli-discuss-agent.md`
+- `platforms/claude/agents/ccw/cli-execution-agent.md`
+- `platforms/claude/agents/ccw/cli-explore-agent.md`
+- `platforms/claude/agents/ccw/cli-lite-planning-agent.md`
+- `platforms/claude/agents/ccw/cli-planning-agent.md`
+- `platforms/claude/agents/ccw/code-developer.md`
+- `platforms/claude/agents/ccw/conceptual-planning-agent.md`
+- `platforms/claude/agents/ccw/context-search-agent.md`
+- `platforms/claude/agents/ccw/debug-explore-agent.md`
+- `platforms/claude/agents/ccw/doc-generator.md`
+- `platforms/claude/agents/ccw/issue-plan-agent.md`
+- `platforms/claude/agents/ccw/issue-queue-agent.md`
+- `platforms/claude/agents/ccw/memory-bridge.md`
+- `platforms/claude/agents/ccw/test-context-search-agent.md`
+- `platforms/claude/agents/ccw/test-fix-agent.md`
+- `platforms/claude/agents/ccw/ui-design-agent.md`
+- `platforms/claude/agents/ccw/universal-executor.md`
+- `platforms/claude/agents/specialist/code-simplifier.md`
+- `platforms/claude/agents/specialist/css.md`
+- `platforms/claude/agents/specialist/deployment-specialist.md`
+- `platforms/claude/agents/specialist/performance-optimizer.md`
+- `platforms/claude/agents/specialist/python.md`
+- `platforms/claude/agents/specialist/spec-analyst.md`
+- `platforms/claude/agents/specialist/spec-architect.md`
+- `platforms/claude/agents/specialist/spec-developer.md`
+- `platforms/claude/agents/specialist/spec-planner.md`
+- `platforms/claude/agents/specialist/spec-reviewer.md`
+- `platforms/claude/agents/specialist/spec-task-reviewer.md`
+- `platforms/claude/agents/specialist/spec-tester.md`
+- `platforms/claude/agents/specialist/spec-validator.md`
+- `platforms/claude/agents/specialist/typescript-expert.md`
+- `platforms/claude/agents/specialist/ui-ux-designer.md`
 
 #### Commands
 
-- `content/platforms/claude/commands/archive-planning.md`
-- `content/platforms/claude/commands/implement-with-notes.md`
-- `content/platforms/claude/commands/init-projects.md`
+- `platforms/claude/commands/archive-planning.md`
+- `platforms/claude/commands/implement-with-notes.md`
+- `platforms/claude/commands/init-projects.md`
+
+#### Hooks
+
+- `platforms/claude/hooks/hooks.json`
+- `platforms/claude/hooks/inject-spec.py`
+- `platforms/claude/hooks/log-prompt.py`
+- `platforms/claude/hooks/pre-bash.py`
 
 ### Codex
 
-`content/platforms/codex/`
+`platforms/codex/`
 
 #### Agents
 
-- `content/platforms/codex/agents/coder.toml`
-- `content/platforms/codex/agents/frontend_ui.toml`
-- `content/platforms/codex/agents/orchestrator.toml`
-- `content/platforms/codex/agents/README.md`
+- `platforms/codex/agents/coder.toml`
+- `platforms/codex/agents/frontend_ui.toml`
+- `platforms/codex/agents/orchestrator.toml`
+- `platforms/codex/agents/README.md`
 
 #### Prompts
 
-- `content/platforms/codex/prompts/archive-planning.md`
-- `content/platforms/codex/prompts/codex-companion/adversarial-review.md`
-- `content/platforms/codex/prompts/codex-companion/cancel.md`
-- `content/platforms/codex/prompts/codex-companion/README.md`
-- `content/platforms/codex/prompts/codex-companion/result.md`
-- `content/platforms/codex/prompts/codex-companion/review.md`
-- `content/platforms/codex/prompts/codex-companion/status.md`
-- `content/platforms/codex/prompts/codex-companion/task.md`
-- `content/platforms/codex/prompts/implement-with-notes.md`
-- `content/platforms/codex/prompts/init-projects.md`
+- `platforms/codex/prompts/archive-planning.md`
+- `platforms/codex/prompts/codex-companion/adversarial-review.md`
+- `platforms/codex/prompts/codex-companion/cancel.md`
+- `platforms/codex/prompts/codex-companion/README.md`
+- `platforms/codex/prompts/codex-companion/result.md`
+- `platforms/codex/prompts/codex-companion/review.md`
+- `platforms/codex/prompts/codex-companion/status.md`
+- `platforms/codex/prompts/codex-companion/task.md`
+- `platforms/codex/prompts/implement-with-notes.md`
+- `platforms/codex/prompts/init-projects.md`
 
 #### Rules
 
-- `content/platforms/codex/rules/AGENTS.md`
+- `platforms/codex/rules/AGENTS.md`
 
 Codex 当前主要使用 prompt / rule / agent 结构；添加“命令”前应先检查 `prompts/`、`agents/` 和 `rules/` 的既有约定。
 

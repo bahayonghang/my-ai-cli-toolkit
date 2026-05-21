@@ -22,29 +22,29 @@ Researcher-profile-driven paper intake and literature workbench for academic wor
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill paper-workbench
+npx skills add bahayonghang/my-claude-code-settings/skills --skill paper-workbench
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/research-learning-knowledge/paper-workbench/evals` | 目录 | 1 | 评测样例 |
-| `content/skills/research-learning-knowledge/paper-workbench/references` | 目录 | 13 | 引用资料 |
-| `content/skills/research-learning-knowledge/paper-workbench/resources` | 目录 | 2 | 资源文件 |
-| `content/skills/research-learning-knowledge/paper-workbench/scripts` | 目录 | 3 | 可执行脚本 |
-| `content/skills/research-learning-knowledge/paper-workbench/test-prompts.json` | 文件 | 1 | 顶层文件 |
-| `content/skills/research-learning-knowledge/paper-workbench/tests` | 目录 | 4 | 自动化测试 |
+| `skills/research-learning-knowledge/paper-workbench/evals` | 目录 | 1 | 评测样例 |
+| `skills/research-learning-knowledge/paper-workbench/references` | 目录 | 13 | 引用资料 |
+| `skills/research-learning-knowledge/paper-workbench/resources` | 目录 | 2 | 资源文件 |
+| `skills/research-learning-knowledge/paper-workbench/scripts` | 目录 | 3 | 可执行脚本 |
+| `skills/research-learning-knowledge/paper-workbench/test-prompts.json` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/paper-workbench/tests` | 目录 | 4 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| evals | `content/skills/research-learning-knowledge/paper-workbench/evals` | 评测样例 |
-| references | `content/skills/research-learning-knowledge/paper-workbench/references` | 引用资料 |
-| resources | `content/skills/research-learning-knowledge/paper-workbench/resources` | 资源文件 |
-| scripts | `content/skills/research-learning-knowledge/paper-workbench/scripts` | 可执行脚本 |
-| tests | `content/skills/research-learning-knowledge/paper-workbench/tests` | 自动化测试 |
+| evals | `skills/research-learning-knowledge/paper-workbench/evals` | 评测样例 |
+| references | `skills/research-learning-knowledge/paper-workbench/references` | 引用资料 |
+| resources | `skills/research-learning-knowledge/paper-workbench/resources` | 资源文件 |
+| scripts | `skills/research-learning-knowledge/paper-workbench/scripts` | 可执行脚本 |
+| tests | `skills/research-learning-knowledge/paper-workbench/tests` | 自动化测试 |
 
 ## 验证方式
 
@@ -58,5 +58,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/research-learning-knowledge/paper-workbench/SKILL.md`
-- `content/skills/research-learning-knowledge/paper-workbench`
+- `skills/research-learning-knowledge/paper-workbench/SKILL.md`
+- `skills/research-learning-knowledge/paper-workbench`

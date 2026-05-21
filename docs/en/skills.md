@@ -1,12 +1,12 @@
 # Skills
 
-`content/skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 21 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 21 skills**; every entry has its own detail page.
 
 ## Quick install
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '<skill-name>'
+npx skills add bahayonghang/my-claude-code-settings/skills
+npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>'
 ```
 
 ## How to choose a skill

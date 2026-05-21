@@ -22,28 +22,28 @@ Debug and fix failing GitHub PR checks with GitHub CLI.
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill gh-fix-ci
+npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-fix-ci
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/gh-fix-ci/agents` | directory | 1 | Companion agents |
-| `content/skills/git-github-collaboration/gh-fix-ci/assets` | directory | 2 | Assets |
-| `content/skills/git-github-collaboration/gh-fix-ci/LICENSE.txt` | file | 1 | Top-level file |
-| `content/skills/git-github-collaboration/gh-fix-ci/references` | directory | 1 | Reference material |
-| `content/skills/git-github-collaboration/gh-fix-ci/scripts` | directory | 1 | Executable scripts |
-| `content/skills/git-github-collaboration/gh-fix-ci/test-prompts.json` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-fix-ci/agents` | directory | 1 | Companion agents |
+| `skills/git-github-collaboration/gh-fix-ci/assets` | directory | 2 | Assets |
+| `skills/git-github-collaboration/gh-fix-ci/LICENSE.txt` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-fix-ci/references` | directory | 1 | Reference material |
+| `skills/git-github-collaboration/gh-fix-ci/scripts` | directory | 1 | Executable scripts |
+| `skills/git-github-collaboration/gh-fix-ci/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/gh-fix-ci/agents` | Companion agents |
-| assets | `content/skills/git-github-collaboration/gh-fix-ci/assets` | Assets |
-| references | `content/skills/git-github-collaboration/gh-fix-ci/references` | Reference material |
-| scripts | `content/skills/git-github-collaboration/gh-fix-ci/scripts` | Executable scripts |
+| agents | `skills/git-github-collaboration/gh-fix-ci/agents` | Companion agents |
+| assets | `skills/git-github-collaboration/gh-fix-ci/assets` | Assets |
+| references | `skills/git-github-collaboration/gh-fix-ci/references` | Reference material |
+| scripts | `skills/git-github-collaboration/gh-fix-ci/scripts` | Executable scripts |
 
 ## Validation
 
@@ -57,5 +57,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/git-github-collaboration/gh-fix-ci/SKILL.md`
-- `content/skills/git-github-collaboration/gh-fix-ci`
+- `skills/git-github-collaboration/gh-fix-ci/SKILL.md`
+- `skills/git-github-collaboration/gh-fix-ci`

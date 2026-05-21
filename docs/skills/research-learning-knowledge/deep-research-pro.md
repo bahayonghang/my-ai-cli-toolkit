@@ -22,17 +22,17 @@ Multi-source deep research skill for current-topic investigation, comparison, an
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill deep-research-pro
+npx skills add bahayonghang/my-claude-code-settings/skills --skill deep-research-pro
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/research-learning-knowledge/deep-research-pro/_meta.json` | 文件 | 1 | 顶层文件 |
-| `content/skills/research-learning-knowledge/deep-research-pro/package.json` | 文件 | 1 | 顶层文件 |
-| `content/skills/research-learning-knowledge/deep-research-pro/README.md` | 文件 | 1 | 顶层文件 |
-| `content/skills/research-learning-knowledge/deep-research-pro/test-prompts.json` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/deep-research-pro/_meta.json` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/deep-research-pro/package.json` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/deep-research-pro/README.md` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/deep-research-pro/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
@@ -49,5 +49,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/research-learning-knowledge/deep-research-pro/SKILL.md`
-- `content/skills/research-learning-knowledge/deep-research-pro`
+- `skills/research-learning-knowledge/deep-research-pro/SKILL.md`
+- `skills/research-learning-knowledge/deep-research-pro`

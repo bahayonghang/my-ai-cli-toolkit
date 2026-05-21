@@ -22,31 +22,31 @@ Initialize GitHub repository configuration from vetted upstream templates.
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill gh-bootstrap
+npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/gh-bootstrap/agents` | directory | 1 | Companion agents |
-| `content/skills/git-github-collaboration/gh-bootstrap/phases` | directory | 9 | Phase guides |
-| `content/skills/git-github-collaboration/gh-bootstrap/references` | directory | 1 | Reference material |
-| `content/skills/git-github-collaboration/gh-bootstrap/scripts` | directory | 1 | Executable scripts |
-| `content/skills/git-github-collaboration/gh-bootstrap/specs` | directory | 5 | Specs |
-| `content/skills/git-github-collaboration/gh-bootstrap/templates` | directory | 1 | Templates |
-| `content/skills/git-github-collaboration/gh-bootstrap/test-prompts.json` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-bootstrap/agents` | directory | 1 | Companion agents |
+| `skills/git-github-collaboration/gh-bootstrap/phases` | directory | 9 | Phase guides |
+| `skills/git-github-collaboration/gh-bootstrap/references` | directory | 1 | Reference material |
+| `skills/git-github-collaboration/gh-bootstrap/scripts` | directory | 1 | Executable scripts |
+| `skills/git-github-collaboration/gh-bootstrap/specs` | directory | 5 | Specs |
+| `skills/git-github-collaboration/gh-bootstrap/templates` | directory | 1 | Templates |
+| `skills/git-github-collaboration/gh-bootstrap/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/gh-bootstrap/agents` | Companion agents |
-| phases | `content/skills/git-github-collaboration/gh-bootstrap/phases` | Phase guides |
-| references | `content/skills/git-github-collaboration/gh-bootstrap/references` | Reference material |
-| scripts | `content/skills/git-github-collaboration/gh-bootstrap/scripts` | Executable scripts |
-| specs | `content/skills/git-github-collaboration/gh-bootstrap/specs` | Specs |
-| templates | `content/skills/git-github-collaboration/gh-bootstrap/templates` | Templates |
+| agents | `skills/git-github-collaboration/gh-bootstrap/agents` | Companion agents |
+| phases | `skills/git-github-collaboration/gh-bootstrap/phases` | Phase guides |
+| references | `skills/git-github-collaboration/gh-bootstrap/references` | Reference material |
+| scripts | `skills/git-github-collaboration/gh-bootstrap/scripts` | Executable scripts |
+| specs | `skills/git-github-collaboration/gh-bootstrap/specs` | Specs |
+| templates | `skills/git-github-collaboration/gh-bootstrap/templates` | Templates |
 
 ## Validation
 
@@ -60,5 +60,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/git-github-collaboration/gh-bootstrap/SKILL.md`
-- `content/skills/git-github-collaboration/gh-bootstrap`
+- `skills/git-github-collaboration/gh-bootstrap/SKILL.md`
+- `skills/git-github-collaboration/gh-bootstrap`

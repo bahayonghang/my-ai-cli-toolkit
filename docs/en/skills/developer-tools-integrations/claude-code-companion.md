@@ -22,14 +22,14 @@ Coordinate Claude Code companion-style workflows for multi-step implementation, 
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill claude-code-companion
+npx skills add bahayonghang/my-claude-code-settings/skills --skill claude-code-companion
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/claude-code-companion/README.md` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/claude-code-companion/README.md` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
@@ -46,5 +46,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/developer-tools-integrations/claude-code-companion/SKILL.md`
-- `content/skills/developer-tools-integrations/claude-code-companion`
+- `skills/developer-tools-integrations/claude-code-companion/SKILL.md`
+- `skills/developer-tools-integrations/claude-code-companion`

@@ -22,20 +22,20 @@ Write or update technical documentation from the real codebase and project files
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill document-writer
+npx skills add bahayonghang/my-claude-code-settings/skills --skill document-writer
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/docs-writing-publishing/document-writer/references` | 目录 | 4 | 引用资料 |
+| `skills/docs-writing-publishing/document-writer/references` | 目录 | 4 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| references | `content/skills/docs-writing-publishing/document-writer/references` | 引用资料 |
+| references | `skills/docs-writing-publishing/document-writer/references` | 引用资料 |
 
 ## 验证方式
 
@@ -48,5 +48,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/docs-writing-publishing/document-writer/SKILL.md`
-- `content/skills/docs-writing-publishing/document-writer`
+- `skills/docs-writing-publishing/document-writer/SKILL.md`
+- `skills/docs-writing-publishing/document-writer`

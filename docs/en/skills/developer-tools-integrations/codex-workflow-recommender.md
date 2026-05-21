@@ -22,20 +22,20 @@ Analyze a repository and current Codex environment, then recommend Codex CLI, Co
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill codex-workflow-recommender
+npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-workflow-recommender
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/codex-workflow-recommender/references` | directory | 5 | Reference material |
+| `skills/developer-tools-integrations/codex-workflow-recommender/references` | directory | 5 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| references | `content/skills/developer-tools-integrations/codex-workflow-recommender/references` | Reference material |
+| references | `skills/developer-tools-integrations/codex-workflow-recommender/references` | Reference material |
 
 ## Validation
 
@@ -48,5 +48,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/developer-tools-integrations/codex-workflow-recommender/SKILL.md`
-- `content/skills/developer-tools-integrations/codex-workflow-recommender`
+- `skills/developer-tools-integrations/codex-workflow-recommender/SKILL.md`
+- `skills/developer-tools-integrations/codex-workflow-recommender`

@@ -22,20 +22,20 @@ Review a codebase for architectural friction, rank deep-module refactoring oppor
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill improve-codebase-architecture
+npx skills add bahayonghang/my-claude-code-settings/skills --skill improve-codebase-architecture
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/improve-codebase-architecture/references` | 目录 | 1 | 引用资料 |
+| `skills/development-workflows/improve-codebase-architecture/references` | 目录 | 1 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| references | `content/skills/development-workflows/improve-codebase-architecture/references` | 引用资料 |
+| references | `skills/development-workflows/improve-codebase-architecture/references` | 引用资料 |
 
 ## 验证方式
 
@@ -48,5 +48,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/development-workflows/improve-codebase-architecture/SKILL.md`
-- `content/skills/development-workflows/improve-codebase-architecture`
+- `skills/development-workflows/improve-codebase-architecture/SKILL.md`
+- `skills/development-workflows/improve-codebase-architecture`

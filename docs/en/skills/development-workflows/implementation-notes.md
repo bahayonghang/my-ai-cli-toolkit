@@ -25,7 +25,7 @@ Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or appro
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill implementation-notes
+npx skills add bahayonghang/my-claude-code-settings/skills --skill implementation-notes
 ```
 
 ## Directory contents
@@ -47,5 +47,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/development-workflows/implementation-notes/SKILL.md`
-- `content/skills/development-workflows/implementation-notes`
+- `skills/development-workflows/implementation-notes/SKILL.md`
+- `skills/development-workflows/implementation-notes`

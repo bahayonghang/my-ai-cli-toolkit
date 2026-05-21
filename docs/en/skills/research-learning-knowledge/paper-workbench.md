@@ -22,29 +22,29 @@ Researcher-profile-driven paper intake and literature workbench for academic wor
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill paper-workbench
+npx skills add bahayonghang/my-claude-code-settings/skills --skill paper-workbench
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/research-learning-knowledge/paper-workbench/evals` | directory | 1 | Evaluation samples |
-| `content/skills/research-learning-knowledge/paper-workbench/references` | directory | 13 | Reference material |
-| `content/skills/research-learning-knowledge/paper-workbench/resources` | directory | 2 | Resources |
-| `content/skills/research-learning-knowledge/paper-workbench/scripts` | directory | 3 | Executable scripts |
-| `content/skills/research-learning-knowledge/paper-workbench/test-prompts.json` | file | 1 | Top-level file |
-| `content/skills/research-learning-knowledge/paper-workbench/tests` | directory | 4 | Automated tests |
+| `skills/research-learning-knowledge/paper-workbench/evals` | directory | 1 | Evaluation samples |
+| `skills/research-learning-knowledge/paper-workbench/references` | directory | 13 | Reference material |
+| `skills/research-learning-knowledge/paper-workbench/resources` | directory | 2 | Resources |
+| `skills/research-learning-knowledge/paper-workbench/scripts` | directory | 3 | Executable scripts |
+| `skills/research-learning-knowledge/paper-workbench/test-prompts.json` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/paper-workbench/tests` | directory | 4 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| evals | `content/skills/research-learning-knowledge/paper-workbench/evals` | Evaluation samples |
-| references | `content/skills/research-learning-knowledge/paper-workbench/references` | Reference material |
-| resources | `content/skills/research-learning-knowledge/paper-workbench/resources` | Resources |
-| scripts | `content/skills/research-learning-knowledge/paper-workbench/scripts` | Executable scripts |
-| tests | `content/skills/research-learning-knowledge/paper-workbench/tests` | Automated tests |
+| evals | `skills/research-learning-knowledge/paper-workbench/evals` | Evaluation samples |
+| references | `skills/research-learning-knowledge/paper-workbench/references` | Reference material |
+| resources | `skills/research-learning-knowledge/paper-workbench/resources` | Resources |
+| scripts | `skills/research-learning-knowledge/paper-workbench/scripts` | Executable scripts |
+| tests | `skills/research-learning-knowledge/paper-workbench/tests` | Automated tests |
 
 ## Validation
 
@@ -58,5 +58,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/research-learning-knowledge/paper-workbench/SKILL.md`
-- `content/skills/research-learning-knowledge/paper-workbench`
+- `skills/research-learning-knowledge/paper-workbench/SKILL.md`
+- `skills/research-learning-knowledge/paper-workbench`

@@ -25,26 +25,26 @@ Safely orchestrate Conventional Commits for staged Git changes, or for all worki
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill git-commit
+npx skills add bahayonghang/my-claude-code-settings/skills --skill git-commit
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/git-commit/agents` | 目录 | 1 | 配套 agent |
-| `content/skills/git-github-collaboration/git-commit/evals` | 目录 | 1 | 评测样例 |
-| `content/skills/git-github-collaboration/git-commit/references` | 目录 | 4 | 引用资料 |
-| `content/skills/git-github-collaboration/git-commit/scripts` | 目录 | 3 | 可执行脚本 |
+| `skills/git-github-collaboration/git-commit/agents` | 目录 | 1 | 配套 agent |
+| `skills/git-github-collaboration/git-commit/evals` | 目录 | 1 | 评测样例 |
+| `skills/git-github-collaboration/git-commit/references` | 目录 | 4 | 引用资料 |
+| `skills/git-github-collaboration/git-commit/scripts` | 目录 | 3 | 可执行脚本 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/git-commit/agents` | 配套 agent |
-| evals | `content/skills/git-github-collaboration/git-commit/evals` | 评测样例 |
-| references | `content/skills/git-github-collaboration/git-commit/references` | 引用资料 |
-| scripts | `content/skills/git-github-collaboration/git-commit/scripts` | 可执行脚本 |
+| agents | `skills/git-github-collaboration/git-commit/agents` | 配套 agent |
+| evals | `skills/git-github-collaboration/git-commit/evals` | 评测样例 |
+| references | `skills/git-github-collaboration/git-commit/references` | 引用资料 |
+| scripts | `skills/git-github-collaboration/git-commit/scripts` | 可执行脚本 |
 
 ## 验证方式
 
@@ -58,5 +58,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/git-github-collaboration/git-commit/SKILL.md`
-- `content/skills/git-github-collaboration/git-commit`
+- `skills/git-github-collaboration/git-commit/SKILL.md`
+- `skills/git-github-collaboration/git-commit`

@@ -25,20 +25,20 @@ Use when the user wants to compact context before auto-compaction kicks in, hand
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill handoff
+npx skills add bahayonghang/my-claude-code-settings/skills --skill handoff
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/handoff/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/handoff/evals` | directory | 1 | Evaluation samples |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| evals | `content/skills/development-workflows/handoff/evals` | Evaluation samples |
+| evals | `skills/development-workflows/handoff/evals` | Evaluation samples |
 
 ## Validation
 
@@ -51,5 +51,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/development-workflows/handoff/SKILL.md`
-- `content/skills/development-workflows/handoff`
+- `skills/development-workflows/handoff/SKILL.md`
+- `skills/development-workflows/handoff`

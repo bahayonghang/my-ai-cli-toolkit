@@ -22,20 +22,20 @@ Analyze a repository and current Codex environment, then recommend Codex CLI, Co
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill codex-workflow-recommender
+npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-workflow-recommender
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/codex-workflow-recommender/references` | 目录 | 5 | 引用资料 |
+| `skills/developer-tools-integrations/codex-workflow-recommender/references` | 目录 | 5 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| references | `content/skills/developer-tools-integrations/codex-workflow-recommender/references` | 引用资料 |
+| references | `skills/developer-tools-integrations/codex-workflow-recommender/references` | 引用资料 |
 
 ## 验证方式
 
@@ -48,5 +48,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/developer-tools-integrations/codex-workflow-recommender/SKILL.md`
-- `content/skills/developer-tools-integrations/codex-workflow-recommender`
+- `skills/developer-tools-integrations/codex-workflow-recommender/SKILL.md`
+- `skills/developer-tools-integrations/codex-workflow-recommender`

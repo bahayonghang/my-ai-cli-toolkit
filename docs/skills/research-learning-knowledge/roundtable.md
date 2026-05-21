@@ -22,21 +22,21 @@ Multi-perspective roundtable discussion skill for exploring a topic through a tr
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill roundtable
+npx skills add bahayonghang/my-claude-code-settings/skills --skill roundtable
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/research-learning-knowledge/roundtable/references` | 目录 | 1 | 引用资料 |
-| `content/skills/research-learning-knowledge/roundtable/test-prompts.json` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/roundtable/references` | 目录 | 1 | 引用资料 |
+| `skills/research-learning-knowledge/roundtable/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| references | `content/skills/research-learning-knowledge/roundtable/references` | 引用资料 |
+| references | `skills/research-learning-knowledge/roundtable/references` | 引用资料 |
 
 ## 验证方式
 
@@ -49,5 +49,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/research-learning-knowledge/roundtable/SKILL.md`
-- `content/skills/research-learning-knowledge/roundtable`
+- `skills/research-learning-knowledge/roundtable/SKILL.md`
+- `skills/research-learning-knowledge/roundtable`

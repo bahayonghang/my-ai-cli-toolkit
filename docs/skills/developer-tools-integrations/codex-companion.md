@@ -23,29 +23,29 @@ Manage Codex background tasks, persistent job threads, adversarial code reviews,
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill codex-companion
+npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-companion
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/codex-companion/prompts` | 目录 | 1 | 提示词 |
-| `content/skills/developer-tools-integrations/codex-companion/README.md` | 文件 | 1 | 顶层文件 |
-| `content/skills/developer-tools-integrations/codex-companion/references` | 目录 | 2 | 引用资料 |
-| `content/skills/developer-tools-integrations/codex-companion/schemas` | 目录 | 1 | 数据结构 |
-| `content/skills/developer-tools-integrations/codex-companion/scripts` | 目录 | 17 | 可执行脚本 |
-| `content/skills/developer-tools-integrations/codex-companion/tests` | 目录 | 7 | 自动化测试 |
+| `skills/developer-tools-integrations/codex-companion/prompts` | 目录 | 1 | 提示词 |
+| `skills/developer-tools-integrations/codex-companion/README.md` | 文件 | 1 | 顶层文件 |
+| `skills/developer-tools-integrations/codex-companion/references` | 目录 | 2 | 引用资料 |
+| `skills/developer-tools-integrations/codex-companion/schemas` | 目录 | 1 | 数据结构 |
+| `skills/developer-tools-integrations/codex-companion/scripts` | 目录 | 17 | 可执行脚本 |
+| `skills/developer-tools-integrations/codex-companion/tests` | 目录 | 7 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| prompts | `content/skills/developer-tools-integrations/codex-companion/prompts` | 提示词 |
-| references | `content/skills/developer-tools-integrations/codex-companion/references` | 引用资料 |
-| schemas | `content/skills/developer-tools-integrations/codex-companion/schemas` | 数据结构 |
-| scripts | `content/skills/developer-tools-integrations/codex-companion/scripts` | 可执行脚本 |
-| tests | `content/skills/developer-tools-integrations/codex-companion/tests` | 自动化测试 |
+| prompts | `skills/developer-tools-integrations/codex-companion/prompts` | 提示词 |
+| references | `skills/developer-tools-integrations/codex-companion/references` | 引用资料 |
+| schemas | `skills/developer-tools-integrations/codex-companion/schemas` | 数据结构 |
+| scripts | `skills/developer-tools-integrations/codex-companion/scripts` | 可执行脚本 |
+| tests | `skills/developer-tools-integrations/codex-companion/tests` | 自动化测试 |
 
 ## 验证方式
 
@@ -57,5 +57,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/developer-tools-integrations/codex-companion/SKILL.md`
-- `content/skills/developer-tools-integrations/codex-companion`
+- `skills/developer-tools-integrations/codex-companion/SKILL.md`
+- `skills/developer-tools-integrations/codex-companion`

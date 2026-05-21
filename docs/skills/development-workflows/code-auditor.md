@@ -23,26 +23,26 @@ Structured code review across correctness, security, performance, readability, t
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill code-auditor
+npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/code-auditor/assets` | 目录 | 4 | 素材资源 |
-| `content/skills/development-workflows/code-auditor/evals` | 目录 | 1 | 评测样例 |
-| `content/skills/development-workflows/code-auditor/references` | 目录 | 22 | 引用资料 |
-| `content/skills/development-workflows/code-auditor/scripts` | 目录 | 3 | 可执行脚本 |
+| `skills/development-workflows/code-auditor/assets` | 目录 | 4 | 素材资源 |
+| `skills/development-workflows/code-auditor/evals` | 目录 | 1 | 评测样例 |
+| `skills/development-workflows/code-auditor/references` | 目录 | 22 | 引用资料 |
+| `skills/development-workflows/code-auditor/scripts` | 目录 | 3 | 可执行脚本 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| assets | `content/skills/development-workflows/code-auditor/assets` | 素材资源 |
-| evals | `content/skills/development-workflows/code-auditor/evals` | 评测样例 |
-| references | `content/skills/development-workflows/code-auditor/references` | 引用资料 |
-| scripts | `content/skills/development-workflows/code-auditor/scripts` | 可执行脚本 |
+| assets | `skills/development-workflows/code-auditor/assets` | 素材资源 |
+| evals | `skills/development-workflows/code-auditor/evals` | 评测样例 |
+| references | `skills/development-workflows/code-auditor/references` | 引用资料 |
+| scripts | `skills/development-workflows/code-auditor/scripts` | 可执行脚本 |
 
 ## 验证方式
 
@@ -56,5 +56,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/development-workflows/code-auditor/SKILL.md`
-- `content/skills/development-workflows/code-auditor`
+- `skills/development-workflows/code-auditor/SKILL.md`
+- `skills/development-workflows/code-auditor`

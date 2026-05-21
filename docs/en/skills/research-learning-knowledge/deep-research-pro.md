@@ -22,17 +22,17 @@ Multi-source deep research skill for current-topic investigation, comparison, an
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill deep-research-pro
+npx skills add bahayonghang/my-claude-code-settings/skills --skill deep-research-pro
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/research-learning-knowledge/deep-research-pro/_meta.json` | file | 1 | Top-level file |
-| `content/skills/research-learning-knowledge/deep-research-pro/package.json` | file | 1 | Top-level file |
-| `content/skills/research-learning-knowledge/deep-research-pro/README.md` | file | 1 | Top-level file |
-| `content/skills/research-learning-knowledge/deep-research-pro/test-prompts.json` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/deep-research-pro/_meta.json` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/deep-research-pro/package.json` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/deep-research-pro/README.md` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/deep-research-pro/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
@@ -49,5 +49,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/research-learning-knowledge/deep-research-pro/SKILL.md`
-- `content/skills/research-learning-knowledge/deep-research-pro`
+- `skills/research-learning-knowledge/deep-research-pro/SKILL.md`
+- `skills/research-learning-knowledge/deep-research-pro`

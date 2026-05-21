@@ -25,20 +25,20 @@ Audit and improve Codex AGENTS.md guidance files in repositories.
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill agents-md-improver
+npx skills add bahayonghang/my-claude-code-settings/skills --skill agents-md-improver
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/agents-md-improver/references` | 目录 | 3 | 引用资料 |
+| `skills/developer-tools-integrations/agents-md-improver/references` | 目录 | 3 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| references | `content/skills/developer-tools-integrations/agents-md-improver/references` | 引用资料 |
+| references | `skills/developer-tools-integrations/agents-md-improver/references` | 引用资料 |
 
 ## 验证方式
 
@@ -51,5 +51,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/developer-tools-integrations/agents-md-improver/SKILL.md`
-- `content/skills/developer-tools-integrations/agents-md-improver`
+- `skills/developer-tools-integrations/agents-md-improver/SKILL.md`
+- `skills/developer-tools-integrations/agents-md-improver`

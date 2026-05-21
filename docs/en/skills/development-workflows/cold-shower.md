@@ -22,22 +22,22 @@ Challenge ideas, requirements, technical plans, products, pricing, markets, pitc
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill cold-shower
+npx skills add bahayonghang/my-claude-code-settings/skills --skill cold-shower
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/cold-shower/agents` | directory | 1 | Companion agents |
-| `content/skills/development-workflows/cold-shower/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/cold-shower/agents` | directory | 1 | Companion agents |
+| `skills/development-workflows/cold-shower/evals` | directory | 1 | Evaluation samples |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| agents | `content/skills/development-workflows/cold-shower/agents` | Companion agents |
-| evals | `content/skills/development-workflows/cold-shower/evals` | Evaluation samples |
+| agents | `skills/development-workflows/cold-shower/agents` | Companion agents |
+| evals | `skills/development-workflows/cold-shower/evals` | Evaluation samples |
 
 ## Validation
 
@@ -50,5 +50,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/development-workflows/cold-shower/SKILL.md`
-- `content/skills/development-workflows/cold-shower`
+- `skills/development-workflows/cold-shower/SKILL.md`
+- `skills/development-workflows/cold-shower`

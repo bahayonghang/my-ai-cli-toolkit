@@ -22,22 +22,22 @@ Challenge ideas, requirements, technical plans, products, pricing, markets, pitc
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill cold-shower
+npx skills add bahayonghang/my-claude-code-settings/skills --skill cold-shower
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/cold-shower/agents` | 目录 | 1 | 配套 agent |
-| `content/skills/development-workflows/cold-shower/evals` | 目录 | 1 | 评测样例 |
+| `skills/development-workflows/cold-shower/agents` | 目录 | 1 | 配套 agent |
+| `skills/development-workflows/cold-shower/evals` | 目录 | 1 | 评测样例 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| agents | `content/skills/development-workflows/cold-shower/agents` | 配套 agent |
-| evals | `content/skills/development-workflows/cold-shower/evals` | 评测样例 |
+| agents | `skills/development-workflows/cold-shower/agents` | 配套 agent |
+| evals | `skills/development-workflows/cold-shower/evals` | 评测样例 |
 
 ## 验证方式
 
@@ -50,5 +50,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/development-workflows/cold-shower/SKILL.md`
-- `content/skills/development-workflows/cold-shower`
+- `skills/development-workflows/cold-shower/SKILL.md`
+- `skills/development-workflows/cold-shower`

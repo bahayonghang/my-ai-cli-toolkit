@@ -23,14 +23,14 @@ Coordinate Antigravity companion workflows for staged review, focused task execu
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill antigravity-companion
+npx skills add bahayonghang/my-claude-code-settings/skills --skill antigravity-companion
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/antigravity-companion/README.md` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/antigravity-companion/README.md` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
@@ -47,5 +47,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/developer-tools-integrations/antigravity-companion/SKILL.md`
-- `content/skills/developer-tools-integrations/antigravity-companion`
+- `skills/developer-tools-integrations/antigravity-companion/SKILL.md`
+- `skills/developer-tools-integrations/antigravity-companion`

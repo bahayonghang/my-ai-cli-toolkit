@@ -22,14 +22,14 @@ Coordinate Claude Code companion-style workflows for multi-step implementation, 
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill claude-code-companion
+npx skills add bahayonghang/my-claude-code-settings/skills --skill claude-code-companion
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/claude-code-companion/README.md` | 文件 | 1 | 顶层文件 |
+| `skills/developer-tools-integrations/claude-code-companion/README.md` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
@@ -46,5 +46,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/developer-tools-integrations/claude-code-companion/SKILL.md`
-- `content/skills/developer-tools-integrations/claude-code-companion`
+- `skills/developer-tools-integrations/claude-code-companion/SKILL.md`
+- `skills/developer-tools-integrations/claude-code-companion`

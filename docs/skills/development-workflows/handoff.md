@@ -25,20 +25,20 @@ Use when the user wants to compact context before auto-compaction kicks in, hand
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill handoff
+npx skills add bahayonghang/my-claude-code-settings/skills --skill handoff
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/handoff/evals` | 目录 | 1 | 评测样例 |
+| `skills/development-workflows/handoff/evals` | 目录 | 1 | 评测样例 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| evals | `content/skills/development-workflows/handoff/evals` | 评测样例 |
+| evals | `skills/development-workflows/handoff/evals` | 评测样例 |
 
 ## 验证方式
 
@@ -51,5 +51,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/development-workflows/handoff/SKILL.md`
-- `content/skills/development-workflows/handoff`
+- `skills/development-workflows/handoff/SKILL.md`
+- `skills/development-workflows/handoff`

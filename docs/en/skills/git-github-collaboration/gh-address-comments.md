@@ -22,26 +22,26 @@ Address GitHub PR review comments and actionable review threads with GitHub CLI.
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill gh-address-comments
+npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-address-comments
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/gh-address-comments/agents` | directory | 1 | Companion agents |
-| `content/skills/git-github-collaboration/gh-address-comments/assets` | directory | 2 | Assets |
-| `content/skills/git-github-collaboration/gh-address-comments/LICENSE.txt` | file | 1 | Top-level file |
-| `content/skills/git-github-collaboration/gh-address-comments/scripts` | directory | 1 | Executable scripts |
-| `content/skills/git-github-collaboration/gh-address-comments/test-prompts.json` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-address-comments/agents` | directory | 1 | Companion agents |
+| `skills/git-github-collaboration/gh-address-comments/assets` | directory | 2 | Assets |
+| `skills/git-github-collaboration/gh-address-comments/LICENSE.txt` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-address-comments/scripts` | directory | 1 | Executable scripts |
+| `skills/git-github-collaboration/gh-address-comments/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/gh-address-comments/agents` | Companion agents |
-| assets | `content/skills/git-github-collaboration/gh-address-comments/assets` | Assets |
-| scripts | `content/skills/git-github-collaboration/gh-address-comments/scripts` | Executable scripts |
+| agents | `skills/git-github-collaboration/gh-address-comments/agents` | Companion agents |
+| assets | `skills/git-github-collaboration/gh-address-comments/assets` | Assets |
+| scripts | `skills/git-github-collaboration/gh-address-comments/scripts` | Executable scripts |
 
 ## Validation
 
@@ -55,5 +55,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/git-github-collaboration/gh-address-comments/SKILL.md`
-- `content/skills/git-github-collaboration/gh-address-comments`
+- `skills/git-github-collaboration/gh-address-comments/SKILL.md`
+- `skills/git-github-collaboration/gh-address-comments`

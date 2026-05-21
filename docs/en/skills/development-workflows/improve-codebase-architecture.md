@@ -22,20 +22,20 @@ Review a codebase for architectural friction, rank deep-module refactoring oppor
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill improve-codebase-architecture
+npx skills add bahayonghang/my-claude-code-settings/skills --skill improve-codebase-architecture
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/improve-codebase-architecture/references` | directory | 1 | Reference material |
+| `skills/development-workflows/improve-codebase-architecture/references` | directory | 1 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| references | `content/skills/development-workflows/improve-codebase-architecture/references` | Reference material |
+| references | `skills/development-workflows/improve-codebase-architecture/references` | Reference material |
 
 ## Validation
 
@@ -48,5 +48,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/development-workflows/improve-codebase-architecture/SKILL.md`
-- `content/skills/development-workflows/improve-codebase-architecture`
+- `skills/development-workflows/improve-codebase-architecture/SKILL.md`
+- `skills/development-workflows/improve-codebase-architecture`

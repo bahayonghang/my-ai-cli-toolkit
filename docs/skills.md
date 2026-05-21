@@ -1,12 +1,12 @@
 # Skills
 
-`content/skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、21 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、21 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '<skill-name>'
+npx skills add bahayonghang/my-claude-code-settings/skills
+npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>'
 ```
 
 ## 如何选择 skill

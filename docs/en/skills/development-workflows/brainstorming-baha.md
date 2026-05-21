@@ -22,21 +22,21 @@
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill brainstorming-baha
+npx skills add bahayonghang/my-claude-code-settings/skills --skill brainstorming-baha
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/brainstorming-baha/scripts` | directory | 5 | Executable scripts |
-| `content/skills/development-workflows/brainstorming-baha/visual-companion.md` | file | 1 | Top-level file |
+| `skills/development-workflows/brainstorming-baha/scripts` | directory | 5 | Executable scripts |
+| `skills/development-workflows/brainstorming-baha/visual-companion.md` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| scripts | `content/skills/development-workflows/brainstorming-baha/scripts` | Executable scripts |
+| scripts | `skills/development-workflows/brainstorming-baha/scripts` | Executable scripts |
 
 ## Validation
 
@@ -49,5 +49,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/development-workflows/brainstorming-baha/SKILL.md`
-- `content/skills/development-workflows/brainstorming-baha`
+- `skills/development-workflows/brainstorming-baha/SKILL.md`
+- `skills/development-workflows/brainstorming-baha`

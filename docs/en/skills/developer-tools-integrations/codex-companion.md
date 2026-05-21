@@ -23,29 +23,29 @@ Manage Codex background tasks, persistent job threads, adversarial code reviews,
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill codex-companion
+npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-companion
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/codex-companion/prompts` | directory | 1 | Prompts |
-| `content/skills/developer-tools-integrations/codex-companion/README.md` | file | 1 | Top-level file |
-| `content/skills/developer-tools-integrations/codex-companion/references` | directory | 2 | Reference material |
-| `content/skills/developer-tools-integrations/codex-companion/schemas` | directory | 1 | Schemas |
-| `content/skills/developer-tools-integrations/codex-companion/scripts` | directory | 17 | Executable scripts |
-| `content/skills/developer-tools-integrations/codex-companion/tests` | directory | 7 | Automated tests |
+| `skills/developer-tools-integrations/codex-companion/prompts` | directory | 1 | Prompts |
+| `skills/developer-tools-integrations/codex-companion/README.md` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/codex-companion/references` | directory | 2 | Reference material |
+| `skills/developer-tools-integrations/codex-companion/schemas` | directory | 1 | Schemas |
+| `skills/developer-tools-integrations/codex-companion/scripts` | directory | 17 | Executable scripts |
+| `skills/developer-tools-integrations/codex-companion/tests` | directory | 7 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| prompts | `content/skills/developer-tools-integrations/codex-companion/prompts` | Prompts |
-| references | `content/skills/developer-tools-integrations/codex-companion/references` | Reference material |
-| schemas | `content/skills/developer-tools-integrations/codex-companion/schemas` | Schemas |
-| scripts | `content/skills/developer-tools-integrations/codex-companion/scripts` | Executable scripts |
-| tests | `content/skills/developer-tools-integrations/codex-companion/tests` | Automated tests |
+| prompts | `skills/developer-tools-integrations/codex-companion/prompts` | Prompts |
+| references | `skills/developer-tools-integrations/codex-companion/references` | Reference material |
+| schemas | `skills/developer-tools-integrations/codex-companion/schemas` | Schemas |
+| scripts | `skills/developer-tools-integrations/codex-companion/scripts` | Executable scripts |
+| tests | `skills/developer-tools-integrations/codex-companion/tests` | Automated tests |
 
 ## Validation
 
@@ -57,5 +57,5 @@ just ci
 
 ## Source path
 
-- `content/skills/developer-tools-integrations/codex-companion/SKILL.md`
-- `content/skills/developer-tools-integrations/codex-companion`
+- `skills/developer-tools-integrations/codex-companion/SKILL.md`
+- `skills/developer-tools-integrations/codex-companion`

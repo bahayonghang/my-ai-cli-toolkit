@@ -23,26 +23,26 @@ Structured code review across correctness, security, performance, readability, t
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill code-auditor
+npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/development-workflows/code-auditor/assets` | directory | 4 | Assets |
-| `content/skills/development-workflows/code-auditor/evals` | directory | 1 | Evaluation samples |
-| `content/skills/development-workflows/code-auditor/references` | directory | 22 | Reference material |
-| `content/skills/development-workflows/code-auditor/scripts` | directory | 3 | Executable scripts |
+| `skills/development-workflows/code-auditor/assets` | directory | 4 | Assets |
+| `skills/development-workflows/code-auditor/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/code-auditor/references` | directory | 22 | Reference material |
+| `skills/development-workflows/code-auditor/scripts` | directory | 3 | Executable scripts |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| assets | `content/skills/development-workflows/code-auditor/assets` | Assets |
-| evals | `content/skills/development-workflows/code-auditor/evals` | Evaluation samples |
-| references | `content/skills/development-workflows/code-auditor/references` | Reference material |
-| scripts | `content/skills/development-workflows/code-auditor/scripts` | Executable scripts |
+| assets | `skills/development-workflows/code-auditor/assets` | Assets |
+| evals | `skills/development-workflows/code-auditor/evals` | Evaluation samples |
+| references | `skills/development-workflows/code-auditor/references` | Reference material |
+| scripts | `skills/development-workflows/code-auditor/scripts` | Executable scripts |
 
 ## Validation
 
@@ -56,5 +56,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/development-workflows/code-auditor/SKILL.md`
-- `content/skills/development-workflows/code-auditor`
+- `skills/development-workflows/code-auditor/SKILL.md`
+- `skills/development-workflows/code-auditor`

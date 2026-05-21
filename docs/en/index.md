@@ -14,8 +14,8 @@ hero:
       link: /en/hooks
 
 features:
-  - title: Content stays in content/
-    details: Runtime assets remain under content/; docs/ only documents and navigates the repository.
+  - title: Root-level workspaces
+    details: skills/ platforms/ scripts/ live directly at the repository root; docs/ only documents and navigates the repository.
   - title: Platform-aware layout
     details: Antigravity and Claude use commands, while Codex currently uses prompts, agents, and rules.
   - title: Locally verifiable
@@ -26,9 +26,9 @@ features:
 
 This documentation site covers the repository's three core areas:
 
-- `content/hooks/`: Claude Code hook configuration and scripts.
-- `content/platforms/`: platform-specific commands, prompts, agents, and rules.
-- `content/skills/`: the first-party skill catalog organized by category.
+- `platforms/claude/hooks/`: Claude Code hook configuration and scripts.
+- `platforms/`: platform-specific commands, prompts, agents, and rules.
+- `skills/`: the first-party skill catalog organized by category.
 
 ## Run locally
 

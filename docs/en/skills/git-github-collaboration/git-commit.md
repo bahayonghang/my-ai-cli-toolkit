@@ -25,26 +25,26 @@ Safely orchestrate Conventional Commits for staged Git changes, or for all worki
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill git-commit
+npx skills add bahayonghang/my-claude-code-settings/skills --skill git-commit
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/git-commit/agents` | directory | 1 | Companion agents |
-| `content/skills/git-github-collaboration/git-commit/evals` | directory | 1 | Evaluation samples |
-| `content/skills/git-github-collaboration/git-commit/references` | directory | 4 | Reference material |
-| `content/skills/git-github-collaboration/git-commit/scripts` | directory | 3 | Executable scripts |
+| `skills/git-github-collaboration/git-commit/agents` | directory | 1 | Companion agents |
+| `skills/git-github-collaboration/git-commit/evals` | directory | 1 | Evaluation samples |
+| `skills/git-github-collaboration/git-commit/references` | directory | 4 | Reference material |
+| `skills/git-github-collaboration/git-commit/scripts` | directory | 3 | Executable scripts |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/git-commit/agents` | Companion agents |
-| evals | `content/skills/git-github-collaboration/git-commit/evals` | Evaluation samples |
-| references | `content/skills/git-github-collaboration/git-commit/references` | Reference material |
-| scripts | `content/skills/git-github-collaboration/git-commit/scripts` | Executable scripts |
+| agents | `skills/git-github-collaboration/git-commit/agents` | Companion agents |
+| evals | `skills/git-github-collaboration/git-commit/evals` | Evaluation samples |
+| references | `skills/git-github-collaboration/git-commit/references` | Reference material |
+| scripts | `skills/git-github-collaboration/git-commit/scripts` | Executable scripts |
 
 ## Validation
 
@@ -58,5 +58,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/git-github-collaboration/git-commit/SKILL.md`
-- `content/skills/git-github-collaboration/git-commit`
+- `skills/git-github-collaboration/git-commit/SKILL.md`
+- `skills/git-github-collaboration/git-commit`

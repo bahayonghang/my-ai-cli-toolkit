@@ -22,26 +22,26 @@ Address GitHub PR review comments and actionable review threads with GitHub CLI.
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill gh-address-comments
+npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-address-comments
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/git-github-collaboration/gh-address-comments/agents` | 目录 | 1 | 配套 agent |
-| `content/skills/git-github-collaboration/gh-address-comments/assets` | 目录 | 2 | 素材资源 |
-| `content/skills/git-github-collaboration/gh-address-comments/LICENSE.txt` | 文件 | 1 | 顶层文件 |
-| `content/skills/git-github-collaboration/gh-address-comments/scripts` | 目录 | 1 | 可执行脚本 |
-| `content/skills/git-github-collaboration/gh-address-comments/test-prompts.json` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-address-comments/agents` | 目录 | 1 | 配套 agent |
+| `skills/git-github-collaboration/gh-address-comments/assets` | 目录 | 2 | 素材资源 |
+| `skills/git-github-collaboration/gh-address-comments/LICENSE.txt` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-address-comments/scripts` | 目录 | 1 | 可执行脚本 |
+| `skills/git-github-collaboration/gh-address-comments/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| agents | `content/skills/git-github-collaboration/gh-address-comments/agents` | 配套 agent |
-| assets | `content/skills/git-github-collaboration/gh-address-comments/assets` | 素材资源 |
-| scripts | `content/skills/git-github-collaboration/gh-address-comments/scripts` | 可执行脚本 |
+| agents | `skills/git-github-collaboration/gh-address-comments/agents` | 配套 agent |
+| assets | `skills/git-github-collaboration/gh-address-comments/assets` | 素材资源 |
+| scripts | `skills/git-github-collaboration/gh-address-comments/scripts` | 可执行脚本 |
 
 ## 验证方式
 
@@ -55,5 +55,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/git-github-collaboration/gh-address-comments/SKILL.md`
-- `content/skills/git-github-collaboration/gh-address-comments`
+- `skills/git-github-collaboration/gh-address-comments/SKILL.md`
+- `skills/git-github-collaboration/gh-address-comments`

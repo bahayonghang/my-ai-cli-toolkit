@@ -25,20 +25,20 @@ Audit and improve Codex AGENTS.md guidance files in repositories.
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill agents-md-improver
+npx skills add bahayonghang/my-claude-code-settings/skills --skill agents-md-improver
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/agents-md-improver/references` | directory | 3 | Reference material |
+| `skills/developer-tools-integrations/agents-md-improver/references` | directory | 3 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| references | `content/skills/developer-tools-integrations/agents-md-improver/references` | Reference material |
+| references | `skills/developer-tools-integrations/agents-md-improver/references` | Reference material |
 
 ## Validation
 
@@ -51,5 +51,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/developer-tools-integrations/agents-md-improver/SKILL.md`
-- `content/skills/developer-tools-integrations/agents-md-improver`
+- `skills/developer-tools-integrations/agents-md-improver/SKILL.md`
+- `skills/developer-tools-integrations/agents-md-improver`

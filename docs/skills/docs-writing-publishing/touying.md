@@ -22,24 +22,24 @@ Author Typst slide decks with Touying.
 ## 安装命令
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill touying
+npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 ```
 
 ## 目录内容
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/docs-writing-publishing/touying/docs` | 目录 | 34 | 内嵌文档 |
-| `content/skills/docs-writing-publishing/touying/examples` | 目录 | 9 | 示例 |
-| `content/skills/docs-writing-publishing/touying/references` | 目录 | 2 | 引用资料 |
+| `skills/docs-writing-publishing/touying/docs` | 目录 | 34 | 内嵌文档 |
+| `skills/docs-writing-publishing/touying/examples` | 目录 | 9 | 示例 |
+| `skills/docs-writing-publishing/touying/references` | 目录 | 2 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| docs | `content/skills/docs-writing-publishing/touying/docs` | 内嵌文档 |
-| examples | `content/skills/docs-writing-publishing/touying/examples` | 示例 |
-| references | `content/skills/docs-writing-publishing/touying/references` | 引用资料 |
+| docs | `skills/docs-writing-publishing/touying/docs` | 内嵌文档 |
+| examples | `skills/docs-writing-publishing/touying/examples` | 示例 |
+| references | `skills/docs-writing-publishing/touying/references` | 引用资料 |
 
 ## 验证方式
 
@@ -52,5 +52,5 @@ just ci
 
 ## 源码路径
 
-- `content/skills/docs-writing-publishing/touying/SKILL.md`
-- `content/skills/docs-writing-publishing/touying`
+- `skills/docs-writing-publishing/touying/SKILL.md`
+- `skills/docs-writing-publishing/touying`

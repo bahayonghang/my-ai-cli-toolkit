@@ -1,6 +1,6 @@
 # Hooks
 
-`content/hooks/` stores runtime hook assets. They describe when an agent runtime invokes external scripts while keeping behavior in small, auditable files.
+`platforms/claude/hooks/` stores runtime hook assets. They describe when an agent runtime invokes external scripts while keeping behavior in small, auditable files.
 
 ## Runtime trigger points
 
@@ -13,34 +13,34 @@
 
 | File | Responsibility | Notes |
 | --- | --- | --- |
-| `content/hooks/hooks.json` | Declares hook entrypoints, matchers, and command order. | Runtime hook declaration file. |
-| `content/hooks/inject-spec.py` | Compatibility no-op for the former spec-injection hook. | Global Spec Injection Hook (DEPRECATED). Spec injection is now handled internally by codeagent-wrapper via the per-task `skills:` field in parallel config and the `--skills` CLI flag. This hook is kept as a no-op for backward compatibility. |
-| `content/hooks/log-prompt.py` | Logs UserPromptSubmit input to local session logs. | Log Prompt Hook - Record user prompts to session-specific log files. Used for review on Stop. Uses session-isolated logs to handle concurrency. |
-| `content/hooks/pre-bash.py` | Blocks conservative dangerous Bash fragments before execution. | Pre-Bash Hook - Block dangerous commands before execution. |
+| `platforms/claude/hooks/hooks.json` | Declares hook entrypoints, matchers, and command order. | Runtime hook declaration file. |
+| `platforms/claude/hooks/inject-spec.py` | Compatibility no-op for the former spec-injection hook. | Global Spec Injection Hook (DEPRECATED). Spec injection is now handled internally by codeagent-wrapper via the per-task `skills:` field in parallel config and the `--skills` CLI flag. This hook is kept as a no-op for backward compatibility. |
+| `platforms/claude/hooks/log-prompt.py` | Logs UserPromptSubmit input to local session logs. | Log Prompt Hook - Record user prompts to session-specific log files. Used for review on Stop. Uses session-isolated logs to handle concurrency. |
+| `platforms/claude/hooks/pre-bash.py` | Blocks conservative dangerous Bash fragments before execution. | Pre-Bash Hook - Block dangerous commands before execution. |
 
 ## Hook file catalog
 
 ### hooks.json
 
-- Path: `content/hooks/hooks.json`
+- Path: `platforms/claude/hooks/hooks.json`
 - Responsibility: Declares hook entrypoints, matchers, and command order.
 - Notes: Runtime hook declaration file.
 
 ### inject-spec.py
 
-- Path: `content/hooks/inject-spec.py`
+- Path: `platforms/claude/hooks/inject-spec.py`
 - Responsibility: Compatibility no-op for the former spec-injection hook.
 - Notes: Global Spec Injection Hook (DEPRECATED). Spec injection is now handled internally by codeagent-wrapper via the per-task `skills:` field in parallel config and the `--skills` CLI flag. This hook is kept as a no-op for backward compatibility.
 
 ### log-prompt.py
 
-- Path: `content/hooks/log-prompt.py`
+- Path: `platforms/claude/hooks/log-prompt.py`
 - Responsibility: Logs UserPromptSubmit input to local session logs.
 - Notes: Log Prompt Hook - Record user prompts to session-specific log files. Used for review on Stop. Uses session-isolated logs to handle concurrency.
 
 ### pre-bash.py
 
-- Path: `content/hooks/pre-bash.py`
+- Path: `platforms/claude/hooks/pre-bash.py`
 - Responsibility: Blocks conservative dangerous Bash fragments before execution.
 - Notes: Pre-Bash Hook - Block dangerous commands before execution.
 

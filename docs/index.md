@@ -14,8 +14,8 @@ hero:
       link: /hooks
 
 features:
-  - title: 内容集中在 content/
-    details: 仓库的运行内容仍位于 content/；docs/ 只负责说明和导航，不改变现有安装或运行逻辑。
+  - title: 根级工作区
+    details: skills/ platforms/ scripts/ 三个工作区直接挂在仓库根；docs/ 只负责说明和导航，不改变现有安装或运行逻辑。
   - title: 平台分层
     details: Antigravity 与 Claude 使用 commands；Codex 当前主要使用 prompts、agents 与 rules。
   - title: 本地可验证
@@ -26,9 +26,9 @@ features:
 
 这个文档站说明当前仓库的三个核心区域：
 
-- `content/hooks/`：Claude Code hook 配置与脚本。
-- `content/platforms/`：不同 agent 平台的 commands、prompts、agents、rules。
-- `content/skills/`：按分类组织的一方 skill catalog。
+- `platforms/claude/hooks/`：Claude Code hook 配置与脚本。
+- `platforms/`：不同 agent 平台的 commands、prompts、agents、rules。
+- `skills/`：按分类组织的一方 skill catalog。
 
 ## 本地运行
 

@@ -22,24 +22,24 @@ Author Typst slide decks with Touying.
 ## Install command
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/content/skills --skill touying
+npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 ```
 
 ## Directory contents
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/docs-writing-publishing/touying/docs` | directory | 34 | Embedded docs |
-| `content/skills/docs-writing-publishing/touying/examples` | directory | 9 | Examples |
-| `content/skills/docs-writing-publishing/touying/references` | directory | 2 | Reference material |
+| `skills/docs-writing-publishing/touying/docs` | directory | 34 | Embedded docs |
+| `skills/docs-writing-publishing/touying/examples` | directory | 9 | Examples |
+| `skills/docs-writing-publishing/touying/references` | directory | 2 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| docs | `content/skills/docs-writing-publishing/touying/docs` | Embedded docs |
-| examples | `content/skills/docs-writing-publishing/touying/examples` | Examples |
-| references | `content/skills/docs-writing-publishing/touying/references` | Reference material |
+| docs | `skills/docs-writing-publishing/touying/docs` | Embedded docs |
+| examples | `skills/docs-writing-publishing/touying/examples` | Examples |
+| references | `skills/docs-writing-publishing/touying/references` | Reference material |
 
 ## Validation
 
@@ -52,5 +52,5 @@ This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just
 
 ## Source path
 
-- `content/skills/docs-writing-publishing/touying/SKILL.md`
-- `content/skills/docs-writing-publishing/touying`
+- `skills/docs-writing-publishing/touying/SKILL.md`
+- `skills/docs-writing-publishing/touying`
