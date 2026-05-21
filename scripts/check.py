@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "targets",
         nargs="*",
-        default=["content/skills"],
+        default=["skills"],
         help="Skill directories, SKILL.md files, or parent directories to scan.",
     )
     parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
@@ -268,12 +268,12 @@ def metadata_tags(metadata: Any) -> list[str]:
 def infer_directory_category(skill_dir: Path) -> str | None:
     parts = skill_dir.parts
     try:
-        skills_index = parts.index("content")
+        skills_index = parts.index("skills")
     except ValueError:
         return skill_dir.parent.name or None
 
-    if len(parts) > skills_index + 2 and parts[skills_index + 1] == "skills":
-        return parts[skills_index + 2]
+    if len(parts) > skills_index + 1:
+        return parts[skills_index + 1]
     return skill_dir.parent.name or None
 
 

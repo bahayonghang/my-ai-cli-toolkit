@@ -10,7 +10,7 @@ These prompts expect the skill runtime script to exist at one of these locations
 
 | Priority | Path | Purpose |
 |---|---|---|
-| 1 | `./content/skills/developer-tools-integrations/codex-companion/scripts/codex-companion.mjs` | Run directly from this repository |
+| 1 | `./skills/developer-tools-integrations/codex-companion/scripts/codex-companion.mjs` | Run directly from this repository |
 | 2 | `~/.agents/skills/codex-companion/scripts/codex-companion.mjs` | Shared installed skill path |
 | 3 | `./.agents/skills/codex-companion/scripts/codex-companion.mjs` | Project-local shared skill install |
 | 4 | `./.codex/skills/codex-companion/scripts/codex-companion.mjs` | Project-local Codex-specific install |

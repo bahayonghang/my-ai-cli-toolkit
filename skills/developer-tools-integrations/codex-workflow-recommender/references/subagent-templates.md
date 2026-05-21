@@ -9,7 +9,7 @@ Common locations:
 ```text
 .codex/agents/          # project-local agents
 ~/.codex/agents/        # user-level agents
-content/platforms/codex/agents/  # source templates in this repository
+platforms/codex/agents/  # source templates in this repository
 ```
 
 Make the exact location match the user's Codex installation and repository policy.

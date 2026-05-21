@@ -14,7 +14,7 @@ Started: 2026-05-20
 ## Deviations
 
 - Spec requested installing/locking VitePress dependencies without naming a version. Implemented with `vitepress@^2.0.0-alpha.17` instead of the latest stable `1.6.4` after audit evidence showed the stable line currently leaves unresolved moderate dev-server advisories; this remains confined to the docs-only package.
-- The earlier docs-site note said the first release would stay hand-authored. The current approved IA plan supersedes that: skill overview/detail pages and scoped sidebar catalog data are now generated from `content/`.
+- The earlier docs-site note said the first release would stay hand-authored. The current approved IA plan supersedes that: skill overview/detail pages and scoped sidebar catalog data are now generated from `skills/` and `platforms/`.
 
 ## Tradeoffs
 

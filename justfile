@@ -1,9 +1,9 @@
 set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 
 # MyClaude Skills Justfile
-# 使用 just 命令管理仓库 content/ 下的内容校验流程
+# 使用 just 命令管理仓库根级 skills/ platforms/ scripts/ 的内容校验流程
 #
-# 本仓库保留 content/ 作为运行内容工作区，并在 docs/ 提供独立 VitePress 文档站。
+# 本仓库在根目录直接提供 skills/ platforms/ scripts/ 三个工作区，并在 docs/ 提供独立 VitePress 文档站。
 
 npm_cmd := if os_family() == "windows" { "npm.cmd" } else { "npm" }
 npx_cmd := if os_family() == "windows" { "npx.cmd" } else { "npx" }
@@ -28,8 +28,8 @@ help:
     @echo "  just docs-check    - 检查 docs catalog 漂移并构建文档站"
     @echo ""
     @echo "✅ 内容校验："
-    @echo "  just skills-check  - 校验 content/skills/ 元数据"
-    @echo "  just python-check  - 编译检查 content/ 下的 Python 脚本"
+    @echo "  just skills-check  - 校验 skills/ 元数据"
+    @echo "  just python-check  - 编译检查 skills/ platforms/ scripts/ 下的 Python 脚本"
     @echo "  just node-test     - 运行仓库内 Node.js 技能测试"
     @echo "  just lint          - skills-check + python-check"
     @echo "  just ci            - 完整本地 CI 流程"
@@ -62,17 +62,17 @@ docs-check:
 
 # ============ 内容校验 ============
 
-# 校验 content/skills/ 元数据
+# 校验 skills/ 元数据
 skills-check:
-    {{ python_cmd }} content/skills/check.py content/skills
+    {{ python_cmd }} scripts/check.py skills
 
-# 编译检查 content/ 下的 Python 脚本；跳过 scaffold 模板
+# 编译检查 skills/ platforms/ scripts/ 下的 Python 脚本；跳过 scaffold 模板
 python-check:
-    {{ python_cmd }} -c "from pathlib import Path; import py_compile; paths=[p for p in Path('content').rglob('*.py') if 'scaffolds' not in p.parts and 'node_modules' not in p.parts]; [py_compile.compile(str(p), doraise=True) for p in paths]; print(f'Checked {len(paths)} Python files')"
+    {{ python_cmd }} -c "from pathlib import Path; import py_compile; roots=['skills','platforms','scripts']; paths=[p for root in roots for p in Path(root).rglob('*.py') if 'scaffolds' not in p.parts and 'node_modules' not in p.parts]; [py_compile.compile(str(p), doraise=True) for p in paths]; print(f'Checked {len(paths)} Python files')"
 
 # 运行仓库内 Node.js 技能测试
 node-test:
-    {{ node_cmd }} -e "const fs = require('node:fs'); const path = require('node:path'); const { spawnSync } = require('node:child_process'); const files = []; const walk = (dir) => { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const filePath = path.join(dir, entry.name); if (entry.isDirectory()) walk(filePath); else if (entry.isFile() && filePath.split(/[\\/]/).includes('tests') && entry.name.endsWith('.mjs')) files.push(filePath); } }; walk('content/skills'); if (files.length === 0) { console.log('No Node skill tests found'); process.exit(0); } const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
+    {{ node_cmd }} -e "const fs = require('node:fs'); const path = require('node:path'); const { spawnSync } = require('node:child_process'); const files = []; const walk = (dir) => { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const filePath = path.join(dir, entry.name); if (entry.isDirectory()) walk(filePath); else if (entry.isFile() && filePath.split(/[\\/]/).includes('tests') && entry.name.endsWith('.mjs')) files.push(filePath); } }; walk('skills'); if (files.length === 0) { console.log('No Node skill tests found'); process.exit(0); } const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
 
 # 运行仓库内容 lint
 lint: skills-check python-check

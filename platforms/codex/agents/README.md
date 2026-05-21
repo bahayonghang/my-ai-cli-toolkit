@@ -22,9 +22,9 @@ This directory defines a small, explicit handoff model for Codex custom agents:
 ## Default verification
 
 - Lint the TOMLs with the installed `agent-creator` skill:
-  `python <agent-creator>/scripts/lint_agent_toml.py content/platforms/codex/agents --json`
+  `python <agent-creator>/scripts/lint_agent_toml.py platforms/codex/agents --json`
 - Before running behavior evals, make the target TOML discoverable by Codex from `.codex/agents/` or `~/.codex/agents/`.
-- Run per-agent behavior evals with the local datasets in `content/platforms/codex/agents/evals/`.
+- Run per-agent behavior evals with the local datasets in `platforms/codex/agents/evals/`.
 - Use `workspace-write` sandbox for `coder` and `frontend_ui` evals, and `read-only` for `orchestrator`.
 
 ## Local eval datasets
