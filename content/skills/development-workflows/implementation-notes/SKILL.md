@@ -107,7 +107,7 @@ A session that adds zero entries is fine if no real decisions were made. Padding
 - **`writing-plans`**: This skill activates *after* a plan exists. If no plan, run `writing-plans` first.
 - **`subagent-driven-development`**: When subagents implement tasks, the **parent maintains this file**. Subagents report their decisions back; the parent appends. Never let multiple subagents write to this file concurrently — entries will conflict and reasoning will get lost.
 - **`git-commit`**: When a notes entry maps one-to-one to a commit, the commit body should link to the entry (e.g., `See implementation-notes.md "Retry count deviation"`). Do not duplicate the reasoning in both places.
-- **`session-wrap`**: When wrapping a session, the "Key decisions" section should pull from this file rather than from memory. If the notes file is empty, that is the truthful answer.
+- **`handoff`**: When producing a handoff doc, pull the "Key decisions" / "Why this over that" content from this file rather than reconstructing from memory. The notes file is the durable record; the handoff is the short pointer that says "this matters next session."
 - **`code-auditor` / PR review**: Reviewers should read this file before reading the diff. It frames what the diff is trying to do.
 
 ## Minimal template

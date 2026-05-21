@@ -35,9 +35,9 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill '<ski
 - [brainstorming-baha](/skills/development-workflows/brainstorming-baha) — 在任何创造性工作之前必须使用此技能——创建功能、构建组件、添加功能或修改行为。在实现之前先探索用户意图、需求和设计。
 - [code-auditor](/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture, with language-specific guidance and human-readable findings.
 - [cold-shower](/skills/development-workflows/cold-shower) — Challenge ideas, requirements, technical plans, products, pricing, markets, pitch/BP narratives, and major personal decisions with a no-flattery adversarial review.
+- [handoff](/skills/development-workflows/handoff) — Use when the user wants to compact context before auto-compaction kicks in, hand off an unfinished task to a fresh session, switch topics mid-stream and preserve state, or pick up yesterday's work in a new conversation.
 - [implementation-notes](/skills/development-workflows/implementation-notes) — Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding.
 - [improve-codebase-architecture](/skills/development-workflows/improve-codebase-architecture) — Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies.
-- [session-wrap](/skills/development-workflows/session-wrap) — Use when the user wants to wrap up the current coding session, summarize what happened in this session before ending work, document learnings and decisions, produce a handoff note for the next session, decide what to commit, or says 总结会话, 会话总结, 收尾, 会话收尾, 结束会话, 总结本次会话.
 
 ### 文档写作与发布
 

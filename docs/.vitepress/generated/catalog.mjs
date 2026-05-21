@@ -58,16 +58,16 @@ export const zhSkillsSidebar = [
         "link": "/skills/development-workflows/cold-shower"
       },
       {
+        "text": "handoff",
+        "link": "/skills/development-workflows/handoff"
+      },
+      {
         "text": "implementation-notes",
         "link": "/skills/development-workflows/implementation-notes"
       },
       {
         "text": "improve-codebase-architecture",
         "link": "/skills/development-workflows/improve-codebase-architecture"
-      },
-      {
-        "text": "session-wrap",
-        "link": "/skills/development-workflows/session-wrap"
       }
     ]
   },
@@ -183,16 +183,16 @@ export const enSkillsSidebar = [
         "link": "/en/skills/development-workflows/cold-shower"
       },
       {
+        "text": "handoff",
+        "link": "/en/skills/development-workflows/handoff"
+      },
+      {
         "text": "implementation-notes",
         "link": "/en/skills/development-workflows/implementation-notes"
       },
       {
         "text": "improve-codebase-architecture",
         "link": "/en/skills/development-workflows/improve-codebase-architecture"
-      },
-      {
-        "text": "session-wrap",
-        "link": "/en/skills/development-workflows/session-wrap"
       }
     ]
   },
