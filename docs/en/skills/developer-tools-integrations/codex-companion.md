@@ -30,7 +30,6 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill codex
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `content/skills/developer-tools-integrations/codex-companion/.omc` | directory | 1 | OMC metadata |
 | `content/skills/developer-tools-integrations/codex-companion/prompts` | directory | 1 | Prompts |
 | `content/skills/developer-tools-integrations/codex-companion/README.md` | file | 1 | Top-level file |
 | `content/skills/developer-tools-integrations/codex-companion/references` | directory | 2 | Reference material |
@@ -42,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill codex
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
-| .omc | `content/skills/developer-tools-integrations/codex-companion/.omc` | OMC metadata |
 | prompts | `content/skills/developer-tools-integrations/codex-companion/prompts` | Prompts |
 | references | `content/skills/developer-tools-integrations/codex-companion/references` | Reference material |
 | schemas | `content/skills/developer-tools-integrations/codex-companion/schemas` | Schemas |

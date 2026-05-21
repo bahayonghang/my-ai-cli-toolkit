@@ -29,7 +29,6 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill touyi
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `content/skills/docs-writing-publishing/touying/.omc` | 目录 | 1 | OMC 元数据 |
 | `content/skills/docs-writing-publishing/touying/docs` | 目录 | 34 | 内嵌文档 |
 | `content/skills/docs-writing-publishing/touying/examples` | 目录 | 9 | 示例 |
 | `content/skills/docs-writing-publishing/touying/references` | 目录 | 2 | 引用资料 |
@@ -38,7 +37,6 @@ npx skills add bahayonghang/my-claude-code-settings/content/skills --skill touyi
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
-| .omc | `content/skills/docs-writing-publishing/touying/.omc` | OMC 元数据 |
 | docs | `content/skills/docs-writing-publishing/touying/docs` | 内嵌文档 |
 | examples | `content/skills/docs-writing-publishing/touying/examples` | 示例 |
 | references | `content/skills/docs-writing-publishing/touying/references` | 引用资料 |

@@ -76,7 +76,8 @@ RESOURCE_LABELS_EN = {
     ".omc": "OMC metadata",
 }
 
-IMPORTANT_RESOURCE_NAMES = set(RESOURCE_LABELS_EN)
+IGNORED_RESOURCE_NAMES = {".omc", "__pycache__", "node_modules"}
+IMPORTANT_RESOURCE_NAMES = set(RESOURCE_LABELS_EN) - IGNORED_RESOURCE_NAMES
 
 HOOK_ROLE_ZH = {
     "hooks.json": "声明 hook 入口、matcher 与命令调用顺序。",
@@ -193,14 +194,14 @@ def count_files(path: Path) -> int:
     return sum(
         1
         for child in path.rglob("*")
-        if child.is_file() and "__pycache__" not in child.parts
+        if child.is_file() and not any(part in IGNORED_RESOURCE_NAMES for part in child.parts)
     )
 
 
 def collect_resources(skill_dir: Path) -> tuple[ResourceEntry, ...]:
     entries: list[ResourceEntry] = []
     for child in sorted(skill_dir.iterdir(), key=lambda item: item.name.lower()):
-        if child.name in {"SKILL.md", "__pycache__"}:
+        if child.name == "SKILL.md" or child.name in IGNORED_RESOURCE_NAMES:
             continue
         kind = "directory" if child.is_dir() else "file"
         entries.append(
