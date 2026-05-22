@@ -4,11 +4,11 @@
 
 ## Purpose overview
 
-在任何创造性工作之前必须使用此技能——创建功能、构建组件、添加功能或修改行为。在实现之前先探索用户意图、需求和设计。
+当用户想要 brainstorm 一个想法、设计 feature 或 spec 时使用。通过对话探索意图与需求，然后将 spec 文档写入 .brainstorm/ 并 STOP。不会自动接 implementation planning 或任何其他技能。
 
 ## Trigger scenarios
 
-- 在任何创造性工作之前必须使用此技能——创建功能、构建组件、添加功能或修改行为。在实现之前先探索用户意图、需求和设计。
+- 当用户想要 brainstorm 一个想法、设计 feature 或 spec 时使用。通过对话探索意图与需求，然后将 spec 文档写入 .brainstorm/ 并 STOP。不会自动接 implementation planning 或任何其他技能。
 
 ## Metadata
 
@@ -16,8 +16,8 @@
 | --- | --- |
 | Name | `brainstorming-baha` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | Not declared |
-| Tags | Not declared |
+| Version | `0.1.0` |
+| Tags | `brainstorming`, `design`, `spec`, `discovery` |
 
 ## Install command
 
@@ -30,6 +30,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill brainstorming
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/brainstorming-baha/scripts` | directory | 5 | Executable scripts |
+| `skills/development-workflows/brainstorming-baha/spec-document-reviewer-prompt.md` | file | 1 | Top-level file |
 | `skills/development-workflows/brainstorming-baha/visual-companion.md` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
