@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、21 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、22 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -20,10 +20,11 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 开发者工具集成
 
-`developer-tools-integrations` · 5 skills
+`developer-tools-integrations` · 6 skills
 
 - [agents-md-improver](/skills/developer-tools-integrations/agents-md-improver) — Audit and improve Codex AGENTS.md guidance files in repositories.
 - [antigravity-companion](/skills/developer-tools-integrations/antigravity-companion) — Coordinate Antigravity companion workflows for staged review, focused task execution, follow-up analysis, and clear continuation boundaries.
+- [archive-planning](/skills/developer-tools-integrations/archive-planning) — Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature.
 - [claude-code-companion](/skills/developer-tools-integrations/claude-code-companion) — Coordinate Claude Code companion-style workflows for multi-step implementation, bounded review, follow-up execution, and session-to-session continuation inside Claude Code.
 - [codex-companion](/skills/developer-tools-integrations/codex-companion) — Manage Codex background tasks, persistent job threads, adversarial code reviews, and job lifecycle (status, result, cancel) from inside any AI coding session.
 - [codex-workflow-recommender](/skills/developer-tools-integrations/codex-workflow-recommender) — Analyze a repository and current Codex environment, then recommend Codex CLI, Codex App, AGENTS.md, skills, native subagents, plugins, MCP servers, config/hooks, and optional OMX workflow improvements without modifying files.

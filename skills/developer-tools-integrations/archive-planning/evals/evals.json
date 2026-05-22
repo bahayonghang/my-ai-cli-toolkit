@@ -1,0 +1,23 @@
+{
+  "skill_name": "archive-planning",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "$archive-planning payment-retry-hardening，当前仓库根目录已有 task_plan.md、findings.md、progress.md。请归档这轮规划。",
+      "expected_output": "运行 bundled archive_planning.py 脚本，先确认三份根规划文件都存在，再移动到 .plannings/yyyyMMdd-HHmmss-payment-retry-hardening/。成功输出 Archive directory 和三份 Moved files；根目录不再保留这三份文件。",
+      "files": ["task_plan.md", "findings.md", "progress.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "$archive-planning，task_plan.md 第一行是 # 任务计划：结算幂等修复。",
+      "expected_output": "未传 feature name 时按优先级从规划文件推断 feature，生成包含 结算幂等修复 slug 的 .plannings/yyyyMMdd-HHmmss-结算幂等修复/ 目录，并只移动 task_plan.md、findings.md、progress.md。",
+      "files": ["task_plan.md", "findings.md", "progress.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "$archive-planning current-feature，但根目录缺少 progress.md。",
+      "expected_output": "中止并列出缺失的 progress.md；不创建 .plannings/，不移动 task_plan.md 或 findings.md，也不尝试归档嵌套目录文件。",
+      "files": ["task_plan.md", "findings.md"]
+    }
+  ]
+}
