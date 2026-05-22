@@ -694,7 +694,7 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
         lines.extend(
             [
                 "- **Command**：用户显式调用的工作流入口，适合有参数、固定步骤和平台 command 语义的任务。",
-                "- **Prompt**：Codex 等平台上的命令式工作流提示，适合复用但不一定映射为 command 文件的流程。",
+                "- **Prompt**：平台遗留或专用提示资产；Codex 可复用工作流优先做成 `skills/` 中的 `$skill-name` 入口。",
                 "- **Agent**：角色化执行面，适合长期保持独立职责、模型/工具边界或子任务分派。",
                 "- **Rule / AGENTS.md**：项目或平台的基础指导，适合默认约束、目录规则和安全边界。",
             ]
@@ -703,7 +703,7 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
         lines.extend(
             [
                 "- **Command**: user-invoked workflow entrypoint with arguments, fixed steps, and platform command semantics.",
-                "- **Prompt**: command-like workflow prompt for platforms such as Codex when no command directory is the native surface.",
+                "- **Prompt**: legacy or platform-specific prompt asset; reusable Codex workflows should prefer `$skill-name` entries under `skills/`.",
                 "- **Agent**: role-specialized execution surface with stable responsibility, model/tool boundaries, or subtask routing.",
                 "- **Rule / AGENTS.md**: baseline project or platform guidance for default constraints, directory rules, and safety boundaries.",
             ]
@@ -719,9 +719,9 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
             lines.append("")
         if platform.name == "codex":
             lines.append(
-                "Codex 当前主要使用 prompt / rule / agent 结构；添加“命令”前应先检查 `prompts/`、`agents/` 和 `rules/` 的既有约定。"
+                "Codex 可复用工作流优先使用 `skills/` 中的 `$skill-name` 入口，例如 `$archive-planning`；`platforms/codex/prompts/` 仅保留遗留或平台专用提示资产。"
                 if zh
-                else "Codex currently uses prompt / rule / agent assets; before adding a “command”, check existing `prompts/`, `agents/`, and `rules/` conventions."
+                else "Reusable Codex workflows should prefer `$skill-name` entries under `skills/`, such as `$archive-planning`; `platforms/codex/prompts/` is only for legacy or platform-specific prompt assets."
             )
             lines.append("")
     lines.extend(

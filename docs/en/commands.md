@@ -5,7 +5,7 @@ Platform content lives under `platforms/<platform>/`. Each platform consumes con
 ## When to add a command, prompt, agent, or rule
 
 - **Command**: user-invoked workflow entrypoint with arguments, fixed steps, and platform command semantics.
-- **Prompt**: command-like workflow prompt for platforms such as Codex when no command directory is the native surface.
+- **Prompt**: legacy or platform-specific prompt asset; reusable Codex workflows should prefer `$skill-name` entries under `skills/`.
 - **Agent**: role-specialized execution surface with stable responsibility, model/tool boundaries, or subtask routing.
 - **Rule / AGENTS.md**: baseline project or platform guidance for default constraints, directory rules, and safety boundaries.
 
@@ -63,12 +63,6 @@ Platform content lives under `platforms/<platform>/`. Each platform consumes con
 - `platforms/claude/agents/specialist/typescript-expert.md`
 - `platforms/claude/agents/specialist/ui-ux-designer.md`
 
-#### Commands
-
-- `platforms/claude/commands/archive-planning.md`
-- `platforms/claude/commands/implement-with-notes.md`
-- `platforms/claude/commands/init-projects.md`
-
 #### Hooks
 
 - `platforms/claude/hooks/hooks.json`
@@ -87,24 +81,11 @@ Platform content lives under `platforms/<platform>/`. Each platform consumes con
 - `platforms/codex/agents/orchestrator.toml`
 - `platforms/codex/agents/README.md`
 
-#### Prompts
-
-- `platforms/codex/prompts/archive-planning.md`
-- `platforms/codex/prompts/codex-companion/adversarial-review.md`
-- `platforms/codex/prompts/codex-companion/cancel.md`
-- `platforms/codex/prompts/codex-companion/README.md`
-- `platforms/codex/prompts/codex-companion/result.md`
-- `platforms/codex/prompts/codex-companion/review.md`
-- `platforms/codex/prompts/codex-companion/status.md`
-- `platforms/codex/prompts/codex-companion/task.md`
-- `platforms/codex/prompts/implement-with-notes.md`
-- `platforms/codex/prompts/init-projects.md`
-
 #### Rules
 
 - `platforms/codex/rules/AGENTS.md`
 
-Codex currently uses prompt / rule / agent assets; before adding a “command”, check existing `prompts/`, `agents/`, and `rules/` conventions.
+Reusable Codex workflows should prefer `$skill-name` entries under `skills/`, such as `$archive-planning`; `platforms/codex/prompts/` is only for legacy or platform-specific prompt assets.
 
 ## Validation after changes
 

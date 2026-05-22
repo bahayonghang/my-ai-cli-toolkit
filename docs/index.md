@@ -17,7 +17,7 @@ features:
   - title: 根级工作区
     details: skills/ platforms/ scripts/ 三个工作区直接挂在仓库根；docs/ 只负责说明和导航，不改变现有安装或运行逻辑。
   - title: 平台分层
-    details: Antigravity 与 Claude 使用 commands；Codex 当前主要使用 prompts、agents 与 rules。
+    details: Antigravity 与 Claude 使用 commands；Codex 可复用工作流优先使用 skills，平台目录保留 agents、rules 与少量遗留 prompts。
   - title: 本地可验证
     details: 使用 just ci 校验 skills 元数据、Python 脚本、Node 测试和空白问题。
 ---

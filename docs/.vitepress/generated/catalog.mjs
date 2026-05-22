@@ -358,10 +358,6 @@ export const zhCommandsSidebar = [
         "link": "/commands#claude"
       },
       {
-        "text": "Commands (3)",
-        "link": "/commands#claude"
-      },
-      {
         "text": "Hooks (4)",
         "link": "/commands#claude"
       }
@@ -373,10 +369,6 @@ export const zhCommandsSidebar = [
     "items": [
       {
         "text": "Agents (4)",
-        "link": "/commands#codex"
-      },
-      {
-        "text": "Prompts (10)",
         "link": "/commands#codex"
       },
       {
@@ -415,10 +407,6 @@ export const enCommandsSidebar = [
         "link": "/en/commands#claude"
       },
       {
-        "text": "Commands (3)",
-        "link": "/en/commands#claude"
-      },
-      {
         "text": "Hooks (4)",
         "link": "/en/commands#claude"
       }
@@ -430,10 +418,6 @@ export const enCommandsSidebar = [
     "items": [
       {
         "text": "Agents (4)",
-        "link": "/en/commands#codex"
-      },
-      {
-        "text": "Prompts (10)",
         "link": "/en/commands#codex"
       },
       {

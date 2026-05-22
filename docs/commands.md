@@ -5,7 +5,7 @@
 ## 何时添加 command / prompt / agent / rule
 
 - **Command**：用户显式调用的工作流入口，适合有参数、固定步骤和平台 command 语义的任务。
-- **Prompt**：Codex 等平台上的命令式工作流提示，适合复用但不一定映射为 command 文件的流程。
+- **Prompt**：平台遗留或专用提示资产；Codex 可复用工作流优先做成 `skills/` 中的 `$skill-name` 入口。
 - **Agent**：角色化执行面，适合长期保持独立职责、模型/工具边界或子任务分派。
 - **Rule / AGENTS.md**：项目或平台的基础指导，适合默认约束、目录规则和安全边界。
 
@@ -63,12 +63,6 @@
 - `platforms/claude/agents/specialist/typescript-expert.md`
 - `platforms/claude/agents/specialist/ui-ux-designer.md`
 
-#### Commands
-
-- `platforms/claude/commands/archive-planning.md`
-- `platforms/claude/commands/implement-with-notes.md`
-- `platforms/claude/commands/init-projects.md`
-
 #### Hooks
 
 - `platforms/claude/hooks/hooks.json`
@@ -87,24 +81,11 @@
 - `platforms/codex/agents/orchestrator.toml`
 - `platforms/codex/agents/README.md`
 
-#### Prompts
-
-- `platforms/codex/prompts/archive-planning.md`
-- `platforms/codex/prompts/codex-companion/adversarial-review.md`
-- `platforms/codex/prompts/codex-companion/cancel.md`
-- `platforms/codex/prompts/codex-companion/README.md`
-- `platforms/codex/prompts/codex-companion/result.md`
-- `platforms/codex/prompts/codex-companion/review.md`
-- `platforms/codex/prompts/codex-companion/status.md`
-- `platforms/codex/prompts/codex-companion/task.md`
-- `platforms/codex/prompts/implement-with-notes.md`
-- `platforms/codex/prompts/init-projects.md`
-
 #### Rules
 
 - `platforms/codex/rules/AGENTS.md`
 
-Codex 当前主要使用 prompt / rule / agent 结构；添加“命令”前应先检查 `prompts/`、`agents/` 和 `rules/` 的既有约定。
+Codex 可复用工作流优先使用 `skills/` 中的 `$skill-name` 入口，例如 `$archive-planning`；`platforms/codex/prompts/` 仅保留遗留或平台专用提示资产。
 
 ## 修改后验证
 

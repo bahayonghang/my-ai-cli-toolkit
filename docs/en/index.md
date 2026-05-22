@@ -17,7 +17,7 @@ features:
   - title: Root-level workspaces
     details: skills/ platforms/ scripts/ live directly at the repository root; docs/ only documents and navigates the repository.
   - title: Platform-aware layout
-    details: Antigravity and Claude use commands, while Codex currently uses prompts, agents, and rules.
+    details: Antigravity and Claude use commands, while reusable Codex workflows prefer skills and the platform directory keeps agents, rules, and limited legacy prompts.
   - title: Locally verifiable
     details: just ci validates skill metadata, Python scripts, Node tests, and whitespace checks.
 ---
