@@ -37,14 +37,14 @@
 scripts/start-server.sh --project-dir /path/to/project
 
 # 返回：{"type":"server-started","port":52341,"url":"http://localhost:52341",
-#           "screen_dir":"/path/to/project/.superpowers/brainstorm/12345-1706000000"}
+#           "screen_dir":"/path/to/project/.brainstorm/12345-1706000000"}
 ```
 
 保存响应中的 `screen_dir`。告诉用户打开该 URL。
 
-**查找连接信息：** 服务器将其启动 JSON 写入 `$SCREEN_DIR/.server-info`。如果你在后台启动了服务器且没有捕获 stdout，读取该文件以获取 URL 和端口。使用 `--project-dir` 时，检查 `<project>/.superpowers/brainstorm/` 获取会话目录。
+**查找连接信息：** 服务器将其启动 JSON 写入 `$SCREEN_DIR/.server-info`。如果你在后台启动了服务器且没有捕获 stdout，读取该文件以获取 URL 和端口。使用 `--project-dir` 时，检查 `<project>/.brainstorm/` 获取会话目录。
 
-**注意：** 传入项目根目录作为 `--project-dir`，这样原型会持久化在 `.superpowers/brainstorm/` 中，不会因服务器重启而丢失。不传的话，文件会保存到 `/tmp` 并在清理时被删除。提醒用户将 `.superpowers/` 添加到 `.gitignore`（如果尚未添加）。
+**注意：** 传入项目根目录作为 `--project-dir`，这样原型会持久化在 `.brainstorm/` 中，不会因服务器重启而丢失。不传的话，文件会保存到 `/tmp` 并在清理时被删除。提醒用户将 `.brainstorm/` 添加到 `.gitignore`（如果尚未添加）。
 
 **按平台启动服务器：**
 
@@ -278,7 +278,7 @@ scripts/start-server.sh \
 scripts/stop-server.sh $SCREEN_DIR
 ```
 
-如果会话使用了 `--project-dir`，原型文件会持久化在 `.superpowers/brainstorm/` 中以供日后参考。只有 `/tmp` 会话会在停止时被删除。
+如果会话使用了 `--project-dir`，原型文件会持久化在 `.brainstorm/` 中以供日后参考。只有 `/tmp` 会话会在停止时被删除。
 
 ## 参考
 
