@@ -9,6 +9,8 @@ Use these templates as starting points. Keep only sections that are useful for t
 
 This `AGENTS.md` governs the repository root and all descendants unless a deeper `AGENTS.md` overrides or narrows the guidance.
 
+Before broad search or repo-wide grep, read `./code_map.md` and use its search anchors to choose targeted files.
+
 ## Project Structure
 - `<dir>/` — <purpose>
 - `<dir>/` — <purpose>
@@ -41,6 +43,8 @@ This `AGENTS.md` governs the repository root and all descendants unless a deeper
 
 This file governs `<package>/**` and overrides root guidance only for this package.
 
+For this subtree, start with `<package>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
+
 ## Package Purpose
 <one-sentence responsibility>
 
@@ -63,6 +67,8 @@ This file governs `<package>/**` and overrides root guidance only for this packa
 
 This file governs `<frontend-path>/**`.
 
+For this subtree, start with `<frontend-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
+
 ## Stack and Entry Points
 - `<src/main>` — app entry
 - `<src/components>` — shared components
@@ -84,6 +90,8 @@ This file governs `<frontend-path>/**`.
 
 This file governs `<backend-path>/**`.
 
+For this subtree, start with `<backend-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
+
 ## Runtime and Entry Points
 - `<entry>` — server start
 - `<routes>` — API routes
@@ -104,6 +112,8 @@ This file governs `<backend-path>/**`.
 
 This file governs `<docs-path>/**`.
 
+For this subtree, start with `<docs-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
+
 ## Source of Truth
 - Content mirrors `<source paths>`.
 - English and Chinese pages must stay structurally aligned when both exist.
@@ -115,6 +125,64 @@ This file governs `<docs-path>/**`.
 ## Style
 - Keep docs concise and example-driven.
 - Update navigation/sidebar when adding pages if required by the docs framework.
+```
+
+## Root code_map.md Template
+
+```markdown
+# Repository Code Map
+
+Use this map for navigation and search routing. Behavioral rules, required commands, and safety constraints live in `AGENTS.md`.
+
+## Top-Level Routing
+- `<dir>/` — <responsibility>; start here for <task type>
+- `<dir>/` — <responsibility>; start here for <task type>
+
+## Key Entrypoints
+- `<path>` — <runtime, CLI, library, or app entry>
+- `<path>` — <configuration or public contract entry>
+
+## Search Anchors
+- `<symbol-or-string>` — <what it locates and when to search for it>
+- `<file-pattern>` — <why it matters>
+
+## Generated, Vendored, and Ignored Paths
+- `<path>/` — generated/build output; do not edit by hand
+- `<path>/` — vendored/third-party/dependency path; skip during guidance creation
+
+## Verification Command Index
+- `<command>` — <scope and expected use>
+- `<command>` — <scope and expected use>
+```
+
+## Nested code_map.md Template
+
+```markdown
+# `<subtree>` Code Map
+
+Use this map for `<subtree>/**` navigation. Behavioral rules and local commands live in this directory's `AGENTS.md` or the nearest parent `AGENTS.md`.
+
+## Subtree Responsibility
+<one-sentence responsibility and why this subtree has its own map>
+
+## Internal Routing
+- `<dir-or-file>` — <responsibility>; start here for <task type>
+- `<dir-or-file>` — <responsibility>; start here for <task type>
+
+## Key Files
+- `<path>` — <entry point, public contract, test fixture, or config>
+- `<path>` — <entry point, public contract, test fixture, or config>
+
+## Upstream and Downstream Boundaries
+- Upstream: `<path-or-package>` provides <contract>
+- Downstream: `<path-or-package>` consumes <contract>
+
+## Local Search Anchors
+- `<symbol-or-string>` — <what it locates>
+- `<file-pattern>` — <what it locates>
+
+## Generated or Ignored Local Paths
+- `<path>/` — <reason to skip or regenerate instead of editing>
 ```
 
 ## OMX Marker Preservation Snippet

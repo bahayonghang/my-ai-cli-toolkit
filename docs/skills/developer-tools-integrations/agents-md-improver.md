@@ -4,14 +4,14 @@
 
 ## 用途概览
 
-Audit and improve Codex AGENTS.md guidance files in repositories.
+Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps in repositories.
 
 ## 触发场景
 
 - the user asks to check, audit, update, optimize, or fix AGENTS.md files
 - asks for Codex project guidance maintenance
-- mentions nested AGENTS.md conflicts, stale commands, scoped instructions, sandbox or approval boundaries
-- or says "优化 AGENTS.md", "审计 AGENTS.md", "检查 nested AGENTS.md", or "更新 Codex 项目指导"
+- mentions nested AGENTS.md conflicts, code maps, stale commands, scoped instructions, sandbox or approval boundaries
+- or says "优化 AGENTS.md", "审计 AGENTS.md", "检查 nested AGENTS.md", "更新 Codex 项目指导", or "生成 code_map.md"
 
 ## 元数据
 

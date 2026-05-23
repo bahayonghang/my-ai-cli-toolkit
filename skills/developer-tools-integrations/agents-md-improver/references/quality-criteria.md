@@ -66,11 +66,38 @@ Use this rubric to score Codex `AGENTS.md` files.
 
 **0**: Mostly filler, template residue, or stale paths.
 
+## Nested AGENTS.md Creation Scorecard (100 points)
+
+Use this scorecard when a repository has a source subtree without local guidance. Score only directories that are not generated, vendored, dependency, cache, or build-output directories.
+
+| Criterion | Weight | Evidence |
+|---|---:|---|
+| Independent commands | 25 | local manifest, test/build/lint/dev command, package script, just target, Make target, or CI fragment |
+| Independent technical or deploy boundary | 20 | separate runtime, service, package, app, plugin, crate, deployable artifact, or language/framework stack |
+| Local constraints | 20 | subtree-specific generated files, style conventions, ownership rules, data contracts, docs sync, or review requirements |
+| Complexity | 15 | enough internal modules, entry points, or cross-file relationships that map-first navigation prevents broad grep |
+| Safety risk | 10 | secrets, credentials, production data, migrations, destructive operations, external services, or privileged tooling |
+| High-frequency or public contract | 10 | commonly edited area, public API, shared schema, CLI surface, plugin/skill contract, or docs users depend on |
+
+Decision thresholds:
+
+- **60-100**: create or update nested `AGENTS.md`; create a local `code_map.md` when navigation differs materially from the root map.
+- **40-59**: list as a candidate in the report; do not create guidance unless the user asks or missing guidance is already causing errors.
+- **0-39**: do not create nested guidance; rely on root `AGENTS.md` and nearest `code_map.md`.
+
+Automatic skip:
+
+- `.git/`, `node_modules/`, `target/`, `dist/`, `build/`, `.omx/state/`, `vendor/`, coverage output, generated site output, package-manager caches, and checked-in third-party source unless the user explicitly asks for recovery guidance there.
+- Directories whose only evidence is file count or obvious names but no local commands, constraints, safety boundary, or public contract.
+
 ## Red Flags
 
 - Commands that do not exist in manifests or justfiles.
 - Stale directory names after repo restructuring.
 - Nested files duplicating root content instead of narrowing it.
+- Creating nested `AGENTS.md` for low-score, generated, vendored, dependency, or build-output directories.
+- `AGENTS.md` files that mention a code map generically without an explicit relative path.
+- `code_map.md` files that contain behavioral constraints that belong in `AGENTS.md`.
 - Provider-specific files such as `CLAUDE.md` described as Codex guidance.
 - Instructions to edit generated/runtime state such as `.omx/state/**` without a recovery reason.
 - Secrets, tokens, production endpoints, or destructive data operations not mentioned.
@@ -81,6 +108,8 @@ Use this rubric to score Codex `AGENTS.md` files.
 
 1. Read every repo `AGENTS.md` in scope.
 2. Build a scope map from root to nested files.
-3. Verify command and path claims against actual files.
-4. Score each criterion and cite concrete evidence.
-5. Propose the smallest changes that improve future Codex sessions.
+3. Read existing `code_map.md` files and verify every `AGENTS.md` map pointer uses an explicit relative path.
+4. Verify command and path claims against actual files.
+5. Score each existing `AGENTS.md` criterion and cite concrete evidence.
+6. Score candidate nested guidance directories with the creation scorecard.
+7. Propose the smallest changes that improve future Codex sessions without adding context noise.
