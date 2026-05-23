@@ -9,6 +9,7 @@ Review a codebase for architectural friction, rank deep-module refactoring oppor
 ## Trigger scenarios
 
 - the user wants to improve architecture, identify refactoring seams, consolidate tightly coupled modules, deepen shallow modules, redesign an interface around a core concept, replace brittle unit tests with boundary tests, or turn an architecture review into an RFC or issue draft
+- Chinese trigger phrases also apply: 架构改进, 抽象太浅, 模块拆得太碎, 接口太多, 测试钉死实现细节, 想写架构 RFC, 这块代码改一改, 模块边界乱
 
 ## Metadata
 
@@ -16,7 +17,7 @@ Review a codebase for architectural friction, rank deep-module refactoring oppor
 | --- | --- |
 | Name | `improve-codebase-architecture` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `1.2.0` |
+| Version | `1.3.0` |
 | Tags | `architecture`, `refactoring`, `testability`, `modularity`, `rfc` |
 
 ## Install command
@@ -29,12 +30,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill improve-codeb
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/improve-codebase-architecture/references` | directory | 1 | Reference material |
+| `skills/development-workflows/improve-codebase-architecture/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/improve-codebase-architecture/references` | directory | 2 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| evals | `skills/development-workflows/improve-codebase-architecture/evals` | Evaluation samples |
 | references | `skills/development-workflows/improve-codebase-architecture/references` | Reference material |
 
 ## Validation

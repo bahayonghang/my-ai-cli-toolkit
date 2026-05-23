@@ -12,12 +12,16 @@ Pure computation, in-memory state, and no I/O.
 - Merge the orchestration and hide the internal helper structure behind one boundary.
 - Test the deepened module directly.
 
+Examples: a pricing calculator that only reads inputs and returns a number; a tokenizer; an in-memory event aggregator with no persistence; a graph traversal helper.
+
 ### 2. Local-substitutable
 
 Dependencies that have realistic local stand-ins, such as an in-memory filesystem or a local database replacement.
 
 - Deepen only if the substitute is good enough to exercise the real behaviors.
 - Prefer boundary tests that run against the substitute instead of unit tests that mock every leaf call.
+
+Examples: filesystem access (production uses real disk, tests use `pyfakefs` or an in-memory FS); SQLite (production on disk, tests with `:memory:`); Redis-like caches with `miniredis` / `fakeredis`; an in-process Kafka substitute for local tests.
 
 ### 3. Remote but owned
 
@@ -30,6 +34,8 @@ Your own services or transports across a network boundary.
 Recommendation shape:
 "Define a shared port, implement the production transport separately, and test the deep module through an in-memory adapter."
 
+Examples: a wrapper around your team's internal gRPC service; a client SDK that talks to a REST API your company owns; a producer for an internally hosted Kafka cluster; the cache layer in front of your own service. The transport crosses a network boundary, but you control both ends of the contract.
+
 ### 4. True external
 
 Third-party services you do not control.
@@ -37,6 +43,8 @@ Third-party services you do not control.
 - Treat the third party as a boundary dependency.
 - Inject a port for the external behavior and use a mock or fake in tests.
 - Keep the external API details out of the main domain interface whenever possible.
+
+Examples: Stripe, Twilio, or OpenAI APIs; AWS S3 or GCP Cloud Storage; third-party OAuth providers such as Google or GitHub; a partner's webhook endpoint. You only see the published surface and cannot influence breaking changes.
 
 ## Candidate evaluation
 
@@ -68,7 +76,13 @@ State how confident you are in the recommendation.
 
 Use `High`, `Medium`, or `Low` and explain why. Confidence should reflect the quality of evidence, not optimism.
 
-Good evidence:
+Calibration anchors:
+
+- **High** — direct call-chain tracing across all known sites, friction reproduced first-hand, and at least one existing test or bug report already pointing at the seam.
+- **Medium** — friction pattern is clear but call sites are not fully enumerated, or a key assumption (third-party behavior, hidden caller semantics, performance shape) is still unverified. Often: "a similar refactor worked elsewhere, not yet validated here."
+- **Low** — single-point observation, no first-hand reproduction, or the recommendation rests mainly on "in theory this should be cleaner."
+
+Good evidence to point at when claiming High:
 - Direct call-chain tracing
 - Repeated friction while exploring the same concept
 - Existing tests that expose the seam

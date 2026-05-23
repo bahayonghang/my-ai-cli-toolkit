@@ -39,3 +39,5 @@ node_modules/
 # VitePress docs site
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+
+.plannings/

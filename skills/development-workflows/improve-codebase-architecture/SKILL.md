@@ -1,7 +1,7 @@
 ---
 name: improve-codebase-architecture
-description: Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies. Use when the user wants to improve architecture, identify refactoring seams, consolidate tightly coupled modules, deepen shallow modules, redesign an interface around a core concept, replace brittle unit tests with boundary tests, or turn an architecture review into an RFC or issue draft.
-version: 1.2.0
+description: "Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies. Use when the user wants to improve architecture, identify refactoring seams, consolidate tightly coupled modules, deepen shallow modules, redesign an interface around a core concept, replace brittle unit tests with boundary tests, or turn an architecture review into an RFC or issue draft. Chinese trigger phrases also apply: 架构改进, 抽象太浅, 模块拆得太碎, 接口太多, 测试钉死实现细节, 想写架构 RFC, 这块代码改一改, 模块边界乱."
+version: 1.3.0
 category: development-workflows
 tags:
   - architecture
@@ -15,7 +15,7 @@ allowed-tools: Read, Glob, Grep, Bash, Write, Agent
 
 # Improve Codebase Architecture
 
-Find architectural friction the way a future maintainer or coding agent experiences it. Favor deep modules: a small interface hiding substantial implementation complexity.
+Find architectural friction the way a future maintainer or coding agent experiences it. Favor deep modules: a small interface hiding substantial implementation complexity. The deep-module idea comes from Ousterhout's *A Philosophy of Software Design* — use it as the bar for "is this module worth carving out," not as decoration.
 
 Read `$SKILL_DIR/references/deepening-guide.md` before classifying dependencies, judging test strategy, or drafting the RFC.
 
@@ -42,7 +42,7 @@ Read `$SKILL_DIR/references/deepening-guide.md` before classifying dependencies,
    - Non-goals
    - Likely failure modes
    - A rough illustrative code sketch that grounds the constraints without committing to a design
-7. Design 2-4 materially different interfaces.
+7. Design 2-4 materially different interfaces. If time or evidence is short, one well-grounded design beats two strawmen — do not pad the count.
    - With subagents: give each one a distinct design goal.
    - Without subagents: produce the same diversity of designs yourself, one by one.
    - Useful design goals:
@@ -59,13 +59,14 @@ Read `$SKILL_DIR/references/deepening-guide.md` before classifying dependencies,
    6. Failure modes
    7. Migration shape
 9. Compare the designs in prose, then give a clear recommendation. If a hybrid is best, say exactly which parts should be combined.
-10. Draft the RFC as Markdown using the template in `$SKILL_DIR/references/deepening-guide.md`.
-11. Save the draft locally as `./architecture-rfc-<candidate-slug>.md`.
+10. Draft the RFC as Markdown using the template in `$SKILL_DIR/references/deepening-guide.md`. See `$SKILL_DIR/references/example-rfc.md` for a worked example showing how each template section connects in a real (small) case — read it for shape, not for content to copy.
+11. Save the draft locally. Default to `.plannings/architecture-rfc-<candidate-slug>.md`; if `.plannings/` does not exist, create it. Ask the user before writing anywhere else, and never default to the repository root — root files get lost and pollute diffs.
 12. Only create a GitHub issue if all of these are true:
    - The user explicitly asks for an issue
    - `gh` is installed and authenticated
    - The draft is already complete
-   Otherwise, return the Markdown draft and the suggested `gh issue create` next step without executing it.
+
+   If any condition fails, do not silently skip. Return the full Markdown draft (already saved locally), a ready-to-paste issue body, and the suggested `gh issue create` command so the user can finish via web UI or shell when they choose.
 
 ## Working heuristics
 
