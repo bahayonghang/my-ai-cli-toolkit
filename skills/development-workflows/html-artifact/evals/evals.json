@@ -1,0 +1,73 @@
+{
+  "skill_name": "html-artifact",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "把这个迁移方案做成可在浏览器审阅的实施计划 artifact。需要阶段、风险、验证和回滚。",
+      "expected_output": "Uses Strategy Blueprint, writes one self-contained HTML artifact, includes phases, risk register, verification checklist, and rollback plan, then runs the validator.",
+      "files": [],
+      "expectations": [
+        "The response chooses Strategy Blueprint for an implementation plan.",
+        "The created artifact is a single self-contained HTML file with no remote dependencies.",
+        "The artifact includes milestones, risks, verification, and rollback sections.",
+        "The validator command is run and reported."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review 当前 diff，生成 HTML 代码审查报告，按阻塞/建议/仅供参考分类。",
+      "expected_output": "Uses Review Workbench, summarizes changed files, lists findings with severity and locations, includes test coverage/gaps, and avoids pasting huge raw diffs.",
+      "files": [],
+      "expectations": [
+        "The response chooses Review Workbench for a code review report.",
+        "Findings include severity, location, impact, and suggested fix.",
+        "Diff excerpts are short and annotated rather than full raw diffs.",
+        "The report includes test coverage or verification gaps."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "调研三种队列方案并给一个决策页面，标注证据和推断。",
+      "expected_output": "Combines Decision Matrix Studio with Evidence Dossier, includes source table, separates evidence from inference, and recommends one option with tradeoffs.",
+      "files": [],
+      "expectations": [
+        "The response combines decision matrix and evidence dossier sections.",
+        "The artifact includes a source table with confidence or source type.",
+        "Evidence and inference are explicitly separated.",
+        "A recommendation is made with tradeoffs and revisit triggers."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "给我做一个临时 JSON 配置编辑器页面，可以预览、校验、复制 JSON 和 Markdown。",
+      "expected_output": "Uses Interactive Editor, keeps validation local, offers preview/copy/export actions, and does not perform network requests.",
+      "files": [],
+      "expectations": [
+        "The response chooses Interactive Editor for a local structured-data editor.",
+        "Validation is local-only and does not use network APIs.",
+        "The artifact includes input, preview, validation, and export areas.",
+        "Copy/export actions include JSON and Markdown."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "写一个 git commit message。",
+      "expected_output": "Does not create an HTML artifact and answers in plain text or Markdown.",
+      "files": [],
+      "expectations": [
+        "The response does not create an HTML artifact.",
+        "The response stays concise and uses commit-message text."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "总结这次小 bug 修复改了什么。",
+      "expected_output": "Does not create an HTML artifact unless explicitly requested and keeps a concise Markdown summary.",
+      "files": [],
+      "expectations": [
+        "The response does not create an HTML artifact unless explicitly requested.",
+        "The response gives a concise summary in Markdown/plain text."
+      ]
+    }
+  ]
+}

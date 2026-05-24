@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、20 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、21 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -29,12 +29,13 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 开发工作流
 
-`development-workflows` · 6 skills
+`development-workflows` · 7 skills
 
 - [brainstorming-baha](/skills/development-workflows/brainstorming-baha) — 当用户想要 brainstorm 一个想法、设计 feature 或 spec 时使用。通过对话探索意图与需求，然后将 spec 文档写入 .brainstorm/ 并 STOP。不会自动接 implementation planning 或任何其他技能。
 - [code-auditor](/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture, with language-specific guidance and human-readable findings.
 - [cold-shower](/skills/development-workflows/cold-shower) — Challenge ideas, requirements, technical plans, products, pricing, markets, pitch/BP narratives, and major personal decisions with a no-flattery adversarial review.
 - [handoff](/skills/development-workflows/handoff) — Use when the user wants to compact context before auto-compaction kicks in, hand off an unfinished task to a fresh session, switch topics mid-stream and preserve state, or pick up yesterday's work in a new conversation.
+- [html-artifact](/skills/development-workflows/html-artifact) — Create single-file, self-contained HTML artifacts for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
 - [implementation-notes](/skills/development-workflows/implementation-notes) — Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding.
 - [improve-codebase-architecture](/skills/development-workflows/improve-codebase-architecture) — Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies.
 
