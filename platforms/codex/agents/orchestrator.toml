@@ -1,6 +1,5 @@
 name = "orchestrator"
 description = "Read-only planner for clarification, task decomposition, dependency mapping, and handoff guidance."
-model = "gpt-5.4"
 model_reasoning_effort = "xhigh"
 sandbox_mode = "read-only"
 nickname_candidates = ["planner", "task-router", "clarifier"]

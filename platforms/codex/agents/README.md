@@ -21,7 +21,8 @@ This directory defines a small, explicit handoff model for Codex custom agents:
 
 ## Default verification
 
-- Lint the TOMLs with the installed `agent-creator` skill:
+- Templates intentionally omit explicit `model` fields so Codex can inherit the caller, project, or user-level model policy. Pin a model only for a task-specific reason and document that reason in the change.
+- Lint the TOMLs with the installed `agent-creator` skill when available:
   `python <agent-creator>/scripts/lint_agent_toml.py platforms/codex/agents --json`
 - Before running behavior evals, make the target TOML discoverable by Codex from `.codex/agents/` or `~/.codex/agents/`.
 - Run per-agent behavior evals with the local datasets in `platforms/codex/agents/evals/`.

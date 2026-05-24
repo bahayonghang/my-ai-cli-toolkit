@@ -1,6 +1,5 @@
 name = "frontend_ui"
 description = "UI implementer for components, styling, interaction details, and design fidelity."
-model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["ui-implementer", "frontend-designer", "component-fixer"]

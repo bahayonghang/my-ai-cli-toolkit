@@ -1,6 +1,5 @@
 name = "coder"
 description = "Implementer for code changes, bug fixes, and tightly scoped verification."
-model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["implementer", "fixer", "code-writer"]
