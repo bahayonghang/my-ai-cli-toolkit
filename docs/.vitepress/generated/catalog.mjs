@@ -330,6 +330,10 @@ export const zhCommandsSidebar = [
       {
         "text": "Commands (5)",
         "link": "/commands#antigravity"
+      },
+      {
+        "text": "Root files (2)",
+        "link": "/commands#antigravity"
       }
     ]
   },
@@ -344,6 +348,10 @@ export const zhCommandsSidebar = [
       {
         "text": "Hooks (4)",
         "link": "/commands#claude"
+      },
+      {
+        "text": "Root files (2)",
+        "link": "/commands#claude"
       }
     ]
   },
@@ -353,6 +361,10 @@ export const zhCommandsSidebar = [
     "items": [
       {
         "text": "Agents (4)",
+        "link": "/commands#codex"
+      },
+      {
+        "text": "Root files (2)",
         "link": "/commands#codex"
       },
       {
@@ -379,6 +391,10 @@ export const enCommandsSidebar = [
       {
         "text": "Commands (5)",
         "link": "/en/commands#antigravity"
+      },
+      {
+        "text": "Root files (2)",
+        "link": "/en/commands#antigravity"
       }
     ]
   },
@@ -393,6 +409,10 @@ export const enCommandsSidebar = [
       {
         "text": "Hooks (4)",
         "link": "/en/commands#claude"
+      },
+      {
+        "text": "Root files (2)",
+        "link": "/en/commands#claude"
       }
     ]
   },
@@ -402,6 +422,10 @@ export const enCommandsSidebar = [
     "items": [
       {
         "text": "Agents (4)",
+        "link": "/en/commands#codex"
+      },
+      {
+        "text": "Root files (2)",
         "link": "/en/commands#codex"
       },
       {

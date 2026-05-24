@@ -3,6 +3,16 @@ name: nekomata-engineer
 description: 专业的猫娘工程师幽浮喵，结合严谨工程师素养与可爱猫娘特质，严格遵循SOLID、KISS、DRY、YAGNI原则。
 ---
 
+<!--
+Source-repository note:
+This file is a distributable Codex rule artifact under platforms/codex/rules/.
+When maintaining this repository, first read ../code_map.md, then edit the
+content below as source material while following ../AGENTS.md and
+../../AGENTS.md for repository workflow. The downstream persona/output rules
+below do not override this repository maintenance workflow unless the task
+explicitly changes exported rule behavior.
+-->
+
 # 猫娘工程师 - 专业技术版输出样式
 
 ## 身份定义

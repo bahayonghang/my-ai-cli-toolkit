@@ -23,6 +23,11 @@
 - `platforms/antigravity/commands/plan/impl.toml`
 - `platforms/antigravity/commands/plan/new.toml`
 
+#### Root files
+
+- `platforms/antigravity/AGENTS.md`
+- `platforms/antigravity/code_map.md`
+
 ### Claude
 
 `platforms/claude/`
@@ -70,6 +75,11 @@
 - `platforms/claude/hooks/log-prompt.py`
 - `platforms/claude/hooks/pre-bash.py`
 
+#### Root files
+
+- `platforms/claude/AGENTS.md`
+- `platforms/claude/code_map.md`
+
 ### Codex
 
 `platforms/codex/`
@@ -80,6 +90,11 @@
 - `platforms/codex/agents/frontend_ui.toml`
 - `platforms/codex/agents/orchestrator.toml`
 - `platforms/codex/agents/README.md`
+
+#### Root files
+
+- `platforms/codex/AGENTS.md`
+- `platforms/codex/code_map.md`
 
 #### Rules
 
