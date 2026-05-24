@@ -40,4 +40,5 @@ node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
 
+.planning/
 .plannings/
