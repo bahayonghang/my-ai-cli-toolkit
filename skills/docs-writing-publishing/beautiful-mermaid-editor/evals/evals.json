@@ -1,0 +1,48 @@
+{
+  "skill_name": "beautiful-mermaid-editor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "去 Beautiful Mermaid 仓库里给编辑器加一个新的 node border 颜色配置项，入口应该在配置面板，顺便确认 editor.html 要不要提交。",
+      "expected_output": "Loads the editor-maintenance workflow, reads the target repo/source first, routes through config-pattern guidance, and explicitly treats editor.ts as the source of truth before deciding whether regenerated editor.html belongs in the diff.",
+      "files": [],
+      "assertions": [
+        "The response starts by locating the Beautiful Mermaid repo root and current editor source.",
+        "The response treats editor.ts as the source of truth rather than directly editing editor.html.",
+        "The response identifies the config/control change path and mentions rebuild or generated-artifact review."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "帮我排查 Beautiful Mermaid 的 PNG 导出和复制图片为什么跟预览颜色不一致，重点看 SVG/PNG/clipboard 这三条路径。",
+      "expected_output": "Loads architecture plus verification guidance, inspects preview/export/clipboard paths separately, and proposes verification that compares preview styling with PNG/SVG/clipboard output.",
+      "files": [],
+      "assertions": [
+        "The response routes through export or clipboard architecture rather than generic Mermaid writing advice.",
+        "The response distinguishes preview, PNG export, SVG export, and clipboard behavior as separate verification targets.",
+        "The response includes rebuild plus browser smoke-check expectations."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "把 Beautiful Mermaid 编辑器的 dark mode 和 zoom 行为调顺，要求手动选主题后不要再被自动模式覆盖，而且缩放后重新渲染不能跳回 100%。",
+      "expected_output": "Loads theme/dark-mode and zoom guidance, preserves auto-vs-manual theme semantics, and keeps zoom as state reapplied after rerender instead of switching to CSS transform hacks.",
+      "files": [],
+      "assertions": [
+        "The response identifies the manual-theme versus auto-theme invariant.",
+        "The response treats zoom persistence across rerenders as a core behavior to preserve.",
+        "The response avoids suggesting direct CSS transform scaling as the primary zoom fix."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "给我写一段 Mermaid 流程图，描述用户注册到邮件验证的流程。",
+      "expected_output": "Negative trigger. The skill should not activate as an editor-maintenance workflow for ordinary Mermaid authoring.",
+      "files": [],
+      "assertions": [
+        "The skill description should not pull ordinary Mermaid syntax or diagram-writing requests into this editor-maintenance workflow.",
+        "If referenced, the response should redirect to normal Mermaid writing rather than editor.ts/editor.html maintenance steps."
+      ]
+    }
+  ]
+}
