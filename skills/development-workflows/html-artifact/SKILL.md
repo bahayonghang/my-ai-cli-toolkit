@@ -47,6 +47,33 @@ Every artifact must be:
 - **Accessible**: skip link, visible focus state, keyboard-operable controls, text alternatives for diagrams, color plus text for status, and `prefers-reduced-motion` support.
 - **Reviewable**: structure content into navigable sections, cards, tables, timelines, or diagrams; do not dump raw long Markdown into a styled box.
 
+## Design escalation
+
+When the artifact is report-like, decision-making, comparison-heavy, deck-like, likely to be screenshotted/shared, or intended for senior review, make the design pass explicit before writing HTML. Use the `$frontend-design` method as an upstream thinking step, then translate it into offline artifact constraints.
+
+Make these four decisions:
+
+1. **Visual direction** — choose one: `editorial`, `dashboard`, `dossier`, `deck`, or `workbench`.
+2. **Memory hook** — one memorable visual motif, such as split hero, evidence rail, diagram frame, accent lane, thesis board, or compact cockpit.
+3. **Density strategy** — choose `spacious presentation`, `medium-density report`, or `high-density cockpit`.
+4. **Diagram strategy** — choose `table-first`, `card-first`, `inline-SVG-first`, or `HTML-lane-first`.
+
+Translate frontend-design principles into this skill's hard constraints:
+
+- Do not use remote fonts. Pick a local-safe font theme instead: editorial serif/sans, technical grotesk/mono, or warm dossier humanist.
+- Use composition and hierarchy instead of dependencies: background layers, contrast, borders, shadows, whitespace, asymmetry, rails, and local emphasis.
+- Avoid generic AI artifact layouts: a centered giant heading, a row of pills, and uniform full-width cards is not enough.
+- Do not use generic `auto-fit` grids when the item count is known. Explicitly compose 5 cards as `3+2` and 7 cards as `4+3` at desktop widths.
+- Do not make every card equally loud; establish primary, secondary, and supporting visual weights.
+
+### Design anti-patterns to avoid
+
+- Full-width hero with no secondary information area, thesis board, diagram, or visual anchor.
+- Known 5-card or 7-card sections using `repeat(auto-fit, ...)` and producing orphan rows such as `4+1`.
+- Tables with only default borders and headers, where recommendations, conclusion columns, evidence columns, or key rows are not visually discoverable.
+- Roadmaps, relationships, or architectures presented only as stacked text blocks when a lane, flow, timeline, or SVG diagram would be clearer.
+- Raw Mermaid text as the primary visual expression in the final artifact.
+
 ## Template selection
 
 Load `references/template-selection.md` when choosing a template. Use the first matching primary goal, then combine secondary sections if needed.
@@ -67,18 +94,41 @@ Load `references/template-selection.md` when choosing a template. Use the first 
 ## Creation workflow
 
 1. Clarify the artifact purpose and choose a template.
-2. Load only the needed template reference under `references/templates/` plus `references/accessibility-and-security.md` when relevant.
-3. Choose or create an output path. Prefer `docs/artifacts/<slug>.html` unless the user gives a path.
-4. Build the HTML using `assets/starter-template.html` as the copyable baseline, not as a remote dependency.
-5. Add only small vanilla JS for local filtering, copy buttons, details toggles, keyboard navigation, or validation.
-6. Run the validator:
+2. If design escalation applies, decide visual direction, memory hook, density, and diagram strategy before drafting markup.
+3. Load only the needed template reference under `references/templates/` plus `references/accessibility-and-security.md` when relevant. Load `references/diagram-cookbook.md` for roadmaps, flows, dependency lanes, or architecture diagrams.
+4. Choose or create an output path. Prefer `docs/artifacts/<slug>.html` unless the user gives a path.
+5. Build the HTML using `assets/starter-template.html` as the copyable baseline, not as a remote dependency.
+6. Add only small vanilla JS for local filtering, copy buttons, details toggles, keyboard navigation, or validation.
+7. Run the validator:
 
 ```bash
 python skills/development-workflows/html-artifact/scripts/check_html_artifact.py <artifact.html>
 ```
 
-7. Fix validation failures and rerun. If warnings remain, either fix them or report why they are acceptable.
-8. Final response: give the artifact path, validation result, and usage notes. Do not paste the full HTML unless requested.
+8. Fix validation failures and rerun. If warnings remain, either fix them or report why they are acceptable.
+9. For high-information-density artifacts, run the manual design review checklist in `references/design-review-checklist.md`.
+10. Final response: give the artifact path, validation result, design review result when used, and usage notes. Do not paste the full HTML unless requested.
+
+## Layout primitives
+
+The starter template includes reusable primitives. Prefer these over ad-hoc CSS for common artifact problems:
+
+- **Hero variants**: `hero--split` for left conclusion plus right thesis board/meta cluster; `hero--compact` when no right-side material exists; `hero--deck` for executive readouts.
+- **Finite grids**: `grid-2`, `grid-3`, `grid-4`, `grid-5-balanced` (`3+2` desktop), and `grid-7-balanced` (`4+3` desktop). All grid children should tolerate long mixed-language text.
+- **Tables**: `table--matrix`, `table--evidence`, and `table--decision`; use `is-recommended`, `key-row`, `verdict-column`, or `evidence-column` to make conclusions scannable.
+- **Diagram frames**: `figure.diagram-frame` with inline SVG, timeline/phase lanes, or structured HTML diagrams; always include `figcaption` and a text equivalent list or table.
+
+## Diagram strategy
+
+Mermaid can be an input sketch, but static SVG or clear HTML must be the final artifact output.
+
+Preferred order:
+
+1. If a future local Mermaid-to-SVG workflow is available, export static SVG and inline it.
+2. Otherwise generate inline SVG directly.
+3. If SVG is not suitable, build a structured HTML timeline, step lane, dependency list, or comparison diagram.
+
+Do not leave raw Mermaid syntax as the main visual expression. Even when the user provides Mermaid, convert the idea into static SVG or a readable HTML diagram with text equivalents.
 
 ## Required checks
 
@@ -99,6 +149,8 @@ Keep this entrypoint small. Load detailed references only as needed:
 
 - `references/template-selection.md` — template selection and combination rules.
 - `references/accessibility-and-security.md` — offline, accessibility, privacy, and validation rules.
+- `references/design-review-checklist.md` — manual visual QA for high-information-density artifacts.
+- `references/diagram-cookbook.md` — inline SVG and HTML diagram recipes.
 - `references/templates/strategy-blueprint.md` — implementation plans and PRDs.
 - `references/templates/review-workbench.md` — code review and PR reports.
 - `references/templates/architecture-atlas.md` — architecture and data-flow explainers.

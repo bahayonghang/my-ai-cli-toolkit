@@ -68,6 +68,45 @@
         "The response does not create an HTML artifact unless explicitly requested.",
         "The response gives a concise summary in Markdown/plain text."
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "把 VibeDeck 和 ccr-ui 的分析做成一个 HTML artifact：要有主要特色、对比矩阵、建议路线图，给高层看。",
+      "expected_output": "Uses Evidence Dossier + Decision Matrix Studio, applies design escalation, creates a split hero, balances five feature cards as 3+2, emphasizes the recommendation/evidence in the matrix, and presents the roadmap as a diagram or lane rather than plain stacked cards.",
+      "files": [],
+      "expectations": [
+        "The artifact uses a split hero with a right-side thesis board, evidence rail, or meta cluster so the header has no meaningless dead area.",
+        "The VibeDeck feature section with five cards uses a stable 3+2 desktop layout such as grid-5-balanced, not a generic auto-fit 4+1 layout.",
+        "The comparison matrix uses table--matrix or equivalent emphasis for recommendation, evidence, verdict, or key rows.",
+        "The suggested roadmap is rendered as inline SVG or a structured HTML lane with a text equivalent, not only as stacked text cards.",
+        "Long mixed Chinese/English labels and code-like chips wrap without card overflow."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "为一个面向 CTO 的高层实施计划生成 HTML 页面：需要一句结论、阶段路线图、风险表、验证命令和回滚策略。",
+      "expected_output": "Uses Strategy Blueprint with an executive design pass, provides a focused hero, diagram-first phase roadmap, emphasized risk/decision tables, verification commands, rollback, validator result, and design checklist review.",
+      "files": [],
+      "expectations": [
+        "The artifact uses hero--split or hero--deck with status/date/risk/verification metadata rather than an empty full-width hero.",
+        "The roadmap appears as inline SVG or HTML phase lanes before detailed phase prose.",
+        "The risk table highlights critical/key rows and makes mitigation or trigger columns visually scannable.",
+        "The artifact includes validation commands and expected evidence.",
+        "The response reports the HTML validator and references the manual design review checklist for visual QA."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "做一个架构解释 HTML artifact，说明从旧同步架构迁移到事件驱动架构的 before/after、数据流、失败路径和观测信号。",
+      "expected_output": "Uses Architecture Atlas, starts diagram-first with inline SVG before/after or data-flow diagrams, includes text equivalents, component cards, failure-mode table, and observability signals.",
+      "files": [],
+      "expectations": [
+        "The artifact chooses Architecture Atlas and starts with a diagram-first section, not a prose-only component list.",
+        "The before/after or data-flow view is inline SVG inside a diagram-frame or an equivalent structured HTML diagram.",
+        "Every diagram includes figcaption plus a nearby ordered list or table that provides a text equivalent.",
+        "If there are exactly seven components, the component grid uses a balanced 4+3 desktop layout such as grid-7-balanced.",
+        "Failure modes and observability signals are organized in emphasized tables or cards."
+      ]
     }
   ]
 }

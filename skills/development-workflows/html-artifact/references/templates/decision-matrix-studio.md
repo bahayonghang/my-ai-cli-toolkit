@@ -19,6 +19,17 @@ There is no meaningful alternative, or the user asked for implementation only.
 ## Visual direction
 Bento comparison grid with consistent option card anatomy; recommended options may use light accent but must not overwhelm evidence.
 
+## Recommended layout primitives
+- **Hero**: `hero--split` for decision question + recommendation, with a right-side thesis board containing confidence, decision owner, date, and revisit trigger. Use `hero--compact` only for narrow ADRs with no useful side evidence.
+- **Cards**: use `grid-3` or `grid-4` for option galleries. Use `grid-5-balanced` when comparing exactly five product/design features or criteria.
+- **Tables**: use `table--matrix` for scoring and `table--decision` for ADR summaries. Use `is-recommended`, `key-row`, `verdict-column`, and `evidence-column` so the recommendation can be scanned before reading every score.
+- **Diagrams/SVG**: use a diagram frame for decision flows, tradeoff frontiers, migration paths, or recommendation roadmaps.
+
+## Emphasis rules
+- Put two or three conclusion cards before dense matrices: recommendation, deciding evidence, and revisit trigger.
+- The winning option must be labeled in text, not only with color.
+- Avoid equal-weight option cards when the artifact already has a recommendation; make the recommended path visually primary while preserving neutral evidence.
+
 ## Core components
 Option cards, criteria chips, score matrix, tradeoff callouts, and ADR summary block.
 

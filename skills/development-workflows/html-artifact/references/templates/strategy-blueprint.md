@@ -19,6 +19,17 @@ The user only needs a tiny checklist, simple command list, or commit message.
 ## Visual direction
 Light editorial layout with bento summary cards, left sticky TOC, readable prose width, calm accent color, and status pills that include text labels.
 
+## Recommended layout primitives
+- **Hero**: `hero--split` for high-stakes implementation plans, with goal/scope on the left and a meta cluster on the right (status, owner, target date, risk, verification gate). Use `hero--deck` for executive implementation readouts and `hero--compact` only when no right-side material exists.
+- **Cards**: use `grid-3` for TL;DR conclusions and `grid-5-balanced` for exactly five workstreams/features so desktop layouts do not become 4+1.
+- **Tables**: use `table--decision` for decision logs and `table--matrix` for risk or option tradeoffs. Highlight blocked/key rows with `key-row`, and put the final meaning in a `verdict-column`.
+- **Diagrams/SVG**: prefer a diagram frame for phase roadmaps, dependency lanes, rollout paths, and rollback flows. A roadmap should not be a plain stack of cards when sequence or dependency matters.
+
+## Roadmap expectations
+- For executive plans, show a visual phase lane or inline SVG before detailed phase notes.
+- Include a text equivalent list under the diagram with deliverable, validation evidence, and rollback signal for each phase.
+- Put the most important risk or success criterion in the hero rail so the page has a right-side focal point.
+
 ## Core components
 Summary grid, timeline, decision table, risk register, callouts, and copy-checklist button.
 

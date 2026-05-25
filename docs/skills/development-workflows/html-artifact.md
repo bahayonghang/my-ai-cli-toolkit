@@ -32,7 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill html-artifact
 | --- | --- | ---: | --- |
 | `skills/development-workflows/html-artifact/assets` | 目录 | 1 | 素材资源 |
 | `skills/development-workflows/html-artifact/evals` | 目录 | 2 | 评测样例 |
-| `skills/development-workflows/html-artifact/references` | 目录 | 12 | 引用资料 |
+| `skills/development-workflows/html-artifact/references` | 目录 | 14 | 引用资料 |
 | `skills/development-workflows/html-artifact/scripts` | 目录 | 1 | 可执行脚本 |
 | `skills/development-workflows/html-artifact/tests` | 目录 | 1 | 自动化测试 |
 

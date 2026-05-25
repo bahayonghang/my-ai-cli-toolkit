@@ -1,6 +1,6 @@
 # evals
 
-Test prompts for the `html-artifact` skill. Used to validate triggering and template selection.
+Test prompts for the `html-artifact` skill. Used to validate triggering, template selection, and the manual design quality expectations that turn a usable artifact into a designed report page.
 
 ## Schema
 
@@ -20,5 +20,18 @@ If you wire these evals into the upstream `eval-viewer/generate_review.py` pipel
 | 4 | Local JSON config editor with preview/export | yes | Interactive Editor |
 | 5 | Plain git commit message | no | — |
 | 6 | Short bug-fix summary | no | — |
+| 7 | VibeDeck vs ccr-ui executive analysis regression | yes | Evidence Dossier + Decision Matrix Studio |
+| 8 | Executive implementation plan with visual roadmap | yes | Strategy Blueprint |
+| 9 | Before/after architecture explainer | yes | Architecture Atlas |
 
 Ids 1–4 verify positive triggering and correct template selection. Ids 5–6 verify the skill does **not** trigger for short transactional outputs.
+
+Ids 7–9 are design-regression prompts. They are intentionally human-judgeable:
+
+- hero has no large meaningless blank zone;
+- known five-card sections do not become 4+1 on desktop;
+- long Chinese/English/code-like labels do not overflow cards;
+- tables make recommendation, evidence, or verdict visible before detail reading;
+- roadmaps/architecture use inline SVG or structured HTML diagrams with text equivalents.
+
+Use `references/design-review-checklist.md` for qualitative review. Keep `scripts/check_html_artifact.py` limited to objective structure, offline safety, and baseline accessibility checks.
