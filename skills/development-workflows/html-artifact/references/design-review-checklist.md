@@ -6,6 +6,7 @@ Use this manual checklist for high-information-density HTML artifacts after the 
 
 Review at least these widths when practical:
 
+- Wide desktop: 1920 px
 - Desktop: 1440 px and 1280 px
 - Tablet: 768 px
 - Mobile: 390 px
@@ -13,6 +14,7 @@ Review at least these widths when practical:
 ## Composition
 
 - Hero has a clear focal point: split thesis board, meta cluster, diagram, evidence rail, or compact bounded width.
+- The outer shell meaningfully occupies desktop width; if the page includes a TOC, sidebar, thesis rail, or dense comparison area, it should not sit inside an arbitrary ~1100–1300 px cap unless that compactness is intentional.
 - There is no large meaningless blank area caused by an over-wide full-width hero or over-narrow title block.
 - The first screen communicates audience, purpose, and current recommendation/status.
 - The page has one memorable visual motif rather than generic centered title + pills + uniform cards.

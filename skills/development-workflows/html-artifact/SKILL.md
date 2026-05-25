@@ -62,6 +62,7 @@ Translate frontend-design principles into this skill's hard constraints:
 
 - Do not use remote fonts. Pick a local-safe font theme instead: editorial serif/sans, technical grotesk/mono, or warm dossier humanist.
 - Use composition and hierarchy instead of dependencies: background layers, contrast, borders, shadows, whitespace, asymmetry, rails, and local emphasis.
+- Use desktop width deliberately. For report, dossier, deck, or workbench artifacts with a TOC, sidebar, thesis rail, or comparison area, let the outer shell expand fluidly across large screens instead of capping the whole page at an arbitrary narrow width such as ~1100–1300 px. A responsive shell in the rough 1400–1800 px range is the default unless the page is intentionally compact.
 - Avoid generic AI artifact layouts: a centered giant heading, a row of pills, and uniform full-width cards is not enough.
 - Do not use generic `auto-fit` grids when the item count is known. Explicitly compose 5 cards as `3+2` and 7 cards as `4+3` at desktop widths.
 - Do not make every card equally loud; establish primary, secondary, and supporting visual weights.
@@ -69,6 +70,7 @@ Translate frontend-design principles into this skill's hard constraints:
 ### Design anti-patterns to avoid
 
 - Full-width hero with no secondary information area, thesis board, diagram, or visual anchor.
+- A globally centered shell capped around ~1100–1300 px on wide desktop screens when the page also has a TOC, sidebar, thesis rail, or dense comparison content.
 - Known 5-card or 7-card sections using `repeat(auto-fit, ...)` and producing orphan rows such as `4+1`.
 - Tables with only default borders and headers, where recommendations, conclusion columns, evidence columns, or key rows are not visually discoverable.
 - Roadmaps, relationships, or architectures presented only as stacked text blocks when a lane, flow, timeline, or SVG diagram would be clearer.
@@ -113,6 +115,7 @@ python skills/development-workflows/html-artifact/scripts/check_html_artifact.py
 
 The starter template includes reusable primitives. Prefer these over ad-hoc CSS for common artifact problems:
 
+- **Outer shell**: keep the main page shell fluid on desktop; use responsive gutters plus a generous max width, and reserve intentionally narrow compositions for prose-only pages or `hero--compact`.
 - **Hero variants**: `hero--split` for left conclusion plus right thesis board/meta cluster; `hero--compact` when no right-side material exists; `hero--deck` for executive readouts.
 - **Finite grids**: `grid-2`, `grid-3`, `grid-4`, `grid-5-balanced` (`3+2` desktop), and `grid-7-balanced` (`4+3` desktop). All grid children should tolerate long mixed-language text.
 - **Tables**: `table--matrix`, `table--evidence`, and `table--decision`; use `is-recommended`, `key-row`, `verdict-column`, or `evidence-column` to make conclusions scannable.

@@ -75,6 +75,7 @@
       "expected_output": "Uses Evidence Dossier + Decision Matrix Studio, applies design escalation, creates a split hero, balances five feature cards as 3+2, emphasizes the recommendation/evidence in the matrix, and presents the roadmap as a diagram or lane rather than plain stacked cards.",
       "files": [],
       "expectations": [
+        "At desktop widths, the outer shell expands fluidly and does not stay trapped inside a narrow centered cap when the page includes navigation and a right-side thesis board.",
         "The artifact uses a split hero with a right-side thesis board, evidence rail, or meta cluster so the header has no meaningless dead area.",
         "The VibeDeck feature section with five cards uses a stable 3+2 desktop layout such as grid-5-balanced, not a generic auto-fit 4+1 layout.",
         "The comparison matrix uses table--matrix or equivalent emphasis for recommendation, evidence, verdict, or key rows.",
@@ -88,6 +89,7 @@
       "expected_output": "Uses Strategy Blueprint with an executive design pass, provides a focused hero, diagram-first phase roadmap, emphasized risk/decision tables, verification commands, rollback, validator result, and design checklist review.",
       "files": [],
       "expectations": [
+        "At desktop widths, the page shell uses the available viewport with responsive gutters instead of centering the entire artifact inside a narrow cap.",
         "The artifact uses hero--split or hero--deck with status/date/risk/verification metadata rather than an empty full-width hero.",
         "The roadmap appears as inline SVG or HTML phase lanes before detailed phase prose.",
         "The risk table highlights critical/key rows and makes mitigation or trigger columns visually scannable.",

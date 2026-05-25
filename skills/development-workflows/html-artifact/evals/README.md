@@ -28,6 +28,7 @@ Ids 1–4 verify positive triggering and correct template selection. Ids 5–6 v
 
 Ids 7–9 are design-regression prompts. They are intentionally human-judgeable:
 
+- outer shell meaningfully uses desktop width instead of sitting inside a narrow ~1100–1300 px centered cap when the page has navigation or a side rail;
 - hero has no large meaningless blank zone;
 - known five-card sections do not become 4+1 on desktop;
 - long Chinese/English/code-like labels do not overflow cards;

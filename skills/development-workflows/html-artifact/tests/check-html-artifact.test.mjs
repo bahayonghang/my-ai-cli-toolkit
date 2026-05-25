@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const script = 'skills/development-workflows/html-artifact/scripts/check_html_artifact.py';
+const starterTemplatePath = 'skills/development-workflows/html-artifact/assets/starter-template.html';
 
 function pythonCommand() {
   const candidates = [process.env.PYTHON, 'python', 'python3', 'py'].filter(Boolean);
@@ -17,6 +18,7 @@ function pythonCommand() {
 }
 
 const python = pythonCommand();
+const starterTemplate = readFileSync(starterTemplatePath, 'utf8');
 
 function withTempFile(name, body, fn) {
   const dir = mkdtempSync(join(tmpdir(), 'html-artifact-'));
@@ -152,4 +154,14 @@ test('preload_link_fails', () => {
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /<link rel/);
   });
+});
+
+test('starter_template_uses_fluid_wide_desktop_shell', () => {
+  assert.match(starterTemplate, /--app-shell-max:\s*\d+px/);
+  assert.match(starterTemplate, /--app-shell-gutter:\s*clamp\(/);
+  assert.match(
+    starterTemplate,
+    /\.app-shell\s*\{[^}]*width:\s*min\(calc\(100vw - \(var\(--app-shell-gutter\) \* 2\)\), var\(--app-shell-max\)\)/s,
+  );
+  assert.doesNotMatch(starterTemplate, /width:\s*min\(100%,\s*1240px\)/);
 });
