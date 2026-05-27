@@ -1,12 +1,15 @@
 # Decision Matrix Studio
 
 ## Use when
+
 Architecture choices, product/design alternatives, package selection, buy/build decisions, and ADR-style recommendations.
 
 ## Do not use when
+
 There is no meaningful alternative, or the user asked for implementation only.
 
 ## Information architecture
+
 - Decision question.
 - Options gallery with neutral summaries.
 - Evaluation criteria and weights.
@@ -17,26 +20,32 @@ There is no meaningful alternative, or the user asked for implementation only.
 - Revisit triggers.
 
 ## Visual direction
+
 Bento comparison grid with consistent option card anatomy; recommended options may use light accent but must not overwhelm evidence.
 
 ## Recommended layout primitives
+
 - **Hero**: `hero--split` for decision question + recommendation, with a right-side thesis board containing confidence, decision owner, date, and revisit trigger. Use `hero--compact` only for narrow ADRs with no useful side evidence.
 - **Cards**: use `grid-3` or `grid-4` for option galleries. Use `grid-5-balanced` when comparing exactly five product/design features or criteria.
-- **Tables**: use `table--matrix` for scoring and `table--decision` for ADR summaries. Use `is-recommended`, `key-row`, `verdict-column`, and `evidence-column` so the recommendation can be scanned before reading every score.
+- **Tables**: see `tables-cookbook.md` — recipe 1 (decision matrix) for the score matrix, recipe 4 (comparison) when criteria are qualitative, recipe 2 (evidence) for the source-backing table. Always use `is-recommended`, `key-row`, `verdict-column`, and `evidence-column` so the recommendation can be scanned before reading every score. Weight and percentage columns should use `col--num` with `cell--bar` to show importance at a glance.
 - **Diagrams/SVG**: use a diagram frame for decision flows, tradeoff frontiers, migration paths, or recommendation roadmaps.
 
 ## Emphasis rules
+
 - Put two or three conclusion cards before dense matrices: recommendation, deciding evidence, and revisit trigger.
 - The winning option must be labeled in text, not only with color.
 - Avoid equal-weight option cards when the artifact already has a recommendation; make the recommended path visually primary while preserving neutral evidence.
 
 ## Core components
+
 Option cards, criteria chips, score matrix, tradeoff callouts, and ADR summary block.
 
 ## Interaction pattern
+
 Toggle criterion explanations, expand rationale per option, and copy ADR/Lore-style decision summary.
 
 ## Accessibility notes
+
 Keep scoring readable in a table, label weights clearly, and avoid color-only winner/loser cues.
 
 ## Minimal HTML skeleton
@@ -45,17 +54,42 @@ Keep scoring readable in a table, label weights clearly, and avoid color-only wi
 <section id="options" aria-labelledby="options-title">
   <h2 id="options-title">Options</h2>
   <div class="summary-grid">
-    <article class="card"><h3 class="card-title">A — Managed queue</h3><p>Pros, cons, neutral summary.</p></article>
-    <article class="card"><h3 class="card-title">B — Self-hosted broker</h3><p>Pros, cons, neutral summary.</p></article>
+    <article class="card">
+      <h3 class="card-title">A — Managed queue</h3>
+      <p>Pros, cons, neutral summary.</p>
+    </article>
+    <article class="card">
+      <h3 class="card-title">B — Self-hosted broker</h3>
+      <p>Pros, cons, neutral summary.</p>
+    </article>
   </div>
 </section>
 <section id="matrix" aria-labelledby="matrix-title">
   <h2 id="matrix-title">Score matrix</h2>
   <div class="table-wrap">
     <table>
-      <caption>Weighted scores (1–5). Recommendation is labeled in the Notes column, not by color.</caption>
-      <thead><tr><th>Criterion</th><th>Weight</th><th>A</th><th>B</th><th>Notes</th></tr></thead>
-      <tbody><tr><td>Latency</td><td>30%</td><td>4</td><td>3</td><td>A wins on cold start.</td></tr></tbody>
+      <caption>
+        Weighted scores (1–5). Recommendation is labeled in the Notes column,
+        not by color.
+      </caption>
+      <thead>
+        <tr>
+          <th>Criterion</th>
+          <th>Weight</th>
+          <th>A</th>
+          <th>B</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Latency</td>
+          <td>30%</td>
+          <td>4</td>
+          <td>3</td>
+          <td>A wins on cold start.</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </section>

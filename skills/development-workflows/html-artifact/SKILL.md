@@ -11,7 +11,7 @@ description: >-
   copy/export buttons, or annotated diffs. Do not use it for short answers,
   simple commands, commit messages, tiny patch summaries, or production UI
   implementation unless the user explicitly asks for a review artifact.
-version: 0.1.0
+version: 0.2.0
 category: development-workflows
 tags:
   - html
@@ -56,7 +56,7 @@ Make these four decisions:
 1. **Visual direction** — choose one: `editorial`, `dashboard`, `dossier`, `deck`, or `workbench`.
 2. **Memory hook** — one memorable visual motif, such as split hero, evidence rail, diagram frame, accent lane, thesis board, or compact cockpit.
 3. **Density strategy** — choose `spacious presentation`, `medium-density report`, or `high-density cockpit`.
-4. **Diagram strategy** — choose `table-first`, `card-first`, `inline-SVG-first`, or `HTML-lane-first`.
+4. **Diagram strategy** — choose `table-first`, `card-first`, `inline-SVG-first`, `HTML-lane-first`, `swimlane-first`, or `chart-first`. Pick `chart-first` when the artifact's core argument is trend, distribution, or proportion; pick `swimlane-first` when responsibility / handoff between roles is the key story.
 
 Translate frontend-design principles into this skill's hard constraints:
 
@@ -80,18 +80,18 @@ Translate frontend-design principles into this skill's hard constraints:
 
 Load `references/template-selection.md` when choosing a template. Use the first matching primary goal, then combine secondary sections if needed.
 
-| User goal | Start with |
-| --- | --- |
-| Implementation plan, PRD, roadmap, migration plan | Strategy Blueprint |
-| Code review, PR explainer, diff audit | Review Workbench |
-| Architecture, data flow, interface boundary | Architecture Atlas |
-| Option comparison, buy/build, design choice | Decision Matrix Studio |
-| Research report, learning brief, source-backed synthesis | Evidence Dossier |
-| Weekly/project status, release readiness, QA report | Status Brief |
-| Incident report, RCA, postmortem | Incident Timeline |
-| JSON/YAML/prompt/config editing or local triage tool | Interactive Editor |
-| Meeting readout, mini deck, slide-like walkthrough | Narrative Deck |
-| Design tokens, component states, visual audit | Component Specimen Sheet |
+| User goal                                                | Start with               |
+| -------------------------------------------------------- | ------------------------ |
+| Implementation plan, PRD, roadmap, migration plan        | Strategy Blueprint       |
+| Code review, PR explainer, diff audit                    | Review Workbench         |
+| Architecture, data flow, interface boundary              | Architecture Atlas       |
+| Option comparison, buy/build, design choice              | Decision Matrix Studio   |
+| Research report, learning brief, source-backed synthesis | Evidence Dossier         |
+| Weekly/project status, release readiness, QA report      | Status Brief             |
+| Incident report, RCA, postmortem                         | Incident Timeline        |
+| JSON/YAML/prompt/config editing or local triage tool     | Interactive Editor       |
+| Meeting readout, mini deck, slide-like walkthrough       | Narrative Deck           |
+| Design tokens, component states, visual audit            | Component Specimen Sheet |
 
 ## Creation workflow
 
@@ -151,9 +151,13 @@ For changes to this skill, run `node --test skills/development-workflows/html-ar
 Keep this entrypoint small. Load detailed references only as needed:
 
 - `references/template-selection.md` — template selection and combination rules.
-- `references/accessibility-and-security.md` — offline, accessibility, privacy, and validation rules.
-- `references/design-review-checklist.md` — manual visual QA for high-information-density artifacts.
-- `references/diagram-cookbook.md` — inline SVG and HTML diagram recipes.
+- `references/accessibility-and-security.md` — offline, accessibility, privacy, and validation rules, including the color / mode / theme layering.
+- `references/design-review-checklist.md` — manual visual QA covering the six dimensions (composition, tables, diagrams/SVG, charts, interactive controls, modes/offline).
+- `references/tables-cookbook.md` — eight table recipes plus responsive strategy and non-decorative emphasis. Load when an artifact has decision matrices, evidence tables, risks, trends, heatmaps, or summaries.
+- `references/charts-cookbook.md` — eight inline-SVG/CSS-only chart recipes plus a decision tree. Load when a metric, distribution, or trend needs visualization beyond a number with a status pill.
+- `references/svg-cookbook.md` — icons, decorative motifs, and spot illustrations using `currentColor` and tokens.
+- `references/diagram-cookbook.md` — inline SVG and HTML diagram recipes (phase roadmap, decision flow, swimlane, state machine, tree, before/after, gantt, dependency, evidence-to-claim) and shape/connector conventions.
+- `references/interaction-cookbook.md` — ten native-first interaction recipes (filter chip, search, sortable table, tabs, disclosure, dialog, scroll-spy, theme toggle, copy with feedback, keyboard shortcuts) with progressive-enhancement baselines.
 - `references/templates/strategy-blueprint.md` — implementation plans and PRDs.
 - `references/templates/review-workbench.md` — code review and PR reports.
 - `references/templates/architecture-atlas.md` — architecture and data-flow explainers.

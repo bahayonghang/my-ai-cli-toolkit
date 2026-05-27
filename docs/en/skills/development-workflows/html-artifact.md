@@ -17,7 +17,7 @@ Create single-file, self-contained HTML artifacts for complex, visual, compariso
 | --- | --- |
 | Name | `html-artifact` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `html`, `artifact`, `planning`, `code-review`, `reports`, `accessibility`, `offline` |
 
 ## Install command
@@ -30,9 +30,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill html-artifact
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/html-artifact/assets` | directory | 1 | Assets |
+| `skills/development-workflows/html-artifact/assets` | directory | 2 | Assets |
 | `skills/development-workflows/html-artifact/evals` | directory | 2 | Evaluation samples |
-| `skills/development-workflows/html-artifact/references` | directory | 14 | Reference material |
+| `skills/development-workflows/html-artifact/references` | directory | 18 | Reference material |
 | `skills/development-workflows/html-artifact/scripts` | directory | 1 | Executable scripts |
 | `skills/development-workflows/html-artifact/tests` | directory | 1 | Automated tests |
 

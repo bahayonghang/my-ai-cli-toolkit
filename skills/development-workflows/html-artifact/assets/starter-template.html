@@ -1,84 +1,225 @@
 <!doctype html>
-<html lang="en" class="theme-editorial">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>HTML Artifact Starter</title>
   <style>
+/* ============================================================
+   html-artifact starter — single-file offline baseline
+   Token layers (orthogonal): base | mode | theme | data-viz | fallback
+   See assets/style-tokens.css for the source of truth & comments.
+   ============================================================ */
+
+/* 1. Base — typography, spacing, radius, shell, strokes */
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --font-display: Constantia, Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
   --font-sans: Aptos, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --bg: #f4f1ea;
-  --bg-layer: radial-gradient(circle at 8% 6%, rgba(177, 89, 47, .16), transparent 28rem), linear-gradient(135deg, rgba(27, 38, 59, .08), transparent 34rem), #f4f1ea;
-  --surface: #fffdf8;
-  --surface-muted: #eee8dd;
-  --surface-strong: #1d2430;
-  --text: #1b1f27;
-  --text-muted: #616a76;
-  --border: #ded6c8;
-  --border-strong: #b6aa99;
-  --accent: #b1592f;
-  --accent-strong: #7a321c;
-  --accent-soft: #f5e2d7;
-  --ink-accent: #0d5661;
-  --info: #1d5fa7;
-  --success: #147552;
-  --warning: #a15c05;
-  --danger: #b83b22;
-  --critical: #8f1d1d;
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 26px;
-  --shadow-sm: 0 1px 2px rgba(30, 34, 42, .08);
-  --shadow-md: 0 24px 70px rgba(30, 34, 42, .14);
-  --app-shell-max: 1680px;
-  --app-shell-gutter: clamp(1rem, 2.5vw, 2.75rem);
   --hero-title-measure: 14ch;
   --measure: 74ch;
-  --space-1: .25rem;
-  --space-2: .5rem;
-  --space-3: .75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+  --radius-sm: 10px; --radius-md: 16px; --radius-lg: 26px;
+  --app-shell-max: 1680px;
+  --app-shell-gutter: clamp(1rem, 2.5vw, 2.75rem);
+  --stroke-thin: 1px; --stroke-medium: 1.5px; --stroke-thick: 2.5px;
+  --icon-size-sm: 1rem; --icon-size-md: 1.25rem; --icon-size-lg: 1.5rem;
+  --diagram-node-radius: 18px;
+  --link-underline-thickness: .08em;
+  --info-h: 240; --success-h: 150; --warning-h: 75; --danger-h: 30; --critical-h: 18;
 }
+
+/* 2. Light mode (editorial theme baseline) */
+:root, [data-mode="light"] {
+  --bg: oklch(0.96 0.012 70);
+  --bg-layer: radial-gradient(circle at 8% 6%, oklch(0.74 0.14 38 / 18%), transparent 28rem), linear-gradient(135deg, oklch(0.28 0.05 240 / 8%), transparent 34rem), var(--bg);
+  --surface: oklch(0.99 0.008 70);
+  --surface-muted: oklch(0.94 0.016 70);
+  --surface-strong: oklch(0.22 0.02 240);
+  --text: oklch(0.22 0.02 240);
+  --text-muted: oklch(0.48 0.018 240);
+  --border: oklch(0.86 0.018 70);
+  --border-strong: oklch(0.74 0.025 70);
+  --accent: oklch(0.55 0.16 38);
+  --accent-strong: oklch(0.42 0.16 30);
+  --accent-soft: oklch(0.93 0.05 38);
+  --ink-accent: oklch(0.45 0.08 220);
+  --link: var(--accent-strong);
+  --focus-ring: oklch(0.55 0.2 250);
+  --shadow-sm: 0 1px 2px oklch(0.22 0.02 240 / 8%);
+  --shadow-md: 0 24px 70px oklch(0.22 0.02 240 / 14%);
+  --info: oklch(0.5 0.15 var(--info-h));
+  --info-soft: oklch(0.93 0.05 var(--info-h));
+  --success: oklch(0.5 0.15 var(--success-h));
+  --success-soft: oklch(0.93 0.05 var(--success-h));
+  --warning: oklch(0.5 0.13 var(--warning-h));
+  --warning-soft: oklch(0.93 0.05 var(--warning-h));
+  --danger: oklch(0.5 0.18 var(--danger-h));
+  --danger-soft: oklch(0.93 0.06 var(--danger-h));
+  --critical: oklch(0.42 0.2 var(--critical-h));
+  --critical-soft: oklch(0.93 0.06 var(--critical-h));
+}
+
+/* 3. Theme overrides (brand only) */
 .theme-technical {
-  --font-display: "Bahnschrift", "Segoe UI Semibold", "Noto Sans SC", sans-serif;
-  --font-sans: "Aptos", "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  --bg: #eef3f7;
-  --bg-layer: radial-gradient(circle at top left, rgba(13, 86, 97, .18), transparent 30rem), linear-gradient(120deg, rgba(15, 23, 42, .08), transparent 38rem), #eef3f7;
-  --surface: #fbfdff;
-  --surface-muted: #e5edf3;
-  --accent: #0d5661;
-  --accent-strong: #083a42;
-  --accent-soft: #dff4f6;
-  --ink-accent: #b1592f;
+  --bg: oklch(0.96 0.012 230);
+  --surface: oklch(0.99 0.008 230);
+  --surface-muted: oklch(0.94 0.014 230);
+  --accent: oklch(0.52 0.1 200);
+  --accent-strong: oklch(0.38 0.1 200);
+  --accent-soft: oklch(0.93 0.04 200);
+  --ink-accent: oklch(0.55 0.16 38);
+  --bg-layer: radial-gradient(circle at top left, oklch(0.45 0.1 200 / 18%), transparent 30rem), linear-gradient(120deg, oklch(0.28 0.05 240 / 8%), transparent 38rem), var(--bg);
 }
 .theme-dossier {
-  --font-display: Cambria, Georgia, "Noto Serif SC", serif;
-  --font-sans: "Trebuchet MS", Aptos, "Segoe UI", "Noto Sans SC", sans-serif;
-  --bg: #f7f4ee;
-  --bg-layer: radial-gradient(circle at 82% 0%, rgba(139, 92, 45, .18), transparent 26rem), linear-gradient(135deg, rgba(64, 56, 44, .10), transparent 34rem), #f7f4ee;
-  --surface: #fffaf0;
-  --surface-muted: #f0e7d7;
-  --accent: #8b5c2d;
-  --accent-strong: #613c18;
-  --accent-soft: #f2dfc1;
-  --ink-accent: #315a68;
+  --bg: oklch(0.95 0.015 70);
+  --surface: oklch(0.98 0.012 70);
+  --surface-muted: oklch(0.91 0.022 70);
+  --accent: oklch(0.5 0.1 60);
+  --accent-strong: oklch(0.37 0.1 60);
+  --accent-soft: oklch(0.93 0.05 60);
+  --ink-accent: oklch(0.45 0.1 220);
+  --bg-layer: radial-gradient(circle at 82% 0%, oklch(0.5 0.12 60 / 18%), transparent 26rem), linear-gradient(135deg, oklch(0.3 0.06 60 / 10%), transparent 34rem), var(--bg);
 }
+
+/* 4. Dark mode — orthogonal to theme */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --bg: oklch(0.18 0.015 240);
+    --bg-layer: radial-gradient(circle at 8% 6%, oklch(0.5 0.1 38 / 22%), transparent 28rem), linear-gradient(135deg, oklch(0.4 0.06 240 / 12%), transparent 34rem), var(--bg);
+    --surface: oklch(0.22 0.015 240);
+    --surface-muted: oklch(0.27 0.018 240);
+    --surface-strong: oklch(0.92 0.01 70);
+    --text: oklch(0.92 0.01 70);
+    --text-muted: oklch(0.72 0.015 70);
+    --border: oklch(0.32 0.02 240);
+    --border-strong: oklch(0.45 0.025 240);
+    --accent: oklch(0.72 0.16 38);
+    --accent-strong: oklch(0.85 0.14 38);
+    --accent-soft: oklch(0.32 0.06 38);
+    --ink-accent: oklch(0.75 0.1 220);
+    --link: var(--accent-strong);
+    --focus-ring: oklch(0.78 0.18 250);
+    --shadow-sm: 0 1px 2px oklch(0 0 0 / 60%);
+    --shadow-md: 0 24px 70px oklch(0 0 0 / 60%);
+    --info: oklch(0.72 0.15 var(--info-h));
+    --info-soft: oklch(0.32 0.06 var(--info-h));
+    --success: oklch(0.72 0.16 var(--success-h));
+    --success-soft: oklch(0.32 0.07 var(--success-h));
+    --warning: oklch(0.78 0.14 var(--warning-h));
+    --warning-soft: oklch(0.32 0.06 var(--warning-h));
+    --danger: oklch(0.72 0.18 var(--danger-h));
+    --danger-soft: oklch(0.32 0.07 var(--danger-h));
+    --critical: oklch(0.68 0.2 var(--critical-h));
+    --critical-soft: oklch(0.32 0.08 var(--critical-h));
+  }
+}
+[data-mode="dark"] {
+  --bg: oklch(0.18 0.015 240);
+  --bg-layer: radial-gradient(circle at 8% 6%, oklch(0.5 0.1 38 / 22%), transparent 28rem), linear-gradient(135deg, oklch(0.4 0.06 240 / 12%), transparent 34rem), var(--bg);
+  --surface: oklch(0.22 0.015 240);
+  --surface-muted: oklch(0.27 0.018 240);
+  --surface-strong: oklch(0.92 0.01 70);
+  --text: oklch(0.92 0.01 70);
+  --text-muted: oklch(0.72 0.015 70);
+  --border: oklch(0.32 0.02 240);
+  --border-strong: oklch(0.45 0.025 240);
+  --accent: oklch(0.72 0.16 38);
+  --accent-strong: oklch(0.85 0.14 38);
+  --accent-soft: oklch(0.32 0.06 38);
+  --ink-accent: oklch(0.75 0.1 220);
+  --link: var(--accent-strong);
+  --focus-ring: oklch(0.78 0.18 250);
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 60%);
+  --shadow-md: 0 24px 70px oklch(0 0 0 / 60%);
+  --info: oklch(0.72 0.15 var(--info-h));
+  --info-soft: oklch(0.32 0.06 var(--info-h));
+  --success: oklch(0.72 0.16 var(--success-h));
+  --success-soft: oklch(0.32 0.07 var(--success-h));
+  --warning: oklch(0.78 0.14 var(--warning-h));
+  --warning-soft: oklch(0.32 0.06 var(--warning-h));
+  --danger: oklch(0.72 0.18 var(--danger-h));
+  --danger-soft: oklch(0.32 0.07 var(--danger-h));
+  --critical: oklch(0.68 0.2 var(--critical-h));
+  --critical-soft: oklch(0.32 0.08 var(--critical-h));
+}
+
+/* 5. High contrast + Print */
+@media (prefers-contrast: more) {
+  :root {
+    --text: oklch(0.12 0 0);
+    --text-muted: oklch(0.22 0 0);
+    --border: oklch(0.4 0 0);
+    --border-strong: oklch(0.2 0 0);
+    --focus-ring: oklch(0.45 0.28 250);
+  }
+}
+@media print {
+  :root {
+    --bg: #fff; --bg-layer: #fff; --surface: #fff;
+    --surface-muted: #f4f4f4; --surface-strong: #1a1a1a;
+    --text: #000; --text-muted: #333;
+    --border: #1a1a1a; --border-strong: #000;
+    --accent: #1a1a1a; --accent-strong: #000; --accent-soft: #eaeaea;
+    --shadow-sm: none; --shadow-md: none;
+  }
+}
+
+/* 6. Data viz palettes */
+:root {
+  --chart-1: #E69F00; --chart-2: #56B4E9; --chart-3: #009E73; --chart-4: #F0E442;
+  --chart-5: #0072B2; --chart-6: #D55E00; --chart-7: #CC79A7; --chart-8: #525252;
+  --seq-50: oklch(0.97 0.02 230); --seq-100: oklch(0.93 0.04 230); --seq-200: oklch(0.87 0.06 230);
+  --seq-300: oklch(0.78 0.09 230); --seq-400: oklch(0.67 0.12 230); --seq-500: oklch(0.55 0.15 230);
+  --seq-600: oklch(0.45 0.16 230); --seq-700: oklch(0.36 0.16 230); --seq-800: oklch(0.28 0.14 230);
+  --seq-900: oklch(0.2 0.1 230);
+  --div-neg-3: oklch(0.5 0.18 25); --div-neg-2: oklch(0.65 0.15 25); --div-neg-1: oklch(0.82 0.1 25);
+  --div-zero: oklch(0.88 0.01 0);
+  --div-pos-1: oklch(0.82 0.08 220); --div-pos-2: oklch(0.65 0.13 220); --div-pos-3: oklch(0.5 0.16 220);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --chart-1: #F2B33D; --chart-2: #79C5EE; --chart-3: #3FB58F; --chart-4: #F2E66B;
+    --chart-5: #4391C7; --chart-6: #E47B33; --chart-7: #D69ABA; --chart-8: #B5B5B5;
+  }
+}
+[data-mode="dark"] {
+  --chart-1: #F2B33D; --chart-2: #79C5EE; --chart-3: #3FB58F; --chart-4: #F2E66B;
+  --chart-5: #4391C7; --chart-6: #E47B33; --chart-7: #D69ABA; --chart-8: #B5B5B5;
+}
+
+/* 7. sRGB fallback */
+@supports not (color: oklch(0 0 0)) {
+  :root, [data-mode="light"] {
+    --bg: #f4f1ea; --surface: #fffdf8; --surface-muted: #eee8dd; --surface-strong: #1d2430;
+    --text: #1b1f27; --text-muted: #616a76; --border: #ded6c8; --border-strong: #b6aa99;
+    --accent: #b1592f; --accent-strong: #7a321c; --accent-soft: #f5e2d7; --ink-accent: #0d5661;
+    --link: #7a321c; --focus-ring: #1d4ed8;
+    --shadow-sm: 0 1px 2px rgba(30, 34, 42, .08);
+    --shadow-md: 0 24px 70px rgba(30, 34, 42, .14);
+    --info: #1d5fa7; --info-soft: #dbeafe;
+    --success: #147552; --success-soft: #d1fae5;
+    --warning: #a15c05; --warning-soft: #fef3c7;
+    --danger: #b83b22; --danger-soft: #ffedd5;
+    --critical: #8f1d1d; --critical-soft: #fee2e2;
+  }
+}
+
+/* ============================================================
+   Layout & components
+   ============================================================ */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-height: 100vh; background: var(--bg-layer); color: var(--text); font-family: var(--font-sans); line-height: 1.55; }
-body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(27,31,39,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(27,31,39,.028) 1px, transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 70%); }
-a { color: var(--accent-strong); }
-.skip-link { position: fixed; top: var(--space-3); left: var(--space-3); z-index: 10; transform: translateY(-160%); border-radius: var(--radius-sm); background: var(--surface-strong); color: #fff; padding: var(--space-2) var(--space-3); text-decoration: none; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: linear-gradient(color-mix(in srgb, var(--text) 4%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--text) 3%, transparent) 1px, transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 70%); }
+a { color: var(--link); text-decoration-thickness: var(--link-underline-thickness); }
+.skip-link { position: fixed; top: var(--space-3); left: var(--space-3); z-index: 10; transform: translateY(-160%); border-radius: var(--radius-sm); background: var(--surface-strong); color: var(--surface); padding: var(--space-2) var(--space-3); text-decoration: none; }
 .skip-link:focus { transform: translateY(0); }
-:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+
 .app-shell { display: grid; grid-template-columns: minmax(13rem, 18rem) minmax(0, 1fr); gap: clamp(1.5rem, 2.6vw, 2.5rem); width: min(calc(100vw - (var(--app-shell-gutter) * 2)), var(--app-shell-max)); margin: 0 auto; padding: clamp(1.25rem, 2vw, 2.5rem) var(--app-shell-gutter) var(--space-12); }
 main, section, article, aside, figure, table, pre, code, .card, .callout, .chip { min-width: 0; }
 h1, h2, h3, p, li, td, th, code, .chip, .card-title { overflow-wrap: anywhere; }
@@ -89,37 +230,43 @@ h3 { margin: 0 0 var(--space-2); font-size: 1.05rem; }
 p { max-width: min(var(--measure), 100%); }
 .eyebrow { margin: 0 0 var(--space-2); color: var(--accent); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .lede { max-width: 66ch; color: var(--text-muted); font-size: clamp(1.02rem, 1.5vw, 1.18rem); }
+
 .toc { position: sticky; top: var(--space-6); align-self: start; border: 1px solid var(--border); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--surface) 82%, transparent); box-shadow: var(--shadow-sm); padding: var(--space-4); backdrop-filter: blur(14px); }
 .toc strong { display: block; margin: 0 0 var(--space-3); }
 .toc a { display: block; border-radius: var(--radius-sm); color: var(--text-muted); padding: var(--space-2) var(--space-3); text-decoration: none; }
-.toc a:hover, .toc a:focus-visible { background: var(--accent-soft); color: var(--accent-strong); }
+.toc a:hover, .toc a:focus-visible, .toc a[aria-current="location"] { background: var(--accent-soft); color: var(--accent-strong); }
+
 .hero, .card, .callout, .table-wrap, .diagram-frame, .rail-panel, .timeline-item { border: 1px solid var(--border); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: var(--shadow-sm); }
 .hero { position: relative; overflow: hidden; margin-bottom: var(--space-8); padding: var(--space-8); }
 .hero::after { content: ""; position: absolute; inset: auto -4rem -7rem auto; width: 18rem; height: 18rem; border-radius: 50%; background: color-mix(in srgb, var(--accent) 14%, transparent); pointer-events: none; }
 .hero--split { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(21rem, .88fr); gap: clamp(1.5rem, 2.4vw, 2.5rem); align-items: stretch; }
 .hero--compact { max-width: 1040px; }
 .hero--compact h1 { max-width: min(16ch, 100%); }
-.hero--deck { min-height: 520px; display: grid; grid-template-rows: auto 1fr auto; background: linear-gradient(135deg, color-mix(in srgb, var(--surface) 95%, white), color-mix(in srgb, var(--accent-soft) 70%, white)); }
+.hero--deck { min-height: 520px; display: grid; grid-template-rows: auto 1fr auto; background: linear-gradient(135deg, color-mix(in srgb, var(--surface) 95%, transparent), color-mix(in srgb, var(--accent-soft) 70%, transparent)); }
 .hero-copy, .hero-visual { position: relative; z-index: 1; }
 .hero-visual { display: grid; align-content: stretch; gap: var(--space-4); }
-.thesis-board { display: grid; gap: var(--space-4); height: 100%; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); border-radius: calc(var(--radius-lg) - 6px); background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 94%, white), color-mix(in srgb, var(--accent-soft) 65%, white)); padding: var(--space-5); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+
+.thesis-board { display: grid; gap: var(--space-4); height: 100%; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); border-radius: calc(var(--radius-lg) - 6px); background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 94%, transparent), color-mix(in srgb, var(--accent-soft) 65%, transparent)); padding: var(--space-5); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 70%, transparent); }
 .thesis-board .big-number { font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 4rem); line-height: .9; letter-spacing: -.06em; }
 .meta-rail { display: grid; gap: var(--space-3); }
 .meta-item { border-left: 4px solid var(--accent); padding-left: var(--space-3); }
 .meta-item span { display: block; color: var(--text-muted); font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+
 .status-pill, .chip { display: inline-flex; align-items: center; gap: .35rem; max-width: 100%; border-radius: 999px; border: 1px solid currentColor; padding: .18rem .6rem; font-size: .83rem; font-weight: 760; white-space: normal; }
-.status-pill.info { color: var(--info); background: #dbeafe; }
-.status-pill.success { color: var(--success); background: #d1fae5; }
-.status-pill.warning { color: var(--warning); background: #fef3c7; }
-.status-pill.danger { color: var(--danger); background: #ffedd5; }
-.status-pill.critical { color: var(--critical); background: #fee2e2; }
+.status-pill.info { color: var(--info); background: var(--info-soft); }
+.status-pill.success { color: var(--success); background: var(--success-soft); }
+.status-pill.warning { color: var(--warning); background: var(--warning-soft); }
+.status-pill.danger { color: var(--danger); background: var(--danger-soft); }
+.status-pill.critical { color: var(--critical); background: var(--critical-soft); }
 .chip { color: var(--accent-strong); background: var(--accent-soft); }
+
 .card { position: relative; padding: 1.25rem; }
 .card-title { margin: 0 0 var(--space-2); font-weight: 780; }
 .card.featured { border-color: color-mix(in srgb, var(--accent) 48%, var(--border)); box-shadow: var(--shadow-md); }
-.card.subtle { background: color-mix(in srgb, var(--surface-muted) 42%, white); }
+.card.subtle { background: color-mix(in srgb, var(--surface-muted) 42%, transparent); }
 .card p:last-child, .callout p:last-child { margin-bottom: 0; }
 .card-kicker { margin: 0 0 var(--space-2); color: var(--accent); font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+
 .grid { display: grid; gap: var(--space-4); }
 .grid > * { min-width: 0; }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -132,34 +279,64 @@ p { max-width: min(var(--measure), 100%); }
 .grid-7-balanced > * { grid-column: span 3; }
 .grid-7-balanced > :nth-child(n+5) { grid-column: span 4; }
 .summary-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-6) 0; }
+
 .callout { margin: var(--space-6) 0; padding: var(--space-4) 1.25rem; border-left: 6px solid var(--accent); }
-.callout.warning { border-left-color: var(--warning); background: #fffbeb; }
-.callout.danger { border-left-color: var(--danger); background: #fff7ed; }
-.callout.success { border-left-color: var(--success); background: #ecfdf5; }
+.callout.warning { border-left-color: var(--warning); background: var(--warning-soft); }
+.callout.danger { border-left-color: var(--danger); background: var(--danger-soft); }
+.callout.success { border-left-color: var(--success); background: var(--success-soft); }
+
+/* Tables — sticky head, tabular nums, alignment utilities, mini-viz cells */
 .table-wrap { overflow-x: auto; margin: var(--space-6) 0; }
-table { width: 100%; min-width: 46rem; border-collapse: collapse; }
-caption { padding: var(--space-4); color: var(--text-muted); text-align: left; font-weight: 700; }
+table { width: 100%; min-width: 46rem; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+caption { padding: var(--space-3) var(--space-4); color: var(--text); text-align: left; font-weight: 780; }
 th, td { border-top: 1px solid var(--border); padding: var(--space-3) var(--space-4); text-align: left; vertical-align: top; }
-th { background: var(--surface-muted); color: var(--text); font-size: .92rem; }
+th { background: var(--surface-muted); color: var(--text); font-size: .92rem; position: sticky; top: 0; z-index: 2; box-shadow: inset 0 -1px 0 var(--border); }
+@media (max-width: 1024px) { th { position: static; } }
 tbody tr:nth-child(even) { background: color-mix(in srgb, var(--surface-muted) 34%, transparent); }
 tbody tr:hover { background: color-mix(in srgb, var(--accent-soft) 50%, transparent); }
+.col--num, .col--num th { text-align: right; }
+.col--center, .col--center th { text-align: center; }
+th[aria-sort] { cursor: pointer; user-select: none; }
+th[aria-sort]::after { content: " ↕"; opacity: .35; font-weight: 400; }
+th[aria-sort="ascending"]::after { content: " ▲"; opacity: .85; }
+th[aria-sort="descending"]::after { content: " ▼"; opacity: .85; }
 .table--matrix th:first-child, .table--matrix td:first-child, .table--decision th:first-child, .table--decision td:first-child { font-weight: 780; }
-.table--matrix .is-recommended, .table--decision .is-recommended { background: color-mix(in srgb, var(--accent-soft) 68%, white); box-shadow: inset 4px 0 0 var(--accent); }
-.table--matrix .key-row, .table--evidence .key-row, .table--decision .key-row { background: color-mix(in srgb, var(--accent-soft) 58%, white); }
+.table--matrix .is-recommended, .table--decision .is-recommended { background: color-mix(in srgb, var(--accent-soft) 68%, transparent); box-shadow: inset 4px 0 0 var(--accent); }
+.table--matrix .key-row, .table--evidence .key-row, .table--decision .key-row { background: color-mix(in srgb, var(--accent-soft) 58%, transparent); }
 .verdict-column { font-weight: 780; color: var(--accent-strong); }
 .evidence-column { color: var(--text-muted); font-size: .95rem; }
-.diagram-frame { margin: var(--space-6) 0; padding: var(--space-5); background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, white), color-mix(in srgb, var(--surface-muted) 44%, white)); }
-.diagram-frame svg { display: block; width: 100%; height: auto; }
+.cell--bar { background: linear-gradient(to right, color-mix(in srgb, var(--accent-soft) 80%, transparent) calc(var(--bar, 0) * 1%), transparent 0); font-variant-numeric: tabular-nums; text-align: right; }
+.cell--heat { background: color-mix(in srgb, var(--seq-500) calc(var(--heat, 0) * 1%), transparent); color: var(--text); text-align: center; font-variant-numeric: tabular-nums; }
+.cell--trend { font-variant-numeric: tabular-nums; text-align: right; }
+.cell--trend[data-dir="up"]::before { content: "↑ "; color: var(--success); font-weight: 700; }
+.cell--trend[data-dir="down"]::before { content: "↓ "; color: var(--danger); font-weight: 700; }
+.cell--trend[data-dir="flat"]::before { content: "→ "; color: var(--text-muted); font-weight: 700; }
+.cell--diff-add { background: color-mix(in srgb, var(--success-soft) 60%, transparent); color: var(--success); }
+.cell--diff-add::before { content: "+ "; font-weight: 700; }
+.cell--diff-del { background: color-mix(in srgb, var(--danger-soft) 60%, transparent); color: var(--danger); }
+.cell--diff-del::before { content: "− "; font-weight: 700; }
+
+/* Diagram frame */
+.diagram-frame { margin: var(--space-6) 0; padding: var(--space-5); background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-muted) 44%, transparent)); }
+.diagram-frame svg { display: block; width: 100%; height: auto; color: var(--accent); }
 figcaption { margin-top: var(--space-3); color: var(--text-muted); font-size: .95rem; }
+
+/* Lane */
 .lane { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin: var(--space-4) 0; }
 .lane-step { position: relative; min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); padding: var(--space-4); }
-.lane-step::before { content: attr(data-step); display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; margin-bottom: var(--space-2); border-radius: 50%; background: var(--surface-strong); color: white; font-weight: 800; }
+.lane-step::before { content: attr(data-step); display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; margin-bottom: var(--space-2); border-radius: 50%; background: var(--surface-strong); color: var(--surface); font-weight: 800; }
+
+/* Code */
 pre, code { font-family: var(--font-mono); }
-code { background: color-mix(in srgb, var(--surface-muted) 72%, white); border: 1px solid var(--border); border-radius: 7px; padding: .05rem .3rem; }
-pre { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); background: #111827; color: #e5e7eb; padding: var(--space-4); }
+code { background: color-mix(in srgb, var(--surface-muted) 72%, transparent); border: 1px solid var(--border); border-radius: 7px; padding: .05rem .3rem; }
+pre { overflow-x: auto; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-strong); color: var(--surface); padding: var(--space-4); }
+
+/* Controls */
 button, .copy-button, .filter-chip { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font: inherit; padding: .5rem .75rem; }
 button:hover, .copy-button:hover, .filter-chip:hover { border-color: var(--accent); color: var(--accent-strong); }
 button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-strong); }
+
+/* Breakpoints */
 @media (max-width: 980px) {
   .app-shell { grid-template-columns: 1fr; }
   .toc { position: static; }
@@ -177,7 +354,6 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
   table { min-width: 40rem; }
 }
 @media print {
-  body { background: #fff; }
   body::before, .toc, button, .copy-button, .filter-chip { display: none !important; }
   .app-shell { display: block; width: auto; max-width: none; padding: 0; }
   section, .card, .diagram-frame { break-inside: avoid; }
@@ -252,15 +428,50 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
         </div>
         <div class="table-wrap">
           <table class="table--matrix">
-            <caption>Weighted comparison matrix. The recommended option is labeled by text and emphasized visually.</caption>
+            <caption>Weighted comparison matrix. Sticky header, tabular numerals, and data-bar cells make the recommendation scannable.</caption>
             <thead>
-              <tr><th>Criterion</th><th>Weight</th><th class="is-recommended">Option A · Recommended</th><th>Option B</th><th class="evidence-column">Evidence</th><th class="verdict-column">Verdict</th></tr>
+              <tr>
+                <th>Criterion</th>
+                <th aria-sort="none" class="col--num">Weight</th>
+                <th class="is-recommended">Option A · Recommended</th>
+                <th>Option B</th>
+                <th class="evidence-column">Evidence</th>
+                <th class="verdict-column">Verdict</th>
+              </tr>
             </thead>
             <tbody>
-              <tr class="key-row"><td>Reviewer clarity</td><td>35%</td><td class="is-recommended"><span class="status-pill success">Strong</span></td><td>Medium</td><td class="evidence-column">Readers see the conclusion before details.</td><td class="verdict-column">A leads</td></tr>
-              <tr><td>Implementation risk</td><td>25%</td><td class="is-recommended">Low</td><td>Medium</td><td class="evidence-column">Single-file offline HTML, no runtime dependency.</td><td class="verdict-column">A leads</td></tr>
-              <tr><td>Maintenance</td><td>20%</td><td class="is-recommended">Medium</td><td>Medium</td><td class="evidence-column">Reusable classes require discipline.</td><td class="verdict-column">Tie</td></tr>
-              <tr><td>Visual memorability</td><td>20%</td><td class="is-recommended">High</td><td>Low</td><td class="evidence-column">Hero and diagram frames create a stronger page identity.</td><td class="verdict-column">A leads</td></tr>
+              <tr class="key-row">
+                <td>Reviewer clarity</td>
+                <td class="cell--bar col--num" style="--bar: 35">35%</td>
+                <td class="is-recommended"><span class="status-pill success">Strong</span></td>
+                <td>Medium</td>
+                <td class="evidence-column">Readers see the conclusion before details.</td>
+                <td class="verdict-column cell--trend" data-dir="up">A leads</td>
+              </tr>
+              <tr>
+                <td>Implementation risk</td>
+                <td class="cell--bar col--num" style="--bar: 25">25%</td>
+                <td class="is-recommended">Low</td>
+                <td>Medium</td>
+                <td class="evidence-column">Single-file offline HTML, no runtime dependency.</td>
+                <td class="verdict-column cell--trend" data-dir="up">A leads</td>
+              </tr>
+              <tr>
+                <td>Maintenance</td>
+                <td class="cell--bar col--num" style="--bar: 20">20%</td>
+                <td class="is-recommended">Medium</td>
+                <td>Medium</td>
+                <td class="evidence-column">Reusable classes require discipline.</td>
+                <td class="verdict-column cell--trend" data-dir="flat">Tie</td>
+              </tr>
+              <tr>
+                <td>Visual memorability</td>
+                <td class="cell--bar col--num" style="--bar: 20">20%</td>
+                <td class="is-recommended">High</td>
+                <td>Low</td>
+                <td class="evidence-column">Hero and diagram frames create a stronger page identity.</td>
+                <td class="verdict-column cell--trend" data-dir="up">A leads</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -269,27 +480,32 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
       <section id="roadmap" aria-labelledby="roadmap-title">
         <h2 id="roadmap-title">Diagram frame and roadmap lane</h2>
         <figure class="diagram-frame">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" role="img" aria-labelledby="roadmap-svg-title roadmap-svg-desc">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" role="img" aria-labelledby="roadmap-svg-title roadmap-svg-desc" style="color: var(--accent);">
             <title id="roadmap-svg-title">Four-phase roadmap from design decision to verified artifact.</title>
             <desc id="roadmap-svg-desc">Phase one chooses composition, phase two maps content, phase three renders HTML and SVG, phase four validates and reviews.</desc>
             <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#7a321c"/></marker>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="currentColor"/>
+              </marker>
+              <symbol id="phase-node" viewBox="0 0 170 92">
+                <rect x="0" y="0" width="170" height="92" rx="18" fill="var(--surface)" stroke="currentColor" stroke-width="3"/>
+              </symbol>
             </defs>
-            <rect x="22" y="32" width="170" height="92" rx="18" fill="#fffdf8" stroke="#b1592f" stroke-width="3"/>
-            <text x="107" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="#1b1f27">1 · Decide</text>
-            <text x="107" y="98" text-anchor="middle" font-size="14" fill="#616a76">direction and motif</text>
-            <line x1="205" y1="78" x2="300" y2="78" stroke="#7a321c" stroke-width="3" marker-end="url(#arrow)"/>
-            <rect x="314" y="32" width="170" height="92" rx="18" fill="#fffdf8" stroke="#0d5661" stroke-width="3"/>
-            <text x="399" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="#1b1f27">2 · Compose</text>
-            <text x="399" y="98" text-anchor="middle" font-size="14" fill="#616a76">cards, table, diagram</text>
-            <line x1="497" y1="78" x2="592" y2="78" stroke="#7a321c" stroke-width="3" marker-end="url(#arrow)"/>
-            <rect x="606" y="32" width="170" height="92" rx="18" fill="#fffdf8" stroke="#b1592f" stroke-width="3"/>
-            <text x="691" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="#1b1f27">3 · Render</text>
-            <text x="691" y="98" text-anchor="middle" font-size="14" fill="#616a76">offline HTML/SVG</text>
-            <path d="M691 132 C691 190 107 190 107 132" fill="none" stroke="#b6aa99" stroke-width="3" stroke-dasharray="8 8"/>
-            <text x="399" y="214" text-anchor="middle" font-size="16" font-weight="700" fill="#1b1f27">4 · Validate and review before handoff</text>
+            <use href="#phase-node" x="22" y="32" width="170" height="92"/>
+            <text x="107" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="var(--text)">1 · Decide</text>
+            <text x="107" y="98" text-anchor="middle" font-size="14" fill="var(--text-muted)">direction and motif</text>
+            <line x1="205" y1="78" x2="300" y2="78" stroke="currentColor" stroke-width="3" marker-end="url(#arrow)"/>
+            <use href="#phase-node" x="314" y="32" width="170" height="92" style="color: var(--ink-accent);"/>
+            <text x="399" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="var(--text)">2 · Compose</text>
+            <text x="399" y="98" text-anchor="middle" font-size="14" fill="var(--text-muted)">cards, table, diagram</text>
+            <line x1="497" y1="78" x2="592" y2="78" stroke="currentColor" stroke-width="3" marker-end="url(#arrow)"/>
+            <use href="#phase-node" x="606" y="32" width="170" height="92"/>
+            <text x="691" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="var(--text)">3 · Render</text>
+            <text x="691" y="98" text-anchor="middle" font-size="14" fill="var(--text-muted)">offline HTML/SVG</text>
+            <path d="M691 132 C691 190 107 190 107 132" fill="none" stroke="var(--border-strong)" stroke-width="3" stroke-dasharray="8 8"/>
+            <text x="399" y="214" text-anchor="middle" font-size="16" font-weight="700" fill="var(--text)">4 · Validate and review before handoff</text>
           </svg>
-          <figcaption>Roadmap diagrams should be inline SVG or structured HTML, not raw diagram syntax. Include a text equivalent immediately nearby.</figcaption>
+          <figcaption>Roadmap diagrams should be inline SVG or structured HTML, not raw diagram syntax. Colors come from CSS tokens so theme/mode switches apply automatically.</figcaption>
         </figure>
         <ol>
           <li><strong>Decide:</strong> choose direction, memory hook, density, and diagram strategy.</li>
@@ -311,8 +527,10 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
           <li>Hero has a clear focal point and no meaningless dead zone.</li>
           <li>Known five-card sections use <code>grid-5-balanced</code> for 3+2 desktop composition.</li>
           <li>Tables surface recommendation, evidence, and verdict before detail scanning.</li>
-          <li>Diagrams include <code>figcaption</code> and a text equivalent list.</li>
+          <li>Tables use <code>tabular-nums</code>, <code>col--num</code> for right-aligned numeric columns, and <code>cell--bar / cell--trend / cell--heat / cell--diff-*</code> for in-cell emphasis.</li>
+          <li>Diagrams include <code>figcaption</code> and a text equivalent list. SVG uses <code>currentColor</code> + <code>var(--*)</code> so theme/mode switches propagate.</li>
           <li>Long Chinese, English, and code text does not overflow cards.</li>
+          <li>Dark mode (<code>prefers-color-scheme</code> or <code>data-mode="dark"</code>) and print mode preserve readability and contrast ≥ 4.5:1 for body text.</li>
           <li>No remote assets, network APIs, telemetry, or hidden requests.</li>
         </ul>
         <button type="button" data-copy="#checklist">Copy checklist</button>

@@ -109,6 +109,47 @@
         "If there are exactly seven components, the component grid uses a balanced 4+3 desktop layout such as grid-7-balanced.",
         "Failure modes and observability signals are organized in emphasized tables or cards."
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "把上季度的 P95 延迟、错误率、覆盖率、上线计数这 4 个指标做成离线 status dashboard，要 sparkline、bullet chart 对比目标，并允许按服务过滤。",
+      "expected_output": "Uses Status Brief with charts cookbook recipes: sparkline trend per metric, bullet chart vs target, filter chips for per-service drill-down. Tokens come from --chart-* / --seq-* and validator runs clean.",
+      "files": [],
+      "expectations": [
+        "Each metric card includes a sparkline (charts-cookbook recipe 3) or bullet chart (recipe 6), not just a number with a status pill.",
+        "Bullet charts show target vs actual with the target rendered as a distinct vertical line, not by color alone.",
+        "Chart colors come from var(--chart-*), var(--seq-*), or var(--*) tokens — no hard-coded brand hex inside SVG fill/stroke.",
+        "Filter chips use aria-pressed and remain operable via keyboard (interaction-cookbook recipe 1).",
+        "Every chart includes a <details><summary>View data</summary><table>...</table></details> text equivalent.",
+        "The validator runs clean with no SVG hard-coded-hex warning."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "我们的退款流程跨客户/客服/财务三个角色，做一个 swimlane 解释 artifact，要标出每一步的负责人和决策点。",
+      "expected_output": "Uses Architecture Atlas or Strategy Blueprint with diagram-cookbook recipe 3 (swimlane). Lanes are HTML grid sections with aria-labelledby; decision steps are visually distinguished with text + emphasis.",
+      "files": [],
+      "expectations": [
+        "The artifact contains a swimlane structure where each lane is a section/group with an accessible name (aria-labelledby).",
+        "Each lane lists ordered steps using <ol> so reading order is preserved for screen readers.",
+        "Decision steps are emphasized in text (e.g., a label such as 'decision' or distinct border) and not by color alone.",
+        "A figcaption explains why the swimlane matters; the diagram is followed by or paired with a text walkthrough.",
+        "Lane colors and step backgrounds reference var(--*) tokens; no hard-coded hex in cell/step styling."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "做一个含 search、severity filter 和列排序的代码审查 HTML workbench。",
+      "expected_output": "Uses Review Workbench with interaction-cookbook recipes: client-side search (recipe 2), filter chips for severity (recipe 1), sortable table for the file map (recipe 3), copy with feedback (recipe 9). All progressive enhancement: no JS still shows content.",
+      "files": [],
+      "expectations": [
+        "The artifact includes an <input type=\"search\"> with aria-controls pointing at the searchable region.",
+        "Severity filter chips are <button aria-pressed=\"...\"> in a labeled role=\"group\".",
+        "Sortable columns expose aria-sort and the header text is wrapped in a <button> for keyboard operability.",
+        "Each finding has a per-comment copy button using copy-with-feedback (aria-live status).",
+        "Without JavaScript, all findings remain visible (no JS-required blanks).",
+        "Severity colors are paired with text labels, never color alone."
+      ]
     }
   ]
 }

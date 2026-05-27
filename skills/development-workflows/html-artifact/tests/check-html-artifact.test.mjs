@@ -1,29 +1,33 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 
-const script = 'skills/development-workflows/html-artifact/scripts/check_html_artifact.py';
-const starterTemplatePath = 'skills/development-workflows/html-artifact/assets/starter-template.html';
+const script =
+  "skills/development-workflows/html-artifact/scripts/check_html_artifact.py";
+const starterTemplatePath =
+  "skills/development-workflows/html-artifact/assets/starter-template.html";
 
 function pythonCommand() {
-  const candidates = [process.env.PYTHON, 'python', 'python3', 'py'].filter(Boolean);
+  const candidates = [process.env.PYTHON, "python", "python3", "py"].filter(
+    Boolean,
+  );
   for (const candidate of candidates) {
-    const result = spawnSync(candidate, ['--version'], { encoding: 'utf8' });
+    const result = spawnSync(candidate, ["--version"], { encoding: "utf8" });
     if (result.status === 0) return candidate;
   }
-  return 'python';
+  return "python";
 }
 
 const python = pythonCommand();
-const starterTemplate = readFileSync(starterTemplatePath, 'utf8');
+const starterTemplate = readFileSync(starterTemplatePath, "utf8");
 
 function withTempFile(name, body, fn) {
-  const dir = mkdtempSync(join(tmpdir(), 'html-artifact-'));
+  const dir = mkdtempSync(join(tmpdir(), "html-artifact-"));
   const file = join(dir, name);
-  writeFileSync(file, body, 'utf8');
+  writeFileSync(file, body, "utf8");
   try {
     return fn(file);
   } finally {
@@ -34,7 +38,7 @@ function withTempFile(name, body, fn) {
 function run(file, args = []) {
   return spawnSync(python, [script, file, ...args], {
     cwd: process.cwd(),
-    encoding: 'utf8',
+    encoding: "utf8",
   });
 }
 
@@ -60,108 +64,219 @@ const validHtml = `<!doctype html>
 </body>
 </html>`;
 
-test('valid_offline_artifact_passes', () => {
-  withTempFile('valid.html', validHtml, (file) => {
+test("valid_offline_artifact_passes", () => {
+  withTempFile("valid.html", validHtml, (file) => {
     const result = run(file);
     assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.match(result.stdout, /validation: ok/);
   });
 });
 
-test('missing_body_fails', () => {
+test("missing_body_fails", () => {
   const html = `<!doctype html><html><head><meta charset="utf-8"><title>Bad</title></head><main><h1>Bad</h1></main></html>`;
-  withTempFile('missing-body.html', html, (file) => {
+  withTempFile("missing-body.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /missing <body>/);
   });
 });
 
-test('external_script_fails', () => {
-  const html = validHtml.replace('</body>', '<script src="https://example.test/app.js"></script></body>');
-  withTempFile('external-script.html', html, (file) => {
+test("external_script_fails", () => {
+  const html = validHtml.replace(
+    "</body>",
+    '<script src="https://example.test/app.js"></script></body>',
+  );
+  withTempFile("external-script.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /script src/);
   });
 });
 
-test('remote_stylesheet_fails', () => {
-  const html = validHtml.replace('</head>', '<link rel="stylesheet" href="https://example.test/app.css"></head>');
-  withTempFile('remote-style.html', html, (file) => {
+test("remote_stylesheet_fails", () => {
+  const html = validHtml.replace(
+    "</head>",
+    '<link rel="stylesheet" href="https://example.test/app.css"></head>',
+  );
+  withTempFile("remote-style.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /<link rel/);
   });
 });
 
-test('fetch_call_fails_by_default', () => {
-  const html = validHtml.replace('</script>', 'fetch("local.json");</script>');
-  withTempFile('fetch.html', html, (file) => {
+test("fetch_call_fails_by_default", () => {
+  const html = validHtml.replace("</script>", 'fetch("local.json");</script>');
+  withTempFile("fetch.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /fetch/);
   });
 });
 
-test('allow_external_flag_allows_http_but_not_missing_structure', () => {
-  const withHttp = validHtml.replace('<main id="main">', '<p>https://example.test/reference</p><main id="main">');
-  withTempFile('allowed-http.html', withHttp, (file) => {
-    const result = run(file, ['--allow-external']);
+test("allow_external_flag_allows_http_but_not_missing_structure", () => {
+  const withHttp = validHtml.replace(
+    '<main id="main">',
+    '<p>https://example.test/reference</p><main id="main">',
+  );
+  withTempFile("allowed-http.html", withHttp, (file) => {
+    const result = run(file, ["--allow-external"]);
     assert.equal(result.status, 0, result.stderr || result.stdout);
   });
 
   const missingStructure = `<html><head><meta charset="utf-8"><title>Missing</title></head><body><h1>Missing main</h1></body></html>`;
-  withTempFile('missing-main.html', missingStructure, (file) => {
-    const result = run(file, ['--allow-external']);
+  withTempFile("missing-main.html", missingStructure, (file) => {
+    const result = run(file, ["--allow-external"]);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /missing <main>/);
   });
 });
 
-test('inline_svg_with_xmlns_passes', () => {
-  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" aria-label="diagram"><rect width="40" height="40" fill="#4f46e5"/></svg>';
-  const html = validHtml.replace('</h1>', '</h1>' + svg);
-  withTempFile('svg-xmlns.html', html, (file) => {
+test("inline_svg_with_xmlns_passes", () => {
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" aria-label="diagram"><rect width="40" height="40" fill="#4f46e5"/></svg>';
+  const html = validHtml.replace("</h1>", "</h1>" + svg);
+  withTempFile("svg-xmlns.html", html, (file) => {
     const result = run(file);
     assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.match(result.stdout, /validation: ok/);
   });
 });
 
-test('main_without_id_fails', () => {
-  const html = validHtml.replace('<main id="main">', '<main>');
-  withTempFile('main-no-id.html', html, (file) => {
+test("main_without_id_fails", () => {
+  const html = validHtml.replace('<main id="main">', "<main>");
+  withTempFile("main-no-id.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /id="main"/);
   });
 });
 
-test('missing_viewport_fails', () => {
-  const html = validHtml.replace(/\s*<meta name="viewport"[^>]*>/, '');
-  withTempFile('no-viewport.html', html, (file) => {
+test("missing_viewport_fails", () => {
+  const html = validHtml.replace(/\s*<meta name="viewport"[^>]*>/, "");
+  withTempFile("no-viewport.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /viewport/);
   });
 });
 
-test('preload_link_fails', () => {
-  const html = validHtml.replace('</head>', '<link rel="preload" as="style" href="/x.css"></head>');
-  withTempFile('preload-link.html', html, (file) => {
+test("preload_link_fails", () => {
+  const html = validHtml.replace(
+    "</head>",
+    '<link rel="preload" as="style" href="/x.css"></head>',
+  );
+  withTempFile("preload-link.html", html, (file) => {
     const result = run(file);
     assert.notEqual(result.status, 0);
     assert.match(result.stdout, /<link rel/);
   });
 });
 
-test('starter_template_uses_fluid_wide_desktop_shell', () => {
+test("starter_template_uses_fluid_wide_desktop_shell", () => {
   assert.match(starterTemplate, /--app-shell-max:\s*\d+px/);
   assert.match(starterTemplate, /--app-shell-gutter:\s*clamp\(/);
   assert.match(
     starterTemplate,
-    /\.app-shell\s*\{[^}]*width:\s*min\(calc\(100vw - \(var\(--app-shell-gutter\) \* 2\)\), var\(--app-shell-max\)\)/s,
+    /\.app-shell\s*\{[^}]*width:\s*min\(\s*calc\(\s*100vw\s*-\s*\(\s*var\(--app-shell-gutter\)\s*\*\s*2\s*\)\s*\)\s*,\s*var\(--app-shell-max\)\s*\)/s,
   );
   assert.doesNotMatch(starterTemplate, /width:\s*min\(100%,\s*1240px\)/);
+});
+
+const tokenHeavyArtifact = (extraStyle = "", extraBody = "") => `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Token Artifact</title>
+  <style>
+    :focus-visible { outline: 2px solid var(--accent); }
+    @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+    ${extraStyle}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip</a>
+  <main id="main">
+    <h1>Token artifact</h1>
+    ${extraBody}
+  </main>
+</body>
+</html>`;
+
+test("hardcoded_color_count_warning_fires_above_threshold", () => {
+  const palette = Array.from(
+    { length: 30 },
+    (_, i) =>
+      `.bg-${i} { color: #${(0x100000 + i).toString(16).padStart(6, "0")}; }`,
+  ).join("\n");
+  withTempFile("hex-heavy.html", tokenHeavyArtifact(palette), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /hard-coded hex colors/);
+    assert.match(result.stdout, /threshold 24/);
+  });
+});
+
+test("hardcoded_color_count_includes_eight_digit_hex", () => {
+  const palette = Array.from(
+    { length: 30 },
+    (_, i) =>
+      `.overlay-${i} { background: #${(0x100000 + i).toString(16).padStart(6, "0")}cc; }`,
+  ).join("\n");
+  withTempFile("hex-alpha-heavy.html", tokenHeavyArtifact(palette), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /30 hard-coded hex colors/);
+  });
+});
+
+test("hardcoded_color_count_no_warning_when_inside_token_definitions", () => {
+  const tokens = Array.from(
+    { length: 30 },
+    (_, i) => `--brand-${i}: #${(0x100000 + i).toString(16).padStart(6, "0")};`,
+  ).join("\n");
+  const html = tokenHeavyArtifact(`:root { ${tokens} }`);
+  withTempFile("hex-tokens.html", html, (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.doesNotMatch(result.stdout, /hard-coded hex colors/);
+  });
+});
+
+test("svg_hardcoded_fill_warning_when_not_using_token", () => {
+  const svg =
+    '<figure><svg viewBox="0 0 10 10" role="img" aria-label="x"><rect width="10" height="10" fill="#ff0000"/></svg></figure>';
+  withTempFile("svg-hex.html", tokenHeavyArtifact("", svg), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /uses hard-coded hex in fill\/stroke/);
+  });
+});
+
+test("svg_currentcolor_fill_does_not_warn", () => {
+  const svg =
+    '<figure><svg viewBox="0 0 10 10" role="img" aria-label="x" style="color: var(--accent);"><rect width="10" height="10" fill="currentColor"/></svg></figure>';
+  withTempFile("svg-token.html", tokenHeavyArtifact("", svg), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.doesNotMatch(result.stdout, /uses hard-coded hex in fill\/stroke/);
+  });
+});
+
+test("table_without_caption_warns", () => {
+  const without =
+    "<table><thead><tr><th>A</th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>";
+  withTempFile("table-no-cap.html", tokenHeavyArtifact("", without), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /<table> block #1 has no <caption>/);
+  });
+  const withCap =
+    "<table><caption>Sample</caption><thead><tr><th>A</th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>";
+  withTempFile("table-cap.html", tokenHeavyArtifact("", withCap), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.doesNotMatch(result.stdout, /has no <caption>/);
+  });
 });
