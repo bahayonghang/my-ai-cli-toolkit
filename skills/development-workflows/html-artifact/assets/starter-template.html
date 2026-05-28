@@ -319,6 +319,8 @@ th[aria-sort="descending"]::after { content: " ▼"; opacity: .85; }
 /* Diagram frame */
 .diagram-frame { margin: var(--space-6) 0; padding: var(--space-5); background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-muted) 44%, transparent)); }
 .diagram-frame svg { display: block; width: 100%; height: auto; color: var(--accent); }
+.diagram-frame text, .svg-label { fill: var(--text); stroke: none; paint-order: normal; text-shadow: none; filter: none; font-weight: 650; }
+.diagram-frame text.svg-label--muted, .svg-label--muted { fill: var(--text-muted); font-size: 13px; font-weight: 500; }
 figcaption { margin-top: var(--space-3); color: var(--text-muted); font-size: .95rem; }
 
 /* Lane */
@@ -492,18 +494,18 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
               </symbol>
             </defs>
             <use href="#phase-node" x="22" y="32" width="170" height="92"/>
-            <text x="107" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="var(--text)">1 · Decide</text>
-            <text x="107" y="98" text-anchor="middle" font-size="14" fill="var(--text-muted)">direction and motif</text>
+            <text class="svg-label" x="107" y="70" text-anchor="middle" font-size="18">1 · Decide</text>
+            <text class="svg-label--muted" x="107" y="98" text-anchor="middle">direction and motif</text>
             <line x1="205" y1="78" x2="300" y2="78" stroke="currentColor" stroke-width="3" marker-end="url(#arrow)"/>
             <use href="#phase-node" x="314" y="32" width="170" height="92" style="color: var(--ink-accent);"/>
-            <text x="399" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="var(--text)">2 · Compose</text>
-            <text x="399" y="98" text-anchor="middle" font-size="14" fill="var(--text-muted)">cards, table, diagram</text>
+            <text class="svg-label" x="399" y="70" text-anchor="middle" font-size="18">2 · Compose</text>
+            <text class="svg-label--muted" x="399" y="98" text-anchor="middle">cards, table, diagram</text>
             <line x1="497" y1="78" x2="592" y2="78" stroke="currentColor" stroke-width="3" marker-end="url(#arrow)"/>
             <use href="#phase-node" x="606" y="32" width="170" height="92"/>
-            <text x="691" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="var(--text)">3 · Render</text>
-            <text x="691" y="98" text-anchor="middle" font-size="14" fill="var(--text-muted)">offline HTML/SVG</text>
+            <text class="svg-label" x="691" y="70" text-anchor="middle" font-size="18">3 · Render</text>
+            <text class="svg-label--muted" x="691" y="98" text-anchor="middle">offline HTML/SVG</text>
             <path d="M691 132 C691 190 107 190 107 132" fill="none" stroke="var(--border-strong)" stroke-width="3" stroke-dasharray="8 8"/>
-            <text x="399" y="214" text-anchor="middle" font-size="16" font-weight="700" fill="var(--text)">4 · Validate and review before handoff</text>
+            <text class="svg-label" x="399" y="214" text-anchor="middle" font-size="16">4 · Validate and review before handoff</text>
           </svg>
           <figcaption>Roadmap diagrams should be inline SVG or structured HTML, not raw diagram syntax. Colors come from CSS tokens so theme/mode switches apply automatically.</figcaption>
         </figure>

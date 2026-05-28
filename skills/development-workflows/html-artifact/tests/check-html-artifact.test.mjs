@@ -280,3 +280,64 @@ test("table_without_caption_warns", () => {
     assert.doesNotMatch(result.stdout, /has no <caption>/);
   });
 });
+
+test("svg_text_legibility_warning_flags_stroked_shadowed_long_labels", () => {
+  const riskyStyle = `
+    .diagram-frame text {
+      text-shadow: 0 2px 8px var(--accent);
+      paint-order: stroke;
+      filter: drop-shadow(0 1px 2px var(--text));
+    }
+  `;
+  const riskySvg = `
+    <figure class="diagram-frame">
+      <svg viewBox="0 0 720 160" role="img" aria-label="bad svg text">
+        <text x="40" y="80" stroke="var(--surface)" stroke-width="5" fill="var(--text)" font-weight="900">
+          TrainerDispatchMechanism.register_super_long_identifier_without_wrapping
+        </text>
+      </svg>
+      <figcaption>Bad text styling reproduces blurry SVG labels.</figcaption>
+    </figure>`;
+  withTempFile("svg-text-risk.html", tokenHeavyArtifact(riskyStyle, riskySvg), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /SVG text selector/);
+    assert.match(result.stdout, /text-shadow/);
+    assert.match(result.stdout, /paint-order: stroke/);
+    assert.match(result.stdout, /stroke-width/);
+    assert.match(result.stdout, /long unwrapped label/);
+  });
+});
+
+test("svg_fill_only_short_labels_with_text_equivalent_do_not_warn", () => {
+  const safeStyle = `
+    .diagram-frame text,
+    .svg-label {
+      fill: var(--text);
+      font-size: 14px;
+      font-weight: 650;
+    }
+  `;
+  const safeDiagram = `
+    <figure class="diagram-frame">
+      <svg viewBox="0 0 420 120" role="img" aria-labelledby="safe-t safe-d">
+        <title id="safe-t">Trainer dispatch flow.</title>
+        <desc id="safe-d">Trainer sends jobs to workers and records results.</desc>
+        <rect x="24" y="34" width="120" height="48" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+        <text class="svg-label" x="84" y="64" text-anchor="middle">Trainer</text>
+        <rect x="264" y="34" width="120" height="48" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+        <text class="svg-label" x="324" y="64" text-anchor="middle">Workers</text>
+      </svg>
+      <figcaption>Short labels stay in SVG; long identifiers live in the text equivalent.</figcaption>
+    </figure>
+    <ol>
+      <li><code>TrainerDispatchMechanism.register_super_long_identifier_without_wrapping</code> remains readable in HTML text.</li>
+    </ol>`;
+  withTempFile("svg-text-safe.html", tokenHeavyArtifact(safeStyle, safeDiagram), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.doesNotMatch(result.stdout, /SVG text selector/);
+    assert.doesNotMatch(result.stdout, /long unwrapped label/);
+    assert.doesNotMatch(result.stdout, /avoid stroke\/shadow\/filter on SVG text/);
+  });
+});

@@ -150,6 +150,19 @@
         "Without JavaScript, all findings remain visible (no JS-required blanks).",
         "Severity colors are paired with text labels, never color alone."
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "生成一个“训练器分发机制”的架构/流程 HTML artifact：要解释 trainer 如何分发 job、worker 如何回报结果、失败如何重试，并且代码标识必须清晰可读。",
+      "expected_output": "Uses Architecture Atlas or Strategy Blueprint with an inline SVG or HTML lane diagram whose SVG labels are short and fill-only, long code identifiers are placed in adjacent HTML text equivalents, and the validator reports no SVG text legibility warnings.",
+      "files": [],
+      "expectations": [
+        "The artifact uses inline SVG or a structured HTML lane for the trainer dispatch flow, paired with a figcaption and ordered list/table text equivalent.",
+        "SVG <text> labels stay short, such as 'Trainer', 'Dispatch', 'Worker', and 'Retry'; long identifiers are not stuffed into SVG text nodes.",
+        "Long code identifiers, paths, and mixed Chinese/English explanations appear in readable HTML lists, cards, or tables where they wrap naturally.",
+        "SVG labels are fill-only and do not use stroke, stroke-width, paint-order: stroke, text-shadow, filter, or drop-shadow to simulate bold text.",
+        "The validator command is run and reported with no SVG text legibility warning."
+      ]
     }
   ]
 }

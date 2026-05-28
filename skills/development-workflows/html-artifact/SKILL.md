@@ -133,6 +133,15 @@ Preferred order:
 
 Do not leave raw Mermaid syntax as the main visual expression. Even when the user provides Mermaid, convert the idea into static SVG or a readable HTML diagram with text equivalents.
 
+### SVG label legibility
+
+Inline SVG labels must stay crisp and short:
+
+- Use SVG `<text>` only for short node/edge labels. Put long code identifiers, file paths, mixed Chinese/English explanations, and nuanced prose in the adjacent ordered list, table, or card text equivalent.
+- Do **not** make SVG text bolder by adding `stroke`, `stroke-width`, `paint-order: stroke`, `text-shadow`, `filter`, or `drop-shadow`; these commonly blur screenshots and exported images.
+- Prefer the starter template label styles: `.svg-label` or `.diagram-frame text` with fill-only text, moderate font size, and moderate weight. Emphasize the surrounding node shape, border, fill, or nearby HTML annotation instead of outlining the letters.
+- If a label needs two short lines, split it deliberately with `<tspan>` and keep each line scannable. If it needs more than two short lines, use an HTML lane/card instead of SVG text.
+
 ## Required checks
 
 For generated artifacts, run `python skills/development-workflows/html-artifact/scripts/check_html_artifact.py <artifact.html>`.

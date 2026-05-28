@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from html import unescape
 import json
 import re
 from pathlib import Path
@@ -94,12 +95,23 @@ SUPPORTS_FALLBACK = re.compile(
     re.IGNORECASE,
 )
 SVG_BLOCK = re.compile(r"<svg\b[^>]*>.*?</svg\s*>", re.IGNORECASE | re.DOTALL)
+SVG_TEXT_BLOCK = re.compile(
+    r"<text\b(?P<attrs>[^>]*)>(?P<body>.*?)</text\s*>",
+    re.IGNORECASE | re.DOTALL,
+)
 SVG_HEX_ATTR = re.compile(
     r"""\b(?:fill|stroke|stop-color|flood-color|lighting-color)\s*=\s*['"]#[0-9a-f]{3,8}['"]""",
     re.IGNORECASE,
 )
+STYLE_BLOCK = re.compile(r"<style\b[^>]*>(.*?)</style\s*>", re.IGNORECASE | re.DOTALL)
+CSS_RULE = re.compile(r"(?P<selector>[^{}]+)\{(?P<body>[^{}]*)\}", re.DOTALL)
+ATTR_VALUE = re.compile(r"""\b(?P<name>[\w:-]+)\s*=\s*(?P<quote>['"])(?P<value>.*?)(?P=quote)""", re.DOTALL)
+TAG_BLOCK = re.compile(r"<[^>]+>")
 TABLE_BLOCK = re.compile(r"<table\b[^>]*>.*?</table\s*>", re.IGNORECASE | re.DOTALL)
 HAS_CAPTION = re.compile(r"<caption\b", re.IGNORECASE)
+
+SVG_LABEL_MAX_CHARS = 44
+SVG_LABEL_MAX_WORD_CHARS = 28
 
 
 def _strip_balanced_block(text: str, opener_match: re.Match[str]) -> str:
@@ -160,6 +172,135 @@ def _svg_token_warning(html: str) -> list[str]:
     return findings
 
 
+def _attr_map(attrs: str) -> dict[str, str]:
+    return {
+        match.group("name").lower(): match.group("value")
+        for match in ATTR_VALUE.finditer(attrs)
+    }
+
+
+def _style_decl_value(style: str, property_name: str) -> str | None:
+    pattern = re.compile(
+        rf"(?:^|;)\s*{re.escape(property_name)}\s*:\s*([^;]+)",
+        re.IGNORECASE,
+    )
+    match = pattern.search(style)
+    if not match:
+        return None
+    return match.group(1).strip()
+
+
+def _is_effectively_none(value: str) -> bool:
+    normalized = value.strip().lower()
+    return normalized in {"", "none", "0", "0px", "0em", "0rem", "normal", "initial", "inherit", "unset"}
+
+
+def _selector_can_target_svg_text(selector: str) -> bool:
+    selector_lower = selector.lower()
+    parts = [part.strip() for part in selector_lower.split(",")]
+    for part in parts:
+        if not part:
+            continue
+        if ".svg-label" in part:
+            return True
+        if "diagram-frame" in part and re.search(r"(?:^|[\s>+~])text(?:$|[\.#:\[\s>+~])", part):
+            return True
+        if re.search(r"(?:^|[\s>+~])svg(?:$|[\.#:\[\s>+~])", part) and (
+            re.search(r"(?:^|[\s>+~])text(?:$|[\.#:\[\s>+~])", part)
+            or "*" in part
+        ):
+            return True
+        if re.fullmatch(r"text(?:[\.#:\[].*)?", part):
+            return True
+    return False
+
+
+def _css_svg_text_warning(html: str) -> list[str]:
+    findings: list[str] = []
+    for style_idx, style_block in enumerate(STYLE_BLOCK.findall(html), start=1):
+        for rule in CSS_RULE.finditer(style_block):
+            selector = " ".join(rule.group("selector").split())
+            if not _selector_can_target_svg_text(selector):
+                continue
+            body = rule.group("body")
+            warning_properties: list[str] = []
+            text_shadow = _style_decl_value(body, "text-shadow")
+            if text_shadow and not _is_effectively_none(text_shadow):
+                warning_properties.append("text-shadow")
+            paint_order = _style_decl_value(body, "paint-order")
+            if paint_order and "stroke" in paint_order.lower():
+                warning_properties.append("paint-order: stroke")
+            filter_value = _style_decl_value(body, "filter")
+            if filter_value and not _is_effectively_none(filter_value):
+                warning_properties.append("filter")
+            if "drop-shadow(" in body.lower():
+                warning_properties.append("drop-shadow")
+            if warning_properties:
+                findings.append(
+                    f"<style> block #{style_idx} has SVG text selector '{selector}' "
+                    f"using {', '.join(dict.fromkeys(warning_properties))}; "
+                    "keep SVG labels fill-only and move emphasis to shapes or nearby HTML"
+                )
+    return findings
+
+
+def _text_content(markup: str) -> str:
+    return " ".join(unescape(TAG_BLOCK.sub(" ", markup)).split())
+
+
+def _svg_text_legibility_warning(html: str) -> list[str]:
+    findings: list[str] = []
+    for svg_idx, block in enumerate(SVG_BLOCK.findall(html), start=1):
+        for text_idx, match in enumerate(SVG_TEXT_BLOCK.finditer(block), start=1):
+            attrs = _attr_map(match.group("attrs"))
+            style = attrs.get("style", "")
+            risky: list[str] = []
+
+            stroke = attrs.get("stroke")
+            if stroke and not _is_effectively_none(stroke):
+                risky.append("stroke")
+            stroke_width = attrs.get("stroke-width") or _style_decl_value(style, "stroke-width")
+            if stroke_width and not _is_effectively_none(stroke_width):
+                risky.append("stroke-width")
+            style_stroke = _style_decl_value(style, "stroke")
+            if style_stroke and not _is_effectively_none(style_stroke):
+                risky.append("style stroke")
+            paint_order = attrs.get("paint-order") or _style_decl_value(style, "paint-order")
+            if paint_order and "stroke" in paint_order.lower():
+                risky.append("paint-order: stroke")
+            text_shadow = _style_decl_value(style, "text-shadow")
+            if text_shadow and not _is_effectively_none(text_shadow):
+                risky.append("text-shadow")
+            filter_attr = attrs.get("filter") or _style_decl_value(style, "filter")
+            if filter_attr and not _is_effectively_none(filter_attr):
+                risky.append("filter")
+            if "drop-shadow(" in style.lower():
+                risky.append("drop-shadow")
+
+            if risky:
+                findings.append(
+                    f"<svg> block #{svg_idx} <text> #{text_idx} uses "
+                    f"{', '.join(dict.fromkeys(risky))}; avoid stroke/shadow/filter on SVG text"
+                )
+
+            label = _text_content(match.group("body"))
+            longest_word = max((len(word) for word in re.split(r"\s+", label) if word), default=0)
+            if (
+                label
+                and "<tspan" not in match.group("body").lower()
+                and (
+                    len(label) > SVG_LABEL_MAX_CHARS
+                    or longest_word > SVG_LABEL_MAX_WORD_CHARS
+                )
+            ):
+                findings.append(
+                    f"<svg> block #{svg_idx} <text> #{text_idx} is a long unwrapped label "
+                    f"({len(label)} chars); keep SVG labels short, split with <tspan>, "
+                    "or move long code/path text to nearby HTML"
+                )
+    return findings
+
+
 def _caption_warning(html: str) -> list[str]:
     findings: list[str] = []
     for idx, block in enumerate(TABLE_BLOCK.findall(html), start=1):
@@ -201,6 +342,8 @@ def validate(path: Path, allow_external: bool = False) -> dict[str, Any]:
     if hex_msg:
         warnings.append(hex_msg)
     warnings.extend(_svg_token_warning(html))
+    warnings.extend(_css_svg_text_warning(html))
+    warnings.extend(_svg_text_legibility_warning(html))
     warnings.extend(_caption_warning(html))
 
     try:

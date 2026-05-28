@@ -62,6 +62,43 @@ Conventions worth keeping consistent:
 - **Labels**: short verb on the edge (`writes`, `polls`, `if invalid`). Put nuance in the figcaption or text equivalent.
 - **Colors**: leave fill/stroke at `currentColor` (controlled by the `style="color: …"` on `<svg>` or the surrounding element). Use `var(--ink-accent)` or `var(--text-muted)` on secondary edges to dim them.
 
+## SVG label legibility
+
+SVG text is for short labels, not dense prose. Long code identifiers, paths, and mixed Chinese/English explanations should live in the adjacent text equivalent (`<ol>`, `<dl>`, table, or card), where normal HTML wrapping and selection work reliably.
+
+Use fill-only labels:
+
+```html
+<style>
+  .diagram-frame text,
+  .svg-label {
+    fill: var(--text);
+    stroke: none;
+    paint-order: normal;
+    text-shadow: none;
+    filter: none;
+    font-weight: 650;
+  }
+  .svg-label--muted {
+    fill: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+</style>
+
+<text class="svg-label" x="120" y="64" text-anchor="middle">Trainer</text>
+<text class="svg-label--muted" x="120" y="86" text-anchor="middle">dispatch</text>
+```
+
+Avoid these SVG text patterns:
+
+- `stroke` / `stroke-width` on `<text>`.
+- `paint-order: stroke` on SVG labels.
+- `text-shadow`, `filter`, or `drop-shadow()` on SVG labels.
+- Single `<text>` nodes containing long identifiers such as `TrainerDispatchMechanism.register_super_long_identifier_without_wrapping`.
+
+If a node label needs two short lines, use separate `<text>` nodes or `<tspan>` lines. If it needs more detail, shorten the SVG label and move the detail into the figcaption or text-equivalent table.
+
 ## Text equivalent patterns
 
 Every diagram needs a parallel textual representation so screen readers, search, and copy-paste workflows still work.
