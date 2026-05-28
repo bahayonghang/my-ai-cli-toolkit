@@ -4,7 +4,7 @@ Use this template when dispatching a spec document reviewer subagent.
 
 **Purpose:** Verify the spec is complete, consistent, and ready for implementation planning.
 
-**Dispatch after:** Spec document is written to docs/superpowers/specs/
+**Dispatch after:** HTML spec document is written to `docs/spark/YYYY-MM-DD-<topic>-design.html`.
 
 ```
 Task tool (general-purpose):
@@ -13,6 +13,8 @@ Task tool (general-purpose):
     You are a spec document reviewer. Verify this spec is complete and ready for planning.
 
     **Spec to review:** [SPEC_FILE_PATH]
+
+    The spec should be a committed single-file offline HTML document under `docs/spark/`, normally named `YYYY-MM-DD-<topic>-design.html`.
 
     ## What to Check
 
@@ -23,6 +25,7 @@ Task tool (general-purpose):
     | Clarity | Requirements ambiguous enough to cause someone to build the wrong thing |
     | Scope | Focused enough for a single plan — not covering multiple independent subsystems |
     | YAGNI | Unrequested features, over-engineering |
+    | HTML contract | Single offline `.html` file, semantic structure, no remote dependencies, no unresolved template placeholders |
 
     ## Calibration
 
@@ -31,7 +34,9 @@ Task tool (general-purpose):
     interpreted two different ways — those are issues. Minor wording improvements,
     stylistic preferences, and "sections less detailed than others" are not.
 
-    Approve unless there are serious gaps that would lead to a flawed plan.
+    For HTML-specific checks, confirm the file has a doctype, `html lang`, charset, viewport, title, `main id="main"`, exactly one `h1`, the standard spec sections, inline CSS, no remote scripts/styles/fonts/images, no protocol-relative URLs, and no leftover template placeholders.
+
+    Approve unless there are serious gaps that would lead to a flawed plan or the HTML spec contract is broken.
 
     ## Output Format
 

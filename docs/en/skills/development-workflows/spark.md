@@ -4,12 +4,12 @@
 
 ## Purpose overview
 
-Spec-only brainstorming workflow for turning an idea into an approved design document.
+Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec.
 
 ## Trigger scenarios
 
 - the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation
-- Explores intent and requirements through dialogue, then writes a spec document to docs/spark/ and STOPS
+- Explores intent and requirements through dialogue, then writes a single-file HTML spec document to docs/spark/ and STOPS
 - Does not auto-chain to implementation planning or any other skill
 
 ## Metadata
@@ -18,7 +18,7 @@ Spec-only brainstorming workflow for turning an idea into an approved design doc
 | --- | --- |
 | Name | `spark` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.2` |
+| Version | `0.2.0` |
 | Tags | `brainstorming`, `spec-writing`, `product-design`, `requirements`, `planning` |
 
 ## Install command
@@ -31,25 +31,28 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill spark
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
+| `skills/development-workflows/spark/assets` | directory | 1 | Assets |
 | `skills/development-workflows/spark/README.md` | file | 1 | Top-level file |
 | `skills/development-workflows/spark/scripts` | directory | 5 | Executable scripts |
 | `skills/development-workflows/spark/spec-document-reviewer-prompt.md` | file | 1 | Top-level file |
+| `skills/development-workflows/spark/tests` | directory | 1 | Automated tests |
 | `skills/development-workflows/spark/visual-companion.md` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| assets | `skills/development-workflows/spark/assets` | Assets |
 | scripts | `skills/development-workflows/spark/scripts` | Executable scripts |
+| tests | `skills/development-workflows/spark/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

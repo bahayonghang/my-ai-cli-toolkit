@@ -1,7 +1,7 @@
 ---
 name: spark
-version: 0.1.2
-description: "Spec-only brainstorming workflow for turning an idea into an approved design document. Use when the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation. Explores intent and requirements through dialogue, then writes a spec document to docs/spark/ and STOPS. Does not auto-chain to implementation planning or any other skill."
+version: 0.2.0
+description: "Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec. Use when the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation. Explores intent and requirements through dialogue, then writes a single-file HTML spec document to docs/spark/ and STOPS. Does not auto-chain to implementation planning or any other skill."
 category: development-workflows
 tags:
   - brainstorming
@@ -35,7 +35,7 @@ You MUST create a task for each of these items and complete them in order:
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/spark/YYYY-MM-DD-<topic>-design.md` and commit
+6. **Write HTML design spec** — save to `docs/spark/YYYY-MM-DD-<topic>-design.html` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
 9. **Deliver spec to user and STOP** — report the spec file path; do not invoke any other skill or start implementation
@@ -51,7 +51,7 @@ digraph brainstorming {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
+    "Write HTML design spec" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
     "Deliver spec path to user and STOP" [shape=doublecircle];
@@ -64,15 +64,15 @@ digraph brainstorming {
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Spec self-review\n(fix inline)";
+    "User approves design?" -> "Write HTML design spec" [label="yes"];
+    "Write HTML design spec" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
+    "User reviews spec?" -> "Write HTML design spec" [label="changes requested"];
     "User reviews spec?" -> "Deliver spec path to user and STOP" [label="approved"];
 }
 ```
 
-**The terminal state is delivering the spec to the user. STOP.** Do NOT invoke any other skill, do NOT start implementation planning, do NOT write code. Report the spec path and end your turn — the user will decide what to do with the spec.
+**The terminal state is delivering the spec to the user. STOP.** Do NOT invoke any other skill, do NOT start implementation planning, do NOT write code. Report the HTML spec path and end your turn — the user will decide what to do with the spec.
 
 ## The Process
 
@@ -117,14 +117,24 @@ digraph brainstorming {
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/spark/YYYY-MM-DD-<topic>-design.md`
+- Write the validated design (spec) to `docs/spark/YYYY-MM-DD-<topic>-design.html`
   - (User preferences for spec location override this default)
-- Commit the design document to git
+- Build the file from `assets/spec-template.html`: copy the template structure, replace its example content with the confirmed design, and keep the same semantic section order unless the user explicitly requests a different structure.
+- Commit the HTML design spec to git
+
+**HTML Spec Output Contract:**
+
+- Produce one self-contained `.html` file that can be opened offline.
+- Use semantic HTML with exactly one `h1`, a `main id="main"`, and clear section headings.
+- Keep CSS inline in a `<style>` block; do not load remote scripts, stylesheets, fonts, images, iframes, or protocol-relative URLs.
+- Include the standard sections from `assets/spec-template.html`: Summary, Goals, Non-goals, Context, Recommended Approach, Alternatives, Design Details, Risks, Test/Acceptance Criteria, and Review Status.
+- Leave no unresolved template placeholders such as TODO, TBD, `[placeholder]`, or lorem ipsum.
+- Make it printable and readable without JavaScript; only add inline vanilla JavaScript if the spec genuinely needs progressive disclosure.
 
 **Spec Self-Review:**
-After writing the spec document, look at it with fresh eyes:
+After writing the HTML spec document, look at it with fresh eyes:
 
-1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague requirements? Fix them.
+1. **Placeholder scan:** Any "TBD", "TODO", bracket placeholders, lorem ipsum, incomplete sections, or vague requirements? Fix them.
 2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
 3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
@@ -134,13 +144,13 @@ Fix any issues inline. No need to re-review — just fix and move on.
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "HTML spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
 **Done — STOP here:**
 
-- Report the spec file path to the user and end your turn.
+- Report the HTML spec file path to the user and end your turn.
 - Do NOT invoke any other skill.
 - Do NOT start implementation planning or write any code.
 - The user will decide what to do with the spec on their own.
@@ -171,4 +181,4 @@ A browser-based companion for showing mockups, diagrams, and visual options duri
 A question about a UI topic is not automatically a visual question. "What does personality mean in this context?" is a conceptual question — use the terminal. "Which wizard layout works better?" is a visual question — use the browser.
 
 If they agree to the companion, read the detailed guide before proceeding:
-`skills/brainstorming/visual-companion.md`
+`visual-companion.md`

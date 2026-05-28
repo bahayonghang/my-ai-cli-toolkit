@@ -1,6 +1,6 @@
 # spark
 
-Standalone brainstorming skill. Asks one question at a time to refine an idea, presents 2–3 approaches with tradeoffs, writes a spec to `docs/spark/YYYY-MM-DD-<topic>-design.md`, then stops.
+Standalone brainstorming skill. Asks one question at a time to refine an idea, presents 2–3 approaches with tradeoffs, writes a single-file offline HTML spec to `docs/spark/YYYY-MM-DD-<topic>-design.html`, then stops.
 
 See [SKILL.md](./SKILL.md) for the full skill content (this is what Claude reads when the skill triggers).
 
@@ -18,8 +18,8 @@ Functional intent: original `brainstorming` ends by handing off to `writing-plan
 - name: brainstorming
 - description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 + name: spark
-+ version: 0.1.2
-+ description: "Spec-only brainstorming workflow for turning an idea into an approved design document. Use when the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation. Explores intent and requirements through dialogue, then writes a spec document to docs/spark/ and STOPS. Does not auto-chain to implementation planning or any other skill."
++ version: 0.2.0
++ description: "Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec. Use when the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation. Explores intent and requirements through dialogue, then writes a single-file HTML spec document to docs/spark/ and STOPS. Does not auto-chain to implementation planning or any other skill."
 + category: development-workflows
 + tags:
 +   - brainstorming
@@ -61,7 +61,7 @@ The description was rewritten to make the "stops after spec" behavior explicit �
 #### 5. "After the Design / Documentation" — cross-plugin dep removed
 
 ```diff
-  - Write the validated design (spec) to `docs/spark/YYYY-MM-DD-<topic>-design.md`
+  - Write the validated design (spec) to `docs/spark/YYYY-MM-DD-<topic>-design.html`
     - (User preferences for spec location override this default)
 - - Use elements-of-style:writing-clearly-and-concisely skill if available
   - Commit the design document to git
@@ -95,12 +95,18 @@ All three references changed:
 
 # in checklist step 6 and Documentation section:
 - docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md
-+ docs/spark/YYYY-MM-DD-<topic>-design.md
++ docs/spark/YYYY-MM-DD-<topic>-design.html
 ```
 
 The original Superpowers plugin namespaced every skill's artifacts under `docs/superpowers/` to isolate them from the project's own `docs/`. For a single standalone skill that's just visual noise — the spec is project documentation, so it goes under `docs/spark/` directly.
 
-#### 8. Skill directory renamed
+#### 8. Spec output switched to offline HTML
+
+The default final artifact is now `docs/spark/YYYY-MM-DD-<topic>-design.html` instead of Markdown. `assets/spec-template.html` provides the committed spec shell: a standalone, printable, semantic HTML document with inline CSS and no remote dependencies. This is separate from `scripts/frame-template.html`, which remains Visual Companion runtime UI and is not reused for final specs.
+
+The spec reviewer prompt now checks the HTML contract as well as content readiness: single-file/offline structure, required sections, no remote resources, no protocol-relative URLs, and no unresolved template placeholders.
+
+#### 9. Skill directory renamed
 
 `skills/brainstorming/` → `skills/spark/`. Matches the `name:` field in the frontmatter and keeps the install path `~/.claude/skills/spark/` distinct from anyone running the original `superpowers:brainstorming`.
 
@@ -111,7 +117,7 @@ The original Superpowers plugin namespaced every skill's artifacts under `docs/s
 - Visual companion feature — browser-based mockup viewer in `scripts/` and `visual-companion.md`
 - Spec self-review loop (placeholder scan, internal consistency, scope, ambiguity)
 - All key principles: one question at a time, multiple choice preferred, YAGNI, explore alternatives, incremental validation, be flexible
-- The subagent spec reviewer prompt template (`spec-document-reviewer-prompt.md`)
+- The subagent spec reviewer prompt template (`spec-document-reviewer-prompt.md`), updated with HTML-specific checks
 
 ## License
 
