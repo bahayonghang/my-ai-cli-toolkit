@@ -17,6 +17,7 @@ Select the smallest HTML template that makes the user's output easier to review.
 | Plan, PRD, migration, roadmap | Strategy Blueprint | phases, milestones, risks, validation, rollback | user only needs a short task list |
 | Code review, PR explanation | Review Workbench | findings, severities, diff snippets, changed files | no code/diff context is available |
 | Architecture/data-flow | Architecture Atlas | components, interfaces, system boundary, failure path | task is mostly project status |
+| Codebase architecture audit / call mechanism analysis | Architecture Atlas + Review Workbench + Strategy Blueprint | 调用机制, 架构优化, 枚举选择, 冗余, trainer/worker, model trainers, module boundary, dispatch, failure/retry path | user only wants a small code fix or short explanation |
 | Option comparison | Decision Matrix Studio | alternatives, criteria, recommendation, rejected options | there is only one viable option |
 | Research synthesis | Evidence Dossier | sources, confidence, evidence vs inference | source-free brainstorming |
 | Project/release status | Status Brief | shipped/slipped/blocked, metrics, asks | deep RCA or research is needed |
@@ -29,6 +30,7 @@ Select the smallest HTML template that makes the user's output easier to review.
 
 - Plan + research: Strategy Blueprint with a short Evidence section and citation appendix.
 - Review + architecture: Review Workbench with an Architecture Atlas component map.
+- Codebase architecture audit: Architecture Atlas as the spine, Review Workbench for findings/redundancy, and Strategy Blueprint for implementation roadmap. Required sections: evidence summary, current call graph, selection/enum mechanism, redundancy matrix, architecture risks, recommendation, implementation route, verification checklist.
 - Decision + plan: Decision Matrix Studio with a Strategy Blueprint implementation slice.
 - Status + incident: Status Brief with a compact Incident Timeline; do not hide impact/root cause.
 - Editor + report: Interactive Editor with a read-only summary panel and export actions.

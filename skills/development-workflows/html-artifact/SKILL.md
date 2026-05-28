@@ -80,6 +80,23 @@ Translate frontend-design principles into this skill's hard constraints:
 
 Load `references/template-selection.md` when choosing a template. Use the first matching primary goal, then combine secondary sections if needed.
 
+### Codebase architecture audit routing
+
+When the user asks to deeply analyze a codebase architecture, call mechanism, enum/selection strategy, module boundaries, redundancy, trainer/worker dispatch, or model-trainer organization, default to an **Architecture Atlas + Review Workbench + Strategy Blueprint** report rather than a generic polished page. Treat this as an evidence-driven architecture audit artifact, not production UI and not a code-editing skill.
+
+Use this fixed report contract unless the user gives a narrower structure:
+
+1. Evidence summary: files, symbols, commands, and confidence for each claim.
+2. Current call graph: entrypoints, dispatch path, trainer/worker handoff, result path, and failure/retry path.
+3. Selection / enum mechanism: how choices are represented today and where the recommended enum belongs.
+4. Redundancy matrix: overlapping responsibilities, duplicate seams, retain/delete/merge recommendation, and owner.
+5. Architecture risks: coupling, hidden state, fragile naming, observability gaps, and migration risk.
+6. Recommended solution: boundary changes, naming strategy, simplification order, and explicit rejected alternatives.
+7. Implementation roadmap: staged, reversible work with validation gates.
+8. Verification checklist: static checks, tests, docs updates, and artifact validator result.
+
+Enum recommendations must include a table with these columns: current entrypoint, recommended enum type, recommended member names, naming basis, caller impact, and documentation update point. Keep long code identifiers in HTML tables/lists; use short SVG labels only.
+
 | User goal                                                | Start with               |
 | -------------------------------------------------------- | ------------------------ |
 | Implementation plan, PRD, roadmap, migration plan        | Strategy Blueprint       |
@@ -120,6 +137,7 @@ The starter template includes reusable primitives. Prefer these over ad-hoc CSS 
 - **Finite grids**: `grid-2`, `grid-3`, `grid-4`, `grid-5-balanced` (`3+2` desktop), and `grid-7-balanced` (`4+3` desktop). All grid children should tolerate long mixed-language text.
 - **Tables**: `table--matrix`, `table--evidence`, and `table--decision`; use `is-recommended`, `key-row`, `verdict-column`, or `evidence-column` to make conclusions scannable.
 - **Diagram frames**: `figure.diagram-frame` with inline SVG, timeline/phase lanes, or structured HTML diagrams; always include `figcaption` and a text equivalent list or table.
+- **Architecture audit primitives**: `architecture-map`, `boundary-band`, `evidence-rail`, `edge-legend`, and `risk-heat` for codebase audit pages that need C4-lite boundaries, traceable evidence, call edges, and risk density.
 
 ## Diagram strategy
 

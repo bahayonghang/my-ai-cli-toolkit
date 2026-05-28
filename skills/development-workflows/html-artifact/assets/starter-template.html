@@ -323,6 +323,25 @@ th[aria-sort="descending"]::after { content: " ▼"; opacity: .85; }
 .diagram-frame text.svg-label--muted, .svg-label--muted { fill: var(--text-muted); font-size: 13px; font-weight: 500; }
 figcaption { margin-top: var(--space-3); color: var(--text-muted); font-size: .95rem; }
 
+/* Architecture audit primitives */
+.architecture-map { border-color: color-mix(in srgb, var(--accent) 34%, var(--border)); }
+.architecture-map .boundary-band { fill: color-mix(in srgb, var(--accent-soft) 58%, transparent); stroke: currentColor; stroke-width: 2; }
+.boundary-band { border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border)); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--accent-soft) 36%, var(--surface)); padding: var(--space-4); }
+.boundary-band > h3 { display: flex; align-items: center; gap: var(--space-2); }
+.boundary-band > h3::before { content: ""; width: .75rem; height: .75rem; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.evidence-rail { display: grid; gap: var(--space-3); border-left: 5px solid var(--accent); padding-left: var(--space-4); }
+.evidence-rail .evidence-item { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); padding: var(--space-3); }
+.evidence-rail .evidence-item strong { display: block; margin-bottom: .2rem; }
+.edge-legend { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0; padding: 0; list-style: none; }
+.edge-legend li { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); padding: .35rem .65rem; font-size: .9rem; }
+.edge-legend .edge-swatch { width: 1.75rem; height: 0; border-top: 3px solid var(--accent); }
+.edge-legend .edge-swatch.result { border-top-color: var(--success); }
+.edge-legend .edge-swatch.failure { border-top-color: var(--danger); border-top-style: dashed; }
+.risk-heat { --risk: 35; border-left: 6px solid color-mix(in srgb, var(--danger) calc(var(--risk) * 1%), var(--accent)); background: color-mix(in srgb, var(--danger-soft) calc(var(--risk) * .8%), var(--surface)); }
+.risk-heat[data-risk="high"] { --risk: 80; }
+.risk-heat[data-risk="medium"] { --risk: 48; }
+.risk-heat[data-risk="low"] { --risk: 18; }
+
 /* Lane */
 .lane { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin: var(--space-4) 0; }
 .lane-step { position: relative; min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); padding: var(--space-4); }
@@ -346,6 +365,7 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
   .grid-4, .grid-7-balanced { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-7-balanced > *, .grid-7-balanced > :nth-child(n+5) { grid-column: auto; }
   .summary-strip, .lane { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .evidence-rail { border-left-width: 4px; }
 }
 @media (max-width: 720px) {
   .app-shell { padding: var(--space-4); }
@@ -374,6 +394,7 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
       <a href="#cards">Cards</a>
       <a href="#matrix">Matrix</a>
       <a href="#roadmap">Roadmap</a>
+      <a href="#architecture-audit">Architecture audit</a>
       <a href="#checklist">Checklist</a>
     </nav>
     <main id="main">
@@ -523,12 +544,68 @@ button[aria-pressed="true"], .filter-chip.is-active { border-color: var(--accent
         </div>
       </section>
 
+
+      <section id="architecture-audit" aria-labelledby="architecture-audit-title">
+        <h2 id="architecture-audit-title">Architecture audit primitives</h2>
+        <div class="grid grid-2">
+          <figure class="diagram-frame architecture-map">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 320" role="img" aria-labelledby="audit-svg-title audit-svg-desc" style="color: var(--accent);">
+              <title id="audit-svg-title">Codebase audit call graph with boundary bands.</title>
+              <desc id="audit-svg-desc">Entrypoint calls dispatch, dispatch selects a trainer, trainer sends work to a worker, and failure returns through retry.</desc>
+              <defs>
+                <marker id="audit-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker>
+              </defs>
+              <rect class="boundary-band" x="22" y="42" width="736" height="232" rx="22"/>
+              <text class="svg-label--muted" x="54" y="76">Module boundary</text>
+              <rect x="270" y="92" width="250" height="132" rx="18" fill="var(--accent-soft)" stroke="currentColor" stroke-width="2"/>
+              <text class="svg-label--muted" x="292" y="122">Trainer boundary</text>
+              <rect x="62" y="150" width="118" height="54" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+              <text class="svg-label" x="121" y="182" text-anchor="middle">Entry</text>
+              <rect x="286" y="150" width="118" height="54" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+              <text class="svg-label" x="345" y="182" text-anchor="middle">Dispatch</text>
+              <rect x="476" y="150" width="118" height="54" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+              <text class="svg-label" x="535" y="182" text-anchor="middle">Trainer</text>
+              <rect x="626" y="150" width="96" height="54" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+              <text class="svg-label" x="674" y="182" text-anchor="middle">Worker</text>
+              <path d="M180 177 H280" fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#audit-arrow)"/>
+              <path d="M404 177 H470" fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#audit-arrow)"/>
+              <path d="M594 177 H620" fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#audit-arrow)"/>
+              <path d="M674 208 C674 256 345 256 345 208" fill="none" stroke="var(--danger)" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#audit-arrow)"/>
+              <text class="svg-label--muted" x="500" y="270" text-anchor="middle">Retry</text>
+            </svg>
+            <figcaption>Use short SVG labels for call shape; put exact files, symbols, and recommendations in adjacent text equivalents.</figcaption>
+          </figure>
+          <aside class="evidence-rail" aria-label="Evidence examples">
+            <div class="evidence-item"><strong>Evidence</strong><code>src/industrytslib/core/model_trainers</code> shows the trainer boundary.</div>
+            <div class="evidence-item"><strong>Inference</strong>Dispatch owns selection; confidence depends on call-site coverage.</div>
+            <div class="evidence-item risk-heat" data-risk="medium"><strong>Risk</strong>Retry and result paths blur if worker failures are not visible.</div>
+          </aside>
+        </div>
+        <ul class="edge-legend" aria-label="Call edge legend">
+          <li><span class="edge-swatch" aria-hidden="true"></span> Call / dispatch</li>
+          <li><span class="edge-swatch result" aria-hidden="true"></span> Result / success</li>
+          <li><span class="edge-swatch failure" aria-hidden="true"></span> Failure / retry</li>
+        </ul>
+        <div class="table-wrap">
+          <table class="table--evidence">
+            <caption>Architecture audit tables should make evidence, enum selection, redundancy, and risk reviewable.</caption>
+            <thead><tr><th>Audit surface</th><th>Required structure</th><th>Primitive</th></tr></thead>
+            <tbody>
+              <tr class="key-row"><td>Call graph</td><td>entrypoint, dispatch, trainer, worker, result, failure path</td><td><code>architecture-map</code></td></tr>
+              <tr><td>Enum advice</td><td>current entrypoint, enum type, member names, naming basis, caller impact, docs</td><td><code>table--decision</code></td></tr>
+              <tr><td>Redundancy</td><td>location A/B, overlap, risk, retain/delete/merge, proof needed</td><td><code>risk-heat</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <section id="checklist" aria-labelledby="checklist-title">
         <h2 id="checklist-title">Checklist</h2>
         <ul>
           <li>Hero has a clear focal point and no meaningless dead zone.</li>
           <li>Known five-card sections use <code>grid-5-balanced</code> for 3+2 desktop composition.</li>
           <li>Tables surface recommendation, evidence, and verdict before detail scanning.</li>
+          <li>Architecture audit artifacts use <code>architecture-map</code>, <code>boundary-band</code>, <code>evidence-rail</code>, <code>edge-legend</code>, and <code>risk-heat</code> when call mechanisms, enum choices, or redundancy are under review.</li>
           <li>Tables use <code>tabular-nums</code>, <code>col--num</code> for right-aligned numeric columns, and <code>cell--bar / cell--trend / cell--heat / cell--diff-*</code> for in-cell emphasis.</li>
           <li>Diagrams include <code>figcaption</code> and a text equivalent list. SVG uses <code>currentColor</code> + <code>var(--*)</code> so theme/mode switches propagate.</li>
           <li>Long Chinese, English, and code text does not overflow cards.</li>

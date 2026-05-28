@@ -474,3 +474,74 @@ Use for research dossiers and decision artifacts where the reader needs to trust
 - Provide a parallel source table beneath the diagram with `Source · Date · Confidence · Used for` columns (see `tables-cookbook.md` recipe 2). The SVG only needs to show structure; the table carries the citation detail.
 
 Both Recipe 8 and 9 deliberately stay short — they describe *patterns* you compose from the SVG primitives at the top of this file and the table recipes in `tables-cookbook.md`. The structural payoff comes from naming the relationship clearly (owner / fallback; evidence / inference), not from clever geometry.
+
+
+## Recipe 10 — C4-lite module boundary map
+
+Use for codebase architecture audits when full C4 would be too heavy. Draw only the layers that matter for the decision: context, container, or component. Do not mix every repository file into one diagram.
+
+- Start with the outer system boundary and one or two nested `boundary-band` regions.
+- Use short node labels in SVG: `CLI`, `API`, `Trainer`, `Store`, `Worker`.
+- Put file paths, class names, and evidence snippets in the adjacent evidence rail or table.
+- Mark boundary crossings with an `edge-legend`: call, data, event, failure/retry.
+
+```html
+<figure class="diagram-frame architecture-map">
+  <svg viewBox="0 0 920 360" role="img" aria-labelledby="c4lite-t c4lite-d" style="color: var(--accent);">
+    <title id="c4lite-t">C4-lite module boundary map.</title>
+    <desc id="c4lite-d">Entrypoint calls the dispatch layer, which selects a trainer and hands work to workers inside the training boundary.</desc>
+    <defs>
+      <marker id="c4lite-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker>
+    </defs>
+    <rect x="28" y="36" width="864" height="280" rx="22" fill="var(--surface)" stroke="currentColor" stroke-width="2"/>
+    <text class="svg-label--muted" x="60" y="68">System boundary</text>
+    <rect x="260" y="86" width="370" height="190" rx="18" fill="var(--accent-soft)" stroke="currentColor" stroke-width="2"/>
+    <text class="svg-label--muted" x="286" y="118">Training boundary</text>
+    <rect x="70" y="150" width="130" height="58" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/><text class="svg-label" x="135" y="184" text-anchor="middle">Entrypoint</text>
+    <rect x="300" y="150" width="130" height="58" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/><text class="svg-label" x="365" y="184" text-anchor="middle">Dispatch</text>
+    <rect x="470" y="150" width="130" height="58" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/><text class="svg-label" x="535" y="184" text-anchor="middle">Trainer</text>
+    <rect x="710" y="150" width="130" height="58" rx="12" fill="var(--surface)" stroke="currentColor" stroke-width="2"/><text class="svg-label" x="775" y="184" text-anchor="middle">Worker</text>
+    <path d="M200 179 H294" fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#c4lite-arrow)"/>
+    <path d="M430 179 H464" fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#c4lite-arrow)"/>
+    <path d="M600 179 H704" fill="none" stroke="currentColor" stroke-width="3" marker-end="url(#c4lite-arrow)"/>
+  </svg>
+  <figcaption>C4-lite view: show only the boundary levels needed to discuss module ownership and call direction.</figcaption>
+</figure>
+<ol>
+  <li><strong>Entrypoint</strong> calls <strong>Dispatch</strong>; cite concrete files in a nearby table.</li>
+  <li><strong>Dispatch</strong> selects <strong>Trainer</strong>; enum advice belongs in the selection table.</li>
+  <li><strong>Trainer</strong> delegates to <strong>Worker</strong>; long identifiers stay outside the SVG.</li>
+</ol>
+```
+
+## Recipe 11 — Call / dispatch flow with failure path
+
+Use for trainer, worker, queue, pipeline, and job-dispatch audits.
+
+- Separate normal path, result path, and failure/retry path with both stroke style and text legend.
+- Include entrypoint, dispatch, selected trainer, worker, result sink, and retry/failure handler.
+- If there are many concrete functions, group them in HTML tables; the SVG should show flow shape only.
+
+Required adjacent table columns: step, source symbol/file, target symbol/file, edge type, evidence, failure behavior.
+
+## Recipe 12 — Enum selection decision map
+
+Use for “which enum should represent this choice?” or “how should model/trainer modes be named?” questions.
+
+- Draw a small decision flow with diamonds for selection criteria and a highlighted recommended path.
+- Do not make enum names depend only on current UI wording; include naming basis: domain language, caller intent, storage compatibility, and docs wording.
+- Pair the diagram with the required enum table: current entrypoint, recommended enum type, recommended member names, naming basis, caller impact, documentation update point.
+
+Keep enum member candidates in HTML tables so long names wrap and remain copyable.
+
+## Recipe 13 — Redundancy overlap map
+
+Use when the audit needs to show repeated responsibilities across modules.
+
+Prefer a table when it is clearer than geometry. If drawing, use SVG only for the overlap structure, then a redundancy matrix below it.
+
+Required redundancy matrix columns: location A, location B, overlapping responsibility, why it is risky, recommendation (`merge`, `delete`, `retain`, `split`), proof needed before change.
+
+- Use `risk-heat` or `cell--heat` for risk density, but pair color with explicit text.
+- Name the safe order: first lock behavior with tests/evidence, then delete or merge one seam at a time.
+- If duplication is intentional, mark it as `retain` and document the boundary rule.

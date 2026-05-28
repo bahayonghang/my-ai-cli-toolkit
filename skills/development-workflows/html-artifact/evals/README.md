@@ -23,10 +23,15 @@ If you wire these evals into the upstream `eval-viewer/generate_review.py` pipel
 | 7 | VibeDeck vs ccr-ui executive analysis regression | yes | Evidence Dossier + Decision Matrix Studio |
 | 8 | Executive implementation plan with visual roadmap | yes | Strategy Blueprint |
 | 9 | Before/after architecture explainer | yes | Architecture Atlas |
+| 10 | Offline status dashboard with charts/filtering | yes | Status Brief |
+| 11 | Role swimlane explainer | yes | Architecture Atlas or Strategy Blueprint |
+| 12 | Interactive code review workbench | yes | Review Workbench |
+| 13 | Trainer dispatch architecture flow | yes | Architecture Atlas or Strategy Blueprint |
+| 14 | Codebase architecture audit with enum/redundancy review | yes | Architecture Atlas + Review Workbench + Strategy Blueprint |
 
 Ids 1–4 verify positive triggering and correct template selection. Ids 5–6 verify the skill does **not** trigger for short transactional outputs.
 
-Ids 7–9 are design-regression prompts. They are intentionally human-judgeable:
+Ids 7–13 are design-regression prompts. Id 14 is the architecture-audit regression for deep codebase analysis, call mechanisms, enum selection, redundancy review, and implementation-route reporting. They are intentionally human-judgeable:
 
 - outer shell meaningfully uses desktop width instead of sitting inside a narrow ~1100–1300 px centered cap when the page has navigation or a side rail;
 - hero has no large meaningless blank zone;
@@ -36,3 +41,14 @@ Ids 7–9 are design-regression prompts. They are intentionally human-judgeable:
 - roadmaps/architecture use inline SVG or structured HTML diagrams with text equivalents.
 
 Use `references/design-review-checklist.md` for qualitative review. Keep `scripts/check_html_artifact.py` limited to objective structure, offline safety, and baseline accessibility checks.
+
+
+## Architecture audit evaluation focus
+
+For codebase architecture audit artifacts, review these points manually:
+
+- Evidence is traceable: files, symbols, commands, and confidence are visible instead of implied.
+- The SVG or structured HTML diagram clarifies the architecture better than prose alone; if it does not, prefer a table.
+- Current call graph, enum selection, redundancy matrix, risks, recommendation, implementation route, and verification checklist are all present.
+- Recommendations are executable: each suggested boundary/enum/redundancy change names caller impact, docs impact, proof needed, and validation gate.
+- Long identifiers remain in HTML lists/tables where they wrap; SVG labels stay short, fill-only, and accessible.

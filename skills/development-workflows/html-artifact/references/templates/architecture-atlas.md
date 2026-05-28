@@ -29,6 +29,23 @@ Diagram-first canvas with side inspector cards, thin connector lines, calm backg
 - Every diagram must include a `figcaption` plus a text equivalent list or table describing nodes, edges, and direction.
 - Raw Mermaid can be used as scratch input, but the final artifact should inline static SVG or use a structured HTML lane.
 
+
+## Codebase-audit variant
+
+Use this variant for requests about call mechanisms, architecture optimization, enum selection, redundant modules, trainer/worker dispatch, model trainers, or unclear module boundaries.
+
+Combine **Architecture Atlas + Review Workbench + Strategy Blueprint** while keeping Architecture Atlas as the spine:
+
+1. Start with a diagram-first architecture section before prose. Show the current call graph or C4-lite module boundary first.
+2. Separate every claim into **evidence**, **inference**, or **recommendation**. Evidence names files/symbols/commands; inference states confidence; recommendation names impact and verification.
+3. Include the fixed audit structure: evidence summary, current call graph, selection/enum mechanism, redundancy matrix, architecture risks, recommended solution, implementation roadmap, verification checklist.
+4. For enum/selection advice, include a table with: current entrypoint, recommended enum type, recommended member names, naming basis, caller impact, documentation update point.
+5. Use a redundancy matrix for duplicate responsibilities: location A, location B, overlap, risk, merge/delete/retain recommendation, and proof needed before changing.
+6. Keep SVG labels short (`CLI`, `Dispatch`, `Trainer`, `Worker`, `Retry`, `Result`). Put long identifiers, paths, Chinese explanation, and nuanced rationale in adjacent cards/tables.
+7. Treat diagrams as evidence organizers, not decoration: every diagram needs a figcaption and nearby text equivalent.
+
+Recommended visual stack: `architecture-map` for boundaries, `evidence-rail` for traceability, `edge-legend` for call/result/failure edge meaning, and `risk-heat` for risk density.
+
 ## Core components
 Inline SVG diagram, component cards, contract snippets, failure-mode table, and observability checklist.
 

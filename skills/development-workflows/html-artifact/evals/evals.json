@@ -163,6 +163,24 @@
         "SVG labels are fill-only and do not use stroke, stroke-width, paint-order: stroke, text-shadow, filter, or drop-shadow to simulate bold text.",
         "The validator command is run and reported with no SVG text legibility warning."
       ]
+    },
+    {
+      "id": 14,
+      "prompt": "请深入分析 src/industrytslib/core/model_trainers 的代码架构、调用机制、模型训练器选择方式和冗余设计，生成一个离线 HTML 架构审查报告。报告要包含当前调用图、枚举选择建议、冗余矩阵、架构优化路线，并在末尾给出 validator 结果。",
+      "expected_output": "Uses Architecture Atlas + Review Workbench + Strategy Blueprint as a codebase architecture audit. The artifact is evidence-driven, diagram-first, includes current call graph, enum recommendation table, redundancy matrix, actionable optimization roadmap, verification checklist, and validator result.",
+      "files": [
+        "src/industrytslib/core/model_trainers"
+      ],
+      "expectations": [
+        "The response routes to a codebase architecture audit using Architecture Atlas as the spine, not a generic beautiful report page.",
+        "The artifact starts with a current call graph or C4-lite boundary map before long prose, using inline SVG or structured HTML with figcaption and text equivalent.",
+        "The evidence summary separates evidence, inference, and recommendation, with concrete files/symbols/commands for traceability.",
+        "The enum selection advice appears as a table with current entrypoint, recommended enum type, recommended member names, naming basis, caller impact, and documentation update point.",
+        "The redundancy review appears as a matrix naming duplicated responsibilities, affected locations, risk, retain/delete/merge recommendation, and proof needed before change.",
+        "The architecture optimization route is staged and actionable, with validation gates rather than vague best-practice advice.",
+        "Long paths and identifiers such as src/industrytslib/core/model_trainers stay in adjacent HTML tables/lists; SVG labels remain short and fill-only.",
+        "The final response reports the html-artifact validator result and any remaining warnings."
+      ]
     }
   ]
 }
