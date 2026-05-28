@@ -71,6 +71,10 @@ OFFLINE_CHECKS: tuple[tuple[re.Pattern[str], str], ...] = (
         "contains sendBeacon",
     ),
     (re.compile(r"\bnew\s+WebSocket\b", re.IGNORECASE), "contains WebSocket"),
+    (re.compile(r"\bEventSource\s*\(", re.IGNORECASE), "contains EventSource"),
+    (re.compile(r"\bfetchLater\s*\(", re.IGNORECASE), "contains fetchLater"),
+    (re.compile(r"<a\b[^>]*\bping\s*=", re.IGNORECASE), "contains <a ping=...>"),
+    (re.compile(r"""(?<!:)//[^\s'"<>]+""", re.IGNORECASE), "contains protocol-relative URL"),
 )
 
 WARNING_CHECKS: tuple[tuple[re.Pattern[str], str], ...] = (
@@ -109,6 +113,22 @@ ATTR_VALUE = re.compile(r"""\b(?P<name>[\w:-]+)\s*=\s*(?P<quote>['"])(?P<value>.
 TAG_BLOCK = re.compile(r"<[^>]+>")
 TABLE_BLOCK = re.compile(r"<table\b[^>]*>.*?</table\s*>", re.IGNORECASE | re.DOTALL)
 HAS_CAPTION = re.compile(r"<caption\b", re.IGNORECASE)
+H1_TAG = re.compile(r"<h1\b", re.IGNORECASE)
+MERMAID_BLOCK = re.compile(
+    r"(?:^|>|\n)\s*(?:graph\s+(?:TD|TB|BT|LR|RL)|flowchart\s+(?:TD|TB|BT|LR|RL)|sequenceDiagram\b|classDiagram\b|stateDiagram(?:-v2)?\b|erDiagram\b|journey\b|gantt\b|pie\b|mindmap\b|timeline\b)",
+    re.IGNORECASE | re.MULTILINE,
+)
+FIGURE_DIAGRAM_BLOCK = re.compile(
+    r"<figure\b(?=[^>]*\bclass\s*=\s*['\"][^'\"]*\bdiagram-frame\b)[^>]*>.*?</figure\s*>",
+    re.IGNORECASE | re.DOTALL,
+)
+HAS_FIGCAPTION = re.compile(r"<figcaption\b", re.IGNORECASE)
+TITLE_TAG = re.compile(r"<title\b[^>]*>.*?</title\s*>", re.IGNORECASE | re.DOTALL)
+DESC_TAG = re.compile(r"<desc\b[^>]*>.*?</desc\s*>", re.IGNORECASE | re.DOTALL)
+SVG_OPEN = re.compile(r"<svg\b(?P<attrs>[^>]*)>", re.IGNORECASE | re.DOTALL)
+ACCESSIBLE_NAME_ATTR = re.compile(
+    r"\b(?:aria-label|aria-labelledby|title)\s*=\s*(['\"])[^'\"]+\1", re.IGNORECASE | re.DOTALL
+)
 
 SVG_LABEL_MAX_CHARS = 44
 SVG_LABEL_MAX_WORD_CHARS = 28
@@ -301,6 +321,55 @@ def _svg_text_legibility_warning(html: str) -> list[str]:
     return findings
 
 
+def _h1_count_error(html: str) -> str | None:
+    count = len(H1_TAG.findall(html))
+    if count > 1:
+        return f"multiple <h1> elements found ({count}); use exactly one document-level <h1>"
+    return None
+
+
+def _raw_mermaid_warning(html: str) -> list[str]:
+    if MERMAID_BLOCK.search(html):
+        return [
+            "raw Mermaid-like diagram syntax found; convert final diagrams to inline SVG or structured HTML with a text equivalent"
+        ]
+    return []
+
+
+def _diagram_frame_warning(html: str) -> list[str]:
+    findings: list[str] = []
+    for idx, block in enumerate(FIGURE_DIAGRAM_BLOCK.findall(html), start=1):
+        if not HAS_FIGCAPTION.search(block):
+            findings.append(
+                f"figure.diagram-frame block #{idx} has no <figcaption>; add a caption explaining what the diagram proves"
+            )
+    return findings
+
+
+def _svg_accessibility_warning(html: str) -> list[str]:
+    findings: list[str] = []
+    for idx, block in enumerate(SVG_BLOCK.findall(html), start=1):
+        opening = SVG_OPEN.search(block)
+        attrs = opening.group("attrs") if opening else ""
+        role_img = re.search(r"\brole\s*=\s*(['\"])img\1", attrs, re.IGNORECASE)
+        aria_hidden = re.search(r"\baria-hidden\s*=\s*(['\"])true\1", attrs, re.IGNORECASE)
+        informative = bool(role_img or ACCESSIBLE_NAME_ATTR.search(attrs)) and not aria_hidden
+        if not informative:
+            continue
+        missing: list[str] = []
+        if not TITLE_TAG.search(block):
+            missing.append("<title>")
+        if not DESC_TAG.search(block):
+            missing.append("<desc>")
+        if not ACCESSIBLE_NAME_ATTR.search(attrs):
+            missing.append("accessible name")
+        if missing:
+            findings.append(
+                f"informative <svg> block #{idx} is missing {', '.join(missing)}; add title/desc and aria-label or aria-labelledby"
+            )
+    return findings
+
+
 def _caption_warning(html: str) -> list[str]:
     findings: list[str] = []
     for idx, block in enumerate(TABLE_BLOCK.findall(html), start=1):
@@ -328,6 +397,10 @@ def validate(path: Path, allow_external: bool = False) -> dict[str, Any]:
         if not pattern.search(html):
             errors.append(message)
 
+    h1_error = _h1_count_error(html)
+    if h1_error:
+        errors.append(h1_error)
+
     if not allow_external:
         scrubbed = XMLNS_ATTR.sub("", html)
         for pattern, message in OFFLINE_CHECKS:
@@ -341,6 +414,9 @@ def validate(path: Path, allow_external: bool = False) -> dict[str, Any]:
     hex_msg = _hex_count_warning(html)
     if hex_msg:
         warnings.append(hex_msg)
+    warnings.extend(_raw_mermaid_warning(html))
+    warnings.extend(_diagram_frame_warning(html))
+    warnings.extend(_svg_accessibility_warning(html))
     warnings.extend(_svg_token_warning(html))
     warnings.extend(_css_svg_text_warning(html))
     warnings.extend(_svg_text_legibility_warning(html))

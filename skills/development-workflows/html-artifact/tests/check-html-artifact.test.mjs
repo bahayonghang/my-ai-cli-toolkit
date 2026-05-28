@@ -341,3 +341,91 @@ test("svg_fill_only_short_labels_with_text_equivalent_do_not_warn", () => {
     assert.doesNotMatch(result.stdout, /avoid stroke\/shadow\/filter on SVG text/);
   });
 });
+
+
+test("multiple_h1_fails", () => {
+  const html = validHtml.replace("</main>", "<h1>Second heading</h1></main>");
+  withTempFile("two-h1.html", html, (file) => {
+    const result = run(file);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stdout, /multiple <h1>/);
+  });
+});
+
+test("raw_mermaid_warns", () => {
+  const mermaid = "<pre>flowchart TD\n  A --> B</pre>";
+  withTempFile("mermaid.html", tokenHeavyArtifact("", mermaid), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /raw Mermaid-like diagram syntax/);
+  });
+});
+
+test("diagram_frame_without_figcaption_warns", () => {
+  const diagram = `
+    <figure class="diagram-frame">
+      <svg viewBox="0 0 100 40" role="img" aria-labelledby="d-t d-d">
+        <title id="d-t">Diagram</title><desc id="d-d">A simple diagram.</desc>
+        <rect width="40" height="30" fill="var(--surface)" stroke="currentColor"/>
+      </svg>
+    </figure>`;
+  withTempFile("diagram-no-caption.html", tokenHeavyArtifact("", diagram), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /figure\.diagram-frame block #1 has no <figcaption>/);
+  });
+});
+
+test("informative_svg_missing_title_desc_accessible_name_warns", () => {
+  const svg = '<svg viewBox="0 0 10 10" role="img"><rect width="10" height="10" fill="currentColor"/></svg>';
+  withTempFile("svg-a11y.html", tokenHeavyArtifact("", svg), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /informative <svg> block #1/);
+    assert.match(result.stdout, /<title>/);
+    assert.match(result.stdout, /<desc>/);
+    assert.match(result.stdout, /accessible name/);
+  });
+});
+
+test("informative_svg_with_title_desc_accessible_name_does_not_warn", () => {
+  const svg = `
+    <svg viewBox="0 0 10 10" role="img" aria-labelledby="ok-t ok-d">
+      <title id="ok-t">OK diagram</title>
+      <desc id="ok-d">Small square diagram.</desc>
+      <rect width="10" height="10" fill="currentColor"/>
+    </svg>`;
+  withTempFile("svg-a11y-ok.html", tokenHeavyArtifact("", svg), (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0);
+    assert.doesNotMatch(result.stdout, /informative <svg> block #1/);
+  });
+});
+
+test("additional_offline_network_surfaces_fail", () => {
+  const cases = [
+    ["event-source.html", "new EventSource('events')", /EventSource/],
+    ["fetch-later.html", "fetchLater('/later')", /fetchLater/],
+    ["a-ping.html", '<a href="#" ping="/track">tracked</a>', /<a ping/],
+    ["protocol-relative.html", '<img alt="x" src="//example.test/x.png">', /protocol-relative URL/],
+  ];
+  for (const [name, payload, expected] of cases) {
+    const html = name.endsWith(".html") && name.includes("a-ping")
+      ? validHtml.replace("</main>", `${payload}</main>`)
+      : validHtml.replace("</script>", `${payload};</script>`);
+    withTempFile(name, html, (file) => {
+      const result = run(file);
+      assert.notEqual(result.status, 0, `${name} should fail`);
+      assert.match(result.stdout, expected);
+    });
+  }
+});
+
+test("starter_template_includes_architecture_audit_primitives", () => {
+  assert.match(starterTemplate, /\.architecture-map/);
+  assert.match(starterTemplate, /\.boundary-band/);
+  assert.match(starterTemplate, /\.evidence-rail/);
+  assert.match(starterTemplate, /\.edge-legend/);
+  assert.match(starterTemplate, /\.risk-heat/);
+  assert.match(starterTemplate, /id="architecture-audit"/);
+});
