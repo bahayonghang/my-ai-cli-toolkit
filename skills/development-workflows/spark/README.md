@@ -1,6 +1,6 @@
 # spark
 
-Standalone brainstorming skill. Asks one question at a time to refine an idea, presents 2–3 approaches with tradeoffs, writes a single-file offline HTML spec to `docs/spark/YYYY-MM-DD-<topic>-design.html`, then stops.
+Standalone brainstorming skill. Drives clarifying choices through the `AskUserQuestion` tool, presents 2–3 approaches with tradeoffs, writes a single-file offline HTML spec to `<project-root>/.spark/YYYY-MM-DD-<topic>-design.html` (gitignored), then hands off to Claude Code plan mode (`EnterPlanMode`) to draft the implementation plan.
 
 See [SKILL.md](./SKILL.md) for the full skill content (this is what Claude reads when the skill triggers).
 
@@ -10,7 +10,7 @@ Extracted from [`brainstorming`](https://github.com/obra/superpowers/tree/main/s
 
 ### Changes vs. the original
 
-Functional intent: original `brainstorming` ends by handing off to `writing-plans`, which chains into `executing-plans` / `subagent-driven-development`. `spark` cuts the pipeline at the spec — once the spec is written, the turn ends.
+Functional intent: original `brainstorming` ends by handing off to `writing-plans`, which chains into `executing-plans` / `subagent-driven-development`. `spark` v0.2 cut the pipeline at the spec entirely; v0.3 restores a planning chain but uses the native `EnterPlanMode` tool instead of the legacy `writing-plans` / `executing-plans` skills. The spec write remains the user-approval gate; the implementation plan is drafted inside plan mode and gated by `ExitPlanMode`.
 
 #### 1. Frontmatter rewritten
 
@@ -18,8 +18,8 @@ Functional intent: original `brainstorming` ends by handing off to `writing-plan
 - name: brainstorming
 - description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 + name: spark
-+ version: 0.2.0
-+ description: "Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec. Use when the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation. Explores intent and requirements through dialogue, then writes a single-file HTML spec document to docs/spark/ and STOPS. Does not auto-chain to implementation planning or any other skill."
++ version: 0.3.0
++ description: "Spec-first brainstorming workflow for turning an idea into an approved offline HTML design spec, then drafting an actionable implementation plan. Use when the user wants to brainstorm an idea or design a feature/spec. Drives clarifying choices through the AskUserQuestion tool, writes a single-file offline HTML spec to <project-root>/.spark/, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec. The spec write is the gate — no code runs until both spec and plan are explicitly approved."
 + category: development-workflows
 + tags:
 +   - brainstorming
@@ -30,94 +30,119 @@ Functional intent: original `brainstorming` ends by handing off to `writing-plan
 + argument-hint: "[idea-or-feature-brief]"
 ```
 
-The description was rewritten to make the "stops after spec" behavior explicit — Claude reads this to decide whether to invoke the skill, so the new wording prevents misuse expecting implementation follow-through. `category`, `tags`, and `argument-hint` keep repository docs and skill discovery aligned with the generated catalog contract. A `version` field was added (optional per the [agent skills spec](https://agentskills.io/specification)) for future bumps.
+The description was rewritten to make both the spec-write gate and the plan-mode handoff explicit — Claude reads this to decide whether to invoke the skill, so the new wording sets expectations correctly. `category`, `tags`, and `argument-hint` keep repository docs and skill discovery aligned with the generated catalog contract. The `version` field tracks the spec-only (v0.2) → plan-mode-handoff (v0.3) evolution.
 
 #### 2. Checklist step 9 — terminal action
 
 ```diff
 - 9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
-+ 9. **Deliver spec to user and STOP** — report the spec file path; do not invoke any other skill or start implementation
++ 9. **Hand off to plan mode** — call the EnterPlanMode tool and run the implementation-plan workflow using the spec file as the primary requirements input. The user approves the resulting plan via ExitPlanMode.
 ```
+
+A new step `8b. Plan-mode pre-check` was added between 8 and 9 to handle the "spark invoked while plan mode is already active" case (file writes outside the plan file are blocked in plan mode, so spark surfaces a choice instead of failing silently).
 
 #### 3. Process-flow graphviz — terminal node
 
 ```diff
 - "Invoke writing-plans skill" [shape=doublecircle];
-+ "Deliver spec path to user and STOP" [shape=doublecircle];
++ "Call EnterPlanMode\n→ implementation plan workflow" [shape=doublecircle];
 
   ...
 
 - "User reviews spec?" -> "Invoke writing-plans skill" [label="approved"];
-+ "User reviews spec?" -> "Deliver spec path to user and STOP" [label="approved"];
++ "User reviews spec?" -> "Call EnterPlanMode\n→ implementation plan workflow" [label="approved"];
 ```
+
+The dialogue nodes were also annotated with `(AskUserQuestion ...)` to make the structured-choice flow visible in the diagram.
 
 #### 4. "Terminal state" paragraph after the flowchart
 
 ```diff
 - **The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
-+ **The terminal state is delivering the spec to the user. STOP.** Do NOT invoke any other skill, do NOT start implementation planning, do NOT write code. Report the spec path and end your turn — the user will decide what to do with the spec.
++ **After the user approves the HTML spec, call the EnterPlanMode tool.** Do NOT write code or modify project files (other than .gitignore and the spec file itself), and do NOT invoke any other skill. EnterPlanMode hands control to Claude Code's native plan workflow; ExitPlanMode is the final user gate before any implementation begins.
 ```
 
-#### 5. "After the Design / Documentation" — cross-plugin dep removed
+The legacy `writing-plans` handoff is replaced by the native plan-mode tool. No skill chain — spark just calls `EnterPlanMode` and the harness takes over.
+
+#### 5. "After the Design / Documentation" — path and commit policy
 
 ```diff
-  - Write the validated design (spec) to `docs/spark/YYYY-MM-DD-<topic>-design.html`
+- - Write the validated design (spec) to `docs/spark/YYYY-MM-DD-<topic>-design.html`
++ - Write the validated design (spec) to `<project-root>/.spark/YYYY-MM-DD-<topic>-design.html`
     - (User preferences for spec location override this default)
 - - Use elements-of-style:writing-clearly-and-concisely skill if available
-  - Commit the design document to git
+- - Commit the design document to git
++ - Do not commit — `.spark/` is gitignored working state, not committed source.
 ```
 
-The removed line referenced a skill from a different plugin (`elements-of-style`) that doesn't exist in this standalone distribution — leaving it would cause the model to attempt invoking a nonexistent skill.
+The cross-plugin dependency on `elements-of-style:writing-clearly-and-concisely` (which doesn't exist in this distribution) was removed. The spec is now per-workspace scratchpad, not committed documentation — the new `.spark/` directory is added to the project's `.gitignore` on first write.
 
-#### 6. Final "Implementation:" section — replaced entirely
+#### 6. Final "Implementation:" section — replaced with "Plan-mode handoff"
 
 ```diff
 - **Implementation:**
 -
 - - Invoke the writing-plans skill to create a detailed implementation plan
 - - Do NOT invoke any other skill. writing-plans is the next step.
-+ **Done — STOP here:**
++ **Plan-mode handoff:**
 +
-+ - Report the spec file path to the user and end your turn.
-+ - Do NOT invoke any other skill.
-+ - Do NOT start implementation planning or write any code.
-+ - The user will decide what to do with the spec on their own.
++ - After spec approval, call the EnterPlanMode tool with an opening message naming the spec path.
++ - Inside plan mode, treat the spec file as the primary requirements input; run the standard Phase 1-5 plan workflow.
++ - The user approves the plan via ExitPlanMode. Implementation begins only after that.
++ - Do NOT invoke any other skill (writing-plans, executing-plans, subagent-driven-development, etc.) — EnterPlanMode is the only sanctioned handoff.
++ - If the user declines the plan-mode step, report the spec path and end the turn (preserves the old terminal behavior as opt-out).
 ```
 
-#### 7. Spec output path — out of the `superpowers/` namespace
-
-All three references changed:
+#### 7. Spec output path — `.spark/` (gitignored, project-local)
 
 ```diff
 # in frontmatter description:
 - writes a spec document to docs/superpowers/specs/ and STOPS
-+ writes a spec document to docs/spark/ and STOPS
++ writes a single-file offline HTML spec to <project-root>/.spark/, then enters plan mode
 
 # in checklist step 6 and Documentation section:
 - docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md
-+ docs/spark/YYYY-MM-DD-<topic>-design.html
++ <project-root>/.spark/YYYY-MM-DD-<topic>-design.html
 ```
 
-The original Superpowers plugin namespaced every skill's artifacts under `docs/superpowers/` to isolate them from the project's own `docs/`. For a single standalone skill that's just visual noise — the spec is project documentation, so it goes under `docs/spark/` directly.
+v0.2 moved the path to `docs/spark/` and committed the specs to git. v0.3 reframes the spec as per-workspace scratchpad — the natural place is a dotfile working directory (`.spark/`), gitignored on first write. Users who want spec history can override the location or move approved specs elsewhere by hand.
 
-#### 8. Spec output switched to offline HTML
+#### 8. Spec output switched to offline HTML (v0.2) + visual refresh (v0.3)
 
-The default final artifact is now `docs/spark/YYYY-MM-DD-<topic>-design.html` instead of Markdown. `assets/spec-template.html` provides the committed spec shell: a standalone, printable, semantic HTML document with inline CSS and no remote dependencies. This is separate from `scripts/frame-template.html`, which remains Visual Companion runtime UI and is not reused for final specs.
+v0.2 introduced `assets/spec-template.html` as the committed spec shell: standalone, printable, semantic HTML with inline CSS and no remote dependencies.
 
-The spec reviewer prompt now checks the HTML contract as well as content readiness: single-file/offline structure, required sections, no remote resources, no protocol-relative URLs, and no unresolved template placeholders.
+v0.3 reworked the template visually based on real-use feedback:
+
+- Single-column layout (~1140px container) — the prior sidebar TOC swallowed screen width and the content area felt cramped.
+- Section cards with a 3px accent left-border, subtle surface tint, and rounded corners — sections used to be separated only by a 1px line.
+- Neutral palette (slate + indigo accent) instead of warm beige.
+- Interactive `<input type="checkbox">` for Test/Acceptance Criteria, Risks, and Review Status (wrapped in `<label>` for full-row clickability). Goals/Non-goals/etc. remain plain `<ul>` since they're scope assertions, not work trackers.
+- Print stylesheet updated to preserve the accent stripe on paper.
+
+The offline single-file contract is preserved: no `<script>`, no `<link>`, no remote URLs.
+
+The spec reviewer prompt now also flags layout regressions (sidebar TOC reappearance, warm beige palette, missing checkboxes in the tracked sections).
 
 #### 9. Skill directory renamed
 
 `skills/brainstorming/` → `skills/spark/`. Matches the `name:` field in the frontmatter and keeps the install path `~/.claude/skills/spark/` distinct from anyone running the original `superpowers:brainstorming`.
 
+#### 10. AskUserQuestion adopted for structured choices (v0.3)
+
+Clarifying questions, approach selection, and section-by-section confirmation now all flow through the `AskUserQuestion` tool when the decision reduces to 2-4 mutually-exclusive options. Plain text is reserved for genuinely open-ended prompts (free-form context, follow-up clarifications). This makes the dialogue significantly more usable in plan mode (where `AskUserQuestion` is the primary clarification surface) and clearer outside plan mode too.
+
+#### 11. Plan-mode handoff (v0.3)
+
+After the user approves the HTML spec, spark calls `EnterPlanMode` and the standard plan-mode workflow drafts the implementation plan. A new "Plan mode already active" branch in `SKILL.md` handles the case where spark is invoked inside an existing plan-mode session (file writes are blocked, so spark surfaces a choice between exit-and-rewrite vs. plan-inline).
+
 ### Preserved as-is
 
-- 9-step checklist structure, the `<HARD-GATE>` block, the "This Is Too Simple To Need A Design" anti-pattern
-- Graphviz process flow (only the terminal node was retargeted)
+- 9-step checklist structure (with the new step 8b for the plan-mode pre-check), the `<HARD-GATE>` block, the "This Is Too Simple To Need A Design" anti-pattern
+- Graphviz process flow shape (only the terminal node was retargeted and dialogue nodes annotated)
 - Visual companion feature — browser-based mockup viewer in `scripts/` and `visual-companion.md`
 - Spec self-review loop (placeholder scan, internal consistency, scope, ambiguity)
-- All key principles: one question at a time, multiple choice preferred, YAGNI, explore alternatives, incremental validation, be flexible
-- The subagent spec reviewer prompt template (`spec-document-reviewer-prompt.md`), updated with HTML-specific checks
+- All key principles: one question at a time, YAGNI, explore alternatives, incremental validation, be flexible
+- The subagent spec reviewer prompt template (`spec-document-reviewer-prompt.md`), updated with the v0.3 layout / checkbox checks
 
 ## License
 

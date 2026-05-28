@@ -38,7 +38,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [html-artifact](/skills/development-workflows/html-artifact) — Create single-file, self-contained HTML artifacts for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
 - [implementation-notes](/skills/development-workflows/implementation-notes) — Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding.
 - [improve-codebase-architecture](/skills/development-workflows/improve-codebase-architecture) — Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies.
-- [spark](/skills/development-workflows/spark) — Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec.
+- [spark](/skills/development-workflows/spark) — Spec-first brainstorming workflow for turning an idea into an approved offline HTML design spec, then drafting an actionable implementation plan.
 
 ### 文档写作与发布
 

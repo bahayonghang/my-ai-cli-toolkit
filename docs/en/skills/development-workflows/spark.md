@@ -4,13 +4,13 @@
 
 ## Purpose overview
 
-Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec.
+Spec-first brainstorming workflow for turning an idea into an approved offline HTML design spec, then drafting an actionable implementation plan.
 
 ## Trigger scenarios
 
-- the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation
-- Explores intent and requirements through dialogue, then writes a single-file HTML spec document to docs/spark/ and STOPS
-- Does not auto-chain to implementation planning or any other skill
+- the user wants to brainstorm an idea or design a feature/spec
+- Drives clarifying choices through the AskUserQuestion tool, writes a single-file offline HTML spec to the project root's .spark/ directory, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec
+- The spec write is the gate — no code runs until both spec and plan are explicitly approved
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Spec-only brainstorming workflow for turning an idea into an approved offline HT
 | --- | --- |
 | Name | `spark` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Tags | `brainstorming`, `spec-writing`, `product-design`, `requirements`, `planning` |
 
 ## Install command

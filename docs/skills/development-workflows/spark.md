@@ -4,13 +4,13 @@
 
 ## 用途概览
 
-Spec-only brainstorming workflow for turning an idea into an approved offline HTML design spec.
+Spec-first brainstorming workflow for turning an idea into an approved offline HTML design spec, then drafting an actionable implementation plan.
 
 ## 触发场景
 
-- the user wants to brainstorm an idea or design a feature/spec, especially when the result should be a written spec rather than immediate implementation
-- Explores intent and requirements through dialogue, then writes a single-file HTML spec document to docs/spark/ and STOPS
-- Does not auto-chain to implementation planning or any other skill
+- the user wants to brainstorm an idea or design a feature/spec
+- Drives clarifying choices through the AskUserQuestion tool, writes a single-file offline HTML spec to the project root's .spark/ directory, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec
+- The spec write is the gate — no code runs until both spec and plan are explicitly approved
 
 ## 元数据
 
@@ -18,7 +18,7 @@ Spec-only brainstorming workflow for turning an idea into an approved offline HT
 | --- | --- |
 | 名称 | `spark` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.2.0` |
+| 版本 | `0.3.0` |
 | 标签 | `brainstorming`, `spec-writing`, `product-design`, `requirements`, `planning` |
 
 ## 安装命令

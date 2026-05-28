@@ -1,353 +1,454 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Spark Design Spec</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f7f3ea;
-      --surface: #fffaf0;
-      --text: #211f1a;
-      --muted: #655f52;
-      --line: #ded4c3;
-      --accent: #7c3aed;
-      --accent-contrast: #ffffff;
-      --shadow: 0 24px 70px rgba(44, 35, 20, 0.12);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    @media (prefers-color-scheme: dark) {
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spark Design Spec</title>
+    <style>
       :root {
-        --bg: #17130f;
-        --surface: #211b16;
-        --text: #f4eadb;
-        --muted: #c8bca9;
-        --line: #3d3329;
-        --accent: #a78bfa;
-        --accent-contrast: #19111f;
-        --shadow: none;
-      }
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 16%, transparent), transparent 32rem), var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-    }
-
-    a { color: var(--accent); }
-
-    .page {
-      display: grid;
-      grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
-      gap: 2rem;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .toc {
-      position: sticky;
-      top: 1rem;
-      align-self: start;
-      padding: 1.25rem;
-      border: 1px solid var(--line);
-      border-radius: 1.25rem;
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
-      box-shadow: var(--shadow);
-    }
-
-    .toc strong {
-      display: block;
-      margin-bottom: 0.75rem;
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .toc ul {
-      display: grid;
-      gap: 0.4rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .toc a {
-      display: block;
-      padding: 0.35rem 0.5rem;
-      border-radius: 0.65rem;
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    .toc a:hover,
-    .toc a:focus-visible {
-      background: color-mix(in srgb, var(--accent) 14%, transparent);
-      outline: none;
-    }
-
-    main {
-      min-width: 0;
-      padding: 2.5rem;
-      border: 1px solid var(--line);
-      border-radius: 1.6rem;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-    }
-
-    header {
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 2rem;
-    }
-
-    h1 {
-      margin: 0 0 0.75rem;
-      font-size: clamp(2rem, 5vw, 4rem);
-      line-height: 1.05;
-      letter-spacing: -0.04em;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .meta li {
-      padding: 0.2rem 0.65rem;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-    }
-
-    section {
-      padding: 1.5rem 0;
-      border-top: 1px solid var(--line);
-    }
-
-    section:first-of-type { border-top: 0; }
-
-    h2 {
-      margin: 0 0 0.75rem;
-      font-size: clamp(1.35rem, 3vw, 2rem);
-      line-height: 1.2;
-    }
-
-    h3 { margin-top: 1.25rem; }
-
-    p, ul, ol, dl { margin-top: 0; }
-
-    .callout {
-      padding: 1rem 1.15rem;
-      border-left: 0.35rem solid var(--accent);
-      border-radius: 0.9rem;
-      background: color-mix(in srgb, var(--accent) 10%, transparent);
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: 0.35rem 0.7rem;
-      border-radius: 999px;
-      background: var(--accent);
-      color: var(--accent-contrast);
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0;
-      font-size: 0.95rem;
-    }
-
-    th, td {
-      padding: 0.7rem;
-      border: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th { background: color-mix(in srgb, var(--accent) 10%, transparent); }
-
-    code {
-      padding: 0.12rem 0.3rem;
-      border-radius: 0.35rem;
-      background: color-mix(in srgb, var(--text) 9%, transparent);
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      font-size: 0.92em;
-    }
-
-    @media (max-width: 860px) {
-      .page {
-        display: block;
-        padding: 1rem;
-      }
-
-      .toc {
-        position: static;
-        margin-bottom: 1rem;
-      }
-
-      .toc ul {
-        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-      }
-
-      main { padding: 1.25rem; }
-    }
-
-    @media print {
-      :root {
-        --bg: #ffffff;
+        color-scheme: light dark;
+        --bg: #f6f7f9;
         --surface: #ffffff;
-        --text: #000000;
-        --muted: #333333;
-        --line: #cccccc;
-        --accent: #000000;
+        --surface-muted: #f8fafc;
+        --text: #0f172a;
+        --muted: #475569;
+        --line: #e2e8f0;
+        --accent: #4f46e5;
+        --accent-soft: #eef2ff;
         --accent-contrast: #ffffff;
+        --shadow:
+          0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 18px rgba(15, 23, 42, 0.05);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
       }
 
-      body { background: #ffffff; }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0f17;
+          --surface: #111827;
+          --surface-muted: #0f172a;
+          --text: #e5e7eb;
+          --muted: #94a3b8;
+          --line: #1f2937;
+          --accent: #818cf8;
+          --accent-soft: #1e1b4b;
+          --accent-contrast: #0b0f17;
+          --shadow:
+            0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: var(--accent);
+      }
 
       .page {
-        display: block;
-        max-width: none;
-        padding: 0;
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 2.25rem clamp(1rem, 3vw, 2.5rem);
       }
-
-      .toc { display: none; }
 
       main {
+        min-width: 0;
         padding: 0;
         border: 0;
+        background: transparent;
         box-shadow: none;
       }
 
-      a { color: inherit; }
+      header {
+        padding: 1.75rem clamp(1rem, 2.5vw, 2rem);
+        margin-bottom: 1.25rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 0.9rem;
+        box-shadow: var(--shadow);
+      }
 
-      section { break-inside: avoid; }
-    }
-  </style>
-</head>
-<body>
-  <div class="page">
-    <nav class="toc" aria-label="Spec sections">
-      <strong>Contents</strong>
-      <ul>
-        <li><a href="#summary">Summary</a></li>
-        <li><a href="#goals">Goals</a></li>
-        <li><a href="#non-goals">Non-goals</a></li>
-        <li><a href="#context">Context</a></li>
-        <li><a href="#recommended-approach">Recommended Approach</a></li>
-        <li><a href="#alternatives">Alternatives</a></li>
-        <li><a href="#design-details">Design Details</a></li>
-        <li><a href="#risks">Risks</a></li>
-        <li><a href="#test-acceptance-criteria">Test/Acceptance Criteria</a></li>
-        <li><a href="#review-status">Review Status</a></li>
-      </ul>
-    </nav>
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.8rem, 4vw, 2.75rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+      }
 
-    <main id="main">
-      <header>
-        <h1>Spark Design Spec</h1>
-        <ul class="meta" aria-label="Spec metadata">
-          <li>Date: 2026-05-28</li>
-          <li>Topic: Spark Design</li>
-          <li>Status: Draft for review</li>
-        </ul>
-      </header>
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
 
-      <section id="summary" aria-labelledby="summary-heading">
-        <h2 id="summary-heading">Summary</h2>
-        <p>Replace this paragraph with the confirmed short description of the design and the decision being proposed.</p>
-      </section>
+      .meta li {
+        padding: 0.2rem 0.7rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface-muted);
+      }
 
-      <section id="goals" aria-labelledby="goals-heading">
-        <h2 id="goals-heading">Goals</h2>
-        <ul>
-          <li>Replace with the concrete outcomes the implementation must achieve.</li>
-        </ul>
-      </section>
+      section {
+        margin: 1.25rem 0;
+        padding: 1.5rem clamp(1rem, 2.5vw, 2rem);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--accent);
+        border-radius: 0.9rem;
+        box-shadow: var(--shadow);
+      }
 
-      <section id="non-goals" aria-labelledby="non-goals-heading">
-        <h2 id="non-goals-heading">Non-goals</h2>
-        <ul>
-          <li>Replace with explicit exclusions that should not be implemented in this cycle.</li>
-        </ul>
-      </section>
+      section:first-of-type {
+        margin-top: 0;
+      }
 
-      <section id="context" aria-labelledby="context-heading">
-        <h2 id="context-heading">Context</h2>
-        <p>Replace with relevant project state, constraints, user intent, and dependencies discovered during brainstorming.</p>
-      </section>
+      h2 {
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
 
-      <section id="recommended-approach" aria-labelledby="recommended-approach-heading">
-        <h2 id="recommended-approach-heading">Recommended Approach</h2>
-        <p>Replace with the chosen approach, why it fits the goals, and the key trade-offs accepted.</p>
-      </section>
+      h3 {
+        margin: 1.25rem 0 0.5rem;
+        font-size: 1.05rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
 
-      <section id="alternatives" aria-labelledby="alternatives-heading">
-        <h2 id="alternatives-heading">Alternatives</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Option</th>
-              <th>Why not chosen</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Replace with an alternative considered</td>
-              <td>Replace with the reason it was not recommended</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      p,
+      ul,
+      ol,
+      dl {
+        margin-top: 0;
+      }
 
-      <section id="design-details" aria-labelledby="design-details-heading">
-        <h2 id="design-details-heading">Design Details</h2>
-        <h3>Components and responsibilities</h3>
-        <p>Replace with the system pieces, ownership boundaries, and interfaces.</p>
-        <h3>Data and control flow</h3>
-        <p>Replace with the important flow from input through output, including error handling.</p>
-      </section>
+      ul,
+      ol {
+        padding-left: 1.25rem;
+      }
 
-      <section id="risks" aria-labelledby="risks-heading">
-        <h2 id="risks-heading">Risks</h2>
-        <ul>
-          <li>Replace with a real risk, mitigation, and any follow-up decision needed.</li>
-        </ul>
-      </section>
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.5rem;
+      }
 
-      <section id="test-acceptance-criteria" aria-labelledby="test-acceptance-criteria-heading">
-        <h2 id="test-acceptance-criteria-heading">Test/Acceptance Criteria</h2>
-        <ol>
-          <li>Replace with an observable acceptance check or verification command.</li>
-        </ol>
-      </section>
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 0.55rem;
+      }
 
-      <section id="review-status" aria-labelledby="review-status-heading">
-        <h2 id="review-status-heading">Review Status</h2>
-        <p><span class="status">Draft for user review</span></p>
-        <p>Replace with approval state, reviewer notes, and any requested follow-up changes.</p>
-      </section>
-    </main>
-  </div>
-</body>
+      .checklist input[type="checkbox"] {
+        margin-top: 0.25rem;
+        accent-color: var(--accent);
+        width: 1rem;
+        height: 1rem;
+        flex: none;
+        cursor: pointer;
+      }
+
+      .checklist input[type="checkbox"]:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .checklist label {
+        cursor: pointer;
+        flex: 1;
+      }
+
+      .checklist input[type="checkbox"]:checked + span,
+      .checklist input[type="checkbox"]:checked ~ span {
+        color: var(--muted);
+        text-decoration: line-through;
+      }
+
+      .callout {
+        padding: 1rem 1.15rem;
+        border-left: 0.35rem solid var(--accent);
+        border-radius: 0.65rem;
+        background: var(--accent-soft);
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--accent-contrast);
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.95rem;
+      }
+
+      th,
+      td {
+        padding: 0.7rem;
+        border: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--surface-muted);
+      }
+
+      code {
+        padding: 0.12rem 0.3rem;
+        border-radius: 0.35rem;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.92em;
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          padding: 1rem;
+        }
+        header {
+          padding: 1.25rem;
+        }
+        section {
+          padding: 1.25rem;
+        }
+      }
+
+      @media print {
+        :root {
+          --bg: #ffffff;
+          --surface: #ffffff;
+          --surface-muted: #f5f5f5;
+          --text: #000000;
+          --muted: #333333;
+          --line: #cccccc;
+          --accent: #000000;
+          --accent-soft: #f0f0f0;
+          --accent-contrast: #ffffff;
+          --shadow: none;
+        }
+
+        body {
+          background: #ffffff;
+        }
+
+        .page {
+          max-width: none;
+          padding: 0;
+        }
+
+        header,
+        section {
+          box-shadow: none;
+          break-inside: avoid;
+          border: 1px solid #cccccc;
+        }
+
+        section {
+          border-left: 3px solid #000000;
+        }
+
+        a {
+          color: inherit;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <main id="main">
+        <header>
+          <h1>Spark Design Spec</h1>
+          <ul class="meta" aria-label="Spec metadata">
+            <li>Date: 2026-05-28</li>
+            <li>Topic: Spark Design</li>
+            <li>Status: Draft for review</li>
+          </ul>
+        </header>
+
+        <section id="summary" aria-labelledby="summary-heading">
+          <h2 id="summary-heading">Summary</h2>
+          <p>
+            Replace this paragraph with the confirmed short description of the
+            design and the decision being proposed.
+          </p>
+        </section>
+
+        <section id="goals" aria-labelledby="goals-heading">
+          <h2 id="goals-heading">Goals</h2>
+          <ul>
+            <li>
+              Replace with the concrete outcomes the implementation must
+              achieve.
+            </li>
+          </ul>
+        </section>
+
+        <section id="non-goals" aria-labelledby="non-goals-heading">
+          <h2 id="non-goals-heading">Non-goals</h2>
+          <ul>
+            <li>
+              Replace with explicit exclusions that should not be implemented in
+              this cycle.
+            </li>
+          </ul>
+        </section>
+
+        <section id="context" aria-labelledby="context-heading">
+          <h2 id="context-heading">Context</h2>
+          <p>
+            Replace with relevant project state, constraints, user intent, and
+            dependencies discovered during brainstorming.
+          </p>
+        </section>
+
+        <section
+          id="recommended-approach"
+          aria-labelledby="recommended-approach-heading"
+        >
+          <h2 id="recommended-approach-heading">Recommended Approach</h2>
+          <p>
+            Replace with the chosen approach, why it fits the goals, and the key
+            trade-offs accepted.
+          </p>
+        </section>
+
+        <section id="alternatives" aria-labelledby="alternatives-heading">
+          <h2 id="alternatives-heading">Alternatives</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Why not chosen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Replace with an alternative considered</td>
+                <td>Replace with the reason it was not recommended</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="design-details" aria-labelledby="design-details-heading">
+          <h2 id="design-details-heading">Design Details</h2>
+          <h3>Components and responsibilities</h3>
+          <p>
+            Replace with the system pieces, ownership boundaries, and
+            interfaces.
+          </p>
+          <h3>Data and control flow</h3>
+          <p>
+            Replace with the important flow from input through output, including
+            error handling.
+          </p>
+        </section>
+
+        <section id="risks" aria-labelledby="risks-heading">
+          <h2 id="risks-heading">Risks</h2>
+          <ul class="checklist">
+            <li>
+              <label
+                ><input type="checkbox" />
+                <span
+                  >Replace with a real risk, mitigation, and any follow-up
+                  decision needed. Check when the mitigation is accepted.</span
+                ></label
+              >
+            </li>
+          </ul>
+        </section>
+
+        <section
+          id="test-acceptance-criteria"
+          aria-labelledby="test-acceptance-criteria-heading"
+        >
+          <h2 id="test-acceptance-criteria-heading">
+            Test/Acceptance Criteria
+          </h2>
+          <ul class="checklist">
+            <li>
+              <label
+                ><input type="checkbox" />
+                <span
+                  >Replace with an observable acceptance check or verification
+                  command. Check it off as the criterion passes.</span
+                ></label
+              >
+            </li>
+          </ul>
+        </section>
+
+        <section id="review-status" aria-labelledby="review-status-heading">
+          <h2 id="review-status-heading">Review Status</h2>
+          <p><span class="status">Draft for user review</span></p>
+          <ul class="checklist">
+            <li>
+              <label
+                ><input type="checkbox" />
+                <span
+                  >Spec self-review complete (placeholders, consistency, scope,
+                  ambiguity)</span
+                ></label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" />
+                <span>User approved the structure and content</span></label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" />
+                <span>Ready for plan-mode handoff (EnterPlanMode)</span></label
+              >
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+  </body>
 </html>
