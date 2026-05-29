@@ -4,7 +4,7 @@
 
 ## Purpose overview
 
-Create single-file, self-contained HTML artifacts for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
+Create self-contained HTML artifacts, single-file by default and split into offline per-page bundles when oversized, for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
 
 ## Trigger scenarios
 
@@ -17,7 +17,7 @@ Create single-file, self-contained HTML artifacts for complex, visual, compariso
 | --- | --- |
 | Name | `html-artifact` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Tags | `html`, `artifact`, `planning`, `code-review`, `reports`, `accessibility`, `offline` |
 
 ## Install command
@@ -32,7 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill html-artifact
 | --- | --- | ---: | --- |
 | `skills/development-workflows/html-artifact/assets` | directory | 2 | Assets |
 | `skills/development-workflows/html-artifact/evals` | directory | 2 | Evaluation samples |
-| `skills/development-workflows/html-artifact/references` | directory | 18 | Reference material |
+| `skills/development-workflows/html-artifact/references` | directory | 19 | Reference material |
 | `skills/development-workflows/html-artifact/scripts` | directory | 1 | Executable scripts |
 | `skills/development-workflows/html-artifact/tests` | directory | 1 | Automated tests |
 

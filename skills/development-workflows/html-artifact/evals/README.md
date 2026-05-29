@@ -28,10 +28,11 @@ If you wire these evals into the upstream `eval-viewer/generate_review.py` pipel
 | 12 | Interactive code review workbench | yes | Review Workbench |
 | 13 | Trainer dispatch architecture flow | yes | Architecture Atlas or Strategy Blueprint |
 | 14 | Codebase architecture audit with enum/redundancy review | yes | Architecture Atlas + Review Workbench + Strategy Blueprint |
+| 15 | Large evidence-heavy report that may exceed one page | yes | Evidence Dossier + Review Workbench |
 
 Ids 1–4 verify positive triggering and correct template selection. Ids 5–6 verify the skill does **not** trigger for short transactional outputs.
 
-Ids 7–13 are design-regression prompts. Id 14 is the architecture-audit regression for deep codebase analysis, call mechanisms, enum selection, redundancy review, and implementation-route reporting. They are intentionally human-judgeable:
+Ids 7–13 are design-regression prompts. Id 14 is the architecture-audit regression for deep codebase analysis, call mechanisms, enum selection, redundancy review, and implementation-route reporting. Id 15 is the size-planning regression for evidence-heavy artifacts. They are intentionally human-judgeable:
 
 - outer shell meaningfully uses desktop width instead of sitting inside a narrow ~1100–1300 px centered cap when the page has navigation or a side rail;
 - hero has no large meaningless blank zone;
@@ -39,6 +40,7 @@ Ids 7–13 are design-regression prompts. Id 14 is the architecture-audit regres
 - long Chinese/English/code-like labels do not overflow cards;
 - tables make recommendation, evidence, or verdict visible before detail reading;
 - roadmaps/architecture use inline SVG or structured HTML diagrams with text equivalents.
+- large artifacts include a pre-build size plan, split decision, and split-bundle navigation when estimated size crosses the thresholds.
 
 Use `references/design-review-checklist.md` for qualitative review. Keep `scripts/check_html_artifact.py` limited to objective structure, offline safety, and baseline accessibility checks.
 

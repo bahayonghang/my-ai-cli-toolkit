@@ -72,6 +72,43 @@ test("valid_offline_artifact_passes", () => {
   });
 });
 
+test("large_artifact_warns_above_size_threshold", () => {
+  const largePayload = `<section aria-label="Large evidence"><p>${"x".repeat(1_510_000)}</p></section>`;
+  const html = validHtml.replace("</main>", `${largePayload}</main>`);
+  withTempFile("large.html", html, (file) => {
+    const result = run(file);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /file is large/);
+    assert.match(result.stdout, /> 1500000 bytes/);
+  });
+});
+
+test("split_bundle_pages_validate_independently", () => {
+  const pages = [
+    ["index.html", validHtml.replace("<title>Valid Offline Artifact</title>", "<title>Bundle Index</title>")],
+    [
+      "part-01-summary.html",
+      validHtml
+        .replace("<title>Valid Offline Artifact</title>", "<title>Part 01 Summary</title>")
+        .replace("<h1>Valid Offline Artifact</h1>", '<h1>Part 01 Summary</h1><nav aria-label="Bundle navigation"><a href="index.html">Back to index</a><a href="part-02-evidence.html">Next</a></nav>'),
+    ],
+    [
+      "part-02-evidence.html",
+      validHtml
+        .replace("<title>Valid Offline Artifact</title>", "<title>Part 02 Evidence</title>")
+        .replace("<h1>Valid Offline Artifact</h1>", '<h1>Part 02 Evidence</h1><nav aria-label="Bundle navigation"><a href="part-01-summary.html">Previous</a><a href="index.html">Back to index</a></nav>'),
+    ],
+  ];
+
+  for (const [name, html] of pages) {
+    withTempFile(name, html, (file) => {
+      const result = run(file);
+      assert.equal(result.status, 0, `${name}: ${result.stderr || result.stdout}`);
+      assert.match(result.stdout, /validation: ok/);
+    });
+  }
+});
+
 test("missing_body_fails", () => {
   const html = `<!doctype html><html><head><meta charset="utf-8"><title>Bad</title></head><main><h1>Bad</h1></main></html>`;
   withTempFile("missing-body.html", html, (file) => {

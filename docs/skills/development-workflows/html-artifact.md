@@ -4,7 +4,7 @@
 
 ## 用途概览
 
-Create single-file, self-contained HTML artifacts for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
+Create self-contained HTML artifacts, single-file by default and split into offline per-page bundles when oversized, for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
 
 ## 触发场景
 
@@ -17,7 +17,7 @@ Create single-file, self-contained HTML artifacts for complex, visual, compariso
 | --- | --- |
 | 名称 | `html-artifact` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.2.0` |
+| 版本 | `0.3.0` |
 | 标签 | `html`, `artifact`, `planning`, `code-review`, `reports`, `accessibility`, `offline` |
 
 ## 安装命令
@@ -32,7 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill html-artifact
 | --- | --- | ---: | --- |
 | `skills/development-workflows/html-artifact/assets` | 目录 | 2 | 素材资源 |
 | `skills/development-workflows/html-artifact/evals` | 目录 | 2 | 评测样例 |
-| `skills/development-workflows/html-artifact/references` | 目录 | 18 | 引用资料 |
+| `skills/development-workflows/html-artifact/references` | 目录 | 19 | 引用资料 |
 | `skills/development-workflows/html-artifact/scripts` | 目录 | 1 | 可执行脚本 |
 | `skills/development-workflows/html-artifact/tests` | 目录 | 1 | 自动化测试 |
 

@@ -181,6 +181,21 @@
         "Long paths and identifiers such as src/industrytslib/core/model_trainers stay in adjacent HTML tables/lists; SVG labels remain short and fill-only.",
         "The final response reports the html-artifact validator result and any remaining warnings."
       ]
+    },
+    {
+      "id": 15,
+      "prompt": "把这份大型审计材料做成离线 HTML artifact：包含 12 个章节、约 260 行证据表、80 段短日志/代码摘录、5 个架构/时间线图和附录。先说明预计大小，如果太大就拆分成 index + 多个 part 页面。",
+      "expected_output": "Uses Evidence Dossier + Review Workbench, performs a pre-build size plan, estimates total bytes, chooses split-bundle when appropriate, and validates every self-contained HTML page.",
+      "files": [],
+      "expectations": [
+        "Before writing HTML, the response includes a content inventory covering sections, table rows, diagrams/SVGs, excerpts, interaction JS, and evidence/appendix volume.",
+        "The response states estimated_total_bytes or an equivalent byte/KB/MB estimate before choosing the output shape.",
+        "Because the prompt is evidence-heavy, the response chooses or strongly prefers a split bundle when the estimate is above the split threshold, unless the user explicitly asks for one file.",
+        "The split plan includes docs/artifacts/<slug>/index.html plus ordered part pages such as part-01-*.html.",
+        "Every part page is described as independently offline and self-contained with inline CSS/JS, no shared assets, no CDN, no fetch, and no network requests.",
+        "The bundle includes index, previous/next, and back-to-index navigation.",
+        "The final response reports validator results for each HTML page, not only for the index."
+      ]
     }
   ]
 }

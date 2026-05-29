@@ -1,7 +1,8 @@
 ---
 name: html-artifact
 description: >-
-  Create single-file, self-contained HTML artifacts for complex, visual,
+  Create self-contained HTML artifacts, single-file by default and split into
+  offline per-page bundles when oversized, for complex, visual,
   comparison-heavy, reviewable, or shareable work outputs. Use this skill when
   the user asks for an HTML artifact, browser-viewable report, implementation
   plan, PR/code review report, architecture explainer, design comparison,
@@ -11,7 +12,7 @@ description: >-
   copy/export buttons, or annotated diffs. Do not use it for short answers,
   simple commands, commit messages, tiny patch summaries, or production UI
   implementation unless the user explicitly asks for a review artifact.
-version: 0.2.0
+version: 0.3.0
 category: development-workflows
 tags:
   - html
@@ -31,7 +32,7 @@ allowed-tools:
 
 # HTML Artifact
 
-Create a browser-viewable, single-file HTML artifact when complex work needs a richer review surface than a wall of Markdown.
+Create a browser-viewable HTML artifact when complex work needs a richer review surface than a wall of Markdown. Default to one self-contained file; use a split bundle when the planned content is too large for a reviewable single page.
 
 ## Core rule
 
@@ -41,11 +42,13 @@ Use HTML artifacts for complex, visual, comparison-heavy, reviewable, or shareab
 
 Every artifact must be:
 
-- **Single-file and offline**: one `.html` or `.htm` file with inline CSS and small inline vanilla JS.
+- **Single-file by default; split bundle when oversized**: create one `.html` or `.htm` file unless the pre-build size gate says to split. When split, create `docs/artifacts/<slug>/index.html` plus self-contained part pages such as `part-01-overview.html`.
 - **Self-contained**: no CDN, remote fonts, remote stylesheets, remote scripts, `fetch`, XHR, beacons, WebSockets, or automatic network requests.
+- **Offline per page**: every split-bundle HTML page must independently include its own CSS and any small vanilla JS; do not share external assets between pages.
 - **Semantic**: include `<!doctype html>`, `<html>`, `<head>`, `<meta charset="utf-8">`, `<meta name="viewport">`, `<title>`, `<main id="main">`, and one clear `<h1>`.
 - **Accessible**: skip link, visible focus state, keyboard-operable controls, text alternatives for diagrams, color plus text for status, and `prefers-reduced-motion` support.
 - **Reviewable**: structure content into navigable sections, cards, tables, timelines, or diagrams; do not dump raw long Markdown into a styled box.
+- **Navigable when split**: split bundles must include an index page plus previous/next/back-to-index links on each part page.
 
 ## Design escalation
 
@@ -114,19 +117,45 @@ Enum recommendations must include a table with these columns: current entrypoint
 
 1. Clarify the artifact purpose and choose a template.
 2. If design escalation applies, decide visual direction, memory hook, density, and diagram strategy before drafting markup.
-3. Load only the needed template reference under `references/templates/` plus `references/accessibility-and-security.md` when relevant. Load `references/diagram-cookbook.md` for roadmaps, flows, dependency lanes, or architecture diagrams.
-4. Choose or create an output path. Prefer `docs/artifacts/<slug>.html` unless the user gives a path.
-5. Build the HTML using `assets/starter-template.html` as the copyable baseline, not as a remote dependency.
-6. Add only small vanilla JS for local filtering, copy buttons, details toggles, keyboard navigation, or validation.
-7. Run the validator:
+3. Run the **Pre-build size and split gate** before drafting markup.
+4. Load only the needed template reference under `references/templates/` plus `references/accessibility-and-security.md` when relevant. Load `references/diagram-cookbook.md` for roadmaps, flows, dependency lanes, or architecture diagrams. Load `references/size-and-splitting.md` when the size gate is near or above the split threshold.
+5. Choose or create an output path. Prefer `docs/artifacts/<slug>.html` for single-page artifacts. For split bundles, prefer `docs/artifacts/<slug>/index.html` plus `part-NN-topic.html` pages.
+6. Build the HTML using `assets/starter-template.html` as the copyable baseline, not as a remote dependency.
+7. Add only small vanilla JS for local filtering, copy buttons, details toggles, keyboard navigation, or validation.
+8. Run the validator on every HTML page:
 
 ```bash
 python skills/development-workflows/html-artifact/scripts/check_html_artifact.py <artifact.html>
 ```
 
-8. Fix validation failures and rerun. If warnings remain, either fix them or report why they are acceptable.
-9. For high-information-density artifacts, run the manual design review checklist in `references/design-review-checklist.md`.
-10. Final response: give the artifact path, validation result, design review result when used, and usage notes. Do not paste the full HTML unless requested.
+9. Fix validation failures and rerun. If warnings remain, either fix them or report why they are acceptable.
+10. For high-information-density artifacts, run the manual design review checklist in `references/design-review-checklist.md`.
+11. Final response: give the artifact path or bundle index path, size/split decision, validation result for every page, design review result when used, and usage notes. Do not paste the full HTML unless requested.
+
+## Pre-build size and split gate
+
+Before writing HTML, make a short size plan. Do not wait for the validator's post-build large-file warning to discover that the artifact should have been split.
+
+1. List the content inventory:
+   - sections and approximate count;
+   - tables and approximate row counts;
+   - charts, inline SVGs, or structured diagrams;
+   - diff/log/code excerpts and maximum excerpt length;
+   - interactive JS features;
+   - evidence, appendices, or raw source volume.
+2. Estimate `estimated_total_bytes` using the method in `references/size-and-splitting.md`.
+3. Choose the output shape:
+   - `<900 KB`: single page by default.
+   - `900 KB–1.2 MB`: single page is allowed, but compress content first by summarizing repeated rows, moving raw evidence into collapsible summaries, and shortening excerpts.
+   - `1.2 MB–1.5 MB`: prefer a split bundle unless the artifact has one tightly coupled reading flow.
+   - `>1.5 MB`: split bundle is required unless the user explicitly asks for one file.
+4. State the decision in the response or working notes before building, for example:
+
+```text
+Size plan: estimated_total_bytes=1.34 MB from 9 sections, 4 tables (~180 rows), 3 SVG diagrams, and 40 short evidence excerpts. Decision: split bundle with index + 3 parts.
+```
+
+For split bundles, keep each page offline self-contained. Do not create a site that depends on shared CSS, shared JS, JSON files, images, or `fetch`.
 
 ## Layout primitives
 
@@ -178,6 +207,7 @@ For changes to this skill, run `node --test skills/development-workflows/html-ar
 Keep this entrypoint small. Load detailed references only as needed:
 
 - `references/template-selection.md` — template selection and combination rules.
+- `references/size-and-splitting.md` — pre-build byte estimation, split thresholds, naming, navigation, and compression strategies.
 - `references/accessibility-and-security.md` — offline, accessibility, privacy, and validation rules, including the color / mode / theme layering.
 - `references/design-review-checklist.md` — manual visual QA covering the six dimensions (composition, tables, diagrams/SVG, charts, interactive controls, modes/offline).
 - `references/tables-cookbook.md` — eight table recipes plus responsive strategy and non-decorative emphasis. Load when an artifact has decision matrices, evidence tables, risks, trends, heatmaps, or summaries.
