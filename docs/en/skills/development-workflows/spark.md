@@ -9,8 +9,9 @@ Spec-first brainstorming workflow for turning an idea into an approved offline H
 ## Trigger scenarios
 
 - the user wants to brainstorm an idea or design a feature/spec
-- Drives clarifying choices through the AskUserQuestion tool, writes a single-file offline HTML spec to the project root's .spark/ directory, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec
-- The spec write is the gate — no code runs until both spec and plan are explicitly approved
+- Gathers only the requirements that genuinely block the design through the AskUserQuestion tool, writes a single-file offline HTML spec to the project root's .spark/ directory, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec
+- The spec is the single design gate — no code runs until both spec and plan are explicitly approved
+- Visual questions (mockups, layouts, comparisons) default to a browser-based companion
 
 ## Metadata
 
@@ -18,7 +19,7 @@ Spec-first brainstorming workflow for turning an idea into an approved offline H
 | --- | --- |
 | Name | `spark` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.3.0` |
+| Version | `0.4.0` |
 | Tags | `brainstorming`, `spec-writing`, `product-design`, `requirements`, `planning` |
 
 ## Install command

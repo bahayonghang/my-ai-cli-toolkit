@@ -10,7 +10,7 @@ Extracted from [`brainstorming`](https://github.com/obra/superpowers/tree/main/s
 
 ### Changes vs. the original
 
-Functional intent: original `brainstorming` ends by handing off to `writing-plans`, which chains into `executing-plans` / `subagent-driven-development`. `spark` v0.2 cut the pipeline at the spec entirely; v0.3 restores a planning chain but uses the native `EnterPlanMode` tool instead of the legacy `writing-plans` / `executing-plans` skills. The spec write remains the user-approval gate; the implementation plan is drafted inside plan mode and gated by `ExitPlanMode`.
+Functional intent: original `brainstorming` ends by handing off to `writing-plans`, which chains into `executing-plans` / `subagent-driven-development`. `spark` v0.2 cut the pipeline at the spec entirely; v0.3 restores a planning chain but uses the native `EnterPlanMode` tool instead of the legacy `writing-plans` / `executing-plans` skills. The spec write remains the user-approval gate; the implementation plan is drafted inside plan mode and gated by `ExitPlanMode`. v0.4 streamlines the dialogue itself: the mid-flow confirmation gates (visual-companion consent, section-by-section design approval) are removed so the spec review is the single design gate, and the visual companion flips to default-on with a text opt-out.
 
 #### 1. Frontmatter rewritten
 
@@ -30,7 +30,7 @@ Functional intent: original `brainstorming` ends by handing off to `writing-plan
 + argument-hint: "[idea-or-feature-brief]"
 ```
 
-The description was rewritten to make both the spec-write gate and the plan-mode handoff explicit — Claude reads this to decide whether to invoke the skill, so the new wording sets expectations correctly. `category`, `tags`, and `argument-hint` keep repository docs and skill discovery aligned with the generated catalog contract. The `version` field tracks the spec-only (v0.2) → plan-mode-handoff (v0.3) evolution.
+The description was rewritten to make both the spec-write gate and the plan-mode handoff explicit — Claude reads this to decide whether to invoke the skill, so the new wording sets expectations correctly. `category`, `tags`, and `argument-hint` keep repository docs and skill discovery aligned with the generated catalog contract. The `version` field tracks the spec-only (v0.2) → plan-mode-handoff (v0.3) → streamlined-dialogue (v0.4) evolution.
 
 #### 2. Checklist step 9 — terminal action
 
@@ -135,13 +135,23 @@ Clarifying questions, approach selection, and section-by-section confirmation no
 
 After the user approves the HTML spec, spark calls `EnterPlanMode` and the standard plan-mode workflow drafts the implementation plan. A new "Plan mode already active" branch in `SKILL.md` handles the case where spark is invoked inside an existing plan-mode session (file writes are blocked, so spark surfaces a choice between exit-and-rewrite vs. plan-inline).
 
+#### 12. Dialogue streamlined — single confirmation (v0.4)
+
+Real use surfaced too many mid-flow confirmation gates. v0.4 removes them so the **written spec is the single design gate**:
+
+- **Visual-companion consent gate removed.** The companion no longer opens with a "want to try it?" message. It's now the default medium for visual questions — Claude shows mockups/comparisons in the browser by default and gives a one-line, non-blocking URL notice; the user opts out by asking for text. (`SKILL.md` "Visual Companion", `visual-companion.md` "When to Use".)
+- **Section-by-section design approval removed.** Claude no longer presents the design in conversation and confirms each section with `AskUserQuestion`. It composes the complete design and writes it straight to the HTML spec, recording assumptions inline (`Assumption:`); the user corrects everything in the single spec review.
+- **Clarifying questions trimmed.** Spark asks only the questions that genuinely block the design, batched into a single `AskUserQuestion` call where independent; non-blocking unknowns become explicit assumptions instead of questions.
+
+The checklist drops from 9 steps to 6 (+5b), the process-flow graph loses the "Visual questions ahead?" and "User approves design?" branches, and the "Incremental validation" principle becomes "Single validation". The `<HARD-GATE>`, the "This Is Too Simple To Need A Design" anti-pattern, YAGNI, and the spec self-review are all preserved — only the confirmation cadence changed, not the quality bar.
+
 ### Preserved as-is
 
-- 9-step checklist structure (with the new step 8b for the plan-mode pre-check), the `<HARD-GATE>` block, the "This Is Too Simple To Need A Design" anti-pattern
-- Graphviz process flow shape (only the terminal node was retargeted and dialogue nodes annotated)
-- Visual companion feature — browser-based mockup viewer in `scripts/` and `visual-companion.md`
+- The `<HARD-GATE>` block and the "This Is Too Simple To Need A Design" anti-pattern (the checklist itself was streamlined from 9 steps to 6 +5b in v0.4 — see #12)
+- Graphviz process flow as the structural diagram (its node set was simplified in v0.4 to match the streamlined flow — see #12)
+- Visual companion feature — browser-based mockup viewer in `scripts/` and `visual-companion.md` (the consent-gate offering became default-on in v0.4 — see #12)
 - Spec self-review loop (placeholder scan, internal consistency, scope, ambiguity)
-- All key principles: one question at a time, YAGNI, explore alternatives, incremental validation, be flexible
+- Key principles YAGNI, explore alternatives, and be flexible (v0.4 replaced "one question at a time" with "ask only what blocks the design" and "incremental validation" with "single validation" — see #12)
 - The subagent spec reviewer prompt template (`spec-document-reviewer-prompt.md`), updated with the v0.3 layout / checkbox checks
 
 ## License
