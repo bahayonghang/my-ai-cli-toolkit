@@ -16,7 +16,7 @@ Run a code quality review focused on maintainability, structure, abstraction qua
 | --- | --- |
 | Name | `code-quality-review` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `code-review`, `code-quality`, `maintainability`, `architecture`, `refactoring` |
 
 ## Install command
@@ -29,12 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-quality-
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/code-quality-review/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/code-quality-review/assets` | directory | 1 | Assets |
+| `skills/development-workflows/code-quality-review/evals` | directory | 2 | Evaluation samples |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| assets | `skills/development-workflows/code-quality-review/assets` | Assets |
 | evals | `skills/development-workflows/code-quality-review/evals` | Evaluation samples |
 
 ## Validation

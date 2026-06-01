@@ -16,7 +16,7 @@ Run a code quality review focused on maintainability, structure, abstraction qua
 | --- | --- |
 | 名称 | `code-quality-review` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.1.0` |
+| 版本 | `0.2.0` |
 | 标签 | `code-review`, `code-quality`, `maintainability`, `architecture`, `refactoring` |
 
 ## 安装命令
@@ -29,12 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-quality-
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/code-quality-review/evals` | 目录 | 1 | 评测样例 |
+| `skills/development-workflows/code-quality-review/assets` | 目录 | 1 | 素材资源 |
+| `skills/development-workflows/code-quality-review/evals` | 目录 | 2 | 评测样例 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| assets | `skills/development-workflows/code-quality-review/assets` | 素材资源 |
 | evals | `skills/development-workflows/code-quality-review/evals` | 评测样例 |
 
 ## 验证方式

@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "chinese-maintainability",
+  "prompt": "帮我审查一下 order_service.ts 的代码质量，重点看可维护性和结构问题。",
+  "assertions": [
+    "The review is written in Chinese",
+    "Flags the `any` typing and silent `?? {}` fallback as a boundary/type-contract issue",
+    "Flags at least one additional structural issue (mode-based branching with duplicated coupon logic, the thin findOrder wrapper, the duplicated formatMoney, or the non-atomic charge/update)",
+    "Findings use stable IDs such as CQ-001",
+    "Does not edit order_service.ts"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "expectations": [
+    {
+      "text": "Performs the analysis without editing order_service.ts or any other file",
+      "passed": true,
+      "evidence": "Header states 'Read-only review; no files were changed.' No edit of the fixture or any file is claimed; Scope limitations confirm only order_service.ts was read."
+    },
+    {
+      "text": "Provides recommendations rather than applying refactors",
+      "passed": true,
+      "evidence": "Each finding ends with a 'Recommended remediation:' (e.g. Finding 1 'Reorder to validate-then-charge-then-persist ... keep charge+persist atomic') phrased as guidance, not an applied refactor."
+    },
+    {
+      "text": "Includes at least one structural finding with a concrete remediation",
+      "passed": true,
+      "evidence": "Finding 2 [High] 'Mode dispatch is a scattered if/else chain with duplicated pricing logic' with concrete remediation 'Extract a single lineItemSubtotal(items) helper, then make each mode a small policy ... typed mode union with a default that throws.'"
+    }
+  ],
+  "summary": { "passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0 }
+}
