@@ -18,7 +18,7 @@ const visualCompanion = read("visual-companion.md");
 const startServer = read("scripts/start-server.sh");
 const stopServer = read("scripts/stop-server.sh");
 const template = read("assets/spec-template.html");
-const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "";
+const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
 const runtimeInstructions = [
   skill,
   reviewerPrompt,
