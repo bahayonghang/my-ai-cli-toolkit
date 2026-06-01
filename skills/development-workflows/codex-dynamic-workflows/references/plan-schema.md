@@ -14,8 +14,25 @@ Use this schema when a machine-readable workflow plan helps coordination. Keep `
       "mitigation": "string"
     }
   ],
-  "max_concurrent_agents": 4,
-  "max_total_agents": 12,
+  "artifact_policy": {
+    "preferred_path": ".planning/<feature> or .workflow/<slug>",
+    "repo_ignore_checked": true,
+    "pollution_guard": "Use .workflow only when durable artifacts are useful and acceptable for the repo.",
+    "commit_intent": "local-only | commit | undecided"
+  },
+  "runner_capabilities": {
+    "subagent_runner": "available | unavailable | unknown",
+    "goal_mode": "explicitly_requested | unavailable | not_requested",
+    "simulation_allowed": true,
+    "max_concurrent_agents": 4,
+    "max_total_agents": 12
+  },
+  "platform_notes": {
+    "os": "windows | macos | linux | unknown",
+    "shell": "powershell | bash | zsh | unknown",
+    "path_guidance": "Quote paths with spaces; prefer pathlib.Path in scripts.",
+    "python_command": "python, with py -3 fallback on Windows"
+  },
   "packets": [
     {
       "id": "01-discovery",
@@ -49,7 +66,9 @@ Use this schema when a machine-readable workflow plan helps coordination. Keep `
 
 Suggested defaults:
 
-- `max_concurrent_agents`: 2-4 for normal work.
-- `max_total_agents`: 6-12 unless the user approves a larger run.
+- `runner_capabilities.max_concurrent_agents`: 2-4 for normal work.
+- `runner_capabilities.max_total_agents`: 6-12 unless the user approves a larger run.
 - Packet IDs: prefix with two digits so files sort naturally.
 - Status values: `pending`, `in_progress`, `complete`, `blocked`, `skipped`.
+- `artifact_policy.commit_intent`: default to `local-only` unless the user asks to commit workflow artifacts.
+- `platform_notes.python_command`: document `python` plus Windows `py -3` fallback for runnable examples.

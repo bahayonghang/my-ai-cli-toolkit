@@ -1,0 +1,71 @@
+{
+  "skill_name": "codex-dynamic-workflows",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Fix the typo in README.md and run the smallest relevant check.",
+      "expected_output": "Does not trigger dynamic workflow orchestration, does not create .workflow, and handles the small task directly.",
+      "files": [],
+      "expectations": [
+        "Ordinary small tasks are negative triggers.",
+        "The response should not mention running a swarm or subagents.",
+        "No durable workflow artifact is created unless explicitly requested."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Use $codex-dynamic-workflows to migrate all auth clients and delete the legacy client after tests pass.",
+      "expected_output": "Creates a workflow plan with approval gates for deletion and broad migration before destructive edits.",
+      "files": [],
+      "expectations": [
+        "Deletion and broad migration are approval-gated.",
+        "Discovery, implementation, tests, docs, and verification can become separate packets.",
+        "The workflow artifact path is chosen after checking repo-local planning conventions."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use $codex-dynamic-workflows: research the payment provider API, implement backend support, update docs, and verify with tests in parallel packets.",
+      "expected_output": "Triggers the skill, defines disjoint research, implementation, docs, and verification packets, and integrates packet outputs before final reporting.",
+      "files": [],
+      "expectations": [
+        "At least two independent workflow dimensions are recognized.",
+        "Packet ownership is disjoint.",
+        "Verification is part of the workflow contract."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use $codex-dynamic-workflows for a security and reliability review, but there is no subagent runner available.",
+      "expected_output": "Simulates packets locally and explicitly avoids claiming that a swarm or subagents ran.",
+      "files": [],
+      "expectations": [
+        "No false claim of a real swarm.",
+        "Security and reliability packet notes stay separate until integration.",
+        "The response uses only currently available tools."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "On Windows PowerShell, use $codex-dynamic-workflows to scaffold packets for a provider migration.",
+      "expected_output": "Includes PowerShell-runnable python and py -3 commands with quoted paths where needed and avoids POSIX-only commands.",
+      "files": [],
+      "expectations": [
+        "Examples use python or py -3, not only python3.",
+        "Paths are Windows-safe and can contain spaces.",
+        "No reliance on /tmp, nohup, open, cp -r, rm -rf, or shell globs."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Please do a normal code review of this PR and summarize findings.",
+      "expected_output": "Does not trigger codex-dynamic-workflows just because the prompt says code review.",
+      "files": [],
+      "expectations": [
+        "Ordinary code review remains a negative trigger.",
+        "No workflow artifact or packet simulation is created.",
+        "The response routes to a normal review surface or asks for review scope."
+      ]
+    }
+  ]
+}

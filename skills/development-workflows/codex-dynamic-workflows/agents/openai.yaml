@@ -1,4 +1,4 @@
 interface:
   display_name: "AI Agent Dynamic Workflows"
-  short_description: "Plan and run supervised subagent workflows"
-  default_prompt: "Use $codex-dynamic-workflows to plan and run a supervised multi-agent workflow for this task."
+  short_description: "Safely decide, scaffold, and verify Codex workflow packets"
+  default_prompt: "Use $codex-dynamic-workflows to first decide whether this task truly needs a dynamic workflow. If it does, run only the safe, authorized parts with disjoint packets and explicit verification."

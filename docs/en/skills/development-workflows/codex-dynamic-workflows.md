@@ -4,11 +4,11 @@
 
 ## Purpose overview
 
-Plan and run AI-agent dynamic workflows for complex tasks that benefit from explicit orchestration, goal mode, subagents or simulated work packets, approval gates, integration, verification, and reusable workflow artifacts.
+Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets.
 
 ## Trigger scenarios
 
-- the user invokes this skill, asks for a swarm, subagents, parallel agents, a dynamic workflow, a large migration or audit, multi-track research plus implementation, or Claude Code-style workflow orchestration
+- Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets
 
 ## Metadata
 
@@ -16,7 +16,7 @@ Plan and run AI-agent dynamic workflows for complex tasks that benefit from expl
 | --- | --- |
 | Name | `codex-dynamic-workflows` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `codex`, `orchestration`, `subagents`, `workflows`, `verification` |
 
 ## Install command
@@ -30,26 +30,29 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-dynamic
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/codex-dynamic-workflows/agents` | directory | 1 | Companion agents |
+| `skills/development-workflows/codex-dynamic-workflows/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/codex-dynamic-workflows/references` | directory | 3 | Reference material |
 | `skills/development-workflows/codex-dynamic-workflows/scripts` | directory | 3 | Executable scripts |
+| `skills/development-workflows/codex-dynamic-workflows/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | agents | `skills/development-workflows/codex-dynamic-workflows/agents` | Companion agents |
+| evals | `skills/development-workflows/codex-dynamic-workflows/evals` | Evaluation samples |
 | references | `skills/development-workflows/codex-dynamic-workflows/references` | Reference material |
 | scripts | `skills/development-workflows/codex-dynamic-workflows/scripts` | Executable scripts |
+| tests | `skills/development-workflows/codex-dynamic-workflows/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
 just python-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 
