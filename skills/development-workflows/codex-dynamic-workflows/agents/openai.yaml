@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Agent Dynamic Workflows"
+  short_description: "Plan and run supervised subagent workflows"
+  default_prompt: "Use $codex-dynamic-workflows to plan and run a supervised multi-agent workflow for this task."
