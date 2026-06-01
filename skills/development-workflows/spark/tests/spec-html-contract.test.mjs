@@ -12,37 +12,87 @@ function read(relativePath) {
 }
 
 const skill = read("SKILL.md");
+const readme = read("README.md");
 const reviewerPrompt = read("spec-document-reviewer-prompt.md");
+const visualCompanion = read("visual-companion.md");
+const startServer = read("scripts/start-server.sh");
+const stopServer = read("scripts/stop-server.sh");
 const template = read("assets/spec-template.html");
+const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "";
+const runtimeInstructions = [
+  skill,
+  reviewerPrompt,
+  visualCompanion,
+  startServer,
+  stopServer,
+].join("\n");
+const publicSkillDocs = [runtimeInstructions, readme, template].join("\n");
 
-test("SKILL.md defaults Spark output to gitignored .spark/ HTML specs", () => {
-  assert.match(skill, /\.spark\/YYYY-MM-DD-<topic>-design\.html/);
-  assert.match(skill, /assets\/spec-template\.html/);
-  assert.match(skill, /HTML Spec Output Contract/);
-  assert.match(skill, /offline HTML spec to .*\.spark\//i);
-  assert.doesNotMatch(skill, /\.spark\/YYYY-MM-DD-<topic>-design\.md/);
-  assert.doesNotMatch(skill, /docs\/superpowers\/specs\//);
-  assert.doesNotMatch(skill, /docs\/spark\//);
-});
-
-test("SKILL.md documents the EnterPlanMode handoff", () => {
-  assert.match(skill, /EnterPlanMode/);
-  assert.match(skill, /Plan-mode handoff/);
-  assert.match(skill, /Plan mode already active/);
-  assert.match(skill, /ExitPlanMode/);
-});
-
-test("SKILL.md instructs use of AskUserQuestion for structured choices", () => {
+test("SKILL.md defaults Spark output to Markdown plans in .plannings", () => {
+  assert.match(frontmatter, /version:\s*0\.5\.0/);
+  assert.match(frontmatter, /Markdown implementation plan by default/i);
+  assert.match(skill, /\.plannings\/YYYY-MM-DD-<feature-slug>\.md/);
+  assert.match(skill, /Markdown Plan Structure/);
   assert.match(skill, /AskUserQuestion/);
-  assert.match(skill, /2-4 (?:mutually exclusive |)options/i);
+  assert.match(skill, /Do not create or edit `\.gitignore`/i);
+  assert.doesNotMatch(frontmatter, /offline HTML spec to .*\.spark/i);
+  assert.doesNotMatch(skill, /\.spark\/YYYY-MM-DD-<topic>-design\.html/);
+  assert.doesNotMatch(skill, /default(?:s|ing)?\s+to\s+(?:an\s+)?HTML/i);
 });
 
-test("SKILL.md describes .gitignore handling for .spark/", () => {
-  assert.match(skill, /\.gitignore/);
-  assert.match(skill, /\.spark\//);
+test("SKILL.md makes HTML an explicit request branch", () => {
+  assert.match(skill, /Explicit HTML\/Visual Branch/);
+  assert.match(skill, /Only create a `\.html` artifact when the user explicitly requests/i);
+  assert.match(skill, /\.plannings\/YYYY-MM-DD-<feature-slug>\.html/);
+  assert.match(skill, /assets\/spec-template\.html/);
+  assert.match(skill, /spec-document-reviewer-prompt\.md` only for this HTML branch/);
 });
 
-test("spec template is standalone semantic HTML with required spec sections", () => {
+test("SKILL.md stops after user approval instead of implementing", () => {
+  assert.match(skill, /User approval gate/i);
+  assert.match(skill, /waits? for a separate execution request/i);
+  assert.match(skill, /Do NOT write production code/i);
+  assert.doesNotMatch(skill, /EnterPlanMode/);
+});
+
+test("only writing-plans is named as a fallback planning skill", () => {
+  assert.match(runtimeInstructions, /writing-plans/);
+  const fallbackNames = new Set(
+    runtimeInstructions.match(/\b(?:writing-plans|executing-plans|subagent-driven-development)\b/g) ?? [],
+  );
+  assert.deepEqual([...fallbackNames].sort(), ["writing-plans"]);
+});
+
+test("runtime instructions and scripts do not use superpowers paths", () => {
+  assert.doesNotMatch(runtimeInstructions, /docs\/superpowers\//);
+  assert.doesNotMatch(runtimeInstructions, /\.superpowers\//);
+  assert.match(visualCompanion, /\.spark\/brainstorm\//);
+  assert.match(startServer, /\.spark\/brainstorm/);
+  assert.match(stopServer, /\.spark\//);
+});
+
+test("README describes current Spark behavior without a runtime superpowers chain", () => {
+  assert.match(readme, /Markdown implementation plan by default/i);
+  assert.match(readme, /\.plannings\/YYYY-MM-DD-<feature-slug>\.md/);
+  assert.match(readme, /HTML and visual artifacts are opt-in/i);
+  assert.doesNotMatch(readme, /\.superpowers\//);
+  assert.doesNotMatch(readme, /docs\/superpowers\//);
+  assert.doesNotMatch(readme, /executing-plans|subagent-driven-development/);
+});
+
+test("HTML reviewer prompt is scoped to explicit HTML output", () => {
+  assert.match(reviewerPrompt, /only when Spark's explicit HTML\/visual branch/i);
+  assert.match(reviewerPrompt, /Default Markdown plans do not use this prompt/i);
+  assert.match(reviewerPrompt, /\.plannings\/YYYY-MM-DD-<feature-slug>\.html/);
+  assert.match(reviewerPrompt, /single-file offline HTML/i);
+  assert.match(reviewerPrompt, /main id="main"/);
+  assert.match(reviewerPrompt, /remote scripts\/styles\/fonts\/images/);
+  assert.match(reviewerPrompt, /template placeholders/);
+  assert.doesNotMatch(reviewerPrompt, /docs\/superpowers\/specs\//);
+  assert.doesNotMatch(reviewerPrompt, /docs\/spark\//);
+});
+
+test("spec template is standalone semantic HTML with required sections", () => {
   assert.match(template, /^<!doctype html>/i);
   assert.match(template, /<html\s+lang="en"/i);
   assert.match(template, /<meta\s+charset="utf-8"/i);
@@ -114,20 +164,11 @@ test("spec template uses interactive checkboxes in tracked sections", () => {
   }
 });
 
-test("spec template uses a neutral palette (no warm beige tokens)", () => {
+test("spec template uses a neutral palette and no plan-mode handoff wording", () => {
   assert.doesNotMatch(template, /#f7f3ea/i);
   assert.doesNotMatch(template, /#fffaf0/i);
   assert.doesNotMatch(template, /#ded4c3/i);
-});
-
-test("reviewer prompt checks the HTML spec contract", () => {
-  assert.match(reviewerPrompt, /\.spark\/YYYY-MM-DD-<topic>-design\.html/);
-  assert.match(reviewerPrompt, /single-file offline HTML/i);
-  assert.match(reviewerPrompt, /main id="main"/);
-  assert.match(reviewerPrompt, /remote scripts\/styles\/fonts\/images/);
-  assert.match(reviewerPrompt, /template placeholders/);
-  assert.doesNotMatch(reviewerPrompt, /docs\/superpowers\/specs\//);
-  assert.doesNotMatch(reviewerPrompt, /docs\/spark\//);
+  assert.doesNotMatch(publicSkillDocs, /EnterPlanMode/);
 });
 
 test("reviewer prompt checks the card layout and interactive checklist", () => {

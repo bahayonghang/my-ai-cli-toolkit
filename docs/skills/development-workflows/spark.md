@@ -4,14 +4,14 @@
 
 ## 用途概览
 
-Spec-first brainstorming workflow for turning an idea into an approved offline HTML design spec, then drafting an actionable implementation plan.
+Plan-first brainstorming workflow that turns an idea into an approved Markdown implementation plan by default.
 
 ## 触发场景
 
-- the user wants to brainstorm an idea or design a feature/spec
-- Gathers only the requirements that genuinely block the design through the AskUserQuestion tool, writes a single-file offline HTML spec to the project root's .spark/ directory, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec
-- The spec is the single design gate — no code runs until both spec and plan are explicitly approved
-- Visual questions (mockups, layouts, comparisons) default to a browser-based companion
+- the user wants to brainstorm, design, scope, or plan a feature/spec before implementation
+- Spark explores project context, asks only blocking questions, writes the plan under the project root's .plannings/YYYY-MM-DD-feature-slug.md path, self-reviews it, and waits for user approval
+- Create an HTML or visual plan/spec only when the user explicitly asks for HTML, browser-viewable, or visual output
+- save the paired .html beside the Markdown plan
 
 ## 元数据
 
@@ -19,8 +19,8 @@ Spec-first brainstorming workflow for turning an idea into an approved offline H
 | --- | --- |
 | 名称 | `spark` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.4.0` |
-| 标签 | `brainstorming`, `spec-writing`, `product-design`, `requirements`, `planning` |
+| 版本 | `0.5.0` |
+| 标签 | `brainstorming`, `plan-writing`, `product-design`, `requirements`, `planning` |
 
 ## 安装命令
 

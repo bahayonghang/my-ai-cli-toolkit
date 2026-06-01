@@ -1,203 +1,203 @@
 ---
 name: spark
-version: 0.4.0
-description: "Spec-first brainstorming workflow for turning an idea into an approved offline HTML design spec, then drafting an actionable implementation plan. Use when the user wants to brainstorm an idea or design a feature/spec. Gathers only the requirements that genuinely block the design through the AskUserQuestion tool, writes a single-file offline HTML spec to the project root's .spark/ directory, then enters plan mode (EnterPlanMode) to draft an implementation plan from the spec. The spec is the single design gate — no code runs until both spec and plan are explicitly approved. Visual questions (mockups, layouts, comparisons) default to a browser-based companion; ask for text to keep them in the terminal."
+version: 0.5.0
+description: "Plan-first brainstorming workflow that turns an idea into an approved Markdown implementation plan by default. Use when the user wants to brainstorm, design, scope, or plan a feature/spec before implementation. Spark explores project context, asks only blocking questions, writes the plan under the project root's .plannings/YYYY-MM-DD-feature-slug.md path, self-reviews it, and waits for user approval. Create an HTML or visual plan/spec only when the user explicitly asks for HTML, browser-viewable, or visual output; save the paired .html beside the Markdown plan."
 category: development-workflows
 tags:
   - brainstorming
-  - spec-writing
+  - plan-writing
   - product-design
   - requirements
   - planning
 argument-hint: "[idea-or-feature-brief]"
 ---
 
-# Brainstorming Ideas Into Designs
+# Brainstorming Ideas Into Markdown Plans
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+Turn rough ideas into an approved implementation plan. Spark is a planning skill, not an execution skill: it clarifies intent, records assumptions, writes a Markdown plan file, and stops for user approval.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
+Default output is a Markdown plan at `<project-root>/.plannings/YYYY-MM-DD-<feature-slug>.md`. Create an HTML or visual artifact only when the user explicitly asks for HTML, browser-viewable, visual, mockup, or comparable output.
 
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity. The one sanctioned next step after spec approval is calling the `EnterPlanMode` tool to draft the implementation plan — that is the designed handoff, not a violation of this gate.
+Do NOT write production code, scaffold projects, modify implementation files, or invoke implementation workflows while Spark is active. Spark ends at an approved plan and waits for a separate execution request.
 </HARD-GATE>
 
-## Anti-Pattern: "This Is Too Simple To Need A Design"
+## Planning Surface Selection
 
-Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
+Prefer the current native plan surface when the environment provides one. Do not force-enter a new mode just to run Spark.
+
+If the environment does not support native plan mode, use the `writing-plans` planning method as the only fallback rubric. When using that fallback, override any default output path and still save Spark's plan to `.plannings/YYYY-MM-DD-<feature-slug>.md`.
 
 ## Checklist
 
-You MUST create a task for each of these items and complete them in order:
+Create a task for each item and complete them in order:
 
-1. **Explore project context** — check files, docs, recent commits
-2. **Gather only the requirements that block the design** — ask the few questions you genuinely can't proceed without, and batch independent ones into a single `AskUserQuestion` call (it takes up to 4). Use the `AskUserQuestion` tool for any 2-4-option decision; use plain text only for genuinely open-ended prompts. When approaches genuinely diverge, fold that choice in here as one of the questions. For anything non-blocking, adopt a sensible default and record it as an explicit assumption in the spec rather than spending a question on it. Visual questions default to the browser companion — see the Visual Companion section.
-3. **Write the complete HTML design spec** — compose the whole design at once (architecture, components, data flow, error handling, testing) and save it to `<project-root>/.spark/YYYY-MM-DD-<topic>-design.html` (see ".spark/ output directory" below). Surface every assumption you made inline (e.g., in Context or the relevant Design Details, prefixed `Assumption:`) so the user can correct them in one pass. The file is gitignored working state, not committed source.
-4. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-5. **User reviews the written spec** — this is the single design gate. Ask the user to review the spec file; on approval proceed, on changes revise and re-run the self-review.
-   5b. **Plan-mode pre-check** — if plan mode is already active when spark was invoked, follow "Plan mode already active" below instead of step 6
-6. **Hand off to plan mode** — call the `EnterPlanMode` tool and run the implementation-plan workflow using the spec file as the primary requirements input. The user approves the resulting plan via `ExitPlanMode`.
+1. **Explore project context** — inspect the relevant files, docs, existing plans, and repo guidance before proposing changes.
+2. **Ask only blocking questions** — clarify only decisions that would materially change the plan. Use the native structured question tool (`AskUserQuestion`) when available for 2-4 mutually exclusive options; otherwise ask one concise plain-text question. Record non-blocking unknowns as assumptions instead of stopping.
+3. **Choose the artifact branch** — default to Markdown. Enter the explicit HTML/visual branch only when the user asked for HTML, browser-viewable output, visual specs, mockups, or layout comparisons.
+4. **Derive the plan path** — save the Markdown plan to `<project-root>/.plannings/YYYY-MM-DD-<feature-slug>.md` using the slug rules below.
+5. **Generate the Markdown plan** — write the complete plan in one pass with concrete implementation steps and verification criteria.
+6. **Optional explicit HTML/visual artifact** — if the explicit branch is active, save a paired HTML artifact to `<project-root>/.plannings/YYYY-MM-DD-<feature-slug>.html` and follow the offline HTML contract.
+7. **Self-review** — check the plan for placeholders, contradictions, missing acceptance criteria, hidden assumptions, overscope, and implementation leakage.
+8. **User approval gate** — report the plan path (and optional HTML path), summarize the decision, ask for approval or changes, then wait. Do not begin implementation.
 
 ## Process Flow
 
 ```dot
-digraph brainstorming {
+digraph spark_plan {
     "Explore project context" [shape=box];
-    "Gather blocking requirements\n(AskUserQuestion for 2-4 options, batched)" [shape=box];
-    "Write complete HTML design spec\nto .spark/ (assumptions inline)" [shape=box];
-    "Spec self-review\n(fix inline)" [shape=box];
-    "User reviews spec?" [shape=diamond];
-    "Call EnterPlanMode\n→ implementation plan workflow" [shape=doublecircle];
+    "Ask blocking questions" [shape=box];
+    "Default Markdown plan
+.plannings/YYYY-MM-DD-<feature-slug>.md" [shape=box];
+    "Explicit HTML/visual branch?" [shape=diamond];
+    "Optional paired HTML
+.plannings/YYYY-MM-DD-<feature-slug>.html" [shape=box];
+    "Self-review" [shape=box];
+    "User approves plan?" [shape=diamond];
+    "Wait for separate execution request" [shape=doublecircle];
 
-    "Explore project context" -> "Gather blocking requirements\n(AskUserQuestion for 2-4 options, batched)";
-    "Gather blocking requirements\n(AskUserQuestion for 2-4 options, batched)" -> "Write complete HTML design spec\nto .spark/ (assumptions inline)";
-    "Write complete HTML design spec\nto .spark/ (assumptions inline)" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec?";
-    "User reviews spec?" -> "Write complete HTML design spec\nto .spark/ (assumptions inline)" [label="changes requested"];
-    "User reviews spec?" -> "Call EnterPlanMode\n→ implementation plan workflow" [label="approved"];
+    "Explore project context" -> "Ask blocking questions";
+    "Ask blocking questions" -> "Default Markdown plan
+.plannings/YYYY-MM-DD-<feature-slug>.md";
+    "Default Markdown plan
+.plannings/YYYY-MM-DD-<feature-slug>.md" -> "Explicit HTML/visual branch?";
+    "Explicit HTML/visual branch?" -> "Optional paired HTML
+.plannings/YYYY-MM-DD-<feature-slug>.html" [label="explicit request"];
+    "Explicit HTML/visual branch?" -> "Self-review" [label="default"];
+    "Optional paired HTML
+.plannings/YYYY-MM-DD-<feature-slug>.html" -> "Self-review";
+    "Self-review" -> "User approves plan?";
+    "User approves plan?" -> "Default Markdown plan
+.plannings/YYYY-MM-DD-<feature-slug>.md" [label="changes requested"];
+    "User approves plan?" -> "Wait for separate execution request" [label="approved"];
 }
 ```
-
-**After the user approves the HTML spec, call the `EnterPlanMode` tool.** Do NOT write code or modify project files (other than `.gitignore` and the spec file itself), and do NOT invoke any other skill. `EnterPlanMode` hands control to Claude Code's native plan workflow; `ExitPlanMode` is the final user gate before any implementation begins.
 
 ## The Process
 
 **Understanding the idea:**
 
-- Check out the current project state first (files, docs, recent commits)
-- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
-- If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
-- For appropriately-scoped projects, ask only the questions you genuinely can't design without — refine the idea in as few exchanges as possible
-- For decisions that reduce to 2-4 mutually exclusive options (approach choice, scope split, design alternative, in/out of scope), use the `AskUserQuestion` tool — not plain-text questions. It renders a structured picker and is the primary clarification surface in plan mode.
-- Use plain-text questions only for genuinely open-ended prompts (free-form context, follow-up clarifications after an `AskUserQuestion` answer)
-- Batch independent questions into a single `AskUserQuestion` call (it takes up to 4); reserve separate messages for decisions that genuinely depend on a prior answer. For anything non-blocking, adopt a sensible default and record it as an explicit assumption in the spec instead of spending a question on it.
-- Focus on understanding: purpose, constraints, success criteria
+- Start from the current project state: local guidance files, existing architecture, pending plans, tests, and recent decisions that affect the requested work.
+- If the brief spans multiple independent subsystems, say so early and split the plan into sequenced phases rather than pretending one plan can cover everything equally.
+- Ask only for missing information that changes scope, architecture, acceptance criteria, or risk. For all other gaps, choose a sensible assumption and mark it clearly in the plan.
+- Focus on purpose, constraints, success criteria, non-goals, compatibility requirements, and verification gates.
 
 **Exploring approaches:**
 
-- Weigh 2-3 different approaches with trade-offs in your own reasoning
-- Surface the choice as a question only when the approaches genuinely diverge and the user's preference would change the design. Present it via `AskUserQuestion` with one option per approach plus an "Other / discuss" escape hatch, leading with your recommended option marked "(Recommended)" and explaining why in the question text.
-- When one approach is clearly best, adopt it — record it as the Recommended Approach in the spec (alternatives noted) rather than spending a separate gate on it
-
-**Composing the design:**
-
-- Once you understand what you're building, compose the complete design and write it straight into the HTML spec — don't stage it section-by-section for approval in conversation
-- Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
-- Cover: architecture, components, data flow, error handling, testing
-- Make every assumption visible in the spec (prefixed `Assumption:`) so the single spec review can correct any misread in one pass, instead of gating each section as you go
-- Be ready to go back and clarify if something genuinely doesn't make sense — but prefer a stated assumption over an extra question
+- Compare 2-3 plausible approaches in your reasoning.
+- Surface an approach choice to the user only when the choice would materially change the plan; otherwise select the best approach and record rejected alternatives in the plan.
+- Keep the plan implementation-oriented: name the files or areas likely to change, the sequence, risk controls, and the tests that will prove completion.
 
 **Design for isolation and clarity:**
 
-- Break the system into smaller units that each have one clear purpose, communicate through well-defined interfaces, and can be understood and tested independently
-- For each unit, you should be able to answer: what does it do, how do you use it, and what does it depend on?
-- Can someone understand what a unit does without reading its internals? Can you change the internals without breaking consumers? If not, the boundaries need work.
-- Smaller, well-bounded units are also easier for you to work with - you reason better about code you can hold in context at once, and your edits are more reliable when files are focused. When a file grows large, that's often a signal that it's doing too much.
+- Break work into small units with clear ownership and interfaces.
+- Prefer existing project patterns and utilities before proposing new abstractions or dependencies.
+- Include targeted cleanup only when it directly supports the requested work.
 
-**Working in existing codebases:**
+## Output Path and Slug Rules
 
-- Explore the current structure before proposing changes. Follow existing patterns.
-- Where existing code has problems that affect the work (e.g., a file that's grown too large, unclear boundaries, tangled responsibilities), include targeted improvements as part of the design - the way a good developer improves code they're working in.
-- Don't propose unrelated refactoring. Stay focused on what serves the current goal.
+The Markdown plan path is always:
 
-## After the Design
+`<project-root>/.plannings/YYYY-MM-DD-<feature-slug>.md`
 
-**Documentation:**
+Rules:
 
-- Write the validated design (spec) to `<project-root>/.spark/YYYY-MM-DD-<topic>-design.html`
-  - (User preferences for spec location override this default)
-- Build the file from `assets/spec-template.html`: copy the template structure, replace its example content with the confirmed design, and keep the same semantic section order unless the user explicitly requests a different structure.
-- Do not commit — `.spark/` is gitignored working state, not committed source. See ".spark/ output directory" below for the `.gitignore` handling.
+- Use the project root from the current repository or workspace.
+- Use the local calendar date in `YYYY-MM-DD` format.
+- Derive `<feature-slug>` from the feature name when one is obvious.
+- Convert the slug to lowercase kebab-case: ASCII letters/numbers separated by single hyphens.
+- Drop filler words and punctuation; collapse repeated hyphens.
+- If no feature name is obvious, create a short slug from the user's brief.
+- If a file with the same name already exists, append a short differentiator such as `-v2` or a more specific noun.
+- Do not create or edit `.gitignore`; `.plannings/` is the expected local planning area.
 
-**HTML Spec Output Contract:**
+## Markdown Plan Structure
 
-- Produce one self-contained `.html` file that can be opened offline.
-- Use semantic HTML with exactly one `h1`, a `main id="main"`, and clear section headings.
-- Keep CSS inline in a `<style>` block; do not load remote scripts, stylesheets, fonts, images, iframes, or protocol-relative URLs.
-- Include the standard sections from `assets/spec-template.html`: Summary, Goals, Non-goals, Context, Recommended Approach, Alternatives, Design Details, Risks, Test/Acceptance Criteria, and Review Status.
+Use this structure unless the repository already has a stronger plan template:
+
+```markdown
+# <Feature Name> Implementation Plan
+
+- Date: YYYY-MM-DD
+- Feature slug: <feature-slug>
+- Status: Draft for user review
+
+## Summary
+
+## Goals
+
+## Non-goals
+
+## Current context
+
+## Assumptions
+
+## Recommended approach
+
+## Alternatives considered
+
+## Implementation steps
+
+## Files and areas likely to change
+
+## Risks and mitigations
+
+## Test and acceptance criteria
+
+## Approval gate
+```
+
+Implementation steps should be concrete enough that a fresh agent can execute them without redesigning the feature. Acceptance criteria must name observable checks, commands, or behaviors; avoid vague wording such as "confirm it works".
+
+## Explicit HTML/Visual Branch
+
+Only create a `.html` artifact when the user explicitly requests HTML, a browser-viewable plan/spec, visual output, mockups, layout comparisons, or a similar visual deliverable.
+
+When the explicit branch is active:
+
+- Keep the Markdown plan as the source of truth.
+- Save the HTML artifact beside it as `<project-root>/.plannings/YYYY-MM-DD-<feature-slug>.html`.
+- Build from `assets/spec-template.html` when a full HTML plan/spec is needed.
+- Keep the HTML offline and self-contained: inline CSS, no remote scripts, stylesheets, fonts, images, iframes, or protocol-relative URLs.
+- Use semantic HTML with exactly one `h1`, a `main id="main"`, and clear headings.
 - Leave no unresolved template placeholders such as TODO, TBD, `[placeholder]`, or lorem ipsum.
-- Make it printable and readable without JavaScript; only add inline vanilla JavaScript if the spec genuinely needs progressive disclosure.
-- Test/Acceptance Criteria, Risks, and Review Status are rendered as interactive checklists (`<ul class="checklist">` with `<input type="checkbox">` inside `<label>`). They're native HTML — no JavaScript needed for the toggle. Goals, Non-goals, and other descriptive lists remain plain `<ul>`.
+- Use `spec-document-reviewer-prompt.md` only for this HTML branch; the default Markdown plan uses the Markdown self-review below.
+- For interactive visual questions, read `visual-companion.md` before starting the browser companion. Visual companion scratch files are separate from the default plan output.
 
-**`.spark/` output directory:**
+## Self-Review
 
-The spec lives at `<project-root>/.spark/YYYY-MM-DD-<topic>-design.html`. `.spark/` is local working state, not committed source. Before the first write of a session, ensure `.spark/` is gitignored:
+Before asking for approval, review the generated plan and fix issues inline:
 
-1. Read the project-root `.gitignore`. If a line exactly matching `.spark/` (or `.spark` / `/.spark/`) is already present, do nothing.
-2. If not present, append `.spark/` on its own line (preceded by a newline if the file does not already end with one). Idempotent on re-invocation.
-3. If `.gitignore` does not exist, create it containing the single line `.spark/`.
+1. **Placeholder scan:** remove TODO, TBD, bracket placeholders, lorem ipsum, and incomplete bullets.
+2. **Consistency:** ensure goals, approach, steps, risks, and tests do not contradict each other.
+3. **Scope:** confirm the plan is small enough to execute as one coherent task or clearly split into phases.
+4. **Assumptions:** mark assumptions explicitly and avoid hiding uncertain requirements inside implementation steps.
+5. **Verification:** ensure every important behavior has a concrete test, command, or acceptance check.
+6. **No execution leakage:** confirm no implementation files were changed and no execution workflow was invoked.
 
-Do NOT `git add` the spec or the directory. Tell the user the spec path; they decide whether to share or archive it. If the user's project conventions reserve `.spark/` for something else, accept their override and use a different gitignored path.
+## User Approval Gate
 
-**Spec Self-Review:**
-After writing the HTML spec document, look at it with fresh eyes:
+After self-review, respond with:
 
-1. **Placeholder scan:** Any "TBD", "TODO", bracket placeholders, lorem ipsum, incomplete sections, or vague requirements? Fix them.
-2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
-3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
-4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
+- The Markdown plan path.
+- The optional HTML path, only if created.
+- A short summary of the recommended approach and main risks.
+- A clear request for approval or requested changes.
 
-Fix any issues inline. No need to re-review — just fix and move on.
-
-**User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
-
-> "HTML spec written to `<path>`. Please review it and let me know if you want to make any changes before we draft the implementation plan in plan mode."
-
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
-
-**Plan-mode handoff:**
-
-After the user approves the spec, call the `EnterPlanMode` tool. Open with a brief message such as: "Drafting the implementation plan from the spec at `<spec-path>`. I'll surface the plan for your approval before any code is written."
-
-Inside plan mode:
-
-- Treat the spec file as the primary requirements input.
-- Run the standard Phase 1-5 plan workflow that plan mode prescribes (explore the relevant code, design, file-by-file changes, risks, verification).
-- Write the plan to the plan file path that plan mode provides — do not hardcode a location.
-- The user approves the plan via `ExitPlanMode`. Implementation begins only after that.
-
-Hard constraints:
-
-- Do NOT invoke any other skill from the spark workflow (`writing-plans`, `executing-plans`, `subagent-driven-development`, etc.). `EnterPlanMode` is the only sanctioned handoff.
-- If the user declines the plan-mode step ("just the spec is enough", "I'll plan it myself"), report the spec path and end the turn. This preserves the old terminal behavior as an explicit opt-out.
-
-**Plan mode already active:**
-
-If plan mode is already active when spark is invoked (you see plan-mode system reminders in context, or you cannot write files outside the plan file), do NOT call `EnterPlanMode` again and do NOT attempt the spec file write — the harness will block it.
-
-Instead:
-
-1. Run the entire dialogue (clarifying questions, approach selection, section-by-section design) in conversation, using `AskUserQuestion` as usual.
-2. When the user approves the design, ask via `AskUserQuestion` whether to:
-   - **Exit plan mode now** — so spark can write the HTML spec to `.spark/`, then re-enter plan mode for the implementation plan, OR
-   - **Skip the HTML artifact** — proceed directly to drafting the implementation plan inline (the design lives in conversation history only)
-3. Honor the user's choice. The "skip artifact" branch keeps everything inside the current plan-mode session.
-
-Rationale: file writes outside the plan file are blocked in plan mode; surfacing the choice keeps the user in control rather than failing silently.
+Then stop. Do not implement until the user separately asks to execute the approved plan.
 
 ## Key Principles
 
-- **Ask only what blocks the design** - Batch independent questions; for non-blocking unknowns, adopt a sensible default and note it as an explicit assumption
-- **Multiple choice preferred** - Easier to answer than open-ended when possible
-- **YAGNI ruthlessly** - Remove unnecessary features from all designs
-- **Explore alternatives** - Weigh 2-3 approaches in your reasoning; present the chosen one with alternatives noted in the spec
-- **Single validation** - Compose the complete design and confirm once at the spec review, instead of gating each section
-- **Be flexible** - Go back and clarify when something genuinely doesn't make sense
+- **Markdown by default** — Spark produces a durable implementation plan first; HTML is opt-in.
+- **Ask only what blocks the plan** — prefer explicit assumptions over unnecessary interview rounds.
+- **Evidence before planning** — inspect the local project before recommending file-level changes.
+- **YAGNI ruthlessly** — remove unrequested features and broad refactors.
+- **Plan for verification** — every plan needs concrete tests or checks.
+- **Wait after approval** — approval completes Spark; execution is a separate user request.
 
 ## Visual Companion
 
-A browser-based companion for showing mockups, diagrams, and visual options during brainstorming. It's the **default medium for visual questions** — when a question is genuinely visual, show it in the browser rather than asking permission first. It's a tool, not a mode: defaulting to it for visual content does NOT mean every question goes through the browser. Text and conceptual questions still belong in the terminal.
+The browser-based companion is available only for explicit visual planning needs. Use it for mockups, diagrams, layout comparisons, and other genuinely visual choices. Keep textual requirements, scope decisions, and technical tradeoffs in the terminal.
 
-**No consent gate.** Don't open with a "want to try it?" message. The first time a visual question comes up, start the server, push the screen, and give a one-line, non-blocking heads-up — e.g. "Mockups are at http://localhost:<port> — say 'just use text' anytime if you'd rather read them." Then keep going. The user opts out by asking for text; they don't have to opt in.
-
-**Per-question decision:** Decide FOR EACH QUESTION whether the content is visual or textual. The test: **would the user understand this better by seeing it than reading it?**
-
-- **Use the browser** for content that IS visual — mockups, wireframes, layout comparisons, architecture diagrams, side-by-side visual designs
-- **Use the terminal** for content that is text — requirements questions, conceptual choices, tradeoff lists, A/B/C/D text options, scope decisions
-- **Honor an explicit text request** — if the user asks to read it instead (markdown/text), keep everything in the terminal until they say otherwise
-
-A question about a UI topic is not automatically a visual question. "What does personality mean in this context?" is a conceptual question — use the terminal. "Which wizard layout works better?" is a visual question — use the browser.
-
-Before you first start the server, read the detailed guide:
+Before starting the companion, read the detailed guide:
 `visual-companion.md`
