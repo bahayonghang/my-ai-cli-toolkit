@@ -1,4 +1,7 @@
-# 中文提交消息规则
+# 提交消息规则 / Commit Message Rules
+
+> 输出语言由 skill 自动探测（用户指示 → 请求语言 → 仓库历史 → 英文兜底）。下列规则对中英文同样适用，示例给出双语版本，按检测到的 `commit-language` 选用即可。
+> Output language is auto-detected (user instruction → request language → repo history → English fallback). These rules apply to both languages; examples are shown in both.
 
 ## Header
 
@@ -20,6 +23,9 @@
 ```text
 feat(auth): [AI] ✨ 添加 SMS 兜底登录
 fix(cart): 🐛 修复购物车总价未更新
+
+feat(auth): [AI] ✨ add SMS fallback login
+fix(cart): 🐛 fix cart total not updating
 ```
 
 ## Subject 规则
@@ -67,10 +73,15 @@ Agent 生成的提交追加以下 trailer，置于其他 footer 之后：
 
 | 字段 | 含义 | 必填 |
 |------|------|------|
+| `Confidence` | 自评可信度 `high`/`medium`/`low`，排在 issue 引用之后 | agent-mode 推荐 |
+| `Scope-risk` | 影响半径 `narrow`/`moderate`/`broad` | agent-mode 推荐 |
+| `Tested` | 验证方式，如 `just ci` / `pytest -k auth` / `未运行` | agent-mode 推荐 |
 | `Agent-Task` | 任务 ID 或 issue URL，缺失时为 `unspecified` | 是 |
 | `Agent-Model` | 模型标识，例如 `claude-opus-4-7` | 是（与 `[AI]` 强绑定） |
 | `Agent-Prompt-Ref` | prompt 摘要 / hash / 短标签 | 否 |
 | `Generated-By` | 固定值 `agent`，作为审计哨兵 | 是 |
+
+`Confidence` / `Scope-risk` / `Tested` 由 compose 脚本 `--confidence` / `--scope-risk` / `--tested` 生成，与 `Why` 不同——它们不强制、缺失不阻断提交，但在 agent-mode 下应尽量填写以便按风险审计。
 
 审计示例：
 

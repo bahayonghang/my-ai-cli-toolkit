@@ -1,13 +1,13 @@
 ---
 name: git-commit
-description: Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Default to English. Switch to Chinese only when the user explicitly says `请使用中文拆分提交所有的改动`. Agent commits automatically inject `Agent-Task` / `Agent-Model` / `Generated-By` trailers and an `[AI]` header tag; Why-line is required for feat/fix/refactor/perf; supports a `chore(wip)` checkpoint mode for long-running agent tasks.
+description: Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Output language is auto-detected from the user's instruction, the request's own language, and the repository's recent commit history (English fallback); explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection. Agent commits automatically inject `Agent-Task` / `Agent-Model` / `Generated-By` trailers — plus optional `Confidence` / `Scope-risk` / `Tested` quality trailers — and an `[AI]` header tag; Why-line is required for feat/fix/refactor/perf; supports a `chore(wip)` checkpoint mode for long-running agent tasks.
 category: git-github-collaboration
 tags:
   - git
   - conventional-commits
   - commit-message
   - agent-aware
-version: 1.6.0
+version: 1.7.0
 allowed-tools:
   - Bash
   - python
@@ -19,8 +19,12 @@ Decide the active change authority and output language before doing anything els
 
 - `staged-only` is the default. Respect the current index and treat unstaged or untracked files as context only.
 - `all-changes` is allowed only when the user explicitly asks to include everything, such as "all changes", "所有改动", "全部改动", "不管有没有 stage", or "包括未跟踪文件". In this mode, the skill may rebuild the index from the full working tree and should treat any existing partial staging as intentionally overridden by the user.
-- `english-output` is the default. Use English for commit `scope`, `subject`, `body`, and explanatory output.
-- `chinese-output` is allowed only when the user explicitly says `请使用中文拆分提交所有的改动`. Treat other Chinese-language prompts as `english-output` unless they include that exact phrase.
+- `commit-language` is **detected, not fixed-default**, because forcing one language fights repos (and users) whose history is already in the other. Resolve it in this order, then use it for `scope`, `subject`, `body`, and explanatory output:
+  1. An explicit instruction in the user's message — "use English", "英文提交", "用中文", "中文提交", or the legacy phrase `请使用中文拆分提交所有的改动`. Honor whichever language the user names.
+  2. The dominant language of the user's current request message.
+  3. The repository's own habit, sampled in Preflight from `git log -n 20 --format=%s`. Match what the repo already does so your commit doesn't read as an outlier.
+  4. Fall back to English only when none of the above gives a clear signal.
+  Language is orthogonal to emoji, `[AI]`, and trailers: detecting Chinese never changes whether `[AI]` or agent trailers attach.
 - `agent-mode` is on by default whenever this skill runs (the caller is an agent). It injects `[AI]` in the header, attaches `Agent-Task` / `Agent-Model` / `Generated-By` trailers, and applies the Why-line rule for `feat` / `fix` / `refactor` / `perf`. Turn it off only when the user explicitly says "no AI tag", "不要 AI 标记", "不加 agent trailer", or equivalent.
 
 ## 1. Preflight
@@ -44,6 +48,11 @@ Decide the active change authority and output language before doing anything els
    - Resolve `agent-task` by trying, in order: (a) explicit task ID or issue URL in the user message, (b) `closes #N` / `refs #N` mentioned by the user, (c) ticket ID extracted from the current branch name, (d) `Agent-Task` value from the previous commit on this branch, (e) fallback to `unspecified`.
    - Resolve `agent-prompt-ref` only when a stable prompt reference exists; otherwise leave empty.
    - Detect `checkpoint-mode`: triggered by user words such as `checkpoint`, `打个 checkpoint`, `先存一下`, `WIP`, `[WIP]`, `work in progress`, `先提交一下，待会再整理`.
+5. **Sample repository conventions** so the skill adapts instead of imposing one repo's habits everywhere:
+   - Language + style: read `git log -n 20 --format=%s`. Note the dominant subject language (this feeds `commit-language` step 3 in §0), whether subjects carry gitmoji, and whether they already use an `[AI]` tag.
+   - Config: if `commitlint.config.*`, `.commitlintrc*`, `.czrc`, `.cz.*`, `.gitmessage`, or a `CONTRIBUTING` commit section exists, treat its allowed `type` / `scope` list and length rules as authoritative over this skill's defaults.
+   - When no signal exists, fall back to this repository's defaults: emoji on, `[AI]` + agent trailers on, scope from the changed path.
+6. **Safety scan** the active change set's file list (`git diff --staged --name-only`, plus untracked paths in `all-changes`). If it includes likely secrets (`.env`, `*.pem`, `*.key`, `id_rsa`, `id_ed25519`, `*.p12`, `*.keystore`) or large/binary blobs (> ~1 MB), do not commit silently — surface them and ask the user to confirm or unstage first. "Safely orchestrate" means catching a leaked secret before it enters history, not only splitting commits cleanly.
 
 ## 2. Split Plan
 
@@ -69,10 +78,10 @@ Decide the active change authority and output language before doing anything els
 2. Use [references/commit-types.md](references/commit-types.md) for type and emoji mapping.
 3. Use [references/message-rules.md](references/message-rules.md) for subject, body, footer, issue, breaking-change, and Why rules.
 4. Use [references/agent-workflow.md](references/agent-workflow.md) for agent context resolution, trailer ordering, and checkpoint handling.
-5. Default to emoji because this repository expects it. Only opt out when the user explicitly requests no emoji.
-6. Keep `type` in English.
-7. Default `scope`, `subject`, `body`, and explanatory output to English.
-8. Switch `scope`, `subject`, `body`, and explanatory output to Chinese only when the user explicitly says `请使用中文拆分提交所有的改动`.
+5. Default to emoji because this repository expects it. Opt out when the user requests no emoji, or when Preflight §5 found a target repo whose history carries no gitmoji.
+6. **Infer `scope` from the changed paths** instead of inventing one: take the common parent of the changed files. In this repo's layout `skills/<category>/<name>/…` → scope `<name>`, and `platforms/<platform>/…` → scope `<platform>`. Changes spanning unrelated top-level areas are a signal to split (§2), not a reason to pick a vague umbrella scope. Prefer a scope that already appears in `git log` when it fits.
+7. Keep `type` in English — the Conventional Commit keyword is the one machine-parsed token and stays stable across languages.
+8. Render `scope`, `subject`, `body`, and explanatory output in the `commit-language` resolved in §0 (user instruction → request language → repo history → English fallback).
 9. Mark Why-required when `type` ∈ {`feat`, `fix`, `refactor`, `perf`} and `checkpoint-mode` is off.
 
 ## 4. Compose
@@ -90,6 +99,7 @@ Decide the active change authority and output language before doing anything els
    - `--closes` for closing issues
    - `--refs` for non-closing issue references
    - `--footer-line` for other structured trailers such as Jira references
+   - `--confidence` / `--scope-risk` / `--tested` for the quality-trail trailers (`Confidence:` / `Scope-risk:` / `Tested:`)
    - `--breaking-header` when the header itself must include `!`
    - `--breaking` when a `BREAKING CHANGE:` trailer is needed
    - `--no-emoji` only when the user explicitly opts out
@@ -97,6 +107,7 @@ Decide the active change authority and output language before doing anything els
    - Always pass `--ai --agent-model <model> --generated-by-agent`.
    - Pass `--agent-task <value>` (use `unspecified` only as last-resort fallback).
    - Pass `--agent-prompt-ref <ref>` only when a stable reference exists.
+   - When you know them, pass `--confidence <high|medium|low>`, `--scope-risk <narrow|moderate|broad>`, and `--tested "<how verified>"`. Recommended in agent-mode but not enforced — omit a field rather than guessing its value.
    - For Why-required types, pass `--why "<motivation>"` and `--require-why` so the script fails loudly when Why is missing.
    - In `checkpoint-mode`, use `--type chore --scope wip` and prepend `[WIP] ` to summary; skip `--require-why`; skip `--closes` / `--refs`.
 5. If the user disabled agent-mode: omit `--ai`, omit all `--agent-*` flags, omit `--generated-by-agent`. Fall back to plain Conventional Commit.
@@ -117,13 +128,16 @@ Decide the active change authority and output language before doing anything els
 ## 6. Verify
 
 1. Read the `git commit` output before claiming success.
-2. If hooks reject the commit, stop immediately and report the original hook failure. Do not silently rewrite the message unless the output clearly says the message format is invalid and the user asked you to fix it.
+2. Distinguish two hook outcomes before reacting:
+   - **Hook rejected the commit** (non-zero exit, message-format or lint failure): stop and report the original hook failure. Do not silently rewrite the message unless the output clearly says the format is invalid and the user asked you to fix it.
+   - **Hook rewrote files** (a formatter such as prettier/black/gofmt modified tracked files and left them unstaged, aborting or staling the commit): re-inspect `git status`, re-stage the hook's edits, and retry the same commit message. Say that the hook reformatted files — do not treat the reformatting as your own change.
 3. After a successful commit, summarize:
    - the final header
    - whether `staged-only` or `all-changes` mode was used
-   - whether `english-output` or `chinese-output` was used
+   - the resolved `commit-language` and which signal chose it (user instruction / request language / repo history)
    - whether emoji was included
    - whether `[AI]` tag was applied and which `Agent-*` trailers attached
+   - which quality trailers attached (`Confidence` / `Scope-risk` / `Tested`), if any
    - whether the commit is a `chore(wip)` checkpoint
    - whether a Why line is present (required for feat/fix/refactor/perf)
    - whether untracked files were included

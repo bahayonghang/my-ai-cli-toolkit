@@ -5,85 +5,213 @@
       "id": 1,
       "prompt": "I have a staged auth change that adds SMS fallback to the login flow. Please generate and execute one Conventional Commit for it, and keep emoji enabled.",
       "expected_output": "Treat it as a single-feature commit and produce or execute an English feat(auth) style commit with emoji, without pushing.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Header is a single feat commit with scope auth",
+        "Emoji is retained in the header",
+        "Output language is English (request is English)",
+        "Does not run git push"
+      ]
     },
     {
       "id": 2,
       "prompt": "The staged set mixes an order-service bug fix and a README update. Do not commit yet. Tell me whether it should split into two commits and draft both headers.",
       "expected_output": "Prefer a split plan and English candidate headers instead of merging the mixed staged set into one vague commit.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Recommends splitting into two commits",
+        "Drafts a fix header and a docs header separately",
+        "Does not merge the mixed set into one vague commit",
+        "Does not execute git commit"
+      ]
     },
     {
       "id": 3,
       "prompt": "This change reshapes the /api/user/profile response and removes the old fields. Generate the commit message and mark it as a breaking change.",
       "expected_output": "The header may include ! and the footer should include a BREAKING CHANGE note, with English scope/subject/body.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Marks the breaking change via ! in the header and/or a BREAKING CHANGE: footer",
+        "Body or footer explains the migration impact, not just 'breaking'",
+        "Output language is English"
+      ]
     },
     {
       "id": 4,
       "prompt": "Write a commit message for fixing duplicate ledger writes in the payment callback, close #128, reference #130, and include Jira PROJ-456.",
       "expected_output": "Correctly distinguish Closes #128, Refs #130, and an extra footer line such as Jira: PROJ-456.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Closes #128 appears in the footer",
+        "Refs #130 appears in the footer and is NOT written as Closes",
+        "Jira PROJ-456 is rendered as a footer/trailer line",
+        "Header type is fix"
+      ]
     },
     {
       "id": 5,
       "prompt": "There are no staged changes in the repo, but I want to commit now. What should you do under this skill?",
       "expected_output": "Stop clearly and tell the user to stage files first instead of inventing a commit or running git commit anyway.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Stops and tells the user to stage files first",
+        "Does not invent a commit or run git commit"
+      ]
     },
     {
       "id": 6,
       "prompt": "Do not actually commit. Draft a commit message for fixing the virtualized list performance issue. Do not include any Co-Authored-By line.",
       "expected_output": "Draft only, do not run git commit, and do not include Co-Authored-By or attribution lines.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Returns a draft only and does not run git commit",
+        "No Co-Authored-By line",
+        "No AI attribution line such as 'Generated with Claude Code'"
+      ]
     },
     {
       "id": 7,
       "prompt": "请使用中文拆分提交所有的改动。当前没有 staged，另外还有两个未跟踪文件。先判断应该拆成几个 commit，再按方案执行。",
-      "expected_output": "Enter all-changes mode and chinese-output mode together, plan the split against the full staged/unstaged/untracked set, and use Chinese for the resulting commit text or split plan.",
-      "files": []
+      "expected_output": "Enter all-changes mode and chinese-output together (the explicit phrase forces Chinese), plan the split against the full staged/unstaged/untracked set, and use Chinese for the resulting commit text or split plan.",
+      "files": [],
+      "assertions": [
+        "Enters all-changes mode (includes untracked files in the candidate set)",
+        "Output language is Chinese",
+        "Plans the split against the full working-tree change set before executing"
+      ]
     },
     {
       "id": 8,
       "prompt": "当前没有 staged，但我要把所有改动直接提交，包括新文件。请生成并执行一个 Conventional Commit。",
-      "expected_output": "Enter all-changes mode without asking the user to stage files manually first, but keep the commit text in English because the exact Chinese-output phrase was not used.",
-      "files": []
+      "expected_output": "Enter all-changes mode without asking the user to stage files manually first. Because the request itself is written in Chinese, the auto-detected commit-language is Chinese — the commit text should be Chinese even though the legacy magic phrase was not used.",
+      "files": [],
+      "assertions": [
+        "Enters all-changes mode without asking the user to stage files manually first",
+        "Auto-detects the commit-language as Chinese from the Chinese request",
+        "Produces a Chinese subject (does NOT fall back to English just because the legacy phrase was absent)"
+      ]
     },
     {
       "id": 9,
       "prompt": "Split and commit all changes, but one file mixes two unrelated purposes. Handle it directly.",
       "expected_output": "Recognize all-changes mode, but stop at the split-plan layer because the split would require hunk-level surgery inside one file.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Recognizes all-changes mode",
+        "Stops at the split-plan layer instead of committing",
+        "Reason given is that a clean split would require hunk-level surgery inside one file"
+      ]
     },
     {
       "id": 10,
       "prompt": "I have a staged auth change that adds SMS fallback to the login flow. Please commit it. Use agent-mode defaults.",
-      "expected_output": "Header contains `[AI] ✨`, body starts with a `Why:` line explaining the motivation, trailers include Agent-Task (from branch or unspecified), Agent-Model matching the running model id, and Generated-By: agent. No Co-Authored-By, no attribution line.",
-      "files": []
+      "expected_output": "Header contains [AI] and emoji, body starts with a Why: line, trailers include Agent-Task, Agent-Model matching the running model id, and Generated-By: agent. No Co-Authored-By, no attribution line.",
+      "files": [],
+      "assertions": [
+        "Header contains the [AI] tag and an emoji",
+        "Body starts with a Why: line explaining the motivation",
+        "Trailers include Agent-Task, Agent-Model, and Generated-By: agent",
+        "No Co-Authored-By and no attribution line"
+      ]
     },
     {
       "id": 11,
       "prompt": "I'm midway through refactoring refresh token rotation. Just give me a checkpoint commit so I don't lose progress. Don't worry about polishing the message.",
-      "expected_output": "Recognize checkpoint-mode. Produce a single `chore(wip): [AI] 🔧 [WIP] <subject>` commit. Skip the Why-line requirement. Still attach Agent-Task / Agent-Model / Generated-By trailers. Remind the user to squash [WIP] commits before merging.",
-      "files": []
+      "expected_output": "Recognize checkpoint-mode. Produce a single chore(wip): [AI] checkpoint commit. Skip the Why-line requirement. Still attach Agent-Task / Agent-Model / Generated-By trailers. Remind the user to squash [WIP] commits before merging.",
+      "files": [],
+      "assertions": [
+        "Produces a single chore(wip) commit with [AI] and a [WIP] marker",
+        "Skips the Why-line requirement",
+        "Still attaches Agent-Task / Agent-Model / Generated-By trailers",
+        "Reminds the user to squash [WIP] commits before merging"
+      ]
     },
     {
       "id": 12,
       "prompt": "Commit my staged bug fix to the cart total calculator. Don't add any AI tag or agent trailer — I want a normal Conventional Commit.",
-      "expected_output": "Disable agent-mode. Header has no `[AI]` tag, no Agent-Task / Agent-Model / Agent-Prompt-Ref / Generated-By trailers. Standard Conventional Commit with emoji preserved.",
-      "files": []
+      "expected_output": "Disable agent-mode. Header has no [AI] tag, no Agent-* / Generated-By trailers. Standard Conventional Commit with emoji preserved.",
+      "files": [],
+      "assertions": [
+        "Header has no [AI] tag",
+        "No Agent-Task / Agent-Model / Agent-Prompt-Ref / Generated-By trailers",
+        "Standard Conventional Commit with emoji preserved"
+      ]
     },
     {
       "id": 13,
       "prompt": "Commit this staged feat change. The diff modifies the user profile API but I haven't said why I'm doing it.",
-      "expected_output": "Type is `feat`, Why is required. Since the agent cannot infer a real motivation from the diff alone, stop at the split-plan layer and ask the user to supply the Why before composing. Do not fabricate a Why line and do not run git commit.",
-      "files": []
+      "expected_output": "Type is feat, Why is required. Since the agent cannot infer a real motivation from the diff alone, stop and ask the user to supply the Why before composing. Do not fabricate a Why line and do not run git commit.",
+      "files": [],
+      "assertions": [
+        "Identifies that Why is required for a feat commit",
+        "Stops and asks the user to supply the Why",
+        "Does not fabricate a Why line and does not run git commit"
+      ]
     },
     {
       "id": 14,
       "prompt": "Write a commit message for fixing duplicate ledger writes in the payment callback, close #128, and link it to task tracker URL https://linear.app/x/issue/PAY-77.",
-      "expected_output": "Closes #128 stays in the standard footer. The task tracker URL is rendered as `Agent-Task: https://linear.app/x/issue/PAY-77`, not mixed into Closes. Agent-Model and Generated-By trailers attach. Header includes `[AI] 🐛` and body has a Why line.",
-      "files": []
+      "expected_output": "Closes #128 stays in the standard footer. The task tracker URL is rendered as Agent-Task: https://linear.app/x/issue/PAY-77, not mixed into Closes. Agent-Model and Generated-By trailers attach. Header includes [AI] and a fix emoji and body has a Why line.",
+      "files": [],
+      "assertions": [
+        "Closes #128 stays in the standard footer",
+        "The Linear URL is rendered as Agent-Task:, not mixed into Closes",
+        "Agent-Model and Generated-By trailers attach",
+        "Header includes [AI] and a fix emoji, and the body has a Why line"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "把我暂存的购物车总价修复提交了，这个 bug 是删除商品后总价没刷新。",
+      "expected_output": "The request is written in Chinese with no magic phrase, so the auto-detected commit-language is Chinese. Produce and execute a fix(cart) commit with a Chinese subject, [AI] tag, emoji, and a Why line, plus agent trailers.",
+      "files": [],
+      "assertions": [
+        "Auto-detects the commit-language as Chinese from the request (no legacy magic phrase needed)",
+        "Header is a fix commit with [AI] and emoji",
+        "Subject and Why line are written in Chinese"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Commit my staged change. Match whatever language this project usually uses — its recent commits all look like 'feat(动态工作流): 收紧编排触发并补齐脚手架验证'.",
+      "expected_output": "With no explicit language instruction and a language-neutral request, the skill should fall through to repo-history detection and match the project's Chinese commit habit.",
+      "files": [],
+      "assertions": [
+        "Samples or honors the repository's commit history to decide language",
+        "Produces a Chinese subject to match the repo's existing style"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "Commit my staged auth fix for the SMS retry bug. I verified it with `just ci`, I'm confident it's correct, and the blast radius is narrow.",
+      "expected_output": "Produce a fix(auth) commit in agent-mode with the quality-trail trailers filled in: Tested: just ci, Confidence: high, Scope-risk: narrow, ordered before the Agent-* trailers.",
+      "files": [],
+      "assertions": [
+        "Includes a Tested: just ci trailer",
+        "Includes Confidence and Scope-risk trailers reflecting the user's statement",
+        "Quality trailers are ordered before Agent-Task / Agent-Model / Generated-By"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "Commit my staged change with this exact subject: 添加短信兜底登录并重构验证码服务与限流降级回退到备用通道的完整逻辑",
+      "expected_output": "That subject is far wider than 72 display columns. The skill should keep the header within ~72 columns (tighten the subject) and move the extra detail into the body, rather than forcing an overlong header through.",
+      "files": [],
+      "assertions": [
+        "Final commit header is within roughly 72 display columns",
+        "Overflow detail is moved into the body rather than left in a giant subject line"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "Stage and commit everything — I added a new login feature plus a .env file with the production API keys.",
+      "expected_output": "The preflight safety scan should flag the .env secret, refuse to commit it silently, and ask the user to confirm or unstage it before proceeding.",
+      "files": [],
+      "assertions": [
+        "Flags the .env / secret file during preflight",
+        "Does not silently commit the secret into history",
+        "Asks the user to confirm or unstage the secret before proceeding"
+      ]
     }
   ]
 }

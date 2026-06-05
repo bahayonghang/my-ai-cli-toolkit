@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import unicodedata
 from pathlib import Path
 
 TYPE_EMOJIS = {
@@ -61,6 +62,21 @@ def parse_args() -> argparse.Namespace:
         help="Raw footer/trailer line. May be supplied multiple times.",
     )
     parser.add_argument(
+        "--confidence",
+        default=None,
+        help="Agent self-assessed confidence, rendered as `Confidence:` trailer (e.g. high/medium/low).",
+    )
+    parser.add_argument(
+        "--scope-risk",
+        default=None,
+        help="Blast-radius estimate, rendered as `Scope-risk:` trailer (e.g. narrow/moderate/broad).",
+    )
+    parser.add_argument(
+        "--tested",
+        default=None,
+        help="How the change was verified, rendered as `Tested:` trailer (e.g. `just ci`).",
+    )
+    parser.add_argument(
         "--breaking-header",
         action="store_true",
         help="Append ! to the commit header before the colon.",
@@ -107,9 +123,6 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     summary = normalize_summary(args.summary)
-    if len(summary) > 50:
-        print("Summary must be 50 characters or fewer.", file=sys.stderr)
-        return 1
 
     if args.ai and not args.agent_model:
         print("--ai requires --agent-model so the commit declares which model produced it.", file=sys.stderr)
@@ -136,6 +149,15 @@ def main() -> int:
     header_parts.append(summary)
     header += " ".join(header_parts)
 
+    header_width = display_width(header)
+    if header_width > 72:
+        print(
+            f"Commit header is {header_width} display columns wide; keep the subject line within 72 "
+            "(≈50 preferred). Tighten the summary or drop the scope.",
+            file=sys.stderr,
+        )
+        return 1
+
     lines = [header]
 
     body_lines: list[str] = []
@@ -155,6 +177,12 @@ def main() -> int:
         normalized = normalize_issue_ref(ref)
         if normalized:
             trailer_lines.append(f"Refs {normalized}")
+    if args.confidence and args.confidence.strip():
+        trailer_lines.append(f"Confidence: {args.confidence.strip()}")
+    if args.scope_risk and args.scope_risk.strip():
+        trailer_lines.append(f"Scope-risk: {args.scope_risk.strip()}")
+    if args.tested and args.tested.strip():
+        trailer_lines.append(f"Tested: {args.tested.strip()}")
     if args.agent_task and args.agent_task.strip():
         trailer_lines.append(f"Agent-Task: {args.agent_task.strip()}")
     if args.agent_model and args.agent_model.strip():
@@ -179,6 +207,24 @@ def main() -> int:
     else:
         sys.stdout.buffer.write(message.encode("utf-8"))
     return 0
+
+
+def display_width(text: str) -> int:
+    """Approximate terminal columns: CJK/fullwidth and emoji count as 2, combining marks as 0.
+
+    A plain ``len()`` undercounts Chinese subjects (each CJK glyph is one code point but two
+    columns), so the old summary-only check let visually-overlong headers through. Measuring the
+    whole header here matches what a reviewer actually sees in ``git log``.
+    """
+    width = 0
+    for ch in text:
+        if unicodedata.combining(ch):
+            continue
+        if unicodedata.east_asian_width(ch) in ("W", "F") or ord(ch) >= 0x1F000:
+            width += 2
+        else:
+            width += 1
+    return width
 
 
 def normalize_summary(summary: str) -> str:
