@@ -18,6 +18,8 @@ openspec/
 .agents/
 .omx/
 .playwright-mcp/
+.trellis/
+
 
 .impeccable.md
 
