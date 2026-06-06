@@ -1,0 +1,4 @@
+interface:
+  display_name: "Goudi"
+  short_description: "Ground bold ideas into executable proof points"
+  default_prompt: "Use $goudi to ground this proposal into the smallest verifiable first move. Preserve the bold direction, name real constraints, cut the first attempt aggressively, and define success criteria, failure signals, and a stop rule before any implementation."
