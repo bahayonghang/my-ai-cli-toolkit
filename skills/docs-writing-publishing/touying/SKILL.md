@@ -4,7 +4,7 @@ description: Author Typst slide decks with Touying. Use when working with .typ p
 category: docs-writing-publishing
 tags: [typst, touying, slide-deck, animation, theme]
 argument-hint: path-to-typ-file
-allowed-tools: [Read, Write, Glob, Grep]
+allowed-tools: Read, Write, Glob, Grep
 ---
 
 # Touying Author

@@ -9,14 +9,7 @@ tags:
   - ci
   - automation
 version: 1.2.0
-allowed-tools:
-  - Task
-  - AskUserQuestion
-  - Read
-  - Bash
-  - Glob
-  - Grep
-  - Write
+allowed-tools: Task, AskUserQuestion, Read, Bash, Glob, Grep, Write
 ---
 
 1. Ask user for communication language and template language preference. Also ask for the desired mode: **quick** (sensible defaults, minimal interaction), **custom** (choose specific templates), or **full** (all available templates). See [phases/02.1-quick-mode.md](phases/02.1-quick-mode.md), [phases/02.2-custom-mode.md](phases/02.2-custom-mode.md), and [phases/02.3-full-mode.md](phases/02.3-full-mode.md) for mode-specific behavior.

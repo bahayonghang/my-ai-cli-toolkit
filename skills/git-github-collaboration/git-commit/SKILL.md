@@ -8,9 +8,7 @@ tags:
   - commit-message
   - agent-aware
 version: 1.7.0
-allowed-tools:
-  - Bash
-  - python
+allowed-tools: Bash, python
 ---
 
 Use this workflow in order: `preflight -> split plan -> classify -> compose -> commit/draft -> verify`.

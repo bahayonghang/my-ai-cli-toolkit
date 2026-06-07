@@ -8,10 +8,7 @@ tags:
   - pr-review
   - code-review
 version: 1.2.0
-allowed-tools:
-  - Read
-  - Bash
-  - python
+allowed-tools: Read, Bash, python
 ---
 
 1. Verify `gh auth status`. If unauthenticated, ask user to run `gh auth login`.

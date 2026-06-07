@@ -9,10 +9,7 @@ tags:
   - archive
   - project-state
 argument-hint: "[feature-name]"
-allowed-tools:
-  - Bash(python *)
-  - Bash(py *)
-  - Read
+allowed-tools: Bash(python *), Bash(py *), Read
 ---
 
 # Archive Planning

@@ -4,8 +4,11 @@ version: 1.0.0
 description: "Multi-source deep research skill for current-topic investigation, comparison, and cited report writing. Use when the user asks to research, compare, or deep-dive a topic with current web sources and citations, including phrases like research, deep dive, latest, 调研, 做个深度研究, or 带来源总结. Do not use for offline-only codebase questions, casual opinion requests, or when the user explicitly forbids web access."
 category: research-learning-knowledge
 tags: [research, web, citations, synthesis, report-writing, current-events]
-homepage: https://github.com/paragshah/deep-research-pro
-metadata: {"clawdbot":{"emoji":"🔬","category":"research"}}
+metadata:
+  version: "1.0.0"
+  homepage: "https://github.com/paragshah/deep-research-pro"
+  clawdbot_emoji: "🔬"
+  clawdbot_category: "research"
 ---
 
 # Deep Research Pro

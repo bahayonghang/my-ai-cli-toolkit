@@ -20,17 +20,7 @@ tags:
   - documentation
   - code-map
 argument-hint: "[audit-or-update-goal]"
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Edit
-  - Write
-  - Bash(git *)
-  - Bash(find *)
-  - Bash(Get-ChildItem *)
-  - Bash(Get-Content *)
-  - Bash(Select-String *)
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *), Bash(Get-ChildItem *), Bash(Get-Content *), Bash(Select-String *)
 ---
 
 # CLAUDE.md Improver

@@ -23,11 +23,7 @@ tags:
   - accessibility
   - offline
 argument-hint: "[goal-or-output-path]"
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
+allowed-tools: Read, Write, Edit, Bash
 ---
 
 # HTML Artifact

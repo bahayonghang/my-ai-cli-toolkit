@@ -16,13 +16,7 @@ tags:
   - live-editor
   - svg-export
 argument-hint: "[path-to-beautiful-mermaid-repo-or-editor-task]"
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Beautiful Mermaid Editor

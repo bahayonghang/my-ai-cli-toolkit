@@ -23,17 +23,7 @@ tags:
   - hooks
   - omx
 argument-hint: "[repository-or-workflow-goal]"
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash(codex *)
-  - Bash(git *)
-  - Bash(find *)
-  - Bash(ls *)
-  - Bash(Get-ChildItem *)
-  - Bash(Get-Content *)
-  - Bash(Select-String *)
+allowed-tools: Read, Glob, Grep, Bash(codex *), Bash(git *), Bash(find *), Bash(ls *), Bash(Get-ChildItem *), Bash(Get-Content *), Bash(Select-String *)
 ---
 
 # Codex Workflow Recommender
