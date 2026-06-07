@@ -8,6 +8,7 @@ This `AGENTS.md` governs `skills/**` and narrows the root guidance for first-par
 ## Local Rules
 - Use kebab-case for category and skill directory names. Keep each skill rooted at `skills/<category>/<skill-name>/SKILL.md`.
 - `SKILL.md` frontmatter must use top-level `name`, `description`, `category`, `tags`, and `version` fields as applicable; `category` must match the parent category directory.
+- If `allowed-tools` is present, use a comma-separated string instead of a YAML sequence so external skill review tools can validate it.
 - Keep runnable helpers inside the owning skill, usually under `scripts/`, and tests under `tests/`.
 - Prefer updating existing references/assets/templates over introducing new dependencies or cross-skill coupling.
 - When public skill metadata changes, refresh/check generated docs with `just docs-sync` or `just docs-check`.
