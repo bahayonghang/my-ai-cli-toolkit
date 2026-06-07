@@ -93,7 +93,10 @@ Decide the active change authority and output language before doing anything els
    - Bash / zsh / macOS / Linux: `bash "$COMMIT_COMPOSER" ...`
    - PowerShell: `& "$COMMIT_COMPOSER" ...`
    The wrapper auto-detects `python3`, `python`, or `py`, so do not write `python ...` directly in the compose step.
-3. Use:
+3. Required arguments:
+   - `--type` for the commit type; choose a key from [references/commit-types.md](references/commit-types.md).
+   - `--summary` for the subject line content. The flag is `--summary`, not `--subject`; passing `--subject` is not accepted and fails argparse.
+4. Optional arguments:
    - `--body-line` for body content
    - `--why` for the motivation line (rendered as `Why: <text>` at the top of body)
    - `--closes` for closing issues
@@ -103,17 +106,17 @@ Decide the active change authority and output language before doing anything els
    - `--breaking-header` when the header itself must include `!`
    - `--breaking` when a `BREAKING CHANGE:` trailer is needed
    - `--no-emoji` only when the user explicitly opts out
-4. **Agent-mode defaults** (applied unless the user disabled agent-mode):
+5. **Agent-mode defaults** (applied unless the user disabled agent-mode):
    - Always pass `--ai --agent-model <model> --generated-by-agent`.
    - Pass `--agent-task <value>` (use `unspecified` only as last-resort fallback).
    - Pass `--agent-prompt-ref <ref>` only when a stable reference exists.
    - When you know them, pass `--confidence <high|medium|low>`, `--scope-risk <narrow|moderate|broad>`, and `--tested "<how verified>"`. Recommended in agent-mode but not enforced — omit a field rather than guessing its value.
    - For Why-required types, pass `--why "<motivation>"` and `--require-why` so the script fails loudly when Why is missing.
    - In `checkpoint-mode`, use `--type chore --scope wip` and prepend `[WIP] ` to summary; skip `--require-why`; skip `--closes` / `--refs`.
-5. If the user disabled agent-mode: omit `--ai`, omit all `--agent-*` flags, omit `--generated-by-agent`. Fall back to plain Conventional Commit.
-6. If the Why-required check fails and Why cannot be inferred from user context: stop, return to the split-plan layer, and ask the user for the motivation. Do not fabricate a Why line.
-7. Never hand-roll a multiline commit message when the script can express it safely.
-8. **PROHIBITED**: Never include `Co-Authored-By`, attribution lines (e.g. `🤖 Generated with Claude Code`), or push commands by default. `Generated-By: agent` is a structured trailer for audit grep, not an attribution line — it stays.
+6. If the user disabled agent-mode: omit `--ai`, omit all `--agent-*` flags, omit `--generated-by-agent`. Fall back to plain Conventional Commit.
+7. If the Why-required check fails and Why cannot be inferred from user context: stop, return to the split-plan layer, and ask the user for the motivation. Do not fabricate a Why line.
+8. Never hand-roll a multiline commit message when the script can express it safely.
+9. **PROHIBITED**: Never include `Co-Authored-By`, attribution lines (e.g. `🤖 Generated with Claude Code`), or push commands by default. `Generated-By: agent` is a structured trailer for audit grep, not an attribution line — it stays.
 
 ## 5. Commit Or Draft
 
