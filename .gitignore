@@ -47,3 +47,4 @@ docs/.vitepress/cache/
 
 # Local skill-creator evaluation workspaces
 goudi-workspace/
+ast-grep-workspace/

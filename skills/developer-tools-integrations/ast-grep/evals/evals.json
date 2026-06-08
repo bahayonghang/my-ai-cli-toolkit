@@ -1,0 +1,44 @@
+{
+  "skill_name": "ast-grep",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In this TypeScript service, I need an ast-grep rule to find async functions that contain an await but do not contain a local try/catch. It needs to handle normal function declarations, arrow functions assigned to consts, and class methods. Please give me the rule, a tiny fixture, the validation command, and caveats.",
+      "expected_output": "Produces a valid JavaScript/TypeScript ast-grep YAML rule that broadens beyond function_declaration, checks for await descendants, excludes local try_statement descendants, includes a minimal positive/negative fixture, gives scan validation commands, and explains likely false negatives.",
+      "files": [],
+      "expectations": [
+        "The output includes a complete ast-grep YAML rule with id, language, and rule fields.",
+        "The rule considers multiple JavaScript/TypeScript function forms rather than only function_declaration.",
+        "The rule uses a descendant search for await and a negated local try/catch or try_statement condition.",
+        "The output includes a minimal fixture and a validation command before the repository scan command.",
+        "The output documents at least one false-negative or scoping caveat."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I am auditing a React TSX codebase. Please write an ast-grep rule to find useEffect calls that have an empty dependency array, show a quick fixture, and explain how to run it on src/**/*.tsx from PowerShell. I care about avoiding shell quoting mistakes.",
+      "expected_output": "Produces a valid TSX ast-grep rule for useEffect($CALLBACK, []), uses a PowerShell-safe rule-file or here-string workflow, includes a fixture and validation command, and explains TSX/glob caveats.",
+      "files": [],
+      "expectations": [
+        "The output targets TSX or React-specific parsing instead of plain JavaScript only.",
+        "The output includes a complete ast-grep YAML rule with id, language, and rule fields.",
+        "The output gives PowerShell-safe commands, preferably using a rule file or single-quoted here-string.",
+        "The output includes a minimal fixture and validation command.",
+        "The output names caveats such as aliased hooks, wrapper hooks, or dynamic dependency arrays."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "For a Python cleanup, I want an ast-grep rule that finds bare except handlers. Please include a small Python fixture, the exact ast-grep command to validate the rule, and guidance for what this rule will not catch.",
+      "expected_output": "Produces a valid Python ast-grep YAML rule or pattern for bare except, includes a fixture and validation command, and explains exclusions such as except Exception, except BaseException, or formatting/parser limitations.",
+      "files": [],
+      "expectations": [
+        "The output includes a complete ast-grep YAML rule with id, language, and rule fields.",
+        "The rule specifically targets bare except handlers and distinguishes them from typed except handlers.",
+        "The output includes a Python fixture with both matching and non-matching examples.",
+        "The output includes an ast-grep validation command before any repository-wide command.",
+        "The output documents at least one caveat about typed exceptions or parser-sensitive indentation."
+      ]
+    }
+  ]
+}
