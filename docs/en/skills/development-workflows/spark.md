@@ -4,14 +4,14 @@
 
 ## Purpose overview
 
-Plan-first brainstorming workflow that turns an idea into an approved Markdown implementation plan by default.
+Plan-first brainstorming workflow that turns an idea into an approved implementation plan before coding.
 
 ## Trigger scenarios
 
-- the user wants to brainstorm, design, scope, or plan a feature/spec before implementation
-- Spark explores project context, asks only blocking questions, writes the plan under the project root's .plannings/YYYY-MM-DD-feature-slug.md path, self-reviews it, and waits for user approval
-- Create an HTML or visual plan/spec only when the user explicitly asks for HTML, browser-viewable, or visual output
-- save the paired .html beside the Markdown plan
+- the user wants to brainstorm, design, scope, stress-test, or plan a feature/spec
+- Spark adapts to the active planning surface: in Codex native Plan mode it stays read-only and returns a chat-only final plan
+- in Claude Code Plan mode it uses Claude's plan approval/exit flow and writes files only after approval exits Plan mode
+- in writable/default mode it saves Markdown plans under .plannings/YYYY-MM-DD-feature-slug.md
 
 ## Metadata
 
@@ -19,7 +19,7 @@ Plan-first brainstorming workflow that turns an idea into an approved Markdown i
 | --- | --- |
 | Name | `spark` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.5.0` |
+| Version | `0.6.0` |
 | Tags | `brainstorming`, `plan-writing`, `product-design`, `requirements`, `planning` |
 
 ## Install command
