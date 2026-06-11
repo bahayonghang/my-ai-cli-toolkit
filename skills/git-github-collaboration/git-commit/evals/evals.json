@@ -212,6 +212,30 @@
         "Does not silently commit the secret into history",
         "Asks the user to confirm or unstage the secret before proceeding"
       ]
+    },
+    {
+      "id": 20,
+      "prompt": "Commit my staged change. Heads up: this repo has a pre-commit hook that reformats files and aborts the commit when it rewrites anything.",
+      "expected_output": "The first commit attempt is aborted by the formatter hook. The skill should re-inspect git status, re-stage the hook's edits, retry the same commit message, and attribute the reformatting to the hook rather than treating it as its own change.",
+      "files": [],
+      "assertions": [
+        "Re-inspects git status after the hook aborts the commit",
+        "Re-stages the hook's edits and retries the same commit message",
+        "Reports that the hook reformatted files instead of claiming the change as its own",
+        "Does not rewrite the commit message in response to the formatter abort"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "Commit my staged docs update. Note: this repo's commitlint config only allows types [feat, fix, docs, chore], forbids emoji, and caps the header at 60 characters.",
+      "expected_output": "Repo config is authoritative over the skill's defaults: pick an allowed type, omit emoji even though the skill defaults to emoji-on, and keep the header within 60 characters.",
+      "files": [],
+      "assertions": [
+        "Treats the commitlint config as authoritative over the skill's defaults",
+        "Omits emoji from the header",
+        "Header stays within the configured 60-character limit",
+        "Uses the docs type from the allowed list"
+      ]
     }
   ]
 }

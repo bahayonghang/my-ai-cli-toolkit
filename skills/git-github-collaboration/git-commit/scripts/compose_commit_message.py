@@ -229,7 +229,7 @@ def display_width(text: str) -> int:
 
 def normalize_summary(summary: str) -> str:
     summary = summary.strip()
-    if summary.endswith(("。", ".", "!", "！")):
+    while summary.endswith(("。", ".", "!", "！")):
         summary = summary[:-1].rstrip()
     return summary
 

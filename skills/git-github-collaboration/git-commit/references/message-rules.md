@@ -15,7 +15,7 @@
 - `scope` 可选，推荐使用中文模块名
 - `[AI]` 标签仅在 agent 生成提交时插入，位于冒号之后、emoji 之前
 - 默认保留 emoji；仅在用户明确要求时关闭
-- `subject` 使用动宾短语，不超过 50 个字符
+- `subject` 使用动宾短语；compose 脚本按显示宽度强制整个 header ≤ 72 列（CJK 与 emoji 每字符按 2 列计），中文 subject 建议 25 字以内，英文 50 字符以内
 - 遇到不兼容变更时，可使用 `type(scope)!:` 头部形式
 
 示例：
@@ -71,15 +71,15 @@ Why: 短信兜底降低验证码服务故障时的登录失败率
 
 Agent 生成的提交追加以下 trailer，置于其他 footer 之后：
 
-| 字段 | 含义 | 必填 |
-|------|------|------|
-| `Confidence` | 自评可信度 `high`/`medium`/`low`，排在 issue 引用之后 | agent-mode 推荐 |
-| `Scope-risk` | 影响半径 `narrow`/`moderate`/`broad` | agent-mode 推荐 |
-| `Tested` | 验证方式，如 `just ci` / `pytest -k auth` / `未运行` | agent-mode 推荐 |
-| `Agent-Task` | 任务 ID 或 issue URL，缺失时为 `unspecified` | 是 |
-| `Agent-Model` | 模型标识，例如 `claude-opus-4-7` | 是（与 `[AI]` 强绑定） |
-| `Agent-Prompt-Ref` | prompt 摘要 / hash / 短标签 | 否 |
-| `Generated-By` | 固定值 `agent`，作为审计哨兵 | 是 |
+| 字段               | 含义                                                  | 必填                   |
+| ------------------ | ----------------------------------------------------- | ---------------------- |
+| `Confidence`       | 自评可信度 `high`/`medium`/`low`，排在 issue 引用之后 | agent-mode 推荐        |
+| `Scope-risk`       | 影响半径 `narrow`/`moderate`/`broad`                  | agent-mode 推荐        |
+| `Tested`           | 验证方式，如 `just ci` / `pytest -k auth` / `未运行`  | agent-mode 推荐        |
+| `Agent-Task`       | 任务 ID 或 issue URL，缺失时为 `unspecified`          | 是                     |
+| `Agent-Model`      | 模型标识，例如 `claude-opus-4-8`                      | 是（与 `[AI]` 强绑定） |
+| `Agent-Prompt-Ref` | prompt 摘要 / hash / 短标签                           | 否                     |
+| `Generated-By`     | 固定值 `agent`，作为审计哨兵                          | 是                     |
 
 `Confidence` / `Scope-risk` / `Tested` 由 compose 脚本 `--confidence` / `--scope-risk` / `--tested` 生成，与 `Why` 不同——它们不强制、缺失不阻断提交，但在 agent-mode 下应尽量填写以便按风险审计。
 
@@ -88,7 +88,7 @@ Agent 生成的提交追加以下 trailer，置于其他 footer 之后：
 ```bash
 git log --grep='^Generated-By: agent' --format='%H %s'
 git log --grep='\[AI\]' --format='%H %s'
-git log --grep='^Agent-Model: claude-opus-4-7'
+git log --grep='^Agent-Model: claude-opus-4-8'
 ```
 
 ## Breaking Change 规则

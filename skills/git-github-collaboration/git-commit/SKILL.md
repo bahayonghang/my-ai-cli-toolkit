@@ -1,14 +1,14 @@
 ---
 name: git-commit
-description: Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Output language is auto-detected from the user's instruction, the request's own language, and the repository's recent commit history (English fallback); explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection. Agent commits automatically inject `Agent-Task` / `Agent-Model` / `Generated-By` trailers — plus optional `Confidence` / `Scope-risk` / `Tested` quality trailers — and an `[AI]` header tag; Why-line is required for feat/fix/refactor/perf; supports a `chore(wip)` checkpoint mode for long-running agent tasks.
+description: Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged or working-tree changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Output language is auto-detected from the user's instruction, the request language, and recent commit history (English fallback); explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection. Agent commits add an `[AI]` header tag and audit trailers, enforce a Why line for feat/fix/refactor/perf, and support a `chore(wip)` checkpoint mode.
 category: git-github-collaboration
 tags:
   - git
   - conventional-commits
   - commit-message
   - agent-aware
-version: 1.7.0
-allowed-tools: Bash, python
+version: 1.8.0
+allowed-tools: Bash
 ---
 
 Use this workflow in order: `preflight -> split plan -> classify -> compose -> commit/draft -> verify`.
@@ -42,7 +42,7 @@ Decide the active change authority and output language before doing anything els
    - The active change set exists but is obviously mixed and cannot be safely separated from inspection alone: do not improvise a commit. Output a split plan and stop.
    - The user explicitly asked only for commit text, a draft, or suggestions: continue through classification and composition, but do not run `git commit`.
 4. **Detect agent context** (skip when user disabled `agent-mode`):
-   - Resolve `agent-model` from the model currently running this skill (e.g. `claude-opus-4-7`, `claude-sonnet-4-6`, `gpt-5-codex`). This value is required.
+   - Resolve `agent-model` from the model currently running this skill (e.g. `claude-opus-4-8`, `claude-sonnet-4-6`, `gpt-5-codex`). This value is required.
    - Resolve `agent-task` by trying, in order: (a) explicit task ID or issue URL in the user message, (b) `closes #N` / `refs #N` mentioned by the user, (c) ticket ID extracted from the current branch name, (d) `Agent-Task` value from the previous commit on this branch, (e) fallback to `unspecified`.
    - Resolve `agent-prompt-ref` only when a stable prompt reference exists; otherwise leave empty.
    - Detect `checkpoint-mode`: triggered by user words such as `checkpoint`, `打个 checkpoint`, `先存一下`, `WIP`, `[WIP]`, `work in progress`, `先提交一下，待会再整理`.
@@ -84,9 +84,9 @@ Decide the active change authority and output language before doing anything els
 
 ## 4. Compose
 
-1. Resolve the helper path once instead of hardcoding an interpreter name:
-   - Bash / zsh / macOS / Linux: `COMMIT_COMPOSER="$SKILL_DIR/scripts/compose_commit_message"`
-   - PowerShell: `$COMMIT_COMPOSER = "$SKILL_DIR/scripts/compose_commit_message.ps1"`
+1. Resolve the helper path once instead of hardcoding an interpreter name. `<skill-dir>` below means this skill's base directory — the path announced when the skill loads. It is not an environment variable, so substitute the literal path:
+   - Bash / zsh / macOS / Linux: `COMMIT_COMPOSER="<skill-dir>/scripts/compose_commit_message"`
+   - PowerShell: `$COMMIT_COMPOSER = "<skill-dir>/scripts/compose_commit_message.ps1"`
 2. Generate the final message with the wrapper script:
    - Bash / zsh / macOS / Linux: `bash "$COMMIT_COMPOSER" ...`
    - PowerShell: `& "$COMMIT_COMPOSER" ...`
@@ -120,7 +120,7 @@ Decide the active change authority and output language before doing anything els
 
 1. If the user asked only for a draft, return the proposed commit text and stop.
 2. **Confirmation checkpoint**: Before any `git commit`, display the final commit message (header + body + footer) and the list of files to be committed. Explicitly call out whether `[AI]` is in the header, whether Why is present, and which agent trailers will attach. If the user has been interactive in this session, wait for explicit confirmation. If the user pre-approved (e.g. "直接提交", "commit it"), proceed without pausing.
-3. If the user asked to commit and `staged-only` is active, commit only the safe staged set. Write the message to a file and commit with `git commit -F <message-file>` so PowerShell and POSIX shells behave consistently.
+3. If the user asked to commit and `staged-only` is active, commit only the safe staged set. Write the message to a file and commit with `git commit -F <message-file>` so PowerShell and POSIX shells behave consistently. Put the message file outside the working tree — `$(git rev-parse --git-dir)/COMMIT_MSG_SKILL` or the OS temp dir — never inside the repo, where the `all-changes` flow's `git add -A` would sweep it into the commit.
 4. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` first so tracked, deleted, and untracked non-ignored files all enter the commit set.
 5. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
 6. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.

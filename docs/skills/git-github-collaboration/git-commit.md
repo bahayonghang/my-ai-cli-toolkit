@@ -8,10 +8,10 @@ Safely orchestrate Conventional Commits for staged Git changes, or for all worki
 
 ## 触发场景
 
-- the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default
-- Output language is auto-detected from the user's instruction, the request's own language, and the repository's recent commit history (English fallback)
+- the user asks to write a commit message, split staged or working-tree changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default
+- Output language is auto-detected from the user's instruction, the request language, and recent commit history (English fallback)
 - explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection
-- Agent commits automatically inject `Agent-Task` / `Agent-Model` / `Generated-By` trailers — plus optional `Confidence` / `Scope-risk` / `Tested` quality trailers — and an `[AI]` header tag
+- Agent commits add an `[AI]` header tag and audit trailers, enforce a Why line for feat/fix/refactor/perf, and support a `chore(wip)` checkpoint mode
 
 ## 元数据
 
@@ -19,7 +19,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or for all worki
 | --- | --- |
 | 名称 | `git-commit` |
 | 分类 | `git-github-collaboration` (Git / GitHub 协作) |
-| 版本 | `1.7.0` |
+| 版本 | `1.8.0` |
 | 标签 | `git`, `conventional-commits`, `commit-message`, `agent-aware` |
 
 ## 安装命令
