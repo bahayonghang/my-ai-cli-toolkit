@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "english-bugfix-boundaries",
+  "prompt": "Write a Codex goal for fixing a flaky checkout discount test in this repo. Keep it English only and make sure the agent does not touch payment provider config.",
+  "assertions": [
+    "Output is English-only unless quoting the /goal command syntax.",
+    "The goal includes Verification, Constraints, Boundaries, Iteration policy, Stop when, and Pause if.",
+    "Payment provider configuration is explicitly out of bounds.",
+    "Verification names regression tests or discovery of the smallest project-provided checks."
+  ]
+}

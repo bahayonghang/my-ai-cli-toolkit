@@ -1,0 +1,11 @@
+{
+  "eval_id": 3,
+  "eval_name": "medical-discovery-first",
+  "prompt": "这是医疗数据标注相关的内部工具，我只知道要先做第一版。帮我写 goal，但别让 Codex 编造医学结论。",
+  "assertions": [
+    "The goal requires inspecting authoritative project docs, sample data, or official references before implementation.",
+    "The constraints prohibit invented medical conclusions, compliance claims, and unsupported data semantics.",
+    "Pause conditions include medical judgment, compliance approval, real patient data, paid services, and destructive actions.",
+    "Chinese-first companion sections and English-compatible mirror are present."
+  ]
+}

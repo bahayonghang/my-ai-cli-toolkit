@@ -1,0 +1,4 @@
+interface:
+  display_name: "Goal Meta Skill"
+  short_description: "Turn vague Codex work into a best-default /goal command"
+  default_prompt: "Use $goal-meta-skill to turn this task into a strong Codex /goal command. Keep the executable prefix as /goal, draft rather than execute unless I explicitly ask you to start the goal, use current Codex goal commands for view/pause/resume/clear requests, keep inline objectives under 4,000 characters or point to a file, and for Chinese prompts provide 推荐执行版（中文，可直接复制） first plus an English-compatible mirror unless I ask for one language only."

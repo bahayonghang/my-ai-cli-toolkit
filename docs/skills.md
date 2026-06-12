@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、28 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、29 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -20,13 +20,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 开发者工具集成
 
-`developer-tools-integrations` · 5 skills
+`developer-tools-integrations` · 6 skills
 
 - [agents-md-improver](/skills/developer-tools-integrations/agents-md-improver) — Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps in repositories.
 - [archive-planning](/skills/developer-tools-integrations/archive-planning) — Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature.
 - [ast-grep](/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
 - [claude-md-improver](/skills/developer-tools-integrations/claude-md-improver) — Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and companion code_map.md navigation maps.
 - [codex-workflow-recommender](/skills/developer-tools-integrations/codex-workflow-recommender) — Analyze a repository and current Codex environment, then recommend Codex CLI, Codex App, AGENTS.md, skills, native subagents, plugins, MCP servers, config/hooks, and optional OMX workflow improvements without modifying files.
+- [goal-meta-skill](/skills/developer-tools-integrations/goal-meta-skill) — Turn vague or complex Codex tasks into strong `/goal` commands with outcome, verification, constraints, boundaries, iteration policy, completion evidence, and pause/block conditions.
 
 ### 开发工作流
 

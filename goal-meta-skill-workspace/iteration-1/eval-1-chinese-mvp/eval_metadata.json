@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "chinese-mvp-defaults",
+  "prompt": "用 goal-meta-skill 帮我把“做一个本地记账 App MVP”写成 Codex /goal。我不想填长表，直接给推荐执行版和几个可选调整。",
+  "assertions": [
+    "Output starts with 推荐执行版（中文，可直接复制） before explanation.",
+    "The executable command prefix is /goal, not /目标.",
+    "The Chinese draft includes 验证, 约束, 边界, 迭代策略, 完成条件, and 暂停条件.",
+    "The output includes 默认选择理由, 可选调整, 你可以直接回复, and Goal Draft (English-compatible)."
+  ]
+}

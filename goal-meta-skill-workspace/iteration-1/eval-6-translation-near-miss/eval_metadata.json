@@ -1,0 +1,9 @@
+{
+  "eval_id": 6,
+  "eval_name": "translation-near-miss",
+  "prompt": "帮我把这句话翻译成英文：今天下午三点开会。",
+  "assertions": [
+    "The answer should not produce a /goal command.",
+    "The answer should treat this as a simple translation or explain that goal mode is unnecessary."
+  ]
+}
