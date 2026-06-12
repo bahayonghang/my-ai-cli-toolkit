@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 9
+- **Total Sessions**: 10
 - **Last Active**: 2026-06-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~308 | Active |
+| `journal-1.md` | ~341 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 10 | 2026-06-12 | Bootstrap Guidelines | `85c5b6e` | `main` |
 | 9 | 2026-06-12 | Optimize goal-meta-skill | `5dfa021`, `526c39d`, `9e72159` | `main` |
 | 8 | 2026-06-09 | Refactor Spark plan mode support | `9af85d3`, `4a62605` | `main` |
 | 7 | 2026-06-08 | Archive completed Trellis tasks | - | `main` |

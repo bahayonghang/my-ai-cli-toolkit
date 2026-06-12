@@ -306,3 +306,36 @@ Optimized goal-meta-skill semantics, docs/catalog sync, eval artifacts, and Trel
 ### Next Steps
 
 - None - task complete
+
+
+## Session 10: Bootstrap Guidelines
+
+**Date**: 2026-06-12
+**Task**: Bootstrap Guidelines
+**Branch**: `main`
+
+### Summary
+
+Filled Trellis backend/frontend project guidelines from real repo conventions.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `85c5b6e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
