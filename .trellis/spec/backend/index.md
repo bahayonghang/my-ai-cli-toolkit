@@ -1,38 +1,33 @@
 # Backend Development Guidelines
 
-> Best practices for backend development in this project.
-
----
+> Repo-side conventions for non-UI plumbing: validators, hook scripts, generators, and other operational code.
 
 ## Overview
 
-This directory contains guidelines for backend development. Fill in each file with your project's specific conventions.
-
----
+This repository does not have a traditional application backend or database layer. The backend section documents the code that keeps the repo itself consistent: Python validation scripts under `scripts/`, runtime hooks under `platforms/claude/hooks/`, docs/catalog generators under `docs/scripts/`, and skill-local helpers under `skills/**/scripts/`.
 
 ## Guidelines Index
 
 | Guide | Description | Status |
 |-------|-------------|--------|
-| [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |
-| [Database Guidelines](./database-guidelines.md) | ORM patterns, queries, migrations | To fill |
-| [Error Handling](./error-handling.md) | Error types, handling strategies | To fill |
-| [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
-| [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
+| [Directory Structure](./directory-structure.md) | Where operational code, hook scripts, and helpers live | Documented |
+| [Database Guidelines](./database-guidelines.md) | File-backed data, no ORM, no migrations | Documented |
+| [Error Handling](./error-handling.md) | Validation failures, exit codes, and stderr output | Documented |
+| [Quality Guidelines](./quality-guidelines.md) | Validation gates, tests, and review standards | Documented |
+| [Logging Guidelines](./logging-guidelines.md) | Console output and local runtime logs | Documented |
 
----
+## How to Keep These Guidelines Current
 
-## How to Fill These Guidelines
+1. Document actual repository behavior, not aspirations.
+2. Tie rules to real files in this repo.
+3. Note when a subtree is source material versus generated output.
+4. Update the guide when a new helper, hook, or generator changes the conventions.
 
-For each guideline file:
+## Examples
 
-1. Document your project's **actual conventions** (not ideals)
-2. Include **code examples** from your codebase
-3. List **forbidden patterns** and why
-4. Add **common mistakes** your team has made
+- `scripts/check.py` validates skill metadata from disk.
+- `platforms/claude/hooks/pre-bash.py` blocks dangerous commands.
+- `skills/git-github-collaboration/git-commit/scripts/compose_commit_message.py` validates commit-message arguments and composes output.
+- `docs/scripts/sync_docs_catalog.py` reads source assets and writes generated docs pages.
 
-The goal is to help AI assistants and new team members understand how YOUR project works.
-
----
-
-**Language**: All documentation should be written in **English**.
+**Language**: All documentation should be written in English.

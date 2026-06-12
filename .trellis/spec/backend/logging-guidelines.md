@@ -1,51 +1,39 @@
 # Logging Guidelines
 
-> How logging is done in this project.
-
----
+> How logging is done in this repository's operational code.
 
 ## Overview
 
-<!--
-Document your project's logging conventions here.
-
-Questions to answer:
-- What logging library do you use?
-- What are the log levels and when to use each?
-- What should be logged?
-- What should NOT be logged (PII, secrets)?
--->
-
-(To be filled by the team)
-
----
+Logging in this repo is minimal and local. Most scripts print short status messages to stdout and errors to stderr. Persistent runtime logs are only used where a hook or helper explicitly needs them, and those logs stay outside the tracked source tree.
 
 ## Log Levels
 
-<!-- When to use each level: debug, info, warn, error -->
-
-(To be filled by the team)
-
----
+- `debug`: only for temporary troubleshooting while developing a helper.
+- `info`: short progress messages, counts, or completion summaries.
+- `warn`: unusual but recoverable conditions.
+- `error`: failed validation, blocked commands, or unrecoverable script failures.
 
 ## Structured Logging
 
-<!-- Log format, required fields -->
-
-(To be filled by the team)
-
----
+- There is no shared logging framework.
+- Prefer plain text lines unless a script already emits JSON or a downstream consumer expects machine-readable output.
+- Keep prefixes stable when they help grepability, such as `[CWF] BLOCKED`.
 
 ## What to Log
 
-<!-- Important events to log -->
-
-(To be filled by the team)
-
----
+- Validation summaries and generated file counts.
+- Rejected commands or policy decisions.
+- Local runtime prompt snippets when a hook explicitly needs review data.
 
 ## What NOT to Log
 
-<!-- Sensitive data, PII, secrets -->
+- Secrets, credentials, tokens, or private prompt bodies.
+- Host-local runtime state committed as source.
+- Large trace dumps when a short message is enough.
 
-(To be filled by the team)
+## Examples
+
+- `platforms/claude/hooks/log-prompt.py` writes prompt snippets to `.claude/state/session-<id>.log`.
+- `platforms/claude/hooks/pre-bash.py` prints `[CWF] BLOCKED: ...` to stderr for rejected commands.
+- `docs/scripts/sync_docs_catalog.py` reports generated doc counts and drift status.
+- `scripts/check.py` prints per-skill validation results.

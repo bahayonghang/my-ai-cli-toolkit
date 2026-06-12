@@ -1,51 +1,39 @@
 # Type Safety
 
-> Type safety patterns in this project.
-
----
+> Type safety patterns in the docs-site frontend.
 
 ## Overview
 
-<!--
-Document your project's type safety conventions here.
-
-Questions to answer:
-- What type system do you use?
-- How are types organized?
-- What validation library do you use?
-- How do you handle type inference?
--->
-
-(To be filled by the team)
-
----
+Type safety matters mainly in `docs/.vitepress/config.mts` and any future Vue/TypeScript helpers. The rest of the docs site is markdown-driven. Prefer narrow, explicit object shapes and avoid `any`.
 
 ## Type Organization
 
-<!-- Where types are defined, shared types vs local types -->
-
-(To be filled by the team)
-
----
+- Keep site config types next to `docs/.vitepress/config.mts`.
+- Do not duplicate catalog shapes in page files.
+- Keep content shape knowledge in `docs/scripts/sync_docs_catalog.py`, which produces the generated catalog module.
+- If you add a TypeScript helper, colocate it with the docs feature that uses it and export the minimum shape needed.
 
 ## Validation
 
-<!-- Runtime validation patterns (Zod, Yup, io-ts, etc.) -->
-
-(To be filled by the team)
-
----
+- There is no runtime validator for docs page content.
+- The build and generator are the validation boundary.
+- Use the Python generator and VitePress build to catch mismatches between source content and generated pages.
 
 ## Common Patterns
 
-<!-- Type utilities, generics, type guards -->
-
-(To be filled by the team)
-
----
+- Explicit nav and sidebar arrays in `docs/.vitepress/config.mts`.
+- Generated catalog imports rather than hard-coded repeated data.
+- Bilingual page pairs that share structure but not copy-pasted config objects.
 
 ## Forbidden Patterns
 
-<!-- any, type assertions, etc. -->
+- `any` for catalog or site config data.
+- Broad casts that hide a mismatch between the generator and the docs config.
+- Duplicating generated catalog shapes in multiple files.
+- Hard-coding generated page data in both the source file and a local runtime copy.
 
-(To be filled by the team)
+## Examples
+
+- `docs/.vitepress/config.mts`
+- `docs/.vitepress/generated/catalog.mjs`
+- `docs/scripts/sync_docs_catalog.py`
