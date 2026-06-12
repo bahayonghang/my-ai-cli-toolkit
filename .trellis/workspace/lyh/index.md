@@ -1,0 +1,48 @@
+# Workspace Index - lyh
+
+> Journal tracking for AI development sessions.
+
+---
+
+## Current Status
+
+<!-- @@@auto:current-status -->
+- **Active File**: `journal-1.md`
+- **Total Sessions**: 8
+- **Last Active**: 2026-06-09
+<!-- @@@/auto:current-status -->
+
+---
+
+## Active Documents
+
+<!-- @@@auto:active-documents -->
+| File | Lines | Status |
+|------|-------|--------|
+| `journal-1.md` | ~273 | Active |
+<!-- @@@/auto:active-documents -->
+
+---
+
+## Session History
+
+<!-- @@@auto:session-history -->
+| # | Date | Title | Commits | Branch |
+|---|------|-------|---------|--------|
+| 8 | 2026-06-09 | Refactor Spark plan mode support | `9af85d3`, `4a62605` | `main` |
+| 7 | 2026-06-08 | Archive completed Trellis tasks | - | `main` |
+| 6 | 2026-06-08 | Optimize ast-grep skill | `17e6ac7` | `main` |
+| 5 | 2026-06-08 | Fix Tessl skill review findings | `3c97d3b`, `308cb18` | `main` |
+| 4 | 2026-06-07 | Fix git-commit composer argument docs | `acbe7b7` | `main` |
+| 3 | 2026-06-06 | Optimize goudi skill | `bba5072` | `main` |
+| 2 | 2026-06-06 | Optimize geju skill | `4717772` | `main` |
+| 1 | 2026-06-05 | Code Refactor Skill | `d2cb36f`, `9e8b08e`, `75d8266` | `main` |
+<!-- @@@/auto:session-history -->
+
+---
+
+## Notes
+
+- Sessions are appended to journal files
+- New journal file created when current exceeds 2000 lines
+- Use `add_session.py` to record sessions

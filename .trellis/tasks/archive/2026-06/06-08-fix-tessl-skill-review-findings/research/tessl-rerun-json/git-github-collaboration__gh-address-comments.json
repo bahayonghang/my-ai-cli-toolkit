@@ -1,0 +1,169 @@
+{
+  "review": {
+    "reviewScore": 89
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 29 (<= 500)",
+        "details": {
+          "line_count": 29,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'gh-address-comments'",
+        "details": {
+          "value": "gh-address-comments",
+          "length": 19
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (199 chars)",
+        "details": {
+          "length": 199
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Bash,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 2151
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "gh-address-comments",
+    "skillDescription": "Address GitHub PR review comments and actionable review threads with GitHub CLI. Use when triaging reviewer feedback, summarizing unresolved PR comments, or applying selected fixes on a pull request."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: 'Address GitHub PR review comments', 'triaging reviewer feedback', 'summarizing unresolved PR comments', and 'applying selected fixes on a pull request'. These are distinct, concrete capabilities."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes strong natural trigger terms users would say: 'PR review comments', 'reviewer feedback', 'unresolved PR comments', 'pull request', 'GitHub CLI', 'review threads', 'fixes'. These cover common variations of how users would describe this task."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (address GitHub PR review comments and actionable review threads with GitHub CLI) and 'when' (explicit 'Use when' clause covering triaging feedback, summarizing unresolved comments, or applying fixes on a PR)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche: specifically targets PR review comment handling via GitHub CLI. The combination of 'PR review comments', 'review threads', and 'GitHub CLI' creates a clear, narrow scope unlikely to conflict with general Git, code review, or GitHub issue skills."
+        }
+      },
+      "overall_assessment": "This is a well-crafted skill description that clearly defines its scope around GitHub PR review comment handling. It uses third person voice, includes an explicit 'Use when' clause with natural trigger terms, and carves out a distinct niche that separates it from broader GitHub or code review skills. The description is concise yet comprehensive.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The content is mostly efficient and avoids explaining basic concepts, but some steps could be tightened. For example, step 3's RTK guidance and step 6's distinction between comment types add moderate value but feel slightly verbose for Claude's level of understanding."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Provides concrete, executable commands (gh auth status, python script invocations with specific flags, gh pr view --json fallback), clear branching logic, and specific thresholds (e.g., 'more than 3 files'). The guidance is specific enough to be directly followed."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The workflow is clearly sequenced (steps 1-9) with explicit validation checkpoints: auth verification at start and mid-run (step 9), error handling for PR resolution (step 2), fallback on script failure (step 4), branching logic (step 5), and confirmation before large changes (step 8). Feedback loops are present for error recovery."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "There is a reference to scripts/fetch_comments.py at the bottom, but no bundle files were provided to verify it exists. The content is reasonably structured as a single procedural document, but the inline detail about RTK, bot suggestions, and output formatting could potentially be split into a separate reference for cleaner navigation."
+        }
+      },
+      "overall_assessment": "This is a well-structured, actionable skill with a clear multi-step workflow, explicit error handling, and good validation checkpoints. Its main strengths are the concrete commands and branching logic that cover edge cases. Minor weaknesses include slightly verbose explanations in a few steps and limited progressive disclosure structure beyond a single script reference.",
+      "suggestions": [
+        "Consider extracting the RTK usage guidance (step 3) and comment categorization details (step 6) into a separate reference file to keep the main skill leaner.",
+        "Tighten step 6 by removing the parenthetical examples of bot types — Claude can infer what linter and CI bots are."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

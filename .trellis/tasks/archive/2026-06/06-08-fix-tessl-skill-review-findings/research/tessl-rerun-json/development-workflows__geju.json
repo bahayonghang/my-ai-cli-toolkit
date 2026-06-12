@@ -1,0 +1,164 @@
+{
+  "review": {
+    "reviewScore": 86
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 216 (<= 500)",
+        "details": {
+          "line_count": 216,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'geju'",
+        "details": {
+          "value": "geju",
+          "length": 4
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (375 chars)",
+        "details": {
+          "length": 375
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 8165
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "geju",
+    "skillDescription": "Use when the user explicitly asks to think bigger, open up the design space, challenge conservative design, avoid over-indexing on backward compatibility, escape local-detail fixation, or make a bold high-level product or architecture direction call. Use for strategic reframing, not for ordinary code review, PRD writing, implementation planning, or adversarial risk review."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 2,
+          "reasoning": "The description names a domain (strategic reframing, bold design/architecture decisions) and lists some actions like 'challenge conservative design' and 'escape local-detail fixation,' but these are more abstract conceptual activities than concrete, measurable actions. It lacks specifics about what the skill actually produces or does."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "The description includes many natural trigger phrases a user might say: 'think bigger,' 'open up the design space,' 'challenge conservative design,' 'avoid over-indexing on backward compatibility,' 'bold high-level product or architecture direction.' These are realistic phrases users would use when seeking this kind of help."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "The description explicitly answers both 'when' (with a detailed 'Use when...' clause listing multiple trigger scenarios) and 'what' (strategic reframing). It also includes a 'not for' clause that clarifies boundaries, which strengthens the 'when' guidance. However, the 'what' portion is relatively thin compared to the 'when' portion."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "The description carves out a clear niche by explicitly distinguishing itself from 'ordinary code review, PRD writing, implementation planning, or adversarial risk review.' The trigger terms are distinctive and unlikely to overlap with standard development skills."
+        }
+      },
+      "overall_assessment": "This description excels at defining when to use the skill and when not to, with strong trigger terms and clear boundary-setting against related skills. Its main weakness is that the 'what it does' portion is somewhat abstract—'strategic reframing' is named but the concrete outputs or actions the skill performs are not well specified. Overall it is a solid description that would perform well in skill selection.",
+      "suggestions": [
+        "Add 1-2 concrete actions or outputs the skill produces (e.g., 'Generates alternative architectural approaches, reframes product constraints, produces high-level strategic recommendations')."
+      ]
+    },
+    "weightedScore": 2.8,
+    "normalizedScore": 0.8999999999999999
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is reasonably well-structured but contains some redundancy—the 'What To Fight' section largely restates the 'Ways To Open The Frame' moves in a different framing. Some sections like 'What This Skill Is Not' repeat what's already implied. The content could be tightened by ~30% without losing clarity, but it doesn't explain concepts Claude already knows."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "For an instruction-only strategic thinking skill, this is highly actionable. It provides specific questions to ask, concrete counter-moves for each anti-pattern, named frame-opening techniques, and a clear workflow with explicit steps. The guidance is specific enough that Claude knows exactly what to do in each situation (e.g., 'Ask what real contract requires compatibility' rather than 'consider compatibility')."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 7-step workflow is clearly sequenced with logical progression from reframing → identifying constraints → evaluating constraints → offering thesis → using techniques → presenting options → execution boundaries. Step 3 includes explicit validation criteria (real vs. not-real constraints), and step 7 includes falsification conditions and proof points, serving as verification checkpoints for a strategic reasoning process."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references `references/output-template.md` in step 7 but no bundle files are provided, making this reference unverifiable. The content is well-organized with clear sections and headers, but at ~200 lines it includes substantial inline content (the 'What To Fight' section and 'Ways To Open The Frame') that could potentially be split into reference files. For a skill of this complexity, the single-file approach is borderline acceptable but not ideal."
+        }
+      },
+      "overall_assessment": "This is a well-crafted strategic thinking skill with strong actionability and workflow clarity. It provides specific, concrete techniques and counter-moves rather than vague advice, and the workflow is logically sequenced with validation checkpoints. The main weaknesses are moderate verbosity from overlapping sections ('Ways To Open The Frame' vs 'What To Fight') and a dangling reference to a bundle file that doesn't exist.",
+      "suggestions": [
+        "Consolidate 'Ways To Open The Frame' and 'What To Fight' sections—they overlap significantly (e.g., compatibility worship vs. constraint inversion, local detail trap vs. end-state backcasting). Merging them would cut ~40 lines without losing content.",
+        "Either provide the referenced `references/output-template.md` bundle file or remove the reference from step 7 to avoid a broken pointer."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

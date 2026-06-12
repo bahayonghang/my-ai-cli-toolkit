@@ -1,0 +1,172 @@
+{
+  "review": {
+    "reviewScore": 92
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 224 (<= 500)",
+        "details": {
+          "line_count": 224,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "version",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'html-artifact'",
+        "details": {
+          "value": "html-artifact",
+          "length": 13
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (810 chars)",
+        "details": {
+          "length": 810
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Write,",
+            "Edit,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 16744
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "html-artifact",
+    "skillDescription": "Create self-contained HTML artifacts, single-file by default and split into offline per-page bundles when oversized, for complex, visual, comparison-heavy, reviewable, or shareable work outputs. Use this skill when the user asks for an HTML artifact, browser-viewable report, implementation plan, PR/code review report, architecture explainer, design comparison, research briefing, incident report, status dashboard, temporary structured-data editor, mini deck, or design-system specimen. Prefer this skill for long Markdown-like outputs that benefit from navigation, cards, diagrams, filters, copy/export buttons, or annotated diffs. Do not use it for short answers, simple commands, commit messages, tiny patch summaries, or production UI implementation unless the user explicitly asks for a review artifact."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions and output types: 'self-contained HTML artifacts', 'single-file by default', 'split into offline per-page bundles when oversized', and enumerates specific features like 'navigation, cards, diagrams, filters, copy/export buttons, annotated diffs'."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural terms users would say: 'HTML artifact', 'browser-viewable report', 'implementation plan', 'PR/code review report', 'architecture explainer', 'design comparison', 'research briefing', 'incident report', 'status dashboard', 'mini deck', 'design-system specimen'. These are terms users would naturally use when requesting such outputs."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (create self-contained HTML artifacts with navigation, cards, diagrams, etc.) and 'when' (explicit 'Use this skill when...' clause with extensive trigger scenarios, plus a 'Prefer this skill for...' clause and a 'Do not use it for...' exclusion clause)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a clear niche (HTML artifact generation for complex visual outputs) and explicit negative boundaries ('Do not use it for short answers, simple commands, commit messages, tiny patch summaries, or production UI implementation') that reduce conflict risk with other skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that thoroughly covers what the skill does, when to use it, and when not to use it. It provides extensive trigger terms covering many natural user request patterns, and the explicit exclusion clause helps prevent false matches. The description uses proper third-person voice throughout and is comprehensive without being unnecessarily verbose.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is lengthy (~300+ lines) but most content is genuinely instructive and non-obvious (design anti-patterns, split-gate thresholds, SVG label rules). However, some sections are verbose—e.g., the design escalation section explains composition principles Claude likely knows, and the codebase architecture audit routing section is very detailed for what could be a reference file. The anti-pattern list and layout primitives could be more terse."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides concrete, executable guidance throughout: specific bash commands for validation, exact byte thresholds for split decisions, a complete size-plan example, specific CSS class names for layout primitives, explicit template-to-goal mapping table, and a clear numbered creation workflow. The validator command is copy-paste ready and the size estimation process is fully specified."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The creation workflow is a clear 11-step sequence with explicit validation checkpoints (step 8: run validator, step 9: fix and rerun, step 10: manual design review). The pre-build size gate is a separate gated workflow with clear thresholds and a decision example. Feedback loops are explicit ('Fix validation failures and rerun'). Split-bundle decisions have clear escalation thresholds."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "Excellent progressive disclosure structure. The main file is an actionable overview that explicitly lists 16+ reference files organized by purpose (cookbooks, templates, checklists) with clear one-level-deep navigation. The 'Load only the needed template reference' instruction and the final Progressive Disclosure section with a clean bullet list of all references demonstrate textbook progressive disclosure."
+        }
+      },
+      "overall_assessment": "This is a well-structured, highly actionable skill for a complex domain. Its greatest strengths are the clear multi-step workflow with validation gates, the concrete size-estimation gate with exact thresholds, and the excellent progressive disclosure pointing to ~16 reference files. The main weakness is moderate verbosity—some sections (design escalation, architecture audit routing, layout primitives) could be tightened or moved to reference files to better respect token budget, though the content itself is substantive and non-trivial.",
+      "suggestions": [
+        "Move the detailed 'Codebase architecture audit routing' section (with its 8-point report contract and enum table columns) into a reference file to reduce main-file verbosity while preserving the routing table entry.",
+        "Tighten the 'Design anti-patterns to avoid' and 'Layout primitives' sections—these read as reference material that could live in the design-review-checklist or starter-template references rather than the main skill body."
+      ]
+    },
+    "weightedScore": 2.7,
+    "normalizedScore": 0.8500000000000001
+  }
+}

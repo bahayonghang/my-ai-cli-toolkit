@@ -1,0 +1,162 @@
+{
+  "review": {
+    "reviewScore": 86
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 162 (<= 500)",
+        "details": {
+          "line_count": 162,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'goudi'",
+        "details": {
+          "value": "goudi",
+          "length": 5
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (536 chars)",
+        "details": {
+          "length": 536
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 6210
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "goudi",
+    "skillDescription": "Use when the user asks to ground an ambitious proposal, avoid over-grand designs, make a bold direction executable, pressure-test feasibility, prevent \"too much vision and too little landing\", or turn a strategy/refactor/product idea into the smallest verifiable first move with stop rules. Trigger for requests such as 落地, 先落地, 别太飘, 收一收, 可执行, 可验证, 止损, and for follow-ups after geju-style big-picture thinking. Do not trigger for ordinary code review or implementation unless the user explicitly asks to ground or shrink the plan first."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 2,
+          "reasoning": "The description names a clear domain (grounding ambitious proposals) and several actions like 'pressure-test feasibility', 'turn a strategy into the smallest verifiable first move with stop rules', but the actions are somewhat abstract and conceptual rather than concrete discrete operations like 'extract text' or 'fill forms'."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms in both English ('ground an ambitious proposal', 'avoid over-grand designs', 'pressure-test feasibility', 'make a bold direction executable') and Chinese (落地, 先落地, 别太飘, 收一收, 可执行, 可验证, 止损). These are phrases users would naturally say when they need this skill."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "The description clearly answers both 'what' (ground ambitious proposals, turn strategies into smallest verifiable first moves with stop rules) and 'when' (explicit 'Use when...' clause with multiple trigger scenarios, plus a 'Do not trigger' exclusion clause that further clarifies scope)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a clear niche (grounding/shrinking ambitious plans). The explicit 'Do not trigger for ordinary code review or implementation' exclusion and the reference to 'geju-style big-picture thinking' as a complementary skill make it very unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "This is a strong skill description with excellent trigger term coverage in both English and Chinese, clear 'Use when' and 'Do not trigger' clauses, and a distinctive niche. The main weakness is that the specific actions/capabilities could be slightly more concrete—the description leans toward conceptual language ('pressure-test feasibility', 'smallest verifiable first move') rather than enumerating discrete outputs or operations. Overall, it would perform very well in a multi-skill selection scenario.",
+      "suggestions": []
+    },
+    "weightedScore": 2.8,
+    "normalizedScore": 0.8999999999999999
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The content is mostly efficient and well-structured, but includes some sections that could be tightened—e.g., the 'What This Skill Is Not' section restates boundaries already implied, and the 'Relationship To Geju' section, while useful, is somewhat verbose. The core principle and anti-patterns are well-expressed but could be more compressed."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Despite being an instruction-only skill (no code), the guidance is highly concrete and specific. Each anti-pattern has explicit counter-moves, the workflow has clear numbered steps with specific deliverables (e.g., 'Name the first concrete artifact: test, PRD patch, interface change...'), and the output rules specify exact behaviors like leading with a landing judgment of go/shrink/pause/reject/validate first."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 7-step workflow is clearly sequenced with logical progression from restating ambition → reality check → minimum viable move → verification → scope cutting → stop rule → output formatting. Validation checkpoints are explicit (step 4 makes verification explicit, step 6 defines stop rules and rollback), and there are clear feedback loops for error recovery."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references 'references/output-template.md' in step 7 and mentions available planning/testing workflows, but no bundle files are provided to verify these exist. The content itself is well-organized with clear sections, but at ~150 lines it includes substantial inline detail (the 5 anti-patterns with counter-moves) that could potentially be split into a reference file for better progressive disclosure."
+        }
+      },
+      "overall_assessment": "This is a strong instruction-only skill with excellent actionability and workflow clarity. The anti-pattern/counter-move structure is highly effective and gives Claude concrete decision frameworks. Minor weaknesses include some verbosity that could be tightened and references to bundle files that aren't provided, making progressive disclosure harder to fully evaluate.",
+      "suggestions": [
+        "Tighten the 'What This Skill Is Not' section—most of these boundaries are already clear from the content and could be reduced to 2-3 bullet points.",
+        "Ensure the referenced 'references/output-template.md' exists in the bundle, or inline the essential template structure if the file is missing."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

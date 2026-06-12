@@ -1,0 +1,186 @@
+{
+  "review": {
+    "reviewScore": 89
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 226 (<= 500)",
+        "details": {
+          "line_count": 226,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "version",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'codex-workflow-recommender'",
+        "details": {
+          "value": "codex-workflow-recommender",
+          "length": 26
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (490 chars)",
+        "details": {
+          "length": 490
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Glob,",
+            "Grep,",
+            "Bash(codex",
+            "*),",
+            "Bash(git",
+            "*),",
+            "Bash(find",
+            "*),",
+            "Bash(ls",
+            "*),",
+            "Bash(Get-ChildItem",
+            "*),",
+            "Bash(Get-Content",
+            "*),",
+            "Bash(Select-String",
+            "*)"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 7485
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "codex-workflow-recommender",
+    "skillDescription": "Analyze a repository and current Codex environment, then recommend Codex CLI, Codex App, AGENTS.md, skills, native subagents, plugins, MCP servers, config/hooks, and optional OMX workflow improvements without modifying files. Use when the user asks to optimize Codex workflows, improve Codex setup, recommend Codex automation, configure MCP/plugins/subagents, analyze AGENTS.md scope needs, or says \"优化 Codex 流程\", \"Codex 工作流推荐\", \"给 Codex 配 MCP\", \"配置 Codex plugins\", or \"配置 Codex subagents\"."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: analyze repository, analyze Codex environment, recommend Codex CLI, Codex App, AGENTS.md, skills, native subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements. Also specifies the constraint 'without modifying files'."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes strong natural trigger terms in both English and Chinese: 'optimize Codex workflows', 'improve Codex setup', 'recommend Codex automation', 'configure MCP/plugins/subagents', 'analyze AGENTS.md scope needs', plus Chinese equivalents like '优化 Codex 流程' and '给 Codex 配 MCP'. Good coverage of terms users would naturally say."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (analyze repo and environment, recommend various Codex components without modifying files) and 'when' (explicit 'Use when...' clause with multiple trigger scenarios in both English and Chinese)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive — focuses specifically on Codex workflow optimization and configuration recommendations, a very specific niche. The combination of Codex-specific terminology (AGENTS.md, MCP servers, OMX workflows, Codex CLI/App) and the read-only constraint makes it unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "This is a strong, well-crafted description that clearly specifies concrete capabilities, includes an explicit 'Use when...' clause with diverse trigger terms in both English and Chinese, and occupies a distinct niche. The description is comprehensive without being padded, and the read-only constraint ('without modifying files') adds useful behavioral clarity. Minor concern is that the description is somewhat long, but the density of useful information justifies the length.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is generally well-structured and avoids explaining basic concepts, but it's quite long for what is essentially a read-only analysis workflow. Some sections like the recommendation categories table and the full report template add bulk that could be tightened. The category descriptions are somewhat repetitive in their framing."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides concrete, executable discovery commands (both POSIX and PowerShell), specific CLI commands for confirming the Codex surface, a complete report template with exact section structure, and clear tables mapping needs to Codex surfaces. Claude can follow this without ambiguity."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The workflow is clearly sequenced: profile the repo → confirm Codex surface → load references selectively → generate report. The Safe Implementation Order provides explicit risk-ordered steps. The Verification Plan includes specific validation commands. The read-only constraint is stated upfront and reinforced in Safety Rules, providing a clear boundary."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references several supporting files (references/mcp-servers.md, references/skills-reference.md, etc.) with clear guidance to load them only when needed, which is good design. However, no bundle files are provided, so these references are broken. The skill itself is also quite long and could benefit from splitting the detailed category guidance into a separate reference file."
+        }
+      },
+      "overall_assessment": "This is a well-structured, actionable skill for a complex advisory workflow. Its strengths are the clear discovery sequence, concrete CLI commands, comprehensive report template, and strong safety boundaries. Its main weaknesses are moderate verbosity (the full content is long for a read-only recommender) and references to bundle files that don't exist, undermining the progressive disclosure design.",
+      "suggestions": [
+        "Provide the referenced bundle files (references/mcp-servers.md, references/skills-reference.md, etc.) or remove the references to avoid broken navigation paths.",
+        "Consider moving the detailed recommendation category descriptions into a separate reference file to shorten the main SKILL.md and improve progressive disclosure."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

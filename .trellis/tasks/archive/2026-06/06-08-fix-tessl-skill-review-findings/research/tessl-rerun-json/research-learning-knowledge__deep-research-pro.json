@@ -1,0 +1,166 @@
+{
+  "review": {
+    "reviewScore": 84
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 158 (<= 500)",
+        "details": {
+          "line_count": 158,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "version",
+            "description",
+            "category",
+            "tags",
+            "metadata"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'deep-research-pro'",
+        "details": {
+          "value": "deep-research-pro",
+          "length": 17
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (404 chars)",
+        "details": {
+          "length": 404
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata.version' is present: 1.0.0",
+        "details": {
+          "version": "1.0.0"
+        }
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' contains 4 entries"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 4453
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "deep-research-pro",
+    "skillDescription": "Multi-source deep research skill for current-topic investigation, comparison, and cited report writing. Use when the user asks to research, compare, or deep-dive a topic with current web sources and citations, including phrases like research, deep dive, latest, 调研, 做个深度研究, or 带来源总结. Do not use for offline-only codebase questions, casual opinion requests, or when the user explicitly forbids web access."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple concrete actions: 'current-topic investigation, comparison, and cited report writing.' Also specifies negative boundaries (what NOT to use it for), adding further specificity."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms including English ('research', 'deep dive', 'latest', 'compare') and Chinese ('调研', '做个深度研究', '带来源总结'). These are terms users would naturally say when requesting this kind of work."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (multi-source deep research, comparison, cited report writing) and 'when' (explicit 'Use when...' clause with trigger phrases, plus a 'Do not use' clause for negative boundaries)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with its focus on multi-source web research with citations. The explicit exclusions (offline codebase questions, casual opinions, no-web-access scenarios) sharply delineate it from general Q&A or code analysis skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly communicates its purpose, provides rich trigger terms in multiple languages, and explicitly defines both positive and negative usage boundaries. The 'Do not use' clause is a particularly strong addition that reduces conflict risk with other skills. The description is concise yet comprehensive.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is mostly efficient but includes some unnecessary elaboration. For instance, the 'When to use' and 'Do not use' sections overlap with what should be in the YAML triggers, and some bullet lists (e.g., 'user goal: learn, decide, write, compare, or monitor') are slightly verbose. However, it avoids explaining concepts Claude already knows and stays reasonably tight for a complex multi-step research workflow."
+        },
+        "actionability": {
+          "score": 2,
+          "reasoning": "The skill provides a clear multi-step process with specific guidance (e.g., '3-5 sub-questions', '8-20 unique sources', source priority ordering, output markdown template). However, it lacks executable code or concrete tool-usage commands — it says 'Use the current environment's available web tools' without specifying which tools or how to invoke them. The output template is a good concrete artifact, but the search/read steps remain somewhat abstract."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The six-step workflow is clearly sequenced with logical progression from objective-locking through sub-question decomposition, searching, deep-reading, synthesis, and delivery. It includes validation-like checkpoints (e.g., treating single-source claims as provisional, marking missing data, distinguishing fact from inference) and has explicit failure/fallback handling. The workflow is well-suited to the non-destructive nature of research tasks."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The content is well-organized with clear section headers and a logical flow, but it's a single monolithic file with no references to supporting materials. For a skill of this complexity (~100 lines of substantive content), some content like the quality rules, failure modes, or the output template could be split into referenced files. However, given no bundle files exist, the inline approach is acceptable though not optimal."
+        }
+      },
+      "overall_assessment": "This is a well-structured research workflow skill with clear sequencing and good quality guardrails. Its main weaknesses are the lack of concrete tool invocation examples (it stays abstract about which web tools to use and how) and some mild verbosity in the framing sections. The workflow clarity is a standout strength, with explicit handling of uncertainty, source quality, and failure modes.",
+      "suggestions": [
+        "Add concrete tool-usage examples showing how to invoke web search and page-reading tools (e.g., specific tool names and parameter patterns) to improve actionability.",
+        "Trim the 'When to use' / 'Do not use' sections since these overlap with the YAML frontmatter trigger conditions, or reduce them to a single concise sentence each."
+      ]
+    },
+    "weightedScore": 2.25,
+    "normalizedScore": 0.625
+  }
+}

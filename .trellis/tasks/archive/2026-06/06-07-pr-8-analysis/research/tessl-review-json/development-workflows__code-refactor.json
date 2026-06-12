@@ -1,0 +1,173 @@
+{
+  "review": {
+    "reviewScore": 83
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 166 (<= 500)",
+        "details": {
+          "line_count": 166,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'code-refactor'",
+        "details": {
+          "value": "code-refactor",
+          "length": 13
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (514 chars)",
+        "details": {
+          "length": 514
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Glob,",
+            "Grep,",
+            "Bash,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 8242
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "code-refactor",
+    "skillDescription": "Implement safe, behavior-preserving code refactors after inspecting the existing project. Use when the user asks to refactor code, split large files or modules, extract functions or methods, reduce duplicated logic, rename confusing classes/functions/variables, improve code comments, remove unused or dead code, or says 重构代码, 拆分模块, 提取方法, 减少重复代码, 优化命名, 优化注释, 删除未调用代码. For broad refactor requests, plan safe slices and wait for approval; for narrow scoped requests, directly implement the smallest verifiable slice."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: split large files/modules, extract functions/methods, reduce duplicated logic, rename classes/functions/variables, improve code comments, remove unused/dead code. Also describes behavioral approach (plan safe slices vs. directly implement)."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms users would say: 'refactor code', 'split large files', 'extract functions', 'reduce duplicated logic', 'rename', 'remove unused code', 'dead code'. Also includes Chinese-language equivalents (重构代码, 拆分模块, etc.) for multilingual trigger coverage."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (safe, behavior-preserving code refactors with specific actions listed) and 'when' (explicit 'Use when...' clause with detailed trigger scenarios). Also includes behavioral guidance for broad vs. narrow requests."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Clearly scoped to code refactoring specifically, with distinct triggers like 'refactor', 'split modules', 'extract methods', 'dead code'. The emphasis on behavior-preserving and safe slices further distinguishes it from general code editing or generation skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that covers all dimensions well. It lists specific concrete refactoring actions, provides comprehensive trigger terms in both English and Chinese, explicitly states both what the skill does and when to use it, and is clearly distinguishable from other code-related skills. The inclusion of behavioral guidance (broad vs. narrow request handling) adds useful context without being verbose.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is generally well-written and avoids explaining basic concepts Claude already knows, but it's quite long (~180 lines) with some sections that could be tightened. The type-specific rules section, while useful, includes guidance that an experienced developer (Claude) could infer, such as 'Keep comments close to the logic they explain' and 'Avoid pass-through helpers that only rename one line.' The structural tooling heuristics section lists well-known tools without adding much beyond what Claude already knows."
+        },
+        "actionability": {
+          "score": 2,
+          "reasoning": "The skill provides clear procedural guidance and well-structured decision tables, but lacks concrete executable code examples. There are no copy-paste-ready commands or code snippets demonstrating actual refactoring patterns. Tool names are mentioned (ts-morph, jscodeshift, ast-grep) but no example invocations are shown. The output contract templates are helpful but the workflow steps remain at the instructional level rather than executable."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 7-step workflow is clearly sequenced with explicit validation checkpoints: establishing a baseline before editing (step 3), verifying after each slice (step 6), and rolling back on failure. The stop conditions section adds important guardrails. The feedback loop of 'verify → fix within slice or roll back' is explicitly stated, which is critical for behavior-preserving refactoring operations."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill is well-organized with clear sections and a logical hierarchy (overview → types → workflow → type-specific rules → tooling → stop conditions → output). However, with no bundle files, all content is inline in a single long document. The type-specific rules and structural tooling heuristics could be split into referenced files. References to other skills (code-quality-review, improve-codebase-architecture) are good for routing but the main content itself is monolithic."
+        }
+      },
+      "overall_assessment": "This is a well-structured refactoring skill with excellent workflow clarity, clear stop conditions, and good decision routing for different request types. Its main weaknesses are the lack of concrete executable examples (no actual code demonstrating refactoring patterns or tool invocations) and moderate verbosity in sections where Claude's existing knowledge could be leveraged more. The type classification table and output contract templates are strong additions.",
+      "suggestions": [
+        "Add 1-2 concrete, executable examples showing actual refactoring transformations (e.g., a before/after function extraction with the exact tool command used like `jscodeshift -t transform.js src/`)",
+        "Trim type-specific rules to only non-obvious guidance — remove advice like 'Keep comments close to the logic they explain' that Claude already knows, and focus on project-specific gotchas (barrel exports, framework discovery, reflection)"
+      ]
+    },
+    "weightedScore": 2.25,
+    "normalizedScore": 0.625
+  }
+}

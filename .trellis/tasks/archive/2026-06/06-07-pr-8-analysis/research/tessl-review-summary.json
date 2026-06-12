@@ -1,0 +1,245 @@
+[
+  {
+    "skill": "skills/developer-tools-integrations/agents-md-improver",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__agents-md-improver.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__agents-md-improver.stderr.txt"
+  },
+  {
+    "skill": "skills/developer-tools-integrations/archive-planning",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__archive-planning.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__archive-planning.stderr.txt"
+  },
+  {
+    "skill": "skills/developer-tools-integrations/claude-md-improver",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__claude-md-improver.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__claude-md-improver.stderr.txt"
+  },
+  {
+    "skill": "skills/developer-tools-integrations/codex-workflow-recommender",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__codex-workflow-recommender.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/developer-tools-integrations__codex-workflow-recommender.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/code-auditor",
+    "exit_code": 0,
+    "score": 89,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__code-auditor.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__code-auditor.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/code-quality-review",
+    "exit_code": 0,
+    "score": 89,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__code-quality-review.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__code-quality-review.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/code-refactor",
+    "exit_code": 0,
+    "score": 83,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__code-refactor.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__code-refactor.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/codex-dynamic-workflows",
+    "exit_code": 0,
+    "score": 75,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__codex-dynamic-workflows.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__codex-dynamic-workflows.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/cold-shower",
+    "exit_code": 0,
+    "score": 90,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__cold-shower.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__cold-shower.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/geju",
+    "exit_code": 0,
+    "score": 86,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__geju.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__geju.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/goudi",
+    "exit_code": 0,
+    "score": 86,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__goudi.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__goudi.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/handoff",
+    "exit_code": 0,
+    "score": 93,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__handoff.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__handoff.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/html-artifact",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__html-artifact.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__html-artifact.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/implementation-notes",
+    "exit_code": 0,
+    "score": 90,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__implementation-notes.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__implementation-notes.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/improve-codebase-architecture",
+    "exit_code": 0,
+    "score": 89,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__improve-codebase-architecture.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__improve-codebase-architecture.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/spark",
+    "exit_code": 0,
+    "score": 90,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__spark.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/development-workflows__spark.stderr.txt"
+  },
+  {
+    "skill": "skills/docs-writing-publishing/beautiful-mermaid-editor",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__beautiful-mermaid-editor.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__beautiful-mermaid-editor.stderr.txt"
+  },
+  {
+    "skill": "skills/docs-writing-publishing/bidwriter",
+    "exit_code": 0,
+    "score": 80,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__bidwriter.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__bidwriter.stderr.txt"
+  },
+  {
+    "skill": "skills/docs-writing-publishing/document-writer",
+    "exit_code": 0,
+    "score": 80,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__document-writer.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__document-writer.stderr.txt"
+  },
+  {
+    "skill": "skills/docs-writing-publishing/touying",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__touying.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/docs-writing-publishing__touying.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/gh-address-comments",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__gh-address-comments.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__gh-address-comments.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/gh-bootstrap",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__gh-bootstrap.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__gh-bootstrap.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/gh-fix-ci",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__gh-fix-ci.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__gh-fix-ci.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/git-commit",
+    "exit_code": 1,
+    "score": null,
+    "validation_errors": null,
+    "validation_warnings": null,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__git-commit.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/git-github-collaboration__git-commit.stderr.txt"
+  },
+  {
+    "skill": "skills/research-learning-knowledge/deep-research-pro",
+    "exit_code": 0,
+    "score": 82,
+    "validation_errors": 0,
+    "validation_warnings": 3,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/research-learning-knowledge__deep-research-pro.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/research-learning-knowledge__deep-research-pro.stderr.txt"
+  },
+  {
+    "skill": "skills/research-learning-knowledge/paper-workbench",
+    "exit_code": 0,
+    "score": 98,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/research-learning-knowledge__paper-workbench.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/research-learning-knowledge__paper-workbench.stderr.txt"
+  },
+  {
+    "skill": "skills/research-learning-knowledge/roundtable",
+    "exit_code": 0,
+    "score": 90,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "json": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/research-learning-knowledge__roundtable.json",
+    "stderr": ".trellis/tasks/06-07-pr-8-analysis/research/tessl-review-json/research-learning-knowledge__roundtable.stderr.txt"
+  }
+]

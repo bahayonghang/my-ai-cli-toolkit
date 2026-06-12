@@ -1,0 +1,161 @@
+{
+  "review": {
+    "reviewScore": 93
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 162 (<= 500)",
+        "details": {
+          "line_count": 162,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'handoff'",
+        "details": {
+          "value": "handoff",
+          "length": 7
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (855 chars)",
+        "details": {
+          "length": 855
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 4349
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "handoff",
+    "skillDescription": "Use when the user wants to compact context before auto-compaction kicks in, hand off an unfinished task to a fresh session, switch topics mid-stream and preserve state, or pick up yesterday's work in a new conversation. Produces a single handoff.md that captures completed work, blocked items with what was already tried, next concrete steps, and the minimum context needed to resume cold. Use proactively when context usage is high, a long-running task hits a natural break, or the user signals a session switch. Triggers include 上下文压缩, 交接文档, handoff, 续接会话, 主题切换, 接力, 明早接着干, context handoff, compact before, fresh session, continue tomorrow. Do NOT use for single-file fixes that finish in one commit (put it in the commit body), Q&A or pure investigation sessions, or end-of-session retrospectives meant for human review (those are different artifacts)."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: compact context, hand off unfinished tasks, switch topics while preserving state, pick up previous work. Also specifies the output artifact (handoff.md) and its contents (completed work, blocked items, next steps, minimum context)."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms in both English and Chinese: 'handoff', 'compact before', 'fresh session', 'continue tomorrow', '上下文压缩', '交接文档', '续接会话', '主题切换', '接力', '明早接着干'. These are phrases users would naturally say."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (produces a handoff.md capturing completed work, blocked items, next steps, minimum context) and 'when' (explicit 'Use when' clause at the start, plus 'Use proactively when' conditions, plus explicit negative guidance on when NOT to use it)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a clear niche (context handoff/session continuity). The explicit 'Do NOT use for' section further reduces conflict risk by distinguishing from commit messages, Q&A sessions, and retrospectives."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that thoroughly covers what the skill does, when to use it, and when not to use it. It provides rich trigger terms in multiple languages, specifies the concrete output artifact and its structure, and includes explicit negative boundaries to prevent misuse. The description is comprehensive without being padded with fluff.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is mostly efficient and well-structured, but includes some content Claude already knows (e.g., explaining what auto-compaction does, the core principle section explaining why context loss is bad). The anti-patterns table and some explanatory prose could be tightened. However, the good/bad examples throughout earn their place by being highly specific and instructive."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Highly actionable: provides a concrete template, specific good/bad examples for each section, a quality checklist, explicit file location conventions, a clear pickup procedure for new sessions, and precise writing rules. Every section tells Claude exactly what to do and what not to do."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The workflow is clearly sequenced across the full lifecycle: when to start writing, how to maintain during a session (edge-driven updates), cadence for rewriting/archiving, and a 5-step pickup procedure for new sessions. The quality checklist serves as an explicit validation checkpoint before handoff is consumed. The 'when to skip' section provides clear boundary conditions."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "For a standalone skill with no bundle files, the content is well-organized with clear sections, a logical flow from principles → triggers → structure → rules → anti-patterns → integration → template → checklist. The integration section cleanly references related skills without deep nesting. Content is appropriately contained in a single file given its scope."
+        }
+      },
+      "overall_assessment": "This is a high-quality skill that provides comprehensive, actionable guidance for creating handoff documents. Its greatest strengths are the concrete good/bad examples for each section, the explicit quality checklist, and the clear new-session pickup procedure. The main weakness is moderate verbosity in the core principle and some explanatory sections that could be trimmed without losing clarity.",
+      "suggestions": [
+        "Trim the 'Core principle' section to 2-3 sentences — Claude doesn't need the explanation of why auto-compaction is lossy; just state that handoff is manual compression for session continuity."
+      ]
+    },
+    "weightedScore": 2.7,
+    "normalizedScore": 0.8500000000000001
+  }
+}

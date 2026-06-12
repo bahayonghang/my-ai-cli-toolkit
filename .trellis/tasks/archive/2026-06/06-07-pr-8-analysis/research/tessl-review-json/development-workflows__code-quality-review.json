@@ -1,0 +1,173 @@
+{
+  "review": {
+    "reviewScore": 89
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 172 (<= 500)",
+        "details": {
+          "line_count": 172,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'code-quality-review'",
+        "details": {
+          "value": "code-quality-review",
+          "length": 19
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (552 chars)",
+        "details": {
+          "length": 552
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Glob,",
+            "Grep,",
+            "Bash,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 11144
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "code-quality-review",
+    "skillDescription": "Run a code quality review focused on maintainability, structure, abstraction quality, file growth, branching complexity, boundary cleanliness, and refactoring opportunities. Use when the user asks for code quality review, code review, maintainability review, architecture quality review, PR code quality feedback, 代码质量审查, 代码质量 review, 可维护性审查, 架构质量审查, or review comments about code structure. Do not use for pure security review, formatting-only review, performance profiling, or implementation tasks unless the user also asks for a code quality review."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete focus areas: maintainability, structure, abstraction quality, file growth, branching complexity, boundary cleanliness, and refactoring opportunities. These are concrete, well-defined aspects of code quality review."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms including 'code quality review', 'code review', 'maintainability review', 'architecture quality review', 'PR code quality feedback', plus Chinese-language equivalents (代码质量审查, 可维护性审查, 架构质量审查). Also includes negative triggers to reduce false matches."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (run a code quality review focused on specific dimensions) and 'when' (explicit 'Use when...' clause with trigger terms). Also includes a 'Do not use' clause that further clarifies boundaries, which is excellent for disambiguation."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with explicit negative boundaries ('Do not use for pure security review, formatting-only review, performance profiling, or implementation tasks') that clearly separate it from adjacent skills. The specific focus areas and exclusions make it very unlikely to conflict with other review-type skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that hits all the marks. It provides specific concrete capabilities, comprehensive trigger terms (including multilingual variants), explicit 'Use when' and 'Do not use' clauses, and clear boundaries that distinguish it from related skills like security review or performance profiling. The description is concise yet thorough, and uses proper third-person voice throughout.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is thorough and mostly well-written, but includes some sections that could be tightened — the 'When to Use' and 'When to Skip' sections largely repeat the YAML description, and the explanatory paragraph at the end of 'When to Skip' about broad audits is somewhat verbose. The review checklist table and severity rubric are dense but earn their place. Overall mostly efficient with some trimming opportunities."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides highly concrete, executable guidance: a specific workflow with clear steps for determining review target (including exact git commands like `main...HEAD`), a detailed review checklist table with specific flag conditions and preferred alternatives, a severity rubric with clear definitions, a complete output format template with stable finding IDs, and a calibrated example finding with real TypeScript code showing both input and expected output."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 4-step workflow is clearly sequenced with explicit decision points (e.g., the cascading scope inference in step 1), validation considerations (step 2 requires reading canonical context before judging), and failure handling for ambiguous situations. The failure handling section adds additional recovery paths. The safety constraints (read-only, never edit product code) serve as guardrails throughout."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references `assets/templates/quality-review.md` for the artifact output mode but no bundle files are provided, so this reference is unverifiable. The content is well-structured with clear sections and a logical flow, but at ~200 lines it's a substantial single file. The review checklist table and severity rubric could potentially be split into referenced files for a cleaner overview, though the current inline approach is defensible for a single-skill document."
+        }
+      },
+      "overall_assessment": "This is a strong, well-crafted skill that provides highly actionable and clearly structured guidance for code quality reviews. Its greatest strengths are the concrete workflow with cascading scope inference, the calibrated example finding, the explicit safety constraints, and the structured output format with stable IDs. Minor weaknesses include some redundancy with the skill description in the when-to-use/skip sections and a reference to a template file that isn't provided in the bundle.",
+      "suggestions": [
+        "Trim the 'When to Use' and 'When to Skip' sections since they largely duplicate the skill description metadata — keep only the nuances that add new information (e.g., the implementation-switch guidance).",
+        "Include the referenced `assets/templates/quality-review.md` template file in the bundle, or inline a minimal version of it, so the artifact output mode is fully self-contained."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

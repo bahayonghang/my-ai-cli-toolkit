@@ -1,0 +1,164 @@
+{
+  "review": {
+    "reviewScore": 90
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 204 (<= 500)",
+        "details": {
+          "line_count": 204,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "version",
+            "description",
+            "category",
+            "tags",
+            "argument-hint"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'spark'",
+        "details": {
+          "value": "spark",
+          "length": 5
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (567 chars)",
+        "details": {
+          "length": 567
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 9911
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "spark",
+    "skillDescription": "Plan-first brainstorming workflow that turns an idea into an approved Markdown implementation plan by default. Use when the user wants to brainstorm, design, scope, or plan a feature/spec before implementation. Spark explores project context, asks only blocking questions, writes the plan under the project root's .plannings/YYYY-MM-DD-feature-slug.md path, self-reviews it, and waits for user approval. Create an HTML or visual plan/spec only when the user explicitly asks for HTML, browser-viewable, or visual output; save the paired .html beside the Markdown plan."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple concrete actions: explores project context, asks blocking questions, writes plan to a specific path (.plannings/YYYY-MM-DD-feature-slug.md), self-reviews, waits for approval, and optionally creates HTML output. Very specific about the workflow steps and file conventions."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes strong natural trigger terms users would say: 'brainstorm', 'design', 'scope', 'plan', 'feature', 'spec', 'implementation plan'. These cover common variations of how users would request planning assistance."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (plan-first brainstorming workflow that produces a Markdown implementation plan with specific steps) and 'when' (explicit 'Use when the user wants to brainstorm, design, scope, or plan a feature/spec before implementation'). The 'Use when...' clause is present and well-defined."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with its specific niche: pre-implementation planning with a defined file path convention (.plannings/YYYY-MM-DD-feature-slug.md), self-review step, and approval gate. The name 'Spark' and the specific workflow make it unlikely to conflict with general coding or documentation skills."
+        }
+      },
+      "overall_assessment": "This is a strong skill description that clearly communicates a specific workflow (plan-first brainstorming), includes explicit trigger guidance with natural user terms, and defines concrete actions and file output conventions. The description is distinctive enough to avoid conflicts with other skills while being comprehensive about both the 'what' and 'when'. Minor note: it uses third person voice appropriately throughout.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is reasonably efficient but includes some redundancy—the process flow dot graph largely duplicates the checklist, and several principles are restated across sections (e.g., 'Markdown by default' and 'ask only blocking questions' appear in multiple places). The HTML branch details are repeated in both the checklist and a dedicated section. However, most content is domain-specific and not explaining things Claude already knows."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides highly concrete guidance: exact file paths with naming conventions, a complete Markdown plan template, specific slug derivation rules, a detailed self-review checklist with named anti-patterns, and explicit tool references (AskUserQuestion). The instructions are specific enough to be directly executable without ambiguity."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The workflow is clearly sequenced via both a numbered checklist and a process flow diagram with decision diamonds. It includes explicit validation (self-review step with 6 specific checks), a feedback loop (user approval → changes requested → revise plan), and a hard gate preventing premature execution. The approval gate serves as a clear checkpoint before any downstream action."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references external files (visual-companion.md, spec-template.html, spec-document-reviewer-prompt.md, writing-plans) but no bundle files were provided, making it impossible to verify these references resolve. The main SKILL.md itself is fairly long (~200 lines) and could benefit from splitting the HTML branch and visual companion details into separate files, keeping the core Markdown planning workflow leaner. However, the sections are well-organized with clear headings."
+        }
+      },
+      "overall_assessment": "This is a well-structured planning workflow skill with strong actionability and clear workflow sequencing including validation checkpoints and approval gates. Its main weaknesses are moderate redundancy across sections (checklist, process flow, and prose all cover similar ground) and references to bundle files that aren't provided, making progressive disclosure harder to fully evaluate. The hard gate, self-review checklist, and concrete plan template are particular strengths.",
+      "suggestions": [
+        "Reduce redundancy by consolidating the checklist, process flow diagram, and 'The Process' prose section—currently the same information appears three times in slightly different forms.",
+        "Consider splitting the HTML/visual branch details and visual companion guidance into a separate referenced file to keep the core SKILL.md focused on the default Markdown planning workflow."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

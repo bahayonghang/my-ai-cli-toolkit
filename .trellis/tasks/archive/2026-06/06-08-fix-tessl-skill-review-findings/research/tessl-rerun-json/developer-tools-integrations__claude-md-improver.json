@@ -1,0 +1,181 @@
+{
+  "review": {
+    "reviewScore": 92
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 281 (<= 500)",
+        "details": {
+          "line_count": 281,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "version",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'claude-md-improver'",
+        "details": {
+          "value": "claude-md-improver",
+          "length": 18
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (645 chars)",
+        "details": {
+          "length": 645
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Glob,",
+            "Grep,",
+            "Edit,",
+            "Write,",
+            "Bash(git",
+            "*),",
+            "Bash(find",
+            "*),",
+            "Bash(Get-ChildItem",
+            "*),",
+            "Bash(Get-Content",
+            "*),",
+            "Bash(Select-String",
+            "*)"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 15207
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "claude-md-improver",
+    "skillDescription": "Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and companion code_map.md navigation maps. Use when the user asks to check, audit, update, optimize, or fix CLAUDE.md files; mentions nested CLAUDE.md, additive loading, ancestor/descendant loading, path-scoped rules, @import chains, CLAUDE.local.md, claudeMdExcludes, or code_map.md; or says \"优化 CLAUDE.md\", \"审计 CLAUDE.md\", \"检查嵌套 CLAUDE.md\", \"Claude Code 项目指导\", \"生成 code_map (Claude)\". Make sure to use this skill whenever the user wants to manage Claude Code memory files at any layer, even if they only mention CLAUDE.md without explicit audit wording."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: 'audit', 'improve', 'check', 'update', 'optimize', 'fix' CLAUDE.md files, path-scoped rules, and code_map.md navigation maps. Clearly names the domain and specific artifacts involved."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms including English terms ('audit', 'check', 'update', 'optimize', 'fix CLAUDE.md'), technical terms ('nested CLAUDE.md', 'additive loading', '@import chains', 'claudeMdExcludes'), file references ('.claude/rules/', 'CLAUDE.local.md', 'code_map.md'), and Chinese equivalents ('优化 CLAUDE.md', '审计 CLAUDE.md'). Covers many natural variations a user might say."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (audit and improve CLAUDE.md guidance files, path-scoped rules, and code_map.md) and 'when' with an explicit 'Use when...' clause listing numerous trigger scenarios. Also includes a catch-all instruction for broader matching even without explicit audit wording."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche focused specifically on Claude Code's CLAUDE.md ecosystem, path-scoped rules, and code_map.md. The triggers are very specific to this domain and unlikely to conflict with general coding, documentation, or other skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly defines its scope (auditing and improving Claude Code guidance files), provides comprehensive trigger terms in both English and Chinese, and explicitly states when it should be used. The description is thorough without being padded, uses third-person voice correctly, and carves out a very distinct niche that minimizes conflict risk with other skills.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is comprehensive and mostly earns its tokens given the complexity of the domain (multi-layer CLAUDE.md auditing), but it's quite long (~300+ lines) with some sections that could be tightened. The classification table in Phase 1 and the detailed report template in Phase 4 are verbose but arguably necessary for this complex workflow. Some redundancy exists between the 'Core Semantics' section and the 'Common Issues to Flag' section."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Highly actionable throughout: executable bash/PowerShell discovery commands, concrete scoring rubric with point values, specific report template with exact markdown format, nine numbered load-bearing rules for updates, and explicit verification commands. The skill provides copy-paste ready commands and clear decision thresholds (e.g., create nested file if score ≥60)."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "Excellent six-phase workflow (Discovery → Evidence Collection → Quality Assessment → Report Before Editing → Targeted Updates → Verification) with explicit validation checkpoints. Phase 4 enforces report-before-edit as a gate, Phase 6 includes both automated (`git diff --check`) and manual verification checklists. The feedback loop is clear: report first, get approval, then edit, then verify."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "Well-structured with clear references to four supporting files (claude-md-loading.md, quality-criteria.md, templates.md, update-guidelines.md) that are one level deep and clearly signaled with purpose descriptions. The main SKILL.md serves as an effective overview and operational guide while deferring detailed scoring rubrics, templates, and edge cases to reference files. Note: bundle files were not provided, so we cannot verify the references exist, but the structure itself is well-organized."
+        }
+      },
+      "overall_assessment": "This is a high-quality, well-structured skill for a genuinely complex domain. Its greatest strengths are the clear six-phase workflow with explicit gates (report before editing), highly actionable commands and scoring criteria, and good progressive disclosure to reference files. The main weakness is moderate verbosity — while most content earns its place given the complexity, some sections (like the full classification table and repeated emphasis on certain rules) could be tightened to better respect token budget.",
+      "suggestions": []
+    },
+    "weightedScore": 2.7,
+    "normalizedScore": 0.8500000000000001
+  }
+}

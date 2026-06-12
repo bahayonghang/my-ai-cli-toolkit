@@ -1,0 +1,172 @@
+{
+  "review": {
+    "reviewScore": 95
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 28 (<= 500)",
+        "details": {
+          "line_count": 28,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'gh-bootstrap'",
+        "details": {
+          "value": "gh-bootstrap",
+          "length": 12
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (216 chars)",
+        "details": {
+          "length": 216
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Task,",
+            "AskUserQuestion,",
+            "Read,",
+            "Bash,",
+            "Glob,",
+            "Grep,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 2166
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "gh-bootstrap",
+    "skillDescription": "Initialize GitHub repository configuration from vetted upstream templates. Use when setting up repository automation, issue and PR templates, CI workflows, or baseline GitHub project files for a new or existing repo."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: 'Initialize GitHub repository configuration', 'repository automation', 'issue and PR templates', 'CI workflows', 'baseline GitHub project files'. These are concrete, actionable items rather than vague language."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes strong natural keywords users would say: 'GitHub repository', 'issue templates', 'PR templates', 'CI workflows', 'repository automation', 'project files', 'repo'. Good coverage of terms a user would naturally use when needing this skill."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both what ('Initialize GitHub repository configuration from vetted upstream templates') and when ('Use when setting up repository automation, issue and PR templates, CI workflows, or baseline GitHub project files for a new or existing repo')."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Clearly scoped to GitHub repository configuration and templates specifically from 'vetted upstream templates'. The combination of GitHub config initialization with upstream templates creates a distinct niche unlikely to conflict with general GitHub or CI skills."
+        }
+      },
+      "overall_assessment": "This is a well-crafted skill description that clearly communicates what the skill does (initialize GitHub repo config from upstream templates) and when to use it (setting up repo automation, templates, CI workflows). It uses third person voice, includes natural trigger terms, and is specific enough to be distinguishable from other skills while covering the key use cases.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 3,
+          "reasoning": "The content is lean and efficient. Every step serves a purpose, no concepts are over-explained, and Claude's intelligence is assumed throughout. No unnecessary preamble or explanation of what GitHub configuration is."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Provides specific, executable commands (e.g., `python \"$SKILL_DIR/scripts/gh_bootstrap_runtime.py\" detect \"$ARGUMENTS\"`), concrete tool invocations, and clear error handling guidance (e.g., what to do on 404/timeout). The steps are copy-paste ready with real CLI commands."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 8-step workflow is clearly sequenced with explicit validation (step 7 validates unreplaced placeholders and refuses completion), conflict resolution planning (step 4), error handling for failed downloads (step 5), and a clear progression from detection to rendering to validation."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "References to phase files (02.1, 02.2, 02.3), specs/template-catalog.md, and references/RULES.md are well-signaled and one level deep. However, no bundle files were provided to verify these references exist, and the overview could better summarize what each referenced file contains rather than just linking to them."
+        }
+      },
+      "overall_assessment": "This is a well-structured skill with clear, actionable steps, proper validation checkpoints, and good error handling guidance. The workflow is logically sequenced from user input collection through detection, template fetching, rendering, and validation. The main weakness is that referenced files (phases/, specs/, references/) cannot be verified since no bundle was provided, and the progressive disclosure could benefit from brief inline summaries of what each referenced file covers.",
+      "suggestions": [
+        "Add brief inline descriptions of what each referenced file contains (e.g., 'See [references/RULES.md](references/RULES.md) — conflict resolution strategies, architecture constraints, and file ownership rules') to improve navigation without requiring file access."
+      ]
+    },
+    "weightedScore": 2.8499999999999996,
+    "normalizedScore": 0.9249999999999998
+  }
+}

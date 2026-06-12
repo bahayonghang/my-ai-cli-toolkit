@@ -1,0 +1,175 @@
+{
+  "review": {
+    "reviewScore": 98
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 199 (<= 500)",
+        "details": {
+          "line_count": 199,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'paper-workbench'",
+        "details": {
+          "value": "paper-workbench",
+          "length": 15
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (562 chars)",
+        "details": {
+          "length": 562
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Write,",
+            "WebFetch,",
+            "Bash(curl",
+            "*),",
+            "Bash(python",
+            "*),",
+            "Bash(pytest",
+            "*)"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 6047
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "paper-workbench",
+    "skillDescription": "Researcher-profile-driven paper intake and literature workbench for academic workflows. Use this whenever the user wants to skim, deep-read, card, compare, synthesize, map research gaps, or build a literature review from papers, arXiv/AlphaXiv links, DOIs, PDFs, landing pages, or existing paper JSON / workbench artifacts. Normalize sources into `paper-record`, then route into scan, deep-read, card, synthesis, review, or compatibility modes (`json`, `interpret`, `xray`). Trigger even when the user only says things like “精读这篇”, “整合这几篇”, “找研究空白”, or “搭综述框架”.\n"
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: skim, deep-read, card, compare, synthesize, map research gaps, build a literature review. Also names specific modes (scan, deep-read, card, synthesis, review, compatibility) and data structures (paper-record, paper JSON, workbench artifacts)."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural terms users would say: papers, arXiv, AlphaXiv, DOIs, PDFs, literature review, research gaps, landing pages. Also includes multilingual trigger phrases in Chinese, which broadens coverage. Terms like 'skim', 'deep-read', 'compare', 'synthesize' are natural user language."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (paper intake, literature workbench with specific actions like skim, deep-read, card, compare, synthesize, map gaps, build reviews) and 'when' (explicit 'Use this whenever...' clause with detailed trigger scenarios and even example trigger phrases)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche: academic paper intake and literature review workflows. The specific mention of arXiv/AlphaXiv, DOIs, paper-record normalization, and specialized modes (xray, interpret, json) make it very unlikely to conflict with generic document or PDF skills."
+        }
+      },
+      "overall_assessment": "This is a strong, well-crafted skill description that clearly defines a specific academic literature workflow niche. It excels in listing concrete actions, providing explicit trigger guidance with a 'Use this whenever...' clause, and including natural keywords across multiple languages. The description is comprehensive without being unnecessarily verbose, and its specialized domain makes it highly distinguishable from other skills.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 3,
+          "reasoning": "The content is lean and well-structured. It avoids explaining concepts Claude already knows (e.g., what arXiv is, what a DOI is). Every section serves a clear purpose—routing, normalization, profile collection, persistence—without padding or redundant explanation."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Provides concrete, executable CLI commands for normalization, profile initialization, and artifact persistence with specific flags. The routing workflow, defaulting rules, and mode quick guide give precise, unambiguous instructions for decision-making. Output rules are specific and actionable (e.g., PEEL structure, separating author views from system analysis)."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The routing workflow is clearly sequenced (resolve input → normalize → determine mode → load profile → produce output → persist). Defaulting rules handle ambiguous cases explicitly. Edge cases are addressed with clear resolution strategies (e.g., mixed sources, multiple papers with deep-read request, missing full text). The 'normalize first' step acts as a validation checkpoint before downstream modes."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "The SKILL.md serves as a clear overview and routing hub, with well-signaled one-level-deep references to 12 specific files covering routing logic, schemas, artifacts, migration, and individual mode details. Content is appropriately split—the main file handles workflow and routing while detailed mode specifications live in referenced files."
+        }
+      },
+      "overall_assessment": "This is an excellent skill file that serves as a well-organized routing hub for a complex multi-mode academic paper workbench. It is concise yet comprehensive, with executable commands, clear decision logic, explicit edge case handling, and well-structured progressive disclosure to detailed reference files. The only minor note is that bundle files weren't provided for verification, but the reference structure is clearly signaled and logically organized.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  }
+}

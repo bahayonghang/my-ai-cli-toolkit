@@ -1,0 +1,167 @@
+{
+  "review": {
+    "reviewScore": 92
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 155 (<= 500)",
+        "details": {
+          "line_count": 155,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'git-commit'",
+        "details": {
+          "value": "git-commit",
+          "length": 10
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (986 chars)",
+        "details": {
+          "length": 986
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Bash,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 14676
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "git-commit",
+    "skillDescription": "Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Output language is auto-detected from the user's instruction, the request's own language, and the repository's recent commit history (English fallback); explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection. Agent commits automatically inject `Agent-Task` / `Agent-Model` / `Generated-By` trailers — plus optional `Confidence` / `Scope-risk` / `Tested` quality trailers — and an `[AI]` header tag; Why-line is required for feat/fix/refactor/perf; supports a `chore(wip)` checkpoint mode for long-running agent tasks."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "The description lists multiple specific concrete actions: orchestrate Conventional Commits, split staged changes, split all changes, commit everything, include untracked files, organize a messy index, generate structured commit text, auto-detect output language, inject trailers, and support checkpoint mode."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms users would say: 'commit message', 'split staged changes', 'commit everything', 'untracked files', 'organize a messy index', 'commit in English', '用中文提交'. These closely match how users would phrase requests about git commits."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (orchestrate Conventional Commits with trailers, language detection, splitting, etc.) and 'when' with an explicit 'Use when...' clause listing seven distinct trigger scenarios including writing commit messages, splitting changes, including untracked files, and generating structured commit text."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a clear niche: Conventional Commits for Git with specific features like trailer injection, language auto-detection, and checkpoint mode. The specificity of 'Conventional Commits', 'Agent-Task/Agent-Model trailers', '[AI] header tag', and 'chore(wip) checkpoint mode' make it very unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "This is an exceptionally detailed and well-crafted skill description. It excels across all dimensions with specific concrete actions, natural trigger terms, explicit 'Use when' guidance covering multiple scenarios, and highly distinctive features that prevent conflicts with other skills. The only minor concern is that the description is quite long and dense, which could slightly reduce readability, but the content quality is high throughout.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is thorough but verbose in places — e.g., the language-detection rules, agent-mode defaults, and checkpoint-mode explanations repeat across multiple sections (§0, §2, §3, §4). Some bullet points explain things Claude would already know (e.g., what git add -A does). However, most content is genuinely instructive and not padding about basic concepts."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides concrete, executable commands (git diff --staged --stat, git add -A, git commit -F), specific script invocation patterns with exact flag names (--summary not --subject), explicit argument lists, and clear branching logic for each scenario. The compose step is copy-paste ready with precise CLI arguments."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The six-step workflow (preflight → split plan → classify → compose → commit/draft → verify) is clearly sequenced with explicit validation checkpoints: safety scan in §1, atomic check in §2, confirmation checkpoint in §5, hook outcome handling in §6. Feedback loops are present (re-inspect after hook rewrites, return to split-plan when Why is missing). The branching logic for different modes is well-defined."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "The skill maintains a clear overview structure with well-signaled one-level-deep references to four supporting files (commit-types.md, message-rules.md, split-strategy.md, agent-workflow.md). Detailed type/emoji mappings and message rules are appropriately delegated to reference files rather than inlined. The references section at the bottom provides a clean navigation summary."
+        }
+      },
+      "overall_assessment": "This is a well-structured, highly actionable skill with a clear six-phase workflow, explicit validation checkpoints, and appropriate progressive disclosure to reference files. Its main weakness is verbosity — the language detection, agent-mode, and checkpoint-mode logic is repeated or elaborated across multiple sections, and some content could be tightened without losing clarity. Overall it is a strong skill that would guide Claude effectively through complex commit orchestration.",
+      "suggestions": [
+        "Consolidate the language-detection, agent-mode, and checkpoint-mode rules into single authoritative sections rather than re-explaining them in §0, §2, §3, and §4 — cross-reference instead of repeating."
+      ]
+    },
+    "weightedScore": 2.7,
+    "normalizedScore": 0.8500000000000001
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "review": {
+    "reviewScore": 80
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 181 (<= 500)",
+        "details": {
+          "line_count": 181,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'bidwriter'",
+        "details": {
+          "value": "bidwriter",
+          "length": 9
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (156 chars)",
+        "details": {
+          "length": 156
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 3307
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "bidwriter",
+    "skillDescription": "智能标书编写专家，专精工程咨询、建筑设计、市政工程领域的投标文件编写。 当用户提到：标书、投标、招标、投标文件、技术标、商务标、招标响应、投标方案、 bid document、bid proposal、tender、proposal writing、编写标书、写标书、 招标文件分析、评分标准优化 时使用此技能。"
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 2,
+          "reasoning": "The description names the domain (bid document writing for engineering consulting, architectural design, municipal engineering) and the general action (编写/writing), but does not list multiple specific concrete actions like 'analyze scoring criteria', 'draft technical proposals', 'optimize bid responses', etc. It stays at a high level."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms in both Chinese and English: 标书, 投标, 招标, 技术标, 商务标, bid document, bid proposal, tender, proposal writing, 编写标书, 写标书, 招标文件分析, 评分标准优化. These are terms users would naturally use when needing this skill."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "The description clearly answers both 'what' (intelligent bid document writing expert specializing in engineering consulting, architectural design, and municipal engineering) and 'when' (explicit '当用户提到...' clause with comprehensive trigger terms). The 'Use when' equivalent is explicitly stated."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "The skill is highly distinctive with a clear niche: bid/tender document writing specifically for engineering, architecture, and municipal engineering domains. The extensive list of domain-specific trigger terms in both languages makes it unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "This is a solid skill description with excellent trigger term coverage in both Chinese and English, and a clear explicit 'when to use' clause. Its main weakness is the lack of specific concrete actions beyond 'writing bid documents' — it would benefit from listing specific capabilities like analyzing scoring criteria, drafting technical sections, or structuring commercial proposals. The description uses appropriate third-person voice.",
+      "suggestions": [
+        "Add specific concrete actions beyond '投标文件编写', such as '分析招标文件评分标准、编写技术方案、优化商务报价策略、生成资质响应表' to improve specificity."
+      ]
+    },
+    "weightedScore": 2.8,
+    "normalizedScore": 0.8999999999999999
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill includes some unnecessary role-playing setup ('15年经验', '一级注册建筑师资质') that Claude doesn't need, and the '角色定义' section with '核心能力' bullets is largely redundant given the workflow already demonstrates these capabilities. However, the reference tables and checklists are efficient and earn their tokens."
+        },
+        "actionability": {
+          "score": 2,
+          "reasoning": "The skill provides clear structural guidance (directory layout, checklists, chapter outlines) and useful reference tables, but lacks executable code or concrete examples of actual bid content. The writing principles are described at a high level ('量化表达', '图文并茂') without showing specific before/after examples of good vs. bad bid text."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The three-phase workflow (需求分析→分章节撰写→审核与交付) is clearly sequenced with explicit validation checkpoints in Phase 3 including a detailed compliance checklist, scoring self-assessment, and terminology verification. The feedback loop of 'identify scoring risk points and adjust' is present."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references four external files (SCORING_GUIDE.md, CHAPTER_TEMPLATES.md, TERMINOLOGY.md, STANDARDS.md) which is good progressive disclosure design, but no bundle files are provided, meaning these references are broken. The main file itself is quite long and some content (like the 常见投标类型速查 table) could potentially be in a reference file."
+        }
+      },
+      "overall_assessment": "This is a well-structured skill for bid document writing with a clear three-phase workflow and thorough compliance checklists. Its main weaknesses are the lack of concrete examples of actual bid content (making it more descriptive than actionable), the verbose role-playing preamble, and missing bundle files that the skill explicitly references. The workflow clarity is strong with good validation steps, but the skill would benefit significantly from executable examples and the referenced support files.",
+      "suggestions": [
+        "Add concrete before/after examples of bid content (e.g., a sample '项目理解' paragraph showing vague vs. quantified writing) to improve actionability.",
+        "Remove or drastically shorten the '角色定义' section — Claude doesn't need persona backstory to execute the workflow effectively.",
+        "Provide the referenced bundle files (SCORING_GUIDE.md, CHAPTER_TEMPLATES.md, TERMINOLOGY.md, STANDARDS.md) or remove the references if they don't exist.",
+        "Move the '常见投标类型速查' table to a reference file to reduce the main skill's token footprint."
+      ]
+    },
+    "weightedScore": 2.25,
+    "normalizedScore": 0.625
+  }
+}

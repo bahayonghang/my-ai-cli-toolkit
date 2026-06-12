@@ -1,0 +1,166 @@
+{
+  "review": {
+    "reviewScore": 98
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 31 (<= 500)",
+        "details": {
+          "line_count": 31,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'gh-fix-ci'",
+        "details": {
+          "value": "gh-fix-ci",
+          "length": 9
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (190 chars)",
+        "details": {
+          "length": 190
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Bash,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 1909
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "gh-fix-ci",
+    "skillDescription": "Debug and fix failing GitHub PR checks with GitHub CLI. Use when GitHub Actions checks fail, when a PR has broken status checks, or when you need local reproduction commands for CI failures."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple concrete actions: 'Debug and fix failing GitHub PR checks', 'local reproduction commands for CI failures'. These are specific, actionable capabilities rather than vague language."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes strong natural trigger terms users would say: 'GitHub Actions', 'checks fail', 'PR', 'broken status checks', 'CI failures', 'GitHub CLI'. Good coverage of variations a user might use when encountering this problem."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both what ('Debug and fix failing GitHub PR checks with GitHub CLI') and when ('Use when GitHub Actions checks fail, when a PR has broken status checks, or when you need local reproduction commands for CI failures'). Explicit 'Use when...' clause with multiple trigger scenarios."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche: specifically targets GitHub PR check failures and CI debugging via GitHub CLI. Unlikely to conflict with general coding skills, git skills, or broader GitHub skills due to the narrow focus on failing checks and status debugging."
+        }
+      },
+      "overall_assessment": "This is a well-crafted skill description that clearly communicates its purpose, includes natural trigger terms, and explicitly states when it should be used. It occupies a distinct niche (debugging failing PR checks) that is unlikely to conflict with other skills, and uses proper third-person voice throughout.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 3,
+          "reasoning": "Every step is purposeful and assumes Claude's competence. No unnecessary explanations of what GitHub Actions or PR checks are. The numbered steps are tight and each token contributes to the workflow."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Provides specific, executable commands (gh auth status, gh pr view --json, the inspect_pr_checks.py invocation with exact flags). Branching logic is concrete with clear actions for each case. Local repro commands and retry limits are specified."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "Clear sequential workflow with explicit branching (step 5 covers all outcomes), validation checkpoints (step 8 reruns local repro and gh pr checks), feedback loops with retry limits (max 2 retries), and approval gates before editing (step 7). Fallback paths are specified for script failures."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "The main SKILL.md is a concise overview with well-signaled one-level-deep references to BACKGROUND.md for manual fallbacks and the inspector script. Content is appropriately split between the overview and supporting files."
+        }
+      },
+      "overall_assessment": "This is a well-crafted skill that efficiently guides Claude through debugging failing PR checks. It excels in all dimensions: concise without sacrificing clarity, fully actionable with specific commands, clear multi-step workflow with validation and retry loops, and appropriate progressive disclosure to reference files. The branching logic in step 5 is particularly well done, covering all possible check states.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  }
+}

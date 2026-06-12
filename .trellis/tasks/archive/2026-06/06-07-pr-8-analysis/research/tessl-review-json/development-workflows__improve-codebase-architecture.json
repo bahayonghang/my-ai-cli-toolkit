@@ -1,0 +1,174 @@
+{
+  "review": {
+    "reviewScore": 89
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 103 (<= 500)",
+        "details": {
+          "line_count": 103,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "version",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'improve-codebase-architecture'",
+        "details": {
+          "value": "improve-codebase-architecture",
+          "length": 29
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (543 chars)",
+        "details": {
+          "length": 543
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Glob,",
+            "Grep,",
+            "Bash,",
+            "Write,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 5006
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "improve-codebase-architecture",
+    "skillDescription": "Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies. Use when the user wants to improve architecture, identify refactoring seams, consolidate tightly coupled modules, deepen shallow modules, redesign an interface around a core concept, replace brittle unit tests with boundary tests, or turn an architecture review into an RFC or issue draft. Chinese trigger phrases also apply: 架构改进, 抽象太浅, 模块拆得太碎, 接口太多, 测试钉死实现细节, 想写架构 RFC, 这块代码改一改, 模块边界乱."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: 'review a codebase for architectural friction', 'rank deep-module refactoring opportunities', 'draft RFCs for safer interfaces and boundary-test strategies'. These are clearly defined, actionable capabilities."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms including 'improve architecture', 'refactoring seams', 'tightly coupled modules', 'shallow modules', 'boundary tests', 'RFC', 'interface redesign', plus Chinese equivalents like '架构改进', '抽象太浅', '模块拆得太碎'. These are terms users would naturally use when seeking this kind of help."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (review codebase for architectural friction, rank refactoring opportunities, draft RFCs) and 'when' with an explicit 'Use when...' clause listing seven distinct trigger scenarios plus Chinese trigger phrases."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche combining architecture review, deep-module refactoring ranking, and RFC drafting with boundary-test strategies. The specific terminology ('architectural friction', 'deep-module', 'boundary tests', 'seams') clearly distinguishes it from generic code review or testing skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly articulates specific capabilities, provides comprehensive trigger terms in both English and Chinese, and explicitly states both what the skill does and when to use it. The description carves out a distinct niche around architecture-level code review and RFC generation, making it unlikely to conflict with more general code review or testing skills.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is mostly efficient and avoids explaining concepts Claude already knows (e.g., it doesn't explain what an RFC is or what deep modules are beyond a brief attribution). However, some sections could be tightened — the subagent availability branching is repeated in steps 2 and 7, and the output contract partially duplicates step 3 and step 9."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides highly concrete, structured guidance: specific fields to report for each candidate (Cluster, Dependency category, etc.), explicit design evaluation criteria (interface signature, usage example, trade-offs), a clear file path convention for output, and precise conditions for GitHub issue creation. While it doesn't include code snippets, this is an instruction-only architectural skill where the guidance is fully actionable."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 12-step workflow is clearly sequenced with explicit checkpoints: step 4 is a stop-if-not-warranted gate, step 5 asks the user before proceeding, step 6 frames constraints before designing, step 12 has three explicit preconditions. The failure handling section provides clear recovery guidance for uncertain situations. The workflow handles both the 'review only' and 'full RFC' paths with explicit branching."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references `$SKILL_DIR/references/deepening-guide.md` and `$SKILL_DIR/references/example-rfc.md` — good one-level-deep references. However, no bundle files were provided, so we cannot verify these exist. The main content is well-structured with clear sections but the body is moderately long (~100 lines) and some content like the output contract could potentially be in a reference file to keep the main skill leaner."
+        }
+      },
+      "overall_assessment": "This is a well-crafted architectural skill with a clear, gated workflow that handles multiple exit points (review-only, full RFC, GitHub issue). Its strongest qualities are the explicit validation checkpoints, concrete output specifications, and thoughtful failure handling. Minor weaknesses include some redundancy between the workflow steps and the output contract section, and the inability to verify referenced bundle files.",
+      "suggestions": [
+        "Deduplicate the output contract section with the inline workflow steps (steps 3 and 9 already specify the same fields) — either keep only the output contract or only the inline specifications to save tokens.",
+        "Consolidate the subagent availability branching (appears in both steps 2 and 7) into a single note at the top of the workflow to reduce repetition."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "review": {
+    "reviewScore": 77
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 49 (<= 500)",
+        "details": {
+          "line_count": 49,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'touying'",
+        "details": {
+          "value": "touying",
+          "length": 7
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (103 chars)",
+        "details": {
+          "length": 103
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Write,",
+            "Glob,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 1235
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "touying",
+    "skillDescription": "Author Typst slide decks with Touying. Use when working with .typ presentations, themes, or animations."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 2,
+          "reasoning": "Names the domain (Typst slide decks with Touying) and implies authoring, but doesn't list multiple concrete actions like creating slides, adding animations, applying themes, or configuring layouts."
+        },
+        "trigger_term_quality": {
+          "score": 2,
+          "reasoning": "Includes some relevant keywords like '.typ', 'presentations', 'themes', 'animations', and 'Touying', but misses common variations users might say such as 'slides', 'slide deck', 'typst presentation', 'speaker notes', or 'Touying theme'."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (author Typst slide decks with Touying) and 'when' (Use when working with .typ presentations, themes, or animations) with an explicit 'Use when' clause."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Very distinct niche — Typst + Touying is a specific technology combination unlikely to conflict with other skills. The mention of '.typ' file extension and 'Touying' framework makes this highly distinguishable."
+        }
+      },
+      "overall_assessment": "The description is concise and clearly scoped to a specific niche (Typst presentations with Touying), which makes it highly distinctive. It includes an explicit 'Use when' clause, satisfying completeness. However, it could benefit from listing more concrete actions and additional trigger terms users might naturally use.",
+      "suggestions": [
+        "Add more specific concrete actions, e.g., 'Author Typst slide decks with Touying: create slides, apply themes, configure animations, add speaker notes.'",
+        "Expand trigger terms in the 'Use when' clause to include variations like 'slides', 'slide deck', 'typst slides', or specific Touying theme names."
+      ]
+    },
+    "weightedScore": 2.5,
+    "normalizedScore": 0.75
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 3,
+          "reasoning": "Every line is purposeful and lean. No unnecessary explanations of what Touying or Typst are. The quick start, key rules, and task routing table are all tightly written with no padding."
+        },
+        "actionability": {
+          "score": 2,
+          "reasoning": "The key rules provide specific, concrete guidance (e.g., 'use config-page not set page', 'avoid #pause inside context blocks'), and templates are referenced. However, there are no executable code examples or copy-paste ready snippets in the body itself—everything is deferred to external docs."
+        },
+        "workflow_clarity": {
+          "score": 2,
+          "reasoning": "The quick start provides a 3-step sequence that is clear but lacks any validation or verification checkpoints. For a task involving document authoring and compilation, there's no mention of checking output, handling compilation errors, or feedback loops."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "The task routing table provides excellent one-level-deep navigation to specific docs for each topic area. Content is clearly split by concern with well-signaled references. However, since no bundle files were provided, we can't verify the referenced paths exist, but the structure itself is exemplary."
+        }
+      },
+      "overall_assessment": "This is a well-structured, concise skill that excels at progressive disclosure through its task routing table and maintains excellent token efficiency. Its main weaknesses are the lack of any inline executable code examples (everything is deferred to external files) and the absence of validation/verification steps in the workflow. Adding a minimal working Typst snippet and a compilation check step would significantly improve actionability and workflow clarity.",
+      "suggestions": [
+        "Add a minimal executable Typst code example in the Quick Start section (e.g., a 5-line working slide deck) so Claude has copy-paste ready guidance without needing to consult external docs.",
+        "Add a validation/compilation step to the Quick Start workflow, e.g., '4. Compile with `typst compile main.typ` and verify output renders correctly.'"
+      ]
+    },
+    "weightedScore": 2.45,
+    "normalizedScore": 0.7250000000000001
+  }
+}

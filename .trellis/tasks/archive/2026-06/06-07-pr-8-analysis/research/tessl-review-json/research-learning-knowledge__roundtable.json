@@ -1,0 +1,162 @@
+{
+  "review": {
+    "reviewScore": 90
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 206 (<= 500)",
+        "details": {
+          "line_count": 206,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'roundtable'",
+        "details": {
+          "value": "roundtable",
+          "length": 10
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (443 chars)",
+        "details": {
+          "length": 443
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 3530
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "roundtable",
+    "skillDescription": "Multi-perspective roundtable discussion skill for exploring a topic through a truth-seeking moderator and a small set of representative real figures. Use when the user asks for 圆桌讨论 / roundtable / 多人物观点碰撞 / 让几位思想家讨论 / 模拟多方思想交锋 / 结构化辩论探索, or wants to examine one topic through disciplined multi-party debate rather than a plain summary. Do not use it for ordinary argumentative writing, generic pros/cons lists, or a single-speaker explanation."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "The description lists concrete actions: exploring a topic through a truth-seeking moderator and representative real figures, structured as a multi-perspective roundtable discussion. It also specifies what it does NOT do (ordinary argumentative writing, generic pros/cons lists, single-speaker explanation), which adds specificity."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms in both Chinese and English: '圆桌讨论', 'roundtable', '多人物观点碰撞', '让几位思想家讨论', '模拟多方思想交锋', '结构化辩论探索', 'multi-party debate'. These are terms users would naturally use when requesting this type of interaction."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (multi-perspective roundtable discussion with a truth-seeking moderator and representative real figures) and 'when' (explicit 'Use when...' clause with multiple trigger phrases, plus a 'Do not use' clause for boundary clarity)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a clear niche—roundtable/multi-party debate format with named roles (moderator, real figures). The explicit exclusion of ordinary argumentative writing, pros/cons lists, and single-speaker explanations further reduces conflict risk with other skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly defines a unique capability (multi-perspective roundtable discussions), provides rich bilingual trigger terms, and explicitly delineates both when to use and when not to use the skill. The inclusion of negative boundaries ('Do not use it for...') is a strong differentiator that reduces conflict risk with related skills.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is fairly well-written and most content earns its place, but there's some redundancy (e.g., the moderator guidelines in section 10 partially repeat principles already embedded in earlier sections, and the participant guidelines in section 11 overlap with section 5's speaking rules). The org-mode export section is detailed but justified given the complexity. Some trimming is possible but it's not egregiously verbose."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides highly concrete, specific guidance: exact format templates for speaker output, specific action labels, precise file naming conventions with shell commands for both PowerShell and POSIX, a complete org-mode template structure, exact control commands, and clear examples of what each round should contain. The instructions are copy-paste ready and leave little ambiguity."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The multi-step workflow is clearly sequenced from topic parsing (step 2) through participant selection (step 3), first round structure (step 4), speaking rules (step 5), moderator synthesis with validation (step 6), user control checkpoints (step 7), and termination (step 8). The user control mechanism serves as an explicit validation checkpoint between rounds, and there are clear feedback loops (e.g., if topic is too broad, narrow it; if file export fails, fall back to inline output)."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references `references/original-prompt.org` as a design intent document, which is good progressive disclosure. However, no bundle files are provided, so we can't verify this reference exists. The SKILL.md itself is a single long document (~200 lines) that could benefit from splitting the org export template and shell commands into a separate reference file. The content is well-organized with numbered sections but is somewhat monolithic."
+        }
+      },
+      "overall_assessment": "This is a well-crafted, highly actionable skill that provides clear structure for a complex multi-turn interaction pattern. Its strengths are the precise workflow sequencing, concrete output formats, and thoughtful guardrails (fact-checking constraints, user control mechanisms, graceful degradation for file export). Minor weaknesses include some redundancy between sections and a somewhat monolithic structure that could benefit from splitting auxiliary content (export templates, shell commands) into separate reference files.",
+      "suggestions": [
+        "Consider moving the org-mode export template and shell commands (section 9) into a separate reference file to reduce the main SKILL.md length and improve progressive disclosure.",
+        "Consolidate the moderator guidelines (section 10) and participant guidelines (section 11) with the earlier speaking rules (section 5) and moderator synthesis (section 6) to reduce redundancy."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

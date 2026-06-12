@@ -1,0 +1,167 @@
+{
+  "review": {
+    "reviewScore": 75
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 276 (<= 500)",
+        "details": {
+          "line_count": 276,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'codex-dynamic-workflows'",
+        "details": {
+          "value": "codex-dynamic-workflows",
+          "length": 23
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (443 chars)",
+        "details": {
+          "length": 443
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 10641
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "codex-dynamic-workflows",
+    "skillDescription": "Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets. Do not use for ordinary code review, planning-only work, single-line bugfixes, routine audits, or migrations unless orchestration is requested or at least two independent workflow dimensions are present."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 1,
+          "reasoning": "The description focuses almost entirely on when to use (and not use) the skill, but never clearly states what concrete actions the skill performs. Phrases like 'coordinated research plus implementation plus review plus verification packets' hint at capabilities but are vague and not listed as concrete actions."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms: 'swarm', 'subagents', 'parallel agents', 'dynamic workflow', 'multi-agent orchestration', and even the Chinese equivalent '多智能体编排'. These are terms users would naturally use when requesting this capability."
+        },
+        "completeness": {
+          "score": 2,
+          "reasoning": "The 'when' clause is very explicit and detailed, including both positive triggers and negative exclusions. However, the 'what does this do' part is essentially missing — there is no clear statement of the skill's capabilities or outputs, only indirect hints through the trigger conditions."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "The description is highly distinctive with explicit negative boundaries ('Do not use for ordinary code review, planning-only work, single-line bugfixes...') and very specific trigger terms like 'swarm', 'subagents', 'multi-agent orchestration'. This makes it very unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "The description excels at defining when to use (and not use) the skill, with strong trigger terms and clear boundaries that minimize conflict risk. However, it critically lacks a 'what does this do' statement — there are no concrete actions or capabilities described, making it hard for Claude to understand the skill's actual purpose beyond its activation conditions.",
+      "suggestions": [
+        "Add a clear 'what' statement at the beginning listing concrete actions, e.g., 'Orchestrates multiple parallel sub-agents to coordinate research, implementation, code review, and verification workflows.'",
+        "Describe the outputs or deliverables of the skill, such as 'Produces coordinated multi-agent execution plans with parallel task assignment and aggregated results.'"
+      ]
+    },
+    "weightedScore": 2.25,
+    "normalizedScore": 0.625
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is comprehensive but includes some redundancy and verbosity. Several sections repeat concepts (e.g., 'when no subagent runner is available' appears in multiple places), and some instructions like 'Do not claim that a swarm ran' or explaining when NOT to trigger could be tightened. However, given the complexity of the orchestration domain, most content earns its place."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides highly concrete, executable guidance throughout: specific CLI commands for scaffolding workflows, exact file structures, template formats for packets/plans/integration, verification levels with specific flags, and cross-platform command examples. The packet template, orchestration plan template, and integration checklist are all copy-paste ready."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The multi-step workflow is clearly sequenced from trigger evaluation → decision rule → operating contract → plan → approval gates → packets → subagents → integration → verification. Explicit validation checkpoints exist (approval gates before destructive operations, verification levels, integration conflict resolution). Feedback loops are present: 'If approval is denied, continue only with safe read-only planning' and 'fix and re-validate' patterns."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references external files (references/plan-schema.md, references/risk-gates.md, references/validation-examples.md, scripts/new_workflow.py, scripts/collect_results.py, scripts/verify_workflow.py) with clear signaling, but no bundle files were provided to verify these exist. The main SKILL.md itself is quite long (~250 lines) and some sections like the detailed packet template or the full orchestration plan template could potentially be split into reference files. The references section at the bottom is well-organized."
+        }
+      },
+      "overall_assessment": "This is a well-structured, highly actionable skill for complex multi-agent workflow orchestration. Its greatest strengths are the concrete templates, executable CLI commands, clear trigger boundaries, and explicit approval gates with feedback loops. The main weakness is moderate verbosity—some concepts are repeated across sections, and the monolithic length could benefit from splitting detailed templates into referenced files. The referenced bundle files (scripts, references) are not provided, making it impossible to fully validate progressive disclosure.",
+      "suggestions": [
+        "Consider moving the detailed packet template, orchestration plan template, and integration checklist into separate reference files to reduce the main SKILL.md length and improve progressive disclosure.",
+        "Consolidate the repeated 'when no subagent runner is available' guidance into a single authoritative section to reduce redundancy and improve conciseness."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

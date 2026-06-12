@@ -1,0 +1,171 @@
+{
+  "review": {
+    "reviewScore": 92
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 100 (<= 500)",
+        "details": {
+          "line_count": 100,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'beautiful-mermaid-editor'",
+        "details": {
+          "value": "beautiful-mermaid-editor",
+          "length": 24
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (404 chars)",
+        "details": {
+          "length": 404
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Write,",
+            "Edit,",
+            "Glob,",
+            "Grep,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 3813
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "beautiful-mermaid-editor",
+    "skillDescription": "Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mermaid diagrams. Use when the task mentions the Beautiful Mermaid repo, `editor.ts`, generated `editor.html`, config panel/options, themes or dark mode, zoom, PNG/SVG export, clipboard behavior, sample presets, or renderer wiring for the editor. Do not use for generic Mermaid syntax help or normal Markdown Mermaid authoring."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions and artifacts: modifying the live editor, editor.ts, editor.html, config panel/options, themes/dark mode, zoom, PNG/SVG export, clipboard behavior, sample presets, and renderer wiring. These are highly specific capabilities."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms a user would mention: 'Beautiful Mermaid repo', 'editor.ts', 'editor.html', 'config panel', 'themes', 'dark mode', 'zoom', 'PNG/SVG export', 'clipboard behavior', 'sample presets', 'renderer wiring'. These are terms a developer working on this editor would naturally use."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (modify the Beautiful Mermaid live editor) and 'when' (explicit 'Use when' clause listing specific triggers). Also includes a 'Do not use' clause that further clarifies scope, which is excellent for disambiguation."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a clear niche (modifying a specific editor tool, not generic Mermaid usage). The explicit 'Do not use for generic Mermaid syntax help or normal Markdown Mermaid authoring' clause directly prevents conflicts with other Mermaid-related skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly defines a narrow, specific domain (modifying the Beautiful Mermaid live editor), provides comprehensive trigger terms covering files, features, and concepts a developer would mention, and explicitly disambiguates from related but distinct skills. The inclusion of both 'Use when' and 'Do not use' clauses makes it highly effective for skill selection.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 3,
+          "reasoning": "The content is lean and efficient throughout. It assumes Claude's competence with TypeScript, build tools, and editor architecture. No unnecessary explanations of basic concepts; every section delivers actionable guidance without padding."
+        },
+        "actionability": {
+          "score": 2,
+          "reasoning": "The skill provides concrete file paths, a routing table, and specific patterns to follow, but lacks executable code examples or copy-paste-ready commands. Guidance like 'wire UI, local state, readConfig(), and events together' is directional but not fully concrete—it relies on reference files for the actual recipes."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 5-step execution flow is clearly sequenced with explicit preconditions, an inspect-before-edit step, and a verification step before handoff. The verification section includes a feedback loop (regenerate, check, smoke-test, review diff), and the routing table efficiently directs to the right references per task type."
+        },
+        "progressive_disclosure": {
+          "score": 3,
+          "reasoning": "The skill is a well-structured overview that clearly signals three one-level-deep reference files (ARCHITECTURE.md, CHANGE_PATTERNS.md, VERIFICATION.md) with descriptions. The routing table in step 2 tells Claude exactly which reference to load for each task type, enabling efficient navigation."
+        }
+      },
+      "overall_assessment": "This is a well-crafted skill that efficiently guides Claude through modifying a specific editor codebase. Its strengths are excellent workflow sequencing, smart task-type routing, and clean progressive disclosure to reference files. The main weakness is that the implementation patterns in step 4 are described at a slightly abstract level, relying on reference files for concrete recipes rather than including at least one inline executable example.",
+      "suggestions": [
+        "Consider adding one concrete inline code snippet (e.g., a minimal example of wiring a new config option) to boost actionability, even if full recipes live in CHANGE_PATTERNS.md."
+      ]
+    },
+    "weightedScore": 2.7,
+    "normalizedScore": 0.8500000000000001
+  }
+}

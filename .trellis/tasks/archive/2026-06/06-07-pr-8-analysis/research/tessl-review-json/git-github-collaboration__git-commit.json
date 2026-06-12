@@ -1,0 +1,166 @@
+{
+  "review": {
+    "reviewScore": 17
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 157 (<= 500)",
+        "details": {
+          "line_count": 157,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'git-commit'",
+        "details": {
+          "value": "git-commit",
+          "length": 10
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (986 chars)",
+        "details": {
+          "length": 986
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "error",
+        "message": "'allowed-tools' must be a string, got object"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 14676
+        }
+      }
+    ],
+    "overallPassed": false,
+    "errorCount": 1,
+    "warningCount": 1,
+    "skillName": "git-commit",
+    "skillDescription": "Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged changes, split all changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Output language is auto-detected from the user's instruction, the request's own language, and the repository's recent commit history (English fallback); explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection. Agent commits automatically inject `Agent-Task` / `Agent-Model` / `Generated-By` trailers — plus optional `Confidence` / `Scope-risk` / `Tested` quality trailers — and an `[AI]` header tag; Why-line is required for feat/fix/refactor/perf; supports a `chore(wip)` checkpoint mode for long-running agent tasks."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "trigger_term_quality": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "completeness": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        }
+      },
+      "overall_assessment": "Skill failed deterministic validation. LLM judge evaluation was skipped.",
+      "suggestions": [
+        "Fix the deterministic validation errors before running LLM judge."
+      ],
+      "validation_skipped": true
+    },
+    "weightedScore": 0,
+    "normalizedScore": 0
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "actionability": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "workflow_clarity": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "progressive_disclosure": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        }
+      },
+      "overall_assessment": "Skill failed deterministic validation. LLM judge evaluation was skipped.",
+      "suggestions": [
+        "Fix the deterministic validation errors before running LLM judge."
+      ],
+      "validation_skipped": true
+    },
+    "weightedScore": 0,
+    "normalizedScore": 0
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "review": {
+    "reviewScore": 89
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 262 (<= 500)",
+        "details": {
+          "line_count": 262,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "version",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'agents-md-improver'",
+        "details": {
+          "value": "agents-md-improver",
+          "length": 18
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (452 chars)",
+        "details": {
+          "length": 452
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Glob,",
+            "Grep,",
+            "Edit,",
+            "Write,",
+            "Bash(git",
+            "*),",
+            "Bash(find",
+            "*),",
+            "Bash(Get-ChildItem",
+            "*),",
+            "Bash(Get-Content",
+            "*),",
+            "Bash(Select-String",
+            "*)"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 10717
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "agents-md-improver",
+    "skillDescription": "Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps in repositories. Use when the user asks to check, audit, update, optimize, or fix AGENTS.md files; asks for Codex project guidance maintenance; mentions nested AGENTS.md conflicts, code maps, stale commands, scoped instructions, sandbox or approval boundaries; or says \"优化 AGENTS.md\", \"审计 AGENTS.md\", \"检查 nested AGENTS.md\", \"更新 Codex 项目指导\", or \"生成 code_map.md\"."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: 'audit', 'improve', 'check', 'update', 'optimize', 'fix' AGENTS.md files, and mentions companion code_map.md navigation maps. Also references specific concepts like nested conflicts, stale commands, scoped instructions, sandbox/approval boundaries."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms including 'check', 'audit', 'update', 'optimize', 'fix AGENTS.md', 'nested AGENTS.md conflicts', 'code maps', 'stale commands', 'Codex project guidance', plus Chinese-language equivalents. These are terms users would naturally use when needing this skill."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (audit and improve AGENTS.md guidance files and companion code_map.md navigation maps) and 'when' (explicit 'Use when...' clause with detailed trigger scenarios covering multiple user intents in both English and Chinese)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche targeting specifically AGENTS.md and code_map.md files for Codex repositories. The specificity of the file types (AGENTS.md, code_map.md) and the Codex context make it very unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "This is a strong, well-crafted skill description that clearly defines its niche around AGENTS.md and code_map.md maintenance for Codex projects. It provides comprehensive trigger terms in both English and Chinese, explicitly states when to use it, and lists concrete actions. The description is distinctive enough to avoid conflicts with other skills while being thorough in its coverage of user intents.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is fairly long (~250+ lines) and includes some content that could be tightened—such as the detailed classification table, the full report template, and the extensive common issues list. However, most content is domain-specific knowledge Claude wouldn't inherently know (AGENTS.md scoping semantics, code_map.md separation, OMX marker blocks, nested guidance scoring). Some sections like the exclusion directory lists are repeated across phases."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides fully executable discovery commands (both POSIX and PowerShell), concrete report templates with exact markdown structure, specific scoring criteria with weights, a detailed quality checklist, and precise verification commands like `git diff --check`. The workflow phases give copy-paste-ready outputs and clear decision thresholds (>=60 create, 40-59 candidate, <40 skip)."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The six-phase workflow (Discovery → Evidence Collection → Quality Assessment → Report Before Editing → Targeted Updates → Verification) is clearly sequenced with an explicit gate between Phase 4 (report) and Phase 5 (edits). The default report-first mode acts as a validation checkpoint before destructive changes. Phase 6 includes specific verification steps and acknowledges when expensive gates are skipped. The feedback loop of 'report → approve → edit → verify' is well-defined."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references three companion files (`references/quality-criteria.md`, `references/templates.md`, `references/update-guidelines.md`) which is good progressive disclosure design. However, no bundle files were provided, so we cannot verify these references exist or are accurate. The main SKILL.md itself is quite long and some content (like the full report template and detailed common issues list) could potentially be moved to reference files to keep the main skill leaner."
+        }
+      },
+      "overall_assessment": "This is a well-structured, highly actionable skill for auditing and improving AGENTS.md files. Its six-phase workflow with an explicit report-before-edit gate is excellent for a potentially destructive operation. The main weaknesses are moderate verbosity (some repeated exclusion lists, lengthy inline templates) and the inability to verify referenced companion files exist, though the progressive disclosure design is sound in principle.",
+      "suggestions": [
+        "Reduce repetition of excluded directory lists (`.git/`, `node_modules/`, etc.) by defining them once and referencing that definition in subsequent phases.",
+        "Consider moving the full report template and common issues checklist into the referenced `references/` files to keep the main SKILL.md more concise while preserving the detailed guidance."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

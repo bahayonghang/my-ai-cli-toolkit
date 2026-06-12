@@ -1,0 +1,173 @@
+{
+  "review": {
+    "reviewScore": 80
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 88 (<= 500)",
+        "details": {
+          "line_count": 88,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'document-writer'",
+        "details": {
+          "value": "document-writer",
+          "length": 15
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (344 chars)",
+        "details": {
+          "length": 344
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Write,",
+            "Edit,",
+            "Glob,",
+            "Grep,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 4498
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "document-writer",
+    "skillDescription": "Write or update technical documentation from the real codebase and project files. Use whenever the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, and also when they want technical documentation rewritten into natural Chinese with correct terminology and formatting."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, JSDoc/code comments, and Chinese translation of technical documentation."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes many natural keywords users would say: 'README', 'API docs', 'architecture guides', 'user guides', 'CONTRIBUTING docs', 'migration notes', 'JSDoc', 'code comments', 'technical documentation', 'Chinese'. These cover a wide range of natural user requests."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (write or update technical documentation from the real codebase) and 'when' (explicit 'Use whenever' clause listing specific document types and the Chinese rewriting scenario)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 2,
+          "reasoning": "While it lists many specific document types, the broad scope of 'technical documentation' could overlap with general coding/writing skills. The Chinese translation aspect adds some distinctiveness, but the overall domain is wide enough to potentially conflict with other documentation or writing skills."
+        }
+      },
+      "overall_assessment": "This is a strong skill description that clearly articulates what it does and when to use it, with excellent trigger term coverage across multiple documentation types. The explicit 'Use whenever' clause with enumerated document types makes it highly actionable for skill selection. The only minor weakness is the broad scope which could potentially overlap with other documentation-related skills.",
+      "suggestions": []
+    },
+    "weightedScore": 2.8499999999999996,
+    "normalizedScore": 0.9249999999999998
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The content is mostly efficient and avoids explaining concepts Claude already knows, but some sections could be tightened—e.g., step 3 (language/audience/output location) has several sub-points that restate conventional defaults Claude would already follow. The rules section partially repeats guidance already given in the workflow steps."
+        },
+        "actionability": {
+          "score": 2,
+          "reasoning": "The skill provides clear procedural guidance and specific decision criteria (e.g., when to use Mermaid diagrams, when to ask questions), but lacks concrete executable examples—no sample commands, no example input/output, no code snippets demonstrating what good output looks like. The actionability relies heavily on external reference files (DOCUMENT_TYPES.md, VERIFICATION_CHECKLIST.md) whose contents are not provided."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The six-step workflow is clearly sequenced from classification through evidence gathering, drafting, and verification. Step 6 provides an explicit verification checkpoint referencing a checklist, and the preconditions establish clear gates before work begins. The feedback loop is implicit but the verification step before handoff is well-defined."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references four external files (WORKFLOW.md, DOCUMENT_TYPES.md, VERIFICATION_CHECKLIST.md, CHINESE_TECH_WRITING.md) which is good progressive disclosure design, but no bundle files were provided to verify these exist or contain useful content. The SKILL.md itself also seems to duplicate what WORKFLOW.md would contain, raising questions about whether the reference structure is well-organized or redundant."
+        }
+      },
+      "overall_assessment": "This is a well-structured documentation skill with a clear six-step workflow and good verification practices. Its main weaknesses are the lack of concrete examples (no sample inputs/outputs or executable snippets) and the inability to verify the referenced support files that the skill depends on. The content is reasonably concise but has some redundancy between inline instructions and the referenced workflow file.",
+      "suggestions": [
+        "Add at least one concrete example showing a before/after or sample output for a common documentation task (e.g., a README section generated from a real-looking codebase snippet).",
+        "Clarify the relationship between the inline execution flow and the referenced WORKFLOW.md—either the SKILL.md body should be the overview pointing to WORKFLOW.md for details, or the inline steps should replace the external file to avoid duplication.",
+        "Include the bundle reference files (DOCUMENT_TYPES.md, VERIFICATION_CHECKLIST.md, etc.) so the progressive disclosure structure can actually function and be validated."
+      ]
+    },
+    "weightedScore": 2.25,
+    "normalizedScore": 0.625
+  }
+}

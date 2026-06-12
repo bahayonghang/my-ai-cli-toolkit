@@ -1,0 +1,156 @@
+[
+  {
+    "skill": "skills/developer-tools-integrations/agents-md-improver",
+    "exit_code": 0,
+    "score": 89,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__agents-md-improver.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__agents-md-improver.stderr.txt"
+  },
+  {
+    "skill": "skills/developer-tools-integrations/archive-planning",
+    "exit_code": 0,
+    "score": 95,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__archive-planning.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__archive-planning.stderr.txt"
+  },
+  {
+    "skill": "skills/developer-tools-integrations/claude-md-improver",
+    "exit_code": 0,
+    "score": 92,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__claude-md-improver.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__claude-md-improver.stderr.txt"
+  },
+  {
+    "skill": "skills/developer-tools-integrations/codex-workflow-recommender",
+    "exit_code": 0,
+    "score": 89,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__codex-workflow-recommender.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/developer-tools-integrations__codex-workflow-recommender.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/html-artifact",
+    "exit_code": 0,
+    "score": 92,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/development-workflows__html-artifact.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/development-workflows__html-artifact.stderr.txt"
+  },
+  {
+    "skill": "skills/docs-writing-publishing/beautiful-mermaid-editor",
+    "exit_code": 0,
+    "score": 92,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/docs-writing-publishing__beautiful-mermaid-editor.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/docs-writing-publishing__beautiful-mermaid-editor.stderr.txt"
+  },
+  {
+    "skill": "skills/docs-writing-publishing/touying",
+    "exit_code": 0,
+    "score": 77,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/docs-writing-publishing__touying.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/docs-writing-publishing__touying.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/gh-address-comments",
+    "exit_code": 0,
+    "score": 89,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__gh-address-comments.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__gh-address-comments.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/gh-bootstrap",
+    "exit_code": 0,
+    "score": 95,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__gh-bootstrap.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__gh-bootstrap.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/gh-fix-ci",
+    "exit_code": 0,
+    "score": 98,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__gh-fix-ci.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__gh-fix-ci.stderr.txt"
+  },
+  {
+    "skill": "skills/git-github-collaboration/git-commit",
+    "exit_code": 0,
+    "score": 92,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 2,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__git-commit.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/git-github-collaboration__git-commit.stderr.txt"
+  },
+  {
+    "skill": "skills/research-learning-knowledge/deep-research-pro",
+    "exit_code": 0,
+    "score": 84,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/research-learning-knowledge__deep-research-pro.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/research-learning-knowledge__deep-research-pro.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/geju",
+    "exit_code": 0,
+    "score": 86,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/development-workflows__geju.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/development-workflows__geju.stderr.txt"
+  },
+  {
+    "skill": "skills/development-workflows/goudi",
+    "exit_code": 0,
+    "score": 86,
+    "validation_passed": true,
+    "validation_errors": 0,
+    "validation_warnings": 1,
+    "blocking": "",
+    "json": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/development-workflows__goudi.json",
+    "stderr": ".trellis/tasks/06-08-fix-tessl-skill-review-findings/research/tessl-rerun-json/development-workflows__goudi.stderr.txt"
+  }
+]

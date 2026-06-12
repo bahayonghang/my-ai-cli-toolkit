@@ -1,0 +1,170 @@
+{
+  "review": {
+    "reviewScore": 95
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 60 (<= 500)",
+        "details": {
+          "line_count": 60,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "version",
+            "category",
+            "tags",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'archive-planning'",
+        "details": {
+          "value": "archive-planning",
+          "length": 16
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (360 chars)",
+        "details": {
+          "length": 360
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Bash(python",
+            "*),",
+            "Bash(py",
+            "*),"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 1463
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "archive-planning",
+    "skillDescription": "Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature. Use when Codex should run `$archive-planning [feature-name]`, close out an active plan, preserve completed planning context, or replace the deprecated Codex prompt workflow with a deterministic skill script."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: archiving specific files ('task_plan.md', 'findings.md', 'progress.md'), into a timestamped '.plannings/' directory, for a named feature. Very concrete and detailed."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Includes strong natural trigger terms: 'archive-planning', 'feature-name', 'close out an active plan', 'preserve completed planning context', specific filenames, and the '.plannings/' directory. Users would naturally use terms like 'archive planning' or 'close out a plan'."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (archive root-level planning files into a timestamped directory) and 'when' (explicit 'Use when' clause covering multiple trigger scenarios: running the command, closing out a plan, preserving context, or replacing deprecated workflow)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive with a very specific niche: archiving planning files into a '.plannings/' directory. The specific filenames, directory structure, and command name ('$archive-planning') make it extremely unlikely to conflict with other skills."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly specifies what it does (archives specific planning files into a timestamped directory), when to use it (multiple explicit trigger scenarios), and uses concrete, distinctive terminology. The description is concise yet comprehensive, with strong trigger terms and minimal risk of conflicting with other skills.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 3,
+          "reasoning": "Every section earns its place. No unnecessary explanations of what planning files are or how archiving works conceptually. The behavior contract is detailed but necessary since it specifies exact inference logic and failure modes that Claude wouldn't know."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Provides exact executable commands with the $SKILL_DIR variable, specifies the precise file names required, the exact regex patterns for feature name inference, and clear success/failure behavior. Copy-paste ready."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The workflow is simple (run one script) but the behavior contract clearly specifies preconditions (all three files must exist), failure handling (stop and print missing files, no-op guarantee), and success behavior (move, not copy). The validation is built into the script's contract with explicit error recovery guidance."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references a bundled script at `$SKILL_DIR/scripts/archive_planning.py` but no bundle files were provided, making it impossible to verify the reference. The content itself is well-structured with clear sections, but there's no navigation to supporting materials or the script's own documentation."
+        }
+      },
+      "overall_assessment": "This is a well-crafted, concise skill that delegates execution to a bundled script while clearly documenting the behavioral contract. The run instructions are concrete and executable, and the failure modes are explicitly defined with a no-op guarantee. The only weakness is the missing bundle file for the referenced script, which slightly undermines progressive disclosure evaluation.",
+      "suggestions": []
+    },
+    "weightedScore": 2.8499999999999996,
+    "normalizedScore": 0.9249999999999998
+  }
+}

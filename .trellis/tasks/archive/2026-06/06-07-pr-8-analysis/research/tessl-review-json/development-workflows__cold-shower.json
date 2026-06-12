@@ -1,0 +1,162 @@
+{
+  "review": {
+    "reviewScore": 90
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 150 (<= 500)",
+        "details": {
+          "line_count": 150,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'cold-shower'",
+        "details": {
+          "value": "cold-shower",
+          "length": 11
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (549 chars)",
+        "details": {
+          "length": 549
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 6421
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "cold-shower",
+    "skillDescription": "Challenge ideas, requirements, technical plans, products, pricing, markets, pitch/BP narratives, and major personal decisions with a no-flattery adversarial review. Use when the user asks for 泼冷水, 挑刺, 骂我, 给我泼盆冷水, 假设你是我的对手, 帮我 challenge 一下, 我这个想法有什么问题, 哪里会崩, 魔鬼代言人, devil's advocate, challenge assumptions, 别夸我, hidden assumptions, failure modes, overengineering, missing evidence, or kill criteria before implementation or commitment. Do not trigger for ordinary code review unless the user explicitly asks to challenge assumptions or failure modes."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions and domains: 'Challenge ideas, requirements, technical plans, products, pricing, markets, pitch/BP narratives, and major personal decisions with a no-flattery adversarial review.' This clearly enumerates what the skill does across many specific areas."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms in both Chinese and English: '泼冷水, 挑刺, 骂我, devil's advocate, challenge assumptions, hidden assumptions, failure modes, overengineering, missing evidence, kill criteria.' These are highly natural phrases users would actually say when seeking this type of review."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (adversarial review of ideas, plans, decisions) and 'when' (explicit 'Use when...' clause with extensive trigger terms). Also includes a helpful negative boundary: 'Do not trigger for ordinary code review unless the user explicitly asks to challenge assumptions or failure modes.'"
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche — adversarial/devil's advocate review is clearly different from standard code review, document editing, or other skills. The explicit exclusion clause for ordinary code review further reduces conflict risk. The bilingual trigger terms carve out a very specific use case."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly defines a specific niche (adversarial review/devil's advocate), provides extensive bilingual trigger terms covering natural user language, and explicitly delineates boundaries to avoid conflicts with related skills like code review. The description is comprehensive yet focused, with strong 'what', 'when', and 'when not' guidance.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is well-structured and mostly efficient, but some sections are somewhat verbose for what Claude already understands (e.g., explaining what 'adversarial but evidence-bound' means, the voice contract section restates operating stance principles). The multiple mode sections add length but each carries distinct, useful guidance. Some tightening is possible but it's not egregiously padded."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The skill provides a concrete output template, a clear 8-step workflow, specific exit conditions with exact phrasing, and detailed mode-specific checklists. Each mode gives precise instructions (e.g., 'Ask Socratic questions that expose ambiguous actors, inputs, outputs, state, errors, and acceptance criteria'). The guidance is specific and directly executable without ambiguity."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The core workflow is clearly sequenced (8 numbered steps), exit conditions are explicit with exact trigger phrases, and the response contract provides a structured output template. Each mode adds specific checkpoints (e.g., 'End with the minimum requirement set needed before coding can safely begin'). The kill/revise/continue criteria serve as validation checkpoints for the overall process."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The content is well-organized with clear section headers and mode-based organization, but it's a monolithic file with no references to external files. Given the length (~150 lines) and the number of distinct modes, the mode-specific sections could reasonably be split into separate files with the main SKILL.md serving as an overview. However, since no bundle files exist, keeping everything inline is a defensible choice."
+        }
+      },
+      "overall_assessment": "This is a strong instruction-only skill with excellent actionability and workflow clarity. The core workflow, output template, exit conditions, and mode-specific guidance are all concrete and well-structured. The main weaknesses are moderate verbosity (some redundancy between operating stance and voice contract, and some guidance Claude could infer) and the monolithic structure that could benefit from splitting modes into separate files for a skill of this length.",
+      "suggestions": [
+        "Consider consolidating 'Operating stance' and 'Voice contract' into a single tighter section, as several points overlap (e.g., no praise, attack ideas not people).",
+        "For a skill this long with 6 distinct modes, consider splitting mode-specific sections into separate referenced files (e.g., modes/technical-plan.md) with a brief summary table in the main SKILL.md."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

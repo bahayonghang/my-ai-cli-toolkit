@@ -1,0 +1,166 @@
+{
+  "review": {
+    "reviewScore": 17
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 35 (<= 500)",
+        "details": {
+          "line_count": 35,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'gh-bootstrap'",
+        "details": {
+          "value": "gh-bootstrap",
+          "length": 12
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (216 chars)",
+        "details": {
+          "length": 216
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "error",
+        "message": "'allowed-tools' must be a string, got object"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 2166
+        }
+      }
+    ],
+    "overallPassed": false,
+    "errorCount": 1,
+    "warningCount": 1,
+    "skillName": "gh-bootstrap",
+    "skillDescription": "Initialize GitHub repository configuration from vetted upstream templates. Use when setting up repository automation, issue and PR templates, CI workflows, or baseline GitHub project files for a new or existing repo."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "trigger_term_quality": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "completeness": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        }
+      },
+      "overall_assessment": "Skill failed deterministic validation. LLM judge evaluation was skipped.",
+      "suggestions": [
+        "Fix the deterministic validation errors before running LLM judge."
+      ],
+      "validation_skipped": true
+    },
+    "weightedScore": 0,
+    "normalizedScore": 0
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "actionability": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "workflow_clarity": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        },
+        "progressive_disclosure": {
+          "score": 0,
+          "reasoning": "Deterministic validation failed; LLM judge was not run."
+        }
+      },
+      "overall_assessment": "Skill failed deterministic validation. LLM judge evaluation was skipped.",
+      "suggestions": [
+        "Fix the deterministic validation errors before running LLM judge."
+      ],
+      "validation_skipped": true
+    },
+    "weightedScore": 0,
+    "normalizedScore": 0
+  }
+}

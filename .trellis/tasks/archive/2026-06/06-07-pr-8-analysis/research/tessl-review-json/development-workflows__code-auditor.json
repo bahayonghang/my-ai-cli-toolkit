@@ -1,0 +1,173 @@
+{
+  "review": {
+    "reviewScore": 89
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 109 (<= 500)",
+        "details": {
+          "line_count": 109,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version",
+            "argument-hint",
+            "allowed-tools"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'code-auditor'",
+        "details": {
+          "value": "code-auditor",
+          "length": 12
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (562 chars)",
+        "details": {
+          "length": 562
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "warning",
+        "message": "'allowed-tools' contains unusual tool name(s)",
+        "details": {
+          "invalid_names": [
+            "Read,",
+            "Write,",
+            "Glob,",
+            "Grep,"
+          ]
+        }
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "argument-hint",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 5316
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "skillName": "code-auditor",
+    "skillDescription": "Structured code review across correctness, security, performance, readability, testing, and architecture, with language-specific guidance and human-readable findings. Use whenever the user asks to review a PR, inspect git changes before merge, audit a directory or file set, prepare merge feedback, summarize review findings, or do code review / PR review / CR / review comments / 代码审查. Adapt the output language to the user's context: use Chinese review wording for Chinese or mixed Chinese discussions, and English review wording for English-first discussions."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions and dimensions: 'correctness, security, performance, readability, testing, and architecture' along with 'language-specific guidance and human-readable findings'. These are concrete review dimensions, not vague abstractions."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms users would say: 'review a PR', 'inspect git changes', 'audit a directory', 'merge feedback', 'code review', 'PR review', 'CR', 'review comments', and even the Chinese term '代码审查'. Covers many natural variations."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (structured code review across multiple dimensions with language-specific guidance) and 'when' (explicit 'Use whenever...' clause listing specific trigger scenarios like reviewing PRs, inspecting git changes, auditing files, etc.)."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Clearly scoped to code review / PR review with distinct triggers. The specificity of review dimensions (correctness, security, performance, etc.) and the explicit PR/merge context make it unlikely to conflict with general coding or documentation skills."
+        }
+      },
+      "overall_assessment": "This is a strong skill description that excels across all dimensions. It clearly defines what the skill does (structured code review across six specific dimensions), when to use it (with an explicit 'Use whenever...' clause covering many natural trigger scenarios), and includes excellent trigger term coverage including abbreviations and multilingual terms. The additional detail about language adaptation adds useful context without being verbose.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is reasonably efficient but includes some sections that could be tightened—the Chinese/English tone examples and the detailed severity mapping table add bulk. The output mode section with its 5 numbered rules explaining language detection is somewhat verbose for something Claude can infer. However, most content is genuinely instructive and not padding."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "The workflow provides concrete, executable commands (gh pr diff, git diff, git diff --staged, gh pr view), specific file paths to load, a clear 4-phase process, and explicit examples of good review wording in both languages. The severity mapping is precise and copy-paste ready. Each step tells Claude exactly what to do."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The 11-step workflow is clearly sequenced with explicit decision points (PR number vs directory vs empty args), fallback paths for each error condition, and a dedicated error handling section covering edge cases like missing tools, large workspaces, and absent language guides. The workflow includes validation-like checkpoints (e.g., checking if gh is available, checking if changes exist) and clear branching logic."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The skill references multiple external files (references/review-dimensions.md, references/issue-classification.md, assets/quick-checklist.md, etc.) which suggests good structural intent, but no bundle files were provided to verify these exist. The references are one-level deep and clearly signaled, but the main SKILL.md itself is fairly long and some content (like the full tone/severity sections) could potentially live in the referenced communication-guide.md rather than being duplicated inline."
+        }
+      },
+      "overall_assessment": "This is a well-structured, highly actionable code review skill with clear workflow sequencing, robust error handling, and thoughtful bilingual support. Its main weakness is moderate verbosity—the tone guidance, severity mapping, and output mode sections inline content that overlaps with the referenced communication-guide.md and issue-classification.md files. The progressive disclosure intent is good but cannot be fully validated without the bundle files.",
+      "suggestions": [
+        "Move the detailed Chinese/English tone examples and severity mapping tables into the referenced communication-guide.md and issue-classification.md respectively, keeping only a brief summary inline to reduce token cost.",
+        "Trim the Output Mode section to 2-3 rules; Claude can infer language-matching behavior from a single concise instruction like 'Match the user's language; keep code identifiers untranslated.'"
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}

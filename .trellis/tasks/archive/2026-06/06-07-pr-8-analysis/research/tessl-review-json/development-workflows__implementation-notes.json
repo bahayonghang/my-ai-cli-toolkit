@@ -1,0 +1,162 @@
+{
+  "review": {
+    "reviewScore": 90
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "skill_md_line_count",
+        "status": "passed",
+        "message": "SKILL.md line count is 149 (<= 500)",
+        "details": {
+          "line_count": 149,
+          "max_lines": 500
+        }
+      },
+      {
+        "name": "frontmatter_valid",
+        "status": "passed",
+        "message": "YAML frontmatter is valid",
+        "details": {
+          "keys": [
+            "name",
+            "description",
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "name_field",
+        "status": "passed",
+        "message": "'name' field is valid: 'implementation-notes'",
+        "details": {
+          "value": "implementation-notes",
+          "length": 20
+        }
+      },
+      {
+        "name": "description_field",
+        "status": "passed",
+        "message": "'description' field is valid (809 chars)",
+        "details": {
+          "length": 809
+        }
+      },
+      {
+        "name": "compatibility_field",
+        "status": "passed",
+        "message": "'compatibility' field not present (optional)"
+      },
+      {
+        "name": "allowed_tools_field",
+        "status": "passed",
+        "message": "'allowed-tools' field not present (optional)"
+      },
+      {
+        "name": "metadata_version",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "metadata_field",
+        "status": "passed",
+        "message": "'metadata' field not present (optional)"
+      },
+      {
+        "name": "license_field",
+        "status": "passed",
+        "message": "'license' field not present (optional)"
+      },
+      {
+        "name": "frontmatter_unknown_keys",
+        "status": "warning",
+        "message": "Unknown frontmatter key(s) found; consider removing or moving to metadata",
+        "details": {
+          "unknown_keys": [
+            "category",
+            "tags",
+            "version"
+          ]
+        }
+      },
+      {
+        "name": "body_present",
+        "status": "passed",
+        "message": "SKILL.md body is present",
+        "details": {
+          "body_chars": 7341
+        }
+      }
+    ],
+    "overallPassed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "skillName": "implementation-notes",
+    "skillDescription": "Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding. Maintain a live implementation-notes.md alongside the work capturing design decisions (choices made where the spec was ambiguous), intentional deviations from the spec, alternatives considered and rejection criteria, and open questions for human review. Use proactively the moment implementation of a written spec begins, before the first edit. Triggers include 实施记录, 实现笔记, 决策日志, 边写边记, 按这个 spec 实现, 按这个计划做, implementation log, decision log, spec divergence, implement this plan. Do NOT use for single-file fixes, pure investigation, one-off scripts, work without a written spec to deviate from, or simple tasks where one commit captures the reasoning."
+  },
+  "descriptionJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "specificity": {
+          "score": 3,
+          "reasoning": "Lists multiple specific concrete actions: maintain a live implementation-notes.md, capture design decisions, intentional deviations, alternatives considered and rejection criteria, and open questions for human review. Also specifies timing ('before the first edit')."
+        },
+        "trigger_term_quality": {
+          "score": 3,
+          "reasoning": "Excellent coverage of natural trigger terms in both English and Chinese: 'implementation log', 'decision log', 'spec divergence', 'implement this plan', '按这个 spec 实现', '按这个计划做', plus contextual triggers like 'spec', 'PRD', 'design doc', 'GitHub issue'."
+        },
+        "completeness": {
+          "score": 3,
+          "reasoning": "Clearly answers both 'what' (maintain implementation-notes.md capturing decisions, deviations, alternatives, open questions) and 'when' (explicit 'Use when' clause for multi-step spec implementation, plus explicit 'Do NOT use' exclusions). The trigger guidance is thorough and explicit."
+        },
+        "distinctiveness_conflict_risk": {
+          "score": 3,
+          "reasoning": "Highly distinctive niche: specifically about maintaining implementation notes during spec-driven coding. The explicit 'Do NOT use' clause for single-file fixes, investigation, and simple tasks sharply delineates boundaries, making conflicts with other skills very unlikely."
+        }
+      },
+      "overall_assessment": "This is an excellent skill description that clearly defines a specific niche (maintaining implementation notes during spec-driven work), provides comprehensive trigger terms in multiple languages, and explicitly delineates both positive and negative use cases. The description is thorough without being padded, uses third-person voice appropriately, and would allow Claude to confidently select or reject this skill from a large pool.",
+      "suggestions": []
+    },
+    "weightedScore": 3,
+    "normalizedScore": 1
+  },
+  "contentJudge": {
+    "judgeConfig": {
+      "model": "anthropic/claude-opus-4-6"
+    },
+    "success": true,
+    "evaluation": {
+      "scores": {
+        "conciseness": {
+          "score": 2,
+          "reasoning": "The skill is well-written but somewhat verbose for its purpose. The 'Core principle' section explains why diffs and commit messages are insufficient — reasoning Claude can infer. The anti-patterns table partially duplicates guidance already stated in 'Writing rules' and 'When to skip'. Some tightening is possible without losing clarity."
+        },
+        "actionability": {
+          "score": 3,
+          "reasoning": "Highly actionable: provides a concrete template, specific good/bad examples for each of the four sections, clear gating criteria (when to start/skip), exact file location conventions, and a quality checklist. Claude can follow this skill without ambiguity."
+        },
+        "workflow_clarity": {
+          "score": 3,
+          "reasoning": "The workflow is clearly sequenced: gate check → create file before first edit → append entries at decision time → quality checklist before review. The cadence section and anti-patterns table serve as validation checkpoints against common failure modes. The integration section clarifies handoffs with other skills."
+        },
+        "progressive_disclosure": {
+          "score": 2,
+          "reasoning": "The content is well-structured with clear headings and logical sections, but it is entirely monolithic — all content lives in a single file with no references to supporting materials. The anti-patterns table, detailed examples, and integration notes could reasonably be split out. However, given no bundle files exist, this is somewhat expected, and the content length (~150 lines) is borderline for needing separation."
+        }
+      },
+      "overall_assessment": "This is a strong, well-crafted skill that provides highly actionable guidance with excellent examples distinguishing good from bad entries. The workflow is clear and well-sequenced with appropriate gating criteria. The main weakness is moderate verbosity — the 'Core principle' section over-explains motivation, and some guidance is repeated across sections (e.g., the backfill prohibition appears in both Writing rules and Anti-patterns).",
+      "suggestions": [
+        "Trim the 'Core principle' section to 1-2 sentences — Claude doesn't need a philosophical justification for why diffs don't capture reasoning.",
+        "Consolidate the Anti-patterns table into the Writing rules section to eliminate duplication (e.g., backfill prohibition is stated twice)."
+      ]
+    },
+    "weightedScore": 2.55,
+    "normalizedScore": 0.7749999999999999
+  }
+}
