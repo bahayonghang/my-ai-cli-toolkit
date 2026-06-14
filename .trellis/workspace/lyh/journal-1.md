@@ -339,3 +339,36 @@ Filled Trellis backend/frontend project guidelines from real repo conventions.
 ### Next Steps
 
 - None - task complete
+
+
+## Session 11: Add neutral agent skill review
+
+**Date**: 2026-06-15
+**Task**: Add neutral agent skill review
+**Branch**: `main`
+
+### Summary
+
+Renamed and debranded the imported review skill as agent-skill-review, preserved README attribution, regenerated docs, and validated with just ci.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `da3cd27` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
