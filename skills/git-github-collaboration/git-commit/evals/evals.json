@@ -236,6 +236,18 @@
         "Header stays within the configured 60-character limit",
         "Uses the docs type from the allowed list"
       ]
+    },
+    {
+      "id": 22,
+      "prompt": "请使用中文拆分提交所有的改动，使用 emoji，然后按方案执行提交；不要 push。当前变更已经确认是一个原子版本同步提交，没有 secret 或大文件。",
+      "expected_output": "Because the user explicitly authorized execution and no safety gate is tripped, the skill should show the final message/file set for transparency and then run the local commit without asking for an extra ok/confirmation. It must still avoid pushing.",
+      "files": [],
+      "assertions": [
+        "Treats the request as execution-authorized instead of waiting for an extra ok",
+        "Displays the final commit message and file set before committing",
+        "Runs the local commit when the split is safe and no safety gate is tripped",
+        "Does not run git push"
+      ]
     }
   ]
 }

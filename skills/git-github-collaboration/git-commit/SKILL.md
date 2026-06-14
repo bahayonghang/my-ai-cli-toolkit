@@ -7,7 +7,7 @@ tags:
   - conventional-commits
   - commit-message
   - agent-aware
-version: 1.8.0
+version: 1.9.0
 allowed-tools: Bash
 ---
 
@@ -119,7 +119,9 @@ Decide the active change authority and output language before doing anything els
 ## 5. Commit Or Draft
 
 1. If the user asked only for a draft, return the proposed commit text and stop.
-2. **Confirmation checkpoint**: Before any `git commit`, display the final commit message (header + body + footer) and the list of files to be committed. Explicitly call out whether `[AI]` is in the header, whether Why is present, and which agent trailers will attach. If the user has been interactive in this session, wait for explicit confirmation. If the user pre-approved (e.g. "直接提交", "commit it"), proceed without pausing.
+2. **Execution consent checkpoint**: Before any `git commit`, display the final commit message (header + body + footer) and the list of files to be committed. Explicitly call out whether `[AI]` is in the header, whether Why is present, and which agent trailers will attach. Then decide whether to pause:
+   - Proceed without an extra confirmation when the user's current request already authorizes execution, such as "commit it", "execute the commit", "commit all changes", "直接提交", "提交了", "按方案执行", or `请使用中文拆分提交所有的改动`, and preflight found no secret/large-binary risk, no ambiguous split, no missing Why, and no draft-only wording.
+   - Wait for explicit confirmation when execution was not clearly requested, when the user asked to review/plan/draft first, when the proposed file set or message differs materially from the requested scope, or when any safety gate in this workflow says to ask before committing.
 3. If the user asked to commit and `staged-only` is active, commit only the safe staged set. Write the message to a file and commit with `git commit -F <message-file>` so PowerShell and POSIX shells behave consistently. Put the message file outside the working tree — `$(git rev-parse --git-dir)/COMMIT_MSG_SKILL` or the OS temp dir — never inside the repo, where the `all-changes` flow's `git add -A` would sweep it into the commit.
 4. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` first so tracked, deleted, and untracked non-ignored files all enter the commit set.
 5. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
