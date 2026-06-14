@@ -1,0 +1,7 @@
+interface:
+  display_name: "Agent Skill Review"
+  short_description: "Review skills as agent capability packages"
+  default_prompt: "Use $agent-skill-review to review this skill directory and propose concrete improvements."
+
+policy:
+  allow_implicit_invocation: true

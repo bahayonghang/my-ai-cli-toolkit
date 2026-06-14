@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 29 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 30 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -20,8 +20,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 6 skills
+`developer-tools-integrations` · 7 skills
 
+- [agent-skill-review](/en/skills/developer-tools-integrations/agent-skill-review) — Review Codex, Claude, OpenAI, or other agent skill directories as reusable capability packages.
 - [agents-md-improver](/en/skills/developer-tools-integrations/agents-md-improver) — Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps in repositories.
 - [archive-planning](/en/skills/developer-tools-integrations/archive-planning) — Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature.
 - [ast-grep](/en/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
