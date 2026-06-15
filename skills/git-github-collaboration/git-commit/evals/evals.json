@@ -248,6 +248,19 @@
         "Runs the local commit when the split is safe and no safety gate is tripped",
         "Does not run git push"
       ]
+    },
+    {
+      "id": 23,
+      "prompt": "请使用中文拆分提交所有的改动，使用 emoji。当前除了源码改动，还有未跟踪的 output/demo-recording.mp4（180MB）和 cache/model.bin（85MB）。有些大文件可能应该加到 .gitignore，不要全都提交。",
+      "expected_output": "Enter all-changes mode, but stop at the safety gate because large untracked files are present. The skill should list each large file, avoid git add -A, ask for a per-file decision, and propose .gitignore patterns for generated/cache artifacts when appropriate.",
+      "files": [],
+      "assertions": [
+        "Detects the large untracked files during preflight",
+        "Does not run git add -A or commit all large files silently",
+        "Asks for a per-file include / ignore / leave-local decision",
+        "Suggests .gitignore patterns for generated or cache artifacts when appropriate",
+        "Keeps output language Chinese"
+      ]
     }
   ]
 }

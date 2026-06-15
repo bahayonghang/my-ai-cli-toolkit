@@ -19,7 +19,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or for all worki
 | --- | --- |
 | 名称 | `git-commit` |
 | 分类 | `git-github-collaboration` (Git / GitHub 协作) |
-| 版本 | `1.9.0` |
+| 版本 | `1.10.0` |
 | 标签 | `git`, `conventional-commits`, `commit-message`, `agent-aware` |
 
 ## 安装命令

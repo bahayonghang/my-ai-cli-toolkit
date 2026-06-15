@@ -7,7 +7,7 @@ tags:
   - conventional-commits
   - commit-message
   - agent-aware
-version: 1.9.0
+version: 1.10.0
 allowed-tools: Bash
 ---
 
@@ -50,7 +50,7 @@ Decide the active change authority and output language before doing anything els
    - Language + style: read `git log -n 20 --format=%s`. Note the dominant subject language (this feeds `commit-language` step 3 in §0), whether subjects carry gitmoji, and whether they already use an `[AI]` tag.
    - Config: if `commitlint.config.*`, `.commitlintrc*`, `.czrc`, `.cz.*`, `.gitmessage`, or a `CONTRIBUTING` commit section exists, treat its allowed `type` / `scope` list and length rules as authoritative over this skill's defaults.
    - When no signal exists, fall back to this repository's defaults: emoji on, `[AI]` + agent trailers on, scope from the changed path.
-6. **Safety scan** the active change set's file list (`git diff --staged --name-only`, plus untracked paths in `all-changes`). If it includes likely secrets (`.env`, `*.pem`, `*.key`, `id_rsa`, `id_ed25519`, `*.p12`, `*.keystore`) or large/binary blobs (> ~1 MB), do not commit silently — surface them and ask the user to confirm or unstage first. "Safely orchestrate" means catching a leaked secret before it enters history, not only splitting commits cleanly.
+6. **Safety scan** the active change set's file list (`git diff --staged --name-only`, plus untracked paths in `all-changes`). If it includes likely secrets (`.env`, `*.pem`, `*.key`, `id_rsa`, `id_ed25519`, `*.p12`, `*.keystore`) or large/binary blobs (> ~1 MB), do not commit silently. Surface each risky path with its staged/untracked/tracked state, size when practical, and why it is risky. For large files, ask the user to decide per path before staging or committing: intentionally commit it, leave it untracked, add or adjust a `.gitignore` pattern, or move it to Git LFS / external artifact storage. Do not treat `all-changes` as permission to sweep every large file into history. "Safely orchestrate" means catching leaked secrets and accidental artifacts before they enter history, not only splitting commits cleanly.
 
 ## 2. Split Plan
 
@@ -123,10 +123,11 @@ Decide the active change authority and output language before doing anything els
    - Proceed without an extra confirmation when the user's current request already authorizes execution, such as "commit it", "execute the commit", "commit all changes", "直接提交", "提交了", "按方案执行", or `请使用中文拆分提交所有的改动`, and preflight found no secret/large-binary risk, no ambiguous split, no missing Why, and no draft-only wording.
    - Wait for explicit confirmation when execution was not clearly requested, when the user asked to review/plan/draft first, when the proposed file set or message differs materially from the requested scope, or when any safety gate in this workflow says to ask before committing.
 3. If the user asked to commit and `staged-only` is active, commit only the safe staged set. Write the message to a file and commit with `git commit -F <message-file>` so PowerShell and POSIX shells behave consistently. Put the message file outside the working tree — `$(git rev-parse --git-dir)/COMMIT_MSG_SKILL` or the OS temp dir — never inside the repo, where the `all-changes` flow's `git add -A` would sweep it into the commit.
-4. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` first so tracked, deleted, and untracked non-ignored files all enter the commit set.
-5. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
-6. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
-7. Do not push by default. Only discuss or run `git push` if the user explicitly asked for it.
+4. If the safety scan found large/binary files, wait for an explicit decision for each risky path before any broad staging command. If the correct outcome is to ignore generated artifacts, edit or ask for a `.gitignore` update first, then re-run preflight so ignored files are no longer part of the candidate set. Include `.gitignore` only when the user approved that ignore policy.
+5. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` only after the safety scan is clear or all risky files have explicit include/ignore decisions, so tracked, deleted, and safe untracked non-ignored files enter the commit set.
+6. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
+7. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
+8. Do not push by default. Only discuss or run `git push` if the user explicitly asked for it.
 
 ## 6. Verify
 
