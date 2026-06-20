@@ -31,10 +31,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-fix-ci
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-fix-ci/agents` | directory | 1 | Companion agents |
 | `skills/git-github-collaboration/gh-fix-ci/assets` | directory | 2 | Assets |
+| `skills/git-github-collaboration/gh-fix-ci/evals` | directory | 1 | Evaluation samples |
 | `skills/git-github-collaboration/gh-fix-ci/LICENSE.txt` | file | 1 | Top-level file |
 | `skills/git-github-collaboration/gh-fix-ci/references` | directory | 1 | Reference material |
 | `skills/git-github-collaboration/gh-fix-ci/scripts` | directory | 1 | Executable scripts |
-| `skills/git-github-collaboration/gh-fix-ci/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
@@ -42,6 +42,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-fix-ci
 | --- | --- | --- |
 | agents | `skills/git-github-collaboration/gh-fix-ci/agents` | Companion agents |
 | assets | `skills/git-github-collaboration/gh-fix-ci/assets` | Assets |
+| evals | `skills/git-github-collaboration/gh-fix-ci/evals` | Evaluation samples |
 | references | `skills/git-github-collaboration/gh-fix-ci/references` | Reference material |
 | scripts | `skills/git-github-collaboration/gh-fix-ci/scripts` | Executable scripts |
 

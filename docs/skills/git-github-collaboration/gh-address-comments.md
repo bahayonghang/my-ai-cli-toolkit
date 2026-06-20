@@ -31,9 +31,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-address-co
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-address-comments/agents` | 目录 | 1 | 配套 agent |
 | `skills/git-github-collaboration/gh-address-comments/assets` | 目录 | 2 | 素材资源 |
+| `skills/git-github-collaboration/gh-address-comments/evals` | 目录 | 1 | 评测样例 |
 | `skills/git-github-collaboration/gh-address-comments/LICENSE.txt` | 文件 | 1 | 顶层文件 |
 | `skills/git-github-collaboration/gh-address-comments/scripts` | 目录 | 1 | 可执行脚本 |
-| `skills/git-github-collaboration/gh-address-comments/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
@@ -41,6 +41,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-address-co
 | --- | --- | --- |
 | agents | `skills/git-github-collaboration/gh-address-comments/agents` | 配套 agent |
 | assets | `skills/git-github-collaboration/gh-address-comments/assets` | 素材资源 |
+| evals | `skills/git-github-collaboration/gh-address-comments/evals` | 评测样例 |
 | scripts | `skills/git-github-collaboration/gh-address-comments/scripts` | 可执行脚本 |
 
 ## 验证方式

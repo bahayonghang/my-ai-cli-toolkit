@@ -31,9 +31,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-address-co
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-address-comments/agents` | directory | 1 | Companion agents |
 | `skills/git-github-collaboration/gh-address-comments/assets` | directory | 2 | Assets |
+| `skills/git-github-collaboration/gh-address-comments/evals` | directory | 1 | Evaluation samples |
 | `skills/git-github-collaboration/gh-address-comments/LICENSE.txt` | file | 1 | Top-level file |
 | `skills/git-github-collaboration/gh-address-comments/scripts` | directory | 1 | Executable scripts |
-| `skills/git-github-collaboration/gh-address-comments/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
@@ -41,6 +41,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-address-co
 | --- | --- | --- |
 | agents | `skills/git-github-collaboration/gh-address-comments/agents` | Companion agents |
 | assets | `skills/git-github-collaboration/gh-address-comments/assets` | Assets |
+| evals | `skills/git-github-collaboration/gh-address-comments/evals` | Evaluation samples |
 | scripts | `skills/git-github-collaboration/gh-address-comments/scripts` | Executable scripts |
 
 ## Validation

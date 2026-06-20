@@ -31,10 +31,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-fix-ci
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-fix-ci/agents` | 目录 | 1 | 配套 agent |
 | `skills/git-github-collaboration/gh-fix-ci/assets` | 目录 | 2 | 素材资源 |
+| `skills/git-github-collaboration/gh-fix-ci/evals` | 目录 | 1 | 评测样例 |
 | `skills/git-github-collaboration/gh-fix-ci/LICENSE.txt` | 文件 | 1 | 顶层文件 |
 | `skills/git-github-collaboration/gh-fix-ci/references` | 目录 | 1 | 引用资料 |
 | `skills/git-github-collaboration/gh-fix-ci/scripts` | 目录 | 1 | 可执行脚本 |
-| `skills/git-github-collaboration/gh-fix-ci/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
@@ -42,6 +42,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-fix-ci
 | --- | --- | --- |
 | agents | `skills/git-github-collaboration/gh-fix-ci/agents` | 配套 agent |
 | assets | `skills/git-github-collaboration/gh-fix-ci/assets` | 素材资源 |
+| evals | `skills/git-github-collaboration/gh-fix-ci/evals` | 评测样例 |
 | references | `skills/git-github-collaboration/gh-fix-ci/references` | 引用资料 |
 | scripts | `skills/git-github-collaboration/gh-fix-ci/scripts` | 可执行脚本 |
 

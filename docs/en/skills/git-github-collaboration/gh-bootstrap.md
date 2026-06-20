@@ -30,23 +30,18 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-bootstrap/agents` | directory | 1 | Companion agents |
-| `skills/git-github-collaboration/gh-bootstrap/phases` | directory | 9 | Phase guides |
-| `skills/git-github-collaboration/gh-bootstrap/references` | directory | 1 | Reference material |
+| `skills/git-github-collaboration/gh-bootstrap/evals` | directory | 1 | Evaluation samples |
 | `skills/git-github-collaboration/gh-bootstrap/scripts` | directory | 1 | Executable scripts |
-| `skills/git-github-collaboration/gh-bootstrap/specs` | directory | 5 | Specs |
-| `skills/git-github-collaboration/gh-bootstrap/templates` | directory | 1 | Templates |
-| `skills/git-github-collaboration/gh-bootstrap/test-prompts.json` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-bootstrap/specs` | directory | 1 | Specs |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | agents | `skills/git-github-collaboration/gh-bootstrap/agents` | Companion agents |
-| phases | `skills/git-github-collaboration/gh-bootstrap/phases` | Phase guides |
-| references | `skills/git-github-collaboration/gh-bootstrap/references` | Reference material |
+| evals | `skills/git-github-collaboration/gh-bootstrap/evals` | Evaluation samples |
 | scripts | `skills/git-github-collaboration/gh-bootstrap/scripts` | Executable scripts |
 | specs | `skills/git-github-collaboration/gh-bootstrap/specs` | Specs |
-| templates | `skills/git-github-collaboration/gh-bootstrap/templates` | Templates |
 
 ## Validation
 

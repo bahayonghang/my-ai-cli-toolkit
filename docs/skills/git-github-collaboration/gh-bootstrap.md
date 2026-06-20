@@ -30,23 +30,18 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-bootstrap/agents` | 目录 | 1 | 配套 agent |
-| `skills/git-github-collaboration/gh-bootstrap/phases` | 目录 | 9 | 阶段说明 |
-| `skills/git-github-collaboration/gh-bootstrap/references` | 目录 | 1 | 引用资料 |
+| `skills/git-github-collaboration/gh-bootstrap/evals` | 目录 | 1 | 评测样例 |
 | `skills/git-github-collaboration/gh-bootstrap/scripts` | 目录 | 1 | 可执行脚本 |
-| `skills/git-github-collaboration/gh-bootstrap/specs` | 目录 | 5 | 规格说明 |
-| `skills/git-github-collaboration/gh-bootstrap/templates` | 目录 | 1 | 模板 |
-| `skills/git-github-collaboration/gh-bootstrap/test-prompts.json` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-bootstrap/specs` | 目录 | 1 | 规格说明 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
 | agents | `skills/git-github-collaboration/gh-bootstrap/agents` | 配套 agent |
-| phases | `skills/git-github-collaboration/gh-bootstrap/phases` | 阶段说明 |
-| references | `skills/git-github-collaboration/gh-bootstrap/references` | 引用资料 |
+| evals | `skills/git-github-collaboration/gh-bootstrap/evals` | 评测样例 |
 | scripts | `skills/git-github-collaboration/gh-bootstrap/scripts` | 可执行脚本 |
 | specs | `skills/git-github-collaboration/gh-bootstrap/specs` | 规格说明 |
-| templates | `skills/git-github-collaboration/gh-bootstrap/templates` | 模板 |
 
 ## 验证方式
 
