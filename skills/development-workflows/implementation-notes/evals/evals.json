@@ -1,0 +1,48 @@
+{
+  "skill_name": "implementation-notes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我准备按这份 design doc 实现一个跨多个文件的缓存层，spec 里有几处没写清楚的地方，估计实现时要做不少取舍。开始写之前帮我把决策边写边记下来。",
+      "expected_output": "在第一次编辑前创建 implementation-notes.md，含 Decisions / Deviations / Tradeoffs / Open questions 四节；每条都记录 diff 看不出的判断（为什么选这个而非备选、偏离了哪条 spec、留给人确认的问题），引用文件路径/行号，不做事后批量补记。",
+      "files": [],
+      "assertions": [
+        "It creates implementation-notes.md before the first edit, with the Decisions / Deviations / Tradeoffs / Open questions sections.",
+        "Each entry records something the diff alone cannot explain (why this option over a named alternative, which spec line was departed from, or an open question for a human).",
+        "Entries reference file paths / line ranges instead of pasting full diffs.",
+        "It appends entries at the moment decisions are made rather than backfilling the whole file at the end."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "按这个 GitHub issue 的方案开始实现吧，会改好几个文件、分几次提交。implementation 里凡是和 issue 不一致的地方我希望能看到原因。",
+      "expected_output": "维护 implementation-notes.md，Deviations 节引用 issue 的具体条目再说明改动与原因；Open questions 以可让 reviewer yes/no 或多选回答的方式表述；不把能从 git log --stat 还原的内容写进去。",
+      "files": [],
+      "assertions": [
+        "Deviations entries quote the spec/issue line they depart from before stating the change and reason.",
+        "Open-questions entries are phrased so a reviewer can answer yes/no or pick from a short list.",
+        "It avoids chronological 'added X then Y' entries that could be reconstructed from git log --stat."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "帮我把 utils.ts 里这个拼错的变量名改对，就这一处，改完直接提交。",
+      "expected_output": "近邻负例：单文件、一次提交、自解释的改动不需要 implementation-notes；理由应写进 commit body。",
+      "files": [],
+      "assertions": [
+        "The response does not create or maintain an implementation-notes.md for a single-file, single-commit fix.",
+        "It indicates the reasoning belongs in the commit body instead."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我看看这个报错是怎么来的，先别改代码，就是想搞清楚根因。",
+      "expected_output": "近邻负例：纯调查/调试、没有要落地的书面 spec 时不触发 implementation-notes；该技能记录的是实现一份 spec 过程中的判断，不是调查笔记。",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture pure investigation/debugging with no written spec to implement.",
+        "It does not start an implementation-notes.md when there is no spec being implemented."
+      ]
+    }
+  ]
+}

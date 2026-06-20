@@ -5,25 +5,57 @@
       "id": 1,
       "prompt": "帮我 review 这次 PR 的后端改动，重点看支付回调和幂等处理。请用中文给我一个可以直接贴到评审里的结论，别只写 LGTM，要把阻塞问题和建议修改分开。",
       "expected_output": "中文输出，先给 findings，再给结论；阻塞问题使用明确的中文分级，并给出可执行建议。",
-      "files": []
+      "files": [],
+      "assertions": [
+        "The review is written in Chinese.",
+        "Findings are presented before the summary or conclusion.",
+        "Blocking issues use explicit Chinese severity labels such as [必须修复] / [建议修改] / [仅供参考].",
+        "Each blocking finding includes a concrete, actionable recommendation rather than a bare LGTM."
+      ]
     },
     {
       "id": 2,
       "prompt": "请审查当前 git changes，代码是 React + TypeScript。团队平时中文沟通，但代码和类型名都保留英文。请重点看 hooks 依赖、内存泄漏和测试缺口。",
       "expected_output": "中文为主、英文技术术语保留原样，指出 React 和 TypeScript 相关风险，不应把纯样式问题抬成高优先级。",
-      "files": []
+      "files": [],
+      "assertions": [
+        "The review is in Chinese while keeping English identifiers, type names, and APIs unchanged.",
+        "The review flags React/TypeScript-specific risks such as hook dependencies, memory leaks, or missing tests.",
+        "Pure formatting or style issues are not escalated above low severity."
+      ]
     },
     {
       "id": 3,
       "prompt": "Review the changes in src/auth and tests/auth before merge. I want a concise English review comment that calls out only real risks, especially auth bypass, token handling, and missing edge-case tests.",
       "expected_output": "English output with findings first, concrete auth and testing concerns, and no forced Chinese wording.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "The review is written in English.",
+        "Findings are presented first, before any summary.",
+        "The review raises concrete authentication and testing concerns such as auth bypass, token handling, or missing edge-case tests.",
+        "No Chinese wording is forced into the English review."
+      ]
     },
     {
       "id": 4,
       "prompt": "看一下 services/order 和 api/order.ts 这几处改动。我想确认逻辑有没有问题，如果有不确定作者意图的地方，请直接提问，不要装作很确定。另外如果整体没大问题，也请写出你检查了哪些方面。",
       "expected_output": "中文输出，能在不确定时使用问题式反馈；如果没有阻塞问题，也要明确列出检查范围和结论。",
-      "files": []
+      "files": [],
+      "assertions": [
+        "The review is written in Chinese.",
+        "When author intent is uncertain, feedback is phrased as questions instead of overconfident assertions.",
+        "If no blocking issues exist, the review still states what was checked and gives a conclusion rather than an empty LGTM."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "这个项目维护性怎么样？帮我从架构和可维护性角度评估一下 src/ 整体结构，看看抽象是不是合理、有没有该拆的大文件。",
+      "expected_output": "近邻负例：纯可维护性/结构质量审查更适合 code-quality-review；code-auditor 是覆盖正确性、安全、性能、可读性、测试、架构的全维度审查。",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture maintainability-only or structure-quality-only review requests that belong to code-quality-review.",
+        "If answered here, the response should still run the full multi-dimension audit rather than only a maintainability lens, or hand off to code-quality-review."
+      ]
     }
   ]
 }

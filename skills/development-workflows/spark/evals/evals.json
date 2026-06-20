@@ -1,0 +1,50 @@
+{
+  "skill_name": "spark",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我想给应用加一个团队协作的实时通知功能，但还没想清楚。先别写代码，帮我把方案和范围理清楚，最后给我一份能直接执行的计划。",
+      "expected_output": "先探查项目上下文，再一次只问一个会改变方案的阻塞性问题，其余不确定项记为假设；产出实现导向的计划（可写模式下保存到 .plannings/YYYY-MM-DD-<slug>.md），含具体实现步骤与可验证验收标准，停在审批门，不写生产代码。",
+      "files": [],
+      "assertions": [
+        "It explores existing project context before proposing changes.",
+        "It asks only blocking questions, one at a time, and records non-blocking unknowns as explicit assumptions.",
+        "It produces an implementation-oriented plan with concrete steps and observable acceptance criteria (not vague 'confirm it works').",
+        "In writable mode it saves the plan to .plannings/YYYY-MM-DD-<feature-slug>.md.",
+        "It stops at a user approval gate and does not write production code or invoke an execution workflow."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "帮我 stress-test 一下这个想法：把现有的单体拆成两个服务。我想要一个有取舍分析和验证标准的计划，不要急着动手。",
+      "expected_output": "比较 2-3 个可行方案并在计划中记录被否决的备选；只在方案会被实质改变时才把方案选择抛给用户；计划包含可能改动的文件/区域、风险与缓解、以及证明完成的测试或检查。",
+      "files": [],
+      "assertions": [
+        "It compares a few plausible approaches and records rejected alternatives in the plan.",
+        "The plan names files/areas likely to change, risks and mitigations, and verification or acceptance checks.",
+        "It surfaces an approach choice to the user only when that choice materially changes the plan.",
+        "It does not begin implementation; it waits for a separate execution request."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "直接帮我把登录页的这个空指针 bug 修了，改完跑一下测试。",
+      "expected_output": "近邻负例：明确的执行/修复请求不应进入 spark 的计划-优先模式；spark 止于已批准的计划，执行是单独的请求。",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture direct execution/bugfix requests.",
+        "spark should not be used to implement code; it ends at an approved plan."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "把这个常量从 30 改成 60，就这一个值。",
+      "expected_output": "近邻负例：琐碎的一行改动不需要 plan-first 头脑风暴流程。",
+      "files": [],
+      "assertions": [
+        "The response does not run a full plan-first brainstorming workflow for a trivial one-line change.",
+        "It treats the change as a direct edit rather than a planning exercise."
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "prompt": "把这个迁移方案做成可在浏览器审阅的实施计划 artifact。需要阶段、风险、验证和回滚。",
       "expected_output": "Uses Strategy Blueprint, writes one self-contained HTML artifact, includes phases, risk register, verification checklist, and rollback plan, then runs the validator.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response chooses Strategy Blueprint for an implementation plan.",
         "The created artifact is a single self-contained HTML file with no remote dependencies.",
         "The artifact includes milestones, risks, verification, and rollback sections.",
@@ -18,7 +18,7 @@
       "prompt": "Review 当前 diff，生成 HTML 代码审查报告，按阻塞/建议/仅供参考分类。",
       "expected_output": "Uses Review Workbench, summarizes changed files, lists findings with severity and locations, includes test coverage/gaps, and avoids pasting huge raw diffs.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response chooses Review Workbench for a code review report.",
         "Findings include severity, location, impact, and suggested fix.",
         "Diff excerpts are short and annotated rather than full raw diffs.",
@@ -30,7 +30,7 @@
       "prompt": "调研三种队列方案并给一个决策页面，标注证据和推断。",
       "expected_output": "Combines Decision Matrix Studio with Evidence Dossier, includes source table, separates evidence from inference, and recommends one option with tradeoffs.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response combines decision matrix and evidence dossier sections.",
         "The artifact includes a source table with confidence or source type.",
         "Evidence and inference are explicitly separated.",
@@ -42,7 +42,7 @@
       "prompt": "给我做一个临时 JSON 配置编辑器页面，可以预览、校验、复制 JSON 和 Markdown。",
       "expected_output": "Uses Interactive Editor, keeps validation local, offers preview/copy/export actions, and does not perform network requests.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response chooses Interactive Editor for a local structured-data editor.",
         "Validation is local-only and does not use network APIs.",
         "The artifact includes input, preview, validation, and export areas.",
@@ -54,7 +54,7 @@
       "prompt": "写一个 git commit message。",
       "expected_output": "Does not create an HTML artifact and answers in plain text or Markdown.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response does not create an HTML artifact.",
         "The response stays concise and uses commit-message text."
       ]
@@ -64,7 +64,7 @@
       "prompt": "总结这次小 bug 修复改了什么。",
       "expected_output": "Does not create an HTML artifact unless explicitly requested and keeps a concise Markdown summary.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response does not create an HTML artifact unless explicitly requested.",
         "The response gives a concise summary in Markdown/plain text."
       ]
@@ -74,7 +74,7 @@
       "prompt": "把 VibeDeck 和 ccr-ui 的分析做成一个 HTML artifact：要有主要特色、对比矩阵、建议路线图，给高层看。",
       "expected_output": "Uses Evidence Dossier + Decision Matrix Studio, applies design escalation, creates a split hero, balances five feature cards as 3+2, emphasizes the recommendation/evidence in the matrix, and presents the roadmap as a diagram or lane rather than plain stacked cards.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "At desktop widths, the outer shell expands fluidly and does not stay trapped inside a narrow centered cap when the page includes navigation and a right-side thesis board.",
         "The artifact uses a split hero with a right-side thesis board, evidence rail, or meta cluster so the header has no meaningless dead area.",
         "The VibeDeck feature section with five cards uses a stable 3+2 desktop layout such as grid-5-balanced, not a generic auto-fit 4+1 layout.",
@@ -88,7 +88,7 @@
       "prompt": "为一个面向 CTO 的高层实施计划生成 HTML 页面：需要一句结论、阶段路线图、风险表、验证命令和回滚策略。",
       "expected_output": "Uses Strategy Blueprint with an executive design pass, provides a focused hero, diagram-first phase roadmap, emphasized risk/decision tables, verification commands, rollback, validator result, and design checklist review.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "At desktop widths, the page shell uses the available viewport with responsive gutters instead of centering the entire artifact inside a narrow cap.",
         "The artifact uses hero--split or hero--deck with status/date/risk/verification metadata rather than an empty full-width hero.",
         "The roadmap appears as inline SVG or HTML phase lanes before detailed phase prose.",
@@ -102,7 +102,7 @@
       "prompt": "做一个架构解释 HTML artifact，说明从旧同步架构迁移到事件驱动架构的 before/after、数据流、失败路径和观测信号。",
       "expected_output": "Uses Architecture Atlas, starts diagram-first with inline SVG before/after or data-flow diagrams, includes text equivalents, component cards, failure-mode table, and observability signals.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The artifact chooses Architecture Atlas and starts with a diagram-first section, not a prose-only component list.",
         "The before/after or data-flow view is inline SVG inside a diagram-frame or an equivalent structured HTML diagram.",
         "Every diagram includes figcaption plus a nearby ordered list or table that provides a text equivalent.",
@@ -115,7 +115,7 @@
       "prompt": "把上季度的 P95 延迟、错误率、覆盖率、上线计数这 4 个指标做成离线 status dashboard，要 sparkline、bullet chart 对比目标，并允许按服务过滤。",
       "expected_output": "Uses Status Brief with charts cookbook recipes: sparkline trend per metric, bullet chart vs target, filter chips for per-service drill-down. Tokens come from --chart-* / --seq-* and validator runs clean.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Each metric card includes a sparkline (charts-cookbook recipe 3) or bullet chart (recipe 6), not just a number with a status pill.",
         "Bullet charts show target vs actual with the target rendered as a distinct vertical line, not by color alone.",
         "Chart colors come from var(--chart-*), var(--seq-*), or var(--*) tokens — no hard-coded brand hex inside SVG fill/stroke.",
@@ -129,7 +129,7 @@
       "prompt": "我们的退款流程跨客户/客服/财务三个角色，做一个 swimlane 解释 artifact，要标出每一步的负责人和决策点。",
       "expected_output": "Uses Architecture Atlas or Strategy Blueprint with diagram-cookbook recipe 3 (swimlane). Lanes are HTML grid sections with aria-labelledby; decision steps are visually distinguished with text + emphasis.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The artifact contains a swimlane structure where each lane is a section/group with an accessible name (aria-labelledby).",
         "Each lane lists ordered steps using <ol> so reading order is preserved for screen readers.",
         "Decision steps are emphasized in text (e.g., a label such as 'decision' or distinct border) and not by color alone.",
@@ -142,7 +142,7 @@
       "prompt": "做一个含 search、severity filter 和列排序的代码审查 HTML workbench。",
       "expected_output": "Uses Review Workbench with interaction-cookbook recipes: client-side search (recipe 2), filter chips for severity (recipe 1), sortable table for the file map (recipe 3), copy with feedback (recipe 9). All progressive enhancement: no JS still shows content.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The artifact includes an <input type=\"search\"> with aria-controls pointing at the searchable region.",
         "Severity filter chips are <button aria-pressed=\"...\"> in a labeled role=\"group\".",
         "Sortable columns expose aria-sort and the header text is wrapped in a <button> for keyboard operability.",
@@ -156,7 +156,7 @@
       "prompt": "生成一个“训练器分发机制”的架构/流程 HTML artifact：要解释 trainer 如何分发 job、worker 如何回报结果、失败如何重试，并且代码标识必须清晰可读。",
       "expected_output": "Uses Architecture Atlas or Strategy Blueprint with an inline SVG or HTML lane diagram whose SVG labels are short and fill-only, long code identifiers are placed in adjacent HTML text equivalents, and the validator reports no SVG text legibility warnings.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The artifact uses inline SVG or a structured HTML lane for the trainer dispatch flow, paired with a figcaption and ordered list/table text equivalent.",
         "SVG <text> labels stay short, such as 'Trainer', 'Dispatch', 'Worker', and 'Retry'; long identifiers are not stuffed into SVG text nodes.",
         "Long code identifiers, paths, and mixed Chinese/English explanations appear in readable HTML lists, cards, or tables where they wrap naturally.",
@@ -171,7 +171,7 @@
       "files": [
         "src/industrytslib/core/model_trainers"
       ],
-      "expectations": [
+      "assertions": [
         "The response routes to a codebase architecture audit using Architecture Atlas as the spine, not a generic beautiful report page.",
         "The artifact starts with a current call graph or C4-lite boundary map before long prose, using inline SVG or structured HTML with figcaption and text equivalent.",
         "The evidence summary separates evidence, inference, and recommendation, with concrete files/symbols/commands for traceability.",
@@ -187,7 +187,7 @@
       "prompt": "把这份大型审计材料做成离线 HTML artifact：包含 12 个章节、约 260 行证据表、80 段短日志/代码摘录、5 个架构/时间线图和附录。先说明预计大小，如果太大就拆分成 index + 多个 part 页面。",
       "expected_output": "Uses Evidence Dossier + Review Workbench, performs a pre-build size plan, estimates total bytes, chooses split-bundle when appropriate, and validates every self-contained HTML page.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Before writing HTML, the response includes a content inventory covering sections, table rows, diagrams/SVGs, excerpts, interaction JS, and evidence/appendix volume.",
         "The response states estimated_total_bytes or an equivalent byte/KB/MB estimate before choosing the output shape.",
         "Because the prompt is evidence-heavy, the response chooses or strongly prefers a split bundle when the estimate is above the split threshold, unless the user explicitly asks for one file.",

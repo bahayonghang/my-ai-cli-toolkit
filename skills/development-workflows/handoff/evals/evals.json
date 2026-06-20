@@ -5,19 +5,49 @@
       "id": 1,
       "prompt": "上下文已经用了一大半，OAuth Google 集成做了三轮调试还没收敛——authorize 回调能拿到 code，但换 token 那一步报 invalid_grant，怀疑是 redirect_uri 不匹配但还没确认。今晚先停，明早新开一个会话接着搞。写一份 handoff，让明早不用从头复盘。",
       "expected_output": "根目录或 .handoff/ 下产出 handoff.md。包含：已完成项（OAuth 哪些环节通了，引用具体文件路径）；Blocked 节明确写 invalid_grant 的错误、已经怀疑过的方向、试过排除的方案；Next steps 给出明早第一动作（如：核对 Google Console 注册的 redirect_uri 与代码中的常量）；Context 节给关键环境配置（client_id 位置、回调路径常量在哪个文件）。不写时间线流水账。",
-      "files": []
+      "files": [],
+      "assertions": [
+        "A handoff.md is produced at the repo root or under .handoff/.",
+        "The Completed section lists verified work with concrete file-path references.",
+        "The Blocked section names the invalid_grant error, the directions already suspected, and what was ruled out.",
+        "Next steps give a concrete first action (e.g. compare the redirect_uri registered in Google Console with the constant in code), not an abstract goal.",
+        "The Context section captures key environment config such as where client_id lives or the callback-path constant.",
+        "The document is structured by Completed/Blocked/Next/Context, not a chronological timeline narration."
+      ]
     },
     {
       "id": 2,
       "prompt": "P1 线上 bug 进来了，dashboard redesign 先停。把当前进度落成 handoff，处理完 bug 回来接着干。",
       "expected_output": "短小聚焦的 handoff.md。Completed 列已合并的组件改动；Blocked 节列当前正在改但没改完的具体组件 + 改到哪一步；Next steps 给恢复时的第一动作（不是抽象目标）。不包含 dashboard 的项目背景介绍、设计理念之类与切换无关的内容。",
-      "files": []
+      "files": [],
+      "assertions": [
+        "A short, focused handoff.md is produced.",
+        "Completed lists already-merged component changes.",
+        "The Blocked section names the component currently in progress and how far it got.",
+        "Next steps give a concrete resume action, not an abstract goal.",
+        "It excludes unrelated project background or design-philosophy prose."
+      ]
     },
     {
       "id": 3,
       "prompt": "新会话开始。仓库根目录有昨天的 handoff.md，按它继续做。",
       "expected_output": "第一动作是读 handoff.md（不是直接开干、不是漫无目的探索仓库）。读完用一句话向用户确认 Next steps 第 1 项的具体内容是否要继续。用户确认后开始执行，并在动作完成后更新 handoff 对应条目（划掉已做的、追加任何新的失败方案）。",
-      "files": []
+      "files": [],
+      "assertions": [
+        "The first action is reading handoff.md, not immediately coding or aimlessly exploring the repo.",
+        "It confirms the first Next-steps item with the user in one sentence before executing.",
+        "After acting, it keeps the handoff in sync (checks off done items, appends any new failed attempts)."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "我刚改完 README 里的一个错别字，准备提交。帮我把这次改动也写一份 handoff 文档留着。",
+      "expected_output": "近邻负例：单文件一次提交收尾的改动不需要 handoff；理由应写进 commit body。空的或为留而留的 handoff 比没有更糟。",
+      "files": [],
+      "assertions": [
+        "The response does not create a handoff.md for a single-file, single-commit change.",
+        "It explains the reasoning belongs in the commit body and that an empty or low-signal handoff is worse than none."
+      ]
     }
   ]
 }

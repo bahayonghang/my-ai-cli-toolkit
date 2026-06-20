@@ -3,11 +3,10 @@
   "evals": [
     {
       "id": 1,
-      "name": "broad-module-refactor-plans-first",
       "prompt": "我有个 TypeScript 后端的 src/services/orderService.ts，里面混着订单校验、库存扣减、支付调用、优惠券计算、邮件通知，大概 1200 行。帮我重构一下这个模块，最好按功能拆成不同文件。",
       "expected_output": "Skill triggers and treats the request as broad: inspects or asks for relevant project context, proposes safe refactor slices such as validation/inventory/payment/notification boundaries, includes verification plan, and waits for approval before broad edits instead of immediately rewriting the module.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Classifies the request as broad and planning-first",
         "Proposes independently verifiable refactor slices",
         "Covers module/file splitting by functional responsibility",
@@ -17,11 +16,10 @@
     },
     {
       "id": 2,
-      "name": "narrow-helper-extraction-implements",
       "prompt": "请直接重构 src/utils/price.ts 里的 formatDiscountLabel 函数：它里面有三段重复的百分比格式化逻辑，把重复逻辑提成私有 helper，保持导出 API 不变。",
       "expected_output": "Skill triggers and treats the request as narrow: reads the target file and callers/tests if available, extracts a private helper for duplicated percentage formatting, preserves the exported API, removes any unused locals, and runs targeted checks or documents unavailable checks.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Classifies the request as narrow enough to implement directly",
         "Preserves the exported function name and behavior",
         "Extracts only a focused private helper rather than a broad utility layer",
@@ -31,11 +29,10 @@
     },
     {
       "id": 3,
-      "name": "dead-code-naming-comments-with-risk-check",
       "prompt": "清理一下 packages/api/src/reporting.ts：删除没调用的函数，把 tmp、data2 这类变量名改好，再顺手优化注释。这个包是给其他项目 import 的。",
       "expected_output": "Skill triggers but treats dead-code removal and public package exports as risky: checks exports/callers/config/tests before deleting, plans or asks before removing public API, applies naming/comment cleanup only where scoped and safe, and separates unapproved public API removals into residual risk or required decision.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Recognizes dead-code removal in a public package as high-risk",
         "Checks or requires evidence beyond plain text search before deletion",
         "Improves naming and comments without adding generic narration",

@@ -6,7 +6,7 @@
       "prompt": "Please do a code quality review of the current changes.",
       "expected_output": "Infers the review scope from git state (uncommitted working-tree diff, else main...HEAD / master...HEAD) per the scope ladder, or returns NEEDS SCOPE and asks for a target when nothing is reviewable. Does not invent findings or edit files.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Determines review scope from git state (uncommitted diff first, otherwise main...HEAD or master...HEAD) or returns NEEDS SCOPE asking for a specific target",
         "Does not fabricate findings about code it has not actually seen",
         "Does not edit, format, or commit any files"
@@ -16,8 +16,10 @@
       "id": 2,
       "prompt": "帮我审查一下 order_service.ts 的代码质量，重点看可维护性和结构问题。",
       "expected_output": "Chinese-language review that flags the any-typed boundary with silent fallback plus at least one other structural issue, using stable CQ-IDs, without editing the fixture.",
-      "files": ["evals/files/order_service.ts"],
-      "expectations": [
+      "files": [
+        "evals/files/order_service.ts"
+      ],
+      "assertions": [
         "The review is written in Chinese",
         "Flags the `any` typing and silent `?? {}` fallback as a boundary/type-contract issue",
         "Flags at least one additional structural issue (mode-based branching with duplicated coupon logic, the thin findOrder wrapper, the duplicated formatMoney, or the non-atomic charge/update)",
@@ -29,8 +31,10 @@
       "id": 3,
       "prompt": "Review order_service.ts for code quality issues and suggest improvements.",
       "expected_output": "Structured review following the required format: a Verdict line, findings with stable CQ-IDs each carrying Location, Evidence, Why it matters, Recommended remediation, and Confidence. Catches the non-atomic payment/order update and the any/silent-fallback boundary.",
-      "files": ["evals/files/order_service.ts"],
-      "expectations": [
+      "files": [
+        "evals/files/order_service.ts"
+      ],
+      "assertions": [
         "Output includes a Verdict line (REQUEST CHANGES | COMMENT ONLY | NEEDS SCOPE | NO MAJOR FINDINGS)",
         "Findings use stable IDs (CQ-001, CQ-002, ...)",
         "Each finding includes Location, Evidence, Why it matters, Recommended remediation, and Confidence",
@@ -44,7 +48,7 @@
       "prompt": "Can you review the code quality here? I have not attached a patch or file path.",
       "expected_output": "With no reviewable target and no usable git diff, returns NEEDS SCOPE and asks for the exact files, diff, PR, patch, or subsystem instead of inventing findings.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Returns NEEDS SCOPE (or clearly asks for a target) rather than producing findings",
         "Asks for specific files, a diff, a PR, a patch, or a subsystem",
         "Does not fabricate findings or edit any files"
@@ -54,8 +58,10 @@
       "id": 5,
       "prompt": "Do a code review of order_service.ts focused on maintainability. Do not change anything yet.",
       "expected_output": "Read-only maintainability review: analyzes and recommends structural improvements without editing the fixture or any file.",
-      "files": ["evals/files/order_service.ts"],
-      "expectations": [
+      "files": [
+        "evals/files/order_service.ts"
+      ],
+      "assertions": [
         "Performs the analysis without editing order_service.ts or any other file",
         "Provides recommendations rather than applying refactors",
         "Includes at least one structural finding with a concrete remediation"
@@ -65,8 +71,10 @@
       "id": 6,
       "prompt": "Review order_service.ts for code quality and save the report so my team can audit it later.",
       "expected_output": "Activates the opt-in artifact mode: writes the review to code_review/<feature>/quality-review.md (a review artifact under code_review/, never product code), with a Verdict and CQ-ID findings, and recommends gitignoring code_review/ without editing .gitignore itself.",
-      "files": ["evals/files/order_service.ts"],
-      "expectations": [
+      "files": [
+        "evals/files/order_service.ts"
+      ],
+      "assertions": [
         "Creates a review artifact file under code_review/ (e.g. code_review/<feature>/quality-review.md)",
         "Does NOT modify order_service.ts",
         "The saved report contains a Verdict and findings with stable CQ-IDs",

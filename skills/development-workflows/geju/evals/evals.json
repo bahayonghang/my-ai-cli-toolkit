@@ -1,0 +1,59 @@
+{
+  "skill_name": "geju",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我们这个模块一直在为了兼容旧调用方打补丁，越改越乱。先别管迁移成本，帮我跳出来想想：如果不怕动现有实现，这个系统到底该长什么样？",
+      "expected_output": "战略性重构判断：先给出大胆的清晰目标方向，把兼容/迁移成本当作要定价的约束而非默认主人，分清真实契约与惯性，并配上验证路径或证伪条件。",
+      "files": [],
+      "assertions": [
+        "The response leads with a bold target-direction thesis instead of a long caveat.",
+        "It names the inherited constraint (compatibility / migration / legacy naming) and judges whether it is a real contract or just inertia.",
+        "It separates the clean target design from the migration or execution path.",
+        "It pairs the bold hypothesis with a verification path or falsifying condition.",
+        "It does not start writing code or modifying files."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "帮我想大一点：这个文档/配置里有好几个历史遗留的概念，我总觉得不该只是改名或加个 wrapper。从更高层看，哪些概念其实就是错的、该删掉？",
+      "expected_output": "用开框手法（如 zero-legacy 思想实验、kill the wrong concept、tasteful deletion）指出应当删除或合并的概念，明确 kill list，并把大胆主张标注为待验证的假设。",
+      "files": [],
+      "assertions": [
+        "The response applies at least one frame-opening move (zero-legacy thought experiment, kill-the-wrong-concept, ten-times question, constraint inversion, or tasteful deletion).",
+        "It explicitly names what should be deleted, merged, or reframed (a kill list) rather than softening into 'maybe simplify later'.",
+        "It labels bold claims as hypotheses to test when evidence is incomplete."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "帮我 review 这段 TypeScript diff 有没有 bug，重点看 hooks 依赖和类型错误。",
+      "expected_output": "近邻负例：普通代码审查不应触发 geju 的战略重构开框模式。",
+      "files": [],
+      "assertions": [
+        "The skill description should not cause an ordinary code-review request to be handled as strategic reframing.",
+        "If answered, the response should route to normal code review rather than forcing a bold-thesis / kill-list framing."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "假设你是我的对手，给我这个上线方案泼冷水，找出最可能崩的失败模式和缺失证据。",
+      "expected_output": "近邻负例：对抗式风险审查（找失败模式、泼冷水）是 cold-shower 的职责；geju 不做对抗式风险审查。",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture adversarial risk-review / devil's-advocate prompts that belong to a cold-shower style skill.",
+        "geju should open the design frame, not enumerate failure modes as its primary output."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我把这个功能写成一份正式的 PRD，包含需求、验收标准和实现步骤清单。",
+      "expected_output": "近邻负例：PRD 撰写与实现计划编排不是 geju 的职责；geju 只做更高层的方向判断。",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture PRD-writing or implementation-planning requests.",
+        "If answered, the response should give high-level direction and defer detailed PRD/implementation planning to a planning workflow."
+      ]
+    }
+  ]
+}

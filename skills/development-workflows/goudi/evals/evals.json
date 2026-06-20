@@ -6,7 +6,7 @@
       "prompt": "We just had a geju-style architecture discussion and the clean target is to replace our plugin-specific skill scanner with one unified manifest ingestion pipeline for Claude, Codex, and Antigravity. It sounds right, but I do not want a fantasy migration. Use goudi to land this into the first executable proof point before we touch the whole repo.",
       "expected_output": "A grounded architecture response that preserves the unified ingestion target while shrinking the first move into a narrow, verifiable slice with real contracts, cut scope, success/failure criteria, and a stop rule.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response leads with a landing judgment such as go, shrink, pause, reject, or validate first.",
         "The response preserves the bold unified-ingestion direction instead of dismissing it as too large.",
         "The response identifies at least two real constraints such as persisted data, public APIs, existing platform behavior, docs, or install workflows.",
@@ -23,7 +23,7 @@
       "prompt": "我想做一个 AI skills marketplace，把团队内部的经验都沉淀成可安装技能，最后还能做评分、推荐、订阅和企业权限。先别写 PRD，也别直接做产品蓝图。用 goudi 帮我把这个想法先落地成一个可以验证的第一步。",
       "expected_output": "A Chinese or mixed-language grounding response that keeps the marketplace ambition but turns it into a small validation artifact with evidence, cut list, and stop criteria.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response does not write a full PRD, roadmap, or product blueprint.",
         "The response keeps the larger marketplace ambition visible.",
         "The response turns the idea into one immediately executable validation artifact or experiment.",
@@ -38,7 +38,7 @@
       "prompt": "This plan is getting huge: rewrite the skill docs generator, add bilingual manual pages, migrate all existing skills to a new schema, build tests for every generated page, and change CI so docs sync runs automatically. I need goudi to tell me what should happen first and where to stop if the thesis is wrong.",
       "expected_output": "A scope-control response that shrinks the over-scoped docs/schema plan into a first safe move, names irreversible or high-blast-radius parts, and defines stop rules.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The response identifies the plan as too broad for a first attempt or recommends shrinking/validating first.",
         "The response separates the clean end-state from the migration path.",
         "The response identifies the highest blast-radius or irreversible part.",
