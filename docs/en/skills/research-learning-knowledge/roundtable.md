@@ -16,7 +16,7 @@ Multi-perspective roundtable discussion skill for exploring a topic through a tr
 | --- | --- |
 | Name | `roundtable` |
 | Category | `research-learning-knowledge` (Research, Learning & Knowledge) |
-| Version | `2.0.0` |
+| Version | `2.0.1` |
 | Tags | `roundtable`, `debate`, `multi-perspective`, `philosophy`, `knowledge-network`, `org-mode` |
 
 ## Install command

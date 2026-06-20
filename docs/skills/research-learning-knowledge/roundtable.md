@@ -16,7 +16,7 @@ Multi-perspective roundtable discussion skill for exploring a topic through a tr
 | --- | --- |
 | 名称 | `roundtable` |
 | 分类 | `research-learning-knowledge` (研究、学习与知识) |
-| 版本 | `2.0.0` |
+| 版本 | `2.0.1` |
 | 标签 | `roundtable`, `debate`, `multi-perspective`, `philosophy`, `knowledge-network`, `org-mode` |
 
 ## 安装命令
