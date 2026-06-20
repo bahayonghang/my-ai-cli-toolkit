@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 11
-- **Last Active**: 2026-06-15
+- **Total Sessions**: 12
+- **Last Active**: 2026-06-20
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~374 | Active |
+| `journal-1.md` | ~409 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 12 | 2026-06-20 | Harmonize git-github-collaboration skill suite (+ adopt literature-mentor) | `046575c`, `1ea3d6d`, `7bf6ec1` | `main` |
 | 11 | 2026-06-15 | Add neutral agent skill review | `da3cd27` | `main` |
 | 10 | 2026-06-12 | Bootstrap Guidelines | `85c5b6e` | `main` |
 | 9 | 2026-06-12 | Optimize goal-meta-skill | `5dfa021`, `526c39d`, `9e72159` | `main` |

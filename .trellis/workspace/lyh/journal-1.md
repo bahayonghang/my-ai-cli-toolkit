@@ -372,3 +372,38 @@ Renamed and debranded the imported review skill as agent-skill-review, preserved
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: Harmonize git-github-collaboration skill suite (+ adopt literature-mentor)
+
+**Date**: 2026-06-20
+**Task**: Harmonize git-github-collaboration skill suite (+ adopt literature-mentor)
+**Branch**: `main`
+
+### Summary
+
+yao-meta review of all 4 gh-collab skills, then implemented all P0-P2 fixes: replaced unset $SKILL_DIR with literal <skill-dir> substitution; corrected allowed-tools (dropped invalid python, added Edit to fixers, Read to git-commit, dropped unused Task); made gh-bootstrap runtime-script the sole engine by deleting contradictory phases/ + specs/ and slimming template-catalog; unified evals to evals/evals.json with routing negatives; renamed agents/openai.yaml -> interface.yaml; removed stale mcs-web-test recipe; added suite AGENTS.md. Side cleanup: adopted the previously-untracked literature-mentor skill with completed frontmatter. Verified by just ci (green).
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `046575c` | (see git log) |
+| `1ea3d6d` | (see git log) |
+| `7bf6ec1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
