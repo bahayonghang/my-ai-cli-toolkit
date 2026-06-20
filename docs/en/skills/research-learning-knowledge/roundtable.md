@@ -29,13 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill roundtable
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
+| `skills/research-learning-knowledge/roundtable/evals` | directory | 1 | Evaluation samples |
 | `skills/research-learning-knowledge/roundtable/references` | directory | 1 | Reference material |
-| `skills/research-learning-knowledge/roundtable/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| evals | `skills/research-learning-knowledge/roundtable/evals` | Evaluation samples |
 | references | `skills/research-learning-knowledge/roundtable/references` | Reference material |
 
 ## Validation

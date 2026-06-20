@@ -69,7 +69,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 `research-learning-knowledge` · 4 skills
 
 - [deep-research-pro](/en/skills/research-learning-knowledge/deep-research-pro) — Multi-source deep research skill for current-topic investigation, comparison, and cited report writing.
-- [literature-mentor](/en/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读Zotero库中的学术论文。当用户提供文献题目、DOI、PDF或要求解读某篇文献时触发。通过Zotero MCP优先获取全文，并根据用户意图自动选择快速筛选、导师深读或研究复盘模式。完整深读时先完成叙事类型判断、阅读前3件事预检、novelty校准和作者思考路径重建，再整体概览，并基于图例、正文和表格逐图详细解读（注：Zotero MCP无法提取PDF图片，解读基于文字信息；如图例或正文描述不足，会提醒用户上传图片后再详细分析）。结合牛基因组学/群体遗传学领域背景进行综合分析（方法学评价、核心概念学习、研究启发、最小复现、反例设计和非增量follow-up）。适用于：(1)快速判断文献是否值得深读 (2)深入理解某篇文献 (3)学习文章中的方法和技术 (4)批判性分析研究设计 (5)寻找研究灵感和可借鉴之处
+- [literature-mentor](/en/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文，面向计算机科学、深度学习、自动化等方向（个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发，通过 Zotero MCP 优先获取全文，并根据用户意图自动选择快速筛选、导师深读或研究复盘模式。完整深读时先完成叙事类型判断、阅读前预检、novelty 校准和作者思考路径重建，再整体概览，并基于图例、正文和表格逐图详细解读（Zotero MCP 无法提取 PDF 图片，解读基于文字信息，必要时提醒上传图片）。适用于：(1)快速判断文献是否值得深读 (2)深入理解某篇论文 (3)学习文章中的方法和技术 (4)批判性分析研究设计 (5)寻找研究灵感。需要多篇论文综合、对比或找研究空白，或 arXiv/DOI 批量规范化时，改用 paper-workbench。
 - [paper-workbench](/en/skills/research-learning-knowledge/paper-workbench) — Researcher-profile-driven paper intake and literature workbench for academic workflows.
 - [roundtable](/en/skills/research-learning-knowledge/roundtable) — Multi-perspective roundtable discussion skill for exploring a topic through a truth-seeking moderator and a small set of representative real figures.
 

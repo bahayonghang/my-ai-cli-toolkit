@@ -29,14 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill deep-research
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/research-learning-knowledge/deep-research-pro/_meta.json` | 文件 | 1 | 顶层文件 |
-| `skills/research-learning-knowledge/deep-research-pro/package.json` | 文件 | 1 | 顶层文件 |
+| `skills/research-learning-knowledge/deep-research-pro/evals` | 目录 | 1 | 评测样例 |
 | `skills/research-learning-knowledge/deep-research-pro/README.md` | 文件 | 1 | 顶层文件 |
-| `skills/research-learning-knowledge/deep-research-pro/test-prompts.json` | 文件 | 1 | 顶层文件 |
 
 ## 脚本、引用与测试资源
 
-未检测到专门的 `scripts`、`references`、`tests` 或其他常见资源目录。
+| 资源 | 路径 | 用途 |
+| --- | --- | --- |
+| evals | `skills/research-learning-knowledge/deep-research-pro/evals` | 评测样例 |
 
 ## 验证方式
 

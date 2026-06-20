@@ -29,14 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill deep-research
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/research-learning-knowledge/deep-research-pro/_meta.json` | file | 1 | Top-level file |
-| `skills/research-learning-knowledge/deep-research-pro/package.json` | file | 1 | Top-level file |
+| `skills/research-learning-knowledge/deep-research-pro/evals` | directory | 1 | Evaluation samples |
 | `skills/research-learning-knowledge/deep-research-pro/README.md` | file | 1 | Top-level file |
-| `skills/research-learning-knowledge/deep-research-pro/test-prompts.json` | file | 1 | Top-level file |
 
 ## Scripts, references, and test resources
 
-No dedicated `scripts`, `references`, `tests`, or other common resource directories were detected.
+| Resource | Path | Purpose |
+| --- | --- | --- |
+| evals | `skills/research-learning-knowledge/deep-research-pro/evals` | Evaluation samples |
 
 ## Validation
 

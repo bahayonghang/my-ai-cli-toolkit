@@ -30,10 +30,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill paper-workben
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/research-learning-knowledge/paper-workbench/evals` | 目录 | 1 | 评测样例 |
-| `skills/research-learning-knowledge/paper-workbench/references` | 目录 | 13 | 引用资料 |
-| `skills/research-learning-knowledge/paper-workbench/resources` | 目录 | 2 | 资源文件 |
+| `skills/research-learning-knowledge/paper-workbench/references` | 目录 | 15 | 引用资料 |
 | `skills/research-learning-knowledge/paper-workbench/scripts` | 目录 | 3 | 可执行脚本 |
-| `skills/research-learning-knowledge/paper-workbench/test-prompts.json` | 文件 | 1 | 顶层文件 |
 | `skills/research-learning-knowledge/paper-workbench/tests` | 目录 | 4 | 自动化测试 |
 
 ## 脚本、引用与测试资源
@@ -42,7 +40,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill paper-workben
 | --- | --- | --- |
 | evals | `skills/research-learning-knowledge/paper-workbench/evals` | 评测样例 |
 | references | `skills/research-learning-knowledge/paper-workbench/references` | 引用资料 |
-| resources | `skills/research-learning-knowledge/paper-workbench/resources` | 资源文件 |
 | scripts | `skills/research-learning-knowledge/paper-workbench/scripts` | 可执行脚本 |
 | tests | `skills/research-learning-knowledge/paper-workbench/tests` | 自动化测试 |
 
