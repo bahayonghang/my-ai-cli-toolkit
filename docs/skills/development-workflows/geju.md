@@ -31,6 +31,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill geju
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/geju/agents` | 目录 | 1 | 配套 agent |
+| `skills/development-workflows/geju/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/geju/references` | 目录 | 1 | 引用资料 |
 
 ## 脚本、引用与测试资源
@@ -38,6 +39,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill geju
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
 | agents | `skills/development-workflows/geju/agents` | 配套 agent |
+| evals | `skills/development-workflows/geju/evals` | 评测样例 |
 | references | `skills/development-workflows/geju/references` | 引用资料 |
 
 ## 验证方式

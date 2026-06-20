@@ -30,11 +30,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill implementatio
 
 ## 目录内容
 
-未检测到 `SKILL.md` 以外的顶层资源。
+| 路径 | 类型 | 文件数 | 说明 |
+| --- | --- | ---: | --- |
+| `skills/development-workflows/implementation-notes/evals` | 目录 | 1 | 评测样例 |
 
 ## 脚本、引用与测试资源
 
-未检测到专门的 `scripts`、`references`、`tests` 或其他常见资源目录。
+| 资源 | 路径 | 用途 |
+| --- | --- | --- |
+| evals | `skills/development-workflows/implementation-notes/evals` | 评测样例 |
 
 ## 验证方式
 

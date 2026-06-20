@@ -30,11 +30,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill implementatio
 
 ## Directory contents
 
-No top-level resources beyond `SKILL.md` were detected.
+| Path | Type | Files | Notes |
+| --- | --- | ---: | --- |
+| `skills/development-workflows/implementation-notes/evals` | directory | 1 | Evaluation samples |
 
 ## Scripts, references, and test resources
 
-No dedicated `scripts`, `references`, `tests`, or other common resource directories were detected.
+| Resource | Path | Purpose |
+| --- | --- | --- |
+| evals | `skills/development-workflows/implementation-notes/evals` | Evaluation samples |
 
 ## Validation
 

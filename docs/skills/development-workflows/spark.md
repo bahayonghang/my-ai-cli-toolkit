@@ -33,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill spark
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/spark/assets` | 目录 | 1 | 素材资源 |
+| `skills/development-workflows/spark/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/spark/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/development-workflows/spark/scripts` | 目录 | 5 | 可执行脚本 |
 | `skills/development-workflows/spark/spec-document-reviewer-prompt.md` | 文件 | 1 | 顶层文件 |
@@ -44,6 +45,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill spark
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
 | assets | `skills/development-workflows/spark/assets` | 素材资源 |
+| evals | `skills/development-workflows/spark/evals` | 评测样例 |
 | scripts | `skills/development-workflows/spark/scripts` | 可执行脚本 |
 | tests | `skills/development-workflows/spark/tests` | 自动化测试 |
 

@@ -33,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill spark
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/spark/assets` | directory | 1 | Assets |
+| `skills/development-workflows/spark/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/spark/README.md` | file | 1 | Top-level file |
 | `skills/development-workflows/spark/scripts` | directory | 5 | Executable scripts |
 | `skills/development-workflows/spark/spec-document-reviewer-prompt.md` | file | 1 | Top-level file |
@@ -44,6 +45,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill spark
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | assets | `skills/development-workflows/spark/assets` | Assets |
+| evals | `skills/development-workflows/spark/evals` | Evaluation samples |
 | scripts | `skills/development-workflows/spark/scripts` | Executable scripts |
 | tests | `skills/development-workflows/spark/tests` | Automated tests |
 
