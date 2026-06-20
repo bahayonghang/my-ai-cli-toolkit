@@ -5,31 +5,73 @@
       "id": 1,
       "prompt": "我刚上传了一篇 PDF，先快速扫一下值不值得精读，重点看它和我的研究问题“平台化协作如何改变学术写作劳动”有没有关系。",
       "expected_output": "Runs scan mode, gives the five quick-triage fields, and evaluates relevance against the research question.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Normalizes the PDF into a paper-record first",
+        "Returns the scan quick-triage fields",
+        "Assesses relevance against the stated research question"
+      ]
     },
     {
       "id": 2,
       "prompt": "精读这篇文献。我做科技社会学，核心问题是平台化协作如何改变学术写作劳动，现在在文献梳理阶段，目标投 SSCI Q1。",
       "expected_output": "Runs deep-read mode, includes quick scan, academic deconstruction, strategic relevance, and a reusable literature card.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Uses the supplied researcher-profile fields (field, question, stage, target tier)",
+        "Separates 作者观点 from 系统分析",
+        "Produces a reusable literature card"
+      ]
     },
     {
       "id": 3,
       "prompt": "只做卡片，不要长报告。我要一个后面写综述能直接复用的版本。",
       "expected_output": "Runs card mode only and returns a concise literature card plus a short critical summary.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Returns only a literature card, not a full report",
+        "Card is reusable for a later review"
+      ]
     },
     {
       "id": 4,
       "prompt": "我这里已经有四篇 related papers 了，帮我整合这几篇，顺便找研究空白，最好指出我的题目更适合补哪类空白。",
       "expected_output": "Runs synthesis mode with concept map, debate spectrum, method matrix, gap map, and relation network anchored to the user's research question.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Integrates arguments across papers instead of summarizing each serially",
+        "Produces a gap map anchored to the user's question"
+      ]
     },
     {
       "id": 5,
       "prompt": "基于刚才那组整合结果，帮我搭一个综述框架，再示范写一段，不要逐篇罗列文献。",
       "expected_output": "Runs review mode, recommends a narrative strategy, outputs a structured outline, and drafts a PEEL-style paragraph.",
-      "files": []
+      "files": [],
+      "assertions": [
+        "Outputs a structured review outline",
+        "Drafts a PEEL-style paragraph, not a citation list"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "用我的 Zotero 库，像导师一样逐图带我读这篇论文，每张图停下来等我。",
+      "expected_output": "Routing-negative: Zotero-first interactive per-figure tutoring should route to literature-mentor, not paper-workbench.",
+      "files": [],
+      "assertions": [
+        "Does NOT run paper-workbench's profile-driven deep-read",
+        "Defers to literature-mentor for the interactive tutor read"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "帮我调研 2026 年 RAG 的最新进展，要带网页来源的综述。",
+      "expected_output": "Routing-negative: current-topic web research with citations should route to deep-research-pro, not paper-workbench.",
+      "files": [],
+      "assertions": [
+        "Does NOT treat this as paper intake/normalization",
+        "Defers to deep-research-pro for cited web research"
+      ]
     }
   ]
 }

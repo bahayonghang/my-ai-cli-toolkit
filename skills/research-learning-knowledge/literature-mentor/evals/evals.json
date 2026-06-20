@@ -1,0 +1,58 @@
+{
+  "skill_name": "literature-mentor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我看下这篇长上下文 Transformer 的论文值不值得精读。",
+      "expected_output": "Enters quick-screen mode: core question, novelty, evidence strength, main risks, and a read/skip recommendation.",
+      "files": [],
+      "assertions": [
+        "Announces quick-screen mode at the start",
+        "Does not conclude from the abstract alone; flags provisional judgment if only the abstract is available",
+        "Tries Zotero first, then web fallback, to get full text"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "带我逐图读这篇扩散模型的论文，像导师一样讲。",
+      "expected_output": "Enters mentor deep-read mode: narrative-type call, pre-reading checks, overview, then per-figure reading that stops after each figure.",
+      "files": [],
+      "assertions": [
+        "Completes narrative-type judgment, 3-item pre-check, and overview before per-figure reading",
+        "Stops after each figure and waits for the user",
+        "Checks information sufficiency and offers to request an image when legend/text is thin"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "批判分析这篇 RLHF 论文，找问题并设计一个 follow-up。",
+      "expected_output": "Enters research-review mode: core claim, evidence chain, most fragile assumption, one-week minimal reproduction, strongest counter-example, non-incremental follow-up.",
+      "files": [],
+      "assertions": [
+        "Focuses on the single most fragile assumption, not an exhaustive limitation list",
+        "Proposes a minimal reproduction and a strongest counter-example",
+        "Follow-up is non-incremental (new framing, not 'extend to task X')"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "我手上有五篇相关 paper，帮我整合一下，顺便找研究空白。",
+      "expected_output": "Routing-negative: multi-paper synthesis and gap mapping should route to paper-workbench, not literature-mentor.",
+      "files": [],
+      "assertions": [
+        "Does NOT start a single-paper tutor read",
+        "Defers to paper-workbench for cross-paper synthesis"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "把这批 arXiv 链接规范化成机器可读的 JSON。",
+      "expected_output": "Routing-negative: source normalization into machine-readable artifacts should route to paper-workbench.",
+      "files": [],
+      "assertions": [
+        "Does NOT enter interactive tutor reading",
+        "Defers to paper-workbench's normalization path"
+      ]
+    }
+  ]
+}

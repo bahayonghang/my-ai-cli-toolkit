@@ -1,0 +1,58 @@
+{
+  "skill_name": "deep-research-pro",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "调研一下 2026 年 AI 编程代理市场格局，给我带来源结论和主要玩家对比。",
+      "expected_output": "Breaks the topic into sub-questions, researches with current web sources, and outputs a market landscape with citations and dates.",
+      "files": [],
+      "assertions": [
+        "Decomposes into 3-5 sub-questions",
+        "Cites multiple independent, dated sources",
+        "Distinguishes fact, inference, and uncertainty"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Compare Rust vs Go for backend services in 2026 with citations and a clear recommendation.",
+      "expected_output": "Gives a cited comparison with fit-by-scenario and an explicit recommendation, not vague hand-waving.",
+      "files": [],
+      "assertions": [
+        "Every non-trivial claim is source-backed",
+        "Separates sourced facts from the author's synthesis",
+        "Ends with an explicit, justified recommendation"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "研究美国住房市场近一年的关键变化，给投资者一个简报。",
+      "expected_output": "Prefers recent sources and outputs a concise briefing with explicit data scope and uncertainty.",
+      "files": [],
+      "assertions": [
+        "Prioritizes recent, dated sources",
+        "Flags single-source claims and missing numbers",
+        "Does not give personalized investment advice"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我逐图精读这篇 arXiv 论文，像导师一样讲。",
+      "expected_output": "Routing-negative: should route to literature-mentor / paper-workbench (single-paper deep reading), not web research.",
+      "files": [],
+      "assertions": [
+        "Does NOT run a multi-source web research pass",
+        "Defers to a paper-reading skill"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "让几位经济学家圆桌讨论住房政策。",
+      "expected_output": "Routing-negative: should route to roundtable (structured multi-figure debate), not a cited research report.",
+      "files": [],
+      "assertions": [
+        "Does NOT produce a sourced research report",
+        "Defers to a debate/roundtable skill"
+      ]
+    }
+  ]
+}

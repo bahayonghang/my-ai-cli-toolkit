@@ -1,0 +1,57 @@
+{
+  "skill_name": "roundtable",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "让几位思想家讨论 AI 是否拥有真正的创造力。",
+      "expected_output": "Selects real, high-tension figures and runs a structured first round, then hands control back to the user.",
+      "files": [],
+      "assertions": [
+        "Proposes 3-4 real figures, each with stated position and reason for inclusion",
+        "Unifies the definition of the core concept before debating",
+        "Ends round 1 with a moderator synthesis, an ASCII framework diagram, and the control menu"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "圆桌讨论：自由意志是否存在？",
+      "expected_output": "Organizes credible, identifiable positions around the core question rather than performative back-and-forth.",
+      "files": [],
+      "assertions": [
+        "Each speaker stays faithful to a recognizable line of thought",
+        "Does not fabricate exact quotes, titles, or years",
+        "Drives toward the deepest fault line instead of covering everything"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "不要分轮，一次性给我一场关于 AGI 治理的完整圆桌。",
+      "expected_output": "Allows a one-shot full discussion but still keeps moderator structure, ASCII diagrams, and a closing synthesis.",
+      "files": [],
+      "assertions": [
+        "Produces first round, follow-up rounds, and a final knowledge-network summary in one reply",
+        "Preserves structured moderation and ASCII framework diagrams"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "调研一下 2026 年大模型推理框架的市场格局，给我带来源的对比。",
+      "expected_output": "Routing-negative: should route to deep-research-pro (cited web research), not convene a roundtable.",
+      "files": [],
+      "assertions": [
+        "Does NOT start a multi-figure debate",
+        "Defers to a web-research/citation-oriented skill"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我精读这篇 arXiv 论文，逐图讲讲。",
+      "expected_output": "Routing-negative: should route to literature-mentor / paper-workbench (single-paper reading), not a roundtable.",
+      "files": [],
+      "assertions": [
+        "Does NOT convene a debate",
+        "Defers to a paper-reading skill"
+      ]
+    }
+  ]
+}
