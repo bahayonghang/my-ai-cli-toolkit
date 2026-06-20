@@ -1,0 +1,48 @@
+{
+  "skill_name": "touying",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "用 Touying 给我搭一个 .typ 的演示文稿，套 metropolis 主题，要有标题页和几个分节，正文用 heading 当每页。",
+      "expected_output": "Authors a Touying .typ deck: imports Touying plus the metropolis theme, applies it with #show, uses headings as slides, and sets up sections.",
+      "files": [],
+      "assertions": [
+        "The response works in Typst/Touying (.typ), importing Touying and a theme.",
+        "It applies the theme via #show and uses headings (or #slide) for slides.",
+        "It does not produce HTML, PPT, or reveal.js output."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我的 Touying 幻灯片想加逐步出现的动画，点一下出一条要点，应该怎么用 #pause 和动态内容？",
+      "expected_output": "Explains incremental reveal in Touying using #pause / dynamic content, with the relevant caveats (such as avoiding #pause inside context blocks).",
+      "files": [],
+      "assertions": [
+        "The response uses Touying's animation mechanisms (#pause, dynamic/only/uncover) rather than generic advice.",
+        "It routes through the dynamic/animation guidance.",
+        "It stays within Typst/Touying."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Touying 里怎么改 slide-level、配置页面尺寸和页脚？我想把这些集中放在 globals.typ 里。",
+      "expected_output": "Shows config-common(slide-level: ...) and config-page for page/footer, centralized in globals.typ, instead of raw set page.",
+      "files": [],
+      "assertions": [
+        "The response uses config-common / config-page instead of raw set page.",
+        "It sets slide-level via config-common.",
+        "It centralizes configuration (globals.typ) consistent with the skill's guidance."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我做一套 HTML 的网页幻灯片，用 reveal.js，能在浏览器里翻页那种。",
+      "expected_output": "Negative trigger. A non-Typst HTML/reveal.js deck is outside Touying's scope and should not activate this skill.",
+      "files": [],
+      "assertions": [
+        "The skill description should not pull HTML/reveal.js/PPT deck requests into the Typst/Touying workflow.",
+        "If referenced, the response should redirect to an HTML or slide tool rather than .typ/Touying authoring."
+      ]
+    }
+  ]
+}

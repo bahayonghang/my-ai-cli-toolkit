@@ -1,0 +1,48 @@
+{
+  "skill_name": "document-writer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "给这个仓库写一份 README，要基于真实代码，把安装、用法和主要命令讲清楚，别编不存在的参数。",
+      "expected_output": "Generates a README grounded in the real repo: reads entrypoints/config/scripts, documents real install/usage/commands, with no fabricated flags.",
+      "files": [],
+      "assertions": [
+        "The response inspects real project files (entrypoints, configs, scripts) before writing.",
+        "Commands, flags, and usage are based on the actual codebase rather than invented.",
+        "The output is a README-structured document."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "更新 docs/api.md，把支付相关的接口文档补全，路由、参数和默认值都要和代码对得上。",
+      "expected_output": "Updates the API doc, verifying routes, parameters, env vars, and defaults against the code.",
+      "files": [],
+      "assertions": [
+        "The response verifies routes, parameters, and defaults against the actual implementation.",
+        "It updates the requested API doc file in place.",
+        "It avoids fabricating endpoints or configuration values."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "给 src/utils.ts 里的公共函数补 JSDoc，说明参数、返回值、副作用和异常，别写复述代码的废话注释。",
+      "expected_output": "Adds JSDoc for the public symbols based on the real implementation, documenting contracts/side effects/errors, without boilerplate.",
+      "files": [],
+      "assertions": [
+        "The response reads the concrete symbol implementations before writing.",
+        "JSDoc documents parameters, return values, side effects, and errors or invariants.",
+        "It does not add boilerplate comments that merely restate the code."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我把这篇公众号文章润色一下，让它读起来更有人味、更顺，不要 AI 腔。",
+      "expected_output": "Negative trigger. Polishing general/marketing prose is not codebase-grounded technical documentation; it belongs to a prose-writing skill.",
+      "files": [],
+      "assertions": [
+        "The skill description should not pull general prose polishing into the technical-documentation workflow.",
+        "If referenced, the response should redirect to a prose or copy writing skill rather than codebase doc generation."
+      ]
+    }
+  ]
+}
