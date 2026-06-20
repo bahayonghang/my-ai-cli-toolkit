@@ -26,20 +26,20 @@ Choose the mode from the user's scope.
 - **Broad request**: If the user says things like "refactor this module", "clean up this project", or "optimize the code structure", inspect first, propose safe refactor slices, and wait for user approval before broad edits.
 - **Narrow request**: If the user names a file, function, duplicated block, dead symbol, or specific cleanup, directly implement the smallest safe slice and verify it.
 - **Review-only request**: If the user asks for code quality review or maintainability findings without asking to edit, use a review skill such as `code-quality-review` instead.
-- **Architecture/RFC request**: If the user wants deep-module design, module-boundary candidates, or an RFC, use `improve-codebase-architecture` instead.
+- **Architecture/RFC request**: If the user wants deep-module design, module-boundary candidates, or an architecture RFC rather than a behavior-preserving refactor, treat that as a separate design effort and surface it instead of refactoring in place.
 
 ## Refactor Types
 
 Classify the requested work before editing. A task may include more than one type, but execute one coherent slice at a time.
 
-| Type | Use when | Good outcome |
-| --- | --- | --- |
-| Module split | A file or subsystem mixes unrelated responsibilities | Files align with functional modules, ownership, and test boundaries |
-| Function/method extraction | One function has multiple small behaviors or hidden phases | Public API stays small; private helpers name meaningful substeps |
-| Duplicate consolidation | Similar logic appears repeatedly and may drift | A shared helper removes real duplication without adding thin indirection |
-| Naming cleanup | Names hide intent, encode stale details, or force readers to inspect implementation | Names are concise, intention-revealing, and consistent with local style |
-| Comment cleanup | Comments repeat code, miss invariants, or hide key assumptions | Comments explain why, contracts, edge cases, and non-obvious decisions |
-| Dead-code removal | Code appears uncalled, stale, or orphaned | Removal is backed by call-site, export, framework, and verification checks |
+| Type                       | Use when                                                                            | Good outcome                                                               |
+| -------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Module split               | A file or subsystem mixes unrelated responsibilities                                | Files align with functional modules, ownership, and test boundaries        |
+| Function/method extraction | One function has multiple small behaviors or hidden phases                          | Public API stays small; private helpers name meaningful substeps           |
+| Duplicate consolidation    | Similar logic appears repeatedly and may drift                                      | A shared helper removes real duplication without adding thin indirection   |
+| Naming cleanup             | Names hide intent, encode stale details, or force readers to inspect implementation | Names are concise, intention-revealing, and consistent with local style    |
+| Comment cleanup            | Comments repeat code, miss invariants, or hide key assumptions                      | Comments explain why, contracts, edge cases, and non-obvious decisions     |
+| Dead-code removal          | Code appears uncalled, stale, or orphaned                                           | Removal is backed by call-site, export, framework, and verification checks |
 
 ## Workflow
 
@@ -148,10 +148,15 @@ For direct implementation, report:
 
 ```markdown
 ## Scope
+
 ## Baseline
+
 ## Refactor Plan
+
 ## Edits Made
+
 ## Verification
+
 ## Residual Risk
 ```
 
@@ -159,7 +164,10 @@ For broad or risky requests, stop before editing and report:
 
 ```markdown
 ## Findings
+
 ## Recommended Refactor Slices
+
 ## Required Decision
+
 ## Verification Plan
 ```
