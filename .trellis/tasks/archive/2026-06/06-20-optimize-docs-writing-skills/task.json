@@ -1,0 +1,32 @@
+{
+  "id": "optimize-docs-writing-skills",
+  "name": "optimize-docs-writing-skills",
+  "title": "Optimize docs-writing-publishing skills",
+  "description": "Parent task: review-driven optimization of the 4 docs-writing-publishing skills (beautiful-mermaid-editor, bidwriter, document-writer, touying). Owns the finding set and cross-child integration acceptance.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-06-20",
+  "completedAt": "2026-06-20",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-20-fix-docs-skill-dir-paths",
+    "06-20-docs-skill-hygiene",
+    "06-20-neutralize-bidwriter-skill-refs",
+    "06-20-strengthen-docs-skill-descriptions",
+    "06-20-add-docs-skill-evals"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
