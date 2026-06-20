@@ -10,7 +10,17 @@ description: >
   `interpret`, `xray`). Trigger even when the user only says things like
   “精读这篇”, “整合这几篇”, “找研究空白”, or “搭综述框架”.
 category: research-learning-knowledge
-tags: [paper, research, normalization, literature-review, synthesis, doi, arxiv, analysis]
+tags:
+  [
+    paper,
+    research,
+    normalization,
+    literature-review,
+    synthesis,
+    doi,
+    arxiv,
+    analysis,
+  ]
 version: "1.1.0"
 argument-hint: "[paper-source-or-artifact] [--mode scan|deep-read|card|synthesis|review|json|interpret|xray] [--workspace PATH] [--profile PATH] [--save PATH] [--lang LANG] [--fulltext auto|prefer|never]"
 allowed-tools: Read, Write, WebFetch, Bash(curl *), Bash(python *), Bash(pytest *)
@@ -24,6 +34,11 @@ and review construction.
 Keep `paper-record` as the normalization layer. Do not merge high-level
 analysis back into the normalized record.
 
+> In the `python` commands below, `<skill-dir>` is this skill's base directory,
+> announced when the skill loads. Substitute that literal path; it is not an
+> environment variable. Bundled scripts self-locate, so only the path needs to
+> resolve.
+
 ## When to use
 
 Use this skill when the job is to:
@@ -34,8 +49,9 @@ Use this skill when the job is to:
 - build a review outline or gap map
 - normalize paper sources into reusable machine-readable artifacts
 
-Do not use this skill when the primary job is to implement a paper. In that
-case, route to `paper2code`.
+Do not use this skill when the primary job is to implement a paper from its
+methods into working code. That implementation work is out of scope for this
+skill.
 
 ## Public interfaces
 
@@ -109,7 +125,7 @@ case, route to `paper2code`.
 For any paper-like input, run:
 
 ```bash
-python "$SKILL_DIR/scripts/normalize_paper.py" \
+python "<skill-dir>/scripts/normalize_paper.py" \
   --source "<paper-source>" \
   --lang "<lang>" \
   --fulltext "<auto|prefer|never>"
@@ -136,7 +152,7 @@ profile-light analysis and explicitly mark that personalization is limited.
 If the user wants persistence, create or update the profile with:
 
 ```bash
-python "$SKILL_DIR/scripts/workbench_io.py" init-profile \
+python "<skill-dir>/scripts/workbench_io.py" init-profile \
   --path "<profile-path>" \
   --research-field "<field>" \
   --core-question "<question>" \
@@ -151,7 +167,7 @@ When the user asks to save a deep read, synthesis, or review plan, write a JSON
 artifact plus an optional Markdown or Org sidecar:
 
 ```bash
-python "$SKILL_DIR/scripts/workbench_io.py" save-artifact \
+python "<skill-dir>/scripts/workbench_io.py" save-artifact \
   --workspace "<workspace-dir>" \
   --artifact-type "<paper-deep-read|literature-synthesis|review-outline>" \
   --title "<artifact-title>" \
@@ -188,6 +204,9 @@ python "$SKILL_DIR/scripts/workbench_io.py" save-artifact \
 - `references/schema.md` — canonical `paper-record` contract
 - `references/artifacts.md` — `researcher-profile` and higher-level artifacts
 - `references/migration.md` — compatibility and alias mapping
+- `references/ANALYSIS_FRAMEWORK.md` — x-ray five-dimension critique framework
+- `references/template-paper.org` — Org sidecar template for deep-read / interpret output
+- `references/template-xray.org` — Org sidecar template for x-ray critique output
 - `references/modes/json.md` — machine-readable output rules
 - `references/modes/interpret.md` — lightweight explanation path
 - `references/modes/xray.md` — compact critique path

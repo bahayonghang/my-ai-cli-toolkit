@@ -22,7 +22,7 @@ Prefer these normalized fields:
 
 ## Output shape
 
-Follow `resources/ANALYSIS_FRAMEWORK.md`:
+Follow `references/ANALYSIS_FRAMEWORK.md`:
 
 - core pain point
 - solving mechanism
