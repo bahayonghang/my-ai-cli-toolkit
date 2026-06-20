@@ -1,0 +1,32 @@
+{
+  "id": "rlk-skills-optimization",
+  "name": "rlk-skills-optimization",
+  "title": "审查优化 research-learning-knowledge 4 个 skill",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-06-20",
+  "completedAt": "2026-06-20",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-20-pw-skilldir-fix",
+    "06-20-litmentor-redomain",
+    "06-20-drp-devendor",
+    "06-20-rlk-conventions",
+    "06-20-pw-doc-dedup"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
