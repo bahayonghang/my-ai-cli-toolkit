@@ -16,7 +16,7 @@ Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mer
 | --- | --- |
 | Name | `beautiful-mermaid-editor` |
 | Category | `docs-writing-publishing` (Docs, Writing & Publishing) |
-| Version | Not declared |
+| Version | `1.0.0` |
 | Tags | `mermaid`, `diagram-editor`, `bun`, `typescript`, `live-editor`, `svg-export` |
 
 ## Install command

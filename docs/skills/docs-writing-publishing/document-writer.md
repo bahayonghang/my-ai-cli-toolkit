@@ -16,7 +16,7 @@ Write or update technical documentation from the real codebase and project files
 | --- | --- |
 | 名称 | `document-writer` |
 | 分类 | `docs-writing-publishing` (文档写作与发布) |
-| 版本 | 未声明 |
+| 版本 | `1.0.0` |
 | 标签 | `documentation`, `technical-writing`, `readme`, `api-docs`, `architecture`, `user-guide`, `contributing`, `jsdoc`, `chinese-docs` |
 
 ## 安装命令
@@ -29,12 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill document-writ
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
+| `skills/docs-writing-publishing/document-writer/evals` | 目录 | 1 | 评测样例 |
 | `skills/docs-writing-publishing/document-writer/references` | 目录 | 4 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| evals | `skills/docs-writing-publishing/document-writer/evals` | 评测样例 |
 | references | `skills/docs-writing-publishing/document-writer/references` | 引用资料 |
 
 ## 验证方式

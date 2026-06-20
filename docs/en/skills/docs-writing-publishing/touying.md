@@ -4,11 +4,11 @@
 
 ## Purpose overview
 
-Author Typst slide decks with Touying.
+Author Typst slide decks with the Touying package.
 
 ## Trigger scenarios
 
-- working with .typ presentations, themes, or animations
+- creating or editing .typ presentations: applying or building Touying themes (metropolis, dewdrop, aqua, stargazer, university, simple), turning headings or #slide into slides, incremental reveals and animations (#pause, dynamic content), speaker notes via pdfpc, and config-common/config-page layout
 
 ## Metadata
 
@@ -16,7 +16,7 @@ Author Typst slide decks with Touying.
 | --- | --- |
 | Name | `touying` |
 | Category | `docs-writing-publishing` (Docs, Writing & Publishing) |
-| Version | Not declared |
+| Version | `1.0.0` |
 | Tags | `typst`, `touying`, `slide-deck`, `animation`, `theme` |
 
 ## Install command
@@ -30,6 +30,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/docs-writing-publishing/touying/docs` | directory | 34 | Embedded docs |
+| `skills/docs-writing-publishing/touying/evals` | directory | 1 | Evaluation samples |
 | `skills/docs-writing-publishing/touying/examples` | directory | 9 | Examples |
 | `skills/docs-writing-publishing/touying/references` | directory | 2 | Reference material |
 
@@ -38,6 +39,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | docs | `skills/docs-writing-publishing/touying/docs` | Embedded docs |
+| evals | `skills/docs-writing-publishing/touying/evals` | Evaluation samples |
 | examples | `skills/docs-writing-publishing/touying/examples` | Examples |
 | references | `skills/docs-writing-publishing/touying/references` | Reference material |
 

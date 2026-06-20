@@ -16,7 +16,7 @@ Write or update technical documentation from the real codebase and project files
 | --- | --- |
 | Name | `document-writer` |
 | Category | `docs-writing-publishing` (Docs, Writing & Publishing) |
-| Version | Not declared |
+| Version | `1.0.0` |
 | Tags | `documentation`, `technical-writing`, `readme`, `api-docs`, `architecture`, `user-guide`, `contributing`, `jsdoc`, `chinese-docs` |
 
 ## Install command
@@ -29,12 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill document-writ
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
+| `skills/docs-writing-publishing/document-writer/evals` | directory | 1 | Evaluation samples |
 | `skills/docs-writing-publishing/document-writer/references` | directory | 4 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| evals | `skills/docs-writing-publishing/document-writer/evals` | Evaluation samples |
 | references | `skills/docs-writing-publishing/document-writer/references` | Reference material |
 
 ## Validation

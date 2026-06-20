@@ -8,7 +8,7 @@
 
 ## Trigger scenarios
 
-- 智能标书编写专家，专精工程咨询、建筑设计、市政工程领域的投标文件编写。 当用户提到：标书、投标、招标、投标文件、技术标、商务标、招标响应、投标方案、 bid document、bid proposal、tender、proposal writing、编写标书、写标书、 招标文件分析、评分标准优化 时使用此技能。
+- 智能标书编写专家，专精工程咨询、建筑设计、市政工程领域的投标文件编写。 当用户提到：标书、投标、招标、投标文件、技术标、商务标、招标响应、投标方案、 bid document、bid proposal、tender、proposal writing、编写标书、写标书、 招标文件分析、评分标准优化 时使用此技能。 不适用于通用商务写作、营销文案、学术论文，或与招投标无关的文档。
 
 ## Metadata
 
@@ -16,7 +16,7 @@
 | --- | --- |
 | Name | `bidwriter` |
 | Category | `docs-writing-publishing` (Docs, Writing & Publishing) |
-| Version | Not declared |
+| Version | `1.0.0` |
 | Tags | `bidwriting`, `tender`, `proposal`, `engineering`, `construction`, `municipal`, `标书`, `投标` |
 
 ## Install command
@@ -29,12 +29,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill bidwriter
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
+| `skills/docs-writing-publishing/bidwriter/evals` | directory | 1 | Evaluation samples |
 | `skills/docs-writing-publishing/bidwriter/references` | directory | 4 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| evals | `skills/docs-writing-publishing/bidwriter/evals` | Evaluation samples |
 | references | `skills/docs-writing-publishing/bidwriter/references` | Reference material |
 
 ## Validation

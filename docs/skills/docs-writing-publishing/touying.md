@@ -4,11 +4,11 @@
 
 ## 用途概览
 
-Author Typst slide decks with Touying.
+Author Typst slide decks with the Touying package.
 
 ## 触发场景
 
-- working with .typ presentations, themes, or animations
+- creating or editing .typ presentations: applying or building Touying themes (metropolis, dewdrop, aqua, stargazer, university, simple), turning headings or #slide into slides, incremental reveals and animations (#pause, dynamic content), speaker notes via pdfpc, and config-common/config-page layout
 
 ## 元数据
 
@@ -16,7 +16,7 @@ Author Typst slide decks with Touying.
 | --- | --- |
 | 名称 | `touying` |
 | 分类 | `docs-writing-publishing` (文档写作与发布) |
-| 版本 | 未声明 |
+| 版本 | `1.0.0` |
 | 标签 | `typst`, `touying`, `slide-deck`, `animation`, `theme` |
 
 ## 安装命令
@@ -30,6 +30,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/docs-writing-publishing/touying/docs` | 目录 | 34 | 内嵌文档 |
+| `skills/docs-writing-publishing/touying/evals` | 目录 | 1 | 评测样例 |
 | `skills/docs-writing-publishing/touying/examples` | 目录 | 9 | 示例 |
 | `skills/docs-writing-publishing/touying/references` | 目录 | 2 | 引用资料 |
 
@@ -38,6 +39,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
 | docs | `skills/docs-writing-publishing/touying/docs` | 内嵌文档 |
+| evals | `skills/docs-writing-publishing/touying/evals` | 评测样例 |
 | examples | `skills/docs-writing-publishing/touying/examples` | 示例 |
 | references | `skills/docs-writing-publishing/touying/references` | 引用资料 |
 

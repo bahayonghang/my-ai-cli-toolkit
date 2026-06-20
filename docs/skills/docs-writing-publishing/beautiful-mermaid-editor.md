@@ -16,7 +16,7 @@ Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mer
 | --- | --- |
 | 名称 | `beautiful-mermaid-editor` |
 | 分类 | `docs-writing-publishing` (文档写作与发布) |
-| 版本 | 未声明 |
+| 版本 | `1.0.0` |
 | 标签 | `mermaid`, `diagram-editor`, `bun`, `typescript`, `live-editor`, `svg-export` |
 
 ## 安装命令

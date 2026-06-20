@@ -53,7 +53,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [beautiful-mermaid-editor](/en/skills/docs-writing-publishing/beautiful-mermaid-editor) — Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mermaid diagrams.
 - [bidwriter](/en/skills/docs-writing-publishing/bidwriter) — 智能标书编写专家，专精工程咨询、建筑设计、市政工程领域的投标文件编写。
 - [document-writer](/en/skills/docs-writing-publishing/document-writer) — Write or update technical documentation from the real codebase and project files.
-- [touying](/en/skills/docs-writing-publishing/touying) — Author Typst slide decks with Touying.
+- [touying](/en/skills/docs-writing-publishing/touying) — Author Typst slide decks with the Touying package.
 
 ### Git & GitHub Collaboration
 
