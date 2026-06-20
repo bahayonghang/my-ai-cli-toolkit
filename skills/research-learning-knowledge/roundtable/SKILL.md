@@ -2,8 +2,16 @@
 name: roundtable
 description: Multi-perspective roundtable discussion skill for exploring a topic through a truth-seeking moderator and a small set of representative real figures. Use when the user asks for 圆桌讨论 / roundtable / 多人物观点碰撞 / 让几位思想家讨论 / 模拟多方思想交锋 / 结构化辩论探索, or wants to examine one topic through disciplined multi-party debate rather than a plain summary. Do not use it for ordinary argumentative writing, generic pros/cons lists, or a single-speaker explanation.
 category: research-learning-knowledge
-tags: [roundtable, debate, multi-perspective, philosophy, knowledge-network, org-mode]
-version: "2.0.0"
+tags:
+  [
+    roundtable,
+    debate,
+    multi-perspective,
+    philosophy,
+    knowledge-network,
+    org-mode,
+  ]
+version: "2.0.1"
 ---
 
 # roundtable: 圆桌求真
@@ -152,10 +160,10 @@ ASCII 图原则：
 1. 生成时间戳时，使用当前 shell 对应的命令：
    - PowerShell：`Get-Date -Format "yyyyMMddTHHmmss"` 与 `Get-Date -Format "yyyy-MM-dd ddd HH:mm"`
    - POSIX shell：`date +%Y%m%dT%H%M%S` 与 `date "+%Y-%m-%d %a %H:%M"`
-2. 确保输出目录存在：
-   - PowerShell：`New-Item -ItemType Directory -Force ~/Documents/notes | Out-Null`
-   - POSIX shell：`mkdir -p ~/Documents/notes`
-3. 写入 `~/Documents/notes/{timestamp}--圆桌-{议题关键词}__roundtable.org`
+2. 确定输出目录：优先使用用户指定的路径；用户未指定时，使用工作区相对路径（默认当前目录下的 `roundtable-notes/`），**不要假设 `~/Documents/notes` 这类个人主目录约定**。然后确保目录存在：
+   - PowerShell：`New-Item -ItemType Directory -Force <输出目录> | Out-Null`
+   - POSIX shell：`mkdir -p <输出目录>`
+3. 写入 `<输出目录>/{timestamp}--圆桌-{议题关键词}__roundtable.org`
 4. 成功后向用户报告文件路径。
 5. 如果建目录或写文件失败，不要改写到别的目录；直接把完整 org 内容返回到对话里，并明确说明保存失败。
 
