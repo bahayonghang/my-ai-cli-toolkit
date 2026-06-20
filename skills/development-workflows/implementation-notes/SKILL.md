@@ -17,7 +17,7 @@ Maintain a live `implementation-notes.md` while implementing a written spec, so 
 
 ## Core principle
 
-A spec is never complete. As you implement, you will make choices the spec did not name. The diff records *what* you did. Commit messages record *what changed*. Neither captures *why this option over the alternative*, *which spec line you knowingly departed from*, or *which question you still need a human to answer*. This file does.
+A spec is never complete. As you implement, you will make choices the spec did not name. The diff records _what_ you did. Commit messages record _what changed_. Neither captures _why this option over the alternative_, _which spec line you knowingly departed from_, or _which question you still need a human to answer_. This file does.
 
 The goal is not to write more documentation. It is to give yourself a legitimate place to record the judgment calls you would otherwise either bury silently in code or interrupt the user to ask about.
 
@@ -29,7 +29,7 @@ Start before the first edit, when **all** of the following are true:
 - Implementation will span multiple files or multiple commits.
 - The spec contains at least one ambiguity, gap, or area where a reasonable implementer would face a choice.
 
-If no written spec exists yet, stop and invoke `writing-plans` first. This skill does not replace planning; it captures what happens after planning meets reality.
+If no written spec exists yet, create or obtain a written plan first (use your environment's planning workflow if one is available). This skill does not replace planning; it captures what happens after planning meets reality.
 
 ## When to skip
 
@@ -90,11 +90,11 @@ Items that need a human to answer before merge. Phrase each so a reviewer can an
 
 ## Anti-patterns
 
-| Anti-pattern | Counter-rule |
-|---|---|
-| Chronological log — "added function X, then function Y, then ran tests" | If an entry could be reconstructed from `git log --stat`, delete it. Only write what the diff alone cannot explain. |
-| End-of-session backfill — writing the whole file at the end | Append at the moment of the decision. A note written hours later is fiction dressed as fact. |
-| Over-triggering — maintaining notes for a one-commit fix | Gate at the start of work. If the spec is under ~50 lines or the work fits in one commit, skip this skill and put the reasoning in the commit body. |
+| Anti-pattern                                                            | Counter-rule                                                                                                                                        |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chronological log — "added function X, then function Y, then ran tests" | If an entry could be reconstructed from `git log --stat`, delete it. Only write what the diff alone cannot explain.                                 |
+| End-of-session backfill — writing the whole file at the end             | Append at the moment of the decision. A note written hours later is fiction dressed as fact.                                                        |
+| Over-triggering — maintaining notes for a one-commit fix                | Gate at the start of work. If the spec is under ~50 lines or the work fits in one commit, skip this skill and put the reasoning in the commit body. |
 
 ## Cadence
 
@@ -104,8 +104,8 @@ A session that adds zero entries is fine if no real decisions were made. Padding
 
 ## Integration with other skills
 
-- **`writing-plans`**: This skill activates *after* a plan exists. If no plan, run `writing-plans` first.
-- **`subagent-driven-development`**: When subagents implement tasks, the **parent maintains this file**. Subagents report their decisions back; the parent appends. Never let multiple subagents write to this file concurrently — entries will conflict and reasoning will get lost.
+- **Planning**: This skill activates _after_ a plan exists. If no plan exists, create one with your environment's planning workflow first.
+- **Subagent-driven work**: When subagents implement tasks, the **parent maintains this file**. Subagents report their decisions back; the parent appends. Never let multiple subagents write to this file concurrently — entries will conflict and reasoning will get lost.
 - **`git-commit`**: When a notes entry maps one-to-one to a commit, the commit body should link to the entry (e.g., `See implementation-notes.md "Retry count deviation"`). Do not duplicate the reasoning in both places.
 - **`handoff`**: When producing a handoff doc, pull the "Key decisions" / "Why this over that" content from this file rather than reconstructing from memory. The notes file is the durable record; the handoff is the short pointer that says "this matters next session."
 - **`code-auditor` / PR review**: Reviewers should read this file before reading the diff. It frames what the diff is trying to do.
