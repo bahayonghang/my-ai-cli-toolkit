@@ -74,17 +74,19 @@ Do not promote pure formatting or taste disagreements above `low` unless the pro
 
 ## Workflow
 
+> Paths below starting with `<skill-dir>` are relative to this skill's base directory, announced when the skill loads. Substitute that literal path; it is not an environment variable. Bundled scripts self-locate, so only the path needs to resolve.
+
 1. Determine the review target:
    - If `$ARGUMENTS` contains a PR number or URL, fetch the PR diff via `gh pr diff <number>` and use it as the review target. If `gh` is unavailable, ask the user to provide the diff manually.
    - If `$ARGUMENTS` mentions "PR" or "MR" without a specific number, check for an active PR on the current branch via `gh pr view`. If none exists, ask the user to specify the PR number.
    - If `$ARGUMENTS` is a file path or directory, review that target directly.
    - If `$ARGUMENTS` is empty, default to current git changes (`git diff` + `git diff --staged`). If there are no changes, prompt for a path.
-2. Read `$SKILL_DIR/references/review-dimensions.md`, `$SKILL_DIR/references/issue-classification.md`, `$SKILL_DIR/references/workflow-guide.md`, and `$SKILL_DIR/references/communication-guide.md`.
-3. Detect languages in the target and load matching guides from `$SKILL_DIR/references/languages/`.
-4. Load the quick checklist at `$SKILL_DIR/assets/quick-checklist.md` when you need a fast pass or a review warm-up.
+2. Read `<skill-dir>/references/review-dimensions.md`, `<skill-dir>/references/issue-classification.md`, `<skill-dir>/references/workflow-guide.md`, and `<skill-dir>/references/communication-guide.md`.
+3. Detect languages in the target and load matching guides from `<skill-dir>/references/languages/`.
+4. Load the quick checklist at `<skill-dir>/assets/quick-checklist.md` when you need a fast pass or a review warm-up.
 5. Execute the 4-phase workflow from `workflow-guide.md`: Collect Context, Quick Scan, Deep Review, Generate Report.
-6. For each dimension, apply rules from `$SKILL_DIR/references/rules/` together with language-specific guidance.
-7. Use `$SKILL_DIR/assets/issue-template.md` for individual findings, `$SKILL_DIR/assets/pr-comment-template.md` for PR-style summaries, and `$SKILL_DIR/assets/review-report-template.md` for full reports.
+6. For each dimension, apply rules from `<skill-dir>/references/rules/` together with language-specific guidance.
+7. Use `<skill-dir>/assets/issue-template.md` for individual findings, `<skill-dir>/assets/pr-comment-template.md` for PR-style summaries, and `<skill-dir>/assets/review-report-template.md` for full reports.
 8. Present findings first. Summaries come after the issues, not before them.
 9. For every `critical` or `high` issue, include location, risk, why it matters, and a concrete recommendation. Add a small fix example when it materially clarifies the action.
 10. If no blocking issues are found, still say what you checked so the review is not an empty `LGTM`.
