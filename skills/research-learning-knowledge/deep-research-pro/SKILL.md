@@ -5,10 +5,7 @@ description: "Multi-source deep research skill for current-topic investigation, 
 category: research-learning-knowledge
 tags: [research, web, citations, synthesis, report-writing, current-events]
 metadata:
-  version: "1.0.0"
   homepage: "https://github.com/paragshah/deep-research-pro"
-  clawdbot_emoji: "🔬"
-  clawdbot_category: "research"
 ---
 
 # Deep Research Pro
@@ -113,18 +110,25 @@ Default output structure:
 # {Topic}
 
 ## Executive Summary
+
 - 3-5 high-signal findings
 
 ## Key Findings
+
 ### {Theme 1}
+
 ...
+
 ### {Theme 2}
+
 ...
 
 ## Risks / Open Questions
+
 ...
 
 ## Sources
+
 1. [Title](url) — source type, date
 ```
 

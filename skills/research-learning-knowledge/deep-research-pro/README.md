@@ -1,108 +1,42 @@
 # Deep Research Pro 🔬
 
-A powerful, self-contained deep research skill for [OpenClaw](https://github.com/openclaw/openclaw) / Clawdbot agents. Produces thorough, cited reports from multiple web sources.
+A prompt-only deep-research skill: turns an open-ended topic into a grounded,
+cited research deliverable using whatever web tools the host environment
+provides. It bundles no scripts and needs no API keys of its own — it drives the
+agent's available search/fetch tools and follows the workflow in
+[`SKILL.md`](SKILL.md).
 
-**No API keys required** — uses DuckDuckGo search.
+## What it does
 
-## Features
-
-- 🔍 Multi-query web + news search
-- 📄 Full-page content fetching for deep reads
-- 📊 Automatic deduplication across queries
-- 📝 Structured reports with citations
-- 💾 Save to file (Markdown or JSON)
-- 🆓 Completely free — no paid APIs
-
-## Installation
-
-### Via ClawdHub (coming soon)
-```bash
-clawdhub install deep-research-pro
-```
-
-### Manual
-```bash
-cd your-workspace/skills
-git clone https://github.com/parags/deep-research-pro.git
-```
+1. **Lock the objective** — topic, goal (learn / decide / write / compare / monitor), depth, and output format.
+2. **Decompose** — break the topic into 3-5 sub-questions.
+3. **Search with source discipline** — prefer primary and high-signal sources; capture title, publisher, URL, and date.
+4. **Deep-read** the strongest sources rather than relying on snippets.
+5. **Synthesize** — distinguish fact, inference, and uncertainty; surface disagreements and missing data.
+6. **Deliver** — executive summary, key findings, risks / open questions, and a dated source list.
 
 ## Usage
 
-### As an Agent Skill
+Just ask the agent to research something:
 
-Just ask your agent to research something:
-```
-"Research the current state of nuclear fusion energy"
-"Deep dive into Rust vs Go for backend services"
-"What's happening with the US housing market?"
-```
+- "Research the current state of nuclear fusion commercialization"
+- "Compare Rust vs Go for backend services in 2026 with sources"
+- "帮我调研一下 AI coding agent 的市场格局，给出带来源总结"
+- "What's the latest on the US housing market?"
 
-The agent will follow the workflow in `SKILL.md` to produce a comprehensive report.
+See [`SKILL.md`](SKILL.md) for the full workflow, quality rules, and fallbacks.
 
-### CLI Tool
+## Quality rules (summary)
 
-The `scripts/research` tool can also be used standalone:
+- Every non-trivial factual claim is source-backed.
+- Prefer exact dates over vague recency words like "recently".
+- Mark single-source claims, missing numbers, and unresolved conflicts.
+- If browsing is unavailable, say current verification could not be completed
+  instead of pretending the answer is current.
 
-```bash
-# Basic multi-query search
-./scripts/research "query 1" "query 2" "query 3"
+## Provenance
 
-# Full research mode (web + news + fetch top pages)
-./scripts/research --full "AI agents 2026" "monetizing AI skills"
-
-# Save to file
-./scripts/research --full "topic" --output results.md
-
-# JSON output
-./scripts/research "topic" --json
-
-# Fetch specific URLs
-./scripts/research --fetch "https://example.com/article"
-```
-
-### Options
-
-| Flag | Description |
-|------|-------------|
-| `--full` | Enable news search + fetch top 3 pages |
-| `--news` | Include news search |
-| `--max N` | Max results per query (default 8) |
-| `--fetch-top N` | Fetch full text of top N results |
-| `--output FILE` | Save results to file |
-| `--json` | Output as JSON |
-
-## How It Works
-
-1. **Plan** — Break topic into 3-5 sub-questions
-2. **Search** — Run multiple queries across web + news
-3. **Deduplicate** — Remove duplicate sources
-4. **Deep Read** — Fetch full content from key sources
-5. **Synthesize** — Write structured report with citations
-
-## Report Structure
-
-```markdown
-# Topic: Deep Research Report
-
-## Executive Summary
-## 1. First Major Theme
-## 2. Second Major Theme
-## Key Takeaways
-## Sources (with links)
-## Methodology
-```
-
-## Requirements
-
-- Python 3.11+
-- [uv](https://github.com/astral-sh/uv) (auto-installs dependencies)
-
-The script is self-contained — dependencies install automatically on first run.
-
-## License
-
-MIT
-
-## Author
-
-Built by [AstralSage](https://moltbook.com/u/AstralSage) 🦞
+Adapted from an upstream community skill
+([source](https://github.com/paragshah/deep-research-pro)). The original bundled
+a standalone research CLI; this vendored version is prompt-only and relies on the
+host environment's web tools, so there is no `scripts/` directory.
