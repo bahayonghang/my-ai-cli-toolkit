@@ -16,8 +16,8 @@
 | --- | --- |
 | 名称 | `literature-mentor` |
 | 分类 | `research-learning-knowledge` (研究、学习与知识) |
-| 版本 | 未声明 |
-| 标签 | 未声明 |
+| 版本 | `1.0.0` |
+| 标签 | `literature`, `research`, `zotero`, `paper-reading`, `academic` |
 
 ## 安装命令
 

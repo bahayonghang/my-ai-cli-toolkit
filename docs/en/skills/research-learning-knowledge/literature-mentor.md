@@ -16,8 +16,8 @@
 | --- | --- |
 | Name | `literature-mentor` |
 | Category | `research-learning-knowledge` (Research, Learning & Knowledge) |
-| Version | Not declared |
-| Tags | Not declared |
+| Version | `1.0.0` |
+| Tags | `literature`, `research`, `zotero`, `paper-reading`, `academic` |
 
 ## Install command
 
