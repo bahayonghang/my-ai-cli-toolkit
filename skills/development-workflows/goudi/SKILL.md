@@ -35,7 +35,7 @@ If the answer cannot produce a concrete first move, it is not a plan yet. It is 
 
 ## Relationship To Geju
 
-Use `geju` when Codex is trapped by local details, compatibility fear, and small-patch thinking.
+Use `geju` when the agent is trapped by local details, compatibility fear, and small-patch thinking.
 
 Use `goudi` when the answer has escaped too far upward and now needs to become an executable, testable, staged move.
 

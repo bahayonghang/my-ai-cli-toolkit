@@ -15,7 +15,7 @@ version: 0.1.0
 
 ## Overview
 
-Use this skill to open up the design space during strategic discussion. It pushes Codex out of compatibility anxiety, local-detail fixation, and small-patch thinking so the answer can address the real product, architecture, or system direction.
+Use this skill to open up the design space during strategic discussion. It pushes the agent out of compatibility anxiety, local-detail fixation, and small-patch thinking so the answer can address the real product, architecture, or system direction.
 
 ## Core Principle
 
@@ -95,7 +95,7 @@ Then make it testable:
 
 ### 1. Compatibility Worship
 
-Codex often keeps old behavior, old names, old paths, aliases, shims, and dual flows because breaking things feels risky.
+The agent often keeps old behavior, old names, old paths, aliases, shims, and dual flows because breaking things feels risky.
 
 Counter-move:
 
@@ -106,7 +106,7 @@ Counter-move:
 
 ### 2. Local Detail Trap
 
-Codex often drills into one field, one function, one paragraph, or one migration path before seeing the whole system.
+The agent often drills into one field, one function, one paragraph, or one migration path before seeing the whole system.
 
 Counter-move:
 
@@ -117,7 +117,7 @@ Counter-move:
 
 ### 3. Refactor Fear
 
-Codex often avoids a better direction because the diff looks big or migration feels inconvenient.
+The agent often avoids a better direction because the diff looks big or migration feels inconvenient.
 
 Counter-move:
 
@@ -128,7 +128,7 @@ Counter-move:
 
 ### 4. Mild Answer Bias
 
-Codex often gives polite, balanced, low-stakes answers that avoid the real decision.
+The agent often gives polite, balanced, low-stakes answers that avoid the real decision.
 
 Counter-move:
 
