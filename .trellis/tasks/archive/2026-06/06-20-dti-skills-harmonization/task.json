@@ -1,0 +1,31 @@
+{
+  "id": "dti-skills-harmonization",
+  "name": "dti-skills-harmonization",
+  "title": "Harmonize and fix developer-tools-integrations skills",
+  "description": "Parent task: audit findings and optimization work for the 7 skills under skills/developer-tools-integrations (agent-skill-review, agents-md-improver, archive-planning, ast-grep, claude-md-improver, codex-workflow-recommender, goal-meta-skill). Owns the requirement set, task map, and final integration review.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-06-20",
+  "completedAt": "2026-06-20",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-20-fix-dti-script-paths",
+    "06-20-add-dti-agents-md",
+    "06-20-harmonize-dti-evals",
+    "06-20-normalize-dti-frontmatter"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
