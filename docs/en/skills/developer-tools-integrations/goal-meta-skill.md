@@ -29,7 +29,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/developer-tools-integrations/goal-meta-skill/agents` | directory | 2 | Companion agents |
+| `skills/developer-tools-integrations/goal-meta-skill/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/goal-meta-skill/evals` | directory | 1 | Evaluation samples |
 | `skills/developer-tools-integrations/goal-meta-skill/README.md` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/goal-meta-skill/references` | directory | 3 | Reference material |

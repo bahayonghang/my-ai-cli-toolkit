@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 31 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 30 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -32,7 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Development Workflows
 
-`development-workflows` · 12 skills
+`development-workflows` · 11 skills
 
 - [code-auditor](/en/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture, with language-specific guidance and human-readable findings.
 - [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a code quality review focused on maintainability, structure, abstraction quality, file growth, branching complexity, boundary cleanliness, and refactoring opportunities.
@@ -44,7 +44,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [handoff](/en/skills/development-workflows/handoff) — Use when the user wants to compact context before auto-compaction kicks in, hand off an unfinished task to a fresh session, switch topics mid-stream and preserve state, or pick up yesterday's work in a new conversation.
 - [html-artifact](/en/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts, single-file by default and split into offline per-page bundles when oversized, for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
 - [implementation-notes](/en/skills/development-workflows/implementation-notes) — Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding.
-- [improve-codebase-architecture](/en/skills/development-workflows/improve-codebase-architecture) — Review a codebase for architectural friction, rank deep-module refactoring opportunities, and draft RFCs for safer interfaces and boundary-test strategies.
 - [spark](/en/skills/development-workflows/spark) — Plan-first brainstorming workflow that turns an idea into an approved implementation plan before coding.
 
 ### Docs, Writing & Publishing
