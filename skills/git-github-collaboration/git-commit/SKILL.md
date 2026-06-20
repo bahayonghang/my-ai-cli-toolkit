@@ -8,7 +8,7 @@ tags:
   - commit-message
   - agent-aware
 version: 1.10.0
-allowed-tools: Bash
+allowed-tools: Read, Bash
 ---
 
 Use this workflow in order: `preflight -> split plan -> classify -> compose -> commit/draft -> verify`.

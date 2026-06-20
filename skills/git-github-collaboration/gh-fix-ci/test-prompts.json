@@ -1,5 +1,0 @@
-[
-  {"id": 1, "prompt": "当前 PR 的 CI 挂了，帮我看看是什么问题", "expected": "调用 inspect_pr_checks.py，汇总失败检查名称+最小日志片段+本地复现命令"},
-  {"id": 2, "prompt": "PR #88 的 Buildkite check 挂了，帮我修", "expected": "识别 Buildkite 为 external provider，标记为 out-of-scope，除非用户坚持"},
-  {"id": 3, "prompt": "CI 失败了，直接帮我修掉然后验证", "expected": "不仅诊断还生成修复方案，执行修复，运行本地复现命令验证，再 gh pr checks 确认"}
-]

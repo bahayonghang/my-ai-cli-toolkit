@@ -1,0 +1,59 @@
+{
+  "skill_name": "gh-bootstrap",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我给这个新项目配置 GitHub 的 CI、Issue 模板和 PR 模板",
+      "expected_output": "Ask for language/mode preferences, run the runtime detect step, then fetch and render the chosen templates from the catalog rather than generating config from memory.",
+      "files": [],
+      "assertions": [
+        "Asks for communication/template language and mode first",
+        "Runs gh_bootstrap_runtime.py detect before planning",
+        "Fetches and renders templates from downloaded sources, not from memory",
+        "Validates the tree for unreplaced {{placeholders}}"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "项目已经有 .github/workflows/ci.yml 了，我想补充 Issue 和 PR 模板",
+      "expected_output": "Detect the existing CI file as a conflict, only generate the missing Issue/PR templates, and never overwrite the existing CI config without explicit approval.",
+      "files": [],
+      "assertions": [
+        "Detects the existing ci.yml and plans conflict resolution",
+        "Generates only the missing files",
+        "Does not overwrite existing config without explicit approval"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "用 quick mode 快速初始化一个 Rust 项目的 GitHub 配置",
+      "expected_output": "Recognize quick mode, minimize interaction, still fetch/render from templates, and validate that no {{placeholders}} remain.",
+      "files": [],
+      "assertions": [
+        "Recognizes quick mode and reduces interaction",
+        "Still fetches/renders from templates rather than memory",
+        "Validates the generated tree for unreplaced placeholders"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "我的 PR CI 红了，帮我修一下",
+      "expected_output": "Near-neighbor negative: a CI-failure fix request should route to gh-fix-ci, not gh-bootstrap.",
+      "files": [],
+      "assertions": [
+        "Does not invoke gh-bootstrap",
+        "Routes to gh-fix-ci instead"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我把这些改动提交了",
+      "expected_output": "Near-neighbor negative: a commit-authoring request should route to git-commit, not gh-bootstrap.",
+      "files": [],
+      "assertions": [
+        "Does not invoke gh-bootstrap",
+        "Routes to git-commit instead"
+      ]
+    }
+  ]
+}

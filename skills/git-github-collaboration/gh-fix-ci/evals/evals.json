@@ -1,0 +1,58 @@
+{
+  "skill_name": "gh-fix-ci",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "当前 PR 的 CI 挂了，帮我看看是什么问题",
+      "expected_output": "Run inspect_pr_checks.py and summarize each failing check with its name, the smallest useful log snippet, and a suggested local reproduction command.",
+      "files": [],
+      "assertions": [
+        "Verifies gh auth status first",
+        "Runs inspect_pr_checks.py to collect failing checks",
+        "Summarizes failing check name + minimal log snippet + local repro command"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "PR #88 的 Buildkite check 挂了，帮我修",
+      "expected_output": "Recognize Buildkite as an external (non-GitHub-Actions) provider, report the URL, and mark it out of scope unless the user explicitly insists.",
+      "files": [],
+      "assertions": [
+        "Identifies Buildkite as an external provider",
+        "Reports the run URL and marks it out of scope",
+        "Does not fabricate GitHub Actions logs for it"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "CI 失败了，直接帮我修掉然后验证",
+      "expected_output": "Diagnose, propose and apply the fix, run the local reproduction command to verify, then re-check gh pr checks.",
+      "files": [],
+      "assertions": [
+        "Goes beyond diagnosis to implement the fix",
+        "Runs the local repro command to verify the fix",
+        "Re-runs gh pr checks to confirm"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我总结一下这个 PR 上 reviewer 提的修改意见",
+      "expected_output": "Near-neighbor negative: a review-comment triage request should route to gh-address-comments, not gh-fix-ci.",
+      "files": [],
+      "assertions": [
+        "Does not invoke gh-fix-ci",
+        "Routes to gh-address-comments instead"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我把暂存的改动提交了",
+      "expected_output": "Near-neighbor negative: a commit-authoring request should route to git-commit, not gh-fix-ci.",
+      "files": [],
+      "assertions": [
+        "Does not invoke gh-fix-ci",
+        "Routes to git-commit instead"
+      ]
+    }
+  ]
+}

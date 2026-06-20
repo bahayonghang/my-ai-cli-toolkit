@@ -1,37 +1,15 @@
 # gh-bootstrap 模板目录
 
-> 本文档汇总了 gh-bootstrap Skill 所引用的所有 GitHub 仓库，并提供**精确的文件路径映射**。
+> 本文档是 gh-bootstrap 的模板数据源：组件 → 仓库 URL → 文件路径映射，外加少量"内置"模板内容与变量替换规则。
 >
-> **⚠️ CRITICAL**: Claude 必须根据此文档下载和读取模板文件，禁止凭记忆生成配置。
+> 执行引擎是 `scripts/gh_bootstrap_runtime.py`（detect / fetch-template / render-template / validate-tree）；本文档只提供它需要的 URL、路径和内置内容，不描述手动执行流程。模板使用纪律见 `SKILL.md` 的 Mandatory Rules。
 
 ## When to Use
 
-- **Phase 4 执行阶段**：下载模板前必须先读取此文档
-- **组件映射**：查找组件 ID 对应的仓库和文件路径
-- **Clone 命令**：获取正确的 git clone 命令
-- **文件路径**：确定需要读取的模板文件精确路径
-- **语言映射**：根据检测到的语言选择对应的模板文件
-
----
-
-## ⚠️ CRITICAL: 模板使用规则
-
-**禁止自行编写工作流！必须遵循以下规则：**
-
-1. **直接复制模板**: 从下载的模板文件中**原样复制**内容，仅替换变量占位符
-2. **禁止重新编写**: 不允许"参考模板后重新编写"，必须基于模板原文修改
-3. **最小化修改**: 只修改必要的项目特定变量（如项目名、Node 版本等）
-4. **保留模板结构**: 不得删除、重排或"优化"模板中的步骤
-
-**正确做法**:
-```
-Read 模板文件 → 复制全部内容 → 仅替换 {{变量}} → Write 到目标
-```
-
-**错误做法**:
-```
-Read 模板文件 → 理解意图 → 自己重新编写 → Write 到目标  ❌
-```
+- 选择组件后，用本表查 `fetch-template` 需要的仓库 URL 与文件路径
+- 根据检测到的语言/框架选择对应的模板文件
+- 对"内置"组件，复制本文档给出的模板内容
+- 查阅变量替换规则（见末尾）
 
 ---
 
@@ -1184,47 +1162,7 @@ Java.gitattributes           # Java 项目
 
 ---
 
-## 执行流程示例
-
-### ⚠️ 正确的执行流程（直接复制）
-
-```
-用户选择: ci-workflow + issue-templates + readme
-
-Phase 4 执行:
-1. git clone actions/starter-workflows → .gh-bootstrap-cache/ci-workflow/
-2. git clone stevemao/github-issue-templates → .gh-bootstrap-cache/issue-templates/
-3. git clone othneildrew/Best-README-Template → .gh-bootstrap-cache/readme/
-
-4. Read .gh-bootstrap-cache/ci-workflow/ci/node.js.yml
-   → 获取完整的工作流 YAML 内容
-
-5. 【直接复制】将读取的内容原样复制
-   → 仅替换变量: ${{ github.repository }} 等保持不变
-   → 仅调整: node-version 根据检测结果设置
-   → 禁止: 重新编写、优化、简化、重构
-
-6. Write .github/workflows/ci.yml
-   → 内容 = 模板原文 + 变量替换
-
-7. 对其他组件重复步骤 4-6
-
-8. 清理 .gh-bootstrap-cache/
-```
-
-### ❌ 错误的执行流程（禁止）
-
-```
-Phase 4 执行:
-1. git clone actions/starter-workflows → .gh-bootstrap-cache/ci-workflow/
-2. Read .gh-bootstrap-cache/ci-workflow/ci/node.js.yml
-3. 【错误】"理解模板意图后重新生成" ← 禁止！
-4. 【错误】"根据最佳实践优化" ← 禁止！
-5. 【错误】"简化不必要的步骤" ← 禁止！
-6. Write 自己编写的内容 ← 这会导致工作流失效！
-```
-
-### 变量替换规则
+## 变量替换规则
 
 在复制模板时，**仅**替换以下变量：
 
@@ -1244,49 +1182,3 @@ Phase 4 执行:
 - `${{ github.* }}` - GitHub 上下文变量
 - `${{ steps.* }}` - 步骤输出引用
 - Action 版本号 - 如 `actions/checkout@v4`
-
----
-
-## 用户交互时的说明模板
-
-在 Phase 2 询问用户选择参考仓库时，使用以下格式：
-
-### Issue 模板选择
-
-```
-选择 Issue 模板的参考仓库
-
-ℹ️ Issue 模板是什么？
-当用户在你的仓库创建 Issue 时，会看到预设表单，帮助他们提供结构化的 Bug 报告或功能请求。
-
-推荐选项：
-○ stevemao/github-issue-templates (推荐)
-  └─ 8 种风格可选：简洁、清单、对话式等，适合各类项目
-○ dec0dOS/amazing-github-template
-  └─ 一站式模板，包含 Bug/Feature/Improvement，设计精美
-○ 让 Claude 智能生成
-  └─ 根据项目特点定制生成，不使用现有模板
-```
-
-### CI 工作流选择
-
-```
-选择 CI 工作流的参考仓库
-
-ℹ️ CI (持续集成) 是什么？
-每次推送代码时，GitHub 会自动运行测试，确保新代码没有破坏现有功能。
-
-推荐选项：
-○ actions/starter-workflows (推荐)
-  └─ GitHub 官方维护，支持 50+ 种语言，持续更新
-```
-
----
-
-## 更新记录
-
-| 日期 | 版本 | 变更 |
-|------|------|------|
-| 2026-01-23 | 3.0.0 | 添加仓库优势说明和用户教育内容 |
-| 2026-01-23 | 2.0.0 | 添加精确文件路径映射，重构为组件导向 |
-| 2026-01-23 | 1.0.0 | 初始版本，包含 48+ 仓库引用 |

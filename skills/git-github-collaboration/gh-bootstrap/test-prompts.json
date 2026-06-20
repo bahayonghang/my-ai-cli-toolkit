@@ -1,5 +1,0 @@
-[
-  {"id": 1, "prompt": "帮我给这个新项目配置 GitHub 的 CI、Issue 模板和 PR 模板", "expected": "先询问语言偏好，运行 detect 检测项目，展示需生成的文件列表，从模板下载而非凭记忆生成"},
-  {"id": 2, "prompt": "项目已经有 .github/workflows/ci.yml 了，我想补充 Issue 和 PR 模板", "expected": "检测到冲突文件，走冲突解决流程，只生成缺失的文件，不覆盖已有 CI 配置"},
-  {"id": 3, "prompt": "用 quick mode 快速初始化一个 Rust 项目的 GitHub 配置", "expected": "识别 quick mode，减少交互轮次，但仍从模板下载，验证无未替换的 {{placeholders}}"}
-]

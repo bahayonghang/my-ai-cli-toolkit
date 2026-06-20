@@ -63,11 +63,19 @@ def parse_args() -> argparse.Namespace:
         description="Inspect failing GitHub PR checks, fetch logs, and suggest local repro commands.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--repo", default=".", help="Path inside the target Git repository.")
-    parser.add_argument("--pr", default=None, help="PR number or URL. Defaults to the current branch PR.")
+    parser.add_argument(
+        "--repo", default=".", help="Path inside the target Git repository."
+    )
+    parser.add_argument(
+        "--pr",
+        default=None,
+        help="PR number or URL. Defaults to the current branch PR.",
+    )
     parser.add_argument("--max-lines", type=int, default=DEFAULT_MAX_LINES)
     parser.add_argument("--context", type=int, default=DEFAULT_CONTEXT_LINES)
-    parser.add_argument("--json", action="store_true", help="Emit JSON instead of text output.")
+    parser.add_argument(
+        "--json", action="store_true", help="Emit JSON instead of text output."
+    )
     return parser.parse_args()
 
 
@@ -92,7 +100,11 @@ def main() -> int:
     failing = [check for check in checks if is_failing(check)]
     if not failing:
         message = f"PR #{pr_value}: no failing checks detected."
-        print(json.dumps({"pr": pr_value, "results": []}, indent=2) if args.json else message)
+        print(
+            json.dumps({"pr": pr_value, "results": []}, indent=2)
+            if args.json
+            else message
+        )
         return 0
 
     results = [
@@ -178,7 +190,14 @@ def resolve_pr(pr_value: str | None, repo_root: Path) -> str | None:
 
 
 def fetch_checks(pr_value: str, repo_root: Path) -> list[dict[str, Any]] | None:
-    primary_fields = ["name", "state", "conclusion", "detailsUrl", "startedAt", "completedAt"]
+    primary_fields = [
+        "name",
+        "state",
+        "conclusion",
+        "detailsUrl",
+        "startedAt",
+        "completedAt",
+    ]
     result = run_gh_command(
         ["pr", "checks", pr_value, "--json", ",".join(primary_fields)],
         cwd=repo_root,
@@ -187,10 +206,23 @@ def fetch_checks(pr_value: str, repo_root: Path) -> list[dict[str, Any]] | None:
         message = "\n".join(filter(None, [result.stderr, result.stdout])).strip()
         available_fields = parse_available_fields(message)
         if available_fields:
-            fallback_fields = ["name", "state", "bucket", "link", "startedAt", "completedAt", "workflow"]
-            selected_fields = [field for field in fallback_fields if field in available_fields]
+            fallback_fields = [
+                "name",
+                "state",
+                "bucket",
+                "link",
+                "startedAt",
+                "completedAt",
+                "workflow",
+            ]
+            selected_fields = [
+                field for field in fallback_fields if field in available_fields
+            ]
             if not selected_fields:
-                print("Error: no usable fields available for gh pr checks.", file=sys.stderr)
+                print(
+                    "Error: no usable fields available for gh pr checks.",
+                    file=sys.stderr,
+                )
                 return None
             result = run_gh_command(
                 ["pr", "checks", pr_value, "--json", ",".join(selected_fields)],
@@ -226,11 +258,15 @@ def is_failing(check: dict[str, Any]) -> bool:
     return bucket in FAILURE_BUCKETS
 
 
-def analyze_check(check: dict[str, Any], repo_root: Path, max_lines: int, context: int) -> dict[str, Any]:
+def analyze_check(
+    check: dict[str, Any], repo_root: Path, max_lines: int, context: int
+) -> dict[str, Any]:
     url = check.get("detailsUrl") or check.get("link") or ""
     run_id = extract_run_id(url)
     job_id = extract_job_id(url)
-    reproduction_commands = suggest_reproduction_commands(str(check.get("name", "")), repo_root)
+    reproduction_commands = suggest_reproduction_commands(
+        str(check.get("name", "")), repo_root
+    )
     result: dict[str, Any] = {
         "name": check.get("name", ""),
         "detailsUrl": url,
@@ -242,11 +278,15 @@ def analyze_check(check: dict[str, Any], repo_root: Path, max_lines: int, contex
 
     if run_id is None:
         result["status"] = "external"
-        result["note"] = "No GitHub Actions run id detected in detailsUrl. Treat this as an external provider unless the user asks otherwise."
+        result["note"] = (
+            "No GitHub Actions run id detected in detailsUrl. Treat this as an external provider unless the user asks otherwise."
+        )
         return result
 
     metadata = fetch_run_metadata(run_id, repo_root)
-    log_text, log_error, log_status = fetch_check_log(run_id=run_id, job_id=job_id, repo_root=repo_root)
+    log_text, log_error, log_status = fetch_check_log(
+        run_id=run_id, job_id=job_id, repo_root=repo_root
+    )
 
     if log_status == "pending":
         result["status"] = "log_pending"
@@ -264,7 +304,9 @@ def analyze_check(check: dict[str, Any], repo_root: Path, max_lines: int, contex
 
     result["status"] = "ok"
     result["run"] = metadata or {}
-    result["logSnippet"] = extract_failure_snippet(log_text, max_lines=max_lines, context=context)
+    result["logSnippet"] = extract_failure_snippet(
+        log_text, max_lines=max_lines, context=context
+    )
     result["logTail"] = tail_lines(log_text, max_lines)
     return result
 
@@ -292,8 +334,19 @@ def extract_job_id(url: str) -> str | None:
 
 
 def fetch_run_metadata(run_id: str, repo_root: Path) -> dict[str, Any] | None:
-    fields = ["conclusion", "status", "workflowName", "name", "event", "headBranch", "headSha", "url"]
-    result = run_gh_command(["run", "view", run_id, "--json", ",".join(fields)], cwd=repo_root)
+    fields = [
+        "conclusion",
+        "status",
+        "workflowName",
+        "name",
+        "event",
+        "headBranch",
+        "headSha",
+        "url",
+    ]
+    result = run_gh_command(
+        ["run", "view", run_id, "--json", ",".join(fields)], cwd=repo_root
+    )
     if result.returncode != 0:
         return None
     try:
@@ -303,7 +356,9 @@ def fetch_run_metadata(run_id: str, repo_root: Path) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
-def fetch_check_log(run_id: str, job_id: str | None, repo_root: Path) -> tuple[str, str, str]:
+def fetch_check_log(
+    run_id: str, job_id: str | None, repo_root: Path
+) -> tuple[str, str, str]:
     log_text, log_error = fetch_run_log(run_id, repo_root)
     if not log_error:
         return log_text, "", "ok"
@@ -337,7 +392,9 @@ def fetch_job_log(job_id: str, repo_root: Path) -> tuple[str, str]:
     if not repo_slug:
         return "", "Error: unable to resolve repository name for job logs."
     endpoint = f"/repos/{repo_slug}/actions/jobs/{job_id}/logs"
-    returncode, stdout_bytes, stderr = run_gh_command_raw(["api", endpoint], cwd=repo_root)
+    returncode, stdout_bytes, stderr = run_gh_command_raw(
+        ["api", endpoint], cwd=repo_root
+    )
     if returncode != 0:
         message = (stderr or stdout_bytes.decode(errors="replace")).strip()
         return "", message or "gh api job logs failed"
@@ -476,7 +533,9 @@ def suggest_reproduction_commands(check_name: str, repo_root: Path) -> list[str]
     if "clippy" in lowered:
         commands.extend(command_if_recipe(just_recipes, "rust-check-all"))
         if has_cargo:
-            commands.append("cargo clippy --workspace --all-targets --all-features -- -D warnings")
+            commands.append(
+                "cargo clippy --workspace --all-targets --all-features -- -D warnings"
+            )
     if "fmt" in lowered or "format" in lowered:
         if has_cargo:
             commands.append("cargo fmt --all -- --check")
@@ -499,7 +558,6 @@ def suggest_reproduction_commands(check_name: str, repo_root: Path) -> list[str]
             commands.append("npx tsc --noEmit")
 
     if any(token in lowered for token in ("vitest", "unit test", "tests", "test")):
-        commands.extend(command_if_recipe(just_recipes, "mcs-web-test"))
         commands.extend(command_if_recipe(just_recipes, "rust-test"))
         commands.extend(
             match_package_scripts(
@@ -599,7 +657,9 @@ def match_package_scripts(
         if directory.resolve() == repo_root.resolve():
             commands.append(f"npm run {name}")
         else:
-            commands.append(f'npm --prefix "{directory.relative_to(repo_root)}" run {name}')
+            commands.append(
+                f'npm --prefix "{directory.relative_to(repo_root)}" run {name}'
+            )
     return commands
 
 
