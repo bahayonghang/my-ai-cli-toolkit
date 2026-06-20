@@ -6,7 +6,7 @@
       "prompt": "In this TypeScript service, I need an ast-grep rule to find async functions that contain an await but do not contain a local try/catch. It needs to handle normal function declarations, arrow functions assigned to consts, and class methods. Please give me the rule, a tiny fixture, the validation command, and caveats.",
       "expected_output": "Produces a valid JavaScript/TypeScript ast-grep YAML rule that broadens beyond function_declaration, checks for await descendants, excludes local try_statement descendants, includes a minimal positive/negative fixture, gives scan validation commands, and explains likely false negatives.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The output includes a complete ast-grep YAML rule with id, language, and rule fields.",
         "The rule considers multiple JavaScript/TypeScript function forms rather than only function_declaration.",
         "The rule uses a descendant search for await and a negated local try/catch or try_statement condition.",
@@ -19,7 +19,7 @@
       "prompt": "I am auditing a React TSX codebase. Please write an ast-grep rule to find useEffect calls that have an empty dependency array, show a quick fixture, and explain how to run it on src/**/*.tsx from PowerShell. I care about avoiding shell quoting mistakes.",
       "expected_output": "Produces a valid TSX ast-grep rule for useEffect($CALLBACK, []), uses a PowerShell-safe rule-file or here-string workflow, includes a fixture and validation command, and explains TSX/glob caveats.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The output targets TSX or React-specific parsing instead of plain JavaScript only.",
         "The output includes a complete ast-grep YAML rule with id, language, and rule fields.",
         "The output gives PowerShell-safe commands, preferably using a rule file or single-quoted here-string.",
@@ -32,12 +32,34 @@
       "prompt": "For a Python cleanup, I want an ast-grep rule that finds bare except handlers. Please include a small Python fixture, the exact ast-grep command to validate the rule, and guidance for what this rule will not catch.",
       "expected_output": "Produces a valid Python ast-grep YAML rule or pattern for bare except, includes a fixture and validation command, and explains exclusions such as except Exception, except BaseException, or formatting/parser limitations.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The output includes a complete ast-grep YAML rule with id, language, and rule fields.",
         "The rule specifically targets bare except handlers and distinguishes them from typed except handlers.",
         "The output includes a Python fixture with both matching and non-matching examples.",
         "The output includes an ast-grep validation command before any repository-wide command.",
         "The output documents at least one caveat about typed exceptions or parser-sensitive indentation."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Find every place in the repo that calls the function named `processPayment`, and also list the files that contain the string 'TODO: refactor'.",
+      "expected_output": "Routing-negative: an exact identifier/string search is a plain-text job. The skill should route to rg (ripgrep) rather than building an ast-grep structural rule, per its own Triage guidance.",
+      "files": [],
+      "assertions": [
+        "Recommends rg (ripgrep) or plain text search for the exact name and the literal string.",
+        "Does NOT build an ast-grep structural rule as the primary answer for an exact-name/exact-string lookup.",
+        "May mention ast-grep only as an option if the user later needs call-shape or structural constraints."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Rename the symbol `UserService` to `AccountService` across the whole codebase, safely, including imports, and show me everywhere it is referenced first.",
+      "expected_output": "Routing-negative: rename safety, reference resolution, and import-aware symbol work are semantic facts. The skill should route to language tooling / LSP (rename, find references) rather than ast-grep, which matches syntax shape and cannot guarantee rename safety.",
+      "files": [],
+      "assertions": [
+        "Routes reference-finding and safe rename to language tooling / LSP (e.g. find references, rename) rather than ast-grep.",
+        "Explains that ast-grep matches structure and does not resolve references or guarantee rename safety.",
+        "Does NOT present an ast-grep rewrite as a safe whole-codebase rename mechanism."
       ]
     }
   ]

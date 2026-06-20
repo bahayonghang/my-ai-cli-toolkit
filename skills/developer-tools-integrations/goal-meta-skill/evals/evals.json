@@ -6,7 +6,7 @@
       "prompt": "用 goal-meta-skill 帮我把“做一个本地记账 App MVP”写成 Codex /goal。我不想填长表，直接给推荐执行版和几个可选调整。",
       "expected_output": "Chinese-first paste-ready /goal with default reason, optional adjustments, reply hint, and English-compatible mirror.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Output starts with 推荐执行版（中文，可直接复制） before explanation.",
         "The executable command prefix is /goal, not /目标.",
         "The Chinese draft includes 验证, 约束, 边界, 迭代策略, 完成条件, and 暂停条件.",
@@ -18,7 +18,7 @@
       "prompt": "Write a Codex goal for fixing a flaky checkout discount test in this repo. Keep it English only and make sure the agent does not touch payment provider config.",
       "expected_output": "English-only /goal with concrete verification, constraints, boundaries, iteration policy, stop, and pause conditions.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "Output is English-only unless quoting the /goal command syntax.",
         "The goal includes Verification, Constraints, Boundaries, Iteration policy, Stop when, and Pause if.",
         "Payment provider configuration is explicitly out of bounds.",
@@ -30,7 +30,7 @@
       "prompt": "这是医疗数据标注相关的内部工具，我只知道要先做第一版。帮我写 goal，但别让 Codex 编造医学结论。",
       "expected_output": "Discovery-first Chinese /goal with high-risk pause conditions and no invented medical claims.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The goal requires inspecting authoritative project docs, sample data, or official references before implementation.",
         "The constraints prohibit invented medical conclusions, compliance claims, and unsupported data semantics.",
         "Pause conditions include medical judgment, compliance approval, real patient data, paid services, and destructive actions.",
@@ -42,7 +42,7 @@
       "prompt": "我已经在 Codex 里开了一个 goal，现在想暂停它，别帮我重新写目标。",
       "expected_output": "Minimal management answer using /goal pause rather than a new /goal objective.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The answer recommends /goal pause.",
         "The answer does not draft a replacement task objective.",
         "It may briefly mention /goal resume or /goal clear only as related management commands."
@@ -53,7 +53,7 @@
       "prompt": "Turn this 20-section migration plan into a Codex goal, but it is obviously too long to paste inline. The details should live in .planning/migration-goal.md.",
       "expected_output": "A short /goal that points to the requested file plus guidance that the detailed contract belongs in that file.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The executable /goal points to .planning/migration-goal.md.",
         "The answer mentions the 4,000 character objective limit or explains why the file-pointer pattern is used.",
         "The detailed contract still preserves verification, boundaries, stop conditions, and pause conditions."
@@ -62,11 +62,22 @@
     {
       "id": 6,
       "prompt": "帮我把这句话翻译成英文：今天下午三点开会。",
-      "expected_output": "No /goal draft; the skill should not force goal mode for a simple one-line translation.",
+      "expected_output": "Routing-negative: no /goal draft; the skill should not force goal mode for a simple one-line translation.",
       "files": [],
-      "expectations": [
+      "assertions": [
         "The answer should not produce a /goal command.",
         "The answer should treat this as a simple translation or explain that goal mode is unnecessary."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "帮我审计并优化这个仓库的 AGENTS.md，看看 nested 指导有没有冲突、命令是不是过期。",
+      "expected_output": "Routing-negative near-neighbor: auditing/optimizing AGENTS.md guidance is agents-md-improver's job, not goal authoring. The skill should defer to agents-md-improver rather than wrapping the request in a /goal command.",
+      "files": [],
+      "assertions": [
+        "Does NOT force the AGENTS.md audit into a /goal command.",
+        "Routes the request to agents-md-improver (the sibling skill that audits AGENTS.md / code_map files).",
+        "Only offers a /goal afterward if the user explicitly wants bounded agent execution of the resulting fixes."
       ]
     }
   ]

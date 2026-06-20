@@ -10,11 +10,17 @@ tags:
   - prompt-engineering
   - agent-skills
   - verification
+argument-hint: "[vague-task-or-goal]"
+allowed-tools: Read, Bash(python *), Bash(py *)
 ---
 
 # Goal Meta Skill
 
 把一个模糊任务，收敛成 Codex 可以持续执行、可以验证、知道何时停止和何时暂停的 `/goal` 指令。
+
+> In the commands below, `<skill-dir>` is this skill's base directory, announced
+> when the skill loads. Substitute the literal path; it is not an environment
+> variable. The script self-locates, so only the path to it must resolve.
 
 ## Operating Mode
 
@@ -56,7 +62,7 @@ Default assumptions:
 7. Check the command against `references/goal-command-playbook.md`.
 8. If the task is about an existing active goal, use `/goal`, `/goal pause`, `/goal resume`, or `/goal clear` guidance rather than inventing a replacement goal.
 9. Keep the executable `/goal` objective within the 4,000 character limit. When the contract is longer, use a file-pointer pattern such as `/goal Follow the task contract in .planning/<task>.md and stop only when its verification section is satisfied.`
-10. For file deliverables, run `python scripts/lint_goal_command.py <file>` or `py -3 scripts/lint_goal_command.py <file>` before calling the goal done. Add `--require-chinese-companion` when validating Chinese-first output.
+10. For file deliverables, run `python "<skill-dir>/scripts/lint_goal_command.py" <file>` or `py -3 "<skill-dir>/scripts/lint_goal_command.py" <file>` before calling the goal done. Add `--require-chinese-companion` when validating Chinese-first output.
 
 ## Output Contract
 

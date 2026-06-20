@@ -22,18 +22,22 @@ Archive the three active root planning files into one timestamped local folder:
 
 Use the bundled script instead of reimplementing the move logic.
 
+> In the commands below, `<skill-dir>` is this skill's base directory, announced
+> when the skill loads. Substitute the literal path; it is not an environment
+> variable. The script self-locates, so only the path to it must resolve.
+
 ## Run
 
 From the project root:
 
 ```bash
-python "$SKILL_DIR/scripts/archive_planning.py" "$ARGUMENTS"
+python "<skill-dir>/scripts/archive_planning.py" "$ARGUMENTS"
 ```
 
 If `$ARGUMENTS` is empty, omit it:
 
 ```bash
-python "$SKILL_DIR/scripts/archive_planning.py"
+python "<skill-dir>/scripts/archive_planning.py"
 ```
 
 The script treats the current working directory as the project root.

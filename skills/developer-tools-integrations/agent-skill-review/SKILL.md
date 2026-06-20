@@ -8,7 +8,9 @@ tags:
   - agents
   - codex
   - documentation
-version: "1.0.0"
+version: 1.0.0
+argument-hint: "[skill-dir-or-path]"
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash
 ---
 
 # Agent Skill Review
@@ -290,12 +292,14 @@ Rating: Good
 Summary: One short paragraph on whether this skill would reliably improve an agent.
 
 **Findings**
+
 - [P1] Title
   Evidence: File and line or exact artifact.
   Why it matters: Explain the agent behavior that will fail or degrade.
   Suggested fix: Concrete edit, replacement wording, or file move.
 
 **Rubric Notes**
+
 - Frontmatter: ...
 - Ability-product design: ...
 - Origin/lifecycle: ...
@@ -312,6 +316,7 @@ Summary: One short paragraph on whether this skill would reliably improve an age
 One paragraph on whether the skill behaves like a reusable ability product that externalizes expert workflow, taste, tools, gotchas, evals, and distribution readiness.
 
 **Recommended Patch Plan**
+
 1. ...
 2. ...
 3. ...

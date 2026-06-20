@@ -5,19 +5,60 @@
       "id": 1,
       "prompt": "$archive-planning payment-retry-hardening，当前仓库根目录已有 task_plan.md、findings.md、progress.md。请归档这轮规划。",
       "expected_output": "运行 bundled archive_planning.py 脚本，先确认三份根规划文件都存在，再移动到 .plannings/yyyyMMdd-HHmmss-payment-retry-hardening/。成功输出 Archive directory 和三份 Moved files；根目录不再保留这三份文件。",
-      "files": ["task_plan.md", "findings.md", "progress.md"]
+      "files": ["task_plan.md", "findings.md", "progress.md"],
+      "assertions": [
+        "Runs the bundled archive_planning.py script rather than re-implementing the move logic.",
+        "Confirms all three root files exist before moving anything.",
+        "Creates .plannings/<timestamp>-payment-retry-hardening/ and moves the three files into it.",
+        "Leaves no copies of the three files in the repo root after success.",
+        "Reports the archive directory and the moved file list."
+      ]
     },
     {
       "id": 2,
       "prompt": "$archive-planning，task_plan.md 第一行是 # 任务计划：结算幂等修复。",
       "expected_output": "未传 feature name 时按优先级从规划文件推断 feature，生成包含 结算幂等修复 slug 的 .plannings/yyyyMMdd-HHmmss-结算幂等修复/ 目录，并只移动 task_plan.md、findings.md、progress.md。",
-      "files": ["task_plan.md", "findings.md", "progress.md"]
+      "files": ["task_plan.md", "findings.md", "progress.md"],
+      "assertions": [
+        "With no feature-name argument, infers the feature from the planning files in the documented priority order.",
+        "Derives the slug from the `# 任务计划：结算幂等修复` first line.",
+        "Creates .plannings/<timestamp>-结算幂等修复/ and moves only the three root files.",
+        "Does not prompt the user for a name when it can be inferred."
+      ]
     },
     {
       "id": 3,
       "prompt": "$archive-planning current-feature，但根目录缺少 progress.md。",
       "expected_output": "中止并列出缺失的 progress.md；不创建 .plannings/，不移动 task_plan.md 或 findings.md，也不尝试归档嵌套目录文件。",
-      "files": ["task_plan.md", "findings.md"]
+      "files": ["task_plan.md", "findings.md"],
+      "assertions": [
+        "Aborts because a required root file (progress.md) is missing.",
+        "Lists the missing file(s) explicitly.",
+        "Does not create .plannings/ and does not move task_plan.md or findings.md.",
+        "Guarantees a no-op on failure."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "$archive-planning，把根目录的三份规划文件，连同 docs/old-notes.md 和 .plannings 里上一轮的 task_plan.md 一起归档过去。",
+      "expected_output": "Out-of-contract scope: the skill archives only the three root planning files and must not sweep in nested or unrelated files. It should archive the three root files and tell the user the extra paths are outside this skill's fixed scope.",
+      "files": ["task_plan.md", "findings.md", "progress.md"],
+      "assertions": [
+        "Archives only the three root files (task_plan.md, findings.md, progress.md).",
+        "Does NOT move docs/old-notes.md or any nested/.plannings file.",
+        "States that archiving is scoped to the three root files only and does not extend to arbitrary paths."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我把 task_plan.md 的目标小节改写得更清晰一点，再补两条验收标准。",
+      "expected_output": "Routing-negative: this is an edit/update of planning content, not an archive. The skill should not run archive_planning.py (which would move the files away); it should treat this as a content edit instead.",
+      "files": ["task_plan.md", "findings.md", "progress.md"],
+      "assertions": [
+        "Does NOT run archive_planning.py for an edit/update request.",
+        "Recognizes the request is to edit planning content, not to archive it.",
+        "Does not move the planning files out of the repo root."
+      ]
     }
   ]
 }
