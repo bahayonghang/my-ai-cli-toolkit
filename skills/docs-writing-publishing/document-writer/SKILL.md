@@ -1,8 +1,20 @@
 ---
 name: document-writer
-description: Write or update technical documentation from the real codebase and project files. Use whenever the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, and also when they want technical documentation rewritten into natural Chinese with correct terminology and formatting.
+description: Write or update technical documentation from the real codebase and project files. Use whenever the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, and also when they want technical documentation rewritten into natural Chinese with correct terminology and formatting. Do not use for polishing or rewriting general prose, marketing or social copy, or localization of non-technical text; those belong to a prose or copy skill that is not codebase-grounded. Keep this skill anchored to the actual code, configs, and project files.
 category: docs-writing-publishing
-tags: [documentation, technical-writing, readme, api-docs, architecture, user-guide, contributing, jsdoc, chinese-docs]
+tags:
+  [
+    documentation,
+    technical-writing,
+    readme,
+    api-docs,
+    architecture,
+    user-guide,
+    contributing,
+    jsdoc,
+    chinese-docs,
+  ]
+version: 1.0.0
 argument-hint: [target-path-and-doc-task]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -11,9 +23,11 @@ Write or update technical documentation for the target project at `$ARGUMENTS`.
 
 ## Preconditions
 
+> Paths starting with `<skill-dir>` are relative to this skill's base directory, announced when the skill loads. Substitute that literal path; it is not an environment variable.
+
 1. If `$ARGUMENTS` is empty, report: `Error: Please provide the target path and the documentation task (for example: './docs/api.md update the payment API docs' or './src/utils.ts add JSDoc for the public helpers').`
-2. Read `$SKILL_DIR/references/WORKFLOW.md`, `$SKILL_DIR/references/DOCUMENT_TYPES.md`, and `$SKILL_DIR/references/VERIFICATION_CHECKLIST.md` before drafting.
-3. If the request is in Chinese, the output file is Chinese, or the user wants polishing/rewrite into Chinese, also read `$SKILL_DIR/references/CHINESE_TECH_WRITING.md`.
+2. Read `<skill-dir>/references/WORKFLOW.md`, `<skill-dir>/references/DOCUMENT_TYPES.md`, and `<skill-dir>/references/VERIFICATION_CHECKLIST.md` before drafting.
+3. If the request is in Chinese, the output file is Chinese, or the user wants polishing/rewrite into Chinese, also read `<skill-dir>/references/CHINESE_TECH_WRITING.md`.
 
 ## Execution Flow
 

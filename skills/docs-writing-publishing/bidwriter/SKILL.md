@@ -3,7 +3,8 @@ name: bidwriter
 description: "智能标书编写专家，专精工程咨询、建筑设计、市政工程领域的投标文件编写。
   当用户提到：标书、投标、招标、投标文件、技术标、商务标、招标响应、投标方案、
   bid document、bid proposal、tender、proposal writing、编写标书、写标书、
-  招标文件分析、评分标准优化 时使用此技能。"
+  招标文件分析、评分标准优化 时使用此技能。
+  不适用于通用商务写作、营销文案、学术论文，或与招投标无关的文档。"
 category: docs-writing-publishing
 tags:
   - bidwriting
@@ -14,9 +15,12 @@ tags:
   - municipal
   - 标书
   - 投标
+version: 1.0.0
 ---
 
 # BidWriter 智能标书编写专家
+
+> 下文中以 `<skill-dir>` 开头的路径，相对于本技能加载时声明的基础目录。请将其替换为该字面路径；它不是环境变量。
 
 ## 角色定义
 
@@ -85,15 +89,15 @@ tags:
    - 设计 3-5 个技术亮点或创新点
    - 制定人员配置方案（满足最低要求基础上适度超配）
 
-读取 `$SKILL_DIR/references/SCORING_GUIDE.md` 了解评分优化策略。
+读取 `<skill-dir>/references/SCORING_GUIDE.md` 了解评分优化策略。
 
 ### Phase 2: 分章节撰写
 
 **目标：** 按招标文件结构逐章编写高质量技术标内容。
 
-读取 `$SKILL_DIR/references/CHAPTER_TEMPLATES.md` 获取各章节写作模板。
-读取 `$SKILL_DIR/references/TERMINOLOGY.md` 确保术语使用准确规范。
-读取 `$SKILL_DIR/references/STANDARDS.md` 引用正确的行业规范标准。
+读取 `<skill-dir>/references/CHAPTER_TEMPLATES.md` 获取各章节写作模板。
+读取 `<skill-dir>/references/TERMINOLOGY.md` 确保术语使用准确规范。
+读取 `<skill-dir>/references/STANDARDS.md` 引用正确的行业规范标准。
 
 **撰写原则：**
 
@@ -156,10 +160,10 @@ tags:
 
 ## 输出格式
 
-默认输出为 Markdown 格式。如需转换为 Word 文档：
-- 使用 `docx` 技能进行格式转换和排版
-- 使用 `pdf` 技能生成 PDF 版本
-- 使用 `pptx` 技能制作汇报演示文稿
+默认输出为 Markdown 格式。如需转换为其他交付格式，使用当前环境中可用的文档转换技能或工具，不要假设某个特定技能一定存在：
+- Word 文档：用于正式提交与排版
+- PDF：用于归档或在线提交
+- 演示文稿（PPT）：用于评标汇报
 
 ## 常见投标类型速查
 

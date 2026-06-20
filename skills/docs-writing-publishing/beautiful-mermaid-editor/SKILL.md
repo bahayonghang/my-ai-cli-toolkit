@@ -15,6 +15,7 @@ tags:
   - typescript
   - live-editor
   - svg-export
+version: 1.0.0
 argument-hint: "[path-to-beautiful-mermaid-repo-or-editor-task]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -46,12 +47,12 @@ Work from the Beautiful Mermaid editor source tree, not from generated HTML outp
 
 Load only the references needed for the requested change:
 
-| Task type | Load first |
-| --- | --- |
-| Config panel, color control, slider, sample preset | `references/CHANGE_PATTERNS.md` |
-| Render pipeline, theme, dark mode, zoom, export, clipboard | `references/ARCHITECTURE.md` |
-| Rebuild commands, smoke checks, generated artifact review | `references/VERIFICATION.md` |
-| Renderer support or new `RenderOptions` field | `references/ARCHITECTURE.md` + `references/CHANGE_PATTERNS.md` |
+| Task type                                                  | Load first                                                     |
+| ---------------------------------------------------------- | -------------------------------------------------------------- |
+| Config panel, color control, slider, sample preset         | `references/CHANGE_PATTERNS.md`                                |
+| Render pipeline, theme, dark mode, zoom, export, clipboard | `references/ARCHITECTURE.md`                                   |
+| Rebuild commands, smoke checks, generated artifact review  | `references/VERIFICATION.md`                                   |
+| Renderer support or new `RenderOptions` field              | `references/ARCHITECTURE.md` + `references/CHANGE_PATTERNS.md` |
 
 ### 3. Inspect before editing
 
