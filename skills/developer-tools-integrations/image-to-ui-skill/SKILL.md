@@ -45,7 +45,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 
 ## image2 调用边界
 
-本 skill 里的 `image2` 指项目指定的 image2 调用入口，不等同于任意图片生成工具。当前 skill 也包含一个明确备案通道：当原生 image2 命令不可用或失败时，必须使用 `scripts/image2_asset.py` 自动转到 OpenRouter ICU `gpt-image-2`，以确保任务能真实落地图片文件。
+本 skill 里的 `image2` 指项目指定的 image2 调用入口，不等同于任意图片生成工具。当前 skill 也包含一个备案通道：当原生 image2 命令不可用或失败时，`scripts/image2_asset.py` 会在**备案前置条件满足时**自动转到 OpenRouter ICU `gpt-image-2`(前置条件见下方「备案通道前置条件」)。若前置条件不满足，脚本会以非零码明确报错，此时必须如实说明尚未生图，不得声称已落地位图。
 
 执行时：
 
@@ -56,6 +56,15 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 - 不要把 `imagegen` skill、其它图片生成插件、随机在线生图服务或手写 SDK 请求当作本 skill 的 image2/fallback 通道。
 - 如果原生 image2 和 OpenRouter ICU fallback 都不可用，再停止并说明缺少可用生图入口；不要声称已经生图。
 - 可以继续实现代码 UI 骨架，但必须明确标注“尚未完成真实位图资产生成”，不能把代码近似、CSS/SVG 视觉或其它来源图片写成 image2 结果。
+
+### 备案通道前置条件
+
+OpenRouter ICU `gpt-image-2` 备案通道并非无条件可用。`scripts/image2_asset.py` 走 fallback 需要同时满足：
+
+- **能定位 OpenRouter ICU CLI**:在本 skill 同级目录安装 `openrouter-icu-image` skill(脚本默认查找 `openrouter-icu-image/scripts/openrouter_icu_image.py`),或显式设置 `OPENROUTER_ICU_IMAGE_CLI` 指向该脚本。本仓库默认不附带该兄弟 skill，需要时另行安装或配置。
+- **凭据可用**:设置 `OPENROUTER_ICU_API_KEY` 或 `OPENAI_API_KEY`。
+
+任一前置条件不满足时，脚本会以非零码报错(例如 `OpenRouter ICU fallback CLI not found`，或提示需要配置 API key),不会产出位图。此时按下文「真实生图验真」与 `references/image2-entrypoint.md` 的「找不到入口时怎么办」处理:完成 UI 拆解、资产清单、提示词与代码骨架，明确标注“尚未完成真实位图资产生成”,不得用 CSS/SVG 代码近似冒充 image2 结果。
 
 ### 生图命令
 

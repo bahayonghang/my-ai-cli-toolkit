@@ -62,6 +62,8 @@ rg -n "image2|IMAGE2|generate.*image|image.*generate|生图|出图|绘图|assets
 5. 不要生成或接入其它模型图片来冒充 image2。
 6. 最终列出待执行的 image2 资产和提示词，方便用户补充入口后继续。
 
+> 备案通道前置条件：需在本 skill 同级安装 `openrouter-icu-image`(或设置 `OPENROUTER_ICU_IMAGE_CLI`),并提供 `OPENROUTER_ICU_API_KEY` 或 `OPENAI_API_KEY`;否则 `scripts/image2_asset.py` 会报错且不产出位图。本仓库默认不附带该兄弟 skill。详见 SKILL.md「备案通道前置条件」。
+
 可使用这段说明：
 
 ```text
