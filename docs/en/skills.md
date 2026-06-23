@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 30 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 31 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -20,7 +20,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 7 skills
+`developer-tools-integrations` · 8 skills
 
 - [agent-skill-review](/en/skills/developer-tools-integrations/agent-skill-review) — Review Codex, Claude, OpenAI, or other agent skill directories as reusable capability packages.
 - [agents-md-improver](/en/skills/developer-tools-integrations/agents-md-improver) — Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps in repositories.
@@ -29,6 +29,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [claude-md-improver](/en/skills/developer-tools-integrations/claude-md-improver) — Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and companion code_map.md navigation maps.
 - [codex-workflow-recommender](/en/skills/developer-tools-integrations/codex-workflow-recommender) — Analyze a repository and current Codex environment, then recommend Codex CLI, Codex App, AGENTS.md, skills, native subagents, plugins, MCP servers, config/hooks, and optional OMX workflow improvements without modifying files.
 - [goal-meta-skill](/en/skills/developer-tools-integrations/goal-meta-skill) — Turn vague or complex Codex tasks into strong `/goal` commands with outcome, verification, constraints, boundaries, iteration policy, completion evidence, and pause/block conditions.
+- [image-to-ui-skill](/en/skills/developer-tools-integrations/image-to-ui-skill) — 将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
 
 ### Development Workflows
 
