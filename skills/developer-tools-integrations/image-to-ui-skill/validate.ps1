@@ -45,7 +45,7 @@ function Get-RelativeMarkdownTargets([string]$content) {
 
 $skillPath = Assert-File "SKILL.md"
 $readmePath = Assert-File "README.md"
-$openaiYamlPath = Assert-File "agents\openai.yaml"
+$interfaceYamlPath = Assert-File "agents\interface.yaml"
 Assert-File "references\asset-manifest-and-prompts.md" | Out-Null
 Assert-File "references\image2-entrypoint.md" | Out-Null
 Assert-File "references\hicolor-case-study.md" | Out-Null
@@ -55,7 +55,7 @@ Assert-File "assets\cases\hicolor\threads-recommendation.png" | Out-Null
 
 $skill = Get-Content -LiteralPath $skillPath -Raw -Encoding UTF8
 $readme = Get-Content -LiteralPath $readmePath -Raw -Encoding UTF8
-$openaiYaml = Get-Content -LiteralPath $openaiYamlPath -Raw -Encoding UTF8
+$interfaceYaml = Get-Content -LiteralPath $interfaceYamlPath -Raw -Encoding UTF8
 
 Assert-True ($skill.Contains("name: image-to-ui-skill")) "SKILL.md frontmatter must contain the expected name"
 Assert-True ($skill.Contains("description:")) "SKILL.md frontmatter must contain description"
@@ -68,9 +68,9 @@ Assert-True ($skill.Contains("OPENAI_API_KEY")) "SKILL.md should document fallba
 Assert-True ($skill.Contains("Dynamic Island")) "SKILL.md should keep iOS app preview requirements"
 Assert-File "scripts\image2_asset.py" | Out-Null
 
-Assert-True ($openaiYaml.Contains("display_name:")) "agents/openai.yaml missing display_name"
-Assert-True ($openaiYaml.Contains("short_description:")) "agents/openai.yaml missing short_description"
-Assert-True ($openaiYaml.Contains("default_prompt:")) "agents/openai.yaml missing default_prompt"
+  Assert-True ($interfaceYaml.Contains("display_name:")) "agents/interface.yaml missing display_name"
+  Assert-True ($interfaceYaml.Contains("short_description:")) "agents/interface.yaml missing short_description"
+  Assert-True ($interfaceYaml.Contains("default_prompt:")) "agents/interface.yaml missing default_prompt"
 
 $targets = Get-RelativeMarkdownTargets $readme
 foreach ($target in $targets) {

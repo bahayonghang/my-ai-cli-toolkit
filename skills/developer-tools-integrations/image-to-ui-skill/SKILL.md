@@ -1,6 +1,16 @@
 ---
 name: image-to-ui-skill
 description: 将 UI 截图、设计稿、图片转换为可实现的前端代码和图片资产；also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, and high-fidelity UI recreation from reference images. 分析哪些部分应该用代码实现，哪些部分应该生成位图资产。识别图片依赖区域、图标、按钮、字体、背景、首屏视觉、产品渲染图、抠图、透明 PNG 资产，生成提示词并回填到前端 UI 中。涉及生图时必须先使用项目指定 image2 入口；如果 image2 不可用或失败，必须自动备案走 OpenRouter ICU gpt-image-2 通道，确保真实生成位图文件。不要用 imagegen 或其他未指定图片工具替代。当用户要求做成 App 形式、手机 App、iOS 预览、可点击 App demo 或移动端原型时，必须生成带 iOS 手机外边框的可点击预览，并提供渲染截图。
+category: developer-tools-integrations
+tags:
+  - image-to-ui
+  - codex
+  - frontend
+  - prototype
+  - image2
+version: 0.1.0
+argument-hint: "[ui-reference-image]"
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Image to UI Skill

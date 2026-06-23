@@ -117,13 +117,13 @@ Turn UI screenshots and design references into clickable Codex demos with code-r
 Windows PowerShell：
 
 ```powershell
-git clone https://github.com/zhu-guli326/image2_UI_skill.git "$env:USERPROFILE\.codex\skills\image2_UI_skill"
+git clone https://github.com/zhu-guli326/image2_UI_skill.git "$env:USERPROFILE\.codex\skills\image-to-ui-skill"
 ```
 
 macOS / Linux：
 
 ```bash
-git clone https://github.com/zhu-guli326/image2_UI_skill.git "${CODEX_HOME:-$HOME/.codex}/skills/image2_UI_skill"
+git clone https://github.com/zhu-guli326/image2_UI_skill.git "${CODEX_HOME:-$HOME/.codex}/skills/image-to-ui-skill"
 ```
 
 安装后重开 Codex，或新开一个会话。
