@@ -2,7 +2,7 @@
 
 House standard for the skills in this directory: `agent-skill-review`,
 `agents-md-improver`, `archive-planning`, `ast-grep`, `claude-md-improver`,
-`codex-workflow-recommender`, `goal-meta-skill`. These skills package
+`codex-workflow-recommender`, `goal-meta-skill`, `image-to-ui-skill`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, planning
 archival, goal authoring). They drifted apart on script paths, evals, and
 interface files; new or edited skills here should match the conventions below so
@@ -53,6 +53,7 @@ bare `Bash` when the skill only runs a known command family.
 | claude-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *), …`        | audits + edits CLAUDE.md/rules/code_map      |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex *), Bash(git *), …`                    | read-only discovery; recommends, never edits |
 | goal-meta-skill            | `Read, Bash(python *), Bash(py *)`                                   | reads refs; runs the goal lint script        |
+| image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 
 `agent-skill-review` and `goal-meta-skill` were missing `allowed-tools`; add them
 to match this table.

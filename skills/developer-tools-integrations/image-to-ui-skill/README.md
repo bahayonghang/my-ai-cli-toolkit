@@ -78,6 +78,8 @@ Turn UI screenshots and design references into clickable Codex demos with code-r
   </tr>
 </table>
 
+[阅读 case study](./references/museum-app-case-study.md)
+
 ### 女装购物 App
 
 <table>
@@ -94,6 +96,8 @@ Turn UI screenshots and design references into clickable Codex demos with code-r
     <td><a href="./assets/cases/fashion-shopping-app/fashion-app-preview.gif">查看动图预览</a></td>
   </tr>
 </table>
+
+[阅读 case study](./references/fashion-shopping-app-case-study.md)
 
 ### 新闻阅读 App
 
