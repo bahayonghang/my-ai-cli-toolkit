@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 12
-- **Last Active**: 2026-06-20
+- **Total Sessions**: 13
+- **Last Active**: 2026-06-24
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~409 | Active |
+| `journal-1.md` | ~443 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 13 | 2026-06-24 | humanizer-paper 改造为学术语体双模式打磨器 | `b84b496`, `cebe478` | `main` |
 | 12 | 2026-06-20 | Harmonize git-github-collaboration skill suite (+ adopt literature-mentor) | `046575c`, `1ea3d6d`, `7bf6ec1` | `main` |
 | 11 | 2026-06-15 | Add neutral agent skill review | `da3cd27` | `main` |
 | 10 | 2026-06-12 | Bootstrap Guidelines | `85c5b6e` | `main` |

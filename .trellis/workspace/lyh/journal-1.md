@@ -407,3 +407,37 @@ yao-meta review of all 4 gh-collab skills, then implemented all P0-P2 fixes: rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: humanizer-paper 改造为学术语体双模式打磨器
+
+**Date**: 2026-06-24
+**Task**: humanizer-paper 改造为学术语体双模式打磨器
+**Branch**: `main`
+
+### Summary
+
+把通用 humanizer-paper 原地改造为英文期刊 + 中文博论双模式学术语体打磨器:33 项 AI-tell 按学术语体重新 gating(hedging 校准、Methods 被动保留、术语一致升硬规则、模糊出处反转为补引用、空结论改创新+局限+展望、PERSONALITY 禁用),新增 5 项学术痕迹(ghost citation/泛泛而谈/术语漂移/低 burstiness/模板化段落),两套规范包(en-journal/zh-dissertation,GB 国标),诚信边界写入主干,scripts/polish_lint.py 机械校验(纯 stdlib、退出码恒 0),evals 7 例含 2 routing-negative。SKILL.md 621→173 行,version 3.0.0,just ci 全绿。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b84b496` | (see git log) |
+| `cebe478` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
