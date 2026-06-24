@@ -1,0 +1,3 @@
+{"file": "skills/research-learning-knowledge/AGENTS.md", "reason": "核对:frontmatter 合规、<skill-dir> 用法、docs-sync 后 docs-check、evals routing-negative 约定"}
+{"file": "scripts/check.py", "reason": "核对 frontmatter 硬校验:name 格式、description 无尖括号且 ≤1024、category 等于目录类目、tags 为数组、未知键告警"}
+{"file": ".trellis/tasks/06-24-humanizer-paper-academic/research/academic-humanization-findings.md", "reason": "核对学术规范内容正确(hedging 校准/术语统一/GB 国标/诚信边界)而非被通用规则改坏"}

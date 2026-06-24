@@ -1,0 +1,4 @@
+{"file": "skills/research-learning-knowledge/AGENTS.md", "reason": "本品类 suite 约定:<skill-dir> 脚本路径、frontmatter 五字段、evals 位置、结构变更后 just docs-sync"}
+{"file": "skills/research-learning-knowledge/paper-workbench/SKILL.md", "reason": "结构样板:精简 SKILL.md + <skill-dir> 提示块 + references 指针 + scripts 调用写法"}
+{"file": "skills/research-learning-knowledge/paper-workbench/scripts/normalize_paper.py", "reason": "脚本风格样板(纯 stdlib / Path(__file__) 自定位 / argparse / JSON);含 infer_language 与中英论文结构识别可复用思路"}
+{"file": ".trellis/tasks/06-24-humanizer-paper-academic/research/academic-humanization-findings.md", "reason": "重新 gating 冲突表、学术新增痕迹、中英规范包内容的依据"}
