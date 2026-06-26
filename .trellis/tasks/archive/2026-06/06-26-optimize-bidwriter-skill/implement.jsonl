@@ -1,0 +1,1 @@
+{"file": "skills/AGENTS.md", "reason": "skills/** 子树规范：frontmatter 必含 name/description/category/tags/version 且 category 须匹配目录；allowed-tools 用逗号字符串；公开元数据变更后须 docs-sync/docs-check"}
