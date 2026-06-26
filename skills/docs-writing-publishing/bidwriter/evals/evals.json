@@ -36,12 +36,44 @@
     },
     {
       "id": 4,
+      "prompt": "我们要投一个政府政务云平台采购项目（IT/信息化，预算约 260 万），帮我先把评分标准和废标条款提取出来，再规划技术标章节，并对关键技术参数做逐条响应。",
+      "expected_output": "Activates the bid-writing workflow for a non-engineering IT/government-cloud procurement: parses the tender, extracts scoring items and veto clauses, plans technical-proposal chapters, and produces a point-by-point technical-parameter response.",
+      "files": [],
+      "assertions": [
+        "The response handles a non-engineering (IT/informatization) tender within the bid-writing workflow rather than rejecting it as out of scope.",
+        "It extracts scoring criteria and veto (废标) clauses.",
+        "It produces or plans a point-by-point technical-parameter response marking 满足/优于/偏离."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "一批服务器和网络设备的货物采购投标，按政府采购货物招标的要求，帮我做技术参数点对点响应表，并列出商务响应要点。",
+      "expected_output": "Drives a goods-procurement bid under government procurement rules: builds a point-by-point technical-parameter response table (满足/优于/偏离) with evidence, and lists commercial response points, deferring final pricing to a human.",
+      "files": [],
+      "assertions": [
+        "The response builds a technical-parameter response table marking 满足/优于/偏离.",
+        "It addresses goods-procurement specifics such as supply/delivery, warranty and after-sales, and commercial response.",
+        "It does not fabricate specific bid prices and defers final pricing decisions to a human."
+      ]
+    },
+    {
+      "id": 6,
       "prompt": "帮我写一篇公司年会的开场致辞和一段产品营销软文。",
       "expected_output": "Negative trigger. General business/marketing prose unrelated to tenders should not activate the bid-writing workflow.",
       "files": [],
       "assertions": [
         "The skill description should not pull general business or marketing copy into the tender-writing workflow.",
         "If referenced, the response should redirect to a general writing skill rather than tender analysis or chapter drafting."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "帮我写一篇关于深度学习的学术论文的文献综述章节。",
+      "expected_output": "Negative trigger. Academic paper writing unrelated to tenders should not activate the bid-writing workflow.",
+      "files": [],
+      "assertions": [
+        "The skill description should not pull academic paper writing into the tender-writing workflow.",
+        "If referenced, the response should redirect to a general or academic writing skill rather than tender analysis or chapter drafting."
       ]
     }
   ]

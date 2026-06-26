@@ -52,7 +52,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 `docs-writing-publishing` · 4 skills
 
 - [beautiful-mermaid-editor](/skills/docs-writing-publishing/beautiful-mermaid-editor) — Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mermaid diagrams.
-- [bidwriter](/skills/docs-writing-publishing/bidwriter) — 智能标书编写专家，专精工程咨询、建筑设计、市政工程领域的投标文件编写。
+- [bidwriter](/skills/docs-writing-publishing/bidwriter) — 智能招投标文件编写专家，覆盖工程咨询、建筑设计、市政工程、IT 与信息化、软件开发、货物采购、服务采购等各类招投标，工程建设类为深度强项。能解析招标文件、提取评分标准与废标条款、制定投标策略、分章节撰写技术标与商务标、做技术指标逐条响应与合规性及废标风险审核。当用户提到：标书、投标、招标、投标文件、技术标、商务标、招标响应、投标方案、编写标书、写标书、招标文件分析、评分标准提取、评分细则、评分项核对、废标风险、否决性条款、合规性检查、逐条响应、响应对照表、技术方案撰写、投标策略、偏离表、政府采购、bid document、bid proposal、tender、RFP response、proposal writing 时使用此技能。不适用于通用商务写作、营销软文、年会致辞、产品文案、学术论文，或与招投标无关的文档。
 - [document-writer](/skills/docs-writing-publishing/document-writer) — Write or update technical documentation from the real codebase and project files.
 - [touying](/skills/docs-writing-publishing/touying) — Author Typst slide decks with the Touying package.
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "BidWriter"
+  short_description: "Draft and audit tender/bid documents across engineering, IT, goods and services procurement"
+  default_prompt: "Use $bidwriter to parse a tender, extract scoring and veto clauses, and draft a compliant, point-by-point bid response."
