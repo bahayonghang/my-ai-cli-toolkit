@@ -441,3 +441,36 @@ yao-meta review of all 4 gh-collab skills, then implemented all P0-P2 fixes: rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 14: BidWriter 通用招投标平台扩展
+
+**Date**: 2026-06-26
+**Task**: BidWriter 通用招投标平台扩展
+**Branch**: `main`
+
+### Summary
+
+将 bidwriter 从工程标书专精扩展为覆盖工程、IT、货物与服务采购的通用招投标文件编写平台；补齐 OCR、报价人工决策、关键字段复核、技术指标逐条响应、政府采购法规与新增 evals/interface，并通过 just ci。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `001ff88` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
