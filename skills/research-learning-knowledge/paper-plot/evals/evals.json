@@ -1,0 +1,65 @@
+{
+  "skill_name": "paper-plot",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有 4 个方法在 GAIA/Web/xBench 上的 baseline 和我们方法的准确率，用 bar_paired_delta 风格画成论文图，标出每组增益。",
+      "expected_output": "Runs from-data mode, reads styles/bar_paired_delta.md, copies scripts/bar_memevolve.py, swaps the data block, and runs python <skill-dir>/scripts/bar_memevolve.py to emit a dpi=300 PNG.",
+      "files": [],
+      "assertions": [
+        "Routes to paper-plot from-data mode",
+        "Selects the bar_paired_delta style and its bar_memevolve.py script",
+        "Reads references/styles/bar_paired_delta.md for exact parameters before generating",
+        "Substitutes user data without changing array dimensions or plot logic",
+        "Produces a dpi=300 PNG via the script"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "这是我从一篇论文里截的训练曲线图（带置信区间阴影），帮我复现成 matplotlib 脚本。",
+      "expected_output": "Runs from-image mode: measures aspect ratio with PIL, matches the figure to line_confidence_band, reads its style file, adapts the script, iterates against assets/originals.",
+      "files": ["fig.png"],
+      "assertions": [
+        "Routes to paper-plot from-image mode",
+        "Measures original proportions before setting figsize",
+        "Matches the shaded-band line plot to the line_confidence_band style",
+        "Adapts scripts/line_selfdistill.py and reads references/styles/line_confidence_band.md",
+        "Iterates by visual comparison against the original"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "用 radar_dual_series 风格把 DoRA 和 LoRA 在 6 个维度上的得分画成雷达对比图。",
+      "expected_output": "Runs from-data mode, reads styles/radar_dual_series.md, adapts scripts/radar_dora.py with the two series, runs to emit a dpi=300 radar PNG.",
+      "files": [],
+      "assertions": [
+        "Routes to paper-plot from-data mode",
+        "Selects radar_dual_series and radar_dora.py",
+        "Reads references/styles/radar_dual_series.md before generating",
+        "Keeps label radius and octagonal grid per the style spec"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我深读这篇 arXiv 论文的方法部分，像导师一样讲讲它的创新点和实验设计。",
+      "expected_output": "Routes to literature-mentor (single-paper interactive deep reading), NOT paper-plot. paper-plot only draws/reproduces figures.",
+      "files": [],
+      "assertions": [
+        "Does NOT route to paper-plot",
+        "Routes to literature-mentor for single-paper deep reading",
+        "Recognizes the request is about understanding paper content, not plotting"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "把这 5 篇论文整理成一张对比表并找出研究空白，做成文献综述。",
+      "expected_output": "Routes to paper-workbench (multi-paper intake, comparison, gap mapping, literature review), NOT paper-plot.",
+      "files": [],
+      "assertions": [
+        "Does NOT route to paper-plot",
+        "Routes to paper-workbench for multi-paper synthesis",
+        "Recognizes a comparison table here is a literature-synthesis artifact, not a matplotlib figure"
+      ]
+    }
+  ]
+}
