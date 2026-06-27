@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、32 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、33 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -67,11 +67,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 研究、学习与知识
 
-`research-learning-knowledge` · 5 skills
+`research-learning-knowledge` · 6 skills
 
 - [deep-research-pro](/skills/research-learning-knowledge/deep-research-pro) — Multi-source deep research skill for current-topic investigation, comparison, and cited report writing.
 - [humanizer-paper](/skills/research-learning-knowledge/humanizer-paper) — Register-aware academic language polisher for English journal articles and Chinese doctoral dissertations.
 - [literature-mentor](/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文，面向计算机科学、深度学习、自动化等方向（个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发，通过 Zotero MCP 优先获取全文，并根据用户意图自动选择快速筛选、导师深读或研究复盘模式。完整深读时先完成叙事类型判断、阅读前预检、novelty 校准和作者思考路径重建，再整体概览，并基于图例、正文和表格逐图详细解读（Zotero MCP 无法提取 PDF 图片，解读基于文字信息，必要时提醒上传图片）。适用于：(1)快速判断文献是否值得深读 (2)深入理解某篇论文 (3)学习文章中的方法和技术 (4)批判性分析研究设计 (5)寻找研究灵感。需要多篇论文综合、对比或找研究空白，或 arXiv/DOI 批量规范化时，改用 paper-workbench。
+- [paper-plot](/skills/research-learning-knowledge/paper-plot) — Generate or reproduce publication-quality matplotlib figures in real academic paper styles. Two modes: (from-data) pick a pre-built paper style and fill in your numbers; (from-image) reproduce an uploaded paper figure as a matplotlib script.
 - [paper-workbench](/skills/research-learning-knowledge/paper-workbench) — Researcher-profile-driven paper intake and literature workbench for academic workflows.
 - [roundtable](/skills/research-learning-knowledge/roundtable) — Multi-perspective roundtable discussion skill for exploring a topic through a truth-seeking moderator and a small set of representative real figures.
 
