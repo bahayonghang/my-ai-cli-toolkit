@@ -474,3 +474,38 @@ yao-meta review of all 4 gh-collab skills, then implemented all P0-P2 fixes: rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 15: 整理 paper-plot-skills 为规范化 paper-plot skill
+
+**Date**: 2026-06-27
+**Task**: 整理 paper-plot-skills 为规范化 paper-plot skill
+**Branch**: `main`
+
+### Summary
+
+将参考仓库 paper-plot-skills 的两个并列技能合并为符合 research-learning-knowledge 房规的单个 paper-plot skill：精简 SKILL.md 路由 + from-data/from-image 两 mode + 8 风格文档 + 9 脚本 + 10 原图画廊 + evals。补全 frontmatter、剔除 vendor sidecar、修跨技能引用、脚本输出路径参数化、python3->python。抽样运行 4 个脚本生成 dpi=300 PNG，just ci 全绿。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d318903` | (see git log) |
+| `99c3b4d` | (see git log) |
+| `51db52b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

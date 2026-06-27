@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 14
-- **Last Active**: 2026-06-26
+- **Total Sessions**: 15
+- **Last Active**: 2026-06-27
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~476 | Active |
+| `journal-1.md` | ~511 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 15 | 2026-06-27 | 整理 paper-plot-skills 为规范化 paper-plot skill | `d318903`, `99c3b4d`, `51db52b` | `main` |
 | 14 | 2026-06-26 | BidWriter 通用招投标平台扩展 | `001ff88` | `main` |
 | 13 | 2026-06-24 | humanizer-paper 改造为学术语体双模式打磨器 | `b84b496`, `cebe478` | `main` |
 | 12 | 2026-06-20 | Harmonize git-github-collaboration skill suite (+ adopt literature-mentor) | `046575c`, `1ea3d6d`, `7bf6ec1` | `main` |
