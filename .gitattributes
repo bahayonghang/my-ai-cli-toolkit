@@ -1,0 +1,3 @@
+# archify's golden tests byte-compare fresh renders against checked-in HTML;
+# pin LF so core.autocrlf=true checkouts cannot break the comparison.
+skills/docs-writing-publishing/archify/** text eol=lf
