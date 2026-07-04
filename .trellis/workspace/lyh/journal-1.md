@@ -509,3 +509,38 @@ yao-meta review of all 4 gh-collab skills, then implemented all P0-P2 fixes: rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 16: Add uv-workflow skill
+
+**Date**: 2026-07-04
+**Task**: Add uv-workflow skill
+**Branch**: `main`
+
+### Summary
+
+Added the uv-workflow skill for coding-agent Python execution through uv, generated catalog docs, and recorded the Trellis task artifacts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8d1d951` | (see git log) |
+| `6e4d4c5` | (see git log) |
+| `dd808c5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
