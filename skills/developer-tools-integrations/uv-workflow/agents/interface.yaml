@@ -1,0 +1,7 @@
+interface:
+  display_name: "uv Workflow"
+  short_description: "Run Python commands and standalone scripts through uv."
+  default_prompt: "Use $uv-workflow whenever you need to run Python code, Python tools, tests, one-liners, or standalone scripts through uv."
+
+policy:
+  allow_implicit_invocation: true

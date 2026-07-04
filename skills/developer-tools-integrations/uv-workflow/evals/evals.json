@@ -1,0 +1,61 @@
+{
+  "skill_name": "uv-workflow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run a quick Python one-liner that prints the current working directory. This environment may not have python on PATH.",
+      "expected_output": "Use uv as the shell entrypoint, for example uv run python -c with the one-liner. Do not run python or python3 directly.",
+      "files": [],
+      "assertions": [
+        "Uses uv run python -c for the one-liner.",
+        "Does not use python or python3 as the direct shell entrypoint.",
+        "May set UV_CACHE_DIR to a writable temporary directory when sandboxed."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a standalone Python script that calls the httpx package, add the dependency, and run it.",
+      "expected_output": "Initialize the script with uv init --script, add httpx with uv add --script, edit the script body normally, and run it with uv run.",
+      "files": [],
+      "assertions": [
+        "Initializes the standalone script with uv init --script.",
+        "Adds dependencies with uv add --script instead of hand-editing inline metadata.",
+        "Runs the script with uv run.",
+        "Does not use python or python3 as the direct shell entrypoint."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run pytest for this Python project, but do not assume a python executable exists on PATH.",
+      "expected_output": "Run the test tool through uv, such as uv run pytest or uv run -m pytest, optionally setting UV_CACHE_DIR first if needed.",
+      "files": [],
+      "assertions": [
+        "Uses uv run pytest or uv run -m pytest.",
+        "Does not invoke python -m pytest directly.",
+        "Keeps uv as the environment and interpreter entrypoint."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Show the current git status and recent commits.",
+      "expected_output": "Routing-negative: this is not a Python or uv task. Use git commands directly rather than invoking the uv-workflow skill.",
+      "files": [],
+      "assertions": [
+        "Does not route the task through uv-workflow.",
+        "Uses git status or git log directly.",
+        "Does not wrap non-Python shell work in uv."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "This repository has a pyproject.toml. Add ruff as a development dependency for the project.",
+      "expected_output": "Use a project-oriented uv command such as uv add --dev ruff. Do not use uv init --script or uv add --script for project dependency management.",
+      "files": [],
+      "assertions": [
+        "Uses project-oriented uv dependency management.",
+        "Does not use uv init --script for a pyproject.toml project.",
+        "Does not use uv add --script for project dependency management."
+      ]
+    }
+  ]
+}
