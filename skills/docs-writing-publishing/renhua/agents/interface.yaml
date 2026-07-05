@@ -1,0 +1,4 @@
+interface:
+  display_name: "Renhua"
+  short_description: "Polish Chinese AI/tech public writing without flattening the author's judgment or voice."
+  default_prompt: "Use $renhua to revise this Chinese AI/tech public draft while preserving my facts, judgment, details, and voice."
