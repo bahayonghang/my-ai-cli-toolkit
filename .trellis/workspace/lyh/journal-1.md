@@ -544,3 +544,39 @@ Added the uv-workflow skill for coding-agent Python execution through uv, genera
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Migrate renhua skill
+
+**Date**: 2026-07-05
+**Task**: Migrate renhua skill
+**Branch**: `main`
+
+### Summary
+
+Imported and optimized renhua as a first-party docs-writing-publishing skill, generated docs, recorded Windows stdin UTF-8 guidance, and captured Trellis task artifacts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bb63d10` | (see git log) |
+| `7c53a56` | (see git log) |
+| `50639c2` | (see git log) |
+| `f5addca` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
