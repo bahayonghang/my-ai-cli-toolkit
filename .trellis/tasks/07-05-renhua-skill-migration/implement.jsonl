@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Repo validation and skill helper conventions for scripts, generated files, and quality gates."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Generated docs/catalog surface conventions after public skill metadata changes."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Check reuse and avoid duplicating existing writing/humanizer responsibilities."}
+{"file": "ref/repo/rnskill/skills/renhua/SKILL.md", "reason": "Source skill behavior and pattern catalog to preserve during import."}
