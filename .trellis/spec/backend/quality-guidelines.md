@@ -22,6 +22,25 @@ Quality here means the repo stays machine-checkable and source-driven. Every cha
 - When public skill or platform metadata changes, regenerate or check the docs catalog.
 - Check nested guidance such as `skills/AGENTS.md`, `platforms/claude/AGENTS.md`, `platforms/codex/AGENTS.md`, or `docs/AGENTS.md` before editing that subtree.
 
+### Python Text Stdin On Windows
+
+Skill-local Python helpers that inspect user-supplied UTF-8 text from stdin
+should read raw bytes and decode UTF-8 first. PowerShell can send UTF-8 bytes
+to native commands while Python's text stdin wrapper decodes with a legacy
+console code page, producing mojibake and false-negative scans.
+
+```python
+raw = sys.stdin.buffer.read()
+try:
+    text = raw.decode("utf-8-sig")
+except UnicodeDecodeError:
+    text = raw.decode(sys.stdin.encoding or locale.getpreferredencoding(False), errors="replace")
+```
+
+For file input, prefer `Path(path).read_text(encoding="utf-8-sig")` when the
+contract is UTF-8 text. This preserves BOM-tolerant reads without accepting
+silent mojibake.
+
 ## Testing Requirements
 
 - `just skills-check` for skill metadata or `SKILL.md` changes.
