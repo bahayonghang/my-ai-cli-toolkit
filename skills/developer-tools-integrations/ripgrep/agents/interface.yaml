@@ -1,0 +1,4 @@
+interface:
+  display_name: "ripgrep"
+  short_description: "Compose and debug ripgrep (rg) text and regex search commands."
+  default_prompt: "Use $ripgrep whenever you need text or regex content search from the command line: composing rg commands, filtering, output pipelines, diagnosing missing matches, or shell-safe quoting."

@@ -1,0 +1,76 @@
+{
+  "skill_name": "ripgrep",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我在整个仓库里找所有 TODO 和 FIXME 注释，包括被 .gitignore 忽略的文件，但要排除 vendor/ 目录，每个匹配带 2 行上下文。给我完整的 rg 命令并解释。",
+      "expected_output": "Produces an rg command that searches TODO|FIXME (or two -e patterns), disables ignore-file filtering with --no-ignore or -u (with justification), excludes vendor via a negated glob like -g '!vendor/**', adds -C 2 context, and reports using the skill's output contract: command, why these flags, what it matches/misses, caveats.",
+      "files": [],
+      "assertions": [
+        "The command searches for both TODO and FIXME, via alternation or repeated -e flags.",
+        "The command uses --no-ignore or -u (not -uu/-uuu) to include gitignored files, and explains why hidden/binary escalation is not needed.",
+        "The command excludes vendor with a negated glob such as -g '!vendor/**' or -g '!vendor/*'.",
+        "The command includes -C 2 (or -A/-B equivalents) for context.",
+        "The answer follows the output contract: command, why these flags, what it matches or misses, and caveats."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm in PowerShell on Windows. Search all .ps1 files in this repo for the literal string $env:Path — my first attempt rg \"$env:Path\" returned garbage. What is the correct command and why did mine fail?",
+      "expected_output": "Explains that PowerShell expands $env:Path inside double quotes before rg sees it, recommends single quotes plus -F for a literal (e.g. rg -F '$env:Path' -g '*.ps1' or a type filter), and optionally offers the -f pattern-file escape hatch. Follows the output contract.",
+      "files": [],
+      "assertions": [
+        "The answer identifies PowerShell double-quote variable expansion of $env:Path as the failure cause.",
+        "The recommended command uses single quotes and -F (or correctly escaped regex) so the pattern reaches rg literally.",
+        "The command scopes to PowerShell files via -g '*.ps1' or an appropriate type filter.",
+        "The answer mentions the -f pattern-file escape hatch or another shell-safe alternative for hostile patterns."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "我想用 rg 找出所有出现 'foo' 但同一行后面没有紧跟 'bar' 的地方，我写了 rg 'foo(?!bar)' 结果直接报错了。怎么回事，怎么解决？",
+      "expected_output": "Explains that ripgrep's default Rust regex engine does not support lookaround, so the pattern fails at compile time; recommends -P/--pcre2 (after confirming +PCRE2 in rg --version) or an equivalent lookaround-free rewrite, and states the tradeoffs (backtracking engine, availability).",
+      "files": [],
+      "assertions": [
+        "The answer attributes the error to the default engine's lack of lookaround support, failing at pattern compile time.",
+        "The answer recommends -P or --pcre2 as the direct fix.",
+        "The answer advises checking rg --version for +PCRE2 availability before relying on -P.",
+        "The answer mentions a tradeoff of PCRE2 (backtracking/performance) or offers a lookaround-free alternative with its limitations."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use ripgrep to replace every occurrence of 'foo' with 'bar' across all files in my project and save the changes.",
+      "expected_output": "States clearly that rg -r/--replace only rewrites rg's output and never modifies files (there is no in-place edit flag), demonstrates -r as a preview, and provides the sanctioned edit pipeline rg foo -l | xargs sed -i 's/foo/bar/g' (with BSD sed and -0 NUL-delimited variants or fastmod as alternatives), with a warning to review matches first.",
+      "files": [],
+      "assertions": [
+        "The answer explicitly states that -r/--replace changes output only and ripgrep never modifies files.",
+        "The answer does NOT present any rg-only command as performing an in-place edit.",
+        "The answer provides a working edit pipeline combining rg -l with sed (or an equivalent sanctioned tool such as fastmod).",
+        "The answer includes a safety note such as previewing matches with -r or handling paths with spaces via -0/xargs -0."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Find all async functions in this TypeScript codebase that contain an await but no try/catch around it. Can you build me a ripgrep regex for that?",
+      "expected_output": "Routing-negative: matching function bodies with descendant/ancestor constraints is a syntax-shape query that line-oriented regex cannot express reliably. The answer should route to ast-grep (structural search) instead of contorting an rg regex, per the skill's Triage.",
+      "files": [],
+      "assertions": [
+        "The answer routes the task to ast-grep or another structural/AST tool as the primary recommendation.",
+        "The answer explains that rg is line-oriented text/regex search and cannot reliably match nested function-body structure.",
+        "The answer does NOT present a multiline rg regex as a reliable primary solution for this structural query."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "请把这个方法 getUserData 安全地重命名为 fetchUserProfile，先找出所有引用它的地方，包括 import，不要漏。",
+      "expected_output": "Routing-negative: safe rename and reference resolution are semantic operations. The answer should route to language tooling / LSP (find references, rename symbol); rg may only serve as a rough pre-scan with an explicit false-positive/false-negative warning.",
+      "files": [],
+      "assertions": [
+        "The answer routes safe renaming and reference finding to language tooling / LSP rather than ripgrep.",
+        "The answer explains that rg matches text and cannot resolve references or guarantee rename safety.",
+        "If rg is mentioned at all, it is only as a preliminary scan with an explicit warning about false positives and misses (comments, strings, dynamic access)."
+      ]
+    }
+  ]
+}
