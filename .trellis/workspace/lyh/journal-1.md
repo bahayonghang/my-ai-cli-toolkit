@@ -580,3 +580,37 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: 新增 ripgrep 使用技能（developer-tools-integrations）
+
+**Date**: 2026-07-06
+**Task**: 新增 ripgrep 使用技能（developer-tools-integrations）
+**Branch**: `main`
+
+### Summary
+
+以 ripgrep 15.1.0 官方文档（README/GUIDE/FAQ/CHANGELOG）为据，参照 ast-grep 先例与目录 AGENTS.md 套件规范，新建 skills/developer-tools-integrations/ripgrep/（SKILL.md 197 行 + cli_reference.md + evals 6 用例含 2 条路由否定 + interface.yaml），AGENTS.md 纯增量补行，docs-sync 再生成。trellis-research 两轮落盘 8 份带出处研究；trellis-check 复核 PRD 7 项验收全过、事实零漂移；just ci 全绿。关键事实：-r 仅改输出、-u/-uu/-uuu 阶梯、默认引擎无 lookaround 需 -P、沙箱 rg 实为 GNU grep（已存记忆）。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `113a659` | (see git log) |
+| `5962c46` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

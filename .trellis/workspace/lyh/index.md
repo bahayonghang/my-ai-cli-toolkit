@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
-- **Last Active**: 2026-07-05
+- **Total Sessions**: 18
+- **Last Active**: 2026-07-06
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~582 | Active |
+| `journal-1.md` | ~616 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-07-06 | 新增 ripgrep 使用技能（developer-tools-integrations） | `113a659`, `5962c46` | `main` |
 | 17 | 2026-07-05 | Migrate renhua skill | `bb63d10`, `7c53a56`, `50639c2`, `f5addca` | `main` |
 | 16 | 2026-07-04 | Add uv-workflow skill | `8d1d951`, `6e4d4c5`, `dd808c5` | `main` |
 | 15 | 2026-06-27 | 整理 paper-plot-skills 为规范化 paper-plot skill | `d318903`, `99c3b4d`, `51db52b` | `main` |
