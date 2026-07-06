@@ -1,0 +1,6 @@
+{"file": "skills/developer-tools-integrations/AGENTS.md", "reason": "Verify the new skill against house conventions: frontmatter, description limits, evals assertions key, allowed-tools accuracy, additive-only AGENTS.md edit"}
+{"file": "skills/developer-tools-integrations/ast-grep/SKILL.md", "reason": "Verify two-way routing consistency: rg triage must mirror ast-grep triage without overlap or contradiction"}
+{"file": "skills/developer-tools-integrations/ast-grep/evals/evals.json", "reason": "Schema parity check for the new evals.json"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/02-core-behavior.md", "reason": "Fact-check default ignore behavior and -u/-uu/-uuu claims in SKILL.md"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/04-regex-engines.md", "reason": "Fact-check engine capability claims (no lookaround/backref default, -P gating)"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/05-output-and-integration.md", "reason": "Fact-check the hard constraint that -r/--replace rewrites output only, never files"}

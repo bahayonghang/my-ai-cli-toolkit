@@ -1,0 +1,13 @@
+{"file": "skills/developer-tools-integrations/AGENTS.md", "reason": "House conventions: frontmatter keys, description rules, allowed-tools table, evals schema (assertions key), interface-file policy, docs-sync/ci gate"}
+{"file": "skills/developer-tools-integrations/ast-grep/SKILL.md", "reason": "Primary structure exemplar (triage/workflow/checklist/output-contract) and the routing counterpart whose triage must mirror the new skill"}
+{"file": "skills/developer-tools-integrations/ast-grep/evals/evals.json", "reason": "Evals schema exemplar (git-commit schema with assertions key)"}
+{"file": "skills/developer-tools-integrations/uv-workflow/SKILL.md", "reason": "Newest CLI-tool-usage exemplar: single-line description style, command-map table"}
+{"file": "skills/developer-tools-integrations/uv-workflow/agents/interface.yaml", "reason": "Neutral interface.yaml exemplar (3 required fields)"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/01-sources-and-version.md", "reason": "Current stable rg version, install/verify commands, source URLs"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/02-core-behavior.md", "reason": "Default filtering model, ignore precedence, -u ladder, missed-file diagnosis"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/03-filtering-and-types.md", "reason": "Glob/type filter semantics"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/04-regex-engines.md", "reason": "Rust engine limits, PCRE2 gating, multiline, case handling"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/05-output-and-integration.md", "reason": "Context/replace/json/vimgrep output semantics; -r output-only fact"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/06-config-and-advanced.md", "reason": "Config file, --pre, encoding, threads, performance notes"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/07-windows-notes.md", "reason": "PowerShell/cmd/Git Bash quoting, UTF-16, Windows pitfalls"}
+{"file": ".trellis/tasks/07-05-ripgrep-skill/research/08-pitfalls-and-recipes.md", "reason": "Common mistakes and GUIDE one-liner recipes for SKILL.md recipe section"}
