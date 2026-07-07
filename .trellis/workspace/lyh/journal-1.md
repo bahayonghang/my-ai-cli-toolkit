@@ -614,3 +614,42 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 19: 审计并优化 windows-dev-process-cleanup skill
+
+**Date**: 2026-07-07
+**Task**: 审计并优化 windows-dev-process-cleanup skill
+**Branch**: `main`
+
+### Summary
+
+深度审计发现 P0：UWP 脚本 Stop-Pids -Pids/-TargetPids 参数失配（普通函数吞进 $args），cleanup 从未杀过进程却报 terminated；修复绑定+逐 PID 诚实报告+registry_changed，dev 脚本加 mixed_tree 防误杀与 stale-codex-playwright 标签，补 9 个 pwsh 回归测试接入 just node-test，SKILL.md 重写（skill-dir 路径/中英触发词/category+tags+version），openai.yaml→interface.yaml。教训：仓库 status.showUntrackedFiles=no 掩盖了整个 skill 目录从未入库；可复用约定沉淀至 spec/guides/skill-authoring-conventions.md
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `67ab86e` | (see git log) |
+| `c85dcde` | (see git log) |
+| `b583fa4` | (see git log) |
+| `189fea8` | (see git log) |
+| `6da0eec` | (see git log) |
+| `509c4ae` | (see git log) |
+| `c97667d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
