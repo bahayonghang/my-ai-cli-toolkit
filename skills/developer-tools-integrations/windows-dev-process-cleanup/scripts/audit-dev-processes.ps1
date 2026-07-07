@@ -1,3 +1,4 @@
+#requires -Version 7.0
 [CmdletBinding()]
 param(
   [ValidateSet('audit', 'cleanup')]
@@ -53,8 +54,13 @@ function Get-ProcessStartTime {
 function Get-ChainRootPid {
   param($Process)
 
+  $visited = @{}
   $current = $Process
   while ($true) {
+    if ($visited[[int]$current.ProcessId]) {
+      return [int]$current.ProcessId
+    }
+    $visited[[int]$current.ProcessId] = $true
     $parent = $processMap[$current.ParentProcessId]
     if (-not $parent) {
       return [int]$current.ProcessId
@@ -112,7 +118,8 @@ function Get-Recommendation {
     [bool]$ParentExists,
     [bool]$WorkspaceMatch,
     [bool]$CodexParent,
-    [timespan]$Age
+    [timespan]$Age,
+    [int]$StaleMinutes
   )
 
   switch ($Category) {
@@ -132,6 +139,14 @@ function Get-Recommendation {
       }
     }
     'playwright-mcp' {
+      if ($CodexParent -and $StaleMinutes -gt 0 -and $Age.TotalMinutes -ge $StaleMinutes) {
+        return @{
+          safe_to_kill = $false
+          recommendation = 'stale-codex-playwright'
+          reason = 'stale Codex-owned browser automation worker; matches the codex-playwright-safe profile'
+        }
+      }
+
       return @{
         safe_to_kill = $false
         recommendation = 'candidate-cleanup'
@@ -192,22 +207,36 @@ $trees = foreach ($group in $grouped) {
 
   $commandLines = @($members | ForEach-Object { $_.CommandLine })
   $category = Get-CategoryFromLines -Lines $commandLines
+  $memberCategories = @($commandLines | ForEach-Object { Get-CategoryFromLines -Lines @($_) } | Sort-Object -Unique)
+  $mixedTree = [bool](
+    ($memberCategories | Where-Object { $_ -in @('npm-outdated', 'playwright-mcp') }) -and
+    ($memberCategories | Where-Object { $_ -in @('dev-server', 'ide-language-service') })
+  )
   $parentExists = Test-ParentExists -ParentProcessId $root.ParentProcessId
   $nonWrapperParent = Get-ImmediateNonWrapperParent -Process $root
   $rootStartTime = Get-ProcessStartTime -ProcessId $root.ProcessId
   $age = if ($rootStartTime) { (Get-Date) - $rootStartTime } else { [timespan]::Zero }
   $workspaceMatch = $false
   if ($WorkspacePath) {
-    $workspaceMatch = [bool]($commandLines | Where-Object { $_ -like "*$WorkspacePath*" })
+    $workspaceMatch = [bool]($commandLines | Where-Object { $_ -and $_.IndexOf($WorkspacePath, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 })
   }
   $codexParent = [bool]($nonWrapperParent -and $nonWrapperParent.Name -ieq 'codex.exe')
 
-  $decision = Get-Recommendation -Category $category -ParentExists $parentExists -WorkspaceMatch $workspaceMatch -CodexParent $codexParent -Age $age
+  $decision = Get-Recommendation -Category $category -ParentExists $parentExists -WorkspaceMatch $workspaceMatch -CodexParent $codexParent -Age $age -StaleMinutes $StaleMinutes
+  if ($mixedTree) {
+    $decision = @{
+      safe_to_kill = $false
+      recommendation = 'manual-review'
+      reason = 'mixed tree: contains both cleanup-target and protected members'
+    }
+  }
 
   [PSCustomObject]@{
     root_pid = [int]$root.ProcessId
     root_name = $root.Name
     category = $category
+    member_categories = $memberCategories
+    mixed_tree = $mixedTree
     parent_process_id = [int]$root.ParentProcessId
     parent_exists = $parentExists
     process_count = $members.Count
@@ -256,23 +285,26 @@ if ($Mode -eq 'cleanup') {
   switch ($Profile) {
     'safe' {
       $cleanupTargets = $trees | Where-Object {
-        $_.category -eq 'npm-outdated' -and -not $_.parent_exists
+        $_.category -eq 'npm-outdated' -and -not $_.parent_exists -and -not $_.mixed_tree
       }
     }
     'playwright-mcp' {
-      $cleanupTargets = $trees | Where-Object { $_.category -eq 'playwright-mcp' }
+      $cleanupTargets = $trees | Where-Object { $_.category -eq 'playwright-mcp' -and -not $_.mixed_tree }
     }
     'codex-playwright-safe' {
       $cleanupTargets = $trees | Where-Object {
         $_.category -eq 'playwright-mcp' -and
+        -not $_.mixed_tree -and
         $_.codex_parent -and
         $_.age_minutes -ge $StaleMinutes
       }
     }
     'safe-plus-codex-playwright' {
       $cleanupTargets = $trees | Where-Object {
-        ($_.category -eq 'npm-outdated' -and -not $_.parent_exists) -or
-        ($_.category -eq 'playwright-mcp' -and $_.codex_parent -and $_.age_minutes -ge $StaleMinutes)
+        -not $_.mixed_tree -and (
+          ($_.category -eq 'npm-outdated' -and -not $_.parent_exists) -or
+          ($_.category -eq 'playwright-mcp' -and $_.codex_parent -and $_.age_minutes -ge $StaleMinutes)
+        )
       }
     }
     'workspace-dev-server' {
@@ -280,7 +312,7 @@ if ($Mode -eq 'cleanup') {
         throw 'WorkspacePath is required when Profile is workspace-dev-server.'
       }
       $cleanupTargets = $trees | Where-Object {
-        $_.category -eq 'dev-server' -and $_.workspace_match
+        $_.category -eq 'dev-server' -and $_.workspace_match -and -not $_.mixed_tree
       }
     }
   }
@@ -310,11 +342,6 @@ if ($Mode -eq 'cleanup') {
   $result | Add-Member -NotePropertyName cleanup_targets -NotePropertyValue @($cleanupTargets)
   $result.summary | Add-Member -NotePropertyName cleanup_target_count -NotePropertyValue @($cleanupTargets).Count
   $result | Add-Member -NotePropertyName cleanup_results -NotePropertyValue @(Invoke-Cleanup -TreesToKill $cleanupTargets)
-}
-
-if ($AsJson) {
-  $result | ConvertTo-Json -Depth 6
-  exit 0
 }
 
 if ($ExportJson) {
@@ -374,6 +401,11 @@ if ($ExportMarkdown) {
   }
 
   Set-Content -Path $ExportMarkdown -Value $markdown -Encoding UTF8
+}
+
+if ($AsJson) {
+  $result | ConvertTo-Json -Depth 6
+  exit 0
 }
 
 $result.summary
