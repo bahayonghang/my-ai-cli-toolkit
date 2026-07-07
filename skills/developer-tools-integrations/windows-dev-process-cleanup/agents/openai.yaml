@@ -1,0 +1,4 @@
+interface:
+  display_name: "Windows Process Cleanup"
+  short_description: "检查并清理 Windows 开发残留进程树"
+  default_prompt: "Use $windows-dev-process-cleanup to audit and safely clean stale node, npm, npx, and cmd process trees on Windows."
