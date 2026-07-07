@@ -265,3 +265,34 @@ test("SKILL.md keeps repo conventions (skill-dir paths, full frontmatter)", () =
     assert.ok(frontmatter[1].includes(key), `frontmatter is missing ${key}`);
   }
 });
+
+test(
+  "Get-Recommendation distinguishes stale codex playwright trees",
+  { skip },
+  () => {
+    const command = [
+      "$ast = [System.Management.Automation.Language.Parser]::ParseFile(" +
+        `'${devScript.replaceAll("'", "''")}', [ref]$null, [ref]$null)`,
+      "$fn = $ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Get-Recommendation' }, $true) | Select-Object -First 1",
+      "if (-not $fn) { throw 'Get-Recommendation not found in script' }",
+      "Invoke-Expression $fn.Extent.Text",
+      "$stale = Get-Recommendation -Category 'playwright-mcp' -ParentExists $true -WorkspaceMatch $false -CodexParent $true -Age ([timespan]::FromMinutes(45)) -StaleMinutes 30",
+      "$fresh = Get-Recommendation -Category 'playwright-mcp' -ParentExists $true -WorkspaceMatch $false -CodexParent $true -Age ([timespan]::FromMinutes(5)) -StaleMinutes 30",
+      "$foreign = Get-Recommendation -Category 'playwright-mcp' -ParentExists $true -WorkspaceMatch $false -CodexParent $false -Age ([timespan]::FromMinutes(45)) -StaleMinutes 30",
+      "[PSCustomObject]@{ stale = $stale.recommendation; stale_safe = $stale.safe_to_kill; fresh = $fresh.recommendation; foreign = $foreign.recommendation } | ConvertTo-Json -Compress",
+    ].join("; ");
+    const parsed = parseJsonOutput(
+      runPwshCommand(command),
+      "recommendation unit",
+    );
+
+    assert.equal(parsed.stale, "stale-codex-playwright");
+    assert.equal(
+      parsed.stale_safe,
+      false,
+      "the label must not flip safe_to_kill",
+    );
+    assert.equal(parsed.fresh, "candidate-cleanup");
+    assert.equal(parsed.foreign, "candidate-cleanup");
+  },
+);
