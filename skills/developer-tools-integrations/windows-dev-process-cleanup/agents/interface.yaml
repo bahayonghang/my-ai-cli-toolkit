@@ -1,0 +1,4 @@
+interface:
+  display_name: "Windows Process Cleanup"
+  short_description: "审计并安全清理 Windows 开发残留进程树与 UWP 后台任务堆积"
+  default_prompt: "Use $windows-dev-process-cleanup to audit and safely clean stale node/npm/npx/cmd/pwsh process trees and UWP backgroundTaskHost pileups (Phone Link, Dolby Access) on Windows."

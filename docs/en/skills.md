@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 37 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 38 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -20,7 +20,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 10 skills
+`developer-tools-integrations` · 11 skills
 
 - [agent-skill-review](/en/skills/developer-tools-integrations/agent-skill-review) — Review Codex, Claude, OpenAI, or other agent skill directories as reusable capability packages.
 - [agents-md-improver](/en/skills/developer-tools-integrations/agents-md-improver) — Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps in repositories.
@@ -32,6 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [image-to-ui-skill](/en/skills/developer-tools-integrations/image-to-ui-skill) — 将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
 - [ripgrep](/en/skills/developer-tools-integrations/ripgrep) — Use when the user needs text or regex content search with ripgrep: composing rg CLI commands, choosing flags, filtering by glob or file type, multiline or PCRE2 searches, replace-preview output, JSON or vimgrep output for pipelines, ripgrep config files, grep-to-rg migration, or diagnosing why rg missed a file due to gitignore, hidden, or binary defaults.
 - [uv-workflow](/en/skills/developer-tools-integrations/uv-workflow) — Use when a coding agent needs to run Python code, modules, one-liners, tools, tests, or standalone scripts through uv, or create and maintain PEP 723 scripts with uv init/add/remove --script.
+- [windows-dev-process-cleanup](/en/skills/developer-tools-integrations/windows-dev-process-cleanup) — Audit and safely clean Windows development process buildup and UWP background-task pileups. Covers stale node.exe, npm.exe, npx.exe, cmd.exe, and pwsh.exe trees (leftover npm outdated runs, leaked Playwright MCP workers, dev servers, IDE language services) plus backgroundTaskHost.exe pileups from Phone Link (Microsoft.YourPhone) and Dolby Access. Classify process trees first, then terminate only profile-matched targets, with WhatIf preview and JSON or Markdown reports.
 
 ### Development Workflows
 

@@ -36,6 +36,8 @@
 
 ## 快速开始
 
+以下命令默认在本 skill 目录内执行；从其他目录运行时，把 `scripts/...` 换成脚本的绝对路径。
+
 审计开发进程树：
 
 ```powershell
@@ -82,7 +84,11 @@ pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile 
 - `safe-plus-codex-playwright`：同时清理孤儿 `npm-outdated` 和过期 Codex Playwright 进程树。
 - `workspace-dev-server`：只结束命令行匹配 `-WorkspacePath` 的指定工作区开发服务。
 
+所有 profile 都会自动排除 `mixed_tree` 进程树（同一棵树里同时包含清理目标成员与 dev server / IDE 服务成员），这类树只会标记为 manual-review。
+
 ### `audit-uwp-backgroundtasks.ps1`
+
+cleanup 模式必须显式指定 `-Profile`，缺省会直接报错。清理结果包含逐 PID 的 `details`（`terminated` / `failed` / `not-found`）、聚合 `result`（`preview` / `terminated` / `partial` / `failed` / `no-targets`）以及 `registry_changed` 标记。
 
 - `phone-link-background`：结束 Phone Link / `Microsoft.YourPhone` 相关应用进程。配合 `-DisablePhoneLinkBackground` 可写入 HKCU 后台访问禁用标记。
 - `dolby-backgroundtask`：只结束 Dolby Access 相关 `backgroundTaskHost.exe` 实例；不会禁用、卸载或修改 Dolby Access 音效功能。
@@ -102,9 +108,19 @@ pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile 
 ## 环境要求
 
 - Windows
-- 推荐 PowerShell 7
+- PowerShell 7（必需，脚本声明 `#requires -Version 7.0`）
 - Windows 内置命令：`tasklist`、`taskkill`
 - 可用的 CIM/WMI 进程查询能力
+
+## 测试
+
+在仓库根目录运行 `just node-test`，或直接运行：
+
+```powershell
+node --test tests/audit-scripts.test.mjs
+```
+
+非 Windows 或缺少 PowerShell 7 时测试会自动跳过。
 
 ## 许可证
 

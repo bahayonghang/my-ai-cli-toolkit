@@ -36,6 +36,8 @@ It classifies process trees as:
 
 ## Quick start
 
+The examples below assume you run them inside this skill directory; use absolute script paths from anywhere else.
+
 Audit development process trees:
 
 ```powershell
@@ -82,7 +84,11 @@ pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile 
 - `safe-plus-codex-playwright`: combine orphan `npm-outdated` cleanup with stale Codex Playwright cleanup.
 - `workspace-dev-server`: terminate only dev servers whose command lines match `-WorkspacePath`.
 
+Every profile automatically excludes `mixed_tree` trees (a single tree containing both cleanup-target members and dev server / IDE service members); such trees are only flagged manual-review.
+
 ### `audit-uwp-backgroundtasks.ps1`
+
+Cleanup mode requires an explicit `-Profile` and fails fast without one. Cleanup results include per-PID `details` (`terminated` / `failed` / `not-found`), an aggregate `result` (`preview` / `terminated` / `partial` / `failed` / `no-targets`), and a `registry_changed` flag.
 
 - `phone-link-background`: terminate Phone Link / `Microsoft.YourPhone` app-associated processes. Use `-DisablePhoneLinkBackground` to write HKCU background-access flags.
 - `dolby-backgroundtask`: terminate only Dolby Access `backgroundTaskHost.exe` instances. It does not disable, uninstall, or change Dolby Access audio features.
@@ -102,9 +108,19 @@ pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile 
 ## Requirements
 
 - Windows
-- PowerShell 7 recommended
+- PowerShell 7 (required; the scripts declare `#requires -Version 7.0`)
 - Built-in Windows commands: `tasklist`, `taskkill`
 - CIM/WMI availability for process tree inspection
+
+## Tests
+
+Run `just node-test` from the repository root, or directly:
+
+```powershell
+node --test tests/audit-scripts.test.mjs
+```
+
+The suite skips automatically on non-Windows machines or when PowerShell 7 is missing.
 
 ## License
 

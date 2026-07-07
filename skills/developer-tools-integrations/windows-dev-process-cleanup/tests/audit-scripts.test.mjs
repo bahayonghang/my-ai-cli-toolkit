@@ -3,6 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -242,4 +243,25 @@ test("uwp cleanup without an explicit profile fails fast", { skip }, () => {
     "cleanup without -Profile must exit non-zero",
   );
   assert.match(`${result.stdout}\n${result.stderr}`, /Profile is required/);
+});
+
+// Doc lint: platform-independent, so no skip gate.
+test("SKILL.md keeps repo conventions (skill-dir paths, full frontmatter)", () => {
+  const skillMd = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
+  assert.doesNotMatch(
+    skillMd,
+    /-File\s+"?scripts\//,
+    "commands must reference scripts via the skill-dir placeholder, not bare relative paths",
+  );
+  const frontmatter = skillMd.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  assert.ok(frontmatter, "SKILL.md must start with YAML frontmatter");
+  for (const key of [
+    "name:",
+    "description:",
+    "category:",
+    "tags:",
+    "version:",
+  ]) {
+    assert.ok(frontmatter[1].includes(key), `frontmatter is missing ${key}`);
+  }
 });
