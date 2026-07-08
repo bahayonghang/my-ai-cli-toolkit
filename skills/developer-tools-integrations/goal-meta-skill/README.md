@@ -1,7 +1,7 @@
 # goal-meta-skill
 
-> 你只想说一句“帮我做个 App”，但 Codex 真正需要的是一个能执行、能验证、知道边界、知道何时停下来的目标。
-> goal-meta-skill turns vague work into a copy-ready Codex `/goal` command with defaults, verification, boundaries, and pause conditions.
+> 你只想说一句“帮我做个 App”，但 Claude Code 和 Codex 真正需要的是一个能执行、能验证、知道边界、知道何时停下来的目标。
+> goal-meta-skill turns vague work into a copy-ready `/goal` command for Claude Code or Codex, with defaults, verification, boundaries, and pause/stop conditions.
 
 **中文** | [English](#english)
 
@@ -24,7 +24,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 
 这个 skill 的目标很简单：
 
-让 Codex 在开工前拿到一份更像“任务合同”的 `/goal`。
+让 Claude Code 或 Codex 在开工前拿到一份更像“任务合同”的 `/goal`。
 
 它会默认给你一段可直接复制的推荐执行版，而不是让你先填表。
 
@@ -46,6 +46,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 ```
 
 用户可以直接复制这一段执行。
+
+如果你在 Claude Code 里，同一个需求会渲染成完成条件式的 `/goal`：证据必须落在对话记录里（命令退出码、测试输出、`git status`），条件末尾带轮次上限（例如「否则在 20 轮后停止并总结剩余问题」），暂停条件写成「停止并报告，等待人工决定」——因为 Claude Code 的 goal 由独立小模型逐 turn 判定，且没有 pause 命令。
 
 ### 2. 再给一句默认理由
 
@@ -109,17 +111,28 @@ Windows PowerShell：
 Test-Path "$HOME\.agents\skills\goal-meta-skill\SKILL.md"
 ```
 
-## Codex `/goal` 提示
+Claude Code 如果没有读取 `~/.agents/skills`，可以把 skill 目录 symlink（或复制）到 `~/.claude/skills/goal-meta-skill`。
 
-- `/goal <text>` 设置持久目标。
-- `/goal` 查看当前目标。
-- `/goal pause`、`/goal resume`、`/goal clear` 用于暂停、恢复或清除当前目标。
-- 如果 slash command 列表没有 `/goal`，需要在 Codex 配置中启用 `features.goals`，或使用当前 Codex 版本提供的 feature enable 命令。
-- 单条 goal objective 最多 4,000 字符；更长的任务合同应放入文件，然后用短 `/goal` 指向该文件。
+## 两个平台的 `/goal` 差异
+
+| 维度 | Codex | Claude Code |
+|---|---|---|
+| 语义 | 附着于当前 thread 的持久 objective | 会话级完成条件，独立小模型逐 turn 判定并自动续 turn |
+| 命令 | `/goal <text>` / `/goal` / `/goal pause` / `/goal resume` / `/goal clear` | `/goal <condition>` / `/goal`（状态）/ `/goal clear`（别名 `stop`、`off`、`reset`、`none`、`cancel`）；没有 pause/resume |
+| 启用 | 实验特性，需 `features.goals` 或 `codex features enable goals` | v2.1.139+，需接受 workspace trust dialog；`disableAllHooks` / `allowManagedHooksOnly` 下不可用 |
+| 长度 | objective ≤ 4,000 字符 | condition ≤ 4,000 字符 |
+| 证据 | 命令、日志、截图、产物 | 只认对话记录里的证据：命令退出码、测试/lint 输出、`git status`、文件清单（评估器不运行工具） |
+| 上限条款 | 可选 | 必须写轮次/时间上限，如「否则在 20 轮后停止并总结剩余问题」 |
+| 恢复 | v0.128.0+ 跨会话持久 | `--resume` / `--continue` 恢复，计时/轮次/token 基线重置 |
+
+两平台同规则：更长的任务合同放入文件，用短 `/goal` 指向该文件。
+
+平台事实的完整版本见 `references/platform-goal-facts.md`。
 
 ## 你可以这样说
 
 - “用 goal-meta-skill 帮我把这个需求写成 Codex /goal。”
+- “我在 Claude Code，帮我把这个任务写成 /goal 完成条件。”
 - “我要开发一个 iOS 提词器，帮我写 goal。”
 - “我要做一个 GTA 网页游戏，帮我写一个安全可执行的 goal。”
 - “这个任务太模糊，先给推荐执行版，再给我几个可选调整。”
@@ -131,7 +144,8 @@ Test-Path "$HOME\.agents\skills\goal-meta-skill\SKILL.md"
 
 ```mermaid
 flowchart LR
-  A["用户的模糊需求"] --> B["选择保守默认值"]
+  A["用户的模糊需求"] --> P["判定目标平台"]
+  P --> B["选择保守默认值"]
   B --> C["生成推荐执行版 /goal"]
   C --> D["补验证、约束、边界"]
   D --> E["补迭代、完成、暂停条件"]
@@ -193,6 +207,8 @@ meta skill 不假装懂所有专业领域。
 
 ```bash
 python ~/.agents/skills/goal-meta-skill/scripts/lint_goal_command.py goal.txt
+python ~/.agents/skills/goal-meta-skill/scripts/lint_goal_command.py --platform claude goal.txt
+python ~/.agents/skills/goal-meta-skill/scripts/lint_goal_command.py --platform codex goal.txt
 py -3 ~/.agents/skills/goal-meta-skill/scripts/lint_goal_command.py goal.txt
 ```
 
@@ -205,6 +221,8 @@ py -3 ~/.agents/skills/goal-meta-skill/scripts/lint_goal_command.py goal.txt
 - `edit anything`
 - `keep trying`
 - 缺少具体证据的验证条件
+- 超过 4,000 字符的 `/goal` 块（两平台通用上限）
+- `--platform claude` 下：`/goal pause`、`/goal resume` 建议，以及缺少轮次/时间上限条款的 condition
 
 ## 前置要求
 
@@ -217,10 +235,14 @@ py -3 ~/.agents/skills/goal-meta-skill/scripts/lint_goal_command.py goal.txt
 | 问题 | 原因 | 解决方法 |
 |---|---|---|
 | 没有触发这个 skill | 运行环境未加载本地 skills，或安装路径不对 | 运行 `test -f ~/.agents/skills/goal-meta-skill/SKILL.md`，确认安装位置 |
-| Codex 里没有 `/goal` | Goal 功能未启用或 Codex 版本不支持 | 在 Codex 配置中启用 `features.goals`，或升级/使用对应 feature enable 命令 |
-| goal 太长 | Codex objective 最多 4,000 字符 | 把详细合同放进文件，`/goal` 只写“读取并执行该文件中的任务合同” |
+| Codex 里没有 `/goal` | Goal 功能未启用或 Codex 版本不支持 | 在 Codex 配置中启用 `features.goals`，或运行 `codex features enable goals` |
+| Claude Code 里 `/goal` 不可用 | 版本低于 v2.1.139、未接受 workspace trust dialog，或 `disableAllHooks` / `allowManagedHooksOnly` 生效 | 升级 Claude Code、接受 trust dialog、检查 hooks 设置 |
+| 想在 Claude Code 暂停 goal | Claude Code 没有 `/goal pause` / `/goal resume` | 用 `/goal clear` 清除、之后重设同一条件，或直接打断会话 |
+| Claude Code goal 一直跑不停 | condition 没写轮次/时间上限 | 在条件里加「否则在 N 轮后停止并总结剩余问题」 |
+| Claude Code goal 完成了评估器却不认 | 证据没有落在对话记录里（评估器不运行工具） | 让验证命令的退出码和输出贴进对话，改用 transcript 可见的证据 |
+| goal 太长 | 两平台的 objective/condition 上限都是 4,000 字符 | 把详细合同放进文件，`/goal` 只写“读取并执行该文件中的任务合同” |
 | 只想要一种语言 | 默认中文用户会同时得到中文推荐版和英文兼容镜像 | 明确说“只要中文版”或“only English” |
-| 输出还是 `/目标` | 使用了中文别名而不是 Codex 可执行命令 | 要求它“命令前缀必须保持 `/goal`，正文可以中文” |
+| 输出还是 `/目标` | 使用了中文别名而不是可执行命令 | 要求它“命令前缀必须保持 `/goal`，正文可以中文” |
 | 输出像模板，有占位符 | 没有按推荐执行版生成 | 要求“不要输出 `[Outcome]` 等占位符，给可直接复制版” |
 | 验证太空 | 目标里只有“确认可用” | 要求补充命令、日志、截图、浏览器/模拟器检查或产物路径 |
 | agent 太早停下 | `暂停条件` 写得过宽 | 把低风险不确定性改成工作假设，只保留账号、付费、生产、版权、发布等高风险暂停 |
@@ -247,7 +269,7 @@ GitHub: https://github.com/joeseesun/
 <a name="english"></a>
 ## English
 
-goal-meta-skill turns vague work into a copy-ready Codex `/goal` command.
+goal-meta-skill turns vague work into a copy-ready `/goal` command for Claude Code or Codex.
 
 It is built for people who do not want to fill out a planning form.
 
@@ -262,6 +284,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 Use it like this:
 
 - "Use goal-meta-skill to turn this vague app idea into a Codex goal."
+- "I'm in Claude Code — turn this task into a /goal completion condition."
 - "Write a goal for an iOS teleprompter MVP."
 - "Write a safe goal for a GTA-like browser game without copyrighted IP."
 - "This domain is unfamiliar. Make the goal discovery-first."
@@ -275,6 +298,7 @@ It produces goals with:
 - iteration policy
 - stop conditions
 - pause conditions
+- on Claude Code: a completion condition with transcript-visible proof, a turn/time bounding clause, and stop-and-report pause semantics
 
 It intentionally avoids:
 
@@ -282,6 +306,7 @@ It intentionally avoids:
 - vague verification like "make sure it works"
 - broad permissions like "edit anything"
 - infinite retry language like "keep trying"
+- `/goal pause` / `/goal resume` advice for Claude Code users (those commands exist only on Codex)
 - unsafe scope expansion into auth, payment, production data, copyrighted assets, or regulated decisions
 
 Source credit:

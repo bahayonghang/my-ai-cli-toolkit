@@ -105,3 +105,46 @@ Pause if: credentials, production data, destructive changes, or product decision
   assert.match(result.stderr, /unresolved placeholder/);
   assert.match(result.stderr, /dangerous vague instruction/);
 });
+
+const claudeConditionGoal = `
+/goal 现有仪表盘的筛选状态丢失问题被修复：回归测试通过，本地页面完整执行一次筛选、刷新、返回流程后筛选状态保留，否则在 20 轮后停止并总结剩余问题。
+验证：运行项目提供的最小相关测试和类型检查并展示命令退出码，执行 git status 确认只有相关文件改动，把测试输出粘贴到对话中作为证据。
+约束：不改变公开路由、筛选字段含义、现有数据源、鉴权流程或无关文案。
+边界：只修改筛选状态、URL 同步、直接相关组件和回归测试，不触碰后端接口或部署配置。
+迭代策略：一次做一个聚焦改动，每次改动后重跑失败检查，连续失败两次后先读日志和现有测试再换方案。
+完成条件：回归测试通过且命令输出出现在对话记录中，相关检查通过或明确说明缺少配置。
+暂停条件：需要生产数据、账号凭证、接口契约变更、破坏性迁移或产品规则决策时，停止并报告，等待人工决定。
+`;
+
+test('claude platform accepts condition-style goal with bounding clause', () => {
+  const result = lintText(claudeConditionGoal, ['--platform', 'claude']);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('claude platform rejects /goal pause advice', () => {
+  const withPause = `${claudeConditionGoal}\n如需暂停，可以使用 /goal pause 再用 /goal resume 恢复。\n`;
+  const result = lintText(withPause, ['--platform', 'claude']);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Claude Code has no pause\/resume/);
+});
+
+test('claude platform rejects goal without a turn or time bounding clause', () => {
+  const result = lintText(baseGoalOnly, ['--platform', 'claude']);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /bounding clause/);
+});
+
+test('codex platform keeps base behavior for goals without bounding clause', () => {
+  const result = lintText(baseGoalOnly, ['--platform', 'codex']);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('linter rejects /goal blocks beyond the 4,000 character platform limit', () => {
+  const oversized = baseGoalOnly.replace(
+    '/goal 为现有仪表盘修复筛选状态丢失问题，',
+    `/goal 为现有仪表盘修复筛选状态丢失问题，${'补充说明。'.repeat(850)}`,
+  );
+  const result = lintText(oversized);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /cap objectives\/conditions at 4000/);
+});

@@ -47,6 +47,21 @@ DANGEROUS_VAGUE_PATTERNS = [
     r"感觉可以",
 ]
 
+GOAL_OBJECTIVE_MAX_CHARS = 4000
+
+CLAUDE_FORBIDDEN_COMMAND_PATTERNS = [
+    r"/goal\s+pause",
+    r"/goal\s+resume",
+]
+
+CLAUDE_BOUNDING_CLAUSE_PATTERNS = [
+    r"stop after \d+",
+    r"\d+\s*turns",
+    r"\d+\s*轮",
+    r"(分钟|小时)后(停止|暂停)",
+    r"after \d+\s*(minutes|hours)",
+]
+
 CHINESE_COMPANION_SECTIONS = [
     "推荐执行版（中文，可直接复制）",
     "默认选择理由",
@@ -116,7 +131,62 @@ def lint_chinese_companion(text: str, source: str) -> list[str]:
     return errors
 
 
-def lint_text(text: str, source: str, *, require_chinese_companion: bool = False) -> list[str]:
+def lint_goal_block_length(text: str, source: str) -> list[str]:
+    """Check the pasted /goal block stays within the 4,000 character limit.
+
+    Both Codex objectives and Claude Code conditions share the limit. The
+    block is measured from each /goal line to the next blank line, matching
+    what a user would paste as one message.
+    """
+    errors: list[str] = []
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if not line.strip().startswith("/goal"):
+            continue
+        block_lines = [line.strip().removeprefix("/goal").strip()]
+        for follower in lines[index + 1 :]:
+            if not follower.strip():
+                break
+            block_lines.append(follower.strip())
+        block_length = len("\n".join(block_lines))
+        if block_length > GOAL_OBJECTIVE_MAX_CHARS:
+            errors.append(
+                f"{source}: /goal block is {block_length} characters; both platforms "
+                f"cap objectives/conditions at {GOAL_OBJECTIVE_MAX_CHARS}. Move the "
+                "contract into a file and point /goal at it"
+            )
+    return errors
+
+
+def lint_claude_platform(text: str, source: str) -> list[str]:
+    errors: list[str] = []
+
+    for pattern in CLAUDE_FORBIDDEN_COMMAND_PATTERNS:
+        if re.search(pattern, text, flags=re.IGNORECASE):
+            errors.append(
+                f"{source}: Claude Code has no pause/resume; matched `{pattern}`. "
+                "Use /goal clear (or interrupt) and re-set the goal later"
+            )
+
+    if not any(
+        re.search(pattern, text, flags=re.IGNORECASE)
+        for pattern in CLAUDE_BOUNDING_CLAUSE_PATTERNS
+    ):
+        errors.append(
+            f"{source}: Claude Code goals need a bounding clause such as "
+            "`or stop after 20 turns` / `否则在 20 轮后停止并总结剩余问题`"
+        )
+
+    return errors
+
+
+def lint_text(
+    text: str,
+    source: str,
+    *,
+    require_chinese_companion: bool = False,
+    platform: str = "both",
+) -> list[str]:
     errors: list[str] = []
 
     if re.search(r"^\s*/目标\b", text, flags=re.MULTILINE):
@@ -149,6 +219,11 @@ def lint_text(text: str, source: str, *, require_chinese_companion: bool = False
         if content and len(content) < 12:
             errors.append(f"{source}: `{name}` content is too thin")
 
+    errors.extend(lint_goal_block_length(text, source))
+
+    if platform == "claude":
+        errors.extend(lint_claude_platform(text, source))
+
     if require_chinese_companion:
         errors.extend(lint_chinese_companion(text, source))
 
@@ -163,6 +238,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--require-chinese-companion",
         action="store_true",
         help="Require the Chinese-first recommended draft, reason, adjustments, reply hint, and English-compatible mirror.",
+    )
+    parser.add_argument(
+        "--platform",
+        choices=("codex", "claude", "both"),
+        default="both",
+        help="Target platform. `claude` adds Claude Code rules: no /goal pause|resume advice and a required turn/time bounding clause.",
     )
     parser.add_argument("files", nargs="+", help="Files to lint.")
     return parser.parse_args(argv[1:])
@@ -187,6 +268,7 @@ def main(argv: list[str]) -> int:
                 text,
                 str(path),
                 require_chinese_companion=args.require_chinese_companion,
+                platform=args.platform,
             )
         )
 

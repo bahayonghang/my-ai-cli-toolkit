@@ -16,7 +16,17 @@ For Chinese users, output in this order:
 
 Do not put a half-filled template before the recommended executable goal. Users often copy the first block directly.
 
-If the user asks about an existing active goal, do not force a new draft. Answer with the smallest correct management command: `/goal` to view it, `/goal pause` to pause it, `/goal resume` to continue it, or `/goal clear` to remove it.
+If the user asks about an existing active goal, do not force a new draft. Answer with the smallest correct management command for their platform. Codex: `/goal` to view it, `/goal pause` to pause it, `/goal resume` to continue it, `/goal clear` to remove it. Claude Code: `/goal` to view status, `/goal clear` to remove it (aliases `stop`, `off`, `reset`, `none`, `cancel`); there is no pause — offer clear-and-reset-later or interrupting the session.
+
+## Platform Determination
+
+Facts and rendering rules live in `references/platform-goal-facts.md`. Selection order:
+
+1. The user names Codex or Claude Code: render for that platform.
+2. Otherwise infer from the host environment running this skill.
+3. Still ambiguous: add `0. 平台：A Claude Code / B Codex` to the 可选调整 block; do not open a separate questionnaire round.
+
+Claude Code rendering must produce a completion condition with transcript-visible proof and a turn/time bounding clause, and its 暂停条件 body must say stop-and-report.
 
 ## Default-First Rule
 
@@ -40,7 +50,7 @@ Always add one short reason:
 
 ## Goal Length Rule
 
-Codex goal objectives are limited to 4,000 characters. Most goals should stay well under that limit. If the best contract needs more room, put the detailed contract in a file and make the executable goal point to it:
+Goal objectives (Codex) and completion conditions (Claude Code) are both limited to 4,000 characters. Most goals should stay well under that limit. If the best contract needs more room, put the detailed contract in a file and make the executable goal point to it:
 
 ```text
 /goal Follow the task contract in .planning/local-mvp-goal.md and stop only when its verification evidence is complete.

@@ -2,27 +2,34 @@
 
 ## What This Skill Produces
 
-This skill produces a Codex `/goal` command.
+This skill produces a `/goal` command for the user's platform: Codex or Claude Code.
 
-For Chinese users, the body of the goal can be fully Chinese, but the slash command should still start with `/goal`. Do not use `/目标` as the executable command unless the current Codex client explicitly supports that alias.
+For Chinese users, the body of the goal can be fully Chinese, but the slash command should still start with `/goal`. Do not use `/目标` as the executable command unless the current client explicitly supports that alias.
 
 A normal prompt tells the agent what to do now. A goal defines a durable operating contract: what outcome matters, how completion is proven, what must not change, where work may happen, how to iterate, when to stop, and when to pause.
 
 Default stance: give the best copy-ready goal first. If the user is vague and the missing details are low-risk, choose conservative defaults and include one short reason instead of making the user fill out a form.
 
-## Current Codex Goal Commands
+## Platform Goal Commands
 
-Use the current Codex slash command behavior:
+Platform facts live in `references/platform-goal-facts.md`; that file wins on any conflict. Summary:
 
-- `/goal <text>` sets the persistent objective.
+Codex:
+
+- `/goal <text>` sets the persistent thread objective.
 - `/goal` views the current goal.
-- `/goal pause` pauses an active goal.
-- `/goal resume` resumes a paused goal.
+- `/goal pause` / `/goal resume` pause and resume an active goal.
 - `/goal clear` removes the current goal.
+- If `/goal` is absent from the slash command list, enable `features.goals` in Codex config or run `codex features enable goals`.
 
-If `/goal` is absent from the slash command list, the user may need to enable `features.goals` in Codex config or run the equivalent Codex feature enable command.
+Claude Code:
 
-Goal objectives must be non-empty and at most 4,000 characters. If the useful contract is longer, put the detailed instructions in a file and make the executable goal point to it:
+- `/goal <condition>` sets a session completion condition and immediately starts a turn; an independent small model evaluates the transcript after each turn and auto-continues until the condition holds.
+- `/goal` shows status (condition, elapsed time, turns, tokens, latest evaluator reason).
+- `/goal clear` removes it; `stop`, `off`, `reset`, `none`, and `cancel` are aliases. There is no pause/resume.
+- Requires v2.1.139+, an accepted trust dialog, and hooks not disabled.
+
+Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. If the useful contract is longer, put the detailed instructions in a file and make the executable goal point to it:
 
 ```text
 /goal Follow the task contract in .planning/checkout-discount-goal.md and stop only when its Verification and Stop when sections are satisfied.
@@ -44,14 +51,15 @@ Do not force `/goal` for:
 - simple rewrites or translations
 - quick shell outputs
 - tasks whose success is obvious without agent persistence
-- existing active-goal management requests where `/goal`, `/goal pause`, `/goal resume`, or `/goal clear` is the correct answer
+- existing active-goal management requests where the platform's management commands are the correct answer
+- Claude Code sessions where a time cadence (`/loop`) or a scripted Stop hook fits better than a completion condition
 
 ## Plan-To-Goal Interview Template
 
-Use this when the user has a vague task and wants the agent to help write the goal:
+Use this when the user has a vague task and wants the agent to help write the goal. On Codex, `/plan` is the built-in planning command; on Claude Code, use plan mode or a plain planning prompt instead of `/plan`:
 
 ```text
-/plan Help me turn this vague task into a strong Codex goal.
+/plan Help me turn this vague task into a strong goal.
 Interview me for missing success criteria, verification commands, constraints, boundaries, iteration policy, and blocked stop conditions.
 Then draft a final `/goal ...` command.
 ```
@@ -99,7 +107,7 @@ Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预�
 当用户使用中文、任务还在收敛中，默认先给可直接复制的推荐版，再给英文兼容镜像：
 
 1. `推荐执行版（中文，可直接复制）`：给用户直接复制，字段名用中文。
-2. `Goal Draft (English-compatible)`：给 Codex、团队文档或偏英文工具链复制使用，字段名用英文。
+2. `Goal Draft (English-compatible)`：给团队文档或偏英文的 Codex / Claude Code 会话复制使用，字段名用英文。
 
 两份草案必须语义一致，不能一份扩大范围、一份缩小范围。英文版是兼容镜像，不是重新发挥。
 
@@ -136,25 +144,25 @@ Pause if: credentials, payments, production data, destructive changes, legal/med
 
 The six practical elements are:
 
-| Element | Question it answers | Good content |
-|---|---|---|
-| Outcome | What should be true at the end? | A user-visible or repo-visible result |
-| Verification | How do we prove it? | Commands, tests, builds, screenshots, logs, API checks, files |
-| Constraints | What must not change? | Behavior, public API, data shape, style, secrets, branch rules |
-| Boundaries | Where may the agent write? | Allowed directories, forbidden paths, no unrelated refactors |
-| Iteration | How should failures be handled? | One focused change, rerun checks, inspect logs before retrying |
-| Stop/Pause | When does work end or wait? | Completion evidence, auth blockers, destructive choices, budget caps |
+| Element      | Question it answers             | Good content                                                         |
+| ------------ | ------------------------------- | -------------------------------------------------------------------- |
+| Outcome      | What should be true at the end? | A user-visible or repo-visible result                                |
+| Verification | How do we prove it?             | Commands, tests, builds, screenshots, logs, API checks, files        |
+| Constraints  | What must not change?           | Behavior, public API, data shape, style, secrets, branch rules       |
+| Boundaries   | Where may the agent write?      | Allowed directories, forbidden paths, no unrelated refactors         |
+| Iteration    | How should failures be handled? | One focused change, rerun checks, inspect logs before retrying       |
+| Stop/Pause   | When does work end or wait?     | Completion evidence, auth blockers, destructive choices, budget caps |
 
 中文对应：
 
-| 要素 | 回答的问题 | 好内容 |
-|---|---|---|
-| 目标结果 | 最后要变成什么状态？ | 用户可见或仓库可见的结果 |
-| 验证 | 怎么证明完成？ | 命令、测试、构建、截图、日志、API 检查、文件 |
-| 约束 | 什么不能变？ | 行为、公开 API、数据结构、风格、密钥、分支规则 |
-| 边界 | 可以写哪里？ | 允许目录、禁止路径、不做无关重构 |
-| 迭代策略 | 失败后怎么继续？ | 小步改动、重跑检查、先读日志再换策略 |
-| 完成/暂停 | 什么时候停止或等人？ | 完成证据、登录/权限阻塞、破坏性选择、预算上限 |
+| 要素      | 回答的问题           | 好内容                                         |
+| --------- | -------------------- | ---------------------------------------------- |
+| 目标结果  | 最后要变成什么状态？ | 用户可见或仓库可见的结果                       |
+| 验证      | 怎么证明完成？       | 命令、测试、构建、截图、日志、API 检查、文件   |
+| 约束      | 什么不能变？         | 行为、公开 API、数据结构、风格、密钥、分支规则 |
+| 边界      | 可以写哪里？         | 允许目录、禁止路径、不做无关重构               |
+| 迭代策略  | 失败后怎么继续？     | 小步改动、重跑检查、先读日志再换策略           |
+| 完成/暂停 | 什么时候停止或等人？ | 完成证据、登录/权限阻塞、破坏性选择、预算上限  |
 
 ## Drafting Rules
 
@@ -185,6 +193,12 @@ Stop when: the regression test fails before the fix, passes after the fix, and t
 Pause if: payment credentials, production data, a schema migration, or a product decision about stacking rules is required.
 ```
 
+Claude Code condition variant (same contract, condition-first with transcript proof and a bounding clause; `Pause if` becomes stop-and-report):
+
+```text
+/goal The checkout discount bug is fixed: the new percentage-coupon regression test failed before the fix and passes after it, the repo's checkout unit tests and smallest lint/typecheck command exit 0 with output shown in the conversation, and git diff touches only checkout pricing logic, coupon tests, and required fixtures; or stop after 20 turns and summarize remaining issues.
+```
+
 ### UI Polish
 
 ```text
@@ -197,6 +211,12 @@ Stop when: checks pass and screenshots show the toolbar fits at desktop and mobi
 Pause if: the design requires removing a primary command, adding a new design system dependency, or changing product navigation.
 ```
 
+Claude Code condition variant (screenshot judgment cannot be seen by the transcript evaluator, so the condition cites checks and reported measurements instead):
+
+```text
+/goal The editor toolbar works on mobile: the configured frontend checks exit 0 with output shown in the conversation, and a layout check (test, DOM measurement, or viewport audit run by Claude) reported in the conversation confirms no horizontal overflow or overlapping controls at desktop and mobile widths; or stop after 15 turns and summarize remaining issues.
+```
+
 ### Skill Creation
 
 ```text
@@ -207,6 +227,12 @@ Boundaries: write only under ~/.agents/skills/goal-example-skill and any explici
 Iteration policy: create the minimal package first, validate structure, then add only references or scripts that improve reliability.
 Stop when: all required files exist, validation passes, and the README explains usage, boundaries, and local checks.
 Pause if: the workflow requires private credentials, external publishing, unclear ownership, or a naming change from the user.
+```
+
+Claude Code condition variant:
+
+```text
+/goal The goal-example-skill package is complete: all required files exist under the requested skill root (file listing shown in the conversation), YAML/JSON syntax checks and the validation script exit 0 with output in the conversation, and no files outside the skill directory changed per git status; or stop after 12 turns and summarize remaining issues.
 ```
 
 ## Anti-Patterns
@@ -236,3 +262,6 @@ Avoid:
 - iteration like `keep trying`
 - stop conditions like `when it seems good`
 - pause conditions omitted for auth, payment, destructive operations, or private data
+- recommending `/goal pause` or `/goal resume` to a Claude Code user (the commands do not exist there; offer `/goal clear` plus re-setting, or interrupting)
+- Claude Code conditions whose only evidence is a screenshot or human confirmation (the evaluator reads the transcript and runs no tools)
+- Claude Code conditions with no turn or time bounding clause

@@ -4,12 +4,15 @@ Ask only the questions needed to write a safe and testable goal. If an answer ca
 
 Prefer numbered choices with defaults over open-ended questions. The user should be able to reply with `按默认` or `1B 2A 3C`.
 
-First distinguish whether the user wants a new goal or active-goal management. If they want to inspect, pause, resume, or clear the current goal, answer with `/goal`, `/goal pause`, `/goal resume`, or `/goal clear` instead of interviewing for a new objective.
+First distinguish whether the user wants a new goal or active-goal management. If they want to inspect, pause, resume, or clear the current goal, answer with the platform's management commands instead of interviewing for a new objective. Codex: `/goal`, `/goal pause`, `/goal resume`, `/goal clear`. Claude Code: `/goal` and `/goal clear` only — for a pause request, explain there is no pause and offer clear-and-reset-later or interrupting the session.
+
+Then determine the target platform (`references/platform-goal-facts.md`): explicit statement wins, otherwise infer from the host environment, otherwise add the platform choice below.
 
 ## Fast Interview
 
-Use these choices for a very vague but low-risk task:
+Use these choices for a very vague but low-risk task. Include choice 0 only when the platform is ambiguous:
 
+0. 平台：A Claude Code / B Codex
 1. 项目形态：A 新建本地 MVP（默认） / B 改现有项目 / C 先做原型
 2. 范围：A 核心流程（默认） / B 加常见增强 / C 做完整产品
 3. 验证：A 本地运行检查（默认） / B 真机或线上检查 / C 发布前检查
@@ -56,7 +59,8 @@ Use open-ended questions only when choices would hide an important decision.
 - What evidence proves completion strongly enough to stop?
 - What blocker requires the user: login, 2FA, paid service, destructive deletion, legal/medical/financial decision, account ownership, or product direction?
 - Should partial success be reported with remaining manual steps, or should the agent continue until the full outcome is proven?
-- If the goal would exceed Codex's 4,000 character objective limit, what local file path should hold the longer contract?
+- If the goal would exceed the shared 4,000 character limit, what local file path should hold the longer contract?
+- Claude Code only: what turn or time bounding clause fits (for example `or stop after 20 turns`), and is every piece of completion evidence something Claude's own output can show in the transcript?
 
 ## Interview Output Shape
 

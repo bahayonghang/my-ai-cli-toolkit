@@ -4,11 +4,11 @@
 
 ## 用途概览
 
-Turn vague or complex Codex tasks into strong `/goal` commands with outcome, verification, constraints, boundaries, iteration policy, completion evidence, and pause/block conditions.
+Turn vague or complex agent tasks into strong `/goal` commands for Claude Code and Codex, with outcome, verification, constraints, boundaries, iteration policy, completion evidence, and pause/stop conditions.
 
 ## 触发场景
 
-- the user asks for Codex goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, success criteria, verification commands, or bounded agent work definitions
+- the user asks for Codex goal instructions, Claude Code goal conditions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, success criteria, verification commands, or bounded agent work definitions
 
 ## 元数据
 
@@ -16,8 +16,8 @@ Turn vague or complex Codex tasks into strong `/goal` commands with outcome, ver
 | --- | --- |
 | 名称 | `goal-meta-skill` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `0.1.0` |
-| 标签 | `codex`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
+| 版本 | `0.2.0` |
+| 标签 | `codex`, `claude-code`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
 
 ## 安装命令
 
@@ -32,7 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 | `skills/developer-tools-integrations/goal-meta-skill/agents` | 目录 | 1 | 配套 agent |
 | `skills/developer-tools-integrations/goal-meta-skill/evals` | 目录 | 1 | 评测样例 |
 | `skills/developer-tools-integrations/goal-meta-skill/README.md` | 文件 | 1 | 顶层文件 |
-| `skills/developer-tools-integrations/goal-meta-skill/references` | 目录 | 3 | 引用资料 |
+| `skills/developer-tools-integrations/goal-meta-skill/references` | 目录 | 4 | 引用资料 |
 | `skills/developer-tools-integrations/goal-meta-skill/scripts` | 目录 | 1 | 可执行脚本 |
 | `skills/developer-tools-integrations/goal-meta-skill/tests` | 目录 | 1 | 自动化测试 |
 

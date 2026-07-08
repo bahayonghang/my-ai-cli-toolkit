@@ -1,7 +1,7 @@
 interface:
   display_name: "Goal Meta Skill"
-  short_description: "Turn vague Codex work into a best-default /goal command, with direct-copy Chinese and English-compatible versions."
-  default_prompt: "Use $goal-meta-skill to turn this vague task into a strong Codex /goal command. If I use Chinese, keep the command prefix as /goal and first provide 推荐执行版（中文，可直接复制）, then an English-compatible mirror unless I ask for one language only. Choose conservative defaults when low-risk, ask only numbered high-impact choices, use discovery-first goals for unfamiliar or specialized domains, use current /goal view/pause/resume/clear commands for existing-goal management, and keep inline objectives under 4,000 characters or point to a file."
+  short_description: "Turn vague work into a best-default /goal command for Claude Code or Codex, with direct-copy Chinese and English-compatible versions."
+  default_prompt: "Use $goal-meta-skill to turn this vague task into a strong /goal command for my platform (Claude Code or Codex). If I use Chinese, keep the command prefix as /goal and first provide 推荐执行版（中文，可直接复制）, then an English-compatible mirror unless I ask for one language only. Choose conservative defaults when low-risk, ask only numbered high-impact choices, use discovery-first goals for unfamiliar or specialized domains, and keep inline objectives/conditions under 4,000 characters or point to a file. On Codex, manage existing goals with /goal view/pause/resume/clear. On Claude Code, write the goal as a completion condition with transcript-visible proof and a turn/time bounding clause, never suggest /goal pause or /goal resume, and write pause conditions as stop-and-report."
 compatibility:
   canonical_format: "agent-skills"
   adapter_targets:
@@ -19,6 +19,6 @@ compatibility:
     remote_inline_execution: "forbid"
     remote_metadata_policy: "allow-metadata-only"
   degradation:
-    openai: "drafts structured Codex /goal commands from available task context"
-    claude: "drafts structured agent goal prompts with the same labels"
+    openai: "drafts structured Codex /goal thread objectives with pause/resume management from available task context"
+    claude: "drafts native Claude Code /goal completion conditions with transcript-visible proof, bounding clauses, and stop-and-report pause semantics"
     generic: "uses the canonical goal template and asks for missing criteria when needed"

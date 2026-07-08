@@ -79,6 +79,43 @@
         "Routes the request to agents-md-improver (the sibling skill that audits AGENTS.md / code_map files).",
         "Only offers a /goal afterward if the user explicitly wants bounded agent execution of the resulting fixes."
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "我在 Claude Code 里，帮我把“清掉这个仓库所有 eslint 报错”写成 /goal。",
+      "expected_output": "Chinese-first paste-ready Claude Code /goal written as a completion condition with transcript-visible proof, a turn/time bounding clause, and stop-and-report pause semantics.",
+      "files": [],
+      "assertions": [
+        "The /goal is phrased as a completion condition (e.g. npm run lint 退出码为 0) whose evidence appears in the conversation transcript.",
+        "The condition includes a bounding clause such as 否则在 N 轮后停止并总结剩余问题 or `or stop after N turns`.",
+        "The output never recommends /goal pause or /goal resume.",
+        "暂停条件 content is written as stop-and-report (停止并报告，等待人工决定), not as pausing the goal.",
+        "Chinese-first companion sections and the English-compatible mirror are present."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "我在 Claude Code 设了一个 goal，现在想暂停它，晚点再继续。",
+      "expected_output": "Platform-correct management answer: Claude Code has no /goal pause; offer /goal clear plus re-setting the same condition later, or interrupting the session.",
+      "files": [],
+      "assertions": [
+        "The answer states that Claude Code has no /goal pause or /goal resume.",
+        "It offers /goal clear (or its aliases) plus re-setting the condition later, or interrupting the session, as the alternative.",
+        "It does not draft a replacement task objective.",
+        "It does not recommend Codex-only commands as if they worked in Claude Code."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "帮我把“把这个 Python 脚本改造成带测试的 CLI 工具”写成 /goal，我没说用哪个工具。",
+      "expected_output": "Platform-ambiguous handling: default to the host platform (stated explicitly) or add a numbered platform choice to 可选调整, while still giving a paste-ready recommended draft first.",
+      "files": [],
+      "assertions": [
+        "The output still leads with 推荐执行版（中文，可直接复制） and a complete /goal draft.",
+        "The platform ambiguity is resolved either by defaulting to the host platform with an explicit statement, or by adding a numbered choice like 0. 平台：A Claude Code / B Codex to 可选调整.",
+        "Platform facts are not mixed: a Claude Code rendering has a bounding clause and no pause/resume wording; a Codex rendering may reference pause/resume.",
+        "No separate questionnaire round is opened beyond the numbered adjustments."
+      ]
     }
   ]
 }
