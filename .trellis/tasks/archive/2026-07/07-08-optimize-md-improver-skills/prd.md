@@ -119,20 +119,20 @@ content semantics while moving.
 
 ## Acceptance Criteria
 
-- [ ] `agents/interface.yaml` exists in both skill dirs and matches sibling-skill structure.
-- [ ] Root + nested code_map templates use identical canonical wording across the two
+- [x] `agents/interface.yaml` exists in both skill dirs and matches sibling-skill structure.
+- [x] Root + nested code_map templates use identical canonical wording across the two
       skills (apart from an allowed skill-name mention); both templates files carry the
       shared-artifact note; both SKILL.md bodies contain a dual-tool coexistence note.
-- [ ] No PowerShell command remains that the declared `allowed-tools` cannot execute.
-- [ ] claude-md-improver's trigger no longer routes trivial single-line CLAUDE.md edits
+- [x] No PowerShell command remains that the declared `allowed-tools` cannot execute.
+- [x] claude-md-improver's trigger no longer routes trivial single-line CLAUDE.md edits
       into the full workflow (narrowed description or documented fast path), with trigger
       before/after + overlap note recorded.
-- [ ] `claude-md-loading.md` carries a "Last verified" line; each listed claim is verified,
+- [x] `claude-md-loading.md` carries a "Last verified" line; each listed claim is verified,
       corrected, or explicitly labeled unverified.
-- [ ] Discovery commands and prose exclusion lists are consistent in both skills.
-- [ ] Both SKILL.md line counts decrease (report templates externalized) with no semantic
+- [x] Discovery commands and prose exclusion lists are consistent in both skills.
+- [x] Both SKILL.md line counts decrease (report templates externalized) with no semantic
       loss.
-- [ ] Both versions read 1.1.0; `just skills-check` and `just ci` pass; `git diff --check`
+- [x] Both versions read 1.1.0; `just skills-check` and `just ci` pass; `git diff --check`
       is clean.
 
 ## Notes
