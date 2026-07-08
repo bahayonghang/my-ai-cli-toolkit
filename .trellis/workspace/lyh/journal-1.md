@@ -653,3 +653,42 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 20: 审计并优化 agents-md-improver / claude-md-improver 双 skill
+
+**Date**: 2026-07-08
+**Task**: optimize-md-improver-skills
+**Branch**: `main`
+
+### Summary
+
+深度审计双 skill 后落地 8 项需求：补齐 agents/interface.yaml；收敛已漂移的共享 code_map 模板（md5 校验字节一致）并加双工具共存规则；删除 allowed-tools 中不可达的 PowerShell 分支；收窄 claude-md-improver 触发词并加琐碎编辑快速通道；对照官方 memory 文档核验事实断言——修正 @import 深度 5→4（6 处）、Windows symlink 措辞，加 Last verified 锚定；报告骨架外移至 references/report-format.md（SKILL.md 261→188 / 280→205 行）；双双升版 1.1.0。trellis-check 子代理额外发现并修复两个 update-guidelines.md 预存的代码围栏嵌套错误（裸 ``` 吞掉 Validation Checklist，需 4 反引号外层围栏）。教训沉淀至 spec/guides/skill-authoring-conventions.md：allowed-tools 可达性、双技能共享产物约定、formatter 围栏陷阱。
+
+### Main Changes
+
+- skills/developer-tools-integrations/agents-md-improver/：SKILL.md、templates.md、update-guidelines.md、新增 interface.yaml + report-format.md
+- skills/developer-tools-integrations/claude-md-improver/：SKILL.md、claude-md-loading.md、quality-criteria.md、templates.md、update-guidelines.md、新增 interface.yaml + report-format.md
+- docs/ 目录重新生成；spec guide 扩充 3 节
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e88bd81` | refactor(skills): [AI] optimize agents-md and claude-md improver skills |
+| `ce71228` | chore(task): [AI] record optimize-md-improver-skills task and spec guide |
+
+### Testing
+
+- [OK] scripts/check.py 双 skill OK 无警告
+- [OK] just ci 全绿（隔离 unknowns-first WIP 后验证）
+- [OK] git diff --check 干净
+- [OK] trellis-check 子代理 5 项复核全部 pass
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 遗留（非本任务）：skills/development-workflows/unknowns-first/ 为未提交 WIP，会使 docs-check 失败，且用的是 openai.yaml 而非 interface.yaml，待用户决定
