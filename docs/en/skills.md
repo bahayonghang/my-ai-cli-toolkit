@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 38 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 39 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -36,7 +36,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Development Workflows
 
-`development-workflows` · 11 skills
+`development-workflows` · 12 skills
 
 - [code-auditor](/en/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture, with language-specific guidance and human-readable findings.
 - [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a code quality review focused on maintainability, structure, abstraction quality, file growth, branching complexity, boundary cleanliness, and refactoring opportunities.
@@ -49,6 +49,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [html-artifact](/en/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts, single-file by default and split into offline per-page bundles when oversized, for complex, visual, comparison-heavy, reviewable, or shareable work outputs.
 - [implementation-notes](/en/skills/development-workflows/implementation-notes) — Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding.
 - [spark](/en/skills/development-workflows/spark) — Plan-first brainstorming workflow that turns an idea into an approved implementation plan before coding.
+- [unknowns-first](/en/skills/development-workflows/unknowns-first) — Diagnose a task before execution when the user may not yet know how to define success.
 
 ### Docs, Writing & Publishing
 

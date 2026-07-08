@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unknowns First"
+  short_description: "Find critical unknowns before work starts"
+  default_prompt: "Use $unknowns-first to diagnose this task before execution."

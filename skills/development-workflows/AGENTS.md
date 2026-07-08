@@ -2,7 +2,7 @@
 
 House standard for the skills in this directory: `code-auditor`, `code-quality-review`,
 `code-refactor`, `codex-dynamic-workflows`, `cold-shower`, `geju`, `goudi`, `handoff`,
-`html-artifact`, `implementation-notes`, `spark`. These skills cover code review,
+`html-artifact`, `implementation-notes`, `spark`, `unknowns-first`. These skills cover code review,
 refactoring, strategic/adversarial thinking, planning, artifact generation, and session
 continuity. They drifted apart on script paths, eval schemas, and interface files; new or
 edited skills here should match the conventions below so the suite does not drift again.

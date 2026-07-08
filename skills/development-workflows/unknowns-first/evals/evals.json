@@ -1,0 +1,82 @@
+{
+  "skill_name": "unknowns-first",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Help me write a proposal for a new project.",
+      "expected_output": "Full-mode unknowns diagnosis; does not draft the proposal immediately; surfaces the missing audience, decision, success standard, task level, and reference needs; asks focused questions and stops for confirmation.",
+      "files": [],
+      "assertions": [
+        "The response does not start drafting the proposal.",
+        "The response surfaces missing context such as audience, decision, success standard, and task level.",
+        "The clarification questions target what changes the deliverable rather than generic questions.",
+        "The response stops for confirmation before execution."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want to use AI to enter a field I do not understand. Help me judge whether this opportunity is worth doing.",
+      "expected_output": "Unknowns diagnosis that names the user's missing judgment standards, selects the true expert by decision level, treats expert standards as hypotheses, and recommends references or examples before execution.",
+      "files": [],
+      "assertions": [
+        "The response identifies that the user lacks the standards to judge the opportunity.",
+        "The response selects a true expert by decision level rather than by keyword.",
+        "The response treats expert standards as hypotheses, not final truth.",
+        "The response recommends references or examples before committing to execution."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Polish this paragraph and make it clearer.",
+      "expected_output": "Lite mode or direct execution; at most 1-2 questions and only when audience, tone, or purpose is missing; no full 10-step diagnosis.",
+      "files": [],
+      "assertions": [
+        "The response does not run the full 10-step diagnosis.",
+        "The response either executes directly or asks at most 1-2 questions.",
+        "Any questions asked are limited to missing audience, tone, or purpose."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Make this landing page feel more premium. I cannot explain what is wrong, but the current version does not feel right.",
+      "expected_output": "Diagnosis that names an unknown known (an implicit taste standard) and surfaces it through examples, alternatives, or visual prototypes rather than abstract taste questions alone.",
+      "files": [],
+      "assertions": [
+        "The response identifies an unknown known: the user has an implicit taste standard.",
+        "The response recommends examples, alternatives, or visual prototypes to surface the standard.",
+        "The response does not ask the user to fully verbalize the taste before seeing options."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Build this workflow, but we may discover constraints while implementing it.",
+      "expected_output": "Full-mode diagnosis that establishes initial success standards, plans to keep implementation notes during execution, and revises standards when new facts appear.",
+      "files": [],
+      "assertions": [
+        "The response runs a full-mode diagnosis and establishes initial success standards.",
+        "The response plans to maintain implementation notes during execution.",
+        "The response commits to revising success standards when new facts change the task."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "帮我把这个想法头脑风暴成一份可以直接开工的实现计划：做一个自动整理本地技能库的工具。",
+      "expected_output": "Routing negative; brainstorming an idea into a ready-to-build implementation plan should route to the spark workflow, not an unknowns-first diagnosis that stops at a confirmed diagnosis and produces no plan artifact.",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture a brainstorm-into-implementation-plan request as an unknowns-first diagnosis.",
+        "If answered by the skill, the response should route the user to the spark workflow rather than producing a confirm-and-stop diagnosis."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "这个方案我已经定稿了，帮我泼冷水、挑刺，看哪里会崩。",
+      "expected_output": "Routing negative; an adversarial challenge of an already-finalized plan should route to the cold-shower workflow, not an unknowns-first clarification of a task the user cannot yet define.",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture an adversarial challenge of a finalized plan as an unknowns-first diagnosis.",
+        "If answered by the skill, the response should route the user to the cold-shower workflow rather than clarifying an undefined task."
+      ]
+    }
+  ]
+}
