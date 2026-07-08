@@ -726,3 +726,37 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 21: goal-meta-skill 双平台化（Claude Code + Codex /goal）
+
+**Date**: 2026-07-08
+**Task**: goal-meta-skill 双平台化（Claude Code + Codex /goal）
+**Branch**: `main`
+
+### Summary
+
+审计 goal-meta-skill 并完成双平台改造：新增 references/platform-goal-facts.md 作为平台事实唯一来源（Claude Code v2.1.139 原生 /goal 为 transcript-only 评估器、无 pause/resume、需轮次上限条款；Codex 为 thread objective + features.goals）；SKILL.md 0.2.0 双平台触发与渲染；linter 加 --platform（claude 模式拦 /goal pause 和缺上限条款，双平台查 4000 字符块）；evals 7→10、Node 测试 141 全绿、just ci 通过。教训：工作区发现来历不明的 agent-skill-review 未暂存删除，用 git restore 恢复后再提交，避免 docs catalog 裹挟无关删除。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a08fd73` | (see git log) |
+| `31832b5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
