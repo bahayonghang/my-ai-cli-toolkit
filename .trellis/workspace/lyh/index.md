@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
-- **Last Active**: 2026-07-07
+- **Total Sessions**: 20
+- **Last Active**: 2026-07-08
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~655 | Active |
+| `journal-1.md` | ~728 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-07-08 | 审计并收编 unknowns-first skill（套件合规化） | `8f7bd1e`, `7b99a33` | `main` |
 | 19 | 2026-07-07 | 审计并优化 windows-dev-process-cleanup skill | `67ab86e`, `c85dcde`, `b583fa4`, `189fea8`, `6da0eec`, `509c4ae`, `c97667d` | `main` |
 | 18 | 2026-07-06 | 新增 ripgrep 使用技能（developer-tools-integrations） | `113a659`, `5962c46` | `main` |
 | 17 | 2026-07-05 | Migrate renhua skill | `bb63d10`, `7c53a56`, `50639c2`, `f5addca` | `main` |

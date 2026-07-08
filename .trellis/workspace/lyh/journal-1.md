@@ -692,3 +692,37 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - 遗留（非本任务）：skills/development-workflows/unknowns-first/ 为未提交 WIP，会使 docs-check 失败，且用的是 openai.yaml 而非 interface.yaml，待用户决定
+
+
+## Session 20: 审计并收编 unknowns-first skill（套件合规化）
+
+**Date**: 2026-07-08
+**Task**: 审计并收编 unknowns-first skill（套件合规化）
+**Branch**: `main`
+
+### Summary
+
+经 /yao-meta 深度审计 unknowns-first：方法论内核良好，但 5 个文件从未被 git 跟踪，且违反套件规范（openai.yaml 命名、frontmatter 缺 category/tags/version、无 evals、description 无排除项、task level 概念未定义）。建 Trellis 任务后由 trellis-implement 实施、trellis-check 独立复核（PASS 零修复）：补 frontmatter、改名 interface.yaml、重写 887 字符路由契约（含 spark/cold-shower/implementation-notes 三条近邻边界）、新增 Task Levels 刻度、7 条 evals（含 2 条路由负例）、收编套件名单与 docs 目录。闭环了上一 session 遗留的 unknowns-first WIP 尾巴。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8f7bd1e` | (see git log) |
+| `7b99a33` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
