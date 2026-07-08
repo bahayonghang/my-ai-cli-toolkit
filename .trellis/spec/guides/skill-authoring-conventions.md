@@ -1,6 +1,7 @@
 # Skill Authoring Conventions (this repo)
 
-> Executable contracts distilled from the windows-dev-process-cleanup overhaul (2026-07-07).
+> Executable contracts distilled from the windows-dev-process-cleanup overhaul (2026-07-07)
+> and the md-improver twin-skill optimization (2026-07-08).
 > Follow these when creating or refactoring anything under `skills/`.
 
 ## Script references in SKILL.md
@@ -53,3 +54,29 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   `git ls-files --others --exclude-standard` before trusting "clean".
 - After changing any SKILL.md frontmatter, run `just docs-sync` and commit the
   regenerated `docs/` catalog pages, or `just ci` fails at step 1 (`docs-check`).
+- The post-edit formatter hook rewrites markdown tables/fences. A markdown
+  example block that itself contains ``` fences must use a 4-backtick outer
+  fence, or the formatter's auto-closing produces swallowed sections (bit both
+  `update-guidelines.md` files in the md-improver skills).
+
+## allowed-tools reachability
+
+- `allowed-tools: Bash(<cmd> *)` entries must be executable in Git Bash (POSIX)
+  — Claude Code's Bash tool is never PowerShell. `Bash(Get-ChildItem *)` style
+  entries are dead: the command fails in bash, and `powershell -Command ...`
+  is not covered by them. Either keep POSIX-only commands or explicitly allow
+  `Bash(powershell *)` and show `powershell -Command "..."` examples.
+- Discovery/example commands in the SKILL.md body must stay within what
+  `allowed-tools` grants.
+
+## Twin skills sharing an artifact
+
+- When two skills maintain the same output file (e.g. `agents-md-improver` and
+  `claude-md-improver` both own `code_map.md` templates), the shared template
+  wording must be byte-identical in both skills, each templates file must carry
+  a symmetric "shared with <sibling>; edit both together" note, and each
+  SKILL.md needs a coexistence rule (never remove the other tool's mention).
+- External-behavior claims (other tools' loading rules, limits, version-gated
+  features) go in a reference file with a `Last verified: <date> against <url>`
+  line; verify against official docs before repeating a number (the `@import`
+  depth was 4, not the 5 both files claimed).
