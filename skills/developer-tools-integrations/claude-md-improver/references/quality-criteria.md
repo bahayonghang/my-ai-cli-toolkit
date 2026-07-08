@@ -72,14 +72,14 @@ The most distinctive criterion for Claude Code. Because files load additively, a
 
 Use this scorecard when a repository has a source subtree without local guidance. Score only directories that are not generated, vendored, dependency, cache, or build-output directories.
 
-| Criterion | Weight | Evidence |
-|---|---:|---|
-| Distinct stack or framework | 25 | Different language, runtime, framework, or build system from the parent. The single strongest signal that parent guidance will be misapplied here. |
-| Independent commands | 20 | Local manifest, test/build/lint/dev command, package script, just target, Make target, or CI fragment specific to this subtree. |
-| Conventions divergence | 20 | Naming, style, patterns, error handling, or architectural rules that differ from the parent. Frontend vs backend vs infrastructure code. |
-| Agent work frequency | 15 | Claude is expected to read or edit files in this subtree often. Without expected agent traffic, lazy loading rarely triggers and the nested file becomes dead weight. |
-| Permissions or safety boundary | 10 | Secrets, credentials, production data, migrations, destructive operations, external services, or privileged tooling. |
-| Parent root file pressure | 10 | Root `CLAUDE.md` exceeds 200 lines and a meaningful chunk of its content is specific to this subtree. Splitting reduces the always-loaded budget. |
+| Criterion                      | Weight | Evidence                                                                                                                                                              |
+| ------------------------------ | -----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Distinct stack or framework    |     25 | Different language, runtime, framework, or build system from the parent. The single strongest signal that parent guidance will be misapplied here.                    |
+| Independent commands           |     20 | Local manifest, test/build/lint/dev command, package script, just target, Make target, or CI fragment specific to this subtree.                                       |
+| Conventions divergence         |     20 | Naming, style, patterns, error handling, or architectural rules that differ from the parent. Frontend vs backend vs infrastructure code.                              |
+| Agent work frequency           |     15 | Claude is expected to read or edit files in this subtree often. Without expected agent traffic, lazy loading rarely triggers and the nested file becomes dead weight. |
+| Permissions or safety boundary |     10 | Secrets, credentials, production data, migrations, destructive operations, external services, or privileged tooling.                                                  |
+| Parent root file pressure      |     10 | Root `CLAUDE.md` exceeds 200 lines and a meaningful chunk of its content is specific to this subtree. Splitting reduces the always-loaded budget.                     |
 
 Decision thresholds:
 
@@ -111,7 +111,7 @@ Pick a nested `CLAUDE.md` over rules when the content is high-level orientation 
 - `CLAUDE.md` files that mention a code map generically without an explicit relative path.
 - `code_map.md` containing behavioral constraints that belong in `CLAUDE.md`.
 - Block-level `<!-- ... -->` comments used to hide instructions; they are stripped before injection.
-- `@import` chains that exceed 5 hops or reference missing files.
+- `@import` chains that exceed 4 hops or reference missing files.
 - `.claude/rules/*.md` with `paths:` globs that do not match any real file.
 - `CLAUDE.local.md` checked into git.
 - Hook-managed marker blocks with missing END markers or accidentally rewritten content.

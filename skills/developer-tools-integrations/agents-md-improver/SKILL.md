@@ -8,7 +8,7 @@ description: >-
   scoped instructions, sandbox or approval boundaries; or says "优化 AGENTS.md",
   "审计 AGENTS.md", "检查 nested AGENTS.md", "更新 Codex 项目指导", or "生成
   code_map.md".
-version: 1.0.0
+version: 1.1.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -19,7 +19,7 @@ tags:
   - audit
   - documentation
 argument-hint: "[audit-or-update-goal]"
-allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *), Bash(Get-ChildItem *), Bash(Get-Content *), Bash(Select-String *)
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *)
 ---
 
 # AGENTS.md Improver
@@ -36,6 +36,7 @@ Audit and improve Codex `AGENTS.md` guidance files and companion `code_map.md` n
 - Repository `AGENTS.md` files are project guidance. User-level `~/.codex/AGENTS.md` is global preference guidance and should not be edited unless explicitly requested.
 - `AGENTS.md` carries durable behavioral constraints, commands, and safety rules. `code_map.md` carries navigational structure, search anchors, entry points, and generated/ignored directory notes.
 - Every created or updated `AGENTS.md` should explicitly name the relative `code_map.md` path agents must read before broad grep or repo-wide search, for example `See ./code_map.md before broad grep` or `For this subtree, start with platforms/codex/code_map.md`.
+- When the repository also uses Claude Code (`CLAUDE.md` present), `code_map.md` is a shared artifact maintained by both this skill and `claude-md-improver`. Use the canonical code map wording from `references/templates.md` (it names both guidance files), never remove the other tool's mention from an existing map, and prefer keeping shared instructions in `AGENTS.md` with `CLAUDE.md` importing them via `@AGENTS.md`.
 - Preserve hook-managed marker blocks such as `<!-- OMX:RUNTIME:START --> ... <!-- OMX:RUNTIME:END -->` and `<!-- OMX:TEAM:WORKER:START --> ... <!-- OMX:TEAM:WORKER:END -->`.
 
 ## Workflow
@@ -45,22 +46,17 @@ Audit and improve Codex `AGENTS.md` guidance files and companion `code_map.md` n
 Find scoped guidance files:
 
 ```bash
-# POSIX shells
 find . \( -name AGENTS.md -o -name code_map.md \) \
   -not -path './.git/*' \
   -not -path './node_modules/*' \
   -not -path './target/*' \
   -not -path './dist/*' \
   -not -path './build/*' \
+  -not -path './vendor/*' \
   -not -path './.omx/state/*'
-
-# PowerShell
-Get-ChildItem -Recurse -Force -Include AGENTS.md,code_map.md |
-  Where-Object { $_.FullName -notmatch '\\.git|node_modules|target|dist|build|\\.omx\\state' } |
-  Select-Object -ExpandProperty FullName
 ```
 
-Exclude generated, vendored, dependency, cache, and build-output directories from guidance creation scans, including `.git/`, `node_modules/`, `target/`, `dist/`, `build/`, `.omx/state/`, `vendor/`, generated docs output, coverage output, and language-specific package caches.
+The command above is a starting set; the full exclusion list below governs. Exclude generated, vendored, dependency, cache, and build-output directories from guidance creation scans, including `.git/`, `node_modules/`, `target/`, `dist/`, `build/`, `.omx/state/`, `vendor/`, generated docs output, coverage output, and language-specific package caches.
 
 Discover candidate directories for new nested `AGENTS.md` plus local `code_map.md` before proposing writes. Score only real source subtrees that show one or more of:
 
@@ -80,14 +76,14 @@ Also note, but do not edit by default:
 
 Classify each file:
 
-| Type | Location | Purpose |
-|---|---|---|
-| root guidance | `./AGENTS.md` | repo-wide commands, architecture, gates, safety boundaries |
-| nested scoped guidance | `./<subtree>/AGENTS.md` | local commands, ownership, generated files, conventions |
-| root code map | `./code_map.md` | repo navigation, top-level routing, search anchors, ignored/generated paths |
-| nested code map | `./<subtree>/code_map.md` | subtree entry points, internal routing, upstream/downstream boundaries |
-| user global guidance | `~/.codex/AGENTS.md` | user-wide preferences, outside repo scope |
-| generated/runtime guidance | `.omx/.../AGENTS.md` or similar | runtime state; usually read-only/no-edit |
+| Type                       | Location                        | Purpose                                                                     |
+| -------------------------- | ------------------------------- | --------------------------------------------------------------------------- |
+| root guidance              | `./AGENTS.md`                   | repo-wide commands, architecture, gates, safety boundaries                  |
+| nested scoped guidance     | `./<subtree>/AGENTS.md`         | local commands, ownership, generated files, conventions                     |
+| root code map              | `./code_map.md`                 | repo navigation, top-level routing, search anchors, ignored/generated paths |
+| nested code map            | `./<subtree>/code_map.md`       | subtree entry points, internal routing, upstream/downstream boundaries      |
+| user global guidance       | `~/.codex/AGENTS.md`            | user-wide preferences, outside repo scope                                   |
+| generated/runtime guidance | `.omx/.../AGENTS.md` or similar | runtime state; usually read-only/no-edit                                    |
 
 ### Phase 2: Evidence Collection
 
@@ -109,14 +105,14 @@ Use `references/quality-criteria.md` for detailed scoring, including the nested 
 
 Quick checklist:
 
-| Criterion | Weight | Check |
-|---|---:|---|
-| scope and override clarity | 20 | file explains what subtree it governs and how it relates to parent guidance |
-| executable commands and gates | 20 | build/test/lint/typecheck commands are real and scoped |
-| architecture and ownership | 15 | enough map to route future edits without restating obvious code |
-| safety and permissions | 15 | sandbox, approvals, secrets, destructive operations, external services are clear |
-| Codex workflow fit | 15 | skills/subagents/plugins/OMX guidance is accurate and not overpromised |
-| conciseness and currency | 15 | current, dense, non-duplicative, no stale file paths |
+| Criterion                     | Weight | Check                                                                            |
+| ----------------------------- | -----: | -------------------------------------------------------------------------------- |
+| scope and override clarity    |     20 | file explains what subtree it governs and how it relates to parent guidance      |
+| executable commands and gates |     20 | build/test/lint/typecheck commands are real and scoped                           |
+| architecture and ownership    |     15 | enough map to route future edits without restating obvious code                  |
+| safety and permissions        |     15 | sandbox, approvals, secrets, destructive operations, external services are clear |
+| Codex workflow fit            |     15 | skills/subagents/plugins/OMX guidance is accurate and not overpromised           |
+| conciseness and currency      |     15 | current, dense, non-duplicative, no stale file paths                             |
 
 For each candidate nested subtree, record:
 
@@ -134,57 +130,7 @@ Grades:
 
 ### Phase 4: Report Before Editing
 
-Always provide this report before edits unless the user already approved an implementation plan.
-
-```markdown
-## AGENTS.md Quality Report
-
-### Summary
-- Files found: X
-- Root guidance: present/missing
-- Root code map: present/missing
-- Nested scoped files: X
-- Nested code maps: X
-- Average score: X/100
-- Files needing update: X
-- Candidate nested guidance dirs: X create / X candidate-only / X skipped
-
-### Scope Map
-| File | Governs | Parent guidance | Notes |
-|---|---|---|---|
-| `AGENTS.md` | repo root | none | ... |
-| `packages/api/AGENTS.md` | `packages/api/**` | root | ... |
-
-### Code Map Coverage
-| Map | Covers | Referenced by | Notes |
-|---|---|---|---|
-| `code_map.md` | repo root | `AGENTS.md` | ... |
-
-### Nested Guidance Candidates
-| Directory | Score | Decision | Evidence |
-|---|---:|---|---|
-| `packages/api/` | 75 | create `packages/api/AGENTS.md` + `packages/api/code_map.md` | independent tests, deploy boundary |
-
-### File-by-File Assessment
-
-#### 1. `AGENTS.md`
-**Score: XX/100 (Grade: X)**
-
-| Criterion | Score | Notes |
-|---|---:|---|
-| scope and override clarity | X/20 | ... |
-| executable commands and gates | X/20 | ... |
-| architecture and ownership | X/15 | ... |
-| safety and permissions | X/15 | ... |
-| Codex workflow fit | X/15 | ... |
-| conciseness and currency | X/15 | ... |
-
-**Issues**
-- ...
-
-**Proposed changes**
-- ...
-```
+Always provide this report before edits unless the user already approved an implementation plan. Use the "Quality Report" skeleton in `references/report-format.md`: summary, scope map, code map coverage, nested guidance candidates, and a per-file assessment scored against the Phase 3 criteria.
 
 ### Phase 5: Targeted Updates
 
@@ -219,6 +165,7 @@ If a documented full gate is expensive, state whether it was run or why it was n
 - `references/quality-criteria.md` — scoring rubric and red flags
 - `references/templates.md` — root, monorepo package, frontend/backend/docs templates
 - `references/update-guidelines.md` — what to add, avoid, and preserve
+- `references/report-format.md` — quality report and update summary skeletons
 
 ## Common Issues to Flag
 
@@ -237,25 +184,4 @@ If a documented full gate is expensive, state whether it was run or why it was n
 
 ## Final Output After Edits
 
-```markdown
-## AGENTS.md Update Summary
-
-### Files changed
-- `AGENTS.md` — ...
-- `packages/api/AGENTS.md` — ...
-- `code_map.md` — ...
-- `packages/api/code_map.md` — ...
-
-### What improved
-- scope/override clarity
-- command/gate accuracy
-- safety boundaries
-- map-first search flow with explicit relative `code_map.md` paths
-
-### Verification
-- `git diff --check` — passed
-- `<targeted command>` — passed/failed/skipped with reason
-
-### Remaining risks
-- ...
-```
+After approved edits, emit the "Update Summary" skeleton in `references/report-format.md`: files changed, what improved, verification results (passed/failed/skipped with reason), and remaining risks.

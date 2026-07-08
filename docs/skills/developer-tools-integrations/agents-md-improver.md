@@ -19,7 +19,7 @@ Audit and improve Codex AGENTS.md guidance files and companion code_map.md navig
 | --- | --- |
 | 名称 | `agents-md-improver` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `1.0.0` |
+| 版本 | `1.1.0` |
 | 标签 | `codex`, `agents-md`, `repository-guidance`, `codex-cli`, `codex-app`, `audit`, `documentation` |
 
 ## 安装命令
@@ -32,12 +32,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill agents-md-imp
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/developer-tools-integrations/agents-md-improver/references` | 目录 | 3 | 引用资料 |
+| `skills/developer-tools-integrations/agents-md-improver/agents` | 目录 | 1 | 配套 agent |
+| `skills/developer-tools-integrations/agents-md-improver/references` | 目录 | 4 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| agents | `skills/developer-tools-integrations/agents-md-improver/agents` | 配套 agent |
 | references | `skills/developer-tools-integrations/agents-md-improver/references` | 引用资料 |
 
 ## 验证方式

@@ -11,7 +11,7 @@ Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scop
 - the user asks to check, audit, update, optimize, or fix CLAUDE.md files
 - mentions nested CLAUDE.md, additive loading, ancestor/descendant loading, path-scoped rules, @import chains, CLAUDE.local.md, claudeMdExcludes, or code_map.md
 - or says "优化 CLAUDE.md", "审计 CLAUDE.md", "检查嵌套 CLAUDE.md", "Claude Code 项目指导", "生成 code_map (Claude)"
-- Make sure to use this skill whenever the user wants to manage Claude Code memory files at any layer, even if they only mention CLAUDE.md without explicit audit wording
+- Also use for structural CLAUDE.md work — splitting, layering, migrating content to rules — even without explicit audit wording
 
 ## 元数据
 
@@ -19,7 +19,7 @@ Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scop
 | --- | --- |
 | 名称 | `claude-md-improver` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `1.0.0` |
+| 版本 | `1.1.0` |
 | 标签 | `claude-code`, `claude-md`, `repository-guidance`, `memory`, `audit`, `documentation`, `code-map` |
 
 ## 安装命令
@@ -32,12 +32,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill claude-md-imp
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/developer-tools-integrations/claude-md-improver/references` | 目录 | 4 | 引用资料 |
+| `skills/developer-tools-integrations/claude-md-improver/agents` | 目录 | 1 | 配套 agent |
+| `skills/developer-tools-integrations/claude-md-improver/references` | 目录 | 5 | 引用资料 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| agents | `skills/developer-tools-integrations/claude-md-improver/agents` | 配套 agent |
 | references | `skills/developer-tools-integrations/claude-md-improver/references` | 引用资料 |
 
 ## 验证方式

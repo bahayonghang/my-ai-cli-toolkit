@@ -8,14 +8,14 @@ Because `CLAUDE.md` loads at every session start (or every time Claude enters a 
 
 ## Division of Labor
 
-| File | Owns |
-|---|---|
-| Root `CLAUDE.md` (or `./.claude/CLAUDE.md`) | Repo-wide pointers, critical gotchas, top-level commands, safety boundaries, link to root `code_map.md`, index of nested documentation |
-| Nested `CLAUDE.md` (`<subtree>/CLAUDE.md` or `<subtree>/.claude/CLAUDE.md`) | Local stack, local commands, local safety, local conventions distinct from parent |
-| `.claude/rules/*.md` | Topic rules; with `paths:` frontmatter for path-specific guidance, without it for always-on rules |
-| `CLAUDE.local.md` | Per-developer overrides; gitignored, never read by this skill |
-| Root `code_map.md` | Top-level routing, entry points, search anchors, generated/ignored paths, verification command index |
-| Nested `code_map.md` | Subtree navigation, key files, internal routing, upstream/downstream boundaries |
+| File                                                                        | Owns                                                                                                                                   |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Root `CLAUDE.md` (or `./.claude/CLAUDE.md`)                                 | Repo-wide pointers, critical gotchas, top-level commands, safety boundaries, link to root `code_map.md`, index of nested documentation |
+| Nested `CLAUDE.md` (`<subtree>/CLAUDE.md` or `<subtree>/.claude/CLAUDE.md`) | Local stack, local commands, local safety, local conventions distinct from parent                                                      |
+| `.claude/rules/*.md`                                                        | Topic rules; with `paths:` frontmatter for path-specific guidance, without it for always-on rules                                      |
+| `CLAUDE.local.md`                                                           | Per-developer overrides; gitignored, never read by this skill                                                                          |
+| Root `code_map.md`                                                          | Top-level routing, entry points, search anchors, generated/ignored paths, verification command index                                   |
+| Nested `code_map.md`                                                        | Subtree navigation, key files, internal routing, upstream/downstream boundaries                                                        |
 
 Keep the boundary strict. If you find directory indexes in `CLAUDE.md`, move them to `code_map.md`. If you find behavioral constraints in `code_map.md`, move them to `CLAUDE.md`.
 
@@ -25,6 +25,7 @@ Keep the boundary strict. If you find directory indexes in `CLAUDE.md`, move the
 
 ```markdown
 ## Core Commands
+
 - `just ci` — runs docs audit, TypeScript, UI tests, Rust fmt/clippy/tests.
 ```
 
@@ -54,6 +55,7 @@ Always relative paths. Never `@code_map.md` (that would force a startup load).
 
 ```markdown
 ## Nested Documentation
+
 - `packages/api/CLAUDE.md` — backend stack, local commands, secrets boundary
 - `packages/web/CLAUDE.md` — frontend stack, component conventions
 - `.claude/rules/testing.md` — TDD rules (loads when editing `**/*.test.{ts,tsx}`)
@@ -65,6 +67,7 @@ This is the only mechanism for cross-subtree visibility; sibling files do not lo
 
 ```markdown
 ## Safety
+
 - Do not edit `.omx/state/**` manually. Files there are managed by hooks.
 - Ask before running migrations against the staging database.
 ```
@@ -107,7 +110,7 @@ If the same instruction applies whenever Claude touches a file pattern, move it 
 
 ## Suggested Diff Format
 
-```markdown
+````markdown
 ### Update: `CLAUDE.md`
 
 **Why:** Root file is 312 lines (target under 200) because frontend testing rules grew over time. Moving them to a path-scoped rule preserves the guidance and shrinks the always-loaded budget.
@@ -132,12 +135,13 @@ paths:
 ---
 
 # Frontend Testing
+
 - Prefer Vitest with `screen.getByRole`.
 - Co-locate test files next to the component.
 - Use the shared `renderWithProviders` helper.
 - Mock `next/router` via the shared `routerMock` fixture.
 ```
-```
+````
 
 This pattern — extract path-specific content from the root file into a `paths:`-scoped rule — is the single highest-leverage refactor for bloated root `CLAUDE.md` files.
 
@@ -147,7 +151,7 @@ Before finalizing edits:
 
 - [ ] Every documented command exists and has the right working directory.
 - [ ] Every path mentioned exists or is clearly a future target created by the change.
-- [ ] Every `@path/to/file` import resolves on disk; recursion depth ≤ 5.
+- [ ] Every `@path/to/file` import resolves on disk; recursion depth ≤ 4.
 - [ ] Every `code_map.md` pointer uses an explicit relative path; no `@code_map.md`.
 - [ ] Every `.claude/rules/*.md` with `paths:` has valid YAML and globs that match at least one real file.
 - [ ] No content was added that duplicates `.claude/settings.json` hard rules.

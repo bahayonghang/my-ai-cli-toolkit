@@ -4,6 +4,8 @@ This file explains how Claude Code discovers, orders, and loads memory files. Us
 
 The authoritative source is the [Claude Code memory documentation](https://code.claude.com/docs/en/memory).
 
+Last verified: 2026-07-08 against https://code.claude.com/docs/en/memory.
+
 ## The Three Loading Modes
 
 Claude Code uses a directory-tree algorithm that behaves differently based on where a file sits relative to the current working directory (CWD).
@@ -22,20 +24,20 @@ If the CWD is `packages/web/`, a `CLAUDE.md` in `packages/api/` is neither an an
 
 ## Precedence Chain at Session Start
 
-| Order | Layer | Path | Edit from a repo skill? |
-|---|---|---|---|
-| 1 | managed policy | `/Library/Application Support/ClaudeCode/CLAUDE.md` (macOS), `/etc/claude-code/CLAUDE.md` (Linux/WSL), `C:\Program Files\ClaudeCode\CLAUDE.md` (Windows) | never; IT/DevOps controlled |
-| 2 | user global | `~/.claude/CLAUDE.md`, `~/.claude/rules/*.md` | only when the user explicitly asks |
-| 3 | project root | `./CLAUDE.md` and `./.claude/CLAUDE.md` | yes; this is the primary target |
-| 4 | per-developer override | `./CLAUDE.local.md` (gitignored) | confirm gitignored only; do not read content |
-| 5 | nested project | `./<subtree>/CLAUDE.md`, `./<subtree>/CLAUDE.local.md` | yes, when the creation scorecard justifies it |
-| 6 | path-scoped rules | `./.claude/rules/*.md` with `paths:` glob | yes; prefer this over bloating the root file |
+| Order | Layer                  | Path                                                                                                                                                     | Edit from a repo skill?                       |
+| ----- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 1     | managed policy         | `/Library/Application Support/ClaudeCode/CLAUDE.md` (macOS), `/etc/claude-code/CLAUDE.md` (Linux/WSL), `C:\Program Files\ClaudeCode\CLAUDE.md` (Windows) | never; IT/DevOps controlled                   |
+| 2     | user global            | `~/.claude/CLAUDE.md`, `~/.claude/rules/*.md`                                                                                                            | only when the user explicitly asks            |
+| 3     | project root           | `./CLAUDE.md` and `./.claude/CLAUDE.md`                                                                                                                  | yes; this is the primary target               |
+| 4     | per-developer override | `./CLAUDE.local.md` (gitignored)                                                                                                                         | confirm gitignored only; do not read content  |
+| 5     | nested project         | `./<subtree>/CLAUDE.md`, `./<subtree>/CLAUDE.local.md`                                                                                                   | yes, when the creation scorecard justifies it |
+| 6     | path-scoped rules      | `./.claude/rules/*.md` with `paths:` glob                                                                                                                | yes; prefer this over bloating the root file  |
 
 Files load additively. There is no override semantic. If two files give conflicting guidance Claude reconciles by judgment, with more specific instructions typically taking precedence — but this is best-effort, not enforced.
 
 ## `@import` Recursion
 
-`CLAUDE.md` files can pull in other markdown via `@path/to/file`. Imports expand at launch and recurse up to **5 hops**. Both relative paths (resolved against the importing file) and absolute paths work.
+`CLAUDE.md` files can pull in other markdown via `@path/to/file`. Imports expand at launch and recurse up to **4 hops**. Both relative paths (resolved against the importing file) and absolute paths work. Import parsing skips code spans and fenced code blocks — wrap a path in backticks to mention it without importing it.
 
 Critical reality check: **imports do not save context**. They are organizational, not cost-saving. The imported file fully expands into the prompt at session start. If you need on-demand loading, put the content in `.claude/rules/*.md` with a `paths:` glob, in a `code_map.md` referenced by prose, or in a skill.
 
@@ -75,6 +77,7 @@ paths:
 ---
 
 # Frontend Testing Rules
+
 - Prefer Vitest with `screen.getByRole`.
 - Co-locate test files with the component.
 ```
@@ -113,7 +116,7 @@ Claude Code reads `CLAUDE.md`, not `AGENTS.md`. The official recommendation when
 Use plan mode for changes under `src/billing/`.
 ```
 
-A symlink also works on POSIX systems (Windows requires Developer Mode). Running `/init` on a repo with `AGENTS.md` reads it and merges relevant parts into the generated `CLAUDE.md`. When auditing a dual-tool repo, prefer the `@AGENTS.md` bridge to keep both agents reading the same source of truth.
+A symlink also works on POSIX systems (Windows requires Administrator privileges or Developer Mode — prefer the `@AGENTS.md` import there). Running `/init` on a repo with `AGENTS.md` reads it and merges relevant parts into the generated `CLAUDE.md`. When auditing a dual-tool repo, prefer the `@AGENTS.md` bridge to keep both agents reading the same source of truth.
 
 ## Compaction Behavior
 
@@ -121,17 +124,17 @@ After `/compact`, the project-root `CLAUDE.md` is re-read from disk and re-injec
 
 ## Comparison With `AGENTS.md` (Codex)
 
-| Aspect | `CLAUDE.md` | `AGENTS.md` |
-|---|---|---|
-| Loading model | additive, ancestor-immediate + descendant-lazy + sibling-isolated | scoped, directory-and-descendants with depth override |
-| Session-start scope | every ancestor + project + user + managed | only the in-scope `AGENTS.md` set |
-| Sibling visibility | never loads | not applicable (scope-based) |
-| Personal override | `CLAUDE.local.md` (gitignored) | none standardized |
-| Imports | `@path` recursion up to 5 hops | none |
-| Comment stripping | block-level `<!-- ... -->` stripped | preserved |
-| Excludes setting | `claudeMdExcludes` | none |
-| Size guidance | under 200 lines | not specified |
-| Path-scoped rules | `.claude/rules/*.md` with `paths:` | none |
-| User-global file | `~/.claude/CLAUDE.md` | `~/.codex/AGENTS.md` |
+| Aspect              | `CLAUDE.md`                                                       | `AGENTS.md`                                           |
+| ------------------- | ----------------------------------------------------------------- | ----------------------------------------------------- |
+| Loading model       | additive, ancestor-immediate + descendant-lazy + sibling-isolated | scoped, directory-and-descendants with depth override |
+| Session-start scope | every ancestor + project + user + managed                         | only the in-scope `AGENTS.md` set                     |
+| Sibling visibility  | never loads                                                       | not applicable (scope-based)                          |
+| Personal override   | `CLAUDE.local.md` (gitignored)                                    | none standardized                                     |
+| Imports             | `@path` recursion up to 4 hops                                    | none                                                  |
+| Comment stripping   | block-level `<!-- ... -->` stripped                               | preserved                                             |
+| Excludes setting    | `claudeMdExcludes`                                                | none                                                  |
+| Size guidance       | under 200 lines                                                   | not specified                                         |
+| Path-scoped rules   | `.claude/rules/*.md` with `paths:`                                | none                                                  |
+| User-global file    | `~/.claude/CLAUDE.md`                                             | `~/.codex/AGENTS.md`                                  |
 
 Use this table to translate guidance from one ecosystem to the other without leaking the wrong semantics.

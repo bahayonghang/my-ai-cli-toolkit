@@ -19,7 +19,7 @@ Audit and improve Codex AGENTS.md guidance files and companion code_map.md navig
 | --- | --- |
 | Name | `agents-md-improver` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `1.0.0` |
+| Version | `1.1.0` |
 | Tags | `codex`, `agents-md`, `repository-guidance`, `codex-cli`, `codex-app`, `audit`, `documentation` |
 
 ## Install command
@@ -32,12 +32,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill agents-md-imp
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/developer-tools-integrations/agents-md-improver/references` | directory | 3 | Reference material |
+| `skills/developer-tools-integrations/agents-md-improver/agents` | directory | 1 | Companion agents |
+| `skills/developer-tools-integrations/agents-md-improver/references` | directory | 4 | Reference material |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| agents | `skills/developer-tools-integrations/agents-md-improver/agents` | Companion agents |
 | references | `skills/developer-tools-integrations/agents-md-improver/references` | Reference material |
 
 ## Validation

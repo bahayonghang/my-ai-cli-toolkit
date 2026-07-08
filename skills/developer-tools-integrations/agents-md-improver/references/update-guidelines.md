@@ -18,6 +18,7 @@ Keep `AGENTS.md` and `code_map.md` separate:
 
 ```markdown
 ## Build, Test, and Development Commands
+
 - `just ci` — runs docs audit, TypeScript, UI tests, Rust fmt/clippy/tests.
 ```
 
@@ -62,12 +63,14 @@ For UI changes, run targeted Vitest first, then `just mcs-web-test`; use Playwri
 ```markdown
 # Repository Code Map
 
-Use this map for navigation and search routing. Behavioral rules live in `AGENTS.md`.
+Use this map for navigation and search routing. Behavioral rules, required commands, and safety constraints live in `CLAUDE.md` / `AGENTS.md` (whichever exist in this repository).
 
 ## Top-Level Routing
+
 - `platforms/` — platform-specific commands, prompts, hooks, and rules.
 
 ## Search Anchors
+
 - `DEFAULT_ENABLED_PLATFORM_IDS` — default platform enablement.
 ```
 
@@ -95,7 +98,7 @@ Create a nested `code_map.md` when a subtree has its own commands, entry points,
 
 ## Suggested Diff Format
 
-```markdown
+````markdown
 ### Update: `AGENTS.md`
 
 **Why:** The repo has a docs audit gate that fails when public skill docs are missing.
@@ -106,7 +109,7 @@ Create a nested `code_map.md` when a subtree has its own commands, entry points,
 +`docs/skills/<category>/<skill>.md` and `docs/zh/skills/<category>/<skill>.md`
 +before running `just docs-audit`.
 ```
-```
+````
 
 ## Validation Checklist
 

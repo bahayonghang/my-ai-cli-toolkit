@@ -12,31 +12,38 @@ This file provides guidance to Claude Code when working in this repository. It g
 Before broad search or repo-wide grep, read `./code_map.md` and use its search anchors to choose targeted files.
 
 ## Repo Shape
+
 - `<dir>/` — <purpose>
 - `<dir>/` — <purpose>
 
 ## Core Commands
+
 - `<command>` — <what it proves or starts>
 - `<command>` — <scope and prerequisites>
 
 ## Coding Standards
+
 - <project-specific convention>
 - <formatter, linter, or source of truth>
 
 ## Testing and Verification
+
 - Prefer targeted checks while iterating.
 - Run `<full gate>` before claiming completion for broad changes.
 
 ## Safety
+
 - Do not edit `<generated-or-runtime-path>` manually.
 - Ask before destructive operations, production calls, or credential changes.
 
 ## Nested Documentation
+
 - `packages/api/CLAUDE.md` — backend API stack, local commands, secrets boundary
 - `packages/web/CLAUDE.md` — frontend stack, component conventions, test commands
 - `.claude/rules/testing.md` — path-scoped TDD rules for `**/*.test.{ts,tsx}`
 
 ## Validation and Commits
+
 - Use Conventional Commits.
 - Run `<pre-merge gate>` before opening a PR.
 ```
@@ -51,23 +58,28 @@ This file loads lazily when Claude reads files under `<package>/`. Root `CLAUDE.
 For this subtree, start with `<package>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
 
 ## Package Purpose
+
 <one-sentence responsibility>
 
 ## Stack
+
 - Language: <language and version>
 - Framework: <framework>
 - Package manager: <pnpm | uv | cargo | ...>
 
 ## Local Commands
+
 - `<command>` — run from `<path>`, validates <scope>
 - `<test command>` — local test loop
 - `<lint or typecheck>` — local static checks
 
 ## Boundaries
+
 - Depends on `<package>` for <reason>.
 - Do not change `<shared-contract>` without updating <peer packages, docs, tests>.
 
 ## Safety
+
 - <local secrets handling, external services, migration rules>
 ```
 
@@ -81,16 +93,19 @@ Loads lazily when Claude reads files under `<frontend-path>/`. Adds frontend-spe
 For this subtree, start with `<frontend-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
 
 ## Stack and Entry Points
+
 - `<src/main>` — app entry
 - `<src/components>` — shared components
 - `<src/routes>` — route definitions
 
 ## Commands
+
 - `<dev command>` — local dev server
 - `<test command>` — component/unit tests
 - `<e2e command>` — browser flow tests
 
 ## UI Conventions
+
 - Preserve accessibility, loading, empty, and error states.
 - Verify visual changes with screenshots or browser smoke tests when available.
 - Use <design system or component library> primitives; do not introduce ad-hoc styles.
@@ -106,16 +121,19 @@ Loads lazily when Claude reads files under `<backend-path>/`. Adds backend-speci
 For this subtree, start with `<backend-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
 
 ## Runtime and Entry Points
+
 - `<entry>` — server start
 - `<routes>` — API routes
 - `<workers>` — background jobs
 
 ## Commands
+
 - `<test command>` — backend tests
 - `<lint/type command>` — static checks
 - `<local dev>` — local server with mock dependencies
 
 ## Data and External Services
+
 - Use read-only credentials for local inspection when possible.
 - Ask before migrations, production calls, or destructive data changes.
 - `<staging endpoint>` is safe to call; `<prod endpoint>` requires explicit approval.
@@ -131,14 +149,17 @@ Loads lazily when Claude reads files under `<docs-path>/`. Adds docs-specific ru
 For this subtree, start with `<docs-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
 
 ## Source of Truth
+
 - Content mirrors `<source paths>`.
 - English and Chinese pages must stay structurally aligned when both exist.
 
 ## Commands
+
 - `<docs dev>` — local preview
 - `<docs build or audit>` — validation
 
 ## Style
+
 - Keep docs concise and example-driven.
 - Update navigation/sidebar when adding pages if required by the docs framework.
 ```
@@ -218,30 +239,35 @@ Note: imports expand at launch, so the size of `AGENTS.md` counts toward the pro
 
 ## Root `code_map.md` Template
 
-This template is intentionally identical in structure to the one used by `agents-md-improver` so that both improvers can maintain the same file without conflict.
+The root and nested `code_map.md` templates below are shared with `agents-md-improver`: `code_map.md` is a single artifact serving both agents, so the wording must stay identical in both skills — edit both together, and never remove the other tool's guidance-file mention from an existing map.
 
 ```markdown
 # Repository Code Map
 
-Use this map for navigation and search routing. Behavioral rules, required commands, and safety constraints live in `CLAUDE.md` (and `AGENTS.md` if present).
+Use this map for navigation and search routing. Behavioral rules, required commands, and safety constraints live in `CLAUDE.md` / `AGENTS.md` (whichever exist in this repository).
 
 ## Top-Level Routing
+
 - `<dir>/` — <responsibility>; start here for <task type>
 - `<dir>/` — <responsibility>; start here for <task type>
 
 ## Key Entrypoints
+
 - `<path>` — <runtime, CLI, library, or app entry>
 - `<path>` — <configuration or public contract entry>
 
 ## Search Anchors
+
 - `<symbol-or-string>` — <what it locates and when to search for it>
 - `<file-pattern>` — <why it matters>
 
 ## Generated, Vendored, and Ignored Paths
+
 - `<path>/` — generated/build output; do not edit by hand
 - `<path>/` — vendored/third-party/dependency path; skip during guidance creation
 
 ## Verification Command Index
+
 - `<command>` — <scope and expected use>
 - `<command>` — <scope and expected use>
 ```
@@ -251,28 +277,34 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 ```markdown
 # `<subtree>` Code Map
 
-Use this map for `<subtree>/` navigation. Behavioral rules live in this subtree's `CLAUDE.md` (or the nearest parent).
+Use this map for `<subtree>/**` navigation. Behavioral rules and local commands live in this directory's `CLAUDE.md` / `AGENTS.md` (or the nearest parent guidance file).
 
 ## Subtree Responsibility
+
 <one-sentence responsibility and why this subtree has its own map>
 
 ## Internal Routing
+
 - `<dir-or-file>` — <responsibility>; start here for <task type>
 - `<dir-or-file>` — <responsibility>; start here for <task type>
 
 ## Key Files
+
 - `<path>` — <entry point, public contract, test fixture, or config>
 - `<path>` — <entry point, public contract, test fixture, or config>
 
 ## Upstream and Downstream Boundaries
+
 - Upstream: `<path-or-package>` provides <contract>
 - Downstream: `<path-or-package>` consumes <contract>
 
 ## Local Search Anchors
+
 - `<symbol-or-string>` — <what it locates>
 - `<file-pattern>` — <what it locates>
 
 ## Generated or Ignored Local Paths
+
 - `<path>/` — <reason to skip or regenerate instead of editing>
 ```
 
