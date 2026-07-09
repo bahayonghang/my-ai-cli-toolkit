@@ -59,6 +59,22 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   fence, or the formatter's auto-closing produces swallowed sections (bit both
   `update-guidelines.md` files in the md-improver skills).
 
+## Adding a new skill category
+
+- Creating `skills/<new-category>/` alone is NOT enough; four places must move
+  together (discovered 2026-07-09 adding `academic-research-tools`):
+  1. `scripts/check.py` — add the slug to `CANONICAL_CATEGORY_SLUGS`;
+     `just skills-check` hard-fails otherwise ("category must be one of: ...").
+  2. `docs/scripts/sync_docs_catalog.py` — add the slug to both
+     `CATEGORY_LABELS_ZH` and `CATEGORY_LABELS_EN`. A Title-Case fallback keeps
+     `docs-sync` from crashing, but the ZH catalog silently shows an English
+     fallback title until the label is added.
+  3. `skills/code_map.md` — insert the category line in Internal Routing
+     (alphabetical order).
+  4. `skills/<new-category>/AGENTS.md` — category house rules; pattern on
+     `skills/research-learning-knowledge/AGENTS.md` (`<skill-dir>` rule,
+     frontmatter contract, evals schema, docs-sync reminder).
+
 ## allowed-tools reachability
 
 - `allowed-tools: Bash(<cmd> *)` entries must be executable in Git Bash (POSIX)

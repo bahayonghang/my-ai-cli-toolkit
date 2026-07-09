@@ -1,0 +1,5 @@
+{"file": "skills/AGENTS.md", "reason": "检查基准：目录/frontmatter/验证命令是否符合 skills 子树规则（just skills-check、python-check、node-test、docs-check 的适用条件）"}
+{"file": "skills/research-learning-knowledge/AGENTS.md", "reason": "检查基准：evals/evals.json 是否用房规 schema、<skill-dir> 写法是否合规（禁止 $SKILL_DIR）、新类目 AGENTS.md 是否覆盖同等房规"}
+{"file": ".trellis/tasks/07-09-academic-figure-skill/research/journal-specs-and-tooling.md", "reason": "A5 抽查来源：journal-specs.md 每个数值应能回溯到本报告的 URL 或标注 missing evidence，禁止出现报告之外的凭记忆数值"}
+{"file": ".trellis/tasks/07-09-academic-figure-skill/research/industrytslib-viz-inventory.md", "reason": "A4 核对来源：industrytslib-integration.md 映射表与调用示例的方法名/参数须逐行能在本报告检索到"}
+{"file": "skills/research-learning-knowledge/paper-plot/SKILL.md", "reason": "边界核查：academic-figure 的 description 与 evals 负例须与 paper-plot 触发词互斥；若 P8 改了 paper-plot description，只允许追加一句反向路由"}

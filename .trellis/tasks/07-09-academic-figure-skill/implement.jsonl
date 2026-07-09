@@ -1,0 +1,8 @@
+{"file": ".trellis/tasks/07-09-academic-figure-skill/research/journal-specs-and-tooling.md", "reason": "期刊规格数值（IEEE/Elsevier/Nature 尺寸、字体、字号、DPI、格式、色彩）与工具链结论（SciencePlots/kaleido EPS 坑/色盲盘/CJK）的唯一事实来源；journal-specs.md 与库配方全部数值从此转写"}
+{"file": ".trellis/tasks/07-09-academic-figure-skill/research/industrytslib-viz-inventory.md", "reason": "industrytslib 可视化 API 的唯一事实来源：图表家族方法名、StyleConfig 字段、五种风格、导出环境变量、Windows CJK caveat；industrytslib-integration.md 的映射表与示例逐行以此为准"}
+{"file": ".trellis/tasks/07-09-academic-figure-skill/research/nature-figure-analysis.md", "reason": "要继承的方法论：五点图表契约、审稿风险自检、QA 交付清单、按需加载路由架构、偏好脚本骨架、evals 案例设计；figure-contract.md 与 qa-checklist.md 从此改造"}
+{"file": "skills/AGENTS.md", "reason": "skills 子树硬规则：kebab-case 目录、SKILL.md 顶层 frontmatter 字段、allowed-tools 逗号串、scripts/tests 位置、各变更类型对应的 just 验证命令"}
+{"file": "skills/research-learning-knowledge/AGENTS.md", "reason": "类目房规范本（新类目 AGENTS.md 参照它写）：<skill-dir> 字面替换规则（禁止 $SKILL_DIR）、evals 房规 schema { skill_name, evals: [...] }、路由负例惯例、pytest 不进 CI、结构变更后 docs-sync"}
+{"file": "skills/research-learning-knowledge/paper-plot/SKILL.md", "reason": "近邻技能边界对照：其触发词（复现这张图/风格目录名/照着画）不得与 academic-figure 冲突；P8 可能对其 description 追加一句反向路由"}
+{"file": "skills/code_map.md", "reason": "P1 需在 Internal Routing 增加 academic-research-tools 类目行；保持导航图与目录一致"}
+{"file": "ref/repo/nature-skills/skills/nature-figure/SKILL.md", "reason": "路由器架构范本：精简 SKILL.md + 按需加载 references 的写法；academic-figure 的 SKILL.md 结构参照（不照抄其 R/OpenRouter 路由与 manifest.yaml 机制）"}
