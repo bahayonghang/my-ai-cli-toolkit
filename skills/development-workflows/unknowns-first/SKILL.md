@@ -1,6 +1,6 @@
 ---
 name: unknowns-first
-description: Diagnose a task before execution when the user may not yet know how to define success. Use when the user asks to clarify an ambiguous or unfamiliar task, define what good means, avoid rework on high-stakes, strategic, creative, learning, research, or product work, turn vague intent into an actionable brief, or says 澄清任务, 先诊断再做, 理清需求, 帮我定义成功标准. Surfaces task level, true expert, success standards, and the four unknowns (known knowns, known unknowns, unknown knowns, unknown unknowns), then stops for confirmation before execution. Do NOT use for direct editing, translation, formatting, summarization, or fully-specified small tasks — execute those directly. Do NOT use when the user wants a feature brainstormed into an implementation plan (use spark), an adversarial challenge of an existing plan (use cold-shower), or a decision log during implementation (use implementation-notes).
+description: Diagnose a task before execution when the user may not yet know how to define success. Use to clarify an ambiguous or unfamiliar task, define what good means, turn vague intent into an actionable brief, or when the user says 澄清任务, 先诊断再做, 理清需求, 帮我定义成功标准. Do NOT use for fully-specified small tasks (execute directly), feature-to-plan brainstorming (spark), or challenging an existing plan (cold-shower).
 category: development-workflows
 tags: [task-clarification, requirements, unknowns, diagnosis, planning]
 version: 0.1.0
@@ -11,6 +11,8 @@ version: 0.1.0
 Use this skill to diagnose a task before doing it. The goal is to find the unknowns that could change the task direction, quality bar, deliverable, or execution path.
 
 Do not execute the user's substantive task during the opening diagnosis unless the user explicitly asks to skip diagnosis.
+
+Routing: for brainstorming a feature into an implementation plan use spark; for adversarially challenging an existing plan use cold-shower; for a decision log during implementation use implementation-notes.
 
 ## Core Contract
 

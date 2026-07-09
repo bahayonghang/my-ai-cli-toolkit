@@ -1,6 +1,6 @@
 ---
 name: touying
-description: "Author Typst slide decks with the Touying package. Use when creating or editing .typ presentations: applying or building Touying themes (metropolis, dewdrop, aqua, stargazer, university, simple), turning headings or #slide into slides, incremental reveals and animations (#pause, dynamic content), speaker notes via pdfpc, and config-common/config-page layout. Do not use for non-Typst decks such as HTML, PPT/PowerPoint, reveal.js, or Marp, for ordinary non-presentation Typst documents, or for plain Markdown or prose slides."
+description: "Author Typst slide decks with the Touying package. Use when creating or editing .typ presentations: applying or building Touying themes (e.g. metropolis), turning headings or #slide into slides, incremental reveals (#pause, dynamic content), speaker notes via pdfpc, and page layout config. Not for non-Typst decks (HTML, PPT, reveal.js, Marp) or ordinary non-presentation Typst documents."
 category: docs-writing-publishing
 tags: [typst, touying, slide-deck, animation, theme]
 version: 1.0.0
@@ -9,6 +9,8 @@ allowed-tools: Read, Write, Glob, Grep
 ---
 
 # Touying Author
+
+Built-in themes: default, simple, metropolis, dewdrop, university, aqua, stargazer (local docs cover metropolis).
 
 ## Quick start
 

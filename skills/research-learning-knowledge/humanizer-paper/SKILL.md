@@ -2,15 +2,11 @@
 name: humanizer-paper
 description: >
   Register-aware academic language polisher for English journal articles and
-  Chinese doctoral dissertations. Removes AI-writing tells while keeping academic
-  norms: calibrates hedging instead of deleting it, preserves section-appropriate
-  passive voice, enforces terminology consistency, and fixes ghost citations,
-  hollow generalities, uniform sentence cadence, and templated structure. Dual
-  mode, en-journal and zh-dissertation, selected by CJK ratio or asked when
-  ambiguous. Use it whenever the user wants to polish, 降AI味, 润色, or norm-check
-  an academic draft, paper section, abstract, or 学位论文 paragraph. Scope
-  boundary: it polishes the author's own drafts for clarity and norm compliance,
-  not for laundering generated text past Turnitin or 知网 AIGC detection.
+  Chinese doctoral dissertations: removes AI-writing tells while keeping
+  academic norms. Use whenever the user wants to polish, 降AI味, 润色, or
+  norm-check an academic draft, paper section, abstract, or 学位论文
+  paragraph. Polishes the author's own drafts only — not for laundering
+  generated text past Turnitin or 知网 AIGC detection.
 category: research-learning-knowledge
 tags:
   [

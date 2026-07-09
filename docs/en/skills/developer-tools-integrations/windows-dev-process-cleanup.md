@@ -4,11 +4,11 @@
 
 ## Purpose overview
 
-Audit and safely clean Windows development process buildup and UWP background-task pileups. Covers stale node.exe, npm.exe, npx.exe, cmd.exe, and pwsh.exe trees (leftover npm outdated runs, leaked Playwright MCP workers, dev servers, IDE language services) plus backgroundTaskHost.exe pileups from Phone Link (Microsoft.YourPhone) and Dolby Access. Classify process trees first, then terminate only profile-matched targets, with WhatIf preview and JSON or Markdown reports.
+Audit and safely clean Windows dev-process buildup and UWP background-task pileups — stale node/npm/cmd/pwsh trees (leaked Playwright MCP workers, dev servers, IDE services) and backgroundTaskHost.exe pileups.
 
 ## Trigger scenarios
 
-- Task Manager is full of node/npm noise, the machine feels sluggish, orphan process trees linger after closing editors or agents, or dozens of backgroundTaskHost.exe instances appear. 中文触发：Windows 进程堆积、任务管理器一堆 node npm backgroundTaskHost、清理残留开发进程、查杀泄漏的 Playwright MCP、手机连接或杜比后台任务堆积、进程树审计与安全清理。
+- Task Manager is full of node/npm noise, or for Windows 进程堆积, 清理残留开发进程, 查杀泄漏的 Playwright MCP, backgroundTaskHost 堆积
 
 ## Metadata
 

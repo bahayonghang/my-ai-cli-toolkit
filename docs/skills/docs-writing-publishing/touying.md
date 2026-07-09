@@ -8,7 +8,8 @@ Author Typst slide decks with the Touying package.
 
 ## 触发场景
 
-- creating or editing .typ presentations: applying or building Touying themes (metropolis, dewdrop, aqua, stargazer, university, simple), turning headings or #slide into slides, incremental reveals and animations (#pause, dynamic content), speaker notes via pdfpc, and config-common/config-page layout
+- creating or editing .typ presentations: applying or building Touying themes (e.g. metropolis), turning headings or #slide into slides, incremental reveals (#pause, dynamic content), speaker notes via pdfpc, and page layout config
+- Not for non-Typst decks (HTML, PPT, reveal.js, Marp) or ordinary non-presentation Typst documents
 
 ## 元数据
 

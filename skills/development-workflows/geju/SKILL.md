@@ -1,6 +1,6 @@
 ---
 name: geju
-description: Use when the user explicitly asks to think bigger, open up the design space, challenge conservative design, avoid over-indexing on backward compatibility, escape local-detail fixation, or make a bold high-level product or architecture direction call. Use for strategic reframing, not for ordinary code review, PRD writing, implementation planning, or adversarial risk review.
+description: Use when the user explicitly asks to think bigger, open up the design space, challenge conservative design, escape local-detail fixation, or make a bold high-level product or architecture direction call. For strategic reframing — not ordinary code review, PRD writing, or adversarial risk review.
 category: development-workflows
 tags:
   - strategy

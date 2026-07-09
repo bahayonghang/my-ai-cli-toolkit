@@ -1,6 +1,6 @@
 ---
 name: cold-shower
-description: Challenge ideas, requirements, technical plans, products, pricing, markets, pitch/BP narratives, and major personal decisions with a no-flattery adversarial review. Use when the user asks for 泼冷水, 挑刺, 骂我, 给我泼盆冷水, 假设你是我的对手, 帮我 challenge 一下, 我这个想法有什么问题, 哪里会崩, 魔鬼代言人, devil's advocate, challenge assumptions, 别夸我, hidden assumptions, failure modes, overengineering, missing evidence, or kill criteria before implementation or commitment. Do not trigger for ordinary code review unless the user explicitly asks to challenge assumptions or failure modes.
+description: Challenge ideas, plans, products, pricing, pitch narratives, and major decisions with a no-flattery adversarial review. Use for 泼冷水, 挑刺, 给我泼盆冷水, 魔鬼代言人, devil's advocate, challenge assumptions, 哪里会崩, hidden assumptions, failure modes, kill criteria. Not for ordinary code review unless the user explicitly asks to challenge assumptions.
 category: development-workflows
 tags: [decision-review, devil-advocate, assumptions, planning, product, risk]
 version: 0.2.0

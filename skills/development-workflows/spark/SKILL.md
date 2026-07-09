@@ -1,7 +1,7 @@
 ---
 name: spark
 version: 0.6.0
-description: "Plan-first brainstorming workflow that turns an idea into an approved implementation plan before coding. Use when the user wants to brainstorm, design, scope, stress-test, or plan a feature/spec. Spark adapts to the active planning surface: in Codex native Plan mode it stays read-only and returns a chat-only final plan; in Claude Code Plan mode it uses Claude's plan approval/exit flow and writes files only after approval exits Plan mode; in writable/default mode it saves Markdown plans under .plannings/YYYY-MM-DD-feature-slug.md. HTML or visual artifacts are explicit and writable-mode-only."
+description: "Turn an idea into an approved implementation plan before coding — plan-first brainstorming. Use when the user wants to brainstorm, design, scope, stress-test, or plan a feature/spec. Codex native Plan mode stays read-only with a chat-only final plan; Claude Code Plan mode writes only after approval exits Plan mode; writable/default mode saves Markdown plans under .plannings/YYYY-MM-DD-feature-slug.md."
 category: development-workflows
 tags:
   - brainstorming

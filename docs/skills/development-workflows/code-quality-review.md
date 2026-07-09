@@ -4,11 +4,12 @@
 
 ## 用途概览
 
-Run a code quality review focused on maintainability, structure, abstraction quality, file growth, branching complexity, boundary cleanliness, and refactoring opportunities.
+Run a code quality review focused on maintainability, structure, abstraction quality, and refactoring opportunities.
 
 ## 触发场景
 
-- the user asks for code quality review, code review, maintainability review, architecture quality review, PR code quality feedback, 代码质量审查, 代码质量 review, 可维护性审查, 架构质量审查, or review comments about code structure
+- the user asks for code quality review, maintainability review, PR code quality feedback, 代码质量审查, 可维护性审查, 架构质量审查, or review comments about code structure
+- Not for pure security review, formatting-only review, or performance profiling
 
 ## 元数据
 

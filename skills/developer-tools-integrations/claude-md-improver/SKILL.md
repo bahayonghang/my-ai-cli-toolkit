@@ -1,14 +1,12 @@
 ---
 name: claude-md-improver
 description: >-
-  Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and
-  companion code_map.md navigation maps. Use when the user asks to check, audit, update, optimize,
-  or fix CLAUDE.md files; mentions nested CLAUDE.md, additive loading, ancestor/descendant
-  loading, path-scoped rules, @import chains, CLAUDE.local.md, claudeMdExcludes, or code_map.md;
-  or says "优化 CLAUDE.md", "审计 CLAUDE.md", "检查嵌套 CLAUDE.md", "Claude Code 项目指导",
-  "生成 code_map (Claude)". Also use for structural CLAUDE.md work — splitting, layering,
-  migrating content to rules — even without explicit audit wording. Not needed for trivial
-  single-line CLAUDE.md edits the user has already fully specified.
+  Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/
+  path-scoped rules, and companion code_map.md navigation maps. Use when the
+  user asks to check, audit, optimize, or restructure CLAUDE.md, mentions
+  nested CLAUDE.md or code_map.md, or says 优化 CLAUDE.md, 审计 CLAUDE.md,
+  生成 code_map (Claude). Not for trivial single-line edits the user has
+  already fully specified.
 version: 1.1.0
 category: developer-tools-integrations
 tags:

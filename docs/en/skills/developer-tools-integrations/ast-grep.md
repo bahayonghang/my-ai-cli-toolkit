@@ -8,7 +8,8 @@ Write, debug, and validate ast-grep structural code search rules.
 
 ## Trigger scenarios
 
-- the user needs syntax-aware code search, AST pattern matching, structural refactor discovery, language-construct queries, or searches that plain text tools like rg can miss, such as finding functions with particular descendants, calls inside specific contexts, missing error handling, React hook shapes, decorators, or other Tree-sitter-backed code structures
+- Write, debug, and validate ast-grep structural code search rules
+- Use for syntax-aware code search, AST pattern matching, structural refactor discovery, or searches plain text tools like rg can miss — functions with particular descendants, calls inside specific contexts, decorators, or other Tree-sitter-backed structures
 
 ## Metadata
 

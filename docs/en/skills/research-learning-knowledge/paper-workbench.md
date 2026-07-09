@@ -8,7 +8,8 @@ Researcher-profile-driven paper intake and literature workbench for academic wor
 
 ## Trigger scenarios
 
-- the user only says things like “精读这篇”, “整合这几篇”, “找研究空白”, or “搭综述框架”
+- the user wants to skim, deep-read, card, compare, synthesize, map research gaps, or build a literature review from papers, arXiv/AlphaXiv links, DOIs, PDFs, or existing workbench artifacts
+- Trigger even when the user only says “精读这篇”, “整合这几篇”, “找研究空白”, or “搭综述框架”
 
 ## Metadata
 

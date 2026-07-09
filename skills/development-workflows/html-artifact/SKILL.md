@@ -1,17 +1,12 @@
 ---
 name: html-artifact
 description: >-
-  Create self-contained HTML artifacts, single-file by default and split into
-  offline per-page bundles when oversized, for complex, visual,
-  comparison-heavy, reviewable, or shareable work outputs. Use this skill when
-  the user asks for an HTML artifact, browser-viewable report, implementation
-  plan, PR/code review report, architecture explainer, design comparison,
-  research briefing, incident report, status dashboard, temporary structured-data
-  editor, mini deck, or design-system specimen. Prefer this skill for long
-  Markdown-like outputs that benefit from navigation, cards, diagrams, filters,
-  copy/export buttons, or annotated diffs. Do not use it for short answers,
-  simple commands, commit messages, tiny patch summaries, or production UI
-  implementation unless the user explicitly asks for a review artifact.
+  Create self-contained HTML artifacts (single-file by default, split bundles
+  when oversized) for complex, reviewable, or shareable work outputs. Use for
+  an HTML artifact, browser-viewable report, implementation plan,
+  PR/code-review report, dashboard, or mini deck, or for long Markdown-like
+  outputs needing navigation or diagrams. Not for short answers, commit
+  messages, or production UI.
 version: 0.3.0
 category: development-workflows
 tags:

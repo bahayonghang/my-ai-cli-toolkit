@@ -2,14 +2,10 @@
 name: ripgrep
 description: >-
   Use when the user needs text or regex content search with ripgrep: composing
-  rg CLI commands, choosing flags, filtering by glob or file type, multiline or
-  PCRE2 searches, replace-preview output, JSON or vimgrep output for pipelines,
-  ripgrep config files, grep-to-rg migration, or diagnosing why rg missed a
-  file due to gitignore, hidden, or binary defaults. Also use for shell-safe rg
-  quoting on Windows PowerShell, cmd, or Git Bash. Do not use for syntax-aware
-  structural queries such as finding functions with particular descendants
-  (use ast-grep) or semantic operations such as renames, references, or type
-  resolution (use language tooling).
+  rg commands, choosing flags, glob/type filtering, multiline or PCRE2
+  searches, pipeline output, grep-to-rg migration, or diagnosing why rg missed
+  a file (gitignore, hidden, binary defaults). Not for syntax-aware structural
+  queries (ast-grep) or semantic renames/references (language tooling).
 version: 0.1.0
 category: developer-tools-integrations
 tags:

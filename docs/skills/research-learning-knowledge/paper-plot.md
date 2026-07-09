@@ -4,14 +4,14 @@
 
 ## 用途概览
 
-Generate or reproduce publication-quality matplotlib figures in real academic paper styles. Two modes: (from-data) pick a pre-built paper style and fill in your numbers; (from-image) reproduce an uploaded paper figure as a matplotlib script.
+Generate publication-quality matplotlib figures in real academic paper styles.
 
 ## 触发场景
 
-- the user wants to "plot this data", "make a bar/line/scatter/ radar chart", "用某风格画我的数据", "把数据画成论文图", names a style from the catalog (bar_paired_delta, bar_grouped_hatch, line_confidence_band, line_training_curve, line_loss_with_inset, scatter_tsne_cluster, scatter_broken_axis, radar_dual_series), or uploads a paper figure and asks to "复现这张图" / "reproduce this figure" / "照着这个图画"
-- This skill draws and reproduces figures
-- it does NOT read, summarize, or compare paper content — route single-paper deep reading to literature-mentor and multi-paper intake/synthesis to paper-workbench
-- Route journal-submission-compliance figure requests (IEEE/Elsevier/Nature specs, vector export) to academic-figure
+- Generate publication-quality matplotlib figures in real academic paper styles
+- Two modes: from-data (pick a pre-built catalog style, fill in your numbers) and from-image (reproduce an uploaded paper figure as a matplotlib script)
+- Use for "把数据画成论文图", "用某风格画我的数据", "复现这张图", or a named catalog style
+- Drawing only, no paper reading
 
 ## 元数据
 

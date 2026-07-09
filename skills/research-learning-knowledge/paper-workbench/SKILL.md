@@ -2,13 +2,11 @@
 name: paper-workbench
 description: >
   Researcher-profile-driven paper intake and literature workbench for academic
-  workflows. Use this whenever the user wants to skim, deep-read, card, compare,
+  workflows. Use whenever the user wants to skim, deep-read, card, compare,
   synthesize, map research gaps, or build a literature review from papers,
-  arXiv/AlphaXiv links, DOIs, PDFs, landing pages, or existing paper JSON /
-  workbench artifacts. Normalize sources into `paper-record`, then route into
-  scan, deep-read, card, synthesis, review, or compatibility modes (`json`,
-  `interpret`, `xray`). Trigger even when the user only says things like
-  “精读这篇”, “整合这几篇”, “找研究空白”, or “搭综述框架”.
+  arXiv/AlphaXiv links, DOIs, PDFs, or existing workbench artifacts. Trigger
+  even when the user only says “精读这篇”, “整合这几篇”, “找研究空白”, or
+  “搭综述框架”.
 category: research-learning-knowledge
 tags:
   [

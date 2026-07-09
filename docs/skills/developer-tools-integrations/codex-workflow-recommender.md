@@ -4,11 +4,11 @@
 
 ## 用途概览
 
-Analyze a repository and current Codex environment, then recommend Codex CLI, Codex App, AGENTS.md, skills, native subagents, plugins, MCP servers, config/hooks, and optional OMX workflow improvements without modifying files.
+Analyze a repository and current Codex environment, then recommend Codex CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements without modifying files.
 
 ## 触发场景
 
-- the user asks to optimize Codex workflows, improve Codex setup, recommend Codex automation, configure MCP/plugins/subagents, analyze AGENTS.md scope needs, or says "优化 Codex 流程", "Codex 工作流推荐", "给 Codex 配 MCP", "配置 Codex plugins", or "配置 Codex subagents"
+- the user asks to optimize Codex workflows or setup, recommend Codex automation, configure MCP/plugins/subagents, or says 优化 Codex 流程, Codex 工作流推荐, 给 Codex 配 MCP
 
 ## 元数据
 

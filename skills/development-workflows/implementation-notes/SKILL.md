@@ -1,6 +1,6 @@
 ---
 name: implementation-notes
-description: Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding. Maintain a live implementation-notes.md alongside the work capturing design decisions (choices made where the spec was ambiguous), intentional deviations from the spec, alternatives considered and rejection criteria, and open questions for human review. Use proactively the moment implementation of a written spec begins, before the first edit. Triggers include 实施记录, 实现笔记, 决策日志, 边写边记, 按这个 spec 实现, 按这个计划做, implementation log, decision log, spec divergence, implement this plan. Do NOT use for single-file fixes, pure investigation, one-off scripts, work without a written spec to deviate from, or simple tasks where one commit captures the reasoning.
+description: Maintain a live implementation-notes.md while implementing a multi-step spec, PRD, design doc, or approved plan — capturing design decisions, intentional deviations, rejected alternatives, and open questions. Start before the first edit. Triggers include 实施记录, 决策日志, 边写边记, 按这个 spec 实现, decision log. Do NOT use for single-file fixes, pure investigation, or work without a written spec.
 category: development-workflows
 tags:
   - implementation

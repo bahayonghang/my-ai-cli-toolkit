@@ -1,7 +1,7 @@
 ---
 name: deep-research-pro
 version: 1.0.0
-description: "Multi-source deep research skill for current-topic investigation, comparison, and cited report writing. Use when the user asks to research, compare, or deep-dive a topic with current web sources and citations, including phrases like research, deep dive, latest, 调研, 做个深度研究, or 带来源总结. Do not use for offline-only codebase questions, casual opinion requests, or when the user explicitly forbids web access."
+description: "Multi-source deep research for current-topic investigation, comparison, and cited report writing. Use when the user asks to research, compare, or deep-dive a topic with current web sources and citations — research, deep dive, latest, 调研, 做个深度研究, 带来源总结. Not for offline-only codebase questions or when web access is forbidden."
 category: research-learning-knowledge
 tags: [research, web, citations, synthesis, report-writing, current-events]
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: archive-planning
-description: Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature. Use when Codex should run `$archive-planning [feature-name]`, close out an active plan, preserve completed planning context, or replace the deprecated Codex prompt workflow with a deterministic skill script.
+description: Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature. Use when Codex should run `$archive-planning [feature-name]`, close out an active plan, or preserve completed planning context.
 version: 0.1.0
 category: developer-tools-integrations
 tags:
@@ -13,6 +13,8 @@ allowed-tools: Bash(python *), Bash(py *), Read
 ---
 
 # Archive Planning
+
+This skill replaces the deprecated Codex prompt workflow with a deterministic script.
 
 Archive the three active root planning files into one timestamped local folder:
 

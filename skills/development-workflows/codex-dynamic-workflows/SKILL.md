@@ -1,6 +1,6 @@
 ---
 name: codex-dynamic-workflows
-description: Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets. Do not use for ordinary code review, planning-only work, single-line bugfixes, routine audits, or migrations unless orchestration is requested or at least two independent workflow dimensions are present.
+description: Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets. Not for ordinary code review, planning-only work, single-line bugfixes, or routine audits unless orchestration is requested.
 argument-hint: "[task-or-workflow-brief]"
 category: development-workflows
 tags:

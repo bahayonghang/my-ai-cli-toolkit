@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Safely orchestrate Conventional Commits for staged Git changes, or for all working-tree changes when the user explicitly asks to include everything. Use when the user asks to write a commit message, split staged or working-tree changes, commit everything regardless of stage state, include untracked files in the commit set, organize a messy index before committing, or generate structured commit text without pushing by default. Output language is auto-detected from the user's instruction, the request language, and recent commit history (English fallback); explicit phrases like `用中文提交`, `commit in English`, or `请使用中文拆分提交所有的改动` override detection. Agent commits add an `[AI]` header tag and audit trailers, enforce a Why line for feat/fix/refactor/perf, and support a `chore(wip)` checkpoint mode.
+description: Safely orchestrate Conventional Commits for staged Git changes, or all working-tree changes when the user explicitly asks to include everything. Use when asked to write a commit message, split staged or working-tree changes, organize a messy index, or draft commit text without pushing. Auto-detects commit language; explicit phrases like 用中文提交 or 请使用中文拆分提交所有的改动 override.
 category: git-github-collaboration
 tags:
   - git

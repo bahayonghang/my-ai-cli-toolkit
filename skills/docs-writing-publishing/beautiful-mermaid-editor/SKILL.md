@@ -3,10 +3,9 @@ name: beautiful-mermaid-editor
 description: >-
   Modify the Beautiful Mermaid live editor itself rather than writing ordinary
   Mermaid diagrams. Use when the task mentions the Beautiful Mermaid repo,
-  `editor.ts`, generated `editor.html`, config panel/options, themes or dark
-  mode, zoom, PNG/SVG export, clipboard behavior, sample presets, or renderer
-  wiring for the editor. Do not use for generic Mermaid syntax help or normal
-  Markdown Mermaid authoring.
+  editor.ts, generated editor.html, config panel, themes or dark mode, zoom,
+  PNG/SVG export, sample presets, or renderer wiring. Not for generic Mermaid
+  syntax help.
 category: docs-writing-publishing
 tags:
   - mermaid

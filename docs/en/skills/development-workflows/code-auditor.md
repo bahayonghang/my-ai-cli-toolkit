@@ -4,12 +4,12 @@
 
 ## Purpose overview
 
-Structured code review across correctness, security, performance, readability, testing, and architecture, with language-specific guidance and human-readable findings.
+Structured code review across correctness, security, performance, readability, testing, and architecture.
 
 ## Trigger scenarios
 
-- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, prepare merge feedback, summarize review findings, or do code review / PR review / CR / review comments / 代码审查
-- Adapt the output language to the user's context: use Chinese review wording for Chinese or mixed Chinese discussions, and English review wording for English-first discussions
+- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, prepare merge feedback, or do code review / PR review / CR / 代码审查
+- Output language follows the discussion language (Chinese or English)
 
 ## Metadata
 

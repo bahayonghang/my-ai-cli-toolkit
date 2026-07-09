@@ -4,14 +4,11 @@
 
 ## 用途概览
 
-Use when implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding.
+Maintain a live implementation-notes.md while implementing a multi-step spec, PRD, design doc, or approved plan — capturing design decisions, intentional deviations, rejected alternatives, and open questions. Start before the first edit.
 
 ## 触发场景
 
-- implementing a multi-step spec, PRD, design doc, GitHub issue, or approved plan where decisions, deviations, and tradeoffs accumulate during coding
-- Maintain a live implementation-notes.md alongside the work capturing design decisions (choices made where the spec was ambiguous), intentional deviations from the spec, alternatives considered and rejection criteria, and open questions for human review
-- Use proactively the moment implementation of a written spec begins, before the first edit
-- Triggers include 实施记录, 实现笔记, 决策日志, 边写边记, 按这个 spec 实现, 按这个计划做, implementation log, decision log, spec divergence, implement this plan
+- 实施记录, 决策日志, 边写边记, 按这个 spec 实现, decision log
 
 ## 元数据
 

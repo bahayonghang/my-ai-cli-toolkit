@@ -4,11 +4,13 @@
 
 ## 用途概览
 
-Multi-perspective roundtable discussion skill for exploring a topic through a truth-seeking moderator and a small set of representative real figures.
+Multi-perspective roundtable discussion — a truth-seeking moderator plus a small set of representative real figures explore one topic through disciplined debate.
 
 ## 触发场景
 
-- the user asks for 圆桌讨论 / roundtable / 多人物观点碰撞 / 让几位思想家讨论 / 模拟多方思想交锋 / 结构化辩论探索, or wants to examine one topic through disciplined multi-party debate rather than a plain summary
+- Multi-perspective roundtable discussion — a truth-seeking moderator plus a small set of representative real figures explore one topic through disciplined debate
+- Use for 圆桌讨论, roundtable, 多人物观点碰撞, 让几位思想家讨论, 结构化辩论探索
+- Not for ordinary argumentative writing, pros/cons lists, or single-speaker explanation
 
 ## 元数据
 

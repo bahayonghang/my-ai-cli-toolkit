@@ -1,7 +1,7 @@
 ---
 name: goal-meta-skill
 description: |
-  Turn vague or complex agent tasks into strong `/goal` commands for Claude Code and Codex, with outcome, verification, constraints, boundaries, iteration policy, completion evidence, and pause/stop conditions. Use when the user asks for Codex goal instructions, Claude Code goal conditions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, success criteria, verification commands, or bounded agent work definitions.
+  Turn vague or complex agent tasks into strong `/goal` commands for Claude Code and Codex — outcome, verification, constraints, boundaries, iteration policy, and stop conditions. Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, or bounded agent work definitions.
 version: 0.2.0
 category: developer-tools-integrations
 tags:

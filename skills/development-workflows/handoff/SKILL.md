@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Use when the user wants to compact context before auto-compaction kicks in, hand off an unfinished task to a fresh session, switch topics mid-stream and preserve state, or pick up yesterday's work in a new conversation. Produces a single handoff.md that captures completed work, blocked items with what was already tried, next concrete steps, and the minimum context needed to resume cold. Use proactively when context usage is high, a long-running task hits a natural break, or the user signals a session switch. Triggers include 上下文压缩, 交接文档, handoff, 续接会话, 主题切换, 接力, 明早接着干, context handoff, compact before, fresh session, continue tomorrow. Do NOT use for single-file fixes that finish in one commit (put it in the commit body), Q&A or pure investigation sessions, or end-of-session retrospectives meant for human review (those are different artifacts).
+description: Write a handoff.md that lets a fresh session resume unfinished work cold. Use when compacting before auto-compaction, handing off an unfinished task, switching topics, or proactively when context usage is high. Triggers include 上下文压缩, 交接文档, 接力, 续接会话, 明早接着干, handoff, fresh session. Do NOT use for work that fits in one commit body, pure Q&A, or human-facing retrospectives.
 category: development-workflows
 tags:
   - handoff

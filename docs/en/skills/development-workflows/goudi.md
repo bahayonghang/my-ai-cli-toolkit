@@ -4,12 +4,13 @@
 
 ## Purpose overview
 
-Use when the user asks to ground an ambitious proposal, avoid over-grand designs, make a bold direction executable, pressure-test feasibility, prevent "too much vision and too little landing", or turn a strategy/refactor/product idea into the smallest verifiable first move with stop rules.
+Ground an ambitious proposal into the smallest verifiable first move with stop rules — pressure-test feasibility, avoid over-grand designs, make a bold direction executable.
 
 ## Trigger scenarios
 
-- the user asks to ground an ambitious proposal, avoid over-grand designs, make a bold direction executable, pressure-test feasibility, prevent "too much vision and too little landing", or turn a strategy/refactor/product idea into the smallest verifiable first move with stop rules
-- Trigger for requests such as 落地, 先落地, 别太飘, 收一收, 可执行, 可验证, 止损, and for follow-ups after geju-style big-picture thinking
+- Ground an ambitious proposal into the smallest verifiable first move with stop rules — pressure-test feasibility, avoid over-grand designs, make a bold direction executable
+- Trigger on 落地, 先落地, 别太飘, 收一收, 可执行, 可验证, 止损, or follow-ups after geju-style big-picture thinking
+- Not for ordinary code review or implementation unless asked to ground or shrink the plan
 
 ## Metadata
 

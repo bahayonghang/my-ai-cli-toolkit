@@ -4,11 +4,13 @@
 
 ## 用途概览
 
-Chinese public-writing editor for AI/tech posts, X/Twitter threads, product notes, model reviews, and public technical essays.
+Chinese public-writing editor for AI/tech posts, X/Twitter threads, product notes, and public technical essays.
 
 ## 触发场景
 
-- the user asks to 去AI味, 改得像本人, 写推特post, 精修中文AI技术文章, or remove AI-flavored shells while preserving facts, judgment, technical terms, lived experience, and author voice
+- Chinese public-writing editor for AI/tech posts, X/Twitter threads, product notes, and public technical essays
+- Use for 去AI味, 改得像本人, 写推特post, 精修中文AI技术文章 — removes AI-flavored shells while preserving facts, judgment, technical terms, and author voice
+- Not for academic papers, codebase docs, bid documents, or AI-detector evasion
 
 ## 元数据
 

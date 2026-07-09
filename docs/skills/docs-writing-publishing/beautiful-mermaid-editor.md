@@ -8,7 +8,8 @@ Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mer
 
 ## 触发场景
 
-- the task mentions the Beautiful Mermaid repo, `editor.ts`, generated `editor.html`, config panel/options, themes or dark mode, zoom, PNG/SVG export, clipboard behavior, sample presets, or renderer wiring for the editor
+- the task mentions the Beautiful Mermaid repo, editor.ts, generated editor.html, config panel, themes or dark mode, zoom, PNG/SVG export, sample presets, or renderer wiring
+- Not for generic Mermaid syntax help
 
 ## 元数据
 

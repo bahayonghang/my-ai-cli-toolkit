@@ -1,6 +1,6 @@
 ---
 name: archify
-description: Create professional architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as standalone HTML files with SVG graphics, a built-in dark/light theme toggle, and one-click export to PNG / JPEG / WebP / SVG. Accepts plain-language descriptions or pasted Mermaid code (flowchart, sequenceDiagram, stateDiagram) and lays the diagram out from scratch in archify style. Use when the user asks for system architecture diagrams, infrastructure diagrams, cloud architecture visualizations, security diagrams, network topology, technical workflows, approval flows, runbooks, CI/CD flows, process diagrams, API call sequences, request lifecycles, data pipelines, ETL/ELT maps, PII boundaries, data lineage, state machines, lifecycle diagrams, status transitions, or asks to convert/beautify a Mermaid diagram.
+description: Create technical diagrams — architecture, workflow, sequence, data-flow, lifecycle/state — as standalone HTML files with SVG graphics, dark/light theme toggle, and built-in image/SVG export. Accepts plain language or pasted Mermaid code, laid out from scratch in archify style. Also use to convert or beautify a Mermaid diagram.
 category: docs-writing-publishing
 tags:
   - diagrams

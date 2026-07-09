@@ -4,11 +4,12 @@
 
 ## Purpose overview
 
-Write or update technical documentation from the real codebase and project files.
+Write or update technical documentation grounded in the real codebase.
 
 ## Trigger scenarios
 
-- the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, and also when they want technical documentation rewritten into natural Chinese with correct terminology and formatting
+- the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, or wants technical docs rewritten into natural Chinese with correct terminology
+- Not for general prose, marketing or social copy, or non-technical localization
 
 ## Metadata
 

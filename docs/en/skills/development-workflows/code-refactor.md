@@ -8,9 +8,9 @@ Implement safe, behavior-preserving code refactors after inspecting the existing
 
 ## Trigger scenarios
 
-- the user asks to refactor code, split large files or modules, extract functions or methods, reduce duplicated logic, rename confusing classes/functions/variables, improve code comments, remove unused or dead code, or says 重构代码, 拆分模块, 提取方法, 减少重复代码, 优化命名, 优化注释, 删除未调用代码
-- For broad refactor requests, plan safe slices and wait for approval
-- for narrow scoped requests, directly implement the smallest verifiable slice
+- the user asks to refactor, split large files, extract methods, reduce duplication, rename, clean dead code, or says 重构代码, 拆分模块, 提取方法, 优化命名, 优化注释, 删除未调用代码
+- For broad requests, plan safe slices and wait for approval
+- for narrow ones, implement the smallest verifiable slice
 
 ## Metadata
 

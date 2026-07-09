@@ -8,7 +8,7 @@ Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.
 
 ## Trigger scenarios
 
-- Codex should run `$archive-planning [feature-name]`, close out an active plan, preserve completed planning context, or replace the deprecated Codex prompt workflow with a deterministic skill script
+- Codex should run `$archive-planning [feature-name]`, close out an active plan, or preserve completed planning context
 
 ## Metadata
 

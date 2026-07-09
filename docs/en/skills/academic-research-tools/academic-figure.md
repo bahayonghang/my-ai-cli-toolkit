@@ -4,11 +4,13 @@
 
 ## Purpose overview
 
-Create, revise, or review publication-ready academic paper figures that meet journal submission specs — IEEE, Elsevier, and Nature, with Springer and chinese-thesis as extended presets — using matplotlib (with seaborn) or plotly. For industrytslib projects it automatically drives that library's built-in visualization system (create_plotter plus a journal style).
+Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly; in industrytslib projects it drives that library's built-in visualization system.
 
 ## Trigger scenarios
 
-- the user asks for 论文配图、学术图表、期刊图、投稿图、科研绘图、出图、IEEE 图、中文学位论文配图, or for a "publication-ready figure", "journal figure", "IEEE/Elsevier/Nature style plot", or "submission-grade figure"
+- Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly
+- in industrytslib projects it drives that library's built-in visualization system
+- Use for 论文配图, 期刊图, 科研绘图, 中文学位论文配图, "publication-ready figure"
 
 ## Metadata
 

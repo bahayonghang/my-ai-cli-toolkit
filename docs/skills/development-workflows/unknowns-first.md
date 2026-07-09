@@ -8,8 +8,8 @@ Diagnose a task before execution when the user may not yet know how to define su
 
 ## 触发场景
 
-- the user asks to clarify an ambiguous or unfamiliar task, define what good means, avoid rework on high-stakes, strategic, creative, learning, research, or product work, turn vague intent into an actionable brief, or says 澄清任务, 先诊断再做, 理清需求, 帮我定义成功标准
-- Surfaces task level, true expert, success standards, and the four unknowns (known knowns, known unknowns, unknown knowns, unknown unknowns), then stops for confirmation before execution
+- Diagnose a task before execution when the user may not yet know how to define success
+- Use to clarify an ambiguous or unfamiliar task, define what good means, turn vague intent into an actionable brief, or when the user says 澄清任务, 先诊断再做, 理清需求, 帮我定义成功标准
 
 ## 元数据
 

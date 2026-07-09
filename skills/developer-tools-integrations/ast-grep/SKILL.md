@@ -1,12 +1,11 @@
 ---
 name: ast-grep
 description: >-
-  Write, debug, and validate ast-grep structural code search rules. Use this
-  skill when the user needs syntax-aware code search, AST pattern matching,
-  structural refactor discovery, language-construct queries, or searches that
-  plain text tools like rg can miss, such as finding functions with particular
-  descendants, calls inside specific contexts, missing error handling, React
-  hook shapes, decorators, or other Tree-sitter-backed code structures.
+  Write, debug, and validate ast-grep structural code search rules. Use for
+  syntax-aware code search, AST pattern matching, structural refactor
+  discovery, or searches plain text tools like rg can miss — functions with
+  particular descendants, calls inside specific contexts, decorators, or other
+  Tree-sitter-backed structures.
 version: 0.1.0
 category: developer-tools-integrations
 tags:

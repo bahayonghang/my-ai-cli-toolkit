@@ -1,6 +1,6 @@
 ---
 name: document-writer
-description: Write or update technical documentation from the real codebase and project files. Use whenever the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, and also when they want technical documentation rewritten into natural Chinese with correct terminology and formatting. Do not use for polishing or rewriting general prose, marketing or social copy, or localization of non-technical text; those belong to a prose or copy skill that is not codebase-grounded. Keep this skill anchored to the actual code, configs, and project files.
+description: Write or update technical documentation grounded in the real codebase. Use when the user asks for README, API docs, architecture guides, user guides, CONTRIBUTING docs, migration notes, or JSDoc/code comments, or wants technical docs rewritten into natural Chinese with correct terminology. Not for general prose, marketing or social copy, or non-technical localization.
 category: docs-writing-publishing
 tags:
   [

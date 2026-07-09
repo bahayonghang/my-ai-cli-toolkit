@@ -4,14 +4,14 @@
 
 ## 用途概览
 
-Plan-first brainstorming workflow that turns an idea into an approved implementation plan before coding.
+Turn an idea into an approved implementation plan before coding — plan-first brainstorming.
 
 ## 触发场景
 
 - the user wants to brainstorm, design, scope, stress-test, or plan a feature/spec
-- Spark adapts to the active planning surface: in Codex native Plan mode it stays read-only and returns a chat-only final plan
-- in Claude Code Plan mode it uses Claude's plan approval/exit flow and writes files only after approval exits Plan mode
-- in writable/default mode it saves Markdown plans under .plannings/YYYY-MM-DD-feature-slug.md
+- Codex native Plan mode stays read-only with a chat-only final plan
+- Claude Code Plan mode writes only after approval exits Plan mode
+- writable/default mode saves Markdown plans under .plannings/YYYY-MM-DD-feature-slug.md
 
 ## 元数据
 

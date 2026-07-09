@@ -1,6 +1,6 @@
 ---
 name: code-quality-review
-description: "Run a code quality review focused on maintainability, structure, abstraction quality, file growth, branching complexity, boundary cleanliness, and refactoring opportunities. Use when the user asks for code quality review, code review, maintainability review, architecture quality review, PR code quality feedback, 代码质量审查, 代码质量 review, 可维护性审查, 架构质量审查, or review comments about code structure. Do not use for pure security review, formatting-only review, performance profiling, or implementation tasks unless the user also asks for a code quality review."
+description: "Run a code quality review focused on maintainability, structure, abstraction quality, and refactoring opportunities. Use when the user asks for code quality review, maintainability review, PR code quality feedback, 代码质量审查, 可维护性审查, 架构质量审查, or review comments about code structure. Not for pure security review, formatting-only review, or performance profiling."
 category: development-workflows
 tags:
   - code-review
