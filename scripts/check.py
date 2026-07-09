@@ -13,6 +13,7 @@ import yaml
 
 MAX_SKILL_NAME_LENGTH = 64
 CANONICAL_CATEGORY_SLUGS = {
+    "academic-research-tools",
     "development-workflows",
     "developer-tools-integrations",
     "git-github-collaboration",
@@ -51,7 +52,9 @@ def parse_args() -> argparse.Namespace:
         default=["skills"],
         help="Skill directories, SKILL.md files, or parent directories to scan.",
     )
-    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+    parser.add_argument(
+        "--json", action="store_true", help="Emit machine-readable JSON."
+    )
     return parser.parse_args()
 
 
@@ -146,7 +149,9 @@ def validate_skill(skill_dir: Path) -> ValidationResult:
     validate_keys(frontmatter, result)
     validate_name(frontmatter.get("name"), result)
     validate_description(frontmatter.get("description"), result)
-    validate_category(skill_dir, frontmatter.get("category"), frontmatter.get("metadata"), result)
+    validate_category(
+        skill_dir, frontmatter.get("category"), frontmatter.get("metadata"), result
+    )
     validate_tags(frontmatter.get("tags"), frontmatter.get("metadata"), result)
 
     if result.errors:

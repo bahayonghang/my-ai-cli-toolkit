@@ -3,9 +3,12 @@
 Use this map for `skills/**` navigation. Behavioral rules and required commands live in `skills/AGENTS.md` and the root `AGENTS.md`.
 
 ## Subtree Responsibility
+
 First-party installable skill catalog organized by category and skill slug.
 
 ## Internal Routing
+
+- `academic-research-tools/` — academic publication figure and research tooling skills.
 - `developer-tools-integrations/` — repository, agent, Codex, Claude, and architecture tooling skills.
 - `development-workflows/` — planning, review, handoff, and implementation workflow skills.
 - `docs-writing-publishing/` — writing, document, and presentation-oriented skills.
@@ -17,11 +20,13 @@ First-party installable skill catalog organized by category and skill slug.
 - `<category>/<skill>/references/`, `assets/`, `templates/`, `evals/`, `agents/` — optional supporting material.
 
 ## Search Anchors
+
 - `name:`, `description:`, `category:`, `tags:`, `version:` — frontmatter fields consumed by validators and docs generation.
 - `argument-hint`, `allowed-tools` — optional skill metadata used by specific runtimes.
 - `tests/*.mjs` — Node skill test entry points for `just node-test`.
 - `scripts/check.py` — root validator for `just skills-check`.
 
 ## Generated and Ignored Notes
+
 - `__pycache__/` and `*.pyc` are Python bytecode artifacts.
 - Generated public docs for skills are under `docs/`, not this subtree.

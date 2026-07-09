@@ -24,6 +24,7 @@ CATALOG_MODULE = GENERATED_DIR / "catalog.mjs"
 REPO_SOURCE = "bahayonghang/my-claude-code-settings/skills"
 
 CATEGORY_LABELS_ZH = {
+    "academic-research-tools": "学术研究工具",
     "developer-tools-integrations": "开发者工具集成",
     "development-workflows": "开发工作流",
     "docs-writing-publishing": "文档写作与发布",
@@ -32,6 +33,7 @@ CATEGORY_LABELS_ZH = {
 }
 
 CATEGORY_LABELS_EN = {
+    "academic-research-tools": "Academic Research Tools",
     "developer-tools-integrations": "Developer Tools & Integrations",
     "development-workflows": "Development Workflows",
     "docs-writing-publishing": "Docs, Writing & Publishing",

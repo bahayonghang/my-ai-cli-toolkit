@@ -1,0 +1,124 @@
+{
+  "skill_name": "academic-figure",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "画一张 IEEE 双栏宽度的时序预测对比图，把真实值和我模型的预测值放在一起，准备投 IEEE 期刊。",
+      "expected_output": "Routes to academic-figure. Locks the figure contract (a true-vs-predicted time-series comparison), resolves the journal-style axis to ieee and the library axis to matplotlib (the default for static paper figures), loads the IEEE spec card plus the true-vs-pred family recipe, and produces a double-column (7.16 in / 182 mm) vector figure with IEEE fonts/sizes/DPI before walking the QA checklist.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure",
+        "Resolves the journal style to IEEE and the library to matplotlib",
+        "Uses the IEEE double-column width (7.16 in / 182 mm) from the spec card",
+        "Locks the figure contract before writing plotting code",
+        "Exports vector-first with fonttype=42 and runs the QA checklist"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Make a Nature-style t-SNE figure of my embedding clusters for a submission.",
+      "expected_output": "Routes to academic-figure. Resolves the journal style to nature and the library to matplotlib (with seaborn as its layer), loads the Nature spec card and the dimensionality-reduction (t-SNE/UMAP) family recipe, and produces a single-column (89 mm) figure with Helvetica/Arial sans-serif fonts, small (5-7 pt) text, an RGB colorblind-safe palette, and vector export.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure",
+        "Resolves the journal style to Nature",
+        "Uses the Nature single-column width (89 mm) and sans-serif (Helvetica/Arial) fonts",
+        "Loads the t-SNE/UMAP dimensionality-reduction recipe",
+        "Applies a colorblind-safe palette (no red/green-only encoding) and exports vector-first"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "用 plotly 画一张 Elsevier 投稿用的相关性热力图，并帮我导出成投稿能用的矢量文件。",
+      "expected_output": "Routes to academic-figure. Resolves the library axis to plotly (explicitly requested) and the journal style to elsevier, loads the Elsevier spec card and the correlation-heatmap family recipe, and exports via kaleido to PDF/SVG at Elsevier's required resolution.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure",
+        "Resolves the library to plotly (explicitly requested) and the journal style to Elsevier",
+        "Loads the correlation-heatmap recipe and the plotly recipe",
+        "Exports vector via kaleido to PDF/SVG and avoids the EPS pitfall (kaleido v1 dropped EPS)",
+        "Notes Elsevier does not accept PNG and targets its required DPI"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "我们项目用的是 industrytslib，帮我用它出一张 IEEE 风格的预测区间图。",
+      "expected_output": "Routes to academic-figure and takes the industrytslib integration path: reads references/industrytslib-integration.md, drives the figure through create_plotter(...) / plotter.set_style('ieee') using the library's interval-prediction chart method, calls the library without modifying it, and only falls back to native matplotlib + StyleManager.apply_style_to_matplotlib if the family is not covered.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure",
+        "Detects the industrytslib project and reads references/industrytslib-integration.md",
+        "Drives the figure via create_plotter(...) / plotter.set_style('ieee'), not a from-scratch rewrite",
+        "Calls the library without modifying its source",
+        "Falls back to native matplotlib + StyleManager.apply_style_to_matplotlib only when the chart family is not covered"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我给中文学位论文配一张带中文标签的实验对比图，要能正常显示中文。",
+      "expected_output": "Routes to academic-figure. Resolves the journal style to the chinese-thesis preset, sets up a CJK font chain (SimHei / Microsoft YaHei / Noto CJK) with axes.unicode_minus=False, defaults the library to matplotlib, and verifies Chinese glyphs render before export.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure",
+        "Resolves the journal style to the chinese-thesis preset",
+        "Configures a CJK font chain and sets axes.unicode_minus=False",
+        "Verifies Chinese glyphs render (no tofu boxes) before delivering",
+        "Locks the figure contract before plotting"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "帮我把这份实验数据做成一张论文配图。",
+      "expected_output": "Routes to academic-figure. Because no journal is named, it resolves the journal-style axis by checking the saved preference (academic_figure_pref.py get journal_style) and, if still unset, asks once for the target journal style before generating; it defaults the library to matplotlib and still opens with the figure contract.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure for the generic '论文配图' request",
+        "Does not silently guess a journal: checks the saved preference, then asks once for the target journal style",
+        "Persists the answer via academic_figure_pref.py set journal_style",
+        "Locks the figure contract before writing code"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "这是我从一篇论文里截的柱状图，帮我照着复现成一模一样的图。",
+      "expected_output": "Routing-negative: reproducing a specific uploaded paper figure is paper-plot's from-image mode, not academic-figure. academic-figure targets journal-submission compliance, not paper reproduction.",
+      "files": ["figure.png"],
+      "assertions": [
+        "Does NOT route to academic-figure",
+        "Routes to paper-plot (from-image reproduction)",
+        "Recognizes the goal is replicating a specific figure's look, not meeting a journal spec"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "用 scatter_tsne_cluster 风格把我的聚类数据画出来。",
+      "expected_output": "Routing-negative: naming a paper-plot catalog style (scatter_tsne_cluster) selects paper-plot's from-data mode, not academic-figure. That token is a style-folder name, not a journal-style axis value.",
+      "files": [],
+      "assertions": [
+        "Does NOT route to academic-figure",
+        "Routes to paper-plot from-data mode via the named style folder",
+        "Recognizes scatter_tsne_cluster as a paper-plot catalog style, not a journal-style axis value"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "帮我做一个运营数据的 BI 大屏 dashboard，多个图表实时联动。",
+      "expected_output": "Out-of-scope negative: dashboards and BI walls are explicitly excluded from academic-figure, which produces single publication figures, not interactive multi-chart dashboards.",
+      "files": [],
+      "assertions": [
+        "Does NOT route to academic-figure",
+        "Recognizes BI dashboards / big-screen walls are out of scope per the description"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "用 AI 帮我生成一张论文的图形摘要（graphical abstract）配图。",
+      "expected_output": "Out-of-scope negative: AI image generation and graphical abstracts are explicitly excluded from academic-figure. It plots data to journal specs; it does not synthesize images with AI.",
+      "files": [],
+      "assertions": [
+        "Does NOT route to academic-figure",
+        "Recognizes AI image generation / graphical-abstract creation is out of scope per the description"
+      ]
+    }
+  ]
+}

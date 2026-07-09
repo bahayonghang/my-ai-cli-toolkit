@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **5 个分类、38 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、39 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -17,6 +17,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - 修改或新增 skill 后，运行 `just docs-sync` 重新生成目录，再运行 `just docs-check`。
 
 ## 分类目录
+
+### 学术研究工具
+
+`academic-research-tools` · 1 skills
+
+- [academic-figure](/skills/academic-research-tools/academic-figure) — Create, revise, or review publication-ready academic paper figures that meet journal submission specs — IEEE, Elsevier, and Nature, with Springer and chinese-thesis as extended presets — using matplotlib (with seaborn) or plotly. For industrytslib projects it automatically drives that library's built-in visualization system (create_plotter plus a journal style).
 
 ### 开发者工具集成
 

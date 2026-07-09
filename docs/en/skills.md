@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **5 categories and 38 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 39 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -17,6 +17,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - After adding or changing a skill, run `just docs-sync` to regenerate the catalog, then `just docs-check`.
 
 ## Category catalog
+
+### Academic Research Tools
+
+`academic-research-tools` · 1 skills
+
+- [academic-figure](/en/skills/academic-research-tools/academic-figure) — Create, revise, or review publication-ready academic paper figures that meet journal submission specs — IEEE, Elsevier, and Nature, with Springer and chinese-thesis as extended presets — using matplotlib (with seaborn) or plotly. For industrytslib projects it automatically drives that library's built-in visualization system (create_plotter plus a journal style).
 
 ### Developer Tools & Integrations
 
