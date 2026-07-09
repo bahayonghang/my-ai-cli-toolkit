@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 21
-- **Last Active**: 2026-07-08
+- **Total Sessions**: 22
+- **Last Active**: 2026-07-09
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~762 | Active |
+| `journal-1.md` | ~797 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 22 | 2026-07-09 | 新增 academic-research-tools 类目与 academic-figure 技能 | `e6c0389`, `3e49a5d`, `a617abf` | `main` |
 | 21 | 2026-07-08 | goal-meta-skill 双平台化（Claude Code + Codex /goal） | `a08fd73`, `31832b5` | `main` |
 | 20 | 2026-07-08 | 审计并收编 unknowns-first skill（套件合规化） | `8f7bd1e`, `7b99a33` | `main` |
 | 19 | 2026-07-07 | 审计并优化 windows-dev-process-cleanup skill | `67ab86e`, `c85dcde`, `b583fa4`, `189fea8`, `6da0eec`, `509c4ae`, `c97667d` | `main` |

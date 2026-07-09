@@ -760,3 +760,38 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: 新增 academic-research-tools 类目与 academic-figure 技能
+
+**Date**: 2026-07-09
+**Task**: 新增 academic-research-tools 类目与 academic-figure 技能
+**Branch**: `main`
+
+### Summary
+
+3 个并行 trellis-research（期刊官方规范/industrytslib API 盘点/nature-figure 方法论）支撑规划后，4 个实施代理并行落地技能（六步路由 SKILL.md + 7 references + 偏好脚本 + evals 10 例），干跑验收 A1-A7 全 PASS。近邻 paper-plot 以互路由单句划界（用户批准）。教训沉淀到 spec：新增技能类目需四处同步（check.py 白名单/docs 中英标题/code_map/类目 AGENTS.md），已写入 skill-authoring-conventions.md。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e6c0389` | (see git log) |
+| `3e49a5d` | (see git log) |
+| `a617abf` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
