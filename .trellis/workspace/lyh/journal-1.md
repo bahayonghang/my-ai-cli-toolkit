@@ -795,3 +795,37 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 23: 精简 skills 全部 description 的常驻 token 占用
+
+**Date**: 2026-07-09
+**Task**: 精简 skills 全部 description 的常驻 token 占用
+**Branch**: `main`
+
+### Summary
+
+39 个 skill 的 description 总量 21270→12993 字符（-38.9%），34 个被改写；被删信息逐项核对/搬入 body。教训：单行 description 含'Triggers:'冒号会破坏 YAML plain scalar；PostToolUse 格式化钩子会重排 Markdown 表格列宽，可导致按字符距离断言的测试（spark ±120 窗口）失败，需用 Bash 绕过钩子写文件；spark 的 description 被其 Node 测试锁定三个契约短语，压缩前先查 tests/；yao-meta 引用的 trigger_eval.py 并未随 skill 分发，触发回归用人工用例清单等价完成。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `eb643f1` | (see git log) |
+| `002e768` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
