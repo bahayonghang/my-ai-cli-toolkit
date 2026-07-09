@@ -12,7 +12,8 @@ description: >
   "复现这张图" / "reproduce this figure" / "照着这个图画". This skill draws and
   reproduces figures; it does NOT read, summarize, or compare paper content —
   route single-paper deep reading to literature-mentor and multi-paper
-  intake/synthesis to paper-workbench.
+  intake/synthesis to paper-workbench. Route journal-submission-compliance
+  figure requests (IEEE/Elsevier/Nature specs, vector export) to academic-figure.
 category: research-learning-knowledge
 tags: [matplotlib, plotting, figures, paper, reproduction, visualization]
 version: 1.0.0
