@@ -4,11 +4,12 @@
 
 ## Purpose overview
 
-将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
+将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 
 ## Trigger scenarios
 
-- 将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
+- 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation
+- exclude image-only generation and reference-free UI polish
 
 ## Metadata
 
@@ -32,11 +33,13 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill image-to-ui-s
 | `skills/developer-tools-integrations/image-to-ui-skill/.gitignore` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/image-to-ui-skill/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/image-to-ui-skill/assets` | directory | 21 | Assets |
-| `skills/developer-tools-integrations/image-to-ui-skill/demo` | directory | 18 | Top-level directory |
+| `skills/developer-tools-integrations/image-to-ui-skill/demo` | directory | 22 | Top-level directory |
+| `skills/developer-tools-integrations/image-to-ui-skill/evals` | directory | 1 | Evaluation samples |
+| `skills/developer-tools-integrations/image-to-ui-skill/out` | directory | 0 | Top-level directory |
 | `skills/developer-tools-integrations/image-to-ui-skill/README.md` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/image-to-ui-skill/references` | directory | 8 | Reference material |
-| `skills/developer-tools-integrations/image-to-ui-skill/scripts` | directory | 1 | Executable scripts |
-| `skills/developer-tools-integrations/image-to-ui-skill/validate.ps1` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/image-to-ui-skill/scripts` | directory | 2 | Executable scripts |
+| `skills/developer-tools-integrations/image-to-ui-skill/tests` | directory | 3 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -44,18 +47,19 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill image-to-ui-s
 | --- | --- | --- |
 | agents | `skills/developer-tools-integrations/image-to-ui-skill/agents` | Companion agents |
 | assets | `skills/developer-tools-integrations/image-to-ui-skill/assets` | Assets |
+| evals | `skills/developer-tools-integrations/image-to-ui-skill/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/image-to-ui-skill/references` | Reference material |
 | scripts | `skills/developer-tools-integrations/image-to-ui-skill/scripts` | Executable scripts |
+| tests | `skills/developer-tools-integrations/image-to-ui-skill/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
 just python-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

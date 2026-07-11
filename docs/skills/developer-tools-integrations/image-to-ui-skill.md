@@ -4,11 +4,12 @@
 
 ## 用途概览
 
-将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
+将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 
 ## 触发场景
 
-- 将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
+- 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation
+- exclude image-only generation and reference-free UI polish
 
 ## 元数据
 
@@ -32,11 +33,13 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill image-to-ui-s
 | `skills/developer-tools-integrations/image-to-ui-skill/.gitignore` | 文件 | 1 | 顶层文件 |
 | `skills/developer-tools-integrations/image-to-ui-skill/agents` | 目录 | 1 | 配套 agent |
 | `skills/developer-tools-integrations/image-to-ui-skill/assets` | 目录 | 21 | 素材资源 |
-| `skills/developer-tools-integrations/image-to-ui-skill/demo` | 目录 | 18 | 顶层目录 |
+| `skills/developer-tools-integrations/image-to-ui-skill/demo` | 目录 | 22 | 顶层目录 |
+| `skills/developer-tools-integrations/image-to-ui-skill/evals` | 目录 | 1 | 评测样例 |
+| `skills/developer-tools-integrations/image-to-ui-skill/out` | 目录 | 0 | 顶层目录 |
 | `skills/developer-tools-integrations/image-to-ui-skill/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/developer-tools-integrations/image-to-ui-skill/references` | 目录 | 8 | 引用资料 |
-| `skills/developer-tools-integrations/image-to-ui-skill/scripts` | 目录 | 1 | 可执行脚本 |
-| `skills/developer-tools-integrations/image-to-ui-skill/validate.ps1` | 文件 | 1 | 顶层文件 |
+| `skills/developer-tools-integrations/image-to-ui-skill/scripts` | 目录 | 2 | 可执行脚本 |
+| `skills/developer-tools-integrations/image-to-ui-skill/tests` | 目录 | 3 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -44,18 +47,19 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill image-to-ui-s
 | --- | --- | --- |
 | agents | `skills/developer-tools-integrations/image-to-ui-skill/agents` | 配套 agent |
 | assets | `skills/developer-tools-integrations/image-to-ui-skill/assets` | 素材资源 |
+| evals | `skills/developer-tools-integrations/image-to-ui-skill/evals` | 评测样例 |
 | references | `skills/developer-tools-integrations/image-to-ui-skill/references` | 引用资料 |
 | scripts | `skills/developer-tools-integrations/image-to-ui-skill/scripts` | 可执行脚本 |
+| tests | `skills/developer-tools-integrations/image-to-ui-skill/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
 just python-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 
