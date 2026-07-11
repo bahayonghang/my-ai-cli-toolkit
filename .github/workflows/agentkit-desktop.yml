@@ -34,4 +34,6 @@ jobs:
         uses: taiki-e/install-action@just
 
       - name: Run repo CI via just
+        env:
+          IMAGE2_SKILL_BROWSER_TESTS: '1'
         run: just ci

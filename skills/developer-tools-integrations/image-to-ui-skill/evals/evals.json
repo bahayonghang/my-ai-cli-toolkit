@@ -1,0 +1,137 @@
+{
+  "skill_name": "image-to-ui-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "参考我上传的电商首页截图，复刻成可点击的网页 demo，卡片、导航和购买按钮都要能操作。",
+      "expected_output": "Routes to image-to-ui-skill and recreates the supplied UI as a clickable demo while separating code-rendered controls from bitmap assets.",
+      "files": [],
+      "assertions": [
+        "Routes to image-to-ui-skill because a UI reference image and clickable recreation are requested.",
+        "Separates code-rendered text, controls, layout, and interactions from bitmap assets.",
+        "Delivers working navigation and button interactions rather than a static screenshot."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "把这三张 iOS App 参考图串成一个可以点击切换页面的手机预览，尽量高保真。",
+      "expected_output": "Routes to image-to-ui-skill and builds a connected mobile/iOS prototype from the supplied screens with interaction and screenshot verification.",
+      "files": [],
+      "assertions": [
+        "Routes to image-to-ui-skill for a multi-screen iOS reference recreation.",
+        "Connects the supplied screens through real clickable transitions.",
+        "Uses rendered screenshots to verify the final prototype against the references."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "按这张设计稿做高保真落地页，主视觉的摄影和颗粒质感要真实生成，文字和按钮保持可编辑。",
+      "expected_output": "Routes to image-to-ui-skill, keeps UI text and controls in code, generates necessary bitmap visuals through the registered image2 path, and integrates them into the page.",
+      "files": [],
+      "assertions": [
+        "Routes to image-to-ui-skill because the request combines a supplied UI design with faithful implementation.",
+        "Keeps text and controls code-rendered and editable.",
+        "Uses the registered image2/fallback boundary for required bitmap generation and integrates generated files into the page."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Turn this UI screenshot into code. I need a responsive, clickable app demo rather than a flattened image.",
+      "expected_output": "Routes to image-to-ui-skill and produces a responsive interactive implementation from the screenshot, not a flattened image.",
+      "files": [],
+      "assertions": [
+        "Routes to image-to-ui-skill for an explicit UI screenshot-to-code request.",
+        "Builds responsive code-rendered UI and real interactions.",
+        "Does not flatten readable interface content into one bitmap."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "参考这组博物馆 App 截图做一个可流转原型，展览列表能进详情，返回和底部导航都要工作。",
+      "expected_output": "Routes to image-to-ui-skill and recreates the referenced museum app as a navigable prototype with list-detail-back and bottom-navigation flows.",
+      "files": [],
+      "assertions": [
+        "Routes to image-to-ui-skill because multiple app references and a clickable flow are supplied.",
+        "Implements the requested list, detail, back, and bottom-navigation interactions.",
+        "Compares rendered output with the supplied references before completion."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "用 image2 复刻这张时尚购物 App 设计稿：复杂商品主视觉要生图，价格、筛选和收藏按钮用代码。",
+      "expected_output": "Routes to image-to-ui-skill, uses image2 for the complex product visual, keeps price/filter/favorite UI in code, and verifies the generated asset appears in the clickable app.",
+      "files": [],
+      "assertions": [
+        "Routes to image-to-ui-skill for an explicit image2-backed UI reference recreation.",
+        "Generates only the complex bitmap visual and keeps semantic UI in code.",
+        "Integrates the generated asset and verifies it in the rendered clickable app."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "用 imagegen 给我画一张赛博朋克城市海报，透明背景，不需要网页或 App。",
+      "expected_output": "Routing-negative: this is standalone image generation and should route to imagegen, not image-to-ui-skill.",
+      "files": [],
+      "assertions": [
+        "Does not route to image-to-ui-skill.",
+        "Routes to imagegen or another standalone raster image-generation capability.",
+        "Does not invent a clickable UI deliverable."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "帮我从零实现一个普通后台管理页，没有参考图，技术栈用 React。",
+      "expected_output": "Routing-negative: this is ordinary frontend implementation without a reference image and should use the normal frontend workflow.",
+      "files": [],
+      "assertions": [
+        "Does not route to image-to-ui-skill because no UI reference is supplied.",
+        "Routes to the normal frontend implementation workflow.",
+        "Does not force image2 asset generation."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "设计一张线下活动的静态宣传海报，最后只要 PNG。",
+      "expected_output": "Routing-negative: a static poster-only deliverable is visual/image design, not UI recreation.",
+      "files": [],
+      "assertions": [
+        "Does not route to image-to-ui-skill.",
+        "Routes to an image or visual-design capability.",
+        "Does not add app interactions or screenshot-to-code work."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "这个现有设置页看起来很普通，帮我优化间距、字体、颜色和 hover，但没有参考图。",
+      "expected_output": "Routing-negative: reference-free UI polish should route to a frontend design/polish capability, not image-to-ui-skill.",
+      "files": [],
+      "assertions": [
+        "Does not route to image-to-ui-skill because the request has no reference image.",
+        "Routes to a frontend interface polish or design-review capability.",
+        "Does not introduce image2 generation without a visual asset requirement."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "把这份 CSV 做成可交互的折线图和筛选器，重点是数据趋势分析。",
+      "expected_output": "Routing-negative: this is data visualization and should route to a visualization/chart workflow.",
+      "files": [],
+      "assertions": [
+        "Does not route to image-to-ui-skill.",
+        "Routes to a data visualization or chart-building capability.",
+        "Treats the CSV and analytical interactions as the primary contract."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "写一个 SaaS 产品落地页，内容我已经给你，不需要参考任何现有设计，也不需要生成图片。",
+      "expected_output": "Routing-negative: a reference-free landing page with no image generation should use the normal frontend workflow.",
+      "files": [],
+      "assertions": [
+        "Does not route to image-to-ui-skill.",
+        "Routes to normal frontend implementation using the supplied copy.",
+        "Does not add image generation or claim reference fidelity."
+      ]
+    }
+  ]
+}

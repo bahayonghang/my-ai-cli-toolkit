@@ -20,6 +20,10 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from string import Formatter
+
+
+_TEMPLATE_FIELDS = frozenset({"prompt", "output", "size", "quality", "output_format"})
 
 
 def _bool(value: str | bool | None) -> str | None:
@@ -46,24 +50,41 @@ def _fallback_cli() -> Path:
     return _skill_root().parent / "openrouter-icu-image" / "scripts" / "openrouter_icu_image.py"
 
 
-def _image2_base_command() -> list[str] | None:
-    configured = os.environ.get("IMAGE2_COMMAND")
-    if configured:
-        return shlex.split(configured)
-    executable = shutil.which("image2")
-    if executable:
-        return [executable]
-    return None
+def _template_fields(template: str) -> set[str]:
+    try:
+        fields = {
+            field_name
+            for _, field_name, _, _ in Formatter().parse(template)
+            if field_name is not None
+        }
+    except ValueError as exc:
+        raise ValueError(f"malformed IMAGE2_COMMAND template: {exc}") from exc
+
+    unknown = fields - _TEMPLATE_FIELDS
+    if unknown:
+        names = ", ".join(sorted(unknown))
+        raise ValueError(f"unsupported IMAGE2_COMMAND placeholder(s): {names}")
+    return fields
 
 
 def _native_command(args: argparse.Namespace) -> list[str] | None:
-    base = _image2_base_command()
-    if not base:
-        return None
-
-    # If IMAGE2_COMMAND contains placeholders, treat it as a full template.
     template = os.environ.get("IMAGE2_COMMAND")
-    if template and any(token in template for token in ("{prompt}", "{output}", "{size}")):
+    if template:
+        fields = _template_fields(template)
+        try:
+            base = shlex.split(template)
+        except ValueError as exc:
+            raise ValueError(f"invalid IMAGE2_COMMAND shell words: {exc}") from exc
+    else:
+        executable = shutil.which("image2")
+        if not executable:
+            return None
+        base = [executable]
+        fields = set()
+
+    # A command containing supported placeholders is a complete argv template.
+    # Split first so substituted prompt/path values can never become new tokens.
+    if fields:
         values = {
             "prompt": args.prompt,
             "output": str(args.output),
@@ -71,7 +92,7 @@ def _native_command(args: argparse.Namespace) -> list[str] | None:
             "quality": args.quality,
             "output_format": args.output_format,
         }
-        return shlex.split(template.format(**values))
+        return [token.format(**values) for token in base]
 
     command = [*base, args.action]
     if args.action == "edit":
@@ -131,21 +152,29 @@ def _fallback_command(args: argparse.Namespace) -> list[str]:
     return command
 
 
+def _printable_command(command: list[str]) -> str:
+    if os.name == "nt":
+        return subprocess.list2cmdline(command)
+    return shlex.join(command)
+
+
 def _run(command: list[str], dry_run: bool) -> int:
-    printable = subprocess.list2cmdline(command)
     if dry_run:
-        print(printable)
+        print(_printable_command(command))
         return 0
     completed = subprocess.run(command)
     return completed.returncode
 
 
 def _fallback_ready() -> tuple[bool, str]:
+    problems: list[str] = []
     cli = _fallback_cli()
     if not cli.exists():
-        return False, f"OpenRouter ICU fallback CLI not found: {cli}"
+        problems.append(f"OpenRouter ICU fallback CLI not found: {cli}")
     if not (os.environ.get("OPENROUTER_ICU_API_KEY") or os.environ.get("OPENAI_API_KEY")):
-        return False, "OPENROUTER_ICU_API_KEY or OPENAI_API_KEY is required for fallback"
+        problems.append("OPENROUTER_ICU_API_KEY or OPENAI_API_KEY is required for fallback")
+    if problems:
+        return False, "; ".join(problems)
     return True, "ok"
 
 
@@ -181,30 +210,45 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
 
     if args.prefer != "fallback":
-        native = _native_command(args)
+        try:
+            native = _native_command(args)
+        except ValueError as exc:
+            print(f"[image2-asset] invalid IMAGE2_COMMAND: {exc}", file=sys.stderr)
+            return 2
         if native:
             print("[image2-asset] trying native image2")
+            if not args.dry_run:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
             native_code = _run(native, args.dry_run)
             if native_code == 0:
-                print("[image2-asset] channel=native-image2")
+                label = "planned-channel" if args.dry_run else "channel"
+                print(f"[image2-asset] {label}=native-image2")
                 return 0
             print(f"[image2-asset] native image2 failed with exit code {native_code}; falling back")
         elif args.prefer == "image2":
-            print("[image2-asset] native image2 requested but no image2 command is available")
+            print(
+                "[image2-asset] native image2 requested but no image2 command is available",
+                file=sys.stderr,
+            )
             return 2
         else:
             print("[image2-asset] native image2 unavailable; using fallback")
 
     ready, reason = _fallback_ready()
-    if not ready and not args.dry_run:
-        print(f"[image2-asset] fallback unavailable: {reason}", file=sys.stderr)
-        return 3
+    if not ready:
+        if args.dry_run:
+            print(f"[image2-asset] note: fallback not ready: {reason}", file=sys.stderr)
+        else:
+            print(f"[image2-asset] fallback unavailable: {reason}", file=sys.stderr)
+            return 3
 
     fallback = _fallback_command(args)
-    print("[image2-asset] channel=openrouter-icu-gpt-image-2")
+    if not args.dry_run:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+    label = "planned-channel" if args.dry_run else "channel"
+    print(f"[image2-asset] {label}=openrouter-icu-gpt-image-2")
     return _run(fallback, args.dry_run)
 
 

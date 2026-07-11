@@ -35,8 +35,8 @@ http://127.0.0.1:4190/
 
 ## Validate
 
-```powershell
-powershell -ExecutionPolicy Bypass -File demo/marble-note/validate.ps1
+```bash
+node demo/marble-note/validate.mjs
 ```
 
 The validation checks page startup, screenshot creation, the cover/home/detail flow, all added logical pages (`folder`, `search`, `create`, `schedule`, `settings`), iOS frame details, local images, and broken image count.

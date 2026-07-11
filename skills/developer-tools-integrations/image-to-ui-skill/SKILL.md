@@ -1,6 +1,6 @@
 ---
 name: image-to-ui-skill
-description: 将 UI 截图、设计稿、参考图复刻为可点击的前端/App demo:拆分代码渲染 UI 与必须生成的位图资产，生成提示词并把生成图接回页面。also use for image to UI, UI screenshot to code, clickable app demo, mobile prototype, iOS preview, high-fidelity UI recreation。涉及生图时优先项目指定 image2 入口，失败再走已登记的 OpenRouter ICU gpt-image-2 备案通道并标明实际通道；不要用 imagegen 或其他未指定工具替代。要求做成 App/手机/iOS 预览时，交付带 iOS 外边框的可点击预览与截图验真。
+description: 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 category: developer-tools-integrations
 tags:
   - image-to-ui
@@ -70,44 +70,46 @@ OpenRouter ICU `gpt-image-2` 备案通道并非无条件可用。`scripts/image2
 
 ### 生图命令
 
+> 下列命令中的 `<skill-dir>` 是 skill 加载时公布的实际根目录。请替换为字面路径；它不是环境变量。Git Bash 使用 `python`，Windows PowerShell 找不到 `python` 时将其替换为 `py -3`。
+
 文本生图：
 
-```powershell
-python scripts\image2_asset.py generate `
-  --prompt "为 App 首屏生成一张无文字、无 logo 的高级时尚产品主视觉，留出左侧文案空间，柔和自然光，4:3" `
-  --output public\generated\hero-main.png `
-  --size 1536x1024 `
-  --quality medium `
+```bash
+python "<skill-dir>/scripts/image2_asset.py" generate \
+  --prompt "为 App 首屏生成一张无文字、无 logo 的高级时尚产品主视觉，留出左侧文案空间，柔和自然光，4:3" \
+  --output "public/generated/hero-main.png" \
+  --size 1536x1024 \
+  --quality medium \
   --output-format png
 ```
 
 参考图编辑或多图参考：
 
-```powershell
-python scripts\image2_asset.py edit `
-  --image reference.png `
-  --prompt "保留参考图主体轮廓和色彩气质，生成无文字、无 logo 的 UI 卡片缩略图，适合 3:2 裁切" `
-  --output public\generated\card-visual.png `
-  --size 1536x1024 `
-  --quality medium `
+```bash
+python "<skill-dir>/scripts/image2_asset.py" edit \
+  --image "reference.png" \
+  --prompt "保留参考图主体轮廓和色彩气质，生成无文字、无 logo 的 UI 卡片缩略图，适合 3:2 裁切" \
+  --output "public/generated/card-visual.png" \
+  --size 1536x1024 \
+  --quality medium \
   --output-format png
 ```
 
 强制只测试原生 image2：
 
-```powershell
-python scripts\image2_asset.py generate `
-  --prompt "test image" `
-  --output output\generated\test.png `
+```bash
+python "<skill-dir>/scripts/image2_asset.py" generate \
+  --prompt "test image" \
+  --output "output/generated/test.png" \
   --prefer image2
 ```
 
 强制走备案通道：
 
-```powershell
-python scripts\image2_asset.py generate `
-  --prompt "test image" `
-  --output output\generated\test.png `
+```bash
+python "<skill-dir>/scripts/image2_asset.py" generate \
+  --prompt "test image" \
+  --output "output/generated/test.png" \
   --prefer fallback
 ```
 
@@ -183,3 +185,5 @@ OpenRouter ICU fallback 需要 `OPENROUTER_ICU_API_KEY` 或 `OPENAI_API_KEY` 可
 - `references/integration-rules.md` — UI 分析规则、字体识别与加载、尺寸规划、image-to-ui 提示词写法、抠图与去背景、集成规则、交互与跳转。
 - `references/review-and-gap-check.md` — 前期审查与确认、常见风险与防护、页面级审查、原图差距核对与迭代、最终交付报告。
 - `references/hicolor-case-study.md` — 把社媒视觉趋势做成可上线网页的真实项目案例。
+- `references/fashion-shopping-app-case-study.md` — 女装购物 App 的风格参考、多屏复刻与展示 mockup 案例。
+- `references/museum-app-case-study.md` — 博物馆多屏移动端 UI 的还原、串联与交付案例。

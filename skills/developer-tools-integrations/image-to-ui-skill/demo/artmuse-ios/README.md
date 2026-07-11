@@ -29,8 +29,8 @@ http://127.0.0.1:4183/
 
 ## Validate
 
-```powershell
-powershell -ExecutionPolicy Bypass -File demo/artmuse-ios/validate.ps1
+```bash
+node demo/artmuse-ios/validate.mjs
 ```
 
 ## Asset Notes

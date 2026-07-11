@@ -21,4 +21,4 @@ This demo is currently a clickable code/SVG/CSS structure replica. No real image
 
 - Keep titles, paragraphs, buttons, folder names, and meeting notes as HTML text.
 - Place generated transparent assets inside the existing phone screens with fixed dimensions and `pointer-events: none`.
-- After image2 is available, rerun `validate.ps1`, regenerate screenshots, and update this file with actual generated paths.
+- After image2 is available, rerun `node demo/marble-note/validate.mjs`, regenerate screenshots, and update this file with actual generated paths.

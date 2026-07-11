@@ -15,6 +15,7 @@ This repository does not have a traditional application backend or database laye
 | [Error Handling](./error-handling.md) | Validation failures, exit codes, and stderr output | Documented |
 | [Quality Guidelines](./quality-guidelines.md) | Validation gates, tests, and review standards | Documented |
 | [Logging Guidelines](./logging-guidelines.md) | Console output and local runtime logs | Documented |
+| [Skill Helper Command Contracts](./skill-helper-command-contracts.md) | Environment-backed argv templates, dry-run behavior, and regression gates | Documented |
 
 ## How to Keep These Guidelines Current
 
