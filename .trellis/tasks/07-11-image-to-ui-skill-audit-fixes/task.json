@@ -1,0 +1,30 @@
+{
+  "id": "image-to-ui-skill-audit-fixes",
+  "name": "image-to-ui-skill-audit-fixes",
+  "title": "优化 image-to-ui-skill：修复脚本缺陷、路径约定与文档一致性",
+  "description": "",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "skills/developer-tools-integrations/image-to-ui-skill",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-07-11",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-11-image2-wrapper-correctness",
+    "07-11-image-to-ui-routing-contract",
+    "07-11-image-to-ui-validator-migration"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
