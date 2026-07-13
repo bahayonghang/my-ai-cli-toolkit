@@ -829,3 +829,38 @@ Imported and optimized renhua as a first-party docs-writing-publishing skill, ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 24: git-commit skill 1.11.0：composer 可配置化与 Assisted-by 对齐
+
+**Date**: 2026-07-13
+**Task**: git-commit skill 1.11.0：composer 可配置化与 Assisted-by 对齐
+**Branch**: `main`
+
+### Summary
+
+yao-meta 审查+网络调研驱动：composer 新增 --max-header-width/--emoji/自定义 type 消除与「仓库配置优先」的互锁矛盾，补 16 例 Node 测试与 evals 24-26。教训：--output 需钉死 UTF-8+newline='\n'（Windows CRLF 曾破坏字节级断言）；「自适应文档需可覆盖校验器」矛盾类与 PowerShell 重定向陷阱已沉淀至 skill-authoring-conventions.md；kernel Assisted-by 的 TOOL 段只列专用分析工具。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4c725b7` | (see git log) |
+| `acf3eaf` | (see git log) |
+| `4c56986` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
