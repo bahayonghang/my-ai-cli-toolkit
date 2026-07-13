@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 25
+- **Total Sessions**: 26
 - **Last Active**: 2026-07-13
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~897 | Active |
+| `journal-1.md` | ~928 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 26 | 2026-07-13 | 豁免并归档 image-to-ui 父任务 | - | `main` |
 | 25 | 2026-07-13 | 归档 image-to-ui 已完成子任务 | - | `main` |
 | 24 | 2026-07-13 | git-commit skill 1.11.0：composer 可配置化与 Assisted-by 对齐 | `4c725b7`, `acf3eaf`, `4c56986` | `main` |
 | 23 | 2026-07-09 | 精简 skills 全部 description 的常驻 token 占用 | `eb643f1`, `002e768` | `main` |

@@ -895,3 +895,34 @@ yao-meta 审查+网络调研驱动：composer 新增 --max-header-width/--emoji/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 26: 豁免并归档 image-to-ui 父任务
+
+**Date**: 2026-07-13
+**Task**: 豁免并归档 image-to-ui 父任务
+**Branch**: `main`
+
+### Summary
+
+用户明确豁免 GitHub 三平台浏览器 CI 实测门禁；保留 missing evidence 事实并更新父任务验收记录，随后归档父任务。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
