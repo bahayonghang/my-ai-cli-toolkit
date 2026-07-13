@@ -32,7 +32,7 @@
 ## Waiver
 
 - Governed-only trust report and output quality scorecard are not required for this Production maintenance task.
-- Remote three-OS evidence is not waived: the parent task remains incomplete until authorization is granted and those jobs pass.
+- Remote three-OS evidence remains `missing evidence`, but the user explicitly waived this gate on 2026-07-13 and authorized parent-task archival. This waiver does not convert the absent GitHub runs into passing evidence.
 
 ## Rollback Boundary
 

@@ -36,14 +36,14 @@
 - [x] 三个 child 均完成自己的局部 acceptance criteria，依赖顺序得到遵守，并有可核验完成状态；child 不依赖父任务的 docs/CI 门禁。
 - [x] wrapper 的模板、dry-run、fallback 与 `<skill-dir>` 契约有自动测试且全绿。
 - [x] description ≤200 字符、interface 对齐、包内 `evals/evals.json` 包含正/负路由与 output assertions。
-- [ ] validator 在 Node 20 下运行；默认 browser test skip，显式 opt-in fail-closed；获得 push/PR 授权后 GitHub ubuntu/windows/macos 均真实执行两个 demo。
+- [x] validator 在 Node 20 下运行；默认 browser test skip，显式 opt-in fail-closed。GitHub ubuntu/windows/macos 真实执行证据仍缺失，由用户于 2026-07-13 明确豁免，不再阻塞本任务归档。
 - [x] parity matrix 全绿后 skill 内 `.ps1` 与 `validate.ps1` 引用均为零。
 - [x] `just docs-sync` 后生成文档只反映本 skill 的预期变化，随后 `just docs-check` 通过。
 - [x] `just skills-check`、`just python-check`、`just node-test`、显式 browser opt-in、`just ci` 与 `git diff --check` 全部通过。
 - [x] `assets/` 与已跟踪 `demo/*/screenshots/` 在 staged/unstaged diff 中均为空。
 - [x] gate report 对无法执行的 yao-meta 外部门禁使用 `missing evidence`，没有伪造 telemetry、approval、benchmark 或 Review Studio 结果。
-- [ ] 最终 work commit plan 仅包含已识别的本任务文件；任何无关 dirty file 单独列出且默认不提交。
-- [ ] 若用户未授权 push/PR，三平台真实 browser CI 标为 `missing evidence` 且父任务保持未完成；不得以本地 Windows 结果替代跨平台实测。
+- [x] 最终 work commit plan 仅包含已识别的本任务文件；归档前工作树干净，无无关 dirty file。
+- [x] 三平台真实 browser CI 保持标记为 `missing evidence`，未以本地 Windows 结果替代跨平台实测；用户于 2026-07-13 明确接受该缺口并授权豁免归档。
 
 ## Non-Goals
 
