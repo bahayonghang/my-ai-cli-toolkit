@@ -11,6 +11,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or all working-t
 - asked to write a commit message, split staged or working-tree changes, organize a messy index, or draft commit text without pushing
 - Auto-detects commit language
 - explicit phrases like 用中文提交 or 请使用中文拆分提交所有的改动 override
+- Not for push, pull-request creation, amend, rebase, or tag operations
 
 ## Metadata
 
@@ -18,7 +19,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or all working-t
 | --- | --- |
 | Name | `git-commit` |
 | Category | `git-github-collaboration` (Git & GitHub Collaboration) |
-| Version | `1.10.0` |
+| Version | `1.11.0` |
 | Tags | `git`, `conventional-commits`, `commit-message`, `agent-aware` |
 
 ## Install command
@@ -35,6 +36,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill git-commit
 | `skills/git-github-collaboration/git-commit/evals` | directory | 1 | Evaluation samples |
 | `skills/git-github-collaboration/git-commit/references` | directory | 4 | Reference material |
 | `skills/git-github-collaboration/git-commit/scripts` | directory | 3 | Executable scripts |
+| `skills/git-github-collaboration/git-commit/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -44,16 +46,16 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill git-commit
 | evals | `skills/git-github-collaboration/git-commit/evals` | Evaluation samples |
 | references | `skills/git-github-collaboration/git-commit/references` | Reference material |
 | scripts | `skills/git-github-collaboration/git-commit/scripts` | Executable scripts |
+| tests | `skills/git-github-collaboration/git-commit/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
 just python-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 
