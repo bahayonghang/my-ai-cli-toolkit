@@ -864,3 +864,34 @@ yao-meta 审查+网络调研驱动：composer 新增 --max-header-width/--emoji/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 25: 归档 image-to-ui 已完成子任务
+
+**Date**: 2026-07-13
+**Task**: 归档 image-to-ui 已完成子任务
+**Branch**: `main`
+
+### Summary
+
+复核四个任务上下文并运行 just ci；归档 wrapper、routing、validator 三个已完成子任务。父任务因缺少 GitHub 三平台浏览器 CI 实测证据而保留。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
