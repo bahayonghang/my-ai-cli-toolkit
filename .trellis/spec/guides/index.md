@@ -19,11 +19,11 @@ These guides help you **ask the right questions before coding**.
 
 ## Available Guides
 
-| Guide                                                           | Purpose                                                                                                  | When to Use                                      |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)     | Identify patterns and reduce duplication                                                                 | When you notice repeated patterns                |
-| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)   | Think through data flow across layers                                                                    | Features spanning multiple layers                |
-| [Skill Authoring Conventions](./skill-authoring-conventions.md) | Repo contracts for skills: skill-dir paths, frontmatter, interface.yaml, ps1 testing, verification traps | Creating or refactoring anything under `skills/` |
+| Guide                                                           | Purpose                                                                                                                                                  | When to Use                                      |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)     | Identify patterns and reduce duplication                                                                                                                 | When you notice repeated patterns                |
+| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)   | Think through data flow across layers                                                                                                                    | Features spanning multiple layers                |
+| [Skill Authoring Conventions](./skill-authoring-conventions.md) | Repo contracts for skills: skill-dir paths, frontmatter, interface.yaml, ps1 testing, verification traps, script output encoding, overridable validators | Creating or refactoring anything under `skills/` |
 
 ---
 

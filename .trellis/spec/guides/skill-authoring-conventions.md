@@ -59,6 +59,34 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   fence, or the formatter's auto-closing produces swallowed sections (bit both
   `update-guidelines.md` files in the md-improver skills).
 
+## Script output files: pin encoding and newline
+
+- A bundled script whose output feeds another tool (`git commit -F`, a JSON
+  parser) must write the file itself with `encoding="utf-8", newline="\n"`
+  (Python `write_text`) — never rely on the caller capturing stdout with `>`:
+  - Windows PowerShell 5.1 `>` writes UTF-16LE, so `git commit -F` reads a
+    Chinese/emoji message as mojibake.
+  - Python `write_text(...)` without `newline=` rewrites `\n` as CRLF on
+    Windows, so file bytes diverge from the stdout path and break byte-level
+    test assertions (bit git-commit 2026-07-13: design said "no script change
+    needed for --output", but the CRLF rewrite failed the single-`\n` test).
+- The SKILL.md must direct the agent to the script's own file-writing flag and
+  explicitly forbid PowerShell `>` capture (pattern: git-commit SKILL.md §5.3).
+
+## Adaptive docs need overridable validators
+
+- Contradiction class (bit git-commit v1.10.0, fixed in 1.11.0): SKILL.md
+  declared repo config authoritative (commitlint length rules / type-enum),
+  but the bundled composer hard-coded 72 columns and a type whitelist with no
+  override flag — while SKILL.md also banned hand-rolling the message. Agent
+  deadlock on any repo allowing 100-char headers (the
+  `@commitlint/config-conventional` default) or custom types like `hotfix`.
+- Rule: every limit a bundled script enforces (length, enum, format) that the
+  SKILL.md says repo/user config may override MUST have a corresponding script
+  flag (e.g. `--max-header-width`, free-form `--type` guarded by a syntax
+  regex). When adding an "X is authoritative" sentence to a SKILL.md, grep the
+  bundled scripts for hard-coded enforcement of X in the same change.
+
 ## Adding a new skill category
 
 - Creating `skills/<new-category>/` alone is NOT enough; four places must move

@@ -1,0 +1,16 @@
+fix(payment)!: [AI] 🐛 修复回调重复写入账本
+
+Why: 回调被网关重试导致重复 ledger 行
+同一订单加幂等键
+
+BREAKING CHANGE: 旧回调端点移除
+Jira: PROJ-456
+Closes #128
+Refs #130
+Confidence: high
+Scope-risk: narrow
+Tested: just ci
+Agent-Task: PROJ-456
+Agent-Model: claude-opus-4-8
+Agent-Prompt-Ref: prompt-2026-05-14-abc123
+Generated-By: agent
