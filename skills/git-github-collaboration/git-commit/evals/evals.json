@@ -261,6 +261,39 @@
         "Suggests .gitignore patterns for generated or cache artifacts when appropriate",
         "Keeps output language Chinese"
       ]
+    },
+    {
+      "id": 24,
+      "prompt": "Commit my staged refactor. This repo's commitlint config sets header-max-length to 100, and the natural subject is about 85 columns wide.",
+      "expected_output": "Repo config is authoritative over the skill's 72-column default: keep the ~85-column header and pass the relaxed limit to the compose script via --max-header-width 100 instead of truncating a legal subject.",
+      "files": [],
+      "assertions": [
+        "Treats the repo's 100-column commitlint limit as authoritative over the skill's default 72",
+        "Passes --max-header-width 100 (or equivalent) to the compose script rather than shortening the subject to fit 72",
+        "Does not reject or truncate the ~85-column header"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Commit my staged emergency production patch. This repo's commitlint type-enum is [feat, fix, hotfix, docs, chore] and its history uses hotfix for urgent patches exactly like this one.",
+      "expected_output": "Adopt the repo's custom hotfix type instead of downgrading to fix, and handle the missing built-in emoji explicitly: pass --emoji when emoji fits the repo style, or accept the no-emoji output otherwise.",
+      "files": [],
+      "assertions": [
+        "Uses the repo's custom hotfix type instead of falling back to fix",
+        "Handles the missing built-in emoji explicitly (passes --emoji or accepts the no-emoji output)",
+        "Does not claim the composer only supports the 11 built-in types"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "Commit my staged change. This repo's CONTRIBUTING says AI-assisted commits must carry an Assisted-by: trailer naming the model, and contributors certify DCO with Signed-off-by.",
+      "expected_output": "Follow the repo's attribution convention: emit an Assisted-by: trailer via --footer-line, omit the skill's private Agent-* / Generated-By trailer group to avoid double attribution, and never add Signed-off-by itself — DCO sign-off belongs to the human (suggest git commit -s).",
+      "files": [],
+      "assertions": [
+        "Emits the repo's Assisted-by: trailer naming the model (via --footer-line or equivalent)",
+        "Omits the private Agent-Task / Agent-Model / Generated-By trailer group to avoid double attribution",
+        "Does not add Signed-off-by itself; points the user at git commit -s for the DCO sign-off"
+      ]
     }
   ]
 }

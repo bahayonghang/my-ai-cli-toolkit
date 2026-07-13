@@ -16,6 +16,8 @@
 | `chore`    | 其他不修改源码的变更         | chore: 更新 .gitignore              |
 | `revert`   | 回滚提交                     | revert: 回滚 feat: 添加支付功能     |
 
+> 以上 11 个内置类型自带 emoji 映射。当目标仓库的 commitlint `type-enum` 定义了自定义类型（如 `hotfix`、`deps`、`release`）时，仓库配置优先：compose 脚本接受任何 `^[a-z][a-z0-9-]*$` 形式的类型，但自定义类型没有内置 emoji——需要时用 `--emoji` 显式指定，否则按无 emoji 输出（脚本会在 stderr 提示一次）。
+
 ## 提交信息格式
 
 ### 基本格式
@@ -45,9 +47,9 @@
 ### 简短描述规则
 
 1. **使用动词开头**: 添加、修复、更新、删除、优化
-2. **保持简短**: compose 脚本按显示宽度强制整个 header ≤ 72 列（CJK 与 emoji 每字符按 2 列计），中文 subject 建议 25 字以内，英文 50 字符以内
+2. **保持简短**: compose 脚本按显示宽度强制整个 header ≤ 72 列（默认值，目标仓库另有长度规则时经 `--max-header-width` 传入仓库上限；CJK 与 emoji 每字符按 2 列计），中文 subject 建议 25 字以内，英文 50 字符以内
 3. **不使用句号**: 描述结尾不加标点
-4. **描述做了什么**: 而不是为什么做
+4. **描述做了什么**: 而不是为什么做（此规则只约束 subject 行；「为什么做」写在 body 的 `Why:` 行，见 message-rules.md 的 Why-line 规则，两者不矛盾）
 
 ✅ 好的示例:
 

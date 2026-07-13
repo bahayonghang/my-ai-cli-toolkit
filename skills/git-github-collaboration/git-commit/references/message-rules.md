@@ -15,7 +15,7 @@
 - `scope` 可选，推荐使用中文模块名
 - `[AI]` 标签仅在 agent 生成提交时插入，位于冒号之后、emoji 之前
 - 默认保留 emoji；仅在用户明确要求时关闭
-- `subject` 使用动宾短语；compose 脚本按显示宽度强制整个 header ≤ 72 列（CJK 与 emoji 每字符按 2 列计），中文 subject 建议 25 字以内，英文 50 字符以内
+- `subject` 使用动宾短语；compose 脚本按显示宽度强制整个 header ≤ 72 列（默认值，目标仓库另有长度规则时经 `--max-header-width` 传入仓库上限；CJK 与 emoji 每字符按 2 列计），中文 subject 建议 25 字以内，英文 50 字符以内
 - 遇到不兼容变更时，可使用 `type(scope)!:` 头部形式
 
 示例：
@@ -109,6 +109,7 @@ git log --grep='^Agent-Model: claude-opus-4-8'
 
 - 不要添加 `Co-Authored-By`
 - 不要附加 AI attribution 文案（例如 `🤖 Generated with Claude Code`）
+- 不要自行添加 `Signed-off-by`（DCO 签署主体必须是人；仓库要求 DCO 时，提示用户自行 `git commit -s`，边界表见 agent-workflow.md）
 - 不要在 message 中讨论 `git push`
 - 不要为了凑格式写空洞 body
 

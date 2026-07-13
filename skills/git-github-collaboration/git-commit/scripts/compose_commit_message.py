@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import unicodedata
 from pathlib import Path
+
+TYPE_PATTERN = re.compile(r"^[a-z][a-z0-9-]*$")
 
 TYPE_EMOJIS = {
     "feat": "✨",
@@ -28,7 +31,15 @@ def parse_args() -> argparse.Namespace:
         description="Compose a Conventional Commit message with optional agent-aware metadata.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--type", required=True, choices=sorted(TYPE_EMOJIS.keys()))
+    parser.add_argument(
+        "--type",
+        required=True,
+        help=(
+            "Commit type. Built-in types ("
+            + ", ".join(sorted(TYPE_EMOJIS))
+            + ") carry an emoji automatically; repo-specific custom types are accepted too."
+        ),
+    )
     parser.add_argument("--scope", default=None, help="Optional commit scope.")
     parser.add_argument("--summary", required=True, help="Short summary without trailing punctuation.")
     parser.add_argument(
@@ -82,6 +93,14 @@ def parse_args() -> argparse.Namespace:
         help="Append ! to the commit header before the colon.",
     )
     parser.add_argument(
+        "--emoji",
+        default=None,
+        help=(
+            "Explicit header emoji. Overrides the built-in type mapping; required when a "
+            "custom (non-built-in) type should carry an emoji."
+        ),
+    )
+    parser.add_argument(
         "--no-emoji",
         action="store_true",
         help="Omit the emoji prefix from the header.",
@@ -116,8 +135,24 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Fail when --why is missing for Why-required types (feat/fix/refactor/perf).",
     )
+    parser.add_argument(
+        "--max-header-width",
+        type=int,
+        default=72,
+        help=(
+            "Maximum header width in display columns (CJK and emoji count as 2). Pass the "
+            "target repo's own header length limit when its commitlint config differs from 72."
+        ),
+    )
     parser.add_argument("--output", default=None, help="Write the composed message to a file instead of stdout.")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if not TYPE_PATTERN.fullmatch(args.type):
+        parser.error(
+            f"--type '{args.type}' must match ^[a-z][a-z0-9-]*$ (lowercase letters, digits, hyphens)."
+        )
+    if args.max_header_width < 20:
+        parser.error("--max-header-width must be at least 20 columns.")
+    return args
 
 
 def main() -> int:
@@ -145,15 +180,25 @@ def main() -> int:
     if args.ai:
         header_parts.append("[AI]")
     if not args.no_emoji:
-        header_parts.append(TYPE_EMOJIS[args.type])
+        # Priority: --no-emoji > --emoji > built-in mapping > (unknown type) none.
+        emoji = args.emoji or TYPE_EMOJIS.get(args.type)
+        if emoji:
+            header_parts.append(emoji)
+        elif args.type not in TYPE_EMOJIS:
+            print(
+                f"Unknown type '{args.type}' has no built-in emoji; pass --emoji or --no-emoji "
+                "to silence this note.",
+                file=sys.stderr,
+            )
     header_parts.append(summary)
     header += " ".join(header_parts)
 
     header_width = display_width(header)
-    if header_width > 72:
+    if header_width > args.max_header_width:
         print(
-            f"Commit header is {header_width} display columns wide; keep the subject line within 72 "
-            "(≈50 preferred). Tighten the summary or drop the scope.",
+            f"Commit header is {header_width} display columns wide; limit is "
+            f"{args.max_header_width}. Tighten the summary, drop the scope, or pass "
+            "--max-header-width if the repo allows longer headers.",
             file=sys.stderr,
         )
         return 1
@@ -203,7 +248,9 @@ def main() -> int:
     if args.output:
         output_path = Path(args.output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(message, encoding="utf-8")
+        # Pin newline="\n" so Windows text mode does not rewrite the message as CRLF;
+        # the file must carry the same bytes the stdout path emits.
+        output_path.write_text(message, encoding="utf-8", newline="\n")
     else:
         sys.stdout.buffer.write(message.encode("utf-8"))
     return 0

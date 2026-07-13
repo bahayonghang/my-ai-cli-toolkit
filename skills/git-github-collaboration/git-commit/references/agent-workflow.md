@@ -137,14 +137,39 @@ git log --grep='^Scope-risk: broad' --format='%H %s'
 git log --grep='^chore(wip):' --format='%H %s'
 ```
 
+## 与社区 Assisted-by 惯例的关系
+
+社区已有公开的 AI 署名惯例：Linux Kernel 采用 `Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]` 格式——TOOL 段可选，只列 coccinelle / sparse 这类专用分析工具（不列编辑器、git 等基础工具），kernel 文档自身的示例是 `Assisted-by: Claude:claude-3-opus coccinelle sparse`——并明确 AI 永不署 `Signed-off-by`：DCO 只能由人类签署；OpenTelemetry 使用 `Assisted-by: Claude Opus 4.5` 这类人类可读形式；Apache 以 `Generated-by:` 记录机器可解析的 provenance。
+
+> Last verified: 2026-07-13 against <https://allthingsopen.org/articles/open-source-ai-contributions-assisted-by-git-trailer-standard>（各项目细则以其官方文档为准）
+
+本 skill 私有 trailer 组与这些惯例的对应关系：
+
+| 本 skill 私有 trailer | 社区近似物 | 说明 |
+|----------------------|-----------|------|
+| `Agent-Model: <id>` | `Assisted-by:` 的 MODEL 段 | 独立字段便于 `git log --grep='^Agent-Model:'` 精确筛选 |
+| `Generated-By: agent` | Apache `Generated-by:` | 同为 provenance 用途；本 skill 用固定值作审计哨兵 |
+| `Agent-Task` + `Tested` / `Confidence` / `Scope-risk` | 无对应物 | 私有方案的保留理由：任务 / 模型 / 验证三维可 grep 审计 |
+
+**默认仍使用私有 trailer 组**：本仓库的审计口径（`git log --grep='^Generated-By: agent'` 等）依赖这些字段，社区惯例没有等价的三维检索能力。
+
+**仓库惯例分支**（仅当目标仓库有明确 AI 署名政策时启用）：Preflight 采样发现近 20 条 log 或 `CONTRIBUTING` / AI 政策文件中出现 `Assisted-by:` / `Generated-by:` 惯例时——
+
+1. 按仓库实际格式输出该 trailer，经 compose 脚本 `--footer-line` 注入，例如 `--footer-line "Assisted-by: Claude:claude-opus-4"`（kernel 风格；TOOL 段仅在确实用了专用分析工具时追加）或 `--footer-line "Assisted-by: Claude Opus 4.5"`（OpenTelemetry 风格）。
+2. 同时省略本 skill 私有的 `Agent-*` / `Generated-By: agent` 组——两套并存会造成双重署名噪音。
+3. `[AI]` header 标签保留与否跟随仓库 history 是否出现过该标签。注意脚本约束：`--ai` 必须搭配 `--agent-model`（会一并输出 `Agent-Model` trailer）；若目标仓库既无 `[AI]` 习惯又要求零私有 trailer，连 `--ai` 一起省略。
+4. 无论哪个分支，都不得自行添加 `Signed-off-by`：DCO 签署主体必须是人。仓库要求 DCO 时，提示用户自行 `git commit -s`，或在用户明确确认后以用户名义签署。
+
 ## 与现有禁止项的边界
 
 | 项 | 是否允许 |
 |----|----------|
 | `Co-Authored-By: ...` | 禁止 |
 | `🤖 Generated with Claude Code` 等 attribution 文案 | 禁止 |
+| 自行添加 `Signed-off-by: ...` | 禁止（DCO 只能由人类签署；仓库要求 DCO 时提示用户自行 `git commit -s`） |
 | `Generated-By: agent` trailer | 允许（结构化字段，非署名） |
 | `Agent-Model: <id>` trailer | 允许 |
+| 仓库惯例的 `Assisted-by:` trailer（经 `--footer-line`） | 允许（仅在目标仓库已有该惯例时） |
 | 在 message 中讨论 `git push` | 禁止 |
 
 `Generated-By` 与 `Co-Authored-By` 的区别：前者是机器可解析的审计字段，写入 trailer 是为了后续 grep；后者是面向人的署名，会让 GitHub 把 commit 计入指定账号的贡献统计，因此本 skill 持续禁用。
