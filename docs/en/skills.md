@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 39 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 38 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -58,9 +58,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Docs, Writing & Publishing
 
-`docs-writing-publishing` · 6 skills
+`docs-writing-publishing` · 5 skills
 
-- [archify](/en/skills/docs-writing-publishing/archify) — Create technical diagrams — architecture, workflow, sequence, data-flow, lifecycle/state — as standalone HTML files with SVG graphics, dark/light theme toggle, and built-in image/SVG export.
 - [beautiful-mermaid-editor](/en/skills/docs-writing-publishing/beautiful-mermaid-editor) — Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mermaid diagrams.
 - [bidwriter](/en/skills/docs-writing-publishing/bidwriter) — 智能招投标文件编写专家，覆盖工程咨询、建筑设计、市政、IT、软件开发、货物与服务采购等各类招投标，工程建设类为深度强项。能解析招标文件、提取评分标准与废标条款、制定投标策略、撰写技术标与商务标、做逐条响应与合规性及废标风险审核。当用户提到标书、投标、招标、技术标、商务标、评分标准提取、废标风险、逐条响应、偏离表、政府采购、tender、RFP response 时使用。不适用于通用商务写作、营销文案、学术论文或与招投标无关的文档。
 - [document-writer](/en/skills/docs-writing-publishing/document-writer) — Write or update technical documentation grounded in the real codebase.
