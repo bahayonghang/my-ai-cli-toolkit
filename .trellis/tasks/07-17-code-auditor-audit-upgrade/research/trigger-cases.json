@@ -1,0 +1,40 @@
+{
+  "should_trigger": [
+    {
+      "text": "对这个项目做一次全维度的代码审计，正确性、安全、性能、可读性、测试和架构都要看。",
+      "family": "project_audit_zh"
+    },
+    {
+      "text": "Do a deep full-spectrum audit of this repo, including architecture debt alongside correctness, security, performance, readability, and tests.",
+      "family": "project_audit_en"
+    },
+    {
+      "text": "Review this PR before merge and call out correctness, security, performance, architecture, and test risks.",
+      "family": "pr_review_en"
+    },
+    {
+      "text": "帮我做这次 PR 的代码审查，重点列出阻塞问题和测试缺口。",
+      "family": "pr_review_zh"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Implement the new checkout page from this design and add the backend endpoint.",
+      "family": "implementation_only"
+    },
+    {
+      "text": "Explain what dependency injection means without reviewing any code.",
+      "family": "explanation_only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "帮我看看 src/ 的结构和可维护性，抽象合不合理，有没有适合重构的大文件。",
+      "family": "code_quality_review"
+    },
+    {
+      "text": "给我一份包含合规、隐私、无障碍、成本和发布准备度的仓库健康报告。",
+      "family": "repository_health_report"
+    }
+  ]
+}

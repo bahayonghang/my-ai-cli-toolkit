@@ -56,6 +56,53 @@
         "The skill description should not capture maintainability-only or structure-quality-only review requests that belong to code-quality-review.",
         "If answered here, the response should still run the full multi-dimension audit rather than only a maintainability lens, or hand off to code-quality-review."
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "对这个项目做一次全维度的代码审计，正确性、安全、性能、可读性、测试和架构都要看。",
+      "expected_output": "Route to the project audit, orient before judging, and return the report in chat by default while offering rather than forcing a dated file.",
+      "files": [],
+      "assertions": [
+        "The request routes to the project audit and covers all six dimensions together.",
+        "The audit builds a repository mental model and identifies scope or hotspots before presenting findings.",
+        "The completed report is presented in chat by default.",
+        "Saving a collision-safe dated report is offered as an explicit opt-in rather than performed automatically."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Do a deep full-spectrum audit of this repo, including architecture debt alongside correctness, security, performance, readability, and tests.",
+      "expected_output": "Use the deep project tier and produce an evidence-grounded findings table with location, severity, effort, recommendations, and the required anti-shallow-audit sections.",
+      "files": [],
+      "assertions": [
+        "The audit selects the deep project tier instead of asking the user to narrow the repository scope.",
+        "The findings table includes file:line, severity, effort, and recommendation fields.",
+        "Every critical or high finding has exact file:line evidence.",
+        "The report includes Looks Bad but Is Actually Fine and Open Questions; the former may explicitly state that no reliable instance was found.",
+        "The report remains in chat unless the user explicitly opts in to saving it."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Audit this codebase again. There is already a previous code-audit report in docs/audits; tell me what changed since then.",
+      "expected_output": "Use delta mode against the latest dated report without overwriting it, update prior finding statuses, and separate new findings.",
+      "files": [],
+      "assertions": [
+        "The audit compares against the latest dated code-audit report in docs/audits.",
+        "Prior findings are classified as Fixed, Partially Fixed, or Still Present.",
+        "New findings are separated from prior-finding status updates.",
+        "If the user later opts in to saving, the output uses a collision-safe filename and never overwrites the baseline."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "给我一份包含合规、隐私、无障碍、成本和发布准备度的仓库健康报告。",
+      "expected_output": "Near-negative: a repository health report spanning non-code dimensions should route to the broader repository-health workflow, not code-auditor.",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture repository health reports spanning compliance, privacy, accessibility, cost, or other non-code dimensions.",
+        "The request is handed off to a broader repository-health audit workflow rather than reduced to code-auditor's six code dimensions."
+      ]
     }
   ]
 }

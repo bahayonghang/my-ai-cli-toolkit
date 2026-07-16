@@ -113,7 +113,41 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
 - Discovery/example commands in the SKILL.md body must stay within what
   `allowed-tools` grants.
 
-## Twin skills sharing an artifact
+## Trigger/boundary changes: two eval systems, not one
+
+> Distilled from the code-auditor project-audit upgrade (2026-07-17).
+
+- The repo's own `skills/<skill>/evals/evals.json` (schema: `id` / `prompt` /
+  `expected_output` / `assertions`) is a **behavior/output regression fixture,
+  reviewed by hand — `just ci` does NOT execute it.** Do not expect CI to catch
+  routing regressions.
+- yao-meta's `trigger_eval.py` is a **separate, incompatible** gate. It needs
+  `should_trigger` / `should_not_trigger` / `near_neighbor` cases plus a
+  domain-specific `semantic_config.json`. The yao-meta default
+  `evals/semantic_config.json` targets skill-*creation* routing and scores every
+  code-audit prompt wrong — author a skill-specific config or all recall is 0.
+- Keep both: extend `evals.json` for the behavior contract, and store the
+  trigger cases + semantic config under the task dir (`research/`) so the route
+  gate is reproducible. Run it as
+  `python "$USERPROFILE/.claude/skills/yao-meta/scripts/trigger_eval.py"
+  --cases … --semantic-config … --description-file <SKILL.md>`.
+- When redefining a boundary, enumerate ALL near neighbors, not just one. This
+  repo had two (`code-quality-review` for maintainability-only, plus the
+  user-global `fuck-my-shit-mountain` for non-code health reports); the positive
+  wording must dodge both — "全维度/full-spectrum audit", never "架构和质量"
+  which collides with `code-quality-review`'s own description.
+
+## resource_boundary_check default budget vs reality
+
+- yao-meta `resource_boundary_check.py` defaults to a 1000-token initial-load
+  budget. Many existing catalog SKILL.md bodies already exceed it (code-auditor
+  0.2.0 was ~1533). A route/section addition will fail the default gate without
+  the failure being your regression.
+- Correct handling (do NOT fake a pass): record the default failure as
+  `missing evidence`, then rerun with `--max-initial-tokens <ceiling>` to prove
+  every resource dir is still reachable/connected under an explicit compatibility
+  ceiling. Bringing the body under 1000 is a separate entrypoint-refactor task.
+
 
 - When two skills maintain the same output file (e.g. `agents-md-improver` and
   `claude-md-improver` both own `code_map.md` templates), the shared template
