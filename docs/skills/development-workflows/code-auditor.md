@@ -8,8 +8,10 @@ Structured code review across correctness, security, performance, readability, t
 
 ## 触发场景
 
-- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, prepare merge feedback, or do code review / PR review / CR / 代码审查
-- Output language follows the discussion language (Chinese or English)
+- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, or run a full-spectrum multi-dimension audit of an entire project across all six dimensions / 全维度代码审计
+- Not for reviews focused only on structure, maintainability, or refactoring opportunities
+- not for repository health reports spanning non-code dimensions such as compliance, privacy, cost, or accessibility
+- Output follows the discussion language
 
 ## 元数据
 
@@ -17,7 +19,7 @@ Structured code review across correctness, security, performance, readability, t
 | --- | --- |
 | 名称 | `code-auditor` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.2.0` |
+| 版本 | `0.3.0` |
 | 标签 | `code-review`, `quality-assurance`, `security`, `performance`, `best-practices`, `testing`, `multi-language` |
 
 ## 安装命令
@@ -30,15 +32,17 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/code-auditor/assets` | 目录 | 4 | 素材资源 |
+| `skills/development-workflows/code-auditor/agents` | 目录 | 1 | 配套 agent |
+| `skills/development-workflows/code-auditor/assets` | 目录 | 5 | 素材资源 |
 | `skills/development-workflows/code-auditor/evals` | 目录 | 1 | 评测样例 |
-| `skills/development-workflows/code-auditor/references` | 目录 | 22 | 引用资料 |
+| `skills/development-workflows/code-auditor/references` | 目录 | 23 | 引用资料 |
 | `skills/development-workflows/code-auditor/scripts` | 目录 | 3 | 可执行脚本 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| agents | `skills/development-workflows/code-auditor/agents` | 配套 agent |
 | assets | `skills/development-workflows/code-auditor/assets` | 素材资源 |
 | evals | `skills/development-workflows/code-auditor/evals` | 评测样例 |
 | references | `skills/development-workflows/code-auditor/references` | 引用资料 |

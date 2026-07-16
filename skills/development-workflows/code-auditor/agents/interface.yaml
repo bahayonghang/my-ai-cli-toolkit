@@ -1,0 +1,26 @@
+interface:
+  display_name: "Code Auditor"
+  short_description: "Review diffs or audit code across six dimensions"
+  default_prompt: "Use $code-auditor to review the requested PR, changes, files, directory, or project across correctness, security, performance, readability, testing, and architecture. Route whole-project requests to the full-spectrum project audit, keep maintainability-only and non-code repository health reports out of scope, and follow the user's language."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "vscode"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+  degradation:
+    openai: "metadata-adapter"
+    claude: "neutral-source-plus-adapter"
+    generic: "neutral-source"
+    vscode: "agent-skills-source-with-vscode-notes"

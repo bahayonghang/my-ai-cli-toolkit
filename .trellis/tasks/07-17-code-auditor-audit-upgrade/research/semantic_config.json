@@ -1,0 +1,117 @@
+{
+  "optimizer_hints": {
+    "capability": "Review code or run a full-spectrum engineering audit across correctness, security, performance, readability, testing, and architecture together",
+    "inputs": [
+      "pull requests and git changes",
+      "files and directories",
+      "whole codebases"
+    ],
+    "trigger_actions": [
+      "review a PR",
+      "review code changes",
+      "audit a directory",
+      "run a full-spectrum project code audit"
+    ],
+    "exclusions": [
+      "maintainability, structure, or refactoring-only review",
+      "repository health report spanning non-code dimensions",
+      "implementation without review",
+      "concept explanation without review"
+    ],
+    "artifacts": [
+      "PR diffs",
+      "source files",
+      "project repositories"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "review_or_audit",
+    "project_full_spectrum",
+    "pr_review"
+  ],
+  "positive_concepts": {
+    "review_or_audit": {
+      "weight": 0.5,
+      "phrases": [
+        "review",
+        "audit",
+        "代码审查",
+        "代码审计",
+        "审查"
+      ]
+    },
+    "project_full_spectrum": {
+      "weight": 0.3,
+      "phrases": [
+        "full-spectrum",
+        "multi-dimension audit",
+        "full audit",
+        "entire project",
+        "全维度",
+        "全谱"
+      ]
+    },
+    "pr_review": {
+      "weight": 0.2,
+      "phrases": [
+        "review a pr",
+        "review this pr",
+        "pr review",
+        "review pr",
+        "review a mr",
+        "pr 的代码审查",
+        "代码审查"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "maintainability_only": {
+      "weight": 0.75,
+      "exclusive": true,
+      "phrases": [
+        "structure and maintainability",
+        "maintainability review",
+        "refactoring-only",
+        "refactoring opportunities",
+        "结构和可维护性",
+        "抽象合不合理",
+        "重构的大文件"
+      ]
+    },
+    "non_code_health": {
+      "weight": 0.85,
+      "exclusive": true,
+      "phrases": [
+        "repository health report",
+        "compliance",
+        "privacy",
+        "accessibility",
+        "cost",
+        "仓库健康报告",
+        "合规",
+        "隐私",
+        "无障碍",
+        "成本"
+      ]
+    },
+    "implementation_only": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "implement",
+        "build the page",
+        "add the backend",
+        "fix this bug"
+      ]
+    },
+    "explanation_only": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "explain",
+        "what does",
+        "teach me"
+      ]
+    }
+  }
+}

@@ -8,8 +8,10 @@ Structured code review across correctness, security, performance, readability, t
 
 ## Trigger scenarios
 
-- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, prepare merge feedback, or do code review / PR review / CR / 代码审查
-- Output language follows the discussion language (Chinese or English)
+- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, or run a full-spectrum multi-dimension audit of an entire project across all six dimensions / 全维度代码审计
+- Not for reviews focused only on structure, maintainability, or refactoring opportunities
+- not for repository health reports spanning non-code dimensions such as compliance, privacy, cost, or accessibility
+- Output follows the discussion language
 
 ## Metadata
 
@@ -17,7 +19,7 @@ Structured code review across correctness, security, performance, readability, t
 | --- | --- |
 | Name | `code-auditor` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Tags | `code-review`, `quality-assurance`, `security`, `performance`, `best-practices`, `testing`, `multi-language` |
 
 ## Install command
@@ -30,15 +32,17 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/code-auditor/assets` | directory | 4 | Assets |
+| `skills/development-workflows/code-auditor/agents` | directory | 1 | Companion agents |
+| `skills/development-workflows/code-auditor/assets` | directory | 5 | Assets |
 | `skills/development-workflows/code-auditor/evals` | directory | 1 | Evaluation samples |
-| `skills/development-workflows/code-auditor/references` | directory | 22 | Reference material |
+| `skills/development-workflows/code-auditor/references` | directory | 23 | Reference material |
 | `skills/development-workflows/code-auditor/scripts` | directory | 3 | Executable scripts |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| agents | `skills/development-workflows/code-auditor/agents` | Companion agents |
 | assets | `skills/development-workflows/code-auditor/assets` | Assets |
 | evals | `skills/development-workflows/code-auditor/evals` | Evaluation samples |
 | references | `skills/development-workflows/code-auditor/references` | Reference material |
