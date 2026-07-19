@@ -926,3 +926,36 @@ yao-meta 审查+网络调研驱动：composer 新增 --max-header-width/--emoji/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 27: 合并 academic-figure 与 paper-plot
+
+**Date**: 2026-07-19
+**Task**: 合并 academic-figure 与 paper-plot
+**Branch**: `main`
+
+### Summary
+
+将 paper-plot 完整并入 academic-figure，统一 journal-spec、from-data、from-image 三模式；补齐行为与触发评测、脚本烟测、生成文档并通过 just ci。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1397ce0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

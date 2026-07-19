@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 26
-- **Last Active**: 2026-07-13
+- **Total Sessions**: 27
+- **Last Active**: 2026-07-19
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~928 | Active |
+| `journal-1.md` | ~961 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 27 | 2026-07-19 | 合并 academic-figure 与 paper-plot | `1397ce0` | `main` |
 | 26 | 2026-07-13 | 豁免并归档 image-to-ui 父任务 | - | `main` |
 | 25 | 2026-07-13 | 归档 image-to-ui 已完成子任务 | - | `main` |
 | 24 | 2026-07-13 | git-commit skill 1.11.0：composer 可配置化与 Assisted-by 对齐 | `4c725b7`, `acf3eaf`, `4c56986` | `main` |
