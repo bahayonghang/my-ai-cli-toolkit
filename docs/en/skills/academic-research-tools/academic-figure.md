@@ -4,13 +4,14 @@
 
 ## Purpose overview
 
-Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly; in industrytslib projects it drives that library's built-in visualization system.
+Create or review academic figures in three modes.
 
 ## Trigger scenarios
 
-- Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly
-- in industrytslib projects it drives that library's built-in visualization system
-- Use for 论文配图, 期刊图, 科研绘图, 中文学位论文配图, "publication-ready figure"
+- Create or review academic figures in three modes. journal-spec creates or reviews publication-ready figures for journal submission specs using matplotlib, seaborn, plotly, or industrytslib. from-data fills a named paper-style catalog with user data. from-image reproduces an uploaded paper figure as a matplotlib script and 300 dpi PNG
+- Use for 论文配图, 期刊图, 科研绘图, 审阅投稿图, 用某论文风格画数据, 复现这张图, or a named catalog style
+- An explicit journal target takes precedence over a style or reference image
+- Paper reading and multi-paper synthesis route to their dedicated research skills
 
 ## Metadata
 
@@ -18,8 +19,8 @@ Create or review publication-ready academic figures that meet journal submission
 | --- | --- |
 | Name | `academic-figure` |
 | Category | `academic-research-tools` (Academic Research Tools) |
-| Version | `0.1.0` |
-| Tags | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication` |
+| Version | `1.0.0` |
+| Tags | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication`, `reproduction`, `paper-style`, `from-image` |
 
 ## Install command
 
@@ -31,15 +32,17 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill academic-figu
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
+| `skills/academic-research-tools/academic-figure/assets` | directory | 10 | Assets |
 | `skills/academic-research-tools/academic-figure/evals` | directory | 1 | Evaluation samples |
-| `skills/academic-research-tools/academic-figure/references` | directory | 7 | Reference material |
-| `skills/academic-research-tools/academic-figure/scripts` | directory | 1 | Executable scripts |
+| `skills/academic-research-tools/academic-figure/references` | directory | 19 | Reference material |
+| `skills/academic-research-tools/academic-figure/scripts` | directory | 10 | Executable scripts |
 | `skills/academic-research-tools/academic-figure/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| assets | `skills/academic-research-tools/academic-figure/assets` | Assets |
 | evals | `skills/academic-research-tools/academic-figure/evals` | Evaluation samples |
 | references | `skills/academic-research-tools/academic-figure/references` | Reference material |
 | scripts | `skills/academic-research-tools/academic-figure/scripts` | Executable scripts |

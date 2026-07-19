@@ -1,7 +1,7 @@
 # Mode: from-image
 
-Reproduce a paper figure by analyzing the image and leveraging accumulated style
-knowledge. All outputs are `dpi=300` PNG.
+Select the authoritative `from-image` output contract in `SKILL.md`, then
+analyze the image and use the accumulated style knowledge.
 
 ## Workflow
 
@@ -15,21 +15,11 @@ Set `figsize=(FW, FH)` so `FW/FH` matches the original AR exactly.
 
 ### 2. Match to existing style
 
-Check if the figure matches a pre-built style (fastest path):
-
-| Figure type                      | Check for                                 |
-| -------------------------------- | ----------------------------------------- |
-| Grouped/paired bar               | `bar_paired_delta` or `bar_grouped_hatch` |
-| Line with shaded bands           | `line_confidence_band`                    |
-| Line with cut lines or reference | `line_training_curve`                     |
-| Loss curve + zoom panel          | `line_loss_with_inset`                    |
-| Scattered clusters               | `scatter_tsne_cluster`                    |
-| Broken x-axis                    | `scatter_broken_axis`                     |
-| Polygon web chart                | `radar_dual_series`                       |
-
-If matched → read `../styles/<name>.md` for exact parameters → adapt
+First read the style-to-script catalog in `from-data.md`. If the image matches
+one of those entries, read `../styles/<name>.md` for exact parameters and adapt
 `<skill-dir>/scripts/<script>.py`. Compare against the source figures in
-`<skill-dir>/assets/originals/` to confirm the visual match.
+`<skill-dir>/assets/originals/` to confirm the visual match. Runtime dependencies
+and LaTeX caveats are recorded in `from-data.md#runtime-dependencies`.
 
 ### 3. If no match → analyze from scratch
 
@@ -47,7 +37,7 @@ Read `../reproduction_guide.md` for the full analysis checklist covering:
 ### 4. Build & iterate
 
 ```
-Write script → python <script>.py [out.png] → visually compare → fix proportions/colors → re-run
+Write script → python "<skill-dir>/scripts/<script>.py" [out.png] → visually compare → fix proportions/colors → re-run
 ```
 
 Key iteration checklist:

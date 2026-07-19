@@ -1,7 +1,7 @@
 # Mode: from-data
 
-Generate a paper-quality figure by picking a style template and filling it with
-user data. All outputs are `dpi=300` PNG.
+Select the authoritative `from-data` output contract in `SKILL.md`, then pick a
+style template and fill it with user data.
 
 ## Workflow
 
@@ -10,7 +10,7 @@ user data. All outputs are `dpi=300` PNG.
 2. 选择对应 style（如不确定，询问用户或根据数据形状推断）
 3. 读取对应 ../styles/<style_name>.md 获取精确参数
 4. 复制对应 <skill-dir>/scripts/<script>.py，替换数据区（脚本顶部有清晰注释标注数据区）
-5. 运行：python <skill-dir>/scripts/<script>.py [输出路径.png]
+5. 运行：python "<skill-dir>/scripts/<script>.py" [输出路径.png]
 6. 检查输出，必要时微调颜色/标签/字号
 ```
 
@@ -48,3 +48,11 @@ sizes, spine settings, and tick directions before generating:
 - Line: `../styles/line_confidence_band.md`, `../styles/line_training_curve.md`, `../styles/line_loss_with_inset.md`
 - Scatter: `../styles/scatter_tsne_cluster.md`, `../styles/scatter_broken_axis.md`
 - Radar: `../styles/radar_dual_series.md`
+
+## Runtime dependencies
+
+- All scripts require `matplotlib` and `numpy`.
+- `scatter_break.py` also requires `scipy`.
+- `bar_spice.py`, `line_selfdistill.py`, `line_loss_inset.py`, and
+  `scatter_tsne.py` use `text.usetex=True` and require a working LaTeX install.
+  If LaTeX is unavailable, set `text.usetex` to `False` in the copied script.

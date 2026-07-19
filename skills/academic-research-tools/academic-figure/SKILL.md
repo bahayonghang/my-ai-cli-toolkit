@@ -1,13 +1,14 @@
 ---
 name: academic-figure
 description: >
-  Create or review publication-ready academic figures that meet
-  journal submission specs (IEEE / Elsevier / Nature, plus Springer and
-  chinese-thesis presets) using matplotlib(+seaborn) or plotly; in
-  industrytslib projects it drives that library's built-in visualization
-  system. Use for 论文配图, 期刊图, 科研绘图, 中文学位论文配图,
-  "publication-ready figure". Do NOT use to reproduce a specific paper's
-  figure or style — that is paper-plot.
+  Create or review academic figures in three modes. journal-spec creates or
+  reviews publication-ready figures for journal submission specs using
+  matplotlib, seaborn, plotly, or industrytslib. from-data fills a named
+  paper-style catalog with user data. from-image reproduces an uploaded paper
+  figure as a matplotlib script and 300 dpi PNG. Use for 论文配图, 期刊图, 科研绘图,
+  审阅投稿图, 用某论文风格画数据, 复现这张图, or a named catalog style. An explicit
+  journal target takes precedence over a style or reference image. Paper
+  reading and multi-paper synthesis route to their dedicated research skills.
 category: academic-research-tools
 tags:
   [
@@ -19,71 +20,61 @@ tags:
     elsevier,
     nature,
     publication,
+    reproduction,
+    paper-style,
+    from-image,
   ]
-version: 0.1.0
+version: 1.0.0
 ---
 
 # Academic Figure
 
-Route a "make me a journal-compliant figure" request across two axes — **journal
-style** (ieee / elsevier / nature, plus springer / chinese-thesis) and
-**library** (matplotlib(+seaborn) / plotly) — then either drive an industrytslib
-project's built-in visualization system or generate a standalone spec-compliant
-figure. Argue the figure first; write code last.
+Pick one mode before loading its reference or writing plotting code.
 
-> `<skill-dir>` below is this skill's directory — substitute the absolute path
-> announced when the skill loads. On Windows, prefix Python runs with
-> `PYTHONUTF8=1`.
+> Replace `<skill-dir>` with the loaded skill directory. In Windows PowerShell,
+> set `$env:PYTHONUTF8 = '1'` before UTF-8 Python commands.
 
-## Routing protocol
+## Pick a mode
 
-Work the six steps in order.
+| Input intent | Mode | Read |
+| --- | --- | --- |
+| Journal/thesis target, generic `论文配图`, or compliance review | **journal-spec** | `references/modes/journal-spec.md` |
+| User data plus a named catalog style | **from-data** | `references/modes/from-data.md` |
+| Uploaded paper figure, with no journal target | **from-image** | `references/modes/from-image.md` |
 
-1. **Figure contract.** Read `references/figure-contract.md` and lock the claim
-   before plotting: core conclusion (one sentence) → evidence chain / panel
-   mapping → prototype class (quantitative grid / schematic-led / image+quant /
-   asymmetric) → journal export contract.
-2. **Journal-style axis.** Resolve in priority order: explicit request >
-   submission context (target journal) > saved preference
-   (`python <skill-dir>/scripts/academic_figure_pref.py get journal_style`) >
-   ask once ("Target journal style? ieee / elsevier / nature, or springer /
-   chinese-thesis"). After the user answers, persist it with the matching `set`.
-3. **Library axis.** Resolve: explicit request > project context (libraries
-   already imported; an industrytslib project uses its matplotlib/plotly
-   backend) > saved preference
-   (`python <skill-dir>/scripts/academic_figure_pref.py get library`) > default
-   matplotlib (recommend plotly only when interactive/web output is needed).
-   seaborn is not a separate axis — it is a matplotlib-layer API and specs still
-   resolve down to rcParams.
-4. **industrytslib integration check.** If the user names industrytslib, or the
-   project's dependencies/imports include `industrytslib`, read
-   `references/industrytslib-integration.md` and drive figures through
-   `create_plotter(...)` / `plotter.set_style(...)` — call the library, never
-   modify it. Otherwise take the standalone path (journal specs + a library
-   recipe).
-5. **Load references on demand.** Read only what the resolved axes need: the
-   matched card in `references/journal-specs.md`, one library recipe
-   (`references/matplotlib-recipes.md` or `references/plotly-recipes.md`), and
-   the matched family section in `references/chart-recipes.md`.
-6. **Export & QA.** Export per the spec card (vector-first, `fonttype=42`,
-   colorblind-safe default palette), then walk every item in
-   `references/qa-checklist.md` before delivering.
+Resolve conflicts in order:
+
+1. An explicit journal target selects **journal-spec**; a style or image is
+   visual reference only.
+2. If exact mimicry and journal compliance are both explicit, ask once which
+   contract wins.
+
+## Output contracts
+
+The selected row is authoritative.
+
+| Mode | Required output behavior |
+| --- | --- |
+| **journal-spec** | Vector-first PDF/SVG/EPS; target size, font, and DPI; colorblind-safe defaults; `fonttype=42`; every applicable QA item checked |
+| **from-data** / **from-image** | Matplotlib script and `dpi=300` PNG; deliberately mimic the selected style or source; journal QA is not imposed by default |
 
 ## Route elsewhere
 
-| Request                                                                                | Route to                                                                       |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Reproduce a specific paper's figure, name a paper-plot style folder, or "照着这个图画" | **paper-plot** (`skills/research-learning-knowledge/paper-plot`)               |
-| Deep-read or summarize a single paper                                                  | **literature-mentor** (`skills/research-learning-knowledge/literature-mentor`) |
-| Intake or synthesize across many papers                                                | **paper-workbench** (`skills/research-learning-knowledge/paper-workbench`)     |
+| Request | Route to |
+| --- | --- |
+| Deep-read or summarize one paper | **literature-mentor** (`skills/research-learning-knowledge/literature-mentor`) |
+| Intake, compare, or synthesize multiple papers | **paper-workbench** (`skills/research-learning-knowledge/paper-workbench`) |
+| Build a BI dashboard or linked operational charts | Dashboard or BI tooling |
+| Generate an AI graphical abstract or illustration | Image-generation tooling |
 
 ## Resources
 
-- **Contract & QA**: `references/figure-contract.md`, `references/qa-checklist.md`
-- **Journal specs**: `references/journal-specs.md` — IEEE / Elsevier / Nature cards + springer / chinese-thesis extensions
-- **Library recipes**: `references/matplotlib-recipes.md`, `references/plotly-recipes.md`
-- **Chart families**: `references/chart-recipes.md`
-- **industrytslib**: `references/industrytslib-integration.md`
-- **Preference CLI**: `scripts/academic_figure_pref.py` — persists `library` and `journal_style`
-
-_References and scripts are populated in later build phases; the filenames above are the stable contract._
+- **Modes**: `references/modes/journal-spec.md`,
+  `references/modes/from-data.md`, `references/modes/from-image.md`
+- **Journal guidance**: `references/figure-contract.md`,
+  `references/journal-specs.md`, `references/matplotlib-recipes.md`,
+  `references/plotly-recipes.md`, `references/chart-recipes.md`,
+  `references/qa-checklist.md`, `references/industrytslib-integration.md`
+- **Reproduction**: `references/styles/`,
+  `references/reproduction_guide.md`, `scripts/`, `assets/originals/`
+- **Preference CLI & evals**: `scripts/academic_figure_pref.py`, `evals/evals.json`

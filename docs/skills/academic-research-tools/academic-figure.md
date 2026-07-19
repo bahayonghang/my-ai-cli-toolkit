@@ -4,13 +4,14 @@
 
 ## 用途概览
 
-Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly; in industrytslib projects it drives that library's built-in visualization system.
+Create or review academic figures in three modes.
 
 ## 触发场景
 
-- Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly
-- in industrytslib projects it drives that library's built-in visualization system
-- Use for 论文配图, 期刊图, 科研绘图, 中文学位论文配图, "publication-ready figure"
+- Create or review academic figures in three modes. journal-spec creates or reviews publication-ready figures for journal submission specs using matplotlib, seaborn, plotly, or industrytslib. from-data fills a named paper-style catalog with user data. from-image reproduces an uploaded paper figure as a matplotlib script and 300 dpi PNG
+- Use for 论文配图, 期刊图, 科研绘图, 审阅投稿图, 用某论文风格画数据, 复现这张图, or a named catalog style
+- An explicit journal target takes precedence over a style or reference image
+- Paper reading and multi-paper synthesis route to their dedicated research skills
 
 ## 元数据
 
@@ -18,8 +19,8 @@ Create or review publication-ready academic figures that meet journal submission
 | --- | --- |
 | 名称 | `academic-figure` |
 | 分类 | `academic-research-tools` (学术研究工具) |
-| 版本 | `0.1.0` |
-| 标签 | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication` |
+| 版本 | `1.0.0` |
+| 标签 | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication`, `reproduction`, `paper-style`, `from-image` |
 
 ## 安装命令
 
@@ -31,15 +32,17 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill academic-figu
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
+| `skills/academic-research-tools/academic-figure/assets` | 目录 | 10 | 素材资源 |
 | `skills/academic-research-tools/academic-figure/evals` | 目录 | 1 | 评测样例 |
-| `skills/academic-research-tools/academic-figure/references` | 目录 | 7 | 引用资料 |
-| `skills/academic-research-tools/academic-figure/scripts` | 目录 | 1 | 可执行脚本 |
+| `skills/academic-research-tools/academic-figure/references` | 目录 | 19 | 引用资料 |
+| `skills/academic-research-tools/academic-figure/scripts` | 目录 | 10 | 可执行脚本 |
 | `skills/academic-research-tools/academic-figure/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| assets | `skills/academic-research-tools/academic-figure/assets` | 素材资源 |
 | evals | `skills/academic-research-tools/academic-figure/evals` | 评测样例 |
 | references | `skills/academic-research-tools/academic-figure/references` | 引用资料 |
 | scripts | `skills/academic-research-tools/academic-figure/scripts` | 可执行脚本 |

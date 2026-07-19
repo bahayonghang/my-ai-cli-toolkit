@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、38 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、37 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -22,7 +22,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 `academic-research-tools` · 1 skills
 
-- [academic-figure](/skills/academic-research-tools/academic-figure) — Create or review publication-ready academic figures that meet journal submission specs (IEEE / Elsevier / Nature, plus Springer and chinese-thesis presets) using matplotlib(+seaborn) or plotly; in industrytslib projects it drives that library's built-in visualization system.
+- [academic-figure](/skills/academic-research-tools/academic-figure) — Create or review academic figures in three modes.
 
 ### 开发者工具集成
 
@@ -77,12 +77,11 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 研究、学习与知识
 
-`research-learning-knowledge` · 6 skills
+`research-learning-knowledge` · 5 skills
 
 - [deep-research-pro](/skills/research-learning-knowledge/deep-research-pro) — Multi-source deep research for current-topic investigation, comparison, and cited report writing.
 - [humanizer-paper](/skills/research-learning-knowledge/humanizer-paper) — Register-aware academic language polisher for English journal articles and Chinese doctoral dissertations: removes AI-writing tells while keeping academic norms.
 - [literature-mentor](/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇论文综合、对比、找研究空白或批量规范化时改用 paper-workbench。
-- [paper-plot](/skills/research-learning-knowledge/paper-plot) — Generate publication-quality matplotlib figures in real academic paper styles.
 - [paper-workbench](/skills/research-learning-knowledge/paper-workbench) — Researcher-profile-driven paper intake and literature workbench for academic workflows.
 - [roundtable](/skills/research-learning-knowledge/roundtable) — Multi-perspective roundtable discussion — a truth-seeking moderator plus a small set of representative real figures explore one topic through disciplined debate.
 

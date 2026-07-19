@@ -1,0 +1,149 @@
+{
+  "optimizer_hints": {
+    "capability": "Create or review academic figures under journal specifications, fill named paper styles, or reproduce uploaded paper figures",
+    "inputs": [
+      "experimental data",
+      "journal submission requirements",
+      "named paper-style catalog entries",
+      "uploaded paper figure images",
+      "期刊投稿规范",
+      "实验数据",
+      "论文截图"
+    ],
+    "trigger_actions": [
+      "create a journal-compliant figure",
+      "review a publication figure",
+      "fill a named paper style",
+      "reproduce an uploaded paper figure",
+      "做论文配图",
+      "审阅投稿图",
+      "按某论文风格画图",
+      "复现这张图"
+    ],
+    "exclusions": [
+      "single-paper reading or summary",
+      "multi-paper synthesis",
+      "BI dashboards",
+      "AI graphical abstracts"
+    ],
+    "artifacts": [
+      "vector PDF/SVG/EPS",
+      "300 dpi PNG",
+      "matplotlib script",
+      "journal QA checklist"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "journal_spec",
+    "figure_review",
+    "style_reproduction",
+    "image_reproduction"
+  ],
+  "positive_concepts": {
+    "journal_spec": {
+      "weight": 0.3,
+      "phrases": [
+        "journal-spec",
+        "journal submission",
+        "submission specs",
+        "journal-compliant",
+        "Nature-compliant",
+        "论文配图",
+        "投稿图",
+        "期刊"
+      ]
+    },
+    "figure_review": {
+      "weight": 0.18,
+      "phrases": [
+        "review academic figures",
+        "review a publication figure",
+        "审阅",
+        "审查",
+        "投稿图是否符合"
+      ]
+    },
+    "style_reproduction": {
+      "weight": 0.22,
+      "phrases": [
+        "from-data",
+        "paper style",
+        "named paper-style",
+        "paper-style catalog",
+        "论文图",
+        "风格",
+        "某论文风格",
+        "某风格"
+      ]
+    },
+    "image_reproduction": {
+      "weight": 0.22,
+      "phrases": [
+        "from-image",
+        "uploaded paper figure",
+        "uploaded figure",
+        "reproduce this",
+        "论文截图",
+        "复现这张图",
+        "照着复现"
+      ]
+    },
+    "academic_figure": {
+      "weight": 0.08,
+      "phrases": [
+        "academic figure",
+        "publication figure",
+        "科研绘图",
+        "实验数据"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "paper_reading": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "deep-read",
+        "read this paper",
+        "explain what this paper",
+        "summarize the authors",
+        "深读",
+        "论文总结",
+        "研究方法"
+      ]
+    },
+    "multi_paper_synthesis": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "six papers",
+        "multiple papers",
+        "literature-synthesis",
+        "文献综述",
+        "多篇论文",
+        "研究空白"
+      ]
+    },
+    "bi_dashboard": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
+        "BI dashboard",
+        "live-linked operational charts",
+        "dashboard",
+        "实时联动",
+        "大屏"
+      ]
+    },
+    "graphical_abstract": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
+        "graphical abstract",
+        "marketing infographic",
+        "图形摘要",
+        "插画"
+      ]
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "recommended_threshold": 0.20,
+  "negative_patterns": [
+    "read a paper",
+    "summarize papers",
+    "literature review",
+    "BI dashboard",
+    "graphical abstract"
+  ],
+  "should_trigger": [
+    {
+      "text": "Make an IEEE double-column figure from my time-series data for journal submission.",
+      "family": "journal_spec_en"
+    },
+    {
+      "text": "帮我审阅这张 Nature 投稿图是否符合尺寸、字体和可读性规范。",
+      "family": "journal_review_zh"
+    },
+    {
+      "text": "Use the bar_paired_delta paper style to draw my baseline-versus-method data.",
+      "family": "from_data_style_en"
+    },
+    {
+      "text": "用 radar_dual_series 风格把我的实验数据画成论文图。",
+      "family": "from_data_style_zh"
+    },
+    {
+      "text": "Reproduce this uploaded paper figure as a matplotlib script and compare the PNG against the source.",
+      "family": "from_image_en"
+    },
+    {
+      "text": "这张论文截图请照着复现，输出 300 dpi 的 matplotlib PNG。",
+      "family": "from_image_zh"
+    },
+    {
+      "text": "Use this uploaded figure as a visual reference but make the final figure Nature-compliant for submission.",
+      "family": "explicit_journal_precedence"
+    },
+    {
+      "text": "帮我把这份实验数据做成一张论文配图。",
+      "family": "generic_journal_figure"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Deep-read this single paper and explain its method and experiments like a mentor.",
+      "family": "literature_mentor"
+    },
+    {
+      "text": "把这 5 篇论文整理成文献综述并找出研究空白。",
+      "family": "paper_workbench"
+    },
+    {
+      "text": "Build a BI dashboard with live-linked operational charts.",
+      "family": "bi_dashboard"
+    },
+    {
+      "text": "用 AI 生成一张论文图形摘要插画，不需要数据绘图。",
+      "family": "graphical_abstract"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Explain what this paper's figure means and summarize the authors' claims.",
+      "family": "paper_reading_neighbor"
+    },
+    {
+      "text": "Compare figures from six papers and produce a literature-synthesis table.",
+      "family": "multi_paper_neighbor"
+    },
+    {
+      "text": "Design a marketing infographic for our product launch.",
+      "family": "general_graphics_neighbor"
+    }
+  ]
+}
