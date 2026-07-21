@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Repo contracts for skills: skill-dir placeholder, frontmatter fields, interface.yaml, dual eval systems, script encoding — governs every file touched in gh-pr"}
+{"file": ".trellis/tasks/archive/2026-07/07-21-gh-pr-lifecycle/design.md", "reason": "Baseline design of gh-pr (routing structure, safety contract, Production-mode gates) that this merge extends; explains why exclusions existed"}
+{"file": ".trellis/tasks/07-21-merge-gh-pr-skills/design.md", "reason": "This task's merge design: 6-mode routing, three-tier safety contract, migration/deletion boundaries"}

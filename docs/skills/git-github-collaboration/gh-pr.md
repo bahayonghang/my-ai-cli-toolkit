@@ -4,12 +4,13 @@
 
 ## 用途概览
 
-Create and operate GitHub pull requests with gh CLI: draft or open a PR, publish confirmed review summaries or inline comments, approve or request changes, merge safely, and reply to or resolve review threads / 创建 PR、发布已确认的 review 总结或逐行评论、批准或请求修改、安全合并、回复或解决评审线程.
+Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI.
 
 ## 触发场景
 
-- the user asks to create/publish a PR, submit an existing review decision, merge a PR, or respond to GitHub review comments
-- Not for substantive code review analysis (code-auditor or code-quality-review), applying review fixes (gh-address-comments), fixing CI failures (gh-fix-ci), crafting commits (git-commit), repository collaboration setup (gh-bootstrap), or repository health audits (fuck-my-shit-mountain)
+- Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI
+- Use for PR creation, review publication, merge execution, thread responses, reviewer-requested fixes, or GitHub Actions failures
+- Not for substantive code-review analysis (code-auditor or code-quality-review), commit authoring (git-commit), GitHub setup (gh-bootstrap), or full-spectrum repository health audits (fuck-my-shit-mountain)
 
 ## 元数据
 
@@ -17,7 +18,7 @@ Create and operate GitHub pull requests with gh CLI: draft or open a PR, publish
 | --- | --- |
 | 名称 | `gh-pr` |
 | 分类 | `git-github-collaboration` (Git / GitHub 协作) |
-| 版本 | `1.0.0` |
+| 版本 | `2.0.0` |
 | 标签 | `github`, `gh-cli`, `pull-request`, `pr-lifecycle` |
 
 ## 安装命令
@@ -32,10 +33,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-pr
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-pr/agents` | 目录 | 1 | 配套 agent |
 | `skills/git-github-collaboration/gh-pr/evals` | 目录 | 1 | 评测样例 |
-| `skills/git-github-collaboration/gh-pr/references` | 目录 | 4 | 引用资料 |
+| `skills/git-github-collaboration/gh-pr/LICENSE-upstream.txt` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-pr/NOTICE-upstream.md` | 文件 | 1 | 顶层文件 |
+| `skills/git-github-collaboration/gh-pr/references` | 目录 | 6 | 引用资料 |
 | `skills/git-github-collaboration/gh-pr/reports` | 目录 | 2 | 顶层目录 |
-| `skills/git-github-collaboration/gh-pr/scripts` | 目录 | 2 | 可执行脚本 |
-| `skills/git-github-collaboration/gh-pr/tests` | 目录 | 1 | 自动化测试 |
+| `skills/git-github-collaboration/gh-pr/scripts` | 目录 | 4 | 可执行脚本 |
+| `skills/git-github-collaboration/gh-pr/tests` | 目录 | 3 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 

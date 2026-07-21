@@ -28,6 +28,13 @@ PR and review text should read like compact engineering collaboration, not a gen
 - Use code fences only for exact replacement snippets; do not paste large unchanged blocks.
 - Preserve the user's language and repository terminology.
 
+## Feedback And CI Fix Reports
+
+- Group review items by thread and number them for selection; separate reviewer, general, and bot feedback.
+- Lead CI reports with the explicit state: all green, pending, failures, or external only.
+- Pair each failure with one short error block, its source URL, and the smallest local reproduction command.
+- End with addressed, skipped, still-open, and not-authorized actions; never imply that a local fix was pushed or a thread was resolved.
+
 ## Final Check
 
 Confirm that headings are specific, lists remain scannable, commands name their side effects, links support real context, and no placeholder or unsupported claim remains.

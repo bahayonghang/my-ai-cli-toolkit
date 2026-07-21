@@ -1,6 +1,6 @@
 # Reply To Review Threads
 
-This mode handles communication only. Route requested code changes to `gh-address-comments`.
+This mode handles communication only. Route requested code changes to this skill's [address-comments mode](address-comments.md).
 
 ## Inspect And Draft
 

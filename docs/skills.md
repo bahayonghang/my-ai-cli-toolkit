@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、38 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、36 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -68,12 +68,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Git / GitHub 协作
 
-`git-github-collaboration` · 5 skills
+`git-github-collaboration` · 3 skills
 
-- [gh-address-comments](/skills/git-github-collaboration/gh-address-comments) — Address GitHub PR review comments and actionable review threads with GitHub CLI.
 - [gh-bootstrap](/skills/git-github-collaboration/gh-bootstrap) — Initialize GitHub repository configuration from vetted upstream templates.
-- [gh-fix-ci](/skills/git-github-collaboration/gh-fix-ci) — Debug and fix failing GitHub PR checks with GitHub CLI.
-- [gh-pr](/skills/git-github-collaboration/gh-pr) — Create and operate GitHub pull requests with gh CLI: draft or open a PR, publish confirmed review summaries or inline comments, approve or request changes, merge safely, and reply to or resolve review threads / 创建 PR、发布已确认的 review 总结或逐行评论、批准或请求修改、安全合并、回复或解决评审线程.
+- [gh-pr](/skills/git-github-collaboration/gh-pr) — Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI.
 - [git-commit](/skills/git-github-collaboration/git-commit) — Safely orchestrate Conventional Commits for staged Git changes, or all working-tree changes when the user explicitly asks to include everything.
 
 ### 研究、学习与知识

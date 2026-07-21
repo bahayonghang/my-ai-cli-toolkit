@@ -15,7 +15,7 @@ Inspect is read-only. Merge, auto-merge, branch deletion, and admin bypass are s
    - all successful: continue;
    - no checks: report that fact; it is not a CI failure;
    - pending: wait or ask whether to use an explicitly authorized auto-merge path;
-   - failed: stop and route diagnosis/fixes to `gh-fix-ci`;
+   - failed: stop and route to this skill's [fix-ci mode](fix-ci.md);
    - timed out or unavailable: report missing evidence and do not call it green.
 3. Treat `CHANGES_REQUESTED` and `REVIEW_REQUIRED` as blockers. An `APPROVED` or empty decision still needs merge-state and repository-rule checks.
 4. Use `bash "<skill-dir>/scripts/pr_review" list-threads --repo . --pr PR` to count unresolved conversations. Do not merge over an unresolved blocking thread.

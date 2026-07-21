@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Check frontmatter, skill-dir usage, eval schema, and validator compliance for the merged gh-pr"}
+{"file": ".trellis/tasks/07-21-merge-gh-pr-skills/prd.md", "reason": "Acceptance criteria: old dirs removed, no live references remain, trigger_eval passes, just ci green"}

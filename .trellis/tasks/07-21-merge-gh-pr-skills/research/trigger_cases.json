@@ -1,0 +1,37 @@
+{
+  "recommended_threshold": 0.48,
+  "should_trigger": [
+    {"text": "Create a PR for my current branch and show me the draft before publishing.", "family": "create"},
+    {"text": "帮我从当前分支创建一个 draft PR，先给我看标题和正文。", "family": "create"},
+    {"text": "Publish this confirmed non-blocking review summary on PR #42.", "family": "review"},
+    {"text": "把这些确认过的问题按行发布为 inline comments，然后 request changes。", "family": "review"},
+    {"text": "Inspect PR #84 and merge it with squash if every gate passes.", "family": "merge"},
+    {"text": "检查这个 PR 是否可合并，通过后帮我安全合并。", "family": "merge"},
+    {"text": "Draft and send replies to the unresolved review threads on this PR.", "family": "respond"},
+    {"text": "回复 reviewer 后，把用户批准的线程 resolve 掉。", "family": "respond"},
+    {"text": "Summarize the actionable review comments on the current PR and let me choose which to address.", "family": "address_comments"},
+    {"text": "处理 PR #42 的评审意见，按我选中的条目修改代码。", "family": "address_comments"},
+    {"text": "Diagnose why the GitHub Actions checks on this PR are failing.", "family": "fix_ci"},
+    {"text": "当前 PR 的 CI 红了，直接修复并跑本地验证。", "family": "fix_ci"},
+    {"text": "Fix the failing PR checks, verify locally, then inspect whether the PR is ready to merge.", "family": "composite"}
+  ],
+  "should_not_trigger": [
+    {"text": "Review this PR for correctness, security, performance, architecture, and tests.", "family": "code_audit"},
+    {"text": "Review this React change only for maintainability and refactoring opportunities.", "family": "maintainability_review"},
+    {"text": "Split and commit all current working-tree changes with Conventional Commits.", "family": "commit"},
+    {"text": "Set up branch protection, CODEOWNERS, and PR templates for this repository.", "family": "github_setup"},
+    {"text": "Audit repository health across compliance, privacy, accessibility, cost, and release readiness.", "family": "repository_health"},
+    {"text": "Create a GitHub issue for this bug report.", "family": "issue"},
+    {"text": "Write release notes for version 2.0 from the changelog.", "family": "release_notes"},
+    {"text": "Explain what a pull request is without changing anything.", "family": "explain_only"}
+  ],
+  "near_neighbor": [
+    {"text": "Analyze this PR and find correctness and security defects, but do not publish a review.", "family": "code_auditor"},
+    {"text": "只评估这个组件的可维护性、复杂度和重构机会。", "family": "code_quality_review"},
+    {"text": "The fixes are done; organize and commit them, but do not create a PR.", "family": "git_commit"},
+    {"text": "Configure GitHub Actions, issue templates, PR templates, and repository collaboration settings.", "family": "gh_bootstrap"},
+    {"text": "Run a full-spectrum repository audit covering code, docs, privacy, cost, accessibility, and release readiness.", "family": "repository_health_audit"},
+    {"text": "Open an issue describing the CI failure; do not diagnose or fix the PR checks.", "family": "issue_only"},
+    {"text": "Summarize this merged PR into release notes without operating on GitHub.", "family": "release_notes_only"}
+  ]
+}

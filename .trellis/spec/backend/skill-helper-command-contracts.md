@@ -145,3 +145,73 @@ test('browser smoke', { skip: !enabled }, () => {
 ```
 
 The skip decision belongs only to the absence of explicit opt-in, never to the result of an enabled validation run.
+
+## Scenario: UTF-8 native command capture on Windows
+
+### 1. Scope / Trigger
+
+Apply this contract when a skill-local Python helper captures text from a native CLI whose output contract is UTF-8, including `gh` JSON, GraphQL, and Actions logs. Windows Python may otherwise decode `text=True` pipes with the active legacy code page (commonly GBK), causing a background `UnicodeDecodeError` and leaving `stdout` as `None`.
+
+### 2. Signatures
+
+```text
+subprocess.run(argv, capture_output=True, text=True,
+               encoding="utf-8", errors="replace")
+```
+
+Use a binary subprocess contract instead when the command intentionally returns archives, images, or other bytes; decode only the text error channel explicitly.
+
+### 3. Contracts
+
+- Pass argv as a list and capture stdout/stderr without a shell.
+- Set `encoding="utf-8"` and `errors="replace"` on every text subprocess boundary whose CLI contract is UTF-8.
+- Treat replacement characters as degraded evidence, not as a reason to crash the helper.
+- Keep binary payloads in bytes. Decode stderr with UTF-8 and `errors="replace"` when reporting failures.
+- Normalize a defensively typed text result with `result.stdout or ""` before calling text methods when an injected or mocked runner can return `None`.
+
+### 4. Validation & Error Matrix
+
+| Condition | Behavior |
+| --- | --- |
+| UTF-8 output contains characters outside the active Windows code page | Decode successfully with UTF-8; no reader-thread exception |
+| Output contains malformed UTF-8 bytes | Replace invalid sequences; preserve the rest of the evidence |
+| Native command returns nonzero | Report decoded stderr/stdout under the helper's documented exit-code contract |
+| Command returns a binary success payload | Keep stdout as bytes; never enable `text=True` |
+| Captured text is unexpectedly `None` in a test double | Normalize to empty text or fail with a specific contract error, never an unrelated `AttributeError` |
+
+### 5. Good/Base/Bad Cases
+
+- Good: an Actions log containing Chinese or arbitrary Unicode is captured and summarized on Windows.
+- Base: ASCII JSON behaves identically across Windows, macOS, and Linux.
+- Bad: `subprocess.run(..., text=True)` relies on the locale and fails inside Python's pipe-reader thread before application error handling can run.
+- Bad: enabling text mode for a job-log archive corrupts or rejects the binary payload.
+
+### 6. Tests Required
+
+- Mock `subprocess.run` and assert `encoding="utf-8"` plus `errors="replace"` for text CLI wrappers.
+- Include a non-ASCII stdout fixture and assert it survives unchanged.
+- Cover nonzero exit handling with non-ASCII stderr.
+- Keep a separate binary-wrapper test when the helper downloads bytes.
+- When practical, run one read-only live smoke test against the actual CLI on Windows; unit tests cannot reproduce Python's background pipe-reader failure with a prebuilt string.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```python
+process = subprocess.run(argv, capture_output=True, text=True)
+```
+
+#### Correct
+
+```python
+process = subprocess.run(
+    argv,
+    capture_output=True,
+    text=True,
+    encoding="utf-8",
+    errors="replace",
+)
+```
+
+The explicit encoding makes the native command's output contract authoritative instead of the host console code page.

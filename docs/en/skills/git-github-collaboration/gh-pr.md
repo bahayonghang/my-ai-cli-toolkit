@@ -4,12 +4,13 @@
 
 ## Purpose overview
 
-Create and operate GitHub pull requests with gh CLI: draft or open a PR, publish confirmed review summaries or inline comments, approve or request changes, merge safely, and reply to or resolve review threads / 创建 PR、发布已确认的 review 总结或逐行评论、批准或请求修改、安全合并、回复或解决评审线程.
+Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI.
 
 ## Trigger scenarios
 
-- the user asks to create/publish a PR, submit an existing review decision, merge a PR, or respond to GitHub review comments
-- Not for substantive code review analysis (code-auditor or code-quality-review), applying review fixes (gh-address-comments), fixing CI failures (gh-fix-ci), crafting commits (git-commit), repository collaboration setup (gh-bootstrap), or repository health audits (fuck-my-shit-mountain)
+- Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI
+- Use for PR creation, review publication, merge execution, thread responses, reviewer-requested fixes, or GitHub Actions failures
+- Not for substantive code-review analysis (code-auditor or code-quality-review), commit authoring (git-commit), GitHub setup (gh-bootstrap), or full-spectrum repository health audits (fuck-my-shit-mountain)
 
 ## Metadata
 
@@ -17,7 +18,7 @@ Create and operate GitHub pull requests with gh CLI: draft or open a PR, publish
 | --- | --- |
 | Name | `gh-pr` |
 | Category | `git-github-collaboration` (Git & GitHub Collaboration) |
-| Version | `1.0.0` |
+| Version | `2.0.0` |
 | Tags | `github`, `gh-cli`, `pull-request`, `pr-lifecycle` |
 
 ## Install command
@@ -32,10 +33,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-pr
 | --- | --- | ---: | --- |
 | `skills/git-github-collaboration/gh-pr/agents` | directory | 1 | Companion agents |
 | `skills/git-github-collaboration/gh-pr/evals` | directory | 1 | Evaluation samples |
-| `skills/git-github-collaboration/gh-pr/references` | directory | 4 | Reference material |
+| `skills/git-github-collaboration/gh-pr/LICENSE-upstream.txt` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-pr/NOTICE-upstream.md` | file | 1 | Top-level file |
+| `skills/git-github-collaboration/gh-pr/references` | directory | 6 | Reference material |
 | `skills/git-github-collaboration/gh-pr/reports` | directory | 2 | Top-level directory |
-| `skills/git-github-collaboration/gh-pr/scripts` | directory | 2 | Executable scripts |
-| `skills/git-github-collaboration/gh-pr/tests` | directory | 1 | Automated tests |
+| `skills/git-github-collaboration/gh-pr/scripts` | directory | 4 | Executable scripts |
+| `skills/git-github-collaboration/gh-pr/tests` | directory | 3 | Automated tests |
 
 ## Scripts, references, and test resources
 

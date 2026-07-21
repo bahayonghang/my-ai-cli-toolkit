@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Adapted from a community-contributed GitHub PR helper and modified here.
+# Licensed under Apache-2.0; see ../LICENSE-upstream.txt.
 from __future__ import annotations
 
 import argparse
@@ -26,7 +28,19 @@ FAILURE_STATES = {
     "action_required",
 }
 
-FAILURE_BUCKETS = {"fail"}
+FAILURE_BUCKETS = {"cancel", "fail"}
+
+PENDING_STATES = {
+    "expected",
+    "in progress",
+    "in_progress",
+    "pending",
+    "queued",
+    "requested",
+    "waiting",
+}
+
+PENDING_BUCKETS = {"pending"}
 
 FAILURE_MARKERS = (
     "error",
@@ -46,7 +60,7 @@ PENDING_LOG_MARKERS = (
     "log will be available when it is complete",
 )
 
-DEFAULT_MAX_LINES = 160
+DEFAULT_MAX_LINES = 50
 DEFAULT_CONTEXT_LINES = 30
 SUPPORTED_RTK_PREFIXES = {"cargo", "npm", "npx", "pnpm", "yarn", "git", "gh"}
 
@@ -98,14 +112,7 @@ def main() -> int:
         return 1
 
     failing = [check for check in checks if is_failing(check)]
-    if not failing:
-        message = f"PR #{pr_value}: no failing checks detected."
-        print(
-            json.dumps({"pr": pr_value, "results": []}, indent=2)
-            if args.json
-            else message
-        )
-        return 0
+    pending = [check for check in checks if is_pending(check)]
 
     results = [
         analyze_check(
@@ -117,12 +124,27 @@ def main() -> int:
         for check in failing
     ]
 
-    if args.json:
-        print(json.dumps({"pr": pr_value, "results": results}, indent=2))
-    else:
-        render_results(pr_value, results)
+    status = classify_check_status(checks)
+    external_failures = [check for check in failing if not is_github_actions(check)]
+    payload = {
+        "pr": pr_value,
+        "status": status,
+        "summary": {
+            "total": len(checks),
+            "failing": len(failing),
+            "pending": len(pending),
+            "externalFailures": len(external_failures),
+        },
+        "pending": [check_summary(check) for check in pending],
+        "results": results,
+    }
 
-    return 1
+    if args.json:
+        print(json.dumps(payload, indent=2))
+    else:
+        render_results(pr_value, status, pending, results)
+
+    return 0
 
 
 def run_gh_command(args: Sequence[str], cwd: Path) -> GhResult:
@@ -131,6 +153,8 @@ def run_gh_command(args: Sequence[str], cwd: Path) -> GhResult:
         cwd=cwd,
         text=True,
         capture_output=True,
+        encoding="utf-8",
+        errors="replace",
     )
     return GhResult(process.returncode, process.stdout, process.stderr)
 
@@ -151,6 +175,8 @@ def find_git_root(start: Path) -> Path | None:
         cwd=start,
         text=True,
         capture_output=True,
+        encoding="utf-8",
+        errors="replace",
     )
     if result.returncode != 0:
         return None
@@ -193,10 +219,11 @@ def fetch_checks(pr_value: str, repo_root: Path) -> list[dict[str, Any]] | None:
     primary_fields = [
         "name",
         "state",
-        "conclusion",
-        "detailsUrl",
+        "bucket",
+        "link",
         "startedAt",
         "completedAt",
+        "workflow",
     ]
     result = run_gh_command(
         ["pr", "checks", pr_value, "--json", ",".join(primary_fields)],
@@ -256,6 +283,36 @@ def is_failing(check: dict[str, Any]) -> bool:
         return True
     bucket = normalize_field(check.get("bucket"))
     return bucket in FAILURE_BUCKETS
+
+
+def is_pending(check: dict[str, Any]) -> bool:
+    state = normalize_field(check.get("state") or check.get("status"))
+    bucket = normalize_field(check.get("bucket"))
+    return state in PENDING_STATES or bucket in PENDING_BUCKETS
+
+
+def is_github_actions(check: dict[str, Any]) -> bool:
+    url = str(check.get("detailsUrl") or check.get("link") or "")
+    return extract_run_id(url) is not None or bool(check.get("workflow"))
+
+
+def classify_check_status(checks: Sequence[dict[str, Any]]) -> str:
+    failing = [check for check in checks if is_failing(check)]
+    if any(is_github_actions(check) for check in failing):
+        return "failures"
+    if any(is_pending(check) for check in checks):
+        return "pending"
+    if failing:
+        return "external_only"
+    return "all_green"
+
+
+def check_summary(check: dict[str, Any]) -> dict[str, str]:
+    return {
+        "name": str(check.get("name") or ""),
+        "state": str(check.get("state") or check.get("status") or ""),
+        "url": str(check.get("detailsUrl") or check.get("link") or ""),
+    }
 
 
 def analyze_check(
@@ -384,7 +441,7 @@ def fetch_run_log(run_id: str, repo_root: Path) -> tuple[str, str]:
     if result.returncode != 0:
         error = (result.stderr or result.stdout or "").strip()
         return "", error or "gh run view failed"
-    return result.stdout, ""
+    return result.stdout or "", ""
 
 
 def fetch_job_log(job_id: str, repo_root: Path) -> tuple[str, str]:
@@ -471,9 +528,17 @@ def tail_lines(text: str, max_lines: int) -> str:
     return "\n".join(lines[-max_lines:]) if max_lines > 0 else ""
 
 
-def render_results(pr_number: str, results: Iterable[dict[str, Any]]) -> None:
+def render_results(
+    pr_number: str,
+    status: str,
+    pending: Sequence[dict[str, Any]],
+    results: Iterable[dict[str, Any]],
+) -> None:
     results_list = list(results)
-    print(f"PR #{pr_number}: {len(results_list)} failing checks analyzed.")
+    print(f"PR #{pr_number}: status={status}; {len(results_list)} failing checks analyzed.")
+    for check in pending:
+        summary = check_summary(check)
+        print(f"Pending: {summary['name']} ({summary['state']}) {summary['url']}")
     for result in results_list:
         print("-" * 60)
         print(f"Check: {result.get('name', '')}")

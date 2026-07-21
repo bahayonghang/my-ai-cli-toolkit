@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Adapted from a community-contributed GitHub PR helper and modified here.
+# Licensed under Apache-2.0; see ../LICENSE-upstream.txt.
 """
 Fetch GitHub PR comments and review threads, then print a stable actionable summary.
 
@@ -17,6 +19,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 QUERY = """\
 query(
@@ -101,7 +104,15 @@ def parse_args() -> argparse.Namespace:
 
 
 def _run(cmd: list[str], cwd: Path, stdin: str | None = None) -> str:
-    process = subprocess.run(cmd, cwd=cwd, input=stdin, capture_output=True, text=True)
+    process = subprocess.run(
+        cmd,
+        cwd=cwd,
+        input=stdin,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
     if process.returncode != 0:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{process.stderr.strip()}")
     return process.stdout
@@ -130,6 +141,8 @@ def resolve_git_root(path: str) -> Path:
         cwd=Path(path),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     if process.returncode != 0:
         raise RuntimeError("Not inside a Git repository.")
@@ -145,14 +158,15 @@ def gh_pr_view_json(fields: str, cwd: Path, pr_ref: str | None = None) -> dict[s
 
 
 def resolve_pr_ref(cwd: Path, pr_ref: str | None) -> tuple[str, str, int, dict[str, Any]]:
-    fields = "number,title,url,state,headRepositoryOwner,headRepository"
+    fields = "number,title,url,state"
     payload = gh_pr_view_json(fields, cwd=cwd, pr_ref=pr_ref)
 
-    owner = payload.get("headRepositoryOwner", {}).get("login")
-    repo = payload.get("headRepository", {}).get("name")
+    url = str(payload.get("url") or "")
+    path_parts = [part for part in urlparse(url).path.split("/") if part]
     number = payload.get("number")
-    if not owner or not repo or number is None:
+    if len(path_parts) < 4 or path_parts[2] != "pull" or number is None:
         raise RuntimeError("Unable to resolve PR owner/repo/number.")
+    owner, repo = path_parts[0], path_parts[1]
     return owner, repo, int(number), payload
 
 
