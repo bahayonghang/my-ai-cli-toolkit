@@ -1,0 +1,96 @@
+{
+  "should_trigger": [
+    {
+      "text": "Create a pull request for my current branch, but show me the title and body before publishing it.",
+      "family": "create_pr_en"
+    },
+    {
+      "text": "帮我给当前分支起草并创建一个 GitHub PR，发布前先让我确认。",
+      "family": "create_pr_zh"
+    },
+    {
+      "text": "Publish these already-confirmed review findings as inline GitHub comments and request changes.",
+      "family": "inline_review_en"
+    },
+    {
+      "text": "把已经审查好的结论作为 review summary 发到 PR 上并 approve。",
+      "family": "review_publish_zh"
+    },
+    {
+      "text": "Inspect whether PR #84 can merge and, after I approve the exact action, squash merge it.",
+      "family": "merge_pr_en"
+    },
+    {
+      "text": "检查这个 PR 的未解决评审线程，帮我逐条起草回复并在确认后发送。",
+      "family": "respond_threads_zh"
+    },
+    {
+      "text": "Resolve the approved review threads on this pull request without changing code.",
+      "family": "resolve_threads_en"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Review this PR for correctness, security, performance, architecture, and missing tests.",
+      "family": "substantive_code_review"
+    },
+    {
+      "text": "评审 src 目录的结构和可维护性，给出重构建议。",
+      "family": "code_quality_review"
+    },
+    {
+      "text": "Apply the requested changes from all unresolved PR review comments and run the tests.",
+      "family": "apply_review_fixes"
+    },
+    {
+      "text": "Fix the failing GitHub Actions checks on PR #42.",
+      "family": "fix_ci"
+    },
+    {
+      "text": "请把工作区改动拆成 Conventional Commits 并提交。",
+      "family": "commit_work"
+    },
+    {
+      "text": "Set up branch protection, CODEOWNERS, and pull request templates for this repository.",
+      "family": "repo_setup"
+    },
+    {
+      "text": "生成一份覆盖合规、隐私、成本和可访问性的仓库健康报告。",
+      "family": "repository_health"
+    },
+    {
+      "text": "Create a GitHub release and tag for version 2.0.0.",
+      "family": "release_management"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Do a full-spectrum code audit of this pull request before it merges.",
+      "family": "code_auditor"
+    },
+    {
+      "text": "Review this PR only for maintainability, abstraction quality, and refactoring opportunities.",
+      "family": "code_quality_review"
+    },
+    {
+      "text": "按这个 PR 的评审意见修改代码并验证修复。",
+      "family": "gh_address_comments"
+    },
+    {
+      "text": "Investigate and fix the failed CI jobs on the pull request.",
+      "family": "gh_fix_ci"
+    },
+    {
+      "text": "Draft and execute a Conventional Commit for all current changes.",
+      "family": "git_commit"
+    },
+    {
+      "text": "初始化仓库的 GitHub 协作配置和分支保护规则。",
+      "family": "gh_bootstrap"
+    },
+    {
+      "text": "Audit the whole repository across security, compliance, privacy, accessibility, cost, and release readiness.",
+      "family": "repository_health_audit"
+    }
+  ]
+}

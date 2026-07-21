@@ -1,7 +1,7 @@
 # git-github-collaboration — suite conventions
 
-House standard for the four skills in this directory: `gh-address-comments`,
-`gh-bootstrap`, `gh-fix-ci`, `git-commit`. `git-commit` is the reference
+House standard for the five skills in this directory: `gh-address-comments`,
+`gh-bootstrap`, `gh-fix-ci`, `gh-pr`, `git-commit`. `git-commit` is the reference
 exemplar; new or edited skills here should match these conventions so the suite
 does not drift apart again.
 
@@ -27,6 +27,7 @@ over-declarations.
 | gh-address-comments | `Read, Edit, Bash`                               | reads + applies approved fixes + runs gh/script         |
 | gh-fix-ci           | `Read, Edit, Bash`                               | reads + applies approved fixes + runs gh/script         |
 | gh-bootstrap        | `AskUserQuestion, Read, Bash, Glob, Grep, Write` | interactive config + writes new files                   |
+| gh-pr               | `Read, Bash`                                     | inspects PR state + runs gh/review helper                |
 | git-commit          | `Read, Bash`                                     | reads references + runs git/compose; must not edit code |
 
 ## Evals
@@ -47,13 +48,13 @@ over-declarations.
 - Fields: `display_name`, a one-line `short_description`, `default_prompt`.
 - Icon policy: include `icon_small` / `icon_large` **only** where matching
   `assets/` exist (gh-address-comments, gh-fix-ci). Do not fabricate icons for
-  skills without assets (gh-bootstrap, git-commit).
+  skills without assets (gh-bootstrap, gh-pr, git-commit).
 
 ## License / assets
 
 - Skills adapted from an upstream template set keep their bundled `LICENSE.txt`
   and `assets/` (gh-address-comments, gh-fix-ci). Home-grown skills
-  (gh-bootstrap, git-commit) inherit the repository license and carry no assets.
+  (gh-bootstrap, gh-pr, git-commit) inherit the repository license and carry no assets.
   This asymmetry is intentional, not drift.
 
 ## Governance metadata

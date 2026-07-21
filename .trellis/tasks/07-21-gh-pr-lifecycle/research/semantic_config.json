@@ -1,0 +1,150 @@
+{
+  "optimizer_hints": {
+    "capability": "Operate GitHub pull request lifecycle actions after intent or review findings already exist: create, publish review decisions or inline comments, merge, reply, and resolve",
+    "inputs": [
+      "a Git branch or pull request",
+      "an already-confirmed review summary or inline findings",
+      "review thread replies"
+    ],
+    "trigger_actions": [
+      "create or open a pull request",
+      "publish or submit an existing review decision",
+      "approve or request changes on GitHub",
+      "merge a pull request",
+      "reply to or resolve review threads"
+    ],
+    "exclusions": [
+      "substantive code review or maintainability analysis",
+      "applying code fixes from review comments",
+      "fixing CI failures",
+      "crafting commits",
+      "repository collaboration setup",
+      "repository health audits"
+    ],
+    "artifacts": [
+      "GitHub pull requests",
+      "review summaries and inline comments",
+      "review threads"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "pr_lifecycle_operation"
+  ],
+  "positive_concepts": {
+    "pr_lifecycle_operation": {
+      "weight": 1.0,
+      "phrases": [
+        "create a pull request",
+        "open a pull request",
+        "create pr",
+        "open pr",
+        "创建 pr",
+        "创建一个 github pr",
+        "起草并创建",
+        "publish review findings",
+        "submit review",
+        "inline github comments",
+        "approve this pr",
+        "request changes",
+        "发布审查结论",
+        "发到 pr 上并 approve",
+        "逐行评论",
+        "merge this pr",
+        "merge pull request",
+        "squash merge",
+        "can merge",
+        "合并 pr",
+        "检查能否合并",
+        "reply to review comments",
+        "resolve review threads",
+        "resolve the approved review threads",
+        "respond to reviewer",
+        "回复评审",
+        "评审线程",
+        "解决评审线程"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "substantive_review": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "code audit",
+        "review for correctness",
+        "security and performance",
+        "maintainability",
+        "refactoring opportunities",
+        "代码审查",
+        "代码审计",
+        "可维护性",
+        "重构建议"
+      ]
+    },
+    "apply_fixes": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "apply requested changes",
+        "modify code",
+        "fix review comments",
+        "按评审意见修改代码",
+        "应用代码修复"
+      ]
+    },
+    "ci_fix": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "fix failing github actions",
+        "failed ci jobs",
+        "fix ci",
+        "修复 ci"
+      ]
+    },
+    "commit_work": {
+      "weight": 0.85,
+      "exclusive": true,
+      "phrases": [
+        "conventional commit",
+        "commit changes",
+        "拆分提交",
+        "提交改动"
+      ]
+    },
+    "repo_setup": {
+      "weight": 0.85,
+      "exclusive": true,
+      "phrases": [
+        "branch protection",
+        "codeowners",
+        "repository setup",
+        "协作配置",
+        "分支保护"
+      ]
+    },
+    "repo_health": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "repository health",
+        "compliance",
+        "privacy",
+        "accessibility",
+        "cost",
+        "仓库健康报告",
+        "合规",
+        "隐私"
+      ]
+    },
+    "release_management": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
+        "create a github release",
+        "release and tag",
+        "创建 release"
+      ]
+    }
+  }
+}

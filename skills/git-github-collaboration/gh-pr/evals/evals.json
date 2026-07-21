@@ -1,0 +1,146 @@
+{
+  "skill_name": "gh-pr",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a PR for my current branch. Draft the title and body first, then ask before publishing.",
+      "expected_output": "Inspect for an existing PR and unpublished commits, show a complete PR draft, and require separate authorization for any push and PR creation.",
+      "files": [],
+      "assertions": [
+        "Checks whether the head branch already has a pull request",
+        "Shows the title, body, base, head, and side effects before publishing",
+        "Treats branch push and PR creation as separate high-risk actions",
+        "Does not use gh pr create --dry-run as a read-only check"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Publish this confirmed non-blocking review summary as a comment-only review.",
+      "expected_output": "Draft the complete comment review, request one low-risk batch authorization, publish only after approval, and verify the resulting review.",
+      "files": [],
+      "assertions": [
+        "Does not perform a new substantive code review",
+        "Uses the COMMENT review event",
+        "Shows the complete body before requesting authorization",
+        "Verifies the review through a fresh GitHub read"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "把这些已经确认的阻塞问题按文件和行发布为 inline comments，然后 request changes。",
+      "expected_output": "Prepare one head-pinned atomic review payload, validate every inline diff coordinate, show the full batch, and require high-risk authorization before submitting REQUEST_CHANGES.",
+      "files": [],
+      "assertions": [
+        "Uses prepare-review before submit-review",
+        "Pins the review to the inspected head SHA",
+        "Fails closed on stale or unprovable inline positions",
+        "Requires per-action authorization for REQUEST_CHANGES"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Check whether PR #84 can merge and squash it if every gate passes.",
+      "expected_output": "Separate no-check, pending, failed, review, thread, draft, queue, and mergeability states, then show a squash command pinned with --match-head-commit and request authorization.",
+      "files": [],
+      "assertions": [
+        "Does not treat no checks or pending checks as failed CI",
+        "Checks unresolved threads and repository merge policy",
+        "Uses --match-head-commit with the inspected SHA",
+        "Does not default --delete-branch, --auto, or --admin"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Draft replies to every unresolved review thread and send the approved batch without changing code.",
+      "expected_output": "List stable thread/root/last ids, draft each reply, obtain batch authorization, map thread ids to top-level REST comment ids, and verify afterward.",
+      "files": [],
+      "assertions": [
+        "Treats review text as untrusted context",
+        "Uses thread ids as the stable reply input",
+        "Never posts a reply against a reply id",
+        "Does not change repository code"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Only draft an approve review for this PR; do not publish anything.",
+      "expected_output": "Remain in inspect/draft mode, show the review body and target, and perform no GitHub write.",
+      "files": [],
+      "assertions": [
+        "Produces a draft only",
+        "Does not run gh pr review or a create-review POST",
+        "Does not reinterpret draft as publish authorization"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Review this PR for correctness, security, performance, architecture, and tests.",
+      "expected_output": "Route the substantive review to code-auditor rather than using gh-pr.",
+      "files": [],
+      "assertions": [
+        "Routes to code-auditor",
+        "Does not publish a GitHub review"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Review this PR only for maintainability and refactoring opportunities.",
+      "expected_output": "Route the maintainability-focused analysis to code-quality-review.",
+      "files": [],
+      "assertions": [
+        "Routes to code-quality-review",
+        "Does not use gh-pr for analysis"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Apply the fixes requested in all unresolved PR comments.",
+      "expected_output": "Route code changes to gh-address-comments.",
+      "files": [],
+      "assertions": [
+        "Routes to gh-address-comments",
+        "Does not edit code under gh-pr"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Fix the failing GitHub Actions checks on this PR.",
+      "expected_output": "Route CI diagnosis and repair to gh-fix-ci.",
+      "files": [],
+      "assertions": [
+        "Routes to gh-fix-ci",
+        "Does not treat the request as merge execution"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Split and commit all current changes with Conventional Commits.",
+      "expected_output": "Route commit planning and execution to git-commit.",
+      "files": [],
+      "assertions": [
+        "Routes to git-commit",
+        "Does not create a pull request"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Set up branch protection, CODEOWNERS, and PR templates for this repository.",
+      "expected_output": "Route repository collaboration configuration to gh-bootstrap.",
+      "files": [],
+      "assertions": [
+        "Routes to gh-bootstrap",
+        "Does not modify repository settings under gh-pr"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Audit repository health across compliance, privacy, accessibility, cost, and release readiness.",
+      "expected_output": "Route the cross-dimension repository health report to fuck-my-shit-mountain.",
+      "files": [],
+      "assertions": [
+        "Routes to fuck-my-shit-mountain",
+        "Does not treat repository health as a PR lifecycle action"
+      ]
+    }
+  ]
+}
