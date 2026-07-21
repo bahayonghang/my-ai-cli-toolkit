@@ -6,6 +6,7 @@ import argparse
 import ast
 import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -190,6 +191,14 @@ def as_tags(value: Any) -> tuple[str, ...]:
 
 
 def count_files(path: Path) -> int:
+    if REPOSITORY_RESOURCE_FILES is not None:
+        if path.is_file():
+            return int(path.resolve() in REPOSITORY_RESOURCE_FILES)
+        return sum(
+            1
+            for child in path.rglob("*")
+            if child.is_file() and child.resolve() in REPOSITORY_RESOURCE_FILES
+        )
     if path.is_file():
         return 1
     return sum(
@@ -199,6 +208,28 @@ def count_files(path: Path) -> int:
     )
 
 
+def repository_resource_files() -> frozenset[Path] | None:
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z", "--", "skills"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    if result.returncode != 0:
+        return None
+    return frozenset(
+        (ROOT / item.decode("utf-8")).resolve()
+        for item in result.stdout.split(b"\0")
+        if item
+    )
+
+
+REPOSITORY_RESOURCE_FILES = repository_resource_files()
+
+
 def collect_resources(skill_dir: Path) -> tuple[ResourceEntry, ...]:
     entries: list[ResourceEntry] = []
     for child in sorted(skill_dir.iterdir(), key=lambda item: item.name.lower()):
@@ -206,8 +237,8 @@ def collect_resources(skill_dir: Path) -> tuple[ResourceEntry, ...]:
             continue
         kind = "directory" if child.is_dir() else "file"
         count = count_files(child)
-        # Git cannot preserve empty directories, so they must not affect generated docs.
-        if child.is_dir() and count == 0:
+        # Ignore local-only artifacts and empty directories that a checkout cannot preserve.
+        if count == 0:
             continue
         entries.append(
             ResourceEntry(
