@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "两套评测系统（evals.json 人工夹具 vs yao trigger_eval.py 需专属 semantic_config）、frontmatter 契约、allowed-tools 可达性、近邻全枚举教训"}
+{"file": ".trellis/tasks/07-21-gh-pr-lifecycle/research/01-pr-creation.md", "reason": "create 模式规范来源：标题/描述结构、体量数据、closing keyword 仅默认分支生效、模板与 draft 规则"}
+{"file": ".trellis/tasks/07-21-gh-pr-lifecycle/research/02-pr-review.md", "reason": "review 模式规范来源：Google eng-practices 审查原则、approve/request-changes/comment 语义、Conventional Comments 标签"}
+{"file": ".trellis/tasks/07-21-gh-pr-lifecycle/research/03-pr-merge.md", "reason": "merge 模式规范来源：三种合并策略对照与决策规则、合并前检查清单"}
+{"file": ".trellis/tasks/07-21-gh-pr-lifecycle/research/04-pr-author-replies.md", "reason": "respond 模式规范来源：回复礼仪、resolve 归属、建设性分歧表达"}
+{"file": ".trellis/tasks/07-21-gh-pr-lifecycle/research/05-gh-cli-commands.md", "reason": "各模式确切 gh 命令与 flag；inline review create-review REST、thread 回复 REST 与 resolve GraphQL 契约，供 pr_review.py 实现"}

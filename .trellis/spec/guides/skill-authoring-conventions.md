@@ -11,7 +11,7 @@
   `python "<skill-dir>/scripts/foo.py"`.
 - Bare relative `scripts/...` breaks at runtime: the agent's CWD is the project,
   not the skill directory, and `$SKILL_DIR` is NOT set as an env var.
-- Reference implementations: `gh-fix-ci`, `academic-figure`, `archive-planning`,
+- Reference implementations: `gh-pr`, `academic-figure`, `archive-planning`,
   `windows-dev-process-cleanup` (the latter enforces it with a lint test).
 
 ## Frontmatter contract

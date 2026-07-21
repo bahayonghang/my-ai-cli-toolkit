@@ -33,9 +33,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill image-to-ui-s
 | `skills/developer-tools-integrations/image-to-ui-skill/.gitignore` | 文件 | 1 | 顶层文件 |
 | `skills/developer-tools-integrations/image-to-ui-skill/agents` | 目录 | 1 | 配套 agent |
 | `skills/developer-tools-integrations/image-to-ui-skill/assets` | 目录 | 21 | 素材资源 |
-| `skills/developer-tools-integrations/image-to-ui-skill/demo` | 目录 | 22 | 顶层目录 |
+| `skills/developer-tools-integrations/image-to-ui-skill/demo` | 目录 | 18 | 顶层目录 |
 | `skills/developer-tools-integrations/image-to-ui-skill/evals` | 目录 | 1 | 评测样例 |
-| `skills/developer-tools-integrations/image-to-ui-skill/out` | 目录 | 0 | 顶层目录 |
 | `skills/developer-tools-integrations/image-to-ui-skill/README.md` | 文件 | 1 | 顶层文件 |
 | `skills/developer-tools-integrations/image-to-ui-skill/references` | 目录 | 8 | 引用资料 |
 | `skills/developer-tools-integrations/image-to-ui-skill/scripts` | 目录 | 2 | 可执行脚本 |
