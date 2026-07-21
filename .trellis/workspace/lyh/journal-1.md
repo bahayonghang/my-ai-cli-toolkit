@@ -1025,3 +1025,36 @@ Merged review-feedback and CI-fix workflows into gh-pr 2.0.0, migrated and corre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 30: 完成 gh-pr-release 3.0.0 交付流程
+
+**Date**: 2026-07-21
+**Task**: 完成 gh-pr-release 3.0.0 交付流程
+**Branch**: `dev`
+
+### Summary
+
+将 gh-pr 扩展并改名为 gh-pr-release 3.0.0，新增 release PR、tag、GitHub Release 与 release CI 安全流程，补齐 Governed 评测和打包证据；just ci、22 个 Python 测试及 trigger/package/install/registry 门通过，升级检查器的改名误报按用户决定保留为已接受缺口。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5e0686f2b2980e7256cde0fd4e1f921f6a747ef5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
