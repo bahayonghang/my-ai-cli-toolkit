@@ -1,0 +1,25 @@
+[
+  {
+    "name": "gh-pr-release",
+    "path": "git-github-collaboration\\gh-pr-release",
+    "source": "git-github-collaboration\\gh-pr-release\\reports\\adoption_drift_report.json",
+    "risk_band": "no-data",
+    "signal_types": [
+      "no telemetry"
+    ],
+    "recommendation": "Start with a small metadata-only sample before using telemetry for release decisions.",
+    "actionable": true,
+    "scope": "release",
+    "summary": {
+      "event_count": 0,
+      "adoption_sample_count": 0,
+      "adoption_rate": 0,
+      "missed_trigger_count": 0,
+      "wrong_trigger_count": 0,
+      "bad_output_count": 0,
+      "missing_resource_count": 0,
+      "script_error_count": 0,
+      "review_overdue_count": 0
+    }
+  }
+]

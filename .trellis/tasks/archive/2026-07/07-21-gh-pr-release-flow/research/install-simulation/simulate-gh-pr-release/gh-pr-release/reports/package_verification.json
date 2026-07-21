@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "schema_version": "2.0",
+  "generated_at": "2026-07-21T00:00:00Z",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+  "package_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic",
+  "summary": {
+    "target_count": 1,
+    "adapter_count": 1,
+    "archive_present": true,
+    "archive_sha256": "e48e92a8a6aab0a5623cd55f06fa083ffda51b4fba9c0c49d25d5cc7ff9fe343",
+    "archive_entry_count": 78,
+    "nested_skill_entry_count": 0,
+    "failure_count": 0,
+    "warning_count": 0
+  },
+  "checks": [
+    {
+      "id": "package-manifest",
+      "status": "pass",
+      "detail": "Package manifest exists: D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\manifest.json"
+    },
+    {
+      "id": "generic-adapter",
+      "status": "pass",
+      "detail": "Adapter exists for target: generic"
+    },
+    {
+      "id": "archive-safe-paths",
+      "status": "pass",
+      "detail": "Archive has no absolute or parent-traversal entries"
+    },
+    {
+      "id": "archive-entry-gh-pr-release/SKILL.md",
+      "status": "pass",
+      "detail": "Archive contains gh-pr-release/SKILL.md"
+    },
+    {
+      "id": "archive-entry-gh-pr-release/manifest.json",
+      "status": "pass",
+      "detail": "Archive contains gh-pr-release/manifest.json"
+    },
+    {
+      "id": "archive-entry-gh-pr-release/agents/interface.yaml",
+      "status": "pass",
+      "detail": "Archive contains gh-pr-release/agents/interface.yaml"
+    },
+    {
+      "id": "archive-single-skill-entrypoint",
+      "status": "pass",
+      "detail": "Archive exposes only the root SKILL.md entrypoint"
+    },
+    {
+      "id": "archive-excludes-generated",
+      "status": "pass",
+      "detail": "Archive excludes generated dist/, .previews/, and tests/tmp* contents"
+    },
+    {
+      "id": "registry-ok",
+      "status": "pass",
+      "detail": "Registry audit is OK"
+    },
+    {
+      "id": "registry-name-match",
+      "status": "pass",
+      "detail": "Registry package name matches package manifest"
+    },
+    {
+      "id": "registry-version-match",
+      "status": "pass",
+      "detail": "Registry package version matches package manifest"
+    },
+    {
+      "id": "registry-compat-generic",
+      "status": "pass",
+      "detail": "Registry compatibility is reviewable for target: generic"
+    }
+  ],
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "manifest": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\manifest.json",
+    "archive": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\gh-pr-release.zip",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\package_verification.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\package_verification.md"
+  }
+}

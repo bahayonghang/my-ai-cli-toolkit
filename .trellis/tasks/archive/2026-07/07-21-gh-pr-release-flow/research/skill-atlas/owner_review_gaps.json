@@ -1,0 +1,387 @@
+[
+  {
+    "name": "academic-figure",
+    "path": "academic-research-tools\\academic-figure",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "agents-md-improver",
+    "path": "developer-tools-integrations\\agents-md-improver",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "archive-planning",
+    "path": "developer-tools-integrations\\archive-planning",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "ast-grep",
+    "path": "developer-tools-integrations\\ast-grep",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "claude-md-improver",
+    "path": "developer-tools-integrations\\claude-md-improver",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "codex-workflow-recommender",
+    "path": "developer-tools-integrations\\codex-workflow-recommender",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "goal-meta-skill",
+    "path": "developer-tools-integrations\\goal-meta-skill",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "image-to-ui-skill",
+    "path": "developer-tools-integrations\\image-to-ui-skill",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "ripgrep",
+    "path": "developer-tools-integrations\\ripgrep",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "uv-workflow",
+    "path": "developer-tools-integrations\\uv-workflow",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "windows-dev-process-cleanup",
+    "path": "developer-tools-integrations\\windows-dev-process-cleanup",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "code-auditor",
+    "path": "development-workflows\\code-auditor",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "code-quality-review",
+    "path": "development-workflows\\code-quality-review",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "code-refactor",
+    "path": "development-workflows\\code-refactor",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "codex-dynamic-workflows",
+    "path": "development-workflows\\codex-dynamic-workflows",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "cold-shower",
+    "path": "development-workflows\\cold-shower",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "geju",
+    "path": "development-workflows\\geju",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "goudi",
+    "path": "development-workflows\\goudi",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "handoff",
+    "path": "development-workflows\\handoff",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "html-artifact",
+    "path": "development-workflows\\html-artifact",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "implementation-notes",
+    "path": "development-workflows\\implementation-notes",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "spark",
+    "path": "development-workflows\\spark",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "unknowns-first",
+    "path": "development-workflows\\unknowns-first",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "beautiful-mermaid-editor",
+    "path": "docs-writing-publishing\\beautiful-mermaid-editor",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "bidwriter",
+    "path": "docs-writing-publishing\\bidwriter",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "document-writer",
+    "path": "docs-writing-publishing\\document-writer",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "renhua",
+    "path": "docs-writing-publishing\\renhua",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "touying",
+    "path": "docs-writing-publishing\\touying",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "gh-bootstrap",
+    "path": "git-github-collaboration\\gh-bootstrap",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "git-commit",
+    "path": "git-github-collaboration\\git-commit",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "deep-research-pro",
+    "path": "research-learning-knowledge\\deep-research-pro",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "humanizer-paper",
+    "path": "research-learning-knowledge\\humanizer-paper",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "literature-mentor",
+    "path": "research-learning-knowledge\\literature-mentor",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "paper-workbench",
+    "path": "research-learning-knowledge\\paper-workbench",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "roundtable",
+    "path": "research-learning-knowledge\\roundtable",
+    "missing": [
+      "owner",
+      "review_cadence",
+      "maturity"
+    ],
+    "actionable": true,
+    "scope": "release"
+  }
+]

@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "name": "academic-figure",
+      "path": "academic-research-tools\\academic-figure"
+    },
+    {
+      "name": "agents-md-improver",
+      "path": "developer-tools-integrations\\agents-md-improver"
+    },
+    {
+      "name": "archive-planning",
+      "path": "developer-tools-integrations\\archive-planning"
+    },
+    {
+      "name": "ast-grep",
+      "path": "developer-tools-integrations\\ast-grep"
+    },
+    {
+      "name": "claude-md-improver",
+      "path": "developer-tools-integrations\\claude-md-improver"
+    },
+    {
+      "name": "codex-workflow-recommender",
+      "path": "developer-tools-integrations\\codex-workflow-recommender"
+    },
+    {
+      "name": "goal-meta-skill",
+      "path": "developer-tools-integrations\\goal-meta-skill"
+    },
+    {
+      "name": "image-to-ui-skill",
+      "path": "developer-tools-integrations\\image-to-ui-skill"
+    },
+    {
+      "name": "ripgrep",
+      "path": "developer-tools-integrations\\ripgrep"
+    },
+    {
+      "name": "uv-workflow",
+      "path": "developer-tools-integrations\\uv-workflow"
+    },
+    {
+      "name": "windows-dev-process-cleanup",
+      "path": "developer-tools-integrations\\windows-dev-process-cleanup"
+    },
+    {
+      "name": "code-auditor",
+      "path": "development-workflows\\code-auditor"
+    },
+    {
+      "name": "code-quality-review",
+      "path": "development-workflows\\code-quality-review"
+    },
+    {
+      "name": "code-refactor",
+      "path": "development-workflows\\code-refactor"
+    },
+    {
+      "name": "codex-dynamic-workflows",
+      "path": "development-workflows\\codex-dynamic-workflows"
+    },
+    {
+      "name": "cold-shower",
+      "path": "development-workflows\\cold-shower"
+    },
+    {
+      "name": "geju",
+      "path": "development-workflows\\geju"
+    },
+    {
+      "name": "goudi",
+      "path": "development-workflows\\goudi"
+    },
+    {
+      "name": "handoff",
+      "path": "development-workflows\\handoff"
+    },
+    {
+      "name": "html-artifact",
+      "path": "development-workflows\\html-artifact"
+    },
+    {
+      "name": "implementation-notes",
+      "path": "development-workflows\\implementation-notes"
+    },
+    {
+      "name": "spark",
+      "path": "development-workflows\\spark"
+    },
+    {
+      "name": "unknowns-first",
+      "path": "development-workflows\\unknowns-first"
+    },
+    {
+      "name": "beautiful-mermaid-editor",
+      "path": "docs-writing-publishing\\beautiful-mermaid-editor"
+    },
+    {
+      "name": "bidwriter",
+      "path": "docs-writing-publishing\\bidwriter"
+    },
+    {
+      "name": "document-writer",
+      "path": "docs-writing-publishing\\document-writer"
+    },
+    {
+      "name": "renhua",
+      "path": "docs-writing-publishing\\renhua"
+    },
+    {
+      "name": "touying",
+      "path": "docs-writing-publishing\\touying"
+    },
+    {
+      "name": "gh-bootstrap",
+      "path": "git-github-collaboration\\gh-bootstrap"
+    },
+    {
+      "name": "gh-pr-release",
+      "path": "git-github-collaboration\\gh-pr-release"
+    },
+    {
+      "name": "git-commit",
+      "path": "git-github-collaboration\\git-commit"
+    },
+    {
+      "name": "deep-research-pro",
+      "path": "research-learning-knowledge\\deep-research-pro"
+    },
+    {
+      "name": "humanizer-paper",
+      "path": "research-learning-knowledge\\humanizer-paper"
+    },
+    {
+      "name": "literature-mentor",
+      "path": "research-learning-knowledge\\literature-mentor"
+    },
+    {
+      "name": "paper-workbench",
+      "path": "research-learning-knowledge\\paper-workbench"
+    },
+    {
+      "name": "roundtable",
+      "path": "research-learning-knowledge\\roundtable"
+    }
+  ],
+  "shared_resources": [
+    {
+      "resource": "references/output-template.md",
+      "skills": [
+        "geju",
+        "goudi"
+      ]
+    },
+    {
+      "resource": "references/quality-criteria.md",
+      "skills": [
+        "agents-md-improver",
+        "claude-md-improver"
+      ]
+    },
+    {
+      "resource": "references/report-format.md",
+      "skills": [
+        "agents-md-improver",
+        "claude-md-improver"
+      ]
+    },
+    {
+      "resource": "references/review.md",
+      "skills": [
+        "gh-pr-release",
+        "paper-workbench"
+      ]
+    },
+    {
+      "resource": "references/templates.md",
+      "skills": [
+        "agents-md-improver",
+        "claude-md-improver"
+      ]
+    },
+    {
+      "resource": "references/update-guidelines.md",
+      "skills": [
+        "agents-md-improver",
+        "claude-md-improver"
+      ]
+    }
+  ]
+}

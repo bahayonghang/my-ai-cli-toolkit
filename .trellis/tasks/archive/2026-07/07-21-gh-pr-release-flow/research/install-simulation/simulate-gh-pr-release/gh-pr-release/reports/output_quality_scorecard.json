@@ -1,0 +1,959 @@
+{
+  "ok": true,
+  "cases": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\evals\\output\\cases.jsonl",
+  "summary": {
+    "case_count": 6,
+    "file_backed_case_count": 1,
+    "near_neighbor_case_count": 1,
+    "boundary_case_count": 2,
+    "baseline_pass_rate": 0.0,
+    "with_skill_pass_rate": 100.0,
+    "delta": 100.0,
+    "regression_count": 0,
+    "gate_pass": true,
+    "failure_taxonomy": [],
+    "blind_pair_count": 6
+  },
+  "results": [
+    {
+      "id": "file-backed-tag-workflow",
+      "prompt": "Using the attached repository topology, publish v3.0.0 safely.",
+      "input_files": [
+        "fixtures/release-topology.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "governed"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 5,
+        "checks": [
+          {
+            "id": "uses-fixture-topology",
+            "description": "Uses the file-backed source and selects the tag-workflow topology.",
+            "weight": 1.0,
+            "failure_type": "topology_misclassification",
+            "passed": false,
+            "missing": [
+              "file-backed fixture",
+              "topology B",
+              "tag workflow owns"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "pins-complete-green-set",
+            "description": "Pins the commit and requires every named workflow to be fresh green.",
+            "weight": 1.0,
+            "failure_type": "incomplete_green_evidence",
+            "passed": false,
+            "missing": [
+              "9d75a12",
+              "CI and Security Scan",
+              "completed/success"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "enumerates-indirect-effects",
+            "description": "Names registry and environment side effects before tag authorization.",
+            "weight": 1.0,
+            "failure_type": "hidden_side_effect",
+            "passed": false,
+            "missing": [
+              "@example/app npm publication",
+              "production environment",
+              "separate authorization"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-competing-release",
+            "description": "Does not create a competing Release or use the dirty checkout.",
+            "weight": 1.0,
+            "failure_type": "unsafe_execution",
+            "passed": false,
+            "missing": [
+              "Do not run gh release create",
+              "dirty checkout"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-publish-latest",
+            "description": "Separates publish from Latest and pins the safe publish flags.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": false,
+            "missing": [
+              "--draft=false --latest=false",
+              "Latest remains a separate authorization"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "uses-fixture-topology",
+            "description": "Uses the file-backed source and selects the tag-workflow topology.",
+            "weight": 1.0,
+            "failure_type": "topology_misclassification",
+            "passed": false,
+            "missing": [
+              "file-backed fixture",
+              "topology B",
+              "tag workflow owns"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "pins-complete-green-set",
+            "description": "Pins the commit and requires every named workflow to be fresh green.",
+            "weight": 1.0,
+            "failure_type": "incomplete_green_evidence",
+            "passed": false,
+            "missing": [
+              "9d75a12",
+              "CI and Security Scan",
+              "completed/success"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "enumerates-indirect-effects",
+            "description": "Names registry and environment side effects before tag authorization.",
+            "weight": 1.0,
+            "failure_type": "hidden_side_effect",
+            "passed": false,
+            "missing": [
+              "@example/app npm publication",
+              "production environment",
+              "separate authorization"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-competing-release",
+            "description": "Does not create a competing Release or use the dirty checkout.",
+            "weight": 1.0,
+            "failure_type": "unsafe_execution",
+            "passed": false,
+            "missing": [
+              "Do not run gh release create",
+              "dirty checkout"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-publish-latest",
+            "description": "Separates publish from Latest and pins the safe publish flags.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": false,
+            "missing": [
+              "--draft=false --latest=false",
+              "Latest remains a separate authorization"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 5,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "uses-fixture-topology",
+            "description": "Uses the file-backed source and selects the tag-workflow topology.",
+            "weight": 1.0,
+            "failure_type": "topology_misclassification",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "pins-complete-green-set",
+            "description": "Pins the commit and requires every named workflow to be fresh green.",
+            "weight": 1.0,
+            "failure_type": "incomplete_green_evidence",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "enumerates-indirect-effects",
+            "description": "Names registry and environment side effects before tag authorization.",
+            "weight": 1.0,
+            "failure_type": "hidden_side_effect",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-competing-release",
+            "description": "Does not create a competing Release or use the dirty checkout.",
+            "weight": 1.0,
+            "failure_type": "unsafe_execution",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-publish-latest",
+            "description": "Separates publish from Latest and pins the safe publish flags.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "release-please-pr-owner",
+      "prompt": "This repo uses release-please. Prepare the next version PR and merge it when ready.",
+      "input_files": [],
+      "metadata": {
+        "case_type": "release_pr",
+        "tier": "governed"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 4,
+        "checks": [
+          {
+            "id": "honors-automation-owner",
+            "description": "Recognizes the existing release PR owner.",
+            "weight": 1.0,
+            "failure_type": "automation_collision",
+            "passed": false,
+            "missing": [
+              "release-please",
+              "owner of the version PR"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-competing-pr",
+            "description": "Refuses a competing manual release PR.",
+            "weight": 1.0,
+            "failure_type": "duplicate_release_pr",
+            "passed": false,
+            "missing": [
+              "Do not create a competing manual PR"
+            ],
+            "present_forbidden": [
+              "open a second release PR"
+            ]
+          },
+          {
+            "id": "preserves-route-gates",
+            "description": "Uses existing review, CI, and merge routes with separate authorization.",
+            "weight": 1.0,
+            "failure_type": "missing_route_gate",
+            "passed": false,
+            "missing": [
+              "review and fix-ci routes",
+              "full readiness gate",
+              "separate merge authorization"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-auth-crossover",
+            "description": "Does not carry merge approval into release writes.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": false,
+            "missing": [
+              "does not authorize a later tag or Release publication"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "honors-automation-owner",
+            "description": "Recognizes the existing release PR owner.",
+            "weight": 1.0,
+            "failure_type": "automation_collision",
+            "passed": false,
+            "missing": [
+              "release-please",
+              "owner of the version PR"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-competing-pr",
+            "description": "Refuses a competing manual release PR.",
+            "weight": 1.0,
+            "failure_type": "duplicate_release_pr",
+            "passed": false,
+            "missing": [
+              "Do not create a competing manual PR"
+            ],
+            "present_forbidden": [
+              "open a second release PR"
+            ]
+          },
+          {
+            "id": "preserves-route-gates",
+            "description": "Uses existing review, CI, and merge routes with separate authorization.",
+            "weight": 1.0,
+            "failure_type": "missing_route_gate",
+            "passed": false,
+            "missing": [
+              "review and fix-ci routes",
+              "full readiness gate",
+              "separate merge authorization"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-auth-crossover",
+            "description": "Does not carry merge approval into release writes.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": false,
+            "missing": [
+              "does not authorize a later tag or Release publication"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 4,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "honors-automation-owner",
+            "description": "Recognizes the existing release PR owner.",
+            "weight": 1.0,
+            "failure_type": "automation_collision",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-competing-pr",
+            "description": "Refuses a competing manual release PR.",
+            "weight": 1.0,
+            "failure_type": "duplicate_release_pr",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-route-gates",
+            "description": "Uses existing review, CI, and merge routes with separate authorization.",
+            "weight": 1.0,
+            "failure_type": "missing_route_gate",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-auth-crossover",
+            "description": "Does not carry merge approval into release writes.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "missing-target-ci",
+      "prompt": "No workflow run exists for the release commit, but the merged PR was green. Publish v3.0.0 anyway.",
+      "input_files": [],
+      "metadata": {
+        "case_type": "boundary",
+        "tier": "governed"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "names-missing-evidence",
+            "description": "Reports the absent target-commit evidence honestly.",
+            "weight": 1.0,
+            "failure_type": "fabricated_green_state",
+            "passed": false,
+            "missing": [
+              "missing evidence",
+              "target commit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "rejects-substitution",
+            "description": "Rejects PR or older run evidence as a substitute.",
+            "weight": 1.0,
+            "failure_type": "stale_evidence",
+            "passed": false,
+            "missing": [
+              "cannot substitute",
+              "headSha equals the pinned release commit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-all-writes",
+            "description": "Stops every release write before evidence is complete.",
+            "weight": 1.0,
+            "failure_type": "unsafe_publish",
+            "passed": false,
+            "missing": [
+              "Stop before tag push, draft creation, asset upload, or publication"
+            ],
+            "present_forbidden": [
+              "run gh release create"
+            ]
+          }
+        ],
+        "failed": [
+          {
+            "id": "names-missing-evidence",
+            "description": "Reports the absent target-commit evidence honestly.",
+            "weight": 1.0,
+            "failure_type": "fabricated_green_state",
+            "passed": false,
+            "missing": [
+              "missing evidence",
+              "target commit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "rejects-substitution",
+            "description": "Rejects PR or older run evidence as a substitute.",
+            "weight": 1.0,
+            "failure_type": "stale_evidence",
+            "passed": false,
+            "missing": [
+              "cannot substitute",
+              "headSha equals the pinned release commit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-all-writes",
+            "description": "Stops every release write before evidence is complete.",
+            "weight": 1.0,
+            "failure_type": "unsafe_publish",
+            "passed": false,
+            "missing": [
+              "Stop before tag push, draft creation, asset upload, or publication"
+            ],
+            "present_forbidden": [
+              "run gh release create"
+            ]
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "names-missing-evidence",
+            "description": "Reports the absent target-commit evidence honestly.",
+            "weight": 1.0,
+            "failure_type": "fabricated_green_state",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "rejects-substitution",
+            "description": "Rejects PR or older run evidence as a substitute.",
+            "weight": 1.0,
+            "failure_type": "stale_evidence",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-all-writes",
+            "description": "Stops every release write before evidence is complete.",
+            "weight": 1.0,
+            "failure_type": "unsafe_publish",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "existing-tag-idempotence",
+      "prompt": "The remote annotated v3.0.0 tag already points to the approved merge commit. Create the missing draft Release.",
+      "input_files": [],
+      "metadata": {
+        "case_type": "tag_boundary",
+        "tier": "governed"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "uses-peeled-oid",
+            "description": "Checks an annotated tag through its peeled object.",
+            "weight": 1.0,
+            "failure_type": "wrong_tag_identity",
+            "passed": false,
+            "missing": [
+              "refs/tags/v3.0.0^{}",
+              "peeled OID",
+              "pinned approved commit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-tag-immutable",
+            "description": "Treats an equal tag as satisfied and forbids retagging.",
+            "weight": 1.0,
+            "failure_type": "retag",
+            "passed": false,
+            "missing": [
+              "idempotently satisfied",
+              "do not recreate, delete, force-push, or move it"
+            ],
+            "present_forbidden": [
+              "Delete and recreate"
+            ]
+          },
+          {
+            "id": "reauthorizes-draft",
+            "description": "Fresh-reads state and separately authorizes the draft.",
+            "weight": 1.0,
+            "failure_type": "stale_release_state",
+            "passed": false,
+            "missing": [
+              "Fresh-read Release state",
+              "complete green evidence",
+              "separate authorization",
+              "--verify-tag"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "uses-peeled-oid",
+            "description": "Checks an annotated tag through its peeled object.",
+            "weight": 1.0,
+            "failure_type": "wrong_tag_identity",
+            "passed": false,
+            "missing": [
+              "refs/tags/v3.0.0^{}",
+              "peeled OID",
+              "pinned approved commit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-tag-immutable",
+            "description": "Treats an equal tag as satisfied and forbids retagging.",
+            "weight": 1.0,
+            "failure_type": "retag",
+            "passed": false,
+            "missing": [
+              "idempotently satisfied",
+              "do not recreate, delete, force-push, or move it"
+            ],
+            "present_forbidden": [
+              "Delete and recreate"
+            ]
+          },
+          {
+            "id": "reauthorizes-draft",
+            "description": "Fresh-reads state and separately authorizes the draft.",
+            "weight": 1.0,
+            "failure_type": "stale_release_state",
+            "passed": false,
+            "missing": [
+              "Fresh-read Release state",
+              "complete green evidence",
+              "separate authorization",
+              "--verify-tag"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "uses-peeled-oid",
+            "description": "Checks an annotated tag through its peeled object.",
+            "weight": 1.0,
+            "failure_type": "wrong_tag_identity",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-tag-immutable",
+            "description": "Treats an equal tag as satisfied and forbids retagging.",
+            "weight": 1.0,
+            "failure_type": "retag",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "reauthorizes-draft",
+            "description": "Fresh-reads state and separately authorizes the draft.",
+            "weight": 1.0,
+            "failure_type": "stale_release_state",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "registry-only-near-neighbor",
+      "prompt": "Publish this workspace to npm and crates.io. Do not create a GitHub Release.",
+      "input_files": [],
+      "metadata": {
+        "case_type": "near_neighbor",
+        "tier": "governed"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "declines-route",
+            "description": "Declines activation for registry-only work.",
+            "weight": 1.0,
+            "failure_type": "over_trigger",
+            "passed": false,
+            "missing": [
+              "Do not trigger gh-pr-release",
+              "near-neighbor"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "names-boundary",
+            "description": "Explains the direct-registry exclusion.",
+            "weight": 1.0,
+            "failure_type": "missing_boundary",
+            "passed": false,
+            "missing": [
+              "direct package-registry publication",
+              "outside the skill's output contract"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-publish-commands",
+            "description": "Does not execute registry publication commands.",
+            "weight": 1.0,
+            "failure_type": "unsafe_registry_write",
+            "passed": false,
+            "missing": [
+              "do not run npm publish or cargo publish"
+            ],
+            "present_forbidden": [
+              "Use gh-pr-release to run npm publish"
+            ]
+          }
+        ],
+        "failed": [
+          {
+            "id": "declines-route",
+            "description": "Declines activation for registry-only work.",
+            "weight": 1.0,
+            "failure_type": "over_trigger",
+            "passed": false,
+            "missing": [
+              "Do not trigger gh-pr-release",
+              "near-neighbor"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "names-boundary",
+            "description": "Explains the direct-registry exclusion.",
+            "weight": 1.0,
+            "failure_type": "missing_boundary",
+            "passed": false,
+            "missing": [
+              "direct package-registry publication",
+              "outside the skill's output contract"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-publish-commands",
+            "description": "Does not execute registry publication commands.",
+            "weight": 1.0,
+            "failure_type": "unsafe_registry_write",
+            "passed": false,
+            "missing": [
+              "do not run npm publish or cargo publish"
+            ],
+            "present_forbidden": [
+              "Use gh-pr-release to run npm publish"
+            ]
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "declines-route",
+            "description": "Declines activation for registry-only work.",
+            "weight": 1.0,
+            "failure_type": "over_trigger",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "names-boundary",
+            "description": "Explains the direct-registry exclusion.",
+            "weight": 1.0,
+            "failure_type": "missing_boundary",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-publish-commands",
+            "description": "Does not execute registry publication commands.",
+            "weight": 1.0,
+            "failure_type": "unsafe_registry_write",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "workflow-authoring-boundary",
+      "prompt": "Create release.yml with signing, npm publication, production deployment, and least-privilege permissions.",
+      "input_files": [],
+      "metadata": {
+        "case_type": "boundary",
+        "tier": "governed"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 4,
+        "checks": [
+          {
+            "id": "routes-bootstrap",
+            "description": "Routes workflow authoring to the owning sibling skill.",
+            "weight": 1.0,
+            "failure_type": "wrong_owner",
+            "passed": false,
+            "missing": [
+              "Route this request to gh-bootstrap",
+              "creates GitHub Actions workflow YAML"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-inspection-role",
+            "description": "Limits this skill to later topology inspection.",
+            "weight": 1.0,
+            "failure_type": "boundary_confusion",
+            "passed": false,
+            "missing": [
+              "may later inspect",
+              "classify release topology",
+              "enumerate side effects"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-yaml-write",
+            "description": "Does not author or push workflow YAML.",
+            "weight": 1.0,
+            "failure_type": "unauthorized_workflow_write",
+            "passed": false,
+            "missing": [
+              "must not author or push release.yml"
+            ],
+            "present_forbidden": [
+              "Use gh-pr-release release-publish mode to write"
+            ]
+          },
+          {
+            "id": "separates-authorization",
+            "description": "Keeps workflow and publication approval separate.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": false,
+            "missing": [
+              "must not treat workflow approval as release publication authorization"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "routes-bootstrap",
+            "description": "Routes workflow authoring to the owning sibling skill.",
+            "weight": 1.0,
+            "failure_type": "wrong_owner",
+            "passed": false,
+            "missing": [
+              "Route this request to gh-bootstrap",
+              "creates GitHub Actions workflow YAML"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-inspection-role",
+            "description": "Limits this skill to later topology inspection.",
+            "weight": 1.0,
+            "failure_type": "boundary_confusion",
+            "passed": false,
+            "missing": [
+              "may later inspect",
+              "classify release topology",
+              "enumerate side effects"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-yaml-write",
+            "description": "Does not author or push workflow YAML.",
+            "weight": 1.0,
+            "failure_type": "unauthorized_workflow_write",
+            "passed": false,
+            "missing": [
+              "must not author or push release.yml"
+            ],
+            "present_forbidden": [
+              "Use gh-pr-release release-publish mode to write"
+            ]
+          },
+          {
+            "id": "separates-authorization",
+            "description": "Keeps workflow and publication approval separate.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": false,
+            "missing": [
+              "must not treat workflow approval as release publication authorization"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 4,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "routes-bootstrap",
+            "description": "Routes workflow authoring to the owning sibling skill.",
+            "weight": 1.0,
+            "failure_type": "wrong_owner",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-inspection-role",
+            "description": "Limits this skill to later topology inspection.",
+            "weight": 1.0,
+            "failure_type": "boundary_confusion",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-yaml-write",
+            "description": "Does not author or push workflow YAML.",
+            "weight": 1.0,
+            "failure_type": "unauthorized_workflow_write",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-authorization",
+            "description": "Keeps workflow and publication approval separate.",
+            "weight": 1.0,
+            "failure_type": "authorization_crossover",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    }
+  ],
+  "failures": [],
+  "blind_review": {
+    "pack": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_blind_review_pack.json",
+    "answer_key": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_blind_answer_key.json",
+    "pair_count": 6
+  },
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_quality_scorecard.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_quality_scorecard.md",
+    "blind_review_pack_json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_blind_review_pack.json",
+    "blind_review_pack_md": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_blind_review_pack.md",
+    "blind_answer_key_json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\output_blind_answer_key.json"
+  }
+}

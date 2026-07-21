@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Repo contracts for skills: skill-dir placeholder, frontmatter fields, dual eval systems, resource budget exemption policy — governs every file touched"}
+{"file": ".trellis/tasks/archive/2026-07/07-21-merge-gh-pr-skills/design.md", "reason": "v2.0.0 baseline design: 6-mode routing, three-tier safety contract, budget two-step policy and precise-rollback precedents this task extends"}
+{"file": ".trellis/tasks/07-21-gh-pr-release-flow/design.md", "reason": "This task's design: 8-mode routing, two new release references, rename blast-radius table, safety-contract additions"}
+{"file": ".trellis/tasks/07-21-gh-pr-release-flow/research/recommended-flow.md", "reason": "Synthesized web best practices (release PR pattern, tag discipline, draft-first releases, release CI) that the new references must match"}
