@@ -1,0 +1,86 @@
+{
+  "ok": true,
+  "schema_version": "2.0",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+  "registry_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\registry-current",
+  "package": {
+    "schema_version": "2.0",
+    "name": "gh-pr-release",
+    "version": "3.0.0",
+    "description": "Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish confirmed reviews, merge safely, reply/resolve threads, apply selected feedback, fix PR checks, prepare release PRs with version bumps/changelogs, tag merged commits, publish GitHub Releases with verified assets, and diagnose release workflows / 创建或发布 PR、评审与安全合并、回复或解决线程、修复 PR CI、准备版本 PR、打 tag、发布含产物的 GitHub Release、诊断 release CI. Not for code-review analysis (code-auditor or code-quality-review), commits (git-commit), GitHub/release-workflow setup (gh-bootstrap), registry publishing (npm/cargo/pypi), release-readiness/full-spectrum audits (fuck-my-shit-mountain), or release-notes-only writing.",
+    "targets": [
+      "claude",
+      "openai",
+      "generic"
+    ],
+    "maturity": "governed",
+    "owner": "lyh",
+    "review_cadence": "quarterly",
+    "trust_level": "local",
+    "license": "MIT",
+    "checksums": {
+      "package_sha256": "bb1b7e46bf725f2c049722c012155328cc691273df0617279ac5f494a0ce07fd",
+      "archive_sha256": "fcad39d44f4b2e4664a091233dab24edfcd30f41a8cc48d536d19705ac37e50b"
+    },
+    "compatibility": {
+      "openai": "pass",
+      "claude": "pass",
+      "generic": "pass"
+    },
+    "source": {
+      "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+      "skill_ir": "reports\\skill-ir.json",
+      "ir_schema_version": "2.0.0",
+      "canonical_metadata": "agents/interface.yaml"
+    },
+    "artifacts": {
+      "overview_html": "reports/skill-overview.html",
+      "review_studio_html": "reports/review-studio.html",
+      "trust_report": "reports/security_trust_report.md",
+      "conformance_matrix": "reports/conformance_matrix.md",
+      "compiled_targets": "reports/compiled_targets.md",
+      "package_verification": "reports/package_verification.md",
+      "install_simulation": "reports/install_simulation.md",
+      "adoption_drift": "reports/adoption_drift_report.md",
+      "review_waivers": "reports/review_waivers.md",
+      "review_annotations": "reports/review_annotations.md",
+      "package_metadata": "registry/packages/gh-pr-release.json"
+    },
+    "distribution": {
+      "archive_verified": true,
+      "archive_sha256": "fcad39d44f4b2e4664a091233dab24edfcd30f41a8cc48d536d19705ac37e50b",
+      "package_verification": "reports/package_verification.json",
+      "install_simulated": true,
+      "install_simulation": "reports/install_simulation.json"
+    },
+    "generated_at": "2026-07-21T00:00:00Z"
+  },
+  "index": {
+    "schema_version": "2.0",
+    "generated_at": "2026-07-21T00:00:00Z",
+    "package_count": 1,
+    "packages": [
+      {
+        "name": "gh-pr-release",
+        "version": "3.0.0",
+        "maturity": "governed",
+        "owner": "lyh",
+        "targets": [
+          "claude",
+          "openai",
+          "generic"
+        ],
+        "package_metadata": "registry/packages/gh-pr-release.json",
+        "package_sha256": "bb1b7e46bf725f2c049722c012155328cc691273df0617279ac5f494a0ce07fd"
+      }
+    ]
+  },
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "index": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\registry-current\\index.json",
+    "package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\registry-current\\packages\\gh-pr-release.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\registry_audit.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\registry_audit.md"
+  }
+}

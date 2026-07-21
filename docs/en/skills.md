@@ -71,7 +71,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 `git-github-collaboration` · 3 skills
 
 - [gh-bootstrap](/en/skills/git-github-collaboration/gh-bootstrap) — Initialize GitHub repository configuration from vetted upstream templates.
-- [gh-pr](/en/skills/git-github-collaboration/gh-pr) — Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI.
+- [gh-pr-release](/en/skills/git-github-collaboration/gh-pr-release) — Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish confirmed reviews, merge safely, reply/resolve threads, apply selected feedback, fix PR checks, prepare release PRs with version bumps/changelogs, tag merged commits, publish GitHub Releases with verified assets, and diagnose release workflows / 创建或发布 PR、评审与安全合并、回复或解决线程、修复 PR CI、准备版本 PR、打 tag、发布含产物的 GitHub Release、诊断 release CI.
 - [git-commit](/en/skills/git-github-collaboration/git-commit) — Safely orchestrate Conventional Commits for staged Git changes, or all working-tree changes when the user explicitly asks to include everything.
 
 ### Research, Learning & Knowledge

@@ -160,8 +160,8 @@ export const zhSkillsSidebar = [
         "link": "/skills/git-github-collaboration/gh-bootstrap"
       },
       {
-        "text": "gh-pr",
-        "link": "/skills/git-github-collaboration/gh-pr"
+        "text": "gh-pr-release",
+        "link": "/skills/git-github-collaboration/gh-pr-release"
       },
       {
         "text": "git-commit",
@@ -351,8 +351,8 @@ export const enSkillsSidebar = [
         "link": "/en/skills/git-github-collaboration/gh-bootstrap"
       },
       {
-        "text": "gh-pr",
-        "link": "/en/skills/git-github-collaboration/gh-pr"
+        "text": "gh-pr-release",
+        "link": "/en/skills/git-github-collaboration/gh-pr-release"
       },
       {
         "text": "git-commit",

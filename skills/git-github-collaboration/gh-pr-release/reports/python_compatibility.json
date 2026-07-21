@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "generated_at": "2026-07-21T00:00:00Z",
+  "root": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+  "summary": {
+    "target_python": "3.11",
+    "file_count": 6,
+    "issue_count": 0,
+    "syntax_error_count": 0,
+    "fstring_311_violation_count": 0,
+    "decision": "pass"
+  },
+  "rules": [
+    {
+      "key": "current-python-syntax",
+      "reason": "Every scanned Python source file must compile under the running interpreter."
+    },
+    {
+      "key": "fstring-expression-backslash",
+      "reason": "Python 3.11 rejects backslashes inside f-string expressions; keep escaping outside the expression."
+    }
+  ],
+  "files": [
+    {
+      "path": "scripts\\fetch_comments.py",
+      "ok": true,
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "path": "scripts\\inspect_pr_checks.py",
+      "ok": true,
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "path": "scripts\\pr_review.py",
+      "ok": true,
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "path": "tests\\test_fetch_comments.py",
+      "ok": true,
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "path": "tests\\test_inspect_pr_checks.py",
+      "ok": true,
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "path": "tests\\test_pr_review.py",
+      "ok": true,
+      "issue_count": 0,
+      "issues": []
+    }
+  ],
+  "issues": [],
+  "artifacts": {
+    "json": "reports/python_compatibility.json",
+    "markdown": "reports/python_compatibility.md"
+  }
+}

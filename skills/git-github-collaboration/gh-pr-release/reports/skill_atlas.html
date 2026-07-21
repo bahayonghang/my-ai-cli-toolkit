@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skill Atlas</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #172033; background: #fff; }
+    main { max-width: 1120px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 34px; margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 28px 0; }
+    .card { border: 1px solid #d9e0ea; border-radius: 8px; padding: 16px; background: #f8fafc; }
+    .card span { display: block; color: #697386; font-size: 13px; }
+    .card strong { display: block; font-size: 28px; color: #1B365D; margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { text-align: left; border-bottom: 1px solid #e5e9f0; padding: 10px; vertical-align: top; }
+    th { color: #1B365D; font-size: 13px; }
+    li { margin: 8px 0; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Skill Atlas</h1>
+    <p>Portfolio-level review for route overlap, stale ownership, shared resources, telemetry drift, and no-route opportunities.</p>
+    <section class="grid">
+      <div class="card"><span>Skills</span><strong>36</strong></div>
+      <div class="card"><span>Actionable</span><strong>36</strong></div>
+      <div class="card"><span>Route Collisions</span><strong>1</strong></div>
+      <div class="card"><span>Owner Gaps</span><strong>35</strong></div>
+      <div class="card"><span>Stale Skills</span><strong>35</strong></div>
+      <div class="card"><span>Drift Signals</span><strong>1</strong></div>
+      <div class="card"><span>No-Route Opportunities</span><strong>0</strong></div>
+    </section>
+    <section>
+      <h2>Actionable Issues</h2>
+      <ul><li><strong>agents-md-improver</strong> collision</li><li><strong>academic-figure</strong> owner, review_cadence, maturity</li><li><strong>agents-md-improver</strong> owner, review_cadence, maturity</li><li><strong>archive-planning</strong> owner, review_cadence, maturity</li><li><strong>ast-grep</strong> owner, review_cadence, maturity</li><li><strong>claude-md-improver</strong> owner, review_cadence, maturity</li><li><strong>codex-workflow-recommender</strong> owner, review_cadence, maturity</li><li><strong>goal-meta-skill</strong> owner, review_cadence, maturity</li><li><strong>image-to-ui-skill</strong> owner, review_cadence, maturity</li><li><strong>ripgrep</strong> owner, review_cadence, maturity</li><li><strong>uv-workflow</strong> owner, review_cadence, maturity</li><li><strong>windows-dev-process-cleanup</strong> owner, review_cadence, maturity</li><li><strong>code-auditor</strong> owner, review_cadence, maturity</li><li><strong>code-quality-review</strong> owner, review_cadence, maturity</li><li><strong>code-refactor</strong> owner, review_cadence, maturity</li><li><strong>codex-dynamic-workflows</strong> owner, review_cadence, maturity</li><li><strong>cold-shower</strong> owner, review_cadence, maturity</li><li><strong>geju</strong> owner, review_cadence, maturity</li><li><strong>goudi</strong> owner, review_cadence, maturity</li><li><strong>handoff</strong> owner, review_cadence, maturity</li><li><strong>html-artifact</strong> owner, review_cadence, maturity</li><li><strong>academic-figure</strong> missing updated_at</li><li><strong>agents-md-improver</strong> missing updated_at</li><li><strong>archive-planning</strong> missing updated_at</li><li><strong>ast-grep</strong> missing updated_at</li><li><strong>claude-md-improver</strong> missing updated_at</li><li><strong>codex-workflow-recommender</strong> missing updated_at</li><li><strong>goal-meta-skill</strong> missing updated_at</li><li><strong>image-to-ui-skill</strong> missing updated_at</li><li><strong>ripgrep</strong> missing updated_at</li><li><strong>uv-workflow</strong> missing updated_at</li><li><strong>windows-dev-process-cleanup</strong> missing updated_at</li><li><strong>code-auditor</strong> missing updated_at</li><li><strong>code-quality-review</strong> missing updated_at</li><li><strong>code-refactor</strong> missing updated_at</li><li><strong>codex-dynamic-workflows</strong> missing updated_at</li><li><strong>cold-shower</strong> missing updated_at</li><li><strong>geju</strong> missing updated_at</li><li><strong>goudi</strong> missing updated_at</li><li><strong>handoff</strong> missing updated_at</li><li><strong>html-artifact</strong> missing updated_at</li><li><strong>gh-pr-release</strong> no telemetry</li></ul>
+    </section>
+    <section>
+      <h2>No-Route Opportunities</h2>
+      <p>Missed-trigger telemetry and explicit failure cases become candidate routing work without storing raw prompts or outputs.</p>
+      <ul><li>No no-route opportunities detected.</li></ul>
+    </section>
+    <section>
+      <h2>Full Portfolio Counts</h2>
+      <p>All scanned skills remain visible: 1 total route collisions, 35 total owner gaps, 35 total stale signals, and 1 telemetry drift signals.</p>
+    </section>
+    <section>
+      <h2>Catalog</h2>
+      <table>
+        <thead><tr><th>Name</th><th>Path</th><th>Owner</th><th>Maturity</th><th>Review</th><th>Scope</th></tr></thead>
+        <tbody><tr><td>academic-figure</td><td>academic-research-tools\academic-figure</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>agents-md-improver</td><td>developer-tools-integrations\agents-md-improver</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>archive-planning</td><td>developer-tools-integrations\archive-planning</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>ast-grep</td><td>developer-tools-integrations\ast-grep</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>claude-md-improver</td><td>developer-tools-integrations\claude-md-improver</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>codex-workflow-recommender</td><td>developer-tools-integrations\codex-workflow-recommender</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>goal-meta-skill</td><td>developer-tools-integrations\goal-meta-skill</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>image-to-ui-skill</td><td>developer-tools-integrations\image-to-ui-skill</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>ripgrep</td><td>developer-tools-integrations\ripgrep</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>uv-workflow</td><td>developer-tools-integrations\uv-workflow</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>windows-dev-process-cleanup</td><td>developer-tools-integrations\windows-dev-process-cleanup</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>code-auditor</td><td>development-workflows\code-auditor</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>code-quality-review</td><td>development-workflows\code-quality-review</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>code-refactor</td><td>development-workflows\code-refactor</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>codex-dynamic-workflows</td><td>development-workflows\codex-dynamic-workflows</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>cold-shower</td><td>development-workflows\cold-shower</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>geju</td><td>development-workflows\geju</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>goudi</td><td>development-workflows\goudi</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>handoff</td><td>development-workflows\handoff</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>html-artifact</td><td>development-workflows\html-artifact</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>implementation-notes</td><td>development-workflows\implementation-notes</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>spark</td><td>development-workflows\spark</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>unknowns-first</td><td>development-workflows\unknowns-first</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>beautiful-mermaid-editor</td><td>docs-writing-publishing\beautiful-mermaid-editor</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>bidwriter</td><td>docs-writing-publishing\bidwriter</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>document-writer</td><td>docs-writing-publishing\document-writer</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>renhua</td><td>docs-writing-publishing\renhua</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>touying</td><td>docs-writing-publishing\touying</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>gh-bootstrap</td><td>git-github-collaboration\gh-bootstrap</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>gh-pr-release</td><td>git-github-collaboration\gh-pr-release</td><td>lyh</td><td>governed</td><td>quarterly</td><td>release</td></tr><tr><td>git-commit</td><td>git-github-collaboration\git-commit</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>deep-research-pro</td><td>research-learning-knowledge\deep-research-pro</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>humanizer-paper</td><td>research-learning-knowledge\humanizer-paper</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>literature-mentor</td><td>research-learning-knowledge\literature-mentor</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>paper-workbench</td><td>research-learning-knowledge\paper-workbench</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr><tr><td>roundtable</td><td>research-learning-knowledge\roundtable</td><td>missing</td><td>unknown</td><td>missing</td><td>release</td></tr></tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

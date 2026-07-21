@@ -1,0 +1,108 @@
+{
+  "schema_version": "2.0.0",
+  "name": "gh-pr-release",
+  "title": "GitHub PRs & Releases",
+  "job_to_be_done": "Operate an existing repository's GitHub pull-request and GitHub Release delivery lifecycle with inspect-first, commit-pinned, separately authorized writes.",
+  "trigger_surface": {
+    "description": "Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish confirmed reviews, merge safely, reply/resolve threads, apply selected feedback, fix PR checks, prepare release PRs with version bumps/changelogs, tag merged commits, publish GitHub Releases with verified assets, and diagnose release workflows / 创建或发布 PR、评审与安全合并、回复或解决线程、修复 PR CI、准备版本 PR、打 tag、发布含产物的 GitHub Release、诊断 release CI. Not for code-review analysis (code-auditor or code-quality-review), commits (git-commit), GitHub/release-workflow setup (gh-bootstrap), registry publishing (npm/cargo/pypi), release-readiness/full-spectrum audits (fuck-my-shit-mountain), or release-notes-only writing.",
+    "should_trigger": [
+      "Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish confirmed reviews, merge safely, reply/resolve threads, apply selected feedback, fix PR checks, prepare release PRs with version bumps/changelogs, tag merged commits, publish GitHub Releases with verified assets, and diagnose release workflows / 创建或发布 PR、评审与安全合并、回复或解决线程、修复 PR CI、准备版本 PR、打 tag、发布含产物的 GitHub Release、诊断 release CI. Not for code-review analysis (code-auditor or code-quality-review), commits (git-commit), GitHub/release-workflow setup (gh-bootstrap), registry publishing (npm/cargo/pypi), release-readiness/full-spectrum audits (fuck-my-shit-mountain), or release-notes-only writing."
+    ],
+    "should_not_trigger": [
+      "Substantive code-review analysis",
+      "Conventional Commit authoring",
+      "GitHub repository or release-workflow setup",
+      "Direct npm, cargo, or PyPI publication",
+      "Full-spectrum repository health or release-readiness audits",
+      "Release-notes-only writing without GitHub operation"
+    ],
+    "edge_cases": []
+  },
+  "workflow": {
+    "steps": [
+      "Understand the request.",
+      "Execute the main task.",
+      "Validate the result."
+    ],
+    "decision_points": [],
+    "failure_modes": []
+  },
+  "resources": {
+    "references": [
+      "references\\address-comments.md",
+      "references\\create.md",
+      "references\\fix-ci.md",
+      "references\\merge.md",
+      "references\\release-pr.md",
+      "references\\release-publish.md",
+      "references\\respond.md",
+      "references\\review.md"
+    ],
+    "scripts": [
+      "scripts\\fetch_comments.py",
+      "scripts\\inspect_pr_checks.py",
+      "scripts\\pr_review.py"
+    ],
+    "assets": [],
+    "reports": [
+      "reports/intent-context.json",
+      "reports/intent-confidence.json",
+      "reports/intent-confidence.md",
+      "reports/output-risk-profile.md",
+      "reports/artifact-design-profile.md",
+      "reports/skill-overview.json",
+      "reports/skill-overview.html",
+      "reports/output_quality_scorecard.json",
+      "reports/output_quality_scorecard.md",
+      "reports/output_blind_review_pack.json",
+      "reports/output_blind_review_pack.md",
+      "reports/output_blind_answer_key.json",
+      "reports/review_annotations.json",
+      "reports/review_annotations.md",
+      "reports/conformance_matrix.json",
+      "reports/conformance_matrix.md",
+      "reports/security_trust_report.json",
+      "reports/security_trust_report.md",
+      "reports/runtime_permission_probes.json",
+      "reports/runtime_permission_probes.md",
+      "reports/skill_atlas.json",
+      "reports/skill_atlas.html"
+    ]
+  },
+  "eval_plan": {
+    "trigger": [
+      "evals\\evals.json",
+      "evals\\history\\2026-07-21-gh-pr-release.json",
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\release-topology.md"
+    ],
+    "output": [
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\release-topology.md"
+    ],
+    "adversarial": [],
+    "baseline": "without_skill"
+  },
+  "risk": {
+    "output_risk": "low",
+    "execution_risk": "medium",
+    "trust_boundary": "external"
+  },
+  "governance": {
+    "owner": "lyh",
+    "maturity": "governed",
+    "review_cadence": "quarterly",
+    "review_due": ""
+  },
+  "targets": [
+    "claude",
+    "openai",
+    "generic"
+  ],
+  "source_files": [
+    "SKILL.md",
+    "manifest.json",
+    "agents/interface.yaml",
+    "reports/intent-context.json"
+  ]
+}

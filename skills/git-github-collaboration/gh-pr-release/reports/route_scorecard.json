@@ -1,0 +1,253 @@
+{
+  "summary": {
+    "total_cases": 10,
+    "correct_cases": 10,
+    "accuracy": 1.0,
+    "ambiguous_case_count": 0,
+    "margin_warning_threshold": 0.08,
+    "misroute_count": 0,
+    "no_route_accuracy": 1.0
+  },
+  "route_stats": {
+    "gh-pr-release": {
+      "expected_count": 4,
+      "predicted_count": 4,
+      "correct_count": 4,
+      "precision": 1.0,
+      "recall": 1.0,
+      "average_margin": 0.956
+    },
+    "no_route": {
+      "expected_count": 6,
+      "predicted_count": 6,
+      "correct_count": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "average_margin": null
+    }
+  },
+  "confusion_matrix": {
+    "gh-pr-release": {
+      "gh-pr-release": 4,
+      "no_route": 0
+    },
+    "no_route": {
+      "gh-pr-release": 0,
+      "no_route": 6
+    }
+  },
+  "ambiguous_cases": [],
+  "misroutes": [],
+  "cases": [
+    {
+      "family": "pr-create",
+      "prompt": "Create a draft PR for my current branch and show me the body first.",
+      "expected_route": "gh-pr-release",
+      "predicted_route": "gh-pr-release",
+      "correct": true,
+      "margin": 0.954,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.954,
+          "passed_threshold": true,
+          "threshold": 0.48,
+          "matched_desired_concepts": [
+            "github_delivery_lifecycle"
+          ],
+          "matched_negative_concepts": []
+        }
+      ]
+    },
+    {
+      "family": "release-pr",
+      "prompt": "Prepare the next version PR with the changelog, but respect release-please if it owns the PR.",
+      "expected_route": "gh-pr-release",
+      "predicted_route": "gh-pr-release",
+      "correct": true,
+      "margin": 0.949,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.949,
+          "passed_threshold": true,
+          "threshold": 0.48,
+          "matched_desired_concepts": [
+            "github_delivery_lifecycle"
+          ],
+          "matched_negative_concepts": []
+        }
+      ]
+    },
+    {
+      "family": "release-publish",
+      "prompt": "Tag the merged release commit and publish a GitHub Release with assets after all workflows pass.",
+      "expected_route": "gh-pr-release",
+      "predicted_route": "gh-pr-release",
+      "correct": true,
+      "margin": 0.973,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.973,
+          "passed_threshold": true,
+          "threshold": 0.48,
+          "matched_desired_concepts": [
+            "github_delivery_lifecycle"
+          ],
+          "matched_negative_concepts": []
+        }
+      ]
+    },
+    {
+      "family": "release-ci",
+      "prompt": "The release workflow failed after the tag was pushed; diagnose the run without publishing anything else.",
+      "expected_route": "gh-pr-release",
+      "predicted_route": "gh-pr-release",
+      "correct": true,
+      "margin": 0.949,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.949,
+          "passed_threshold": true,
+          "threshold": 0.48,
+          "matched_desired_concepts": [
+            "github_delivery_lifecycle"
+          ],
+          "matched_negative_concepts": []
+        }
+      ]
+    },
+    {
+      "family": "code-review",
+      "prompt": "Find correctness and security defects in this pull request, but do not publish a review.",
+      "expected_route": "no_route",
+      "predicted_route": "no_route",
+      "correct": true,
+      "margin": null,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.0,
+          "passed_threshold": false,
+          "threshold": 0.48,
+          "matched_desired_concepts": [],
+          "matched_negative_concepts": [
+            "code_audit"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "commit",
+      "prompt": "Split and commit all current changes with Conventional Commits; do not create a PR.",
+      "expected_route": "no_route",
+      "predicted_route": "no_route",
+      "correct": true,
+      "margin": null,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.0,
+          "passed_threshold": false,
+          "threshold": 0.48,
+          "matched_desired_concepts": [
+            "github_delivery_lifecycle"
+          ],
+          "matched_negative_concepts": [
+            "commit_authoring"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "github-setup",
+      "prompt": "Create release.yml with signing, registry permissions, and production deployment.",
+      "expected_route": "no_route",
+      "predicted_route": "no_route",
+      "correct": true,
+      "margin": null,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.04,
+          "passed_threshold": false,
+          "threshold": 0.48,
+          "matched_desired_concepts": [],
+          "matched_negative_concepts": []
+        }
+      ]
+    },
+    {
+      "family": "registry-publish",
+      "prompt": "Run npm publish and cargo publish without creating a GitHub Release.",
+      "expected_route": "no_route",
+      "predicted_route": "no_route",
+      "correct": true,
+      "margin": null,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.0,
+          "passed_threshold": false,
+          "threshold": 0.48,
+          "matched_desired_concepts": [],
+          "matched_negative_concepts": [
+            "registry_publish"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "repository-audit",
+      "prompt": "Audit release readiness across compliance, privacy, accessibility, cost, and operations.",
+      "expected_route": "no_route",
+      "predicted_route": "no_route",
+      "correct": true,
+      "margin": null,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.0,
+          "passed_threshold": false,
+          "threshold": 0.48,
+          "matched_desired_concepts": [],
+          "matched_negative_concepts": [
+            "repository_health"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "release-notes-only",
+      "prompt": "Write release notes from this changelog, but do not operate on GitHub.",
+      "expected_route": "no_route",
+      "predicted_route": "no_route",
+      "correct": true,
+      "margin": null,
+      "ambiguous": false,
+      "ranked_routes": [
+        {
+          "name": "gh-pr-release",
+          "score": 0.0,
+          "passed_threshold": false,
+          "threshold": 0.48,
+          "matched_desired_concepts": [],
+          "matched_negative_concepts": [
+            "release_notes_only"
+          ]
+        }
+      ]
+    }
+  ]
+}
