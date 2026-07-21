@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 27
-- **Last Active**: 2026-07-19
+- **Total Sessions**: 28
+- **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~961 | Active |
+| `journal-1.md` | ~994 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 28 | 2026-07-21 | 完成 gh-pr 生命周期技能 | `4a210e9` | `dev` |
 | 27 | 2026-07-19 | 合并 academic-figure 与 paper-plot | `1397ce0` | `main` |
 | 26 | 2026-07-13 | 豁免并归档 image-to-ui 父任务 | - | `main` |
 | 25 | 2026-07-13 | 归档 image-to-ui 已完成子任务 | - | `main` |

@@ -959,3 +959,36 @@ yao-meta 审查+网络调研驱动：composer 新增 --max-header-width/--emoji/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 28: 完成 gh-pr 生命周期技能
+
+**Date**: 2026-07-21
+**Task**: 完成 gh-pr 生命周期技能
+**Branch**: `dev`
+
+### Summary
+
+新增 gh-pr skill，覆盖 PR 创建、已确认 review 发布、安全合并和评审线程回复/解决；提供 head 固定、diff 坐标校验、分页与 ID 映射 helper，补齐评测、风险报告、生成文档并通过完整 CI。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4a210e9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
