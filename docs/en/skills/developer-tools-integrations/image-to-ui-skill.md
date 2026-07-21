@@ -35,7 +35,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill image-to-ui-s
 | `skills/developer-tools-integrations/image-to-ui-skill/assets` | directory | 21 | Assets |
 | `skills/developer-tools-integrations/image-to-ui-skill/demo` | directory | 22 | Top-level directory |
 | `skills/developer-tools-integrations/image-to-ui-skill/evals` | directory | 1 | Evaluation samples |
-| `skills/developer-tools-integrations/image-to-ui-skill/out` | directory | 0 | Top-level directory |
 | `skills/developer-tools-integrations/image-to-ui-skill/README.md` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/image-to-ui-skill/references` | directory | 8 | Reference material |
 | `skills/developer-tools-integrations/image-to-ui-skill/scripts` | directory | 2 | Executable scripts |

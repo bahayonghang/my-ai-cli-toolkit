@@ -205,12 +205,16 @@ def collect_resources(skill_dir: Path) -> tuple[ResourceEntry, ...]:
         if child.name == "SKILL.md" or child.name in IGNORED_RESOURCE_NAMES:
             continue
         kind = "directory" if child.is_dir() else "file"
+        count = count_files(child)
+        # Git cannot preserve empty directories, so they must not affect generated docs.
+        if child.is_dir() and count == 0:
+            continue
         entries.append(
             ResourceEntry(
                 name=child.name,
                 rel_path=rel(child),
                 kind=kind,
-                count=count_files(child),
+                count=count,
             )
         )
     return tuple(entries)
