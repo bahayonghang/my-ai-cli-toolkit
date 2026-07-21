@@ -992,3 +992,36 @@ yao-meta 审查+网络调研驱动：composer 新增 --max-header-width/--emoji/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: Merge gh-pr review and CI skills
+
+**Date**: 2026-07-21
+**Task**: Merge gh-pr review and CI skills
+**Branch**: `dev`
+
+### Summary
+
+Merged review-feedback and CI-fix workflows into gh-pr 2.0.0, migrated and corrected helper contracts, preserved upstream licensing, refreshed evals/docs/specs, and passed full CI plus 22 Python unit tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `015283a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
