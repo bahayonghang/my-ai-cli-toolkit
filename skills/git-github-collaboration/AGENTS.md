@@ -1,6 +1,6 @@
 # git-github-collaboration — suite conventions
 
-House standard for the three skills in this directory: `gh-bootstrap`, `gh-pr`,
+House standard for the three skills in this directory: `gh-bootstrap`, `gh-pr-release`,
 `git-commit`. `git-commit` is the reference
 exemplar; new or edited skills here should match these conventions so the suite
 does not drift apart again.
@@ -25,7 +25,7 @@ over-declarations.
 | Skill               | Tools                                            | Why                                                     |
 | ------------------- | ------------------------------------------------ | ------------------------------------------------------- |
 | gh-bootstrap        | `AskUserQuestion, Read, Bash, Glob, Grep, Write` | interactive config + writes new files                   |
-| gh-pr               | `Read, Edit, Bash`                               | operates PR state + applies approved review/CI fixes     |
+| gh-pr-release       | `Read, Edit, Bash`                               | operates PR/release state + approved review/CI fixes     |
 | git-commit          | `Read, Bash`                                     | reads references + runs git/compose; must not edit code |
 
 ## Evals
@@ -50,7 +50,7 @@ over-declarations.
 
 ## License / assets
 
-- `gh-pr` inherits the repository license for its original content and keeps
+- `gh-pr-release` carries the repository `LICENSE` for its original content and keeps
   `LICENSE-upstream.txt` plus `NOTICE-upstream.md` for its embedded Apache-2.0
   helper components. `gh-bootstrap` and `git-commit` inherit the repository
   license. None of the three carries icon assets.

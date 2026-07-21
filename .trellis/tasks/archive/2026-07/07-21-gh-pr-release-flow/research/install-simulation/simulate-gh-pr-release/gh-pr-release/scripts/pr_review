@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PY_SCRIPT="$SCRIPT_DIR/pr_review.py"
+
+usable() {
+  command -v "$1" >/dev/null 2>&1 || return 1
+  "$@" -c 'import sys' >/dev/null 2>&1
+}
+
+if usable python3; then
+  exec python3 "$PY_SCRIPT" "$@"
+elif usable python; then
+  exec python "$PY_SCRIPT" "$@"
+elif usable py -3; then
+  exec py -3 "$PY_SCRIPT" "$@"
+elif usable py; then
+  exec py "$PY_SCRIPT" "$@"
+fi
+
+printf '%s\n' "Unable to find a working Python interpreter. Tried: python3, python, py -3, py." >&2
+exit 127

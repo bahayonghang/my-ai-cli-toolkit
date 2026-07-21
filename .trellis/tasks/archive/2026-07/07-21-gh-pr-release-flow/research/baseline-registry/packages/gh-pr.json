@@ -1,0 +1,53 @@
+{
+  "schema_version": "2.0",
+  "name": "gh-pr",
+  "version": "2.0.0",
+  "description": "Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI. Use for PR creation, review publication, merge execution, thread responses, reviewer-requested fixes, or GitHub Actions failures. Not for substantive code-review analysis (code-auditor or code-quality-review), commit authoring (git-commit), GitHub setup (gh-bootstrap), or full-spectrum repository health audits (fuck-my-shit-mountain).",
+  "targets": [
+    "openai",
+    "claude",
+    "generic",
+    "vscode"
+  ],
+  "maturity": "scaffold",
+  "owner": "",
+  "review_cadence": "",
+  "trust_level": "local",
+  "license": "",
+  "checksums": {
+    "package_sha256": ""
+  },
+  "compatibility": {
+    "openai": "missing",
+    "claude": "missing",
+    "generic": "missing",
+    "vscode": "missing"
+  },
+  "source": {
+    "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr",
+    "skill_ir": "missing",
+    "ir_schema_version": "missing",
+    "canonical_metadata": "agents/interface.yaml"
+  },
+  "artifacts": {
+    "overview_html": "reports/skill-overview.html",
+    "review_studio_html": "reports/review-studio.html",
+    "trust_report": "reports/security_trust_report.md",
+    "conformance_matrix": "reports/conformance_matrix.md",
+    "compiled_targets": "",
+    "package_verification": "",
+    "install_simulation": "",
+    "adoption_drift": "",
+    "review_waivers": "",
+    "review_annotations": "",
+    "package_metadata": "registry/packages/gh-pr.json"
+  },
+  "distribution": {
+    "archive_verified": false,
+    "archive_sha256": "",
+    "package_verification": "",
+    "install_simulated": false,
+    "install_simulation": ""
+  },
+  "generated_at": "2026-07-21T18:54:50.5309764+08:00"
+}

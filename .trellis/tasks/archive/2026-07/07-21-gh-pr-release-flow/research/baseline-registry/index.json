@@ -1,0 +1,21 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-07-21T18:54:50.5309764+08:00",
+  "package_count": 1,
+  "packages": [
+    {
+      "name": "gh-pr",
+      "version": "2.0.0",
+      "maturity": "scaffold",
+      "owner": "",
+      "targets": [
+        "openai",
+        "claude",
+        "generic",
+        "vscode"
+      ],
+      "package_metadata": "registry/packages/gh-pr.json",
+      "package_sha256": ""
+    }
+  ]
+}

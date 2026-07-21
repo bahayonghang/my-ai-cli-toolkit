@@ -1,0 +1,116 @@
+{
+  "ok": false,
+  "schema_version": "2.0",
+  "generated_at": "2026-07-21",
+  "previous": {
+    "name": "gh-pr",
+    "version": "2.0.0",
+    "targets": [
+      "openai",
+      "claude",
+      "generic",
+      "vscode"
+    ]
+  },
+  "current": {
+    "name": "gh-pr-release",
+    "version": "3.0.0",
+    "targets": [
+      "claude",
+      "openai",
+      "generic"
+    ]
+  },
+  "summary": {
+    "declared_bump": "major",
+    "recommended_bump": "major",
+    "breaking_change_count": 2,
+    "added_target_count": 0,
+    "metadata_change_count": 5,
+    "checksum_change_count": 2,
+    "failure_count": 1,
+    "warning_count": 0
+  },
+  "upgrade_diff": {
+    "name_changed": true,
+    "added_targets": [],
+    "removed_targets": [
+      "vscode"
+    ],
+    "compatibility_changes": [
+      {
+        "target": "claude",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "generic",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "openai",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      }
+    ],
+    "metadata_changes": [
+      {
+        "field": "description",
+        "from": "Operate GitHub pull requests with gh CLI: create or draft PRs, publish confirmed reviews, inspect and merge, reply to or resolve threads, apply selected review feedback, and diagnose or fix failing PR checks / 创建或发布 PR、发布评审、安全合并、回复或解决线程、按评审意见修复代码、修复 PR CI. Use for PR creation, review publication, merge execution, thread responses, reviewer-requested fixes, or GitHub Actions failures. Not for substantive code-review analysis (code-auditor or code-quality-review), commit authoring (git-commit), GitHub setup (gh-bootstrap), or full-spectrum repository health audits (fuck-my-shit-mountain).",
+        "to": "Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish confirmed reviews, merge safely, reply/resolve threads, apply selected feedback, fix PR checks, prepare release PRs with version bumps/changelogs, tag merged commits, publish GitHub Releases with verified assets, and diagnose release workflows / 创建或发布 PR、评审与安全合并、回复或解决线程、修复 PR CI、准备版本 PR、打 tag、发布含产物的 GitHub Release、诊断 release CI. Not for code-review analysis (code-auditor or code-quality-review), commits (git-commit), GitHub/release-workflow setup (gh-bootstrap), registry publishing (npm/cargo/pypi), release-readiness/full-spectrum audits (fuck-my-shit-mountain), or release-notes-only writing."
+      },
+      {
+        "field": "maturity",
+        "from": "scaffold",
+        "to": "governed"
+      },
+      {
+        "field": "owner",
+        "from": "",
+        "to": "lyh"
+      },
+      {
+        "field": "review_cadence",
+        "from": "",
+        "to": "quarterly"
+      },
+      {
+        "field": "license",
+        "from": "",
+        "to": "MIT"
+      }
+    ],
+    "checksum_changes": [
+      {
+        "field": "archive_sha256",
+        "from": "",
+        "to": "fcad39d44f4b2e4664a091233dab24edfcd30f41a8cc48d536d19705ac37e50b"
+      },
+      {
+        "field": "package_sha256",
+        "from": "",
+        "to": "bb1b7e46bf725f2c049722c012155328cc691273df0617279ac5f494a0ce07fd"
+      }
+    ]
+  },
+  "release_notes": [
+    "Recommended version bump: major.",
+    "Breaking target removals: vscode.",
+    "Package or archive checksum changed; reviewers should verify package artifacts before release.",
+    "Package verification evidence: reports/package_verification.md."
+  ],
+  "failures": [
+    "Package name changed; publish as a new package or use a major version bump"
+  ],
+  "warnings": [],
+  "artifacts": {
+    "previous_package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\baseline-registry\\packages\\gh-pr.json",
+    "current_package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\registry-current\\packages\\gh-pr-release.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\upgrade_check.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\upgrade_check.md"
+  }
+}

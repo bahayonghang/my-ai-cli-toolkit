@@ -1,0 +1,141 @@
+{
+  "ok": true,
+  "schema_version": "2.0",
+  "generated_at": "2026-07-21T00:00:00Z",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+  "package_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic",
+  "install_root": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\install-simulation\\simulate-gh-pr-release",
+  "installed_skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\install-simulation\\simulate-gh-pr-release\\gh-pr-release",
+  "summary": {
+    "archive_present": true,
+    "archive_entry_count": 78,
+    "nested_skill_entry_count": 0,
+    "archive_extracted": true,
+    "entrypoint_loaded": true,
+    "manifest_loaded": true,
+    "interface_loaded": true,
+    "adapter_count": 1,
+    "installer_permission_enforced_count": 2,
+    "installer_permission_failure_count": 0,
+    "permission_target_count": 1,
+    "permission_capability_count": 2,
+    "install_root_is_temp": false,
+    "failure_count": 0,
+    "warning_count": 0
+  },
+  "checks": [
+    {
+      "id": "archive-present",
+      "status": "pass",
+      "detail": "Package archive exists: D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\gh-pr-release.zip"
+    },
+    {
+      "id": "archive-safe-paths",
+      "status": "pass",
+      "detail": "Archive has no absolute or parent-traversal entries"
+    },
+    {
+      "id": "single-skill-entrypoint",
+      "status": "pass",
+      "detail": "Installed package exposes only the root SKILL.md entrypoint"
+    },
+    {
+      "id": "single-top-level",
+      "status": "pass",
+      "detail": "Archive top-level directory is gh-pr-release"
+    },
+    {
+      "id": "entrypoint-load",
+      "status": "pass",
+      "detail": "Installed SKILL.md frontmatter is readable"
+    },
+    {
+      "id": "entrypoint-name",
+      "status": "pass",
+      "detail": "Installed SKILL.md name matches package directory"
+    },
+    {
+      "id": "entrypoint-description",
+      "status": "pass",
+      "detail": "Installed SKILL.md description is present"
+    },
+    {
+      "id": "manifest-load",
+      "status": "pass",
+      "detail": "Installed manifest.json is readable"
+    },
+    {
+      "id": "manifest-name",
+      "status": "pass",
+      "detail": "Installed manifest name matches package manifest"
+    },
+    {
+      "id": "manifest-version",
+      "status": "pass",
+      "detail": "Installed manifest version matches package manifest"
+    },
+    {
+      "id": "interface-load",
+      "status": "pass",
+      "detail": "Installed agents/interface.yaml is readable"
+    },
+    {
+      "id": "overview-report",
+      "status": "pass",
+      "detail": "Installed overview report is present"
+    },
+    {
+      "id": "review-studio-report",
+      "status": "pass",
+      "detail": "Installed Review Studio report is present"
+    },
+    {
+      "id": "adapter-generic",
+      "status": "pass",
+      "detail": "generic adapter is readable after package install simulation"
+    },
+    {
+      "id": "adapter-generic-name",
+      "status": "pass",
+      "detail": "generic adapter name matches package manifest"
+    },
+    {
+      "id": "permission-policy-load",
+      "status": "pass",
+      "detail": "Installed permission policy is readable"
+    },
+    {
+      "id": "permission-generic-contract",
+      "status": "pass",
+      "detail": "generic adapter exposes target permission contract for installer enforcement"
+    },
+    {
+      "id": "permission-generic-file_write-approved",
+      "status": "pass",
+      "detail": "generic capability file_write has active reviewer approval"
+    },
+    {
+      "id": "permission-generic-file_write-target-enforcement",
+      "status": "pass",
+      "detail": "generic capability file_write has target enforcement note"
+    },
+    {
+      "id": "permission-generic-subprocess-approved",
+      "status": "pass",
+      "detail": "generic capability subprocess has active reviewer approval"
+    },
+    {
+      "id": "permission-generic-subprocess-target-enforcement",
+      "status": "pass",
+      "detail": "generic capability subprocess has target enforcement note"
+    }
+  ],
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "archive": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\gh-pr-release.zip",
+    "package_manifest": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\manifest.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\install_simulation.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\install_simulation.md"
+  }
+}

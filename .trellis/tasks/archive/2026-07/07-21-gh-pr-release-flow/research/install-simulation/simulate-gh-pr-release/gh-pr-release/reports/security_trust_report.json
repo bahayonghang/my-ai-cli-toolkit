@@ -1,0 +1,222 @@
+{
+  "ok": true,
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+  "summary": {
+    "scanned_files": 22,
+    "script_count": 3,
+    "internal_module_count": 0,
+    "secret_findings": 0,
+    "dependency_files": [
+      "requirements-ci.txt"
+    ],
+    "network_script_count": 0,
+    "network_policy_covered_count": 0,
+    "network_policy_missing_count": 0,
+    "file_write_script_count": 1,
+    "permission_required_count": 2,
+    "permission_approved_count": 2,
+    "permission_missing_count": 0,
+    "permission_invalid_count": 0,
+    "permission_expired_count": 0,
+    "help_smoke_checked_count": 3,
+    "help_smoke_failed_count": 0,
+    "interactive_script_count": 0,
+    "package_hash_scope": "source-contract-without-generated-reports",
+    "package_hash_file_count": 22,
+    "package_sha256": "bb1b7e46bf725f2c049722c012155328cc691273df0617279ac5f494a0ce07fd"
+  },
+  "failures": [],
+  "warnings": [],
+  "secrets": [],
+  "scripts": [
+    {
+      "path": "scripts\\fetch_comments.py",
+      "interface": "cli",
+      "interface_declared": false,
+      "interface_reason": "Default CLI classification; add SCRIPT_INTERFACE for internal modules.",
+      "has_argparse": true,
+      "has_main_guard": true,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": false,
+      "uses_subprocess": true,
+      "network_urls": [
+        "https://github.com/org/repo/pull/42"
+      ],
+      "network_hosts": [
+        "github.com"
+      ]
+    },
+    {
+      "path": "scripts\\inspect_pr_checks.py",
+      "interface": "cli",
+      "interface_declared": false,
+      "interface_reason": "Default CLI classification; add SCRIPT_INTERFACE for internal modules.",
+      "has_argparse": true,
+      "has_main_guard": true,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": false,
+      "uses_subprocess": true,
+      "network_urls": [],
+      "network_hosts": []
+    },
+    {
+      "path": "scripts\\pr_review.py",
+      "interface": "cli",
+      "interface_declared": false,
+      "interface_reason": "Default CLI classification; add SCRIPT_INTERFACE for internal modules.",
+      "has_argparse": true,
+      "has_main_guard": true,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": true,
+      "uses_subprocess": true,
+      "network_urls": [],
+      "network_hosts": []
+    }
+  ],
+  "dependencies": {
+    "present": [
+      "requirements-ci.txt"
+    ],
+    "pinned": [],
+    "unpinned": []
+  },
+  "network_policy": {
+    "present": false,
+    "path": "security/network_policy.json",
+    "schema_version": "",
+    "network_script_count": 0,
+    "covered_scripts": [],
+    "missing_scripts": [],
+    "mismatches": [],
+    "default_policy": {}
+  },
+  "help_smoke": {
+    "enabled": true,
+    "timeout_seconds": 5.0,
+    "candidate_count": 3,
+    "checked_count": 3,
+    "passed_count": 3,
+    "failed_count": 0,
+    "skipped_count": 0,
+    "failed_scripts": [],
+    "results": [
+      {
+        "path": "scripts\\fetch_comments.py",
+        "command": "python3 scripts\\fetch_comments.py --help",
+        "returncode": 0,
+        "timed_out": false,
+        "passed": true,
+        "has_help_text": true,
+        "stdout_excerpt": "usage: fetch_comments.py [-h] [--repo REPO] [--pr PR] [--json]\n                         [--include-resolved]\n\nFetch PR review comments and summarize actionable items.\n\noptions:\n  -h, --help          show this help message and exit\n  --repo ",
+        "stderr_excerpt": ""
+      },
+      {
+        "path": "scripts\\inspect_pr_checks.py",
+        "command": "python3 scripts\\inspect_pr_checks.py --help",
+        "returncode": 0,
+        "timed_out": false,
+        "passed": true,
+        "has_help_text": true,
+        "stdout_excerpt": "usage: inspect_pr_checks.py [-h] [--repo REPO] [--pr PR]\n                            [--max-lines MAX_LINES] [--context CONTEXT]\n                            [--json]\n\nInspect failing GitHub PR checks, fetch logs, and suggest local repro\ncom",
+        "stderr_excerpt": ""
+      },
+      {
+        "path": "scripts\\pr_review.py",
+        "command": "python3 scripts\\pr_review.py --help",
+        "returncode": 0,
+        "timed_out": false,
+        "passed": true,
+        "has_help_text": true,
+        "stdout_excerpt": "usage: pr_review.py [-h]\n                    {prepare-review,submit-review,list-threads,reply,resolve} ...\n\nPrepare and publish PR reviews, then inspect or update review threads.\n\npositional arguments:\n  {prepare-review,submit-review,list-t",
+        "stderr_excerpt": ""
+      }
+    ],
+    "skipped": []
+  },
+  "permission_governance": {
+    "present": true,
+    "path": "security/permission_policy.json",
+    "schema_version": "1.0",
+    "reviewed_at": "2026-07-21",
+    "required_capabilities": [
+      "file_write",
+      "subprocess"
+    ],
+    "approved_capabilities": [
+      "file_write",
+      "subprocess"
+    ],
+    "missing_capabilities": [],
+    "invalid_capabilities": [],
+    "expired_capabilities": [],
+    "approval_count": 2,
+    "required_count": 2,
+    "missing_count": 0,
+    "invalid_count": 0,
+    "expired_count": 0,
+    "approvals": [
+      {
+        "capability": "file_write",
+        "status": "approved",
+        "scripts": [
+          "scripts\\pr_review.py"
+        ],
+        "reviewer": "lyh",
+        "scope": "scripts/pr_review.py may write caller-approved local preparation and state artifacts. Local approval does not authorize a GitHub write, push, review submission, thread update, merge, tag, or Release action.",
+        "reason": "The approved task retains the existing review helper, whose bounded local files are required to prepare auditable batches before any separately authorized GitHub write.",
+        "expires_at": "2026-10-21",
+        "evidence": [
+          "SKILL.md",
+          "reports/security_trust_report.md",
+          "tests/test_pr_review.py"
+        ],
+        "target_enforcement": {
+          "openai": "Permission contract metadata; the host must enforce file-write approval.",
+          "claude": "SKILL.md allowed-tools plus permission contract metadata; each local edit remains scope-bound.",
+          "generic": "Permission contract metadata for downstream installer or host enforcement.",
+          "vscode": "Permission contract metadata only; workspace trust and the host remain responsible for enforcement."
+        },
+        "validation": []
+      },
+      {
+        "capability": "subprocess",
+        "status": "approved",
+        "scripts": [
+          "scripts\\fetch_comments.py",
+          "scripts\\inspect_pr_checks.py",
+          "scripts\\pr_review.py"
+        ],
+        "reviewer": "lyh",
+        "scope": "scripts/fetch_comments.py, scripts/inspect_pr_checks.py, and scripts/pr_review.py may invoke the local gh executable for the resolved repository and approved operation. Remote writes remain separately authorized by SKILL.md.",
+        "reason": "The approved task preserves deterministic gh CLI helpers for PR inspection and prepared review operations while the safety contract keeps every external write behind a fresh-read authorization boundary.",
+        "expires_at": "2026-10-21",
+        "evidence": [
+          "SKILL.md",
+          "reports/security_trust_report.md",
+          "tests/test_fetch_comments.py",
+          "tests/test_inspect_pr_checks.py",
+          "tests/test_pr_review.py"
+        ],
+        "target_enforcement": {
+          "openai": "Permission contract metadata; the host must enforce subprocess and network authorization.",
+          "claude": "Bash is declared in allowed-tools; the skill contract still requires action-specific authorization.",
+          "generic": "Permission contract metadata for downstream installer or host enforcement.",
+          "vscode": "Permission contract metadata only; workspace trust and the host remain responsible for enforcement."
+        },
+        "validation": []
+      }
+    ]
+  },
+  "trust_metadata": {
+    "source_tier": "local",
+    "remote_inline_execution": "forbid",
+    "remote_metadata_policy": "allow-metadata-only"
+  },
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\security_trust_report.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\security_trust_report.md"
+  }
+}

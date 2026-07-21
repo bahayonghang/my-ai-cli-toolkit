@@ -1,0 +1,33 @@
+{
+  "optimizer_hints": {
+    "capability": "Operate the GitHub pull-request and release lifecycle from PR creation through tagged GitHub Release publication",
+    "inputs": ["GitHub pull requests", "review threads", "PR checks", "release tags", "GitHub Releases", "release workflow runs"],
+    "trigger_actions": ["create a PR", "publish a review", "merge a PR", "reply to threads", "address feedback", "fix PR checks", "prepare a release PR", "tag a merged commit", "publish a GitHub Release", "diagnose release CI"],
+    "exclusions": ["substantive code review analysis", "commit authoring", "GitHub setup", "release workflow authoring", "registry publishing", "release-readiness audits", "release-notes-only writing"],
+    "artifacts": ["PR drafts", "GitHub reviews", "thread replies", "code fixes", "CI diagnostics", "release PRs", "annotated tags", "GitHub Releases", "verified assets"]
+  },
+  "fallback_positive_concepts": ["github_delivery_lifecycle"],
+  "positive_concepts": {
+    "github_delivery_lifecycle": {
+      "weight": 1.0,
+      "phrases": [
+        "create a pr", "draft pr", "创建一个 draft pr", "publish this confirmed", "inline comments", "request changes", "发布为 inline comments",
+        "merge it", "merge safely", "安全合并", "reply to unresolved review threads", "send replies", "thread resolve", "回复 reviewer",
+        "actionable review comments", "处理 pr", "评审意见", "fix failing pr checks", "fix the failing pr checks", "github actions checks on this pr are failing", "ci 红了",
+        "prepare a release pr", "version pr", "版本 pr", "version bumps", "更新版本号", "tag that merge commit", "打 tag",
+        "publish a github release", "发布 github release", "verified assets", "校验过的产物", "tag-triggered release workflow failed", "release workflow failed after the tag was pushed", "release ci 失败", "cut a release"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "code_audit": {"weight": 1.0, "exclusive": true, "phrases": ["review this pr for correctness", "find correctness and security defects", "substantive code review", "code-auditor"]},
+    "maintainability_review": {"weight": 1.0, "exclusive": true, "phrases": ["maintainability and refactoring", "可维护性", "重构机会", "code-quality-review"]},
+    "commit_authoring": {"weight": 1.0, "exclusive": true, "phrases": ["commit all current", "organize and commit", "commit authoring", "git-commit"]},
+    "github_setup": {"weight": 1.0, "exclusive": true, "phrases": ["set up branch protection", "configure github actions", "author a release.yml", "build the release workflow yaml", "gh-bootstrap"]},
+    "registry_publish": {"weight": 1.0, "exclusive": true, "phrases": ["npm publish", "cargo publish", "publish the crate to crates.io", "registry publishing"]},
+    "repository_health": {"weight": 1.0, "exclusive": true, "phrases": ["audit repository health", "full-spectrum repository audit", "release readiness", "release-readiness", "fuck-my-shit-mountain"]},
+    "issue_only": {"weight": 1.0, "exclusive": true, "phrases": ["create a github issue", "open an issue"]},
+    "release_notes_only": {"weight": 1.0, "exclusive": true, "phrases": ["write release notes", "summarize this merged pr into release notes", "without operating on github"]},
+    "explain_only": {"weight": 1.0, "exclusive": true, "phrases": ["explain what a pull request is"]}
+  }
+}

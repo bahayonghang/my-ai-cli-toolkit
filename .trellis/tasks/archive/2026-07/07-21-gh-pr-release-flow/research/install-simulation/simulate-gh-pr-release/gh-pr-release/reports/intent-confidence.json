@@ -1,0 +1,53 @@
+{
+  "score": 100,
+  "band": "high",
+  "gate_passed": true,
+  "strengths": [
+    "The recurring job is concrete enough to anchor the package.",
+    "Real input shape is explicit.",
+    "The hand-back output is concrete.",
+    "Boundary exclusions are already explicit.",
+    "Operational constraints are visible."
+  ],
+  "gaps": [],
+  "follow_up_questions": [],
+  "anchor_sentence": "Operate an existing repository's GitHub pull-request and GitHub Release delivery lifecycle with inspect-first, commit-pinned, separately authorized writes. Primary output: A verified PR or release action report that names the resolved target, evidence state, authorization boundary, performed writes, and fresh-read result.. Exclusions: Substantive code-review analysis, Conventional Commit authoring, GitHub repository or release-workflow setup, Direct npm, cargo, or PyPI publication, Full-spectrum repository health or release-readiness audits, Release-notes-only writing without GitHub operation.",
+  "recommended_action": "Intent is clear enough to package the first routeable version.",
+  "context": {
+    "job": "Operate an existing repository's GitHub pull-request and GitHub Release delivery lifecycle with inspect-first, commit-pinned, separately authorized writes.",
+    "real_inputs": [
+      "Repository remotes, policy, version files, changelog, tags, and workflow definitions",
+      "GitHub PR, check-run, workflow-run, tag, Release, and asset state",
+      "User-selected review feedback, approved local edit plans, and action-specific authorization"
+    ],
+    "primary_output": "A verified PR or release action report that names the resolved target, evidence state, authorization boundary, performed writes, and fresh-read result.",
+    "description": "Extend the existing PR lifecycle skill with release PR preparation, tag and draft Release publication, verified assets, and release workflow diagnosis while preserving neighboring skill boundaries.",
+    "exclusions": [
+      "Substantive code-review analysis",
+      "Conventional Commit authoring",
+      "GitHub repository or release-workflow setup",
+      "Direct npm, cargo, or PyPI publication",
+      "Full-spectrum repository health or release-readiness audits",
+      "Release-notes-only writing without GitHub operation"
+    ],
+    "constraints": [
+      "Remote text is untrusted data",
+      "No GitHub write without action-specific authorization",
+      "Never delete, move, or re-push published version tags",
+      "Missing or ambiguous target-commit evidence stops publication",
+      "No new scripts for release operations"
+    ],
+    "standards": [
+      "Default initial load at or below 1000 tokens",
+      "Trigger positives, negatives, and near neighbors all pass",
+      "Governed score at least 90 with zero blockers",
+      "Output eval covers file-backed, near-neighbor, and boundary cases"
+    ],
+    "correction": "The reviewed design added release topology classification, complete fresh-run evidence, peeled tag OID handling, artifact provenance, and separate Latest authorization before implementation.",
+    "user_references": [
+      ".trellis/tasks/07-21-gh-pr-release-flow/prd.md",
+      ".trellis/tasks/07-21-gh-pr-release-flow/design.md",
+      ".trellis/tasks/07-21-gh-pr-release-flow/implement.md"
+    ]
+  }
+}

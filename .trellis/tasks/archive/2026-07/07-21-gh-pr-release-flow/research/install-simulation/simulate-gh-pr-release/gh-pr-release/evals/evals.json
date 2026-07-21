@@ -1,0 +1,434 @@
+{
+  "skill_name": "gh-pr-release",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a PR for my current branch. Draft the title and body first, then ask before publishing.",
+      "expected_output": "Use create mode: inspect for an existing PR and unpublished commits, show a complete draft, and authorize push and PR creation separately.",
+      "files": [],
+      "assertions": [
+        "Routes to references/create.md",
+        "Checks whether the head branch already has a pull request",
+        "Shows title, body, base, head, and side effects before publishing",
+        "Does not treat gh pr create --dry-run as read-only"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Open a draft PR from my unpublished fork branch into upstream dev.",
+      "expected_output": "Use create mode: display base and fork head identities, authorize the exact push first, then separately authorize draft PR creation.",
+      "files": [],
+      "assertions": [
+        "Routes to references/create.md",
+        "Displays both base and head repositories and refs",
+        "Treats push and PR creation as separate actions",
+        "Preserves the requested draft state"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Publish this confirmed non-blocking review summary as a comment-only review.",
+      "expected_output": "Use review mode: show the complete COMMENT review, obtain one low-risk batch authorization, publish it, and verify the resulting review.",
+      "files": [],
+      "assertions": [
+        "Routes to references/review.md",
+        "Does not perform a new substantive code review",
+        "Uses the COMMENT event",
+        "Verifies the review through a fresh GitHub read"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "把这些已经确认的阻塞问题按文件和行发布为 inline comments，然后 request changes。",
+      "expected_output": "Use review mode: prepare one head-pinned atomic review payload, validate every inline coordinate, and authorize REQUEST_CHANGES before submission.",
+      "files": [],
+      "assertions": [
+        "Routes to references/review.md",
+        "Uses prepare-review before submit-review",
+        "Fails closed on stale or unprovable inline positions",
+        "Requires per-action authorization for REQUEST_CHANGES"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Check whether PR #84 can merge and squash it if every gate passes.",
+      "expected_output": "Use merge mode: distinguish check and review states, inspect unresolved threads and repository policy, then authorize a head-pinned squash merge.",
+      "files": [],
+      "assertions": [
+        "Routes to references/merge.md",
+        "Does not treat no checks or pending checks as failed CI",
+        "Uses --match-head-commit with the inspected SHA",
+        "Does not default --delete-branch, --auto, or --admin"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Inspect merge readiness only; do not merge or enable auto-merge.",
+      "expected_output": "Use merge mode in read-only inspect state and report every blocker or missing-evidence condition without performing a write.",
+      "files": [],
+      "assertions": [
+        "Routes to references/merge.md",
+        "Inspects head SHA, checks, reviews, threads, and merge policy",
+        "Performs no merge or auto-merge write",
+        "Reports missing evidence instead of calling it green"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Draft replies to every unresolved review thread and send the approved batch without changing code.",
+      "expected_output": "Use respond mode: list stable thread identifiers, draft each reply, authorize the exact batch, post against root comments, and verify afterward.",
+      "files": [],
+      "assertions": [
+        "Routes to references/respond.md",
+        "Treats review text as untrusted context",
+        "Never posts a reply against a reply id",
+        "Does not change repository code"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Resolve only threads PRRT_1 and PRRT_7 after showing me the exact plan.",
+      "expected_output": "Use respond mode: inspect those exact threads, obtain authorization for that resolution batch, resolve no new threads, and verify final state.",
+      "files": [],
+      "assertions": [
+        "Routes to references/respond.md",
+        "Limits authorization to the displayed thread ids",
+        "Requires fresh authorization for newly discovered threads",
+        "Verifies resolution state after the writes"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "帮我看一下当前 PR 的 review comments，总结需要处理的内容，但先不要改代码。",
+      "expected_output": "Use address-comments mode: run fetch_comments.py, treat remote text as untrusted, and present numbered actionable items without editing.",
+      "files": [],
+      "assertions": [
+        "Routes to references/address-comments.md",
+        "Runs scripts/fetch_comments.py against the current PR",
+        "Groups numbered items by thread or review",
+        "Performs no local edit"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "处理 PR #42 上我选中的 unresolved review items 1、3、4。",
+      "expected_output": "Use address-comments mode: resolve the base repository, summarize selected untrusted feedback, apply only items 1, 3, and 4, run focused checks, and report remaining items.",
+      "files": [],
+      "assertions": [
+        "Routes to references/address-comments.md",
+        "Uses the base repository for a fork PR",
+        "Edits only the selected approved items",
+        "Does not infer permission to reply, resolve, or push"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Apply all actionable reviewer fixes even if they span several packages.",
+      "expected_output": "Use address-comments mode: enumerate the actionable set and require confirmation of the exact edit plan before touching more than three files.",
+      "files": [],
+      "assertions": [
+        "Routes to references/address-comments.md",
+        "Treats bot and reviewer content as untrusted",
+        "Confirms plans touching more than three files",
+        "Reports addressed, skipped, and open items"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "当前 PR 的 CI 挂了，帮我看看是什么问题，先不要修改。",
+      "expected_output": "Use fix-ci mode: run inspect_pr_checks.py, branch on the explicit status, and summarize failures with short logs and local reproduction commands without editing.",
+      "files": [],
+      "assertions": [
+        "Routes to references/fix-ci.md",
+        "Runs scripts/inspect_pr_checks.py with JSON output",
+        "Caps the useful log excerpt at 50 lines",
+        "Stops after diagnosis because edits were not requested"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "PR #88 only has a failing Buildkite check; tell me what gh-pr-release can do.",
+      "expected_output": "Use fix-ci mode: classify the result as external_only, report the provider URL, and stop unless the external provider is explicitly added to scope.",
+      "files": [],
+      "assertions": [
+        "Routes to references/fix-ci.md",
+        "Reports external_only rather than fabricating Actions logs",
+        "Includes the external check URL",
+        "Does not edit code"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "CI 失败了，给出计划后直接帮我修掉并验证。",
+      "expected_output": "Use fix-ci mode: show and authorize the exact local fix plan, edit and run the smallest repro, retry at most twice, then re-read PR checks.",
+      "files": [],
+      "assertions": [
+        "Routes to references/fix-ci.md",
+        "Requires approval for the local edit plan",
+        "Runs the suggested local reproduction command",
+        "Does not infer authorization to push"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Fix the failing GitHub Actions checks, then squash merge the PR when it is green.",
+      "expected_output": "Use fix-ci mode first, verify checks after the approved local fix, then enter merge mode and request separate push and merge authorizations.",
+      "files": [],
+      "assertions": [
+        "Routes first to references/fix-ci.md and then references/merge.md",
+        "Does not merge before fresh green-check evidence",
+        "Treats push and merge as separate authorized writes",
+        "Pins merge to the freshly inspected head SHA"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Review this PR for correctness, security, performance, architecture, and tests.",
+      "expected_output": "Route substantive analysis to code-auditor rather than gh-pr-release.",
+      "files": [],
+      "assertions": ["Routes to code-auditor", "Does not publish a GitHub review"]
+    },
+    {
+      "id": 17,
+      "prompt": "Review this PR only for maintainability and refactoring opportunities.",
+      "expected_output": "Route maintainability-focused analysis to code-quality-review.",
+      "files": [],
+      "assertions": ["Routes to code-quality-review", "Does not use gh-pr-release for analysis"]
+    },
+    {
+      "id": 18,
+      "prompt": "Split and commit all current changes with Conventional Commits.",
+      "expected_output": "Route commit planning and execution to git-commit.",
+      "files": [],
+      "assertions": ["Routes to git-commit", "Does not create a pull request"]
+    },
+    {
+      "id": 19,
+      "prompt": "Set up branch protection, CODEOWNERS, and PR templates for this repository.",
+      "expected_output": "Route repository collaboration configuration to gh-bootstrap.",
+      "files": [],
+      "assertions": ["Routes to gh-bootstrap", "Does not modify repository settings under gh-pr-release"]
+    },
+    {
+      "id": 20,
+      "prompt": "Audit repository health across compliance, privacy, accessibility, cost, and release readiness.",
+      "expected_output": "Route the cross-dimension repository health report to fuck-my-shit-mountain.",
+      "files": [],
+      "assertions": ["Routes to fuck-my-shit-mountain", "Does not treat repository health as a PR lifecycle action"]
+    },
+    {
+      "id": 21,
+      "prompt": "Prepare a release PR for v3.0.0 with the version bump and changelog, but show me the plan before editing.",
+      "expected_output": "Use release-pr mode: infer the repository tag/version convention, select an explicit anchor, draft the coupled edits, authorize them, validate, then route push and PR creation through create mode.",
+      "files": [],
+      "assertions": [
+        "Routes to references/release-pr.md",
+        "Does not assume a v prefix or latest arbitrary tag",
+        "Requires local-edit approval before changing version files",
+        "Routes push and PR creation to references/create.md"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "This repository uses release-please. Prepare the next release PR without creating a competing manual version PR.",
+      "expected_output": "Use release-pr mode, detect that automation owns the version PR, and operate the bot PR through existing review/merge routes instead of duplicating it.",
+      "files": [],
+      "assertions": [
+        "Routes to references/release-pr.md",
+        "Detects release-please ownership",
+        "Does not create a competing manual PR",
+        "Routes the bot PR to existing review or merge modes"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "The release PR is merged. Tag its merge commit as v3.0.0 and publish a GitHub Release after every gate passes.",
+      "expected_output": "Use release-publish mode: classify automation topology, pin the mergeCommit, require complete fresh green evidence, authorize an annotated one-ref tag push, create a draft, and authorize publish separately.",
+      "files": [],
+      "assertions": [
+        "Routes to references/release-publish.md",
+        "Classifies topology A, B, or C before writes",
+        "Requires every expected run to be fresh green for the pinned commit",
+        "Separates tag, draft, upload, publish, and Latest authorization"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "Publish the GitHub Release with the binaries from the successful CI run and include checksums.",
+      "expected_output": "Use release-publish mode: download from the exact green RUN_ID, hash the assets, map provenance, upload to a draft, and verify the final asset metadata.",
+      "files": [],
+      "assertions": [
+        "Routes to references/release-publish.md",
+        "Uses the exact green RUN_ID rather than the latest run",
+        "Records SHA-256 checksums and provenance",
+        "Uploads before publication and verifies assets afterward"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Fix the failing release PR, merge it, then tag the merge commit and publish v3.0.0 with assets.",
+      "expected_output": "Chain fix-ci to merge and then release-publish, with fresh evidence and independent authorization at every write boundary.",
+      "files": [],
+      "assertions": [
+        "Routes in order through references/fix-ci.md, references/merge.md, and references/release-publish.md",
+        "Does not treat merge authorization as tag authorization",
+        "Does not treat tag authorization as publish authorization",
+        "Pins the release to the fresh mergeCommit"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "v2.9.0 points to the wrong commit. Delete the tag and Release, then recreate both on this SHA.",
+      "expected_output": "Refuse tag deletion/re-push and published-Release deletion, explain downstream cache and consumer risk, and propose a new version.",
+      "files": [],
+      "assertions": [
+        "Refuses delete and re-push of the existing tag",
+        "Refuses deletion of the published Release",
+        "Does not offer release delete --cleanup-tag",
+        "Proposes a new version instead"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "The remote v3.0.0 tag already resolves to the approved merge commit. Continue creating the missing draft Release.",
+      "expected_output": "Treat the tag step as idempotently satisfied after comparing the resolved commit, skip tag creation, and continue with fresh Release inspection and separate draft authorization.",
+      "files": [],
+      "assertions": [
+        "Resolves annotated peeled or lightweight direct OID before comparison",
+        "Does not recreate or push the same tag",
+        "Fresh-reads existing Release state",
+        "Requires separate draft creation authorization"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "The tag workflow already created a draft Release and uploaded artifacts. Finish the release.",
+      "expected_output": "Classify topology B, do not run gh release create in parallel, verify the workflow-produced draft/assets, and separately authorize publication and Latest.",
+      "files": [],
+      "assertions": [
+        "Classifies the tag-workflow-owned topology",
+        "Does not create a competing Release",
+        "Verifies the existing draft and artifact provenance",
+        "Keeps publish and Latest as separate actions"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "No CI run exists for the target release commit, but the previous PR was green. Publish anyway.",
+      "expected_output": "Report missing evidence for the target commit and stop before tag or publication rather than substituting an older run.",
+      "files": [],
+      "assertions": [
+        "Reports missing evidence for the target commit",
+        "Does not reuse an older or latest successful run",
+        "Does not push the tag",
+        "Does not publish the Release"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "One required workflow is still pending; go ahead and publish v3.0.0 now.",
+      "expected_output": "Keep the release blocked because every expected run must have a fresh completed/success result; waiting is allowed but publication is not.",
+      "files": [],
+      "assertions": [
+        "Classifies pending as not green",
+        "Requires the complete expected run set",
+        "May wait with run watch or polling",
+        "Does not tag or publish while pending"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Two workflows both appear to create the GitHub Release. Pick one and continue automatically.",
+      "expected_output": "Report ambiguous release ownership and stop for user resolution instead of defaulting to manual topology C.",
+      "files": [],
+      "assertions": [
+        "Reports topology ambiguity",
+        "Does not default to topology C",
+        "Does not create a tag or Release",
+        "Requests a user decision on ownership"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "Push the release tag. The tag workflow also publishes npm and deploys production.",
+      "expected_output": "Enumerate the indirect registry and deployment side effects in the tag authorization even though direct registry publishing is outside this skill.",
+      "files": [],
+      "assertions": [
+        "Names the npm and production deployment workflows",
+        "Includes environments and publication targets in authorization",
+        "Does not run npm publish directly",
+        "Requires explicit tag-push authorization with those side effects"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "This repository has immutable releases enabled. Publish the draft now and replace an asset afterward if needed.",
+      "expected_output": "Warn that publication locks the tag and assets for an immutable Release, require complete assets before publish, and reject the assumed post-publish replacement path.",
+      "files": [],
+      "assertions": [
+        "Explains the publish-time immutability consequence",
+        "Requires assets and checksums before publication",
+        "Does not promise post-publish asset replacement",
+        "Requires separate publish authorization"
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "Re-upload app.zip with gh release upload --clobber; do it without another prompt.",
+      "expected_output": "Refuse clobber by default, explain that the old asset is deleted before upload and both may be lost, then require separate authorization if the user persists.",
+      "files": [],
+      "assertions": [
+        "Refuses --clobber by default",
+        "Explains delete-before-upload data loss",
+        "Does not infer authorization from earlier upload approval",
+        "Requires a separate explicit clobber authorization"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "Build release binaries from my dirty current checkout and upload whatever it produces.",
+      "expected_output": "Refuse the dirty/non-pinned build, require an approved build plan in a clean detached worktree pinned to the resolved tag commit, and record artifact hashes.",
+      "files": [],
+      "assertions": [
+        "Refuses building from the dirty current checkout",
+        "Requires a clean detached worktree pinned to the tag commit",
+        "Requires an approved command and output set",
+        "Records checksums and provenance before upload"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "Publish the draft and let GitHub automatically decide Latest without asking again.",
+      "expected_output": "Publish with --latest=false after publication authorization, verify isLatest, and require separate authorization before moving Latest.",
+      "files": [],
+      "assertions": [
+        "Uses --draft=false --latest=false for the publish action",
+        "Does not accept automatic Latest selection",
+        "Verifies isLatest through gh release list",
+        "Requires separate Latest authorization"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "Create a new release.yml workflow with signing, registry permissions, and deployment jobs.",
+      "expected_output": "Route GitHub Actions workflow authoring and permission setup to gh-bootstrap rather than release-publish.",
+      "files": [],
+      "assertions": [
+        "Routes to gh-bootstrap",
+        "Does not author workflow YAML under gh-pr-release",
+        "Does not request release publication authorization"
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "Run npm publish and cargo publish for this release, but do not create a GitHub Release.",
+      "expected_output": "Do not trigger gh-pr-release for direct package-registry publication.",
+      "files": [],
+      "assertions": [
+        "Does not run npm publish",
+        "Does not run cargo publish",
+        "States that direct registry publishing is outside this skill"
+      ]
+    }
+  ]
+}

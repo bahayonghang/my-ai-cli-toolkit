@@ -1,0 +1,63 @@
+{
+  "margin_warning_threshold": 0.08,
+  "routes": [
+    {
+      "name": "gh-pr-release",
+      "description_file": "D:/Documents/Code/Agents/my-claude-code-settings/skills/git-github-collaboration/gh-pr-release/SKILL.md",
+      "semantic_config": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/07-21-gh-pr-release-flow/research/semantic_config.json",
+      "threshold": 0.48
+    }
+  ],
+  "cases": [
+    {
+      "family": "pr-create",
+      "text": "Create a draft PR for my current branch and show me the body first.",
+      "expected_route": "gh-pr-release"
+    },
+    {
+      "family": "release-pr",
+      "text": "Prepare the next version PR with the changelog, but respect release-please if it owns the PR.",
+      "expected_route": "gh-pr-release"
+    },
+    {
+      "family": "release-publish",
+      "text": "Tag the merged release commit and publish a GitHub Release with assets after all workflows pass.",
+      "expected_route": "gh-pr-release"
+    },
+    {
+      "family": "release-ci",
+      "text": "The release workflow failed after the tag was pushed; diagnose the run without publishing anything else.",
+      "expected_route": "gh-pr-release"
+    },
+    {
+      "family": "code-review",
+      "text": "Find correctness and security defects in this pull request, but do not publish a review.",
+      "expected_route": "no_route"
+    },
+    {
+      "family": "commit",
+      "text": "Split and commit all current changes with Conventional Commits; do not create a PR.",
+      "expected_route": "no_route"
+    },
+    {
+      "family": "github-setup",
+      "text": "Create release.yml with signing, registry permissions, and production deployment.",
+      "expected_route": "no_route"
+    },
+    {
+      "family": "registry-publish",
+      "text": "Run npm publish and cargo publish without creating a GitHub Release.",
+      "expected_route": "no_route"
+    },
+    {
+      "family": "repository-audit",
+      "text": "Audit release readiness across compliance, privacy, accessibility, cost, and operations.",
+      "expected_route": "no_route"
+    },
+    {
+      "family": "release-notes-only",
+      "text": "Write release notes from this changelog, but do not operate on GitHub.",
+      "expected_route": "no_route"
+    }
+  ]
+}

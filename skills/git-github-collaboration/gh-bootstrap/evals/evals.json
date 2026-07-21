@@ -38,11 +38,11 @@
     {
       "id": 4,
       "prompt": "我的 PR CI 红了，帮我修一下",
-      "expected_output": "Near-neighbor negative: a CI-failure fix request should route to gh-pr fix-ci mode, not gh-bootstrap.",
+      "expected_output": "Near-neighbor negative: a CI-failure fix request should route to gh-pr-release fix-ci mode, not gh-bootstrap.",
       "files": [],
       "assertions": [
         "Does not invoke gh-bootstrap",
-        "Routes to gh-pr references/fix-ci.md instead"
+        "Routes to gh-pr-release references/fix-ci.md instead"
       ]
     },
     {

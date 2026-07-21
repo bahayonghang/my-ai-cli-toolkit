@@ -1,0 +1,49 @@
+{
+  "captured_at": "2026-07-21",
+  "skill": "gh-pr",
+  "version": "2.0.0",
+  "resource_boundary": {
+    "ok": true,
+    "failures": [],
+    "warnings": [],
+    "stats": {
+      "context_budget_tier": "production",
+      "context_budget_limit": 1000,
+      "skill_body_tokens": 754,
+      "other_text_tokens": 30077,
+      "estimated_initial_load_tokens": 995,
+      "estimated_total_text_tokens": 30831,
+      "deferred_resource_tokens": 23265,
+      "relevant_file_count": 24,
+      "unused_resource_dirs": [],
+      "quality_signal_points": 85,
+      "quality_density": 85.4
+    }
+  },
+  "governance": {
+    "ok": true,
+    "failures": [],
+    "warnings": [
+      "No manifest.json; governance metadata is unavailable."
+    ],
+    "details": {
+      "manifest_present": false,
+      "frontmatter_name": "gh-pr",
+      "manifest_name": null,
+      "status": null,
+      "maturity_tier": null,
+      "review_cadence": null,
+      "governance_score": 50,
+      "declared_maturity_minimum": null,
+      "computed_governance_band": "emerging",
+      "computed_maturity_tier": "emerging",
+      "score_breakdown": {
+        "metadata_integrity": 0,
+        "ownership_and_review": 0,
+        "boundary_and_eval": 25,
+        "operational_assets": 15,
+        "maintenance_evidence": 10
+      }
+    }
+  }
+}

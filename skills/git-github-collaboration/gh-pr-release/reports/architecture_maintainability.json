@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "generated_at": "2026-07-21T00:00:00Z",
+  "skill_dir": ".",
+  "summary": {
+    "python_file_count": 6,
+    "script_file_count": 0,
+    "test_file_count": 0,
+    "internal_module_count": 0,
+    "cli_script_count": 4,
+    "command_handler_count": 0,
+    "entrypoint_command_handler_count": 0,
+    "command_module_count": 0,
+    "warn_line_threshold": 900,
+    "watch_line_threshold": 720,
+    "early_watch_line_threshold": 600,
+    "block_line_threshold": 1500,
+    "largest_file_lines": 802,
+    "watchlist_count": 2,
+    "early_watchlist_count": 0,
+    "hotspot_count": 0,
+    "blocker_count": 0,
+    "decision": "pass"
+  },
+  "largest_files": [
+    {
+      "path": "scripts\\pr_review.py",
+      "lines": 802,
+      "kind": "cli-script",
+      "severity": "pass",
+      "early_watch": true,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    },
+    {
+      "path": "scripts\\inspect_pr_checks.py",
+      "lines": 765,
+      "kind": "cli-script",
+      "severity": "pass",
+      "early_watch": true,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    },
+    {
+      "path": "scripts\\fetch_comments.py",
+      "lines": 377,
+      "kind": "cli-script",
+      "severity": "pass",
+      "early_watch": false,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    },
+    {
+      "path": "tests\\test_pr_review.py",
+      "lines": 357,
+      "kind": "test",
+      "severity": "pass",
+      "early_watch": false,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    },
+    {
+      "path": "tests\\test_inspect_pr_checks.py",
+      "lines": 137,
+      "kind": "cli-script",
+      "severity": "pass",
+      "early_watch": false,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    },
+    {
+      "path": "tests\\test_fetch_comments.py",
+      "lines": 79,
+      "kind": "test",
+      "severity": "pass",
+      "early_watch": false,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    }
+  ],
+  "watchlist": [
+    {
+      "path": "scripts\\pr_review.py",
+      "lines": 802,
+      "kind": "cli-script",
+      "severity": "pass",
+      "early_watch": true,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    },
+    {
+      "path": "scripts\\inspect_pr_checks.py",
+      "lines": 765,
+      "kind": "cli-script",
+      "severity": "pass",
+      "early_watch": true,
+      "recommendation": "Watch this file before adding new responsibilities; extract a helper module when one concern dominates."
+    }
+  ],
+  "early_watchlist": [],
+  "hotspots": [],
+  "actions": [],
+  "artifacts": {
+    "json": "reports/architecture_maintainability.json",
+    "markdown": "reports/architecture_maintainability.md"
+  }
+}

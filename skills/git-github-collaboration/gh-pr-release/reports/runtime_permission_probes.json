@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "skill_dir": ".",
+  "package_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic",
+  "expected_capabilities": [
+    "file_write",
+    "subprocess"
+  ],
+  "summary": {
+    "target_count": 1,
+    "pass_count": 1,
+    "fail_count": 0,
+    "native_enforcement_count": 0,
+    "metadata_fallback_count": 1,
+    "residual_risk_count": 1,
+    "required_capability_count": 2,
+    "failure_count": 0,
+    "installer_enforcement_source_status": "present",
+    "installer_enforcement_target_count": 1,
+    "installer_enforcement_pass_count": 1,
+    "installer_permission_enforced_count": 2,
+    "installer_permission_failure_count": 0,
+    "installer_permission_capability_count": 2,
+    "world_class_native_evidence_ready": false,
+    "installer_enforcement_ready": true
+  },
+  "installer_enforcement": {
+    "source": "reports\\install_simulation.json",
+    "source_status": "present",
+    "package_dir_matches": true,
+    "summary": {
+      "installer_permission_enforced_count": 2,
+      "installer_permission_failure_count": 0,
+      "permission_target_count": 1,
+      "permission_capability_count": 2,
+      "failure_count": 0
+    }
+  },
+  "targets": [
+    {
+      "target": "generic",
+      "status": "pass",
+      "adapter": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-21-gh-pr-release-flow\\research\\package-generic\\targets\\generic\\adapter.json",
+      "permission_model": "agent-skills-compatible-metadata",
+      "native_enforcement": false,
+      "metadata_fallback_explicit": true,
+      "installer_enforcement": {
+        "target": "generic",
+        "source_status": "present",
+        "enforced": true,
+        "enforced_capabilities": [
+          "file_write",
+          "subprocess"
+        ],
+        "missing_capabilities": [],
+        "failure_details": []
+      },
+      "assurance": "metadata-fallback-explicit",
+      "declared_capabilities": [
+        "file_write",
+        "subprocess"
+      ],
+      "checks": [
+        {
+          "key": "adapter-present",
+          "passed": true,
+          "detail": "generic adapter.json is readable"
+        },
+        {
+          "key": "permission-contract-present",
+          "passed": true,
+          "detail": "generic adapter includes permission_contract"
+        },
+        {
+          "key": "target-contract-present",
+          "passed": true,
+          "detail": "generic adapter includes target_permission_contract"
+        },
+        {
+          "key": "source-available",
+          "passed": true,
+          "detail": "generic permission_contract links to an available trust report"
+        },
+        {
+          "key": "declared-capabilities-match",
+          "passed": true,
+          "detail": "generic target_permission_contract mirrors expected capabilities"
+        },
+        {
+          "key": "capability-counts-present",
+          "passed": true,
+          "detail": "generic target_permission_contract includes capability_counts"
+        },
+        {
+          "key": "native-enforcement-boolean",
+          "passed": true,
+          "detail": "generic target_permission_contract declares native_enforcement as a boolean"
+        },
+        {
+          "key": "representation-present",
+          "passed": true,
+          "detail": "generic target_permission_contract declares where permission metadata is represented"
+        },
+        {
+          "key": "operator-note-present",
+          "passed": true,
+          "detail": "generic target_permission_contract includes an operator_note"
+        },
+        {
+          "key": "review-required-matches",
+          "passed": true,
+          "detail": "generic review_required matches whether capabilities are required"
+        }
+      ],
+      "failures": [],
+      "residual_risks": [
+        "Client-native permission enforcement is not provided by this target; installer or operator must honor metadata."
+      ]
+    }
+  ],
+  "failures": [],
+  "artifacts": {
+    "json": "reports\\runtime_permission_probes.json",
+    "markdown": "reports\\runtime_permission_probes.md"
+  }
+}

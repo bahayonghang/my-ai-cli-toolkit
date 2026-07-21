@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "reviewed_at": "2026-07-21",
+  "capabilities": {
+    "file_write": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "scripts/pr_review.py may write caller-approved local preparation and state artifacts. Local approval does not authorize a GitHub write, push, review submission, thread update, merge, tag, or Release action.",
+      "reason": "The approved task retains the existing review helper, whose bounded local files are required to prepare auditable batches before any separately authorized GitHub write.",
+      "expires_at": "2026-10-21",
+      "evidence": [
+        "SKILL.md",
+        "reports/security_trust_report.md",
+        "tests/test_pr_review.py"
+      ],
+      "target_enforcement": {
+        "openai": "Permission contract metadata; the host must enforce file-write approval.",
+        "claude": "SKILL.md allowed-tools plus permission contract metadata; each local edit remains scope-bound.",
+        "generic": "Permission contract metadata for downstream installer or host enforcement.",
+        "vscode": "Permission contract metadata only; workspace trust and the host remain responsible for enforcement."
+      }
+    },
+    "subprocess": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "scripts/fetch_comments.py, scripts/inspect_pr_checks.py, and scripts/pr_review.py may invoke the local gh executable for the resolved repository and approved operation. Remote writes remain separately authorized by SKILL.md.",
+      "reason": "The approved task preserves deterministic gh CLI helpers for PR inspection and prepared review operations while the safety contract keeps every external write behind a fresh-read authorization boundary.",
+      "expires_at": "2026-10-21",
+      "evidence": [
+        "SKILL.md",
+        "reports/security_trust_report.md",
+        "tests/test_fetch_comments.py",
+        "tests/test_inspect_pr_checks.py",
+        "tests/test_pr_review.py"
+      ],
+      "target_enforcement": {
+        "openai": "Permission contract metadata; the host must enforce subprocess and network authorization.",
+        "claude": "Bash is declared in allowed-tools; the skill contract still requires action-specific authorization.",
+        "generic": "Permission contract metadata for downstream installer or host enforcement.",
+        "vscode": "Permission contract metadata only; workspace trust and the host remain responsible for enforcement."
+      }
+    }
+  }
+}

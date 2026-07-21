@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release",
+  "generated_at": "2026-07-21T00:00:00Z",
+  "summary": {
+    "waiver_count": 3,
+    "active_count": 3,
+    "expired_count": 0,
+    "invalid_count": 0,
+    "covered_gate_count": 3,
+    "covered_gate_keys": [
+      "operations-loop",
+      "output-lab",
+      "skill-atlas"
+    ],
+    "waiver_candidate_count": 1,
+    "waiverable_open_count": 0,
+    "non_waivable_count": 0
+  },
+  "policy": {
+    "blocker_waivers_allowed": false,
+    "minimum_reason_chars": 20,
+    "expires_required": true,
+    "review_studio_gate_keys": [
+      "architecture-maintainability",
+      "context-budget",
+      "intent-canvas",
+      "operations-loop",
+      "output-lab",
+      "permission-gates",
+      "permission-runtime",
+      "python-compat",
+      "registry-audit",
+      "release-notes",
+      "review-waivers",
+      "runtime-matrix",
+      "skill-atlas",
+      "trigger-lab",
+      "trust-report",
+      "world-class-evidence"
+    ],
+    "known_gate_keys": [
+      "architecture-maintainability",
+      "context-budget",
+      "intent-canvas",
+      "operations-loop",
+      "output-lab",
+      "permission-gates",
+      "permission-runtime",
+      "python-compat",
+      "registry-audit",
+      "release-notes",
+      "runtime-matrix",
+      "skill-atlas",
+      "trigger-lab",
+      "trust-report"
+    ],
+    "waiverable_gate_keys": [
+      "architecture-maintainability",
+      "context-budget",
+      "intent-canvas",
+      "operations-loop",
+      "output-lab",
+      "permission-gates",
+      "permission-runtime",
+      "python-compat",
+      "registry-audit",
+      "release-notes",
+      "runtime-matrix",
+      "skill-atlas",
+      "trigger-lab",
+      "trust-report"
+    ],
+    "non_waivable_gate_keys": [
+      "review-waivers",
+      "world-class-evidence"
+    ]
+  },
+  "waivers": [
+    {
+      "id": "851d194ab0c3",
+      "gate_key": "output-lab",
+      "decision": "accepted-risk",
+      "reviewer": "lyh",
+      "reason": "Recorded fixtures pass locally; provider-backed execution and independent blind adjudication remain unavailable for this 3.0.0 release.",
+      "created_at": "2026-07-21",
+      "expires_at": "2027-07-21",
+      "evidence": "reports/output_quality_scorecard.md",
+      "scope": "gh-pr-release-3.0.0",
+      "status": "active",
+      "validation": {
+        "failures": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "c4e28a31de64",
+      "gate_key": "skill-atlas",
+      "decision": "accepted-risk",
+      "reviewer": "lyh",
+      "reason": "Portfolio owner, staleness, and route-collision debt predates this skill and is accepted for the bounded 3.0.0 release.",
+      "created_at": "2026-07-21",
+      "expires_at": "2027-07-21",
+      "evidence": "reports/skill_atlas.html",
+      "scope": "gh-pr-release-3.0.0",
+      "status": "active",
+      "validation": {
+        "failures": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "379be9e0dd38",
+      "gate_key": "operations-loop",
+      "decision": "accepted-risk",
+      "reviewer": "lyh",
+      "reason": "No real adoption telemetry exists before the first release; the explicit no-data state is accepted for the bounded 3.0.0 release.",
+      "created_at": "2026-07-21",
+      "expires_at": "2027-07-21",
+      "evidence": "reports/adoption_drift_report.md",
+      "scope": "gh-pr-release-3.0.0",
+      "status": "active",
+      "validation": {
+        "failures": [],
+        "warnings": []
+      }
+    }
+  ],
+  "waiver_candidates": [
+    {
+      "gate_key": "output-lab",
+      "label": "Output Lab",
+      "status": "covered",
+      "waiver_allowed": true,
+      "decision_options": [
+        "accepted-risk",
+        "false-positive",
+        "temporary-exception"
+      ],
+      "risk_summary": "review pending 0; model-executed 0; output failures 0",
+      "required_review": [
+        "Reviewer confirms this release does not claim provider-backed or human-adjudicated output superiority.",
+        "Reviewer names the release scope and expiry date.",
+        "Reviewer links output_review_adjudication or output_execution evidence."
+      ],
+      "suggested_evidence": "reports/output_review_adjudication.md",
+      "suggested_command": "python3 scripts/yao.py review-waivers . --add-waiver --gate-key output-lab --reviewer \"<reviewer>\" --reason \"Output Lab has pending human/provider evidence; accepted only for this bounded review scope.\" --expires-at 2027-07-21 --evidence reports/output_review_adjudication.md",
+      "world_class_boundary": "Does not count as provider, human, or public world-class completion evidence."
+    }
+  ],
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\review_waivers.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\git-github-collaboration\\gh-pr-release\\reports\\review_waivers.md"
+  }
+}

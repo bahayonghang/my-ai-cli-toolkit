@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "generated_at": "2026-07-21T00:00:00Z",
+  "summary": {
+    "promote": 1,
+    "keep_current": 0,
+    "blocked": 0
+  },
+  "targets": [
+    {
+      "name": "gh-pr-release",
+      "from_name": "gh-pr",
+      "from_version": "2.0.0",
+      "to_version": "3.0.0",
+      "decision": "promote",
+      "decision_scope": "local governed package",
+      "remote_publish_authorized": false,
+      "route_evidence": {
+        "should_trigger": "21/21",
+        "should_not_trigger": "11/11",
+        "near_neighbor": "9/9",
+        "route_matrix": "10/10",
+        "ambiguous_cases": 0
+      },
+      "output_evidence": {
+        "case_count": 6,
+        "baseline_pass_rate": 0.0,
+        "with_skill_pass_rate": 1.0,
+        "execution_mode": "recorded fixtures",
+        "human_adjudication": "missing evidence",
+        "provider_execution": "missing evidence"
+      },
+      "known_gaps": [
+        "No independent human blind-review adjudication.",
+        "No provider-backed model execution evidence.",
+        "No real-client adoption telemetry.",
+        "No client-native permission enforcement evidence.",
+        "No public world-class readiness claim."
+      ],
+      "reason": "Promote the approved local package because the release routes, safety boundaries, trigger coverage, output fixtures, conformance, trust, packaging, and install gates are present. External and human evidence remains explicitly unavailable.",
+      "rollback_boundary": "Reinstall gh-pr 2.0.0 for PR-only behavior before any remote write. Never roll back a published tag or GitHub Release; use a new version."
+    }
+  ],
+  "evidence": [
+    "reports/route_scorecard.json",
+    "reports/output_quality_scorecard.json",
+    "reports/conformance_matrix.json",
+    "reports/security_trust_report.json",
+    "reports/runtime_permission_probes.json",
+    "reports/registry_audit.json",
+    "reports/upgrade_check.json"
+  ]
+}

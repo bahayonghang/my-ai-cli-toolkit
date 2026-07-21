@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 29
+- **Total Sessions**: 30
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1027 | Active |
+| `journal-1.md` | ~1060 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 30 | 2026-07-21 | 完成 gh-pr-release 3.0.0 交付流程 | `5e0686f2b2980e7256cde0fd4e1f921f6a747ef5` | `dev` |
 | 29 | 2026-07-21 | Merge gh-pr review and CI skills | `015283a` | `dev` |
 | 28 | 2026-07-21 | 完成 gh-pr 生命周期技能 | `4a210e9` | `dev` |
 | 27 | 2026-07-19 | 合并 academic-figure 与 paper-plot | `1397ce0` | `main` |

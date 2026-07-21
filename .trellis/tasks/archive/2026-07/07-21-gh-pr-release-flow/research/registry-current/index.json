@@ -1,0 +1,20 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-07-21T00:00:00Z",
+  "package_count": 1,
+  "packages": [
+    {
+      "name": "gh-pr-release",
+      "version": "3.0.0",
+      "maturity": "governed",
+      "owner": "lyh",
+      "targets": [
+        "claude",
+        "openai",
+        "generic"
+      ],
+      "package_metadata": "registry/packages/gh-pr-release.json",
+      "package_sha256": "bb1b7e46bf725f2c049722c012155328cc691273df0617279ac5f494a0ce07fd"
+    }
+  ]
+}
