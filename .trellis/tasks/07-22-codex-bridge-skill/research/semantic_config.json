@@ -1,0 +1,148 @@
+{
+  "optimizer_hints": {
+    "capability": "Bridge an explicit user request from the current agent to Codex CLI through a validated file-backed bundle",
+    "inputs": [
+      "plans",
+      "approved coding tasks",
+      "review comments",
+      "pattern candidates",
+      "project files"
+    ],
+    "trigger_actions": [
+      "ask Codex to review a plan",
+      "delegate implementation to Codex",
+      "ask Codex to revise its implementation",
+      "ask Codex to verify extrapolated candidates",
+      "让 Codex 审计划",
+      "交给 Codex 实现"
+    ],
+    "exclusions": [
+      "ordinary code review without explicit Codex participation",
+      "direct implementation by the current agent",
+      "generic dynamic multi-agent orchestration",
+      "repository health audits",
+      "session handoff",
+      "explanation or summary only"
+    ],
+    "artifacts": [
+      "file-backed bundle",
+      "request.md",
+      "manifest.json",
+      "response.json"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "explicit_codex",
+    "bridge_action",
+    "bundle_contract"
+  ],
+  "positive_concepts": {
+    "explicit_codex": {
+      "weight": 0.5,
+      "phrases": [
+        "ask codex",
+        "use codex to",
+        "delegate to codex",
+        "codex to review",
+        "codex to implement",
+        "codex to verify",
+        "让 codex",
+        "交给 codex",
+        "请 codex"
+      ]
+    },
+    "bridge_action": {
+      "weight": 0.32,
+      "phrases": [
+        "review the plan",
+        "implement this approved",
+        "apply the review comments",
+        "verify these candidates",
+        "审一下这个 plan",
+        "实现这个已批准",
+        "验证候选"
+      ]
+    },
+    "bundle_contract": {
+      "weight": 0.18,
+      "phrases": [
+        "file-backed bundle",
+        "include the plan and files",
+        "核对 diff",
+        "read-only",
+        "workspace-write"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "no_codex_requested": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "no second model",
+        "do not use codex",
+        "current agent",
+        "directly implement",
+        "不需要 codex",
+        "不要 codex"
+      ]
+    },
+    "dynamic_orchestration": {
+      "weight": 0.45,
+      "exclusive": true,
+      "phrases": [
+        "codex swarm",
+        "parallel agents",
+        "dynamic workflow",
+        "multi-agent orchestration",
+        "并行 agent",
+        "多 agent 编排"
+      ]
+    },
+    "ordinary_review": {
+      "weight": 0.38,
+      "exclusive": true,
+      "phrases": [
+        "review this pull request",
+        "review this diff",
+        "code quality review",
+        "check this typescript diff",
+        "审查这个 pr",
+        "代码审查"
+      ]
+    },
+    "repository_audit": {
+      "weight": 0.42,
+      "exclusive": true,
+      "phrases": [
+        "entire repository",
+        "full repository audit",
+        "release readiness",
+        "全维度审计",
+        "项目健康报告"
+      ]
+    },
+    "handoff": {
+      "weight": 0.42,
+      "exclusive": true,
+      "phrases": [
+        "session handoff",
+        "continue tomorrow",
+        "next session",
+        "交接给下一个 session",
+        "会话交接"
+      ]
+    },
+    "explain_or_summary": {
+      "weight": 0.35,
+      "exclusive": true,
+      "phrases": [
+        "explain how",
+        "summarize",
+        "summary only",
+        "解释一下",
+        "总结一下"
+      ]
+    }
+  }
+}

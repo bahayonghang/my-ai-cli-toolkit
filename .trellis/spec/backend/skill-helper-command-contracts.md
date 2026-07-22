@@ -146,6 +146,74 @@ test('browser smoke', { skip: !enabled }, () => {
 
 The skip decision belongs only to the absence of explicit opt-in, never to the result of an enabled validation run.
 
+## Scenario: Resolve npm CLI shims before shell-free execution on Windows
+
+### 1. Scope / Trigger
+
+Apply this contract when a Python skill helper launches a CLI that may be installed by npm and must keep `shell=False`. On Windows, npm commonly exposes `tool.cmd`; `subprocess.run(["tool", ...], shell=False)` does not apply `PATHEXT` lookup and can raise `FileNotFoundError` even when PowerShell and `where.exe` find the command.
+
+### 2. Signatures
+
+```python
+executable = shutil.which("codex")
+subprocess.run([executable, *args], shell=False, check=False)
+```
+
+The executable name is fixed by the helper. User-controlled values may populate later argv elements but never the executable name or a shell command string.
+
+### 3. Contracts
+
+- Resolve the fixed executable with `shutil.which()` immediately before execution.
+- Treat a missing result as an expected CLI error; print a concise stderr message and return the helper's documented not-found code.
+- Pass the resolved absolute executable and all arguments as a list with `shell=False`.
+- Preserve user paths, model names, and configuration values as individual argv elements.
+- Record the actual resolved argv when the helper persists execution provenance.
+- A dry run may display the resolved argv but must not execute the child or mutate runtime files.
+- Do not use `shell=True`, `cmd /c`, or PowerShell command strings merely to make an npm shim discoverable.
+
+### 4. Validation & Error Matrix
+
+| Condition | Behavior |
+| --- | --- |
+| Native executable or npm `.cmd` is found | Execute the resolved absolute path with the original argv list |
+| Executable is absent from `PATH` | stderr names the missing CLI; return the documented not-found code; no traceback |
+| Child returns nonzero | Preserve the child exit/status evidence under the helper contract |
+| Project path contains spaces or non-ASCII text | Keep the path as one argv element; execution behavior is unchanged |
+| Dry run requested | Print the planned argv; do not execute or write state |
+
+### 5. Good/Base/Bad Cases
+
+- Good: Windows resolves `codex.cmd`, runs it with `shell=False`, and records the `.cmd` path as argv element zero.
+- Base: Linux/macOS resolves a native executable or executable shim and uses the same list contract.
+- Bad: `subprocess.run(["codex", ...], shell=False)` assumes Windows performs `PATHEXT` resolution.
+- Bad: changing to `shell=True` makes project paths and model/config values part of shell parsing.
+
+### 6. Tests Required
+
+- Prepend a temporary fake-bin directory to `PATH` and install a `tool.cmd` fixture on Windows plus an executable shim on POSIX.
+- Run the helper against a project path containing spaces and non-ASCII characters.
+- Assert success provenance records an argv array and, on Windows, argv element zero ends in `.cmd`.
+- Assert a missing executable fails without a traceback and leaves no false success status.
+- Assert dry run is side-effect free.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```python
+subprocess.run(["codex", "exec", "--cd", str(project)], shell=False)
+```
+
+#### Correct
+
+```python
+executable = shutil.which("codex")
+if executable is None:
+    print("ERROR: codex executable was not found on PATH", file=sys.stderr)
+    return 127
+subprocess.run([executable, "exec", "--cd", str(project)], shell=False)
+```
+
 ## Scenario: UTF-8 native command capture on Windows
 
 ### 1. Scope / Trigger

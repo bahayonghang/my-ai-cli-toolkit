@@ -1,0 +1,71 @@
+{
+  "skill_name": "codex-bridge",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "让 Codex 审一下这个实现计划，重点检查隐藏假设和项目约定，先不要改代码。",
+      "expected_output": "Routes to codex-bridge plan-review, creates a complete read-only bundle, and validates the structured response before synthesis.",
+      "files": [],
+      "assertions": [
+        "The request is treated as an explicit Codex bridge trigger.",
+        "The selected scenario is plan-review with a read-only sandbox.",
+        "The primary agent validates and synthesizes Codex findings instead of forwarding them blindly."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "交给 Codex 实现这个已批准的修复，相关 plan 和文件都放进上下文，完成后核对实际 diff。",
+      "expected_output": "Routes to codex-bridge codify, uses workspace-write only for the authorized scope, and compares files_changed with the real working tree.",
+      "files": [],
+      "assertions": [
+        "The selected scenario is codify.",
+        "The workflow requires a complete file-backed fixture and preflight validation.",
+        "The response file list is verified against real repository state."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use Codex to verify whether the two candidate files have the same bug pattern found in round 1. Do not modify anything.",
+      "expected_output": "Routes to a focused non-recursive verification-round with one previous round and read-only sandbox.",
+      "files": [],
+      "assertions": [
+        "The request uses verification-round rather than a full plan review.",
+        "The sandbox remains read-only.",
+        "The workflow prevents recursive verification rounds."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我编排一个多步 Codex 工作流，拆成研究、实现、文档和测试几个并行 agent。",
+      "expected_output": "Does not route to codex-bridge; routes to codex-dynamic-workflows or another orchestration surface.",
+      "files": [],
+      "assertions": [
+        "Generic multi-agent orchestration remains a negative trigger.",
+        "No .codex-bridge bundle is created.",
+        "The response routes to codex-dynamic-workflows when available."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Review this TypeScript diff for correctness and maintainability. I do not need another model involved.",
+      "expected_output": "Does not route to codex-bridge; uses the normal code review surface.",
+      "files": [],
+      "assertions": [
+        "Ordinary code review without explicit Codex participation is a negative trigger.",
+        "No bridge bundle or Codex subprocess is used.",
+        "The response routes to code-quality-review or code-auditor as appropriate."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "把当前会话整理好，交接给下一个 session 继续。",
+      "expected_output": "Does not route to codex-bridge; routes to the handoff workflow.",
+      "files": [],
+      "assertions": [
+        "Session handoff remains a negative trigger.",
+        "No Codex model is invoked.",
+        "The response routes to handoff when available."
+      ]
+    }
+  ]
+}

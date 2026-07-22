@@ -1,0 +1,23 @@
+interface:
+  display_name: "Codex Bridge"
+  short_description: "Package context and run explicit Codex collaboration safely"
+  default_prompt: "Use $codex-bridge because I explicitly want Codex to review or implement this work. Build a complete file-backed bundle, enforce the scenario sandbox, validate the result, and synthesize verified findings."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+  activation:
+    mode: "explicit"
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "managed"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "deny"
+  degradation:
+    openai: "Run the same Python helpers inline when skill adapters are unavailable."
+    claude: "Run the same Python helpers inline when skill adapters are unavailable."
+    generic: "Require Python 3 and a local Codex CLI; otherwise preserve the bundle and report the missing capability."

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "codex-bridge review-iteration response",
+  "type": "object",
+  "required": [
+    "task_understanding",
+    "result",
+    "key_findings",
+    "specific_suggestions",
+    "files_changed",
+    "open_questions",
+    "uncertainty"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "task_understanding": {
+      "type": "string",
+      "description": "3-5 句总结对本轮修改目标的理解"
+    },
+    "result": {
+      "type": "string",
+      "description": "本轮做了什么、为什么"
+    },
+    "key_findings": {
+      "type": "array",
+      "description": "重点标记 review 意见的接受/拒绝情况",
+      "items": {
+        "type": "object",
+        "required": ["type", "content"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["hidden_assumption", "disagreement", "risk", "validation"],
+            "description": "validation=接受 review 意见; disagreement=拒绝 review 意见; risk=引入的新风险; hidden_assumption=新发现的假设"
+          },
+          "content": { "type": "string" },
+          "related_files": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "specific_suggestions": {
+      "type": "array",
+      "description": "后续可改进的建议（非本轮执行）",
+      "items": {
+        "type": "object",
+        "required": ["file", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "file": { "type": "string" },
+          "change": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "files_changed": {
+      "type": "object",
+      "description": "本轮（Round 2）新增的改动清单。不重复列 Round 1 改过但本轮没动的文件。路径相对项目根，不含 .codex-bridge/ / .git/ / node_modules/ 等",
+      "additionalProperties": false,
+      "required": ["created", "modified", "deleted"],
+      "properties": {
+        "created": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "description": "相对项目根的路径"
+          }
+        },
+        "modified": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "deleted": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "uncertainty": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "recommended_threshold": 0.48,
+  "should_trigger": [
+    {
+      "text": "让 Codex 审一下这个 plan，重点找隐藏假设，不要改文件。",
+      "family": "explicit_plan_review"
+    },
+    {
+      "text": "交给 Codex 实现这个已经批准的修复，完成后我们再核对 diff。",
+      "family": "explicit_codify"
+    },
+    {
+      "text": "Ask Codex to apply the review comments to its first implementation, with no extra refactor.",
+      "family": "explicit_review_iteration"
+    },
+    {
+      "text": "Use Codex to verify these candidate instances against the pattern from round 1, read-only.",
+      "family": "explicit_verification"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Review this pull request for correctness and maintainability.",
+      "family": "ordinary_code_review"
+    },
+    {
+      "text": "Implement this small Python bug fix and run the test.",
+      "family": "direct_implementation"
+    },
+    {
+      "text": "Explain how Codex sandboxes work.",
+      "family": "explanation_only"
+    },
+    {
+      "text": "Summarize the current session so I can continue tomorrow.",
+      "family": "summary_only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Use a Codex swarm with parallel research, implementation, docs, and test agents.",
+      "family": "dynamic_orchestration"
+    },
+    {
+      "text": "Audit the entire repository across architecture, security, performance, and release readiness.",
+      "family": "full_repository_audit"
+    },
+    {
+      "text": "Check this TypeScript diff for hook dependency and type errors; no second model is needed.",
+      "family": "code_quality_review"
+    },
+    {
+      "text": "把当前会话和未完成事项交接给下一个 session。",
+      "family": "session_handoff"
+    }
+  ]
+}

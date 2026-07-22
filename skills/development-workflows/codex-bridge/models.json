@@ -1,0 +1,24 @@
+{
+  "$comment": "Scenario -> Codex model defaults. Model availability changes over time; verify against https://developers.openai.com/codex/models. Representative output quality and Terra/Luna verification-round comparisons are missing evidence.",
+  "defaults": {
+    "reasoning_effort": "medium"
+  },
+  "scenarios": {
+    "plan-review": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "high"
+    },
+    "codify": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium"
+    },
+    "review-iteration": {
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium"
+    },
+    "verification-round": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium"
+    }
+  }
+}

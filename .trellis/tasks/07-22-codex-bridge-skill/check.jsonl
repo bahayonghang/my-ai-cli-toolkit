@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/07-22-codex-bridge-skill/prd.md", "reason": "验收标准清单是 check 的判定基准"}
+{"file": ".trellis/tasks/07-22-codex-bridge-skill/design.md", "reason": "D9 处置表与追踪矩阵要求；审查门条款"}
+{"file": "ref/repo/codex-bridge/scripts/validate-bundle.sh", "reason": "核对 traceability.md 检查项无遗漏的对照基线"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "核对 evals/interface/frontmatter 是否符合类目规范"}
+{"file": "CLAUDE.md", "reason": "just ci / skills-check / node-test 命令与仓库 skill 规范（frontmatter 五字段）"}

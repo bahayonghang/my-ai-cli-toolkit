@@ -1,0 +1,11 @@
+{"file": ".trellis/tasks/07-22-codex-bridge-skill/design.md", "reason": "全部设计决策 D0-D9 与 Codex 审阅裁决记录，实施的唯一技术真源"}
+{"file": ".trellis/tasks/07-22-codex-bridge-skill/prd.md", "reason": "需求 R0-R4、明确不做、验收标准"}
+{"file": "ref/repo/codex-bridge/SKILL.md", "reason": "上游工作流 12 步与校验逻辑的移植来源（只读参考）"}
+{"file": "ref/repo/codex-bridge/scripts/create-bundle.sh", "reason": "create_bundle.py 需一比一对齐的行为基线（round=第一个空缺、退出码 1/2/3/4）"}
+{"file": "ref/repo/codex-bridge/scripts/validate-bundle.sh", "reason": "validate_bundle.py 检查项移植基线（含 purpose 豁免、F10-F13）"}
+{"file": "ref/repo/codex-bridge/conventions.md", "reason": "bundle 目录约定移植来源；注意其 gitignore 建议与新配置分离设计的关系"}
+{"file": "ref/repo/codex-bridge/README.md", "reason": "上游 R1-R8 缺口清单，对照 design.md D9 处置表"}
+{"file": "ref/repo/codex-bridge/LICENSE", "reason": "THIRD_PARTY_NOTICES.md 需内嵌的 MIT 全文"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "本类目 skill 规范：evals.json schema、路由负例要求、interface contract"}
+{"file": "skills/development-workflows/codex-dynamic-workflows/tests/workflow-scripts.test.mjs", "reason": ".mjs 驱动 Python 脚本的测试范式样板"}
+{"file": "skills/development-workflows/codex-dynamic-workflows/agents/interface.yaml", "reason": "agents/interface.yaml 样式参照"}
