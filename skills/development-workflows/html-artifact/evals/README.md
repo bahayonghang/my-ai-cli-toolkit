@@ -4,7 +4,7 @@ Test prompts for the `html-artifact` skill. Used to validate triggering, templat
 
 ## Schema
 
-This file uses `expectations` as the per-eval check list, matching the in-repo convention shared with `skills/development-workflows/cold-shower/evals/evals.json`.
+This file uses `expectations` as the per-eval check list.
 
 `expectations` is semantically equivalent to the `assertions` field in the upstream `skill-creator` schema (`references/schemas.md`): each entry is a human-readable, independently judgeable check that the skill's output should satisfy.
 
@@ -12,23 +12,23 @@ If you wire these evals into the upstream `eval-viewer/generate_review.py` pipel
 
 ## Coverage
 
-| id | Intent | Should trigger | Primary template |
-| -- | -- | -- | -- |
-| 1 | Migration plan as browser-reviewable artifact | yes | Strategy Blueprint |
-| 2 | HTML code review report with severity bands | yes | Review Workbench |
-| 3 | Decision page with evidence vs inference | yes | Decision Matrix Studio + Evidence Dossier |
-| 4 | Local JSON config editor with preview/export | yes | Interactive Editor |
-| 5 | Plain git commit message | no | — |
-| 6 | Short bug-fix summary | no | — |
-| 7 | VibeDeck vs ccr-ui executive analysis regression | yes | Evidence Dossier + Decision Matrix Studio |
-| 8 | Executive implementation plan with visual roadmap | yes | Strategy Blueprint |
-| 9 | Before/after architecture explainer | yes | Architecture Atlas |
-| 10 | Offline status dashboard with charts/filtering | yes | Status Brief |
-| 11 | Role swimlane explainer | yes | Architecture Atlas or Strategy Blueprint |
-| 12 | Interactive code review workbench | yes | Review Workbench |
-| 13 | Trainer dispatch architecture flow | yes | Architecture Atlas or Strategy Blueprint |
-| 14 | Codebase architecture audit with enum/redundancy review | yes | Architecture Atlas + Review Workbench + Strategy Blueprint |
-| 15 | Large evidence-heavy report that may exceed one page | yes | Evidence Dossier + Review Workbench |
+| id  | Intent                                                  | Should trigger | Primary template                                           |
+| --- | ------------------------------------------------------- | -------------- | ---------------------------------------------------------- |
+| 1   | Migration plan as browser-reviewable artifact           | yes            | Strategy Blueprint                                         |
+| 2   | HTML code review report with severity bands             | yes            | Review Workbench                                           |
+| 3   | Decision page with evidence vs inference                | yes            | Decision Matrix Studio + Evidence Dossier                  |
+| 4   | Local JSON config editor with preview/export            | yes            | Interactive Editor                                         |
+| 5   | Plain git commit message                                | no             | —                                                          |
+| 6   | Short bug-fix summary                                   | no             | —                                                          |
+| 7   | VibeDeck vs ccr-ui executive analysis regression        | yes            | Evidence Dossier + Decision Matrix Studio                  |
+| 8   | Executive implementation plan with visual roadmap       | yes            | Strategy Blueprint                                         |
+| 9   | Before/after architecture explainer                     | yes            | Architecture Atlas                                         |
+| 10  | Offline status dashboard with charts/filtering          | yes            | Status Brief                                               |
+| 11  | Role swimlane explainer                                 | yes            | Architecture Atlas or Strategy Blueprint                   |
+| 12  | Interactive code review workbench                       | yes            | Review Workbench                                           |
+| 13  | Trainer dispatch architecture flow                      | yes            | Architecture Atlas or Strategy Blueprint                   |
+| 14  | Codebase architecture audit with enum/redundancy review | yes            | Architecture Atlas + Review Workbench + Strategy Blueprint |
+| 15  | Large evidence-heavy report that may exceed one page    | yes            | Evidence Dossier + Review Workbench                        |
 
 Ids 1–4 verify positive triggering and correct template selection. Ids 5–6 verify the skill does **not** trigger for short transactional outputs.
 
@@ -43,7 +43,6 @@ Ids 7–13 are design-regression prompts. Id 14 is the architecture-audit regres
 - large artifacts include a pre-build size plan, split decision, and split-bundle navigation when estimated size crosses the thresholds.
 
 Use `references/design-review-checklist.md` for qualitative review. Keep `scripts/check_html_artifact.py` limited to objective structure, offline safety, and baseline accessibility checks.
-
 
 ## Architecture audit evaluation focus
 

@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 37 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 31 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -26,10 +26,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 10 skills
+`developer-tools-integrations` · 9 skills
 
 - [agents-md-improver](/en/skills/developer-tools-integrations/agents-md-improver) — Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps.
-- [archive-planning](/en/skills/developer-tools-integrations/archive-planning) — Archive root-level planning files (`task_plan.md`, `findings.md`, and `progress.md`) into a timestamped `.plannings/` directory for the current feature.
 - [ast-grep](/en/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
 - [claude-md-improver](/en/skills/developer-tools-integrations/claude-md-improver) — Audit and improve Claude Code CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and companion code_map.md navigation maps.
 - [codex-workflow-recommender](/en/skills/developer-tools-integrations/codex-workflow-recommender) — Analyze a repository and current Codex environment, then recommend Codex CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements without modifying files.
@@ -41,19 +40,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Development Workflows
 
-`development-workflows` · 13 skills
+`development-workflows` · 8 skills
 
 - [code-auditor](/en/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture.
 - [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a code quality review focused on maintainability, structure, abstraction quality, and refactoring opportunities.
 - [code-refactor](/en/skills/development-workflows/code-refactor) — Implement safe, behavior-preserving code refactors after inspecting the existing project.
 - [codex-bridge](/en/skills/development-workflows/codex-bridge) — Use when the user explicitly asks the current agent to involve Codex CLI by reviewing a plan, implementing code, revising an implementation after review, or verifying extrapolated findings.
 - [codex-dynamic-workflows](/en/skills/development-workflows/codex-dynamic-workflows) — Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets.
-- [cold-shower](/en/skills/development-workflows/cold-shower) — Challenge ideas, plans, products, pricing, pitch narratives, and major decisions with a no-flattery adversarial review.
-- [geju](/en/skills/development-workflows/geju) — Use when the user explicitly asks to think bigger, open up the design space, challenge conservative design, escape local-detail fixation, or make a bold high-level product or architecture direction call.
-- [goudi](/en/skills/development-workflows/goudi) — Ground an ambitious proposal into the smallest verifiable first move with stop rules — pressure-test feasibility, avoid over-grand designs, make a bold direction executable.
-- [handoff](/en/skills/development-workflows/handoff) — Write a handoff.md that lets a fresh session resume unfinished work cold.
 - [html-artifact](/en/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts (single-file by default, split bundles when oversized) for complex, reviewable, or shareable work outputs.
-- [implementation-notes](/en/skills/development-workflows/implementation-notes) — Maintain a live implementation-notes.md while implementing a multi-step spec, PRD, design doc, or approved plan — capturing design decisions, intentional deviations, rejected alternatives, and open questions. Start before the first edit.
 - [spark](/en/skills/development-workflows/spark) — Turn an idea into an approved implementation plan before coding — plan-first brainstorming.
 - [unknowns-first](/en/skills/development-workflows/unknowns-first) — Diagnose a task before execution when the user may not yet know how to define success.
 

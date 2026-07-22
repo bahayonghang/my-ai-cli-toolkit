@@ -1,6 +1,6 @@
 ---
 name: unknowns-first
-description: Diagnose a task before execution when the user may not yet know how to define success. Use to clarify an ambiguous or unfamiliar task, define what good means, turn vague intent into an actionable brief, or when the user says 澄清任务, 先诊断再做, 理清需求, 帮我定义成功标准. Do NOT use for fully-specified small tasks (execute directly), feature-to-plan brainstorming (spark), or challenging an existing plan (cold-shower).
+description: Diagnose a task before execution when the user may not yet know how to define success. Use to clarify an ambiguous or unfamiliar task, define what good means, turn vague intent into an actionable brief, or when the user says 澄清任务, 先诊断再做, 理清需求, 帮我定义成功标准. Do NOT use for fully-specified small tasks (execute directly) or feature-to-plan brainstorming (spark).
 category: development-workflows
 tags: [task-clarification, requirements, unknowns, diagnosis, planning]
 version: 0.1.0
@@ -12,7 +12,7 @@ Use this skill to diagnose a task before doing it. The goal is to find the unkno
 
 Do not execute the user's substantive task during the opening diagnosis unless the user explicitly asks to skip diagnosis.
 
-Routing: for brainstorming a feature into an implementation plan use spark; for adversarially challenging an existing plan use cold-shower; for a decision log during implementation use implementation-notes.
+Routing: for brainstorming a feature into an implementation plan use spark.
 
 ## Core Contract
 
@@ -128,7 +128,7 @@ For complex tasks, maintain implementation notes. Capture:
 - open question
 - final standard revision
 
-Use the `implementation-notes` skill if available; otherwise use `references/implementation-notes-template.md`. Reach for it when the task is long, risky, or likely to drift.
+Use `references/implementation-notes-template.md`. Reach for it when the task is long, risky, or likely to drift.
 
 If a new fact changes the task level, true expert, success standard, or deliverable shape, stop and ask for confirmation before continuing.
 

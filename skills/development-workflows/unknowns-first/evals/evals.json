@@ -71,11 +71,11 @@
     {
       "id": 7,
       "prompt": "这个方案我已经定稿了，帮我泼冷水、挑刺，看哪里会崩。",
-      "expected_output": "Routing negative; an adversarial challenge of an already-finalized plan should route to the cold-shower workflow, not an unknowns-first clarification of a task the user cannot yet define.",
+      "expected_output": "Routing negative; an adversarial challenge of an already-finalized plan should route to an adversarial plan-review workflow, not an unknowns-first clarification of a task the user cannot yet define.",
       "files": [],
       "assertions": [
         "The skill description should not capture an adversarial challenge of a finalized plan as an unknowns-first diagnosis.",
-        "If answered by the skill, the response should route the user to the cold-shower workflow rather than clarifying an undefined task."
+        "If answered by the skill, the response should route the user to an adversarial plan-review workflow rather than clarifying an undefined task."
       ]
     }
   ]

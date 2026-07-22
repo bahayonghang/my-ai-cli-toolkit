@@ -59,12 +59,12 @@
     {
       "id": 6,
       "prompt": "把当前会话整理好，交接给下一个 session 继续。",
-      "expected_output": "Does not route to codex-bridge; routes to the handoff workflow.",
+      "expected_output": "Does not route to codex-bridge; session handoff is out of scope for the bridge.",
       "files": [],
       "assertions": [
         "Session handoff remains a negative trigger.",
         "No Codex model is invoked.",
-        "The response routes to handoff when available."
+        "Session handoff is left to a session-continuity workflow, not the bridge."
       ]
     }
   ]
