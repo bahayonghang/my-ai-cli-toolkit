@@ -1124,3 +1124,36 @@ Merged review-feedback and CI-fix workflows into gh-pr 2.0.0, migrated and corre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 33: Clarify code-auditor vs code-quality-review boundary
+
+**Date**: 2026-07-22
+**Task**: Clarify code-auditor vs code-quality-review boundary
+**Branch**: `dev`
+
+### Summary
+
+Fixed the code-review skill boundary (audit F1-F3): qualified code-quality-review's bare code-review trigger to quality/maintainability, added routing-negative evals #7 (full-spectrum -> code-auditor) and #8 (apply refactor -> code-refactor), and added a Routing section in development-workflows/AGENTS.md covering purpose, trigger routing, and output contract. just ci green (docs catalog in sync, no docs-sync needed). yao-meta trigger_eval.py unavailable in repo/~/.claude, recorded as missing evidence in the task notes.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0276c4f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
