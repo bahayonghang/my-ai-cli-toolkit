@@ -117,7 +117,7 @@ function installFakeCodex(binDir) {
     "utf8",
   );
   if (process.platform === "win32") {
-    fs.writeFileSync(path.join(binDir, "codex.cmd"), `@echo off\r\n"${process.execPath}" "${runner}" %*\r\n`, "utf8");
+    fs.writeFileSync(path.join(binDir, "codex.cmd"), `@echo off\r\n"${process.execPath}" "%~dp0fake-codex.mjs" %*\r\n`, "utf8");
   } else {
     const executable = path.join(binDir, "codex");
     fs.writeFileSync(executable, `#!/bin/sh\nexec "${process.execPath}" "${runner}" "$@"\n`, "utf8");
