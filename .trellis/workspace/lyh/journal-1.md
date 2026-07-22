@@ -1091,3 +1091,36 @@ Merged review-feedback and CI-fix workflows into gh-pr 2.0.0, migrated and corre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 32: 删除 6 个过时 skill 并修复交叉引用
+
+**Date**: 2026-07-22
+**Task**: 删除 6 个过时 skill 并修复交叉引用
+**Branch**: `dev`
+
+### Summary
+
+核对并删除 cold-shower/geju/goudi/handoff/implementation-notes/archive-planning 六个 skill。修复 7 个存活文件的真实交叉引用（两个 AGENTS.md、unknowns-first SKILL+evals、codex-bridge evals、html-artifact evals README、.gitignore），docs-sync 移除 12 个文档页。验证：docs-check/skills-check/python-check/git diff --check 全绿；node-test 仅剩 codex-bridge 预先存在的 2 个 fake-Codex 退出码失败（git stash 在干净 HEAD 复现，非本次引入，已开 chip 跟踪）。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `38dfa34` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

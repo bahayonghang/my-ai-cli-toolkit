@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 31
+- **Total Sessions**: 32
 - **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1093 | Active |
+| `journal-1.md` | ~1126 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 32 | 2026-07-22 | 删除 6 个过时 skill 并修复交叉引用 | `38dfa34` | `dev` |
 | 31 | 2026-07-22 | 实现跨平台 Codex Bridge skill | `1b33899` | `dev` |
 | 30 | 2026-07-21 | 完成 gh-pr-release 3.0.0 交付流程 | `5e0686f2b2980e7256cde0fd4e1f921f6a747ef5` | `dev` |
 | 29 | 2026-07-21 | Merge gh-pr review and CI skills | `015283a` | `dev` |
