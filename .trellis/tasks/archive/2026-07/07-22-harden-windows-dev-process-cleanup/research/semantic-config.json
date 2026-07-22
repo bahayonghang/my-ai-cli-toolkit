@@ -1,0 +1,174 @@
+{
+  "optimizer_hints": {
+    "capability": "Audit and safely clean scoped Windows development process trees and UWP app background-task pileups",
+    "inputs": [
+      "Windows process trees",
+      "node npm npx cmd pwsh",
+      "Playwright MCP workers",
+      "workspace dev servers",
+      "tasklist app associations",
+      "Phone Link and Dolby background tasks"
+    ],
+    "trigger_actions": [
+      "audit stale development processes",
+      "clean leaked Playwright MCP workers",
+      "clean an exact workspace dev server",
+      "audit or clean UWP backgroundTaskHost pileups"
+    ],
+    "exclusions": [
+      "generic performance profiling",
+      "malware response",
+      "Windows service management",
+      "application uninstall",
+      "non-Windows cleanup",
+      "arbitrary process managers"
+    ],
+    "artifacts": [
+      "process audit",
+      "cleanup plan",
+      "per-PID verification",
+      "UWP package groups"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "dev_process_cleanup",
+    "playwright_cleanup",
+    "uwp_cleanup",
+    "workspace_cleanup"
+  ],
+  "positive_concepts": {
+    "dev_process_cleanup": {
+      "weight": 0.28,
+      "phrases": [
+        "windows dev process cleanup",
+        "development process trees",
+        "stale node",
+        "orphan npm",
+        "npm outdated",
+        "vite dev server",
+        "workspace dev server",
+        "node npm npx cmd pwsh",
+        "process buildup",
+        "进程堆积",
+        "清理残留开发进程"
+      ]
+    },
+    "playwright_cleanup": {
+      "weight": 0.24,
+      "phrases": [
+        "playwright mcp",
+        "browser automation workers",
+        "leaked playwright",
+        "codex playwright",
+        "泄漏的 playwright mcp"
+      ]
+    },
+    "uwp_cleanup": {
+      "weight": 0.24,
+      "phrases": [
+        "backgroundtaskhost",
+        "phone link",
+        "microsoft.yourphone",
+        "dolby access",
+        "uwp background",
+        "手机连接",
+        "杜比后台任务"
+      ]
+    },
+    "workspace_cleanup": {
+      "weight": 0.14,
+      "phrases": [
+        "workspace dev server",
+        "exact workspace",
+        "vite dev server",
+        "workspace path"
+      ]
+    },
+    "safety_intent": {
+      "weight": 0.1,
+      "phrases": [
+        "audit and clean",
+        "preview cleanup",
+        "only safe leftovers",
+        "verify every pid",
+        "do not touch",
+        "只预览",
+        "安全清理"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "generic_performance": {
+      "weight": 0.34,
+      "exclusive": true,
+      "phrases": [
+        "profile cpu",
+        "profile disk",
+        "startup apps",
+        "general performance",
+        "most memory over a full day",
+        "performance monitoring"
+      ]
+    },
+    "malware_response": {
+      "weight": 0.4,
+      "exclusive": true,
+      "phrases": [
+        "malware",
+        "forensic evidence",
+        "incident response",
+        "infection",
+        "suspicious processes"
+      ]
+    },
+    "service_or_uninstall": {
+      "weight": 0.36,
+      "exclusive": true,
+      "phrases": [
+        "windows service",
+        "disable service",
+        "uninstall phone link",
+        "remove its package",
+        "application uninstall"
+      ]
+    },
+    "non_windows": {
+      "weight": 0.4,
+      "exclusive": true,
+      "phrases": [
+        "linux server",
+        "macos",
+        "unix process"
+      ]
+    },
+    "explain_only": {
+      "weight": 0.28,
+      "exclusive": true,
+      "phrases": [
+        "explain why",
+        "do not audit",
+        "do not clean",
+        "explain only"
+      ]
+    },
+    "generic_process_manager": {
+      "weight": 0.32,
+      "exclusive": true,
+      "phrases": [
+        "general windows task manager",
+        "arbitrary processes",
+        "generic process manager"
+      ]
+    },
+    "registry_configuration": {
+      "weight": 0.34,
+      "exclusive": true,
+      "phrases": [
+        "through the registry",
+        "registry configuration",
+        "persistent background setting",
+        "without terminating any process"
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "evaluated_at": "2026-07-22",
+  "command": "python <yao-meta-dir>/scripts/trigger_eval.py --cases .trellis/tasks/07-22-harden-windows-dev-process-cleanup/research/trigger-cases.json --semantic-config .trellis/tasks/07-22-harden-windows-dev-process-cleanup/research/semantic-config.json --description-file skills/developer-tools-integrations/windows-dev-process-cleanup/SKILL.md",
+  "threshold": 0.32,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "bucket_stats": {
+    "should_trigger": {"total": 7, "passed": 7, "pass_rate": 1.0},
+    "should_not_trigger": {"total": 5, "passed": 5, "pass_rate": 1.0},
+    "near_neighbor": {"total": 4, "passed": 4, "pass_rate": 1.0}
+  },
+  "misfires": [],
+  "evidence_limits": [
+    "This is a deterministic semantic-config evaluation, not production router telemetry.",
+    "Provider-backed routing behavior and real activation telemetry are missing evidence."
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "recommended_threshold": 0.32,
+  "should_trigger": [
+    {
+      "text": "Task Manager is full of stale node, npm, npx, cmd, and pwsh trees after development sessions. Audit and clean only safe leftovers.",
+      "family": "dev_process_cleanup"
+    },
+    {
+      "text": "清理残留开发进程，尤其是已经泄漏的 Playwright MCP worker，但保留正在运行的 dev server。",
+      "family": "playwright_cleanup"
+    },
+    {
+      "text": "Audit orphan npm outdated processes on Windows and remove only trees whose parent is gone.",
+      "family": "orphan_npm"
+    },
+    {
+      "text": "Stop only the Vite dev server for C:\\work\\app and do not touch sibling workspaces.",
+      "family": "workspace_cleanup"
+    },
+    {
+      "text": "backgroundTaskHost.exe has piled up for Phone Link. Audit the full package identities and preview cleanup.",
+      "family": "uwp_cleanup"
+    },
+    {
+      "text": "杜比 Dolby Access 的 backgroundTaskHost 有几十个，只预览结束泄漏后台任务，不要禁用音效。",
+      "family": "uwp_cleanup"
+    },
+    {
+      "text": "Codex left old Playwright browser automation workers running. Use a stale threshold and verify every PID after cleanup.",
+      "family": "playwright_cleanup"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "My Windows laptop is slow. Profile CPU, disk, memory, startup apps, and recommend optimizations.",
+      "family": "generic_performance"
+    },
+    {
+      "text": "Investigate these suspicious processes as possible malware and preserve forensic evidence.",
+      "family": "malware_response"
+    },
+    {
+      "text": "Disable and reconfigure the Windows Update service.",
+      "family": "service_management"
+    },
+    {
+      "text": "Uninstall Phone Link and remove its package for every user.",
+      "family": "app_uninstall"
+    },
+    {
+      "text": "Clean zombie processes on my Linux server.",
+      "family": "non_windows"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Explain why Task Manager shows many node.exe processes, but do not audit or clean anything.",
+      "family": "explain_only"
+    },
+    {
+      "text": "Build a general Windows task manager that can terminate arbitrary processes.",
+      "family": "generic_process_manager"
+    },
+    {
+      "text": "Change Phone Link's persistent background setting through the registry without terminating any process.",
+      "family": "registry_configuration"
+    },
+    {
+      "text": "Show me which applications consume the most memory over a full day.",
+      "family": "performance_monitoring"
+    }
+  ]
+}
