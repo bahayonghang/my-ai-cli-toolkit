@@ -88,6 +88,29 @@ where they agree, those files are the older reference.
 - When a skill is removed, grep the suite for references to it and repoint or genericize
   them in the same change.
 
+## Routing: code-auditor vs code-quality-review
+
+These two review skills are deliberately complementary, not duplicates — do not merge them.
+They differ on purpose, trigger surface, and output contract:
+
+- **Purpose.** `code-auditor` is the full-spectrum, pre-merge gate across six dimensions
+  (correctness, security, performance, readability, testing, architecture) with `pr` /
+  `dir` / `project` routes. `code-quality-review` is the single maintainability/structure
+  lens: abstraction quality, branching complexity, file growth, boundary and canonical
+  ownership, duplication, and behavior-preserving refactoring opportunities.
+- **Triggers / routing.** A bare `code review`, `review this PR`, or a full-spectrum /
+  multi-dimension audit (`全维度代码审计`) defaults to `code-auditor`. `code-quality-review`
+  owns the qualified maintainability requests (`代码质量审查`, `可维护性审查`,
+  `architecture quality review`, `code review focused on quality/maintainability`). Neither
+  `description` should capture the other's turf; each ships near-neighbor routing-negative
+  evals that lock the hand-off (code-auditor #5 defers maintainability-only reviews to
+  code-quality-review; code-quality-review #7 defers full-spectrum audits to code-auditor).
+- **Output contract.** `code-auditor` maps an internal severity model
+  (`critical`/`high`/`medium`/`low`/`info`) to human labels (`[必须修复]` / `[建议修改]` /
+  `[仅供参考]`). `code-quality-review` returns a `Verdict` line plus findings with stable
+  `CQ-IDs` and a per-finding `Confidence`. The two severity vocabularies stay separate by
+  design; do not unify them.
+
 ## Frontmatter
 
 - Required top-level keys (enforced by `scripts/check.py`): `name`, `description`,
