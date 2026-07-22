@@ -1058,3 +1058,36 @@ Merged review-feedback and CI-fix workflows into gh-pr 2.0.0, migrated and corre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 31: 实现跨平台 Codex Bridge skill
+
+**Date**: 2026-07-22
+**Task**: 实现跨平台 Codex Bridge skill
+**Branch**: `dev`
+
+### Summary
+
+新增四场景 bundle 工作流、跨平台 Python 创建/校验/执行器、GPT-5.6 模型覆盖与固定 sandbox 策略；补齐路由评测、trust 报告、Windows npm CLI 解析规范和双语生成文档。yao-meta 四门禁与 just ci 均通过；真实付费 Codex codify 输出质量、成本和延迟保留为 missing evidence。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1b33899` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
