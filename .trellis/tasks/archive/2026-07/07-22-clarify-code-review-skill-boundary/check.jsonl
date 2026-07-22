@@ -1,0 +1,1 @@
+{"file": "skills/development-workflows/AGENTS.md", "reason": "Verify against suite conventions: new evals use the git-commit schema with `assertions` (not `expectations`), no stray `name` keys; prompts stay natural-language while expected_output/assertions are English; the added routing/boundary subsection is consistent with the eval and description contracts."}
