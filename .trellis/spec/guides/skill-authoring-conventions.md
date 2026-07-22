@@ -1,7 +1,8 @@
 # Skill Authoring Conventions (this repo)
 
-> Executable contracts distilled from the windows-dev-process-cleanup overhaul (2026-07-07)
-> and the md-improver twin-skill optimization (2026-07-08).
+> Executable contracts distilled from the windows-dev-process-cleanup overhauls
+> (2026-07-07 and 2026-07-22) and the md-improver twin-skill optimization
+> (2026-07-08).
 > Follow these when creating or refactoring anything under `skills/`.
 
 ## Script references in SKILL.md
@@ -58,6 +59,66 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   example block that itself contains ``` fences must use a 4-backtick outer
   fence, or the formatter's auto-closing produces swallowed sections (bit both
   `update-guidelines.md` files in the md-improver skills).
+
+## Governed PowerShell trust evidence
+
+### 1. Scope / Trigger
+
+Apply this contract when a Governed skill ships one or more `.ps1` files and
+uses yao-meta to generate its `trust report`.
+
+### 2. Signatures
+
+```powershell
+python "<yao-meta-dir>/scripts/trust_check.py" "<skill-dir>" `
+  --output-json "<skill-dir>/reports/security_trust_report.json" `
+  --output-md "<skill-dir>/reports/security_trust_report.md"
+```
+
+### 3. Contracts
+
+- The generated trust inventory scans supported Python script surfaces; it does
+  not automatically inspect PowerShell source.
+- When `.ps1` files exist, `Scripts: 0` is an inventory limitation, not a safety
+  pass. Append a literal `missing evidence` boundary to the generated Markdown.
+- Name the manually inventoried `.ps1` files and pair them with deterministic
+  parse, fixture, injected-side-effect, and audit/`-WhatIf` evidence.
+- Keep host-local absolute paths out of committed JSON reports.
+
+### 4. Validation & Error Matrix
+
+- `.ps1` exists and generated script count is `0` -> keep the report, add the
+  PowerShell `missing evidence` boundary, and require manual/test evidence.
+- Any real termination, registry write, or other irreversible action in a test
+  -> fail the gate; replace it with an injected shim.
+- Provider execution, human adjudication, or telemetry was not run -> record
+  each item as `missing evidence`; fixture success cannot substitute for it.
+
+### 5. Good / Base / Bad Cases
+
+- Good: two `.ps1` files are manually inventoried, fixture-backed tests pass,
+  live checks use audit or `-WhatIf`, and the report discloses the scan gap.
+- Base: no PowerShell files exist; interpret the generated script count using
+  the tool's normal supported-language contract.
+- Bad: publish `Scripts: 0` as proof that a PowerShell package has no executable
+  risk.
+
+### 6. Tests Required
+
+- Parse every bundled `.ps1` file with the PowerShell AST parser.
+- Load pure functions without running top-level code and test file-backed
+  fixtures through injected command/process shims.
+- Prove destructive branches make zero real side-effect calls in CI.
+- Run only audit and `-WhatIf` smoke commands against the live host.
+
+### 7. Wrong vs Correct
+
+Wrong: "The trust report found zero scripts, so the package passed script
+review."
+
+Correct: "The generated report found zero supported scripts; PowerShell
+automated trust coverage is `missing evidence`, supplemented by the named
+manual inventory and deterministic safety tests."
 
 ## Script output files: pin encoding and newline
 

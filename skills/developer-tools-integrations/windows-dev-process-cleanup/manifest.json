@@ -1,0 +1,44 @@
+{
+  "name": "windows-dev-process-cleanup",
+  "version": "2.0.0",
+  "owner": "lyh",
+  "updated_at": "2026-07-22",
+  "review_cadence": "quarterly",
+  "status": "active",
+  "maturity_tier": "governed",
+  "lifecycle_stage": "governed",
+  "context_budget_tier": "governed",
+  "category": "developer-tools-integrations",
+  "license": "MIT",
+  "complexity_tier": "complex",
+  "factory_components": [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "security",
+    "scripts",
+    "tests"
+  ],
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic",
+    "vscode"
+  ],
+  "contracts": {
+    "input_files": {
+      "classification": "file-backed fixture",
+      "paths": [
+        "tests/fixtures/process-graphs.json",
+        "tests/fixtures/tasklist-apps.csv",
+        "tests/fixtures/tasklist-apps-malformed.csv",
+        "evals/output/fixtures/process-safety-scenarios.md"
+      ],
+      "rule": "Fixtures model process graphs, Windows paths, command status, and tasklist CSV without terminating real processes or writing the registry."
+    },
+    "output contract": "Return normalized inputs, complete affected members, identities, roles, blocked reasons, plan_id, preconditions, command status, and verified per-member outcomes. Never equate a successful command exit with confirmed termination.",
+    "rollback boundary": "Process termination is irreversible and is controlled by audit, confirmation, complete closure, and precondition checks. Report files are local and removable. Version 2.0 performs no registry mutation; persistent Phone Link changes must use supported Windows Settings.",
+    "trust report": "reports/security_trust_report.md"
+  }
+}

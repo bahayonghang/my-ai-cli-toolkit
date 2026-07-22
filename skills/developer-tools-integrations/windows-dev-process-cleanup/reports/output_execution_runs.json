@@ -1,0 +1,333 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "cases": "evals/output/cases.jsonl",
+  "runner": {
+    "mode": "command",
+    "command": [
+      "python",
+      "scripts\\local_output_eval_runner.py"
+    ],
+    "timeout_seconds": 30.0
+  },
+  "summary": {
+    "case_count": 6,
+    "variant_run_count": 12,
+    "command_executed_count": 12,
+    "model_executed_count": 0,
+    "recorded_fixture_count": 0,
+    "timing_observed_count": 12,
+    "token_observed_count": 0,
+    "token_estimated_count": 12,
+    "baseline_pass_rate": 0.0,
+    "with_skill_pass_rate": 100.0,
+    "delta": 100.0,
+    "regression_count": 0,
+    "failure_count": 0,
+    "gate_pass": true
+  },
+  "runs": [
+    {
+      "case_id": "protected-descendant",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 67.79,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 16,
+        "total_tokens": 32,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "uses-full-closure",
+        "blocks-protected",
+        "no-kill"
+      ],
+      "output_sha256": "81c75ec5dd104c51b3fd20249051eeed8ba48607810acdc46d876af3326c7ee3",
+      "failure": ""
+    },
+    {
+      "case_id": "protected-descendant",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 72.72,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 70,
+        "total_tokens": 86,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "15c2b39c8f16fbd2f0fa2c8eceb891eff1f38567025ab4a65ccebad80d5c9f87",
+      "failure": ""
+    },
+    {
+      "case_id": "identity-drift",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 71.26,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 16,
+        "total_tokens": 36,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 2,
+      "failed_assertions": [
+        "detects-drift",
+        "fails-precondition"
+      ],
+      "output_sha256": "7bbedaede70f6f919e801527688f513a33a699e27ad6bb941d7e995ffcb9c7bb",
+      "failure": ""
+    },
+    {
+      "case_id": "identity-drift",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 64.51,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 57,
+        "total_tokens": 77,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 2,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "8c81d7f790cbc7149f7a1b9ace2cbbd4ac99305660c406560ad6862acda52df2",
+      "failure": ""
+    },
+    {
+      "case_id": "false-taskkill-success",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 69.43,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 18,
+        "output_tokens": 12,
+        "total_tokens": 30,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 2,
+      "failed_assertions": [
+        "rejects-exit-only",
+        "verifies-members"
+      ],
+      "output_sha256": "a62f8a966d87e8442565c614a49e00a9e1f0564f1b94388c4d981e4bb8aea08f",
+      "failure": ""
+    },
+    {
+      "case_id": "false-taskkill-success",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 63.35,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 18,
+        "output_tokens": 52,
+        "total_tokens": 70,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 2,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "224d24fd9b1e22d384980cd890eb3aa8184a0826562334688a64da064ba0afab",
+      "failure": ""
+    },
+    {
+      "case_id": "workspace-boundary",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 67.76,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 20,
+        "total_tokens": 36,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 2,
+      "failed_assertions": [
+        "segment-boundary",
+        "workspace-precondition"
+      ],
+      "output_sha256": "a0bf71b9e4eb581584b74f868dc763a9a98e264cc25596cc89a9d205a4affcd9",
+      "failure": ""
+    },
+    {
+      "case_id": "workspace-boundary",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 67.39,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 63,
+        "total_tokens": 79,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 2,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "09d3b72a87f34c6c01af7f0dcfe24801dd0e1f8c25ef8d0cafbec13dceccf39a",
+      "failure": ""
+    },
+    {
+      "case_id": "uwp-csv-failure",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 65.79,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 23,
+        "total_tokens": 43,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "strict-parse",
+        "zero-targets",
+        "package-identity"
+      ],
+      "output_sha256": "5e3ce2ec950554d9ab4e47a7c4a2f94e257c37ae16e0c7a5333f148c27e20530",
+      "failure": ""
+    },
+    {
+      "case_id": "uwp-csv-failure",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 67.96,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 58,
+        "total_tokens": 78,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "201f1dd0833b969573d93657c603dab0f726229f7e6f3fabfccb3cb35da5ebe0",
+      "failure": ""
+    },
+    {
+      "case_id": "phone-link-registry",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 65.32,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 32,
+        "total_tokens": 53,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "no-registry-write",
+        "supported-guidance",
+        "honest-evidence"
+      ],
+      "output_sha256": "a0f7b42b6c43f793b9c3bbaf4af136610a5dd5d7df7d9fc1ffb8748c8e5cceae",
+      "failure": ""
+    },
+    {
+      "case_id": "phone-link-registry",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 67.64,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 86,
+        "total_tokens": 107,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "f879e27882e38d2f57019d75812e961c2d53c72db558fad66d66c295d1d60a41",
+      "failure": ""
+    }
+  ],
+  "failures": [],
+  "artifacts": {
+    "json": "reports/output_execution_runs.json",
+    "markdown": "reports/output_execution_runs.md"
+  }
+}

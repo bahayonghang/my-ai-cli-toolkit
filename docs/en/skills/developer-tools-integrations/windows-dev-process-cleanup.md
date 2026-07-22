@@ -4,11 +4,12 @@
 
 ## Purpose overview
 
-Audit and safely clean Windows dev-process buildup and UWP background-task pileups — stale node/npm/cmd/pwsh trees (leaked Playwright MCP workers, dev servers, IDE services) and backgroundTaskHost.exe pileups.
+Audit and safely clean Windows dev-process trees and UWP app background-task pileups, including orphan npm/npx, leaked Playwright MCP workers, workspace dev servers, IDE services, Phone Link, Dolby Access, and backgroundTaskHost.exe.
 
 ## Trigger scenarios
 
-- Task Manager is full of node/npm noise, or for Windows 进程堆积, 清理残留开发进程, 查杀泄漏的 Playwright MCP, backgroundTaskHost 堆积
+- Audit and safely clean Windows dev-process trees and UWP app background-task pileups, including orphan npm/npx, leaked Playwright MCP workers, workspace dev servers, IDE services, Phone Link, Dolby Access, and backgroundTaskHost.exe
+- Use for Task Manager node/npm noise, Windows process buildup, 进程堆积, 清理残留开发进程, 泄漏的 Playwright MCP, 手机连接或杜比后台任务堆积
 
 ## Metadata
 
@@ -16,7 +17,7 @@ Audit and safely clean Windows dev-process buildup and UWP background-task pileu
 | --- | --- |
 | Name | `windows-dev-process-cleanup` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `1.1.0` |
+| Version | `2.0.0` |
 | Tags | `windows`, `powershell`, `process-cleanup`, `uwp`, `playwright-mcp` |
 
 ## Install command
@@ -30,16 +31,23 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill windows-dev-p
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/windows-dev-process-cleanup/agents` | directory | 1 | Companion agents |
+| `skills/developer-tools-integrations/windows-dev-process-cleanup/evals` | directory | 3 | Evaluation samples |
+| `skills/developer-tools-integrations/windows-dev-process-cleanup/manifest.json` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/windows-dev-process-cleanup/README.en.md` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/windows-dev-process-cleanup/README.md` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/windows-dev-process-cleanup/references` | directory | 3 | Reference material |
+| `skills/developer-tools-integrations/windows-dev-process-cleanup/reports` | directory | 10 | Top-level directory |
 | `skills/developer-tools-integrations/windows-dev-process-cleanup/scripts` | directory | 2 | Executable scripts |
-| `skills/developer-tools-integrations/windows-dev-process-cleanup/tests` | directory | 1 | Automated tests |
+| `skills/developer-tools-integrations/windows-dev-process-cleanup/security` | directory | 1 | Top-level directory |
+| `skills/developer-tools-integrations/windows-dev-process-cleanup/tests` | directory | 4 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | agents | `skills/developer-tools-integrations/windows-dev-process-cleanup/agents` | Companion agents |
+| evals | `skills/developer-tools-integrations/windows-dev-process-cleanup/evals` | Evaluation samples |
+| references | `skills/developer-tools-integrations/windows-dev-process-cleanup/references` | Reference material |
 | scripts | `skills/developer-tools-integrations/windows-dev-process-cleanup/scripts` | Executable scripts |
 | tests | `skills/developer-tools-integrations/windows-dev-process-cleanup/tests` | Automated tests |
 

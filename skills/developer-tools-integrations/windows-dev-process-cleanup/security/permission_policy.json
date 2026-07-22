@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "reviewed_at": "2026-07-22",
+  "capabilities": {
+    "process_read": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Read local process metadata through Win32_Process and Get-Process for audit, plan construction, identity preconditions, and post-action verification.",
+      "reason": "Complete local process identity and descendant evidence is required to prevent cleanup from affecting unaudited or replaced processes.",
+      "expires_at": "2026-10-22",
+      "evidence": ["references/safety-policy.md", "tests/audit-scripts.test.mjs"],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must enforce local process-read access.",
+        "claude": "Permission metadata only; the host must enforce local process-read access.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust does not grant process access; the host must enforce it."
+      }
+    },
+    "subprocess": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Invoke local Windows tasklist for structured read-only app association and taskkill only for a user-authorized, prevalidated process-tree plan.",
+      "reason": "Windows built-in commands provide the required app association and tree termination behavior while deterministic tests replace both actions with shims.",
+      "expires_at": "2026-10-22",
+      "evidence": ["references/windows-command-contracts.md", "tests/audit-scripts.test.mjs"],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must enforce subprocess authorization.",
+        "claude": "Permission metadata only; the host must enforce subprocess authorization.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust does not grant subprocess access; the host must enforce it."
+      }
+    },
+    "process_termination": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Terminate only PIDs in the displayed unblocked cleanup plan after explicit user authorization and a successful immediate identity and closure recheck.",
+      "reason": "Termination is the requested capability, but it is irreversible and therefore limited by audit-first planning, narrow profiles, preconditions, and post-action verification.",
+      "expires_at": "2026-10-22",
+      "evidence": ["SKILL.md", "references/safety-policy.md", "tests/audit-scripts.test.mjs"],
+      "target_enforcement": {
+        "openai": "Contract metadata; the host must require authorization for process termination.",
+        "claude": "Contract metadata; the host must require authorization for process termination.",
+        "generic": "Downstream hosts must provide equivalent explicit authorization and fail-closed checks.",
+        "vscode": "Workspace trust alone is insufficient; explicit process-termination permission is required."
+      }
+    },
+    "file_write": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Write only caller-selected local JSON or Markdown audit report paths supplied through ExportJson or ExportMarkdown.",
+      "reason": "Optional local reports make the reviewed plan auditable; no default path is written and report files contain only local process evidence.",
+      "expires_at": "2026-10-22",
+      "evidence": ["SKILL.md", "scripts/audit-dev-processes.ps1"],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must enforce destination scope.",
+        "claude": "Permission metadata only; the host must enforce destination scope.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "The host must enforce workspace and destination write boundaries."
+      }
+    },
+    "registry_read": {
+      "decision": "not-approved",
+      "reviewer": "lyh",
+      "scope": "No registry read is required by version 2.0 runtime behavior.",
+      "reason": "The unsupported Phone Link registry path was removed, so no registry state is used to select, execute, or verify cleanup.",
+      "expires_at": "2026-10-22",
+      "evidence": ["references/migration-2.0.md", "reports/security_trust_report.md"],
+      "target_enforcement": {
+        "openai": "Deny registry access for this skill.",
+        "claude": "Deny registry access for this skill.",
+        "generic": "Downstream hosts should deny registry access.",
+        "vscode": "Workspace trust does not authorize registry access."
+      }
+    },
+    "registry_write": {
+      "decision": "not-approved",
+      "reviewer": "lyh",
+      "scope": "Version 2.0 must not write HKCU or any other registry location; the deprecated flag fails before enumeration.",
+      "reason": "No current authoritative and reversible Windows contract was found for the former Phone Link registry values, so mutation is fail-closed.",
+      "expires_at": "2026-10-22",
+      "evidence": ["references/windows-command-contracts.md", "tests/audit-scripts.test.mjs"],
+      "target_enforcement": {
+        "openai": "Deny registry writes for this skill.",
+        "claude": "Deny registry writes for this skill.",
+        "generic": "Downstream hosts should deny registry writes.",
+        "vscode": "Workspace trust does not authorize registry writes."
+      }
+    }
+  }
+}

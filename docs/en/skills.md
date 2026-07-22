@@ -36,7 +36,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [image-to-ui-skill](/en/skills/developer-tools-integrations/image-to-ui-skill) — 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 - [ripgrep](/en/skills/developer-tools-integrations/ripgrep) — Use when the user needs text or regex content search with ripgrep: composing rg commands, choosing flags, glob/type filtering, multiline or PCRE2 searches, pipeline output, grep-to-rg migration, or diagnosing why rg missed a file (gitignore, hidden, binary defaults).
 - [uv-workflow](/en/skills/developer-tools-integrations/uv-workflow) — Use when a coding agent needs to run Python code, modules, one-liners, tools, tests, or standalone scripts through uv, or create and maintain PEP 723 scripts with uv init/add/remove --script.
-- [windows-dev-process-cleanup](/en/skills/developer-tools-integrations/windows-dev-process-cleanup) — Audit and safely clean Windows dev-process buildup and UWP background-task pileups — stale node/npm/cmd/pwsh trees (leaked Playwright MCP workers, dev servers, IDE services) and backgroundTaskHost.exe pileups.
+- [windows-dev-process-cleanup](/en/skills/developer-tools-integrations/windows-dev-process-cleanup) — Audit and safely clean Windows dev-process trees and UWP app background-task pileups, including orphan npm/npx, leaked Playwright MCP workers, workspace dev servers, IDE services, Phone Link, Dolby Access, and backgroundTaskHost.exe.
 
 ### Development Workflows
 

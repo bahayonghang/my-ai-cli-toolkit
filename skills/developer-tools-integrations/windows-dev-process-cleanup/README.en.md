@@ -2,125 +2,70 @@
 
 [中文](./README.md) | English
 
-A Codex skill and PowerShell toolkit for **auditing and safely cleaning stale Windows development process trees** and **UWP background-task pileups**.
+A PowerShell 7 toolkit for auditing and safely cleaning stale Windows development process trees and UWP background-task buildup. It builds a complete plan, blocks uncertain targets, revalidates immediately before cleanup, and verifies every PID afterward.
 
-The core principle is: **classify first, then clean up**. By default, it avoids killing active dev servers, editor language services, and ambiguous process trees.
+## What it audits
 
-## What it detects
-
-### 1. Development process trees
-
-`scripts/audit-dev-processes.ps1` audits Windows development-related processes:
-
-- `node.exe`
-- `npm.exe`
-- `npx.exe`
-- `cmd.exe`
-- `pwsh.exe`
-
-It classifies process trees as:
-
-- `npm-outdated`
-- `playwright-mcp`
-- `dev-server`
-- `ide-language-service`
-- `generic`
-
-### 2. UWP background-task pileups
-
-`scripts/audit-uwp-backgroundtasks.ps1` audits app-associated `backgroundTaskHost.exe` processes via `tasklist /apps`, with focused handling for:
-
-- Phone Link / `Microsoft.YourPhone`
-- Dolby Access / `DolbyLaboratories.DolbyAccess`
-- Microsoft Store / StorePurchaseApp / Microsoft To Do and other UWP background tasks
+- Dev trees rooted in `node.exe`, `npm.exe`, `npx.exe`, `cmd.exe`, or `pwsh.exe`, including orphan `npm outdated`, Playwright MCP, dev servers, and IDE language services.
+- UWP-associated processes from `tasklist /apps /fo csv /nh`, with focused handling for Phone Link, Dolby Access, and `backgroundTaskHost.exe` pileups.
 
 ## Quick start
 
-The examples below assume you run them inside this skill directory; use absolute script paths from anywhere else.
-
-Audit development process trees:
+Use an absolute script path from outside this skill directory. These examples assume the current directory is the skill directory.
 
 ```powershell
-pwsh -NoLogo -File scripts/audit-dev-processes.ps1 -Mode audit
+# Read-only audits
+pwsh -NoLogo -NoProfile -File scripts/audit-dev-processes.ps1 -Mode audit -AsJson
+pwsh -NoLogo -NoProfile -File scripts/audit-uwp-backgroundtasks.ps1 -Mode audit -AsJson
+
+# Preview only; no process termination
+pwsh -NoLogo -NoProfile -File scripts/audit-dev-processes.ps1 -Mode cleanup -Profile safe -WhatIf -AsJson
+pwsh -NoLogo -NoProfile -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile dolby-backgroundtask -WhatIf -AsJson
 ```
 
-Preview conservative cleanup without terminating processes:
+Remove `-WhatIf` only when the user explicitly requested cleanup, the plan has no blocked target, and the preview remains accurate.
 
-```powershell
-pwsh -NoLogo -File scripts/audit-dev-processes.ps1 -Mode cleanup -Profile safe -WhatIf
-```
+## Dev profiles
 
-Clean orphan `npm outdated` process trees:
+- `safe`: selects only `npm-outdated` trees whose parent is absent.
+- `playwright-mcp`: selects Playwright MCP trees and requires explicit cleanup intent.
+- `codex-playwright-safe`: selects Codex-owned Playwright MCP trees older than a positive `-StaleMinutes` threshold.
+- `safe-plus-codex-playwright`: combines the two conservative predicates.
+- `workspace-dev-server`: selects dev servers whose normalized paths match `-WorkspacePath` on a directory-segment boundary; cleanup requires an existing directory.
 
-```powershell
-pwsh -NoLogo -File scripts/audit-dev-processes.ps1 -Mode cleanup -Profile safe
-```
+The script enumerates each root and every descendant. A mixed tree, protected member, unknown member, missing identity, or newly discovered descendant blocks the entire tree. Before termination it rechecks PID identity and descendant closure. Afterward it reports `terminated`, `not-found`, `failed`, or `identity-changed` per member. A zero `taskkill` exit code is not proof of termination.
 
-Audit UWP/app background tasks:
+## UWP profiles
 
-```powershell
-pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode audit
-```
+- `phone-link-background`: selects full `Microsoft.YourPhone_*` package identities and expected Phone Link processes.
+- `dolby-backgroundtask`: selects only Dolby Access-associated `backgroundTaskHost` processes; it never disables, uninstalls, or changes Dolby audio features.
 
-Disable Phone Link background access and terminate related processes:
+Invalid CSV columns, PID, package identity, or command status fail the audit and block cleanup.
 
-```powershell
-pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile phone-link-background -DisablePhoneLinkBackground
-```
+## Version 2.0 migration
 
-Terminate leaked Dolby Access `backgroundTaskHost.exe` instances without disabling Dolby Access:
+`-DisablePhoneLinkBackground` is deprecated and fails closed. It no longer writes HKCU because no current Microsoft authority was found for a stable, verifiable, and reversible contract for the former values.
 
-```powershell
-pwsh -NoLogo -File scripts/audit-uwp-backgroundtasks.ps1 -Mode cleanup -Profile dolby-backgroundtask
-```
+For a persistent change, use Windows Settings: `System > Power & battery > Battery usage > Manage background activity`, then choose `Never` when the app exposes that control. See [migration-2.0.md](references/migration-2.0.md) and [windows-command-contracts.md](references/windows-command-contracts.md).
 
-## Cleanup profiles
+## Output and rollback boundary
 
-### `audit-dev-processes.ps1`
+JSON, console, and Markdown derive from the same fact model: normalized inputs, complete members, roles and protection reasons, blocked targets, `plan_id`, preconditions, and per-PID results. Process termination is irreversible; planning, confirmation, and revalidation are the prevention controls. Report files are local and removable. Version 2.0 performs no registry mutation.
 
-- `safe`: terminate only clearly stale orphan `npm-outdated` process trees.
-- `playwright-mcp`: terminate Playwright MCP process trees. Use only when browser automation workers are known to be stale.
-- `codex-playwright-safe`: terminate stale Playwright MCP process trees owned by Codex after the stale threshold.
-- `safe-plus-codex-playwright`: combine orphan `npm-outdated` cleanup with stale Codex Playwright cleanup.
-- `workspace-dev-server`: terminate only dev servers whose command lines match `-WorkspacePath`.
+See [safety-policy.md](references/safety-policy.md) for the full policy.
 
-Every profile automatically excludes `mixed_tree` trees (a single tree containing both cleanup-target members and dev server / IDE service members); such trees are only flagged manual-review.
-
-### `audit-uwp-backgroundtasks.ps1`
-
-Cleanup mode requires an explicit `-Profile` and fails fast without one. Cleanup results include per-PID `details` (`terminated` / `failed` / `not-found`), an aggregate `result` (`preview` / `terminated` / `partial` / `failed` / `no-targets`), and a `registry_changed` flag.
-
-- `phone-link-background`: terminate Phone Link / `Microsoft.YourPhone` app-associated processes. Use `-DisablePhoneLinkBackground` to write HKCU background-access flags.
-- `dolby-backgroundtask`: terminate only Dolby Access `backgroundTaskHost.exe` instances. It does not disable, uninstall, or change Dolby Access audio features.
-
-## Safety notes
-
-- Always audit first.
-- Prefer `-WhatIf` before non-trivial cleanup.
-- Do not kill `dev-server`, `ide-language-service`, or `generic` process trees without user confirmation.
-- Do not disable Dolby Access by default because it may affect audio features.
-- Disable Phone Link background access only when the user does not need background phone sync.
-
-## Codex skill usage
-
-`SKILL.md` describes when and how Codex should use these scripts.
-
-## Requirements
+## Requirements and tests
 
 - Windows
-- PowerShell 7 (required; the scripts declare `#requires -Version 7.0`)
-- Built-in Windows commands: `tasklist`, `taskkill`
-- CIM/WMI availability for process tree inspection
-
-## Tests
-
-Run `just node-test` from the repository root, or directly:
+- PowerShell 7
+- Built-in Windows `tasklist` and `taskkill`
+- CIM/WMI process queries
 
 ```powershell
 node --test tests/audit-scripts.test.mjs
 ```
 
-The suite skips automatically on non-Windows machines or when PowerShell 7 is missing.
+Tests use file-backed fixtures and injected shims. They do not terminate real processes or write the registry.
 
 ## License
 
