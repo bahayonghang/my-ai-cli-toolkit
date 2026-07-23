@@ -134,7 +134,7 @@ test("create builds a model-aware bundle in a non-ASCII path", () => {
   assert.equal(manifest.model, "gpt-5.6-sol");
   assert.equal(manifest.reasoning_effort, "high");
   assert.equal(manifest.sandbox, "read-only");
-  assert.equal(manifest.project_root, fs.realpathSync(project));
+  assert.equal(manifest.project_root, fs.realpathSync.native(project));
   assert.equal(fs.existsSync(path.join(bundle, "files")), true);
 });
 
