@@ -167,6 +167,7 @@ def _next_content_line(lines: list[str], start: int) -> tuple[int, str]:
 DEFAULT_SESSION_COMMIT_MESSAGE = "chore: record journal"
 DEFAULT_MAX_JOURNAL_LINES = 2000
 DEFAULT_SESSION_AUTO_COMMIT = True
+DEFAULT_CODEX_DISPATCH_MODE = "auto"
 
 CONFIG_FILE = "config.yaml"
 
@@ -241,6 +242,42 @@ def get_session_auto_commit(repo_root: Path | None = None) -> bool:
         file=sys.stderr,
     )
     return DEFAULT_SESSION_AUTO_COMMIT
+
+
+def get_codex_dispatch_mode(repo_root: Path | None = None) -> str:
+    """Return Codex dispatch mode.
+
+    Default is ``auto``, which dispatches Trellis sub-agents and uses native
+    context injection with a child-side fallback. ``inline`` is an explicit
+    opt-out. ``sub-agent`` remains a backwards-compatible alias for ``auto``.
+
+    Invalid explicit configuration falls back to ``inline`` rather than
+    unexpectedly dispatching a sub-agent. This CLI-facing parser is the only
+    place that emits a warning for invalid values; hook readers fail safely
+    without producing per-turn warning noise.
+    """
+    config = _load_config(repo_root)
+    codex = config.get("codex")
+    if codex is None:
+        return DEFAULT_CODEX_DISPATCH_MODE
+    if not isinstance(codex, dict):
+        print(
+            f"[WARN] invalid codex config: {codex!r}; using inline",
+            file=sys.stderr,
+        )
+        return "inline"
+
+    raw = codex.get("dispatch_mode", DEFAULT_CODEX_DISPATCH_MODE)
+    mode = str(raw).strip().lower()
+    if mode in ("auto", "inline"):
+        return mode
+    if mode == "sub-agent":
+        return "auto"
+    print(
+        f"[WARN] invalid codex.dispatch_mode value: {raw!r}; using inline",
+        file=sys.stderr,
+    )
+    return "inline"
 
 
 def get_hooks(event: str, repo_root: Path | None = None) -> list[str]:
