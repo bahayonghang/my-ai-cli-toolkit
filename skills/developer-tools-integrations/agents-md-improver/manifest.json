@@ -1,0 +1,37 @@
+{
+  "name": "agents-md-improver",
+  "version": "1.2.0",
+  "owner": "lyh",
+  "updated_at": "2026-07-23",
+  "review_cadence": "quarterly",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "production",
+  "category": "developer-tools-integrations",
+  "license": "MIT",
+  "complexity_tier": "medium",
+  "factory_components": [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "tests"
+  ],
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic"
+  ],
+  "contracts": {
+    "input_files": {
+      "classification": "file-backed fixture",
+      "paths": [
+        "evals/output/fixtures/agents-md-scenarios.md"
+      ],
+      "rule": "Repository guidance, effective configuration evidence, commands, structure, and fixtures are inputs. Documented defaults do not prove effective local configuration."
+    },
+    "output contract": "Return an evidence-first audit with conditional proposed diffs, or an authorized update summary with changed files and honest validation states. Keep AGENTS instruction need separate from code_map navigation need.",
+    "rollback boundary": "All package behavior is local prompt, reference, metadata, fixture, and report content. Repository guidance edits remain limited to the caller-authorized files; user-global and external writes are outside the default boundary."
+  }
+}

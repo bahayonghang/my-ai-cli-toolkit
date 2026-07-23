@@ -1,0 +1,100 @@
+{
+  "ok": true,
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+  "steps": [
+    {
+      "command": "validate_skill.py D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+      "ok": true,
+      "returncode": 0,
+      "payload": {
+        "ok": true,
+        "failures": [],
+        "warnings": []
+      }
+    },
+    {
+      "command": "lint_skill.py D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+      "ok": true,
+      "returncode": 0,
+      "payload": {
+        "ok": true,
+        "failures": [],
+        "warnings": []
+      }
+    },
+    {
+      "command": "governance_check.py D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+      "ok": true,
+      "returncode": 0,
+      "payload": {
+        "ok": true,
+        "failures": [],
+        "warnings": [],
+        "details": {
+          "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+          "manifest_present": true,
+          "frontmatter_name": "agents-md-improver",
+          "manifest_name": "agents-md-improver",
+          "status": "active",
+          "maturity_tier": "production",
+          "review_cadence": "quarterly",
+          "governance_score": 90,
+          "declared_maturity_minimum": 80,
+          "computed_governance_band": "governed",
+          "computed_maturity_tier": "governed",
+          "score_breakdown": {
+            "metadata_integrity": 20,
+            "ownership_and_review": 20,
+            "boundary_and_eval": 25,
+            "operational_assets": 15,
+            "maintenance_evidence": 10
+          }
+        }
+      }
+    },
+    {
+      "command": "resource_boundary_check.py D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+      "ok": true,
+      "returncode": 0,
+      "payload": {
+        "ok": true,
+        "failures": [],
+        "warnings": [],
+        "stats": {
+          "context_budget_tier": "production",
+          "context_budget_limit": 1000,
+          "skill_body_tokens": 777,
+          "other_text_tokens": 24426,
+          "estimated_initial_load_tokens": 983,
+          "estimated_total_text_tokens": 25203,
+          "deferred_resource_tokens": 6779,
+          "deferred_resource_warn_threshold": 120000,
+          "deferred_resource_dirs": [
+            {
+              "path": "references",
+              "estimated_tokens": 4356,
+              "file_count": 5
+            },
+            {
+              "path": "evals",
+              "estimated_tokens": 2423,
+              "file_count": 2
+            }
+          ],
+          "large_deferred_resource_dirs": [],
+          "deferred_resource_governance": {
+            "status": "not-required",
+            "large_dir_count": 0,
+            "governed_large_dir_count": 0,
+            "directories": [],
+            "summary": "No large deferred resource directory exceeds the per-dir threshold."
+          },
+          "relevant_file_count": 23,
+          "unused_resource_dirs": [],
+          "quality_signal_points": 125,
+          "quality_density": 127.2
+        }
+      }
+    }
+  ]
+}

@@ -44,5 +44,4 @@ docs/.vitepress/cache/
 .plannings/
 
 # Local skill-creator evaluation workspaces
-goudi-workspace/
 ast-grep-workspace/

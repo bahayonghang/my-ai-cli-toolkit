@@ -1,0 +1,17 @@
+{
+  "recommended_threshold": 0.46,
+  "should_trigger": [
+    {"text":"审计这个仓库的 AGENTS.md，检查 nested 指导冲突、过期命令和 code_map.md 覆盖。","family":"full_audit"},
+    {"text":"Generate a repository code_map.md and align the root and nested AGENTS.md guidance with it.","family":"code_map_alignment"},
+    {"text":"Audit why AGENTS.override.md wins over AGENTS.md in this subtree and report the effective Codex instruction chain.","family":"override_precedence"}
+  ],
+  "should_not_trigger": [
+    {"text":"Audit CLAUDE.md layering, .claude/rules globs, and @import chains.","family":"claude_md_improver"},
+    {"text":"Recommend which Codex MCP servers, plugins, hooks, and subagents this repository should adopt, but do not edit files.","family":"codex_workflow_recommender"},
+    {"text":"Add one already-specified sentence to AGENTS.md: run npm test before opening a PR.","family":"trivial_direct_edit"}
+  ],
+  "near_neighbor": [
+    {"text":"Audit both AGENTS.md and CLAUDE.md, keeping their shared code_map.md wording aligned.","family":"dual_agent_guidance"},
+    {"text":"Create an architecture map for this repository, but do not add or change agent guidance.","family":"architecture_diagram"}
+  ]
+}

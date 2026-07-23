@@ -1,0 +1,162 @@
+{
+  "clean_playwright": [
+    {
+      "ProcessId": 90,
+      "ParentProcessId": 1,
+      "Name": "codex.exe",
+      "CommandLine": "codex",
+      "CreationDate": "2026-07-22T08:00:00Z"
+    },
+    {
+      "ProcessId": 100,
+      "ParentProcessId": 90,
+      "Name": "cmd.exe",
+      "CommandLine": "cmd /c npx -y @playwright/mcp@latest",
+      "CreationDate": "2026-07-22T08:01:00Z"
+    },
+    {
+      "ProcessId": 101,
+      "ParentProcessId": 100,
+      "Name": "node.exe",
+      "CommandLine": "node playwright-mcp",
+      "CreationDate": "2026-07-22T08:01:01Z"
+    }
+  ],
+  "protected_descendant": [
+    {
+      "ProcessId": 90,
+      "ParentProcessId": 1,
+      "Name": "codex.exe",
+      "CommandLine": "codex",
+      "CreationDate": "2026-07-22T08:00:00Z"
+    },
+    {
+      "ProcessId": 100,
+      "ParentProcessId": 90,
+      "Name": "cmd.exe",
+      "CommandLine": "cmd /c npx -y @playwright/mcp@latest",
+      "CreationDate": "2026-07-22T08:01:00Z"
+    },
+    {
+      "ProcessId": 101,
+      "ParentProcessId": 100,
+      "Name": "node.exe",
+      "CommandLine": "node playwright-mcp",
+      "CreationDate": "2026-07-22T08:01:01Z"
+    },
+    {
+      "ProcessId": 102,
+      "ParentProcessId": 100,
+      "Name": "node.exe",
+      "CommandLine": "npm run dev -- --host 127.0.0.1",
+      "CreationDate": "2026-07-22T08:01:02Z"
+    }
+  ],
+  "unknown_descendant": [
+    {
+      "ProcessId": 90,
+      "ParentProcessId": 1,
+      "Name": "codex.exe",
+      "CommandLine": "codex",
+      "CreationDate": "2026-07-22T08:00:00Z"
+    },
+    {
+      "ProcessId": 100,
+      "ParentProcessId": 90,
+      "Name": "cmd.exe",
+      "CommandLine": "cmd /c npx -y @playwright/mcp@latest",
+      "CreationDate": "2026-07-22T08:01:00Z"
+    },
+    {
+      "ProcessId": 101,
+      "ParentProcessId": 100,
+      "Name": "node.exe",
+      "CommandLine": "node playwright-mcp",
+      "CreationDate": "2026-07-22T08:01:01Z"
+    },
+    {
+      "ProcessId": 103,
+      "ParentProcessId": 100,
+      "Name": "python.exe",
+      "CommandLine": "python unrelated-helper.py",
+      "CreationDate": "2026-07-22T08:01:03Z"
+    }
+  ],
+  "identity_changed": [
+    {
+      "ProcessId": 90,
+      "ParentProcessId": 1,
+      "Name": "codex.exe",
+      "CommandLine": "codex",
+      "CreationDate": "2026-07-22T08:00:00Z"
+    },
+    {
+      "ProcessId": 100,
+      "ParentProcessId": 90,
+      "Name": "cmd.exe",
+      "CommandLine": "cmd /c npx -y @playwright/mcp@latest",
+      "CreationDate": "2026-07-22T09:01:00Z"
+    },
+    {
+      "ProcessId": 101,
+      "ParentProcessId": 100,
+      "Name": "node.exe",
+      "CommandLine": "node playwright-mcp",
+      "CreationDate": "2026-07-22T08:01:01Z"
+    }
+  ],
+  "identity_missing": [
+    {
+      "ProcessId": 100,
+      "ParentProcessId": 90,
+      "Name": "cmd.exe",
+      "CommandLine": "cmd /c npx -y @playwright/mcp@latest",
+      "CreationDate": "2026-07-22T08:01:00Z"
+    },
+    {
+      "ProcessId": 101,
+      "ParentProcessId": 100,
+      "Name": "node.exe",
+      "CommandLine": null,
+      "CreationDate": "2026-07-22T08:01:01Z"
+    }
+  ],
+  "safe_npm": [
+    {
+      "ProcessId": 200,
+      "ParentProcessId": 999,
+      "Name": "cmd.exe",
+      "CommandLine": "cmd /c npm outdated",
+      "CreationDate": "2026-07-22T07:00:00Z"
+    },
+    {
+      "ProcessId": 201,
+      "ParentProcessId": 200,
+      "Name": "node.exe",
+      "CommandLine": "node npm-cli.js outdated",
+      "CreationDate": "2026-07-22T07:00:01Z"
+    }
+  ],
+  "workspace_cases": [
+    {
+      "target": "C:\\work\\app",
+      "command_line": "node C:\\work\\app\\node_modules\\.bin\\vite",
+      "expected": true
+    },
+    {
+      "target": "C:\\work\\app\\",
+      "command_line": "node \"c:\\WORK\\APP\\node_modules\\.bin\\vite\"",
+      "expected": true
+    },
+    {
+      "target": "C:\\work\\app",
+      "command_line": "node C:\\work\\app-copy\\node_modules\\.bin\\vite",
+      "expected": false
+    },
+    {
+      "target": "C:\\work\\app",
+      "command_line": "node --cwd=C:\\work\\application vite",
+      "expected": false
+    }
+  ]
+}

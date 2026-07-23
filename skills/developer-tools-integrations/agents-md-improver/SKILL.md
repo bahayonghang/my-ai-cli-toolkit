@@ -1,12 +1,7 @@
 ---
 name: agents-md-improver
-description: >-
-  Audit and improve Codex AGENTS.md guidance files and companion code_map.md
-  navigation maps. Use when the user asks to check, audit, optimize, or fix
-  AGENTS.md; mentions nested AGENTS.md conflicts, code maps, stale commands,
-  or scoped instructions; or says 优化 AGENTS.md, 审计 AGENTS.md, 更新 Codex
-  项目指导, 生成 code_map.md.
-version: 1.1.0
+description: Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.
+version: 1.2.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -17,169 +12,54 @@ tags:
   - audit
   - documentation
 argument-hint: "[audit-or-update-goal]"
-allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *)
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git *), Bash(rg *)
 ---
 
 # AGENTS.md Improver
 
-Audit and improve Codex `AGENTS.md` guidance files and companion `code_map.md` navigation maps so future Codex CLI, Codex App, and native subagent sessions receive concise, accurate, scoped project instructions and fast code search entry points.
+Produce lean repository guidance grounded in the Codex instruction chain that
+applies to the launch context.
 
-**Default mode is report-first.** Output a quality report and proposed diff before writing. If the user explicitly asks to implement an approved plan, continue directly to targeted edits and verification.
+## Action Boundary
 
-## Core Semantics
-
-- An `AGENTS.md` file governs the directory that contains it and every descendant directory.
-- A deeper `AGENTS.md` adds or overrides guidance for its subtree.
-- System, developer, and direct user instructions outrank any `AGENTS.md` content.
-- Repository `AGENTS.md` files are project guidance. User-level `~/.codex/AGENTS.md` is global preference guidance and should not be edited unless explicitly requested.
-- `AGENTS.md` carries durable behavioral constraints, commands, and safety rules. `code_map.md` carries navigational structure, search anchors, entry points, and generated/ignored directory notes.
-- Every created or updated `AGENTS.md` should explicitly name the relative `code_map.md` path agents must read before broad grep or repo-wide search, for example `See ./code_map.md before broad grep` or `For this subtree, start with platforms/codex/code_map.md`.
-- When the repository also uses Claude Code (`CLAUDE.md` present), `code_map.md` is a shared artifact maintained by both this skill and `claude-md-improver`. Use the canonical code map wording from `references/templates.md` (it names both guidance files), never remove the other tool's mention from an existing map, and prefer keeping shared instructions in `AGENTS.md` with `CLAUDE.md` importing them via `@AGENTS.md`.
-- Preserve hook-managed marker blocks such as `<!-- OMX:RUNTIME:START --> ... <!-- OMX:RUNTIME:END -->` and `<!-- OMX:TEAM:WORKER:START --> ... <!-- OMX:TEAM:WORKER:END -->`.
+- Audit/optimize/plan: inspect and return an evidence-first report with proposed
+  diffs; do not write.
+- Approved plan or explicit scoped change/fix: edit local in-scope files and
+  validate without another approval round.
+- Fully specified trivial edit: implicit routing stays with direct editing;
+  explicit skill invocation uses a minimal check, edit, validation, then stops.
+- Confirm user-global, external, destructive, costly, or scope-expanding work.
+  Never write Codex-home guidance unless requested.
 
 ## Workflow
 
-### Phase 1: Discovery
+1. Resolve project root, launch CWD, candidates, and effective config evidence.
+   Read [Codex discovery semantics](references/codex-agents-discovery.md) before
+   declaring files active. Prefer structured tools; use one-line
+   `rg --files --hidden` with include/exclude globs as the shell fallback.
+2. Build the root-to-CWD chain, shadows, empty-file and byte-budget state.
+   Inventory off-chain files separately; unavailable config is `missing evidence`.
+3. Verify commands, paths, ownership, boundaries, and recurring failures. Apply
+   [quality criteria](references/quality-criteria.md); decide durable instruction
+   need independently from navigation need.
+4. Use [the report contract](references/report-format.md) for audits. For edits,
+   follow [update guidelines](references/update-guidelines.md) and evidence-backed
+   [templates](references/templates.md).
+5. Run the smallest checks proving the changed claims, then stop.
 
-Find scoped guidance files:
+## Evidence Rules
 
-```bash
-find . \( -name AGENTS.md -o -name code_map.md \) \
-  -not -path './.git/*' \
-  -not -path './node_modules/*' \
-  -not -path './target/*' \
-  -not -path './dist/*' \
-  -not -path './build/*' \
-  -not -path './vendor/*' \
-  -not -path './.omx/state/*'
-```
+- Separate facts, defaults, inference, and missing evidence; retry suspiciously
+  empty reads once or twice.
+- Treat `evals/` as release evidence, not model or human proof.
+- Preserve human/managed content. Change both sibling fenced `code_map.md`
+  templates only when their shared contract changes.
+- Audit existing overrides; create one only for an explicit temporary or strong
+  override need.
 
-The command above is a starting set; the full exclusion list below governs. Exclude generated, vendored, dependency, cache, and build-output directories from guidance creation scans, including `.git/`, `node_modules/`, `target/`, `dist/`, `build/`, `.omx/state/`, `vendor/`, generated docs output, coverage output, and language-specific package caches.
+## Output Contract
 
-Discover candidate directories for new nested `AGENTS.md` plus local `code_map.md` before proposing writes. Score only real source subtrees that show one or more of:
-
-- independent manifests or command files such as `package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`, `Makefile`, `justfile`, or CI/workflow fragments
-- independent runtime, entry point, test command, deployable package, or service boundary
-- distinct language stack, framework, generated-source policy, or data/credential safety boundary
-- high internal complexity where a local map would prevent broad grep or repeated rediscovery
-- public API/contract surfaces that are frequently edited or shared by multiple packages
-
-Also note, but do not edit by default:
-
-```text
-~/.codex/AGENTS.md
-.codex/agents/
-.codex/skills/
-```
-
-Classify each file:
-
-| Type                       | Location                        | Purpose                                                                     |
-| -------------------------- | ------------------------------- | --------------------------------------------------------------------------- |
-| root guidance              | `./AGENTS.md`                   | repo-wide commands, architecture, gates, safety boundaries                  |
-| nested scoped guidance     | `./<subtree>/AGENTS.md`         | local commands, ownership, generated files, conventions                     |
-| root code map              | `./code_map.md`                 | repo navigation, top-level routing, search anchors, ignored/generated paths |
-| nested code map            | `./<subtree>/code_map.md`       | subtree entry points, internal routing, upstream/downstream boundaries      |
-| user global guidance       | `~/.codex/AGENTS.md`            | user-wide preferences, outside repo scope                                   |
-| generated/runtime guidance | `.omx/.../AGENTS.md` or similar | runtime state; usually read-only/no-edit                                    |
-
-### Phase 2: Evidence Collection
-
-For every repo guidance file, verify claims against the repository:
-
-- commands in `package.json`, `justfile`, `Cargo.toml`, `pyproject.toml`, `Makefile`, CI files
-- actual directory structure and entry points
-- existing `code_map.md` files, map pointers in `AGENTS.md`, and whether map content is navigational rather than behavioral
-- test/lint/typecheck/build commands
-- generated, vendored, secret, data, or deployment-sensitive paths
-- nested guidance overlap or conflicts
-- unrepresented key subprojects that score high enough for nested guidance creation
-- Codex-specific surfaces: `.codex/skills`, `.codex/agents`, `AGENTS.md` scope rules, sandbox/approval notes
-- optional OMX sections only when present in the repo or current user environment
-
-### Phase 3: Quality Assessment
-
-Use `references/quality-criteria.md` for detailed scoring, including the nested `AGENTS.md` creation scorecard.
-
-Quick checklist:
-
-| Criterion                     | Weight | Check                                                                            |
-| ----------------------------- | -----: | -------------------------------------------------------------------------------- |
-| scope and override clarity    |     20 | file explains what subtree it governs and how it relates to parent guidance      |
-| executable commands and gates |     20 | build/test/lint/typecheck commands are real and scoped                           |
-| architecture and ownership    |     15 | enough map to route future edits without restating obvious code                  |
-| safety and permissions        |     15 | sandbox, approvals, secrets, destructive operations, external services are clear |
-| Codex workflow fit            |     15 | skills/subagents/plugins/OMX guidance is accurate and not overpromised           |
-| conciseness and currency      |     15 | current, dense, non-duplicative, no stale file paths                             |
-
-For each candidate nested subtree, record:
-
-- creation score and decision: create (`>=60`), candidate only (`40-59`), or do not create (`<40`)
-- nearest applicable `code_map.md` path and whether a local nested map should be created
-- reason not to create guidance for generated, vendored, dependency, or low-signal directories
-
-Grades:
-
-- **A (90-100)**: scoped, current, executable, and concise
-- **B (70-89)**: useful with minor gaps
-- **C (50-69)**: basic but missing key operational detail
-- **D (30-49)**: sparse, stale, or confusing
-- **F (0-29)**: missing, misleading, or unsafe
-
-### Phase 4: Report Before Editing
-
-Always provide this report before edits unless the user already approved an implementation plan. Use the "Quality Report" skeleton in `references/report-format.md`: summary, scope map, code map coverage, nested guidance candidates, and a per-file assessment scored against the Phase 3 criteria.
-
-### Phase 5: Targeted Updates
-
-When approved or already authorized by a plan:
-
-1. Preserve existing human-authored guidance unless it is demonstrably stale.
-2. Keep root guidance global and short.
-3. Keep architecture/search navigation in `code_map.md`; keep behavioral rules, commands, and safety constraints in `AGENTS.md`.
-4. Move subtree-specific detail to the narrowest applicable nested `AGENTS.md` instead of duplicating it everywhere.
-5. Create nested guidance only when candidate scoring justifies it; list lower-scoring candidates in the report instead of adding noise.
-6. Ensure every updated `AGENTS.md` names the exact relative `code_map.md` path agents should read first.
-7. Preserve marker blocks exactly unless the user explicitly asks to repair them.
-8. Prefer additions or surgical rewrites over wholesale replacement.
-9. Remove stale commands only after verifying current replacements.
-10. Do not add generic advice that Codex already knows.
-
-### Phase 6: Verification
-
-Run the smallest checks that prove the edits:
-
-- `git diff --check`
-- command existence checks for newly documented commands when cheap
-- targeted checks that generated `AGENTS.md` files reference an explicit relative `code_map.md` path
-- targeted checks that generated or vendored directories were not assigned meaningless nested guidance
-- repo docs or lint gates when AGENTS.md is part of a larger docs change
-- targeted search for stale names or paths removed by the update
-
-If a documented full gate is expensive, state whether it was run or why it was not.
-
-## Reference Files
-
-- `references/quality-criteria.md` — scoring rubric and red flags
-- `references/templates.md` — root, monorepo package, frontend/backend/docs templates
-- `references/update-guidelines.md` — what to add, avoid, and preserve
-- `references/report-format.md` — quality report and update summary skeletons
-
-## Common Issues to Flag
-
-- root `AGENTS.md` missing commands required by CI or local development
-- root `AGENTS.md` missing an explicit `./code_map.md` pointer when a root map exists or should exist
-- nested `AGENTS.md` contradicts parent guidance without saying why
-- nested `AGENTS.md` only says "read the code map" without naming the relative map path
-- `AGENTS.md` bloated with directory index content that belongs in `code_map.md`
-- low-score, generated, vendored, dependency, or build-output directories receiving unnecessary nested guidance
-- stale paths after a refactor
-- Claude-only guidance copied into Codex files without AGENTS.md scope semantics
-- dangerous operations not gated by explicit approval language
-- external production services or credentials not called out
-- skills/subagents/plugins described as available when they are only aspirational
-- OMX workflows documented as universal Codex features instead of environment-specific enhancements
-
-## Final Output After Edits
-
-After approved edits, emit the "Update Summary" skeleton in `references/report-format.md`: files changed, what improved, verification results (passed/failed/skipped with reason), and remaining risks.
+Audit output: prioritized findings/evidence/impact/diffs/confidence, conditional
+chain/shadows, separate AGENTS/map decisions, validation, and risk. Edit output:
+changed files/outcome/preservation and passed/failed/skipped checks. Omit empty
+sections; evidence outranks scores.

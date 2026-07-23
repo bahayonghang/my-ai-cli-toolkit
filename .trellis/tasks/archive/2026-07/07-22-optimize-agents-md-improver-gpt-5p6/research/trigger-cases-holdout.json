@@ -1,0 +1,15 @@
+{
+  "recommended_threshold": 0.46,
+  "should_trigger": [
+    {"text":"Check whether configured fallback instruction filenames and the project_doc_max_bytes limit make this Codex guidance incomplete.","family":"fallback_and_budget"},
+    {"text":"Implement the approved AGENTS.md cleanup plan, preserve managed markers, and validate the changed guidance files.","family":"approved_update"}
+  ],
+  "should_not_trigger": [
+    {"text":"Explain how AGENTS.md discovery works in Codex without auditing or changing a repository.","family":"docs_explanation"},
+    {"text":"Review this TypeScript pull request for correctness and security issues.","family":"code_review"}
+  ],
+  "near_neighbor": [
+    {"text":"Fix the repository README setup commands; AGENTS.md is not in scope.","family":"ordinary_docs_edit"},
+    {"text":"Review whether our global Codex preferences should live in ~/.codex/AGENTS.md, without editing the current repo.","family":"global_preferences"}
+  ]
+}

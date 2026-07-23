@@ -25,7 +25,7 @@ Prioritize structural concerns over style nits: abstraction quality, branching c
 
 Use this skill when the user asks for:
 
-- `code quality review`, `code review`, `maintainability review`, or `architecture quality review`
+- `code quality review`, `code review focused on quality/maintainability`, `maintainability review`, or `architecture quality review`
 - PR or diff feedback focused on code structure, maintainability, abstractions, or refactoring opportunities
 - Chinese requests such as `代码质量审查`, `代码质量 review`, `可维护性审查`, or `架构质量审查`
 

@@ -1,0 +1,91 @@
+{
+  "schema_version": "2.0.0",
+  "name": "agents-md-improver",
+  "title": "AGENTS.md Improver",
+  "job_to_be_done": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+  "trigger_surface": {
+    "description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "should_trigger": [
+      "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits."
+    ],
+    "should_not_trigger": [],
+    "edge_cases": []
+  },
+  "workflow": {
+    "steps": [
+      "Resolve project root, launch CWD, candidates, and effective config evidence.",
+      "Build the root-to-CWD chain, shadows, empty-file and byte-budget state.",
+      "Verify commands, paths, ownership, boundaries, and recurring failures. Apply",
+      "Use [the report contract](references/report-format.md) for audits. For edits,",
+      "Run the smallest checks proving the changed claims, then stop."
+    ],
+    "decision_points": [],
+    "failure_modes": [
+      "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+      "Long bullets can make the output look complete while hiding the actual decision logic.",
+      "Commands can omit environment assumptions, working directory, or rollback notes.",
+      "Code snippets can look runnable while missing required inputs.",
+      "Generic section headings make the tutorial feel templated instead of fitted to the learner's task.",
+      "Steps may explain what to do without naming the exact check that proves the step worked."
+    ]
+  },
+  "resources": {
+    "references": [
+      "references\\codex-agents-discovery.md",
+      "references\\quality-criteria.md",
+      "references\\report-format.md",
+      "references\\templates.md",
+      "references\\update-guidelines.md"
+    ],
+    "scripts": [],
+    "assets": [],
+    "reports": [
+      "reports/output-risk-profile.json",
+      "reports/output-risk-profile.md",
+      "reports/artifact-design-profile.json",
+      "reports/artifact-design-profile.md",
+      "reports/prompt-quality-profile.json",
+      "reports/prompt-quality-profile.md",
+      "reports/output_quality_scorecard.json",
+      "reports/output_quality_scorecard.md",
+      "reports/output_blind_review_pack.json",
+      "reports/output_blind_review_pack.md",
+      "reports/output_blind_answer_key.json"
+    ]
+  },
+  "eval_plan": {
+    "trigger": [
+      "evals\\evals.json",
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\agents-md-scenarios.md"
+    ],
+    "output": [
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\agents-md-scenarios.md"
+    ],
+    "adversarial": [],
+    "baseline": "without_skill"
+  },
+  "risk": {
+    "output_risk": "high",
+    "execution_risk": "low",
+    "trust_boundary": "team"
+  },
+  "governance": {
+    "owner": "lyh",
+    "maturity": "production",
+    "review_cadence": "quarterly",
+    "review_due": ""
+  },
+  "targets": [
+    "openai",
+    "claude",
+    "generic"
+  ],
+  "source_files": [
+    "SKILL.md",
+    "manifest.json",
+    "agents/interface.yaml",
+    "reports/output-risk-profile.json"
+  ]
+}

@@ -1058,3 +1058,168 @@ Merged review-feedback and CI-fix workflows into gh-pr 2.0.0, migrated and corre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 31: 实现跨平台 Codex Bridge skill
+
+**Date**: 2026-07-22
+**Task**: 实现跨平台 Codex Bridge skill
+**Branch**: `dev`
+
+### Summary
+
+新增四场景 bundle 工作流、跨平台 Python 创建/校验/执行器、GPT-5.6 模型覆盖与固定 sandbox 策略；补齐路由评测、trust 报告、Windows npm CLI 解析规范和双语生成文档。yao-meta 四门禁与 just ci 均通过；真实付费 Codex codify 输出质量、成本和延迟保留为 missing evidence。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1b33899` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 32: 删除 6 个过时 skill 并修复交叉引用
+
+**Date**: 2026-07-22
+**Task**: 删除 6 个过时 skill 并修复交叉引用
+**Branch**: `dev`
+
+### Summary
+
+核对并删除 cold-shower/geju/goudi/handoff/implementation-notes/archive-planning 六个 skill。修复 7 个存活文件的真实交叉引用（两个 AGENTS.md、unknowns-first SKILL+evals、codex-bridge evals、html-artifact evals README、.gitignore），docs-sync 移除 12 个文档页。验证：docs-check/skills-check/python-check/git diff --check 全绿；node-test 仅剩 codex-bridge 预先存在的 2 个 fake-Codex 退出码失败（git stash 在干净 HEAD 复现，非本次引入，已开 chip 跟踪）。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `38dfa34` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 33: Clarify code-auditor vs code-quality-review boundary
+
+**Date**: 2026-07-22
+**Task**: Clarify code-auditor vs code-quality-review boundary
+**Branch**: `dev`
+
+### Summary
+
+Fixed the code-review skill boundary (audit F1-F3): qualified code-quality-review's bare code-review trigger to quality/maintainability, added routing-negative evals #7 (full-spectrum -> code-auditor) and #8 (apply refactor -> code-refactor), and added a Routing section in development-workflows/AGENTS.md covering purpose, trigger routing, and output contract. just ci green (docs catalog in sync, no docs-sync needed). yao-meta trigger_eval.py unavailable in repo/~/.claude, recorded as missing evidence in the task notes.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0276c4f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 34: Harden Windows dev process cleanup
+
+**Date**: 2026-07-22
+**Task**: Harden Windows dev process cleanup
+**Branch**: `dev`
+
+### Summary
+
+Promoted windows-dev-process-cleanup to Governed 2.0 with complete process-closure planning, identity preconditions, verified outcomes, fail-closed Phone Link behavior, deterministic fixtures, and reproducible trust/output evidence.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `39792e2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 35: Optimize agents-md-improver for GPT-5.6
+
+**Date**: 2026-07-23
+**Task**: Optimize agents-md-improver for GPT-5.6
+**Branch**: `dev`
+
+### Summary
+
+Upgraded agents-md-improver to 1.2.0 with current Codex discovery semantics, GPT-5.6-aligned outcome and authorization guidance, Production routing/output evals, package evidence, and honest missing-evidence boundaries.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9ae4cee` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

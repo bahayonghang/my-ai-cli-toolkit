@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "reviewed_at": "2026-07-22",
+  "capabilities": {
+    "file_write": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "reason": "Bundle creation and manifest updates are required deterministic outputs and are restricted to the selected project runtime directory.",
+      "scope": "scripts/create_bundle.py and the shared atomic writer used by create/run write only under an explicit bundle directory",
+      "expires_at": "2027-07-22",
+      "evidence": [
+        "tests/bundle-scripts.test.mjs",
+        "tests/traceability.md"
+      ],
+      "target_enforcement": {
+        "openai": "scenario policy plus explicit project path",
+        "claude": "scenario policy plus explicit project path",
+        "generic": "scenario policy plus explicit project path",
+        "vscode": "scenario policy plus explicit project path"
+      }
+    },
+    "subprocess": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "reason": "The skill exists to invoke a locally installed Codex CLI with an argv list after user authorization and preflight validation.",
+      "scope": "scripts/run_bundle.py invokes only the resolved Codex executable with scenario-fixed sandbox arguments",
+      "expires_at": "2027-07-22",
+      "evidence": [
+        "tests/bundle-scripts.test.mjs",
+        "reports/trust-report.md"
+      ],
+      "target_enforcement": {
+        "openai": "fixed executable and argv contract",
+        "claude": "fixed executable and argv contract",
+        "generic": "fixed executable and argv contract",
+        "vscode": "fixed executable and argv contract"
+      }
+    }
+  }
+}

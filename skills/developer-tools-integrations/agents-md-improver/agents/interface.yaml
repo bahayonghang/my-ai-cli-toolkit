@@ -1,7 +1,25 @@
 interface:
   display_name: "AGENTS.md Improver"
-  short_description: "Audit and improve Codex AGENTS.md guidance and companion code_map.md maps"
-  default_prompt: "Use $agents-md-improver to audit the repository's AGENTS.md and code_map.md files and produce a quality report with proposed diffs before editing."
-
+  short_description: "Audit Codex guidance and code maps"
+  default_prompt: "Use $agents-md-improver to resolve the chain; report evidence/diffs or apply authorized local edits. Decide AGENTS/map independently; mark config gaps missing evidence."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+  activation:
+    mode: "implicit"
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+  degradation:
+    openai: "native; config gaps are missing evidence"
+    claude: "Claude-only work routes away"
+    generic: "portable; activation needs evidence"
 policy:
   allow_implicit_invocation: true

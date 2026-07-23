@@ -1,0 +1,230 @@
+{
+  "ok": true,
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\development-workflows\\codex-bridge",
+  "summary": {
+    "scanned_files": 21,
+    "script_count": 4,
+    "internal_module_count": 1,
+    "secret_findings": 0,
+    "dependency_files": [],
+    "network_script_count": 0,
+    "network_policy_covered_count": 0,
+    "network_policy_missing_count": 0,
+    "file_write_script_count": 2,
+    "permission_required_count": 2,
+    "permission_approved_count": 2,
+    "permission_missing_count": 0,
+    "permission_invalid_count": 0,
+    "permission_expired_count": 0,
+    "help_smoke_checked_count": 3,
+    "help_smoke_failed_count": 0,
+    "interactive_script_count": 0,
+    "package_hash_scope": "source-contract-without-generated-reports",
+    "package_hash_file_count": 21,
+    "package_sha256": "26fd8ea82d56c087534426701ee00d78d9444fafb0748d4897d87885c51f165c"
+  },
+  "failures": [],
+  "warnings": [
+    "No dependency or lock file detected"
+  ],
+  "secrets": [],
+  "scripts": [
+    {
+      "path": "scripts\\bundle_common.py",
+      "interface": "internal-module",
+      "interface_declared": true,
+      "interface_reason": "Shared JSON, scenario, and encoding contracts imported by the three CLI helpers.",
+      "has_argparse": false,
+      "has_main_guard": false,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": true,
+      "uses_subprocess": false,
+      "network_urls": [],
+      "network_hosts": []
+    },
+    {
+      "path": "scripts\\create_bundle.py",
+      "interface": "cli",
+      "interface_declared": false,
+      "interface_reason": "Default CLI classification; add SCRIPT_INTERFACE for internal modules.",
+      "has_argparse": true,
+      "has_main_guard": true,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": true,
+      "uses_subprocess": false,
+      "network_urls": [],
+      "network_hosts": []
+    },
+    {
+      "path": "scripts\\run_bundle.py",
+      "interface": "cli",
+      "interface_declared": false,
+      "interface_reason": "Default CLI classification; add SCRIPT_INTERFACE for internal modules.",
+      "has_argparse": true,
+      "has_main_guard": true,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": false,
+      "uses_subprocess": true,
+      "network_urls": [],
+      "network_hosts": []
+    },
+    {
+      "path": "scripts\\validate_bundle.py",
+      "interface": "cli",
+      "interface_declared": false,
+      "interface_reason": "Default CLI classification; add SCRIPT_INTERFACE for internal modules.",
+      "has_argparse": true,
+      "has_main_guard": true,
+      "uses_input": false,
+      "uses_network": false,
+      "uses_file_write": false,
+      "uses_subprocess": false,
+      "network_urls": [],
+      "network_hosts": []
+    }
+  ],
+  "dependencies": {
+    "present": [],
+    "pinned": [],
+    "unpinned": []
+  },
+  "network_policy": {
+    "present": false,
+    "path": "security/network_policy.json",
+    "schema_version": "",
+    "network_script_count": 0,
+    "covered_scripts": [],
+    "missing_scripts": [],
+    "mismatches": [],
+    "default_policy": {}
+  },
+  "help_smoke": {
+    "enabled": true,
+    "timeout_seconds": 5.0,
+    "candidate_count": 3,
+    "checked_count": 3,
+    "passed_count": 3,
+    "failed_count": 0,
+    "skipped_count": 1,
+    "failed_scripts": [],
+    "results": [
+      {
+        "path": "scripts\\create_bundle.py",
+        "command": "python3 scripts\\create_bundle.py --help",
+        "returncode": 0,
+        "timed_out": false,
+        "passed": true,
+        "has_help_text": true,
+        "stdout_excerpt": "usage: create_bundle.py [-h] [--model MODEL] [--effort EFFORT]\n                        [--skill-root SKILL_ROOT]\n                        scenario [project_root] [round]\n\nCreate a codex-bridge round bundle.\n\npositional arguments:\n  scenario ",
+        "stderr_excerpt": ""
+      },
+      {
+        "path": "scripts\\run_bundle.py",
+        "command": "python3 scripts\\run_bundle.py --help",
+        "returncode": 0,
+        "timed_out": false,
+        "passed": true,
+        "has_help_text": true,
+        "stdout_excerpt": "usage: run_bundle.py [-h] [--dry-run] [--timeout TIMEOUT] [--output-schema]\n                     bundle\n\nExecute a codex-bridge bundle.\n\npositional arguments:\n  bundle             bundle directory\n\noptions:\n  -h, --help         show this he",
+        "stderr_excerpt": ""
+      },
+      {
+        "path": "scripts\\validate_bundle.py",
+        "command": "python3 scripts\\validate_bundle.py --help",
+        "returncode": 0,
+        "timed_out": false,
+        "passed": true,
+        "has_help_text": true,
+        "stdout_excerpt": "usage: validate_bundle.py [-h] [--phase {preflight,post-response}] bundle\n\nValidate a codex-bridge bundle.\n\npositional arguments:\n  bundle                bundle directory\n\noptions:\n  -h, --help            show this help message and exit\n  -",
+        "stderr_excerpt": ""
+      }
+    ],
+    "skipped": [
+      {
+        "path": "scripts\\bundle_common.py",
+        "reason": "internal module"
+      }
+    ]
+  },
+  "permission_governance": {
+    "present": true,
+    "path": "security/permission_policy.json",
+    "schema_version": "1.0",
+    "reviewed_at": "2026-07-22",
+    "required_capabilities": [
+      "file_write",
+      "subprocess"
+    ],
+    "approved_capabilities": [
+      "file_write",
+      "subprocess"
+    ],
+    "missing_capabilities": [],
+    "invalid_capabilities": [],
+    "expired_capabilities": [],
+    "approval_count": 2,
+    "required_count": 2,
+    "missing_count": 0,
+    "invalid_count": 0,
+    "expired_count": 0,
+    "approvals": [
+      {
+        "capability": "file_write",
+        "status": "approved",
+        "scripts": [
+          "scripts\\bundle_common.py",
+          "scripts\\create_bundle.py"
+        ],
+        "reviewer": "lyh",
+        "scope": "scripts/create_bundle.py and the shared atomic writer used by create/run write only under an explicit bundle directory",
+        "reason": "Bundle creation and manifest updates are required deterministic outputs and are restricted to the selected project runtime directory.",
+        "expires_at": "2027-07-22",
+        "evidence": [
+          "tests/bundle-scripts.test.mjs",
+          "tests/traceability.md"
+        ],
+        "target_enforcement": {
+          "openai": "scenario policy plus explicit project path",
+          "claude": "scenario policy plus explicit project path",
+          "generic": "scenario policy plus explicit project path",
+          "vscode": "scenario policy plus explicit project path"
+        },
+        "validation": []
+      },
+      {
+        "capability": "subprocess",
+        "status": "approved",
+        "scripts": [
+          "scripts\\run_bundle.py"
+        ],
+        "reviewer": "lyh",
+        "scope": "scripts/run_bundle.py invokes only the resolved Codex executable with scenario-fixed sandbox arguments",
+        "reason": "The skill exists to invoke a locally installed Codex CLI with an argv list after user authorization and preflight validation.",
+        "expires_at": "2027-07-22",
+        "evidence": [
+          "tests/bundle-scripts.test.mjs",
+          "reports/trust-report.md"
+        ],
+        "target_enforcement": {
+          "openai": "fixed executable and argv contract",
+          "claude": "fixed executable and argv contract",
+          "generic": "fixed executable and argv contract",
+          "vscode": "fixed executable and argv contract"
+        },
+        "validation": []
+      }
+    ]
+  },
+  "trust_metadata": {
+    "source_tier": "managed",
+    "remote_inline_execution": "forbid",
+    "remote_metadata_policy": "deny"
+  },
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\development-workflows\\codex-bridge\\reports\\trust-report.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\development-workflows\\codex-bridge\\reports\\trust-report.md"
+  }
+}

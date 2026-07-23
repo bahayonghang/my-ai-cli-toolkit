@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "codex-bridge verification-round response",
+  "type": "object",
+  "required": [
+    "task_understanding",
+    "verifications",
+    "additional_findings",
+    "summary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "task_understanding": {
+      "type": "string",
+      "description": "3-5 句总结对本验证轮任务的理解"
+    },
+    "verifications": {
+      "type": "array",
+      "description": "对 Claude Code 列出的每个 candidate 的判断",
+      "items": {
+        "type": "object",
+        "required": ["candidate_id", "verdict", "reasoning"],
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "description": "candidate 编号，与 request §3 / extracted-patterns.md 中的 X1/X2/Y1 等对应"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": ["confirmed", "refuted", "partial", "unsure"],
+            "description": "confirmed=同类问题; refuted=不是; partial=部分相似; unsure=信息不够"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "1-2 句具体理由（不能只标 verdict）"
+          }
+        }
+      }
+    },
+    "additional_findings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Codex 在验证时新发现的、Claude Code 没列出的同类问题。每条 1-2 句描述（含文件路径）"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "description": "总体总结：confirmed/refuted/partial/unsure 各几条、additional_findings 几条、整体判断 (patterns 抽取是否合理)"
+    }
+  }
+}

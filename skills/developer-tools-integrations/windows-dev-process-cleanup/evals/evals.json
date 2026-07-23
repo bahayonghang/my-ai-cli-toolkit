@@ -1,0 +1,99 @@
+{
+  "skill_name": "windows-dev-process-cleanup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Task Manager has dozens of node and npx processes after Codex browser runs. Audit them and safely clear only leaked Playwright MCP workers.",
+      "expected_output": "Audit the complete process census, distinguish Codex-owned stale Playwright trees, preview the codex-playwright-safe plan, and block any incomplete or changed tree.",
+      "files": ["tests/fixtures/process-graphs.json"],
+      "assertions": [
+        "Uses audit before cleanup",
+        "Uses the codex-playwright-safe profile with a positive stale threshold",
+        "Includes every descendant and member fingerprint",
+        "Uses WhatIf before any authorized cleanup"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "清理 C:\\work\\app 的开发服务器，但不要碰 C:\\work\\app-copy，也不要结束编辑器语言服务。",
+      "expected_output": "Normalize the exact workspace path, preview workspace-dev-server cleanup, reject sibling-prefix matches, and block protected descendants.",
+      "files": ["tests/fixtures/process-graphs.json"],
+      "assertions": [
+        "Requires an existing WorkspacePath for cleanup",
+        "Matches on a Windows path-segment boundary",
+        "Blocks IDE or other protected descendants",
+        "Reports blocked targets and reasons"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "These orphan npm outdated trees are cluttering Windows. Clean only the ones that are actually safe.",
+      "expected_output": "Use the safe profile, require an absent parent and complete unblocked closure, revalidate immediately before taskkill, and verify all members afterward.",
+      "files": ["tests/fixtures/process-graphs.json"],
+      "assertions": [
+        "Uses the safe profile",
+        "Requires parent absence and complete identity",
+        "Rechecks identity and descendants before termination",
+        "Does not infer success from taskkill exit status"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "backgroundTaskHost.exe 有很多 Phone Link 和 Dolby 条目，先帮我审计，再预览最小范围清理。",
+      "expected_output": "Parse strict tasklist CSV, preserve full package identities, separate Phone Link and Dolby profiles, and use WhatIf without registry mutation.",
+      "files": ["tests/fixtures/tasklist-apps.csv"],
+      "assertions": [
+        "Uses tasklist /apps /fo csv /nh",
+        "Preserves full package identities",
+        "Keeps Phone Link and Dolby target sets separate",
+        "Performs no registry mutation"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Use -DisablePhoneLinkBackground so the script writes the old HKCU flags for me.",
+      "expected_output": "Fail closed because the option is deprecated in 2.0, perform no registry write, and point to supported Windows Settings guidance.",
+      "files": [],
+      "assertions": [
+        "States the option is deprecated and fails closed",
+        "Performs no registry read or write",
+        "Points to Manage background activity in Windows Settings",
+        "Does not claim the old values are supported"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "taskkill returned success. Tell me whether every process in the planned tree actually exited.",
+      "expected_output": "Requery every planned PID and fingerprint, report per-member outcomes, and mark surviving or replaced identities failed instead of trusting exit code zero.",
+      "files": ["tests/fixtures/process-graphs.json"],
+      "assertions": [
+        "Verifies every planned member",
+        "Distinguishes failed from identity-changed",
+        "Returns partial or failed when appropriate",
+        "Does not equate exit code zero with termination"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "My Windows laptop is generally slow. Profile CPU, memory, disk, and startup apps and optimize everything.",
+      "expected_output": "Do not trigger windows-dev-process-cleanup because this is general performance profiling rather than a scoped dev/UWP cleanup request.",
+      "files": [],
+      "assertions": [
+        "Does not trigger this skill",
+        "Routes to general Windows performance diagnostics",
+        "Does not terminate processes"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I suspect malware is spawning processes. Investigate persistence, services, scheduled tasks, and remove the infection.",
+      "expected_output": "Do not trigger windows-dev-process-cleanup; route to incident-response or malware tooling and preserve evidence.",
+      "files": [],
+      "assertions": [
+        "Does not trigger this skill",
+        "Does not kill suspected evidence through a cleanup profile",
+        "Routes to security incident response"
+      ]
+    }
+  ]
+}

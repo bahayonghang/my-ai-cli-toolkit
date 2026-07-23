@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "codex-bridge plan-review response",
+  "type": "object",
+  "required": [
+    "task_understanding",
+    "result",
+    "key_findings",
+    "specific_suggestions",
+    "open_questions",
+    "uncertainty"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "task_understanding": {
+      "type": "string",
+      "description": "用 3-5 句总结对任务的理解，供 Claude Code 验证一致性"
+    },
+    "result": {
+      "type": "string",
+      "description": "总体评估结论。例：plan 整体合理但有 2 个隐藏假设需要先验证；或：plan 偏离项目惯例，建议重做"
+    },
+    "key_findings": {
+      "type": "array",
+      "description": "关键发现，覆盖 4 维度评估",
+      "items": {
+        "type": "object",
+        "required": ["type", "dimension", "content"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["hidden_assumption", "disagreement", "risk", "validation"],
+            "description": "发现类型"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": ["rationality", "hidden_assumptions", "conventions", "scope_control"],
+            "description": "对应 4 维度审阅之一（强制让 Codex 标注覆盖的维度）"
+          },
+          "content": {
+            "type": "string",
+            "description": "至少 2 句：是什么 + 为什么"
+          },
+          "related_files": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "如果此发现关联具体文件，列出路径"
+          }
+        }
+      }
+    },
+    "specific_suggestions": {
+      "type": "array",
+      "description": "针对 plan 的具体改动建议",
+      "items": {
+        "type": "object",
+        "required": ["file", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "file:line 格式，或仅文件路径"
+          },
+          "change": {
+            "type": "string",
+            "description": "建议的具体改动（plan-review 阶段不会真改文件）"
+          },
+          "reason": {
+            "type": "string",
+            "description": "为什么这么改"
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "需要 Claude / 用户拍板的问题"
+    },
+    "uncertainty": {
+      "type": "string",
+      "description": "自我标注哪里没把握、或哪里信息不够。完全有把握则填\"无\""
+    }
+  }
+}

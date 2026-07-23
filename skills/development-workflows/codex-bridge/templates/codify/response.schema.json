@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "codex-bridge codify response",
+  "type": "object",
+  "required": [
+    "task_understanding",
+    "result",
+    "key_findings",
+    "specific_suggestions",
+    "files_changed",
+    "open_questions",
+    "uncertainty"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "task_understanding": {
+      "type": "string",
+      "description": "3-5 句总结对任务的理解"
+    },
+    "result": {
+      "type": "string",
+      "description": "做了什么、为什么这么做"
+    },
+    "key_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "content"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["hidden_assumption", "disagreement", "risk", "validation"]
+          },
+          "content": { "type": "string" },
+          "related_files": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "specific_suggestions": {
+      "type": "array",
+      "description": "后续可继续改动的建议（不是本轮已做的改动）",
+      "items": {
+        "type": "object",
+        "required": ["file", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "file": { "type": "string" },
+          "change": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "files_changed": {
+      "type": "object",
+      "description": "本轮实际改动的文件清单，必填。路径必须相对项目根，不得含 .codex-bridge/ / .git/ / node_modules/ / dist/ / .next/ 等",
+      "additionalProperties": false,
+      "required": ["created", "modified", "deleted"],
+      "properties": {
+        "created": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "description": "相对项目根的路径"
+          }
+        },
+        "modified": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "deleted": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "uncertainty": {
+      "type": "string",
+      "description": "自我标注哪里没把握。完全有把握填\"无\""
+    }
+  }
+}

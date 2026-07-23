@@ -1,149 +1,78 @@
-# AGENTS.md Templates
+# AGENTS.md templates
 
-Use these templates as starting points. Keep only sections that are useful for the current repository.
+Use only slots supported by repository evidence. Delete unused headings and
+placeholders; these are shapes, not default advice.
 
-## Root Repository Template
+## Root repository template
 
 ```markdown
 # Repository Guidelines
 
-This `AGENTS.md` governs the repository root and all descendants unless a deeper `AGENTS.md` overrides or narrows the guidance.
+This `AGENTS.md` governs the repository root and descendants unless a selected
+deeper instruction file narrows or overrides it.
 
-Before broad search or repo-wide grep, read `./code_map.md` and use its search anchors to choose targeted files.
-
-## Project Structure
-
-- `<dir>/` — <purpose>
-- `<dir>/` — <purpose>
-
-## Build, Test, and Development Commands
-
-- `<command>` — <what it proves or starts>
-- `<command>` — <scope and prerequisites>
-
-## Coding Standards
-
-- <project-specific convention>
-- <formatter/linter/source-of-truth>
-
-## Testing and Verification
-
-- Prefer targeted checks while iterating.
-- Run `<full gate>` before claiming completion for broad changes.
-
-## Safety and Permissions
-
-- Do not edit `<generated-or-secret-path>` manually.
-- Ask before destructive, external-production, credential, or history-rewriting operations.
-
-## Codex Workflow Notes
-
-- Use `.codex/skills` for project-local repeatable workflows when present.
-- Use `.codex/agents` only for bounded native subagent roles with clear verification duties.
-```
-
-## Monorepo Package Template
-
-```markdown
-# `<package>` Guidelines
-
-This file governs `<package>/**` and overrides root guidance only for this package.
-
-For this subtree, start with `<package>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
-
-## Package Purpose
-
-<one-sentence responsibility>
-
-## Local Commands
-
-- `<command>` — run from `<path>`, validates <scope>
-
-## Boundaries
-
-- Depends on `<package>` for <reason>.
-- Do not change `<shared-contract>` without updating <peer packages/docs/tests>.
-
-## Local Testing
-
-- `<targeted command>` for local changes.
-- `<integration gate>` when public interfaces change.
-```
-
-## Frontend Subtree Template
-
-```markdown
-# Frontend Guidelines
-
-This file governs `<frontend-path>/**`.
-
-For this subtree, start with `<frontend-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
-
-## Stack and Entry Points
-
-- `<src/main>` — app entry
-- `<src/components>` — shared components
+Before broad search, read `./code_map.md`. <!-- Include only when the map exists or is created. -->
 
 ## Commands
 
-- `<dev command>` — starts local app
-- `<test command>` — component/unit tests
-- `<e2e command>` — browser flow tests
+- `<verified command>` - run from `<cwd>`; proves `<scope>`
 
-## UI Safety
+## Durable Repository Contracts
 
-- Preserve accessibility, loading, empty, and error states.
-- Verify visual changes with screenshots or browser smoke tests when available.
+- `<non-inferable ownership, generated-file, API, or change-coupling rule>`
+
+## Safety Boundaries
+
+- `<verified destructive, credential, external, production, or data boundary>`
+
+## Verification
+
+- `<targeted check>` - required for `<change class>`
+- `<full gate>` - required for `<broader change class>`
+
+## Local Codex Surfaces
+
+- `.agents/skills/<skill>/` - `<verified repo workflow>`
+- `.codex/agents/<role>.toml` - `<verified native subagent role>`
 ```
 
-## Backend Subtree Template
+## Nested guidance template
+
+Use only after the durable-instruction hard minimum is met.
 
 ```markdown
-# Backend Guidelines
+# `<subtree>` Guidelines
 
-This file governs `<backend-path>/**`.
+This file governs `<subtree>/**`. Root guidance still applies; this file changes
+only the local contracts named below.
 
-For this subtree, start with `<backend-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
+For navigation, read `<exact local-or-parent code_map.md path>`.
 
-## Runtime and Entry Points
+## Local Commands and Gates
 
-- `<entry>` — server start
-- `<routes>` — API routes
+- `<verified command>` - run from `<cwd>`; proves `<scope>`
 
-## Commands
+## Local Contracts
 
-- `<test command>` — backend tests
-- `<lint/type command>` — static checks
+- `<verified rule that cannot be cheaply inferred from code>`
 
-## Data and External Services
+## Local Safety or Generated Boundaries
 
-- Use read-only credentials for local inspection when possible.
-- Ask before migrations, production calls, or destructive data changes.
+- `<verified boundary>`
 ```
 
-## Docs Subtree Template
+## Override template
+
+Use only when the user explicitly needs temporary or strong override semantics.
 
 ```markdown
-# Docs Guidelines
+# `<subtree>` Override
 
-This file governs `<docs-path>/**`.
+This `AGENTS.override.md` intentionally replaces other instruction candidates in
+this directory while `<condition or time window>` applies.
 
-For this subtree, start with `<docs-path>/code_map.md` before broad grep. If the local map is missing, fall back to the nearest parent `code_map.md`.
-
-## Source of Truth
-
-- Content mirrors `<source paths>`.
-- English and Chinese pages must stay structurally aligned when both exist.
-
-## Commands
-
-- `<docs dev>` — local preview
-- `<docs build/audit>` — validation
-
-## Style
-
-- Keep docs concise and example-driven.
-- Update navigation/sidebar when adding pages if required by the docs framework.
+- `<specific override and why ordinary nested guidance is insufficient>`
+- Remove or rename this file when `<exit condition>` is met.
 ```
 
 ## Root code_map.md Template
@@ -217,15 +146,13 @@ Use this map for `<subtree>/**` navigation. Behavioral rules and local commands 
 - `<path>/` — <reason to skip or regenerate instead of editing>
 ```
 
-## OMX Marker Preservation Snippet
+## Marker preservation snippet
 
-Environment-specific: include only when the repository or the current user environment uses OMX hook tooling.
+Include only when matching managed markers exist.
 
 ```markdown
-## Runtime Markers
+## Managed Sections
 
-Preserve marker-bounded runtime sections exactly unless repairing hook state:
-
-- `<!-- OMX:RUNTIME:START --> ... <!-- OMX:RUNTIME:END -->`
-- `<!-- OMX:TEAM:WORKER:START --> ... <!-- OMX:TEAM:WORKER:END -->`
+Preserve `<START marker> ... <END marker>` exactly unless the request is to
+repair that managed state.
 ```

@@ -1,0 +1,164 @@
+{
+  "optimizer_hints": {
+    "capability": "Audit or improve repository-scoped Codex AGENTS instruction chains and companion code_map navigation",
+    "inputs": [
+      "AGENTS.md",
+      "AGENTS.override.md",
+      "configured fallback instruction files",
+      "code_map.md",
+      "repository commands and structure"
+    ],
+    "trigger_actions": [
+      "audit AGENTS.md",
+      "improve Codex repository guidance",
+      "resolve nested instruction conflicts",
+      "align code_map.md",
+      "apply an approved guidance update"
+    ],
+    "exclusions": [
+      "Claude-only CLAUDE.md work",
+      "general Codex workflow recommendations",
+      "fully specified trivial edits",
+      "documentation-only explanations",
+      "ordinary code review"
+    ],
+    "artifacts": [
+      "quality report",
+      "proposed guidance diff",
+      "updated AGENTS.md",
+      "updated code_map.md",
+      "verification evidence"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "agents_guidance",
+    "audit_or_update",
+    "repository_scope"
+  ],
+  "positive_concepts": {
+    "agents_guidance": {
+      "weight": 0.34,
+      "phrases": [
+        "agents.md",
+        "agents.override.md",
+        "codex guidance",
+        "codex project guidance",
+        "instruction chain",
+        "项目指导"
+      ]
+    },
+    "audit_or_update": {
+      "weight": 0.24,
+      "phrases": [
+        "audit",
+        "check",
+        "improve",
+        "optimize",
+        "fix",
+        "implement the approved",
+        "审计",
+        "优化",
+        "更新"
+      ]
+    },
+    "nested_precedence": {
+      "weight": 0.16,
+      "phrases": [
+        "nested",
+        "override",
+        "precedence",
+        "fallback instruction",
+        "project_doc_max_bytes",
+        "scoped instructions",
+        "冲突"
+      ]
+    },
+    "code_map": {
+      "weight": 0.16,
+      "phrases": [
+        "code_map.md",
+        "code map",
+        "navigation map"
+      ]
+    },
+    "repository_scope": {
+      "weight": 0.1,
+      "phrases": [
+        "repository",
+        "repo",
+        "subtree",
+        "root",
+        "仓库"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "claude_only": {
+      "weight": 0.45,
+      "exclusive": true,
+      "phrases": [
+        "claude.md",
+        ".claude/rules",
+        "@import chains",
+        "claude code memory"
+      ]
+    },
+    "workflow_recommendation": {
+      "weight": 0.4,
+      "exclusive": true,
+      "phrases": [
+        "recommend which codex",
+        "mcp servers",
+        "plugins",
+        "hooks",
+        "subagents"
+      ]
+    },
+    "trivial_edit": {
+      "weight": 0.36,
+      "exclusive": true,
+      "phrases": [
+        "add one already-specified sentence",
+        "one-line edit",
+        "single line",
+        "fully specified"
+      ]
+    },
+    "explain_only": {
+      "weight": 0.34,
+      "exclusive": true,
+      "phrases": [
+        "explain how",
+        "what is",
+        "documentation-only",
+        "without auditing or changing"
+      ]
+    },
+    "ordinary_review": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": [
+        "pull request",
+        "code review",
+        "security issues"
+      ]
+    },
+    "ordinary_docs": {
+      "weight": 0.38,
+      "exclusive": true,
+      "phrases": [
+        "readme",
+        "ordinary docs",
+        "not in scope"
+      ]
+    },
+    "global_only": {
+      "weight": 0.3,
+      "exclusive": true,
+      "phrases": [
+        "global codex preferences",
+        "without editing the current repo"
+      ]
+    }
+  }
+}

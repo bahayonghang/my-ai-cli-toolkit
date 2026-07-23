@@ -1,0 +1,1 @@
+Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps. Use when the user asks to check, audit, optimize, or fix AGENTS.md; mentions nested AGENTS.md conflicts, code maps, stale commands, or scoped instructions; or says 优化 AGENTS.md, 审计 AGENTS.md, 更新 Codex 项目指导, 生成 code_map.md.

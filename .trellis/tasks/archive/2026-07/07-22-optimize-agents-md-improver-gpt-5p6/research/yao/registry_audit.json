@@ -1,0 +1,91 @@
+{
+  "ok": false,
+  "schema_version": "2.0",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+  "registry_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\registry",
+  "package": {
+    "schema_version": "2.0",
+    "name": "agents-md-improver",
+    "version": "1.2.0",
+    "description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "targets": [
+      "openai",
+      "claude",
+      "generic"
+    ],
+    "maturity": "production",
+    "owner": "lyh",
+    "review_cadence": "quarterly",
+    "trust_level": "local",
+    "license": "",
+    "checksums": {
+      "package_sha256": "ffbbed133fdba7abb8781879a0ae8a930e2eabbe2fbc5e21087323fef6ef614d",
+      "archive_sha256": "6611fdf25ce8105ebbe9899d9b82ac969bb9a350353fdebbb5787dbbd69f00d3"
+    },
+    "compatibility": {
+      "openai": "pass",
+      "claude": "pass",
+      "generic": "pass"
+    },
+    "source": {
+      "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+      "skill_ir": "reports\\skill-ir.json",
+      "ir_schema_version": "2.0.0",
+      "canonical_metadata": "agents/interface.yaml"
+    },
+    "artifacts": {
+      "overview_html": "reports/skill-overview.html",
+      "review_studio_html": "reports/review-studio.html",
+      "trust_report": "reports/security_trust_report.md",
+      "conformance_matrix": "reports/conformance_matrix.md",
+      "compiled_targets": "reports/compiled_targets.md",
+      "package_verification": "reports/package_verification.md",
+      "install_simulation": "",
+      "adoption_drift": "",
+      "review_waivers": "",
+      "review_annotations": "",
+      "package_metadata": "registry/packages/agents-md-improver.json"
+    },
+    "distribution": {
+      "archive_verified": true,
+      "archive_sha256": "6611fdf25ce8105ebbe9899d9b82ac969bb9a350353fdebbb5787dbbd69f00d3",
+      "package_verification": "reports/package_verification.json",
+      "install_simulated": false,
+      "install_simulation": ""
+    },
+    "generated_at": "2026-07-23"
+  },
+  "index": {
+    "schema_version": "2.0",
+    "generated_at": "2026-07-23",
+    "package_count": 1,
+    "packages": [
+      {
+        "name": "agents-md-improver",
+        "version": "1.2.0",
+        "maturity": "production",
+        "owner": "lyh",
+        "targets": [
+          "openai",
+          "claude",
+          "generic"
+        ],
+        "package_metadata": "registry/packages/agents-md-improver.json",
+        "package_sha256": "ffbbed133fdba7abb8781879a0ae8a930e2eabbe2fbc5e21087323fef6ef614d"
+      }
+    ]
+  },
+  "failures": [
+    "Missing package metadata field: license"
+  ],
+  "warnings": [
+    "Recommended registry evidence is missing: reports/review_waivers.md",
+    "Recommended registry evidence is missing: reports/review_annotations.md"
+  ],
+  "artifacts": {
+    "index": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\registry\\index.json",
+    "package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\registry\\packages\\agents-md-improver.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\registry_audit.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\registry_audit.md"
+  }
+}

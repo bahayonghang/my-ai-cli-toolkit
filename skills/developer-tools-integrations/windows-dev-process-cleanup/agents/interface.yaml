@@ -1,4 +1,29 @@
 interface:
   display_name: "Windows Process Cleanup"
-  short_description: "审计并安全清理 Windows 开发残留进程树与 UWP 后台任务堆积"
-  default_prompt: "Use $windows-dev-process-cleanup to audit and safely clean stale node/npm/npx/cmd/pwsh process trees and UWP backgroundTaskHost pileups (Phone Link, Dolby Access) on Windows."
+  short_description: "Audit and safely clean Windows dev and UWP process buildup"
+  default_prompt: "Use $windows-dev-process-cleanup to audit the complete affected process set, preview the narrowest eligible cleanup plan, block on missing or changed identity evidence, and verify every requested termination."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "vscode"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "powershell"
+    platform: "windows"
+    minimum_runtime: "PowerShell 7"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "deny"
+    side_effect_policy: "audit and WhatIf are read-only; real process termination requires explicit user authorization and passing preconditions"
+  degradation:
+    openai: "metadata-adapter; host remains responsible for process and file permissions"
+    claude: "neutral-source-plus-adapter; host remains responsible for process and file permissions"
+    generic: "neutral-source; do not run cleanup without equivalent permission and confirmation controls"
+    vscode: "agent-skills-source-with-vscode-notes; workspace trust does not authorize process termination"
