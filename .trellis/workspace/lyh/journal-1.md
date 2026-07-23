@@ -1190,3 +1190,36 @@ Promoted windows-dev-process-cleanup to Governed 2.0 with complete process-closu
 ### Next Steps
 
 - None - task complete
+
+
+## Session 35: Optimize agents-md-improver for GPT-5.6
+
+**Date**: 2026-07-23
+**Task**: Optimize agents-md-improver for GPT-5.6
+**Branch**: `dev`
+
+### Summary
+
+Upgraded agents-md-improver to 1.2.0 with current Codex discovery semantics, GPT-5.6-aligned outcome and authorization guidance, Production routing/output evals, package evidence, and honest missing-evidence boundaries.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9ae4cee` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
