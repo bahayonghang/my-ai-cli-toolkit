@@ -1,0 +1,6 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Check repo-specific metadata, eval, interface, tool reachability, docs sync and validation compliance."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/prd.md","reason":"Review every acceptance criterion and scope exclusion against the final diff and evidence."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/design.md","reason":"Verify surface ownership, provenance, privacy, no-change, evaluation and rollback contracts are coherent."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/implement.md","reason":"Run the targeted-to-full validation ladder and inspect every required review gate."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/research/skill-audit.md","reason":"Confirm every baseline high/medium finding is fixed or explicitly dispositioned without fabricated evidence."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/research/official-codex-surface.md","reason":"Revalidate dated Codex facts and surface-specific degradation before release."}

@@ -1,0 +1,24 @@
+interface:
+  display_name: "Codex Workflow Recommender"
+  short_description: "Recommend the smallest justified Codex workflow change"
+  default_prompt: "Use $codex-workflow-recommender read-only. Prefer existing capability or no change; preserve evidence, risk, verification, rollback, and approval."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+  activation:
+    mode: "implicit"
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+    side_effect_policy: "read-only; writes need separate authorization"
+  degradation:
+    openai: "use current Codex surfaces; gaps are missing evidence"
+    claude: "use the read-only contract; do not infer Codex state"
+    generic: "use local evidence; runtime gaps are missing evidence"

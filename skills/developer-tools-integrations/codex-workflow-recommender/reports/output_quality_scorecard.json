@@ -1,0 +1,886 @@
+{
+  "ok": true,
+  "cases": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\evals\\output\\cases.jsonl",
+  "summary": {
+    "case_count": 6,
+    "file_backed_case_count": 6,
+    "near_neighbor_case_count": 0,
+    "boundary_case_count": 3,
+    "baseline_pass_rate": 0.0,
+    "with_skill_pass_rate": 100.0,
+    "delta": 100.0,
+    "regression_count": 0,
+    "gate_pass": true,
+    "failure_taxonomy": [],
+    "blind_pair_count": 6
+  },
+  "results": [
+    {
+      "id": "current-skill-root",
+      "prompt": "Using Scenario A, decide how to handle the repository's stale Codex skill path.",
+      "input_files": [
+        "fixtures/codex-workflow-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "correct-roots",
+            "description": "Separates current skill and native-agent roots.",
+            "weight": 1.0,
+            "failure_type": "stale_root",
+            "passed": false,
+            "missing": [
+              ".agents/skills",
+              ".codex/agents"
+            ],
+            "present_forbidden": [
+              ".codex/skills"
+            ]
+          },
+          {
+            "id": "keeps-approval",
+            "description": "Does not treat recommendation as edit authorization.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": false,
+            "missing": [
+              "Approval:",
+              "recommendation",
+              "edit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "includes-recovery",
+            "description": "Names verification and rollback.",
+            "weight": 1.0,
+            "failure_type": "missing_recovery",
+            "passed": false,
+            "missing": [
+              "Verification:",
+              "Rollback:"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "correct-roots",
+            "description": "Separates current skill and native-agent roots.",
+            "weight": 1.0,
+            "failure_type": "stale_root",
+            "passed": false,
+            "missing": [
+              ".agents/skills",
+              ".codex/agents"
+            ],
+            "present_forbidden": [
+              ".codex/skills"
+            ]
+          },
+          {
+            "id": "keeps-approval",
+            "description": "Does not treat recommendation as edit authorization.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": false,
+            "missing": [
+              "Approval:",
+              "recommendation",
+              "edit"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "includes-recovery",
+            "description": "Names verification and rollback.",
+            "weight": 1.0,
+            "failure_type": "missing_recovery",
+            "passed": false,
+            "missing": [
+              "Verification:",
+              "Rollback:"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "correct-roots",
+            "description": "Separates current skill and native-agent roots.",
+            "weight": 1.0,
+            "failure_type": "stale_root",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-approval",
+            "description": "Does not treat recommendation as edit authorization.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "includes-recovery",
+            "description": "Names verification and rollback.",
+            "weight": 1.0,
+            "failure_type": "missing_recovery",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "reuse-installed-browser",
+      "prompt": "Using Scenario B, recommend the browser capability setup.",
+      "input_files": [
+        "fixtures/codex-workflow-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "reuses-capability",
+            "description": "Prefers the suitable installed capability.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": false,
+            "missing": [
+              "reuse",
+              "browser plugin",
+              "installed-enabled",
+              "plugin-provided"
+            ],
+            "present_forbidden": [
+              "add a new raw browser MCP"
+            ]
+          },
+          {
+            "id": "tests-real-job",
+            "description": "Verifies the owned browser job.",
+            "weight": 1.0,
+            "failure_type": "weak_verification",
+            "passed": false,
+            "missing": [
+              "Verification:",
+              "browser smoke task"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "defers-duplicate",
+            "description": "Provides a defer condition and rollback.",
+            "weight": 1.0,
+            "failure_type": "missing_defer_reason",
+            "passed": false,
+            "missing": [
+              "Rollback:",
+              "Defer",
+              "raw MCP"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "reuses-capability",
+            "description": "Prefers the suitable installed capability.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": false,
+            "missing": [
+              "reuse",
+              "browser plugin",
+              "installed-enabled",
+              "plugin-provided"
+            ],
+            "present_forbidden": [
+              "add a new raw browser MCP"
+            ]
+          },
+          {
+            "id": "tests-real-job",
+            "description": "Verifies the owned browser job.",
+            "weight": 1.0,
+            "failure_type": "weak_verification",
+            "passed": false,
+            "missing": [
+              "Verification:",
+              "browser smoke task"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "defers-duplicate",
+            "description": "Provides a defer condition and rollback.",
+            "weight": 1.0,
+            "failure_type": "missing_defer_reason",
+            "passed": false,
+            "missing": [
+              "Rollback:",
+              "Defer",
+              "raw MCP"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "reuses-capability",
+            "description": "Prefers the suitable installed capability.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "tests-real-job",
+            "description": "Verifies the owned browser job.",
+            "weight": 1.0,
+            "failure_type": "weak_verification",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "defers-duplicate",
+            "description": "Provides a defer condition and rollback.",
+            "weight": 1.0,
+            "failure_type": "missing_defer_reason",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "preserve-mcp-provenance",
+      "prompt": "Using Scenario C, summarize current MCP and plugin state before recommending changes.",
+      "input_files": [
+        "fixtures/codex-workflow-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "preserves-provenance",
+            "description": "Reports each distinct provenance state.",
+            "weight": 1.0,
+            "failure_type": "provenance_loss",
+            "passed": false,
+            "missing": [
+              "user-config",
+              "plugin-provided",
+              "installed-enabled",
+              "project-config",
+              "available-uninstalled"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "protects-sensitive-data",
+            "description": "Forbids raw sensitive diagnostic output.",
+            "weight": 1.0,
+            "failure_type": "diagnostic_leak",
+            "passed": false,
+            "missing": [
+              "doctor",
+              "auth",
+              "provider",
+              "environment",
+              "report"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-duplicate",
+            "description": "Rejects a duplicate direct MCP.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": false,
+            "missing": [
+              "Recommendation:",
+              "duplicate",
+              "issue-tracker MCP"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "preserves-provenance",
+            "description": "Reports each distinct provenance state.",
+            "weight": 1.0,
+            "failure_type": "provenance_loss",
+            "passed": false,
+            "missing": [
+              "user-config",
+              "plugin-provided",
+              "installed-enabled",
+              "project-config",
+              "available-uninstalled"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "protects-sensitive-data",
+            "description": "Forbids raw sensitive diagnostic output.",
+            "weight": 1.0,
+            "failure_type": "diagnostic_leak",
+            "passed": false,
+            "missing": [
+              "doctor",
+              "auth",
+              "provider",
+              "environment",
+              "report"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-duplicate",
+            "description": "Rejects a duplicate direct MCP.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": false,
+            "missing": [
+              "Recommendation:",
+              "duplicate",
+              "issue-tracker MCP"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "preserves-provenance",
+            "description": "Reports each distinct provenance state.",
+            "weight": 1.0,
+            "failure_type": "provenance_loss",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "protects-sensitive-data",
+            "description": "Forbids raw sensitive diagnostic output.",
+            "weight": 1.0,
+            "failure_type": "diagnostic_leak",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "avoids-duplicate",
+            "description": "Rejects a duplicate direct MCP.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "no-change-result",
+      "prompt": "Using Scenario D, recommend the next Codex workflow investment.",
+      "input_files": [
+        "fixtures/codex-workflow-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "boundary",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "allows-no-change",
+            "description": "Treats no change as a successful outcome.",
+            "weight": 1.0,
+            "failure_type": "forced_recommendation",
+            "passed": false,
+            "missing": [
+              "Outcome:",
+              "No change recommended"
+            ],
+            "present_forbidden": [
+              "add those next"
+            ]
+          },
+          {
+            "id": "uses-hard-condition",
+            "description": "Rejects technology-only setup.",
+            "weight": 1.0,
+            "failure_type": "stack_trigger",
+            "passed": false,
+            "missing": [
+              "Technology detection",
+              "persistent surface"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "states-defer-evidence",
+            "description": "Names what future evidence would reopen the decision.",
+            "weight": 1.0,
+            "failure_type": "missing_defer_reason",
+            "passed": false,
+            "missing": [
+              "Defer",
+              "repeated job",
+              "measured failure",
+              "Rollback:"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "allows-no-change",
+            "description": "Treats no change as a successful outcome.",
+            "weight": 1.0,
+            "failure_type": "forced_recommendation",
+            "passed": false,
+            "missing": [
+              "Outcome:",
+              "No change recommended"
+            ],
+            "present_forbidden": [
+              "add those next"
+            ]
+          },
+          {
+            "id": "uses-hard-condition",
+            "description": "Rejects technology-only setup.",
+            "weight": 1.0,
+            "failure_type": "stack_trigger",
+            "passed": false,
+            "missing": [
+              "Technology detection",
+              "persistent surface"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "states-defer-evidence",
+            "description": "Names what future evidence would reopen the decision.",
+            "weight": 1.0,
+            "failure_type": "missing_defer_reason",
+            "passed": false,
+            "missing": [
+              "Defer",
+              "repeated job",
+              "measured failure",
+              "Rollback:"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "allows-no-change",
+            "description": "Treats no change as a successful outcome.",
+            "weight": 1.0,
+            "failure_type": "forced_recommendation",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "uses-hard-condition",
+            "description": "Rejects technology-only setup.",
+            "weight": 1.0,
+            "failure_type": "stack_trigger",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "states-defer-evidence",
+            "description": "Names what future evidence would reopen the decision.",
+            "weight": 1.0,
+            "failure_type": "missing_defer_reason",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "old-cli-degradation",
+      "prompt": "Using Scenario E, report recommendations for the unverified Codex surfaces.",
+      "input_files": [
+        "fixtures/codex-workflow-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "boundary",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "degrades-honestly",
+            "description": "Marks every unavailable surface as missing evidence.",
+            "weight": 1.0,
+            "failure_type": "fabricated_surface",
+            "passed": false,
+            "missing": [
+              "missing evidence",
+              "CLI",
+              "separate surfaces"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-invention",
+            "description": "Does not borrow commands from memory or another surface.",
+            "weight": 1.0,
+            "failure_type": "invented_command",
+            "passed": false,
+            "missing": [
+              "Do not invent commands",
+              "--help"
+            ],
+            "present_forbidden": [
+              "Use the latest",
+              "from memory"
+            ]
+          },
+          {
+            "id": "keeps-read-only",
+            "description": "Leaves persistent state unchanged.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": false,
+            "missing": [
+              "Rollback:",
+              "no persistent change"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "degrades-honestly",
+            "description": "Marks every unavailable surface as missing evidence.",
+            "weight": 1.0,
+            "failure_type": "fabricated_surface",
+            "passed": false,
+            "missing": [
+              "missing evidence",
+              "CLI",
+              "separate surfaces"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-invention",
+            "description": "Does not borrow commands from memory or another surface.",
+            "weight": 1.0,
+            "failure_type": "invented_command",
+            "passed": false,
+            "missing": [
+              "Do not invent commands",
+              "--help"
+            ],
+            "present_forbidden": [
+              "Use the latest",
+              "from memory"
+            ]
+          },
+          {
+            "id": "keeps-read-only",
+            "description": "Leaves persistent state unchanged.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": false,
+            "missing": [
+              "Rollback:",
+              "no persistent change"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "degrades-honestly",
+            "description": "Marks every unavailable surface as missing evidence.",
+            "weight": 1.0,
+            "failure_type": "fabricated_surface",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "forbids-invention",
+            "description": "Does not borrow commands from memory or another surface.",
+            "weight": 1.0,
+            "failure_type": "invented_command",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-read-only",
+            "description": "Leaves persistent state unchanged.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "high-permission-preflight",
+      "prompt": "Using Scenario F, recommend how to add the write-capable issue tracker integration.",
+      "input_files": [
+        "fixtures/codex-workflow-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "boundary",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "blocks-on-permission",
+            "description": "Defers high-permission setup until key controls exist.",
+            "weight": 1.0,
+            "failure_type": "permission_bypass",
+            "passed": false,
+            "missing": [
+              "defer",
+              "permission",
+              "data preflight",
+              "managed policy",
+              "least-privilege",
+              "write approvals"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "checks-reuse-first",
+            "description": "Checks an existing bundle before direct MCP.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": false,
+            "missing": [
+              "installed",
+              "plugin",
+              "direct MCP"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-authorization",
+            "description": "Keeps installation and writes behind separate approval.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": false,
+            "missing": [
+              "Prerequisites:",
+              "separate approval",
+              "Rollback:",
+              "does not authorize"
+            ],
+            "present_forbidden": [
+              "codex mcp add",
+              "creating a test issue",
+              "issue tracker token"
+            ]
+          }
+        ],
+        "failed": [
+          {
+            "id": "blocks-on-permission",
+            "description": "Defers high-permission setup until key controls exist.",
+            "weight": 1.0,
+            "failure_type": "permission_bypass",
+            "passed": false,
+            "missing": [
+              "defer",
+              "permission",
+              "data preflight",
+              "managed policy",
+              "least-privilege",
+              "write approvals"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "checks-reuse-first",
+            "description": "Checks an existing bundle before direct MCP.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": false,
+            "missing": [
+              "installed",
+              "plugin",
+              "direct MCP"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-authorization",
+            "description": "Keeps installation and writes behind separate approval.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": false,
+            "missing": [
+              "Prerequisites:",
+              "separate approval",
+              "Rollback:",
+              "does not authorize"
+            ],
+            "present_forbidden": [
+              "codex mcp add",
+              "creating a test issue",
+              "issue tracker token"
+            ]
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "blocks-on-permission",
+            "description": "Defers high-permission setup until key controls exist.",
+            "weight": 1.0,
+            "failure_type": "permission_bypass",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "checks-reuse-first",
+            "description": "Checks an existing bundle before direct MCP.",
+            "weight": 1.0,
+            "failure_type": "duplicate_capability",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "separates-authorization",
+            "description": "Keeps installation and writes behind separate approval.",
+            "weight": 1.0,
+            "failure_type": "authorization_expansion",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    }
+  ],
+  "failures": [],
+  "blind_review": {
+    "pack": "reports\\output_blind_review_pack.json",
+    "answer_key": "reports\\output_blind_answer_key.json",
+    "pair_count": 6
+  },
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_quality_scorecard.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_quality_scorecard.md",
+    "blind_review_pack_json": "reports\\output_blind_review_pack.json",
+    "blind_review_pack_md": "reports\\output_blind_review_pack.md",
+    "blind_answer_key_json": "reports\\output_blind_answer_key.json"
+  }
+}

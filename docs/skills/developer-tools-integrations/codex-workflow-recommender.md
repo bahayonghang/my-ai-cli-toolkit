@@ -4,11 +4,13 @@
 
 ## 用途概览
 
-Analyze a repository and current Codex environment, then recommend Codex CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements without modifying files.
+Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change.
 
 ## 触发场景
 
-- the user asks to optimize Codex workflows or setup, recommend Codex automation, configure MCP/plugins/subagents, or says 优化 Codex 流程, Codex 工作流推荐, 给 Codex 配 MCP
+- Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change
+- Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐
+- Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write
 
 ## 元数据
 
@@ -16,8 +18,8 @@ Analyze a repository and current Codex environment, then recommend Codex CLI/App
 | --- | --- |
 | 名称 | `codex-workflow-recommender` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `1.0.0` |
-| 标签 | `codex`, `codex-cli`, `codex-app`, `workflow`, `agents-md`, `skills`, `subagents`, `plugins`, `mcp`, `hooks`, `omx` |
+| 版本 | `1.1.0` |
+| 标签 | `codex`, `skills`, `mcp` |
 
 ## 安装命令
 
@@ -29,22 +31,29 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-workflo
 
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
-| `skills/developer-tools-integrations/codex-workflow-recommender/references` | 目录 | 5 | 引用资料 |
+| `skills/developer-tools-integrations/codex-workflow-recommender/agents` | 目录 | 1 | 配套 agent |
+| `skills/developer-tools-integrations/codex-workflow-recommender/evals` | 目录 | 3 | 评测样例 |
+| `skills/developer-tools-integrations/codex-workflow-recommender/manifest.json` | 文件 | 1 | 顶层文件 |
+| `skills/developer-tools-integrations/codex-workflow-recommender/references` | 目录 | 6 | 引用资料 |
+| `skills/developer-tools-integrations/codex-workflow-recommender/reports` | 目录 | 9 | 顶层目录 |
+| `skills/developer-tools-integrations/codex-workflow-recommender/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
+| agents | `skills/developer-tools-integrations/codex-workflow-recommender/agents` | 配套 agent |
+| evals | `skills/developer-tools-integrations/codex-workflow-recommender/evals` | 评测样例 |
 | references | `skills/developer-tools-integrations/codex-workflow-recommender/references` | 引用资料 |
+| tests | `skills/developer-tools-integrations/codex-workflow-recommender/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

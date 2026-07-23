@@ -1,0 +1,63 @@
+{
+  "recommended_threshold": 0.46,
+  "should_trigger": [
+    {
+      "text": "Audit this repository's Codex setup and recommend only evidence-backed workflow improvements without changing anything.",
+      "family": "repo_audit"
+    },
+    {
+      "text": "优化这个仓库的 Codex 工作流，判断 AGENTS、skill、plugin、MCP 和 subagent 应该如何分工。",
+      "family": "surface_selection"
+    },
+    {
+      "text": "Plan which Codex plugin or MCP capability would solve our repeated browser verification job, but do not configure it.",
+      "family": "mcp_plugin_plan"
+    },
+    {
+      "text": "Review our current Codex capabilities, detect duplicate setup, and say no change when the existing plugin is enough.",
+      "family": "existing_capability"
+    },
+    {
+      "text": "审阅 Codex 配置和能力，只给出仓库级只读建议、验证与回滚方案。",
+      "family": "holdout_chinese",
+      "holdout": true
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Directly update AGENTS.md and code_map.md with the approved repository rules.",
+      "family": "agents_direct_edit"
+    },
+    {
+      "text": "From official docs, explain where current Codex discovers project skills.",
+      "family": "docs_fact"
+    },
+    {
+      "text": "Use yao-meta-skill to audit this skill package and add trigger evals.",
+      "family": "skill_audit"
+    },
+    {
+      "text": "Build a persistent multi-stage Codex workflow packet with resume state and agent handoffs.",
+      "family": "dynamic_workflow"
+    },
+    {
+      "text": "Review this pull request for correctness, security, and missing tests.",
+      "family": "code_review"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Install the browser plugin now and add its MCP server to my user config.",
+      "family": "actual_configuration"
+    },
+    {
+      "text": "Draft a new reusable skill package for our release workflow and implement it.",
+      "family": "skill_creation"
+    },
+    {
+      "text": "Compare current Codex CLI and desktop App features without inspecting a repository.",
+      "family": "holdout_docs_comparison",
+      "holdout": true
+    }
+  ]
+}

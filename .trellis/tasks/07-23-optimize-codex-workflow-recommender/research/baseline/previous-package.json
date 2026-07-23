@@ -1,0 +1,21 @@
+{
+  "schema_version": "baseline-snapshot",
+  "name": "codex-workflow-recommender",
+  "version": "1.0.0",
+  "description": "Analyze a repository and current Codex environment, then recommend Codex CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements without modifying files. Use when the user asks to optimize Codex workflows or setup, recommend Codex automation, configure MCP/plugins/subagents, or says 优化 Codex 流程, Codex 工作流推荐, 给 Codex 配 MCP.",
+  "targets": [],
+  "maturity": "scaffold",
+  "owner": "",
+  "review_cadence": "",
+  "trust_level": "",
+  "license": "",
+  "checksums": {
+    "skill_md_git_blob": "789ab1d648a4e5cbf9f6710399bfe0591ecb1762"
+  },
+  "compatibility": {},
+  "source": {
+    "git_commit": "adaa8b351ceb7155c160c4d5c2292b5acb63db01",
+    "snapshot": "research/baseline/README.md",
+    "note": "Version 1.0.0 had no manifest, declared adapter targets, or generated registry package. Empty fields preserve that absence."
+  }
+}

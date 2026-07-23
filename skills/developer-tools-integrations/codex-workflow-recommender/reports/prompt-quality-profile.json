@@ -1,0 +1,129 @@
+{
+  "skill_name": "codex-workflow-recommender",
+  "relevance": "prompt-heavy",
+  "primary_task_family": {
+    "key": "prompt_engineering",
+    "label": "Prompt engineering",
+    "matched_keywords": [
+      "prompt",
+      "role"
+    ]
+  },
+  "task_families": [
+    {
+      "key": "prompt_engineering",
+      "label": "Prompt engineering",
+      "score": 2,
+      "matched_keywords": [
+        "prompt",
+        "role"
+      ],
+      "role_guidance": "Use a prompt engineer role only when role design materially improves execution.",
+      "task_guidance": "Map Role, Task, and Format into skill behavior rather than copying a large prompt template.",
+      "format_guidance": "Return a compact prompt contract plus tests, quality matrix, and usage notes."
+    },
+    {
+      "key": "analytical_reasoning",
+      "label": "Analytical reasoning",
+      "score": 1,
+      "matched_keywords": [
+        "decision"
+      ],
+      "role_guidance": "Use an analyst role that separates evidence, inference, uncertainty, and recommendation.",
+      "task_guidance": "State assumptions, compare alternatives, and make the decision path inspectable.",
+      "format_guidance": "Return findings, evidence, tradeoffs, recommendation, and residual risks."
+    },
+    {
+      "key": "execution_operation",
+      "label": "Execution operation",
+      "score": 1,
+      "matched_keywords": [
+        "workflow"
+      ],
+      "role_guidance": "Use an operator role with explicit boundaries, inputs, outputs, and failure handling.",
+      "task_guidance": "Convert the job into ordered steps with validation checks and stop conditions.",
+      "format_guidance": "Return a runbook-like handoff with commands, checks, owners, and next actions when relevant."
+    },
+    {
+      "key": "dialogue_interaction",
+      "label": "Dialogue interaction",
+      "score": 1,
+      "matched_keywords": [
+        "support"
+      ],
+      "role_guidance": "Use a conversational role that asks only high-leverage questions and remembers the user's goal.",
+      "task_guidance": "Clarify intent, resolve uncertainty, and converge toward a recommendation instead of a long option list.",
+      "format_guidance": "Return concise prompts, decision points, and reviewer-visible assumptions."
+    }
+  ],
+  "complexity": {
+    "band": "complex",
+    "score": 6,
+    "reason": "multiple inputs, constraints, or task families require tradeoff handling"
+  },
+  "need_model": {
+    "explicit_need": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+    "implicit_need": "The reusable skill needs a stable role, task, and output contract rather than a one-off prompt.",
+    "scenario": "not yet explicit",
+    "user_level": "infer from examples and standards; ask only if it changes output depth",
+    "success_standard": "usable output with clear validation cues"
+  },
+  "rtf_to_skill": {
+    "role": "Use a prompt engineer role only when role design materially improves execution.",
+    "task": "Map Role, Task, and Format into skill behavior rather than copying a large prompt template.",
+    "format": "Return a compact prompt contract plus tests, quality matrix, and usage notes."
+  },
+  "quality_matrix": [
+    {
+      "key": "completeness",
+      "label": "Completeness",
+      "score": 75,
+      "matched_signals": [
+        "output",
+        "example"
+      ],
+      "repair": "Name missing inputs, outputs, constraints, or success standards before deepening the package."
+    },
+    {
+      "key": "clarity",
+      "label": "Clarity",
+      "score": 80,
+      "matched_signals": [],
+      "repair": "Replace broad verbs with observable actions and define what done means."
+    },
+    {
+      "key": "consistency",
+      "label": "Consistency",
+      "score": 80,
+      "matched_signals": [],
+      "repair": "Check that role, task, format, exclusions, and examples do not contradict each other."
+    },
+    {
+      "key": "practicality",
+      "label": "Practicality",
+      "score": 95,
+      "matched_signals": [
+        "action",
+        "use",
+        "workflow"
+      ],
+      "repair": "Add runnable steps, examples, or verification cues instead of abstract advice."
+    },
+    {
+      "key": "specificity",
+      "label": "Specificity",
+      "score": 70,
+      "matched_signals": [],
+      "repair": "Anchor wording in the user's audience, domain nouns, and target outcome."
+    }
+  ],
+  "overall_quality_score": 80.0,
+  "self_repair_checks": [
+    "Check explicit need, implicit need, scenario, user level, and success standard before deepening.",
+    "Map Role, Task, and Format into skill behavior, not decorative prompt labels.",
+    "Ask one focused clarification only when missing information changes the package boundary.",
+    "Add tests or examples for prompt-heavy behavior before treating it as reusable.",
+    "Keep prompt methodology in references and reports instead of bloating SKILL.md."
+  ],
+  "reviewer_note": "Use this profile when the package depends on prompt behavior, role design, output contracts, or conversation quality."
+}

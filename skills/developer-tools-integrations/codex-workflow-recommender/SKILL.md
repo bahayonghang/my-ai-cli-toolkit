@@ -1,224 +1,66 @@
 ---
 name: codex-workflow-recommender
 description: >-
-  Analyze a repository and current Codex environment, then recommend Codex
-  CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks,
-  and OMX workflow improvements without modifying files. Use when the user
-  asks to optimize Codex workflows or setup, recommend Codex automation,
-  configure MCP/plugins/subagents, or says 优化 Codex 流程, Codex 工作流推荐,
-  给 Codex 配 MCP.
-version: 1.0.0
+  Audit a repository and current Codex capabilities, then recommend the smallest
+  evidence-backed read-only improvement or no change. Use for Codex setup
+  optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex
+  工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits,
+  docs questions, skill audits, dynamic workflow implementation, code review,
+  and any install/config/write.
+version: 1.1.0
 category: developer-tools-integrations
 tags:
   - codex
-  - codex-cli
-  - codex-app
-  - workflow
-  - agents-md
   - skills
-  - subagents
-  - plugins
   - mcp
-  - hooks
-  - omx
-argument-hint: "[repository-or-workflow-goal]"
-allowed-tools: Read, Glob, Grep, Bash(codex *), Bash(git *), Bash(find *), Bash(ls *), Bash(Get-ChildItem *), Bash(Get-Content *), Bash(Select-String *)
+allowed-tools: Read, Glob, Grep, Bash(codex --version), Bash(codex * --help), Bash(codex mcp list *), Bash(codex plugin list *), Bash(git status *), Bash(rg *)
 ---
 
 # Codex Workflow Recommender
 
-Analyze a codebase and the local Codex surface, then recommend a safe implementation order for Codex-specific workflow improvements.
+Read-only: do not create, edit, install, remove, configure, or write externally;
+reports never authorize implementation.
 
-**This skill is read-only.** It may inspect files and run read-only discovery commands, but it must not create, edit, install, remove, or reconfigure anything. End with implementation options the user can approve separately.
+## Workflow
+
+1. Confirm outcome, repo root, surface, and scope; read applicable
+   `AGENTS.md`/`code_map.md`.
+2. Inventory relevant gates, roots, trusted config, plugins, and MCP. Prefer
+   structured tools or `rg` and current help.
+3. Summarize minimum fields, never raw doctor/config/auth/provider/env values.
+   Preserve provenance: `built-in`, `user-config`, `project-config`,
+   `plugin-provided`, `installed-enabled`, `installed-disabled`,
+   `available-uninstalled`, `unsupported`, `missing evidence`.
+4. Decide whether persistence is justified. `No change recommended` is valid.
+   Smallest owner: one-off -> prompt; repo rule -> AGENTS; learned context ->
+   memory; repeated flow -> skill; team bundle -> plugin; live external need ->
+   MCP; independent role -> subagent; runtime default -> config/rule; lifecycle
+   event -> hook; schedule -> automation.
+5. Reuse suitable native/installed capability first. Technology detection alone
+   is only a signal. Rank by impact, evidence, dependency, effort,
+   reversibility, and Permission/data risk.
+6. Stop at supported decisions; keep OMX conditional and omit irrelevant surfaces.
 
 ## Output Contract
 
-Return exactly these top-level sections unless the user asks for a narrower category:
+Return `Outcome`; `Evidence and Unknowns`; supported `Prioritized Recommendations`;
+dependency/risk `Implementation Sequence`; `Verification and Rollback`; and
+`Approval Options` split by local versus persistent/external action. Each item:
+Observed evidence; Existing capability/provenance; scope; prerequisites;
+Permission/data risk; confidence or `missing evidence`; Verification;
+Rollback/defer reason. Omit empty categories.
 
-1. `Codebase Profile`
-2. `Current Codex Surface`
-3. `Top Recommendations by category`
-4. `Safe Implementation Order`
-5. `Verification Plan`
-6. `Want me to implement...`
+## References
 
-Keep recommendations evidence-based. Recommend the highest-value 1-2 items per relevant category, not a catalog dump.
+- [Surface map](references/codex-surface-map.md)
+- [Skills](references/skills-reference.md)
+- [Subagents](references/subagent-templates.md)
+- [MCP](references/mcp-servers.md)
+- [Plugins](references/plugins-reference.md)
+- [Config/hooks](references/hooks-patterns.md)
 
-## Discovery Workflow
-
-### 1. Profile the repository
-
-Inspect only enough to classify the project and its verification gates:
-
-```bash
-# POSIX shells
-find . -maxdepth 3 \( -name package.json -o -name pyproject.toml -o -name Cargo.toml -o -name go.mod -o -name justfile -o -name Makefile \) -print
-find . -maxdepth 4 \( -name AGENTS.md -o -path './.codex/*' \) -print
-
-# PowerShell
-Get-ChildItem -Recurse -Depth 3 -Include package.json,pyproject.toml,Cargo.toml,go.mod,justfile,Makefile | Select-Object -ExpandProperty FullName
-Get-ChildItem -Recurse -Depth 4 -Force -Include AGENTS.md | Select-Object -ExpandProperty FullName
-```
-
-Capture:
-
-| Signal | Why it matters |
-|---|---|
-| language/runtime manifests | hooks, test commands, subagent expertise |
-| frontend/backend/data boundaries | Playwright/browser MCP, DB MCP, API docs |
-| existing `AGENTS.md` files | root vs nested guidance recommendations |
-| `.codex/skills`, `.codex/agents` | project-local Codex capabilities already present |
-| `~/.codex/config.toml`, `~/.codex/hooks.json` when readable | user-level Codex config and hook surface |
-| CI and local gates | verification plan and safe hook candidates |
-| external services in dependencies or docs | MCP/plugin candidates |
-| OMX files such as `.omx/` or `AGENTS.md` OMX sections | optional repo-specific runtime workflows |
-
-### 2. Confirm the local Codex command surface
-
-Prefer the installed CLI over memory:
-
-```bash
-codex --help
-codex mcp --help
-codex plugin --help
-codex doctor --help
-```
-
-When available, also inspect configured state without modifying it:
-
-```bash
-codex mcp list --json
-codex plugin list
-codex plugin marketplace list
-```
-
-If a command is missing, state that the recommendation depends on the installed Codex version.
-
-### 3. Load focused references only when needed
-
-- MCP recommendations: `references/mcp-servers.md`
-- Skills recommendations: `references/skills-reference.md`
-- Hooks/config recommendations: `references/hooks-patterns.md`
-- Native subagents: `references/subagent-templates.md`
-- Plugins: `references/plugins-reference.md`
-
-Do not load every reference by default.
-
-## Recommendation Categories
-
-### AGENTS.md guidance
-
-Recommend root or nested `AGENTS.md` changes when the repository has distinct subtrees, commands, generated files, safety boundaries, or verification gates that future Codex agents must know. If the user wants direct AGENTS.md edits, use `agents-md-improver` instead of this read-only recommender.
-
-### Codex skills
-
-Recommend skills for repeatable workflows, project-specific procedures, bundled scripts/templates, or domain knowledge that should be discoverable by Codex. Typical roots include:
-
-- user/system skills: `~/.codex/skills`
-- project-local skills: `.codex/skills`
-- shared installs used by this repo/user environment: `~/.agents/skills`
-
-Confirm the actual roots for the current environment before giving path-specific instructions.
-
-### Native subagents
-
-Recommend `.codex/agents` or `~/.codex/agents` only for bounded roles with clear ownership, sandbox expectations, and verification responsibilities. Avoid suggesting a subagent when a skill, prompt, or direct instruction is simpler.
-
-### MCP servers
-
-Recommend MCP only when external tool access materially helps: browser automation, live docs, databases, issue trackers, observability, cloud services, or filesystem boundaries. Use `codex mcp add/list/get/remove` syntax and avoid provider-specific commands from other CLIs.
-
-### Plugins
-
-Recommend plugins when the user needs a bundled set of skills/tools or a reusable team distribution unit. Use `codex plugin list/add/remove/marketplace` syntax and verify marketplaces before recommending a plugin name.
-
-### Config and hooks
-
-Recommend `~/.codex/config.toml` or hook-related changes only when the current Codex installation and local policy support them. Treat `~/.codex/hooks.json` as environment-specific; do not invent a schema when it is not present. For enforcement that must work outside Codex, recommend standard repo gates such as pre-commit, `just`, npm scripts, or CI.
-
-### Codex CLI runtime
-
-Recommend direct CLI features when they match the workflow:
-
-| Need | Codex surface |
-|---|---|
-| non-interactive implementation or analysis | `codex exec` |
-| read-only diff review | `codex review` |
-| continue or branch a previous session | `codex resume` / `codex fork` |
-| diagnose install/auth/config health | `codex doctor` |
-| sandboxed local command execution | `codex sandbox` |
-| launch desktop app | `codex app` |
-
-### OMX workflows
-
-Mention OMX only when the repository or user environment shows OMX is installed or requested. Present it as an optional enhancement, not a universal Codex capability.
-
-## Report Template
-
-```markdown
-## Codex Workflow Recommendations
-
-### Codebase Profile
-- **Type**: ...
-- **Primary gates**: ...
-- **Risk boundaries**: ...
-
-### Current Codex Surface
-- **AGENTS.md**: root/nested/global status
-- **Skills**: discovered roots and notable project-local skills
-- **Subagents**: discovered `.codex/agents` or user agents
-- **MCP**: configured or absent
-- **Plugins**: configured marketplaces/plugins or absent
-- **Config/hooks**: current known surface and unsupported gaps
-- **OMX**: present/absent/optional
-
-### Top Recommendations by category
-
-#### AGENTS.md
-1. **...**
-   - Evidence: ...
-   - Why now: ...
-   - Suggested scope: ...
-
-#### Skills
-...
-
-#### Native subagents
-...
-
-#### MCP servers
-...
-
-#### Plugins
-...
-
-#### Config/hooks
-...
-
-#### Codex CLI runtime
-...
-
-### Safe Implementation Order
-1. Read-only inventory and baseline verification
-2. AGENTS.md or docs guidance changes
-3. Local/project skill or subagent additions
-4. MCP/plugin/config changes behind explicit approval
-5. Verification and rollback notes
-
-### Verification Plan
-- `codex doctor` for installation/config health
-- repository-specific lint/type/test/build gates
-- skill or agent validators when new packages are added
-- `codex mcp list --json` / `codex plugin list` after configuration changes
-
-### Want me to implement...
-I can implement the approved local-file changes next. I will not install plugins, add MCP servers, or change user-level config without explicit approval.
-```
-
-## Safety Rules
-
-- Do not modify files or run install/remove/config mutation commands in this skill.
-- Do not claim a Codex feature exists solely because another CLI has it.
-- Do not recommend secrets in config files; prefer environment variables and bearer-token env var options where supported.
-- Do not place OMX recommendations in the critical path unless the current environment actually uses OMX.
-- Keep implementation advice reversible and ordered from lowest-risk to highest-risk.
+Load only relevant references. CLI help overrides examples and dated facts
+override memory; otherwise use `missing evidence`.
+Route direct AGENTS/code-map edits to `agents-md-improver`, fact questions to
+`openai-docs`, skill reviews to `agent-skill-review`/`yao-meta-skill`, and
+dynamic workflow builds to `codex-dynamic-workflows`.

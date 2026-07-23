@@ -1,0 +1,64 @@
+{
+  "optimizer_hints": {
+    "capability": "Audit repository-grounded Codex workflow surfaces and recommend the smallest justified read-only change or no change",
+    "inputs": ["repository evidence", "current Codex help", "capability provenance", "dated official facts"],
+    "trigger_actions": ["audit Codex setup", "optimize Codex workflow", "select a Codex surface", "plan MCP/plugin/subagent capability"],
+    "exclusions": ["direct guidance edits", "documentation-only facts", "skill audits", "dynamic workflow implementation", "code review", "actual configuration"],
+    "artifacts": ["recommendation report", "implementation sequence", "verification and rollback", "approval options"]
+  },
+  "fallback_positive_concepts": ["codex_workflow", "audit_recommend", "surface_selection"],
+  "positive_concepts": {
+    "codex_workflow": {
+      "weight": 0.32,
+      "phrases": ["codex setup", "codex workflow", "codex capabilities", "codex configuration", "codex 工作流", "codex 配置", "codex 能力"]
+    },
+    "audit_recommend": {
+      "weight": 0.28,
+      "phrases": ["audit", "optimize", "review", "recommend", "plan", "审阅", "优化", "建议", "方案"]
+    },
+    "surface_selection": {
+      "weight": 0.25,
+      "phrases": ["surface", "plugin", "mcp", "subagent", "skill", "capability", "能力", "分工"]
+    },
+    "repository_scope": {
+      "weight": 0.1,
+      "phrases": ["repository", "repo", "仓库", "repository-grounded"]
+    },
+    "read_only": {
+      "weight": 0.05,
+      "phrases": ["read-only", "without changing", "do not configure", "no change", "只读"]
+    }
+  },
+  "negative_concepts": {
+    "direct_edit": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": ["directly update agents.md", "edit agents.md", "code_map.md with the approved"]
+    },
+    "docs_only": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["from official docs", "explain where", "without inspecting a repository"]
+    },
+    "skill_package": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": ["audit this skill package", "trigger evals", "new reusable skill package"]
+    },
+    "dynamic_workflow": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": ["build a persistent multi-stage", "resume state", "agent handoffs"]
+    },
+    "ordinary_review": {
+      "weight": 0.6,
+      "exclusive": true,
+      "phrases": ["pull request", "code review", "security and missing tests"]
+    },
+    "actual_configuration": {
+      "weight": 0.6,
+      "exclusive": true,
+      "phrases": ["install the browser plugin now", "add its mcp server", "user config"]
+    }
+  }
+}

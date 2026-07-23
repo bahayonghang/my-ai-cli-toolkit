@@ -1,146 +1,49 @@
-# Codex Skills Recommendations
+# Codex skill recommendations
 
-Use this reference when a repeated workflow should become a Codex skill instead of a paragraph in `AGENTS.md`.
+Load this reference only when a repeated workflow may need a reusable skill.
 
-## Codex Skill Roots
+## Discovery and placement
 
-Inspect the current environment before giving exact paths. Common roots include:
+Current Codex discovery roots, verified 2026-07-23:
 
-| Root | Use |
-|---|---|
-| `~/.codex/skills` | user/system Codex skills |
-| `.codex/skills` | project-local Codex skills checked into or carried with a repo |
-| `~/.agents/skills` | shared local install root used by some cross-platform managers |
+| Scope | Root |
+| --- | --- |
+| Project | `.agents/skills` from launch CWD toward repository root |
+| User | `~/.agents/skills` |
+| Admin | `/etc/codex/skills` |
+| Built-in | bundled system skills |
 
-Each skill must have a `SKILL.md` entrypoint. Optional resources live beside it:
+A skill directory contains `SKILL.md`; references, scripts, assets, evals, and
+tests are optional and must support a real behavior contract.
 
-```text
-my-skill/
-  SKILL.md
-  references/
-  scripts/
-  assets/
-```
+## Hard decision gate
 
-## When to Recommend a Skill
+Recommend a skill only when all apply:
 
-| Signal | Skill candidate |
-|---|---|
-| repeated multi-step task | workflow skill |
-| fragile command sequence | skill with script or checklist |
-| project-specific conventions | guidance/reference skill |
-| template-heavy output | skill with assets/templates |
-| external artifact format | tool-specific skill |
-| recurring review mode | review or audit skill |
+- the job repeats or is costly to reconstruct;
+- it has a reusable input/output contract;
+- prompt/thread, AGENTS, memory, or an installed capability is insufficient;
+- packaging the workflow lowers more ambiguity than context/maintenance cost.
 
-Do not recommend a skill for one-off knowledge that belongs in `AGENTS.md` or ordinary docs.
+One-off instructions stay in the prompt/thread. Durable repository rules belong
+in AGENTS. Learned non-mandatory context may belong in memory. Prefer a suitable
+installed plugin that already provides the workflow before creating a duplicate
+skill.
 
-## Skill Ideas by Codebase Signal
+Stack detection is not a creation reason. Tie a candidate to an observed
+repeated failure or job, an owner, validation, and a defer/rollback condition.
 
-### API projects
+## Recommendation contract
 
-**Skill**: `api-doc-auditor`
+Name the job, evidence, existing capability, proposed scope/root, inputs and
+output contract, maintenance owner, permission risk, verification task, and
+rollback/defer reason. Creating or editing the skill requires separate approval.
 
-Use when API routes, OpenAPI files, or endpoint docs need recurring review.
-
-Resources:
+Example project layout:
 
 ```text
-.codex/skills/api-doc-auditor/
+.agents/skills/release-readiness/
   SKILL.md
-  references/openapi-style.md
-  scripts/check-openapi.py
+  references/release-policy.md
+  tests/contracts.test.mjs
 ```
-
-### Database projects
-
-**Skill**: `migration-checker`
-
-Use when migrations need repeated safety checks.
-
-Resources:
-
-```text
-.codex/skills/migration-checker/
-  SKILL.md
-  scripts/validate-migration.sh
-  references/schema-policy.md
-```
-
-### Frontend projects
-
-**Skill**: `ui-smoke-verifier`
-
-Use when every UI change should run a browser-backed smoke path and screenshot capture.
-
-Resources:
-
-```text
-.codex/skills/ui-smoke-verifier/
-  SKILL.md
-  references/local-app-start.md
-  scripts/capture-smoke.mjs
-```
-
-### Release workflows
-
-**Skill**: `release-readiness`
-
-Use when release notes, changelog, version sync, and verification gates repeat.
-
-Resources:
-
-```text
-.codex/skills/release-readiness/
-  SKILL.md
-  references/release-checklist.md
-```
-
-### Repo onboarding
-
-**Skill**: `setup-dev`
-
-Use when setup has platform-specific prerequisites or bootstrap order.
-
-Resources:
-
-```text
-.codex/skills/setup-dev/
-  SKILL.md
-  scripts/check-prereqs.py
-  references/troubleshooting.md
-```
-
-## Frontmatter Guidance
-
-Use concise frontmatter that helps Codex trigger the skill:
-
-```yaml
----
-name: migration-checker
-description: Validate database migrations for this repository. Use when editing migrations, reviewing schema changes, or preparing a release that touches database structure.
----
-```
-
-For this repository's public skill catalog, also include top-level metadata such as `version`, `category`, and `tags` when required by the repo validator.
-
-## Recommendation Snippet
-
-```markdown
-#### Skills
-1. **migration-checker**
-   - Evidence: migrations are frequent and require manual safety checks.
-   - Why a skill: the workflow repeats and benefits from bundled validation scripts.
-   - Suggested location: `.codex/skills/migration-checker/SKILL.md` for project-local use.
-   - Verification: run the bundled script on one existing migration and document the expected output.
-```
-
-## Skill vs AGENTS.md vs Subagent
-
-| Need | Prefer |
-|---|---|
-| short global rule | `AGENTS.md` |
-| repeated procedure with resources | skill |
-| specialized independent worker role | native subagent |
-| team-distributed bundle | plugin |
-| external service access | MCP server |

@@ -1,0 +1,336 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "cases": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\evals\\output\\cases.jsonl",
+  "runner": {
+    "mode": "command",
+    "command": [
+      "python",
+      "scripts\\local_output_eval_runner.py"
+    ],
+    "timeout_seconds": 30.0
+  },
+  "summary": {
+    "case_count": 6,
+    "variant_run_count": 12,
+    "command_executed_count": 12,
+    "model_executed_count": 0,
+    "recorded_fixture_count": 0,
+    "timing_observed_count": 12,
+    "token_observed_count": 0,
+    "token_estimated_count": 12,
+    "baseline_pass_rate": 0.0,
+    "with_skill_pass_rate": 100.0,
+    "delta": 100.0,
+    "regression_count": 0,
+    "failure_count": 0,
+    "gate_pass": true
+  },
+  "runs": [
+    {
+      "case_id": "current-skill-root",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 67.69,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 18,
+        "total_tokens": 38,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "correct-roots",
+        "keeps-approval",
+        "includes-recovery"
+      ],
+      "output_sha256": "6123212c921ec72ed7ee315989fa260273118c22b2c230bf363732db1d7b2ec7",
+      "failure": ""
+    },
+    {
+      "case_id": "current-skill-root",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 64.71,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 140,
+        "total_tokens": 160,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "6d16c51045f69dff4f37f6acbc35ef0518fd1a17ba0b8d23efc178caac6f2652",
+      "failure": ""
+    },
+    {
+      "case_id": "reuse-installed-browser",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 65.84,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 18,
+        "total_tokens": 32,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "reuses-capability",
+        "tests-real-job",
+        "defers-duplicate"
+      ],
+      "output_sha256": "e5d4a0dfd8fcde24fa7540730379b51fdb2aa532a27514a61cee8075f9aca0ee",
+      "failure": ""
+    },
+    {
+      "case_id": "reuse-installed-browser",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 65.77,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 122,
+        "total_tokens": 136,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "8dc63e72b3e68abe284260fcd6bf87aaed2ef87b8cdb1476a8d4b4826df13839",
+      "failure": ""
+    },
+    {
+      "case_id": "preserve-mcp-provenance",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 68.66,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 22,
+        "total_tokens": 43,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "preserves-provenance",
+        "protects-sensitive-data",
+        "avoids-duplicate"
+      ],
+      "output_sha256": "40ae7c09586a02b9fc43a7a69d2472c35f49f9aefedadda70cd30b8ff4c55018",
+      "failure": ""
+    },
+    {
+      "case_id": "preserve-mcp-provenance",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 66.53,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 141,
+        "total_tokens": 162,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "f61d259eec5785b34c83e928079230cdc138c561f0439d3ea5bb239978ee144d",
+      "failure": ""
+    },
+    {
+      "case_id": "no-change-result",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 65.83,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 26,
+        "total_tokens": 42,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "allows-no-change",
+        "uses-hard-condition",
+        "states-defer-evidence"
+      ],
+      "output_sha256": "7ae2729a09847cbbfe618c7d35a10199409a75cf5b1e879d5f170a250a65164d",
+      "failure": ""
+    },
+    {
+      "case_id": "no-change-result",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 62.81,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 124,
+        "total_tokens": 140,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "2f749791a465fdb0b0e963a0ae22320a00543c53c46f7c31535b3fd48546ab33",
+      "failure": ""
+    },
+    {
+      "case_id": "old-cli-degradation",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 64.81,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 19,
+        "output_tokens": 24,
+        "total_tokens": 43,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "degrades-honestly",
+        "forbids-invention",
+        "keeps-read-only"
+      ],
+      "output_sha256": "ca8bb19e03fc8b7afb6c9db9c33c5f5b37935d1a4302454e0e38acdb2633b2e3",
+      "failure": ""
+    },
+    {
+      "case_id": "old-cli-degradation",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 65.5,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 19,
+        "output_tokens": 114,
+        "total_tokens": 133,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "ddb9072008718b1a309ae6ebc1d0499dc99b06c6e0f423ff00bb0474d4645667",
+      "failure": ""
+    },
+    {
+      "case_id": "high-permission-preflight",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 64.65,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 22,
+        "total_tokens": 43,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "blocks-on-permission",
+        "checks-reuse-first",
+        "separates-authorization"
+      ],
+      "output_sha256": "55d8381f41f7750059d4b4c1bdec1c01471fb824d8b036cae9b7db6be793d0d2",
+      "failure": ""
+    },
+    {
+      "case_id": "high-permission-preflight",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 63.33,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 182,
+        "total_tokens": 203,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "0a1f836c8096d2d7fb6482143d5f8d4093768e38479bf1442f3007a4b94bc091",
+      "failure": ""
+    }
+  ],
+  "failures": [],
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\output-execution-runs.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\output-execution-runs.md"
+  }
+}
