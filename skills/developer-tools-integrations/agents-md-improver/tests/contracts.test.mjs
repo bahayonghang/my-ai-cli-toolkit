@@ -42,7 +42,10 @@ test("entrypoint stays within the Production initial-load budget", () => {
   const interfaceYaml = read("agents", "interface.yaml");
   const frontmatter = skill.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
   assert.ok(frontmatter, "SKILL.md frontmatter is malformed");
-  const estimatedInitialTokens = Math.floor(skill.length / 4) + Math.floor(interfaceYaml.length / 4);
+  const normalizedSkill = skill.replace(/\r\n/g, "\n");
+  const normalizedInterfaceYaml = interfaceYaml.replace(/\r\n/g, "\n");
+  const estimatedInitialTokens =
+    Math.floor(normalizedSkill.length / 4) + Math.floor(normalizedInterfaceYaml.length / 4);
   assert.ok(
     estimatedInitialTokens <= 1000,
     `initial-load estimate ${estimatedInitialTokens} exceeds 1000 tokens`,
