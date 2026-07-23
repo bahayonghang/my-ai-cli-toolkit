@@ -1,91 +1,96 @@
-# AGENTS.md Improver Report Formats
+# AGENTS.md improver output contracts
 
-Skeletons for the two required outputs. Keep table columns; replace placeholder values.
+Use the audit contract for read-only audit/optimize/plan intent and the update
+contract after authorized edits. Omit conditional sections that have no rows.
 
-## Quality Report (Phase 4, before edits)
+## Audit report
 
-```markdown
-## AGENTS.md Quality Report
+````markdown
+## AGENTS.md Audit
 
-### Summary
+### Outcome
 
-- Files found: X
-- Root guidance: present/missing
-- Root code map: present/missing
-- Nested scoped files: X
-- Nested code maps: X
-- Average score: X/100
-- Files needing update: X
-- Candidate nested guidance dirs: X create / X candidate-only / X skipped
+<Concise conclusion, highest-risk issue, and recommended next action.>
 
-### Scope Map
+### Prioritized Findings
 
-| File                     | Governs           | Parent guidance | Notes |
-| ------------------------ | ----------------- | --------------- | ----- |
-| `AGENTS.md`              | repo root         | none            | ...   |
-| `packages/api/AGENTS.md` | `packages/api/**` | root            | ...   |
+| Severity | File / scope | Evidence | Impact | Proposed change | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| P1 | `<path>` | `<verified source or missing evidence>` | ... | ... | high/medium/low |
 
-### Code Map Coverage
+### Effective Instruction Chain
 
-| Map           | Covers    | Referenced by | Notes |
-| ------------- | --------- | ------------- | ----- |
-| `code_map.md` | repo root | `AGENTS.md`   | ...   |
+| Order | Directory | Selected file | Selection evidence | Bytes / budget status |
+| ---: | --- | --- | --- | --- |
+| 1 | `<root>` | `AGENTS.override.md` | highest-precedence non-empty candidate | ... |
 
-### Nested Guidance Candidates
+### Shadowed Candidates
 
-| Directory       | Score | Decision                                                     | Evidence                           |
-| --------------- | ----: | ------------------------------------------------------------ | ---------------------------------- |
-| `packages/api/` |    75 | create `packages/api/AGENTS.md` + `packages/api/code_map.md` | independent tests, deploy boundary |
+| File | Why shadowed or inactive | Activating CWD / condition |
+| --- | --- | --- |
+| `<path>` | ... | ... |
 
-### File-by-File Assessment
+### Guidance and Navigation Decisions
 
-#### 1. `AGENTS.md`
+| Directory | AGENTS decision | Instruction evidence / no-create reason | code_map decision | Navigation evidence / no-create reason |
+| --- | --- | --- | --- | --- |
+| `<path>` | keep/create/update/do not create | ... | keep/create/update/do not create | ... |
 
-**Score: XX/100 (Grade: X)**
+### Proposed Diff
 
-| Criterion                     | Score | Notes |
-| ----------------------------- | ----: | ----- |
-| scope and override clarity    |  X/20 | ...   |
-| executable commands and gates |  X/20 | ...   |
-| architecture and ownership    |  X/15 | ...   |
-| safety and permissions        |  X/15 | ...   |
-| Codex workflow fit            |  X/15 | ...   |
-| conciseness and currency      |  X/15 | ...   |
+#### `<path>`
 
-**Issues**
-
-- ...
-
-**Proposed changes**
-
-- ...
+```diff
+<smallest proposed change>
 ```
 
-## Update Summary (after approved edits)
+### Validation Plan
+
+- `<check>` - <claim it proves>
+
+### Remaining Risks
+
+- `<risk or missing evidence>`
+````
+
+Rules:
+
+- Findings are severity-ordered and each row names fact evidence, impact, a
+  concrete proposed change, and confidence or `missing evidence`.
+- Include Effective Instruction Chain and Shadowed Candidates only when the
+  launch context has multiple layers, alternatives, budget risk, or ambiguity.
+- Include Proposed Diff only for files recommended to change. A proposed-change
+  bullet is not a substitute for the diff.
+- Average scores, if useful, follow the findings; they are not the outcome.
+
+## Authorized update summary
 
 ```markdown
 ## AGENTS.md Update Summary
 
-### Files changed
+### Files Changed
 
-- `AGENTS.md` — ...
-- `packages/api/AGENTS.md` — ...
-- `code_map.md` — ...
-- `packages/api/code_map.md` — ...
+- `<path>` - <behavioral purpose>
 
-### What improved
+### Behavioral Outcome
 
-- scope/override clarity
-- command/gate accuracy
-- safety boundaries
-- map-first search flow with explicit relative `code_map.md` paths
+- <what future Codex runs now select, understand, or avoid>
+
+### Preservation Boundaries
+
+- <human content, managed markers, sibling coexistence, and global scope kept intact>
 
 ### Verification
 
-- `git diff --check` — passed
-- `<targeted command>` — passed/failed/skipped with reason
+| Check | Status | Evidence |
+| --- | --- | --- |
+| `<command or inspection>` | passed / failed / skipped | <result or reason> |
 
-### Remaining risks
+### Remaining Risks
 
-- ...
+- `<risk or missing evidence>`
 ```
+
+Never convert a failed, skipped, unavailable, recorded-fixture, or inferred
+check into a pass. Name `missing evidence` directly when required proof was not
+available.

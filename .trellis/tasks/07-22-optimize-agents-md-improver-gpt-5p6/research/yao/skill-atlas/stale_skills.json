@@ -1,0 +1,198 @@
+[
+  {
+    "name": "academic-figure",
+    "path": "academic-research-tools\\academic-figure",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "ast-grep",
+    "path": "developer-tools-integrations\\ast-grep",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "claude-md-improver",
+    "path": "developer-tools-integrations\\claude-md-improver",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "codex-workflow-recommender",
+    "path": "developer-tools-integrations\\codex-workflow-recommender",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "goal-meta-skill",
+    "path": "developer-tools-integrations\\goal-meta-skill",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "image-to-ui-skill",
+    "path": "developer-tools-integrations\\image-to-ui-skill",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "ripgrep",
+    "path": "developer-tools-integrations\\ripgrep",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "uv-workflow",
+    "path": "developer-tools-integrations\\uv-workflow",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "code-auditor",
+    "path": "development-workflows\\code-auditor",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "code-quality-review",
+    "path": "development-workflows\\code-quality-review",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "code-refactor",
+    "path": "development-workflows\\code-refactor",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "codex-bridge",
+    "path": "development-workflows\\codex-bridge",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "codex-dynamic-workflows",
+    "path": "development-workflows\\codex-dynamic-workflows",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "html-artifact",
+    "path": "development-workflows\\html-artifact",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "spark",
+    "path": "development-workflows\\spark",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "unknowns-first",
+    "path": "development-workflows\\unknowns-first",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "beautiful-mermaid-editor",
+    "path": "docs-writing-publishing\\beautiful-mermaid-editor",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "bidwriter",
+    "path": "docs-writing-publishing\\bidwriter",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "document-writer",
+    "path": "docs-writing-publishing\\document-writer",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "renhua",
+    "path": "docs-writing-publishing\\renhua",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "touying",
+    "path": "docs-writing-publishing\\touying",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "gh-bootstrap",
+    "path": "git-github-collaboration\\gh-bootstrap",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "git-commit",
+    "path": "git-github-collaboration\\git-commit",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "deep-research-pro",
+    "path": "research-learning-knowledge\\deep-research-pro",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "humanizer-paper",
+    "path": "research-learning-knowledge\\humanizer-paper",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "literature-mentor",
+    "path": "research-learning-knowledge\\literature-mentor",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "paper-workbench",
+    "path": "research-learning-knowledge\\paper-workbench",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  },
+  {
+    "name": "roundtable",
+    "path": "research-learning-knowledge\\roundtable",
+    "reason": "missing updated_at",
+    "actionable": true,
+    "scope": "release"
+  }
+]

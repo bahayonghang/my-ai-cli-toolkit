@@ -4,13 +4,13 @@
 
 ## Purpose overview
 
-Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps.
+Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation.
 
 ## Trigger scenarios
 
-- the user asks to check, audit, optimize, or fix AGENTS.md
-- mentions nested AGENTS.md conflicts, code maps, stale commands, or scoped instructions
-- or says 优化 AGENTS.md, 审计 AGENTS.md, 更新 Codex 项目指导, 生成 code_map.md
+- Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation
+- Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md
+- Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Audit and improve Codex AGENTS.md guidance files and companion code_map.md navig
 | --- | --- |
 | Name | `agents-md-improver` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `1.1.0` |
+| Version | `1.2.0` |
 | Tags | `codex`, `agents-md`, `repository-guidance`, `codex-cli`, `codex-app`, `audit`, `documentation` |
 
 ## Install command
@@ -32,23 +32,28 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill agents-md-imp
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/agents-md-improver/agents` | directory | 1 | Companion agents |
-| `skills/developer-tools-integrations/agents-md-improver/references` | directory | 4 | Reference material |
+| `skills/developer-tools-integrations/agents-md-improver/evals` | directory | 3 | Evaluation samples |
+| `skills/developer-tools-integrations/agents-md-improver/manifest.json` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/agents-md-improver/references` | directory | 5 | Reference material |
+| `skills/developer-tools-integrations/agents-md-improver/reports` | directory | 11 | Top-level directory |
+| `skills/developer-tools-integrations/agents-md-improver/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | agents | `skills/developer-tools-integrations/agents-md-improver/agents` | Companion agents |
+| evals | `skills/developer-tools-integrations/agents-md-improver/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/agents-md-improver/references` | Reference material |
+| tests | `skills/developer-tools-integrations/agents-md-improver/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

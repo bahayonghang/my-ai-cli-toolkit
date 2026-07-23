@@ -1,0 +1,206 @@
+{
+  "schema_version": "1.0",
+  "seed": "yao-output-eval-blind-v1",
+  "summary": {
+    "pair_count": 5,
+    "answer_key_separate": true,
+    "with_skill_hidden_count": 5
+  },
+  "pairs": [
+    {
+      "case_id": "effective-instruction-chain",
+      "prompt": "Using Scenario A, report the effective Codex instruction chain for the launch context.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+      "rubric": [
+        {
+          "id": "selects-chain",
+          "description": "Selects one non-empty file per directory in precedence order.",
+          "weight": 1.0
+        },
+        {
+          "id": "reports-shadows",
+          "description": "Names shadowed and out-of-chain candidates.",
+          "weight": 1.0
+        },
+        {
+          "id": "checks-budget",
+          "description": "Uses the effective byte evidence and reports risk honestly.",
+          "weight": 1.0
+        },
+        {
+          "id": "preserves-uncertainty",
+          "description": "Keeps unavailable config as missing evidence.",
+          "weight": 1.0
+        }
+      ],
+      "variant_a": {
+        "blind_id": "effective-instruction-chain:A",
+        "output": "All AGENTS.md files under C:/repo govern their descendants. The active files are root AGENTS.md, packages/api AGENTS.md, and packages/web AGENTS.md. The default limit is probably enough."
+      },
+      "variant_b": {
+        "blind_id": "effective-instruction-chain:B",
+        "output": "The file-backed fixture fixes the launch CWD at C:/repo/packages/api and provides effective config evidence. Select C:/repo/AGENTS.override.md, then C:/repo/packages/TEAM_GUIDE.md after skipping the empty override, then C:/repo/packages/api/AGENTS.override.md. Root AGENTS.md, root TEAM_GUIDE.md, and api AGENTS.md are shadowed; packages/web/AGENTS.md is outside this root-to-CWD chain. The selected 36,000 bytes exceed project_doc_max_bytes=32,768, so report truncation or an incomplete-chain risk instead of claiming all selected content loaded. If effective config were unavailable, label its value missing evidence."
+      }
+    },
+    {
+      "case_id": "navigation-only-candidate",
+      "prompt": "Using Scenario B, decide whether modules/ needs nested guidance and/or a local map.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+      "rubric": [
+        {
+          "id": "separates-decisions",
+          "description": "Evaluates the two creation decisions independently.",
+          "weight": 1.0
+        },
+        {
+          "id": "creates-map-only",
+          "description": "Recommends a map and rejects unnecessary behavioral guidance.",
+          "weight": 1.0
+        },
+        {
+          "id": "names-hard-gate",
+          "description": "Explains why complexity is insufficient for AGENTS guidance.",
+          "weight": 1.0
+        }
+      ],
+      "variant_a": {
+        "blind_id": "navigation-only-candidate:A",
+        "output": "modules/ is large and has many entry points, so create both modules/AGENTS.md and modules/code_map.md."
+      },
+      "variant_b": {
+        "blind_id": "navigation-only-candidate:B",
+        "output": "The file-backed fixture establishes a navigation need, so propose modules/code_map.md with local routes and search anchors. Durable local instruction need is not established: root guidance already covers commands and verification, and there is no local safety, ownership, generated-file, override, or recurring-failure contract. Do not create modules/AGENTS.md. Complexity and file count justify the map only."
+      }
+    },
+    {
+      "case_id": "approved-edit-direct",
+      "prompt": "Using Scenario C, implement the approved guidance refresh.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "boundary",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+      "rubric": [
+        {
+          "id": "uses-approval",
+          "description": "Executes an already approved scoped plan.",
+          "weight": 1.0
+        },
+        {
+          "id": "preserves-content",
+          "description": "Protects managed and human-authored content.",
+          "weight": 1.0
+        },
+        {
+          "id": "reports-check-states",
+          "description": "Requires honest post-edit evidence.",
+          "weight": 1.0
+        }
+      ],
+      "variant_a": {
+        "blind_id": "approved-edit-direct:A",
+        "output": "I completed the audit. Please confirm whether I should now edit the three files."
+      },
+      "variant_b": {
+        "blind_id": "approved-edit-direct:B",
+        "output": "Treat the approved plan as authorization for the three named repository files. Edit them directly, preserve the TRELLIS managed block and unrelated human content, verify every new command and explicit code_map pointer, then return the changed files, behavioral outcome, passed/failed/skipped checks, and remaining risk. Do not request another approval unless scope or side effects expand."
+      }
+    },
+    {
+      "case_id": "explicit-trivial-fast-path",
+      "prompt": "Using Scenario D, add the exact requested sentence through $agents-md-improver.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "fast_path",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+      "rubric": [
+        {
+          "id": "uses-fast-path",
+          "description": "Uses explicit invocation without a full audit.",
+          "weight": 1.0
+        },
+        {
+          "id": "keeps-semantic-check",
+          "description": "Checks the exact edit before applying it.",
+          "weight": 1.0
+        },
+        {
+          "id": "stops-cleanly",
+          "description": "Avoids scope and approval expansion.",
+          "weight": 1.0
+        }
+      ],
+      "variant_a": {
+        "blind_id": "explicit-trivial-fast-path:A",
+        "output": "Because the user explicitly invoked the skill for a fully specified repository-scoped edit, use the trivial fast path: verify the sentence is not stale or contradictory, edit only AGENTS.md, run focused file and command checks, report the result, and stop. Do not expand into a repository audit or another approval gate."
+      },
+      "variant_b": {
+        "blind_id": "explicit-trivial-fast-path:B",
+        "output": "First I will audit every AGENTS.md and code_map.md in the repository and return a scored quality report for approval."
+      }
+    },
+    {
+      "case_id": "claude-only-near-neighbor",
+      "prompt": "Using Scenario E, audit CLAUDE.md layering and .claude/rules only.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "near_neighbor",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+      "rubric": [
+        {
+          "id": "declines-route",
+          "description": "Declines the Claude-only request.",
+          "weight": 1.0
+        },
+        {
+          "id": "routes-owner",
+          "description": "Names the owning skill.",
+          "weight": 1.0
+        },
+        {
+          "id": "protects-codex-files",
+          "description": "Avoids Codex guidance edits.",
+          "weight": 1.0
+        }
+      ],
+      "variant_a": {
+        "blind_id": "claude-only-near-neighbor:A",
+        "output": "Do not trigger agents-md-improver. This is a Claude-only near-neighbor request owned by claude-md-improver. Route there without inspecting or editing Codex AGENTS files. Preserve a shared code_map.md only if that owning workflow changes the shared fenced template contract."
+      },
+      "variant_b": {
+        "blind_id": "claude-only-near-neighbor:B",
+        "output": "Use agents-md-improver to inspect AGENTS.md and rewrite the repository guidance alongside CLAUDE.md."
+      }
+    }
+  ]
+}

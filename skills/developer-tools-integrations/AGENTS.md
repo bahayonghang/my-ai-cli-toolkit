@@ -46,7 +46,7 @@ bare `Bash` when the skill only runs a known command family.
 | Skill                      | Tools                                                                | Why                                          |
 | -------------------------- | ------------------------------------------------------------------- | -------------------------------------------- |
 | agent-skill-review         | `Read, Glob, Grep, Edit, Write, Bash`                               | reads a skill package; edits when asked      |
-| agents-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *), …`        | audits + edits AGENTS.md/code_map files      |
+| agents-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(rg *), …`          | audits + edits AGENTS.md/code_map files      |
 | ast-grep                   | `Read, Glob, Grep, Bash, Write`                                      | runs ast-grep, writes rule files             |
 | claude-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *), …`        | audits + edits CLAUDE.md/rules/code_map      |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex *), Bash(git *), …`                    | read-only discovery; recommends, never edits |
@@ -71,8 +71,9 @@ to match this table.
   for rename/type-resolution).
 - Evals are review and future-tooling assets: CI does **not** execute them
   (`scripts/check.py` validates only SKILL.md frontmatter; `node-test` runs
-  `tests/*.mjs`). Skills without evals (`agents-md-improver`, `claude-md-improver`,
-  `codex-workflow-recommender`) are a known gap, not a hard failure; add evals
+  `tests/*.mjs`). `agents-md-improver` now ships routing/output evals plus a
+  Node contract test. Skills without evals (`claude-md-improver`,
+  `codex-workflow-recommender`) remain a known gap, not a hard failure; add evals
   when the skill's routing surface is worth regression-guarding.
 
 ## Interface contract

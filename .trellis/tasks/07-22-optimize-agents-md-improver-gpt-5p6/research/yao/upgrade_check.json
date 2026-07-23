@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "schema_version": "2.0",
+  "generated_at": "2026-07-23",
+  "previous": {
+    "name": "agents-md-improver",
+    "version": "1.1.0",
+    "targets": []
+  },
+  "current": {
+    "name": "agents-md-improver",
+    "version": "1.2.0",
+    "targets": [
+      "openai",
+      "claude",
+      "generic"
+    ]
+  },
+  "summary": {
+    "declared_bump": "minor",
+    "recommended_bump": "minor",
+    "breaking_change_count": 0,
+    "added_target_count": 3,
+    "metadata_change_count": 5,
+    "checksum_change_count": 3,
+    "failure_count": 0,
+    "warning_count": 0
+  },
+  "upgrade_diff": {
+    "name_changed": false,
+    "added_targets": [
+      "claude",
+      "generic",
+      "openai"
+    ],
+    "removed_targets": [],
+    "compatibility_changes": [
+      {
+        "target": "claude",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "generic",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "openai",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      }
+    ],
+    "metadata_changes": [
+      {
+        "field": "description",
+        "from": "Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps. Use when the user asks to check, audit, optimize, or fix AGENTS.md; mentions nested AGENTS.md conflicts, code maps, stale commands, or scoped instructions; or says 优化 AGENTS.md, 审计 AGENTS.md, 更新 Codex 项目指导, 生成 code_map.md.",
+        "to": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits."
+      },
+      {
+        "field": "maturity",
+        "from": "scaffold",
+        "to": "production"
+      },
+      {
+        "field": "owner",
+        "from": "",
+        "to": "lyh"
+      },
+      {
+        "field": "review_cadence",
+        "from": "",
+        "to": "quarterly"
+      },
+      {
+        "field": "trust_level",
+        "from": "",
+        "to": "local"
+      }
+    ],
+    "checksum_changes": [
+      {
+        "field": "archive_sha256",
+        "from": "",
+        "to": "6611fdf25ce8105ebbe9899d9b82ac969bb9a350353fdebbb5787dbbd69f00d3"
+      },
+      {
+        "field": "package_sha256",
+        "from": "",
+        "to": "ffbbed133fdba7abb8781879a0ae8a930e2eabbe2fbc5e21087323fef6ef614d"
+      },
+      {
+        "field": "skill_md_git_blob",
+        "from": "d6da79f4637cbdd3fdaba9d9d63c0f5190ab6589",
+        "to": ""
+      }
+    ]
+  },
+  "release_notes": [
+    "Recommended version bump: minor.",
+    "Added targets: claude, generic, openai.",
+    "Package or archive checksum changed; reviewers should verify package artifacts before release.",
+    "Package verification evidence: reports/package_verification.md."
+  ],
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "previous_package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\baseline\\previous-package.json",
+    "current_package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\registry\\packages\\agents-md-improver.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\upgrade_check.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\upgrade_check.md"
+  }
+}

@@ -1,0 +1,501 @@
+{
+  "name": "agents-md-improver",
+  "description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+  "version": "1.2.0",
+  "platform": "generic",
+  "skill_root": "agents-md-improver",
+  "job_to_be_done": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+  "ir_source": "reports\\skill-ir.json",
+  "ir_schema_version": "2.0.0",
+  "semantic_contract": {
+    "name": "agents-md-improver",
+    "description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "job_to_be_done": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "trigger_description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "should_trigger_count": 1,
+    "should_not_trigger_count": 0,
+    "edge_case_count": 0,
+    "workflow_step_count": 5,
+    "decision_point_count": 0,
+    "failure_mode_count": 6,
+    "resource_counts": {
+      "references": 5,
+      "scripts": 0,
+      "assets": 0,
+      "reports": 11
+    },
+    "eval_counts": {
+      "trigger": 3,
+      "output": 2,
+      "adversarial": 0,
+      "baseline": 1
+    },
+    "risk": {
+      "output_risk": "high",
+      "execution_risk": "low",
+      "trust_boundary": "team"
+    },
+    "governance": {
+      "owner": "lyh",
+      "maturity": "production",
+      "review_cadence": "quarterly",
+      "review_due": ""
+    },
+    "targets": [
+      "openai",
+      "claude",
+      "generic"
+    ],
+    "source_files_count": 4
+  },
+  "semantic_parity": {
+    "source": "skill-ir",
+    "ir_source": "reports\\skill-ir.json",
+    "name_matches_ir": true,
+    "description_matches_ir": true,
+    "platform_declared_in_ir": true,
+    "platform_declared_in_interface": true,
+    "display_name_present": true,
+    "default_prompt_present": true
+  },
+  "compiler": {
+    "name": "yao-skill-ir-compiler",
+    "schema_version": "1.0",
+    "source": "skill-ir",
+    "ir_source": "reports\\skill-ir.json",
+    "ir_schema_version": "2.0.0"
+  },
+  "compiled_contract": {
+    "name": "agents-md-improver",
+    "title": "AGENTS.md Improver",
+    "version": "1.2.0",
+    "description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "job_to_be_done": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+    "trigger": {
+      "description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+      "should_trigger": [
+        "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits."
+      ],
+      "should_not_trigger": [],
+      "edge_cases": []
+    },
+    "workflow": {
+      "steps": [
+        "Resolve project root, launch CWD, candidates, and effective config evidence.",
+        "Build the root-to-CWD chain, shadows, empty-file and byte-budget state.",
+        "Verify commands, paths, ownership, boundaries, and recurring failures. Apply",
+        "Use [the report contract](references/report-format.md) for audits. For edits,",
+        "Run the smallest checks proving the changed claims, then stop."
+      ],
+      "decision_points": [],
+      "failure_modes": [
+        "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+        "Long bullets can make the output look complete while hiding the actual decision logic.",
+        "Commands can omit environment assumptions, working directory, or rollback notes.",
+        "Code snippets can look runnable while missing required inputs.",
+        "Generic section headings make the tutorial feel templated instead of fitted to the learner's task.",
+        "Steps may explain what to do without naming the exact check that proves the step worked."
+      ]
+    },
+    "resources": {
+      "references": [
+        "references\\codex-agents-discovery.md",
+        "references\\quality-criteria.md",
+        "references\\report-format.md",
+        "references\\templates.md",
+        "references\\update-guidelines.md"
+      ],
+      "scripts": [],
+      "assets": [],
+      "reports": [
+        "reports/output-risk-profile.json",
+        "reports/output-risk-profile.md",
+        "reports/artifact-design-profile.json",
+        "reports/artifact-design-profile.md",
+        "reports/prompt-quality-profile.json",
+        "reports/prompt-quality-profile.md",
+        "reports/output_quality_scorecard.json",
+        "reports/output_quality_scorecard.md",
+        "reports/output_blind_review_pack.json",
+        "reports/output_blind_review_pack.md",
+        "reports/output_blind_answer_key.json"
+      ],
+      "counts": {
+        "references": 5,
+        "scripts": 0,
+        "assets": 0,
+        "reports": 11
+      }
+    },
+    "eval_plan": {
+      "trigger": [
+        "evals\\evals.json",
+        "evals\\output\\cases.jsonl",
+        "evals\\output\\fixtures\\agents-md-scenarios.md"
+      ],
+      "output": [
+        "evals\\output\\cases.jsonl",
+        "evals\\output\\fixtures\\agents-md-scenarios.md"
+      ],
+      "adversarial": [],
+      "baseline": "without_skill",
+      "counts": {
+        "trigger": 3,
+        "output": 2,
+        "adversarial": 0,
+        "baseline": 1
+      }
+    },
+    "risk": {
+      "output_risk": "high",
+      "execution_risk": "low",
+      "trust_boundary": "team"
+    },
+    "governance": {
+      "owner": "lyh",
+      "maturity": "production",
+      "review_cadence": "quarterly",
+      "review_due": ""
+    },
+    "runtime": {
+      "activation": {
+        "mode": "implicit"
+      },
+      "execution": {
+        "context": "inline",
+        "shell": "bash"
+      },
+      "trust": {
+        "source_tier": "local",
+        "remote_inline_execution": "forbid",
+        "remote_metadata_policy": "allow-metadata-only"
+      },
+      "adapter_targets": [
+        "openai",
+        "claude",
+        "generic"
+      ],
+      "canonical_format": "agent-skills"
+    },
+    "permissions": {
+      "schema_version": "1.0",
+      "source": "reports\\security_trust_report.json",
+      "source_available": true,
+      "declared_capabilities": [],
+      "review_required": false,
+      "capabilities": {
+        "network": {
+          "required": false,
+          "script_count": 0,
+          "scripts": [],
+          "review_reason": ""
+        },
+        "file_write": {
+          "required": false,
+          "script_count": 0,
+          "scripts": [],
+          "review_reason": ""
+        },
+        "subprocess": {
+          "required": false,
+          "script_count": 0,
+          "scripts": [],
+          "review_reason": ""
+        },
+        "interactive": {
+          "required": false,
+          "script_count": 0,
+          "scripts": [],
+          "review_reason": ""
+        }
+      },
+      "network_policy": {
+        "source": "security/network_policy.json",
+        "covered_scripts": [],
+        "missing_scripts": [],
+        "mismatches": []
+      },
+      "help_smoke": {
+        "enabled": true,
+        "checked_count": 0,
+        "failed_count": 0,
+        "failed_scripts": []
+      },
+      "trust_summary": {
+        "secret_findings": 0,
+        "network_script_count": 0,
+        "file_write_script_count": 0,
+        "subprocess_script_count": 0,
+        "interactive_script_count": 0,
+        "help_smoke_failed_count": 0
+      }
+    },
+    "source_files_count": 4,
+    "target": "generic",
+    "target_permission_contract": {
+      "schema_version": "1.0",
+      "target": "generic",
+      "permission_model": "agent-skills-compatible-metadata",
+      "native_enforcement": false,
+      "representation": "targets/generic/adapter.json::target_permission_contract",
+      "review_required": false,
+      "declared_capabilities": [],
+      "capability_counts": {
+        "network": 0,
+        "file_write": 0,
+        "subprocess": 0,
+        "interactive": 0
+      },
+      "evidence": "reports\\security_trust_report.json",
+      "operator_note": "Generic target exposes permission metadata for downstream clients to enforce or review."
+    },
+    "target_native_contract": {
+      "schema_version": "1.0",
+      "target": "generic",
+      "native_surface": "Agent Skills compatible neutral package",
+      "activation": {
+        "policy": "Use SKILL.md name and description; consumers decide automatic or manual activation.",
+        "trigger_description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+        "manual_activation_supported": true,
+        "automatic_activation_note": "Depends on the target client route/catalog implementation."
+      },
+      "resources": {
+        "strategy": "Preserve references, scripts, assets, evals, reports, and adapter metadata as relative package resources.",
+        "counts": {
+          "references": 5,
+          "scripts": 0,
+          "assets": 0,
+          "reports": 11
+        },
+        "generated_files": [
+          "targets/generic/adapter.json"
+        ]
+      },
+      "scripts": {
+        "strategy": "Expose script and permission metadata for downstream clients or installers to enforce.",
+        "script_count": 0,
+        "help_smoke_failed_count": 0
+      },
+      "permissions": {
+        "enforcement": "consumer-enforced-or-metadata-only",
+        "native_enforcement": false,
+        "declared_capabilities": [],
+        "review_required": false
+      },
+      "review": {
+        "artifacts": [
+          "targets/generic/adapter.json",
+          "reports/review-studio.html"
+        ],
+        "fallback_behavior": "Neutral source is the runtime fallback.",
+        "unsupported_native_features": []
+      },
+      "install_scope": "generic Agent Skills compatible root"
+    },
+    "degradation_strategy": "portable; activation needs evidence",
+    "target_runtime": {
+      "adapter_mode": "agent-skills-compatible",
+      "generated_files": [
+        "targets/generic/adapter.json"
+      ],
+      "metadata_mapping": {
+        "display_name": "targets/generic/adapter.json::display_name",
+        "default_prompt": "targets/generic/adapter.json::default_prompt",
+        "activation": "targets/generic/adapter.json::activation_mode",
+        "execution": "targets/generic/adapter.json::execution_context",
+        "trust": "targets/generic/adapter.json::trust_level",
+        "permissions": "targets/generic/adapter.json::target_permission_contract",
+        "degradation": "targets/generic/adapter.json::degradation_strategy"
+      },
+      "preserved_semantics": [
+        "trigger",
+        "workflow-counts",
+        "resources",
+        "eval-plan",
+        "risk",
+        "governance",
+        "runtime",
+        "trust",
+        "permissions"
+      ],
+      "native_surface": "Agent Skills compatible neutral package"
+    }
+  },
+  "permission_contract": {
+    "schema_version": "1.0",
+    "source": "reports\\security_trust_report.json",
+    "source_available": true,
+    "declared_capabilities": [],
+    "review_required": false,
+    "capabilities": {
+      "network": {
+        "required": false,
+        "script_count": 0,
+        "scripts": [],
+        "review_reason": ""
+      },
+      "file_write": {
+        "required": false,
+        "script_count": 0,
+        "scripts": [],
+        "review_reason": ""
+      },
+      "subprocess": {
+        "required": false,
+        "script_count": 0,
+        "scripts": [],
+        "review_reason": ""
+      },
+      "interactive": {
+        "required": false,
+        "script_count": 0,
+        "scripts": [],
+        "review_reason": ""
+      }
+    },
+    "network_policy": {
+      "source": "security/network_policy.json",
+      "covered_scripts": [],
+      "missing_scripts": [],
+      "mismatches": []
+    },
+    "help_smoke": {
+      "enabled": true,
+      "checked_count": 0,
+      "failed_count": 0,
+      "failed_scripts": []
+    },
+    "trust_summary": {
+      "secret_findings": 0,
+      "network_script_count": 0,
+      "file_write_script_count": 0,
+      "subprocess_script_count": 0,
+      "interactive_script_count": 0,
+      "help_smoke_failed_count": 0
+    }
+  },
+  "target_permission_contract": {
+    "schema_version": "1.0",
+    "target": "generic",
+    "permission_model": "agent-skills-compatible-metadata",
+    "native_enforcement": false,
+    "representation": "targets/generic/adapter.json::target_permission_contract",
+    "review_required": false,
+    "declared_capabilities": [],
+    "capability_counts": {
+      "network": 0,
+      "file_write": 0,
+      "subprocess": 0,
+      "interactive": 0
+    },
+    "evidence": "reports\\security_trust_report.json",
+    "operator_note": "Generic target exposes permission metadata for downstream clients to enforce or review."
+  },
+  "target_native_contract": {
+    "schema_version": "1.0",
+    "target": "generic",
+    "native_surface": "Agent Skills compatible neutral package",
+    "activation": {
+      "policy": "Use SKILL.md name and description; consumers decide automatic or manual activation.",
+      "trigger_description": "Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation. Use for effective-chain audits, nested conflicts, stale commands, scoped-guidance gaps, approved updates, 优化 AGENTS.md, 审计 Codex 项目指导, 更新 AGENTS.md, or 生成 code_map.md. Exclude Claude-only guidance, general Codex workflow advice, explanations, ordinary code/docs review, and implicit fully specified trivial edits.",
+      "manual_activation_supported": true,
+      "automatic_activation_note": "Depends on the target client route/catalog implementation."
+    },
+    "resources": {
+      "strategy": "Preserve references, scripts, assets, evals, reports, and adapter metadata as relative package resources.",
+      "counts": {
+        "references": 5,
+        "scripts": 0,
+        "assets": 0,
+        "reports": 11
+      },
+      "generated_files": [
+        "targets/generic/adapter.json"
+      ]
+    },
+    "scripts": {
+      "strategy": "Expose script and permission metadata for downstream clients or installers to enforce.",
+      "script_count": 0,
+      "help_smoke_failed_count": 0
+    },
+    "permissions": {
+      "enforcement": "consumer-enforced-or-metadata-only",
+      "native_enforcement": false,
+      "declared_capabilities": [],
+      "review_required": false
+    },
+    "review": {
+      "artifacts": [
+        "targets/generic/adapter.json",
+        "reports/review-studio.html"
+      ],
+      "fallback_behavior": "Neutral source is the runtime fallback.",
+      "unsupported_native_features": []
+    },
+    "install_scope": "generic Agent Skills compatible root"
+  },
+  "target_transform": {
+    "target": "generic",
+    "adapter_mode": "agent-skills-compatible",
+    "generated_files": [
+      "targets/generic/adapter.json"
+    ],
+    "metadata_mapping": {
+      "display_name": "targets/generic/adapter.json::display_name",
+      "default_prompt": "targets/generic/adapter.json::default_prompt",
+      "activation": "targets/generic/adapter.json::activation_mode",
+      "execution": "targets/generic/adapter.json::execution_context",
+      "trust": "targets/generic/adapter.json::trust_level",
+      "permissions": "targets/generic/adapter.json::target_permission_contract",
+      "degradation": "targets/generic/adapter.json::degradation_strategy"
+    },
+    "preserved_semantics": [
+      "trigger",
+      "workflow-counts",
+      "resources",
+      "eval-plan",
+      "risk",
+      "governance",
+      "runtime",
+      "trust",
+      "permissions"
+    ],
+    "degradation_strategy": "portable; activation needs evidence",
+    "permission_representation": "targets/generic/adapter.json::target_permission_contract",
+    "native_surface": "Agent Skills compatible neutral package",
+    "activation_policy": "Use SKILL.md name and description; consumers decide automatic or manual activation.",
+    "resource_strategy": "Preserve references, scripts, assets, evals, reports, and adapter metadata as relative package resources.",
+    "script_strategy": "Expose script and permission metadata for downstream clients or installers to enforce.",
+    "permission_enforcement": "consumer-enforced-or-metadata-only"
+  },
+  "unsupported_features": [],
+  "compiler_warnings": [],
+  "display_name": "AGENTS.md Improver",
+  "short_description": "Audit Codex guidance and code maps",
+  "default_prompt": "Use $agents-md-improver to resolve the chain; report evidence/diffs or apply authorized local edits. Decide AGENTS/map independently; mark config gaps missing evidence.",
+  "canonical_metadata": "agents/interface.yaml",
+  "canonical_format": "agent-skills",
+  "adapter_targets": [
+    "openai",
+    "claude",
+    "generic"
+  ],
+  "activation_mode": "implicit",
+  "activation_paths": [],
+  "execution_context": "inline",
+  "shell": "bash",
+  "trust_level": "local",
+  "remote_inline_execution": "forbid",
+  "remote_metadata_policy": "allow-metadata-only",
+  "degradation_strategy": "portable; activation needs evidence",
+  "portability_profile": {
+    "activation_mode": "implicit",
+    "activation_paths": [],
+    "execution_context": "inline",
+    "shell": "bash",
+    "source_tier": "local",
+    "remote_inline_execution": "forbid",
+    "remote_metadata_policy": "allow-metadata-only",
+    "degradation_strategy": "portable; activation needs evidence"
+  }
+}

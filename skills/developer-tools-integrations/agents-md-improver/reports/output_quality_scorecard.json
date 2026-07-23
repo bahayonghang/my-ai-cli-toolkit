@@ -1,0 +1,724 @@
+{
+  "ok": true,
+  "cases": "evals/output/cases.jsonl",
+  "summary": {
+    "case_count": 5,
+    "file_backed_case_count": 5,
+    "near_neighbor_case_count": 1,
+    "boundary_case_count": 1,
+    "baseline_pass_rate": 0.0,
+    "with_skill_pass_rate": 100.0,
+    "delta": 100.0,
+    "regression_count": 0,
+    "gate_pass": true,
+    "failure_taxonomy": [],
+    "blind_pair_count": 5
+  },
+  "results": [
+    {
+      "id": "effective-instruction-chain",
+      "prompt": "Using Scenario A, report the effective Codex instruction chain for the launch context.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 4,
+        "checks": [
+          {
+            "id": "selects-chain",
+            "description": "Selects one non-empty file per directory in precedence order.",
+            "weight": 1.0,
+            "failure_type": "wrong_instruction_chain",
+            "passed": false,
+            "missing": [
+              "C:/repo/AGENTS.override.md",
+              "C:/repo/packages/TEAM_GUIDE.md",
+              "C:/repo/packages/api/AGENTS.override.md"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "reports-shadows",
+            "description": "Names shadowed and out-of-chain candidates.",
+            "weight": 1.0,
+            "failure_type": "inactive_file_claim",
+            "passed": false,
+            "missing": [
+              "shadowed",
+              "packages/web/AGENTS.md",
+              "outside this root-to-CWD chain"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "checks-budget",
+            "description": "Uses the effective byte evidence and reports risk honestly.",
+            "weight": 1.0,
+            "failure_type": "budget_omission",
+            "passed": false,
+            "missing": [
+              "36,000 bytes",
+              "project_doc_max_bytes=32,768",
+              "incomplete-chain risk"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-uncertainty",
+            "description": "Keeps unavailable config as missing evidence.",
+            "weight": 1.0,
+            "failure_type": "fabricated_config",
+            "passed": false,
+            "missing": [
+              "missing evidence"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "selects-chain",
+            "description": "Selects one non-empty file per directory in precedence order.",
+            "weight": 1.0,
+            "failure_type": "wrong_instruction_chain",
+            "passed": false,
+            "missing": [
+              "C:/repo/AGENTS.override.md",
+              "C:/repo/packages/TEAM_GUIDE.md",
+              "C:/repo/packages/api/AGENTS.override.md"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "reports-shadows",
+            "description": "Names shadowed and out-of-chain candidates.",
+            "weight": 1.0,
+            "failure_type": "inactive_file_claim",
+            "passed": false,
+            "missing": [
+              "shadowed",
+              "packages/web/AGENTS.md",
+              "outside this root-to-CWD chain"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "checks-budget",
+            "description": "Uses the effective byte evidence and reports risk honestly.",
+            "weight": 1.0,
+            "failure_type": "budget_omission",
+            "passed": false,
+            "missing": [
+              "36,000 bytes",
+              "project_doc_max_bytes=32,768",
+              "incomplete-chain risk"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-uncertainty",
+            "description": "Keeps unavailable config as missing evidence.",
+            "weight": 1.0,
+            "failure_type": "fabricated_config",
+            "passed": false,
+            "missing": [
+              "missing evidence"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 4,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "selects-chain",
+            "description": "Selects one non-empty file per directory in precedence order.",
+            "weight": 1.0,
+            "failure_type": "wrong_instruction_chain",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "reports-shadows",
+            "description": "Names shadowed and out-of-chain candidates.",
+            "weight": 1.0,
+            "failure_type": "inactive_file_claim",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "checks-budget",
+            "description": "Uses the effective byte evidence and reports risk honestly.",
+            "weight": 1.0,
+            "failure_type": "budget_omission",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-uncertainty",
+            "description": "Keeps unavailable config as missing evidence.",
+            "weight": 1.0,
+            "failure_type": "fabricated_config",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "navigation-only-candidate",
+      "prompt": "Using Scenario B, decide whether modules/ needs nested guidance and/or a local map.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "file_backed",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "separates-decisions",
+            "description": "Evaluates the two creation decisions independently.",
+            "weight": 1.0,
+            "failure_type": "decision_conflation",
+            "passed": false,
+            "missing": [
+              "navigation need",
+              "Durable local instruction need is not established"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "creates-map-only",
+            "description": "Recommends a map and rejects unnecessary behavioral guidance.",
+            "weight": 1.0,
+            "failure_type": "over_creation",
+            "passed": false,
+            "missing": [
+              "propose modules/code_map.md",
+              "Do not create modules/AGENTS.md"
+            ],
+            "present_forbidden": [
+              "create both modules/AGENTS.md"
+            ]
+          },
+          {
+            "id": "names-hard-gate",
+            "description": "Explains why complexity is insufficient for AGENTS guidance.",
+            "weight": 1.0,
+            "failure_type": "score_bypasses_gate",
+            "passed": false,
+            "missing": [
+              "Complexity and file count justify the map only"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "separates-decisions",
+            "description": "Evaluates the two creation decisions independently.",
+            "weight": 1.0,
+            "failure_type": "decision_conflation",
+            "passed": false,
+            "missing": [
+              "navigation need",
+              "Durable local instruction need is not established"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "creates-map-only",
+            "description": "Recommends a map and rejects unnecessary behavioral guidance.",
+            "weight": 1.0,
+            "failure_type": "over_creation",
+            "passed": false,
+            "missing": [
+              "propose modules/code_map.md",
+              "Do not create modules/AGENTS.md"
+            ],
+            "present_forbidden": [
+              "create both modules/AGENTS.md"
+            ]
+          },
+          {
+            "id": "names-hard-gate",
+            "description": "Explains why complexity is insufficient for AGENTS guidance.",
+            "weight": 1.0,
+            "failure_type": "score_bypasses_gate",
+            "passed": false,
+            "missing": [
+              "Complexity and file count justify the map only"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "separates-decisions",
+            "description": "Evaluates the two creation decisions independently.",
+            "weight": 1.0,
+            "failure_type": "decision_conflation",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "creates-map-only",
+            "description": "Recommends a map and rejects unnecessary behavioral guidance.",
+            "weight": 1.0,
+            "failure_type": "over_creation",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "names-hard-gate",
+            "description": "Explains why complexity is insufficient for AGENTS guidance.",
+            "weight": 1.0,
+            "failure_type": "score_bypasses_gate",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "approved-edit-direct",
+      "prompt": "Using Scenario C, implement the approved guidance refresh.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "boundary",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "uses-approval",
+            "description": "Executes an already approved scoped plan.",
+            "weight": 1.0,
+            "failure_type": "redundant_approval",
+            "passed": false,
+            "missing": [
+              "authorization for the three named repository files",
+              "Edit them directly",
+              "Do not request another approval"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-content",
+            "description": "Protects managed and human-authored content.",
+            "weight": 1.0,
+            "failure_type": "content_loss",
+            "passed": false,
+            "missing": [
+              "preserve the TRELLIS managed block",
+              "unrelated human content"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "reports-check-states",
+            "description": "Requires honest post-edit evidence.",
+            "weight": 1.0,
+            "failure_type": "verification_overclaim",
+            "passed": false,
+            "missing": [
+              "passed/failed/skipped checks",
+              "remaining risk"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "uses-approval",
+            "description": "Executes an already approved scoped plan.",
+            "weight": 1.0,
+            "failure_type": "redundant_approval",
+            "passed": false,
+            "missing": [
+              "authorization for the three named repository files",
+              "Edit them directly",
+              "Do not request another approval"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-content",
+            "description": "Protects managed and human-authored content.",
+            "weight": 1.0,
+            "failure_type": "content_loss",
+            "passed": false,
+            "missing": [
+              "preserve the TRELLIS managed block",
+              "unrelated human content"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "reports-check-states",
+            "description": "Requires honest post-edit evidence.",
+            "weight": 1.0,
+            "failure_type": "verification_overclaim",
+            "passed": false,
+            "missing": [
+              "passed/failed/skipped checks",
+              "remaining risk"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "uses-approval",
+            "description": "Executes an already approved scoped plan.",
+            "weight": 1.0,
+            "failure_type": "redundant_approval",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "preserves-content",
+            "description": "Protects managed and human-authored content.",
+            "weight": 1.0,
+            "failure_type": "content_loss",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "reports-check-states",
+            "description": "Requires honest post-edit evidence.",
+            "weight": 1.0,
+            "failure_type": "verification_overclaim",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "explicit-trivial-fast-path",
+      "prompt": "Using Scenario D, add the exact requested sentence through $agents-md-improver.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "fast_path",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "uses-fast-path",
+            "description": "Uses explicit invocation without a full audit.",
+            "weight": 1.0,
+            "failure_type": "wrong_action_mode",
+            "passed": false,
+            "missing": [
+              "trivial fast path",
+              "edit only AGENTS.md"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-semantic-check",
+            "description": "Checks the exact edit before applying it.",
+            "weight": 1.0,
+            "failure_type": "blind_edit",
+            "passed": false,
+            "missing": [
+              "verify the sentence is not stale or contradictory"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-cleanly",
+            "description": "Avoids scope and approval expansion.",
+            "weight": 1.0,
+            "failure_type": "scope_expansion",
+            "passed": false,
+            "missing": [
+              "stop",
+              "Do not expand into a repository audit or another approval gate"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "uses-fast-path",
+            "description": "Uses explicit invocation without a full audit.",
+            "weight": 1.0,
+            "failure_type": "wrong_action_mode",
+            "passed": false,
+            "missing": [
+              "trivial fast path",
+              "edit only AGENTS.md"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-semantic-check",
+            "description": "Checks the exact edit before applying it.",
+            "weight": 1.0,
+            "failure_type": "blind_edit",
+            "passed": false,
+            "missing": [
+              "verify the sentence is not stale or contradictory"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-cleanly",
+            "description": "Avoids scope and approval expansion.",
+            "weight": 1.0,
+            "failure_type": "scope_expansion",
+            "passed": false,
+            "missing": [
+              "stop",
+              "Do not expand into a repository audit or another approval gate"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "uses-fast-path",
+            "description": "Uses explicit invocation without a full audit.",
+            "weight": 1.0,
+            "failure_type": "wrong_action_mode",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "keeps-semantic-check",
+            "description": "Checks the exact edit before applying it.",
+            "weight": 1.0,
+            "failure_type": "blind_edit",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "stops-cleanly",
+            "description": "Avoids scope and approval expansion.",
+            "weight": 1.0,
+            "failure_type": "scope_expansion",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    },
+    {
+      "id": "claude-only-near-neighbor",
+      "prompt": "Using Scenario E, audit CLAUDE.md layering and .claude/rules only.",
+      "input_files": [
+        "fixtures/agents-md-scenarios.md"
+      ],
+      "metadata": {
+        "case_type": "near_neighbor",
+        "input_class": "file-backed fixture",
+        "tier": "production"
+      },
+      "baseline": {
+        "score": 0.0,
+        "passed_count": 0,
+        "failed_count": 3,
+        "checks": [
+          {
+            "id": "declines-route",
+            "description": "Declines the Claude-only request.",
+            "weight": 1.0,
+            "failure_type": "over_trigger",
+            "passed": false,
+            "missing": [
+              "Do not trigger agents-md-improver",
+              "Claude-only near-neighbor"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "routes-owner",
+            "description": "Names the owning skill.",
+            "weight": 1.0,
+            "failure_type": "wrong_owner",
+            "passed": false,
+            "missing": [
+              "owned by claude-md-improver",
+              "Route there"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "protects-codex-files",
+            "description": "Avoids Codex guidance edits.",
+            "weight": 1.0,
+            "failure_type": "scope_violation",
+            "passed": false,
+            "missing": [
+              "without inspecting or editing Codex AGENTS files"
+            ],
+            "present_forbidden": []
+          }
+        ],
+        "failed": [
+          {
+            "id": "declines-route",
+            "description": "Declines the Claude-only request.",
+            "weight": 1.0,
+            "failure_type": "over_trigger",
+            "passed": false,
+            "missing": [
+              "Do not trigger agents-md-improver",
+              "Claude-only near-neighbor"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "routes-owner",
+            "description": "Names the owning skill.",
+            "weight": 1.0,
+            "failure_type": "wrong_owner",
+            "passed": false,
+            "missing": [
+              "owned by claude-md-improver",
+              "Route there"
+            ],
+            "present_forbidden": []
+          },
+          {
+            "id": "protects-codex-files",
+            "description": "Avoids Codex guidance edits.",
+            "weight": 1.0,
+            "failure_type": "scope_violation",
+            "passed": false,
+            "missing": [
+              "without inspecting or editing Codex AGENTS files"
+            ],
+            "present_forbidden": []
+          }
+        ]
+      },
+      "with_skill": {
+        "score": 100.0,
+        "passed_count": 3,
+        "failed_count": 0,
+        "checks": [
+          {
+            "id": "declines-route",
+            "description": "Declines the Claude-only request.",
+            "weight": 1.0,
+            "failure_type": "over_trigger",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "routes-owner",
+            "description": "Names the owning skill.",
+            "weight": 1.0,
+            "failure_type": "wrong_owner",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "protects-codex-files",
+            "description": "Avoids Codex guidance edits.",
+            "weight": 1.0,
+            "failure_type": "scope_violation",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          }
+        ],
+        "failed": []
+      },
+      "delta": 100.0,
+      "winner": "with_skill",
+      "failure_taxonomy": []
+    }
+  ],
+  "failures": [],
+  "blind_review": {
+    "pack": "reports/output_blind_review_pack.json",
+    "answer_key": "reports/output_blind_answer_key.json",
+    "pair_count": 5
+  },
+  "artifacts": {
+    "json": "reports/output_quality_scorecard.json",
+    "markdown": "reports/output_quality_scorecard.md",
+    "blind_review_pack_json": "reports/output_blind_review_pack.json",
+    "blind_review_pack_md": "reports/output_blind_review_pack.md",
+    "blind_answer_key_json": "reports/output_blind_answer_key.json"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "skill_name": "agents-md-improver",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "审计这个仓库的 AGENTS.md、AGENTS.override.md 和 code_map.md，先给报告，不要修改文件。",
+      "expected_output": "Audit the repository-scoped Codex instruction chain and navigation maps, lead with prioritized findings and proposed diffs, and make no edits.",
+      "files": [
+        "output/fixtures/agents-md-scenarios.md"
+      ],
+      "assertions": [
+        "Resolves the launch CWD and effective root-to-CWD instruction chain",
+        "Reports selected and shadowed instruction candidates",
+        "Leads with severity-ordered findings and evidence",
+        "Produces proposed diffs only for recommended changes",
+        "Does not edit files"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Implement the approved AGENTS.md cleanup plan, preserve managed marker blocks, and validate the result.",
+      "expected_output": "Apply the already approved repository-scoped changes directly, run non-destructive validation, and return an honest update summary without another approval round.",
+      "files": [],
+      "assertions": [
+        "Treats the approved plan as local edit authorization",
+        "Preserves human content and managed marker blocks",
+        "Does not repeat the report-first approval gate",
+        "Reports passed, failed, and skipped checks accurately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Fix the stale test command in packages/api/AGENTS.md and its local code map, then run the smallest relevant checks.",
+      "expected_output": "Perform the explicitly scoped repository guidance fix and validate only the affected guidance and documented command.",
+      "files": [],
+      "assertions": [
+        "Edits only the named repository-scoped guidance",
+        "Verifies the replacement command against repository evidence",
+        "Runs focused non-destructive checks",
+        "Does not request redundant confirmation"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "This large modules/ subtree is hard to navigate, but it has no distinct commands, safety rules, ownership rules, or recurring instruction failures. Decide what local guidance to add.",
+      "expected_output": "Create or propose a local code_map.md for navigation, but do not create a nested AGENTS.md because no durable local instruction need is evidenced.",
+      "files": [
+        "output/fixtures/agents-md-scenarios.md"
+      ],
+      "assertions": [
+        "Evaluates instruction need and navigation need separately",
+        "Recommends a local code_map.md",
+        "Does not recommend a nested AGENTS.md",
+        "Explains the no-create reason for AGENTS.md"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Audit why AGENTS.override.md wins at packages/api and whether the configured fallback and byte budget change the active instructions.",
+      "expected_output": "Apply current Codex discovery precedence, distinguish active and shadowed files, and report budget/config uncertainty as evidence rather than guessing.",
+      "files": [
+        "output/fixtures/agents-md-scenarios.md"
+      ],
+      "assertions": [
+        "Uses override then AGENTS then configured fallback precedence",
+        "Selects at most one non-empty file per directory",
+        "Stops the active chain at the launch CWD",
+        "Reports project_doc_max_bytes status or missing evidence"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Use $agents-md-improver to add this exact sentence to AGENTS.md: run npm test before opening a PR.",
+      "expected_output": "Because the skill was explicitly invoked, use the trivial-edit fast path: verify the sentence is appropriate, apply it, and run focused validation without a full audit report.",
+      "files": [],
+      "assertions": [
+        "Recognizes explicit invocation",
+        "Uses the trivial-edit fast path",
+        "Does not produce a full repository audit",
+        "Validates the edited file"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Audit CLAUDE.md layering, .claude/rules globs, and @import chains.",
+      "expected_output": "Route this Claude-only request to claude-md-improver instead of agents-md-improver.",
+      "files": [],
+      "assertions": [
+        "Routes to claude-md-improver",
+        "Does not audit Codex AGENTS.md files"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Recommend which Codex MCP servers, plugins, hooks, and subagents this repository should adopt, but do not edit files.",
+      "expected_output": "Route this capability-selection request to codex-workflow-recommender.",
+      "files": [],
+      "assertions": [
+        "Routes to codex-workflow-recommender",
+        "Does not treat workflow recommendations as AGENTS.md quality findings"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Add one already-specified sentence to AGENTS.md: run npm test before opening a PR.",
+      "expected_output": "Do not trigger agents-md-improver implicitly; handle the fully specified one-line edit through the direct editing workflow.",
+      "files": [],
+      "assertions": [
+        "Does not implicitly route to agents-md-improver",
+        "Does not require a full audit report"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Explain how AGENTS.md discovery works in Codex without auditing or changing a repository.",
+      "expected_output": "Answer from current Codex documentation rather than invoking a repository audit/update skill.",
+      "files": [],
+      "assertions": [
+        "Routes to documentation or direct explanation",
+        "Does not inspect or edit a repository"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Review this TypeScript pull request for correctness, security, performance, and missing tests.",
+      "expected_output": "Route this request to the owning code-review workflow, not agents-md-improver.",
+      "files": [],
+      "assertions": [
+        "Routes to code review",
+        "Does not modify AGENTS.md or code_map.md"
+      ]
+    }
+  ]
+}

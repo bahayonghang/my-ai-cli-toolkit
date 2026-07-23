@@ -1,0 +1,287 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "cases": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver\\evals\\output\\cases.jsonl",
+  "runner": {
+    "mode": "command",
+    "command": [
+      "python",
+      "scripts\\local_output_eval_runner.py"
+    ],
+    "timeout_seconds": 30.0
+  },
+  "summary": {
+    "case_count": 5,
+    "variant_run_count": 10,
+    "command_executed_count": 10,
+    "model_executed_count": 0,
+    "recorded_fixture_count": 0,
+    "timing_observed_count": 10,
+    "token_observed_count": 0,
+    "token_estimated_count": 10,
+    "baseline_pass_rate": 0.0,
+    "with_skill_pass_rate": 100.0,
+    "delta": 100.0,
+    "regression_count": 0,
+    "failure_count": 0,
+    "gate_pass": true
+  },
+  "runs": [
+    {
+      "case_id": "effective-instruction-chain",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 91.5,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 22,
+        "output_tokens": 46,
+        "total_tokens": 68,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 4,
+      "failed_assertions": [
+        "selects-chain",
+        "reports-shadows",
+        "checks-budget",
+        "preserves-uncertainty"
+      ],
+      "output_sha256": "3a102793b2920d9af9f64922cb348f1f8b0d444feef4fa989068d1fb7ab95b5c",
+      "failure": ""
+    },
+    {
+      "case_id": "effective-instruction-chain",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 74.24,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 22,
+        "output_tokens": 155,
+        "total_tokens": 177,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 4,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "ec46354461cb53a6812b071f2b840ca802a63fec854e213d44553c682690c46e",
+      "failure": ""
+    },
+    {
+      "case_id": "navigation-only-candidate",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 76.31,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 26,
+        "total_tokens": 47,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "separates-decisions",
+        "creates-map-only",
+        "names-hard-gate"
+      ],
+      "output_sha256": "01e67be6035dcdfc8060d7c49e1482a5a8d6a18fbe02af275487368b47ee5ca2",
+      "failure": ""
+    },
+    {
+      "case_id": "navigation-only-candidate",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 74.13,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 21,
+        "output_tokens": 102,
+        "total_tokens": 123,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "79b1ab76e199301d02fc3e1fef93544e636eca758f9d45561e05e2317e92e4ab",
+      "failure": ""
+    },
+    {
+      "case_id": "approved-edit-direct",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 72.1,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 20,
+        "total_tokens": 34,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "uses-approval",
+        "preserves-content",
+        "reports-check-states"
+      ],
+      "output_sha256": "0d80a8e886fdf82f217cd850c32a87b27ad3b6576d5f72b185e7ea5d3dec3af9",
+      "failure": ""
+    },
+    {
+      "case_id": "approved-edit-direct",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 73.02,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 97,
+        "total_tokens": 111,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "fe98fd78a80e74df7dcf4a154860b8e07de2a6c7b7dff7e321cc2934ba75b063",
+      "failure": ""
+    },
+    {
+      "case_id": "explicit-trivial-fast-path",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 70.88,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 29,
+        "total_tokens": 49,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "uses-fast-path",
+        "keeps-semantic-check",
+        "stops-cleanly"
+      ],
+      "output_sha256": "1cb1e8827589aa3679a330aa771fb91ea64ff0a94c59218d9ce97baa0ecb69cf",
+      "failure": ""
+    },
+    {
+      "case_id": "explicit-trivial-fast-path",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 72.45,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 80,
+        "total_tokens": 100,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "218a5101108d80531ab04cd4dfb8eb7f9dfefda259cb3687b09cc2ff2158cdb3",
+      "failure": ""
+    },
+    {
+      "case_id": "claude-only-near-neighbor",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 73.93,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 25,
+        "total_tokens": 41,
+        "estimated": true
+      },
+      "score": 0.0,
+      "passed_count": 0,
+      "failed_count": 3,
+      "failed_assertions": [
+        "declines-route",
+        "routes-owner",
+        "protects-codex-files"
+      ],
+      "output_sha256": "33b2cef558b1060cc675908e8bccd4e8804cec99aebae00f4407c645261da138",
+      "failure": ""
+    },
+    {
+      "case_id": "claude-only-near-neighbor",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "command",
+      "model_executed": false,
+      "command_executed": true,
+      "duration_ms": 74.5,
+      "provider": "local-output-eval-runner",
+      "model": "",
+      "usage": {
+        "input_tokens": 16,
+        "output_tokens": 68,
+        "total_tokens": 84,
+        "estimated": true
+      },
+      "score": 100.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_assertions": [],
+      "output_sha256": "5874879c5650ce4f84fa7f31b8165054e24d83aba1ed28c4cc963a8861ef5f54",
+      "failure": ""
+    }
+  ],
+  "failures": [],
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\output_execution_runs.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\output_execution_runs.md"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "evaluator": "trigger_eval.py",
+  "cases": "holdout",
+  "threshold": 0.46,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "bucket_stats": {
+    "should_trigger": {
+      "total": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    "should_not_trigger": {
+      "total": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    "near_neighbor": {
+      "total": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    }
+  },
+  "misfires": []
+}

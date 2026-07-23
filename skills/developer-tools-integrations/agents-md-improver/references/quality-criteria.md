@@ -1,115 +1,73 @@
-# AGENTS.md Quality Criteria
+# AGENTS.md quality and creation criteria
 
-Use this rubric to score Codex `AGENTS.md` files.
+Use evidence rather than a composite score to decide what guidance should exist.
 
-## 1. Scope and Override Clarity (20 points)
+## Existing guidance quality
 
-**20**: The file clearly states what directory/subtree it governs, how nested files override parent guidance, and whether any user/global guidance is out of scope.
+Assess each active or intentionally audited file. Cite the source for every
+material deduction.
 
-**15**: Scope is mostly clear but parent/child relationships need small clarification.
+| Criterion | Weight | Full-credit evidence |
+| --- | ---: | --- |
+| Scope and precedence | 20 | Governing subtree, parent relationship, override role, and active/shadowed state are accurate. |
+| Commands and gates | 20 | Essential commands exist, name the correct working directory, and match CI or source manifests. |
+| Local contracts | 15 | Non-obvious ownership, generated-file, API, data, or change-coupling rules are concise. |
+| Safety and permissions | 15 | Real destructive, credential, production, external, or user-global boundaries are explicit. |
+| Codex fit | 15 | Discovery, skills, subagents, and optional tooling are current and evidence-backed. |
+| Conciseness and currency | 15 | No stale paths, obvious code restatement, duplicate rules, or navigation bloat. |
 
-**10**: The file is useful but does not explain its scope.
+Grades (A 90-100, B 70-89, C 50-69, D 30-49, F 0-29) are secondary summaries.
+Lead with findings and evidence, not averages.
 
-**5**: Scope is ambiguous or likely to be misapplied.
+## Independent creation decisions
 
-**0**: Guidance contradicts AGENTS.md semantics.
+Every source subtree gets two decisions:
 
-## 2. Executable Commands and Gates (20 points)
+| Durable local instruction need | Navigation/routing need | Outcome |
+| --- | --- | --- |
+| no | no | create nothing |
+| no | yes | local `code_map.md` only |
+| yes | no | nested `AGENTS.md`; point to the nearest useful map |
+| yes | yes | nested `AGENTS.md` and local `code_map.md` |
 
-**20**: Essential install/build/test/lint/typecheck/dev commands are present, current, and scoped.
+### AGENTS hard minimum
 
-**15**: Most commands are present but some lack context.
+`AGENTS decision: create` requires at least one verified, durable,
+non-inferable local contract:
 
-**10**: Basic commands only.
+- a distinct command or gate future Codex work must use;
+- a local safety, generated-file, data, external-service, or permission boundary;
+- a local ownership, public-contract, or cross-file change rule;
+- a recurring agent error or repeated review finding;
+- an intentional override of broader guidance.
 
-**5**: Few commands or likely stale commands.
+Complexity, file count, a separate manifest, or a different language cannot
+satisfy this minimum alone. Record a no-create reason when it is absent.
 
-**0**: No actionable commands, or documented commands are misleading.
+### code_map evidence
 
-## 3. Architecture and Ownership (15 points)
+`code_map decision: create` may use navigation evidence such as many internal
+routes, several entry points, hard-to-discover search anchors, generated/vendor
+boundaries, or repeated broad-search cost. A map is navigation, not another
+behavior policy.
 
-**15**: Key directories, module boundaries, entry points, generated assets, and ownership boundaries are clear.
+## Automatic exclusions
 
-**10**: Structure is mostly clear with minor gaps.
+Do not create guidance or maps inside dependencies, generated output, caches,
+build output, vendored source, runtime state, or third-party snapshots unless
+the request is explicitly about recovery for that path. File count and obvious
+directory names are not evidence.
 
-**5**: Directory listing exists but lacks routing value.
+## Assessment record
 
-**0**: No useful architecture guidance.
+For each candidate return:
 
-## 4. Safety and Permissions (15 points)
+- `AGENTS decision`: create, update, keep, or do not create;
+- instruction evidence and no-create reason;
+- `code_map decision`: create, update, keep, or do not create;
+- navigation evidence and no-create reason;
+- confidence or `missing evidence`;
+- nearest applicable guidance and map paths.
 
-**15**: Sandbox/approval expectations, destructive operations, secrets, external services, production data, and generated files are clearly bounded.
-
-**10**: Major safety boundaries are present but incomplete.
-
-**5**: Safety is generic or missing important project-specific risks.
-
-**0**: Guidance encourages unsafe behavior or omits obvious high-risk boundaries.
-
-## 5. Codex Workflow Fit (15 points)
-
-**15**: Codex CLI/App semantics, native subagents, skills, plugins, MCP, and optional OMX workflows are described accurately and only when relevant.
-
-**10**: Mostly Codex-specific but has minor provider-neutral or stale phrasing.
-
-**5**: Mixes Codex and other-provider concepts confusingly.
-
-**0**: Uses another provider's guidance semantics as if they were Codex instructions.
-
-## 6. Conciseness and Currency (15 points)
-
-**15**: Dense, current, non-duplicative, and free of obvious code restatement.
-
-**10**: Mostly concise with small redundancy or stale wording.
-
-**5**: Verbose, repetitive, or partly outdated.
-
-**0**: Mostly filler, template residue, or stale paths.
-
-## Nested AGENTS.md Creation Scorecard (100 points)
-
-Use this scorecard when a repository has a source subtree without local guidance. Score only directories that are not generated, vendored, dependency, cache, or build-output directories.
-
-| Criterion | Weight | Evidence |
-|---|---:|---|
-| Independent commands | 25 | local manifest, test/build/lint/dev command, package script, just target, Make target, or CI fragment |
-| Independent technical or deploy boundary | 20 | separate runtime, service, package, app, plugin, crate, deployable artifact, or language/framework stack |
-| Local constraints | 20 | subtree-specific generated files, style conventions, ownership rules, data contracts, docs sync, or review requirements |
-| Complexity | 15 | enough internal modules, entry points, or cross-file relationships that map-first navigation prevents broad grep |
-| Safety risk | 10 | secrets, credentials, production data, migrations, destructive operations, external services, or privileged tooling |
-| High-frequency or public contract | 10 | commonly edited area, public API, shared schema, CLI surface, plugin/skill contract, or docs users depend on |
-
-Decision thresholds:
-
-- **60-100**: create or update nested `AGENTS.md`; create a local `code_map.md` when navigation differs materially from the root map.
-- **40-59**: list as a candidate in the report; do not create guidance unless the user asks or missing guidance is already causing errors.
-- **0-39**: do not create nested guidance; rely on root `AGENTS.md` and nearest `code_map.md`.
-
-Automatic skip:
-
-- `.git/`, `node_modules/`, `target/`, `dist/`, `build/`, `.omx/state/`, `vendor/`, coverage output, generated site output, package-manager caches, and checked-in third-party source unless the user explicitly asks for recovery guidance there.
-- Directories whose only evidence is file count or obvious names but no local commands, constraints, safety boundary, or public contract.
-
-## Red Flags
-
-- Commands that do not exist in manifests or justfiles.
-- Stale directory names after repo restructuring.
-- Nested files duplicating root content instead of narrowing it.
-- Creating nested `AGENTS.md` for low-score, generated, vendored, dependency, or build-output directories.
-- `AGENTS.md` files that mention a code map generically without an explicit relative path.
-- `code_map.md` files that contain behavioral constraints that belong in `AGENTS.md`.
-- Provider-specific files such as `CLAUDE.md` described as Codex guidance.
-- Instructions to edit generated/runtime state such as `.omx/state/**` without a recovery reason.
-- Secrets, tokens, production endpoints, or destructive data operations not mentioned.
-- Subagents or workflows promised without local support.
-- Hook-managed marker blocks missing an end marker or rewritten accidentally.
-
-## Assessment Process
-
-1. Read every repo `AGENTS.md` in scope.
-2. Build a scope map from root to nested files.
-3. Read existing `code_map.md` files and verify every `AGENTS.md` map pointer uses an explicit relative path.
-4. Verify command and path claims against actual files.
-5. Score each existing `AGENTS.md` criterion and cite concrete evidence.
-6. Score candidate nested guidance directories with the creation scorecard.
-7. Propose the smallest changes that improve future Codex sessions without adding context noise.
+Use scores only after these hard decisions to compare content quality. A score
+must never bypass the AGENTS minimum condition.

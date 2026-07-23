@@ -1,0 +1,109 @@
+{
+  "ok": false,
+  "schema_version": "2.0",
+  "generated_at": "2026-07-23",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\agents-md-improver",
+  "package_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\package",
+  "summary": {
+    "target_count": 3,
+    "adapter_count": 3,
+    "archive_present": true,
+    "archive_sha256": "6611fdf25ce8105ebbe9899d9b82ac969bb9a350353fdebbb5787dbbd69f00d3",
+    "archive_entry_count": 34,
+    "nested_skill_entry_count": 0,
+    "failure_count": 1,
+    "warning_count": 0
+  },
+  "checks": [
+    {
+      "id": "package-manifest",
+      "status": "pass",
+      "detail": "Package manifest exists: D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\package\\manifest.json"
+    },
+    {
+      "id": "claude-adapter",
+      "status": "pass",
+      "detail": "Adapter exists for target: claude"
+    },
+    {
+      "id": "generic-adapter",
+      "status": "pass",
+      "detail": "Adapter exists for target: generic"
+    },
+    {
+      "id": "openai-adapter",
+      "status": "pass",
+      "detail": "Adapter exists for target: openai"
+    },
+    {
+      "id": "archive-safe-paths",
+      "status": "pass",
+      "detail": "Archive has no absolute or parent-traversal entries"
+    },
+    {
+      "id": "archive-entry-agents-md-improver/SKILL.md",
+      "status": "pass",
+      "detail": "Archive contains agents-md-improver/SKILL.md"
+    },
+    {
+      "id": "archive-entry-agents-md-improver/manifest.json",
+      "status": "pass",
+      "detail": "Archive contains agents-md-improver/manifest.json"
+    },
+    {
+      "id": "archive-entry-agents-md-improver/agents/interface.yaml",
+      "status": "pass",
+      "detail": "Archive contains agents-md-improver/agents/interface.yaml"
+    },
+    {
+      "id": "archive-single-skill-entrypoint",
+      "status": "pass",
+      "detail": "Archive exposes only the root SKILL.md entrypoint"
+    },
+    {
+      "id": "archive-excludes-generated",
+      "status": "pass",
+      "detail": "Archive excludes generated dist/, .previews/, and tests/tmp* contents"
+    },
+    {
+      "id": "registry-ok",
+      "status": "fail",
+      "detail": "Registry audit is OK"
+    },
+    {
+      "id": "registry-name-match",
+      "status": "pass",
+      "detail": "Registry package name matches package manifest"
+    },
+    {
+      "id": "registry-version-match",
+      "status": "pass",
+      "detail": "Registry package version matches package manifest"
+    },
+    {
+      "id": "registry-compat-claude",
+      "status": "pass",
+      "detail": "Registry compatibility is reviewable for target: claude"
+    },
+    {
+      "id": "registry-compat-generic",
+      "status": "pass",
+      "detail": "Registry compatibility is reviewable for target: generic"
+    },
+    {
+      "id": "registry-compat-openai",
+      "status": "pass",
+      "detail": "Registry compatibility is reviewable for target: openai"
+    }
+  ],
+  "failures": [
+    "Registry audit is OK"
+  ],
+  "warnings": [],
+  "artifacts": {
+    "manifest": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\package\\manifest.json",
+    "archive": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\package\\agents-md-improver.zip",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\package_verification.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-22-optimize-agents-md-improver-gpt-5p6\\research\\yao\\package_verification.md"
+  }
+}

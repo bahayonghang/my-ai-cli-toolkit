@@ -1,0 +1,21 @@
+{
+  "schema_version": "baseline-snapshot",
+  "name": "agents-md-improver",
+  "version": "1.1.0",
+  "description": "Audit and improve Codex AGENTS.md guidance files and companion code_map.md navigation maps. Use when the user asks to check, audit, optimize, or fix AGENTS.md; mentions nested AGENTS.md conflicts, code maps, stale commands, or scoped instructions; or says 优化 AGENTS.md, 审计 AGENTS.md, 更新 Codex 项目指导, 生成 code_map.md.",
+  "targets": [],
+  "maturity": "scaffold",
+  "owner": "",
+  "review_cadence": "",
+  "trust_level": "",
+  "license": "",
+  "checksums": {
+    "skill_md_git_blob": "d6da79f4637cbdd3fdaba9d9d63c0f5190ab6589"
+  },
+  "compatibility": {},
+  "source": {
+    "git_commit": "7585297fc87839be0d77f25ba0f229e08c86d139",
+    "snapshot": "research/baseline/package-snapshot.md",
+    "note": "Version 1.1.0 had no manifest, declared adapter targets, or generated registry package. Empty fields preserve that absence."
+  }
+}
