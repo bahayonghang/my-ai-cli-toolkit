@@ -1223,3 +1223,37 @@ Upgraded agents-md-improver to 1.2.0 with current Codex discovery semantics, GPT
 ### Next Steps
 
 - None - task complete
+
+
+## Session 36: 优化 Codex 工作流推荐器
+
+**Date**: 2026-07-23
+**Task**: 优化 Codex 工作流推荐器
+**Branch**: `dev`
+
+### Summary
+
+将 codex-workflow-recommender 升级为 Production 1.1.0，补齐准确的 Codex 表面模型、只读决策合同、路由与输出评测，并记录 Yao 门禁的缺失证据边界。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8f987c3` | (see git log) |
+| `53a1eb5` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
