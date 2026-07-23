@@ -21,8 +21,10 @@ import argparse
 import json
 from pathlib import Path
 
+from .git import branch_exists_locally
+from .io import read_json
 from .log import Colors, colored
-from .paths import get_repo_root
+from .paths import FILE_TASK_JSON, get_repo_root
 from .task_utils import resolve_task_dir
 
 
@@ -96,6 +98,22 @@ def cmd_validate(args: argparse.Namespace) -> int:
     print(colored("=== Validating Context Files ===", Colors.BLUE))
     print(f"Target dir: {target_dir}")
     print()
+
+    # Warn (don't fail validation) when the recorded branch is stale — it
+    # was likely already merged and deleted (#399 item 2).
+    task_json_path = target_dir / FILE_TASK_JSON
+    if task_json_path.is_file():
+        task_data = read_json(task_json_path)
+        stored_branch = task_data.get("branch") if task_data else None
+        if stored_branch and not branch_exists_locally(stored_branch, repo_root):
+            print(
+                colored(
+                    f"Warning: recorded branch '{stored_branch}' no longer exists locally "
+                    "(likely merged and deleted).",
+                    Colors.YELLOW,
+                )
+            )
+            print()
 
     total_errors = 0
     for jsonl_name in ["implement.jsonl", "check.jsonl"]:
