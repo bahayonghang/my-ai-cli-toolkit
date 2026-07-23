@@ -174,6 +174,27 @@ manual inventory and deterministic safety tests."
 - Discovery/example commands in the SKILL.md body must stay within what
   `allowed-tools` grants.
 
+## Read-only CLI grants must whitelist subcommands
+
+- A read-only skill must not grant a whole CLI family when that family also
+  contains mutating commands. Allow only the read-only command shapes the
+  workflow actually uses, such as `codex mcp list *`, `codex plugin list *`,
+  `codex doctor *`, `codex features list *`, and read-only `git` inspection.
+- Add a contract test that rejects broad grants such as `Bash(codex *)` and
+  `Bash(git *)`, plus any explicitly mutating subcommand used by that CLI.
+  Reachability is necessary but does not prove that a permission remains
+  read-only.
+
+## Recorded output fixtures prove deterministic contracts only
+
+- Label replayed output as deterministic `recorded_fixture` evidence. It does
+  not prove provider/model execution, human blind-review agreement, or live
+  telemetry; unavailable evidence stays `missing evidence`.
+- Each output assertion should combine multiple short semantic anchors with a
+  forbidden material behavior, such as requiring evidence and rollback terms
+  while rejecting an unauthorized write. Do not require reproduction of a
+  long sentence, and do not let one keyword prove the whole behavior.
+
 ## Trigger/boundary changes: two eval systems, not one
 
 > Distilled from the code-auditor project-audit upgrade (2026-07-17).
