@@ -1,0 +1,94 @@
+{
+  "ok": false,
+  "schema_version": "2.0",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+  "registry_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\registry",
+  "package": {
+    "schema_version": "2.0",
+    "name": "codex-workflow-recommender",
+    "version": "1.1.0",
+    "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+    "targets": [
+      "openai",
+      "claude",
+      "generic"
+    ],
+    "maturity": "production",
+    "owner": "lyh",
+    "review_cadence": "quarterly",
+    "trust_level": "local",
+    "license": "",
+    "checksums": {
+      "package_sha256": "3b7b0cbf7e51e5f3e81bcc3f6e45629147afdd1da119afc80f1c99cb7b5e907f"
+    },
+    "compatibility": {
+      "openai": "pass",
+      "claude": "pass",
+      "agent-skills": "fail",
+      "vscode": "fail",
+      "generic": "pass"
+    },
+    "source": {
+      "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+      "skill_ir": "reports\\skill-ir.json",
+      "ir_schema_version": "2.0.0",
+      "canonical_metadata": "agents/interface.yaml"
+    },
+    "artifacts": {
+      "overview_html": "reports/skill-overview.html",
+      "review_studio_html": "reports/review-studio.html",
+      "trust_report": "reports/security_trust_report.md",
+      "conformance_matrix": "reports/conformance_matrix.md",
+      "compiled_targets": "reports/compiled_targets.md",
+      "package_verification": "",
+      "install_simulation": "",
+      "adoption_drift": "",
+      "review_waivers": "",
+      "review_annotations": "",
+      "package_metadata": "registry/packages/codex-workflow-recommender.json"
+    },
+    "distribution": {
+      "archive_verified": false,
+      "archive_sha256": "",
+      "package_verification": "",
+      "install_simulated": false,
+      "install_simulation": ""
+    },
+    "generated_at": "2026-07-23T00:00:00Z"
+  },
+  "index": {
+    "schema_version": "2.0",
+    "generated_at": "2026-07-23T00:00:00Z",
+    "package_count": 1,
+    "packages": [
+      {
+        "name": "codex-workflow-recommender",
+        "version": "1.1.0",
+        "maturity": "production",
+        "owner": "lyh",
+        "targets": [
+          "openai",
+          "claude",
+          "generic"
+        ],
+        "package_metadata": "registry/packages/codex-workflow-recommender.json",
+        "package_sha256": "3b7b0cbf7e51e5f3e81bcc3f6e45629147afdd1da119afc80f1c99cb7b5e907f"
+      }
+    ]
+  },
+  "failures": [
+    "Missing package metadata field: license"
+  ],
+  "warnings": [
+    "Recommended registry evidence is missing: reports/skill-overview.html",
+    "Recommended registry evidence is missing: reports/review-studio.html",
+    "Recommended registry evidence is missing: reports/review_waivers.md",
+    "Recommended registry evidence is missing: reports/review_annotations.md"
+  ],
+  "artifacts": {
+    "index": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\registry\\index.json",
+    "package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\registry\\packages\\codex-workflow-recommender.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\registry-audit.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\registry-audit.md"
+  }
+}

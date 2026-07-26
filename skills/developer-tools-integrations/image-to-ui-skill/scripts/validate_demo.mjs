@@ -215,16 +215,38 @@ async function capture(cdp, sessionId, viewport, output) {
   if (statSync(output).size <= 10_000) throw new DemoValidationError(`Screenshot is too small: ${output}`);
 }
 
-async function stopBrowser(child) {
-  if (!child || child.exitCode !== null) return;
-  await new Promise((resolve) => {
-    const timer = setTimeout(resolve, 2_000);
-    child.once('exit', () => {
+export async function stopBrowser(child, { closeBrowser, timeoutMs = 2_000 } = {}) {
+  if (!child || child.exitCode !== null || child.signalCode !== null) return;
+
+  const waitForExit = () => new Promise((resolve) => {
+    if (child.exitCode !== null || child.signalCode !== null) {
+      resolve(true);
+      return;
+    }
+    const onExit = () => {
       clearTimeout(timer);
-      resolve();
-    });
-    child.kill();
+      resolve(true);
+    };
+    const timer = setTimeout(() => {
+      child.off('exit', onExit);
+      resolve(false);
+    }, timeoutMs);
+    child.once('exit', onExit);
   });
+
+  if (closeBrowser) {
+    const exited = waitForExit();
+    await closeBrowser().catch(() => {});
+    if (await exited) return;
+  }
+
+  let exited = waitForExit();
+  child.kill();
+  if (await exited) return;
+
+  exited = waitForExit();
+  child.kill('SIGKILL');
+  if (!await exited) throw new Error('Browser did not exit after SIGKILL');
 }
 
 export async function runDemo(config, demoDir, options = {}) {
@@ -235,6 +257,7 @@ export async function runDemo(config, demoDir, options = {}) {
   const server = await startStaticServer(demoDir);
   const profile = mkdtempSync(path.join(tmpdir(), `${config.name}-chrome-`));
   let child;
+  let cdp;
   try {
     child = spawn(browser.path, [
       '--headless=new', '--disable-gpu', '--disable-extensions', '--hide-scrollbars',
@@ -243,7 +266,7 @@ export async function runDemo(config, demoDir, options = {}) {
     ], { stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe'] });
     let stderr = '';
     child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
-    const cdp = new CdpPipe(child.stdio[3], child.stdio[4], child);
+    cdp = new CdpPipe(child.stdio[3], child.stdio[4], child);
     const { targetId } = await cdp.send('Target.createTarget', { url: server.url });
     const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
     await cdp.send('Page.enable', {}, sessionId);
@@ -269,7 +292,7 @@ export async function runDemo(config, demoDir, options = {}) {
     if (error instanceof DemoValidationError) throw error;
     throw new DemoValidationError(`${error.message}${child?.exitCode ? `; browser=${child.exitCode}` : ''}`, 4);
   } finally {
-    await stopBrowser(child);
+    await stopBrowser(child, { closeBrowser: cdp ? () => cdp.send('Browser.close') : undefined });
     await server.close().catch(() => {});
     rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }

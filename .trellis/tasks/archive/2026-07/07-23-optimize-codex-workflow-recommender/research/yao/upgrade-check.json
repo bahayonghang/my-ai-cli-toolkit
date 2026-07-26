@@ -1,0 +1,122 @@
+{
+  "ok": true,
+  "schema_version": "2.0",
+  "generated_at": "2026-07-23",
+  "previous": {
+    "name": "codex-workflow-recommender",
+    "version": "1.0.0",
+    "targets": []
+  },
+  "current": {
+    "name": "codex-workflow-recommender",
+    "version": "1.1.0",
+    "targets": [
+      "openai",
+      "claude",
+      "generic"
+    ]
+  },
+  "summary": {
+    "declared_bump": "minor",
+    "recommended_bump": "minor",
+    "breaking_change_count": 0,
+    "added_target_count": 3,
+    "metadata_change_count": 5,
+    "checksum_change_count": 2,
+    "failure_count": 0,
+    "warning_count": 0
+  },
+  "upgrade_diff": {
+    "name_changed": false,
+    "added_targets": [
+      "claude",
+      "generic",
+      "openai"
+    ],
+    "removed_targets": [],
+    "compatibility_changes": [
+      {
+        "target": "agent-skills",
+        "from": "missing",
+        "to": "fail",
+        "direction": "improved"
+      },
+      {
+        "target": "claude",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "generic",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "openai",
+        "from": "missing",
+        "to": "pass",
+        "direction": "improved"
+      },
+      {
+        "target": "vscode",
+        "from": "missing",
+        "to": "fail",
+        "direction": "improved"
+      }
+    ],
+    "metadata_changes": [
+      {
+        "field": "description",
+        "from": "Analyze a repository and current Codex environment, then recommend Codex CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements without modifying files. Use when the user asks to optimize Codex workflows or setup, recommend Codex automation, configure MCP/plugins/subagents, or says 优化 Codex 流程, Codex 工作流推荐, 给 Codex 配 MCP.",
+        "to": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write."
+      },
+      {
+        "field": "maturity",
+        "from": "scaffold",
+        "to": "production"
+      },
+      {
+        "field": "owner",
+        "from": "",
+        "to": "lyh"
+      },
+      {
+        "field": "review_cadence",
+        "from": "",
+        "to": "quarterly"
+      },
+      {
+        "field": "trust_level",
+        "from": "",
+        "to": "local"
+      }
+    ],
+    "checksum_changes": [
+      {
+        "field": "package_sha256",
+        "from": "",
+        "to": "3b7b0cbf7e51e5f3e81bcc3f6e45629147afdd1da119afc80f1c99cb7b5e907f"
+      },
+      {
+        "field": "skill_md_git_blob",
+        "from": "789ab1d648a4e5cbf9f6710399bfe0591ecb1762",
+        "to": ""
+      }
+    ]
+  },
+  "release_notes": [
+    "Recommended version bump: minor.",
+    "Added targets: claude, generic, openai.",
+    "Package or archive checksum changed; reviewers should verify package artifacts before release."
+  ],
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "previous_package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\baseline\\previous-package.json",
+    "current_package": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\registry\\packages\\codex-workflow-recommender.json",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\upgrade-check.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\upgrade-check.md"
+  }
+}

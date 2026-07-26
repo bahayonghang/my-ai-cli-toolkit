@@ -4,11 +4,13 @@
 
 ## Purpose overview
 
-Analyze a repository and current Codex environment, then recommend Codex CLI/App, AGENTS.md, skills, subagents, plugins, MCP servers, config/hooks, and OMX workflow improvements without modifying files.
+Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change.
 
 ## Trigger scenarios
 
-- the user asks to optimize Codex workflows or setup, recommend Codex automation, configure MCP/plugins/subagents, or says 优化 Codex 流程, Codex 工作流推荐, 给 Codex 配 MCP
+- Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change
+- Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐
+- Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write
 
 ## Metadata
 
@@ -16,8 +18,8 @@ Analyze a repository and current Codex environment, then recommend Codex CLI/App
 | --- | --- |
 | Name | `codex-workflow-recommender` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `1.0.0` |
-| Tags | `codex`, `codex-cli`, `codex-app`, `workflow`, `agents-md`, `skills`, `subagents`, `plugins`, `mcp`, `hooks`, `omx` |
+| Version | `1.1.0` |
+| Tags | `codex`, `skills`, `mcp` |
 
 ## Install command
 
@@ -29,22 +31,29 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-workflo
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/developer-tools-integrations/codex-workflow-recommender/references` | directory | 5 | Reference material |
+| `skills/developer-tools-integrations/codex-workflow-recommender/agents` | directory | 1 | Companion agents |
+| `skills/developer-tools-integrations/codex-workflow-recommender/evals` | directory | 3 | Evaluation samples |
+| `skills/developer-tools-integrations/codex-workflow-recommender/manifest.json` | file | 1 | Top-level file |
+| `skills/developer-tools-integrations/codex-workflow-recommender/references` | directory | 6 | Reference material |
+| `skills/developer-tools-integrations/codex-workflow-recommender/reports` | directory | 9 | Top-level directory |
+| `skills/developer-tools-integrations/codex-workflow-recommender/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| agents | `skills/developer-tools-integrations/codex-workflow-recommender/agents` | Companion agents |
+| evals | `skills/developer-tools-integrations/codex-workflow-recommender/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/codex-workflow-recommender/references` | Reference material |
+| tests | `skills/developer-tools-integrations/codex-workflow-recommender/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

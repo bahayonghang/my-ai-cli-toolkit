@@ -1,0 +1,37 @@
+{
+  "name": "codex-workflow-recommender",
+  "version": "1.1.0",
+  "owner": "lyh",
+  "updated_at": "2026-07-23",
+  "review_cadence": "quarterly",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "production",
+  "category": "developer-tools-integrations",
+  "license": "MIT",
+  "complexity_tier": "medium",
+  "factory_components": [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "tests"
+  ],
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic"
+  ],
+  "contracts": {
+    "input_files": {
+      "classification": "file-backed fixture",
+      "paths": [
+        "evals/output/fixtures/codex-workflow-scenarios.md"
+      ],
+      "rule": "Repository files, current CLI help, minimal capability summaries, dated references, and synthetic fixtures are evidence inputs. Raw auth, provider, token, environment-value, and complete diagnostic output must not enter reports."
+    },
+    "output contract": "Return an outcome, evidence and unknowns, only supported prioritized recommendations, a dependency/risk sequence, verification and rollback, and separate local-file versus persistent/external approval options. No change is a valid outcome.",
+    "rollback boundary": "The package is read-only prompt, reference, metadata, fixture, test, and report content. It never mutates Codex or external state; any later implementation has its own authorization and rollback boundary."
+  }
+}

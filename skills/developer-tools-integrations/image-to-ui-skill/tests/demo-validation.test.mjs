@@ -12,6 +12,7 @@ import {
   createNulDecoder,
   findBrowser,
   startStaticServer,
+  stopBrowser,
 } from '../scripts/validate_demo.mjs';
 import { config as artmuse } from '../demo/artmuse-ios/validate.mjs';
 import { config as marble } from '../demo/marble-note/validate.mjs';
@@ -58,6 +59,49 @@ test('CDP pipe rejects pending requests when browser spawn fails', async () => {
   const pending = cdp.send('Target.createTarget');
   browser.emit('error', new Error('spawn denied'));
   await assert.rejects(pending, /spawn denied/);
+});
+
+test('browser shutdown escalates and waits for forced exit', async () => {
+  const browser = new EventEmitter();
+  browser.exitCode = null;
+  browser.signalCode = null;
+  const signals = [];
+  browser.kill = (signal = 'SIGTERM') => {
+    signals.push(signal);
+    if (signal === 'SIGKILL') {
+      queueMicrotask(() => {
+        browser.signalCode = signal;
+        browser.emit('exit', null, signal);
+      });
+    }
+    return true;
+  };
+
+  await stopBrowser(browser, { timeoutMs: 1 });
+
+  assert.deepEqual(signals, ['SIGTERM', 'SIGKILL']);
+  assert.equal(browser.signalCode, 'SIGKILL');
+});
+
+test('browser shutdown requests a graceful close before sending signals', async () => {
+  const browser = new EventEmitter();
+  browser.exitCode = null;
+  browser.signalCode = null;
+  browser.kill = () => assert.fail('graceful close should avoid process signals');
+  const requests = [];
+
+  await stopBrowser(browser, {
+    closeBrowser: async () => {
+      requests.push('Browser.close');
+      queueMicrotask(() => {
+        browser.exitCode = 0;
+        browser.emit('exit', 0, null);
+      });
+    },
+    timeoutMs: 10,
+  });
+
+  assert.deepEqual(requests, ['Browser.close']);
 });
 
 test('browser discovery covers explicit, Windows, macOS, and Linux paths', () => {

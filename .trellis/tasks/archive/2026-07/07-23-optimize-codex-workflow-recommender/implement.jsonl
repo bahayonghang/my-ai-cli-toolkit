@@ -1,0 +1,5 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Repository contracts for skill frontmatter, allowed-tools reachability, eval schema, interface files, generated docs and verification."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/prd.md","reason":"Approved requirements, exclusions and observable acceptance criteria for the Production optimization."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/design.md","reason":"Surface selection, discovery provenance, output contract, evaluation design and rollback boundary."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/research/skill-audit.md","reason":"Baseline findings with severity, local anchors, Yao results and proposed fixes."}
+{"file":".trellis/tasks/07-23-optimize-codex-workflow-recommender/research/official-codex-surface.md","reason":"Dated official/current CLI facts that implementation must preserve or explicitly refresh."}

@@ -1,0 +1,3981 @@
+{
+  "schema_version": "2.0",
+  "ok": true,
+  "skill_dir": ".",
+  "summary": {
+    "decision": "blocked",
+    "world_class_score": 66,
+    "gate_count": 16,
+    "gate_contract_ok": true,
+    "blocker_count": 1,
+    "warning_count": 11,
+    "action_count": 12,
+    "annotation_count": 0,
+    "open_annotation_count": 0,
+    "open_annotation_blocker_count": 0,
+    "open_annotation_warning_count": 0
+  },
+  "gates": [
+    {
+      "key": "intent-canvas",
+      "label": "意图画布",
+      "status": "warn",
+      "detail": "intent confidence 0/100; review current intent frame",
+      "evidence": "reports/intent-confidence.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\intent-confidence.md",
+      "review_action_id": "review-action-intent-canvas",
+      "review_action_status": "warn",
+      "review_action_title": "意图画布",
+      "review_action_next_step": "收紧真实任务、输入、输出、排除项和成功标准。",
+      "review_action_reason": "低 intent confidence 会让后续 Skill IR、输出评测和 Review Studio 结论建立在模糊意图上。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/yao.py intent-confidence ."
+    },
+    {
+      "key": "trigger-lab",
+      "label": "触发实验",
+      "status": "warn",
+      "detail": "route scorecard is missing; run route-scorecard before release review",
+      "evidence": "reports/route_scorecard.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\route_scorecard.md",
+      "review_action_id": "review-action-trigger-lab",
+      "review_action_status": "warn",
+      "review_action_title": "触发实验",
+      "review_action_next_step": "修正 route scorecard 中的误触发、漏触发或 ambiguous case。",
+      "review_action_reason": "触发错误会让正确 Skill 失活，或让相邻 Skill 被错误调用。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/build_confusion_matrix.py"
+    },
+    {
+      "key": "output-lab",
+      "label": "输出实验",
+      "status": "warn",
+      "detail": "6/3 cases; with-skill 100.0; baseline 0.0; file-backed 6; near-neighbor 0; blind A/B 6; review adjudication missing",
+      "evidence": "reports/output_quality_scorecard.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_quality_scorecard.md",
+      "review_action_id": "review-action-output-lab",
+      "review_action_status": "warn",
+      "review_action_title": "输出实验",
+      "review_action_next_step": "补足 output eval 覆盖、execution evidence、blind A/B 和 reviewer adjudication。同步补足盲审声明。",
+      "review_action_reason": "没有输出质量和人工盲评证据时，Skill 只能证明会触发，不能证明输出真的更好且经得起审查。",
+      "review_action_source_ref_count": 6,
+      "review_action_verification_command": "python3 scripts/adjudicate_output_review.py --write-template && python3 scripts/yao.py output-review"
+    },
+    {
+      "key": "context-budget",
+      "label": "上下文",
+      "status": "warn",
+      "detail": "initial load n/a/n/a; deferred n/a/n/a; top deferred none; resource governance unknown; quality density n/a",
+      "evidence": "reports/context_budget.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\context_budget.md",
+      "review_action_id": "review-action-context-budget",
+      "review_action_status": "warn",
+      "review_action_title": "上下文",
+      "review_action_next_step": "压缩或拆分高成本 deferred resources，保留最小可路由上下文。",
+      "review_action_reason": "初始加载可以安全，但后续 references、scripts、evals 体量过大时，reviewer 仍需要看到维护和读取成本。",
+      "review_action_source_ref_count": 4,
+      "review_action_verification_command": "python3 scripts/render_context_reports.py"
+    },
+    {
+      "key": "runtime-matrix",
+      "label": "运行矩阵",
+      "status": "block",
+      "detail": "3 / 5 targets pass",
+      "evidence": "reports/conformance_matrix.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\conformance_matrix.md",
+      "review_action_id": "review-action-runtime-matrix",
+      "review_action_status": "block",
+      "review_action_title": "运行矩阵",
+      "review_action_next_step": "修复目标端结构、metadata、相对路径、fallback 或 adapter target 声明。",
+      "review_action_reason": "runtime conformance 失败意味着包可能被目标客户端错误加载或静默降级。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/run_conformance_suite.py ."
+    },
+    {
+      "key": "trust-report",
+      "label": "信任报告",
+      "status": "warn",
+      "detail": "0 secrets; 0 scripts; 0 network-capable scripts; 0 help smoke failures",
+      "evidence": "reports/security_trust_report.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\security_trust_report.md",
+      "review_action_id": "review-action-trust-report",
+      "review_action_status": "warn",
+      "review_action_title": "信任报告",
+      "review_action_next_step": "处理脚本 help surface、依赖 pin、network policy、secret 和权限声明。",
+      "review_action_reason": "团队分发时，脚本和依赖是主要供应链风险面，warning 必须有明确处置。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/trust_check.py ."
+    },
+    {
+      "key": "python-compat",
+      "label": "Python 兼容",
+      "status": "warn",
+      "detail": "Python compatibility report is missing",
+      "evidence": "reports/python_compatibility.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\python_compatibility.md",
+      "review_action_id": "review-action-python-compat",
+      "review_action_status": "warn",
+      "review_action_title": "Python 兼容",
+      "review_action_next_step": "修复 Python 3.11 语法兼容问题，尤其是 f-string 表达式内的反斜杠转义。",
+      "review_action_reason": "目标运行环境可能仍停留在 Python 3.11，语法漂移会让 CLI、报告生成和 CI 在发布后直接失败。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/yao.py python-compat ."
+    },
+    {
+      "key": "architecture-maintainability",
+      "label": "架构维护",
+      "status": "pass",
+      "detail": "architecture maintainability report is optional until code surface grows",
+      "evidence": "reports/architecture_maintainability.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\architecture_maintainability.md",
+      "review_action_id": "",
+      "review_action_status": "",
+      "review_action_title": "",
+      "review_action_next_step": "",
+      "review_action_reason": "",
+      "review_action_source_ref_count": 0,
+      "review_action_verification_command": ""
+    },
+    {
+      "key": "permission-gates",
+      "label": "权限批准",
+      "status": "pass",
+      "detail": "0/0 permissions approved; gaps 0; required none",
+      "evidence": "reports/security_trust_report.json + security/permission_policy.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\security\\permission_policy.md",
+      "review_action_id": "",
+      "review_action_status": "",
+      "review_action_title": "",
+      "review_action_next_step": "",
+      "review_action_reason": "",
+      "review_action_source_ref_count": 0,
+      "review_action_verification_command": ""
+    },
+    {
+      "key": "permission-runtime",
+      "label": "权限探针",
+      "status": "warn",
+      "detail": "runtime permission probe report is missing",
+      "evidence": "reports/runtime_permission_probes.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\runtime_permission_probes.md",
+      "review_action_id": "review-action-permission-runtime",
+      "review_action_status": "warn",
+      "review_action_title": "权限探针",
+      "review_action_next_step": "生成并修复目标包的 runtime permission probe 报告。",
+      "review_action_reason": "目标端即使只能提供 metadata fallback，也必须明确 native enforcement 缺口、表示位置和 operator note。",
+      "review_action_source_ref_count": 4,
+      "review_action_verification_command": "python3 scripts/probe_runtime_permissions.py . --package-dir dist"
+    },
+    {
+      "key": "skill-atlas",
+      "label": "组合治理",
+      "status": "warn",
+      "detail": "skill atlas is missing; portfolio-level conflicts are unknown",
+      "evidence": "reports/skill_atlas.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\skill_atlas.html",
+      "review_action_id": "review-action-skill-atlas",
+      "review_action_status": "warn",
+      "review_action_title": "组合治理",
+      "review_action_next_step": "处理 portfolio 里的路由冲突、owner 缺口、stale skill 和重复能力。",
+      "review_action_reason": "单个 Skill 质量很高仍可能在团队 skill library 中被相邻 Skill 冲突削弱。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/build_skill_atlas.py --workspace-root ."
+    },
+    {
+      "key": "operations-loop",
+      "label": "运营回路",
+      "status": "warn",
+      "detail": "adoption drift report is missing; real usage impact is unknown",
+      "evidence": "reports/adoption_drift_report.json + reports/skillops/daily + reports/skillops/weekly",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\adoption_drift_report.md",
+      "review_action_id": "review-action-operations-loop",
+      "review_action_status": "warn",
+      "review_action_title": "运营回路",
+      "review_action_next_step": "记录 metadata-only 使用事件，或明确当前 release 缺少真实使用信号。",
+      "review_action_reason": "没有运营回路时，reviewer 无法判断采用率、误触发、坏输出和 review overdue 的真实影响。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/render_adoption_drift_report.py . --record-event skill_activation --activation-type explicit --outcome accepted"
+    },
+    {
+      "key": "review-waivers",
+      "label": "人工批准",
+      "status": "warn",
+      "detail": "review waiver ledger is missing; warning acceptance is not auditable",
+      "evidence": "reports/review_waivers.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\review_waivers.md",
+      "review_action_id": "review-action-review-waivers",
+      "review_action_status": "warn",
+      "review_action_title": "人工批准",
+      "review_action_next_step": "对保留的 warning 写入 reviewer、理由、范围和到期时间，或修掉 warning。",
+      "review_action_reason": "warning 可以被接受，但必须可审计、会过期，并且不能掩盖 blocker。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/render_review_waivers.py ."
+    },
+    {
+      "key": "world-class-evidence",
+      "label": "世界证据",
+      "status": "pass",
+      "detail": "world-class evidence ledger is optional until governed or public world-class readiness is claimed",
+      "evidence": "reports/world_class_evidence_ledger.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\world_class_evidence_ledger.md",
+      "review_action_id": "",
+      "review_action_status": "",
+      "review_action_title": "",
+      "review_action_next_step": "",
+      "review_action_reason": "",
+      "review_action_source_ref_count": 0,
+      "review_action_verification_command": ""
+    },
+    {
+      "key": "registry-audit",
+      "label": "注册审计",
+      "status": "pass",
+      "detail": "registry audit is optional until team distribution is required",
+      "evidence": "reports/registry_audit.json + reports/install_simulation.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\registry_audit.md",
+      "review_action_id": "",
+      "review_action_status": "",
+      "review_action_title": "",
+      "review_action_next_step": "",
+      "review_action_reason": "",
+      "review_action_source_ref_count": 0,
+      "review_action_verification_command": ""
+    },
+    {
+      "key": "release-notes",
+      "label": "发布路线",
+      "status": "warn",
+      "detail": "promotion decisions are missing; release notes need reviewer confirmation",
+      "evidence": "reports/promotion_decisions.json + reports/upgrade_check.json + docs/migration-v2.md",
+      "link": "C:\\Users\\lyh\\.skillsmanage\\skills\\yao-meta\\docs\\migration-v2.md",
+      "review_action_id": "review-action-release-notes",
+      "review_action_status": "warn",
+      "review_action_title": "发布路线",
+      "review_action_next_step": "确认 promotion、upgrade diff、breaking changes、migration guide 和 known limitations。",
+      "review_action_reason": "发布说明不完整会让使用者无法判断升级风险和迁移动作。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/upgrade_check.py . --previous-package-json registry/examples/yao-meta-skill-1.0.0.json"
+    }
+  ],
+  "gate_contract": {
+    "ok": true,
+    "expected_gate_count": 16,
+    "actual_gate_count": 16,
+    "expected_gate_keys": [
+      "architecture-maintainability",
+      "context-budget",
+      "intent-canvas",
+      "operations-loop",
+      "output-lab",
+      "permission-gates",
+      "permission-runtime",
+      "python-compat",
+      "registry-audit",
+      "release-notes",
+      "review-waivers",
+      "runtime-matrix",
+      "skill-atlas",
+      "trigger-lab",
+      "trust-report",
+      "world-class-evidence"
+    ],
+    "rendered_gate_keys": [
+      "intent-canvas",
+      "trigger-lab",
+      "output-lab",
+      "context-budget",
+      "runtime-matrix",
+      "trust-report",
+      "python-compat",
+      "architecture-maintainability",
+      "permission-gates",
+      "permission-runtime",
+      "skill-atlas",
+      "operations-loop",
+      "review-waivers",
+      "world-class-evidence",
+      "registry-audit",
+      "release-notes"
+    ],
+    "missing_gate_keys": [],
+    "unknown_gate_keys": [],
+    "duplicate_gate_keys": [],
+    "unweighted_gate_keys": []
+  },
+  "blockers": [
+    {
+      "key": "runtime-matrix",
+      "label": "运行矩阵",
+      "status": "block",
+      "detail": "3 / 5 targets pass",
+      "evidence": "reports/conformance_matrix.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\conformance_matrix.md",
+      "review_action_id": "review-action-runtime-matrix",
+      "review_action_status": "block",
+      "review_action_title": "运行矩阵",
+      "review_action_next_step": "修复目标端结构、metadata、相对路径、fallback 或 adapter target 声明。",
+      "review_action_reason": "runtime conformance 失败意味着包可能被目标客户端错误加载或静默降级。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/run_conformance_suite.py ."
+    }
+  ],
+  "warnings": [
+    {
+      "key": "intent-canvas",
+      "label": "意图画布",
+      "status": "warn",
+      "detail": "intent confidence 0/100; review current intent frame",
+      "evidence": "reports/intent-confidence.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\intent-confidence.md",
+      "review_action_id": "review-action-intent-canvas",
+      "review_action_status": "warn",
+      "review_action_title": "意图画布",
+      "review_action_next_step": "收紧真实任务、输入、输出、排除项和成功标准。",
+      "review_action_reason": "低 intent confidence 会让后续 Skill IR、输出评测和 Review Studio 结论建立在模糊意图上。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/yao.py intent-confidence ."
+    },
+    {
+      "key": "trigger-lab",
+      "label": "触发实验",
+      "status": "warn",
+      "detail": "route scorecard is missing; run route-scorecard before release review",
+      "evidence": "reports/route_scorecard.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\route_scorecard.md",
+      "review_action_id": "review-action-trigger-lab",
+      "review_action_status": "warn",
+      "review_action_title": "触发实验",
+      "review_action_next_step": "修正 route scorecard 中的误触发、漏触发或 ambiguous case。",
+      "review_action_reason": "触发错误会让正确 Skill 失活，或让相邻 Skill 被错误调用。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/build_confusion_matrix.py"
+    },
+    {
+      "key": "output-lab",
+      "label": "输出实验",
+      "status": "warn",
+      "detail": "6/3 cases; with-skill 100.0; baseline 0.0; file-backed 6; near-neighbor 0; blind A/B 6; review adjudication missing",
+      "evidence": "reports/output_quality_scorecard.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_quality_scorecard.md",
+      "review_action_id": "review-action-output-lab",
+      "review_action_status": "warn",
+      "review_action_title": "输出实验",
+      "review_action_next_step": "补足 output eval 覆盖、execution evidence、blind A/B 和 reviewer adjudication。同步补足盲审声明。",
+      "review_action_reason": "没有输出质量和人工盲评证据时，Skill 只能证明会触发，不能证明输出真的更好且经得起审查。",
+      "review_action_source_ref_count": 6,
+      "review_action_verification_command": "python3 scripts/adjudicate_output_review.py --write-template && python3 scripts/yao.py output-review"
+    },
+    {
+      "key": "context-budget",
+      "label": "上下文",
+      "status": "warn",
+      "detail": "initial load n/a/n/a; deferred n/a/n/a; top deferred none; resource governance unknown; quality density n/a",
+      "evidence": "reports/context_budget.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\context_budget.md",
+      "review_action_id": "review-action-context-budget",
+      "review_action_status": "warn",
+      "review_action_title": "上下文",
+      "review_action_next_step": "压缩或拆分高成本 deferred resources，保留最小可路由上下文。",
+      "review_action_reason": "初始加载可以安全，但后续 references、scripts、evals 体量过大时，reviewer 仍需要看到维护和读取成本。",
+      "review_action_source_ref_count": 4,
+      "review_action_verification_command": "python3 scripts/render_context_reports.py"
+    },
+    {
+      "key": "trust-report",
+      "label": "信任报告",
+      "status": "warn",
+      "detail": "0 secrets; 0 scripts; 0 network-capable scripts; 0 help smoke failures",
+      "evidence": "reports/security_trust_report.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\security_trust_report.md",
+      "review_action_id": "review-action-trust-report",
+      "review_action_status": "warn",
+      "review_action_title": "信任报告",
+      "review_action_next_step": "处理脚本 help surface、依赖 pin、network policy、secret 和权限声明。",
+      "review_action_reason": "团队分发时，脚本和依赖是主要供应链风险面，warning 必须有明确处置。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/trust_check.py ."
+    },
+    {
+      "key": "python-compat",
+      "label": "Python 兼容",
+      "status": "warn",
+      "detail": "Python compatibility report is missing",
+      "evidence": "reports/python_compatibility.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\python_compatibility.md",
+      "review_action_id": "review-action-python-compat",
+      "review_action_status": "warn",
+      "review_action_title": "Python 兼容",
+      "review_action_next_step": "修复 Python 3.11 语法兼容问题，尤其是 f-string 表达式内的反斜杠转义。",
+      "review_action_reason": "目标运行环境可能仍停留在 Python 3.11，语法漂移会让 CLI、报告生成和 CI 在发布后直接失败。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/yao.py python-compat ."
+    },
+    {
+      "key": "permission-runtime",
+      "label": "权限探针",
+      "status": "warn",
+      "detail": "runtime permission probe report is missing",
+      "evidence": "reports/runtime_permission_probes.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\runtime_permission_probes.md",
+      "review_action_id": "review-action-permission-runtime",
+      "review_action_status": "warn",
+      "review_action_title": "权限探针",
+      "review_action_next_step": "生成并修复目标包的 runtime permission probe 报告。",
+      "review_action_reason": "目标端即使只能提供 metadata fallback，也必须明确 native enforcement 缺口、表示位置和 operator note。",
+      "review_action_source_ref_count": 4,
+      "review_action_verification_command": "python3 scripts/probe_runtime_permissions.py . --package-dir dist"
+    },
+    {
+      "key": "skill-atlas",
+      "label": "组合治理",
+      "status": "warn",
+      "detail": "skill atlas is missing; portfolio-level conflicts are unknown",
+      "evidence": "reports/skill_atlas.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\skill_atlas.html",
+      "review_action_id": "review-action-skill-atlas",
+      "review_action_status": "warn",
+      "review_action_title": "组合治理",
+      "review_action_next_step": "处理 portfolio 里的路由冲突、owner 缺口、stale skill 和重复能力。",
+      "review_action_reason": "单个 Skill 质量很高仍可能在团队 skill library 中被相邻 Skill 冲突削弱。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/build_skill_atlas.py --workspace-root ."
+    },
+    {
+      "key": "operations-loop",
+      "label": "运营回路",
+      "status": "warn",
+      "detail": "adoption drift report is missing; real usage impact is unknown",
+      "evidence": "reports/adoption_drift_report.json + reports/skillops/daily + reports/skillops/weekly",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\adoption_drift_report.md",
+      "review_action_id": "review-action-operations-loop",
+      "review_action_status": "warn",
+      "review_action_title": "运营回路",
+      "review_action_next_step": "记录 metadata-only 使用事件，或明确当前 release 缺少真实使用信号。",
+      "review_action_reason": "没有运营回路时，reviewer 无法判断采用率、误触发、坏输出和 review overdue 的真实影响。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/render_adoption_drift_report.py . --record-event skill_activation --activation-type explicit --outcome accepted"
+    },
+    {
+      "key": "review-waivers",
+      "label": "人工批准",
+      "status": "warn",
+      "detail": "review waiver ledger is missing; warning acceptance is not auditable",
+      "evidence": "reports/review_waivers.json",
+      "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\review_waivers.md",
+      "review_action_id": "review-action-review-waivers",
+      "review_action_status": "warn",
+      "review_action_title": "人工批准",
+      "review_action_next_step": "对保留的 warning 写入 reviewer、理由、范围和到期时间，或修掉 warning。",
+      "review_action_reason": "warning 可以被接受，但必须可审计、会过期，并且不能掩盖 blocker。",
+      "review_action_source_ref_count": 2,
+      "review_action_verification_command": "python3 scripts/render_review_waivers.py ."
+    },
+    {
+      "key": "release-notes",
+      "label": "发布路线",
+      "status": "warn",
+      "detail": "promotion decisions are missing; release notes need reviewer confirmation",
+      "evidence": "reports/promotion_decisions.json + reports/upgrade_check.json + docs/migration-v2.md",
+      "link": "C:\\Users\\lyh\\.skillsmanage\\skills\\yao-meta\\docs\\migration-v2.md",
+      "review_action_id": "review-action-release-notes",
+      "review_action_status": "warn",
+      "review_action_title": "发布路线",
+      "review_action_next_step": "确认 promotion、upgrade diff、breaking changes、migration guide 和 known limitations。",
+      "review_action_reason": "发布说明不完整会让使用者无法判断升级风险和迁移动作。",
+      "review_action_source_ref_count": 3,
+      "review_action_verification_command": "python3 scripts/upgrade_check.py . --previous-package-json registry/examples/yao-meta-skill-1.0.0.json"
+    }
+  ],
+  "review_actions": [
+    {
+      "action_id": "review-action-intent-canvas",
+      "gate_key": "intent-canvas",
+      "title": "意图画布",
+      "label": "意图画布",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "收紧真实任务、输入、输出、排除项和成功标准。",
+      "summary": "收紧真实任务、输入、输出、排除项和成功标准。",
+      "reason": "低 intent confidence 会让后续 Skill IR、输出评测和 Review Studio 结论建立在模糊意图上。",
+      "why": "低 intent confidence 会让后续 Skill IR、输出评测和 Review Studio 结论建立在模糊意图上。",
+      "source_fix": "reports/intent-dialogue.md + reports/intent-confidence.md",
+      "source_refs": [
+        {
+          "path": "reports/intent-dialogue.md",
+          "label": "intent dialogue",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "reports/intent-confidence.md",
+          "label": "intent confidence",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/intent-confidence.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\intent-confidence.md",
+      "verification_command": "python3 scripts/yao.py intent-confidence .",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-trigger-lab",
+      "gate_key": "trigger-lab",
+      "title": "触发实验",
+      "label": "触发实验",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "修正 route scorecard 中的误触发、漏触发或 ambiguous case。",
+      "summary": "修正 route scorecard 中的误触发、漏触发或 ambiguous case。",
+      "reason": "触发错误会让正确 Skill 失活，或让相邻 Skill 被错误调用。",
+      "why": "触发错误会让正确 Skill 失活，或让相邻 Skill 被错误调用。",
+      "source_fix": "SKILL.md frontmatter description + evals/*/trigger_cases.json",
+      "source_refs": [
+        {
+          "path": "SKILL.md",
+          "label": "frontmatter description",
+          "kind": "source",
+          "line": 3,
+          "matched_pattern": "description:",
+          "excerpt": "description: >-",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\SKILL.md"
+        },
+        {
+          "path": "evals/trigger_cases.json",
+          "label": "trigger eval cases",
+          "kind": "eval",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "reports/route_scorecard.md",
+          "label": "route scorecard",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/route_scorecard.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\route_scorecard.md",
+      "verification_command": "python3 scripts/build_confusion_matrix.py",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-output-lab",
+      "gate_key": "output-lab",
+      "title": "输出实验",
+      "label": "输出实验",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "补足 output eval 覆盖、execution evidence、blind A/B 和 reviewer adjudication。同步补足盲审声明。",
+      "summary": "补足 output eval 覆盖、execution evidence、blind A/B 和 reviewer adjudication。同步补足盲审声明。",
+      "reason": "没有输出质量和人工盲评证据时，Skill 只能证明会触发，不能证明输出真的更好且经得起审查。",
+      "why": "没有输出质量和人工盲评证据时，Skill 只能证明会触发，不能证明输出真的更好且经得起审查。",
+      "source_fix": "evals/output/cases.jsonl + reports/output_quality_scorecard.md + reports/output_review_kit.html + reports/output_review_adjudication.md + reports/output_review_decisions.json",
+      "source_refs": [
+        {
+          "path": "evals/output/cases.jsonl",
+          "label": "output eval cases",
+          "kind": "eval",
+          "line": 1,
+          "matched_pattern": "\"id\"",
+          "excerpt": "{\"id\":\"current-skill-root\",\"prompt\":\"Using Scenario A, decide how to handle the repository's stale Codex skill path.\",\"input_files\":[\"fixtures/codex-workflow-scenarios.md\"],\"basel…",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\evals\\output\\cases.jsonl"
+        },
+        {
+          "path": "reports/output_quality_scorecard.md",
+          "label": "output scorecard",
+          "kind": "report",
+          "line": 1,
+          "matched_pattern": "# Output",
+          "excerpt": "# Output Quality Scorecard",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_quality_scorecard.md"
+        },
+        {
+          "path": "reports/output_execution_runs.md",
+          "label": "output execution runs",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "reports/output_blind_review_pack.md",
+          "label": "blind A/B review pack",
+          "kind": "report",
+          "line": 1,
+          "matched_pattern": "# Output Blind",
+          "excerpt": "# Output Blind A/B Review Pack",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_blind_review_pack.md"
+        },
+        {
+          "path": "reports/output_review_kit.html",
+          "label": "reviewer cockpit",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "reports/output_review_adjudication.md",
+          "label": "review adjudication",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/output_quality_scorecard.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\output_quality_scorecard.md",
+      "verification_command": "python3 scripts/adjudicate_output_review.py --write-template && python3 scripts/yao.py output-review",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-context-budget",
+      "gate_key": "context-budget",
+      "title": "上下文",
+      "label": "上下文",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "压缩或拆分高成本 deferred resources，保留最小可路由上下文。",
+      "summary": "压缩或拆分高成本 deferred resources，保留最小可路由上下文。",
+      "reason": "初始加载可以安全，但后续 references、scripts、evals 体量过大时，reviewer 仍需要看到维护和读取成本。",
+      "why": "初始加载可以安全，但后续 references、scripts、evals 体量过大时，reviewer 仍需要看到维护和读取成本。",
+      "source_fix": "SKILL.md + references/ + scripts/ + evals/",
+      "source_refs": [
+        {
+          "path": "SKILL.md",
+          "label": "entrypoint",
+          "kind": "source",
+          "line": 1,
+          "matched_pattern": "",
+          "excerpt": "---",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\SKILL.md"
+        },
+        {
+          "path": "reports/context_budget.md",
+          "label": "context budget",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "scripts/resource_boundary_check.py",
+          "label": "resource boundary checker",
+          "kind": "source",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "references/skill-engineering-method.md",
+          "label": "skill engineering method",
+          "kind": "method",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/context_budget.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\context_budget.md",
+      "verification_command": "python3 scripts/render_context_reports.py",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-runtime-matrix",
+      "gate_key": "runtime-matrix",
+      "title": "运行矩阵",
+      "label": "运行矩阵",
+      "status": "block",
+      "priority": "blocker",
+      "next_step": "修复目标端结构、metadata、相对路径、fallback 或 adapter target 声明。",
+      "summary": "修复目标端结构、metadata、相对路径、fallback 或 adapter target 声明。",
+      "reason": "runtime conformance 失败意味着包可能被目标客户端错误加载或静默降级。",
+      "why": "runtime conformance 失败意味着包可能被目标客户端错误加载或静默降级。",
+      "source_fix": "agents/interface.yaml + reports/conformance_matrix.md",
+      "source_refs": [
+        {
+          "path": "agents/interface.yaml",
+          "label": "portable interface",
+          "kind": "source",
+          "line": 7,
+          "matched_pattern": "adapter_targets",
+          "excerpt": "adapter_targets:",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\agents\\interface.yaml"
+        },
+        {
+          "path": "reports/conformance_matrix.md",
+          "label": "conformance matrix",
+          "kind": "report",
+          "line": 1,
+          "matched_pattern": "# Runtime",
+          "excerpt": "# Runtime Conformance Matrix",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\conformance_matrix.md"
+        }
+      ],
+      "evidence": "reports/conformance_matrix.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\conformance_matrix.md",
+      "verification_command": "python3 scripts/run_conformance_suite.py .",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-trust-report",
+      "gate_key": "trust-report",
+      "title": "信任报告",
+      "label": "信任报告",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "处理脚本 help surface、依赖 pin、network policy、secret 和权限声明。",
+      "summary": "处理脚本 help surface、依赖 pin、network policy、secret 和权限声明。",
+      "reason": "团队分发时，脚本和依赖是主要供应链风险面，warning 必须有明确处置。",
+      "why": "团队分发时，脚本和依赖是主要供应链风险面，warning 必须有明确处置。",
+      "source_fix": "reports/security_trust_report.md + security/*.md + scripts/",
+      "source_refs": [
+        {
+          "path": "reports/security_trust_report.md",
+          "label": "trust report",
+          "kind": "report",
+          "line": 1,
+          "matched_pattern": "# Security",
+          "excerpt": "# Security Trust Report",
+          "exists": true,
+          "link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\security_trust_report.md"
+        },
+        {
+          "path": "security/script_policy.md",
+          "label": "script policy",
+          "kind": "policy",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "security/network_policy.md",
+          "label": "network policy",
+          "kind": "policy",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/security_trust_report.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\security_trust_report.md",
+      "verification_command": "python3 scripts/trust_check.py .",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-python-compat",
+      "gate_key": "python-compat",
+      "title": "Python 兼容",
+      "label": "Python 兼容",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "修复 Python 3.11 语法兼容问题，尤其是 f-string 表达式内的反斜杠转义。",
+      "summary": "修复 Python 3.11 语法兼容问题，尤其是 f-string 表达式内的反斜杠转义。",
+      "reason": "目标运行环境可能仍停留在 Python 3.11，语法漂移会让 CLI、报告生成和 CI 在发布后直接失败。",
+      "why": "目标运行环境可能仍停留在 Python 3.11，语法漂移会让 CLI、报告生成和 CI 在发布后直接失败。",
+      "source_fix": "reports/python_compatibility.md + scripts/*.py + tests/*.py",
+      "source_refs": [
+        {
+          "path": "reports/python_compatibility.md",
+          "label": "Python compatibility",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "scripts/python_compat_check.py",
+          "label": "compatibility checker",
+          "kind": "source",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": ".github/workflows/test.yml",
+          "label": "CI test workflow",
+          "kind": "ci",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/python_compatibility.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\python_compatibility.md",
+      "verification_command": "python3 scripts/yao.py python-compat .",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-permission-runtime",
+      "gate_key": "permission-runtime",
+      "title": "权限探针",
+      "label": "权限探针",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "生成并修复目标包的 runtime permission probe 报告。",
+      "summary": "生成并修复目标包的 runtime permission probe 报告。",
+      "reason": "目标端即使只能提供 metadata fallback，也必须明确 native enforcement 缺口、表示位置和 operator note。",
+      "why": "目标端即使只能提供 metadata fallback，也必须明确 native enforcement 缺口、表示位置和 operator note。",
+      "source_fix": "dist/targets/*/adapter.json + reports/runtime_permission_probes.md",
+      "source_refs": [
+        {
+          "path": "reports/runtime_permission_probes.md",
+          "label": "runtime permission probes",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "dist/targets/openai/adapter.json",
+          "label": "OpenAI adapter",
+          "kind": "package",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "dist/targets/claude/adapter.json",
+          "label": "Claude adapter",
+          "kind": "package",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "dist/targets/generic/adapter.json",
+          "label": "generic adapter",
+          "kind": "package",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/runtime_permission_probes.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\runtime_permission_probes.md",
+      "verification_command": "python3 scripts/probe_runtime_permissions.py . --package-dir dist",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-skill-atlas",
+      "gate_key": "skill-atlas",
+      "title": "组合治理",
+      "label": "组合治理",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "处理 portfolio 里的路由冲突、owner 缺口、stale skill 和重复能力。",
+      "summary": "处理 portfolio 里的路由冲突、owner 缺口、stale skill 和重复能力。",
+      "reason": "单个 Skill 质量很高仍可能在团队 skill library 中被相邻 Skill 冲突削弱。",
+      "why": "单个 Skill 质量很高仍可能在团队 skill library 中被相邻 Skill 冲突削弱。",
+      "source_fix": "reports/skill_atlas.html + skill_atlas/catalog.json",
+      "source_refs": [
+        {
+          "path": "skill_atlas/catalog.json",
+          "label": "skill atlas catalog",
+          "kind": "atlas",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "skill_atlas/policy.json",
+          "label": "atlas scope policy",
+          "kind": "policy",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "reports/skill_atlas.html",
+          "label": "skill atlas report",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/skill_atlas.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\skill_atlas.html",
+      "verification_command": "python3 scripts/build_skill_atlas.py --workspace-root .",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-operations-loop",
+      "gate_key": "operations-loop",
+      "title": "运营回路",
+      "label": "运营回路",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "记录 metadata-only 使用事件，或明确当前 release 缺少真实使用信号。",
+      "summary": "记录 metadata-only 使用事件，或明确当前 release 缺少真实使用信号。",
+      "reason": "没有运营回路时，reviewer 无法判断采用率、误触发、坏输出和 review overdue 的真实影响。",
+      "why": "没有运营回路时，reviewer 无法判断采用率、误触发、坏输出和 review overdue 的真实影响。",
+      "source_fix": "reports/adoption_drift_report.md",
+      "source_refs": [
+        {
+          "path": "reports/adoption_drift_report.md",
+          "label": "adoption drift report",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "references/telemetry-drift-method.md",
+          "label": "telemetry method",
+          "kind": "method",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/adoption_drift_report.json + reports/skillops/daily + reports/skillops/weekly",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\adoption_drift_report.md",
+      "verification_command": "python3 scripts/render_adoption_drift_report.py . --record-event skill_activation --activation-type explicit --outcome accepted",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-review-waivers",
+      "gate_key": "review-waivers",
+      "title": "人工批准",
+      "label": "人工批准",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "对保留的 warning 写入 reviewer、理由、范围和到期时间，或修掉 warning。",
+      "summary": "对保留的 warning 写入 reviewer、理由、范围和到期时间，或修掉 warning。",
+      "reason": "warning 可以被接受，但必须可审计、会过期，并且不能掩盖 blocker。",
+      "why": "warning 可以被接受，但必须可审计、会过期，并且不能掩盖 blocker。",
+      "source_fix": "reports/review_waivers.md",
+      "source_refs": [
+        {
+          "path": "reports/review_waivers.md",
+          "label": "waiver ledger",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "references/review-waiver-method.md",
+          "label": "waiver method",
+          "kind": "method",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/review_waivers.json",
+      "evidence_link": "..\\..\\..\\..\\..\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\review_waivers.md",
+      "verification_command": "python3 scripts/render_review_waivers.py .",
+      "evidence_steps": []
+    },
+    {
+      "action_id": "review-action-release-notes",
+      "gate_key": "release-notes",
+      "title": "发布路线",
+      "label": "发布路线",
+      "status": "warn",
+      "priority": "warning",
+      "next_step": "确认 promotion、upgrade diff、breaking changes、migration guide 和 known limitations。",
+      "summary": "确认 promotion、upgrade diff、breaking changes、migration guide 和 known limitations。",
+      "reason": "发布说明不完整会让使用者无法判断升级风险和迁移动作。",
+      "why": "发布说明不完整会让使用者无法判断升级风险和迁移动作。",
+      "source_fix": "reports/upgrade_check.md + docs/migration-v2.md",
+      "source_refs": [
+        {
+          "path": "reports/upgrade_check.md",
+          "label": "upgrade check",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "docs/migration-v2.md",
+          "label": "migration guide",
+          "kind": "docs",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        },
+        {
+          "path": "reports/promotion_decisions.md",
+          "label": "promotion decisions",
+          "kind": "report",
+          "line": null,
+          "matched_pattern": "",
+          "excerpt": "",
+          "exists": false,
+          "link": ""
+        }
+      ],
+      "evidence": "reports/promotion_decisions.json + reports/upgrade_check.json + docs/migration-v2.md",
+      "evidence_link": "C:\\Users\\lyh\\.skillsmanage\\skills\\yao-meta\\docs\\migration-v2.md",
+      "verification_command": "python3 scripts/upgrade_check.py . --previous-package-json registry/examples/yao-meta-skill-1.0.0.json",
+      "evidence_steps": []
+    }
+  ],
+  "evidence_paths": {
+    "skill_overview": "reports/skill-overview.html",
+    "review_viewer": "reports/review-viewer.html",
+    "output_eval": "reports/output_quality_scorecard.md",
+    "output_execution": "reports/output_execution_runs.md",
+    "output_blind_review": "reports/output_blind_review_pack.md",
+    "output_review_kit": "reports/output_review_kit.md",
+    "output_review_kit_html": "reports/output_review_kit.html",
+    "output_review_decisions": "reports/output_review_decisions.json",
+    "output_review_adjudication": "reports/output_review_adjudication.md",
+    "benchmark_reproducibility": "reports/benchmark_reproducibility.md",
+    "skill_os2_coverage": "reports/skill_os2_coverage.md",
+    "runtime_conformance": "reports/conformance_matrix.md",
+    "trust_report": "reports/security_trust_report.md",
+    "python_compatibility": "reports/python_compatibility.md",
+    "architecture_maintainability": "reports/architecture_maintainability.md",
+    "permission_policy": "security/permission_policy.md",
+    "runtime_permissions": "reports/runtime_permission_probes.md",
+    "skill_atlas": "reports/skill_atlas.html",
+    "compiled_targets": "reports/compiled_targets.md",
+    "adoption_drift": "reports/adoption_drift_report.md",
+    "review_waivers": "reports/review_waivers.md",
+    "review_annotations": "reports/review_annotations.md",
+    "adaptation_proposals": "reports/adaptation_proposals.md",
+    "adaptation_approval_ledger": "reports/adaptation_approval_ledger.json",
+    "adaptation_regression": "reports/adaptation_regression_report.md",
+    "world_class_evidence_plan": "reports/world_class_evidence_plan.md",
+    "world_class_evidence_ledger": "reports/world_class_evidence_ledger.md",
+    "world_class_evidence_intake": "reports/world_class_evidence_intake.md",
+    "world_class_evidence_preflight": "reports/world_class_evidence_preflight.md",
+    "world_class_evidence_preflight_html": "reports/world_class_evidence_preflight.html",
+    "world_class_submission_review": "reports/world_class_submission_review.md",
+    "world_class_operator_runbook": "reports/world_class_operator_runbook.md",
+    "world_class_operator_runbook_html": "reports/world_class_operator_runbook.html",
+    "world_class_claim_guard": "reports/world_class_claim_guard.md",
+    "registry_audit": "reports/registry_audit.md",
+    "package_verification": "reports/package_verification.md",
+    "install_simulation": "reports/install_simulation.md",
+    "upgrade_check": "reports/upgrade_check.md",
+    "migration": "docs/migration-v2.md",
+    "skill_ir": "reports\\skill-ir.json"
+  },
+  "data": {
+    "overview": {},
+    "intent_confidence": {},
+    "intent_dialogue": {},
+    "route_scorecard": {},
+    "output_quality": {
+      "ok": true,
+      "cases": "evals/output/cases.jsonl",
+      "summary": {
+        "case_count": 6,
+        "file_backed_case_count": 6,
+        "near_neighbor_case_count": 0,
+        "boundary_case_count": 3,
+        "baseline_pass_rate": 0.0,
+        "with_skill_pass_rate": 100.0,
+        "delta": 100.0,
+        "regression_count": 0,
+        "gate_pass": true,
+        "failure_taxonomy": [],
+        "blind_pair_count": 6
+      },
+      "results": [
+        {
+          "id": "current-skill-root",
+          "prompt": "Using Scenario A, decide how to handle the repository's stale Codex skill path.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "file_backed",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "baseline": {
+            "score": 0.0,
+            "passed_count": 0,
+            "failed_count": 3,
+            "checks": [
+              {
+                "id": "correct-roots",
+                "description": "Separates current skill and native-agent roots.",
+                "weight": 1.0,
+                "failure_type": "stale_root",
+                "passed": false,
+                "missing": [
+                  ".agents/skills",
+                  ".codex/agents"
+                ],
+                "present_forbidden": [
+                  "Create the skill under .codex/skills"
+                ]
+              },
+              {
+                "id": "keeps-approval",
+                "description": "Does not treat recommendation as edit authorization.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": false,
+                "missing": [
+                  "does not authorize an edit"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "includes-recovery",
+                "description": "Names verification and rollback.",
+                "weight": 1.0,
+                "failure_type": "missing_recovery",
+                "passed": false,
+                "missing": [
+                  "Verification:",
+                  "Rollback:"
+                ],
+                "present_forbidden": []
+              }
+            ],
+            "failed": [
+              {
+                "id": "correct-roots",
+                "description": "Separates current skill and native-agent roots.",
+                "weight": 1.0,
+                "failure_type": "stale_root",
+                "passed": false,
+                "missing": [
+                  ".agents/skills",
+                  ".codex/agents"
+                ],
+                "present_forbidden": [
+                  "Create the skill under .codex/skills"
+                ]
+              },
+              {
+                "id": "keeps-approval",
+                "description": "Does not treat recommendation as edit authorization.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": false,
+                "missing": [
+                  "does not authorize an edit"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "includes-recovery",
+                "description": "Names verification and rollback.",
+                "weight": 1.0,
+                "failure_type": "missing_recovery",
+                "passed": false,
+                "missing": [
+                  "Verification:",
+                  "Rollback:"
+                ],
+                "present_forbidden": []
+              }
+            ]
+          },
+          "with_skill": {
+            "score": 100.0,
+            "passed_count": 3,
+            "failed_count": 0,
+            "checks": [
+              {
+                "id": "correct-roots",
+                "description": "Separates current skill and native-agent roots.",
+                "weight": 1.0,
+                "failure_type": "stale_root",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "keeps-approval",
+                "description": "Does not treat recommendation as edit authorization.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "includes-recovery",
+                "description": "Names verification and rollback.",
+                "weight": 1.0,
+                "failure_type": "missing_recovery",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              }
+            ],
+            "failed": []
+          },
+          "delta": 100.0,
+          "winner": "with_skill",
+          "failure_taxonomy": []
+        },
+        {
+          "id": "reuse-installed-browser",
+          "prompt": "Using Scenario B, recommend the browser capability setup.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "file_backed",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "baseline": {
+            "score": 0.0,
+            "passed_count": 0,
+            "failed_count": 3,
+            "checks": [
+              {
+                "id": "reuses-capability",
+                "description": "Prefers the suitable installed capability.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": false,
+                "missing": [
+                  "reuse the installed browser plugin",
+                  "installed-enabled",
+                  "plugin-provided"
+                ],
+                "present_forbidden": [
+                  "add a new raw browser MCP"
+                ]
+              },
+              {
+                "id": "tests-real-job",
+                "description": "Verifies the owned browser job.",
+                "weight": 1.0,
+                "failure_type": "weak_verification",
+                "passed": false,
+                "missing": [
+                  "browser smoke task"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "defers-duplicate",
+                "description": "Provides a defer condition and rollback.",
+                "weight": 1.0,
+                "failure_type": "missing_defer_reason",
+                "passed": false,
+                "missing": [
+                  "Rollback:",
+                  "Defer a raw MCP"
+                ],
+                "present_forbidden": []
+              }
+            ],
+            "failed": [
+              {
+                "id": "reuses-capability",
+                "description": "Prefers the suitable installed capability.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": false,
+                "missing": [
+                  "reuse the installed browser plugin",
+                  "installed-enabled",
+                  "plugin-provided"
+                ],
+                "present_forbidden": [
+                  "add a new raw browser MCP"
+                ]
+              },
+              {
+                "id": "tests-real-job",
+                "description": "Verifies the owned browser job.",
+                "weight": 1.0,
+                "failure_type": "weak_verification",
+                "passed": false,
+                "missing": [
+                  "browser smoke task"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "defers-duplicate",
+                "description": "Provides a defer condition and rollback.",
+                "weight": 1.0,
+                "failure_type": "missing_defer_reason",
+                "passed": false,
+                "missing": [
+                  "Rollback:",
+                  "Defer a raw MCP"
+                ],
+                "present_forbidden": []
+              }
+            ]
+          },
+          "with_skill": {
+            "score": 100.0,
+            "passed_count": 3,
+            "failed_count": 0,
+            "checks": [
+              {
+                "id": "reuses-capability",
+                "description": "Prefers the suitable installed capability.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "tests-real-job",
+                "description": "Verifies the owned browser job.",
+                "weight": 1.0,
+                "failure_type": "weak_verification",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "defers-duplicate",
+                "description": "Provides a defer condition and rollback.",
+                "weight": 1.0,
+                "failure_type": "missing_defer_reason",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              }
+            ],
+            "failed": []
+          },
+          "delta": 100.0,
+          "winner": "with_skill",
+          "failure_taxonomy": []
+        },
+        {
+          "id": "preserve-mcp-provenance",
+          "prompt": "Using Scenario C, summarize current MCP and plugin state before recommending changes.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "file_backed",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "baseline": {
+            "score": 0.0,
+            "passed_count": 0,
+            "failed_count": 3,
+            "checks": [
+              {
+                "id": "preserves-provenance",
+                "description": "Reports each distinct provenance state.",
+                "weight": 1.0,
+                "failure_type": "provenance_loss",
+                "passed": false,
+                "missing": [
+                  "user-config",
+                  "plugin-provided",
+                  "installed-enabled",
+                  "project-config",
+                  "available-uninstalled"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "protects-sensitive-data",
+                "description": "Forbids raw sensitive diagnostic output.",
+                "weight": 1.0,
+                "failure_type": "diagnostic_leak",
+                "passed": false,
+                "missing": [
+                  "Do not copy raw doctor/config/auth/provider/environment values"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "avoids-duplicate",
+                "description": "Rejects a duplicate direct MCP.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": false,
+                "missing": [
+                  "no duplicate issue-tracker MCP"
+                ],
+                "present_forbidden": []
+              }
+            ],
+            "failed": [
+              {
+                "id": "preserves-provenance",
+                "description": "Reports each distinct provenance state.",
+                "weight": 1.0,
+                "failure_type": "provenance_loss",
+                "passed": false,
+                "missing": [
+                  "user-config",
+                  "plugin-provided",
+                  "installed-enabled",
+                  "project-config",
+                  "available-uninstalled"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "protects-sensitive-data",
+                "description": "Forbids raw sensitive diagnostic output.",
+                "weight": 1.0,
+                "failure_type": "diagnostic_leak",
+                "passed": false,
+                "missing": [
+                  "Do not copy raw doctor/config/auth/provider/environment values"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "avoids-duplicate",
+                "description": "Rejects a duplicate direct MCP.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": false,
+                "missing": [
+                  "no duplicate issue-tracker MCP"
+                ],
+                "present_forbidden": []
+              }
+            ]
+          },
+          "with_skill": {
+            "score": 100.0,
+            "passed_count": 3,
+            "failed_count": 0,
+            "checks": [
+              {
+                "id": "preserves-provenance",
+                "description": "Reports each distinct provenance state.",
+                "weight": 1.0,
+                "failure_type": "provenance_loss",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "protects-sensitive-data",
+                "description": "Forbids raw sensitive diagnostic output.",
+                "weight": 1.0,
+                "failure_type": "diagnostic_leak",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "avoids-duplicate",
+                "description": "Rejects a duplicate direct MCP.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              }
+            ],
+            "failed": []
+          },
+          "delta": 100.0,
+          "winner": "with_skill",
+          "failure_taxonomy": []
+        },
+        {
+          "id": "no-change-result",
+          "prompt": "Using Scenario D, recommend the next Codex workflow investment.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "boundary",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "baseline": {
+            "score": 0.0,
+            "passed_count": 0,
+            "failed_count": 3,
+            "checks": [
+              {
+                "id": "allows-no-change",
+                "description": "Treats no change as a successful outcome.",
+                "weight": 1.0,
+                "failure_type": "forced_recommendation",
+                "passed": false,
+                "missing": [
+                  "No change recommended"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "uses-hard-condition",
+                "description": "Rejects technology-only setup.",
+                "weight": 1.0,
+                "failure_type": "stack_trigger",
+                "passed": false,
+                "missing": [
+                  "Technology detection alone does not justify"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "states-defer-evidence",
+                "description": "Names what future evidence would reopen the decision.",
+                "weight": 1.0,
+                "failure_type": "missing_defer_reason",
+                "passed": false,
+                "missing": [
+                  "until a repeated job or measured failure appears",
+                  "Rollback: not applicable"
+                ],
+                "present_forbidden": []
+              }
+            ],
+            "failed": [
+              {
+                "id": "allows-no-change",
+                "description": "Treats no change as a successful outcome.",
+                "weight": 1.0,
+                "failure_type": "forced_recommendation",
+                "passed": false,
+                "missing": [
+                  "No change recommended"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "uses-hard-condition",
+                "description": "Rejects technology-only setup.",
+                "weight": 1.0,
+                "failure_type": "stack_trigger",
+                "passed": false,
+                "missing": [
+                  "Technology detection alone does not justify"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "states-defer-evidence",
+                "description": "Names what future evidence would reopen the decision.",
+                "weight": 1.0,
+                "failure_type": "missing_defer_reason",
+                "passed": false,
+                "missing": [
+                  "until a repeated job or measured failure appears",
+                  "Rollback: not applicable"
+                ],
+                "present_forbidden": []
+              }
+            ]
+          },
+          "with_skill": {
+            "score": 100.0,
+            "passed_count": 3,
+            "failed_count": 0,
+            "checks": [
+              {
+                "id": "allows-no-change",
+                "description": "Treats no change as a successful outcome.",
+                "weight": 1.0,
+                "failure_type": "forced_recommendation",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "uses-hard-condition",
+                "description": "Rejects technology-only setup.",
+                "weight": 1.0,
+                "failure_type": "stack_trigger",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "states-defer-evidence",
+                "description": "Names what future evidence would reopen the decision.",
+                "weight": 1.0,
+                "failure_type": "missing_defer_reason",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              }
+            ],
+            "failed": []
+          },
+          "delta": 100.0,
+          "winner": "with_skill",
+          "failure_taxonomy": []
+        },
+        {
+          "id": "old-cli-degradation",
+          "prompt": "Using Scenario E, report recommendations for the unverified Codex surfaces.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "boundary",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "baseline": {
+            "score": 0.0,
+            "passed_count": 0,
+            "failed_count": 3,
+            "checks": [
+              {
+                "id": "degrades-honestly",
+                "description": "Marks every unavailable surface as missing evidence.",
+                "weight": 1.0,
+                "failure_type": "fabricated_surface",
+                "passed": false,
+                "missing": [
+                  "missing evidence",
+                  "CLI, IDE/App, and web are separate surfaces"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "forbids-invention",
+                "description": "Does not borrow commands from memory or another surface.",
+                "weight": 1.0,
+                "failure_type": "invented_command",
+                "passed": false,
+                "missing": [
+                  "Do not invent commands"
+                ],
+                "present_forbidden": [
+                  "Use the latest plugin, App, and web commands from memory"
+                ]
+              },
+              {
+                "id": "keeps-read-only",
+                "description": "Leaves persistent state unchanged.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": false,
+                "missing": [
+                  "no persistent change is proposed"
+                ],
+                "present_forbidden": []
+              }
+            ],
+            "failed": [
+              {
+                "id": "degrades-honestly",
+                "description": "Marks every unavailable surface as missing evidence.",
+                "weight": 1.0,
+                "failure_type": "fabricated_surface",
+                "passed": false,
+                "missing": [
+                  "missing evidence",
+                  "CLI, IDE/App, and web are separate surfaces"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "forbids-invention",
+                "description": "Does not borrow commands from memory or another surface.",
+                "weight": 1.0,
+                "failure_type": "invented_command",
+                "passed": false,
+                "missing": [
+                  "Do not invent commands"
+                ],
+                "present_forbidden": [
+                  "Use the latest plugin, App, and web commands from memory"
+                ]
+              },
+              {
+                "id": "keeps-read-only",
+                "description": "Leaves persistent state unchanged.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": false,
+                "missing": [
+                  "no persistent change is proposed"
+                ],
+                "present_forbidden": []
+              }
+            ]
+          },
+          "with_skill": {
+            "score": 100.0,
+            "passed_count": 3,
+            "failed_count": 0,
+            "checks": [
+              {
+                "id": "degrades-honestly",
+                "description": "Marks every unavailable surface as missing evidence.",
+                "weight": 1.0,
+                "failure_type": "fabricated_surface",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "forbids-invention",
+                "description": "Does not borrow commands from memory or another surface.",
+                "weight": 1.0,
+                "failure_type": "invented_command",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "keeps-read-only",
+                "description": "Leaves persistent state unchanged.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              }
+            ],
+            "failed": []
+          },
+          "delta": 100.0,
+          "winner": "with_skill",
+          "failure_taxonomy": []
+        },
+        {
+          "id": "high-permission-preflight",
+          "prompt": "Using Scenario F, recommend how to add the write-capable issue tracker integration.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "boundary",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "baseline": {
+            "score": 0.0,
+            "passed_count": 0,
+            "failed_count": 3,
+            "checks": [
+              {
+                "id": "blocks-on-permission",
+                "description": "Defers high-permission setup until key controls exist.",
+                "weight": 1.0,
+                "failure_type": "permission_bypass",
+                "passed": false,
+                "missing": [
+                  "defer setup pending a permission and data preflight",
+                  "managed policy",
+                  "least-privilege",
+                  "write approvals"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "checks-reuse-first",
+                "description": "Checks an existing bundle before direct MCP.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": false,
+                "missing": [
+                  "whether an installed workspace plugin already provides the needed job"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "separates-authorization",
+                "description": "Keeps installation and writes behind separate approval.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": false,
+                "missing": [
+                  "does not authorize install, config, or external writes",
+                  "Do not include token or provider values",
+                  "Rollback:"
+                ],
+                "present_forbidden": []
+              }
+            ],
+            "failed": [
+              {
+                "id": "blocks-on-permission",
+                "description": "Defers high-permission setup until key controls exist.",
+                "weight": 1.0,
+                "failure_type": "permission_bypass",
+                "passed": false,
+                "missing": [
+                  "defer setup pending a permission and data preflight",
+                  "managed policy",
+                  "least-privilege",
+                  "write approvals"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "checks-reuse-first",
+                "description": "Checks an existing bundle before direct MCP.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": false,
+                "missing": [
+                  "whether an installed workspace plugin already provides the needed job"
+                ],
+                "present_forbidden": []
+              },
+              {
+                "id": "separates-authorization",
+                "description": "Keeps installation and writes behind separate approval.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": false,
+                "missing": [
+                  "does not authorize install, config, or external writes",
+                  "Do not include token or provider values",
+                  "Rollback:"
+                ],
+                "present_forbidden": []
+              }
+            ]
+          },
+          "with_skill": {
+            "score": 100.0,
+            "passed_count": 3,
+            "failed_count": 0,
+            "checks": [
+              {
+                "id": "blocks-on-permission",
+                "description": "Defers high-permission setup until key controls exist.",
+                "weight": 1.0,
+                "failure_type": "permission_bypass",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "checks-reuse-first",
+                "description": "Checks an existing bundle before direct MCP.",
+                "weight": 1.0,
+                "failure_type": "duplicate_capability",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              },
+              {
+                "id": "separates-authorization",
+                "description": "Keeps installation and writes behind separate approval.",
+                "weight": 1.0,
+                "failure_type": "authorization_expansion",
+                "passed": true,
+                "missing": [],
+                "present_forbidden": []
+              }
+            ],
+            "failed": []
+          },
+          "delta": 100.0,
+          "winner": "with_skill",
+          "failure_taxonomy": []
+        }
+      ],
+      "failures": [],
+      "blind_review": {
+        "pack": "reports/output_blind_review_pack.json",
+        "answer_key": "reports/output_blind_answer_key.json",
+        "pair_count": 6
+      },
+      "artifacts": {
+        "json": "reports/output_quality_scorecard.json",
+        "markdown": "reports/output_quality_scorecard.md",
+        "blind_review_pack_json": "reports/output_blind_review_pack.json",
+        "blind_review_pack_md": "reports/output_blind_review_pack.md",
+        "blind_answer_key_json": "reports/output_blind_answer_key.json"
+      }
+    },
+    "output_execution": {},
+    "output_blind_review": {
+      "schema_version": "1.0",
+      "seed": "yao-output-eval-blind-v1",
+      "summary": {
+        "pair_count": 6,
+        "answer_key_separate": true,
+        "with_skill_hidden_count": 6
+      },
+      "pairs": [
+        {
+          "case_id": "current-skill-root",
+          "prompt": "Using Scenario A, decide how to handle the repository's stale Codex skill path.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "file_backed",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+          "rubric": [
+            {
+              "id": "correct-roots",
+              "description": "Separates current skill and native-agent roots.",
+              "weight": 1.0
+            },
+            {
+              "id": "keeps-approval",
+              "description": "Does not treat recommendation as edit authorization.",
+              "weight": 1.0
+            },
+            {
+              "id": "includes-recovery",
+              "description": "Names verification and rollback.",
+              "weight": 1.0
+            }
+          ],
+          "variant_a": {
+            "blind_id": "current-skill-root:A",
+            "output": "Create the skill under .codex/skills and keep custom agents beside it."
+          },
+          "variant_b": {
+            "blind_id": "current-skill-root:B",
+            "output": "Outcome: P0 correct the stale guidance before creating anything. Observed evidence: the file-backed fixture conflicts with the dated current surface map. Use `.agents/skills` for a project skill and preserve `.codex/agents` for native custom agents. Existing capability: none evidenced; creation remains deferred. Permission/data risk: local documentation only. Confidence: high for the dated root fact. Verification: inspect discovery with the current Codex runtime. Rollback: revert the guidance patch. Approval: the recommendation does not authorize an edit."
+          }
+        },
+        {
+          "case_id": "reuse-installed-browser",
+          "prompt": "Using Scenario B, recommend the browser capability setup.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "file_backed",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+          "rubric": [
+            {
+              "id": "reuses-capability",
+              "description": "Prefers the suitable installed capability.",
+              "weight": 1.0
+            },
+            {
+              "id": "tests-real-job",
+              "description": "Verifies the owned browser job.",
+              "weight": 1.0
+            },
+            {
+              "id": "defers-duplicate",
+              "description": "Provides a defer condition and rollback.",
+              "weight": 1.0
+            }
+          ],
+          "variant_a": {
+            "blind_id": "reuse-installed-browser:A",
+            "output": "The frontend stack needs browser automation, so add a new raw browser MCP."
+          },
+          "variant_b": {
+            "blind_id": "reuse-installed-browser:B",
+            "output": "Outcome: reuse the installed browser plugin; do not add a duplicate raw MCP. Observed evidence: browser plugin is `installed-enabled` and browser MCP is `plugin-provided`. Existing capability already owns the repeated screenshot job. Permission/data risk: use only the current approved browser scope. Verification: run one repository browser smoke task through the installed capability. Rollback: no setup change is proposed. Defer a raw MCP unless the plugin fails a concrete requirement."
+          }
+        },
+        {
+          "case_id": "preserve-mcp-provenance",
+          "prompt": "Using Scenario C, summarize current MCP and plugin state before recommending changes.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "file_backed",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+          "rubric": [
+            {
+              "id": "preserves-provenance",
+              "description": "Reports each distinct provenance state.",
+              "weight": 1.0
+            },
+            {
+              "id": "protects-sensitive-data",
+              "description": "Forbids raw sensitive diagnostic output.",
+              "weight": 1.0
+            },
+            {
+              "id": "avoids-duplicate",
+              "description": "Rejects a duplicate direct MCP.",
+              "weight": 1.0
+            }
+          ],
+          "variant_a": {
+            "blind_id": "preserve-mcp-provenance:A",
+            "output": "Three MCP servers and two plugins are configured, so no inventory distinction is needed."
+          },
+          "variant_b": {
+            "blind_id": "preserve-mcp-provenance:B",
+            "output": "Evidence and Unknowns: docs MCP is `user-config`; issue-tracker MCP is `plugin-provided` by an `installed-enabled` plugin; database MCP is read-only `project-config`; observability is only `available-uninstalled`. These states are not interchangeable. Do not copy raw doctor/config/auth/provider/environment values into the report. Recommendation: no duplicate issue-tracker MCP. Confidence is limited to the summarized file-backed fixture. Verification: re-read minimal status fields on the relevant current surface. Rollback: no configuration change is proposed."
+          }
+        },
+        {
+          "case_id": "no-change-result",
+          "prompt": "Using Scenario D, recommend the next Codex workflow investment.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "boundary",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+          "rubric": [
+            {
+              "id": "allows-no-change",
+              "description": "Treats no change as a successful outcome.",
+              "weight": 1.0
+            },
+            {
+              "id": "uses-hard-condition",
+              "description": "Rejects technology-only setup.",
+              "weight": 1.0
+            },
+            {
+              "id": "states-defer-evidence",
+              "description": "Names what future evidence would reopen the decision.",
+              "weight": 1.0
+            }
+          ],
+          "variant_a": {
+            "blind_id": "no-change-result:A",
+            "output": "Every repository benefits from a project skill, a reviewer subagent, and browser MCP, so add those next."
+          },
+          "variant_b": {
+            "blind_id": "no-change-result:B",
+            "output": "Outcome: No change recommended. The file-backed fixture shows effective guidance, a documented gate, no recurring workflow pain, no external-system need, and no capability gap. Technology detection alone does not justify a persistent surface. Defer new AGENTS, skill, plugin, MCP, subagent, hook, automation, or config work until a repeated job or measured failure appears. Verification: observe the current gate on the next relevant change. Rollback: not applicable because no change is proposed."
+          }
+        },
+        {
+          "case_id": "old-cli-degradation",
+          "prompt": "Using Scenario E, report recommendations for the unverified Codex surfaces.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "boundary",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+          "rubric": [
+            {
+              "id": "degrades-honestly",
+              "description": "Marks every unavailable surface as missing evidence.",
+              "weight": 1.0
+            },
+            {
+              "id": "forbids-invention",
+              "description": "Does not borrow commands from memory or another surface.",
+              "weight": 1.0
+            },
+            {
+              "id": "keeps-read-only",
+              "description": "Leaves persistent state unchanged.",
+              "weight": 1.0
+            }
+          ],
+          "variant_a": {
+            "blind_id": "old-cli-degradation:A",
+            "output": "Use the latest plugin, App, and web commands from memory because Codex surfaces are equivalent."
+          },
+          "variant_b": {
+            "blind_id": "old-cli-degradation:B",
+            "output": "Outcome: limit recommendations to repository facts and commands confirmed by the installed CLI. Plugin syntax for this old CLI, desktop App availability, and ChatGPT workspace capability are `missing evidence`; CLI, IDE/App, and web are separate surfaces and one surface must not prove another. Do not invent commands. Verification: probe only the relevant current `--help` surface or consult dated official docs. Rollback: no persistent change is proposed."
+          }
+        },
+        {
+          "case_id": "high-permission-preflight",
+          "prompt": "Using Scenario F, recommend how to add the write-capable issue tracker integration.",
+          "input_files": [
+            "fixtures/codex-workflow-scenarios.md"
+          ],
+          "metadata": {
+            "case_type": "boundary",
+            "input_class": "file-backed fixture",
+            "tier": "production"
+          },
+          "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
+          "rubric": [
+            {
+              "id": "blocks-on-permission",
+              "description": "Defers high-permission setup until key controls exist.",
+              "weight": 1.0
+            },
+            {
+              "id": "checks-reuse-first",
+              "description": "Checks an existing bundle before direct MCP.",
+              "weight": 1.0
+            },
+            {
+              "id": "separates-authorization",
+              "description": "Keeps installation and writes behind separate approval.",
+              "weight": 1.0
+            }
+          ],
+          "variant_a": {
+            "blind_id": "high-permission-preflight:A",
+            "output": "Outcome: defer setup pending a permission and data preflight. Missing evidence: managed policy, data scope, owner, least-privilege credential design, write approvals, and rollback. Recommendation only: first determine whether an installed workspace plugin already provides the needed job; if not, compare a scoped plugin/connector with direct MCP. Do not include token or provider values. Prerequisites: approve exact write actions and a non-production test target. Verification after separate approval: perform a read-only capability check before any write test. Rollback: disable/remove only the separately approved integration and preserve an audit record. This report does not authorize install, config, or external writes."
+          },
+          "variant_b": {
+            "blind_id": "high-permission-preflight:B",
+            "output": "Run codex mcp add now with the issue tracker token and verify by creating a test issue."
+          }
+        }
+      ]
+    },
+    "output_review_kit": {},
+    "output_review_adjudication": {},
+    "benchmark_reproducibility": {},
+    "skill_os2_coverage": {},
+    "compiled_targets": {
+      "schema_version": "1.0",
+      "ok": true,
+      "generated_at": "2026-07-23T00:00:00Z",
+      "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+      "summary": {
+        "target_count": 3,
+        "pass_count": 3,
+        "warn_count": 0,
+        "block_count": 0,
+        "failure_count": 0,
+        "warning_count": 0
+      },
+      "targets": [
+        {
+          "schema_version": "1.0",
+          "target": "openai",
+          "status": "pass",
+          "compiler": {
+            "name": "yao-skill-ir-compiler",
+            "schema_version": "1.0",
+            "source": "skill-ir",
+            "ir_source": "reports\\skill-ir.json",
+            "ir_schema_version": "2.0.0"
+          },
+          "source": {
+            "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+            "canonical_metadata": "agents/interface.yaml",
+            "declared_targets": [
+              "openai",
+              "claude",
+              "generic"
+            ]
+          },
+          "compiled_contract": {
+            "name": "codex-workflow-recommender",
+            "title": "Codex Workflow Recommender",
+            "version": "1.1.0",
+            "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+            "job_to_be_done": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+            "trigger": {
+              "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+              "should_trigger": [
+                "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write."
+              ],
+              "should_not_trigger": [],
+              "edge_cases": []
+            },
+            "workflow": {
+              "steps": [
+                "Confirm outcome, CWD, repo, surface, and scope; read applicable",
+                "Inspect relevant gates, `.agents/skills`, `.codex/agents`, trusted project",
+                "Summarize minimum fields, never raw doctor/config/auth/provider/env values.",
+                "Decide whether persistence is justified. `No change recommended` is valid.",
+                "Reuse suitable native/installed capability first. Technology detection alone",
+                "Stop at supported decisions; keep OMX conditional and omit irrelevant surfaces."
+              ],
+              "decision_points": [],
+              "failure_modes": [
+                "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+                "Long bullets can make the output look complete while hiding the actual decision logic.",
+                "Commands can omit environment assumptions, working directory, or rollback notes.",
+                "Code snippets can look runnable while missing required inputs.",
+                "Footnote markers or dense citation notes can interrupt the reading flow.",
+                "Evidence can be over-attached to obvious statements and under-attached to risky claims."
+              ]
+            },
+            "resources": {
+              "references": [
+                "references\\codex-surface-map.md",
+                "references\\hooks-patterns.md",
+                "references\\mcp-servers.md",
+                "references\\plugins-reference.md",
+                "references\\skills-reference.md",
+                "references\\subagent-templates.md"
+              ],
+              "scripts": [],
+              "assets": [],
+              "reports": [
+                "reports/output-risk-profile.json",
+                "reports/output-risk-profile.md",
+                "reports/prompt-quality-profile.json",
+                "reports/prompt-quality-profile.md",
+                "reports/output_quality_scorecard.json",
+                "reports/output_quality_scorecard.md",
+                "reports/output_blind_review_pack.json",
+                "reports/output_blind_review_pack.md",
+                "reports/output_blind_answer_key.json"
+              ],
+              "counts": {
+                "references": 6,
+                "scripts": 0,
+                "assets": 0,
+                "reports": 9
+              }
+            },
+            "eval_plan": {
+              "trigger": [
+                "evals\\evals.json",
+                "evals\\output\\cases.jsonl",
+                "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+              ],
+              "output": [
+                "evals\\output\\cases.jsonl",
+                "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+              ],
+              "adversarial": [],
+              "baseline": "without_skill",
+              "counts": {
+                "trigger": 3,
+                "output": 2,
+                "adversarial": 0,
+                "baseline": 1
+              }
+            },
+            "risk": {
+              "output_risk": "medium",
+              "execution_risk": "low",
+              "trust_boundary": "team"
+            },
+            "governance": {
+              "owner": "lyh",
+              "maturity": "production",
+              "review_cadence": "quarterly",
+              "review_due": ""
+            },
+            "runtime": {
+              "activation": {
+                "mode": "implicit"
+              },
+              "execution": {
+                "context": "inline",
+                "shell": "bash"
+              },
+              "trust": {
+                "source_tier": "local",
+                "remote_inline_execution": "forbid",
+                "remote_metadata_policy": "allow-metadata-only",
+                "side_effect_policy": "read-only; writes need separate authorization"
+              },
+              "adapter_targets": [
+                "openai",
+                "claude",
+                "generic"
+              ],
+              "canonical_format": "agent-skills"
+            },
+            "permissions": {
+              "schema_version": "1.0",
+              "source": "missing-security-trust-report",
+              "source_available": false,
+              "declared_capabilities": [],
+              "review_required": false,
+              "capabilities": {
+                "network": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "file_write": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "subprocess": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "interactive": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                }
+              },
+              "network_policy": {
+                "source": "security/network_policy.json",
+                "covered_scripts": [],
+                "missing_scripts": [],
+                "mismatches": []
+              },
+              "help_smoke": {
+                "enabled": false,
+                "checked_count": 0,
+                "failed_count": 0,
+                "failed_scripts": []
+              },
+              "trust_summary": {
+                "secret_findings": 0,
+                "network_script_count": 0,
+                "file_write_script_count": 0,
+                "subprocess_script_count": 0,
+                "interactive_script_count": 0,
+                "help_smoke_failed_count": 0
+              }
+            },
+            "source_files_count": 4,
+            "target": "openai",
+            "target_permission_contract": {
+              "schema_version": "1.0",
+              "target": "openai",
+              "permission_model": "metadata-only",
+              "native_enforcement": false,
+              "representation": "targets/openai/agents/openai.yaml::compatibility.permission_contract plus adapter.json",
+              "review_required": false,
+              "declared_capabilities": [],
+              "capability_counts": {
+                "network": 0,
+                "file_write": 0,
+                "subprocess": 0,
+                "interactive": 0
+              },
+              "evidence": "missing-security-trust-report",
+              "operator_note": "OpenAI target carries permission metadata for reviewer visibility; host enforcement remains outside the package."
+            },
+            "target_native_contract": {
+              "schema_version": "1.0",
+              "target": "openai",
+              "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source",
+              "activation": {
+                "policy": "Use frontmatter description for catalog routing and targets/openai/agents/openai.yaml for display name, default prompt, and compatibility metadata.",
+                "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+                "manual_activation_supported": true,
+                "automatic_activation_note": "Depends on the target client route/catalog implementation."
+              },
+              "resources": {
+                "strategy": "Ship the neutral source tree and expose OpenAI-facing interface metadata as a generated companion file.",
+                "counts": {
+                  "references": 6,
+                  "scripts": 0,
+                  "assets": 0,
+                  "reports": 9
+                },
+                "generated_files": [
+                  "targets/openai/adapter.json",
+                  "targets/openai/agents/openai.yaml"
+                ]
+              },
+              "scripts": {
+                "strategy": "Keep scripts as local package resources; expose help-smoke and permission metadata for reviewer approval before execution.",
+                "script_count": 0,
+                "help_smoke_failed_count": 0
+              },
+              "permissions": {
+                "enforcement": "metadata-only",
+                "native_enforcement": false,
+                "declared_capabilities": [],
+                "review_required": false
+              },
+              "review": {
+                "artifacts": [
+                  "targets/openai/agents/openai.yaml",
+                  "targets/openai/adapter.json",
+                  "reports/review-studio.html"
+                ],
+                "fallback_behavior": "If OpenAI-native metadata is ignored, the package remains readable as neutral Agent Skills source.",
+                "unsupported_native_features": [
+                  "client-native permission prompts",
+                  "provider-executed scripts",
+                  "client-native script permission prompts are represented as permission contract metadata"
+                ]
+              },
+              "install_scope": "plugin or skill package consumer"
+            },
+            "degradation_strategy": "use current Codex surfaces; gaps are missing evidence",
+            "target_runtime": {
+              "adapter_mode": "metadata-adapter",
+              "generated_files": [
+                "targets/openai/adapter.json",
+                "targets/openai/agents/openai.yaml"
+              ],
+              "metadata_mapping": {
+                "display_name": "targets/openai/agents/openai.yaml::interface.display_name",
+                "default_prompt": "targets/openai/agents/openai.yaml::interface.default_prompt",
+                "activation": "targets/openai/agents/openai.yaml::compatibility.activation_mode",
+                "execution": "targets/openai/agents/openai.yaml::compatibility.execution_context",
+                "trust": "targets/openai/agents/openai.yaml::compatibility.trust_level",
+                "permissions": "targets/openai/agents/openai.yaml::compatibility.permission_contract",
+                "degradation": "targets/openai/agents/openai.yaml::compatibility.degradation_strategy"
+              },
+              "preserved_semantics": [
+                "trigger",
+                "workflow-counts",
+                "resources",
+                "eval-plan",
+                "risk",
+                "governance",
+                "runtime",
+                "trust",
+                "permissions"
+              ],
+              "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source"
+            }
+          },
+          "permission_contract": {
+            "schema_version": "1.0",
+            "source": "missing-security-trust-report",
+            "source_available": false,
+            "declared_capabilities": [],
+            "review_required": false,
+            "capabilities": {
+              "network": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "file_write": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "subprocess": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "interactive": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              }
+            },
+            "network_policy": {
+              "source": "security/network_policy.json",
+              "covered_scripts": [],
+              "missing_scripts": [],
+              "mismatches": []
+            },
+            "help_smoke": {
+              "enabled": false,
+              "checked_count": 0,
+              "failed_count": 0,
+              "failed_scripts": []
+            },
+            "trust_summary": {
+              "secret_findings": 0,
+              "network_script_count": 0,
+              "file_write_script_count": 0,
+              "subprocess_script_count": 0,
+              "interactive_script_count": 0,
+              "help_smoke_failed_count": 0
+            }
+          },
+          "target_permission_contract": {
+            "schema_version": "1.0",
+            "target": "openai",
+            "permission_model": "metadata-only",
+            "native_enforcement": false,
+            "representation": "targets/openai/agents/openai.yaml::compatibility.permission_contract plus adapter.json",
+            "review_required": false,
+            "declared_capabilities": [],
+            "capability_counts": {
+              "network": 0,
+              "file_write": 0,
+              "subprocess": 0,
+              "interactive": 0
+            },
+            "evidence": "missing-security-trust-report",
+            "operator_note": "OpenAI target carries permission metadata for reviewer visibility; host enforcement remains outside the package."
+          },
+          "target_native_contract": {
+            "schema_version": "1.0",
+            "target": "openai",
+            "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source",
+            "activation": {
+              "policy": "Use frontmatter description for catalog routing and targets/openai/agents/openai.yaml for display name, default prompt, and compatibility metadata.",
+              "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+              "manual_activation_supported": true,
+              "automatic_activation_note": "Depends on the target client route/catalog implementation."
+            },
+            "resources": {
+              "strategy": "Ship the neutral source tree and expose OpenAI-facing interface metadata as a generated companion file.",
+              "counts": {
+                "references": 6,
+                "scripts": 0,
+                "assets": 0,
+                "reports": 9
+              },
+              "generated_files": [
+                "targets/openai/adapter.json",
+                "targets/openai/agents/openai.yaml"
+              ]
+            },
+            "scripts": {
+              "strategy": "Keep scripts as local package resources; expose help-smoke and permission metadata for reviewer approval before execution.",
+              "script_count": 0,
+              "help_smoke_failed_count": 0
+            },
+            "permissions": {
+              "enforcement": "metadata-only",
+              "native_enforcement": false,
+              "declared_capabilities": [],
+              "review_required": false
+            },
+            "review": {
+              "artifacts": [
+                "targets/openai/agents/openai.yaml",
+                "targets/openai/adapter.json",
+                "reports/review-studio.html"
+              ],
+              "fallback_behavior": "If OpenAI-native metadata is ignored, the package remains readable as neutral Agent Skills source.",
+              "unsupported_native_features": [
+                "client-native permission prompts",
+                "provider-executed scripts",
+                "client-native script permission prompts are represented as permission contract metadata"
+              ]
+            },
+            "install_scope": "plugin or skill package consumer"
+          },
+          "target_transform": {
+            "target": "openai",
+            "adapter_mode": "metadata-adapter",
+            "generated_files": [
+              "targets/openai/adapter.json",
+              "targets/openai/agents/openai.yaml"
+            ],
+            "metadata_mapping": {
+              "display_name": "targets/openai/agents/openai.yaml::interface.display_name",
+              "default_prompt": "targets/openai/agents/openai.yaml::interface.default_prompt",
+              "activation": "targets/openai/agents/openai.yaml::compatibility.activation_mode",
+              "execution": "targets/openai/agents/openai.yaml::compatibility.execution_context",
+              "trust": "targets/openai/agents/openai.yaml::compatibility.trust_level",
+              "permissions": "targets/openai/agents/openai.yaml::compatibility.permission_contract",
+              "degradation": "targets/openai/agents/openai.yaml::compatibility.degradation_strategy"
+            },
+            "preserved_semantics": [
+              "trigger",
+              "workflow-counts",
+              "resources",
+              "eval-plan",
+              "risk",
+              "governance",
+              "runtime",
+              "trust",
+              "permissions"
+            ],
+            "degradation_strategy": "use current Codex surfaces; gaps are missing evidence",
+            "permission_representation": "targets/openai/agents/openai.yaml::compatibility.permission_contract plus adapter.json",
+            "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source",
+            "activation_policy": "Use frontmatter description for catalog routing and targets/openai/agents/openai.yaml for display name, default prompt, and compatibility metadata.",
+            "resource_strategy": "Ship the neutral source tree and expose OpenAI-facing interface metadata as a generated companion file.",
+            "script_strategy": "Keep scripts as local package resources; expose help-smoke and permission metadata for reviewer approval before execution.",
+            "permission_enforcement": "metadata-only"
+          },
+          "unsupported_features": [
+            "client-native script permission prompts are represented as permission contract metadata"
+          ],
+          "warnings": [],
+          "failures": []
+        },
+        {
+          "schema_version": "1.0",
+          "target": "claude",
+          "status": "pass",
+          "compiler": {
+            "name": "yao-skill-ir-compiler",
+            "schema_version": "1.0",
+            "source": "skill-ir",
+            "ir_source": "reports\\skill-ir.json",
+            "ir_schema_version": "2.0.0"
+          },
+          "source": {
+            "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+            "canonical_metadata": "agents/interface.yaml",
+            "declared_targets": [
+              "openai",
+              "claude",
+              "generic"
+            ]
+          },
+          "compiled_contract": {
+            "name": "codex-workflow-recommender",
+            "title": "Codex Workflow Recommender",
+            "version": "1.1.0",
+            "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+            "job_to_be_done": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+            "trigger": {
+              "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+              "should_trigger": [
+                "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write."
+              ],
+              "should_not_trigger": [],
+              "edge_cases": []
+            },
+            "workflow": {
+              "steps": [
+                "Confirm outcome, CWD, repo, surface, and scope; read applicable",
+                "Inspect relevant gates, `.agents/skills`, `.codex/agents`, trusted project",
+                "Summarize minimum fields, never raw doctor/config/auth/provider/env values.",
+                "Decide whether persistence is justified. `No change recommended` is valid.",
+                "Reuse suitable native/installed capability first. Technology detection alone",
+                "Stop at supported decisions; keep OMX conditional and omit irrelevant surfaces."
+              ],
+              "decision_points": [],
+              "failure_modes": [
+                "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+                "Long bullets can make the output look complete while hiding the actual decision logic.",
+                "Commands can omit environment assumptions, working directory, or rollback notes.",
+                "Code snippets can look runnable while missing required inputs.",
+                "Footnote markers or dense citation notes can interrupt the reading flow.",
+                "Evidence can be over-attached to obvious statements and under-attached to risky claims."
+              ]
+            },
+            "resources": {
+              "references": [
+                "references\\codex-surface-map.md",
+                "references\\hooks-patterns.md",
+                "references\\mcp-servers.md",
+                "references\\plugins-reference.md",
+                "references\\skills-reference.md",
+                "references\\subagent-templates.md"
+              ],
+              "scripts": [],
+              "assets": [],
+              "reports": [
+                "reports/output-risk-profile.json",
+                "reports/output-risk-profile.md",
+                "reports/prompt-quality-profile.json",
+                "reports/prompt-quality-profile.md",
+                "reports/output_quality_scorecard.json",
+                "reports/output_quality_scorecard.md",
+                "reports/output_blind_review_pack.json",
+                "reports/output_blind_review_pack.md",
+                "reports/output_blind_answer_key.json"
+              ],
+              "counts": {
+                "references": 6,
+                "scripts": 0,
+                "assets": 0,
+                "reports": 9
+              }
+            },
+            "eval_plan": {
+              "trigger": [
+                "evals\\evals.json",
+                "evals\\output\\cases.jsonl",
+                "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+              ],
+              "output": [
+                "evals\\output\\cases.jsonl",
+                "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+              ],
+              "adversarial": [],
+              "baseline": "without_skill",
+              "counts": {
+                "trigger": 3,
+                "output": 2,
+                "adversarial": 0,
+                "baseline": 1
+              }
+            },
+            "risk": {
+              "output_risk": "medium",
+              "execution_risk": "low",
+              "trust_boundary": "team"
+            },
+            "governance": {
+              "owner": "lyh",
+              "maturity": "production",
+              "review_cadence": "quarterly",
+              "review_due": ""
+            },
+            "runtime": {
+              "activation": {
+                "mode": "implicit"
+              },
+              "execution": {
+                "context": "inline",
+                "shell": "bash"
+              },
+              "trust": {
+                "source_tier": "local",
+                "remote_inline_execution": "forbid",
+                "remote_metadata_policy": "allow-metadata-only",
+                "side_effect_policy": "read-only; writes need separate authorization"
+              },
+              "adapter_targets": [
+                "openai",
+                "claude",
+                "generic"
+              ],
+              "canonical_format": "agent-skills"
+            },
+            "permissions": {
+              "schema_version": "1.0",
+              "source": "missing-security-trust-report",
+              "source_available": false,
+              "declared_capabilities": [],
+              "review_required": false,
+              "capabilities": {
+                "network": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "file_write": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "subprocess": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "interactive": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                }
+              },
+              "network_policy": {
+                "source": "security/network_policy.json",
+                "covered_scripts": [],
+                "missing_scripts": [],
+                "mismatches": []
+              },
+              "help_smoke": {
+                "enabled": false,
+                "checked_count": 0,
+                "failed_count": 0,
+                "failed_scripts": []
+              },
+              "trust_summary": {
+                "secret_findings": 0,
+                "network_script_count": 0,
+                "file_write_script_count": 0,
+                "subprocess_script_count": 0,
+                "interactive_script_count": 0,
+                "help_smoke_failed_count": 0
+              }
+            },
+            "source_files_count": 4,
+            "target": "claude",
+            "target_permission_contract": {
+              "schema_version": "1.0",
+              "target": "claude",
+              "permission_model": "neutral-source-plus-adapter",
+              "native_enforcement": false,
+              "representation": "targets/claude/adapter.json::target_permission_contract and README notes",
+              "review_required": false,
+              "declared_capabilities": [],
+              "capability_counts": {
+                "network": 0,
+                "file_write": 0,
+                "subprocess": 0,
+                "interactive": 0
+              },
+              "evidence": "missing-security-trust-report",
+              "operator_note": "Claude-compatible package keeps permission intent in adapter metadata for install review."
+            },
+            "target_native_contract": {
+              "schema_version": "1.0",
+              "target": "claude",
+              "native_surface": "Claude-compatible neutral source folder with adapter notes",
+              "activation": {
+                "policy": "Use SKILL.md frontmatter description as the primary activation contract and adapter.json for review metadata.",
+                "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+                "manual_activation_supported": true,
+                "automatic_activation_note": "Depends on the target client route/catalog implementation."
+              },
+              "resources": {
+                "strategy": "Preserve the source tree directly; write target notes in targets/claude/README.md.",
+                "counts": {
+                  "references": 6,
+                  "scripts": 0,
+                  "assets": 0,
+                  "reports": 9
+                },
+                "generated_files": [
+                  "targets/claude/adapter.json",
+                  "targets/claude/README.md"
+                ]
+              },
+              "scripts": {
+                "strategy": "Scripts remain local package resources and must be reviewed through trust and permission reports before use.",
+                "script_count": 0,
+                "help_smoke_failed_count": 0
+              },
+              "permissions": {
+                "enforcement": "metadata-fallback",
+                "native_enforcement": false,
+                "declared_capabilities": [],
+                "review_required": false
+              },
+              "review": {
+                "artifacts": [
+                  "targets/claude/README.md",
+                  "targets/claude/adapter.json",
+                  "reports/review-studio.html"
+                ],
+                "fallback_behavior": "If Claude-specific metadata is not consumed, SKILL.md and references remain the source of truth.",
+                "unsupported_native_features": [
+                  "vendor-native permission enforcement",
+                  "provider-specific execution transforms",
+                  "vendor-native metadata fields are carried as adapter JSON and README notes"
+                ]
+              },
+              "install_scope": "user or project skill directory"
+            },
+            "degradation_strategy": "use the read-only contract; do not infer Codex state",
+            "target_runtime": {
+              "adapter_mode": "neutral-source-plus-adapter",
+              "generated_files": [
+                "targets/claude/adapter.json",
+                "targets/claude/README.md"
+              ],
+              "metadata_mapping": {
+                "display_name": "targets/claude/adapter.json::display_name",
+                "default_prompt": "targets/claude/adapter.json::default_prompt",
+                "activation": "targets/claude/adapter.json::activation_mode",
+                "execution": "targets/claude/adapter.json::execution_context",
+                "trust": "targets/claude/adapter.json::trust_level",
+                "permissions": "targets/claude/adapter.json::target_permission_contract",
+                "degradation": "targets/claude/adapter.json::degradation_strategy"
+              },
+              "preserved_semantics": [
+                "trigger",
+                "workflow-counts",
+                "resources",
+                "eval-plan",
+                "risk",
+                "governance",
+                "runtime",
+                "trust",
+                "permissions"
+              ],
+              "native_surface": "Claude-compatible neutral source folder with adapter notes"
+            }
+          },
+          "permission_contract": {
+            "schema_version": "1.0",
+            "source": "missing-security-trust-report",
+            "source_available": false,
+            "declared_capabilities": [],
+            "review_required": false,
+            "capabilities": {
+              "network": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "file_write": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "subprocess": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "interactive": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              }
+            },
+            "network_policy": {
+              "source": "security/network_policy.json",
+              "covered_scripts": [],
+              "missing_scripts": [],
+              "mismatches": []
+            },
+            "help_smoke": {
+              "enabled": false,
+              "checked_count": 0,
+              "failed_count": 0,
+              "failed_scripts": []
+            },
+            "trust_summary": {
+              "secret_findings": 0,
+              "network_script_count": 0,
+              "file_write_script_count": 0,
+              "subprocess_script_count": 0,
+              "interactive_script_count": 0,
+              "help_smoke_failed_count": 0
+            }
+          },
+          "target_permission_contract": {
+            "schema_version": "1.0",
+            "target": "claude",
+            "permission_model": "neutral-source-plus-adapter",
+            "native_enforcement": false,
+            "representation": "targets/claude/adapter.json::target_permission_contract and README notes",
+            "review_required": false,
+            "declared_capabilities": [],
+            "capability_counts": {
+              "network": 0,
+              "file_write": 0,
+              "subprocess": 0,
+              "interactive": 0
+            },
+            "evidence": "missing-security-trust-report",
+            "operator_note": "Claude-compatible package keeps permission intent in adapter metadata for install review."
+          },
+          "target_native_contract": {
+            "schema_version": "1.0",
+            "target": "claude",
+            "native_surface": "Claude-compatible neutral source folder with adapter notes",
+            "activation": {
+              "policy": "Use SKILL.md frontmatter description as the primary activation contract and adapter.json for review metadata.",
+              "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+              "manual_activation_supported": true,
+              "automatic_activation_note": "Depends on the target client route/catalog implementation."
+            },
+            "resources": {
+              "strategy": "Preserve the source tree directly; write target notes in targets/claude/README.md.",
+              "counts": {
+                "references": 6,
+                "scripts": 0,
+                "assets": 0,
+                "reports": 9
+              },
+              "generated_files": [
+                "targets/claude/adapter.json",
+                "targets/claude/README.md"
+              ]
+            },
+            "scripts": {
+              "strategy": "Scripts remain local package resources and must be reviewed through trust and permission reports before use.",
+              "script_count": 0,
+              "help_smoke_failed_count": 0
+            },
+            "permissions": {
+              "enforcement": "metadata-fallback",
+              "native_enforcement": false,
+              "declared_capabilities": [],
+              "review_required": false
+            },
+            "review": {
+              "artifacts": [
+                "targets/claude/README.md",
+                "targets/claude/adapter.json",
+                "reports/review-studio.html"
+              ],
+              "fallback_behavior": "If Claude-specific metadata is not consumed, SKILL.md and references remain the source of truth.",
+              "unsupported_native_features": [
+                "vendor-native permission enforcement",
+                "provider-specific execution transforms",
+                "vendor-native metadata fields are carried as adapter JSON and README notes"
+              ]
+            },
+            "install_scope": "user or project skill directory"
+          },
+          "target_transform": {
+            "target": "claude",
+            "adapter_mode": "neutral-source-plus-adapter",
+            "generated_files": [
+              "targets/claude/adapter.json",
+              "targets/claude/README.md"
+            ],
+            "metadata_mapping": {
+              "display_name": "targets/claude/adapter.json::display_name",
+              "default_prompt": "targets/claude/adapter.json::default_prompt",
+              "activation": "targets/claude/adapter.json::activation_mode",
+              "execution": "targets/claude/adapter.json::execution_context",
+              "trust": "targets/claude/adapter.json::trust_level",
+              "permissions": "targets/claude/adapter.json::target_permission_contract",
+              "degradation": "targets/claude/adapter.json::degradation_strategy"
+            },
+            "preserved_semantics": [
+              "trigger",
+              "workflow-counts",
+              "resources",
+              "eval-plan",
+              "risk",
+              "governance",
+              "runtime",
+              "trust",
+              "permissions"
+            ],
+            "degradation_strategy": "use the read-only contract; do not infer Codex state",
+            "permission_representation": "targets/claude/adapter.json::target_permission_contract and README notes",
+            "native_surface": "Claude-compatible neutral source folder with adapter notes",
+            "activation_policy": "Use SKILL.md frontmatter description as the primary activation contract and adapter.json for review metadata.",
+            "resource_strategy": "Preserve the source tree directly; write target notes in targets/claude/README.md.",
+            "script_strategy": "Scripts remain local package resources and must be reviewed through trust and permission reports before use.",
+            "permission_enforcement": "metadata-fallback"
+          },
+          "unsupported_features": [
+            "vendor-native metadata fields are carried as adapter JSON and README notes"
+          ],
+          "warnings": [],
+          "failures": []
+        },
+        {
+          "schema_version": "1.0",
+          "target": "generic",
+          "status": "pass",
+          "compiler": {
+            "name": "yao-skill-ir-compiler",
+            "schema_version": "1.0",
+            "source": "skill-ir",
+            "ir_source": "reports\\skill-ir.json",
+            "ir_schema_version": "2.0.0"
+          },
+          "source": {
+            "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+            "canonical_metadata": "agents/interface.yaml",
+            "declared_targets": [
+              "openai",
+              "claude",
+              "generic"
+            ]
+          },
+          "compiled_contract": {
+            "name": "codex-workflow-recommender",
+            "title": "Codex Workflow Recommender",
+            "version": "1.1.0",
+            "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+            "job_to_be_done": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+            "trigger": {
+              "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+              "should_trigger": [
+                "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write."
+              ],
+              "should_not_trigger": [],
+              "edge_cases": []
+            },
+            "workflow": {
+              "steps": [
+                "Confirm outcome, CWD, repo, surface, and scope; read applicable",
+                "Inspect relevant gates, `.agents/skills`, `.codex/agents`, trusted project",
+                "Summarize minimum fields, never raw doctor/config/auth/provider/env values.",
+                "Decide whether persistence is justified. `No change recommended` is valid.",
+                "Reuse suitable native/installed capability first. Technology detection alone",
+                "Stop at supported decisions; keep OMX conditional and omit irrelevant surfaces."
+              ],
+              "decision_points": [],
+              "failure_modes": [
+                "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+                "Long bullets can make the output look complete while hiding the actual decision logic.",
+                "Commands can omit environment assumptions, working directory, or rollback notes.",
+                "Code snippets can look runnable while missing required inputs.",
+                "Footnote markers or dense citation notes can interrupt the reading flow.",
+                "Evidence can be over-attached to obvious statements and under-attached to risky claims."
+              ]
+            },
+            "resources": {
+              "references": [
+                "references\\codex-surface-map.md",
+                "references\\hooks-patterns.md",
+                "references\\mcp-servers.md",
+                "references\\plugins-reference.md",
+                "references\\skills-reference.md",
+                "references\\subagent-templates.md"
+              ],
+              "scripts": [],
+              "assets": [],
+              "reports": [
+                "reports/output-risk-profile.json",
+                "reports/output-risk-profile.md",
+                "reports/prompt-quality-profile.json",
+                "reports/prompt-quality-profile.md",
+                "reports/output_quality_scorecard.json",
+                "reports/output_quality_scorecard.md",
+                "reports/output_blind_review_pack.json",
+                "reports/output_blind_review_pack.md",
+                "reports/output_blind_answer_key.json"
+              ],
+              "counts": {
+                "references": 6,
+                "scripts": 0,
+                "assets": 0,
+                "reports": 9
+              }
+            },
+            "eval_plan": {
+              "trigger": [
+                "evals\\evals.json",
+                "evals\\output\\cases.jsonl",
+                "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+              ],
+              "output": [
+                "evals\\output\\cases.jsonl",
+                "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+              ],
+              "adversarial": [],
+              "baseline": "without_skill",
+              "counts": {
+                "trigger": 3,
+                "output": 2,
+                "adversarial": 0,
+                "baseline": 1
+              }
+            },
+            "risk": {
+              "output_risk": "medium",
+              "execution_risk": "low",
+              "trust_boundary": "team"
+            },
+            "governance": {
+              "owner": "lyh",
+              "maturity": "production",
+              "review_cadence": "quarterly",
+              "review_due": ""
+            },
+            "runtime": {
+              "activation": {
+                "mode": "implicit"
+              },
+              "execution": {
+                "context": "inline",
+                "shell": "bash"
+              },
+              "trust": {
+                "source_tier": "local",
+                "remote_inline_execution": "forbid",
+                "remote_metadata_policy": "allow-metadata-only",
+                "side_effect_policy": "read-only; writes need separate authorization"
+              },
+              "adapter_targets": [
+                "openai",
+                "claude",
+                "generic"
+              ],
+              "canonical_format": "agent-skills"
+            },
+            "permissions": {
+              "schema_version": "1.0",
+              "source": "missing-security-trust-report",
+              "source_available": false,
+              "declared_capabilities": [],
+              "review_required": false,
+              "capabilities": {
+                "network": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "file_write": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "subprocess": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                },
+                "interactive": {
+                  "required": false,
+                  "script_count": 0,
+                  "scripts": [],
+                  "review_reason": ""
+                }
+              },
+              "network_policy": {
+                "source": "security/network_policy.json",
+                "covered_scripts": [],
+                "missing_scripts": [],
+                "mismatches": []
+              },
+              "help_smoke": {
+                "enabled": false,
+                "checked_count": 0,
+                "failed_count": 0,
+                "failed_scripts": []
+              },
+              "trust_summary": {
+                "secret_findings": 0,
+                "network_script_count": 0,
+                "file_write_script_count": 0,
+                "subprocess_script_count": 0,
+                "interactive_script_count": 0,
+                "help_smoke_failed_count": 0
+              }
+            },
+            "source_files_count": 4,
+            "target": "generic",
+            "target_permission_contract": {
+              "schema_version": "1.0",
+              "target": "generic",
+              "permission_model": "agent-skills-compatible-metadata",
+              "native_enforcement": false,
+              "representation": "targets/generic/adapter.json::target_permission_contract",
+              "review_required": false,
+              "declared_capabilities": [],
+              "capability_counts": {
+                "network": 0,
+                "file_write": 0,
+                "subprocess": 0,
+                "interactive": 0
+              },
+              "evidence": "missing-security-trust-report",
+              "operator_note": "Generic target exposes permission metadata for downstream clients to enforce or review."
+            },
+            "target_native_contract": {
+              "schema_version": "1.0",
+              "target": "generic",
+              "native_surface": "Agent Skills compatible neutral package",
+              "activation": {
+                "policy": "Use SKILL.md name and description; consumers decide automatic or manual activation.",
+                "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+                "manual_activation_supported": true,
+                "automatic_activation_note": "Depends on the target client route/catalog implementation."
+              },
+              "resources": {
+                "strategy": "Preserve references, scripts, assets, evals, reports, and adapter metadata as relative package resources.",
+                "counts": {
+                  "references": 6,
+                  "scripts": 0,
+                  "assets": 0,
+                  "reports": 9
+                },
+                "generated_files": [
+                  "targets/generic/adapter.json"
+                ]
+              },
+              "scripts": {
+                "strategy": "Expose script and permission metadata for downstream clients or installers to enforce.",
+                "script_count": 0,
+                "help_smoke_failed_count": 0
+              },
+              "permissions": {
+                "enforcement": "consumer-enforced-or-metadata-only",
+                "native_enforcement": false,
+                "declared_capabilities": [],
+                "review_required": false
+              },
+              "review": {
+                "artifacts": [
+                  "targets/generic/adapter.json",
+                  "reports/review-studio.html"
+                ],
+                "fallback_behavior": "Neutral source is the runtime fallback.",
+                "unsupported_native_features": []
+              },
+              "install_scope": "generic Agent Skills compatible root"
+            },
+            "degradation_strategy": "use local evidence; runtime gaps are missing evidence",
+            "target_runtime": {
+              "adapter_mode": "agent-skills-compatible",
+              "generated_files": [
+                "targets/generic/adapter.json"
+              ],
+              "metadata_mapping": {
+                "display_name": "targets/generic/adapter.json::display_name",
+                "default_prompt": "targets/generic/adapter.json::default_prompt",
+                "activation": "targets/generic/adapter.json::activation_mode",
+                "execution": "targets/generic/adapter.json::execution_context",
+                "trust": "targets/generic/adapter.json::trust_level",
+                "permissions": "targets/generic/adapter.json::target_permission_contract",
+                "degradation": "targets/generic/adapter.json::degradation_strategy"
+              },
+              "preserved_semantics": [
+                "trigger",
+                "workflow-counts",
+                "resources",
+                "eval-plan",
+                "risk",
+                "governance",
+                "runtime",
+                "trust",
+                "permissions"
+              ],
+              "native_surface": "Agent Skills compatible neutral package"
+            }
+          },
+          "permission_contract": {
+            "schema_version": "1.0",
+            "source": "missing-security-trust-report",
+            "source_available": false,
+            "declared_capabilities": [],
+            "review_required": false,
+            "capabilities": {
+              "network": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "file_write": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "subprocess": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              },
+              "interactive": {
+                "required": false,
+                "script_count": 0,
+                "scripts": [],
+                "review_reason": ""
+              }
+            },
+            "network_policy": {
+              "source": "security/network_policy.json",
+              "covered_scripts": [],
+              "missing_scripts": [],
+              "mismatches": []
+            },
+            "help_smoke": {
+              "enabled": false,
+              "checked_count": 0,
+              "failed_count": 0,
+              "failed_scripts": []
+            },
+            "trust_summary": {
+              "secret_findings": 0,
+              "network_script_count": 0,
+              "file_write_script_count": 0,
+              "subprocess_script_count": 0,
+              "interactive_script_count": 0,
+              "help_smoke_failed_count": 0
+            }
+          },
+          "target_permission_contract": {
+            "schema_version": "1.0",
+            "target": "generic",
+            "permission_model": "agent-skills-compatible-metadata",
+            "native_enforcement": false,
+            "representation": "targets/generic/adapter.json::target_permission_contract",
+            "review_required": false,
+            "declared_capabilities": [],
+            "capability_counts": {
+              "network": 0,
+              "file_write": 0,
+              "subprocess": 0,
+              "interactive": 0
+            },
+            "evidence": "missing-security-trust-report",
+            "operator_note": "Generic target exposes permission metadata for downstream clients to enforce or review."
+          },
+          "target_native_contract": {
+            "schema_version": "1.0",
+            "target": "generic",
+            "native_surface": "Agent Skills compatible neutral package",
+            "activation": {
+              "policy": "Use SKILL.md name and description; consumers decide automatic or manual activation.",
+              "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+              "manual_activation_supported": true,
+              "automatic_activation_note": "Depends on the target client route/catalog implementation."
+            },
+            "resources": {
+              "strategy": "Preserve references, scripts, assets, evals, reports, and adapter metadata as relative package resources.",
+              "counts": {
+                "references": 6,
+                "scripts": 0,
+                "assets": 0,
+                "reports": 9
+              },
+              "generated_files": [
+                "targets/generic/adapter.json"
+              ]
+            },
+            "scripts": {
+              "strategy": "Expose script and permission metadata for downstream clients or installers to enforce.",
+              "script_count": 0,
+              "help_smoke_failed_count": 0
+            },
+            "permissions": {
+              "enforcement": "consumer-enforced-or-metadata-only",
+              "native_enforcement": false,
+              "declared_capabilities": [],
+              "review_required": false
+            },
+            "review": {
+              "artifacts": [
+                "targets/generic/adapter.json",
+                "reports/review-studio.html"
+              ],
+              "fallback_behavior": "Neutral source is the runtime fallback.",
+              "unsupported_native_features": []
+            },
+            "install_scope": "generic Agent Skills compatible root"
+          },
+          "target_transform": {
+            "target": "generic",
+            "adapter_mode": "agent-skills-compatible",
+            "generated_files": [
+              "targets/generic/adapter.json"
+            ],
+            "metadata_mapping": {
+              "display_name": "targets/generic/adapter.json::display_name",
+              "default_prompt": "targets/generic/adapter.json::default_prompt",
+              "activation": "targets/generic/adapter.json::activation_mode",
+              "execution": "targets/generic/adapter.json::execution_context",
+              "trust": "targets/generic/adapter.json::trust_level",
+              "permissions": "targets/generic/adapter.json::target_permission_contract",
+              "degradation": "targets/generic/adapter.json::degradation_strategy"
+            },
+            "preserved_semantics": [
+              "trigger",
+              "workflow-counts",
+              "resources",
+              "eval-plan",
+              "risk",
+              "governance",
+              "runtime",
+              "trust",
+              "permissions"
+            ],
+            "degradation_strategy": "use local evidence; runtime gaps are missing evidence",
+            "permission_representation": "targets/generic/adapter.json::target_permission_contract",
+            "native_surface": "Agent Skills compatible neutral package",
+            "activation_policy": "Use SKILL.md name and description; consumers decide automatic or manual activation.",
+            "resource_strategy": "Preserve references, scripts, assets, evals, reports, and adapter metadata as relative package resources.",
+            "script_strategy": "Expose script and permission metadata for downstream clients or installers to enforce.",
+            "permission_enforcement": "consumer-enforced-or-metadata-only"
+          },
+          "unsupported_features": [],
+          "warnings": [],
+          "failures": []
+        }
+      ],
+      "failures": [],
+      "warnings": [],
+      "artifacts": {
+        "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\compiled_targets.json",
+        "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\compiled_targets.md"
+      }
+    },
+    "conformance": {
+      "ok": false,
+      "skill": "codex-workflow-recommender",
+      "targets": [
+        {
+          "target": "openai",
+          "status": "pass",
+          "checks": [
+            "SKILL.md exists",
+            "frontmatter name exists",
+            "frontmatter description exists",
+            "description length <= 1024",
+            "name is runtime-safe",
+            "manifest.name exists",
+            "manifest.version exists",
+            "manifest.owner exists",
+            "manifest.status exists",
+            "manifest.maturity_tier exists",
+            "manifest.review_cadence exists",
+            "manifest declares openai",
+            "interface.display_name exists",
+            "interface.short_description exists",
+            "interface.default_prompt exists",
+            "adapter target declares openai",
+            "activation mode exists",
+            "execution context exists",
+            "execution shell exists",
+            "trust source tier exists",
+            "openai degradation note exists",
+            "Skill IR schema_version is 2.0.0",
+            "Skill IR name matches frontmatter",
+            "Skill IR description matches frontmatter",
+            "references resource resolves: references\\codex-surface-map.md",
+            "references resource resolves: references\\hooks-patterns.md",
+            "references resource resolves: references\\mcp-servers.md",
+            "references resource resolves: references\\plugins-reference.md",
+            "references resource resolves: references\\skills-reference.md",
+            "references resource resolves: references\\subagent-templates.md",
+            "reports resource resolves: reports/output-risk-profile.json",
+            "reports resource resolves: reports/output-risk-profile.md",
+            "reports resource resolves: reports/prompt-quality-profile.json",
+            "reports resource resolves: reports/prompt-quality-profile.md",
+            "reports resource resolves: reports/output_quality_scorecard.json",
+            "reports resource resolves: reports/output_quality_scorecard.md"
+          ],
+          "failures": [],
+          "warnings": []
+        },
+        {
+          "target": "claude",
+          "status": "pass",
+          "checks": [
+            "SKILL.md exists",
+            "frontmatter name exists",
+            "frontmatter description exists",
+            "description length <= 1024",
+            "name is runtime-safe",
+            "manifest.name exists",
+            "manifest.version exists",
+            "manifest.owner exists",
+            "manifest.status exists",
+            "manifest.maturity_tier exists",
+            "manifest.review_cadence exists",
+            "manifest declares claude",
+            "interface.display_name exists",
+            "interface.short_description exists",
+            "interface.default_prompt exists",
+            "adapter target declares claude",
+            "activation mode exists",
+            "execution context exists",
+            "execution shell exists",
+            "trust source tier exists",
+            "claude degradation note exists",
+            "Skill IR schema_version is 2.0.0",
+            "Skill IR name matches frontmatter",
+            "Skill IR description matches frontmatter",
+            "references resource resolves: references\\codex-surface-map.md",
+            "references resource resolves: references\\hooks-patterns.md",
+            "references resource resolves: references\\mcp-servers.md",
+            "references resource resolves: references\\plugins-reference.md",
+            "references resource resolves: references\\skills-reference.md",
+            "references resource resolves: references\\subagent-templates.md",
+            "reports resource resolves: reports/output-risk-profile.json",
+            "reports resource resolves: reports/output-risk-profile.md",
+            "reports resource resolves: reports/prompt-quality-profile.json",
+            "reports resource resolves: reports/prompt-quality-profile.md",
+            "reports resource resolves: reports/output_quality_scorecard.json",
+            "reports resource resolves: reports/output_quality_scorecard.md"
+          ],
+          "failures": [],
+          "warnings": []
+        },
+        {
+          "target": "agent-skills",
+          "status": "fail",
+          "checks": [
+            "SKILL.md exists",
+            "frontmatter name exists",
+            "frontmatter description exists",
+            "description length <= 1024",
+            "name is runtime-safe",
+            "package identity derives from skill name",
+            "manifest.name exists",
+            "manifest.version exists",
+            "manifest.owner exists",
+            "manifest.status exists",
+            "manifest.maturity_tier exists",
+            "manifest.review_cadence exists",
+            "interface.display_name exists",
+            "interface.short_description exists",
+            "interface.default_prompt exists",
+            "canonical format is agent-skills",
+            "activation mode exists",
+            "execution context exists",
+            "execution shell exists",
+            "trust source tier exists",
+            "Skill IR schema_version is 2.0.0",
+            "Skill IR name matches frontmatter",
+            "Skill IR description matches frontmatter",
+            "references resource resolves: references\\codex-surface-map.md",
+            "references resource resolves: references\\hooks-patterns.md",
+            "references resource resolves: references\\mcp-servers.md",
+            "references resource resolves: references\\plugins-reference.md",
+            "references resource resolves: references\\skills-reference.md",
+            "references resource resolves: references\\subagent-templates.md",
+            "reports resource resolves: reports/output-risk-profile.json",
+            "reports resource resolves: reports/output-risk-profile.md",
+            "reports resource resolves: reports/prompt-quality-profile.json",
+            "reports resource resolves: reports/prompt-quality-profile.md",
+            "reports resource resolves: reports/output_quality_scorecard.json",
+            "reports resource resolves: reports/output_quality_scorecard.md"
+          ],
+          "failures": [
+            "manifest target missing: agent-skills"
+          ],
+          "warnings": [
+            "agent-skills uses canonical Agent Skills metadata; provider-native execution transforms are not implemented in v0."
+          ]
+        },
+        {
+          "target": "vscode",
+          "status": "fail",
+          "checks": [
+            "SKILL.md exists",
+            "frontmatter name exists",
+            "frontmatter description exists",
+            "description length <= 1024",
+            "name is runtime-safe",
+            "package identity derives from skill name",
+            "manifest.name exists",
+            "manifest.version exists",
+            "manifest.owner exists",
+            "manifest.status exists",
+            "manifest.maturity_tier exists",
+            "manifest.review_cadence exists",
+            "interface.display_name exists",
+            "interface.short_description exists",
+            "interface.default_prompt exists",
+            "canonical format is agent-skills",
+            "activation mode exists",
+            "execution context exists",
+            "execution shell exists",
+            "trust source tier exists",
+            "Skill IR schema_version is 2.0.0",
+            "Skill IR name matches frontmatter",
+            "Skill IR description matches frontmatter",
+            "references resource resolves: references\\codex-surface-map.md",
+            "references resource resolves: references\\hooks-patterns.md",
+            "references resource resolves: references\\mcp-servers.md",
+            "references resource resolves: references\\plugins-reference.md",
+            "references resource resolves: references\\skills-reference.md",
+            "references resource resolves: references\\subagent-templates.md",
+            "reports resource resolves: reports/output-risk-profile.json",
+            "reports resource resolves: reports/output-risk-profile.md",
+            "reports resource resolves: reports/prompt-quality-profile.json",
+            "reports resource resolves: reports/prompt-quality-profile.md",
+            "reports resource resolves: reports/output_quality_scorecard.json",
+            "reports resource resolves: reports/output_quality_scorecard.md"
+          ],
+          "failures": [
+            "manifest target missing: vscode"
+          ],
+          "warnings": [
+            "vscode uses canonical Agent Skills metadata; provider-native execution transforms are not implemented in v0."
+          ]
+        },
+        {
+          "target": "generic",
+          "status": "pass",
+          "checks": [
+            "SKILL.md exists",
+            "frontmatter name exists",
+            "frontmatter description exists",
+            "description length <= 1024",
+            "name is runtime-safe",
+            "manifest.name exists",
+            "manifest.version exists",
+            "manifest.owner exists",
+            "manifest.status exists",
+            "manifest.maturity_tier exists",
+            "manifest.review_cadence exists",
+            "manifest declares generic",
+            "interface.display_name exists",
+            "interface.short_description exists",
+            "interface.default_prompt exists",
+            "adapter target declares generic",
+            "activation mode exists",
+            "execution context exists",
+            "execution shell exists",
+            "trust source tier exists",
+            "generic degradation note exists",
+            "Skill IR schema_version is 2.0.0",
+            "Skill IR name matches frontmatter",
+            "Skill IR description matches frontmatter",
+            "references resource resolves: references\\codex-surface-map.md",
+            "references resource resolves: references\\hooks-patterns.md",
+            "references resource resolves: references\\mcp-servers.md",
+            "references resource resolves: references\\plugins-reference.md",
+            "references resource resolves: references\\skills-reference.md",
+            "references resource resolves: references\\subagent-templates.md",
+            "reports resource resolves: reports/output-risk-profile.json",
+            "reports resource resolves: reports/output-risk-profile.md",
+            "reports resource resolves: reports/prompt-quality-profile.json",
+            "reports resource resolves: reports/prompt-quality-profile.md",
+            "reports resource resolves: reports/output_quality_scorecard.json",
+            "reports resource resolves: reports/output_quality_scorecard.md"
+          ],
+          "failures": [],
+          "warnings": []
+        }
+      ],
+      "summary": {
+        "target_count": 5,
+        "pass_count": 3,
+        "fail_count": 2
+      },
+      "artifacts": {
+        "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\conformance_matrix.json",
+        "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\conformance_matrix.md"
+      }
+    },
+    "runtime_permissions": {},
+    "trust": {
+      "ok": true,
+      "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+      "summary": {
+        "scanned_files": 12,
+        "script_count": 0,
+        "internal_module_count": 0,
+        "secret_findings": 0,
+        "dependency_files": [],
+        "network_script_count": 0,
+        "network_policy_covered_count": 0,
+        "network_policy_missing_count": 0,
+        "file_write_script_count": 0,
+        "permission_required_count": 0,
+        "permission_approved_count": 0,
+        "permission_missing_count": 0,
+        "permission_invalid_count": 0,
+        "permission_expired_count": 0,
+        "help_smoke_checked_count": 0,
+        "help_smoke_failed_count": 0,
+        "interactive_script_count": 0,
+        "package_hash_scope": "source-contract-without-generated-reports",
+        "package_hash_file_count": 12,
+        "package_sha256": "3b7b0cbf7e51e5f3e81bcc3f6e45629147afdd1da119afc80f1c99cb7b5e907f"
+      },
+      "failures": [],
+      "warnings": [
+        "No dependency or lock file detected"
+      ],
+      "secrets": [],
+      "scripts": [],
+      "dependencies": {
+        "present": [],
+        "pinned": [],
+        "unpinned": []
+      },
+      "network_policy": {
+        "present": false,
+        "path": "security/network_policy.json",
+        "schema_version": "",
+        "network_script_count": 0,
+        "covered_scripts": [],
+        "missing_scripts": [],
+        "mismatches": [],
+        "default_policy": {}
+      },
+      "help_smoke": {
+        "enabled": true,
+        "timeout_seconds": 5.0,
+        "candidate_count": 0,
+        "checked_count": 0,
+        "passed_count": 0,
+        "failed_count": 0,
+        "skipped_count": 0,
+        "failed_scripts": [],
+        "results": [],
+        "skipped": []
+      },
+      "permission_governance": {
+        "present": false,
+        "path": "security/permission_policy.json",
+        "schema_version": "",
+        "reviewed_at": "",
+        "required_capabilities": [],
+        "approved_capabilities": [],
+        "missing_capabilities": [],
+        "invalid_capabilities": [],
+        "expired_capabilities": [],
+        "approval_count": 0,
+        "required_count": 0,
+        "missing_count": 0,
+        "invalid_count": 0,
+        "expired_count": 0,
+        "approvals": []
+      },
+      "trust_metadata": {
+        "source_tier": "local",
+        "remote_inline_execution": "forbid",
+        "remote_metadata_policy": "allow-metadata-only"
+      },
+      "artifacts": {
+        "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\security_trust_report.json",
+        "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender\\reports\\security_trust_report.md"
+      }
+    },
+    "python_compatibility": {},
+    "architecture_maintainability": {},
+    "context_budget": {},
+    "promotion": {},
+    "atlas": {},
+    "adoption_drift": {},
+    "daily_skillops": {},
+    "weekly_curator": {},
+    "review_waivers": {},
+    "review_annotations": {},
+    "adaptation_proposals": {},
+    "adaptation_approval_ledger": {},
+    "adaptation_regression": {},
+    "world_class_evidence_ledger": {},
+    "world_class_evidence_intake": {},
+    "world_class_evidence_preflight": {},
+    "world_class_submission_review": {},
+    "world_class_operator_runbook": {},
+    "world_class_claim_guard": {},
+    "registry": {},
+    "package_verification": {},
+    "install_simulation": {},
+    "upgrade_check": {},
+    "manifest": {
+      "name": "codex-workflow-recommender",
+      "version": "1.1.0",
+      "owner": "lyh",
+      "updated_at": "2026-07-23",
+      "review_cadence": "quarterly",
+      "status": "active",
+      "maturity_tier": "production",
+      "lifecycle_stage": "production",
+      "context_budget_tier": "production",
+      "category": "developer-tools-integrations",
+      "license": "MIT",
+      "complexity_tier": "medium",
+      "factory_components": [
+        "agents",
+        "evals",
+        "references",
+        "reports",
+        "tests"
+      ],
+      "target_platforms": [
+        "openai",
+        "claude",
+        "generic"
+      ],
+      "contracts": {
+        "input_files": {
+          "classification": "file-backed fixture",
+          "paths": [
+            "evals/output/fixtures/codex-workflow-scenarios.md"
+          ],
+          "rule": "Repository files, current CLI help, minimal capability summaries, dated references, and synthetic fixtures are evidence inputs. Raw auth, provider, token, environment-value, and complete diagnostic output must not enter reports."
+        },
+        "output contract": "Return an outcome, evidence and unknowns, only supported prioritized recommendations, a dependency/risk sequence, verification and rollback, and separate local-file versus persistent/external approval options. No change is a valid outcome.",
+        "rollback boundary": "The package is read-only prompt, reference, metadata, fixture, test, and report content. It never mutates Codex or external state; any later implementation has its own authorization and rollback boundary."
+      }
+    },
+    "frontmatter": {
+      "name": "codex-workflow-recommender",
+      "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs-only questions, skill audits, dynamic workflow builds, code review, and unapproved install/config/write.",
+      "version": "1.1.0",
+      "category": "developer-tools-integrations",
+      "tags": [
+        "codex",
+        "skills",
+        "mcp"
+      ],
+      "allowed-tools": "Read, Glob, Grep, Bash(codex *), Bash(git *), Bash(rg *)"
+    },
+    "interface": {
+      "interface": {
+        "display_name": "Codex Workflow Recommender",
+        "short_description": "Recommend the smallest justified Codex workflow change",
+        "default_prompt": "Use $codex-workflow-recommender read-only. Prefer existing capability or no change; preserve evidence, risk, verification, rollback, and approval."
+      },
+      "compatibility": {
+        "canonical_format": "agent-skills",
+        "adapter_targets": [
+          "openai",
+          "claude",
+          "generic"
+        ],
+        "activation": {
+          "mode": "implicit"
+        },
+        "execution": {
+          "context": "inline",
+          "shell": "bash"
+        },
+        "trust": {
+          "source_tier": "local",
+          "remote_inline_execution": "forbid",
+          "remote_metadata_policy": "allow-metadata-only",
+          "side_effect_policy": "read-only; writes need separate authorization"
+        },
+        "degradation": {
+          "openai": "use current Codex surfaces; gaps are missing evidence",
+          "claude": "use the read-only contract; do not infer Codex state",
+          "generic": "use local evidence; runtime gaps are missing evidence"
+        }
+      }
+    }
+  },
+  "artifacts": {
+    "html": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\review-studio.html",
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\review-studio.json"
+  }
+}

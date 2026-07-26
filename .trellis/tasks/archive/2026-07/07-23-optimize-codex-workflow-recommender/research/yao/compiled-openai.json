@@ -1,0 +1,466 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "generated_at": "2026-07-23T00:00:00Z",
+  "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+  "summary": {
+    "target_count": 1,
+    "pass_count": 1,
+    "warn_count": 0,
+    "block_count": 0,
+    "failure_count": 0,
+    "warning_count": 0
+  },
+  "targets": [
+    {
+      "schema_version": "1.0",
+      "target": "openai",
+      "status": "pass",
+      "compiler": {
+        "name": "yao-skill-ir-compiler",
+        "schema_version": "1.0",
+        "source": "skill-ir",
+        "ir_source": "reports\\skill-ir.json",
+        "ir_schema_version": "2.0.0"
+      },
+      "source": {
+        "skill_dir": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\developer-tools-integrations\\codex-workflow-recommender",
+        "canonical_metadata": "agents/interface.yaml",
+        "declared_targets": [
+          "openai",
+          "claude",
+          "generic"
+        ]
+      },
+      "compiled_contract": {
+        "name": "codex-workflow-recommender",
+        "title": "Codex Workflow Recommender",
+        "version": "1.1.0",
+        "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+        "job_to_be_done": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+        "trigger": {
+          "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+          "should_trigger": [
+            "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write."
+          ],
+          "should_not_trigger": [],
+          "edge_cases": []
+        },
+        "workflow": {
+          "steps": [
+            "Confirm outcome, repo root, surface, and scope; read applicable",
+            "Inventory relevant gates, roots, trusted config, plugins, and MCP. Prefer",
+            "Summarize minimum fields, never raw doctor/config/auth/provider/env values.",
+            "Decide whether persistence is justified. `No change recommended` is valid.",
+            "Reuse suitable native/installed capability first. Technology detection alone",
+            "Stop at supported decisions; keep OMX conditional and omit irrelevant surfaces."
+          ],
+          "decision_points": [],
+          "failure_modes": [
+            "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+            "Long bullets can make the output look complete while hiding the actual decision logic.",
+            "Commands can omit environment assumptions, working directory, or rollback notes.",
+            "Code snippets can look runnable while missing required inputs.",
+            "Footnote markers or dense citation notes can interrupt the reading flow.",
+            "Evidence can be over-attached to obvious statements and under-attached to risky claims."
+          ]
+        },
+        "resources": {
+          "references": [
+            "references\\codex-surface-map.md",
+            "references\\hooks-patterns.md",
+            "references\\mcp-servers.md",
+            "references\\plugins-reference.md",
+            "references\\skills-reference.md",
+            "references\\subagent-templates.md"
+          ],
+          "scripts": [],
+          "assets": [],
+          "reports": [
+            "reports/output-risk-profile.json",
+            "reports/output-risk-profile.md",
+            "reports/prompt-quality-profile.json",
+            "reports/prompt-quality-profile.md",
+            "reports/output_quality_scorecard.json",
+            "reports/output_quality_scorecard.md",
+            "reports/output_blind_review_pack.json",
+            "reports/output_blind_review_pack.md",
+            "reports/output_blind_answer_key.json"
+          ],
+          "counts": {
+            "references": 6,
+            "scripts": 0,
+            "assets": 0,
+            "reports": 9
+          }
+        },
+        "eval_plan": {
+          "trigger": [
+            "evals\\evals.json",
+            "evals\\output\\cases.jsonl",
+            "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+          ],
+          "output": [
+            "evals\\output\\cases.jsonl",
+            "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+          ],
+          "adversarial": [],
+          "baseline": "without_skill",
+          "counts": {
+            "trigger": 3,
+            "output": 2,
+            "adversarial": 0,
+            "baseline": 1
+          }
+        },
+        "risk": {
+          "output_risk": "medium",
+          "execution_risk": "low",
+          "trust_boundary": "team"
+        },
+        "governance": {
+          "owner": "lyh",
+          "maturity": "production",
+          "review_cadence": "quarterly",
+          "review_due": ""
+        },
+        "runtime": {
+          "activation": {
+            "mode": "implicit"
+          },
+          "execution": {
+            "context": "inline",
+            "shell": "bash"
+          },
+          "trust": {
+            "source_tier": "local",
+            "remote_inline_execution": "forbid",
+            "remote_metadata_policy": "allow-metadata-only",
+            "side_effect_policy": "read-only; writes need separate authorization"
+          },
+          "adapter_targets": [
+            "openai",
+            "claude",
+            "generic"
+          ],
+          "canonical_format": "agent-skills"
+        },
+        "permissions": {
+          "schema_version": "1.0",
+          "source": "missing-security-trust-report",
+          "source_available": false,
+          "declared_capabilities": [],
+          "review_required": false,
+          "capabilities": {
+            "network": {
+              "required": false,
+              "script_count": 0,
+              "scripts": [],
+              "review_reason": ""
+            },
+            "file_write": {
+              "required": false,
+              "script_count": 0,
+              "scripts": [],
+              "review_reason": ""
+            },
+            "subprocess": {
+              "required": false,
+              "script_count": 0,
+              "scripts": [],
+              "review_reason": ""
+            },
+            "interactive": {
+              "required": false,
+              "script_count": 0,
+              "scripts": [],
+              "review_reason": ""
+            }
+          },
+          "network_policy": {
+            "source": "security/network_policy.json",
+            "covered_scripts": [],
+            "missing_scripts": [],
+            "mismatches": []
+          },
+          "help_smoke": {
+            "enabled": false,
+            "checked_count": 0,
+            "failed_count": 0,
+            "failed_scripts": []
+          },
+          "trust_summary": {
+            "secret_findings": 0,
+            "network_script_count": 0,
+            "file_write_script_count": 0,
+            "subprocess_script_count": 0,
+            "interactive_script_count": 0,
+            "help_smoke_failed_count": 0
+          }
+        },
+        "source_files_count": 4,
+        "target": "openai",
+        "target_permission_contract": {
+          "schema_version": "1.0",
+          "target": "openai",
+          "permission_model": "metadata-only",
+          "native_enforcement": false,
+          "representation": "targets/openai/agents/openai.yaml::compatibility.permission_contract plus adapter.json",
+          "review_required": false,
+          "declared_capabilities": [],
+          "capability_counts": {
+            "network": 0,
+            "file_write": 0,
+            "subprocess": 0,
+            "interactive": 0
+          },
+          "evidence": "missing-security-trust-report",
+          "operator_note": "OpenAI target carries permission metadata for reviewer visibility; host enforcement remains outside the package."
+        },
+        "target_native_contract": {
+          "schema_version": "1.0",
+          "target": "openai",
+          "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source",
+          "activation": {
+            "policy": "Use frontmatter description for catalog routing and targets/openai/agents/openai.yaml for display name, default prompt, and compatibility metadata.",
+            "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+            "manual_activation_supported": true,
+            "automatic_activation_note": "Depends on the target client route/catalog implementation."
+          },
+          "resources": {
+            "strategy": "Ship the neutral source tree and expose OpenAI-facing interface metadata as a generated companion file.",
+            "counts": {
+              "references": 6,
+              "scripts": 0,
+              "assets": 0,
+              "reports": 9
+            },
+            "generated_files": [
+              "targets/openai/adapter.json",
+              "targets/openai/agents/openai.yaml"
+            ]
+          },
+          "scripts": {
+            "strategy": "Keep scripts as local package resources; expose help-smoke and permission metadata for reviewer approval before execution.",
+            "script_count": 0,
+            "help_smoke_failed_count": 0
+          },
+          "permissions": {
+            "enforcement": "metadata-only",
+            "native_enforcement": false,
+            "declared_capabilities": [],
+            "review_required": false
+          },
+          "review": {
+            "artifacts": [
+              "targets/openai/agents/openai.yaml",
+              "targets/openai/adapter.json",
+              "reports/review-studio.html"
+            ],
+            "fallback_behavior": "If OpenAI-native metadata is ignored, the package remains readable as neutral Agent Skills source.",
+            "unsupported_native_features": [
+              "client-native permission prompts",
+              "provider-executed scripts",
+              "client-native script permission prompts are represented as permission contract metadata"
+            ]
+          },
+          "install_scope": "plugin or skill package consumer"
+        },
+        "degradation_strategy": "use current Codex surfaces; gaps are missing evidence",
+        "target_runtime": {
+          "adapter_mode": "metadata-adapter",
+          "generated_files": [
+            "targets/openai/adapter.json",
+            "targets/openai/agents/openai.yaml"
+          ],
+          "metadata_mapping": {
+            "display_name": "targets/openai/agents/openai.yaml::interface.display_name",
+            "default_prompt": "targets/openai/agents/openai.yaml::interface.default_prompt",
+            "activation": "targets/openai/agents/openai.yaml::compatibility.activation_mode",
+            "execution": "targets/openai/agents/openai.yaml::compatibility.execution_context",
+            "trust": "targets/openai/agents/openai.yaml::compatibility.trust_level",
+            "permissions": "targets/openai/agents/openai.yaml::compatibility.permission_contract",
+            "degradation": "targets/openai/agents/openai.yaml::compatibility.degradation_strategy"
+          },
+          "preserved_semantics": [
+            "trigger",
+            "workflow-counts",
+            "resources",
+            "eval-plan",
+            "risk",
+            "governance",
+            "runtime",
+            "trust",
+            "permissions"
+          ],
+          "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source"
+        }
+      },
+      "permission_contract": {
+        "schema_version": "1.0",
+        "source": "missing-security-trust-report",
+        "source_available": false,
+        "declared_capabilities": [],
+        "review_required": false,
+        "capabilities": {
+          "network": {
+            "required": false,
+            "script_count": 0,
+            "scripts": [],
+            "review_reason": ""
+          },
+          "file_write": {
+            "required": false,
+            "script_count": 0,
+            "scripts": [],
+            "review_reason": ""
+          },
+          "subprocess": {
+            "required": false,
+            "script_count": 0,
+            "scripts": [],
+            "review_reason": ""
+          },
+          "interactive": {
+            "required": false,
+            "script_count": 0,
+            "scripts": [],
+            "review_reason": ""
+          }
+        },
+        "network_policy": {
+          "source": "security/network_policy.json",
+          "covered_scripts": [],
+          "missing_scripts": [],
+          "mismatches": []
+        },
+        "help_smoke": {
+          "enabled": false,
+          "checked_count": 0,
+          "failed_count": 0,
+          "failed_scripts": []
+        },
+        "trust_summary": {
+          "secret_findings": 0,
+          "network_script_count": 0,
+          "file_write_script_count": 0,
+          "subprocess_script_count": 0,
+          "interactive_script_count": 0,
+          "help_smoke_failed_count": 0
+        }
+      },
+      "target_permission_contract": {
+        "schema_version": "1.0",
+        "target": "openai",
+        "permission_model": "metadata-only",
+        "native_enforcement": false,
+        "representation": "targets/openai/agents/openai.yaml::compatibility.permission_contract plus adapter.json",
+        "review_required": false,
+        "declared_capabilities": [],
+        "capability_counts": {
+          "network": 0,
+          "file_write": 0,
+          "subprocess": 0,
+          "interactive": 0
+        },
+        "evidence": "missing-security-trust-report",
+        "operator_note": "OpenAI target carries permission metadata for reviewer visibility; host enforcement remains outside the package."
+      },
+      "target_native_contract": {
+        "schema_version": "1.0",
+        "target": "openai",
+        "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source",
+        "activation": {
+          "policy": "Use frontmatter description for catalog routing and targets/openai/agents/openai.yaml for display name, default prompt, and compatibility metadata.",
+          "trigger_description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+          "manual_activation_supported": true,
+          "automatic_activation_note": "Depends on the target client route/catalog implementation."
+        },
+        "resources": {
+          "strategy": "Ship the neutral source tree and expose OpenAI-facing interface metadata as a generated companion file.",
+          "counts": {
+            "references": 6,
+            "scripts": 0,
+            "assets": 0,
+            "reports": 9
+          },
+          "generated_files": [
+            "targets/openai/adapter.json",
+            "targets/openai/agents/openai.yaml"
+          ]
+        },
+        "scripts": {
+          "strategy": "Keep scripts as local package resources; expose help-smoke and permission metadata for reviewer approval before execution.",
+          "script_count": 0,
+          "help_smoke_failed_count": 0
+        },
+        "permissions": {
+          "enforcement": "metadata-only",
+          "native_enforcement": false,
+          "declared_capabilities": [],
+          "review_required": false
+        },
+        "review": {
+          "artifacts": [
+            "targets/openai/agents/openai.yaml",
+            "targets/openai/adapter.json",
+            "reports/review-studio.html"
+          ],
+          "fallback_behavior": "If OpenAI-native metadata is ignored, the package remains readable as neutral Agent Skills source.",
+          "unsupported_native_features": [
+            "client-native permission prompts",
+            "provider-executed scripts",
+            "client-native script permission prompts are represented as permission contract metadata"
+          ]
+        },
+        "install_scope": "plugin or skill package consumer"
+      },
+      "target_transform": {
+        "target": "openai",
+        "adapter_mode": "metadata-adapter",
+        "generated_files": [
+          "targets/openai/adapter.json",
+          "targets/openai/agents/openai.yaml"
+        ],
+        "metadata_mapping": {
+          "display_name": "targets/openai/agents/openai.yaml::interface.display_name",
+          "default_prompt": "targets/openai/agents/openai.yaml::interface.default_prompt",
+          "activation": "targets/openai/agents/openai.yaml::compatibility.activation_mode",
+          "execution": "targets/openai/agents/openai.yaml::compatibility.execution_context",
+          "trust": "targets/openai/agents/openai.yaml::compatibility.trust_level",
+          "permissions": "targets/openai/agents/openai.yaml::compatibility.permission_contract",
+          "degradation": "targets/openai/agents/openai.yaml::compatibility.degradation_strategy"
+        },
+        "preserved_semantics": [
+          "trigger",
+          "workflow-counts",
+          "resources",
+          "eval-plan",
+          "risk",
+          "governance",
+          "runtime",
+          "trust",
+          "permissions"
+        ],
+        "degradation_strategy": "use current Codex surfaces; gaps are missing evidence",
+        "permission_representation": "targets/openai/agents/openai.yaml::compatibility.permission_contract plus adapter.json",
+        "native_surface": "OpenAI-style interface metadata plus neutral Agent Skills source",
+        "activation_policy": "Use frontmatter description for catalog routing and targets/openai/agents/openai.yaml for display name, default prompt, and compatibility metadata.",
+        "resource_strategy": "Ship the neutral source tree and expose OpenAI-facing interface metadata as a generated companion file.",
+        "script_strategy": "Keep scripts as local package resources; expose help-smoke and permission metadata for reviewer approval before execution.",
+        "permission_enforcement": "metadata-only"
+      },
+      "unsupported_features": [
+        "client-native script permission prompts are represented as permission contract metadata"
+      ],
+      "warnings": [],
+      "failures": []
+    }
+  ],
+  "failures": [],
+  "warnings": [],
+  "artifacts": {
+    "json": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\compiled-openai.json",
+    "markdown": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\.trellis\\tasks\\07-23-optimize-codex-workflow-recommender\\research\\yao\\compiled-openai.md"
+  }
+}

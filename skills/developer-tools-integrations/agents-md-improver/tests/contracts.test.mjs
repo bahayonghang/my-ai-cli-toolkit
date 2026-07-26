@@ -4,16 +4,20 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-const skillDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const skillDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 const siblingTemplates = path.resolve(
   skillDir,
   "..",
-  "claude-md-improver",
+  "claude-context-improver",
   "references",
   "templates.md",
 );
 
-const read = (...parts) => fs.readFileSync(path.join(skillDir, ...parts), "utf8");
+const read = (...parts) =>
+  fs.readFileSync(path.join(skillDir, ...parts), "utf8");
 const readJson = (...parts) => JSON.parse(read(...parts));
 
 function markdownFiles(directory) {
@@ -45,7 +49,8 @@ test("entrypoint stays within the Production initial-load budget", () => {
   const normalizedSkill = skill.replace(/\r\n/g, "\n");
   const normalizedInterfaceYaml = interfaceYaml.replace(/\r\n/g, "\n");
   const estimatedInitialTokens =
-    Math.floor(normalizedSkill.length / 4) + Math.floor(normalizedInterfaceYaml.length / 4);
+    Math.floor(normalizedSkill.length / 4) +
+    Math.floor(normalizedInterfaceYaml.length / 4);
   assert.ok(
     estimatedInitialTokens <= 1000,
     `initial-load estimate ${estimatedInitialTokens} exceeds 1000 tokens`,
@@ -59,7 +64,9 @@ test("active guidance uses current Codex roots and discovery semantics", () => {
     path.join(skillDir, "SKILL.md"),
     ...markdownFiles(path.join(skillDir, "references")),
   ];
-  const activeText = activeFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  const activeText = activeFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
   assert.doesNotMatch(activeText, /\.codex\/skills/);
   assert.match(activeText, /\.agents\/skills/);
   assert.match(activeText, /\.codex\/agents/);
@@ -72,10 +79,16 @@ test("active guidance uses current Codex roots and discovery semantics", () => {
     "root-to-CWD",
     "missing evidence",
   ]) {
-    assert.ok(discovery.includes(anchor), `missing discovery anchor: ${anchor}`);
+    assert.ok(
+      discovery.includes(anchor),
+      `missing discovery anchor: ${anchor}`,
+    );
   }
   assert.match(discovery, /Last verified: 2026-07-23/);
-  assert.match(discovery, /https:\/\/learn\.chatgpt\.com\/docs\/agent-configuration\/agents-md/);
+  assert.match(
+    discovery,
+    /https:\/\/learn\.chatgpt\.com\/docs\/agent-configuration\/agents-md/,
+  );
 });
 
 test("interface and manifest describe a Production inline package", () => {
@@ -91,7 +104,10 @@ test("interface and manifest describe a Production inline package", () => {
     'remote_inline_execution: "forbid"',
     "degradation:",
   ]) {
-    assert.ok(interfaceYaml.includes(fragment), `missing interface contract: ${fragment}`);
+    assert.ok(
+      interfaceYaml.includes(fragment),
+      `missing interface contract: ${fragment}`,
+    );
   }
 
   const manifest = readJson("manifest.json");
@@ -102,8 +118,17 @@ test("interface and manifest describe a Production inline package", () => {
   assert.equal(manifest.maturity_tier, "production");
   assert.equal(manifest.context_budget_tier, "production");
   assert.deepEqual(manifest.target_platforms, ["openai", "claude", "generic"]);
-  for (const component of ["agents", "evals", "references", "reports", "tests"]) {
-    assert.ok(manifest.factory_components.includes(component), `missing component: ${component}`);
+  for (const component of [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "tests",
+  ]) {
+    assert.ok(
+      manifest.factory_components.includes(component),
+      `missing component: ${component}`,
+    );
   }
 });
 
@@ -111,17 +136,37 @@ test("repo and output eval fixtures are parseable and cover boundaries", () => {
   const evals = readJson("evals", "evals.json");
   assert.equal(evals.skill_name, "agents-md-improver");
   assert.ok(evals.evals.length >= 10);
-  assert.ok(evals.evals.filter((item) => /Route|Do not trigger/.test(item.expected_output)).length >= 4);
+  assert.ok(
+    evals.evals.filter((item) =>
+      /Route|Do not trigger/.test(item.expected_output),
+    ).length >= 4,
+  );
 
   const lines = read("evals", "output", "cases.jsonl")
     .split(/\r?\n/)
     .filter(Boolean);
   const cases = lines.map((line) => JSON.parse(line));
   assert.equal(cases.length, 5);
-  assert.ok(cases.every((item) => item.input_files?.includes("fixtures/agents-md-scenarios.md")));
-  assert.ok(cases.filter((item) => item.execution?.holdout === true).length >= 2);
+  assert.ok(
+    cases.every((item) =>
+      item.input_files?.includes("fixtures/agents-md-scenarios.md"),
+    ),
+  );
+  assert.ok(
+    cases.filter((item) => item.execution?.holdout === true).length >= 2,
+  );
   assert.ok(cases.every((item) => item.human_review?.status === "pending"));
-  assert.ok(fs.existsSync(path.join(skillDir, "evals", "output", "fixtures", "agents-md-scenarios.md")));
+  assert.ok(
+    fs.existsSync(
+      path.join(
+        skillDir,
+        "evals",
+        "output",
+        "fixtures",
+        "agents-md-scenarios.md",
+      ),
+    ),
+  );
 });
 
 test("report contract is evidence-first and honest about verification", () => {
@@ -154,10 +199,15 @@ test("report contract is evidence-first and honest about verification", () => {
 
 test("every linked reference exists and focused quality evidence is present", () => {
   const skill = read("SKILL.md");
-  const links = [...skill.matchAll(/\((references\/[^)#]+\.md)\)/g)].map((match) => match[1]);
+  const links = [...skill.matchAll(/\((references\/[^)#]+\.md)\)/g)].map(
+    (match) => match[1],
+  );
   assert.ok(links.length >= 5);
   for (const link of links) {
-    assert.ok(fs.existsSync(path.join(skillDir, ...link.split("/"))), `missing reference: ${link}`);
+    assert.ok(
+      fs.existsSync(path.join(skillDir, ...link.split("/"))),
+      `missing reference: ${link}`,
+    );
   }
 
   for (const report of [
@@ -166,7 +216,10 @@ test("every linked reference exists and focused quality evidence is present", ()
     "prompt-quality-profile.md",
     "output_quality_scorecard.md",
   ]) {
-    assert.ok(fs.existsSync(path.join(skillDir, "reports", report)), `missing report: ${report}`);
+    assert.ok(
+      fs.existsSync(path.join(skillDir, "reports", report)),
+      `missing report: ${report}`,
+    );
   }
   const scorecard = read("reports", "output_quality_scorecard.md");
   const scorecardJson = readJson("reports", "output_quality_scorecard.json");
@@ -175,10 +228,18 @@ test("every linked reference exists and focused quality evidence is present", ()
   assert.match(scorecard, /Holdout cases: `2`/);
   assert.match(scorecard, /Boundary cases: `1`/);
   assert.equal(scorecardJson.cases, "evals/output/cases.jsonl");
-  assert.equal(scorecardJson.blind_review.pack, "reports/output_blind_review_pack.json");
-  assert.equal(scorecardJson.artifacts.json, "reports/output_quality_scorecard.json");
+  assert.equal(
+    scorecardJson.blind_review.pack,
+    "reports/output_blind_review_pack.json",
+  );
+  assert.equal(
+    scorecardJson.artifacts.json,
+    "reports/output_quality_scorecard.json",
+  );
   assert.ok(
-    Object.values(scorecardJson.artifacts).every((value) => value.startsWith("reports/")),
+    Object.values(scorecardJson.artifacts).every((value) =>
+      value.startsWith("reports/"),
+    ),
     "scorecard artifact paths must remain package-relative",
   );
 });
@@ -186,6 +247,12 @@ test("every linked reference exists and focused quality evidence is present", ()
 test("shared root and nested code_map templates remain byte-identical", () => {
   const target = read("references", "templates.md");
   const sibling = fs.readFileSync(siblingTemplates, "utf8");
-  assert.equal(extractSharedBlock(target, "Root"), extractSharedBlock(sibling, "Root"));
-  assert.equal(extractSharedBlock(target, "Nested"), extractSharedBlock(sibling, "Nested"));
+  assert.equal(
+    extractSharedBlock(target, "Root"),
+    extractSharedBlock(sibling, "Root"),
+  );
+  assert.equal(
+    extractSharedBlock(target, "Nested"),
+    extractSharedBlock(sibling, "Nested"),
+  );
 });

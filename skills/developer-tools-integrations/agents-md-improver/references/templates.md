@@ -77,7 +77,7 @@ this directory while `<condition or time window>` applies.
 
 ## Root code_map.md Template
 
-The root and nested `code_map.md` templates below are shared with `claude-md-improver`: `code_map.md` is a single artifact serving both agents, so the wording must stay identical in both skills — edit both together, and never remove the other tool's guidance-file mention from an existing map.
+The root and nested `code_map.md` templates below are shared with `claude-context-improver`: `code_map.md` is a single artifact serving both agents, so the wording must stay identical in both skills — edit both together, and never remove the other tool's guidance-file mention from an existing map.
 
 ```markdown
 # Repository Code Map

@@ -1,0 +1,91 @@
+{
+  "schema_version": "2.0.0",
+  "name": "codex-workflow-recommender",
+  "title": "Codex Workflow Recommender",
+  "job_to_be_done": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+  "trigger_surface": {
+    "description": "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write.",
+    "should_trigger": [
+      "Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change. Use for Codex setup optimization, surface selection, unapplied MCP/plugin/subagent plans, 优化 Codex 工作流, 审阅 Codex 配置, Codex 能力推荐. Exclude direct AGENTS/code-map edits, docs questions, skill audits, dynamic workflow implementation, code review, and any install/config/write."
+    ],
+    "should_not_trigger": [],
+    "edge_cases": []
+  },
+  "workflow": {
+    "steps": [
+      "Confirm outcome, repo root, surface, and scope; read applicable",
+      "Inventory relevant gates, roots, trusted config, plugins, and MCP. Prefer",
+      "Summarize minimum fields, never raw doctor/config/auth/provider/env values.",
+      "Decide whether persistence is justified. `No change recommended` is valid.",
+      "Reuse suitable native/installed capability first. Technology detection alone",
+      "Stop at supported decisions; keep OMX conditional and omit irrelevant surfaces."
+    ],
+    "decision_points": [],
+    "failure_modes": [
+      "Tables can render as dense grids with weak hierarchy or poor mobile readability.",
+      "Long bullets can make the output look complete while hiding the actual decision logic.",
+      "Commands can omit environment assumptions, working directory, or rollback notes.",
+      "Code snippets can look runnable while missing required inputs.",
+      "Footnote markers or dense citation notes can interrupt the reading flow.",
+      "Evidence can be over-attached to obvious statements and under-attached to risky claims."
+    ]
+  },
+  "resources": {
+    "references": [
+      "references\\codex-surface-map.md",
+      "references\\hooks-patterns.md",
+      "references\\mcp-servers.md",
+      "references\\plugins-reference.md",
+      "references\\skills-reference.md",
+      "references\\subagent-templates.md"
+    ],
+    "scripts": [],
+    "assets": [],
+    "reports": [
+      "reports/output-risk-profile.json",
+      "reports/output-risk-profile.md",
+      "reports/prompt-quality-profile.json",
+      "reports/prompt-quality-profile.md",
+      "reports/output_quality_scorecard.json",
+      "reports/output_quality_scorecard.md",
+      "reports/output_blind_review_pack.json",
+      "reports/output_blind_review_pack.md",
+      "reports/output_blind_answer_key.json"
+    ]
+  },
+  "eval_plan": {
+    "trigger": [
+      "evals\\evals.json",
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+    ],
+    "output": [
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\codex-workflow-scenarios.md"
+    ],
+    "adversarial": [],
+    "baseline": "without_skill"
+  },
+  "risk": {
+    "output_risk": "medium",
+    "execution_risk": "low",
+    "trust_boundary": "team"
+  },
+  "governance": {
+    "owner": "lyh",
+    "maturity": "production",
+    "review_cadence": "quarterly",
+    "review_due": ""
+  },
+  "targets": [
+    "openai",
+    "claude",
+    "generic"
+  ],
+  "source_files": [
+    "SKILL.md",
+    "manifest.json",
+    "agents/interface.yaml",
+    "reports/output-risk-profile.json"
+  ]
+}

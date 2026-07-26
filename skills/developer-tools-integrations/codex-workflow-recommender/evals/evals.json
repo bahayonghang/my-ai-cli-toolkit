@@ -1,0 +1,75 @@
+{
+  "skill_name": "codex-workflow-recommender",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit this repository's Codex setup and recommend the smallest useful workflow improvements. Do not change files.",
+      "expected_output": "Trigger the read-only recommender, ground the result in repository and current Codex evidence, and allow no change as the outcome.",
+      "files": ["output/fixtures/codex-workflow-scenarios.md"],
+      "assertions": ["Uses repository and current Codex evidence", "Recommends only justified surfaces", "Does not modify or configure anything"]
+    },
+    {
+      "id": 2,
+      "prompt": "优化这个仓库的 Codex 工作流，比较 AGENTS、skill、plugin、MCP 和 subagent 谁应该承接重复任务。",
+      "expected_output": "Trigger the recommender and select the smallest owning surface using recurrence, external access, delegation, existing capability, risk, and evidence.",
+      "files": ["output/fixtures/codex-workflow-scenarios.md"],
+      "assertions": ["Compares owning surfaces", "Checks existing capabilities and provenance", "Orders implementation by dependency and risk"]
+    },
+    {
+      "id": 3,
+      "prompt": "给 Codex 配 MCP 和 plugin 前先做只读方案，确认现有 browser 能力会不会重复。",
+      "expected_output": "Trigger the read-only recommender, distinguish installed plugins from available plugins and plugin-provided MCP from direct MCP, then return a separately approvable plan.",
+      "files": ["output/fixtures/codex-workflow-scenarios.md"],
+      "assertions": ["Does not treat planning as configuration authorization", "Prefers an existing suitable capability", "Separates persistent actions for approval"]
+    },
+    {
+      "id": 4,
+      "prompt": "Review whether this recurring release workflow belongs in a prompt, memory, skill, plugin, hook, or automation.",
+      "expected_output": "Trigger the recommender and apply the minimum conditions for one-off context, learned context, repeatable workflows, distribution, lifecycle enforcement, and scheduling.",
+      "files": [],
+      "assertions": ["Selects a surface from the recurring job", "Does not use technology detection alone", "Explains verification and rollback"]
+    },
+    {
+      "id": 5,
+      "prompt": "Our Codex CLI is old and the desktop App is unavailable. Recommend only what can be proven for this repo.",
+      "expected_output": "Trigger the recommender, narrow claims by surface and version, and label unverified capabilities missing evidence instead of borrowing another surface's behavior.",
+      "files": ["output/fixtures/codex-workflow-scenarios.md"],
+      "assertions": ["Keeps CLI and App claims separate", "Uses missing evidence", "Does not invent commands"]
+    },
+    {
+      "id": 6,
+      "prompt": "Directly rewrite AGENTS.md and code_map.md now, preserving our managed blocks.",
+      "expected_output": "Do not trigger this recommender; route the direct repository-guidance edit to agents-md-improver.",
+      "files": [],
+      "assertions": ["Routes to agents-md-improver", "Does not perform the edit through this skill"]
+    },
+    {
+      "id": 7,
+      "prompt": "What directory does current Codex use for project skills? Just answer from official docs.",
+      "expected_output": "Do not trigger this repository recommender; route the documentation-only Codex fact question to openai-docs.",
+      "files": [],
+      "assertions": ["Routes to openai-docs", "Does not start a repository audit"]
+    },
+    {
+      "id": 8,
+      "prompt": "Use yao-meta-skill to audit and optimize this existing skill package, including trigger evals.",
+      "expected_output": "Do not trigger this recommender; route skill-package engineering and evaluation to yao-meta-skill or agent-skill-review.",
+      "files": [],
+      "assertions": ["Routes to skill-package review", "Does not treat the package as a repository workflow recommendation"]
+    },
+    {
+      "id": 9,
+      "prompt": "Build a durable multi-stage Codex workflow packet with planning, implementation, checking, and resume state.",
+      "expected_output": "Do not trigger this recommender; route implementation of a dynamic multi-stage workflow to codex-dynamic-workflows.",
+      "files": [],
+      "assertions": ["Routes to codex-dynamic-workflows", "Does not substitute a recommendation report for implementation"]
+    },
+    {
+      "id": 10,
+      "prompt": "Review this pull request for TypeScript correctness, security, and missing tests.",
+      "expected_output": "Do not trigger this recommender; use the ordinary code-review workflow.",
+      "files": [],
+      "assertions": ["Routes to code review", "Does not recommend Codex configuration"]
+    }
+  ]
+}
