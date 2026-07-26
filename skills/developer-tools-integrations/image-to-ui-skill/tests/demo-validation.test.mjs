@@ -12,6 +12,7 @@ import {
   createNulDecoder,
   findBrowser,
   startStaticServer,
+  stopBrowser,
 } from '../scripts/validate_demo.mjs';
 import { config as artmuse } from '../demo/artmuse-ios/validate.mjs';
 import { config as marble } from '../demo/marble-note/validate.mjs';
@@ -58,6 +59,28 @@ test('CDP pipe rejects pending requests when browser spawn fails', async () => {
   const pending = cdp.send('Target.createTarget');
   browser.emit('error', new Error('spawn denied'));
   await assert.rejects(pending, /spawn denied/);
+});
+
+test('browser shutdown escalates and waits for forced exit', async () => {
+  const browser = new EventEmitter();
+  browser.exitCode = null;
+  browser.signalCode = null;
+  const signals = [];
+  browser.kill = (signal = 'SIGTERM') => {
+    signals.push(signal);
+    if (signal === 'SIGKILL') {
+      queueMicrotask(() => {
+        browser.signalCode = signal;
+        browser.emit('exit', null, signal);
+      });
+    }
+    return true;
+  };
+
+  await stopBrowser(browser, 1);
+
+  assert.deepEqual(signals, ['SIGTERM', 'SIGKILL']);
+  assert.equal(browser.signalCode, 'SIGKILL');
 });
 
 test('browser discovery covers explicit, Windows, macOS, and Linux paths', () => {
