@@ -83,10 +83,10 @@
     {
       "id": 7,
       "prompt": "Audit CLAUDE.md layering, .claude/rules globs, and @import chains.",
-      "expected_output": "Route this Claude-only request to claude-md-improver instead of agents-md-improver.",
+      "expected_output": "Route this Claude-only request to claude-context-improver instead of agents-md-improver.",
       "files": [],
       "assertions": [
-        "Routes to claude-md-improver",
+        "Routes to claude-context-improver",
         "Does not audit Codex AGENTS.md files"
       ]
     },

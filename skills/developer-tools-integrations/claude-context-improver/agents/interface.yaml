@@ -1,0 +1,7 @@
+interface:
+  display_name: "Claude Context Improver"
+  short_description: "Audit and improve Claude Code context files (CLAUDE.md, .claude/rules, code_map.md) for repo or global scope"
+  default_prompt: "Use $claude-context-improver to audit the Claude Code context layer — CLAUDE.md files, .claude/rules, and code_map.md — against Claude 5 context-engineering rules, asking first whether the scope is the current repository or global ~/.claude, and produce a quality report with proposed diffs before editing."
+
+policy:
+  allow_implicit_invocation: true

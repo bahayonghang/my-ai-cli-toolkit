@@ -1,7 +1,7 @@
 # developer-tools-integrations — suite conventions
 
 House standard for the skills in this directory: `agent-skill-review`,
-`agents-md-improver`, `ast-grep`, `claude-md-improver`,
+`agents-md-improver`, `ast-grep`, `claude-context-improver`,
 `codex-workflow-recommender`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, goal
 authoring). They drifted apart on script paths, evals, and
@@ -12,7 +12,7 @@ older reference.
 
 ## Reference exemplars
 
-- **`claude-md-improver`** — exemplar for the audit/improver pattern (frontmatter,
+- **`claude-context-improver`** — exemplar for the audit/improver pattern (frontmatter,
   phased workflow, `references/` split, report-before-edit gate). `agents-md-improver`
   is its near-twin; keep the two aligned when editing either.
 - **`goal-meta-skill`** — exemplar for script-bearing skills after the script-path
@@ -48,7 +48,7 @@ bare `Bash` when the skill only runs a known command family.
 | agent-skill-review         | `Read, Glob, Grep, Edit, Write, Bash`                               | reads a skill package; edits when asked      |
 | agents-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(rg *), …`          | audits + edits AGENTS.md/code_map files      |
 | ast-grep                   | `Read, Glob, Grep, Bash, Write`                                      | runs ast-grep, writes rule files             |
-| claude-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(find *), …`        | audits + edits CLAUDE.md/rules/code_map      |
+| claude-context-improver    | `Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git *), Bash(find *)` | audits + edits CLAUDE.md/rules/code_map; asks repo-vs-global scope |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
 | goal-meta-skill            | `Read, Bash(python *), Bash(py *)`                                   | reads refs; runs the goal lint script        |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
@@ -73,7 +73,7 @@ to match this table.
   (`scripts/check.py` validates only SKILL.md frontmatter; `node-test` runs
   `tests/*.mjs`). `agents-md-improver` now ships routing/output evals plus a
   Node contract test. `codex-workflow-recommender` now follows the same pattern.
-  Skills without evals (`claude-md-improver`) remain a known gap, not a hard failure; add evals
+  Skills without evals (`claude-context-improver`) remain a known gap, not a hard failure; add evals
   when the skill's routing surface is worth regression-guarding.
 
 ## Interface contract

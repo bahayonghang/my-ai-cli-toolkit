@@ -16,16 +16,16 @@ Launch context:
 
 Non-empty candidates and sizes:
 
-| Directory | Candidate | Bytes | Note |
-| --- | --- | ---: | --- |
-| `C:/repo` | `AGENTS.override.md` | 14000 | highest-precedence non-empty file |
-| `C:/repo` | `AGENTS.md` | 5000 | shadowed by override |
-| `C:/repo` | `TEAM_GUIDE.md` | 4000 | shadowed by override |
-| `C:/repo/packages` | `AGENTS.override.md` | 0 | empty; skipped |
-| `C:/repo/packages` | `TEAM_GUIDE.md` | 10000 | selected fallback |
-| `C:/repo/packages/api` | `AGENTS.override.md` | 12000 | selected |
-| `C:/repo/packages/api` | `AGENTS.md` | 3000 | shadowed by override |
-| `C:/repo/packages/web` | `AGENTS.md` | 2000 | outside the root-to-CWD chain |
+| Directory              | Candidate            | Bytes | Note                              |
+| ---------------------- | -------------------- | ----: | --------------------------------- |
+| `C:/repo`              | `AGENTS.override.md` | 14000 | highest-precedence non-empty file |
+| `C:/repo`              | `AGENTS.md`          |  5000 | shadowed by override              |
+| `C:/repo`              | `TEAM_GUIDE.md`      |  4000 | shadowed by override              |
+| `C:/repo/packages`     | `AGENTS.override.md` |     0 | empty; skipped                    |
+| `C:/repo/packages`     | `TEAM_GUIDE.md`      | 10000 | selected fallback                 |
+| `C:/repo/packages/api` | `AGENTS.override.md` | 12000 | selected                          |
+| `C:/repo/packages/api` | `AGENTS.md`          |  3000 | shadowed by override              |
+| `C:/repo/packages/web` | `AGENTS.md`          |  2000 | outside the root-to-CWD chain     |
 
 Expected reasoning:
 
@@ -81,6 +81,6 @@ file, and stop. Do not render the full audit report.
 
 The request is to audit only `CLAUDE.md`, `.claude/rules`, and import behavior.
 
-Expected behavior: route to `claude-md-improver`; do not inspect or edit Codex
+Expected behavior: route to `claude-context-improver`; do not inspect or edit Codex
 guidance under this skill. A shared `code_map.md` may be preserved only when the
 owning workflow actually changes its shared fenced template contract.

@@ -1,7 +1,0 @@
-interface:
-  display_name: "CLAUDE.md Improver"
-  short_description: "Audit and improve Claude Code CLAUDE.md files, .claude/rules, and code_map.md maps"
-  default_prompt: "Use $claude-md-improver to audit the repository's CLAUDE.md files, .claude/rules, and code_map.md and produce a quality report with proposed diffs before editing."
-
-policy:
-  allow_implicit_invocation: true

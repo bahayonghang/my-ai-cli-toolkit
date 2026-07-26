@@ -27,13 +27,25 @@ If the CWD is `packages/web/`, a `CLAUDE.md` in `packages/api/` is neither an an
 | Order | Layer                  | Path                                                                                                                                                     | Edit from a repo skill?                       |
 | ----- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
 | 1     | managed policy         | `/Library/Application Support/ClaudeCode/CLAUDE.md` (macOS), `/etc/claude-code/CLAUDE.md` (Linux/WSL), `C:\Program Files\ClaudeCode\CLAUDE.md` (Windows) | never; IT/DevOps controlled                   |
-| 2     | user global            | `~/.claude/CLAUDE.md`, `~/.claude/rules/*.md`                                                                                                            | only when the user explicitly asks            |
+| 2     | user global            | `~/.claude/CLAUDE.md`, `~/.claude/rules/*.md`                                                                                                            | yes, when the user chose the 全局 scope       |
 | 3     | project root           | `./CLAUDE.md` and `./.claude/CLAUDE.md`                                                                                                                  | yes; this is the primary target               |
 | 4     | per-developer override | `./CLAUDE.local.md` (gitignored)                                                                                                                         | confirm gitignored only; do not read content  |
 | 5     | nested project         | `./<subtree>/CLAUDE.md`, `./<subtree>/CLAUDE.local.md`                                                                                                   | yes, when the creation scorecard justifies it |
 | 6     | path-scoped rules      | `./.claude/rules/*.md` with `paths:` glob                                                                                                                | yes; prefer this over bloating the root file  |
 
-Files load additively. There is no override semantic. If two files give conflicting guidance Claude reconciles by judgment, with more specific instructions typically taking precedence — but this is best-effort, not enforced.
+Files load additively. There is no override semantic. If two files give conflicting guidance Claude reconciles by judgment, with more specific instructions typically taking precedence — but this is best-effort, not enforced. Treat every conflict as a defect to remove at the source rather than a precedence question to reason about.
+
+## Global Scope Notes
+
+The user-global layer (row 2) loads into **every** session on this machine, before any project file. That makes it the most expensive layer per line and the one where a repo-specific claim does the most damage: a command or path that only exists in one repository is being asserted for all of them.
+
+When auditing under the 全局 scope:
+
+- Targets are `~/.claude/CLAUDE.md`, `~/.claude/rules/*.md`, and anything they `@`-import (same 4-hop expansion, resolved relative to the importing file).
+- `~/.claude/rules/*.md` with a `paths:` glob still loads conditionally — the glob is matched against files Claude reads in the current project, so a global rule can scope itself to, say, `**/*.py` across every repository.
+- The auto-memory directory (`~/.claude/projects/<project>/memory/`) lives under `~/.claude` but is **not** in scope. Claude maintains it; do not hand-edit it during an audit.
+- `~/.claude` is normally not a git repository, so `git diff --check` and diff-based review are unavailable. Show the proposed change in the report and verify line counts and import resolution manually.
+- Managed policy (row 1) is never edited regardless of scope.
 
 ## `@import` Recursion
 

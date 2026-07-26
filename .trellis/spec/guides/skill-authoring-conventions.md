@@ -232,7 +232,7 @@ manual inventory and deterministic safety tests."
 
 
 - When two skills maintain the same output file (e.g. `agents-md-improver` and
-  `claude-md-improver` both own `code_map.md` templates), the shared template
+  `claude-context-improver` both own `code_map.md` templates), the shared template
   wording must be byte-identical in both skills, each templates file must carry
   a symmetric "shared with <sibling>; edit both together" note, and each
   SKILL.md needs a coexistence rule (never remove the other tool's mention).

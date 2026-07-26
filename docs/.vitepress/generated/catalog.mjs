@@ -38,8 +38,8 @@ export const zhSkillsSidebar = [
         "link": "/skills/developer-tools-integrations/ast-grep"
       },
       {
-        "text": "claude-md-improver",
-        "link": "/skills/developer-tools-integrations/claude-md-improver"
+        "text": "claude-context-improver",
+        "link": "/skills/developer-tools-integrations/claude-context-improver"
       },
       {
         "text": "codex-workflow-recommender",
@@ -209,8 +209,8 @@ export const enSkillsSidebar = [
         "link": "/en/skills/developer-tools-integrations/ast-grep"
       },
       {
-        "text": "claude-md-improver",
-        "link": "/en/skills/developer-tools-integrations/claude-md-improver"
+        "text": "claude-context-improver",
+        "link": "/en/skills/developer-tools-integrations/claude-context-improver"
       },
       {
         "text": "codex-workflow-recommender",
