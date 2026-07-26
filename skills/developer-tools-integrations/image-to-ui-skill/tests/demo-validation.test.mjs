@@ -77,10 +77,31 @@ test('browser shutdown escalates and waits for forced exit', async () => {
     return true;
   };
 
-  await stopBrowser(browser, 1);
+  await stopBrowser(browser, { timeoutMs: 1 });
 
   assert.deepEqual(signals, ['SIGTERM', 'SIGKILL']);
   assert.equal(browser.signalCode, 'SIGKILL');
+});
+
+test('browser shutdown requests a graceful close before sending signals', async () => {
+  const browser = new EventEmitter();
+  browser.exitCode = null;
+  browser.signalCode = null;
+  browser.kill = () => assert.fail('graceful close should avoid process signals');
+  const requests = [];
+
+  await stopBrowser(browser, {
+    closeBrowser: async () => {
+      requests.push('Browser.close');
+      queueMicrotask(() => {
+        browser.exitCode = 0;
+        browser.emit('exit', 0, null);
+      });
+    },
+    timeoutMs: 10,
+  });
+
+  assert.deepEqual(requests, ['Browser.close']);
 });
 
 test('browser discovery covers explicit, Windows, macOS, and Linux paths', () => {
