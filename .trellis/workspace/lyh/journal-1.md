@@ -1278,3 +1278,24 @@ Upgraded agents-md-improver to 1.2.0 with current Codex discovery semantics, GPT
 ### Status
 
 [OK] **Completed**
+
+
+## Session 38: 检查并归档 claude-context-improver
+
+**Date**: 2026-07-29
+**Task**: 检查并归档 claude-context-improver
+**Branch**: `dev`
+
+### Summary
+
+复核 PRD 验收条件与工作提交；just skills-check、just node-test、just ci 均通过；保留无关的 Trellis 0.6.10 未提交改动，并归档 07-26-claude-context-improver。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b75b8fc52db32e0225115e106de68dd457b6dace` | (see git log) |
+
+### Status
+
+[OK] **Completed**
