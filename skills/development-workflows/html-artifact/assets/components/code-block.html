@@ -1,0 +1,33 @@
+<!-- code-block: Show a short command, configuration, or code excerpt. Keep long evidence in a disclosure. -->
+<style>
+  .ha-code-block {
+    margin: var(--space-6) 0;
+    border: var(--stroke-thin) solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ha-code-block figcaption {
+    margin: 0;
+    border-bottom: var(--stroke-thin) solid var(--border);
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--space-3);
+    font-weight: 700;
+  }
+  .ha-code-block pre {
+    margin: 0;
+    padding: var(--space-5);
+    overflow-x: auto;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: var(--space-3);
+    line-height: 1.6;
+  }
+</style>
+
+<figure class="ha-code-block">
+  <figcaption>Validate the self-contained component specimen</figcaption>
+  <pre><code>python skills/development-workflows/html-artifact/scripts/check_html_artifact.py skills/development-workflows/html-artifact/assets/demo-all.html</code></pre>
+</figure>

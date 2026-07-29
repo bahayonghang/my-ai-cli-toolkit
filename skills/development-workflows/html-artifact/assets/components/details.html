@@ -1,0 +1,42 @@
+<!-- details: Collapse secondary evidence or implementation notes with native HTML and no JavaScript. -->
+<style>
+  .ha-details {
+    margin: var(--space-6) 0;
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ha-details summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    cursor: pointer;
+    padding: var(--space-4) var(--space-5);
+    color: var(--text);
+    font-weight: 700;
+    list-style: none;
+  }
+  .ha-details summary::-webkit-details-marker { display: none; }
+  .ha-details summary::after { content: "+"; color: var(--accent-strong); }
+  .ha-details[open] summary::after { content: "-"; }
+  .ha-details summary:hover { background: var(--accent-soft); }
+  .ha-details summary:focus-visible {
+    outline: var(--stroke-thick) solid var(--focus-ring);
+    outline-offset: calc(var(--stroke-thick) * -1);
+  }
+  .ha-details__body {
+    border-top: var(--stroke-thin) solid var(--border);
+    padding: var(--space-4) var(--space-5);
+    color: var(--text-muted);
+  }
+  .ha-details__body p { margin: 0; }
+</style>
+
+<details class="ha-details">
+  <summary>Why comparison tables reuse starter classes</summary>
+  <div class="ha-details__body">
+    <p>The starter already defines matrix, decision, and evidence table behavior, so the component snippets only assemble semantic examples.</p>
+  </div>
+</details>

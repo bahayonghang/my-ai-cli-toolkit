@@ -1,0 +1,30 @@
+<!-- badge: Label concise state or category values. Always express status in text as well as color. -->
+<style>
+  .ha-badge-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-6) 0;
+  }
+  .ha-badge {
+    display: inline-flex;
+    align-items: center;
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--space-3);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .ha-badge--ready { background: var(--success-soft); color: var(--success); }
+  .ha-badge--review { background: var(--warning-soft); color: var(--warning); }
+  .ha-badge--reference { background: var(--info-soft); color: var(--info); }
+  .ha-badge--neutral { background: var(--surface-muted); color: var(--text-muted); }
+</style>
+
+<p class="ha-badge-set" aria-label="Artifact status examples">
+  <span class="ha-badge ha-badge--ready">Ready</span>
+  <span class="ha-badge ha-badge--review">Needs review</span>
+  <span class="ha-badge ha-badge--reference">Reference</span>
+  <span class="ha-badge ha-badge--neutral">Supporting detail</span>
+</p>

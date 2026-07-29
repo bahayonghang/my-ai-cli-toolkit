@@ -1,0 +1,52 @@
+<!-- checklist: Track requirements, steps, or review state. Pair every color with explicit status text. -->
+<style>
+  .ha-checklist {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-6) 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ha-checklist__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    padding: var(--space-4);
+  }
+  .ha-checklist__status {
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--space-3);
+    font-weight: 700;
+  }
+  .ha-checklist__status--complete {
+    background: var(--success-soft);
+    color: var(--success);
+  }
+  .ha-checklist__status--next {
+    background: var(--info-soft);
+    color: var(--info);
+  }
+  .ha-checklist__copy { color: var(--text); }
+  .ha-checklist__copy strong { display: block; margin-bottom: var(--space-1); }
+  .ha-checklist__copy small { color: var(--text-muted); font-size: var(--space-3); }
+</style>
+
+<ul class="ha-checklist" aria-label="Artifact assembly checklist">
+  <li class="ha-checklist__item">
+    <span class="ha-checklist__status ha-checklist__status--complete">Complete</span>
+    <span class="ha-checklist__copy"><strong>Inline the token system</strong><small>Component CSS resolves against the bundled variables.</small></span>
+  </li>
+  <li class="ha-checklist__item">
+    <span class="ha-checklist__status ha-checklist__status--complete">Complete</span>
+    <span class="ha-checklist__copy"><strong>Keep the page self-contained</strong><small>No remote stylesheet, font, script, or request is required.</small></span>
+  </li>
+  <li class="ha-checklist__item">
+    <span class="ha-checklist__status ha-checklist__status--next">Next</span>
+    <span class="ha-checklist__copy"><strong>Validate the finished page</strong><small>Resolve failures and explain accepted warnings.</small></span>
+  </li>
+</ul>

@@ -1,0 +1,59 @@
+<!-- timeline: Show ordered milestones or phases. Use when sequence is more important than exact duration. -->
+<style>
+  .ha-timeline {
+    margin: var(--space-6) 0;
+    padding: 0 0 0 var(--space-8);
+    border-left: var(--stroke-thick) solid var(--border-strong);
+    list-style: none;
+  }
+  .ha-timeline__item {
+    position: relative;
+    padding: 0 0 var(--space-6) var(--space-4);
+  }
+  .ha-timeline__item:last-child { padding-bottom: 0; }
+  .ha-timeline__item::before {
+    content: "";
+    position: absolute;
+    top: var(--space-1);
+    left: calc((var(--space-8) + var(--space-1)) * -1);
+    width: var(--space-3);
+    height: var(--space-3);
+    border: var(--stroke-thick) solid var(--surface);
+    border-radius: var(--radius-lg);
+    background: var(--accent);
+    box-shadow: var(--shadow-sm);
+  }
+  .ha-timeline__step {
+    margin: 0 0 var(--space-1);
+    color: var(--accent-strong);
+    font-size: var(--space-3);
+    font-weight: 700;
+  }
+  .ha-timeline__title {
+    margin: 0 0 var(--space-2);
+    color: var(--text);
+    font-size: var(--space-5);
+  }
+  .ha-timeline__description {
+    margin: 0;
+    color: var(--text-muted);
+  }
+</style>
+
+<ol class="ha-timeline">
+  <li class="ha-timeline__item">
+    <p class="ha-timeline__step">Step 1</p>
+    <h3 class="ha-timeline__title">Start with the artifact skeleton</h3>
+    <p class="ha-timeline__description">Copy the starter template and retain its semantic structure.</p>
+  </li>
+  <li class="ha-timeline__item">
+    <p class="ha-timeline__step">Step 2</p>
+    <h3 class="ha-timeline__title">Assemble section components</h3>
+    <p class="ha-timeline__description">Add only the snippets needed by each information shape.</p>
+  </li>
+  <li class="ha-timeline__item">
+    <p class="ha-timeline__step">Step 3</p>
+    <h3 class="ha-timeline__title">Run the bundled validator</h3>
+    <p class="ha-timeline__description">Fix failures and account for every remaining warning.</p>
+  </li>
+</ol>

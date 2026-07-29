@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en" class="theme-technical">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTML Artifact Component Specimen</title>
+  <style>
+/*
+ * html-artifact / style-tokens.css
+ *
+ * Source of truth for the token system. Starter template and any artifact built
+ * from this skill should inline an equivalent block (single-file offline).
+ *
+ * Layer model:
+ *   1. Base       — typography, spacing, radius, shadow, shell sizing, strokes
+ *   2. Light mode — surface/text/accent tokens (editorial theme baseline)
+ *   3. Themes     — .theme-technical / .theme-dossier override brand only
+ *   4. Dark mode  — covers surface/text/accent on top of any theme
+ *   5. Mode opts  — prefers-contrast: more, @media print
+ *   6. Data viz   — categorical (Okabe-Ito), sequential, diverging
+ *   7. Fallback   — @supports not (color: oklch(...)) sRGB hex backup
+ *
+ * Theme and mode are orthogonal:
+ *   - theme  = which brand hue family (class on <html>)
+ *   - mode   = light / dark / high-contrast / print (media query or data-mode)
+ */
+
+/* 1. Base ────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light dark;
+  --font-display:
+    Constantia, Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+  --font-sans:
+    Aptos, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono:
+    "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --hero-title-measure: 14ch;
+  --measure: 74ch;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 26px;
+  --app-shell-max: 1680px;
+  --app-shell-gutter: clamp(1rem, 2.5vw, 2.75rem);
+  --stroke-thin: 1px;
+  --stroke-medium: 1.5px;
+  --stroke-thick: 2.5px;
+  --icon-size-sm: 1rem;
+  --icon-size-md: 1.25rem;
+  --icon-size-lg: 1.5rem;
+  --diagram-node-radius: 18px;
+  --link-underline-thickness: 0.08em;
+  --info-h: 240;
+  --success-h: 150;
+  --warning-h: 75;
+  --danger-h: 30;
+  --critical-h: 18;
+}
+
+/* 2. Light mode default (editorial theme) ───────────────────────────────── */
+:root,
+[data-mode="light"] {
+  --bg: oklch(0.96 0.012 70);
+  --bg-layer:
+    radial-gradient(
+      circle at 8% 6%,
+      oklch(0.74 0.14 38 / 18%),
+      transparent 28rem
+    ),
+    linear-gradient(135deg, oklch(0.28 0.05 240 / 8%), transparent 34rem),
+    var(--bg);
+  --surface: oklch(0.99 0.008 70);
+  --surface-muted: oklch(0.94 0.016 70);
+  --surface-strong: oklch(0.22 0.02 240);
+  --text: oklch(0.22 0.02 240);
+  --text-muted: oklch(0.48 0.018 240);
+  --border: oklch(0.86 0.018 70);
+  --border-strong: oklch(0.74 0.025 70);
+  --accent: oklch(0.55 0.16 38);
+  --accent-strong: oklch(0.42 0.16 30);
+  --accent-soft: oklch(0.93 0.05 38);
+  --ink-accent: oklch(0.45 0.08 220);
+  --link: var(--accent-strong);
+  --focus-ring: oklch(0.55 0.2 250);
+  --shadow-sm: 0 1px 2px oklch(0.22 0.02 240 / 8%);
+  --shadow-md: 0 24px 70px oklch(0.22 0.02 240 / 14%);
+  --info: oklch(0.5 0.15 var(--info-h));
+  --info-soft: oklch(0.93 0.05 var(--info-h));
+  --success: oklch(0.5 0.15 var(--success-h));
+  --success-soft: oklch(0.93 0.05 var(--success-h));
+  --warning: oklch(0.5 0.13 var(--warning-h));
+  --warning-soft: oklch(0.93 0.05 var(--warning-h));
+  --danger: oklch(0.5 0.18 var(--danger-h));
+  --danger-soft: oklch(0.93 0.06 var(--danger-h));
+  --critical: oklch(0.42 0.2 var(--critical-h));
+  --critical-soft: oklch(0.93 0.06 var(--critical-h));
+}
+
+/* 3. Themes — brand override only ───────────────────────────────────────── */
+.theme-technical {
+  --bg: oklch(0.96 0.012 230);
+  --surface: oklch(0.99 0.008 230);
+  --surface-muted: oklch(0.94 0.014 230);
+  --accent: oklch(0.52 0.1 200);
+  --accent-strong: oklch(0.38 0.1 200);
+  --accent-soft: oklch(0.93 0.04 200);
+  --ink-accent: oklch(0.55 0.16 38);
+  --bg-layer:
+    radial-gradient(
+      circle at top left,
+      oklch(0.45 0.1 200 / 18%),
+      transparent 30rem
+    ),
+    linear-gradient(120deg, oklch(0.28 0.05 240 / 8%), transparent 38rem),
+    var(--bg);
+}
+
+.theme-dossier {
+  --bg: oklch(0.95 0.015 70);
+  --surface: oklch(0.98 0.012 70);
+  --surface-muted: oklch(0.91 0.022 70);
+  --accent: oklch(0.5 0.1 60);
+  --accent-strong: oklch(0.37 0.1 60);
+  --accent-soft: oklch(0.93 0.05 60);
+  --ink-accent: oklch(0.45 0.1 220);
+  --bg-layer:
+    radial-gradient(
+      circle at 82% 0%,
+      oklch(0.5 0.12 60 / 18%),
+      transparent 26rem
+    ),
+    linear-gradient(135deg, oklch(0.3 0.06 60 / 10%), transparent 34rem),
+    var(--bg);
+}
+
+/* 4. Dark mode — orthogonal to theme ────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --bg: oklch(0.18 0.015 240);
+    --bg-layer:
+      radial-gradient(
+        circle at 8% 6%,
+        oklch(0.5 0.1 38 / 22%),
+        transparent 28rem
+      ),
+      linear-gradient(135deg, oklch(0.4 0.06 240 / 12%), transparent 34rem),
+      var(--bg);
+    --surface: oklch(0.22 0.015 240);
+    --surface-muted: oklch(0.27 0.018 240);
+    --surface-strong: oklch(0.92 0.01 70);
+    --text: oklch(0.92 0.01 70);
+    --text-muted: oklch(0.72 0.015 70);
+    --border: oklch(0.32 0.02 240);
+    --border-strong: oklch(0.45 0.025 240);
+    --accent: oklch(0.72 0.16 38);
+    --accent-strong: oklch(0.85 0.14 38);
+    --accent-soft: oklch(0.32 0.06 38);
+    --ink-accent: oklch(0.75 0.1 220);
+    --link: var(--accent-strong);
+    --focus-ring: oklch(0.78 0.18 250);
+    --shadow-sm: 0 1px 2px oklch(0 0 0 / 60%);
+    --shadow-md: 0 24px 70px oklch(0 0 0 / 60%);
+    --info: oklch(0.72 0.15 var(--info-h));
+    --info-soft: oklch(0.32 0.06 var(--info-h));
+    --success: oklch(0.72 0.16 var(--success-h));
+    --success-soft: oklch(0.32 0.07 var(--success-h));
+    --warning: oklch(0.78 0.14 var(--warning-h));
+    --warning-soft: oklch(0.32 0.06 var(--warning-h));
+    --danger: oklch(0.72 0.18 var(--danger-h));
+    --danger-soft: oklch(0.32 0.07 var(--danger-h));
+    --critical: oklch(0.68 0.2 var(--critical-h));
+    --critical-soft: oklch(0.32 0.08 var(--critical-h));
+  }
+}
+
+[data-mode="dark"] {
+  --bg: oklch(0.18 0.015 240);
+  --bg-layer:
+    radial-gradient(
+      circle at 8% 6%,
+      oklch(0.5 0.1 38 / 22%),
+      transparent 28rem
+    ),
+    linear-gradient(135deg, oklch(0.4 0.06 240 / 12%), transparent 34rem),
+    var(--bg);
+  --surface: oklch(0.22 0.015 240);
+  --surface-muted: oklch(0.27 0.018 240);
+  --surface-strong: oklch(0.92 0.01 70);
+  --text: oklch(0.92 0.01 70);
+  --text-muted: oklch(0.72 0.015 70);
+  --border: oklch(0.32 0.02 240);
+  --border-strong: oklch(0.45 0.025 240);
+  --accent: oklch(0.72 0.16 38);
+  --accent-strong: oklch(0.85 0.14 38);
+  --accent-soft: oklch(0.32 0.06 38);
+  --ink-accent: oklch(0.75 0.1 220);
+  --link: var(--accent-strong);
+  --focus-ring: oklch(0.78 0.18 250);
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 60%);
+  --shadow-md: 0 24px 70px oklch(0 0 0 / 60%);
+  --info: oklch(0.72 0.15 var(--info-h));
+  --info-soft: oklch(0.32 0.06 var(--info-h));
+  --success: oklch(0.72 0.16 var(--success-h));
+  --success-soft: oklch(0.32 0.07 var(--success-h));
+  --warning: oklch(0.78 0.14 var(--warning-h));
+  --warning-soft: oklch(0.32 0.06 var(--warning-h));
+  --danger: oklch(0.72 0.18 var(--danger-h));
+  --danger-soft: oklch(0.32 0.07 var(--danger-h));
+  --critical: oklch(0.68 0.2 var(--critical-h));
+  --critical-soft: oklch(0.32 0.08 var(--critical-h));
+}
+
+/* 5. High contrast and print ────────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --text: oklch(0.12 0 0);
+    --text-muted: oklch(0.22 0 0);
+    --border: oklch(0.4 0 0);
+    --border-strong: oklch(0.2 0 0);
+    --focus-ring: oklch(0.45 0.28 250);
+    --shadow-sm: 0 0 0 1px oklch(0 0 0 / 50%);
+  }
+}
+
+@media print {
+  :root {
+    --bg: #ffffff;
+    --bg-layer: #ffffff;
+    --surface: #ffffff;
+    --surface-muted: #f4f4f4;
+    --surface-strong: #1a1a1a;
+    --text: #000000;
+    --text-muted: #333333;
+    --border: #1a1a1a;
+    --border-strong: #000000;
+    --accent: #1a1a1a;
+    --accent-strong: #000000;
+    --accent-soft: #eaeaea;
+    --shadow-sm: none;
+    --shadow-md: none;
+  }
+}
+
+/* 6. Data visualization palettes ────────────────────────────────────────── */
+:root {
+  /* Categorical — Okabe-Ito 8 colors (colorblind-safe; widely cited in scientific viz) */
+  --chart-1: #e69f00; /* orange */
+  --chart-2: #56b4e9; /* sky blue */
+  --chart-3: #009e73; /* bluish green */
+  --chart-4: #f0e442; /* yellow */
+  --chart-5: #0072b2; /* blue */
+  --chart-6: #d55e00; /* vermillion */
+  --chart-7: #cc79a7; /* reddish purple */
+  --chart-8: #525252; /* dark grey */
+  /* Sequential 9 stops (single hue scale; good for heatmaps & density) */
+  --seq-50: oklch(0.97 0.02 230);
+  --seq-100: oklch(0.93 0.04 230);
+  --seq-200: oklch(0.87 0.06 230);
+  --seq-300: oklch(0.78 0.09 230);
+  --seq-400: oklch(0.67 0.12 230);
+  --seq-500: oklch(0.55 0.15 230);
+  --seq-600: oklch(0.45 0.16 230);
+  --seq-700: oklch(0.36 0.16 230);
+  --seq-800: oklch(0.28 0.14 230);
+  --seq-900: oklch(0.2 0.1 230);
+  /* Diverging 7 stops (negative → neutral → positive) */
+  --div-neg-3: oklch(0.5 0.18 25);
+  --div-neg-2: oklch(0.65 0.15 25);
+  --div-neg-1: oklch(0.82 0.1 25);
+  --div-zero: oklch(0.88 0.01 0);
+  --div-pos-1: oklch(0.82 0.08 220);
+  --div-pos-2: oklch(0.65 0.13 220);
+  --div-pos-3: oklch(0.5 0.16 220);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --chart-1: #f2b33d;
+    --chart-2: #79c5ee;
+    --chart-3: #3fb58f;
+    --chart-4: #f2e66b;
+    --chart-5: #4391c7;
+    --chart-6: #e47b33;
+    --chart-7: #d69aba;
+    --chart-8: #b5b5b5;
+    --seq-50: oklch(0.28 0.06 230);
+    --seq-100: oklch(0.32 0.08 230);
+    --seq-200: oklch(0.38 0.1 230);
+    --seq-300: oklch(0.46 0.13 230);
+    --seq-400: oklch(0.55 0.15 230);
+    --seq-500: oklch(0.65 0.16 230);
+    --seq-600: oklch(0.74 0.15 230);
+    --seq-700: oklch(0.82 0.13 230);
+    --seq-800: oklch(0.88 0.1 230);
+    --seq-900: oklch(0.93 0.07 230);
+    --div-neg-3: oklch(0.7 0.18 25);
+    --div-neg-2: oklch(0.6 0.15 25);
+    --div-neg-1: oklch(0.45 0.12 25);
+    --div-zero: oklch(0.4 0.01 0);
+    --div-pos-1: oklch(0.45 0.1 220);
+    --div-pos-2: oklch(0.6 0.13 220);
+    --div-pos-3: oklch(0.75 0.16 220);
+  }
+}
+
+[data-mode="dark"] {
+  --chart-1: #f2b33d;
+  --chart-2: #79c5ee;
+  --chart-3: #3fb58f;
+  --chart-4: #f2e66b;
+  --chart-5: #4391c7;
+  --chart-6: #e47b33;
+  --chart-7: #d69aba;
+  --chart-8: #b5b5b5;
+}
+
+/* 7. sRGB fallback for browsers without oklch() ─────────────────────────── */
+@supports not (color: oklch(0 0 0)) {
+  :root,
+  [data-mode="light"] {
+    --bg: #f4f1ea;
+    --bg-layer:
+      radial-gradient(
+        circle at 8% 6%,
+        rgba(177, 89, 47, 0.16),
+        transparent 28rem
+      ),
+      linear-gradient(135deg, rgba(27, 38, 59, 0.08), transparent 34rem),
+      #f4f1ea;
+    --surface: #fffdf8;
+    --surface-muted: #eee8dd;
+    --surface-strong: #1d2430;
+    --text: #1b1f27;
+    --text-muted: #616a76;
+    --border: #ded6c8;
+    --border-strong: #b6aa99;
+    --accent: #b1592f;
+    --accent-strong: #7a321c;
+    --accent-soft: #f5e2d7;
+    --ink-accent: #0d5661;
+    --link: #7a321c;
+    --focus-ring: #1d4ed8;
+    --shadow-sm: 0 1px 2px rgba(30, 34, 42, 0.08);
+    --shadow-md: 0 24px 70px rgba(30, 34, 42, 0.14);
+    --info: #1d5fa7;
+    --info-soft: #dbeafe;
+    --success: #147552;
+    --success-soft: #d1fae5;
+    --warning: #a15c05;
+    --warning-soft: #fef3c7;
+    --danger: #b83b22;
+    --danger-soft: #ffedd5;
+    --critical: #8f1d1d;
+    --critical-soft: #fee2e2;
+    --seq-50: #eef4fb;
+    --seq-100: #d8e6f6;
+    --seq-200: #b7d0ec;
+    --seq-300: #8eb3dc;
+    --seq-400: #6796ca;
+    --seq-500: #3f78b6;
+    --seq-600: #2e60a0;
+    --seq-700: #244c81;
+    --seq-800: #1c3a63;
+    --seq-900: #122846;
+    --div-neg-3: #a93a22;
+    --div-neg-2: #d68466;
+    --div-neg-1: #f0c2ad;
+    --div-zero: #ece9e3;
+    --div-pos-1: #b8d2e8;
+    --div-pos-2: #6da1c9;
+    --div-pos-3: #2a6aa3;
+  }
+}
+
+/* Demo shell: starter-template structure plus the table primitives used by snippets. */
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-layer);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+}
+a {
+  color: var(--link);
+  text-decoration-thickness: var(--link-underline-thickness);
+}
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 10;
+  transform: translateY(-160%);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+  color: var(--surface);
+  padding: var(--space-2) var(--space-3);
+  text-decoration: none;
+}
+.skip-link:focus { transform: translateY(0); }
+:focus-visible {
+  outline: var(--stroke-thick) solid var(--focus-ring);
+  outline-offset: var(--space-1);
+}
+.demo-shell {
+  display: grid;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: var(--space-8);
+  width: min(calc(100vw - (var(--app-shell-gutter) * 2)), var(--app-shell-max));
+  margin: 0 auto;
+  padding: var(--space-8) var(--app-shell-gutter) var(--space-12);
+}
+.demo-nav {
+  position: sticky;
+  top: var(--space-6);
+  align-self: start;
+  border: var(--stroke-thin) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+}
+.demo-nav strong {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+.demo-nav a {
+  display: block;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.demo-nav a:hover,
+.demo-nav a:focus-visible {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+main,
+section,
+article,
+figure,
+table,
+pre,
+code { min-width: 0; }
+h1,
+h2,
+h3,
+p,
+li,
+td,
+th,
+code { overflow-wrap: anywhere; }
+h1,
+h2,
+h3 {
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+h1 {
+  margin: 0;
+  max-width: var(--hero-title-measure);
+  font-family: var(--font-display);
+  font-size: clamp(var(--space-8), 6vw, var(--space-12));
+}
+h2 {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--space-8);
+}
+.demo-hero {
+  margin-bottom: var(--space-4);
+  border: var(--stroke-thin) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-8);
+}
+.demo-eyebrow {
+  margin: 0 0 var(--space-2);
+  color: var(--accent-strong);
+  font-size: var(--space-3);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.demo-lede {
+  max-width: var(--measure);
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+.demo-section {
+  padding: var(--space-10) 0;
+  border-bottom: var(--stroke-thin) solid var(--border);
+}
+.demo-section > p {
+  max-width: var(--measure);
+  color: var(--text-muted);
+}
+.table-wrap {
+  overflow-x: auto;
+  border: var(--stroke-thin) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+caption {
+  padding: var(--space-3) var(--space-4);
+  color: var(--text);
+  text-align: left;
+  font-weight: 700;
+}
+th,
+td {
+  border-top: var(--stroke-thin) solid var(--border);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: var(--surface-muted);
+  color: var(--text);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface-muted) 34%, transparent);
+}
+.table--matrix th:first-child,
+.table--matrix td:first-child {
+  font-weight: 700;
+}
+.table--matrix .key-row,
+.table--evidence .key-row {
+  background: color-mix(in srgb, var(--accent-soft) 58%, transparent);
+}
+.verdict-column {
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+.evidence-column {
+  color: var(--text-muted);
+}
+@media (max-width: 900px) {
+  .demo-shell { grid-template-columns: 1fr; }
+  .demo-nav {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  .demo-nav strong { flex-basis: 100%; }
+}
+@media (max-width: 720px) {
+  .demo-shell {
+    width: 100%;
+    padding: var(--space-4);
+    box-sizing: border-box;
+  }
+  .demo-hero { padding: var(--space-5); }
+  h1 { max-width: none; }
+  table { min-width: 40rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* metric-card */
+.ha-metric-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+  }
+  .ha-metric-card {
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-5);
+  }
+  .ha-metric-card__value {
+    margin: 0 0 var(--space-2);
+    color: var(--accent-strong);
+    font-family: var(--font-display);
+    font-size: var(--space-10);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .ha-metric-card__label {
+    margin: 0 0 var(--space-2);
+    color: var(--text);
+    font-size: var(--space-4);
+    font-weight: 700;
+  }
+  .ha-metric-card__note {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--space-3);
+  }
+  @media (max-width: 720px) {
+    .ha-metric-cards { grid-template-columns: 1fr; }
+  }
+
+/* comparison-table */
+.ha-comparison-table {
+    margin: var(--space-6) 0;
+  }
+  .ha-comparison-table .verdict-column {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+/* data-table */
+.ha-data-table {
+    margin: var(--space-6) 0;
+  }
+  .ha-data-table .evidence-column {
+    color: var(--text-muted);
+    font-size: var(--space-4);
+  }
+
+/* timeline */
+.ha-timeline {
+    margin: var(--space-6) 0;
+    padding: 0 0 0 var(--space-8);
+    border-left: var(--stroke-thick) solid var(--border-strong);
+    list-style: none;
+  }
+  .ha-timeline__item {
+    position: relative;
+    padding: 0 0 var(--space-6) var(--space-4);
+  }
+  .ha-timeline__item:last-child { padding-bottom: 0; }
+  .ha-timeline__item::before {
+    content: "";
+    position: absolute;
+    top: var(--space-1);
+    left: calc((var(--space-8) + var(--space-1)) * -1);
+    width: var(--space-3);
+    height: var(--space-3);
+    border: var(--stroke-thick) solid var(--surface);
+    border-radius: var(--radius-lg);
+    background: var(--accent);
+    box-shadow: var(--shadow-sm);
+  }
+  .ha-timeline__step {
+    margin: 0 0 var(--space-1);
+    color: var(--accent-strong);
+    font-size: var(--space-3);
+    font-weight: 700;
+  }
+  .ha-timeline__title {
+    margin: 0 0 var(--space-2);
+    color: var(--text);
+    font-size: var(--space-5);
+  }
+  .ha-timeline__description {
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+/* checklist */
+.ha-checklist {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-6) 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ha-checklist__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    padding: var(--space-4);
+  }
+  .ha-checklist__status {
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--space-3);
+    font-weight: 700;
+  }
+  .ha-checklist__status--complete {
+    background: var(--success-soft);
+    color: var(--success);
+  }
+  .ha-checklist__status--next {
+    background: var(--info-soft);
+    color: var(--info);
+  }
+  .ha-checklist__copy { color: var(--text); }
+  .ha-checklist__copy strong { display: block; margin-bottom: var(--space-1); }
+  .ha-checklist__copy small { color: var(--text-muted); font-size: var(--space-3); }
+
+/* quote-card */
+.ha-quote-card {
+    margin: var(--space-6) 0;
+    border: var(--stroke-thin) solid var(--border);
+    border-left: var(--stroke-thick) solid var(--accent);
+    border-radius: var(--radius-md);
+    background: var(--accent-soft);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+  }
+  .ha-quote-card blockquote { margin: 0; }
+  .ha-quote-card blockquote p {
+    margin: 0;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: var(--space-6);
+    line-height: 1.4;
+  }
+  .ha-quote-card figcaption {
+    margin-top: var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--space-3);
+  }
+
+/* code-block */
+.ha-code-block {
+    margin: var(--space-6) 0;
+    border: var(--stroke-thin) solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ha-code-block figcaption {
+    margin: 0;
+    border-bottom: var(--stroke-thin) solid var(--border);
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--space-3);
+    font-weight: 700;
+  }
+  .ha-code-block pre {
+    margin: 0;
+    padding: var(--space-5);
+    overflow-x: auto;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: var(--space-3);
+    line-height: 1.6;
+  }
+
+/* details */
+.ha-details {
+    margin: var(--space-6) 0;
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ha-details summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    cursor: pointer;
+    padding: var(--space-4) var(--space-5);
+    color: var(--text);
+    font-weight: 700;
+    list-style: none;
+  }
+  .ha-details summary::-webkit-details-marker { display: none; }
+  .ha-details summary::after { content: "+"; color: var(--accent-strong); }
+  .ha-details[open] summary::after { content: "-"; }
+  .ha-details summary:hover { background: var(--accent-soft); }
+  .ha-details summary:focus-visible {
+    outline: var(--stroke-thick) solid var(--focus-ring);
+    outline-offset: calc(var(--stroke-thick) * -1);
+  }
+  .ha-details__body {
+    border-top: var(--stroke-thin) solid var(--border);
+    padding: var(--space-4) var(--space-5);
+    color: var(--text-muted);
+  }
+  .ha-details__body p { margin: 0; }
+
+/* badge */
+.ha-badge-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-6) 0;
+  }
+  .ha-badge {
+    display: inline-flex;
+    align-items: center;
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--space-3);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .ha-badge--ready { background: var(--success-soft); color: var(--success); }
+  .ha-badge--review { background: var(--warning-soft); color: var(--warning); }
+  .ha-badge--reference { background: var(--info-soft); color: var(--info); }
+  .ha-badge--neutral { background: var(--surface-muted); color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="demo-shell">
+    <nav class="demo-nav" aria-label="Component specimens">
+      <strong>Components</strong>
+      <a href="#metric-card">Metric cards</a>
+      <a href="#comparison-table">Comparison table</a>
+      <a href="#data-table">Data table</a>
+      <a href="#timeline">Time<wbr>line</a>
+      <a href="#checklist">Checklist</a>
+      <a href="#quote-card">Quote card</a>
+      <a href="#code-block">Code block</a>
+      <a href="#details">Details</a>
+      <a href="#badge">Badges</a>
+    </nav>
+    <main id="main">
+      <header class="demo-hero">
+        <p class="demo-eyebrow">Offline component reference</p>
+        <h1>HTML Artifact Component Specimen</h1>
+        <p class="demo-lede">All nine copy-ready components are shown with repository-verifiable content, the full bundled token system, and no remote dependencies.</p>
+      </header>
+      <section class="demo-section" id="metric-card" aria-labelledby="metric-card-title">
+        <h2 id="metric-card-title">Metric cards</h2>
+        <p>Source snippet: <code>assets/components/metric-card.html</code></p>
+        <div class="ha-metric-cards" role="list" aria-label="Component layer facts">
+          <article class="ha-metric-card" role="listitem">
+            <p class="ha-metric-card__value">9</p>
+            <p class="ha-metric-card__label">Component snippets</p>
+            <p class="ha-metric-card__note">The first-party component set has nine focused files.</p>
+          </article>
+          <article class="ha-metric-card" role="listitem">
+            <p class="ha-metric-card__value">3</p>
+            <p class="ha-metric-card__label">Fast-path steps</p>
+            <p class="ha-metric-card__note">Start from the template, add snippets, then validate.</p>
+          </article>
+          <article class="ha-metric-card" role="listitem">
+            <p class="ha-metric-card__value">0</p>
+            <p class="ha-metric-card__label">Remote dependencies</p>
+            <p class="ha-metric-card__note">Every artifact remains self-contained and offline.</p>
+          </article>
+        </div>
+      </section>
+      <section class="demo-section" id="comparison-table" aria-labelledby="comparison-table-title">
+        <h2 id="comparison-table-title">Comparison table</h2>
+        <p>Source snippet: <code>assets/components/comparison-table.html</code></p>
+        <div class="table-wrap ha-comparison-table">
+          <table class="table--matrix">
+            <caption>HTML artifact composition layers</caption>
+            <thead>
+              <tr>
+                <th scope="col">Layer</th>
+                <th scope="col">Decision</th>
+                <th scope="col">Bundled source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Page</th>
+                <td>Choose the narrative skeleton.</td>
+                <td class="verdict-column">Template references</td>
+              </tr>
+              <tr class="key-row">
+                <th scope="row">Section</th>
+                <td>Match the information shape to a component.</td>
+                <td class="verdict-column">Component snippets</td>
+              </tr>
+              <tr>
+                <th scope="row">Foundation</th>
+                <td>Apply layout primitives and semantic tokens.</td>
+                <td class="verdict-column">Starter and tokens</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="demo-section" id="data-table" aria-labelledby="data-table-title">
+        <h2 id="data-table-title">Data table</h2>
+        <p>Source snippet: <code>assets/components/data-table.html</code></p>
+        <div class="table-wrap ha-data-table">
+          <table class="table--evidence">
+            <caption>Bundled sources used by the component layer</caption>
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Role</th>
+                <th scope="col">Loading rule</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="key-row">
+                <th scope="row">style-tokens.css</th>
+                <td>Defines the visual token system.</td>
+                <td class="evidence-column">Inline before component CSS.</td>
+              </tr>
+              <tr>
+                <th scope="row">starter-template.html</th>
+                <td>Provides the semantic shell and layout primitives.</td>
+                <td class="evidence-column">Copy as the artifact baseline.</td>
+              </tr>
+              <tr>
+                <th scope="row">assets/components</th>
+                <td>Provides section-level assembly snippets.</td>
+                <td class="evidence-column">Copy only the components in use.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="demo-section" id="timeline" aria-labelledby="timeline-title">
+        <h2 id="timeline-title">time<wbr>line</h2>
+        <p>Source snippet: <code>assets/components/timeline.html</code></p>
+        <ol class="ha-timeline">
+          <li class="ha-timeline__item">
+            <p class="ha-timeline__step">Step 1</p>
+            <h3 class="ha-timeline__title">Start with the artifact skeleton</h3>
+            <p class="ha-timeline__description">Copy the starter template and retain its semantic structure.</p>
+          </li>
+          <li class="ha-timeline__item">
+            <p class="ha-timeline__step">Step 2</p>
+            <h3 class="ha-timeline__title">Assemble section components</h3>
+            <p class="ha-timeline__description">Add only the snippets needed by each information shape.</p>
+          </li>
+          <li class="ha-timeline__item">
+            <p class="ha-timeline__step">Step 3</p>
+            <h3 class="ha-timeline__title">Run the bundled validator</h3>
+            <p class="ha-timeline__description">Fix failures and account for every remaining warning.</p>
+          </li>
+        </ol>
+      </section>
+      <section class="demo-section" id="checklist" aria-labelledby="checklist-title">
+        <h2 id="checklist-title">Checklist</h2>
+        <p>Source snippet: <code>assets/components/checklist.html</code></p>
+        <ul class="ha-checklist" aria-label="Artifact assembly checklist">
+          <li class="ha-checklist__item">
+            <span class="ha-checklist__status ha-checklist__status--complete">Complete</span>
+            <span class="ha-checklist__copy"><strong>Inline the token system</strong><small>Component CSS resolves against the bundled variables.</small></span>
+          </li>
+          <li class="ha-checklist__item">
+            <span class="ha-checklist__status ha-checklist__status--complete">Complete</span>
+            <span class="ha-checklist__copy"><strong>Keep the page self-contained</strong><small>No remote stylesheet, font, script, or request is required.</small></span>
+          </li>
+          <li class="ha-checklist__item">
+            <span class="ha-checklist__status ha-checklist__status--next">Next</span>
+            <span class="ha-checklist__copy"><strong>Validate the finished page</strong><small>Resolve failures and explain accepted warnings.</small></span>
+          </li>
+        </ul>
+      </section>
+      <section class="demo-section" id="quote-card" aria-labelledby="quote-card-title">
+        <h2 id="quote-card-title">Quote card</h2>
+        <p>Source snippet: <code>assets/components/quote-card.html</code></p>
+        <figure class="ha-quote-card">
+          <blockquote>
+            <p>Every artifact must be self-contained, semantic, accessible, and reviewable.</p>
+          </blockquote>
+          <figcaption>HTML Artifact output contract</figcaption>
+        </figure>
+      </section>
+      <section class="demo-section" id="code-block" aria-labelledby="code-block-title">
+        <h2 id="code-block-title">Code block</h2>
+        <p>Source snippet: <code>assets/components/code-block.html</code></p>
+        <figure class="ha-code-block">
+          <figcaption>Validate the self-contained component specimen</figcaption>
+          <pre><code>python skills/development-workflows/html-artifact/scripts/check_html_artifact.py skills/development-workflows/html-artifact/assets/demo-all.html</code></pre>
+        </figure>
+      </section>
+      <section class="demo-section" id="details" aria-labelledby="details-title">
+        <h2 id="details-title">Details</h2>
+        <p>Source snippet: <code>assets/components/details.html</code></p>
+        <details class="ha-details">
+          <summary>Why comparison tables reuse starter classes</summary>
+          <div class="ha-details__body">
+            <p>The starter already defines matrix, decision, and evidence table behavior, so the component snippets only assemble semantic examples.</p>
+          </div>
+        </details>
+      </section>
+      <section class="demo-section" id="badge" aria-labelledby="badge-title">
+        <h2 id="badge-title">Badges</h2>
+        <p>Source snippet: <code>assets/components/badge.html</code></p>
+        <p class="ha-badge-set" aria-label="Artifact status examples">
+          <span class="ha-badge ha-badge--ready">Ready</span>
+          <span class="ha-badge ha-badge--review">Needs review</span>
+          <span class="ha-badge ha-badge--reference">Reference</span>
+          <span class="ha-badge ha-badge--neutral">Supporting detail</span>
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
