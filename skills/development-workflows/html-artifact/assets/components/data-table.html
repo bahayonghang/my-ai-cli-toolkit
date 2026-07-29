@@ -1,0 +1,40 @@
+<!-- data-table: Present structured records without implying an option comparison. Use for inventories and evidence lists. -->
+<style>
+  .ha-data-table {
+    margin: var(--space-6) 0;
+  }
+  .ha-data-table .evidence-column {
+    color: var(--text-muted);
+    font-size: var(--space-4);
+  }
+</style>
+
+<div class="table-wrap ha-data-table">
+  <table class="table--evidence">
+    <caption>Bundled sources used by the component layer</caption>
+    <thead>
+      <tr>
+        <th scope="col">Source</th>
+        <th scope="col">Role</th>
+        <th scope="col">Loading rule</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="key-row">
+        <th scope="row">style-tokens.css</th>
+        <td>Defines the visual token system.</td>
+        <td class="evidence-column">Inline before component CSS.</td>
+      </tr>
+      <tr>
+        <th scope="row">starter-template.html</th>
+        <td>Provides the semantic shell and layout primitives.</td>
+        <td class="evidence-column">Copy as the artifact baseline.</td>
+      </tr>
+      <tr>
+        <th scope="row">assets/components</th>
+        <td>Provides section-level assembly snippets.</td>
+        <td class="evidence-column">Copy only the components in use.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

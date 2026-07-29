@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 36
-- **Last Active**: 2026-07-23
+- **Total Sessions**: 38
+- **Last Active**: 2026-07-29
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1259 | Active |
+| `journal-1.md` | ~1301 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,8 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 38 | 2026-07-29 | 检查并归档 claude-context-improver | `b75b8fc52db32e0225115e106de68dd457b6dace` | `dev` |
+| 37 | 2026-07-29 | html-artifact 组件装配层 | `305fc46` | `dev` |
 | 36 | 2026-07-23 | 优化 Codex 工作流推荐器 | `8f987c3`, `53a1eb5` | `dev` |
 | 35 | 2026-07-23 | Optimize agents-md-improver for GPT-5.6 | `9ae4cee` | `dev` |
 | 34 | 2026-07-22 | Harden Windows dev process cleanup | `39792e2` | `dev` |

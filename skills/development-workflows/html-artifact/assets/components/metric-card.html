@@ -1,0 +1,56 @@
+<!-- metric-card: Summarize a small set of verified measures. Best for two to four metrics. -->
+<style>
+  .ha-metric-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+  }
+  .ha-metric-card {
+    border: var(--stroke-thin) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-5);
+  }
+  .ha-metric-card__value {
+    margin: 0 0 var(--space-2);
+    color: var(--accent-strong);
+    font-family: var(--font-display);
+    font-size: var(--space-10);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .ha-metric-card__label {
+    margin: 0 0 var(--space-2);
+    color: var(--text);
+    font-size: var(--space-4);
+    font-weight: 700;
+  }
+  .ha-metric-card__note {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--space-3);
+  }
+  @media (max-width: 720px) {
+    .ha-metric-cards { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="ha-metric-cards" role="list" aria-label="Component layer facts">
+  <article class="ha-metric-card" role="listitem">
+    <p class="ha-metric-card__value">9</p>
+    <p class="ha-metric-card__label">Component snippets</p>
+    <p class="ha-metric-card__note">The first-party component set has nine focused files.</p>
+  </article>
+  <article class="ha-metric-card" role="listitem">
+    <p class="ha-metric-card__value">3</p>
+    <p class="ha-metric-card__label">Fast-path steps</p>
+    <p class="ha-metric-card__note">Start from the template, add snippets, then validate.</p>
+  </article>
+  <article class="ha-metric-card" role="listitem">
+    <p class="ha-metric-card__value">0</p>
+    <p class="ha-metric-card__label">Remote dependencies</p>
+    <p class="ha-metric-card__note">Every artifact remains self-contained and offline.</p>
+  </article>
+</div>

@@ -236,20 +236,22 @@ def _validate_jsonl(jsonl_file: Path, repo_root: Path, task_dir: Path | None = N
         if extension in _CODE_FILE_EXTENSIONS and not _is_exempt_from_code_file_warning(
             file_path, task_rel
         ):
-            print(
-                f"  {colored(f'{file_name}:{line_num}: Warning: {file_path} looks like a code file — '
-                             'implement/check.jsonl should reference spec/research docs; '
-                             'agents read code themselves', Colors.YELLOW)}"
+            warning_message = (
+                f"{file_name}:{line_num}: Warning: {file_path} looks like a code file — "
+                "implement/check.jsonl should reference spec/research docs; "
+                "agents read code themselves"
             )
+            print(f"  {colored(warning_message, Colors.YELLOW)}")
 
         if max_file_bytes:
             size = full_path.stat().st_size
             if size > max_file_bytes:
-                print(
-                    f"  {colored(f'{file_name}:{line_num}: Warning: {file_path} is {size} bytes, '
-                                 f'exceeds context_injection.max_file_bytes ({max_file_bytes}); '
-                                 'injection will truncate it', Colors.YELLOW)}"
+                warning_message = (
+                    f"{file_name}:{line_num}: Warning: {file_path} is {size} bytes, "
+                    f"exceeds context_injection.max_file_bytes ({max_file_bytes}); "
+                    "injection will truncate it"
                 )
+                print(f"  {colored(warning_message, Colors.YELLOW)}")
 
     if errors == 0:
         print(f"  {colored(f'{file_name}: ✓ ({real_entries} entries)', Colors.GREEN)}")

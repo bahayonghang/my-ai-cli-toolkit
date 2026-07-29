@@ -18,7 +18,7 @@ Create self-contained HTML artifacts (single-file by default, split bundles when
 | --- | --- |
 | Name | `html-artifact` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.3.0` |
+| Version | `0.4.0` |
 | Tags | `html`, `artifact`, `planning`, `code-review`, `reports`, `accessibility`, `offline` |
 
 ## Install command
@@ -31,7 +31,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill html-artifact
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
-| `skills/development-workflows/html-artifact/assets` | directory | 2 | Assets |
+| `skills/development-workflows/html-artifact/assets` | directory | 12 | Assets |
 | `skills/development-workflows/html-artifact/evals` | directory | 2 | Evaluation samples |
 | `skills/development-workflows/html-artifact/references` | directory | 19 | Reference material |
 | `skills/development-workflows/html-artifact/scripts` | directory | 1 | Executable scripts |

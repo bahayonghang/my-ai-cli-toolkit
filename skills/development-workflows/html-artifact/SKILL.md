@@ -7,7 +7,7 @@ description: >-
   PR/code-review report, dashboard, or mini deck, or for long Markdown-like
   outputs needing navigation or diagrams. Not for short answers, commit
   messages, or production UI.
-version: 0.3.0
+version: 0.4.0
 category: development-workflows
 tags:
   - html
@@ -40,6 +40,9 @@ Every artifact must be:
 - **Accessible**: skip link, visible focus state, keyboard-operable controls, text alternatives for diagrams, color plus text for status, and `prefers-reduced-motion` support.
 - **Reviewable**: structure content into navigable sections, cards, tables, timelines, or diagrams; do not dump raw long Markdown into a styled box.
 - **Navigable when split**: split bundles must include an index page plus previous/next/back-to-index links on each part page.
+- **Free of unfinished placeholders**: remove `[填这里]`, Lorem ipsum, TBD, and other fill-in markers before delivery.
+- **Truthful about data**: do not invent measurements, statistics, customers, sources, or outcomes.
+- **Explicit about missing data**: mark a real gap as `[数据待补:说明]` and explain what evidence is needed.
 
 ## Design escalation
 
@@ -104,6 +107,16 @@ Enum recommendations must include a table with these columns: current entrypoint
 | Meeting readout, mini deck, slide-like walkthrough       | Narrative Deck           |
 | Design tokens, component states, visual audit            | Component Specimen Sheet |
 
+## Fast path
+
+Use the fast path only for a simple single-page artifact estimated below 900 KB, with no chart/split request and no high-density review need. It may skip design escalation and the detailed size inventory:
+
+1. Copy `assets/starter-template.html` as the semantic skeleton.
+2. Keep the starter's embedded token system, then copy only the needed `assets/components/*.html` snippets.
+3. Run the bundled validator and resolve failures or account for warnings.
+
+The fast path never relaxes the output contract: self-containment, semantics, accessibility, content honesty, and validation remain mandatory.
+
 ## Creation workflow
 
 1. Clarify the artifact purpose and choose a template.
@@ -159,6 +172,25 @@ The starter template includes reusable primitives. Prefer these over ad-hoc CSS 
 - **Diagram frames**: `figure.diagram-frame` with inline SVG, timeline/phase lanes, or structured HTML diagrams; always include `figcaption` and a text equivalent list or table.
 - **Architecture audit primitives**: `architecture-map`, `boundary-band`, `evidence-rail`, `edge-legend`, and `risk-heat` for codebase audit pages that need C4-lite boundaries, traceable evidence, call edges, and risk density.
 
+## Component snippets
+
+Use `assets/components/` for copy-ready section patterns after choosing the page template. Ensure the artifact contains the `assets/style-tokens.css` variables; the starter already embeds them. Comparison and data tables also rely on the starter's table primitives. Copy only the snippets the artifact uses.
+
+| Information shape | Use |
+| --- | --- |
+| Key metrics or verified counts | `metric-card` |
+| Side-by-side options or decisions | `comparison-table` |
+| Inventories, records, or evidence | `data-table` |
+| Ordered phases or milestones | `timeline` |
+| Requirements, steps, or completion state | `checklist` |
+| Sourced statement or governing rule | `quote-card` |
+| Command, code, or configuration excerpt | `code-block` |
+| Secondary evidence or implementation detail | `details` |
+| Short status or category label | `badge` |
+| Two, three, or four columns | starter `grid-2`, `grid-3`, or `grid-4` |
+
+The routing layers are sequential: choose a template for the page skeleton, choose components for each section's information shape, then rely on tokens and starter primitives for the visual foundation. `assets/demo-all.html` is the visual reference for the complete component set.
+
 ## Diagram strategy
 
 Mermaid can be an input sketch, but static SVG or clear HTML must be the final artifact output.
@@ -206,6 +238,8 @@ Keep this entrypoint small. Load detailed references only as needed:
 - `references/svg-cookbook.md` — icons, decorative motifs, and spot illustrations using `currentColor` and tokens.
 - `references/diagram-cookbook.md` — inline SVG and HTML diagram recipes (phase roadmap, decision flow, swimlane, state machine, tree, before/after, gantt, dependency, evidence-to-claim) and shape/connector conventions.
 - `references/interaction-cookbook.md` — ten native-first interaction recipes (filter chip, search, sortable table, tabs, disclosure, dialog, scroll-spy, theme toggle, copy with feedback, keyboard shortcuts) with progressive-enhancement baselines.
+- `assets/components/` — nine copy-ready section components that depend on the bundled tokens and selected starter primitives.
+- `assets/demo-all.html` — self-contained visual specimen for all component snippets.
 - `references/templates/strategy-blueprint.md` — implementation plans and PRDs.
 - `references/templates/review-workbench.md` — code review and PR reports.
 - `references/templates/architecture-atlas.md` — architecture and data-flow explainers.
