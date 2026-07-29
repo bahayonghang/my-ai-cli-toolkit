@@ -1,0 +1,64 @@
+{
+  "skill_name": "rust-build-optimization",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我的 Rust 项目只改了一行 main.rs,cargo build --release 还要 1 分多钟,机器是 32 核的,帮我看看为什么这么慢。",
+      "expected_output": "Skill triggers and follows measure-first workflow: frames the complaint as a warm release rebuild, establishes a reproducible baseline, runs cargo build --timings, notes its bin-crate blind spot and escalates to -Zself-profile/measureme or a linker A/B test before recommending fixes; likely diagnoses serialized codegen of one large crate and proposes workspace splitting plus release incremental, with before/after re-measurement.",
+      "files": [],
+      "assertions": [
+        "Classifies the scenario as a warm/incremental release build before proposing fixes",
+        "Measures with cargo build --timings before recommending any change",
+        "Escalates beyond --timings for the opaque bin-crate block (self-profile, linker A/B, or cargo-llvm-lines)",
+        "Ties each proposed fix to observed evidence rather than applying all optimizations at once",
+        "Re-measures and reports before/after numbers"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our Rust CI pipeline recompiles everything from scratch on every PR and takes 25 minutes. Set it up to be faster.",
+      "expected_output": "Skill triggers on the CI cold-build scenario: recommends sccache with a shared backend, CARGO_INCREMENTAL=0, a dedicated ci profile (lto off, codegen-units 16, incremental false, reduced debuginfo), cargo-chef if Docker is involved, and job parallelization; does not enable incremental compilation in CI.",
+      "files": [],
+      "assertions": [
+        "Recommends compilation caching such as sccache for CI",
+        "Disables incremental compilation in CI rather than enabling it",
+        "Proposes a CI-specific cargo profile trading runtime optimization for build speed",
+        "Flags any tradeoff affecting release runtime performance instead of silently changing release settings"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "cargo --timings 显示最后一个 bin crate 自己跑了 70 秒,其它 crate 早就编完了,CPU 利用率也掉到一个核。怎么办?",
+      "expected_output": "Skill triggers with measurement already in hand: identifies serialized codegen of an oversized crate, confirms with cargo-llvm-lines or -Zself-profile whether monomorphization/LLVM dominates, and proposes workspace splitting with a thin bin crate as the root fix, plus generics-bloat mitigations (non-generic inner fn, dyn Trait at boundaries) and optionally nightly Cranelift/parallel-frontend clearly labeled as nightly.",
+      "files": [],
+      "assertions": [
+        "Recognizes the single-crate serialization pattern from the described evidence",
+        "Proposes workspace splitting with a thin bin crate as the primary fix",
+        "Mentions monomorphization diagnosis via cargo-llvm-lines or self-profile",
+        "Labels Cranelift or -Zthreads suggestions as nightly-only if mentioned"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "My Rust service compiles fine but request latency is terrible in production. Profile it and make the hot path faster.",
+      "expected_output": "Routing negative: this is runtime performance optimization of the compiled program, not build-time optimization. The skill should not apply build-speed changes; route to runtime profiling (perf/flamegraph on the running binary) and note that build-speed settings like fewer codegen-units would if anything be reversed for runtime speed.",
+      "files": [],
+      "assertions": [
+        "Does not treat the request as a slow-build problem",
+        "Routes to runtime profiling and optimization instead",
+        "Does not apply compile-time-oriented config such as opt-level reduction or lto off"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Our webpack build takes 10 minutes, can you speed it up?",
+      "expected_output": "Routing negative: non-Rust build system. The skill declines to apply Rust/cargo tooling and defers to general JavaScript build-tooling assistance.",
+      "files": [],
+      "assertions": [
+        "Recognizes the build system is not Rust/cargo",
+        "Does not recommend cargo, rustc flags, or Rust linker changes",
+        "Defers to appropriate non-Rust tooling help"
+      ]
+    }
+  ]
+}

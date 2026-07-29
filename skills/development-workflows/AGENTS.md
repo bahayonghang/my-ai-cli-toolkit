@@ -1,7 +1,8 @@
 # development-workflows — suite conventions
 
 House standard for the skills in this directory: `code-auditor`, `code-quality-review`,
-`code-refactor`, `codex-dynamic-workflows`, `html-artifact`, `spark`, `unknowns-first`.
+`code-refactor`, `codex-dynamic-workflows`, `html-artifact`, `rust-build-optimization`,
+`spark`, `unknowns-first`.
 These skills cover code review, refactoring, task diagnosis, planning, and artifact
 generation. They drifted apart on script paths, eval schemas, and interface files; new or
 edited skills here should match the conventions below so the suite does not drift again.
