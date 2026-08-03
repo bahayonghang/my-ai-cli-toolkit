@@ -1,0 +1,4 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "House contracts binding this task: skill-dir paths, frontmatter, allowed-tools whitelist rule, mjs tests, 4-backtick fence trap, two-eval-system rule"}
+{"file": ".trellis/tasks/08-03-optimize-goal-meta-skill/research/official-goal-facts-2026-08-03.md", "reason": "Verified /goal platform facts with confidence labels; sole baseline for facts-layer edits"}
+{"file": "skills/developer-tools-integrations/AGENTS.md", "reason": "Suite conventions: allowed-tools table to sync, evals schema, interface contract, docs-sync ordering"}

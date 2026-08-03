@@ -1,0 +1,68 @@
+{
+  "should_trigger": [
+    {
+      "text": "Turn this vague checkout task into a project-aware Codex /goal, inspect the repo first, then interview me about the missing constraints.",
+      "family": "project_aware_goal"
+    },
+    {
+      "text": "直接帮我写一个可验证的 Goal 指令，先结合项目内容，只问我项目里找不到的关键问题。",
+      "family": "project_aware_goal"
+    },
+    {
+      "text": "Write a Claude Code goal command with verification, boundaries, a turn limit, and stop-and-report conditions.",
+      "family": "platform_goal_contract"
+    },
+    {
+      "text": "我需求还比较模糊，请通过多轮讨论问答帮我收敛成 `/goal`，我说按默认时直接出稿。",
+      "family": "bounded_interview"
+    },
+    {
+      "text": "I already have a Codex goal and need the correct /goal edit command without losing its accounting.",
+      "family": "goal_management"
+    },
+    {
+      "text": "直接给我一个英文 Codex /goal，把明确的 parser bug 修复合同写成可复制终稿。",
+      "family": "fast_path"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Brainstorm possible product directions with me; we are not ready to define a goal or execution contract.",
+      "family": "brainstorm_only"
+    },
+    {
+      "text": "Explain what a completion condition means in plain language, but do not draft any command.",
+      "family": "explain_only"
+    },
+    {
+      "text": "Review this pull request for correctness and security findings.",
+      "family": "code_review"
+    },
+    {
+      "text": "Run the current test command and tell me whether it passes.",
+      "family": "direct_execution"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Audit and improve this repository's AGENTS.md and nested guidance files; do not wrap it in a /goal.",
+      "family": "agents_md_improver"
+    },
+    {
+      "text": "Recommend whether I should use Codex /plan, /review, or /goal for this workflow, but do not draft a goal command.",
+      "family": "codex_workflow_recommender"
+    },
+    {
+      "text": "Translate this sentence into English: 今天下午三点开会。",
+      "family": "translation"
+    },
+    {
+      "text": "Print the current directory as a one-line shell result.",
+      "family": "one_line_output"
+    },
+    {
+      "text": "Create a custom Claude Code Stop hook script for a deterministic build check.",
+      "family": "stop_hook"
+    }
+  ]
+}

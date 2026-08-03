@@ -1,16 +1,38 @@
 # Goal Interview Checklist
 
-Ask only the questions needed to write a safe and testable goal. If an answer can be inferred with low risk, state the assumption and move on.
+Ask only the questions needed to write a safe and testable goal. If reconnaissance or a low-risk assumption can answer it, do not ask the user.
 
-Prefer numbered choices with defaults over open-ended questions. The user should be able to reply with `按默认` or `1B 2A 3C`.
+Prefer numbered choices with defaults; use open questions for intent or priority when choices would distort the answer. Ask at most four questions per round. The user should be able to reply with `按默认` or `1B 2A 3C`.
 
-First distinguish whether the user wants a new goal or active-goal management. If they want to inspect, pause, resume, or clear the current goal, answer with the platform's management commands instead of interviewing for a new objective. Codex: `/goal`, `/goal pause`, `/goal resume`, `/goal clear`. Claude Code: `/goal` and `/goal clear` only — for a pause request, explain there is no pause and offer clear-and-reset-later or interrupting the session.
+First distinguish whether the user wants a new goal or active-goal management. If they want to inspect, edit, pause, resume, or clear the current goal, answer from `references/platform-goal-facts.md` instead of interviewing. Codex supports `/goal edit`; its accounting-retention behavior is explicitly `community-observed`. Claude Code has no edit/pause/resume command — offer clear-and-reset-later or interruption.
 
 Then determine the target platform (`references/platform-goal-facts.md`): explicit statement wins, otherwise infer from the host environment, otherwise add the platform choice below.
 
+## Two-Phase Protocol
+
+### Phase A: Understand And Interview
+
+1. Restate the intended outcome and the assumptions already safe to make.
+2. Report project reconnaissance: rules, real verification commands, likely write boundaries, and dirty state. Invite corrections.
+3. Ask only human-owned unknowns across outcome, verification, boundaries, and risk tolerance, with at most four questions in the round.
+4. Repeat only when the answer exposes another material human decision. The user may say `按默认` at any point to continue.
+
+Do not emit a premature goal during Phase A. Skip directly to Phase B when requirements are concrete or the user asks for a direct/default draft.
+
+### Phase B: Draft, Revise, Finalize
+
+Present the complete platform-rendered draft, invite corrections, and revise it until the user confirms. The confirmed response is the final paste-ready goal, not another questionnaire.
+
+## Applicability Gate
+
+- Direction undecided or pure divergent exploration: refuse to draft a goal and suggest `/plan` or discussion first.
+- Repairable subjectivity: warn, then draft with observable review evidence, a round limit, and a stop-and-report condition.
+- Low-risk ambiguity: state defaults and proceed.
+- One-line or near-neighbor work: route to the direct workflow rather than manufacturing a goal.
+
 ## Fast Interview
 
-Use these choices for a very vague but low-risk task. Include choice 0 only when the platform is ambiguous:
+Use these choices for a very vague but low-risk task. Include choice 0 only when the platform is ambiguous, and never exceed four choices in one round:
 
 0. 平台：A Claude Code / B Codex
 1. 项目形态：A 新建本地 MVP（默认） / B 改现有项目 / C 先做原型
@@ -52,17 +74,29 @@ Use open-ended questions only when choices would hide an important decision.
 
 - Should the agent make one focused change and rerun checks after each change?
 - After repeated failures, should it inspect logs, search docs, reduce to a minimal repro, or pause?
-- Is there a budget cap for attempts, time, or tokens?
+- Is there a soft stop clause for attempts, time, or tokens? For Codex, label the evidence that goal text does not set a runtime budget as `community-observed`; Claude's evaluator-judged soft-boundary behavior is official.
 
 ### Stop And Pause
 
 - What evidence proves completion strongly enough to stop?
 - What blocker requires the user: login, 2FA, paid service, destructive deletion, legal/medical/financial decision, account ownership, or product direction?
 - Should partial success be reported with remaining manual steps, or should the agent continue until the full outcome is proven?
-- If the goal would exceed the shared 4,000 character limit, what local file path should hold the longer contract?
+- If the goal would exceed the shared 4,000 character limit, is the standard `.planning/goal-<slug>.md` path acceptable? Output its content by default; write only on explicit request.
 - Claude Code only: what turn or time bounding clause fits (for example `or stop after 20 turns`), and is every piece of completion evidence something Claude's own output can show in the transcript?
 
-## Interview Output Shape
+## Phase A Output Shape
+
+```text
+我的理解：[outcome and safe assumptions]
+项目侦察：[rules, real commands, boundary candidates, dirty state, or the stated discovery fallback]
+
+需要你决定（最多 4 项）
+1. [material decision]: A [recommended default] / B [alternative]
+
+你可以直接回复：按默认，或回复类似 1B。
+```
+
+## Phase B Draft Shape
 
 ```text
 Recommended Executable Goal

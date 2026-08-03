@@ -1,0 +1,196 @@
+{
+  "optimizer_hints": {
+    "capability": "Draft and manage project-aware, verifiable /goal commands for Codex and Claude Code",
+    "inputs": [
+      "vague tasks",
+      "project rules",
+      "verification commands",
+      "constraints and boundaries",
+      "模糊需求",
+      "项目内容",
+      "验证命令"
+    ],
+    "trigger_actions": [
+      "write a goal command",
+      "turn a task into a /goal",
+      "interview for a goal",
+      "draft a verifiable execution contract",
+      "写 Goal 指令",
+      "收敛成 /goal",
+      "讨论问答后出 goal"
+    ],
+    "exclusions": [
+      "AGENTS.md auditing",
+      "Codex workflow recommendation",
+      "translation",
+      "one-line output",
+      "pure brainstorming",
+      "direct task execution"
+    ],
+    "artifacts": [
+      "paste-ready /goal",
+      "verification contract",
+      "goal management command",
+      ".planning/goal file content"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "goal_authoring",
+    "project_context",
+    "bounded_interview",
+    "verification_contract"
+  ],
+  "positive_concepts": {
+    "goal_authoring": {
+      "weight": 0.55,
+      "phrases": [
+        "/goal",
+        "goal command",
+        "codex goal",
+        "claude code goal",
+        "goal instruction",
+        "goal 指令",
+        "目标指令",
+        "写一个可验证的 goal",
+        "写成 goal",
+        "收敛成 /goal"
+      ]
+    },
+    "project_context": {
+      "weight": 0.18,
+      "phrases": [
+        "project-aware",
+        "inspect the repo",
+        "existing repo",
+        "project rules",
+        "项目内容",
+        "项目规则",
+        "项目侦察",
+        "结合项目"
+      ]
+    },
+    "bounded_interview": {
+      "weight": 0.14,
+      "phrases": [
+        "interview me",
+        "ask me questions",
+        "bounded interview",
+        "multi-round discussion",
+        "多轮讨论",
+        "讨论问答",
+        "只问我",
+        "按默认"
+      ]
+    },
+    "verification_contract": {
+      "weight": 0.13,
+      "phrases": [
+        "verification",
+        "constraints",
+        "boundaries",
+        "completion condition",
+        "stop-and-report",
+        "execution contract",
+        "可验证",
+        "验证命令",
+        "完成条件",
+        "暂停条件"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "agents_md_audit": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "audit and improve this repository's agents.md",
+        "audit agents.md",
+        "nested guidance files",
+        "审计 agents.md",
+        "优化 agents.md"
+      ]
+    },
+    "workflow_recommendation": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "recommend whether i should use codex",
+        "recommend a codex workflow",
+        "which codex workflow",
+        "should i use /plan",
+        "不要起草 goal"
+      ]
+    },
+    "translation_only": {
+      "weight": 0.75,
+      "exclusive": true,
+      "phrases": [
+        "translate this sentence",
+        "translate into english",
+        "翻译成英文",
+        "翻译这句话"
+      ]
+    },
+    "one_line_output": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "one-line shell result",
+        "print the current directory",
+        "current time",
+        "一句话输出",
+        "一行命令"
+      ]
+    },
+    "brainstorm_only": {
+      "weight": 0.6,
+      "exclusive": true,
+      "phrases": [
+        "brainstorm possible product directions",
+        "not ready to define a goal",
+        "pure brainstorming",
+        "先发散方向",
+        "还没决定方向"
+      ]
+    },
+    "direct_execution": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": [
+        "run the current test command",
+        "fix the bug now",
+        "execute the task",
+        "直接执行任务"
+      ]
+    },
+    "explain_only": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": [
+        "explain what a completion condition means",
+        "plain language",
+        "do not draft any command",
+        "只解释"
+      ]
+    },
+    "code_review": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "review this pull request",
+        "code review findings",
+        "correctness and security findings",
+        "审查这个 pr"
+      ]
+    },
+    "stop_hook": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "custom claude code stop hook",
+        "stop hook script",
+        "deterministic build check"
+      ]
+    }
+  }
+}

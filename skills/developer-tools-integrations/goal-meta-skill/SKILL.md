@@ -1,8 +1,8 @@
 ---
 name: goal-meta-skill
 description: |
-  Turn vague or complex agent tasks into strong `/goal` commands for Claude Code and Codex — outcome, verification, constraints, boundaries, iteration policy, and stop conditions. Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, or bounded agent work definitions.
-version: 0.2.0
+  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path. Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, or bounded agent work definitions.
+version: 0.3.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -12,7 +12,7 @@ tags:
   - agent-skills
   - verification
 argument-hint: "[vague-task-or-goal]"
-allowed-tools: Read, Bash(python *), Bash(py *)
+allowed-tools: Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)
 ---
 
 # Goal Meta Skill
@@ -31,11 +31,11 @@ Shared defaults:
 
 - The user wants a paste-ready `/goal` command for their platform, not a general prompt.
 - The executable slash command stays `/goal` on both platforms. Do not output `/目标` as the command unless the user's environment explicitly documents that alias.
-- Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. For longer instructions, draft a compact `/goal` that points at a local instruction file and put the long contract in that file content or a separate copy block.
+- Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. For longer or complex contracts, output copy-ready `.planning/goal-<slug>.md` content plus a compact file-pointer `/goal`; write the file only when the user explicitly requests it.
 - The first goal block should be the best recommended executable version, not a half-filled template. Users often copy the first draft directly.
 - For Chinese users, output Chinese content and Chinese field names by default while keeping the command prefix `/goal`.
 - For Chinese users, include both `推荐执行版（中文，可直接复制）` and `Goal Draft (English-compatible)` unless the user asks for one language only.
-- If the task is still vague but low-risk, choose the best conservative defaults and continue. Ask only when the answer changes cost, risk, ownership, or product direction.
+- If the task is vague, discuss only material unknowns; if it is concrete or the user asks for a direct draft, take the fast path with conservative defaults.
 - If the domain is unfamiliar or specialized, create a discovery-first goal that makes the agent inspect authoritative project/docs/runtime evidence before implementation instead of inventing domain rules.
 - If the missing detail is low-risk, make an explicit assumption and continue.
 - Do not start the work described by the goal unless the user explicitly asks. This skill creates the goal instruction.
@@ -51,37 +51,27 @@ Platform selection (details in `references/platform-goal-facts.md`):
 
 Codex-specific assumptions:
 
-- `/goal <text>` sets a persistent thread objective; `/goal` views it; `/goal pause`, `/goal resume`, and `/goal clear` manage it. For inspect/pause/resume/clear requests, give the relevant management command instead of drafting a new objective.
-- If `/goal` is missing from the slash command list, tell the user to enable `features.goals` in Codex config or run `codex features enable goals`.
+- `/goal <text>` sets an objective and starts the first turn; `/goal`, `/goal edit`, `/goal pause`, `/goal resume`, and `/goal clear` manage it. `Community-observed`: editing preserves accounting; to reset accounting, clear then create a new goal. For management requests, answer instead of drafting a new objective.
+- A `local-probe` shows Goals stable and enabled by default on current Codex. `Community-observed`: text budgets are only soft stop clauses, not the runtime budget. Use `references/platform-goal-facts.md` for lifecycle and troubleshooting details.
 
 Claude Code-specific assumptions:
 
-- `/goal <condition>` sets a session completion condition and immediately starts a turn; an independent small model reads the transcript after each turn and auto-continues until the condition holds. `/goal` shows status; `/goal clear` (aliases `stop`, `off`, `reset`, `none`, `cancel`) removes it. There is no `/goal pause` or `/goal resume` — for a pause request, explain that and offer `/goal clear` plus re-setting later, or interrupting the session.
-- Phrase the goal as a completion condition whose proof lands in the transcript: command exit codes, test/lint output, `git status`/`git diff`, file listings. The evaluator runs no tools, so screenshot-only or human-confirmation evidence must be rewritten into a transcript-visible check or moved into constraints.
+- `/goal <condition>` sets a session completion condition and immediately starts a turn; an independent small model reads the transcript after each turn and auto-continues until the condition holds. `/goal` shows status; `/goal clear` (aliases `stop`, `off`, `reset`, `none`, `cancel`) removes it, as does `/clear`. There is no `/goal pause` or `/goal resume` — offer clear-and-reset or interruption instead.
+- Phrase the goal as a completion condition whose proof lands in the transcript: command exit codes, test/lint output, `git status`, file listings. The evaluator runs no tools, so screenshot-only or human-confirmation evidence must be rewritten into a transcript-visible check or moved into constraints.
 - Always include a bounding clause such as `否则在 20 轮后停止并总结剩余问题` / `or stop after 20 turns and summarize remaining issues`.
 - Keep the `暂停条件` / `Pause if` label but write its body as stop-and-report: Claude Code cannot pause, so high-risk situations must instruct Claude to stop, report, and wait for a human decision.
+- Goal text turn/time limits are evaluator-judged soft clauses, not runtime budgets. Pair unattended goals with auto mode; a goal does not grant broader permissions.
 - Requires Claude Code v2.1.139+, an accepted workspace trust dialog, and hooks not disabled (`disableAllHooks` / `allowManagedHooksOnly` block it).
 
 ## Workflow
 
-1. Restate the task as an outcome, not an activity.
-2. Determine the target platform using the platform selection rules above.
-3. Classify the task using `references/default-goal-strategy.md`: familiar vs unknown domain, low vs high risk, new work vs existing project.
-4. Choose best defaults for low-risk unknowns and write a one-sentence reason.
-5. Identify missing information across the Goal contract:
-   - success criteria
-   - verification commands, artifacts, or evidence
-   - constraints that must not change
-   - allowed writes and forbidden paths
-   - iteration policy
-   - completion evidence
-   - blocked stop conditions, human decisions, or budget caps
-6. If the task is under-specified, prefer numbered multiple-choice adjustments with defaults. Use `references/interview-checklist.md`.
-7. For Chinese-first users, produce the Chinese recommended execution goal first, then an English-compatible mirror that preserves the same meaning and keeps English field labels.
-8. Render the contract for the target platform using the rendering rules in `references/platform-goal-facts.md`, then check the command against `references/goal-command-playbook.md`.
-9. If the task is about an existing active goal, answer with the platform's management commands: Codex supports `/goal`, `/goal pause`, `/goal resume`, `/goal clear`; Claude Code supports `/goal` and `/goal clear` only.
-10. Keep the executable `/goal` objective/condition within the 4,000 character limit. When the contract is longer, use a file-pointer pattern such as `/goal Follow the task contract in .planning/<task>.md and stop only when its verification section is satisfied.`
-11. For file deliverables, run `python "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` or `py -3 "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` before calling the goal done. Add `--require-chinese-companion` when validating Chinese-first output.
+1. **S0 — Route.** Determine the platform. Answer management requests from `references/platform-goal-facts.md`; route one-line/neighbor tasks elsewhere. If the direction is undecided or purely exploratory, do not draft a goal: suggest `/plan` or discussion. Otherwise continue to S1.
+2. **S1 — Reconnoiter.** In an existing project, follow the read-only pass in `references/default-goal-strategy.md`: root rules, real command sources, `git rev-parse`, `git branch`, `git status --porcelain -uall`, and related top-level paths. Do not run tests, write files, or inspect secrets/dependencies/generated output. Report findings for correction; on failure use a discovery-first goal. Skip this state when no project context exists.
+3. **S2 — Choose the path.** Concrete requirements or `直接给` / `按默认` go directly to S4. Material gaps in outcome, verification, boundaries, or risk tolerance go to S3.
+4. **S3 — Interview.** Each round restates the outcome, reports reconnaissance, and asks at most four human-only questions. Prefer numbered choices with defaults; allow open intent questions. Repeat until the user confirms or chooses defaults. Follow `references/interview-checklist.md`.
+5. **S4/S5 — Draft and revise.** Produce the complete bilingual contract (one language when requested), invite corrections, and revise until confirmed. Warn-but-proceed for repairable subjectivity by adding a stop condition and round limit. Use the platform rendering and verification anchors in `references/goal-command-playbook.md`.
+6. **S6 — Deliver.** Keep the executable goal within 4,000 characters. For longer/complex contracts, output the two-part `.planning/goal-<slug>.md` content and tell the user to save it before using the short file-pointer goal; do not write it without an explicit request. Remind Claude users that setting starts a turn and Codex users that goal text is the first prompt.
+7. For file deliverables, run `python "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` or `py -3 "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` before calling the goal done. Add `--require-chinese-companion` for Chinese-first output.
 
 ## Output Contract
 
@@ -123,7 +113,7 @@ Claude Code rendering of the same request (condition style — proof lands in th
 暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时，停止并报告，等待人工决定。
 ```
 
-When the task is vague, output:
+During S3, output a restatement, reconnaissance findings, and no more than four questions; do not emit a premature goal unless the user chooses the defaults. At S4/S6, output:
 
 1. `推荐执行版（中文，可直接复制）`: the best default `/goal` for the target platform.
 2. `默认选择理由`: one concise sentence.
@@ -135,7 +125,7 @@ If the user writes in English, output only the English-compatible draft unless t
 
 If the user asks how to manage an existing goal, answer with the minimal platform-correct command:
 
-- Codex: `/goal` to view, `/goal pause` to pause, `/goal resume` to continue, `/goal clear` to remove.
+- Codex: `/goal` to view, `/goal edit` to revise (`community-observed`: accounting is preserved), `/goal pause` to pause, `/goal resume` to continue, `/goal clear` to remove.
 - Claude Code: `/goal` to view status, `/goal clear` to remove (aliases: `stop`, `off`, `reset`, `none`, `cancel`). There is no pause; to pause in spirit, clear now and re-set the same condition later, or interrupt the session.
 
 Do not output long generic coaching unless the user asks for explanation.
@@ -172,4 +162,19 @@ Reject or revise a goal that:
 - `references/goal-command-playbook.md`: the core `/goal` template, when to use it, examples, and anti-patterns.
 - `references/default-goal-strategy.md`: lazy-user defaults, unknown-domain discovery, risk classification, and direct-copy output rules.
 - `references/interview-checklist.md`: question bank for turning vague tasks into strong goals.
+- `evals/evals.json`: behavior and routing fixtures for project reconnaissance, bounded interviews, applicability gates, and the direct fast path.
 - `scripts/lint_goal_command.py`: lightweight checker for required `/goal` labels, unresolved placeholders, platform-specific rules (`--platform codex|claude|both`), the 4,000 character limit, and optional Chinese-first companion sections.
+
+## 来源致谢
+
+这个 skill 基于向阳乔木发布的 goal meta skill 改造而来。当前版本保留原始工作流的核心思路，并将项目命名、示例路径和触发方式通用化，以便在本仓库的技能集合中复用。感谢原作者的思路和基础实现。
+
+## License
+
+MIT
+
+Original work copyright (c) 向阳乔木
+
+X: https://x.com/vista8
+
+GitHub: https://github.com/joeseesun/
