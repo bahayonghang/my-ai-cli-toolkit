@@ -229,6 +229,10 @@ manual inventory and deterministic safety tests."
   `missing evidence`, then rerun with `--max-initial-tokens <ceiling>` to prove
   every resource dir is still reachable/connected under an explicit compatibility
   ceiling. Bringing the body under 1000 is a separate entrypoint-refactor task.
+- A non-empty optional directory reported as unreferenced is a connectivity
+  failure even when the explicit ceiling exits successfully. Reference it from
+  the SKILL.md resource map or declare it in manifest factory components, then
+  rerun until the ceiling result has zero unused-resource warnings.
 
 
 - When two skills maintain the same output file (e.g. `agents-md-improver` and

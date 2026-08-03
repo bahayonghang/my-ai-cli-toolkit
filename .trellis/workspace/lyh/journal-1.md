@@ -1299,3 +1299,36 @@ Upgraded agents-md-improver to 1.2.0 with current Codex discovery semantics, GPT
 ### Status
 
 [OK] **Completed**
+
+
+## Session 39: 优化 goal-meta-skill 侦察与访谈工作流
+
+**Date**: 2026-08-03
+**Task**: 优化 goal-meta-skill 侦察与访谈工作流
+**Branch**: `dev`
+
+### Summary
+
+完成项目侦察、多轮访谈、适用性闸门、无副作用合同、平台事实、linter 与双轨评测升级。
+
+### Main Changes
+
+- 将 goal-meta-skill 升级为 S0-S6 项目感知工作流，并迁移 README attribution/MIT。
+- 新增验证锚点与预算语义 linter、16 项目标测试、14 条行为 evals 和 task-local 路由评测。
+- 同步只读 allowed-tools、interface、双语 docs catalog 与 resource connectivity spec。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d15f435` | (see git log) |
+
+### Testing
+
+- [OK] PYTHONUTF8=1 just ci: exit 0；Node 165 pass、2 skip；Python 42 files。
+- [OK] trigger_eval.py 默认阈值 0.48: 15/15，FP/FN=0，precision/recall=1.0。
+- [OK] resource boundary: 默认 3890>1000 记 missing evidence；ceiling 4000 通过且 0 warning。
+
+### Status
+
+[OK] **Completed**

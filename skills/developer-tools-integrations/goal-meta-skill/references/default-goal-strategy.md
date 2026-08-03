@@ -6,7 +6,7 @@ The skill should not rely on knowing every domain. Reliability comes from conser
 
 ## Output Priority
 
-For Chinese users, output in this order:
+After the interview converges, Chinese-first drafts use this order:
 
 1. `推荐执行版（中文，可直接复制）`
 2. `默认选择理由`
@@ -16,7 +16,7 @@ For Chinese users, output in this order:
 
 Do not put a half-filled template before the recommended executable goal. Users often copy the first block directly.
 
-If the user asks about an existing active goal, do not force a new draft. Answer with the smallest correct management command for their platform. Codex: `/goal` to view it, `/goal pause` to pause it, `/goal resume` to continue it, `/goal clear` to remove it. Claude Code: `/goal` to view status, `/goal clear` to remove it (aliases `stop`, `off`, `reset`, `none`, `cancel`); there is no pause — offer clear-and-reset-later or interrupting the session.
+If the user asks about an existing active goal, do not force a new draft. Answer with the smallest correct management command from `references/platform-goal-facts.md`. Codex also supports `/goal edit`; `community-observed` behavior retains accounting, while clearing and creating a new goal resets it. Claude Code has no pause/edit command — offer clear-and-reset-later or interrupting the session.
 
 ## Platform Determination
 
@@ -28,9 +28,29 @@ Facts and rendering rules live in `references/platform-goal-facts.md`. Selection
 
 Claude Code rendering must produce a completion condition with transcript-visible proof and a turn/time bounding clause, and its 暂停条件 body must say stop-and-report.
 
+## Applicability Gate
+
+- **Hard refusal:** when the direction is undecided or the request is pure divergent exploration, do not emit a goal. Suggest `/plan` (Codex) or an ordinary planning discussion first.
+- **Warn and proceed:** when subjectivity can be repaired (for example, "make it polished"), translate it into review evidence, add a round limit, and require stop-and-report if the limit expires.
+- **Proceed by default:** low-risk ambiguity is not a gate. State conservative assumptions and continue.
+- **Route neighbors:** translations, one-line outputs, guidance-file audits, time-cadence loops, and scripted Stop-hook tasks should use their direct workflow instead of `/goal`.
+
+## Read-Only Project Reconnaissance
+
+When a request targets an existing project, inspect before interviewing or drafting. Stop at the first useful source; do not crawl the whole tree.
+
+1. Read root `AGENTS.md` / `CLAUDE.md`; mention nested rule files when discovered.
+2. Identify real command sources from `justfile`, `Makefile`, `package.json` scripts, `pyproject.toml`, `Cargo.toml`, and `.github/workflows/*.yml` filenames.
+3. Capture Git context with `git rev-parse --show-toplevel`, `git branch --show-current`, and `git status --porcelain -uall` so untracked files are visible.
+4. List only task-related top-level boundary candidates; do not recursively enumerate the repository.
+
+This pass is read-only: do not run tests/builds, write files, or inspect `.env*`, keys, credentials, `node_modules`, `dist`, `build`, `target`, `.venv`, or `.git` internals. Read only necessary file snippets. Report project type, governing rules, discovered verification commands, likely write boundaries, and dirty state; invite correction before relying on them.
+
+If reconnaissance fails or times out, say what could not be confirmed and use a discovery-first goal. If there is no project context, skip reconnaissance rather than inventing one.
+
 ## Default-First Rule
 
-If the user gives a vague task and the uncertainty is low-risk, choose the best default and move forward.
+If the task is already concrete, the user says `直接给` / `按默认`, or the remaining uncertainty is low-risk, choose the best default and move forward. Otherwise use the bounded protocol in `references/interview-checklist.md`.
 
 Good defaults:
 
@@ -50,13 +70,14 @@ Always add one short reason:
 
 ## Goal Length Rule
 
-Goal objectives (Codex) and completion conditions (Claude Code) are both limited to 4,000 characters. Most goals should stay well under that limit. If the best contract needs more room, put the detailed contract in a file and make the executable goal point to it:
+Goal objectives (Codex) and completion conditions (Claude Code) are both limited to 4,000 characters. Most goals should stay well under that limit. If the best contract needs more room, output copy-ready `.planning/goal-<slug>.md` content and make the executable goal point to it:
 
 ```text
-/goal Follow the task contract in .planning/local-mvp-goal.md and stop only when its verification evidence is complete.
+/goal Follow the task contract in .planning/goal-local-mvp.md and stop only when its verification evidence is complete.
 ```
 
 Do not compress away verification, boundaries, stop conditions, or pause conditions just to fit a long objective inline.
+Do not write the contract file unless the user explicitly requests it; saving the provided content is a separate action.
 
 ## Lazy-User Choices
 
@@ -103,7 +124,7 @@ Behavior:
 
 - Low risk: choose defaults and generate a copy-ready goal.
 - Medium risk: choose defaults, add explicit boundaries and pause conditions.
-- High risk: either ask a numbered decision or generate a discovery-only goal that pauses before the risky action.
+- High risk: ask a numbered decision or generate a discovery-only goal that pauses before the risky action. High risk alone is not the hard refusal gate when the desired outcome is clear.
 
 ## Vague Words
 

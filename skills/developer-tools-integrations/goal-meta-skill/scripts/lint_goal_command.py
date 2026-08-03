@@ -33,6 +33,31 @@ VERIFICATION_EVIDENCE_PATTERNS = [
     r"(运行|启动|打开|测试|构建|检查|验证|读取|截图|日志|产物|文件|链接|接口|API|模拟器|浏览器|本地|证据)",
 ]
 
+COMPLETION_QUANTIFIER_PATTERNS = [
+    r"\b(?:all|every)\b",
+    r"\bclean\s+up\b",
+    r"(?:全部|所有|每个)",
+]
+
+COMPLETION_ANCHOR_PATTERNS = [
+    r"\b(?:command|exit code|test|tests|pytest|lint|build|typecheck|benchmark|report|artifact|file list|issue|acceptance criteria|docs?)\b",
+    r"(?:命令|退出码|测试|检查|构建|类型检查|基准|报告|产物|文件清单|问题单|验收标准|文档)",
+    r"(?:[\w.-]+[/\\])+[\w.-]+",
+]
+
+NUMBERED_COMPLETION_PATTERN = r"^\s*(?:[-*]\s*)?\d+[.)、]\s*"
+
+BUDGET_MISREPRESENTATION_PATTERNS = [
+    r"(?:/goal|goal\s+(?:text|clause|prompt)).{0,80}(?:sets?|configures?|enforces?|limits?).{0,40}(?:runtime\s+)?(?:token\s+)?budget",
+    r"(?:runtime|platform)\s+(?:token\s+)?budget.{0,50}(?:is|gets)\s+(?:set|configured|enforced|limited).{0,40}(?:/goal|goal\s+(?:text|clause|prompt))",
+    r"(?:目标文本|目标条款|goal\s*正文|/goal).{0,50}(?:设置|配置|强制|限制).{0,40}(?:平台|运行时|token).{0,20}预算",
+]
+
+BUDGET_NEGATION_PATTERNS = [
+    r"\b(?:does not|doesn't|cannot|can't|never)\b",
+    r"(?:不等于|不会|不能|无法|并非|不是)",
+]
+
 DANGEROUS_VAGUE_PATTERNS = [
     r"make sure it works",
     r"edit anything",
@@ -180,6 +205,55 @@ def lint_claude_platform(text: str, source: str) -> list[str]:
     return errors
 
 
+def lint_completion_warnings(text: str, source: str) -> list[str]:
+    warnings: list[str] = []
+    completion = find_marker_content(text, REQUIRED_MARKER_GROUPS[5][1])
+    if not completion:
+        return warnings
+
+    has_quantifier = any(
+        re.search(pattern, completion, flags=re.IGNORECASE)
+        for pattern in COMPLETION_QUANTIFIER_PATTERNS
+    )
+    has_anchor = any(
+        re.search(pattern, completion, flags=re.IGNORECASE)
+        for pattern in COMPLETION_ANCHOR_PATTERNS
+    )
+    if has_quantifier and not has_anchor:
+        warnings.append(
+            f"{source}: broad completion quantifier lacks an authoritative "
+            "enumeration source or deterministic check"
+        )
+
+    if not re.search(NUMBERED_COMPLETION_PATTERN, completion):
+        warnings.append(
+            f"{source}: completion conditions are easier to verify when numbered "
+            "(recommended, not required)"
+        )
+
+    return warnings
+
+
+def lint_budget_misrepresentation(text: str, source: str) -> list[str]:
+    errors: list[str] = []
+    for line in text.splitlines():
+        if not any(
+            re.search(pattern, line, flags=re.IGNORECASE)
+            for pattern in BUDGET_MISREPRESENTATION_PATTERNS
+        ):
+            continue
+        if any(
+            re.search(pattern, line, flags=re.IGNORECASE)
+            for pattern in BUDGET_NEGATION_PATTERNS
+        ):
+            continue
+        errors.append(
+            f"{source}: goal text cannot set or enforce a platform runtime budget; "
+            "express budget, time, or turn limits only as soft stop clauses"
+        )
+    return errors
+
+
 def lint_text(
     text: str,
     source: str,
@@ -220,6 +294,7 @@ def lint_text(
             errors.append(f"{source}: `{name}` content is too thin")
 
     errors.extend(lint_goal_block_length(text, source))
+    errors.extend(lint_budget_misrepresentation(text, source))
 
     if platform == "claude":
         errors.extend(lint_claude_platform(text, source))
@@ -256,6 +331,7 @@ def main(argv: list[str]) -> int:
         return int(exc.code)
 
     all_errors: list[str] = []
+    all_warnings: list[str] = []
     for raw_path in args.files:
         path = Path(raw_path)
         try:
@@ -271,6 +347,10 @@ def main(argv: list[str]) -> int:
                 platform=args.platform,
             )
         )
+        all_warnings.extend(lint_completion_warnings(text, str(path)))
+
+    for warning in all_warnings:
+        print(f"warning: {warning}", file=sys.stderr)
 
     if all_errors:
         for error in all_errors:

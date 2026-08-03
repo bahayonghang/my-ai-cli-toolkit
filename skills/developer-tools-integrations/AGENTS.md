@@ -50,7 +50,7 @@ bare `Bash` when the skill only runs a known command family.
 | ast-grep                   | `Read, Glob, Grep, Bash, Write`                                      | runs ast-grep, writes rule files             |
 | claude-context-improver    | `Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git *), Bash(find *)` | audits + edits CLAUDE.md/rules/code_map; asks repo-vs-global scope |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
-| goal-meta-skill            | `Read, Bash(python *), Bash(py *)`                                   | reads refs; runs the goal lint script        |
+| goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | reads refs/project metadata; runs goal lint   |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |
 

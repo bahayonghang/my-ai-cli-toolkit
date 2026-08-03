@@ -116,6 +116,54 @@
         "Platform facts are not mixed: a Claude Code rendering has a bounding clause and no pause/resume wording; a Codex rendering may reference pause/resume.",
         "No separate questionnaire round is opened beyond the numbered adjustments."
       ]
+    },
+    {
+      "id": 11,
+      "prompt": "Staged conversation fixture:\nTurn 1 user: 帮我把这个仓库的结账折扣修复写成 Codex /goal，但先结合项目内容和我讨论。根 AGENTS.md 要求保留无关 WIP；justfile 暴露 `just test-checkout` 和 `just ci`；相关边界候选是 `src/checkout/` 与 `tests/checkout/`；git status 有一个无关的 `notes.md` 修改。\nTurn 2 user (after the assistant's interview round): 只修百分比优惠重复应用，允许改上述两个目录，按项目命令验证。\nTurn 3 user (after the first complete draft): 把最终 CI 也列入完成证据，然后定稿。",
+      "expected_output": "A staged S1→S3→S4→S5 response: read-only reconnaissance and at most four human-only questions, then a complete Codex draft grounded in the fixture, followed by the requested final revision.",
+      "files": [],
+      "assertions": [
+        "Turn 1 reports AGENTS.md, both real just commands, the two boundary paths, and the unrelated dirty notes.md without running tests or writing files.",
+        "Turn 1 invites correction, asks no more than four questions that the fixture cannot answer, and does not emit a premature /goal.",
+        "Turn 2 produces a complete Codex contract whose Verification uses `just test-checkout` and whose Boundaries name only `src/checkout/` and `tests/checkout/` while preserving notes.md.",
+        "Turn 3 revises the draft so `just ci` is final completion evidence and returns a paste-ready final /goal."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Single-turn fast-path fixture: 直接给 Codex 终稿，不要问我。为 `src/parser/` 修复 CSV 空行崩溃，只允许修改 `src/parser/` 和 `tests/parser/`，先读根 AGENTS.md，验证命令是 `just test-parser`，不允许新增依赖。",
+      "expected_output": "A one-turn S2 fast-path Codex goal using the supplied project facts and no interview round.",
+      "files": [],
+      "assertions": [
+        "The response immediately gives a complete paste-ready /goal and does not ask follow-up questions.",
+        "The goal opens read-first with AGENTS.md, uses `just test-parser` as deterministic verification, and names the exact two write boundaries.",
+        "The constraints forbid new dependencies and unrelated edits.",
+        "The response remains side-effect-free and does not claim to run reconnaissance commands or tests."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Gate case: 我还没决定做网站、桌面应用还是 CLI，也不知道给谁用。先随便发散一些方向，但顺便给我一个 /goal 开跑。",
+      "expected_output": "S0 hard gate: no goal draft because direction is undecided and the request is pure divergent exploration; recommend planning/discussion first.",
+      "files": [],
+      "assertions": [
+        "The response does not emit an executable /goal or invent a product direction.",
+        "It explains briefly that a durable goal is premature while the outcome is undecided.",
+        "It suggests `/plan` or an ordinary discussion to choose the outcome and audience first.",
+        "It does not turn the gate into a long questionnaire."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Warn-and-proceed gate fixture: 直接写 Claude Code /goal，把现有编辑器工具栏做得更专业、更有质感。项目已有 `npm test`，只允许改 `src/toolbar/`，不要改变命令或快捷键。",
+      "expected_output": "A Claude Code draft that warns about repairable subjectivity, translates it into observable evidence, and proceeds with a bounded stop-and-report contract.",
+      "files": [],
+      "assertions": [
+        "The response does not hard-refuse; it briefly warns that professional and polished need observable proxies.",
+        "The completion condition uses `npm test` output plus concrete toolbar layout/readability evidence rather than subjective taste alone.",
+        "The goal includes a finite turn or improvement-round limit and stop-and-report behavior when the limit is reached.",
+        "The boundary is `src/toolbar/`, commands and shortcuts remain unchanged, and no Claude-invalid pause/resume command appears."
+      ]
     }
   ]
 }

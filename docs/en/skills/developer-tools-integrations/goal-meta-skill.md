@@ -4,11 +4,11 @@
 
 ## Purpose overview
 
-Turn vague or complex agent tasks into strong `/goal` commands for Claude Code and Codex — outcome, verification, constraints, boundaries, iteration policy, and stop conditions.
+Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path.
 
 ## Trigger scenarios
 
-- Turn vague or complex agent tasks into strong `/goal` commands for Claude Code and Codex — outcome, verification, constraints, boundaries, iteration policy, and stop conditions
+- Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path
 - Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, or bounded agent work definitions
 
 ## Metadata
@@ -17,7 +17,7 @@ Turn vague or complex agent tasks into strong `/goal` commands for Claude Code a
 | --- | --- |
 | Name | `goal-meta-skill` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Tags | `codex`, `claude-code`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
 
 ## Install command
@@ -32,7 +32,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/goal-meta-skill/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/goal-meta-skill/evals` | directory | 1 | Evaluation samples |
-| `skills/developer-tools-integrations/goal-meta-skill/README.md` | file | 1 | Top-level file |
 | `skills/developer-tools-integrations/goal-meta-skill/references` | directory | 4 | Reference material |
 | `skills/developer-tools-integrations/goal-meta-skill/scripts` | directory | 1 | Executable scripts |
 | `skills/developer-tools-integrations/goal-meta-skill/tests` | directory | 1 | Automated tests |

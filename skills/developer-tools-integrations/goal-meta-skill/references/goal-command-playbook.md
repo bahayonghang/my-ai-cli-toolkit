@@ -8,7 +8,7 @@ For Chinese users, the body of the goal can be fully Chinese, but the slash comm
 
 A normal prompt tells the agent what to do now. A goal defines a durable operating contract: what outcome matters, how completion is proven, what must not change, where work may happen, how to iterate, when to stop, and when to pause.
 
-Default stance: give the best copy-ready goal first. If the user is vague and the missing details are low-risk, choose conservative defaults and include one short reason instead of making the user fill out a form.
+Default stance: give the best copy-ready goal once the request is concrete. For material unknowns, use the bounded discussion in `references/interview-checklist.md`; low-risk unknowns still get conservative defaults and one short reason.
 
 ## Platform Goal Commands
 
@@ -16,24 +16,57 @@ Platform facts live in `references/platform-goal-facts.md`; that file wins on an
 
 Codex:
 
-- `/goal <text>` sets the persistent thread objective.
+- `/goal <text>` sets the objective and is the first prompt.
 - `/goal` views the current goal.
+- `/goal edit` revises the current objective.
 - `/goal pause` / `/goal resume` pause and resume an active goal.
 - `/goal clear` removes the current goal.
-- If `/goal` is absent from the slash command list, enable `features.goals` in Codex config or run `codex features enable goals`.
+- A `local-probe` shows Goals stable and enabled by default on current Codex; consult the facts file for older-version troubleshooting.
+
+For a Codex edit-management request, answer with `/goal edit`. Accounting retention across edits is `community-observed`; when the user must reset accounting, tell them to `/goal clear` and create a new goal.
 
 Claude Code:
 
 - `/goal <condition>` sets a session completion condition and immediately starts a turn; an independent small model evaluates the transcript after each turn and auto-continues until the condition holds.
 - `/goal` shows status (condition, elapsed time, turns, tokens, latest evaluator reason).
-- `/goal clear` removes it; `stop`, `off`, `reset`, `none`, and `cancel` are aliases. There is no pause/resume.
+- `/goal clear` removes it; `stop`, `off`, `reset`, `none`, and `cancel` are aliases, and `/clear` also removes an active goal. There is no pause/resume/edit.
+- The latest evaluator reason can guide the next turn. A goal grants no extra permissions; pair unattended use with auto mode.
 - Requires v2.1.139+, an accepted trust dialog, and hooks not disabled.
 
-Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. If the useful contract is longer, put the detailed instructions in a file and make the executable goal point to it:
+Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. If the useful contract is longer or complex, output complete copy-ready `.planning/goal-<slug>.md` content and a short executable goal that points to it:
 
 ```text
-/goal Follow the task contract in .planning/checkout-discount-goal.md and stop only when its Verification and Stop when sections are satisfied.
+/goal Follow the task contract in .planning/goal-checkout-discount.md and stop only when its Verification and Stop when sections are satisfied.
 ```
+
+The default is side-effect-free: tell the user to save the content, but do not write the file unless they explicitly ask. Use this two-part shape so the file is useful as a human record and its executable invocation is mechanically bounded:
+
+````markdown
+---
+title: Checkout discount goal
+platform: codex
+status: draft
+---
+
+# Context
+[Why this outcome matters and the authoritative inputs to read first.]
+
+# Contract
+- Outcome: [final state]
+- Verification: [commands, reports, or artifact paths]
+- Constraints: [behavior that must not change]
+- Boundaries: [allowed writes and forbidden paths]
+- Iteration policy: [checks and checkpoints]
+- Stop/Pause: [completion proof and human decisions]
+
+<!-- invocation-start -->
+```text
+/goal Follow the task contract in .planning/goal-checkout-discount.md and stop only when its Verification and Stop/Pause conditions are satisfied.
+```
+<!-- invocation-end -->
+````
+
+After the user saves the file, tell them to paste the delimited invocation. Setting a Claude goal immediately starts a turn; for Codex, the goal text is the first prompt.
 
 This skill drafts goal instructions. Do not start or execute the goal task unless the user explicitly asks for execution.
 
@@ -53,6 +86,8 @@ Do not force `/goal` for:
 - tasks whose success is obvious without agent persistence
 - existing active-goal management requests where the platform's management commands are the correct answer
 - Claude Code sessions where a time cadence (`/loop`) or a scripted Stop hook fits better than a completion condition
+
+When the direction is undecided or the task is pure divergent exploration, refuse to produce a goal and suggest `/plan` or ordinary discussion. Repairable subjectivity is not a refusal: warn, translate it into evidence, and add a round limit plus stop-and-report clause.
 
 ## Plan-To-Goal Interview Template
 
@@ -164,6 +199,33 @@ The six practical elements are:
 | 迭代策略  | 失败后怎么继续？     | 小步改动、重跑检查、先读日志再换策略           |
 | 完成/暂停 | 什么时候停止或等人？ | 完成证据、登录/权限阻塞、破坏性选择、预算上限  |
 
+## Verification Anchors
+
+Bind every completion condition to an authoritative enumeration source or a deterministic check. Valid anchors include command exit codes and test/lint/build output, benchmark or report values, artifact paths or file lists, and named source material such as issue acceptance criteria or project docs.
+
+Numbered completion conditions are the recommended style, not a hard requirement and not a demand to invent counts. A broad term such as `all`, `every`, `所有`, `全部`, or `clean up` is defective only when no enumerated source or check defines its set. `all tests in test/auth pass` is valid because the named suite is the evidence source.
+
+Classify proposed verification before placing it in the goal:
+
+| Class       | Use in the goal                                                                 |
+| ----------- | ------------------------------------------------------------------------------- |
+| Safe-quick  | Run after focused changes and at completion.                                    |
+| Long        | Run at planned checkpoints or the final gate, not after every small edit.       |
+| Destructive | Never put in an iteration loop; stop for authorization and recovery planning.   |
+| Flaky       | Record failures, retry only within a stated bound, and corroborate another way. |
+
+Baseline capture may be recommended when before/after evidence matters, but this skill only drafts the instruction and does not run the command.
+
+## Read-First And Checkpoint Patterns
+
+Prefer a read-first opening when source context exists: name the files, docs, issue, logs, or plan the agent must inspect before changing anything. For longer work, require checkpoints and a short progress log tied to verification evidence.
+
+```text
+Iteration policy: first read AGENTS.md, the linked issue, and the affected tests; then work in focused checkpoints, record each checkpoint's changed scope and check output, and inspect new evidence before changing strategy.
+```
+
+Budget, turn, or time wording is always a soft stop clause. Say, for example, `Treat 20 turns as a soft stop: report progress and remaining work when reached.` `Community-observed` Codex evidence says goal text does not configure the platform runtime budget; `budget-limited` is an official runtime state. Claude's evaluator officially judges turn/time clauses from the transcript.
+
 ## Drafting Rules
 
 - Write the outcome as a result, not as "work on X".
@@ -175,6 +237,7 @@ The six practical elements are:
 - Put filesystem and repo permissions in `Boundaries`.
 - In `Iteration policy`, require a new source of evidence after repeated failures.
 - In `Stop when`, define proof, not a feeling.
+- Number `Stop when` conditions when it improves scanability; do not invent a count when a named suite, source, report, or artifact already enumerates completion.
 - In `Pause if`, include anything that needs human judgment or external permission.
 - If the domain is unfamiliar or specialized, do not invent domain rules. Require an initial discovery pass over authoritative project docs, sample data, official references, or user-provided material.
 - Allow model taste and implementation judgment inside the boundary, but do not allow scope expansion or weaker verification.

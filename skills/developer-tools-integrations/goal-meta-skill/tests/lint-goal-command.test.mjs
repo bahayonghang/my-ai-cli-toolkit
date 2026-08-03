@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -147,4 +147,67 @@ test('linter rejects /goal blocks beyond the 4,000 character platform limit', ()
   const result = lintText(oversized);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /cap objectives\/conditions at 4000/);
+});
+
+test('unanchored completion quantifiers produce a warning without failing', () => {
+  const output = baseGoalOnly.replace(
+    /完成条件：.*\n/,
+    '完成条件：清理所有问题并确保全部内容完成。\n',
+  );
+  const result = lintText(output);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stderr, /warning: .*broad completion quantifier lacks/);
+});
+
+test('authoritative test suite anchor avoids the broad-quantifier warning', () => {
+  const output = baseGoalOnly.replace(
+    /完成条件：.*\n/,
+    '完成条件：1. test\/auth 中所有测试的命令退出码为 0。\n',
+  );
+  const result = lintText(output);
+  assert.equal(result.status, 0, result.stderr);
+  assert.doesNotMatch(result.stderr, /broad completion quantifier lacks/);
+  assert.doesNotMatch(result.stderr, /completion conditions are easier to verify/);
+});
+
+test('unnumbered completion conditions produce a recommendation warning', () => {
+  const result = lintText(baseGoalOnly);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stderr, /completion conditions are easier to verify when numbered/);
+});
+
+test('linter rejects claims that goal text configures runtime budget', () => {
+  const output = `${baseGoalOnly}\n说明：Goal text configures the runtime token budget to 8000 tokens.\n`;
+  const result = lintText(output);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /goal text cannot set or enforce a platform runtime budget/);
+});
+
+test('linter accepts an explicit soft-stop budget disclaimer', () => {
+  const output = `${baseGoalOnly}\n说明：Goal text does not configure the platform runtime budget; treat 20 turns only as a soft stop clause.\n`;
+  const result = lintText(output);
+  assert.equal(result.status, 0, result.stderr);
+  assert.doesNotMatch(result.stderr, /goal text cannot set or enforce a platform runtime budget/);
+});
+
+test('skill allowed-tools stay exact, narrow, read-only, and body commands stay reachable', () => {
+  const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
+  const allowedTools = skillText.match(/^allowed-tools:\s*(.+)$/m)?.[1];
+  assert.equal(
+    allowedTools,
+    'Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)',
+  );
+  assert.doesNotMatch(allowedTools, /\bWrite\b|Bash\(git \*\)|Bash\(codex \*\)/);
+  assert.doesNotMatch(
+    allowedTools,
+    /git\s+(?:add|commit|push|pull|checkout|reset|clean|restore|switch|merge|rebase|stash|tag)\b/,
+  );
+
+  const body = skillText.replace(/^---[\s\S]*?---\s*/m, '');
+  const gitCommands = [...body.matchAll(/`(git\s+[^`]+)`/g)].map((match) => match[1]);
+  assert.ok(gitCommands.length > 0, 'expected documented read-only git commands');
+  for (const command of gitCommands) {
+    assert.match(command, /^git\s+(?:status|branch|rev-parse)\b/);
+  }
+  assert.doesNotMatch(body, /`codex\s+[^`]+`/);
 });
