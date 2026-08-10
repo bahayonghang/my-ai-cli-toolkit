@@ -1,0 +1,96 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-08-10",
+  "package": {
+    "name": "idea-bib-review",
+    "version": null,
+    "owner": null,
+    "maturity_tier": null,
+    "lifecycle_stage": null,
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Draft an evidence-grounded literature review or related-work section from both a user-provided idea, argument, reasoning outline, 思路, 框架, or 论证主线 and one or more supplied BibTeX .bib files. Use when the job is to write 文献综述, 综述, or 相关工作 while preserving citation keys, auditing claim evidence, and optionally finding approval-gated supplement candidates for evidence gaps. Route single-paper reading, generic multi-paper synthesis without a BibTeX corpus, topic-only research, BibTeX cleanup, and prose-only polishing elsewhere.\n",
+    "job_to_be_done": "Draft an evidence-grounded literature review or related-work section from both a user-provided idea, argument, reasoning outline, 思路, 框架, or 论证主线 and one or more supplied BibTeX .bib files. Use when the job is to write 文献综述, 综述, or 相关工作 while preserving citation keys, auditing claim evidence, and optionally finding approval-gated supplement candidates for evidence gaps. Route single-paper reading, generic multi-paper synthesis without a BibTeX corpus, topic-only research, BibTeX cleanup, and prose-only polishing elsewhere.\n",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [],
+    "should_not_trigger": [],
+    "near_neighbor": []
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\evidence-contract.md",
+      "references\\quality-rubric.md",
+      "references\\review-workflow.md",
+      "references\\search-supplement.md"
+    ],
+    "scripts": [
+      "scripts\\review_guard.py"
+    ],
+    "evals": [
+      "evals\\evals.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\output-evidence.json",
+      "reports\\prior-art-research.md",
+      "reports\\skill-ir.json",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "agent-skills-compatible"
+    ],
+    "activation": {
+      "mode": "model-or-manual",
+      "paths": []
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "portable-python"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "allow-read-only"
+    },
+    "permissions": {
+      "local_reads": "user-supplied idea, BibTeX, and evidence files",
+      "local_writes": "only requested new artifacts",
+      "network": "anonymous read-only verification and gap search when available",
+      "credentials": "forbid"
+    },
+    "degradation": {
+      "offline": "deliver an unresolved identity report and reproducible query pack",
+      "metadata_only": "limit prose to bibliographic facts and report substantive gaps",
+      "unsupported_format": "draft and audit Markdown/Pandoc before conversion"
+    }
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

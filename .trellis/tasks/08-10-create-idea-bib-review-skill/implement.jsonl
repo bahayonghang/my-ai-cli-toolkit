@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "仓库 skill 编写硬契约：frontmatter、<skill-dir> 路径、eval 双系统、生成文档与验证陷阱"}
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "目标类目房规：结构范本、frontmatter、evals/tests、脚本路径和 docs-sync 要求"}
+{"file": "skills/code_map.md", "reason": "技能目录路由与验证入口，实施时限制搜索和确认分类边界"}
+{"file": "skills/research-learning-knowledge/paper-workbench/SKILL.md", "reason": "最近邻行为所有者；新 skill 不得重复通用论文 intake/synthesis/review-outline"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/local-boundaries.md", "reason": "本地近邻 skill 的正反向路由与 dirty-worktree 边界"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/prior-art-research.md", "reason": "外部候选、dated metrics、keep/adapt/reject/invent 和 creation handoff 事实来源"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/evidence-and-search-standards.md", "reason": "narrative/systematic 边界、证据层级、搜索日志和反幻觉事实契约"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/qiaomu-tooling-compatibility.md", "reason": "当前 Qiaomu CLI 实际能力及其与仓库 manifest/eval 规范冲突，禁止伪造 gate pass"}

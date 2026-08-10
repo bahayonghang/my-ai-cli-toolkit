@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "evidence_kind": "recorded_fixture",
+  "ok": true,
+  "recorded_at": "2026-08-10",
+  "runner": "node --test skills/academic-research-tools/idea-bib-review/tests/review-guard.test.mjs",
+  "summary": {
+    "tests": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "validated_contracts": [
+    "complex BibTeX parsing with strings, concatenation, nesting, quotes, comments, preamble, and Unicode",
+    "fail-closed damaged input and separate duplicate-key, case-collision, duplicate-DOI, and missing-field diagnostics",
+    "prompt-injection text remains inert BibTeX field data",
+    "empty corpora, empty drafts, and empty ledgers fail closed",
+    "Pandoc and LaTeX citation occurrence extraction",
+    "unique ledger span coverage and normalized draft hash checks",
+    "deliverable claims require verified source identity and non-empty evidence anchors",
+    "synthesis evidence must align with at least two cited sources",
+    "evidence minimum rejection for an abstract-only quantitative claim",
+    "unknown-citation rejection plus candidate citation rejection before approval and acceptance after explicit approved-corpus input",
+    "one discoverable root entrypoint, reachable references, and behavior eval coverage"
+  ],
+  "claim_boundary": "Recorded fixtures prove deterministic structure, membership, hash, and minimum evidence-level checks only. They do not prove semantic entailment, detect every uncited substantive sentence, or measure generated review quality.",
+  "missing_evidence": [
+    "provider-backed output comparison",
+    "blinded human review",
+    "live online identity and full-text route coverage",
+    "telemetry",
+    "public release",
+    "clean remote installation"
+  ]
+}

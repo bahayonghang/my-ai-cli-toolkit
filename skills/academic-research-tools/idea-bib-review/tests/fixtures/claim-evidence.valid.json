@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "claims": [
+    {
+      "claim_id": "C1",
+      "claim_kind": "descriptive",
+      "draft_span": "Prior work describes an evidence-mapping workflow for bounded reviews [@Smith2024].",
+      "draft_hash": "d6766ea2cc6ab65fadcd54adc53a4f5c2f3272fdffad6585848367141c4ce6d8",
+      "citation_keys": ["Smith2024"],
+      "support_status": "supported",
+      "limitations": "The available basis is the synthetic abstract.",
+      "is_inference": false,
+      "evidence": [
+        {
+          "citation_key": "Smith2024",
+          "identity_status": "metadata_verified",
+          "content_basis": "abstract",
+          "locator": "synthetic abstract",
+          "excerpt": "describes an evidence-mapping workflow",
+          "source_url": "https://example.test/smith",
+          "checked_at": "2026-08-10T10:00:00+08:00"
+        }
+      ]
+    },
+    {
+      "claim_id": "C2",
+      "claim_kind": "synthesis",
+      "draft_span": "Taken together, the studies suggest that explicit evidence maps can expose review gaps [@Smith2024; @Li2023].",
+      "draft_hash": "3c450df167f0a0f7d9916d38afe3e6817ffd413fd90e25e94e070829edc613bd",
+      "citation_keys": ["Smith2024", "Li2023"],
+      "support_status": "supported",
+      "limitations": "This is a bounded synthesis of two synthetic sources.",
+      "is_inference": true,
+      "evidence": [
+        {
+          "citation_key": "Smith2024",
+          "identity_status": "metadata_verified",
+          "content_basis": "abstract",
+          "locator": "synthetic abstract",
+          "excerpt": "evidence-mapping workflow",
+          "source_url": "https://example.test/smith",
+          "checked_at": "2026-08-10T10:00:00+08:00"
+        },
+        {
+          "citation_key": "Li2023",
+          "identity_status": "metadata_verified",
+          "content_basis": "full_text",
+          "locator": "synthetic section 2",
+          "excerpt": "evidence maps expose missing review coverage",
+          "source_url": "https://example.test/li",
+          "checked_at": "2026-08-10T10:05:00+08:00"
+        }
+      ]
+    }
+  ]
+}

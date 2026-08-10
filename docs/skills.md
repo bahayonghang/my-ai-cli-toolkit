@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、33 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、34 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -20,9 +20,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 学术研究工具
 
-`academic-research-tools` · 1 skills
+`academic-research-tools` · 2 skills
 
 - [academic-figure](/skills/academic-research-tools/academic-figure) — Create or review academic figures in three modes.
+- [idea-bib-review](/skills/academic-research-tools/idea-bib-review) — Draft an evidence-grounded literature review or related-work section from both a user-provided idea, argument, reasoning outline, 思路, 框架, or 论证主线 and one or more supplied BibTeX .bib files.
 
 ### 开发者工具集成
 

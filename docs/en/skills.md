@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 33 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 34 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -20,9 +20,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Academic Research Tools
 
-`academic-research-tools` · 1 skills
+`academic-research-tools` · 2 skills
 
 - [academic-figure](/en/skills/academic-research-tools/academic-figure) — Create or review academic figures in three modes.
+- [idea-bib-review](/en/skills/academic-research-tools/idea-bib-review) — Draft an evidence-grounded literature review or related-work section from both a user-provided idea, argument, reasoning outline, 思路, 框架, or 论证主线 and one or more supplied BibTeX .bib files.
 
 ### Developer Tools & Integrations
 

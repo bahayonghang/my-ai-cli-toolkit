@@ -1,0 +1,6 @@
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "检查 package 结构、frontmatter、evals/tests 和 docs 同步是否满足类目房规"}
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "检查路径可达性、触发评测双系统、fixture 证据边界与工作区验证陷阱"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/local-boundaries.md", "reason": "核查与 literature-mentor、paper-workbench、deep-research-pro、humanizer-paper 的边界"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/evidence-and-search-standards.md", "reason": "核查 identity/content/support 三分、claim 证据层级、systematic claim 和搜索降级"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/qiaomu-tooling-compatibility.md", "reason": "核查 Qiaomu 报告是否如实记录当前工具缺口而非宣称虚假通过"}
+{"file": ".trellis/tasks/08-10-create-idea-bib-review-skill/research/prior-art-research.md", "reason": "核查 reports/creation-handoff 的候选经验、拒绝项、指标语义和优势标签"}
