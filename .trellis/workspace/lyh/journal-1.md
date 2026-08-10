@@ -1332,3 +1332,24 @@ Upgraded agents-md-improver to 1.2.0 with current Codex discovery semantics, GPT
 ### Status
 
 [OK] **Completed**
+
+
+## Session 40: Create idea-bib-review skill
+
+**Date**: 2026-08-10
+**Task**: Create idea-bib-review skill
+**Branch**: `dev`
+
+### Summary
+
+Implemented an idea-and-BibTeX grounded literature-review skill with approval-gated supplements, deterministic citation evidence audits, regression tests, Qiaomu evidence reports, and synchronized docs.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b29d459` | (see git log) |
+
+### Status
+
+[OK] **Completed**
