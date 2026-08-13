@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "claims": [
+    {
+      "claim_id": "C-INSUFFICIENT",
+      "claim_kind": "quantitative",
+      "draft_span": "The method improved accuracy by 42 percent [@Smith2024].",
+      "draft_hash": "80122957ec0f8507f859faff08d460af22efb2ff8b9f1f1f2ab792b55cf0117b",
+      "citation_keys": ["Smith2024"],
+      "support_status": "supported",
+      "limitations": "Only an abstract is available.",
+      "is_inference": false,
+      "evidence": [
+        {
+          "citation_key": "Smith2024",
+          "identity_status": "metadata_verified",
+          "content_basis": "abstract",
+          "locator": "synthetic abstract",
+          "excerpt": "describes an evidence-mapping workflow",
+          "source_url": "https://example.test/smith",
+          "checked_at": "2026-08-10T10:00:00+08:00"
+        }
+      ]
+    }
+  ]
+}

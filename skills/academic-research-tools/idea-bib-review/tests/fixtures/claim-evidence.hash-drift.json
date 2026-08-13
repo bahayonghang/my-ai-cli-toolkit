@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "claims": [
+    {
+      "claim_id": "C-HASH",
+      "claim_kind": "descriptive",
+      "draft_span": "Prior work describes an evidence-mapping workflow for bounded reviews [@Smith2024].",
+      "draft_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "citation_keys": ["Smith2024"],
+      "support_status": "supported",
+      "limitations": "Synthetic fixture.",
+      "is_inference": false,
+      "evidence": [
+        {
+          "citation_key": "Smith2024",
+          "identity_status": "metadata_verified",
+          "content_basis": "abstract",
+          "locator": "synthetic abstract",
+          "excerpt": "describes an evidence-mapping workflow",
+          "source_url": "https://example.test/smith",
+          "checked_at": "2026-08-10T10:00:00+08:00"
+        }
+      ]
+    }
+  ]
+}

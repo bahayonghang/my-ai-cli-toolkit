@@ -1,0 +1,30 @@
+interface:
+  display_name: "Idea Bib Review"
+  short_description: "Draft an evidence-audited review from an idea and BibTeX corpus"
+  default_prompt: "Use $idea-bib-review when I provide both an argument or outline and one or more BibTeX files and want a literature review or related-work section. Preserve citation keys, map claims to available evidence, stop for explicit approval before citing supplement candidates, and report semantic-review limits."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "agent-skills-compatible"
+  activation:
+    mode: "model-or-manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "portable-python"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-read-only"
+  permissions:
+    local_reads: "user-supplied idea, BibTeX, and evidence files"
+    local_writes: "only requested new artifacts"
+    network: "anonymous read-only verification and gap search when available"
+    credentials: "forbid"
+  degradation:
+    offline: "deliver an unresolved identity report and reproducible query pack"
+    metadata_only: "limit prose to bibliographic facts and report substantive gaps"
+    unsupported_format: "draft and audit Markdown/Pandoc before conversion"

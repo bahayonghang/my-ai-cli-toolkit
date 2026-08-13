@@ -1,0 +1,30 @@
+{
+  "id": "create-idea-bib-review-skill",
+  "name": "create-idea-bib-review-skill",
+  "title": "Create idea-and-bib grounded literature review skill",
+  "description": "Plan a governed idea-bib-review skill that drafts a literature review from a user-provided argument and BibTeX corpus with claim-level evidence controls and explicit search-gap handling.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "skills/academic-research-tools/idea-bib-review plus required catalog docs and task-local research/eval evidence",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-08-10",
+  "completedAt": "2026-08-10",
+  "branch": null,
+  "base_branch": "dev",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "skills/academic-research-tools/AGENTS.md",
+    "skills/research-learning-knowledge/paper-workbench/SKILL.md",
+    ".trellis/spec/guides/skill-authoring-conventions.md"
+  ],
+  "notes": "",
+  "meta": {}
+}

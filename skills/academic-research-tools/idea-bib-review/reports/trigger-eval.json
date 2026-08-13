@@ -1,0 +1,220 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "bib",
+    "evidence",
+    "idea",
+    "review",
+    "supplement"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "按我给出的论证思路和 references.bib 写一节文献综述，逐条核验引用证据，不够就先给补充候选。",
+        "family": "cn_idea_bib_review",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "bib",
+          "evidence",
+          "idea",
+          "review"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "这里是章节框架和 BibTeX 文献库，请写 related work，确保每个 claim 都能回到文献证据。",
+        "family": "cn_framework_bib_related_work",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "bib",
+          "evidence",
+          "idea",
+          "review"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use this argument outline and refs.bib to draft an evidence-grounded literature review without inventing citation keys.",
+        "family": "en_outline_bib_review",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "bib",
+          "evidence",
+          "idea",
+          "review"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Given my reasoning and BibTeX library, write the review section and search gaps for candidate papers before citing supplements.",
+        "family": "en_candidate_gate",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "bib",
+          "idea",
+          "review",
+          "supplement"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "根据这份思路文件和两个 .bib 写综述；证据不足时生成检索式和待批准补充文献。",
+        "family": "cn_multi_bib_gap",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "bib",
+          "evidence",
+          "idea",
+          "review",
+          "supplement"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "我批准候选 C03 和 C07，请把它们作为补充 BibTeX，重新核验后继续按原框架完成文献综述。",
+        "family": "cn_resume_approved_supplement",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "bib",
+          "idea",
+          "review"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "只清洗这个 BibTeX，修复重复 key 和格式，不要写综述。",
+        "family": "bib_cleanup_only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "bib",
+          "review"
+        ],
+        "negative_pattern": "不要写综述"
+      },
+      {
+        "prompt": "单篇精读这篇 PDF，逐图解释实验。",
+        "family": "single_paper_read",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "单篇精读"
+      },
+      {
+        "prompt": "调研 2026 年 agent memory 的最新进展并给出带来源报告。",
+        "family": "topic_web_research",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把这五篇论文做对比并搭一个 review outline，我没有 bib。",
+        "family": "paper_workbench_synthesis",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "bib",
+          "idea"
+        ],
+        "negative_pattern": "我没有 bib"
+      },
+      {
+        "prompt": "只润色我已经写好的 literature review，让语言更像人写的。",
+        "family": "prose_polish_only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "review"
+        ],
+        "negative_pattern": "只润色"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "我有一个研究主题，帮我找文献并生成 BibTeX。",
+        "family": "search_and_bib_generation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "bib"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "根据我的研究问题分析这批 DOI 的研究空白。",
+        "family": "paper_workbench_gap_map",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Check whether every entry in references.bib really exists, but do not draft a review.",
+        "family": "citation_existence_audit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "bib"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Write a systematic review with PRISMA flow and meta-analysis from this topic only.",
+        "family": "systematic_review_protocol",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "topic only"
+      }
+    ]
+  }
+}

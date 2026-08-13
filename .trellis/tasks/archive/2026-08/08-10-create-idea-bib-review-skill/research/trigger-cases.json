@@ -1,0 +1,132 @@
+{
+  "recommended_threshold": 0.34,
+  "description_required_concepts": [
+    "idea",
+    "bib",
+    "review",
+    "evidence"
+  ],
+  "positive_concepts": {
+    "idea": [
+      "given idea",
+      "argument",
+      "outline",
+      "reasoning",
+      "思路",
+      "框架",
+      "论证主线"
+    ],
+    "bib": [
+      ".bib",
+      "bibtex",
+      "bib file",
+      "reference library",
+      "参考文献库",
+      "文献库"
+    ],
+    "review": [
+      "literature review",
+      "related work",
+      "review section",
+      "文献综述",
+      "综述",
+      "相关工作"
+    ],
+    "evidence": [
+      "evidence grounded",
+      "citation grounded",
+      "citation audit",
+      "claim evidence",
+      "证据",
+      "引用核验",
+      "避免胡编"
+    ],
+    "supplement": [
+      "supplement",
+      "search gaps",
+      "candidate papers",
+      "补充文献",
+      "检索式",
+      "证据缺口"
+    ]
+  },
+  "negative_patterns": [
+    "只清洗 bib",
+    "只整理 bibtex",
+    "不要写综述",
+    "我没有 bib",
+    "只润色",
+    "单篇精读",
+    "不要联网",
+    "topic only",
+    "single paper",
+    "format bibtex only",
+    "polish only"
+  ],
+  "should_trigger": [
+    {
+      "text": "按我给出的论证思路和 references.bib 写一节文献综述，逐条核验引用证据，不够就先给补充候选。",
+      "family": "cn_idea_bib_review"
+    },
+    {
+      "text": "这里是章节框架和 BibTeX 文献库，请写 related work，确保每个 claim 都能回到文献证据。",
+      "family": "cn_framework_bib_related_work"
+    },
+    {
+      "text": "Use this argument outline and refs.bib to draft an evidence-grounded literature review without inventing citation keys.",
+      "family": "en_outline_bib_review"
+    },
+    {
+      "text": "Given my reasoning and BibTeX library, write the review section and search gaps for candidate papers before citing supplements.",
+      "family": "en_candidate_gate"
+    },
+    {
+      "text": "根据这份思路文件和两个 .bib 写综述；证据不足时生成检索式和待批准补充文献。",
+      "family": "cn_multi_bib_gap"
+    },
+    {
+      "text": "我批准候选 C03 和 C07，请把它们作为补充 BibTeX，重新核验后继续按原框架完成文献综述。",
+      "family": "cn_resume_approved_supplement"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "只清洗这个 BibTeX，修复重复 key 和格式，不要写综述。",
+      "family": "bib_cleanup_only"
+    },
+    {
+      "text": "单篇精读这篇 PDF，逐图解释实验。",
+      "family": "single_paper_read"
+    },
+    {
+      "text": "调研 2026 年 agent memory 的最新进展并给出带来源报告。",
+      "family": "topic_web_research"
+    },
+    {
+      "text": "把这五篇论文做对比并搭一个 review outline，我没有 bib。",
+      "family": "paper_workbench_synthesis"
+    },
+    {
+      "text": "只润色我已经写好的 literature review，让语言更像人写的。",
+      "family": "prose_polish_only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "我有一个研究主题，帮我找文献并生成 BibTeX。",
+      "family": "search_and_bib_generation"
+    },
+    {
+      "text": "根据我的研究问题分析这批 DOI 的研究空白。",
+      "family": "paper_workbench_gap_map"
+    },
+    {
+      "text": "Check whether every entry in references.bib really exists, but do not draft a review.",
+      "family": "citation_existence_audit"
+    },
+    {
+      "text": "Write a systematic review with PRISMA flow and meta-analysis from this topic only.",
+      "family": "systematic_review_protocol"
+    }
+  ]
+}
