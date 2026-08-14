@@ -1,3 +1,5 @@
+
+
 # My Claude Code Settings
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -20,13 +22,13 @@ You do not need to clone this repository to install skills.
 Direct first-party catalog install:
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/skills
+npx skills add bahayonghang/my-ai-cli-toolkit/skills
 ```
 
 Install all first-party skills non-interactively to specific agents:
 
 ```bash
-npx skills add bahayonghang/my-claude-code-settings/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
+npx skills add bahayonghang/my-ai-cli-toolkit/skills --skill '*' -g -y -a universal -a antigravity -a claude-code -a kiro-cli -a qwen-code -a trae -a trae-cn
 ```
 
 ### Manage skills with skills-manage
@@ -42,8 +44,8 @@ Use `skills/` as the first-party source for this repository.
 Clone the repository only when you want to validate or contribute changes locally:
 
 ```bash
-git clone https://github.com/bahayonghang/my-claude-code-settings.git
-cd my-claude-code-settings
+git clone https://github.com/bahayonghang/my-ai-cli-toolkit.git
+cd my-ai-cli-toolkit
 
 just ci
 ```
