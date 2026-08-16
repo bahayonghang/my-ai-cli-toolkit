@@ -1353,3 +1353,25 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Status
 
 [OK] **Completed**
+
+
+## Session 41: academic-figure 1.1.0：整合 7 个开源 SCI 绘图项目能力
+
+**Date**: 2026-08-16
+**Task**: academic-figure 1.1.0：整合 7 个开源 SCI 绘图项目能力
+**Branch**: `dev`
+
+### Summary
+
+克隆 7 个绘图项目到 ref/repo/plot_ref 并产出 7 份研究记录；基于 qiaomu-meta 将 academic-figure 升级至 1.1.0：新增 advise 模式、viz-pitfalls 拦截、视觉自检闭环、visual_qa.py 与 audit_pdf_text.py（11 项测试）、panel-layout/图注/design-theory 参考、pubfig 与 AgentFigureGallery 集成指引、attribution 总登记；期刊卡片补投稿阶段与 Science/Cell；evals 扩至 23 条；触发评测 24/24；just ci 全绿。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `55931386` | (see git log) |
+| `f9b635ea` | (see git log) |
+
+### Status
+
+[OK] **Completed**
