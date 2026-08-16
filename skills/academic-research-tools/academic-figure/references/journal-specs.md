@@ -4,18 +4,56 @@ Per-journal figure specifications for the **journal-style axis** (SKILL.md step 
 Read only the card for the resolved style, then hand its numbers to the matched
 library recipe (`matplotlib-recipes.md` / `plotly-recipes.md`).
 
-Every value below is transcribed from this task's research report
-`research/journal-specs-and-tooling.md`; each spec table carries a **Source**
-column and each card ends with a **Sources** list resolving those names to URLs.
-Values the research could not confirm against an official page are kept as
-`[missing evidence]` — do not invent a number to fill them. Where the research
-found version drift (IEEE font size, Nature column widths), both readings are
-listed side by side.
+Every value in the IEEE / Elsevier / Nature cards is transcribed from this task's
+research report `research/journal-specs-and-tooling.md`; each spec table carries
+a **Source** column and each card ends with a **Sources** list resolving those
+names to URLs. Values the research could not confirm against an official page
+are kept as `[missing evidence]` — do not invent a number to fill them. Where the
+research found version drift (IEEE font size, Nature column widths), both
+readings are listed side by side. The two "Snapshot cards" at the end of this
+file come from a different, dated corpus and carry their own boundary note.
 
 > **Disclaimer (applies to every card).** Journal rules change and vary by
 > title. Treat these as safe defaults and confirm against the target journal's
 > current _Guide for Authors / artwork_ page before final submission. This is
 > most important for **Elsevier**, whose sizing is journal-specific.
+
+---
+
+## Submission stage
+
+Resolve the stage before you audit a figure, because the file contract changes
+with it.
+
+| Stage                       | What the journal expects                                                                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------- |
+| initial submission          | figures may sit inside the manuscript file; the resolution only has to let a referee judge the data |
+| revision                    | follow the public guide **and** the editor's instructions                                           |
+| accepted / final production | separate production files; the card's formats, DPI, color mode, and font embedding all apply        |
+
+- Do not fail an initial submission only because it has no separate production
+  artwork. Do fail it when the displayed data are unreadable, misrepresented,
+  incomplete, or impossible for a referee to assess.
+- **Do not infer a journal's requirements** from a sister title, from a
+  preset, or from this file alone. Confirm the journal, the article type, the
+  figure type, and the stage against the current official author guide before
+  submission.
+
+## Figure type
+
+Format and DPI rows split by figure type on every card below:
+
+| Type          | What it is                                                     |
+| ------------- | -------------------------------------------------------------- |
+| `line art`    | vector drawings: plots, diagrams, schematics, labeled artwork  |
+| `photo`       | continuous-tone images: micrographs, photographs, renderings   |
+| `combination` | line art over a photo, for example a labeled or annotated scan |
+
+Stage model from nature-figure's `nature-article-requirements.md`
+(`Yuan1z0825/nature-skills`, Apache-2.0, reviewed 2026-08-16); the stage and
+figure-type split are also the `phase` and `formats` fields of the publisher
+snapshot in `skills/scientific-visualization` of
+`K-Dense-AI/claude-scientific-skills` (MIT, snapshot dated 2026-07-23).
 
 ---
 
@@ -42,6 +80,15 @@ magazines (one Author Center source).
 | Font size                    | ~**9–10 pt** at full size (current Author Center); older FAQ allows down to **8 pt**                                                     | Improve Your Graphics; Author-Supplied Graphics FAQ |
 | Font embedding               | EPS/PS/PDF must embed fonts or convert text to outlines                                                                                  | File Formatting                                     |
 | Colorblind accessibility     | avoid red–green; dual-encode with color + shape, thick lines + unique markers, contrast in both hue and lightness, readable in grayscale | Create Graphics (CVD)                               |
+
+**Figure type → format and DPI** (regrouping of the rows above; IEEE states no
+separate combination rule in this corpus):
+
+| Figure type   | Format                                              | DPI                                                                 |
+| ------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
+| `line art`    | vector PS / EPS / PDF preferred; PNG, TIFF accepted | > 600 dpi for black-and-white line art                              |
+| `photo`       | TIFF or PNG                                         | > 300 dpi; 400 dpi recommended for RGB color TIFF                   |
+| `combination` | same as line art                                    | **[missing evidence]** — use the 600 dpi line-art floor and confirm |
 
 **Do not** send users to the IEEE Graphics Analyzer (`graphicsqc.ieee.org`): it
 was decommissioned around 2020 and IEEE now checks figures automatically at
@@ -134,6 +181,16 @@ Methods).
 > it wants PSD/TIFF (300–600 dpi). The deciding question is "is this figure
 > vector or bitmap?"
 
+**Figure type → format and DPI** (regrouping of the rows above; the type split
+follows the K-Dense publisher snapshot of 2026-07-23, whose sources are the two
+Nature pages already listed below):
+
+| Figure type   | Format                                                | DPI                                                                                                                      |
+| ------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `line art`    | PDF, EPS, AI, PS — editable and layered               | not applicable; keep it vector, do not rasterize                                                                         |
+| `photo`       | PSD, TIFF, JPEG (max quality)                         | ≥ 300 dpi at final size; the final-submission page accepts 300–600 dpi, and the research-figure guide asks for ≥ 450 dpi |
+| `combination` | the line-art containers, with the image placed inside | **[missing evidence]** — the snapshot gives no separate floor; treat the embedded image by the photo row and confirm     |
+
 **Sources**
 
 - Final submission (main entry): https://www.nature.com/nature/for-authors/final-submission
@@ -181,3 +238,55 @@ corpus]**; defer to the user's university 学位论文格式规范.
 - If on industrytslib, a `chinese_thesis` style preset exists (based on a
   university 2024 thesis spec); it uses SimSun and injects a CJK fallback chain —
   see `industrytslib-integration.md`.
+
+---
+
+## Snapshot cards (not presets)
+
+The two cards below are **not** journal-style presets: `academic_figure_pref.py`
+accepts only `ieee`, `elsevier`, `nature`, `springer`, and `chinese-thesis`. For
+a Science or Cell target, drive the rcParams from the `nature` preset (both are
+sans-serif, small-type styles) and take every number from the card here.
+
+Both cards are transcribed from the publisher snapshot in
+`skills/scientific-visualization` of `K-Dense-AI/claude-scientific-skills` (MIT),
+`assets/publisher_profiles.json`, accessed 2026-07-23. That file states its own
+boundary: the values are dated planning snapshots and do not establish
+submission compliance. They were **not** verified against the publisher pages in
+this task, so confirm each number on the official author page before submission.
+
+### Science (AAAS)
+
+Snapshot scope: revised-manuscript figures.
+
+- Column widths: single **57 mm**, double **121 mm**, full **184 mm** (Science
+  pages carry three columns).
+- Formats: line art PDF / EPS / AI; photo TIFF; combination PDF / EPS.
+- Raster DPI: **≥ 300 dpi** for line art, photo, and combination alike.
+- Type size: about **7 pt** after reduction, never below **5 pt**.
+- Stage: initial-submission figures may be embedded and should be 300 dpi;
+  revised figures upload separately. The revised guidance prefers vectors and
+  prohibits upsampling.
+- Max height, color mode, and file-size ceiling: **[missing evidence]** in the
+  snapshot.
+- Official pages to confirm against:
+  https://www.science.org/content/page/instructions-preparing-initial-manuscript
+  and https://www.science.org/content/page/instructions-preparing-revised-manuscript
+
+### Cell Press
+
+Snapshot scope: final production files for most Cell Press journals.
+
+- Column widths (two-column article formats): single **85 mm**, 1.5-column
+  **114 mm**, full **174 mm**. Three-column formats differ.
+- Max height: **200 mm**. The 16.5 × 20 cm overall size is a recommendation, not
+  a universal hard limit.
+- Raster DPI: photo **≥ 300 dpi**, line art **≥ 1000 dpi**, black-and-white
+  **≥ 500 dpi**; combination **[missing evidence]**.
+- Formats: line art PDF / TIFF / EPS; photo TIFF / PDF / JPEG; combination
+  PDF / TIFF / EPS. TIFF and PDF are preferred for final production; STAR
+  Protocols and Cell Leading Edge differ.
+- Color mode: **RGB**. File-size ceiling: **20 MB**.
+- Type: Arial, capital panel labels, about **6–8 pt** text at final size.
+- Official page to confirm against:
+  https://www.cell.com/information-for-authors/figure-guidelines

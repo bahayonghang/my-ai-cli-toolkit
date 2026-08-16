@@ -22,7 +22,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 `academic-research-tools` · 2 skills
 
-- [academic-figure](/skills/academic-research-tools/academic-figure) — Create or review academic figures in three modes.
+- [academic-figure](/skills/academic-research-tools/academic-figure) — Create, advise on, or audit academic figures in four modes.
 - [idea-bib-review](/skills/academic-research-tools/idea-bib-review) — Draft an evidence-grounded literature review or related-work section from both a user-provided idea, argument, reasoning outline, 思路, 框架, or 论证主线 and one or more supplied BibTeX .bib files.
 
 ### 开发者工具集成

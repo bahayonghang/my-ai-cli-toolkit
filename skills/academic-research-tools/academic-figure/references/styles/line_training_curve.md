@@ -1,5 +1,7 @@
 # Style: line_training_curve
 
+**来源论文**：DAPO: An Open-Source LLM RL System at Scale
+
 ## 适用场景
 训练过程曲线，展示多种方法的收敛对比，带垂直断点线和水平基准线。
 

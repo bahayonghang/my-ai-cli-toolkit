@@ -1,0 +1,338 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "audit_review",
+    "backend_tools",
+    "chart_advice",
+    "data_input",
+    "figure_intent",
+    "paper_context",
+    "style_reproduction"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 24,
+    "passed": 24,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "画一张 IEEE 双栏宽度的时序预测对比图，准备投期刊。",
+        "family": "journal-spec",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "figure_intent",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我把这份实验数据画成论文配图。",
+        "family": "journal-spec-generic",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "data_input",
+          "figure_intent",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "我有一份 CSV，不知道用什么图展示，最后要放进论文。",
+        "family": "advise",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "chart_advice",
+          "data_input",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "3 组各 5 个样本，画均值柱状图放到投稿里。",
+        "family": "advise-intercept",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "figure_intent",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 scatter_tsne_cluster 风格把我的聚类数据画出来。",
+        "family": "from-data",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "data_input",
+          "figure_intent",
+          "style_reproduction"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "这是论文里截的图，帮我复现成 matplotlib 脚本。",
+        "family": "from-image",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "backend_tools",
+          "paper_context",
+          "style_reproduction"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "请审阅我的 Nature 投稿图，检查尺寸字体和导出格式是否合规。",
+        "family": "journal-spec-review",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "audit_review",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "投稿前帮我审计这批 PDF 图的字号和 DPI。",
+        "family": "audit",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "audit_review",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "我们项目用 pubfig，帮我出一张 Nature 风格的箱线图。",
+        "family": "pubfig-backend",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "backend_tools",
+          "figure_intent",
+          "paper_context",
+          "style_reproduction"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "What chart should I use for my experiment results in the paper?",
+        "family": "advise-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "chart_advice",
+          "data_input",
+          "figure_intent",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "怎么展示这份消融实验数据比较好？要放在论文里。",
+        "family": "advise",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "chart_advice",
+          "data_input",
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 AgentFigureGallery 选好参考图了，按选中的参考画我的数据。",
+        "family": "gallery",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "backend_tools",
+          "data_input",
+          "style_reproduction"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "帮我做一个运营数据的 BI 大屏 dashboard，多图实时联动。",
+        "family": "bi-dashboard",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "data_input"
+        ],
+        "negative_pattern": "dashboard"
+      },
+      {
+        "prompt": "用 AI 生成一张论文的图形摘要。",
+        "family": "graphical-abstract",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "paper_context"
+        ],
+        "negative_pattern": "图形摘要"
+      },
+      {
+        "prompt": "帮我深读这篇论文的方法部分，讲讲创新点。",
+        "family": "paper-reading",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "paper_context"
+        ],
+        "negative_pattern": "深读"
+      },
+      {
+        "prompt": "把这 5 篇论文整理成对比表做成文献综述。",
+        "family": "literature-review",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "paper_context"
+        ],
+        "negative_pattern": "文献综述"
+      },
+      {
+        "prompt": "画一张系统架构图说明我们的微服务。",
+        "family": "architecture-diagram",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "架构图"
+      },
+      {
+        "prompt": "快速看一下这份 CSV 的分布，随便出个草稿就行，不用发表。",
+        "family": "eda-only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "data_input"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Write a Python script to clean my experiment data.",
+        "family": "data-cleaning",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "data_input"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "给周报做个好看的图表。",
+        "family": "generic-chart",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "figure_intent"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "论文里的统计检验结果帮我解读一下。",
+        "family": "stats-interpretation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把论文导出成 PPT 汇报。",
+        "family": "paper-to-ppt",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "paper_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 matplotlib 做个交互式 web 可视化 demo。",
+        "family": "web-viz",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "backend_tools"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "论文的参考文献格式检查一下。",
+        "family": "reference-format",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "paper_context"
+        ],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

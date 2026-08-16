@@ -69,6 +69,8 @@ the other library.
 
 - The core conclusion is one sentence with a verb: "Method X lowers error Y by
   recovering regime Z", not "Results of method X".
+- Group the source tables by scientific argument, not one figure per table. One
+  table may feed several panels, and several tables may feed one panel.
 - Every panel answers a unique question. If hiding a panel would not weaken the
   argument, remove or merge it.
 - Separate primary from supporting evidence. The primary evidence gets the hero
@@ -115,6 +117,9 @@ Before finalizing, ask what a skeptical reviewer would challenge:
 
 - Is the sample size (`n`) visible in the legend or source data?
 - Are error bars, intervals, and statistical tests defined?
+- For paired observations, does the figure show the paired differences? Two
+  overlapping marginal distributions can hide a consistent within-subject
+  effect, and a reviewer will ask for the difference plot.
 - Are axes comparable across panels that invite comparison?
 - Are representative cases traceable to raw data/source files?
 - Could the same conclusion be made from fewer panels?

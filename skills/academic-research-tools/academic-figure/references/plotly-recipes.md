@@ -116,7 +116,20 @@ it needs the `poppler` library). Two paths when a journal requires EPS:
 
 Kaleido v1 requires plotly ≥ 6.1.1.
 
-### Two known gotchas
+**Kaleido v1 needs a browser.** Version 1 no longer bundles Chrome, so static
+export needs a compatible Chrome/Chromium installation on the machine. Treat a
+missing browser as a blocker and report it instead of falling back to a raster
+screenshot. (Cross-checked 2026-08-16 against the K-Dense
+scientific-visualization snapshot dated 2026-07-23 for Kaleido 1.3.0, which
+cites the plotly static-export page and the Kaleido repository below.)
+
+### Known gotchas
+
+**`scale` is not a DPI setting.** `width` and `height` are logical pixels and
+`scale` multiplies the exported pixel count, so `scale=3` does not declare
+"300 DPI". For a journal raster target, size the layout from the card width and
+DPI (see the sizing section) and export with `scale=1`; state the DPI from that
+arithmetic, not from `scale`. (Same 2026-07-23 snapshot cross-check as above.)
 
 **`scale` does not help raster inside vector.** `scale` raises resolution for
 raster output, but for raster **embedded in a vector export** it does _not_
@@ -176,3 +189,6 @@ Same palette as the matplotlib recipe. Set it as the plotly `colorway`
 - default width/height issue #378: https://github.com/plotly/Kaleido/issues/378
 - Okabe-Ito hex reference: https://conceptviz.app/blog/okabe-ito-palette-hex-codes-complete-reference
 - viridis intro: https://github.com/sjmgarnier/viridis/blob/master/vignettes/intro-to-viridis.Rmd
+- Chrome requirement and `scale` cross-check: `skills/scientific-visualization`
+  of `K-Dense-AI/claude-scientific-skills` (MIT), snapshot dated 2026-07-23,
+  which sources both claims from the two plotly/Kaleido pages above.

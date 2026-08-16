@@ -1,5 +1,7 @@
 # Style: scatter_tsne_cluster
 
+**来源论文**：MemGen: Weaving Generative Latent Memory for Self-Evolving Agents
+
 ## 适用场景
 高维 embedding 经 t-SNE 降维后的聚类可视化，多类别、带标注框的散点图。
 

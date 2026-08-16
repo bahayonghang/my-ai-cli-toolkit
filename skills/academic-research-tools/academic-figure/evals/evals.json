@@ -211,6 +211,83 @@
         "Uses Nature size, font, palette, vector export, and QA requirements",
         "Does not select from-image exact-mimicry output"
       ]
+    },
+    {
+      "id": 18,
+      "prompt": "我这份实验结果 CSV 不知道用什么图展示，最后要放进论文。",
+      "expected_output": "Routes to advise. Profiles the data inline, confirms the argument goal, recommends one chart type with alternates, and hands off to journal-spec instead of drawing a figure immediately.",
+      "files": ["results.csv"],
+      "assertions": [
+        "Routes to academic-figure advise mode",
+        "Reads references/modes/advise.md and references/chart-selection.md",
+        "Profiles the data inline and confirms the argument goal before recommending",
+        "Gives one recommendation with the reason plus one or two alternates",
+        "Hands off to journal-spec rather than exporting a figure from advise"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "帮我画 3 组各 5 个样本的均值柱状图，投稿用。",
+      "expected_output": "Recognizes the small-sample mean bar as pitfall P1 and runs the four-step interception protocol before any plotting decision is final.",
+      "files": [],
+      "assertions": [
+        "Reads references/viz-pitfalls.md and matches the mean-only bar row (P1)",
+        "Runs the four-step interception protocol",
+        "States the reviewer's view of a mean bar at n = 5",
+        "Offers a box plot with overlaid points, or raw points, as the replacement",
+        "Asks whether the user keeps the original plan and records the answer",
+        "Does not silently draw the mean bar chart"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "投稿前帮我审计这张图的字号和导出合规性，不用重画。",
+      "expected_output": "Routes to journal-spec review-only intent, audits the delivered PDF with the bundled glyph-floor script, and reports each machine check with a pass/fail/review/unknown verdict.",
+      "files": ["figure.pdf"],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode with review-only intent",
+        "Runs python \"<skill-dir>/scripts/audit_pdf_text.py\" figure.pdf --min-pt 5",
+        "Walks the post-export machine checks in references/qa-checklist.md",
+        "Reports each check as pass, fail, review, or unknown instead of guessing",
+        "Does not redraw the figure"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "我们项目已经用 pubfig，帮我出一张 Nature 单栏箱线图。",
+      "expected_output": "Detects the pubfig backend, takes the kind-hit path with pf.box, and exports through save_figure with the Nature spec at single-column width.",
+      "files": [],
+      "assertions": [
+        "Reads references/pubfig-integration.md",
+        "Takes the kind-hit path because box is one of the 41 registered kinds",
+        "Calls pf.box(...) and pf.save_figure(fig, spec=\"nature\", width=\"single\")",
+        "Passes an explicit file suffix to save_figure",
+        "Calls pubfig without modifying its source"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "我装了 AgentFigureGallery，画图前先帮我找参考。",
+      "expected_output": "Reads the integration guide, verifies the CLI and knowledge-base root, runs query and gallery, returns the browser selection step to the user, and writes plotting code only after the bundle exists.",
+      "files": [],
+      "assertions": [
+        "Reads references/agent-figure-gallery-integration.md",
+        "Checks that the agentfiguregallery CLI is available and that AGENT_FIGURE_GALLERY_ROOT or DRAWING_KB_ROOT resolves",
+        "Runs query then gallery --serve",
+        "Hands the browser like/reject/select step back to the user",
+        "Writes plotting code only after reading the exported reference bundle"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "随便帮我看看这份数据的分布长什么样，不发论文。",
+      "expected_output": "Routes to general-purpose plotting, not academic-figure, because the request is exploratory data analysis with no publication or submission goal.",
+      "files": ["data.csv"],
+      "assertions": [
+        "Does NOT route to academic-figure",
+        "Recognizes exploratory data analysis rather than a publication figure",
+        "Does not impose the journal contract or the QA checklist"
+      ]
     }
   ]
 }

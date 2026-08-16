@@ -39,6 +39,28 @@ style template and fill it with user data.
 - 输出路径由 `argv[1]` 控制（缺省写入当前目录的 `*_repro.png`）；
   `line_selfdistill.py` 产出两张图，分别由 `argv[1]`、`argv[2]` 控制
 
+## Template reuse ladder
+
+A template renders its own bundled example. That fact does not prove it fits your
+data. Assign the template to one level before you edit it:
+
+| Level                  | Use when                                                             | Allowed changes                                     |
+| ---------------------- | -------------------------------------------------------------------- | --------------------------------------------------- |
+| Exact reuse            | Meaning, data shape, and transformations all match                   | Data values, labels, and output path                |
+| Structural adaptation  | Meaning and dimensionality match, field names or group counts differ | The above, plus an explicit field map               |
+| Style-only inheritance | The chart family helps, but the statistic or structure differs       | Palette, typography, spacing, marker, legend only   |
+| Build anew             | The template answers a different question                            | Do not force it. Draw from `../figure-contract.md`. |
+
+**Check every transformation that you inherit against the new data.** A log axis
+needs strictly positive values. A ratio needs a finite denominator and a stated
+rule for a zero denominator. Min-max scaling needs a non-constant finite range.
+Binning and density estimation need enough distinct observations; record the bin
+width or the bandwidth. When a check fails, drop to style-only inheritance or
+build anew. Do not change the transform silently.
+
+> Adapted from the asset adaptation reference of `nature-figure`
+> (`Yuan1z0825/nature-skills`, Apache-2.0). See `../attribution.md`.
+
 ## Detailed style parameters
 
 Read the corresponding file in `../styles/` for exact `rcParams`, colors, font

@@ -1,5 +1,7 @@
 # Style: radar_dual_series
 
+**来源论文**：DoRA: Weight-Decomposed Low-Rank Adaptation
+
 ## 适用场景
 两个方法在多维 benchmark 的雷达/蜘蛛图对比，强调主方法优势。
 

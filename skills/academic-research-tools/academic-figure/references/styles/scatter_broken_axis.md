@@ -1,5 +1,7 @@
 # Style: scatter_broken_axis
 
+**来源论文**：Meta-Harness: End-to-End Optimization of Model Harnesses
+
 ## 适用场景
 需要对比低 context（0-50k）与高 context（115k、200k）系统，X 轴因范围差异大需要折断表示。
 

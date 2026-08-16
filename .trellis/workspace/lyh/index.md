@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 40
-- **Last Active**: 2026-08-10
+- **Total Sessions**: 41
+- **Last Active**: 2026-08-16
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1355 | Active |
+| `journal-1.md` | ~1377 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 41 | 2026-08-16 | academic-figure 1.1.0：整合 7 个开源 SCI 绘图项目能力 | `55931386`, `f9b635ea` | `dev` |
 | 40 | 2026-08-10 | Create idea-bib-review skill | `b29d459` | `dev` |
 | 39 | 2026-08-03 | 优化 goal-meta-skill 侦察与访谈工作流 | `d15f435` | `dev` |
 | 38 | 2026-07-29 | 检查并归档 claude-context-improver | `b75b8fc52db32e0225115e106de68dd457b6dace` | `dev` |

@@ -1,0 +1,171 @@
+{
+  "source": "skillsmp",
+  "query": "publication figure journal submission quality",
+  "request": {
+    "attempts": 1,
+    "max_attempts": 3
+  },
+  "metric_semantics": {
+    "repo_stars": "GitHub repository stars; not installs, ratings, or skill-specific quality",
+    "catalog_updated_at": "SkillsMP indexed update time; verify the repository for current source"
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 11,
+    "totalPages": 2,
+    "hasNext": true,
+    "hasPrev": false,
+    "totalIsExact": false
+  },
+  "rate_limit": {
+    "daily_limit": "50",
+    "daily_remaining": "49",
+    "minute_limit": "10",
+    "minute_remaining": "9"
+  },
+  "raw_candidate_count": 10,
+  "deduplicated_candidate_count": 10,
+  "candidates": [
+    {
+      "source": "skillsmp",
+      "name": "verify-release",
+      "author": "openclaw",
+      "description": "Verify regular or extended-stable OpenClaw releases against the exact publication surfaces, workflow identities, package provenance, smoke tests, and live Gateway behavior expected for that release track.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/verify-release",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-verify-release",
+      "repo_stars": 386158,
+      "catalog_updated_at": "2026-07-23T01:48:48+00:00",
+      "source_key": "openclaw/openclaw:.agents/skills/verify-release",
+      "family_key": "openclaw/openclaw:verify-release",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "make-pdf",
+      "author": "garrytan",
+      "description": "Turn any markdown file into a publication-quality PDF. (gstack)",
+      "content_language": "en",
+      "github_url": "https://github.com/garrytan/gstack/tree/main/make-pdf",
+      "skillsmp_url": "https://skillsmp.com/creators/garrytan/gstack/make-pdf",
+      "repo_stars": 127796,
+      "catalog_updated_at": "2026-08-12T18:12:28+00:00",
+      "source_key": "garrytan/gstack:make-pdf",
+      "family_key": "garrytan/gstack:make-pdf",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "zh-output-example",
+      "author": "bytedance",
+      "description": "Reviews Chinese skill documentation for publication readiness. Invoke when the user asks in Chinese to review a skill.",
+      "content_language": "en",
+      "github_url": "https://github.com/bytedance/deer-flow/tree/main/skills/public/skill-reviewer/evals/fixtures/zh-output",
+      "skillsmp_url": "https://skillsmp.com/creators/bytedance/deer-flow/skills-public-skill-reviewer-evals-fixtures-zh-output",
+      "repo_stars": 79919,
+      "catalog_updated_at": "2026-07-11T07:58:07+00:00",
+      "source_key": "bytedance/deer-flow:skills/public/skill-reviewer/evals/fixtures/zh-output",
+      "family_key": "bytedance/deer-flow:zh-output-example",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "academic-paper-review",
+      "author": "bytedance",
+      "description": "Use this skill when the user requests to review, analyze, critique, or summarize academic papers, research articles, preprints, or scientific publications. Supports comprehensive structured reviews covering methodology assessment, contribution evaluation, literature positioning, and constructive feedback generation. Trigger on queries involving paper URLs, uploaded PDFs, arXiv links, or requests like \"review this paper\", \"analyze this research\", \"summarize this study\", or \"write a peer review\".",
+      "content_language": "en",
+      "github_url": "https://github.com/bytedance/deer-flow/tree/main/skills/public/academic-paper-review",
+      "skillsmp_url": "https://skillsmp.com/creators/bytedance/deer-flow/skills-public-academic-paper-review",
+      "repo_stars": 79919,
+      "catalog_updated_at": "2026-04-05T02:19:35+00:00",
+      "source_key": "bytedance/deer-flow:skills/public/academic-paper-review",
+      "family_key": "bytedance/deer-flow:academic-paper-review",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "deal-with-security-advisory",
+      "author": "paperclipai",
+      "description": "Handle confidential GitHub Security Advisory response for Paperclip. Use when coordinating advisory triage, private-fork fixes, CVE/publication steps, and immediate security releases.",
+      "content_language": "en",
+      "github_url": "https://github.com/paperclipai/paperclip/tree/master/.agents/skills/deal-with-security-advisory",
+      "skillsmp_url": "https://skillsmp.com/creators/paperclipai/paperclip/agents-skills-deal-with-security-advisory",
+      "repo_stars": 77979,
+      "catalog_updated_at": "2026-07-10T13:46:20+00:00",
+      "source_key": "paperclipai/paperclip:.agents/skills/deal-with-security-advisory",
+      "family_key": "paperclipai/paperclip:deal-with-security-advisory",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "docs-editor",
+      "author": "openai",
+      "description": "Review and edit OpenAI Cookbook notebooks, Markdown, and MDX for technical accuracy, clarity, grammar, consistency, runnable examples, and repository publication requirements. Use for editorial reviews, pre-merge documentation checks, or notebook Markdown-cell sweeps in openai-cookbook.",
+      "content_language": "en",
+      "github_url": "https://github.com/openai/openai-cookbook/tree/main/.codex/skills/docs-editor",
+      "skillsmp_url": "https://skillsmp.com/creators/openai/openai-cookbook/codex-skills-docs-editor",
+      "repo_stars": 75226,
+      "catalog_updated_at": "2026-07-17T15:04:17+00:00",
+      "source_key": "openai/openai-cookbook:.codex/skills/docs-editor",
+      "family_key": "openai/openai-cookbook:docs-editor",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "publish-app",
+      "author": "twentyhq",
+      "description": "Use when the user wants to prepare or verify a Twenty app for npm or marketplace publication, including README/About copy, package metadata, defineApplication marketplace metadata, logos, screenshots, and public assets.",
+      "content_language": "en",
+      "github_url": "https://github.com/twentyhq/twenty/tree/main/packages/twenty-codex-plugin/skills/publish-app",
+      "skillsmp_url": "https://skillsmp.com/creators/twentyhq/twenty/packages-twenty-codex-plugin-skills-publish-app",
+      "repo_stars": 54857,
+      "catalog_updated_at": "2026-06-02T14:39:14+00:00",
+      "source_key": "twentyhq/twenty:packages/twenty-codex-plugin/skills/publish-app",
+      "family_key": "twentyhq/twenty:publish-app",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "academic-pipeline",
+      "author": "Imbad0202",
+      "description": "Orchestrator for the full academic research pipeline: research -> write -> integrity check -> review -> revise -> re-review -> re-revise -> final integrity check -> finalize. Coordinates deep-research, academic-paper, and academic-paper-reviewer into a seamless 10-stage workflow with mandatory integrity verification, two-stage peer review, and reproducible quality gates. Triggers on: academic pipeline, research to paper, full paper workflow, paper pipeline, end-to-end paper, research-to-publication, complete paper workflow, 연구부터 논문까지, 연구 주제 설정부터 논문 완성까지, 논문 전체 워크플로.",
+      "content_language": "en",
+      "github_url": "https://github.com/Imbad0202/academic-research-skills/tree/main/academic-pipeline",
+      "skillsmp_url": "https://skillsmp.com/creators/imbad0202/academic-research-skills/academic-pipeline",
+      "repo_stars": 42323,
+      "catalog_updated_at": "2026-08-11T07:01:26+00:00",
+      "source_key": "imbad0202/academic-research-skills:academic-pipeline",
+      "family_key": "imbad0202/academic-research-skills:academic-pipeline",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "release",
+      "author": "lfnovo",
+      "description": "Orchestrate an Open Notebook release — changelog audit, risk-based A/B/C test matrix, Docker image gate (fresh + upgrade), fix loop via PRs, cut, publication with credits, retro. Use when preparing, testing, cutting or publishing a release.",
+      "content_language": "en",
+      "github_url": "https://github.com/lfnovo/open-notebook/tree/main/.agents/skills/release",
+      "skillsmp_url": "https://skillsmp.com/creators/lfnovo/open-notebook/agents-skills-release",
+      "repo_stars": 36760,
+      "catalog_updated_at": "2026-07-19T18:14:17+00:00",
+      "source_key": "lfnovo/open-notebook:.agents/skills/release",
+      "family_key": "lfnovo/open-notebook:release",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "nature-statistics",
+      "author": "Yuan1z0825",
+      "description": "Audit, revise, or draft manuscript statistical reporting for Nature / high-impact journal submissions. Use when the user asks to check statistical analysis sections, p values, confidence intervals, sample size, biological versus technical replicates, randomization, blinding, multiple-comparison correction, model assumptions, figure legends, Results statistics wording, reviewer comments about statistics, or Chinese academic drafts needing publication-ready Statistical analysis text. Also trigger on general paper-statistics requests such as 统计审查、统计分析小节、统计方法、p值、样本量、重复数、多重比较、置信区间、效应量、图注统计、审稿人统计意见.",
+      "content_language": "en",
+      "github_url": "https://github.com/Yuan1z0825/nature-skills/tree/main/skills/nature-statistics",
+      "skillsmp_url": "https://skillsmp.com/creators/yuan1z0825/nature-skills/skills-nature-statistics",
+      "repo_stars": 35004,
+      "catalog_updated_at": "2026-08-12T15:44:28+00:00",
+      "source_key": "yuan1z0825/nature-skills:skills/nature-statistics",
+      "family_key": "yuan1z0825/nature-skills:nature-statistics",
+      "aliases": []
+    }
+  ]
+}

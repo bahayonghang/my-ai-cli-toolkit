@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "检查依据：frontmatter 契约、<skill-dir> 占位符、docs-sync 必跑、评测体系与测试模式"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/paper-plot-skills.md", "reason": "核对署名修复是否落实（5 处来源论文、3 处指针、attribution 补记）"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/nature-skills.md", "reason": "核对 Apache-2.0 移植署名与 figures4papers 无许可素材边界"}
