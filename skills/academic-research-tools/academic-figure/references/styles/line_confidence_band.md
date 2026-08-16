@@ -3,7 +3,7 @@
 **来源论文**：Reinforcement learning via self-distillation  
 **图表类型**：折线图（连续训练曲线 / 离散 scaling 曲线）+ 半透明置信区间阴影  
 **复现代码**：`<skill-dir>/scripts/line_selfdistill.py`  
-**原图**：`image2.png`（连续），`image3.png`（离散 scaling）
+**原图**：`<skill-dir>/assets/originals/line_selfdistill_train.png`（连续），`<skill-dir>/assets/originals/line_selfdistill_scale.png`（离散 scaling）
 
 ---
 
@@ -55,13 +55,13 @@ for text in leg.get_texts():
 
 ## 两种子类型
 
-### Type A：连续训练曲线（image2）
+### Type A：连续训练曲线（line_selfdistill_train）
 - x 轴为 step 数，格式化为 `0, 5k, 10k, 15k, 20k`
 - 阴影宽度随训练进行逐渐收窄（前期宽、后期窄），用 `exp(-t)` 衰减模拟
 - 图例位于**右下角**
 - 水平参考虚线：外部 baseline 的性能水平
 
-### Type B：离散 Scaling 曲线（image3）
+### Type B：离散 Scaling 曲线（line_selfdistill_scale）
 - x 轴为离散参数量，使用等间距 x_pos + 手动刻度标签（避免对数轴变形）
 - 每个数据点都有圆点标记
 - 图例位于**左上角**

@@ -1,0 +1,30 @@
+interface:
+  display_name: "Academic Figure"
+  short_description: "Advise, create, or audit publication-ready academic figures"
+  default_prompt: "Use $academic-figure when I need a paper or journal figure. Pick one mode first: advise when the chart type is open, journal-spec for a submission target or a compliance review, from-data for a named catalog style, from-image to reproduce an uploaded figure. Report every matched pitfall, and audit the exported file against the journal card before you call the figure done."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "agent-skills-compatible"
+  activation:
+    mode: "model-or-manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "portable-python"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-read-only"
+  permissions:
+    local_reads: "user-supplied data files, figure images, and plotting scripts"
+    local_writes: "only the requested figure and script artifacts"
+    network: "none"
+    credentials: "forbid"
+  degradation:
+    no_latex: "set text.usetex=False and keep mathtext for the math labels"
+    no_matplotlib: "report the missing dependency and stop; do not install it unasked"
+    no_optional_backend: "without pubfig or AgentFigureGallery, take the built-in path and say the optional step was skipped"

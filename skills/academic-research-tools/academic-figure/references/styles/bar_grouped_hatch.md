@@ -3,7 +3,7 @@
 **来源论文**：SPICE: Self-play in corpus environments improves reasoning  
 **图表类型**：分组柱状图（每组 3 柱，主方法使用斜线填充强调）  
 **复现代码**：`<skill-dir>/scripts/bar_spice.py`  
-**原图**：`image5.png`
+**原图**：`<skill-dir>/assets/originals/bar_spice.png`
 
 ---
 

@@ -1,6 +1,7 @@
 # matplotlib (+ seaborn) Recipes
 
-The matplotlib branch of the **library axis** (SKILL.md step 3). Take the numbers
+The matplotlib branch of the **library axis** (the library-axis step in
+`modes/journal-spec.md`). Take the numbers
 from the resolved card in `journal-specs.md` and drop them into one of the
 presets below. seaborn is treated here as a matplotlib-layer API, not a separate
 backend — specs still resolve down to rcParams.
@@ -170,16 +171,90 @@ sns.despine()      # drop top & right spines (pairs with "white"/"ticks")
 
 ---
 
+## Layout, scoped styles, and presentation scale
+
+### Apply a preset in a scope, not globally
+
+`plt.style.use(...)` and `mpl.rcParams.update(...)` change global state and stay
+in force for every later figure in the session. Keep each preset a plain dict
+and apply it in a context manager, so two figures in one script stay
+independent.
+
+```python
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+with mpl.rc_context(PRESETS["nature"]):     # scoped; global rcParams stay clean
+    fig, ax = plt.subplots(figsize=(3.5, 2.6), layout="constrained")
+    ax.plot(x, y)
+    fig.savefig("figure.pdf")
+```
+
+### Keep the exported size equal to the card width
+
+- `layout="constrained"` at figure creation reserves room for titles, labels,
+  and colorbars **inside** the canvas, so the saved size stays `figsize`.
+- `fig.tight_layout()` switches constrained layout off. Do not call both.
+- `bbox_inches="tight"` trims the saved file to the drawn content, so the saved
+  width is not `figsize`. The presets above set `savefig.bbox = "tight"`, which
+  is safe while a slightly narrower figure is acceptable. When the card width
+  must be exact, drop that key and rely on `layout="constrained"`.
+- Export at the final physical size and do not rescale the figure in Word or
+  LaTeX: rescaling changes every effective font size and line width.
+
+### Presentation scale
+
+Poster and slide figures use a larger type and line-width tier than the journal
+presets above. See `design-theory.md` for that tier and for the semantic palette
+roles; do not apply presentation numbers to a single-column journal figure.
+
+---
+
 ## CJK (Chinese) text
 
 Two failure modes: Chinese glyphs render as boxes, and the minus sign renders as
-a box. Fix both:
+a box. Fix both. The priority chains and the install hints below are adapted
+from scipilot-figure-skill (`Haojae/scipilot-figure-skill`, MIT, reviewed
+2026-08-16).
 
 ```python
 import matplotlib.pyplot as plt
-plt.rcParams["font.sans-serif"] = ["SimHei"]   # or "Microsoft YaHei" / "Noto Sans CJK SC"
-plt.rcParams["axes.unicode_minus"] = False      # U+2212 minus -> box in SimHei; fall back to ASCII '-'
+from matplotlib import font_manager
+
+# Sans chain for Nature/Elsevier-style cards. First installed name wins.
+CJK_SANS = ["Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC",
+            "Source Han Sans CN", "SimHei", "Microsoft YaHei",
+            "PingFang SC", "Heiti SC", "WenQuanYi Zen Hei", "Arial Unicode MS"]
+# Serif chain for a Chinese thesis or a Song-body journal.
+CJK_SERIF = ["Noto Serif CJK SC", "Noto Serif SC", "Source Han Serif SC",
+             "Source Han Serif CN", "SimSun", "STSong", "Songti SC"]
+
+installed = {f.name for f in font_manager.fontManager.ttflist}
+chain = [name for name in CJK_SANS if name in installed]
+if not chain:
+    raise RuntimeError("No CJK font found; install Noto Sans CJK SC first")
+plt.rcParams["font.sans-serif"] = chain + ["DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False      # U+2212 minus -> box in SimHei
 ```
+
+Install a CJK font when the chain is empty:
+
+| Platform      | Command                                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Debian/Ubuntu | `sudo apt install fonts-noto-cjk`                                                                                     |
+| Fedora/RHEL   | `sudo dnf install google-noto-sans-cjk-fonts`                                                                         |
+| macOS         | `brew install --cask font-noto-sans-cjk-sc`                                                                           |
+| Windows       | Download https://github.com/notofonts/noto-cjk/releases, then right-click the `.ttf`/`.otf` and install for all users |
+
+List what matplotlib currently indexes before you blame the code:
+
+```bash
+python -c "from matplotlib import font_manager; print(sorted({f.name for f in font_manager.fontManager.ttflist}))"
+```
+
+matplotlib indexes fonts at import, so restart the process after an install. If
+the new font still does not appear, clear the cache directory reported by
+`matplotlib.get_cachedir()`. The cache refresh on Windows is unverified here.
 
 - matplotlib defaults to the Unicode minus U+2212, which fonts like SimHei often
   lack → box. `axes.unicode_minus = False` falls back to ASCII `-`.
@@ -193,6 +268,8 @@ plt.rcParams["axes.unicode_minus"] = False      # U+2212 minus -> box in SimHei;
   needs the `pgf` backend + `xeCJK` (`\setCJKmainfont{SimHei}` preamble), or use
   `["science", "no-latex"]` and then set the CJK font + `axes.unicode_minus =
 False` as above.
+- A missing glyph only produces a warning; matplotlib still writes the file.
+  Run the audit in `visual-review.md` before export.
 
 When a journal card wants sans-serif (Nature/Elsevier), put the CJK family in
 `font.sans-serif`; for a serif thesis look, put it in `font.serif` and set

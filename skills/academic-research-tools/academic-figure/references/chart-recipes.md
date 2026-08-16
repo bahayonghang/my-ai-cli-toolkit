@@ -327,3 +327,8 @@ are journal- and library-agnostic and apply on top of any family above.
   bar's luminance, `0.299*R + 0.587*G + 0.114*B` above/below a mid threshold.
 - **One shared color family across panels.** Fix a `{condition: color}` map once and
   reuse it in every panel; keep green/red only for gain/loss or directional cues.
+
+For the multi-panel structures this list does not cover — wide multi-metric rows,
+grouped-within-grouped bars, hatched bands, event annotations, spanning hero
+panels, dark image plates, and aligned panel labels — see
+`panel-layout-patterns.md`.

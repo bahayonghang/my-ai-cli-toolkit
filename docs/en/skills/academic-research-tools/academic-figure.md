@@ -4,14 +4,14 @@
 
 ## Purpose overview
 
-Create or review academic figures in three modes.
+Create, advise on, or audit academic figures in four modes.
 
 ## Trigger scenarios
 
-- Create or review academic figures in three modes. journal-spec creates or reviews publication-ready figures for journal submission specs using matplotlib, seaborn, plotly, or industrytslib. from-data fills a named paper-style catalog with user data. from-image reproduces an uploaded paper figure as a matplotlib script and 300 dpi PNG
-- Use for 论文配图, 期刊图, 科研绘图, 审阅投稿图, 用某论文风格画数据, 复现这张图, or a named catalog style
+- Create, advise on, or audit academic figures in four modes. advise profiles the data and recommends a chart type when none is fixed. journal-spec creates or reviews publication-ready figures for journal submission specs using matplotlib, seaborn, plotly, industrytslib, or the optional pubfig backend. from-data fills a named paper-style catalog with user data. from-image reproduces an uploaded paper figure as a matplotlib script and 300 dpi PNG
+- Use for 论文配图, 期刊图, 科研绘图, 审阅投稿图, 用某论文风格画数据, 复现这张图, a named catalog style, 不知道用什么图 / 选图 / 怎么展示这份实验数据, what chart should I use, 投稿前审计图的字号 DPI 与导出合规, pre-submission figure audit, or 参考图筛选 with AgentFigureGallery
 - An explicit journal target takes precedence over a style or reference image
-- Paper reading and multi-paper synthesis route to their dedicated research skills
+- Exploratory data checks with no publication goal, paper reading, and multi-paper synthesis route to their dedicated skills
 
 ## Metadata
 
@@ -19,8 +19,8 @@ Create or review academic figures in three modes.
 | --- | --- |
 | Name | `academic-figure` |
 | Category | `academic-research-tools` (Academic Research Tools) |
-| Version | `1.0.0` |
-| Tags | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication`, `reproduction`, `paper-style`, `from-image` |
+| Version | `1.1.0` |
+| Tags | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication`, `reproduction`, `paper-style`, `from-image`, `chart-advisor`, `figure-audit`, `visual-qa`, `pubfig`, `reference-gallery` |
 
 ## Install command
 
@@ -32,16 +32,18 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill academic-figu
 
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
+| `skills/academic-research-tools/academic-figure/agents` | directory | 1 | Companion agents |
 | `skills/academic-research-tools/academic-figure/assets` | directory | 10 | Assets |
 | `skills/academic-research-tools/academic-figure/evals` | directory | 1 | Evaluation samples |
-| `skills/academic-research-tools/academic-figure/references` | directory | 19 | Reference material |
-| `skills/academic-research-tools/academic-figure/scripts` | directory | 10 | Executable scripts |
-| `skills/academic-research-tools/academic-figure/tests` | directory | 1 | Automated tests |
+| `skills/academic-research-tools/academic-figure/references` | directory | 29 | Reference material |
+| `skills/academic-research-tools/academic-figure/scripts` | directory | 12 | Executable scripts |
+| `skills/academic-research-tools/academic-figure/tests` | directory | 3 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
+| agents | `skills/academic-research-tools/academic-figure/agents` | Companion agents |
 | assets | `skills/academic-research-tools/academic-figure/assets` | Assets |
 | evals | `skills/academic-research-tools/academic-figure/evals` | Evaluation samples |
 | references | `skills/academic-research-tools/academic-figure/references` | Reference material |

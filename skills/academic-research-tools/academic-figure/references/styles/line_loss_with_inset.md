@@ -1,5 +1,7 @@
 # Style: line_loss_with_inset
 
+**来源论文**：SiameseNorm: Breaking the Barrier to Reconciling Pre/Post-Norm
+
 ## 适用场景
 训练 loss 曲线，需要放大局部区域对比细节差异，通过 inset 子图实现局部放大。
 
