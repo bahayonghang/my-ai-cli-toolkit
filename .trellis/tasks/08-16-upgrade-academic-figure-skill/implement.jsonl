@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "本仓库 skill 创作硬约束：<skill-dir> 占位符、frontmatter 契约、4 反引号围栏、docs-sync、双 eval 体系、测试模式"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/scipilot-figure-skill.md", "reason": "Batch A 事实来源：advise 决策框架、P1-P18、视觉自检闭环、visual_qa.py 移植依据、CJK 字体链"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/kdense-scientific-visualization.md", "reason": "Batch A/B 事实来源：机器检查口径、投稿阶段维度、Science/Cell 卡片数值、误导性编码条目"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/nature-skills.md", "reason": "Batch B 事实来源：逐 Panel 审计、字形地板、audit_pdf_text.py 移植依据、布局模式、图注规范、Apache-2.0 署名要求"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/figures4papers.md", "reason": "Batch B 事实来源：语义调色板、两档字号、导出契约思想；无 LICENSE 只改写不复制的约束"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/agent-figure-gallery.md", "reason": "Batch C 事实来源：六步工作流、偏好语义、bundle 契约、降级说明、MIT 署名"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/pubfig.md", "reason": "Batch C 事实来源：检测条件、spec 契约、save_figure 行为、期刊覆盖差异、调色板出处、MIT 署名"}
+{"file": ".trellis/tasks/08-16-upgrade-academic-figure-skill/research/paper-plot-skills.md", "reason": "Batch C 事实来源：5 处来源论文补标注、3 处原图指针修复、attribution.md 补记内容"}

@@ -1,0 +1,45 @@
+{
+  "note": "academic-figure v1.1.0 触发边界用例。领域概念表与负向词内嵌（qiaomu trigger_eval.py 的 positive_concepts/negative_patterns 机制），替代其面向 skill 创作域的默认概念表。评分规则：score = |prompt命中 ∩ description命中| / denominator，denominator=max(3,min(5,|description命中|))，threshold=0.34，即 description 命中 5+ 概念族时 prompt 需命中 ≥2 族才触发。",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["figure_intent", "paper_context", "chart_advice", "audit_review"],
+  "positive_concepts": {
+    "figure_intent": ["配图", "画图", "绘图", "画成", "画出", "画个", "图表", "柱状", "折线", "散点", "雷达", "热力图", "箱线", "对比图", "训练曲线", "figure", "plot", "chart"],
+    "paper_context": ["论文", "期刊", "投稿", "学位论文", "科研", "ieee", "elsevier", "nature", "springer", "paper", "journal", "submission", "publication", "academic"],
+    "data_input": ["数据", "csv", "excel", "实验结果", "data", "results"],
+    "style_reproduction": ["复现", "风格", "参考图", "照着", "reproduce", "mimic", "style"],
+    "chart_advice": ["不知道用什么图", "用什么图", "选图", "什么图合适", "怎么展示", "which chart", "what chart", "recommend a chart"],
+    "audit_review": ["审阅", "审计", "合规", "检查尺寸", "检查图", "检查字体", "检查配色", "review", "audit", "compliance", "dpi", "字号"],
+    "backend_tools": ["matplotlib", "plotly", "seaborn", "pubfig", "industrytslib", "agentfiguregallery"]
+  },
+  "negative_patterns": ["dashboard", "大屏", "图形摘要", "graphical abstract", "文献综述", "深读", "架构图", "流程图", "logo"],
+  "should_trigger": [
+    {"text": "画一张 IEEE 双栏宽度的时序预测对比图，准备投期刊。", "family": "journal-spec"},
+    {"text": "帮我把这份实验数据画成论文配图。", "family": "journal-spec-generic"},
+    {"text": "我有一份 CSV，不知道用什么图展示，最后要放进论文。", "family": "advise"},
+    {"text": "3 组各 5 个样本，画均值柱状图放到投稿里。", "family": "advise-intercept"},
+    {"text": "用 scatter_tsne_cluster 风格把我的聚类数据画出来。", "family": "from-data"},
+    {"text": "这是论文里截的图，帮我复现成 matplotlib 脚本。", "family": "from-image"},
+    {"text": "请审阅我的 Nature 投稿图，检查尺寸字体和导出格式是否合规。", "family": "journal-spec-review"},
+    {"text": "投稿前帮我审计这批 PDF 图的字号和 DPI。", "family": "audit"},
+    {"text": "我们项目用 pubfig，帮我出一张 Nature 风格的箱线图。", "family": "pubfig-backend"},
+    {"text": "What chart should I use for my experiment results in the paper?", "family": "advise-en"},
+    {"text": "怎么展示这份消融实验数据比较好？要放在论文里。", "family": "advise"},
+    {"text": "用 AgentFigureGallery 选好参考图了，按选中的参考画我的数据。", "family": "gallery"}
+  ],
+  "should_not_trigger": [
+    {"text": "帮我做一个运营数据的 BI 大屏 dashboard，多图实时联动。", "family": "bi-dashboard"},
+    {"text": "用 AI 生成一张论文的图形摘要。", "family": "graphical-abstract"},
+    {"text": "帮我深读这篇论文的方法部分，讲讲创新点。", "family": "paper-reading"},
+    {"text": "把这 5 篇论文整理成对比表做成文献综述。", "family": "literature-review"},
+    {"text": "画一张系统架构图说明我们的微服务。", "family": "architecture-diagram"},
+    {"text": "快速看一下这份 CSV 的分布，随便出个草稿就行，不用发表。", "family": "eda-only"},
+    {"text": "Write a Python script to clean my experiment data.", "family": "data-cleaning"}
+  ],
+  "near_neighbor": [
+    {"text": "给周报做个好看的图表。", "family": "generic-chart"},
+    {"text": "论文里的统计检验结果帮我解读一下。", "family": "stats-interpretation"},
+    {"text": "把论文导出成 PPT 汇报。", "family": "paper-to-ppt"},
+    {"text": "用 matplotlib 做个交互式 web 可视化 demo。", "family": "web-viz"},
+    {"text": "论文的参考文献格式检查一下。", "family": "reference-format"}
+  ]
+}

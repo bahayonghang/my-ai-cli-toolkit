@@ -218,6 +218,18 @@ manual inventory and deterministic safety tests."
   user-global `fuck-my-shit-mountain` for non-code health reports); the positive
   wording must dodge both — "全维度/full-spectrum audit", never "架构和质量"
   which collides with `code-quality-review`'s own description.
+- qiaomu-meta's `trigger_eval.py` needs no separate `semantic_config.json`: the
+  cases JSON itself may embed `positive_concepts`, `negative_patterns`,
+  `recommended_threshold`, and `description_required_concepts`. Score model:
+  `|prompt-hits ∩ description-hits| / max(3, min(5, |description-hits|))` ≥
+  threshold (default 0.34) with a negative-pattern veto — so with 5+ description
+  concepts, a prompt needs ≥2 concept-family hits to trigger. Author the domain
+  concept table in the cases file (pattern: academic-figure task
+  `research/trigger-cases.json`, 2026-08-16, 24/24).
+- qiaomu-meta's `validate_skill.py` hard-fails on missing per-skill `README.md`
+  and `manifest.json`. Those are qiaomu-package conventions, not this repo's
+  (authoritative gates: `scripts/check.py` + docs-sync catalog pages). Record
+  the two failures as an intentional schema deviation; do not add the files.
 
 ## resource_boundary_check default budget vs reality
 
