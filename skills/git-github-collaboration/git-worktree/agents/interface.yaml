@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Worktree"
+  short_description: "Create, list, and safely remove isolated Git worktrees under one convention root"
+  default_prompt: "Use $git-worktree to inspect the repository, resolve one convention root, verify that the repo .gitignore excludes that root, then plan a new-branch worktree, list trees, remove an owned tree, or show prune candidates. Do not adopt foreign worktrees, check out an existing branch, copy secrets, commit, or open a pull request."

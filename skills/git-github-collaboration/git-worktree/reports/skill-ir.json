@@ -1,0 +1,69 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-08-17",
+  "package": {
+    "name": "git-worktree",
+    "version": null,
+    "owner": null,
+    "maturity_tier": null,
+    "lifecycle_stage": null,
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Manage isolated Git worktrees under one repository convention root. Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization. Checks that the repo .gitignore excludes the worktree root before any git worktree add. Use for 创建 worktree, 隔离工作区, 并行分支 checkout, list/remove/prune worktrees, .worktrees 规范, gitignore 检查. Not for commits (git-commit), pull requests or releases (gh-pr-release), GitHub templates (gh-bootstrap), or adopting someone else's worktree.",
+    "job_to_be_done": "Manage isolated Git worktrees under one repository convention root. Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization. Checks that the repo .gitignore excludes the worktree root before any git worktree add. Use for 创建 worktree, 隔离工作区, 并行分支 checkout, list/remove/prune worktrees, .worktrees 规范, gitignore 检查. Not for commits (git-commit), pull requests or releases (gh-pr-release), GitHub templates (gh-bootstrap), or adopting someone else's worktree.",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [],
+    "should_not_trigger": [],
+    "near_neighbor": []
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\convention.md",
+      "references\\safety.md"
+    ],
+    "scripts": [
+      "scripts\\worktree_convention.py"
+    ],
+    "evals": [
+      "evals\\evals.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\secret-scan.md",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": null,
+    "adapter_targets": [],
+    "activation": {},
+    "execution": {},
+    "trust": {},
+    "permissions": {},
+    "degradation": {}
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

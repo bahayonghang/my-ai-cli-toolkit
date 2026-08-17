@@ -1,0 +1,18 @@
+{
+  "ok": false,
+  "ran_at": "2026-08-17",
+  "command": "python -X utf8 C:/Users/lyh/.grok/skills/qiaomu-meta/scripts/validate_skill.py skills/git-github-collaboration/git-worktree",
+  "failures": [
+    "missing required file: README.md",
+    "missing required file: manifest.json",
+    "agents/interface.yaml missing compatibility.adapter_targets"
+  ],
+  "warnings": [
+    "adapter target not declared: openai",
+    "adapter target not declared: claude",
+    "adapter target not declared: generic",
+    "adapter target not declared: agent-skills-compatible",
+    "evals/trigger_cases.json missing; recommended for production/library packages"
+  ],
+  "interpretation": "Intentional suite schema deviation. This catalog uses agents/interface.yaml without adapter_targets, evals/evals.json instead of evals/trigger_cases.json, and no per-skill README.md or manifest.json. Repository gate is just skills-check, which passed."
+}
