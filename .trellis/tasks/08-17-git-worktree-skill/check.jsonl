@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "检查 frontmatter、<skill-dir>、evals 与 docs catalog"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "检查验证门和测试覆盖"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "检查 helper 退出码"}
+{"file": ".trellis/spec/backend/skill-helper-command-contracts.md", "reason": "检查 ignore 门、dry-run、Windows subprocess"}
+{"file": ".trellis/tasks/08-17-git-worktree-skill/research/prior-art-research.md", "reason": "检查是否误引入密钥复制、兄目录默认、第三方 CLI、adopt"}
+{"file": ".trellis/tasks/08-17-git-worktree-skill/research/review-response.md", "reason": "检查 4 个 P0 与 3 个规划缺口是否仍未闭合"}
+{"file": ".trellis/tasks/08-17-git-worktree-skill/research/qiaomu-gates.md", "reason": "检查 Governed 证据与 missing evidence 标签"}

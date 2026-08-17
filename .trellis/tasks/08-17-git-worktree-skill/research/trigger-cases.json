@@ -1,0 +1,34 @@
+{
+  "note": "git-worktree 0.1.0 trigger boundary. Domain concept table replaces qiaomu-meta default skill-authoring concepts.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["worktree_noun", "isolate", "create_action", "ignore_gate"],
+  "positive_concepts": {
+    "worktree_noun": ["worktree", "worktrees", "工作区"],
+    "isolate": ["isolated", "isolation", "隔离"],
+    "create_action": ["create", "创建"],
+    "lifecycle": ["list", "remove", "prune", "清理"],
+    "ignore_gate": ["gitignore", ".gitignore", "check-ignore"],
+    "convention_root": [".worktrees", "convention root", "规范"]
+  },
+  "negative_patterns": ["pull request", "github release", "conventional commit", "提交信息"],
+  "should_trigger": [
+    {"text": "Create an isolated worktree for a new login feature.", "family": "create-en"},
+    {"text": "帮我创建一个隔离工作区 worktree。", "family": "create-zh"},
+    {"text": "List the git worktrees and show the convention root.", "family": "list"},
+    {"text": "Remove the owned worktree for feat/login.", "family": "remove"},
+    {"text": "Check .gitignore then create a worktree under .worktrees.", "family": "ignore-create"},
+    {"text": "Show prune candidates for stale worktrees.", "family": "prune"},
+    {"text": "按 .worktrees 规范创建隔离工作区。", "family": "convention-zh"}
+  ],
+  "should_not_trigger": [
+    {"text": "帮我把这些改动提交了，写一条 Conventional Commit。", "family": "commit"},
+    {"text": "Open a pull request and merge it.", "family": "pr"},
+    {"text": "Publish the GitHub Release for v1.2.0.", "family": "release"},
+    {"text": "Initialize GitHub issue templates for this repo.", "family": "bootstrap"}
+  ],
+  "near_neighbor": [
+    {"text": "Fix the red PR CI and prepare the GitHub Release assets.", "family": "pr-release"},
+    {"text": "Draft a commit message for the staged auth fix.", "family": "commit-draft"},
+    {"text": "Adopt someone else's checkout and take ownership.", "family": "adopt"}
+  ]
+}
