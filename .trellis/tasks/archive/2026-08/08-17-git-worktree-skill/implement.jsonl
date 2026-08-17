@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "frontmatter、<skill-dir>、evals 双系统、docs-sync、脚本编码"}
+{"file": ".trellis/spec/backend/skill-helper-command-contracts.md", "reason": "helper argv、Windows git 解析、UTF-8、dry-run 无副作用"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "预期失败走 stderr 与退出码"}
+{"file": ".trellis/tasks/08-17-git-worktree-skill/research/prior-art-research.md", "reason": "keep/adapt/reject 与已注册根、ownership 取舍"}
+{"file": ".trellis/tasks/08-17-git-worktree-skill/research/review-response.md", "reason": "Codex 审阅逐条校验结论，实施不得回退到旧 Production/双门手写匹配"}
+{"file": ".trellis/tasks/08-17-git-worktree-skill/research/qiaomu-gates.md", "reason": "Governed 必做门与 schema deviation 边界"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "helper/测试形状对齐 git-commit，避免第二套调用约定"}

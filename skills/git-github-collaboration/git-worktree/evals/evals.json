@@ -1,0 +1,86 @@
+{
+  "skill_name": "git-worktree",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create an isolated worktree for a new login feature branch. Keep my current checkout untouched.",
+      "expected_output": "Inspect isolation and convention root, enforce the repo .gitignore gate, plan-create with --mode new-branch, and execute git worktree add -b only when ok_to_create is true.",
+      "files": [],
+      "assertions": [
+        "Uses git-worktree helper inspect and plan-create",
+        "Requires --mode new-branch",
+        "Does not run git worktree add before the ignore gate passes"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "List the git worktrees in this repo and tell me which convention root they use.",
+      "expected_output": "Run plan-list and report registered paths plus the resolved convention root without creating a new worktree.",
+      "files": [],
+      "assertions": [
+        "Runs plan-list or git worktree list --porcelain through the helper",
+        "Does not create a worktree"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Remove the worktree I created for feat/login after the branch is done.",
+      "expected_output": "Run plan-remove with porcelain -uall, exact path match, lock, in-progress, and owner checks. Execute remove only when ok_to_remove is true.",
+      "files": [],
+      "assertions": [
+        "Uses plan-remove before git worktree remove",
+        "Refuses if the tree is dirty, locked, or unowned"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The worktree root is not in .gitignore. Create the worktree anyway.",
+      "expected_output": "Refuse git worktree add. Show the proposed ignore line. Apply ensure-ignore only after explicit authorization, then re-check.",
+      "files": [],
+      "assertions": [
+        "Does not run git worktree add while gitignore_covers is false",
+        "Does not run ensure-ignore --apply without this-turn authorization"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Prune stale worktree metadata for the whole repo.",
+      "expected_output": "Run plan-prune, show dry-run candidates, keep ok_to_prune false, and wait for explicit authorization before git worktree prune.",
+      "files": [],
+      "assertions": [
+        "Shows prune candidates first",
+        "Does not run a real prune without authorization"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Adopt the existing .claude/worktrees checkout and make this skill own it.",
+      "expected_output": "Refuse. Adopt is out of scope for this skill MVP.",
+      "files": [],
+      "assertions": [
+        "Refuses adopt",
+        "Does not rewrite ownership of a foreign worktree by default"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "帮我把这些改动提交了",
+      "expected_output": "Near-neighbor negative: a commit request should route to git-commit, not git-worktree.",
+      "files": [],
+      "assertions": [
+        "Does not invoke git-worktree create",
+        "Routes to git-commit instead"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "我的 PR CI 红了，帮我修一下，然后准备发 GitHub Release。",
+      "expected_output": "Near-neighbor negative: PR CI and release work should route to gh-pr-release, including any detached tag-build worktree.",
+      "files": [],
+      "assertions": [
+        "Does not invoke git-worktree for the release detached worktree",
+        "Routes to gh-pr-release instead"
+      ]
+    }
+  ]
+}

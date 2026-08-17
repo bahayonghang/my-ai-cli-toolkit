@@ -1,0 +1,198 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "convention_root",
+    "create_action",
+    "ignore_gate",
+    "isolate",
+    "lifecycle",
+    "worktree_noun"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 14,
+    "passed": 14,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "Create an isolated worktree for a new login feature.",
+        "family": "create-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "create_action",
+          "isolate",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我创建一个隔离工作区 worktree。",
+        "family": "create-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "create_action",
+          "isolate",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "List the git worktrees and show the convention root.",
+        "family": "list",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "convention_root",
+          "lifecycle",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Remove the owned worktree for feat/login.",
+        "family": "remove",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "lifecycle",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Check .gitignore then create a worktree under .worktrees.",
+        "family": "ignore-create",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "convention_root",
+          "create_action",
+          "ignore_gate",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Show prune candidates for stale worktrees.",
+        "family": "prune",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "convention_root",
+          "lifecycle",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "按 .worktrees 规范创建隔离工作区。",
+        "family": "convention-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "convention_root",
+          "create_action",
+          "isolate",
+          "worktree_noun"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "帮我把这些改动提交了，写一条 Conventional Commit。",
+        "family": "commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "conventional commit"
+      },
+      {
+        "prompt": "Open a pull request and merge it.",
+        "family": "pr",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "pull request"
+      },
+      {
+        "prompt": "Publish the GitHub Release for v1.2.0.",
+        "family": "release",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "github release"
+      },
+      {
+        "prompt": "Initialize GitHub issue templates for this repo.",
+        "family": "bootstrap",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "Fix the red PR CI and prepare the GitHub Release assets.",
+        "family": "pr-release",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "github release"
+      },
+      {
+        "prompt": "Draft a commit message for the staged auth fix.",
+        "family": "commit-draft",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Adopt someone else's checkout and take ownership.",
+        "family": "adopt",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

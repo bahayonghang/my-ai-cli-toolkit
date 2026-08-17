@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、34 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、35 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -66,11 +66,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Git / GitHub 协作
 
-`git-github-collaboration` · 3 skills
+`git-github-collaboration` · 4 skills
 
 - [gh-bootstrap](/skills/git-github-collaboration/gh-bootstrap) — Initialize GitHub repository configuration from vetted upstream templates.
 - [gh-pr-release](/skills/git-github-collaboration/gh-pr-release) — Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish confirmed reviews, merge safely, reply/resolve threads, apply selected feedback, fix PR checks, prepare release PRs with version bumps/changelogs, tag merged commits, publish GitHub Releases with verified assets, and diagnose release workflows / 创建或发布 PR、评审与安全合并、回复或解决线程、修复 PR CI、准备版本 PR、打 tag、发布含产物的 GitHub Release、诊断 release CI.
 - [git-commit](/skills/git-github-collaboration/git-commit) — Safely orchestrate Conventional Commits for staged Git changes, or all working-tree changes when the user explicitly asks to include everything.
+- [git-worktree](/skills/git-github-collaboration/git-worktree) — Manage isolated Git worktrees under one repository convention root.
 
 ### 研究、学习与知识
 

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "reviewed_at": "2026-08-17",
+  "capabilities": {
+    "gitignore_write": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "scripts/worktree_convention.py ensure-ignore --apply may append one planned <root>/ line to the repository-root .gitignore after this-turn authorization. It must not stage, commit, delete, or reorder existing rules.",
+      "reason": "A tracked ignore rule is required so worktree contents cannot enter history. Apply is opt-in and restores previous bytes on failure.",
+      "expires_at": "2026-11-17",
+      "evidence": [
+        "SKILL.md",
+        "references/convention.md",
+        "tests/worktree-convention.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must require authorization before file write.",
+        "claude": "Bash may run the helper; --apply still requires this-turn authorization.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to rewrite .gitignore."
+      }
+    },
+    "git_worktree_add": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Execute only the argv from plan-create when ok_to_create is true: git worktree add -b <branch> <path> <start-point>.",
+      "reason": "MVP creates only a new branch in a planned ignored path.",
+      "expires_at": "2026-11-17",
+      "evidence": [
+        "SKILL.md",
+        "references/convention.md",
+        "tests/worktree-convention.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must authorize the git subprocess.",
+        "claude": "Bash is declared; still require ok_to_create before execution.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to create worktrees."
+      }
+    },
+    "git_worktree_remove": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Execute only the argv from plan-remove when ok_to_remove is true. Refuse dirty, locked, in-progress, submodule, unowned, or unregistered paths.",
+      "reason": "Removal discards a checkout and must stay owner-scoped.",
+      "expires_at": "2026-11-17",
+      "evidence": [
+        "references/safety.md",
+        "tests/worktree-convention.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must authorize removal.",
+        "claude": "Bash is declared; still require ok_to_remove.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to remove worktrees."
+      }
+    },
+    "git_worktree_prune": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "The helper may run git worktree prune --dry-run. A real prune requires this-turn authorization after the candidate list is shown.",
+      "reason": "prune is repository-global and can drop metadata for worktrees this skill did not create.",
+      "expires_at": "2026-11-17",
+      "evidence": [
+        "references/safety.md",
+        "tests/worktree-convention.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must authorize prune separately from list.",
+        "claude": "Bash is declared; still require displayed candidates plus authorization.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to prune worktrees."
+      }
+    }
+  }
+}
