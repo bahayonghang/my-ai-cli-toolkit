@@ -1375,3 +1375,39 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Status
 
 [OK] **Completed**
+
+
+## Session 42: Create git-worktree skill
+
+**Date**: 2026-08-17
+**Task**: Create git-worktree skill
+**Branch**: `dev`
+
+### Summary
+
+新增 git-worktree 规范 skill，升级 Trellis 运行时至 0.6.15，并记录任务规划产物。
+
+### Main Changes
+
+- 新增 skills/git-github-collaboration/git-worktree 与 docs catalog
+- 升级 .trellis 运行时至 0.6.15
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3f36ec7c` | (see git log) |
+| `b0e79ab8` | (see git log) |
+| `a6382292` | (see git log) |
+
+### Testing
+
+- [OK] just ci; helper 16/16; trigger eval 14/14
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无
