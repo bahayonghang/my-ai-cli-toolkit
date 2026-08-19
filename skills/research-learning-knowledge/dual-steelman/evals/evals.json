@@ -1,0 +1,59 @@
+{
+  "skill_name": "dual-steelman",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "用钢人论证帮我想想：我现在月薪 3 万，要不要辞职去做独立开发？手里有 40 万存款。",
+      "expected_output": "Runs steps 1-4 in one reply: restates the real problem with the user's concrete numbers, steelmans both sides, names the crux and decisive variables, asks exactly one question, then stops.",
+      "files": [],
+      "assertions": [
+        "Restates the real underlying problem, reusing 3 万 and 40 万 instead of abstracting them away",
+        "Both the pro side and the con side are argued at full strength; neither side is a strawman or a symmetric filler list",
+        "States the crux type and 1-2 decisive variables as flip conditions",
+        "Ends the turn with exactly one key question and gives no verdict, lean, or hint in the same turn"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "公司司庆日在三个时间点里纠结：2023 年公众号第一篇文章、2024 年公司注册、2025 年主体团队入职。选哪个？",
+      "expected_output": "Multi-option variant: each candidate gets its own strongest-support and strongest-objection block, followed by a cross-comparison, one key question, then a hard stop.",
+      "files": [],
+      "assertions": [
+        "Every candidate date receives both a strongest-support and a strongest-objection argument",
+        "Includes a cross-candidate comparison and decisive variables, not just per-option lists",
+        "Asks exactly one question and does not reveal a preferred candidate in the same turn"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "（承接上一轮的关键一问）我更希望大家纪念的是最初连接人的那个起点。",
+      "expected_output": "Step 5: a committed one-sided verdict grounded in the user's answer, decisive reasons from the earlier steelman, and 2-4 concrete next actions.",
+      "files": [],
+      "assertions": [
+        "Picks exactly one side or candidate; no both-are-fine or it-depends closing",
+        "Reasons cite the decisive steelman points and explain why the opposing strongest case loses under the user's answer",
+        "Gives 2-4 concrete, ordered next actions specific to the user's situation"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "圆桌讨论：让几位思想家聊聊 AI 是否拥有真正的创造力。",
+      "expected_output": "Routing-negative: multi-figure open-topic exploration should go to roundtable, not the dual-steelman decision protocol.",
+      "files": [],
+      "assertions": [
+        "Does NOT run the restate/steelman/one-question decision protocol",
+        "Routes to or behaves as a multi-figure roundtable discussion"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我把这段 Python 函数重构得更易读一些。",
+      "expected_output": "Routing-negative: a direct execution task; the assistant should just do the work instead of steelmanning it.",
+      "files": [],
+      "assertions": [
+        "Does NOT restate the request as a decision or produce pro/con steelman blocks",
+        "Directly performs or plans the refactor as a normal coding task"
+      ]
+    }
+  ]
+}
