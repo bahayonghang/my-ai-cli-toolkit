@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "本仓库 skill 的强制契约：<skill-dir> 占位路径、frontmatter 必填键、allowed-tools 只读白名单、脚本输出编码与换行"}
+{"file": ".trellis/spec/guides/index.md", "reason": "guides 索引，定位其余通用约束"}
+{"file": "skills/AGENTS.md", "reason": "skills 子树规则：目录形状、frontmatter 顶层字段、allowed-tools 写法、验证命令"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "类别房规：evals schema、interface 契约、自包含规则、code-auditor 与 code-quality-review 的路由分工"}

@@ -1411,3 +1411,25 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Next Steps
 
 - 无
+
+
+## Session 43: academic-figure 默认 16:9 与曲线留白
+
+**Date**: 2026-08-20
+**Task**: academic-figure 默认 16:9 与曲线留白
+**Branch**: `dev`
+
+### Summary
+
+将 academic-figure 升至 1.2.0：默认 16:9 画布、曲线 y 轴 12% 留白、论文路径禁止过大字号。新增 layout-defaults.md 与 visual_qa WARN。已归档 08-20-academic-figure-layout-defaults。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6d05f64e` | (see git log) |
+| `40d5cd7d` | (see git log) |
+
+### Status
+
+[OK] **Completed**
