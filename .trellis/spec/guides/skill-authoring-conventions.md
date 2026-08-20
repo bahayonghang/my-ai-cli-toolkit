@@ -270,3 +270,37 @@ manual inventory and deterministic safety tests."
   features) go in a reference file with a `Last verified: <date> against <url>`
   line; verify against official docs before repeating a number (the `@import`
   depth was 4, not the 5 both files claimed).
+
+## Marker scanners must exclude their own documentation
+
+> Distilled from the trellis-plan-review precheck script (2026-08-20).
+
+- A bundled script that scans documents for template markers (`TBD`,
+  `_example`, `[PLACEHOLDER]`, `TODO`, `待补`) will flag the very docs that
+  document the marker list. The skill's own `design.md` listed its blocking set
+  and self-reported 10 blocking items on the first self-test.
+- Rules for any marker/placeholder scanner:
+  1. In Markdown, strip inline code spans (`` `[^`]*` ``) before matching. An
+     occurrence inside backticks is a discussion of the marker, not a surviving
+     marker.
+  2. Detect structured markers structurally, not by substring. A `.jsonl`
+     template line is `json.loads(line)` plus an `_example` key test, never
+     `"_example" in line`.
+  3. Whitelist the files to scan (the contract artifacts). Do not `rglob` the
+     whole directory: note/research subtrees are not templates and produce
+     false positives.
+  4. Split the marker set into blocking and note tiers. `TBD` / `_example` are
+     unreplaced template text; a bare `TODO` can legitimately appear in prose
+     that discusses an existing code comment.
+- Always self-test a scanner against the skill's own artifacts before shipping.
+  The self-test is the cheapest case where the scanner's input contains its own
+  rule text.
+
+## Repo-wide filename search needs a worktree exclusion
+
+- `rglob` over the repository root reaches `.claude/worktrees/<name>/...`, so a
+  filename search returns each hit twice (once real, once inside a worktree
+  copy) and an "ambiguous match" heuristic misfires. Add `worktrees` to the
+  skip-directory set alongside `node_modules`, `target`, `dist`, and
+  `__pycache__`.
+

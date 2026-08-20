@@ -103,16 +103,17 @@ python "<skill-dir>/scripts/plan_precheck.py" <task-dir> [--repo-root <path>] [-
 
 四类检查与输出字段：
 
-| 检查         | 输出字段       | 判定                                                                          |
-| ------------ | -------------- | ----------------------------------------------------------------------------- |
-| 产物存在性   | `artifacts`    | `prd.md` 缺失为阻断；`design.md` / `implement.md` 缺失记为 `lightweight` 提示 |
-| 模板占位残留 | `placeholders` | `*.jsonl` 的 `_example` 行、`TBD`、`TODO`、`[PLACEHOLDER]`、`待补`            |
-| 引用解析     | `citations`    | 抽取 `path:line` 与 `path:line-line`，报文件不存在、行号越界                  |
-| 编号交叉引用 | `identifiers`  | `R\d+` / `AC\d+` 的定义集与引用集之差                                         |
+| 检查         | 输出字段       | 判定                                                                                     |
+| ------------ | -------------- | ---------------------------------------------------------------------------------------- |
+| 产物存在性   | `artifacts`    | `prd.md` 缺失为阻断；`design.md` / `implement.md` 缺失记为 `lightweight` 提示            |
+| 模板占位残留 | `placeholders` | 阻断集 `_example`、`TBD`、`[PLACEHOLDER]`、`待补`、`待填`；提示集 `TODO`、`FIXME`、`???` |
+| 引用解析     | `citations`    | 抽取 `path:line` 与 `path:line-line`，报文件不存在、行号越界                             |
+| 编号交叉引用 | `identifiers`  | `R\d+` / `AC\d+` 的定义集与引用集之差                                                    |
 
 引用抽取用正则匹配「反引号内或裸露的 `路径:行号`」形状，路径需含 `/` 或已知扩展名，
 避免把 `styles.css:1808` 之外的 `10:30` 之类时间串误判。解析结果分
-`resolved` / `missing_file` / `line_out_of_range` / `unresolvable`，最后一类不计入阻断。
+`resolved` / `missing_file` / `line_out_of_range` / `ambiguous`，最后一类不计入阻断。
+`resolved` 只表示文件找到且行号在范围内，不表示该行的构造与文本描述一致；构造是否对应由 Pass 1 判断。
 
 脚本只做能被字符串与文件系统判定的事。断言真伪、机制是否存在、算式是否正确都不在脚本内。
 
