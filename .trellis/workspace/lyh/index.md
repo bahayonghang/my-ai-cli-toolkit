@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 43
+- **Total Sessions**: 44
 - **Last Active**: 2026-08-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1435 | Active |
+| `journal-1.md` | ~1457 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 44 | 2026-08-20 | 审阅 font-picker 规划并新建 trellis-plan-review skill | `db075216`, `95c09afb` | `dev` |
 | 43 | 2026-08-20 | academic-figure 默认 16:9 与曲线留白 | `6d05f64e`, `40d5cd7d` | `dev` |
 | 42 | 2026-08-17 | Create git-worktree skill | `3f36ec7c`, `b0e79ab8`, `a6382292` | `dev` |
 | 41 | 2026-08-16 | academic-figure 1.1.0：整合 7 个开源 SCI 绘图项目能力 | `55931386`, `f9b635ea` | `dev` |
