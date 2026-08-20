@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository organizes content directly at the root: `skills/` (installable skill catalog), `platforms/` (platform-scoped commands/agents/prompts/rules), `platforms/claude/hooks/` (Claude Code hook assets), and `scripts/` (shared validation/maintenance scripts). The old `mcs/` Rust workspace, repo-local platform mapping file, and large archived skill bundles have been removed.
 
-Before editing a scoped area, check any nested guidance file that still exists for that subtree, such as `platforms/codex/rules/AGENTS.md`.
+Before editing a scoped area, check any nested guidance file that still exists for that subtree, such as `platforms/codex/AGENTS.md`.
 
 ## Core commands
 

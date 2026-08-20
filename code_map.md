@@ -5,7 +5,7 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 ## Top-Level Routing
 - `skills/<category>/<skill-name>/` — first-party installable skills; start here for skill behavior, frontmatter, bundled scripts, tests, references, and evals.
 - `platforms/<platform>/` — platform-scoped source assets such as commands, agents, prompts, rules, and hooks.
-- `platforms/codex/` — Codex agent/rule templates; start with `platforms/codex/code_map.md` before editing this subtree.
+- `platforms/codex/` — Codex native subagent templates; start with `platforms/codex/code_map.md` before editing this subtree.
 - `platforms/claude/hooks/` — Claude Code runtime hook assets and hook JSON.
 - `scripts/` — shared repository validation and maintenance scripts.
 - `docs/` — VitePress documentation site and generated catalog pages; `docs/scripts/sync_docs_catalog.py` owns catalog synchronization.
@@ -18,7 +18,6 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 - `scripts/check.py` — skill metadata validator used by `just skills-check`.
 - `docs/scripts/sync_docs_catalog.py` — scans `skills/` and `platforms/` to generate docs catalog/sidebar content.
 - `platforms/codex/agents/*.toml` — reusable Codex native subagent templates.
-- `platforms/codex/rules/AGENTS.md` — distributable Codex rule artifact; treat as source content when maintaining this repository.
 
 ## Search Anchors
 - `name:` in `SKILL.md` — skill identifier/frontmatter entry point.

@@ -506,10 +506,6 @@ export const zhCommandsSidebar = [
       {
         "text": "Root files (2)",
         "link": "/commands#codex"
-      },
-      {
-        "text": "Rules (1)",
-        "link": "/commands#codex"
       }
     ]
   }
@@ -566,10 +562,6 @@ export const enCommandsSidebar = [
       },
       {
         "text": "Root files (2)",
-        "link": "/en/commands#codex"
-      },
-      {
-        "text": "Rules (1)",
         "link": "/en/commands#codex"
       }
     ]

@@ -96,10 +96,6 @@
 - `platforms/codex/AGENTS.md`
 - `platforms/codex/code_map.md`
 
-#### Rules
-
-- `platforms/codex/rules/AGENTS.md`
-
 Codex 可复用工作流优先使用 `skills/` 中的 `$skill-name` 入口，例如 `$archive-planning`；`platforms/codex/prompts/` 仅保留遗留或平台专用提示资产。
 
 ## 修改后验证

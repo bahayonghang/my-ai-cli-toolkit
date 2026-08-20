@@ -96,10 +96,6 @@ Platform content lives under `platforms/<platform>/`. Each platform consumes con
 - `platforms/codex/AGENTS.md`
 - `platforms/codex/code_map.md`
 
-#### Rules
-
-- `platforms/codex/rules/AGENTS.md`
-
 Reusable Codex workflows should prefer `$skill-name` entries under `skills/`, such as `$archive-planning`; `platforms/codex/prompts/` is only for legacy or platform-specific prompt assets.
 
 ## Validation after changes
