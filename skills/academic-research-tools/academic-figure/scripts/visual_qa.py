@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import io
 import logging
+import math
 import os
 import sys
 import warnings
@@ -68,6 +69,11 @@ if sys.platform == "win32":
 
 SEVERITY = {"INFO": 0, "WARN": 1, "FAIL": 2}
 _GLYPH_MARKERS = ("missing from", "Glyph", "findfont")
+# Warn below the 0.12 contract in layout-defaults.md so tick rounding is not a
+# false positive. Plot-box fractions match that file.
+_HEADROOM_WARN_FRAC = 0.08
+_AXES_WIDTH_FRAC = 0.68
+_AXES_HEIGHT_FRAC = 0.58
 
 
 def _ensure_parent(path: str) -> None:
@@ -155,6 +161,112 @@ def _ticklabels_overlap(labels, renderer, axis: str, tol: float) -> bool:
     return any(a.y1 - b.y0 > tol for a, b in zip(boxes, boxes[1:]))
 
 
+def _is_finite(value) -> bool:
+    try:
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _cartesian_line_axes(ax) -> bool:
+    name = getattr(ax, "name", "")
+    if name in {"polar", "3d"}:
+        return False
+    if getattr(ax, "images", None):
+        return False
+    return True
+
+
+def _finite_y_values(ax) -> list[float]:
+    values: list[float] = []
+    for line in ax.get_lines():
+        try:
+            ydata = line.get_ydata()
+        except Exception:
+            continue
+        for v in ydata:
+            if _is_finite(v):
+                values.append(float(v))
+    for artist in ax.collections:
+        get_paths = getattr(artist, "get_paths", None)
+        if get_paths is None:
+            continue
+        try:
+            paths = get_paths()
+        except Exception:
+            continue
+        for path in paths:
+            verts = getattr(path, "vertices", None)
+            if verts is None:
+                continue
+            for point in verts:
+                if len(point) < 2:
+                    continue
+                if _is_finite(point[1]):
+                    values.append(float(point[1]))
+    return values
+
+
+def _y_headroom_issues(fig) -> list[tuple[str, str]]:
+    """WARN when a linear line/area series kisses the y limits."""
+    issues: list[tuple[str, str]] = []
+    tight = 0
+    for ax in fig.axes:
+        if not _cartesian_line_axes(ax):
+            continue
+        if ax.get_yscale() != "linear":
+            continue
+        ys = _finite_y_values(ax)
+        if len(ys) < 2:
+            continue
+        y0, y1 = ax.get_ylim()
+        span = float(y1) - float(y0)
+        if span <= 0:
+            continue
+        data_min = min(ys)
+        data_max = max(ys)
+        lower = (data_min - float(y0)) / span
+        upper = (float(y1) - data_max) / span
+        if lower < _HEADROOM_WARN_FRAC or upper < _HEADROOM_WARN_FRAC:
+            tight += 1
+    if tight:
+        issues.append(
+            (
+                "WARN",
+                f"{tight} axes have a line or area series that sits too close "
+                "to the y limits. Call ax.margins(y=0.12) after plotting "
+                "(see references/layout-defaults.md).",
+            )
+        )
+    return issues
+
+
+def _plot_box_issues(fig) -> list[tuple[str, str]]:
+    """WARN when a single cartesian panel is crowded out by labels."""
+    if len(fig.axes) != 1:
+        return []
+    ax = fig.axes[0]
+    if not _cartesian_line_axes(ax):
+        return []
+    fw = float(fig.bbox.width)
+    fh = float(fig.bbox.height)
+    if fw <= 0 or fh <= 0:
+        return []
+    width_frac = float(ax.bbox.width) / fw
+    height_frac = float(ax.bbox.height) / fh
+    if width_frac >= _AXES_WIDTH_FRAC and height_frac >= _AXES_HEIGHT_FRAC:
+        return []
+    return [
+        (
+            "WARN",
+            "The data rectangle is too small relative to the canvas "
+            f"(axes {width_frac:.2f} of figure width, {height_frac:.2f} of "
+            "height). Reduce label and tick sizes; paper figures use 10-11 pt "
+            "without a journal card (see references/layout-defaults.md).",
+        )
+    ]
+
+
 def audit_layout(
     fig, clip_tol_px: float = 2.0, overlap_tol_px: float = 1.0
 ) -> list[tuple[str, str]]:
@@ -164,7 +276,9 @@ def audit_layout(
 
     1. missing glyph (FAIL) - the font does not cover a character;
     2. clipped text (WARN) - a title, label, or annotation leaves the canvas;
-    3. tick-label overlap (WARN) - two adjacent tick boxes intersect.
+    3. tick-label overlap (WARN) - two adjacent tick boxes intersect;
+    4. y-axis headroom (WARN) - a linear line/area series kisses the y limits;
+    5. plot-box fraction (WARN) - labels crowd out a single cartesian panel.
 
     The audit only measures. It does not change the figure.
     """
@@ -257,6 +371,8 @@ def audit_layout(
             )
         )
 
+    issues.extend(_y_headroom_issues(fig))
+    issues.extend(_plot_box_issues(fig))
     return issues
 
 
@@ -292,9 +408,10 @@ def render_preview(fig_or_path, out_png: str = "_preview.png", dpi: int = 150) -
 def print_report(issues: list[tuple[str, str]]) -> str:
     """Print the audit result. Return the verdict: PASS, INFO, WARN, or FAIL."""
     if not issues:
-        print("  [PASS] No missing glyph, clipped text, or tick overlap.")
+        print("  [PASS] No missing glyph, clipped text, tick overlap, "
+              "y-headroom, or plot-box issues.")
         print(
-            "  >>> Now read the preview PNG and check the eight perceptual "
+            "  >>> Now read the preview PNG and check the ten perceptual "
             "items in references/visual-review.md."
         )
         return "PASS"

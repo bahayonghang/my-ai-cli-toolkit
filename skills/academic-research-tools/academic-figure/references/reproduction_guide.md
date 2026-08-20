@@ -98,5 +98,7 @@ plt.close(fig)
 
 - **Aspect ratio wrong**: always measure original px first, then set figsize = (W/100, H/100) or maintain ratio
 - **Fonts too large**: match font size ratio to original figure size; if original is small (5" wide), use fontsize=9-10
-- **Too much whitespace**: use `ax.set_ylim(content_bottom, content_top)` + `bbox_inches='tight'`
+- **Too much whitespace (from-image only)**: match the source `ylim`. For a new
+  figure, use the canvas and y-axis headroom in `layout-defaults.md`; do not
+  set `ylim` to the data min and max.
 - **Jagged smooth curves**: apply EMA smoothing `alpha=0.95-0.97` before plotting

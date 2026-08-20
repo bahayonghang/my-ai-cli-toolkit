@@ -94,8 +94,9 @@ test("audit_layout returns graded issues for a clean figure", { skip }, () => {
     `sys.path.insert(0, ${JSON.stringify(scriptsDir)})`,
     "import matplotlib.pyplot as plt",
     "from visual_qa import audit_layout",
-    "fig, ax = plt.subplots(figsize=(4, 3))",
+    "fig, ax = plt.subplots(figsize=(8.0, 4.5), layout='constrained')",
     "ax.plot([0, 1, 2], [0, 1, 4])",
+    "ax.margins(y=0.12)",
     'ax.set_xlabel("x")',
     'ax.set_ylabel("y")',
     "issues = audit_layout(fig)",
@@ -118,6 +119,50 @@ test("audit_layout returns graded issues for a clean figure", { skip }, () => {
       `unexpected severity ${severity}`,
     );
   }
+});
+
+test("audit_layout warns when a line series kisses the y limits", { skip }, () => {
+  const code = [
+    "import matplotlib",
+    'matplotlib.use("Agg")',
+    "import sys",
+    `sys.path.insert(0, ${JSON.stringify(scriptsDir)})`,
+    "import matplotlib.pyplot as plt",
+    "from visual_qa import audit_layout",
+    "fig, ax = plt.subplots(figsize=(8.0, 4.5), layout='constrained')",
+    "ax.plot([0, 1, 2], [25.2, 25.5, 25.8])",
+    "ax.set_ylim(25.2, 25.8)",
+    'ax.set_xlabel("t")',
+    'ax.set_ylabel("I")',
+    "issues = audit_layout(fig)",
+    'print("\\n".join("%s:%s" % (s, m) for s, m in issues))',
+  ].join("\n");
+  const result = runCode(code);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /\[?WARN\]?:?.*y limits/i);
+});
+
+test("audit_layout warns when labels crowd out the plot box", { skip }, () => {
+  const code = [
+    "import matplotlib",
+    'matplotlib.use("Agg")',
+    "import sys",
+    `sys.path.insert(0, ${JSON.stringify(scriptsDir)})`,
+    "import matplotlib.pyplot as plt",
+    "from visual_qa import audit_layout",
+    "plt.rcParams.update({'font.size': 32, 'axes.labelsize': 36,",
+    "  'xtick.labelsize': 30, 'ytick.labelsize': 30})",
+    "fig, ax = plt.subplots(figsize=(3.0, 1.7), layout='constrained')",
+    "ax.plot([0, 1, 2], [1.0, 1.1, 1.2])",
+    "ax.margins(y=0.12)",
+    'ax.set_xlabel("Time / min")',
+    'ax.set_ylabel("Current / A")',
+    "issues = audit_layout(fig)",
+    'print("\\n".join("%s:%s" % (s, m) for s, m in issues))',
+  ].join("\n");
+  const result = runCode(code);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /data rectangle is too small/i);
 });
 
 test("a preview of a missing file exits non-zero", { skip }, () => {

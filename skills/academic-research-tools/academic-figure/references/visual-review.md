@@ -23,7 +23,7 @@ and both layers must pass.
 
 | Layer         | Tool                                 | Finds                                                                                       |
 | ------------- | ------------------------------------ | ------------------------------------------------------------------------------------------- |
-| Machine audit | `scripts/visual_qa.py::audit_layout` | Missing glyphs, clipped text, overlapping tick labels                                       |
+| Machine audit | `scripts/visual_qa.py::audit_layout` | Missing glyphs, clipped text, overlapping tick labels, y-axis headroom, plot-box fraction   |
 | Agent review  | The checklist below, read the PNG    | Legend over data, annotation overlap, panel-label alignment, color and grayscale separation |
 
 ## Step 1 — render the preview
@@ -50,7 +50,7 @@ and confirm it in step 3. To see the audit on a deliberately bad layout, run
 
 ## Step 3 — read the preview
 
-Open the PNG with the Read tool and check the eight items one by one. Do not
+Open the PNG with the Read tool and check the ten items one by one. Do not
 scan the image and call it good.
 
 1. **Glyphs.** Boxes instead of CJK characters, minus signs, `±`, `×`, `μ`, `Δ`,
@@ -69,6 +69,10 @@ scan the image and call it good.
    the axis limits.
 8. **Cross-panel consistency.** One variable keeps one color, one marker, and
    one unit; axes that invite comparison share their range.
+9. **Axis headroom.** On a linear cartesian line or area chart, the series does
+   not touch the top or bottom of the axes. Apply `layout-defaults.md`.
+10. **Data over chrome.** Axis labels and tick labels stay smaller than the data
+    rectangle. The plot box occupies most of the canvas (`layout-defaults.md`).
 
 ## Step 4 — fix at the source
 
@@ -84,12 +88,14 @@ Never retouch the preview image.
 | Panel labels misaligned         | Anchor at the axes-fraction (0, 1) corner with one shared point offset (`panel-layout-patterns.md`)          |
 | Panels overlap                  | `layout="constrained"` at figure creation                                                                    |
 | Colors not separable            | Okabe-Ito or the seaborn `colorblind` palette, plus line style or marker (`matplotlib-recipes.md`)           |
-| Data clipped by the axis limits | Widen `set_xlim` / `set_ylim`, or `ax.margins(0.05)`                                                         |
+| Data clipped by the axis limits | Widen `set_xlim` / `set_ylim`, or apply the headroom in `layout-defaults.md`                                 |
+| Curve kisses the y limits       | `ax.margins(y=0.12)` (`layout-defaults.md`); do not set `ylim` to the data min and max                       |
+| Labels crowd out the plot       | Reduce label and tick sizes; do not apply Display-scale 24 pt fonts on a paper figure (`layout-defaults.md`) |
 
 ## Step 5 — render again and re-read
 
 Go back to step 1 after every fix. Stop when the machine audit reports no `FAIL`
-and the eight items pass, or when the user accepts a remaining item.
+and the ten items pass, or when the user accepts a remaining item.
 
 ## Loop discipline
 

@@ -315,9 +315,10 @@ are journal- and library-agnostic and apply on top of any family above.
 - **Direct labels over legends.** For stable line identities, channels, and fixed
   spatial regions, annotate at the line end (`ax.annotate`) instead of a legend —
   it cuts eye travel. Reserve legends for categories that move between panels.
-- **Dynamic y-axis tightening.** When values sit in a narrow band, do not anchor to
-  0–100; set `margin = (vmax - vmin) * 0.1` and `ax.set_ylim(vmin - margin, vmax + margin)`
-  so the effect is visible.
+- **Data-driven y range plus headroom.** When values sit in a narrow band, do not
+  anchor to 0–100. Apply the y-axis headroom in `layout-defaults.md`
+  (`ax.margins(y=0.12)`), so the effect stays visible and the series does not
+  touch the frame.
 - **Alpha-gradient ablation.** Encode an ordered ablation as one hue with rising
   alpha, `alphas = np.linspace(0.2, 1.0, n)`, rather than n unrelated colors.
 - **Hatch for grayscale-safe bars.** Add `hatch` patterns

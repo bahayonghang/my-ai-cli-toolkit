@@ -19,7 +19,7 @@ Create, advise on, or audit academic figures in four modes.
 | --- | --- |
 | Name | `academic-figure` |
 | Category | `academic-research-tools` (Academic Research Tools) |
-| Version | `1.1.0` |
+| Version | `1.2.0` |
 | Tags | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication`, `reproduction`, `paper-style`, `from-image`, `chart-advisor`, `figure-audit`, `visual-qa`, `pubfig`, `reference-gallery` |
 
 ## Install command
@@ -35,7 +35,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill academic-figu
 | `skills/academic-research-tools/academic-figure/agents` | directory | 1 | Companion agents |
 | `skills/academic-research-tools/academic-figure/assets` | directory | 10 | Assets |
 | `skills/academic-research-tools/academic-figure/evals` | directory | 1 | Evaluation samples |
-| `skills/academic-research-tools/academic-figure/references` | directory | 29 | Reference material |
+| `skills/academic-research-tools/academic-figure/references` | directory | 30 | Reference material |
 | `skills/academic-research-tools/academic-figure/scripts` | directory | 12 | Executable scripts |
 | `skills/academic-research-tools/academic-figure/tests` | directory | 3 | Automated tests |
 

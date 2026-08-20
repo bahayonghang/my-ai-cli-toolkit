@@ -19,7 +19,7 @@ Create, advise on, or audit academic figures in four modes.
 | --- | --- |
 | 名称 | `academic-figure` |
 | 分类 | `academic-research-tools` (学术研究工具) |
-| 版本 | `1.1.0` |
+| 版本 | `1.2.0` |
 | 标签 | `academic-figures`, `matplotlib`, `seaborn`, `plotly`, `ieee`, `elsevier`, `nature`, `publication`, `reproduction`, `paper-style`, `from-image`, `chart-advisor`, `figure-audit`, `visual-qa`, `pubfig`, `reference-gallery` |
 
 ## 安装命令
@@ -35,7 +35,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill academic-figu
 | `skills/academic-research-tools/academic-figure/agents` | 目录 | 1 | 配套 agent |
 | `skills/academic-research-tools/academic-figure/assets` | 目录 | 10 | 素材资源 |
 | `skills/academic-research-tools/academic-figure/evals` | 目录 | 1 | 评测样例 |
-| `skills/academic-research-tools/academic-figure/references` | 目录 | 29 | 引用资料 |
+| `skills/academic-research-tools/academic-figure/references` | 目录 | 30 | 引用资料 |
 | `skills/academic-research-tools/academic-figure/scripts` | 目录 | 12 | 可执行脚本 |
 | `skills/academic-research-tools/academic-figure/tests` | 目录 | 3 | 自动化测试 |
 

@@ -26,7 +26,7 @@ reviewed 2026-08-16).
 | Core conclusion             | A one-sentence claim exists and every panel maps to it                                                                                      |
 | Archetype                   | The figure has a declared archetype and panel hierarchy                                                                                     |
 | Library + style consistency | One resolved library + journal style produced all plotting, previews, exports, and QA renders — no cross-library mixing                     |
-| Final size                  | Width matches the resolved `journal-specs.md` card (single- or double-column); height is within the journal limit                           |
+| Final size                  | Width matches the resolved `journal-specs.md` card (single- or double-column); default height is 16:9 of that width (`layout-defaults.md`) and stays within the journal limit |
 | Text size                   | Body/tick/legend text is at least the card's minimum at final size (do not shrink below it)                                                 |
 | Panel labels                | Lowercase, bold, near top-left, at the card's panel-label size; consistent across all panels                                                |
 | Editable text               | Vector text stays selectable/editable (`svg.fonttype="none"`, `pdf.fonttype=42`); no outlined text unless unavoidable                       |
@@ -105,7 +105,7 @@ baseline definition:
 
 Run the loop in `visual-review.md` **before** the export block below: render a
 PNG preview, run the machine audit in `<skill-dir>/scripts/visual_qa.py`, read
-the preview against the eight perceptual items, fix at the source, and render
+the preview against the ten perceptual items, fix at the source, and render
 again. A missing-glyph `FAIL` blocks the export. Three rounds is the limit.
 
 ## Export checks
