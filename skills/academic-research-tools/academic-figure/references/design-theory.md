@@ -24,7 +24,9 @@ figure, or when you need the reasoning behind a semantic color role.
 - Both tiers hide the top and right spines and use frameless legends.
 - **Journal exception.** The journal cards put body text between 5 and 10 pt.
   The display tier is three to five times that size, so it never applies to a
-  submission figure.
+  submission figure. A generic paper figure with no card uses 10–11 pt
+  (`layout-defaults.md`). Do not apply Display 24 pt or Compact 15–16 pt unless
+  the user asked for a poster or a slide.
 - Declare a font fallback stack, because Helvetica is absent on most Windows and
   Linux systems: `["Arial", "Helvetica", "DejaVu Sans"]` in `font.sans-serif`.
 - Turn on `text.usetex` only when the labels need real math and a LaTeX

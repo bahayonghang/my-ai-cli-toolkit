@@ -47,6 +47,11 @@ Template:
 | P17 | Clipped text, or a legend over the data           | A clipped label removes information; a legend over data hides data                            | Build with `layout="constrained"`; move the legend outside the axes or direct-label; rotate long tick labels                   |
 | P18 | Panel labels placed in each axes' own coordinates | Labels do not line up, and mixed `a` and `(a)` reads as careless                              | Anchor every label at the axes-fraction (0, 1) corner and apply one shared point offset (`panel-layout-patterns.md`)           |
 
+P4 applies to proportions and to counts that have a natural zero. It does not
+apply to a continuous metric with no natural zero (loss, current, temperature,
+embedding coordinates). Those series keep a data-driven y range plus the
+headroom in `layout-defaults.md`.
+
 ## Misleading encoding (M1–M7)
 
 | ID  | Do not                                                              | Do this instead                                                                                                                                                                                |

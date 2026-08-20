@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、35 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、37 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -41,7 +41,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 开发工作流
 
-`development-workflows` · 10 skills
+`development-workflows` · 11 skills
 
 - [code-auditor](/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture.
 - [code-quality-review](/skills/development-workflows/code-quality-review) — Run a code quality review focused on maintainability, structure, abstraction quality, and refactoring opportunities.
@@ -51,6 +51,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [html-artifact](/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts (single-file by default, split bundles when oversized) for complex, reviewable, or shareable work outputs.
 - [rust-build-optimization](/skills/development-workflows/rust-build-optimization) — Use when a Rust or Cargo build is slow and the user wants it diagnosed or sped up: profiling compile times with cargo --timings or -Zself-profile, finding whether the bottleneck is dependencies, codegen/LLVM, linking, or one oversized crate, and applying targeted fixes such as faster linkers (lld, mold, wild), incremental compilation, dev/release profile tuning, workspace splitting, Cranelift, the nightly parallel frontend, or CI caching with sccache.
 - [spark](/skills/development-workflows/spark) — Turn an idea into an approved implementation plan before coding — plan-first brainstorming.
+- [trellis-plan-review](/skills/development-workflows/trellis-plan-review) — Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, and reports evidence-backed findings with a verdict. Compares the plan against the real diff once the task has started.
 - [unknowns-first](/skills/development-workflows/unknowns-first) — Diagnose a task before execution when the user may not yet know how to define success.
 - [web-research](/skills/development-workflows/web-research) — 跨平台互联网来源发现、核验与本地归档。.
 
@@ -75,9 +76,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 研究、学习与知识
 
-`research-learning-knowledge` · 5 skills
+`research-learning-knowledge` · 6 skills
 
 - [deep-research-pro](/skills/research-learning-knowledge/deep-research-pro) — Multi-source deep research for current-topic investigation, comparison, and cited report writing.
+- [dual-steelman](/skills/research-learning-knowledge/dual-steelman) — Bidirectional steelman deep-thinking protocol for one pending decision, stance, or contested choice.
 - [humanizer-paper](/skills/research-learning-knowledge/humanizer-paper) — Register-aware academic language polisher for English journal articles and Chinese doctoral dissertations: removes AI-writing tells while keeping academic norms.
 - [literature-mentor](/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇论文综合、对比、找研究空白或批量规范化时改用 paper-workbench。
 - [paper-workbench](/skills/research-learning-knowledge/paper-workbench) — Researcher-profile-driven paper intake and literature workbench for academic workflows.

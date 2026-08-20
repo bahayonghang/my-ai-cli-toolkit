@@ -1,0 +1,106 @@
+{
+  "skill_name": "trellis-plan-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "请深入分析和审阅 .trellis/tasks/08-20-settings-font-picker-repaint 这份规划",
+      "expected_output": "Skill triggers. Locates the task directory (searching other repositories when the path is not in the working repo), reads task.json before the artifacts, runs plan_precheck.py with the <skill-dir> placeholder path, then runs the judgment passes and returns the four-section report: verdict line, numbered findings with severity and evidence, unverified list, sound parts. Edits nothing.",
+      "files": [],
+      "assertions": [
+        "Reads task.json first and uses its status to decide whether the drift pass applies",
+        "Runs the bundled precheck script and reports blocking items before the judgment passes",
+        "Verifies path:line citations against the actual repository instead of accepting them",
+        "Returns a verdict line plus numbered findings, an unverified list, and a sound-parts list",
+        "Does not edit prd.md, design.md, implement.md, the jsonl manifests, or any code",
+        "Does not run task.py start or any state-writing Trellis command"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review the trellis plan under .trellis/tasks/08-19-ssh-remote-host-import before I start implementing. Another agent wrote it.",
+      "expected_output": "Skill triggers and writes the report in English. Traces every acceptance-criterion clause to a requirement and a design mechanism, recomputes any calculation in design.md, cross-checks requirements against out-of-scope and rejected options, and flags criteria whose result depends on an unstated condition.",
+      "files": [],
+      "assertions": [
+        "Writes the report in the language of the request",
+        "Splits each acceptance criterion by clause, not by criterion",
+        "Reports a clause that has a requirement but no design mechanism",
+        "Recomputes calculations and checks their unit sources",
+        "Flags any criterion whose pass/fail result depends on an unstated precondition"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "这个 trellis 任务已经实现完并且提交了，帮我回头审一下当时的规划有没有问题",
+      "expected_output": "Skill triggers and activates the implementation-drift pass because task.json status is not planning. Compares the design.md change list against the real change using read-only git inspection, and classifies undeclared files, undeclared mechanisms, uncovered behavior changes, unimplemented plan items, and silent spec amendments. States that the review is a retrospective record.",
+      "files": [],
+      "assertions": [
+        "Activates the drift pass when task status is not planning",
+        "Uses read-only git commands with -uall for untracked files",
+        "Separates an undeclared change from a defective change: the missing declaration is the defect",
+        "Reports that the review arrived after the change shipped",
+        "Still does not modify any file"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "审阅 .trellis/tasks/08-18-fix-typo-in-readme，这个任务只有 prd.md",
+      "expected_output": "Skill triggers and treats PRD-only as valid for a lightweight task. Does not report the missing design.md and implement.md as defects by themselves. Checks whether the change really is lightweight, and reports the missing design only when the plan changes contracts, adds a data path, or names many files.",
+      "files": [],
+      "assertions": [
+        "Does not report a missing design.md or implement.md as a defect on a lightweight task",
+        "Checks whether the change scope justifies the PRD-only shape",
+        "Skips passes that depend on absent artifacts instead of inventing content",
+        "Keeps the four-section report shape even when the findings list is short"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "这份规划我看着挺好的，你审一下确认没问题就行",
+      "expected_output": "Skill triggers and still runs the passes. Returns an empty findings list when nothing survives verification, rather than manufacturing findings to fill the report. Keeps the unverified list and the blind-spot disclosure.",
+      "files": [],
+      "assertions": [
+        "Returns an empty findings list when no finding has evidence",
+        "Does not manufacture findings to fill the report",
+        "Drops candidate findings that cannot be cited",
+        "Includes the disclosure that an agent reviewing an agent's plan is not an independent second opinion"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "帮我审一下这个分支上的代码改动，看看有没有 bug、安全和性能问题",
+      "expected_output": "Skill does not own this request. The request is a code-diff review with no Trellis planning artifact in scope, so it routes to code-auditor for the full-spectrum review, or to code-quality-review when the user narrows the request to maintainability.",
+      "files": [],
+      "assertions": [
+        "Recognizes the request as a code-diff review, not a planning-artifact review",
+        "Routes to code-auditor for a full-spectrum diff review",
+        "Names code-quality-review as the maintainability-only alternative",
+        "Does not start the Trellis planning-artifact passes"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "这个 trellis 任务的 design.md 还没写，你帮我把它补上，再顺手把 AC 改得更可测一点",
+      "expected_output": "Skill does not own this request. Writing or repairing planning artifacts belongs to the project's own Trellis planning flow. The skill may review an existing plan and report which criteria are untestable, but it does not author or rewrite the artifacts.",
+      "files": [],
+      "assertions": [
+        "Declines to author or rewrite design.md and the acceptance criteria",
+        "Routes plan authoring and repair to the project's Trellis planning flow",
+        "Offers the review of an existing plan as the in-scope alternative",
+        "Does not produce a revised plan in final form"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "审阅规划：AC2 写的是「列表滚动位置和页面滚动位置都不被重置」，需求里只有 R3 说了页面滚动。",
+      "expected_output": "Skill triggers and applies clause-level tracing. Splits AC2 into the list-scroll clause and the page-scroll clause, matches the page-scroll clause to R3, and reports the list-scroll clause as having no requirement and no design mechanism. Gives the routes (add a requirement and a mechanism, or narrow the criterion) without editing the artifact.",
+      "files": [],
+      "assertions": [
+        "Splits the criterion into two clauses and evaluates each one separately",
+        "Reports the uncovered clause even though the criterion looks covered as a whole",
+        "Searches design.md for the mechanism, not only prd.md for the requirement",
+        "Gives available routes instead of a single decision",
+        "Does not edit prd.md or design.md"
+      ]
+    }
+  ]
+}

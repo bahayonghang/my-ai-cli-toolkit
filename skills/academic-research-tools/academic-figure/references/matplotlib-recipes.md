@@ -11,7 +11,7 @@ Every technical claim in this file is grounded in this task's research report
 are collected at the bottom. Numbers that the research traced to a journal are
 labelled as such (e.g. "spec card"); numbers that are presentational defaults
 (line widths, aspect ratios) are labelled as defaults — journals do not mandate
-them, so tune them freely. Anything the research did not establish is marked
+them. Default heights follow `layout-defaults.md` (16:9 of the card width). Anything the research did not establish is marked
 `[missing evidence]`; do not invent it.
 
 ---
@@ -44,7 +44,9 @@ plt.style.use(["science", "ieee", "no-latex"])
 SciencePlots also ships colorblind-safe color cycles you can stack, e.g.
 `bright` (7-color, colorblind-safe) or `std-colors`:
 `plt.style.use(["science", "ieee", "bright"])`. On Windows, LaTeX usually must be
-added to `PATH` manually.
+added to `PATH` manually. After `plt.style.use(...)`, set `figure.figsize` from
+`layout-defaults.md` (card width, 16:9 height). The style sheet would otherwise
+restore a shorter canvas.
 
 ---
 
@@ -65,7 +67,7 @@ OKABE_ITO = ["#E69F00", "#56B4E9", "#009E73", "#F0E442",
 
 # --- IEEE: single 3.5 in / double 7.16 in; ~9-10 pt (old FAQ 8 pt); B/W line art >600 dpi; PS/EPS/PDF ---
 IEEE_RCPARAMS = {
-    "figure.figsize": (3.5, 2.6),      # single-column 3.5 in wide (spec card); height is a default
+    "figure.figsize": (3.5, 1.97),     # single-column 3.5 in wide (spec card); height 16:9 (layout-defaults.md)
     "savefig.dpi": 600,                # IEEE B/W line art >600 dpi (spec card); use 300 for color/grayscale
     "savefig.format": "pdf",           # IEEE prefers vector PS/EPS/PDF (spec card)
     "savefig.bbox": "tight",
@@ -82,7 +84,7 @@ IEEE_RCPARAMS = {
 
 # --- Elsevier: single ~90 mm (3.54 in) / double ~190 mm (7.48 in); 7 pt (sub >=6 pt); line 1000 / halftone 300 / combo 500 dpi; EPS/PDF/TIFF, not PNG ---
 ELSEVIER_RCPARAMS = {
-    "figure.figsize": (3.54, 2.66),    # ~90 mm single column (spec card, secondary-sourced)
+    "figure.figsize": (3.54, 1.99),    # ~90 mm single column (spec card, secondary-sourced); height 16:9 (layout-defaults.md)
     "savefig.dpi": 1000,               # line-art minimum (spec card); 300 halftone / 500 combination
     "savefig.format": "pdf",           # EPS/PDF vector; PNG is NOT accepted by Elsevier (spec card)
     "savefig.bbox": "tight",
@@ -99,7 +101,7 @@ ELSEVIER_RCPARAMS = {
 
 # --- Nature: single 89 mm (3.5 in) / double 183 mm (7.2 in); 5-7 pt, panel labels 8 pt bold; sans-serif Helvetica/Arial; photo >=300 dpi; vector AI/EPS/PDF/SVG ---
 NATURE_RCPARAMS = {
-    "figure.figsize": (3.5, 2.6),      # 89 mm single column (spec card)
+    "figure.figsize": (3.5, 1.97),     # 89 mm single column (spec card); height 16:9 (layout-defaults.md)
     "savefig.dpi": 300,                # photo minimum (spec card); prefer vector for line art
     "savefig.format": "pdf",           # editable vector preferred (spec card)
     "savefig.bbox": "tight",
@@ -124,7 +126,7 @@ def apply_journal_style(journal):
 
 Panel labels for Nature are 8 pt bold (spec card) — set them per-annotation
 (`ax.text(..., fontsize=8, fontweight="bold")`), not via the global `font.size`.
-`figure.figsize` heights and `*.linewidth` above are sensible defaults; the
+`figure.figsize` heights follow the 16:9 default in `layout-defaults.md`; the
 journal-traced numbers are the widths, font sizes, DPI, formats, and fonts.
 
 ### Vector export & font embedding
@@ -185,7 +187,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 with mpl.rc_context(PRESETS["nature"]):     # scoped; global rcParams stay clean
-    fig, ax = plt.subplots(figsize=(3.5, 2.6), layout="constrained")
+    fig, ax = plt.subplots(figsize=(3.5, 1.97), layout="constrained")
     ax.plot(x, y)
     fig.savefig("figure.pdf")
 ```

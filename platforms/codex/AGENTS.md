@@ -8,7 +8,7 @@ This file governs `platforms/codex/**` and narrows the root guidance for Codex p
 ## Local Rules
 - Keep reusable agent templates under `agents/` free of stale hardcoded model names unless a task explicitly requires a pinned model.
 - Prefer inheriting the caller/repo model and setting only role-appropriate reasoning effort and sandbox boundaries.
-- `rules/AGENTS.md` is a distributable rule artifact. When maintaining this repository, edit it as source content; do not let its persona/output rules override the root repository workflow unless the task is specifically to change that exported rule behavior.
+- This subtree currently ships agent templates only. Do not add a nested `rules/AGENTS.md` unless a Codex consumer actually installs it; Cursor applies every `AGENTS.md` as workspace guidance.
 - Keep platform documentation and generated docs aligned when changing public platform paths or descriptions.
 
 ## Verification

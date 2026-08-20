@@ -34,7 +34,7 @@ tags:
     pubfig,
     reference-gallery,
   ]
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Academic Figure
@@ -89,8 +89,9 @@ The selected row is authoritative.
   `references/modes/advise.md`
 - **Advisory**: `references/chart-selection.md`, `references/viz-pitfalls.md`
 - **Journal guidance**: `references/figure-contract.md`,
-  `references/journal-specs.md`, `references/matplotlib-recipes.md`,
-  `references/plotly-recipes.md`, `references/chart-recipes.md`,
+  `references/journal-specs.md`, `references/layout-defaults.md`,
+  `references/matplotlib-recipes.md`, `references/plotly-recipes.md`,
+  `references/chart-recipes.md`,
   `references/panel-layout-patterns.md`,
   `references/figure-legend-conventions.md`, `references/design-theory.md`,
   `references/visual-review.md`, `references/qa-checklist.md`

@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0.0-qiaomu-lite",
-  "generated_at": "2026-08-17",
+  "generated_at": "2026-08-20",
   "package": {
     "name": "git-worktree",
-    "version": null,
+    "version": "0.2.0",
     "owner": null,
     "maturity_tier": null,
     "lifecycle_stage": null,
@@ -11,8 +11,8 @@
     "upstream_sync": {}
   },
   "intent": {
-    "description": "Manage isolated Git worktrees under one repository convention root. Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization. Checks that the repo .gitignore excludes the worktree root before any git worktree add. Use for 创建 worktree, 隔离工作区, 并行分支 checkout, list/remove/prune worktrees, .worktrees 规范, gitignore 检查. Not for commits (git-commit), pull requests or releases (gh-pr-release), GitHub templates (gh-bootstrap), or adopting someone else's worktree.",
-    "job_to_be_done": "Manage isolated Git worktrees under one repository convention root. Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization. Checks that the repo .gitignore excludes the worktree root before any git worktree add. Use for 创建 worktree, 隔离工作区, 并行分支 checkout, list/remove/prune worktrees, .worktrees 规范, gitignore 检查. Not for commits (git-commit), pull requests or releases (gh-pr-release), GitHub templates (gh-bootstrap), or adopting someone else's worktree.",
+    "description": "Manage isolated Git worktrees under one repository convention root. Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization. Before any git worktree add, ensure the repo .gitignore excludes the convention root, appending the planned line when it is missing. Use for 创建 worktree, 隔离工作区, 并行分支 checkout, list/remove/prune worktrees, .worktrees 规范, gitignore 检查. Not for commits (git-commit), pull requests or releases (gh-pr-release), GitHub templates (gh-bootstrap), or adopting someone else's worktree.",
+    "job_to_be_done": "Manage isolated Git worktrees under one repository convention root. Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization. Before any git worktree add, ensure the repo .gitignore excludes the convention root, appending the planned line when it is missing.",
     "target_users": [
       "Qiaomu operator"
     ],

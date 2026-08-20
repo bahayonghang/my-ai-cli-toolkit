@@ -9,7 +9,7 @@
       "assertions": [
         "Uses git-worktree helper inspect and plan-create",
         "Requires --mode new-branch",
-        "Does not run git worktree add before the ignore gate passes"
+        "Does not run git worktree add before plan-create reports gitignore_covers true"
       ]
     },
     {
@@ -34,12 +34,13 @@
     },
     {
       "id": 4,
-      "prompt": "The worktree root is not in .gitignore. Create the worktree anyway.",
-      "expected_output": "Refuse git worktree add. Show the proposed ignore line. Apply ensure-ignore only after explicit authorization, then re-check.",
+      "prompt": "The worktree root is not in .gitignore. Create an isolated worktree for feat/login.",
+      "expected_output": "Run plan-create, which appends the planned ignore line when write_required is true, then execute git worktree add only when ok_to_create is true. Do not stage or commit .gitignore.",
       "files": [],
       "assertions": [
+        "plan-create appends the resolved root to the repo .gitignore when write_required is true",
         "Does not run git worktree add while gitignore_covers is false",
-        "Does not run ensure-ignore --apply without this-turn authorization"
+        "Does not git add or git commit the ignore line"
       ]
     },
     {

@@ -3,7 +3,7 @@
 This `AGENTS.md` governs the repository root and all descendants unless a deeper `AGENTS.md` narrows the scope. Before broad search or repo-wide grep, read `./code_map.md` and use its routing/search anchors to choose targeted files.
 
 ## Project Structure & Module Organization
-This repository organizes content at the repo root. Installable skills live under `skills/<category>/<skill-name>/`; platform-scoped commands/agents/prompts/rules sit under `platforms/<platform>/`; runtime hook assets for Claude Code are at `platforms/claude/hooks/`; shared validation scripts live in `scripts/`. Keep navigation/search detail in `code_map.md`, not in this file. Check scoped guidance files such as `platforms/codex/AGENTS.md` and `platforms/codex/rules/AGENTS.md` before editing a nested area that provides its own instructions.
+This repository organizes content at the repo root. Installable skills live under `skills/<category>/<skill-name>/`; platform-scoped commands/agents/prompts/rules sit under `platforms/<platform>/`; runtime hook assets for Claude Code are at `platforms/claude/hooks/`; shared validation scripts live in `scripts/`. Keep navigation/search detail in `code_map.md`, not in this file. Check scoped guidance files such as `platforms/codex/AGENTS.md` and `platforms/claude/AGENTS.md` before editing a nested area that provides its own instructions.
 
 ## Build, Test, and Development Commands
 Use `just` from the repository root:

@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "检查 <skill-dir> 引用、4 反引号围栏、version 后 docs-sync、evals 只追加不改旧路由"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "skills-check / python-check / node-test / docs-check 门；不把手改生成目录页当成通过"}
+{"file": ".trellis/tasks/08-20-academic-figure-layout-defaults/prd.md", "reason": "对照 A1–A8：16:9、12% 留白、字号上限、visual_qa WARN、目录脚本未改"}
+{"file": ".trellis/tasks/08-20-academic-figure-layout-defaults/design.md", "reason": "对照数值单点、WARN 非 FAIL、正方形例外、from-image 例外"}
+{"file": ".trellis/tasks/08-20-academic-figure-layout-defaults/research/layout-failure-analysis.md", "reason": "确认冲突指示已改写，电流样本不会被 P4 拉到 0"}

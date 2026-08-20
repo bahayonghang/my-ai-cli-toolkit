@@ -1411,3 +1411,47 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Next Steps
 
 - 无
+
+
+## Session 43: academic-figure 默认 16:9 与曲线留白
+
+**Date**: 2026-08-20
+**Task**: academic-figure 默认 16:9 与曲线留白
+**Branch**: `dev`
+
+### Summary
+
+将 academic-figure 升至 1.2.0：默认 16:9 画布、曲线 y 轴 12% 留白、论文路径禁止过大字号。新增 layout-defaults.md 与 visual_qa WARN。已归档 08-20-academic-figure-layout-defaults。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6d05f64e` | (see git log) |
+| `40d5cd7d` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 44: 审阅 font-picker 规划并新建 trellis-plan-review skill
+
+**Date**: 2026-08-20
+**Task**: 审阅 font-picker 规划并新建 trellis-plan-review skill
+**Branch**: `dev`
+
+### Summary
+
+审阅 clash-verge-ai-residential 的 08-20-settings-font-picker-repaint 规划，得到 7 条问题，其中 3 条已在实现阶段被实现者未申报地补救。据此在 skills/development-workflows/ 新建 trellis-plan-review skill：八个 pass 固定判据，自带只读预检脚本（产物、占位残留、path:line 解析、R/AC 交叉引用）。先行研究采集 10 个同类 skill，目录中无 Trellis 规划审阅 skill。脚本自测暴露标记扫描器误报自身文档的缺陷，已修并写入 spec。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `db075216` | (see git log) |
+| `95c09afb` | (see git log) |
+
+### Status
+
+[OK] **Completed**

@@ -10,7 +10,7 @@ Manage isolated Git worktrees under one repository convention root.
 
 - Manage isolated Git worktrees under one repository convention root
 - Create a new-branch worktree, list trees, remove an owned tree, or show prune candidates after authorization
-- Checks that the repo .gitignore excludes the worktree root before any git worktree add
+- Before any git worktree add, ensure the repo .gitignore excludes the convention root, appending the planned line when it is missing
 - Use for 创建 worktree, 隔离工作区, 并行分支 checkout, list/remove/prune worktrees, .worktrees 规范, gitignore 检查
 
 ## Metadata
@@ -19,7 +19,7 @@ Manage isolated Git worktrees under one repository convention root.
 | --- | --- |
 | Name | `git-worktree` |
 | Category | `git-github-collaboration` (Git & GitHub Collaboration) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `git`, `worktree`, `isolation`, `agent-aware` |
 
 ## Install command

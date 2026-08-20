@@ -288,6 +288,45 @@
         "Recognizes exploratory data analysis rather than a publication figure",
         "Does not impose the journal contract or the QA checklist"
       ]
+    },
+    {
+      "id": 24,
+      "prompt": "帮我画一张训练损失曲线，论文用，期刊还没定。",
+      "expected_output": "Routes to journal-spec. Uses the no-card 16:9 canvas (8.0 x 4.5 in) from layout-defaults.md, applies y-axis headroom on the loss curves, and keeps paper type at 10-11 pt rather than Display-scale 24 pt.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode",
+        "Reads references/layout-defaults.md",
+        "Uses a 16:9 canvas or figsize (8.0, 4.5)",
+        "Applies y-axis headroom (ax.margins y=0.12) instead of ylim at the data min and max",
+        "Does not apply Display-scale 24 pt fonts"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "把这份电流–时间 CSV 画成折线图，投稿用。",
+      "expected_output": "Routes to journal-spec. Treats current as a continuous metric with no natural zero, so P4 does not force ylim from 0. Applies layout-defaults y-axis headroom on both ends.",
+      "files": ["current.csv"],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode",
+        "Reads references/layout-defaults.md and the P4 scope in references/viz-pitfalls.md",
+        "Does not set the y axis to start at 0 for current in amperes",
+        "Leaves headroom above and below the data on the y axis",
+        "Uses a 16:9 default height unless the user named a ratio"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "画一张 Nature 单栏时序预测对比图，真实值和预测值放在一起。",
+      "expected_output": "Routes to journal-spec with Nature. Keeps the Nature single-column width (89 mm / 3.5 in) and sets height from the 16:9 default. Nature type sizes 5-7 pt. Vector-first export.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode",
+        "Resolves the journal style to Nature",
+        "Uses the Nature single-column width (89 mm / 3.5 in)",
+        "Sets height from the 16:9 default in references/layout-defaults.md",
+        "Keeps Nature 5-7 pt type and vector-first export"
+      ]
     }
   ]
 }

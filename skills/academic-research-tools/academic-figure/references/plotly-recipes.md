@@ -77,7 +77,8 @@ def mm_to_px(width_mm, dpi):
     return round(width_mm / 25.4 * dpi)
 ```
 
-Set `width`/`height` to these pixel values and export with `scale=1`.
+Set `width` to these pixel values. Set `height` to `round(width_px * 9 / 16)`
+unless the family is square (`layout-defaults.md`). Export with `scale=1`.
 
 > **Vector export (pdf/svg) caveat — [missing evidence].** The research did not
 > establish how plotly maps layout pixels to physical inches for vector output.

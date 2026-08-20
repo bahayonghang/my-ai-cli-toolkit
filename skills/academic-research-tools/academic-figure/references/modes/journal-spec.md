@@ -33,13 +33,14 @@ contract in `SKILL.md`. Work the eight steps in order.
    `create_plotter(...)` / `plotter.set_style(...)`. Call the library without
    modifying it. Otherwise take the standalone path.
 6. **Load references on demand.** Read only what the resolved axes need: the
-   matched card in `../journal-specs.md`, one library recipe
+   matched card in `../journal-specs.md`, `../layout-defaults.md` (canvas,
+   y-axis headroom, type size), one library recipe
    (`../matplotlib-recipes.md` or `../plotly-recipes.md`), and the matched
    family section in `../chart-recipes.md`. Add
    `../figure-legend-conventions.md` when the deliverable includes the caption.
 7. **Visual review before export.** Run the loop in `../visual-review.md`:
    render a PNG preview, run the machine audit in
-   `<skill-dir>/scripts/visual_qa.py`, read the preview against the eight
+   `<skill-dir>/scripts/visual_qa.py`, read the preview against the ten
    perceptual items, fix at the source, and render again. Three rounds is the
    limit. A missing-glyph `FAIL` blocks the export.
 8. **Export and QA.** Export under the selected `journal-spec` contract, then

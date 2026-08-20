@@ -71,3 +71,11 @@ suite 内的 Governed 规范 skill：单一仓库内根、创建前 `check-ignor
 - 未执行任何第三方 skill 脚本。
 - 宿主原生 worktree API 的第一方合同：今日未复验。
 - `research_prior_art.py --strict` 完整 stdout：未保存。
+
+## 2026-08-20 follow-up (ignore-on-create)
+
+Not a new-skill prior-art rerun. The original shortlist already documented obra/everyinc appending `.worktrees/` when `check-ignore` misses. This package had split that append behind a second confirmation, so agents could create without writing `.gitignore`.
+
+Generalization: before creating a worktree under a convention root, a repository `.gitignore` must cover that root; if not, append the planned `<resolved_root>/` line. Core safety mechanism, not an adapter.
+
+Keep: `check-ignore` as matcher authority; no auto-commit. Adapt: create request authorizes the one-line append (`plan-create` sets `ignore_wrote`). Reject remains: auto-commit `.gitignore`.
