@@ -5,6 +5,20 @@
 > (2026-07-08).
 > Follow these when creating or refactoring anything under `skills/`.
 
+## Plotting layout defaults (academic-figure 1.2.0)
+
+Distilled from the academic-figure layout-defaults task (2026-08-20). Apply
+when a skill both *creates* figures and *reproduces* catalog originals.
+
+- Put canvas ratio, axis headroom, and type-size-vs-plot-box numbers in **one**
+  reference file. Recipes, QA checklists, and visual-review items point there.
+  Do not copy the numbers into `SKILL.md`.
+- A publication-default change does **not** rewrite catalog reproduction
+  scripts (`from-data` / `from-image`). Those scripts keep the source figure's
+  `figsize` and `ylim`.
+- Machine layout checks that catch a tight axis or a crowded plot box stay
+  `WARN`. Missing glyphs stay `FAIL`.
+
 ## Script references in SKILL.md
 
 - Every command in SKILL.md that runs a bundled script must use the literal

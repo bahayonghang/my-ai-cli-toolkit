@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill 目录、<skill-dir> 占位符、frontmatter、docs-sync、evals 双体系、禁止为 qiaomu 补 README/manifest"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Python 可编译、node-test 发现规则、禁止手改生成 docs、helper 留在 skill 内"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "改 figsize/字号/margin 常数前必须搜全 skill，数值单点在 layout-defaults.md"}
+{"file": ".trellis/tasks/08-20-academic-figure-layout-defaults/research/layout-failure-analysis.md", "reason": "失败样本测量、规则冲突表、泛化闸门、不改目录脚本的边界"}
+{"file": ".trellis/tasks/08-20-academic-figure-layout-defaults/prd.md", "reason": "R1–R6 与 A1–A8 验收；D1–D5 决策"}
+{"file": ".trellis/tasks/08-20-academic-figure-layout-defaults/design.md", "reason": "layout-defaults 合同、visual_qa WARN 阈值、evals 24–26、SciencePlots 尺寸覆盖"}
