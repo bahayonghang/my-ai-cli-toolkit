@@ -35,7 +35,9 @@ The helper writes `<resolved_root>/` plus a NUL to stdin. A pass requires:
 
 Do not hand-write a gitignore matcher. Parent rules such as `.agents/` covering `.agents/worktrees/` count only when `check-ignore` says they match.
 
-`ensure-ignore` without `--apply` only prints `proposed_line`. `--apply` snapshots the current bytes, appends `<resolved_root>/`, and restores the snapshot if the gate still fails. Do not stage or commit that line.
+`ensure-ignore` without `--apply` only prints `proposed_line`. `--apply` snapshots the current bytes, appends `<resolved_root>/`, and restores the snapshot if the gate still fails.
+
+`plan-create` calls the same apply path when `write_required` is true and the caller is not already in a linked worktree. A create request is enough authorization for that one-line append. The JSON field `ignore_wrote` records whether this invocation wrote. Do not stage or commit that line.
 
 ## Create mode
 
@@ -45,6 +47,6 @@ MVP accepts only `--mode new-branch`. The planned argv is:
 git worktree add -b <branch> <path> <start-point>
 ```
 
-Refuse: missing mode, any other mode, existing local branch, existing remote-tracking branch of the same name, path already present, path already registered, ignore gate failure, unresolved start-point.
+Refuse: missing mode, any other mode, existing local branch, existing remote-tracking branch of the same name, path already present, path already registered, ignore gate still failing after apply, unresolved start-point.
 
 Default start-point: `refs/remotes/origin/HEAD` when it resolves, else local `main`, else local `master`. Do not silently use `HEAD`.

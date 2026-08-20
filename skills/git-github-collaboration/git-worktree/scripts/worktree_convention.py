@@ -381,6 +381,24 @@ def apply_ignore(repo: Path, resolved_root: str) -> dict[str, Any]:
         raise HelperError(f"failed to update .gitignore: {exc}", 1) from exc
 
 
+IGNORE_FIELDS = (
+    "probe",
+    "check_ignore",
+    "check_ignore_source",
+    "check_ignore_linenum",
+    "gitignore_patterns",
+    "gitignore_covers",
+    "write_required",
+    "proposed_line",
+)
+
+
+def merge_ignore(payload: dict[str, Any], ignore: dict[str, Any]) -> None:
+    for key in IGNORE_FIELDS:
+        if key in ignore:
+            payload[key] = ignore[key]
+
+
 def default_start_point(repo: Path) -> str | None:
     symbolic = run_git(repo, ["symbolic-ref", "--quiet", "refs/remotes/origin/HEAD"])
     if symbolic.returncode == 0:
@@ -489,6 +507,12 @@ def plan_create(repo: Path, args: argparse.Namespace) -> dict[str, Any]:
     if not args.branch:
         raise HelperError("plan-create requires --branch", 2)
     payload = build_inspect(repo, args)
+    ignore_wrote = False
+    if payload["write_required"] and not payload["already_linked"]:
+        applied = apply_ignore(repo, payload["resolved_root"])
+        merge_ignore(payload, applied)
+        ignore_wrote = bool(applied.get("wrote"))
+    payload["ignore_wrote"] = ignore_wrote
     records = parse_worktree_list(repo)
     start_point = args.start_point or default_start_point(repo)
     refusals: list[str] = []

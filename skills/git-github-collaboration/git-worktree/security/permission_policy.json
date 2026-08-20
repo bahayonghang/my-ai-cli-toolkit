@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "reviewed_at": "2026-08-17",
+  "reviewed_at": "2026-08-20",
   "capabilities": {
     "gitignore_write": {
       "decision": "approved",
       "reviewer": "lyh",
-      "scope": "scripts/worktree_convention.py ensure-ignore --apply may append one planned <root>/ line to the repository-root .gitignore after this-turn authorization. It must not stage, commit, delete, or reorder existing rules.",
-      "reason": "A tracked ignore rule is required so worktree contents cannot enter history. Apply is opt-in and restores previous bytes on failure.",
+      "scope": "scripts/worktree_convention.py plan-create may append one planned <root>/ line to the repository-root .gitignore when write_required is true. ensure-ignore --apply remains available for an ignore-only repair. It must not stage, commit, delete, or reorder existing rules.",
+      "reason": "A tracked ignore rule is required so worktree contents cannot enter history. A create request authorizes that one-line append. Apply restores previous bytes on failure.",
       "expires_at": "2026-11-17",
       "evidence": [
         "SKILL.md",
@@ -14,8 +14,8 @@
         "tests/worktree-convention.test.mjs"
       ],
       "target_enforcement": {
-        "openai": "Permission metadata only; the host must require authorization before file write.",
-        "claude": "Bash may run the helper; --apply still requires this-turn authorization.",
+        "openai": "Permission metadata only; the host must authorize the create flow that may write .gitignore.",
+        "claude": "Bash may run the helper; plan-create may write the planned ignore line without a second confirmation.",
         "generic": "Permission metadata for downstream host enforcement.",
         "vscode": "Workspace trust is not authorization to rewrite .gitignore."
       }

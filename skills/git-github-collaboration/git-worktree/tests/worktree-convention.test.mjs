@@ -133,7 +133,15 @@ test("symlink escape is rejected", { skip }, () => {
   assert.equal(result.status, 2, result.stderr);
 });
 
-test("missing repo gitignore blocks create until apply", { skip }, () => {
+test("inspect does not write a missing gitignore", { skip }, () => {
+  const repo = initRepo();
+  const payload = readJson(runHelper(repo, ["inspect"]));
+  assert.equal(payload.resolved_root, ".worktrees");
+  assert.equal(payload.gitignore_covers, false);
+  assert.equal(fs.existsSync(path.join(repo, ".gitignore")), false);
+});
+
+test("plan-create appends the convention root to .gitignore then allows create", { skip }, () => {
   const repo = initRepo();
   const before = readJson(runHelper(repo, ["--branch", "feat/login", "inspect"]));
   assert.equal(before.gitignore_covers, false);
@@ -141,18 +149,31 @@ test("missing repo gitignore blocks create until apply", { skip }, () => {
   const planned = readJson(
     runHelper(repo, ["--mode", "new-branch", "--branch", "feat/login", "plan-create"]),
   );
-  assert.equal(planned.ok_to_create, false);
-  assert.ok(planned.refusals.includes("ignore_gate"));
-  const applied = readJson(runHelper(repo, ["ensure-ignore", "--apply"]));
-  assert.equal(applied.gitignore_covers, true);
-  assert.equal(applied.wrote, true);
+  assert.equal(planned.ignore_wrote, true);
+  assert.equal(planned.gitignore_covers, true);
+  assert.equal(planned.write_required, false);
+  assert.equal(planned.ok_to_create, true);
+  assert.ok(!planned.refusals.includes("ignore_gate"));
   const gitignore = fs.readFileSync(path.join(repo, ".gitignore"), "utf8");
   assert.match(gitignore, /\.worktrees\//);
-  const after = readJson(
-    runHelper(repo, ["--mode", "new-branch", "--branch", "feat/login", "plan-create"]),
+  const status = runGit(repo, ["status", "--porcelain", "--untracked-files=all", "--", ".gitignore"]);
+  assert.equal(status.status, 0, status.stderr);
+  const statusLine = (status.stdout.trim().split(/\r?\n/)[0] || "").replaceAll("\\", "/");
+  assert.match(statusLine, /^\?\? \.gitignore$/);
+  assert.deepEqual(planned.argv.slice(0, 5), ["git", "worktree", "add", "-b", "feat/login"]);
+});
+
+test("plan-create does not rewrite gitignore when a parent rule already covers the root", { skip }, () => {
+  const repo = initRepo();
+  fs.writeFileSync(path.join(repo, ".gitignore"), ".agents/\n", "utf8");
+  fs.mkdirSync(path.join(repo, ".agents", "worktrees"), { recursive: true });
+  const planned = readJson(
+    runHelper(repo, ["--mode", "new-branch", "--branch", "feat/covered", "plan-create"]),
   );
-  assert.equal(after.ok_to_create, true);
-  assert.deepEqual(after.argv.slice(0, 5), ["git", "worktree", "add", "-b", "feat/login"]);
+  assert.equal(planned.resolved_root, ".agents/worktrees");
+  assert.equal(planned.gitignore_covers, true);
+  assert.equal(planned.ignore_wrote, false);
+  assert.equal(fs.readFileSync(path.join(repo, ".gitignore"), "utf8"), ".agents/\n");
 });
 
 test("global exclude alone does not satisfy the ignore gate", { skip }, () => {
