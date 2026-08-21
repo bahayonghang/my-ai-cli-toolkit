@@ -1,0 +1,135 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "behavioral",
+    "independent",
+    "pr_diff",
+    "project_audit",
+    "read_only",
+    "six_dimensions"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "请以独立代码审查者的身份检查当前 Git diff。不要根据原开发思路替改动辩护，重点寻找功能回归、遗漏场景、错误假设、并发问题和测试盲区。暂时不要修改代码，先按严重程度列出问题，并提供对应文件和证据。",
+        "family": "user-prompt-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "behavioral",
+          "independent",
+          "pr_diff",
+          "read_only",
+          "six_dimensions"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Review this PR before merge and call out functional regressions, missed scenarios, and test gaps.",
+        "family": "pr-review-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "behavioral",
+          "pr_diff"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我做这次 PR 的代码审查，重点列出阻塞问题和测试缺口。",
+        "family": "pr-review-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "behavioral",
+          "pr_diff",
+          "six_dimensions"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "对这个项目做一次全维度的代码审计，正确性、安全、性能、可读性、测试和架构都要看。",
+        "family": "project-audit-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "project_audit",
+          "six_dimensions"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Implement the new checkout page from this design and add the backend endpoint.",
+        "family": "implementation-only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Write a Conventional Commit for the staged auth fix.",
+        "family": "commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "conventional commit"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "帮我看看 src/ 的结构和可维护性，抽象合不合理，有没有适合重构的大文件。",
+        "family": "code-quality-review",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "给我一份包含合规、隐私、无障碍、成本和发布准备度的仓库健康报告。",
+        "family": "repository-health",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "别只做 review 了，直接帮我把重复的逻辑重构掉、把过大的函数拆开。",
+        "family": "code-refactor",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "maintainability",
+    "quality_review",
+    "structure"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "帮我审查一下 order_service.ts 的代码质量，重点看可维护性和结构问题。",
+        "family": "quality-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "maintainability",
+          "quality_review",
+          "structure"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Do a maintainability review of this change and point out abstraction and duplication issues.",
+        "family": "maintainability-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "maintainability",
+          "structure"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "看看这次改动的分层和归属对不对，有没有该拆的大文件。",
+        "family": "layering-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "maintainability",
+          "structure"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Write a Conventional Commit for the staged auth fix.",
+        "family": "commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "conventional commit"
+      },
+      {
+        "prompt": "Implement the new checkout page from this design.",
+        "family": "implementation-only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "请以独立代码审查者的身份检查当前 Git diff。不要根据原开发思路替改动辩护，重点寻找功能回归、遗漏场景、错误假设、并发问题和测试盲区。暂时不要修改代码，先按严重程度列出问题，并提供对应文件和证据。",
+        "family": "independent-diff-auditor",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "功能回归"
+      },
+      {
+        "prompt": "对这个项目做一次全维度的代码审计，正确性、安全、性能、可读性、测试和架构都要看。",
+        "family": "full-spectrum-auditor",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "全维度的代码审计"
+      },
+      {
+        "prompt": "别只做 review 了，直接帮我把重复的逻辑重构掉、把过大的函数拆开。",
+        "family": "code-refactor",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

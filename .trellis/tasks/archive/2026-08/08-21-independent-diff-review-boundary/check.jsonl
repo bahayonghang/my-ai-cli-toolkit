@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "检查 description ≤1024、无尖括号、frontmatter 改动后 docs-sync、trigger 回归证据规则"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "检查 evals 键名 assertions、≥2 条 routing-negative、两套严重度词汇未被合并"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "禁止手改 generated docs；改 metadata 后走 docs-sync / docs-check"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/prompt-mapping.md", "reason": "验收时核对姿态条款是否都落到 auditor pr/dir"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/current-collisions.md", "reason": "验收时核对 架构质量审查、PR code quality feedback、非原子支付断言是否已从 CQR 拿开"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/baseline-trigger-eval.md", "reason": "对照当前 description 的 false_negative：用户原句、全维度的代码审计、代码质量 / 分层归属"}

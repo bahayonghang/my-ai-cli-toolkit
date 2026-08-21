@@ -1,0 +1,9 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "description 长度与尖括号、docs-sync、trigger_eval 两套 schema、禁止为 qiaomu validate 补 README/manifest"}
+{"file": "skills/AGENTS.md", "reason": "skills 子树 frontmatter、allowed-tools 逗号字符串、验证命令"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "套件房规：evals schema、近邻负例数量、auditor 与 CQR 路由节是本次必改文档"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/prompt-mapping.md", "reason": "用户 prompt 条款到 skill 的归属表，实现姿态节时的权威对照"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/current-collisions.md", "reason": "07-22 之后仍存在的触发与清单碰撞，避免漏改 description 或 eval #3"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "复用现有 SKILL 节与 eval 槽位，不新开第三个审查 skill"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/code-auditor-trigger-cases.json", "reason": "auditor description 的 should_trigger / near_neighbor 草稿，实现时对着新 description 调概念表"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/code-quality-review-trigger-cases.json", "reason": "CQR description 的触发草稿；正向概念不得收录独立审查专属短语"}
+{"file": ".trellis/tasks/08-21-independent-diff-review-boundary/research/baseline-trigger-eval.md", "reason": "当前 description 对用户原句与全维度的代码审计的 false_negative，实现后必须翻转为 pass"}
