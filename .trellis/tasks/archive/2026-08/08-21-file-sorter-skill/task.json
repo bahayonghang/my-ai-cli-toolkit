@@ -1,0 +1,36 @@
+{
+  "id": "file-sorter-skill",
+  "name": "file-sorter-skill",
+  "title": "Create file-sorter skill from AI File Sorter rules",
+  "description": "Plan a governed file-sorter skill that re-expresses AI File Sorter taxonomy, scan-safety, and review-before-apply rules as an agent skill without porting the Qt app.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "skills/developer-tools-integrations/file-sorter plus required catalog docs, suite AGENTS.md, and task-local research/eval evidence",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-08-21",
+  "completedAt": "2026-08-21",
+  "branch": null,
+  "base_branch": "dev",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "ref/repo/ai-file-sorter/docs/categorization-behavior.md",
+    "ref/repo/ai-file-sorter/app/lib/FileCategoryPolicy.cpp",
+    "ref/repo/ai-file-sorter/app/lib/ProtectedProjectDetector.cpp",
+    "skills/developer-tools-integrations/AGENTS.md",
+    "skills/developer-tools-integrations/windows-dev-process-cleanup/SKILL.md",
+    ".trellis/spec/guides/skill-authoring-conventions.md",
+    "scripts/check.py"
+  ],
+  "notes": "",
+  "meta": {
+    "description": "Plan a governed file-sorter skill that re-expresses AI File Sorter taxonomy, scan-safety, and review-before-apply rules as an agent skill without porting the Qt app."
+  }
+}
