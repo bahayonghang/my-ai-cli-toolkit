@@ -41,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill file-sorter
 | `skills/developer-tools-integrations/file-sorter/reports` | 目录 | 5 | 顶层目录 |
 | `skills/developer-tools-integrations/file-sorter/scripts` | 目录 | 1 | 可执行脚本 |
 | `skills/developer-tools-integrations/file-sorter/security` | 目录 | 1 | 顶层目录 |
-| `skills/developer-tools-integrations/file-sorter/skills` | 目录 | 1 | 顶层目录 |
 | `skills/developer-tools-integrations/file-sorter/tests` | 目录 | 1 | 自动化测试 |
 | `skills/developer-tools-integrations/file-sorter/THIRD_PARTY_NOTICES.md` | 文件 | 1 | 顶层文件 |
 

@@ -4,12 +4,14 @@
 
 ## 用途概览
 
-Run a code quality review focused on maintainability, structure, abstraction quality, and refactoring opportunities.
+Run a maintainability and structure review focused on abstraction quality, branching complexity, file growth, canonical ownership, duplication, and refactoring opportunities.
 
 ## 触发场景
 
-- the user asks for code quality review, maintainability review, PR code quality feedback, 代码质量审查, 可维护性审查, 架构质量审查, or review comments about code structure
-- Not for pure security review, formatting-only review, or performance profiling
+- the user asks for code quality review, maintainability review, 代码质量审查, 可维护性审查, or comments about whether the change stays easy to understand, modify, test, and extend, including layering and ownership of the change / 改动的分层与归属
+- Not for generic PR review or independent diff review hunting regressions, concurrency, or test gaps
+- not for full-spectrum or 全维度代码审计
+- not for system architecture audits
 
 ## 元数据
 
@@ -17,7 +19,7 @@ Run a code quality review focused on maintainability, structure, abstraction qua
 | --- | --- |
 | 名称 | `code-quality-review` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.2.0` |
+| 版本 | `0.3.0` |
 | 标签 | `code-review`, `code-quality`, `maintainability`, `architecture`, `refactoring` |
 
 ## 安装命令

@@ -41,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill file-sorter
 | `skills/developer-tools-integrations/file-sorter/reports` | directory | 5 | Top-level directory |
 | `skills/developer-tools-integrations/file-sorter/scripts` | directory | 1 | Executable scripts |
 | `skills/developer-tools-integrations/file-sorter/security` | directory | 1 | Top-level directory |
-| `skills/developer-tools-integrations/file-sorter/skills` | directory | 1 | Top-level directory |
 | `skills/developer-tools-integrations/file-sorter/tests` | directory | 1 | Automated tests |
 | `skills/developer-tools-integrations/file-sorter/THIRD_PARTY_NOTICES.md` | file | 1 | Top-level file |
 

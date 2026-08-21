@@ -103,6 +103,35 @@
         "The skill description should not capture repository health reports spanning compliance, privacy, accessibility, cost, or other non-code dimensions.",
         "The request is handed off to a broader repository-health audit workflow rather than reduced to code-auditor's six code dimensions."
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "请以独立代码审查者的身份检查当前 Git diff。不要根据原开发思路替改动辩护，重点寻找功能回归、遗漏场景、错误假设、并发问题和测试盲区。暂时不要修改代码，先按严重程度列出问题，并提供对应文件和证据。",
+      "expected_output": "Chinese output. Findings first, sorted by severity, each with file evidence. Hunt functional regressions, missed scenarios, wrong assumptions, concurrency, or test gaps. Do not edit product code. Do not defend the author's approach.",
+      "files": [],
+      "assertions": [
+        "The review is written in Chinese.",
+        "Findings are presented before the summary or conclusion.",
+        "Blocking issues use explicit severity labels such as [必须修复] / [建议修改] / [仅供参考].",
+        "The review reports at least one of: functional regression, missed scenario, wrong assumption, concurrency issue, or test gap.",
+        "Each finding includes a file path or other concrete evidence.",
+        "Does not edit product code."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "As an independent reviewer, inspect this checkout flow for concurrency and missed scenarios. Do not modify the file. List findings by severity with file evidence.",
+      "expected_output": "English findings first. The non-atomic charge-then-orders.update path is a Must Fix / [必须修复] correctness finding with file evidence. Product code is not edited.",
+      "files": [
+        "../code-quality-review/evals/files/order_service.ts"
+      ],
+      "assertions": [
+        "The review is written in English.",
+        "Findings are presented before the summary or conclusion.",
+        "Identifies the non-atomic payment/order update where charge can succeed while the order is never marked paid as Must Fix or [必须修复].",
+        "The finding includes a file path or other concrete evidence.",
+        "Does not edit product code."
+      ]
     }
   ]
 }

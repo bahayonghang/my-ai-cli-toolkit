@@ -240,6 +240,12 @@ manual inventory and deterministic safety tests."
   concepts, a prompt needs ≥2 concept-family hits to trigger. Author the domain
   concept table in the cases file (pattern: academic-figure task
   `research/trigger-cases.json`, 2026-08-16, 24/24).
+- Pass `--cases` as an **absolute** path when the JSON lives outside the skill
+  directory. A relative `--cases` path is resolved from the skill dir, not the
+  repo root (independent-diff-review-boundary, 2026-08-21).
+- Chinese trigger phrases are literal substrings. `全维度代码审计` does not
+  match `全维度的代码审计`. If evals or users insert 的, put both forms in the
+  description and in the concept table.
 - qiaomu-meta's `validate_skill.py` hard-fails on missing per-skill `README.md`
   and `manifest.json`. Those are qiaomu-package conventions, not this repo's
   (authoritative gates: `scripts/check.py` + docs-sync catalog pages). Record

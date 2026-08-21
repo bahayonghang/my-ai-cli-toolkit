@@ -44,8 +44,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 `development-workflows` · 11 skills
 
-- [code-auditor](/en/skills/development-workflows/code-auditor) — Structured code review across correctness, security, performance, readability, testing, and architecture.
-- [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a code quality review focused on maintainability, structure, abstraction quality, and refactoring opportunities.
+- [code-auditor](/en/skills/development-workflows/code-auditor) — Independent pre-merge review of a git diff, PR, or named files.
+- [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a maintainability and structure review focused on abstraction quality, branching complexity, file growth, canonical ownership, duplication, and refactoring opportunities.
 - [code-refactor](/en/skills/development-workflows/code-refactor) — Implement safe, behavior-preserving code refactors after inspecting the existing project.
 - [codex-bridge](/en/skills/development-workflows/codex-bridge) — Use when the user explicitly asks the current agent to involve Codex CLI by reviewing a plan, implementing code, revising an implementation after review, or verifying extrapolated findings.
 - [codex-dynamic-workflows](/en/skills/development-workflows/codex-dynamic-workflows) — Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets.

@@ -22,7 +22,7 @@
       "assertions": [
         "The review is written in Chinese",
         "Flags the `any` typing and silent `?? {}` fallback as a boundary/type-contract issue",
-        "Flags at least one additional structural issue (mode-based branching with duplicated coupon logic, the thin findOrder wrapper, the duplicated formatMoney, or the non-atomic charge/update)",
+        "Flags at least one additional structural issue (mode-based branching with duplicated coupon logic, the thin findOrder wrapper, or the duplicated formatMoney)",
         "Findings use stable IDs such as CQ-001",
         "Does not edit order_service.ts"
       ]
@@ -30,7 +30,7 @@
     {
       "id": 3,
       "prompt": "Review order_service.ts for code quality issues and suggest improvements.",
-      "expected_output": "Structured review following the required format: a Verdict line, findings with stable CQ-IDs each carrying Location, Evidence, Why it matters, Recommended remediation, and Confidence. Catches the non-atomic payment/order update and the any/silent-fallback boundary.",
+      "expected_output": "Structured review following the required format: a Verdict line, findings with stable CQ-IDs each carrying Location, Evidence, Why it matters, Recommended remediation, and Confidence. Catches the any/silent-fallback boundary and at least one structural issue.",
       "files": [
         "evals/files/order_service.ts"
       ],
@@ -38,8 +38,8 @@
         "Output includes a Verdict line (REQUEST CHANGES | COMMENT ONLY | NEEDS SCOPE | NO MAJOR FINDINGS)",
         "Findings use stable IDs (CQ-001, CQ-002, ...)",
         "Each finding includes Location, Evidence, Why it matters, Recommended remediation, and Confidence",
-        "Identifies the non-atomic payment/order update where charge can succeed while the order is never marked paid",
         "Identifies the `any` type-boundary and silent empty-object fallback",
+        "Flags at least one structural issue (mode-based branching with duplicated coupon logic, the thin findOrder wrapper, or the duplicated formatMoney)",
         "Does not edit order_service.ts"
       ]
     },
@@ -99,6 +99,16 @@
       "assertions": [
         "The request to apply refactors and edit files is routed to code-refactor rather than performed here.",
         "This skill stays review-only and does not edit product code in response to the request."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "请以独立代码审查者的身份检查当前 Git diff。不要根据原开发思路替改动辩护，重点寻找功能回归、遗漏场景、错误假设、并发问题和测试盲区。暂时不要修改代码，先按严重程度列出问题，并提供对应文件和证据。",
+      "expected_output": "Near-neighbor routing-negative: an independent git-diff review hunting functional regressions, missed scenarios, wrong assumptions, concurrency, and test gaps belongs to code-auditor, not this maintainability/structure-focused lens.",
+      "files": [],
+      "assertions": [
+        "The skill description should not capture independent git-diff review requests that hunt regressions, missed scenarios, wrong assumptions, concurrency, or test gaps.",
+        "The request is handed off to code-auditor rather than reduced to a maintainability-only or structure-only lens."
       ]
     }
   ]

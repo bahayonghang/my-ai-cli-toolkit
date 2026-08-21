@@ -9,7 +9,7 @@ Independent review of Trellis task planning artifacts. Reads prd.md, design.md, 
 ## 触发场景
 
 - the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation
-- Not for reviewing a code diff by itself (code-auditor for full-spectrum, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task
+- Not for reviewing a code diff by itself (code-auditor for independent or full-spectrum review, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task
 
 ## 元数据
 
