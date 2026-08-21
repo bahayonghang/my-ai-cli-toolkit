@@ -1455,3 +1455,36 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Status
 
 [OK] **Completed**
+
+
+## Session 45: 新增 file-sorter skill
+
+**Date**: 2026-08-21
+**Task**: 新增 file-sorter skill
+**Branch**: `dev`
+
+### Summary
+
+将 AI File Sorter 规则转为审阅先行的 file-sorter skill，默认 dry-run，批准后 apply 并写 undo sidecar。
+
+### Main Changes
+
+- 新增 skills/developer-tools-integrations/file-sorter 与 suite AGENTS.md、docs catalog
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `279ff3832ee129af3fd637cf8bc130e9207be995` | (see git log) |
+
+### Testing
+
+- [OK] just ci；trigger eval 13/13；file-sorter Node 测试 7/7
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无；任务已归档
