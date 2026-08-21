@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 45
+- **Total Sessions**: 46
 - **Last Active**: 2026-08-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1490 | Active |
+| `journal-1.md` | ~1511 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 46 | 2026-08-21 | 独立 diff 审查姿态写入 code-auditor 并收紧双审查边界 | `5e24a2e8` | `dev` |
 | 45 | 2026-08-21 | 新增 file-sorter skill | `279ff3832ee129af3fd637cf8bc130e9207be995` | `dev` |
 | 44 | 2026-08-20 | 审阅 font-picker 规划并新建 trellis-plan-review skill | `db075216`, `95c09afb` | `dev` |
 | 43 | 2026-08-20 | academic-figure 默认 16:9 与曲线留白 | `6d05f64e`, `40d5cd7d` | `dev` |
