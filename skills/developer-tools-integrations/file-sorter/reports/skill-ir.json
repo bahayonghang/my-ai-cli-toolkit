@@ -1,0 +1,113 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-08-21",
+  "package": {
+    "name": "file-sorter",
+    "version": "0.1.0",
+    "owner": "lyh",
+    "maturity_tier": "governed",
+    "lifecycle_stage": "governed",
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Use when the user wants to categorize, sort, organize, or suggest renames for files in a local folder such as Downloads, or for files that share one parent directory. Builds a review plan with stable file-family categories, optional whitelist, project-root protection, and dry-run apply; moves or renames only after explicit approval of that plan. Use for 整理文件, 分类归档, Downloads 整理, 重命名建议, 审阅后再移动. Do not use for Git worktree isolation, Windows process cleanup, repository source-layout refactors, duplicate deletion, cloud-drive sync, or installing the AI File Sorter desktop app.",
+    "job_to_be_done": "Use when the user wants to categorize, sort, organize, or suggest renames for files in a local folder such as Downloads, or for files that share one parent directory. Builds a review plan with stable file-family categories, optional whitelist, project-root protection, and dry-run apply; moves or renames only after explicit approval of that plan. Use for 整理文件, 分类归档, Downloads 整理, 重命名建议, 审阅后再移动. Do not use for Git worktree isolation, Windows process cleanup, repository source-layout refactors, duplicate deletion, cloud-drive sync, or installing the AI File Sorter desktop app.",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "My Downloads folder is a mess. Categorize the files and show a plan first.",
+      "帮我整理这个目录里的文件，按类别建文件夹。",
+      "Suggest rename ideas for pictures in this folder.",
+      "Organize this mixed archive folder with more refined categories.",
+      "审阅后再移动这些 Downloads 文件。",
+      "Organize files that all live in one parent directory."
+    ],
+    "should_not_trigger": [
+      "Create an isolated git worktree for feat/login.",
+      "Kill leaked Playwright MCP node processes.",
+      "Write a Conventional Commit for the staged auth fix.",
+      "Publish the GitHub Release for v1.2.0."
+    ],
+    "near_neighbor": [
+      "Restructure src/ in this Node repo so helpers live under lib/.",
+      "Delete duplicate PDFs in Downloads.",
+      "Install the AI File Sorter desktop app."
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\naming.md",
+      "references\\review-apply.md",
+      "references\\scan-safety.md",
+      "references\\taxonomy.md"
+    ],
+    "scripts": [
+      "scripts\\file_sorter.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\secret-scan.md",
+      "reports\\skill-ir.json",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "vscode",
+      "agent-skills-compatible"
+    ],
+    "activation": {
+      "mode": "manual",
+      "paths": []
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "posix-or-py",
+      "platform": "any",
+      "minimum_runtime": "Python 3"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "deny",
+      "side_effect_policy": "scan and assemble-plan and apply without --execute are read-only aside from optional JSON outputs; filesystem moves require --execute after this-turn plan_id approval"
+    },
+    "permissions": {},
+    "degradation": {
+      "openai": "metadata-adapter; host must keep --execute behind user approval",
+      "claude": "neutral-source-plus-adapter; host remains responsible for filesystem permission",
+      "generic": "neutral-source; do not move files without an equivalent confirmation control",
+      "vscode": "workspace trust is not authorization to move files"
+    }
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

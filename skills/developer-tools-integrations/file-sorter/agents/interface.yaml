@@ -1,0 +1,30 @@
+interface:
+  display_name: "File Sorter"
+  short_description: "Plan and, after approval, apply category folders and rename suggestions for one local directory"
+  default_prompt: "Use $file-sorter to scan an absolute folder, assemble a review plan with file-family categories, and dry-run apply. Move or rename only after this-turn approval of the shown plan_id. Do not follow symlinks, delete files, restructure Git/Node project roots, clean processes, or create git worktrees."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "vscode"
+    - "agent-skills-compatible"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "posix-or-py"
+    platform: "any"
+    minimum_runtime: "Python 3"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "deny"
+    side_effect_policy: "scan and assemble-plan and apply without --execute are read-only aside from optional JSON outputs; filesystem moves require --execute after this-turn plan_id approval"
+  degradation:
+    openai: "metadata-adapter; host must keep --execute behind user approval"
+    claude: "neutral-source-plus-adapter; host remains responsible for filesystem permission"
+    generic: "neutral-source; do not move files without an equivalent confirmation control"
+    vscode: "workspace trust is not authorization to move files"

@@ -1,0 +1,106 @@
+{
+  "skill_name": "file-sorter",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My Downloads folder is a mess. Categorize the files and show me a plan before you move anything.",
+      "expected_output": "Scan the absolute Downloads path, assemble a more-consistent categorize plan, dry-run apply, and wait for plan_id approval before --execute.",
+      "files": [],
+      "assertions": [
+        "Runs file_sorter.py scan with an absolute --root",
+        "Assembles a review plan before any move",
+        "Does not pass --execute before this-turn approval"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "帮我整理这个目录里的文件，按类别建文件夹，先给我看计划。",
+      "expected_output": "Scan, assemble-plan, show plan_id and destinations, keep apply in dry-run until the user approves.",
+      "files": [],
+      "assertions": [
+        "Uses assemble-plan",
+        "Shows plan_id",
+        "Does not move files in the planning step"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Suggest cleaner names for these images in C:/temp/pics but do not move them into category folders.",
+      "expected_output": "assemble-plan with --operation rename, dry-run apply, keep files in the source directory.",
+      "files": [],
+      "assertions": [
+        "Uses operation rename",
+        "Does not categorize-move into Images subfolders unless asked"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use more refined categories for this mixed archive folder.",
+      "expected_output": "assemble-plan --mode more-refined so topic-specific main categories can survive when no whitelist blocks them.",
+      "files": [],
+      "assertions": [
+        "Passes --mode more-refined"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Execute plan_id abc123 from the plan we just reviewed.",
+      "expected_output": "apply --execute only if abc123 matches the shown plan and ok_to_apply is true. Report undo_path.",
+      "files": [],
+      "assertions": [
+        "Passes --execute after this-turn approval of that plan_id",
+        "Reports undo_path"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Kill the leaked Playwright MCP node processes on this Windows machine.",
+      "expected_output": "Route to windows-dev-process-cleanup. Do not scan Downloads or move files.",
+      "files": [],
+      "assertions": [
+        "Does not run file_sorter.py",
+        "Routes to windows-dev-process-cleanup"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Create an isolated git worktree for feat/login without touching my current checkout.",
+      "expected_output": "Route to git-worktree. Do not treat the repo as a Downloads folder to sort.",
+      "files": [],
+      "assertions": [
+        "Does not run file_sorter.py",
+        "Routes to git-worktree"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Delete duplicate PDFs in Downloads and free disk space.",
+      "expected_output": "Refuse duplicate deletion. This skill does not delete user files.",
+      "files": [],
+      "assertions": [
+        "Does not delete files",
+        "Does not pass --execute for deletion"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Restructure the src/ layout of this Node repo so helpers live under lib/.",
+      "expected_output": "Refuse. Protected project roots are skipped; source-layout refactors are out of scope.",
+      "files": [],
+      "assertions": [
+        "Does not move files inside a Node project root",
+        "Does not treat the repository as a Downloads folder"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Install the AI File Sorter desktop app and download the GGUF model.",
+      "expected_output": "Refuse. This skill is not the desktop application and does not install GGUF runtimes.",
+      "files": [],
+      "assertions": [
+        "Does not install the upstream desktop app",
+        "Does not download GGUF files"
+      ]
+    }
+  ]
+}

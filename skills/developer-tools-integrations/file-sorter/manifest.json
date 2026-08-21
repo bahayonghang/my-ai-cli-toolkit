@@ -1,0 +1,45 @@
+{
+  "name": "file-sorter",
+  "version": "0.1.0",
+  "owner": "lyh",
+  "updated_at": "2026-08-21",
+  "review_cadence": "quarterly",
+  "status": "active",
+  "maturity_tier": "governed",
+  "lifecycle_stage": "governed",
+  "context_budget_tier": "governed",
+  "category": "developer-tools-integrations",
+  "license": "MIT",
+  "release_gates": {
+    "local": ["validate_skill", "trigger_eval", "node-test"],
+    "published": ["missing evidence"]
+  },
+  "complexity_tier": "complex",
+  "factory_components": [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "security",
+    "scripts",
+    "tests"
+  ],
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic",
+    "vscode"
+  ],
+  "contracts": {
+    "input_files": {
+      "classification": "user-local-paths",
+      "paths": [
+        "tests/file-sorter.test.mjs"
+      ],
+      "rule": "Tests create temporary directories. Production runs take an absolute folder path from the user. The helper must not follow symlinks or write outside scan_root."
+    },
+    "output contract": "Return scan, plan, apply-result, or undo-result JSON with plan_id, ok_to_apply or ok_to_scan, skipped reasons, and dry_run. --execute is the only mutating apply path.",
+    "rollback boundary": "Undo sidecar lists completed moves. Dry-run makes no filesystem changes. Delete is forbidden.",
+    "trust report": "reports/secret-scan.md"
+  }
+}
