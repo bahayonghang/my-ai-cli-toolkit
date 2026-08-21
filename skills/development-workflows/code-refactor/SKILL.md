@@ -25,7 +25,7 @@ Choose the mode from the user's scope.
 
 - **Broad request**: If the user says things like "refactor this module", "clean up this project", or "optimize the code structure", inspect first, propose safe refactor slices, and wait for user approval before broad edits.
 - **Narrow request**: If the user names a file, function, duplicated block, dead symbol, or specific cleanup, directly implement the smallest safe slice and verify it.
-- **Review-only request**: If the user asks for code quality review or maintainability findings without asking to edit, use a review skill such as `code-quality-review` instead.
+- **Review-only request**: If the user asks for an independent diff or PR review (functional regressions, concurrency, test gaps) without asking to edit, use `code-auditor`. If the user asks for code quality review or maintainability findings without asking to edit, use `code-quality-review`.
 - **Architecture/RFC request**: If the user wants deep-module design, module-boundary candidates, or an architecture RFC rather than a behavior-preserving refactor, treat that as a separate design effort and surface it instead of refactoring in place.
 
 ## Refactor Types

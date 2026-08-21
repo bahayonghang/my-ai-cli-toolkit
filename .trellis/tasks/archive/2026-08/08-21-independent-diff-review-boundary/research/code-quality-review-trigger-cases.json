@@ -1,0 +1,79 @@
+{
+  "note": "code-quality-review 0.3.0 trigger table. 改动的分层 is in maintainability so the layering prompt hits two families. Do not list auditor-only phrases in positive_concepts.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["maintainability", "structure", "quality_review"],
+  "positive_concepts": {
+    "maintainability": [
+      "maintainability",
+      "可维护性",
+      "easy to understand",
+      "modify, test, and extend",
+      "改动的分层"
+    ],
+    "structure": [
+      "structure",
+      "abstraction",
+      "duplication",
+      "file growth",
+      "canonical ownership",
+      "refactoring opportunities",
+      "分层与归属",
+      "分层",
+      "归属",
+      "结构",
+      "重构机会"
+    ],
+    "quality_review": [
+      "code quality review",
+      "代码质量审查",
+      "代码质量"
+    ]
+  },
+  "negative_patterns": [
+    "全维度代码审计",
+    "全维度的代码审计",
+    "independent reviewer",
+    "功能回归",
+    "测试盲区",
+    "替改动辩护",
+    "conventional commit"
+  ],
+  "should_trigger": [
+    {
+      "text": "帮我审查一下 order_service.ts 的代码质量，重点看可维护性和结构问题。",
+      "family": "quality-zh"
+    },
+    {
+      "text": "Do a maintainability review of this change and point out abstraction and duplication issues.",
+      "family": "maintainability-en"
+    },
+    {
+      "text": "看看这次改动的分层和归属对不对，有没有该拆的大文件。",
+      "family": "layering-zh"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Write a Conventional Commit for the staged auth fix.",
+      "family": "commit"
+    },
+    {
+      "text": "Implement the new checkout page from this design.",
+      "family": "implementation-only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "请以独立代码审查者的身份检查当前 Git diff。不要根据原开发思路替改动辩护，重点寻找功能回归、遗漏场景、错误假设、并发问题和测试盲区。暂时不要修改代码，先按严重程度列出问题，并提供对应文件和证据。",
+      "family": "independent-diff-auditor"
+    },
+    {
+      "text": "对这个项目做一次全维度的代码审计，正确性、安全、性能、可读性、测试和架构都要看。",
+      "family": "full-spectrum-auditor"
+    },
+    {
+      "text": "别只做 review 了，直接帮我把重复的逻辑重构掉、把过大的函数拆开。",
+      "family": "code-refactor"
+    }
+  ]
+}

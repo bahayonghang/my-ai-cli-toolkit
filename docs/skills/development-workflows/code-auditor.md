@@ -4,14 +4,14 @@
 
 ## 用途概览
 
-Structured code review across correctness, security, performance, readability, testing, and architecture.
+Independent pre-merge review of a git diff, PR, or named files.
 
 ## 触发场景
 
-- the user asks to review a PR, inspect git changes before merge, audit a directory or file set, or run a full-spectrum multi-dimension audit of an entire project across all six dimensions / 全维度代码审计
-- Not for reviews focused only on structure, maintainability, or refactoring opportunities
-- not for repository health reports spanning non-code dimensions such as compliance, privacy, cost, or accessibility
-- Output follows the discussion language
+- the user asks to review a PR, inspect current git changes, or hunt functional regressions, missed scenarios, wrong assumptions, concurrency bugs, and test gaps as an independent reviewer who does not defend the author's approach / 独立审查、功能回归、遗漏场景、错误假设、并发、测试盲区
+- Also use for a full-spectrum multi-dimension project audit across correctness, security, performance, readability, testing, and architecture / 全维度代码审计 / 全维度的代码审计
+- Not for maintainability-only or structure/refactoring reviews
+- not for applying code changes
 
 ## 元数据
 
@@ -19,7 +19,7 @@ Structured code review across correctness, security, performance, readability, t
 | --- | --- |
 | 名称 | `code-auditor` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.3.0` |
+| 版本 | `0.4.0` |
 | 标签 | `code-review`, `quality-assurance`, `security`, `performance`, `best-practices`, `testing`, `multi-language` |
 
 ## 安装命令

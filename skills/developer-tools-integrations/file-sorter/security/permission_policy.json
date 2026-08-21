@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "reviewed_at": "2026-08-21",
+  "capabilities": {
+    "filesystem_scan": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "scripts/file_sorter.py scan may read directory entries under an absolute --root. It must not follow symlinks or write files except an optional --output JSON.",
+      "reason": "A review plan needs an inventory of the target folder.",
+      "expires_at": "2026-11-19",
+      "evidence": [
+        "SKILL.md",
+        "references/scan-safety.md",
+        "tests/file-sorter.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must authorize directory reads.",
+        "claude": "Bash may run the helper; scan remains non-mutating aside from optional JSON output.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to scan arbitrary disks."
+      }
+    },
+    "filesystem_move": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "apply --execute may mkdir destination folders under scan_root and shutil.move planned items when ok_to_apply is true and identity checks pass.",
+      "reason": "Approved plans need a deterministic mover. Default apply is dry-run.",
+      "expires_at": "2026-11-19",
+      "evidence": [
+        "SKILL.md",
+        "references/review-apply.md",
+        "tests/file-sorter.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must require this-turn plan_id approval before --execute.",
+        "claude": "Bash may run the helper; SKILL forbids --execute without this-turn approval.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to move files."
+      }
+    },
+    "filesystem_undo": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "undo --execute may move sidecar destinations back to recorded sources when size matches and the source path is free. It must not delete or overwrite.",
+      "reason": "Completed apply entries need a reversible sidecar.",
+      "expires_at": "2026-11-19",
+      "evidence": [
+        "references/review-apply.md",
+        "tests/file-sorter.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; undo --execute needs this-turn approval of the sidecar.",
+        "claude": "Bash may run the helper; SKILL forbids --execute without approval.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to undo moves."
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "note": "file-sorter 0.1.0 trigger boundary. Domain concept table replaces qiaomu-meta default skill-authoring concepts.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["folder", "organize", "plan_first"],
+  "positive_concepts": {
+    "folder": ["folder", "directory", "downloads", "目录", "文件夹"],
+    "organize": ["organize", "categorize", "sort", "整理", "分类", "归档"],
+    "rename": ["rename", "filename", "重命名"],
+    "plan_first": ["plan", "review", "dry-run", "计划", "审阅"],
+    "apply": ["apply", "execute", "move", "执行", "移动"]
+  },
+  "negative_patterns": ["git worktree", "playwright mcp", "conventional commit", "github release"],
+  "should_trigger": [
+    {"text": "My Downloads folder is a mess. Categorize the files and show a plan first.", "family": "downloads-en"},
+    {"text": "帮我整理这个目录里的文件，按类别建文件夹。", "family": "organize-zh"},
+    {"text": "Suggest rename ideas for pictures in this folder.", "family": "rename"},
+    {"text": "Organize this mixed archive folder with more refined categories.", "family": "refined"},
+    {"text": "审阅后再移动这些 Downloads 文件。", "family": "review-zh"},
+    {"text": "Organize files that all live in one parent directory.", "family": "same-parent"}
+  ],
+  "should_not_trigger": [
+    {"text": "Create an isolated git worktree for feat/login.", "family": "worktree"},
+    {"text": "Kill leaked Playwright MCP node processes.", "family": "process-cleanup"},
+    {"text": "Write a Conventional Commit for the staged auth fix.", "family": "commit"},
+    {"text": "Publish the GitHub Release for v1.2.0.", "family": "release"}
+  ],
+  "near_neighbor": [
+    {"text": "Restructure src/ in this Node repo so helpers live under lib/.", "family": "source-refactor"},
+    {"text": "Delete duplicate PDFs in Downloads.", "family": "dedupe-delete"},
+    {"text": "Install the AI File Sorter desktop app.", "family": "desktop-app"}
+  ]
+}

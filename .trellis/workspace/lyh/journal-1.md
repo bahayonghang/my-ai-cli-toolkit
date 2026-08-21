@@ -1455,3 +1455,57 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Status
 
 [OK] **Completed**
+
+
+## Session 45: 新增 file-sorter skill
+
+**Date**: 2026-08-21
+**Task**: 新增 file-sorter skill
+**Branch**: `dev`
+
+### Summary
+
+将 AI File Sorter 规则转为审阅先行的 file-sorter skill，默认 dry-run，批准后 apply 并写 undo sidecar。
+
+### Main Changes
+
+- 新增 skills/developer-tools-integrations/file-sorter 与 suite AGENTS.md、docs catalog
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `279ff3832ee129af3fd637cf8bc130e9207be995` | (see git log) |
+
+### Testing
+
+- [OK] just ci；trigger eval 13/13；file-sorter Node 测试 7/7
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无；任务已归档
+
+
+## Session 46: 独立 diff 审查姿态写入 code-auditor 并收紧双审查边界
+
+**Date**: 2026-08-21
+**Task**: 独立 diff 审查姿态写入 code-auditor 并收紧双审查边界
+**Branch**: `dev`
+
+### Summary
+
+把独立 Git diff 审查姿态写入 code-auditor 0.4.0 的 pr/dir：不替改动辩护，主搜查功能回归、遗漏场景、错误假设、并发和测试盲区。code-quality-review 0.3.0 去掉 PR 质量与架构质量触发，半成功状态交 auditor。trigger_eval 两边全过，just ci 通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5e24a2e8` | (see git log) |
+
+### Status
+
+[OK] **Completed**

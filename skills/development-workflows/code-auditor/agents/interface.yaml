@@ -1,7 +1,7 @@
 interface:
   display_name: "Code Auditor"
-  short_description: "Review diffs or audit code across six dimensions"
-  default_prompt: "Use $code-auditor to review the requested PR, changes, files, directory, or project across correctness, security, performance, readability, testing, and architecture. Route whole-project requests to the full-spectrum project audit, keep maintainability-only and non-code repository health reports out of scope, and follow the user's language."
+  short_description: "Independent pre-merge review of a git diff, PR, or named files; also full-spectrum project audits"
+  default_prompt: "Use $code-auditor as an independent reviewer of the requested PR, git diff, or named files. Hunt functional regressions, missed scenarios, wrong assumptions, concurrency bugs, and test gaps; do not defend the author's approach. Also use it for a full-spectrum project audit across correctness, security, performance, readability, testing, and architecture. Keep maintainability-only and structure/refactoring reviews, product-code edits, and repository health reports spanning compliance, privacy, cost, or accessibility out of scope. Do not modify product code. Follow the user's language."
 compatibility:
   canonical_format: "agent-skills"
   adapter_targets:

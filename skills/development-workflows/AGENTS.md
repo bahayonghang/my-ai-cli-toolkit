@@ -92,20 +92,32 @@ where they agree, those files are the older reference.
 ## Routing: code-auditor vs code-quality-review
 
 These two review skills are deliberately complementary, not duplicates — do not merge them.
-They differ on purpose, trigger surface, and output contract:
+They differ on purpose, trigger surface, stance, and output contract:
 
-- **Purpose.** `code-auditor` is the full-spectrum, pre-merge gate across six dimensions
-  (correctness, security, performance, readability, testing, architecture) with `pr` /
-  `dir` / `project` routes. `code-quality-review` is the single maintainability/structure
-  lens: abstraction quality, branching complexity, file growth, boundary and canonical
-  ownership, duplication, and behavior-preserving refactoring opportunities.
-- **Triggers / routing.** A bare `code review`, `review this PR`, or a full-spectrum /
-  multi-dimension audit (`全维度代码审计`) defaults to `code-auditor`. `code-quality-review`
-  owns the qualified maintainability requests (`代码质量审查`, `可维护性审查`,
-  `architecture quality review`, `code review focused on quality/maintainability`). Neither
-  `description` should capture the other's turf; each ships near-neighbor routing-negative
-  evals that lock the hand-off (code-auditor #5 defers maintainability-only reviews to
-  code-quality-review; code-quality-review #7 defers full-spectrum audits to code-auditor).
+- **Purpose.** `code-auditor` is the independent pre-merge gate for a git diff, PR, or
+  named files (`pr` / `dir`), plus the full-spectrum six-dimension project audit
+  (`project`: correctness, security, performance, readability, testing, architecture).
+  `code-quality-review` is the single maintainability/structure lens: abstraction
+  quality, branching complexity, file growth, boundary and canonical ownership,
+  duplication, layering and ownership of the change (`改动的分层与归属`), and
+  behavior-preserving refactoring opportunities.
+- **Triggers / routing.** Independent git-diff / PR review, or a hunt for functional
+  regression, missed scenarios, wrong assumptions, concurrency, or test gaps
+  (`功能回归` / `并发` / `测试盲区`) → `code-auditor` `pr` / `dir`. Full-spectrum /
+  `全维度代码审计` → `code-auditor` `project`. Maintainability / structure / abstraction
+  / `代码质量审查` / `可维护性审查` / `改动的分层与归属` → `code-quality-review`. Apply
+  the refactor → `code-refactor`. Half-applied state and non-atomic related updates
+  are correctness findings for `code-auditor`, not CQR. Neither `description` should
+  capture the other's turf; each ships near-neighbor routing-negative evals that lock
+  the hand-off (code-auditor #5 defers maintainability-only reviews to
+  code-quality-review; code-auditor #9 defers non-code health reports;
+  code-quality-review #7 defers full-spectrum audits; code-quality-review #9 defers
+  the independent-diff prompt).
+- **Stance (`pr` / `dir`).** Treat the diff as untrusted work. Do not rebuild the
+  author's plan to excuse missing handling. Hunt the five behavioral classes first.
+  Report security and performance when the diff introduces them. Report readability /
+  structure / architecture in `pr` / `dir` only when they create a merge risk.
+  Product code is read-only.
 - **Output contract.** `code-auditor` maps an internal severity model
   (`critical`/`high`/`medium`/`low`/`info`) to human labels (`[必须修复]` / `[建议修改]` /
   `[仅供参考]`). `code-quality-review` returns a `Verdict` line plus findings with stable

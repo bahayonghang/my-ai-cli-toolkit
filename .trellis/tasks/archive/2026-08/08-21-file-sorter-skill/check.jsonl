@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "校验 frontmatter、docs-sync、<skill-dir> 命令"}
+{"file": "scripts/check.py", "reason": "CANONICAL_CATEGORY_SLUGS 与 SKILL.md 字段"}
+{"file": "skills/developer-tools-integrations/windows-dev-process-cleanup/SKILL.md", "reason": "审计后授权执行的近邻对照"}
+{"file": ".trellis/tasks/08-21-file-sorter-skill/research/source-capability-map.md", "reason": "源规则锚点，核对实现是否越界"}
+{"file": ".trellis/tasks/08-21-file-sorter-skill/research/prior-art-research.md", "reason": "核对未把已拒绝机制（去重删除、PARA、无审阅移动）做进包"}

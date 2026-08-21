@@ -2,9 +2,9 @@
 
 House standard for the skills in this directory: `agent-skill-review`,
 `agents-md-improver`, `ast-grep`, `claude-context-improver`,
-`codex-workflow-recommender`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`. These skills package
+`codex-workflow-recommender`, `file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, goal
-authoring). They drifted apart on script paths, evals, and
+authoring, local file review plans). They drifted apart on script paths, evals, and
 interface files; new or edited skills here should match the conventions below so
 the suite does not drift again. This file mirrors
 `../git-github-collaboration/AGENTS.md`; where the two agree, that file is the
@@ -33,7 +33,7 @@ older reference.
 - Bundled scripts self-locate via `Path(__file__)`, so only the script _path_ must
   resolve. Keep the Windows-friendly interpreter fallback (`python` / `py -3`)
   that `goal-meta-skill` shows; do not assume a single interpreter name.
-- Only `goal-meta-skill` ships scripts. The read/audit
+- `goal-meta-skill` and `file-sorter` ship scripts. The read/audit
   skills legitimately have none — that is not a gap.
 
 ## `allowed-tools`
@@ -50,6 +50,7 @@ bare `Bash` when the skill only runs a known command family.
 | ast-grep                   | `Read, Glob, Grep, Bash, Write`                                      | runs ast-grep, writes rule files             |
 | claude-context-improver    | `Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git *), Bash(find *)` | audits + edits CLAUDE.md/rules/code_map; asks repo-vs-global scope |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
+| file-sorter                | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | scans one folder; apply --execute only after plan approval |
 | goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | reads refs/project metadata; runs goal lint   |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |

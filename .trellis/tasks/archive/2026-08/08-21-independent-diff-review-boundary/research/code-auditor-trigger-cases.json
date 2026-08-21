@@ -1,0 +1,114 @@
+{
+  "note": "code-auditor 0.4.0 trigger table. Plurals and six_dimensions exist so English PR prompts and 全维度的代码审计 reach the 0.34 family-hit threshold. Domain table replaces qiaomu-meta default skill-authoring concepts.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["pr_diff", "independent", "behavioral"],
+  "positive_concepts": {
+    "pr_diff": [
+      "git diff",
+      "git changes",
+      "review a PR",
+      "review this PR",
+      "当前 Git diff",
+      "审查 PR",
+      "PR",
+      "named files"
+    ],
+    "independent": [
+      "independent reviewer",
+      "independent",
+      "does not defend",
+      "独立审查",
+      "替改动辩护"
+    ],
+    "behavioral": [
+      "functional regression",
+      "functional regressions",
+      "missed scenario",
+      "missed scenarios",
+      "wrong assumption",
+      "wrong assumptions",
+      "concurrency",
+      "test gap",
+      "test gaps",
+      "功能回归",
+      "遗漏场景",
+      "错误假设",
+      "并发",
+      "测试盲区",
+      "测试缺口"
+    ],
+    "project_audit": [
+      "full-spectrum",
+      "multi-dimension",
+      "全维度代码审计",
+      "全维度的代码审计",
+      "全维度"
+    ],
+    "six_dimensions": [
+      "correctness",
+      "security",
+      "performance",
+      "readability",
+      "testing",
+      "architecture",
+      "正确性",
+      "安全",
+      "性能",
+      "可读性",
+      "测试",
+      "架构"
+    ],
+    "read_only": [
+      "do not modify",
+      "不要修改代码"
+    ]
+  },
+  "negative_patterns": [
+    "代码质量审查",
+    "可维护性审查",
+    "conventional commit",
+    "github release"
+  ],
+  "should_trigger": [
+    {
+      "text": "请以独立代码审查者的身份检查当前 Git diff。不要根据原开发思路替改动辩护，重点寻找功能回归、遗漏场景、错误假设、并发问题和测试盲区。暂时不要修改代码，先按严重程度列出问题，并提供对应文件和证据。",
+      "family": "user-prompt-zh"
+    },
+    {
+      "text": "Review this PR before merge and call out functional regressions, missed scenarios, and test gaps.",
+      "family": "pr-review-en"
+    },
+    {
+      "text": "帮我做这次 PR 的代码审查，重点列出阻塞问题和测试缺口。",
+      "family": "pr-review-zh"
+    },
+    {
+      "text": "对这个项目做一次全维度的代码审计，正确性、安全、性能、可读性、测试和架构都要看。",
+      "family": "project-audit-zh"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Implement the new checkout page from this design and add the backend endpoint.",
+      "family": "implementation-only"
+    },
+    {
+      "text": "Write a Conventional Commit for the staged auth fix.",
+      "family": "commit"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "帮我看看 src/ 的结构和可维护性，抽象合不合理，有没有适合重构的大文件。",
+      "family": "code-quality-review"
+    },
+    {
+      "text": "给我一份包含合规、隐私、无障碍、成本和发布准备度的仓库健康报告。",
+      "family": "repository-health"
+    },
+    {
+      "text": "别只做 review 了，直接帮我把重复的逻辑重构掉、把过大的函数拆开。",
+      "family": "code-refactor"
+    }
+  ]
+}

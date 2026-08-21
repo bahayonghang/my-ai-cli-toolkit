@@ -1,0 +1,180 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "apply",
+    "folder",
+    "organize",
+    "plan_first",
+    "rename"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 13,
+    "passed": 13,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "My Downloads folder is a mess. Categorize the files and show a plan first.",
+        "family": "downloads-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "folder",
+          "organize",
+          "plan_first"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我整理这个目录里的文件，按类别建文件夹。",
+        "family": "organize-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "folder",
+          "organize"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Suggest rename ideas for pictures in this folder.",
+        "family": "rename",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "folder",
+          "rename"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Organize this mixed archive folder with more refined categories.",
+        "family": "refined",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "folder",
+          "organize"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "审阅后再移动这些 Downloads 文件。",
+        "family": "review-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "apply",
+          "folder",
+          "plan_first"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Organize files that all live in one parent directory.",
+        "family": "same-parent",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "folder",
+          "organize"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Create an isolated git worktree for feat/login.",
+        "family": "worktree",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "git worktree"
+      },
+      {
+        "prompt": "Kill leaked Playwright MCP node processes.",
+        "family": "process-cleanup",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "playwright mcp"
+      },
+      {
+        "prompt": "Write a Conventional Commit for the staged auth fix.",
+        "family": "commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "conventional commit"
+      },
+      {
+        "prompt": "Publish the GitHub Release for v1.2.0.",
+        "family": "release",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "github release"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "Restructure src/ in this Node repo so helpers live under lib/.",
+        "family": "source-refactor",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Delete duplicate PDFs in Downloads.",
+        "family": "dedupe-delete",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "folder"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Install the AI File Sorter desktop app.",
+        "family": "desktop-app",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

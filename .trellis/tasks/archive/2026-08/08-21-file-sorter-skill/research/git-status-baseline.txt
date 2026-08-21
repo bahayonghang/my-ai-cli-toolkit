@@ -1,0 +1,9 @@
+?? .trellis/tasks/08-21-file-sorter-skill/check.jsonl
+?? .trellis/tasks/08-21-file-sorter-skill/design.md
+?? .trellis/tasks/08-21-file-sorter-skill/implement.jsonl
+?? .trellis/tasks/08-21-file-sorter-skill/implement.md
+?? .trellis/tasks/08-21-file-sorter-skill/prd.md
+?? .trellis/tasks/08-21-file-sorter-skill/research/git-status-baseline.txt
+?? .trellis/tasks/08-21-file-sorter-skill/research/prior-art-research.md
+?? .trellis/tasks/08-21-file-sorter-skill/research/source-capability-map.md
+?? .trellis/tasks/08-21-file-sorter-skill/task.json

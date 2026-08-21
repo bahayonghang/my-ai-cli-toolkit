@@ -1,6 +1,6 @@
 ---
 name: code-auditor
-description: "Structured code review across correctness, security, performance, readability, testing, and architecture. Use when the user asks to review a PR, inspect git changes before merge, audit a directory or file set, or run a full-spectrum multi-dimension audit of an entire project across all six dimensions / 全维度代码审计. Not for reviews focused only on structure, maintainability, or refactoring opportunities; not for repository health reports spanning non-code dimensions such as compliance, privacy, cost, or accessibility. Output follows the discussion language."
+description: "Independent pre-merge review of a git diff, PR, or named files. Use when the user asks to review a PR, inspect current git changes, or hunt functional regressions, missed scenarios, wrong assumptions, concurrency bugs, and test gaps as an independent reviewer who does not defend the author's approach / 独立审查、功能回归、遗漏场景、错误假设、并发、测试盲区. Also use for a full-spectrum multi-dimension project audit across correctness, security, performance, readability, testing, and architecture / 全维度代码审计 / 全维度的代码审计. Not for maintainability-only or structure/refactoring reviews; not for applying code changes; not for repository health reports spanning compliance, privacy, cost, or accessibility. Do not modify product code. Output follows the discussion language."
 category: development-workflows
 tags:
   - code-review
@@ -10,7 +10,7 @@ tags:
   - best-practices
   - testing
   - multi-language
-version: 0.3.0
+version: 0.4.0
 argument-hint: [target-files-or-directory]
 allowed-tools: Read, Write, Glob, Grep, Bash
 ---
@@ -46,6 +46,17 @@ Examples:
 - Be direct, precise, and professional.
 - Lead with the risk or behavioral impact.
 - Prefer concrete fixes over abstract criticism.
+
+## Independent Reviewer Stance
+
+Applies only to `pr` and `dir`. The `project` route still follows `references/audit-workflow.md`.
+
+1. Treat the diff as untrusted work. Do not rebuild the author's plan in order to excuse missing handling.
+2. Hunt first: functional regression, missed scenarios, wrong assumptions, concurrency, and test gaps.
+3. Report security and performance when the diff introduces them.
+4. Report readability, structure, or architecture in `pr`/`dir` only when they create a merge risk (wrong layer that causes a bug, untestable public seam, public API with no regression test).
+5. Do not edit product code. `Write` is only for an explicit opt-in report path (`docs/audits/` for `project`). `pr`/`dir` stay in-chat unless the user asks to save the report.
+6. Findings first, sorted by severity. Each finding names a file and evidence. An empty `LGTM` is forbidden.
 
 ## Severity Contract
 
@@ -86,6 +97,8 @@ The `project` route owns full-spectrum engineering audits that cover correctness
 
 > Paths below starting with `<skill-dir>` are relative to this skill's base directory, announced when the skill loads. Substitute that literal path; it is not an environment variable. Bundled scripts self-locate, so only the path needs to resolve.
 
+Product code is read-only. Do not edit, reformat, refactor, or commit the code under review. Use `Write` only for an explicit opt-in report (`docs/audits/` on `project`). `pr`/`dir` reports stay in chat unless the user asks to save them.
+
 1. Determine the review target and select `pr`, `dir`, or `project` using the routing table:
    - If `$ARGUMENTS` contains a PR number or URL, fetch the PR diff via `gh pr diff <number>` and use it as the review target. If `gh` is unavailable, ask the user to provide the diff manually.
    - If `$ARGUMENTS` mentions "PR" or "MR" without a specific number, check for an active PR on the current branch via `gh pr view`. If none exists, ask the user to specify the PR number.
@@ -111,6 +124,7 @@ The `project` route owns full-spectrum engineering audits that cover correctness
 - Reference files and lines whenever the evidence is concrete.
 - Make praise specific. Example: `错误处理链路完整，回滚逻辑也覆盖到了超时分支。`
 - If the scope is small, produce concise prose. If the scope is larger, produce a structured report.
+- Do not modify product code. Fix examples in the report are suggestions, not applied edits.
 - Treat `evals/` as route and output regression fixtures, not runtime instructions.
 
 ## Error Handling
@@ -121,3 +135,4 @@ The `project` route owns full-spectrum engineering audits that cover correctness
 - Workspace too large (>200 files): confirm switching to the `project` route; narrow only when the user declines the project audit.
 - Missing language guide: fall back to general best practices and the dimension rules.
 - Mixed-language repositories: keep one consistent human-facing language per response instead of switching tone mid-report.
+- User asks to apply fixes during review: keep product code unchanged; present findings first and wait for an explicit implementation request.

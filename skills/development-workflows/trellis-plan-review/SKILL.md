@@ -1,6 +1,6 @@
 ---
 name: trellis-plan-review
-description: "Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, and reports evidence-backed findings with a verdict. Compares the plan against the real diff once the task has started. Use when the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation. Not for reviewing a code diff by itself (code-auditor for full-spectrum, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task."
+description: "Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, and reports evidence-backed findings with a verdict. Compares the plan against the real diff once the task has started. Use when the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation. Not for reviewing a code diff by itself (code-auditor for independent or full-spectrum review, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task."
 category: development-workflows
 tags:
   - trellis
@@ -90,8 +90,8 @@ A plan with no defects gets an empty findings list. Do not manufacture findings 
 
 ## 5. Routing
 
-- Reviewing a code diff on its own: `code-auditor` (full-spectrum) or `code-quality-review`
-  (maintainability only).
+- Reviewing a code diff on its own: `code-auditor` (independent git-diff / full-spectrum)
+  or `code-quality-review` (maintainability only).
 - Diagnosing an underspecified task or listing unknowns: `unknowns-first`.
 - Writing, repairing, or executing the plan: the project's own Trellis planning and execution
   flow. Not this skill.

@@ -1,0 +1,28 @@
+{
+  "id": "independent-diff-review-boundary",
+  "name": "independent-diff-review-boundary",
+  "title": "独立 diff 审查思想写入 code-auditor 并收紧双审查 skill 边界",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "skills",
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-08-21",
+  "completedAt": "2026-08-21",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "description": "Put independent git-diff review stance into code-auditor pr/dir; tighten code-quality-review triggers so the two skills no longer collide."
+  }
+}
