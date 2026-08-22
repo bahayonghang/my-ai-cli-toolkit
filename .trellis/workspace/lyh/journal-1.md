@@ -1509,3 +1509,24 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Status
 
 [OK] **Completed**
+
+
+## Session 47: goal-meta-skill Trellis 提交归档节奏与终稿展示
+
+**Date**: 2026-08-22
+**Task**: goal-meta-skill Trellis 提交归档节奏与终稿展示
+**Branch**: `dev`
+
+### Summary
+
+goal-meta-skill 升到 0.4.0：实施 Trellis 任务时先提交该任务相关产品改动再 task.py archive；父任务归档推迟到命名发布门。S6 终稿改为 text 围栏加字段一览。just ci 通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `96f60896` | (see git log) |
+
+### Status
+
+[OK] **Completed**
