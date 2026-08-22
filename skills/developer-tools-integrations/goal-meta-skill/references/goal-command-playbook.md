@@ -68,6 +68,8 @@ status: draft
 
 After the user saves the file, tell them to paste the delimited invocation. Setting a Claude goal immediately starts a turn; for Codex, the goal text is the first prompt.
 
+If Trellis cadence is injected, put it in the file's Contract section. The short `/goal` still points at Verification and Stop/Pause in that file.
+
 This skill drafts goal instructions. Do not start or execute the goal task unless the user explicitly asks for execution.
 
 Use `/goal` for work that benefits from persistence:
@@ -146,10 +148,14 @@ Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预�
 
 两份草案必须语义一致，不能一份扩大范围、一份缩小范围。英文版是兼容镜像，不是重新发挥。
 
+S4 把每份 `/goal` 正文放进 `text` 围栏，围栏内不要空行。用户确认后的 S6 形状见 `references/default-goal-strategy.md`：`最终可复制 /goal` 围栏外再给 `字段一览`。
+
 如果用户明确说“只要中文版”或“只要英文版”，遵从用户要求。
 
-```text
+````markdown
 推荐执行版（中文，可直接复制）
+
+```text
 /goal 基于用户需求创建第一版本地 MVP，先读取项目已有命令和约束，实现核心用户可见流程，并避免改动无关系统。
 验证：运行项目提供的最小相关检查，启动本地应用或对应运行环境，完整走通一次核心流程，并用日志、截图或命令输出作为证据。
 约束：不加入账号、付费服务、生产变更、破坏性操作或无关功能，除非用户明确要求。
@@ -157,6 +163,7 @@ Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预�
 迭代策略：一次实现一个聚焦工作流，每次有意义改动后重跑检查，重试前先读日志，最多做 3 轮聚焦改进后报告剩余风险。
 完成条件：核心流程有运行证据证明可用，检查通过或明确说明缺少配置。
 暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时暂停。
+```
 
 默认选择理由：先做本地 MVP，因为它能最快验证核心体验，同时避免账号、后端和发布流程拖慢第一版。
 
@@ -168,6 +175,8 @@ Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预�
 你可以直接回复：按默认，或回复类似 1B 2A 3C。
 
 Goal Draft (English-compatible)
+
+```text
 /goal Create a first-version local MVP for the requested task, inspect project-provided commands before changing code, implement the core user-visible workflow, and keep unrelated systems unchanged.
 Verification: run the smallest project-provided checks, start the local app or relevant runtime, complete the core workflow once, and capture logs/screenshots or command output as evidence.
 Constraints: do not add accounts, paid services, production changes, destructive operations, or unrelated features unless requested.
@@ -176,6 +185,7 @@ Iteration policy: implement one focused workflow at a time, rerun checks after m
 Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
 Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
 ```
+````
 
 The six practical elements are:
 
@@ -241,6 +251,9 @@ Budget, turn, or time wording is always a soft stop clause. Say, for example, `T
 - In `Pause if`, include anything that needs human judgment or external permission.
 - If the domain is unfamiliar or specialized, do not invent domain rules. Require an initial discovery pass over authoritative project docs, sample data, official references, or user-provided material.
 - Allow model taste and implementation judgment inside the boundary, but do not allow scope expansion or weaker verification.
+- At S4, put the `/goal` body in a `text` fence with no blank lines inside the fence.
+- After confirmation, S6 is `最终可复制 /goal` plus 字段一览 as defined in `references/default-goal-strategy.md`.
+- When the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md`. Do not invent placeholder tokens in executable drafts.
 
 ## Strong Examples
 
@@ -296,6 +309,32 @@ Claude Code condition variant:
 
 ```text
 /goal The goal-example-skill package is complete: all required files exist under the requested skill root (file listing shown in the conversation), YAML/JSON syntax checks and the validation script exit 0 with output in the conversation, and no files outside the skill directory changed per git status; or stop after 12 turns and summarize remaining issues.
+```
+
+### Trellis Task Implementation
+
+Codex (commit the child-task product files, then archive; keep the parent until 发布门 `just ci`):
+
+```text
+/goal 实施 Trellis 子任务 .trellis/tasks/08-22-checkout-discount：先读该任务 prd.md、design.md 与根 AGENTS.md，按任务边界修复结账百分比优惠重复应用，每完成一个可独立验收的任务先提交该任务相关产品改动，再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount。
+验证：运行 just test-checkout 与 just ci，保存退出码和输出；用 git status --porcelain -uall 确认产品提交只含 src/checkout/ 与 tests/checkout/。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
+迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. 发布门 just ci 退出码为 0。3. 父任务在发布门通过前保持未归档。
+暂停条件：任务范围外出现脏文件；归档自动提交失败；父任务仍有未归档子任务却被要求归档；出现 git add -f .trellis/ 请求；需要凭证、生产数据或破坏性操作。
+```
+
+Claude Code condition variant (transcript-visible proof, bounding clause, stop-and-report; do not recommend pause or resume management commands):
+
+```text
+/goal Trellis 子任务 .trellis/tasks/08-22-checkout-discount 已实施：百分比优惠只应用一次的回归证据已出现在对话中，just test-checkout 与 just ci 退出码为 0 且输出贴进对话，可独立验收的任务先提交相关产品改动再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount，git status --porcelain -uall 证明产品提交未混入归档提交，父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前未归档；否则在 20 轮后停止并总结剩余问题。
+验证：运行 just test-checkout 和 just ci 并展示退出码；把 git status --porcelain -uall 与归档命令输出贴进对话。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
+迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. just ci 退出码为 0 且出现在对话中。3. 父任务在发布门通过前保持未归档。
+暂停条件：任务范围外出现脏文件、归档自动提交失败、父任务仍有未归档子任务却被要求归档、出现 git add -f .trellis/ 请求、需要凭证或破坏性操作时，停止并报告，等待人工决定。
 ```
 
 ## Anti-Patterns

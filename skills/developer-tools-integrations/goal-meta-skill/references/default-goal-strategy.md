@@ -68,6 +68,15 @@ Always add one short reason:
 默认选择理由：先做本地 MVP，因为它能最快验证核心体验，同时避免账号、后端和发布流程拖慢第一版。
 ```
 
+## Trellis Cadence Trigger
+
+When the stated outcome is Trellis task or child-task implementation, or
+reconnaissance finds `.trellis/tasks/` and the outcome is to execute that
+task tree, load `references/trellis-goal-cadence.md`. Do not inject that
+cadence for ordinary code or doc work merely because `.trellis/` exists.
+Fast-path `直接给` still injects only when the outcome text already names
+Trellis task implementation.
+
 ## Goal Length Rule
 
 Goal objectives (Codex) and completion conditions (Claude Code) are both limited to 4,000 characters. Most goals should stay well under that limit. If the best contract needs more room, output copy-ready `.planning/goal-<slug>.md` content and make the executable goal point to it:
@@ -152,4 +161,31 @@ Do not write `keep trying` or `until it looks good`.
 
 ## Finalization Rule
 
-After the user answers choices, output `最终可复制 /goal` and keep the response mostly to one code block. Do not repeat the full explanation unless asked.
+After the user confirms the draft, output this dual-layer S6 shape. Keep the
+response to the copy fence plus 字段一览. Do not repeat the full explanation
+or the 可选调整 questionnaire unless asked.
+
+````markdown
+最终可复制 /goal
+
+```text
+/goal ...
+```
+
+字段一览
+1. 目标结果：...
+2. 验证：...
+3. 约束：...
+4. 边界：...
+5. 迭代策略：...
+6. 完成条件：...
+7. 暂停条件：...
+8. Trellis 节奏：（仅注入时）先提交该任务相关改动，再 archive；父任务等到发布门。
+````
+
+Omit item 8 unless Trellis cadence was injected. Do not mention archive
+cadence in 字段一览 for ordinary non-task goals.
+
+Do not put blank lines inside the copy fence. Do not put 字段一览 inside
+the `/goal` body. The 字段一览 is a human edit map and does not count toward
+the 4,000-character `/goal` limit.

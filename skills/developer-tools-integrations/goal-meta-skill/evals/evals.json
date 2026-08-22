@@ -164,6 +164,57 @@
         "The goal includes a finite turn or improvement-round limit and stop-and-report behavior when the limit is reached.",
         "The boundary is `src/toolbar/`, commands and shortcuts remain unchanged, and no Claude-invalid pause/resume command appears."
       ]
+    },
+    {
+      "id": 15,
+      "prompt": "直接给 Codex /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`：修结账百分比优惠重复应用，只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查是 `just ci`。",
+      "expected_output": "A paste-ready Codex /goal whose iteration policy and stop condition require a product commit for the child task, then python ./.trellis/scripts/task.py archive.",
+      "files": [],
+      "assertions": [
+        "The executable command prefix is /goal.",
+        "Iteration policy or 完成条件/Stop when says to commit the task's related product changes first, then run python ./.trellis/scripts/task.py archive.",
+        "The /goal names the concrete task directory .trellis/tasks/08-22-checkout-discount rather than a placeholder token.",
+        "Constraints or 暂停条件/Pause if forbid git add -f .trellis/.",
+        "The skill itself does not execute git commit or task.py archive; it only drafts the /goal."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "把父任务 `.trellis/tasks/08-22-checkout` 和子任务 `.trellis/tasks/08-22-checkout-discount` 一起写成 Codex /goal。子任务做完不要立刻归档父任务。发布检查用侦察到的 `just ci`。",
+      "expected_output": "A /goal that defers parent archive until the named 发布门 just ci has passed and the child is archived.",
+      "files": [],
+      "assertions": [
+        "Parent .trellis/tasks/08-22-checkout is not archived as soon as the child finishes.",
+        "Parent archive is delayed until the 发布门 named just ci has passed.",
+        "The 发布门 is the reconnaissance or user-named parent check just ci, not a GitHub Release unless the user asked for a release task.",
+        "Deferral wording states that archiving a parent with active children would clear those children's parent field.",
+        "Child archive still follows commit-then-archive."
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "Single-turn fast-path fixture: 直接给 Codex 终稿，不要问我。侦察已看到 `.trellis/workflow.md` 和 `.trellis/tasks/`，但本次只要修 `src/parser/` 的 CSV 空行崩溃，只允许改 `src/parser/` 和 `tests/parser/`，验证命令是 `just test-parser`，这不是 Trellis 任务实施。",
+      "expected_output": "An ordinary parser bug-fix /goal with no Trellis archive cadence, despite .trellis/ existing in reconnaissance.",
+      "files": [],
+      "assertions": [
+        "The /goal does not mention task.py archive or Trellis 归档 cadence.",
+        "The /goal does not instruct archiving a parent or child Trellis task.",
+        "Verification uses just test-parser and boundaries stay on src/parser/ and tests/parser/.",
+        "Presence of .trellis/ in reconnaissance is not treated as a reason to inject commit-then-archive."
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "S6 fixture: 我已确认推荐执行版，请定稿，不要再给可选调整问卷。任务是为现有仪表盘修复筛选状态丢失，验证用项目最小测试，边界只改筛选状态相关文件。中文输出。",
+      "expected_output": "S6 dual-layer final: 最终可复制 /goal, one text fence containing the full /goal with no inner blank lines, then 字段一览 outside the fence.",
+      "files": [],
+      "assertions": [
+        "The response includes the heading 最终可复制 /goal.",
+        "The executable /goal body is inside a text fence.",
+        "字段一览 appears outside the fence and summarizes 目标结果, 验证, 约束, 边界, 迭代策略, 完成条件, and 暂停条件.",
+        "The fenced /goal body contains no blank lines.",
+        "The response does not repeat the full 可选调整 questionnaire."
+      ]
     }
   ]
 }

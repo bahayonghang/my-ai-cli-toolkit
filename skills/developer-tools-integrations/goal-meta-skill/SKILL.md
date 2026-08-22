@@ -1,8 +1,8 @@
 ---
 name: goal-meta-skill
 description: |
-  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path. Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, or bounded agent work definitions.
-version: 0.3.0
+  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path. Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, Trellis task implementation with 归档 cadence, or 终稿展示 with a copy fence and 字段一览.
+version: 0.4.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -42,6 +42,7 @@ Shared defaults:
 - Prefer concrete verification commands and artifacts over vague confidence phrases.
 - Prefer narrow write boundaries and explicit forbidden paths over broad permission.
 - Treat `Stop when` and `Pause if` as part of the same completion/blocking contract.
+- When the outcome is Trellis task or child-task implementation, load `references/trellis-goal-cadence.md` and encode commit-then-archive. Do not inject that cadence only because `.trellis/` exists.
 
 Platform selection (details in `references/platform-goal-facts.md`):
 
@@ -69,8 +70,8 @@ Claude Code-specific assumptions:
 2. **S1 — Reconnoiter.** In an existing project, follow the read-only pass in `references/default-goal-strategy.md`: root rules, real command sources, `git rev-parse`, `git branch`, `git status --porcelain -uall`, and related top-level paths. Do not run tests, write files, or inspect secrets/dependencies/generated output. Report findings for correction; on failure use a discovery-first goal. Skip this state when no project context exists.
 3. **S2 — Choose the path.** Concrete requirements or `直接给` / `按默认` go directly to S4. Material gaps in outcome, verification, boundaries, or risk tolerance go to S3.
 4. **S3 — Interview.** Each round restates the outcome, reports reconnaissance, and asks at most four human-only questions. Prefer numbered choices with defaults; allow open intent questions. Repeat until the user confirms or chooses defaults. Follow `references/interview-checklist.md`.
-5. **S4/S5 — Draft and revise.** Produce the complete bilingual contract (one language when requested), invite corrections, and revise until confirmed. Warn-but-proceed for repairable subjectivity by adding a stop condition and round limit. Use the platform rendering and verification anchors in `references/goal-command-playbook.md`.
-6. **S6 — Deliver.** Keep the executable goal within 4,000 characters. For longer/complex contracts, output the two-part `.planning/goal-<slug>.md` content and tell the user to save it before using the short file-pointer goal; do not write it without an explicit request. Remind Claude users that setting starts a turn and Codex users that goal text is the first prompt.
+5. **S4/S5 — Draft and revise.** Produce the complete bilingual contract (one language when requested) with each `/goal` body in a `text` fence and no blank lines inside that fence, invite corrections, and revise until confirmed. Warn-but-proceed for repairable subjectivity by adding a stop condition and round limit. Use the platform rendering and verification anchors in `references/goal-command-playbook.md`.
+6. **S6 — Deliver.** After confirmation, output `最终可复制 /goal` as one `text` fence plus `字段一览` outside the fence; do not repeat the full 可选调整 questionnaire unless asked. Keep the executable goal within 4,000 characters. For longer/complex contracts, output the two-part `.planning/goal-<slug>.md` content and tell the user to save it before using the short file-pointer goal; do not write it without an explicit request. Remind Claude users that setting starts a turn and Codex users that goal text is the first prompt.
 7. For file deliverables, run `python "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` or `py -3 "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` before calling the goal done. Add `--require-chinese-companion` for Chinese-first output.
 
 ## Output Contract
@@ -113,13 +114,15 @@ Claude Code rendering of the same request (condition style — proof lands in th
 暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时，停止并报告，等待人工决定。
 ```
 
-During S3, output a restatement, reconnaissance findings, and no more than four questions; do not emit a premature goal unless the user chooses the defaults. At S4/S6, output:
+During S3, output a restatement, reconnaissance findings, and no more than four questions; do not emit a premature goal unless the user chooses the defaults. At S4, output:
 
-1. `推荐执行版（中文，可直接复制）`: the best default `/goal` for the target platform.
+1. `推荐执行版（中文，可直接复制）`: the best default `/goal` for the target platform, inside a `text` fence with no blank lines in the `/goal` body.
 2. `默认选择理由`: one concise sentence.
 3. `可选调整`: numbered choices with recommended defaults and short option labels (include the platform choice only when the platform is ambiguous).
 4. `你可以直接回复`: an example such as `按默认` or `1B 2A 3C`.
-5. `Goal Draft (English-compatible)`: a faithful English-compatible mirror with English field labels.
+5. `Goal Draft (English-compatible)`: a faithful English-compatible mirror with English field labels, also in a `text` fence.
+
+After the user confirms, S6 replaces that wrapper with `最终可复制 /goal`, one `text` fence, and `字段一览` outside the fence. Do not put 字段一览 inside the `/goal` body.
 
 If the user writes in English, output only the English-compatible draft unless they ask for Chinese too.
 
@@ -155,14 +158,16 @@ Reject or revise a goal that:
 - treats vague words such as `高级`, `有质感`, or `professional` as verification instead of translating them into screenshots, runtime checks, review criteria, or iteration rules
 - recommends `/goal pause` or `/goal resume` to a Claude Code user
 - on Claude Code: relies on evidence the transcript evaluator cannot see, or has no bounding clause
+- injects Trellis archive cadence into a non-task goal, or archives a parent before the named 发布门
 
 ## Reference Files
 
 - `references/platform-goal-facts.md`: single source of truth for Codex vs Claude Code `/goal` behavior, rendering rules, and platform selection.
 - `references/goal-command-playbook.md`: the core `/goal` template, when to use it, examples, and anti-patterns.
-- `references/default-goal-strategy.md`: lazy-user defaults, unknown-domain discovery, risk classification, and direct-copy output rules.
+- `references/default-goal-strategy.md`: lazy-user defaults, unknown-domain discovery, risk classification, and dual-layer S6 output rules.
+- `references/trellis-goal-cadence.md`: optional adapter for Trellis task implementation — detection, commit-then-archive, parent/发布门, pause text. Not a core rule for every goal.
 - `references/interview-checklist.md`: question bank for turning vague tasks into strong goals.
-- `evals/evals.json`: behavior and routing fixtures for project reconnaissance, bounded interviews, applicability gates, and the direct fast path.
+- `evals/evals.json`: behavior and routing fixtures for project reconnaissance, bounded interviews, applicability gates, the direct fast path, Trellis cadence, and S6 字段一览.
 - `scripts/lint_goal_command.py`: lightweight checker for required `/goal` labels, unresolved placeholders, platform-specific rules (`--platform codex|claude|both`), the 4,000 character limit, and optional Chinese-first companion sections.
 
 ## 来源致谢
