@@ -1,0 +1,28 @@
+{
+  "id": "goal-meta-trellis-cadence",
+  "name": "goal-meta-trellis-cadence",
+  "title": "优化 goal-meta-skill：Trellis 提交归档节奏与终稿展示",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-08-22",
+  "completedAt": "2026-08-22",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "description": "Inject Trellis commit-then-archive cadence into goal-meta-skill outputs; defer parent archive until the release gate; dual-layer final /goal display."
+  }
+}
