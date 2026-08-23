@@ -1509,3 +1509,45 @@ Implemented an idea-and-BibTeX grounded literature-review skill with approval-ga
 ### Status
 
 [OK] **Completed**
+
+
+## Session 47: goal-meta-skill Trellis 提交归档节奏与终稿展示
+
+**Date**: 2026-08-22
+**Task**: goal-meta-skill Trellis 提交归档节奏与终稿展示
+**Branch**: `dev`
+
+### Summary
+
+goal-meta-skill 升到 0.4.0：实施 Trellis 任务时先提交该任务相关产品改动再 task.py archive；父任务归档推迟到命名发布门。S6 终稿改为 text 围栏加字段一览。just ci 通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `96f60896` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 48: 实现跨平台 Goal 持久化交接契约
+
+**Date**: 2026-08-23
+**Task**: 实现跨平台 Goal 持久化交接契约
+**Branch**: `dev`
+
+### Summary
+
+将 goal-meta-skill 升级至 v0.5.0，新增经授权的根 GOAL.md 安全持久化、五平台生命周期适配、严格合同 lint 与覆盖测试；完成网络证据、Qiaomu 治理记录、Trellis 规范及全量 CI 验证。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7e7fc049` | (see git log) |
+
+### Status
+
+[OK] **Completed**

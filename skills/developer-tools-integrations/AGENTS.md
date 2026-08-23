@@ -4,7 +4,7 @@ House standard for the skills in this directory: `agent-skill-review`,
 `agents-md-improver`, `ast-grep`, `claude-context-improver`,
 `codex-workflow-recommender`, `file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, goal
-authoring, local file review plans). They drifted apart on script paths, evals, and
+authoring and governed Goal handoff persistence, local file review plans). They drifted apart on script paths, evals, and
 interface files; new or edited skills here should match the conventions below so
 the suite does not drift again. This file mirrors
 `../git-github-collaboration/AGENTS.md`; where the two agree, that file is the
@@ -51,12 +51,15 @@ bare `Bash` when the skill only runs a known command family.
 | claude-context-improver    | `Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git *), Bash(find *)` | audits + edits CLAUDE.md/rules/code_map; asks repo-vs-global scope |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
 | file-sorter                | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | scans one folder; apply --execute only after plan approval |
-| goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | reads refs/project metadata; runs goal lint   |
+| goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named governed root-contract writer after confirmation |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |
 
-`agent-skill-review` and `goal-meta-skill` were missing `allowed-tools`; add them
-to match this table.
+The goal-meta Python grant covers exactly its documented linter and
+`persist_goal_contract.py` path. It is not a claim that the skill is wholly
+read-only: reconnaissance is read-only, while the named helper may write one
+confirmed root Markdown contract. Git remains inspection-only; the helper must
+not add, commit, push, ignore, or delete the contract.
 
 ## Evals
 
@@ -85,8 +88,7 @@ to match this table.
   `openai.yaml`). Never ship both. Required fields: `display_name`,
   `short_description`, `default_prompt`. Richer `compatibility` / `trust` /
   `degradation` blocks (as in `goal-meta-skill`) are allowed but optional.
-- `agent-skill-review` (platform-named `openai.yaml` only) and `goal-meta-skill`
-  (both `interface.yaml` and `openai.yaml`) are drift to normalize.
+- `agent-skill-review` (platform-named `openai.yaml` only) remains drift to normalize.
 
 ## Frontmatter
 

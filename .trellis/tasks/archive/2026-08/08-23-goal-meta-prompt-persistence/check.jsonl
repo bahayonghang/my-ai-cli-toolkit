@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Review frontmatter, script invocation, encoding, trigger/eval, and external-fact source compliance."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Review path, conflict, secret, partial-write, and non-echo failure behavior."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Review focused tests, full CI, generated docs ownership, and evidence boundaries."}
+{"file": "skills/developer-tools-integrations/AGENTS.md", "reason": "Review category tool grants, helper ownership, eval schema, and interface alignment."}
+{"file": ".trellis/tasks/08-23-goal-meta-prompt-persistence/research/feasibility-and-prior-art.md", "reason": "Check the implementation against official facts, deliberate scope limits, prior-art lessons, and missing evidence."}
+{"file": ".trellis/tasks/08-23-goal-meta-prompt-persistence/research/platform-goal-modes-grok-omp-kimi.md", "reason": "Check that every Grok/OMP/Kimi launcher and management claim matches the pinned primary-source platform matrix and preserves missing-evidence labels."}

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Quality bar for skill edits: description gates, companion titles, nested fences, docs-sync."}
+{"file": "skills/developer-tools-integrations/AGENTS.md", "reason": "Suite conventions the check agent must score against."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "just ci / generated docs / helper ownership."}
+{"file": ".trellis/tasks/08-22-goal-meta-trellis-cadence/research/trellis-archive-semantics.md", "reason": "Cadence and parent-unlink facts the generated /goal must not contradict."}

@@ -139,6 +139,45 @@ test('codex platform keeps base behavior for goals without bounding clause', () 
   assert.equal(result.status, 0, result.stderr);
 });
 
+test('grok and omp use the skill-owned portability limit wording', () => {
+  const oversized = baseGoalOnly.replace(
+    '/goal 为现有仪表盘修复筛选状态丢失问题，',
+    `/goal 为现有仪表盘修复筛选状态丢失问题，${'补充说明。'.repeat(850)}`,
+  );
+  for (const platform of ['grok', 'omp']) {
+    const result = lintText(oversized, ['--platform', platform]);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /goal-meta portability limit is 4000/);
+    assert.doesNotMatch(result.stderr, /Grok|Oh My Pi.*official.*cap/i);
+  }
+});
+
+test('platform-specific management commands cannot be borrowed', () => {
+  const cases = [
+    ['codex', '/goal drop'],
+    ['claude', '/goal pause'],
+    ['grok', '/goal next continue-later'],
+    ['omp', '/goal clear'],
+    ['kimi', '/goal budget 1000'],
+  ];
+  for (const [platform, command] of cases) {
+    const result = lintText(`${baseGoalOnly}\nManagement: ${command}\n`, [
+      '--platform',
+      platform,
+    ]);
+    assert.notEqual(result.status, 0, `${platform} accepted ${command}`);
+    assert.match(result.stderr, new RegExp(`not valid for ${platform}`, 'i'));
+  }
+});
+
+test('both remains Codex plus Claude and all five platform values parse', () => {
+  for (const platform of ['codex', 'claude', 'grok', 'omp', 'kimi', 'both', 'all']) {
+    const text = platform === 'claude' ? claudeConditionGoal : baseGoalOnly;
+    const result = lintText(text, ['--platform', platform]);
+    assert.equal(result.status, 0, `${platform}: ${result.stderr}`);
+  }
+});
+
 test('linter rejects /goal blocks beyond the 4,000 character platform limit', () => {
   const oversized = baseGoalOnly.replace(
     '/goal 为现有仪表盘修复筛选状态丢失问题，',
@@ -190,7 +229,7 @@ test('linter accepts an explicit soft-stop budget disclaimer', () => {
   assert.doesNotMatch(result.stderr, /goal text cannot set or enforce a platform runtime budget/);
 });
 
-test('skill allowed-tools stay exact, narrow, read-only, and body commands stay reachable', () => {
+test('skill allowed-tools stay exact and narrow while the named helper owns the governed write', () => {
   const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
   const allowedTools = skillText.match(/^allowed-tools:\s*(.+)$/m)?.[1];
   assert.equal(
@@ -210,4 +249,38 @@ test('skill allowed-tools stay exact, narrow, read-only, and body commands stay 
     assert.match(command, /^git\s+(?:status|branch|rev-parse)\b/);
   }
   assert.doesNotMatch(body, /`codex\s+[^`]+`/);
+  assert.match(body, /persist_goal_contract\.py/);
+  assert.match(body, /explicit|明确/i);
+});
+
+test('package metadata, platform registry, and behavior eval history stay synchronized', () => {
+  const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
+  assert.match(skillText, /^version:\s*0\.5\.0$/m);
+  for (const platform of ['Claude Code', 'Codex', 'Grok Build', 'Oh My Pi', 'Kimi Code']) {
+    assert.match(skillText, new RegExp(platform));
+  }
+
+  const interfaceText = readFileSync(path.join(skillRoot, 'agents', 'interface.yaml'), 'utf8');
+  for (const adapter of ['openai', 'claude', 'grok-build', 'oh-my-pi', 'kimi-code']) {
+    assert.match(interfaceText, new RegExp(`- "${adapter}"`));
+  }
+
+  const facts = readFileSync(path.join(skillRoot, 'references', 'platform-goal-facts.md'), 'utf8');
+  assert.match(facts, /Last verified: 2026-08-23/);
+  for (const heading of ['## Codex', '## Claude Code', '## Grok Build', '## Oh My Pi', '## Kimi Code']) {
+    assert.match(facts, new RegExp(`^${heading}`, 'm'));
+  }
+  assert.match(facts, /07b2f7144fd5c5c9d3dd1966937a87852d2dbdb8/);
+  assert.match(facts, /160ed439ac0df594347e7d7018b813a7ffdb5e81/);
+  assert.match(facts, /368b4b7400228028006c9b0d5789fcced85f75aa/);
+
+  const evals = JSON.parse(
+    readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
+  ).evals;
+  assert.deepEqual(evals.slice(0, 18).map(({ id }) => id), Array.from({ length: 18 }, (_, i) => i + 1));
+  assert.deepEqual(evals.slice(18).map(({ id }) => id), Array.from({ length: 15 }, (_, i) => i + 19));
+  for (const fixture of evals) {
+    assert.ok(Array.isArray(fixture.assertions) && fixture.assertions.length > 0);
+    assert.equal('expectations' in fixture, false);
+  }
 });

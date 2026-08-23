@@ -1,0 +1,98 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-08-23",
+  "package": {
+    "name": "goal-meta-skill",
+    "version": null,
+    "owner": null,
+    "maturity_tier": null,
+    "lifecycle_stage": null,
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.\n",
+    "job_to_be_done": "Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.\n",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [],
+    "should_not_trigger": [],
+    "near_neighbor": []
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\default-goal-strategy.md",
+      "references\\goal-command-playbook.md",
+      "references\\interview-checklist.md",
+      "references\\persistent-goal-contract.md",
+      "references\\platform-goal-facts.md",
+      "references\\trellis-goal-cadence.md"
+    ],
+    "scripts": [
+      "scripts\\lint_goal_command.py",
+      "scripts\\persist_goal_contract.py"
+    ],
+    "evals": [
+      "evals\\evals.json"
+    ],
+    "reports": [
+      "reports\\skill-ir.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "grok-build",
+      "oh-my-pi",
+      "kimi-code",
+      "agent-skills-compatible",
+      "generic"
+    ],
+    "activation": {
+      "mode": "manual",
+      "paths": []
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "bash"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "allow-metadata-only",
+      "file_write": "one confirmed direct-child Markdown through persist_goal_contract.py",
+      "git_mutation": "forbid"
+    },
+    "permissions": {},
+    "degradation": {
+      "openai_codex": "uses an explicit read ./GOAL.md objective; arbitrary GOAL.md is not auto-loaded",
+      "anthropic_claude_code": "uses @GOAL.md and requires transcript-visible evidence plus bounded stop-and-report",
+      "xai_grok_build": "uses an explicit read; @GOAL.md inside /goal and provider handoff remain UNVERIFIED",
+      "oh_my_pi": "uses an explicit read and reports goal.enabled or plan/vibe conflicts; budget exhaustion is not completion",
+      "moonshot_kimi_code": "uses an explicit read; headless creation is separate and provider handoff remains UNVERIFIED",
+      "generic": "asks for a concrete platform and keeps the contract chat-only when root or authorization is unclear"
+    }
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}
