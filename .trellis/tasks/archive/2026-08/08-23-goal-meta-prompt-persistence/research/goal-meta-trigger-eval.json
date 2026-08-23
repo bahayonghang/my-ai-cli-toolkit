@@ -1,0 +1,229 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "goal_task",
+    "handoff_contract",
+    "persistence",
+    "platform",
+    "trellis"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 16,
+    "passed": 16,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "帮我把这个模糊任务整理成 Codex /goal，包含验证、约束和暂停条件。",
+        "family": "codex-goal-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "goal_task",
+          "platform"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Create a Claude Code goal command with transcript-visible verification and a bounded stop condition.",
+        "family": "claude-goal-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "goal_task",
+          "platform"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把已批准的 Goal 持久化保存到项目根目录 GOAL.md，让新 Agent 可以交接。",
+        "family": "persistence-handoff-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract",
+          "persistence"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Persist this goal contract as GOAL.md and return the fresh Agent handoff command.",
+        "family": "persistence-handoff-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract",
+          "persistence"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "为 Grok Build 生成 /goal，并把长合同保存到 GOAL.md。",
+        "family": "grok-persist",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract",
+          "persistence",
+          "platform"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 OMP 的 goal 模式实施这份交接合同，预算耗尽不能算完成。",
+        "family": "omp-goal",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract",
+          "platform"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "为 Kimi Code 创建跨会话 GOAL.md 和 /goal 启动命令。",
+        "family": "kimi-goal",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract",
+          "persistence",
+          "platform"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把这个 Trellis 子任务实施计划转换成 goal 指令，保留 commit-then-archive。",
+        "family": "trellis-goal",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "goal_task",
+          "trellis"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "把今天下午三点开会翻译成英文。",
+        "family": "translation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "翻译成英文"
+      },
+      {
+        "prompt": "Write a Conventional Commit for the staged parser fix.",
+        "family": "commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "conventional commit"
+      },
+      {
+        "prompt": "直接修复 src/parser 的 CSV 空行崩溃并运行测试。",
+        "family": "implementation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我审计 AGENTS.md 的嵌套规则和过期命令。",
+        "family": "agents-audit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "把所有历史对话和进度持续同步到 GOAL.md，当成长期记忆库。",
+        "family": "memory-vault",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract"
+        ],
+        "negative_pattern": "长期记忆库"
+      },
+      {
+        "prompt": "只需要告诉我 Kimi Code 当前 goal 的状态命令，不要创建目标。",
+        "family": "management-only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "goal_task",
+          "platform"
+        ],
+        "negative_pattern": "只需要告诉我"
+      },
+      {
+        "prompt": "先发散网站、桌面和 CLI 三个方向，还没决定目标。",
+        "family": "pure-exploration",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把这个普通提示保存成 notes.md，不需要 /goal 或交接合同。",
+        "family": "ordinary-file-write",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "goal_task",
+          "handoff_contract",
+          "persistence"
+        ],
+        "negative_pattern": "不需要 /goal"
+      }
+    ]
+  }
+}

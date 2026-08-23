@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill package contracts for script paths, frontmatter, evals, docs sync, encoding, and external behavior claims."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Fail-closed CLI errors, stable exits, stderr, and no partial mutation."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Repository validation chain and deterministic helper test expectations."}
+{"file": "skills/developer-tools-integrations/AGENTS.md", "reason": "Category allowed-tools, helper, eval, interface, and generated-doc conventions."}
+{"file": ".trellis/tasks/08-23-goal-meta-prompt-persistence/research/feasibility-and-prior-art.md", "reason": "Official platform facts, prior-art synthesis, option tradeoffs, and missing evidence for the persistent Goal contract."}
+{"file": ".trellis/tasks/08-23-goal-meta-prompt-persistence/research/platform-goal-modes-grok-omp-kimi.md", "reason": "Pinned first-party command, lifecycle, budget, length, file-reference, and headless evidence for Grok Build, Oh My Pi, and Kimi Code."}

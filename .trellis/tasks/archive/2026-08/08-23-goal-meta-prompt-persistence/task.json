@@ -1,0 +1,36 @@
+{
+  "id": "goal-meta-prompt-persistence",
+  "name": "goal-meta-prompt-persistence",
+  "title": "持久化 Goal Prompt 交接契约",
+  "description": "Implement a governed root GOAL.md persistence and fresh-Agent handoff contract for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "skills/developer-tools-integrations/goal-meta-skill persistence plus five platform-specific launch/lifecycle adapters, required category guidance, and generated docs",
+  "package": "single-repo",
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-08-23",
+  "completedAt": "2026-08-23",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "skills/developer-tools-integrations/goal-meta-skill/SKILL.md",
+    "skills/developer-tools-integrations/goal-meta-skill/references/platform-goal-facts.md",
+    "skills/developer-tools-integrations/goal-meta-skill/references/",
+    "skills/developer-tools-integrations/goal-meta-skill/scripts/",
+    "skills/developer-tools-integrations/goal-meta-skill/tests/",
+    "skills/developer-tools-integrations/goal-meta-skill/evals/evals.json",
+    "skills/developer-tools-integrations/goal-meta-skill/agents/interface.yaml"
+  ],
+  "notes": "Planning was completed read-only; the user approved implementation on 2026-08-23 and task.py start was run before code changes.",
+  "meta": {
+    "description": "Persist one approved root GOAL.md contract and render short, fact-checked /goal pointers for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code."
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "note": "goal-meta-skill 0.5.0 trigger boundary for five-platform goal drafting and explicitly authorized GOAL.md handoff persistence.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["goal_task", "platform", "persistence", "handoff_contract"],
+  "positive_concepts": {
+    "goal_task": [
+      "/goal",
+      "goal command",
+      "goal prompt",
+      "Goal 指令",
+      "目标指令",
+      "目标模式",
+      "goal 模式"
+    ],
+    "platform": [
+      "Codex",
+      "Claude Code",
+      "Grok Build",
+      "Oh My Pi",
+      "OMP",
+      "Kimi Code",
+      "Kimi CLI"
+    ],
+    "persistence": [
+      "persist",
+      "save",
+      "write to disk",
+      "持久化",
+      "保存",
+      "落盘",
+      "跨会话"
+    ],
+    "handoff_contract": [
+      "GOAL.md",
+      "goal contract",
+      "handoff contract",
+      "fresh Agent",
+      "new Agent",
+      "新 Agent",
+      "交接合同",
+      "交接"
+    ],
+    "bounded_contract": [
+      "verification",
+      "constraints",
+      "completion conditions",
+      "pause conditions",
+      "验证",
+      "约束",
+      "完成条件",
+      "暂停条件"
+    ],
+    "trellis": [
+      "Trellis task",
+      "Trellis child task",
+      "Trellis 任务",
+      "Trellis 子任务",
+      "commit-then-archive",
+      "归档 cadence"
+    ]
+  },
+  "negative_patterns": [
+    "memory vault",
+    "长期记忆库",
+    "进度数据库",
+    "翻译成英文",
+    "conventional commit",
+    "发布 github release",
+    "只需要告诉我",
+    "不要创建目标",
+    "不需要 /goal",
+    "普通提示"
+  ],
+  "should_trigger": [
+    {
+      "text": "帮我把这个模糊任务整理成 Codex /goal，包含验证、约束和暂停条件。",
+      "family": "codex-goal-zh"
+    },
+    {
+      "text": "Create a Claude Code goal command with transcript-visible verification and a bounded stop condition.",
+      "family": "claude-goal-en"
+    },
+    {
+      "text": "把已批准的 Goal 持久化保存到项目根目录 GOAL.md，让新 Agent 可以交接。",
+      "family": "persistence-handoff-zh"
+    },
+    {
+      "text": "Persist this goal contract as GOAL.md and return the fresh Agent handoff command.",
+      "family": "persistence-handoff-en"
+    },
+    {
+      "text": "为 Grok Build 生成 /goal，并把长合同保存到 GOAL.md。",
+      "family": "grok-persist"
+    },
+    {
+      "text": "用 OMP 的 goal 模式实施这份交接合同，预算耗尽不能算完成。",
+      "family": "omp-goal"
+    },
+    {
+      "text": "为 Kimi Code 创建跨会话 GOAL.md 和 /goal 启动命令。",
+      "family": "kimi-goal"
+    },
+    {
+      "text": "把这个 Trellis 子任务实施计划转换成 goal 指令，保留 commit-then-archive。",
+      "family": "trellis-goal"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "把今天下午三点开会翻译成英文。",
+      "family": "translation"
+    },
+    {
+      "text": "Write a Conventional Commit for the staged parser fix.",
+      "family": "commit"
+    },
+    {
+      "text": "直接修复 src/parser 的 CSV 空行崩溃并运行测试。",
+      "family": "implementation"
+    },
+    {
+      "text": "帮我审计 AGENTS.md 的嵌套规则和过期命令。",
+      "family": "agents-audit"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "把所有历史对话和进度持续同步到 GOAL.md，当成长期记忆库。",
+      "family": "memory-vault"
+    },
+    {
+      "text": "只需要告诉我 Kimi Code 当前 goal 的状态命令，不要创建目标。",
+      "family": "management-only"
+    },
+    {
+      "text": "先发散网站、桌面和 CLI 三个方向，还没决定目标。",
+      "family": "pure-exploration"
+    },
+    {
+      "text": "把这个普通提示保存成 notes.md，不需要 /goal 或交接合同。",
+      "family": "ordinary-file-write"
+    }
+  ]
+}
