@@ -1,182 +1,136 @@
 ---
 name: goal-meta-skill
 description: |
-  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path. Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, Trellis task implementation with 归档 cadence, or 终稿展示 with a copy fence and 字段一览.
-version: 0.4.0
+  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.
+version: 0.5.0
 category: developer-tools-integrations
 tags:
   - codex
   - claude-code
+  - grok
+  - kimi-code
   - goal
   - prompt-engineering
   - agent-skills
   - verification
 argument-hint: "[vague-task-or-goal]"
 allowed-tools: Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)
+metadata:
+  owner: lyh
+  review_cadence: quarterly-or-on-platform-goal-change
 ---
 
 # Goal Meta Skill
 
-把一个模糊任务，收敛成 Claude Code 或 Codex 可以持续执行、可以验证、知道何时停止和何时暂停的 `/goal` 指令。
+把模糊任务收敛成目标平台可持续执行、可验证、知道何时完成和何时停下的 `/goal`。当用户明确要求保存、持久化或交接时，还可以在最终确认后把同一份批准合同安全写入项目根目录 `GOAL.md`。
 
-> In the commands below, `<skill-dir>` is this skill's base directory, announced
-> when the skill loads. Substitute the literal path; it is not an environment
-> variable. The script self-locates, so only the path to it must resolve.
+> `<skill-dir>` 是 skill 加载时提供的实际目录，不是环境变量。命令中替换为字面路径；脚本会自定位。
 
-## Operating Mode
+## Governed mode
 
-Run as a production-lite meta skill.
+- 普通 Goal 默认只在聊天中输出，不写文件。
+- `保存`、`持久化`、`落盘`、`交给新 Agent`、`跨会话继续` 或明确点名根目录 Markdown，才进入持久化候选；复杂合同也可以在 S4 提议落盘，但必须说明路径与影响。
+- `直接给` 只跳过访谈，不自动授权写文件；`直接生成并保存到项目根目录 GOAL.md` 才同时授权该次 create 动作。
+- S1 始终只读。只有 S6 对已经展示并确认的合同调用命名 helper；不得用任意 Python/Write 命令绕过 helper。
+- 默认 create-only。已有文件时报告冲突；替换必须再次明确确认，并带已读取旧文件的 SHA-256。
+- 不自动加载、执行、提交、忽略、删除或发布 `GOAL.md`，也不把它导入 `AGENTS.md`、`CLAUDE.md`、`.grok/rules` 或 `.omp` 上下文文件。
+- 合同不得包含凭证、私有数据或原始会话转录；秘密扫描只是 backstop，不是“无敏感信息”证明。
+- 真实新会话接力没有 provider transcript 时保持 `UNVERIFIED`。
 
-Shared defaults:
+完整的路径、schema、冲突、回滚、Git 可见性与五平台 launcher 契约见 `references/persistent-goal-contract.md`。
 
-- The user wants a paste-ready `/goal` command for their platform, not a general prompt.
-- The executable slash command stays `/goal` on both platforms. Do not output `/目标` as the command unless the user's environment explicitly documents that alias.
-- Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. For longer or complex contracts, output copy-ready `.planning/goal-<slug>.md` content plus a compact file-pointer `/goal`; write the file only when the user explicitly requests it.
-- The first goal block should be the best recommended executable version, not a half-filled template. Users often copy the first draft directly.
-- For Chinese users, output Chinese content and Chinese field names by default while keeping the command prefix `/goal`.
-- For Chinese users, include both `推荐执行版（中文，可直接复制）` and `Goal Draft (English-compatible)` unless the user asks for one language only.
-- If the task is vague, discuss only material unknowns; if it is concrete or the user asks for a direct draft, take the fast path with conservative defaults.
-- If the domain is unfamiliar or specialized, create a discovery-first goal that makes the agent inspect authoritative project/docs/runtime evidence before implementation instead of inventing domain rules.
-- If the missing detail is low-risk, make an explicit assumption and continue.
-- Do not start the work described by the goal unless the user explicitly asks. This skill creates the goal instruction.
-- Prefer concrete verification commands and artifacts over vague confidence phrases.
-- Prefer narrow write boundaries and explicit forbidden paths over broad permission.
-- Treat `Stop when` and `Pause if` as part of the same completion/blocking contract.
-- When the outcome is Trellis task or child-task implementation, load `references/trellis-goal-cadence.md` and encode commit-then-archive. Do not inject that cadence only because `.trellis/` exists.
+## Platform selection
 
-Platform selection (details in `references/platform-goal-facts.md`):
+平台事实只以 `references/platform-goal-facts.md` 为准：
 
-1. If the user names Codex or Claude Code, render for that platform.
-2. Otherwise infer from the host environment this skill is running in.
-3. If still ambiguous, add one numbered choice such as `0. 平台：A Claude Code / B Codex` to the existing 可选调整 block instead of opening a separate questionnaire round.
+1. 用户显式名称优先。`OMP` 在无相反说明时表示 Oh My Pi。
+2. 否则使用当前 host 的明确证据。
+3. 仍不明确时，在现有 `可选调整` 中加入一个平台选择；不要混合生命周期命令。
 
-Codex-specific assumptions:
+目标平台支持 `codex`、`claude`、`grok`、`omp`、`kimi`。只有用户明确要求多平台交接时才生成多个 launcher；合同正文始终只有一份。
 
-- `/goal <text>` sets an objective and starts the first turn; `/goal`, `/goal edit`, `/goal pause`, `/goal resume`, and `/goal clear` manage it. `Community-observed`: editing preserves accounting; to reset accounting, clear then create a new goal. For management requests, answer instead of drafting a new objective.
-- A `local-probe` shows Goals stable and enabled by default on current Codex. `Community-observed`: text budgets are only soft stop clauses, not the runtime budget. Use `references/platform-goal-facts.md` for lifecycle and troubleshooting details.
-
-Claude Code-specific assumptions:
-
-- `/goal <condition>` sets a session completion condition and immediately starts a turn; an independent small model reads the transcript after each turn and auto-continues until the condition holds. `/goal` shows status; `/goal clear` (aliases `stop`, `off`, `reset`, `none`, `cancel`) removes it, as does `/clear`. There is no `/goal pause` or `/goal resume` — offer clear-and-reset or interruption instead.
-- Phrase the goal as a completion condition whose proof lands in the transcript: command exit codes, test/lint output, `git status`, file listings. The evaluator runs no tools, so screenshot-only or human-confirmation evidence must be rewritten into a transcript-visible check or moved into constraints.
-- Always include a bounding clause such as `否则在 20 轮后停止并总结剩余问题` / `or stop after 20 turns and summarize remaining issues`.
-- Keep the `暂停条件` / `Pause if` label but write its body as stop-and-report: Claude Code cannot pause, so high-risk situations must instruct Claude to stop, report, and wait for a human decision.
-- Goal text turn/time limits are evaluator-judged soft clauses, not runtime budgets. Pair unattended goals with auto mode; a goal does not grant broader permissions.
-- Requires Claude Code v2.1.139+, an accepted workspace trust dialog, and hooks not disabled (`disableAllHooks` / `allowManagedHooksOnly` block it).
+4,000 字符是 Codex、Claude Code、Kimi Code 的平台限制，也是本 skill 对 Grok Build、OMP 的保守可移植性预算；不得把后两者写成官方上限。
 
 ## Workflow
 
-1. **S0 — Route.** Determine the platform. Answer management requests from `references/platform-goal-facts.md`; route one-line/neighbor tasks elsewhere. If the direction is undecided or purely exploratory, do not draft a goal: suggest `/plan` or discussion. Otherwise continue to S1.
-2. **S1 — Reconnoiter.** In an existing project, follow the read-only pass in `references/default-goal-strategy.md`: root rules, real command sources, `git rev-parse`, `git branch`, `git status --porcelain -uall`, and related top-level paths. Do not run tests, write files, or inspect secrets/dependencies/generated output. Report findings for correction; on failure use a discovery-first goal. Skip this state when no project context exists.
-3. **S2 — Choose the path.** Concrete requirements or `直接给` / `按默认` go directly to S4. Material gaps in outcome, verification, boundaries, or risk tolerance go to S3.
-4. **S3 — Interview.** Each round restates the outcome, reports reconnaissance, and asks at most four human-only questions. Prefer numbered choices with defaults; allow open intent questions. Repeat until the user confirms or chooses defaults. Follow `references/interview-checklist.md`.
-5. **S4/S5 — Draft and revise.** Produce the complete bilingual contract (one language when requested) with each `/goal` body in a `text` fence and no blank lines inside that fence, invite corrections, and revise until confirmed. Warn-but-proceed for repairable subjectivity by adding a stop condition and round limit. Use the platform rendering and verification anchors in `references/goal-command-playbook.md`.
-6. **S6 — Deliver.** After confirmation, output `最终可复制 /goal` as one `text` fence plus `字段一览` outside the fence; do not repeat the full 可选调整 questionnaire unless asked. Keep the executable goal within 4,000 characters. For longer/complex contracts, output the two-part `.planning/goal-<slug>.md` content and tell the user to save it before using the short file-pointer goal; do not write it without an explicit request. Remind Claude users that setting starts a turn and Codex users that goal text is the first prompt.
-7. For file deliverables, run `python "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` or `py -3 "<skill-dir>/scripts/lint_goal_command.py" --platform <codex|claude> <file>` before calling the goal done. Add `--require-chinese-companion` for Chinese-first output.
-
-## Output Contract
-
-When enough information is known, output the best recommended command first. Do not leave placeholders in real output.
-
-Codex rendering (objective style):
+1. **S0 — Route.** 区分新 Goal、持久化/交接请求与现有 Goal 管理。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
+2. **S1 — Reconnoiter.** 现有项目先读取局部规则、真实命令源与相关边界，并运行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git status --porcelain -uall`。不运行测试、不写文件、不读 secrets/dependencies/generated output。持久化时还要检查根目录和现有 `GOAL.md`。
+3. **S2 — Choose.** 需求具体或用户说 `直接给` / `按默认` 时走 fast path；只有结果、验证、边界或风险容忍存在实质缺口时才访谈。
+4. **S3 — Interview.** 每轮复述结果和侦察发现，只问最多四个必须由人决定的问题。遵循 `references/interview-checklist.md`。
+5. **S4/S5 — Draft/revise.** 给出完整、无占位符的目标合同与平台渲染。持久化候选必须展示精确根目录、文件名、create/replace 效果、Git 可见性影响和仍需确认的动作；此时仍不写。
+6. **S6 — Deliver or persist.** 普通模式输出最终 `/goal` 与字段一览。持久化模式仅在相关确认后，用下面的 helper 从 stdin 写入已批准正文，回读摘要，再输出选定平台的短 launcher。
 
 ```text
-/goal Create a first-version local MVP for the requested task, inspect project-provided commands before changing code, implement the core user-visible workflow, and keep unrelated systems unchanged.
-Verification: run the smallest project-provided checks, start the local app or relevant runtime, complete the core workflow once, and capture logs/screenshots or command output as evidence.
-Constraints: do not add accounts, paid services, production changes, destructive operations, or unrelated features unless requested.
-Boundaries: write only inside the new project directory or the directly related existing project files.
-Iteration policy: implement one focused workflow at a time, rerun checks after meaningful changes, inspect logs before retrying, and make at most 3 focused improvement rounds before reporting remaining risks.
-Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
-Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
+python "<skill-dir>/scripts/persist_goal_contract.py" --repo-root "<confirmed-root>"
 ```
 
-For Chinese-first Codex users, prefer this equivalent shape:
+替换只允许：
 
 ```text
-/goal 基于用户需求创建第一版本地 MVP，先读取项目已有命令和约束，实现核心用户可见流程，并避免改动无关系统。
-验证：运行项目提供的最小相关检查，启动本地应用或对应运行环境，完整走通一次核心流程，并用日志、截图或命令输出作为证据。
-约束：不加入账号、付费服务、生产变更、破坏性操作或无关功能，除非用户明确要求。
-边界：只写入新项目目录，或只修改现有项目中与该功能直接相关的文件。
-迭代策略：一次实现一个聚焦工作流，每次有意义改动后重跑检查，重试前先读日志，最多做 3 轮聚焦改进后报告剩余风险。
-完成条件：核心流程有运行证据证明可用，检查通过或明确说明缺少配置。
-暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时暂停。
+python "<skill-dir>/scripts/persist_goal_contract.py" --repo-root "<confirmed-root>" --replace --expected-sha256 "<observed-sha256>"
 ```
 
-Claude Code rendering of the same request (condition style — proof lands in the transcript, bounded turns, stop-and-report instead of pause):
+在 Windows 可将 `python` 换成 `py -3`。合同正文通过 stdin 传入，不能放入 argv，也不能用 PowerShell `>` 直接写目标文件。成功只报告相对路径、字节数、SHA-256、created/replaced 与 tracked/ignored/untracked；失败不得破坏旧文件。
+
+7. **Validate.** 聊天型输出运行：
 
 ```text
-/goal 第一版本地 MVP 完成：核心用户可见流程可以完整走通一次，项目提供的最小相关检查命令退出码为 0 并把输出贴进对话，git status 显示只有新项目目录或直接相关文件被改动；否则在 20 轮后停止并总结剩余问题。
-验证：运行项目提供的最小相关检查并展示命令退出码，启动本地应用或对应运行环境，完整走通一次核心流程，把检查输出、运行日志和 git status 结果贴进对话作为证据。
-约束：不加入账号、付费服务、生产变更、破坏性操作或无关功能，除非用户明确要求。
-边界：只写入新项目目录，或只修改现有项目中与该功能直接相关的文件。
-迭代策略：一次实现一个聚焦工作流，每次有意义改动后重跑检查，重试前先读日志，最多做 3 轮聚焦改进后报告剩余风险。
-完成条件：核心流程的检查输出和运行证据出现在对话记录中，检查通过或明确说明缺少配置。
-暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时，停止并报告，等待人工决定。
+python "<skill-dir>/scripts/lint_goal_command.py" --platform codex <file>
 ```
 
-During S3, output a restatement, reconnaissance findings, and no more than four questions; do not emit a premature goal unless the user chooses the defaults. At S4, output:
+持久合同额外运行 `--contract --expected-path GOAL.md`。平台枚举为 `codex|claude|grok|omp|kimi|both|all`；`both` 保持 Codex+Claude 旧语义。
 
-1. `推荐执行版（中文，可直接复制）`: the best default `/goal` for the target platform, inside a `text` fence with no blank lines in the `/goal` body.
-2. `默认选择理由`: one concise sentence.
-3. `可选调整`: numbered choices with recommended defaults and short option labels (include the platform choice only when the platform is ambiguous).
-4. `你可以直接回复`: an example such as `按默认` or `1B 2A 3C`.
-5. `Goal Draft (English-compatible)`: a faithful English-compatible mirror with English field labels, also in a `text` fence.
+## Output contract
 
-After the user confirms, S6 replaces that wrapper with `最终可复制 /goal`, one `text` fence, and `字段一览` outside the fence. Do not put 字段一览 inside the `/goal` body.
+普通 S4 中文输出顺序：`推荐执行版（中文，可直接复制）`、`默认选择理由`、`可选调整`、`你可以直接回复`、`Goal Draft (English-compatible)`。每个 `/goal` 放在无内空行的 `text` fence。用户确认后的 S6 改为一个 `最终可复制 /goal` fence，外加 `字段一览`；英文用户默认只给英文。
 
-If the user writes in English, output only the English-compatible draft unless they ask for Chinese too.
+每个 Goal 都包含：可观察目标、具体验证、不可变约束、写入边界、证据驱动的有限迭代、合取式完成条件、平台正确的暂停/停止条件。权威检查、文件、报告或验收条款必须界定 `all/全部` 的集合。
 
-If the user asks how to manage an existing goal, answer with the minimal platform-correct command:
+持久化输出使用 `references/persistent-goal-contract.md` 的固定 11 节 schema。文件正文是权威交接合同，短命令只负责显式读取、复述关键门并开始执行；不得声称开启 Goal 模式会自动发现 `GOAL.md`。
 
-- Codex: `/goal` to view, `/goal edit` to revise (`community-observed`: accounting is preserved), `/goal pause` to pause, `/goal resume` to continue, `/goal clear` to remove.
-- Claude Code: `/goal` to view status, `/goal clear` to remove (aliases: `stop`, `off`, `reset`, `none`, `cancel`). There is no pause; to pause in spirit, clear now and re-set the same condition later, or interrupt the session.
+推荐 launcher 形状：
 
-Do not output long generic coaching unless the user asks for explanation.
+```text
+Codex/Grok/OMP/Kimi: /goal First read and follow ./GOAL.md as the approved execution contract. ...
+Claude Code: /goal @GOAL.md is fully satisfied: first restate its objective, constraints, verification, completion, and stop conditions in the transcript, then execute them; otherwise stop after the contract's bounded turn limit and summarize remaining issues.
+```
 
-## Quality Bar
+Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作为推荐。只输出用户选中的平台命令。
 
-A strong goal:
+## Management and stop semantics
 
-- has one concrete outcome
-- names exact checks or evidence
-- protects unrelated files, user data, secrets, and default branches
-- defines the write boundary
-- tells the agent how to iterate after failures
-- says when to stop because completion is proven
-- says when to pause (Codex) or stop-and-report (Claude Code) because a human decision, credential, account state, budget, or repeated blocker is required
-- fits inside the shared 4,000 character limit, or points to a file that contains the longer contract
-- on Claude Code: reads as a completion condition, cites transcript-visible proof, and includes a turn/time bounding clause
+- Codex：view/edit/pause/resume/clear。
+- Claude Code：view/clear；没有 pause/resume/edit，使用停止并报告和 bounded turn/time clause，证据必须进入 transcript。
+- Grok Build：status/pause/resume/clear；只有用户明确要求时才加 `--budget`，完成候选要经独立证据复核。
+- Oh My Pi：set/show/pause/resume/drop/budget；要求 `goal.enabled`，与 plan/vibe 模式互斥，预算耗尽不等于完成。
+- Kimi Code：status/pause/resume/cancel/replace/next；状态为 active/paused/blocked/complete，headless 只创建并区分退出码。
 
-Reject or revise a goal that:
+管理请求只回答最小正确命令，不另写新目标。平台命令、版本、权限与证据级别见唯一事实表 `references/platform-goal-facts.md`。
 
-- says only `make it better`, `finish this`, or `fix bugs`
-- lacks verification
-- lets the agent edit the whole machine or repo without reason
-- asks for repeated retries without a new source of evidence
-- has no pause/stop condition for external auth, secrets, payments, destructive actions, or ambiguous product decisions
-- leaves placeholders such as `[Outcome]` in user-facing executable drafts
-- treats vague words such as `高级`, `有质感`, or `professional` as verification instead of translating them into screenshots, runtime checks, review criteria, or iteration rules
-- recommends `/goal pause` or `/goal resume` to a Claude Code user
-- on Claude Code: relies on evidence the transcript evaluator cannot see, or has no bounding clause
-- injects Trellis archive cadence into a non-task goal, or archives a parent before the named 发布门
+## Trellis adapter
 
-## Reference Files
+只有 outcome 明确是 Trellis task/child implementation 时才加载 `references/trellis-goal-cadence.md`。持久合同时必须链接具体 `prd.md`、`design.md`、`implement.md`，并保留“先提交该任务产品改动，再 archive；父任务等发布门”的节奏。`GOAL.md` 不能取代任务文档，skill 本身也不执行目标内的 commit/archive。
 
-- `references/platform-goal-facts.md`: single source of truth for Codex vs Claude Code `/goal` behavior, rendering rules, and platform selection.
-- `references/goal-command-playbook.md`: the core `/goal` template, when to use it, examples, and anti-patterns.
-- `references/default-goal-strategy.md`: lazy-user defaults, unknown-domain discovery, risk classification, and dual-layer S6 output rules.
-- `references/trellis-goal-cadence.md`: optional adapter for Trellis task implementation — detection, commit-then-archive, parent/发布门, pause text. Not a core rule for every goal.
-- `references/interview-checklist.md`: question bank for turning vague tasks into strong goals.
-- `evals/evals.json`: behavior and routing fixtures for project reconnaissance, bounded interviews, applicability gates, the direct fast path, Trellis cadence, and S6 字段一览.
-- `scripts/lint_goal_command.py`: lightweight checker for required `/goal` labels, unresolved placeholders, platform-specific rules (`--platform codex|claude|both`), the 4,000 character limit, and optional Chinese-first companion sections.
+## Quality bar
+
+拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明。
+
+## Resources
+
+- `references/persistent-goal-contract.md`：持久化触发、schema、写入/冲突/回滚、Git 可见性、五平台 launcher。
+- `references/platform-goal-facts.md`：五平台 `/goal` 行为、管理命令、限制、权限、文件引用与 dated primary sources 的唯一事实源。
+- `references/goal-command-playbook.md`：普通/持久目标模板、验证锚点与示例。
+- `references/default-goal-strategy.md`：默认路径、侦察、风险、长合同与 S6 输出。
+- `references/trellis-goal-cadence.md`：可选 Trellis commit-then-archive adapter。
+- `references/interview-checklist.md`：有限访谈题库。
+- `evals/evals.json`：行为与路由 fixtures；CI 不执行，需人工审阅。
+- `scripts/lint_goal_command.py`：inline/contract linter 与平台命令隔离。
+- `scripts/persist_goal_contract.py`：唯一授权的确定性合同写入器。
+- `reports/creation-handoff.md`：Qiaomu 参考取舍、验证证据与缺失项。
 
 ## 来源致谢
 
-这个 skill 基于向阳乔木发布的 goal meta skill 改造而来。当前版本保留原始工作流的核心思路，并将项目命名、示例路径和触发方式通用化，以便在本仓库的技能集合中复用。感谢原作者的思路和基础实现。
-
-## License
-
-MIT
+这个 skill 基于向阳乔木发布的 goal meta skill 改造而来，保留原始收敛工作流并扩展为项目侦察、平台渲染与受控持久化。MIT。
 
 Original work copyright (c) 向阳乔木
 

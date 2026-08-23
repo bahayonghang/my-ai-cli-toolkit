@@ -4,12 +4,12 @@
 
 ## 用途概览
 
-Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path.
+Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code.
 
 ## 触发场景
 
-- Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands for Claude Code and Codex through read-only reconnaissance, bounded interviews, or a direct fast path
-- Use for Codex/Claude Code goal instructions, Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, Trellis task implementation with 归档 cadence, or 终稿展示 with a copy fence and 字段一览
+- Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code
+- Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示
 
 ## 元数据
 
@@ -17,8 +17,8 @@ Turn vague or complex agent tasks into project-aware, verifiable `/goal` command
 | --- | --- |
 | 名称 | `goal-meta-skill` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `0.4.0` |
-| 标签 | `codex`, `claude-code`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
+| 版本 | `0.5.0` |
+| 标签 | `codex`, `claude-code`, `grok`, `kimi-code`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
 
 ## 安装命令
 
@@ -32,9 +32,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/goal-meta-skill/agents` | 目录 | 1 | 配套 agent |
 | `skills/developer-tools-integrations/goal-meta-skill/evals` | 目录 | 1 | 评测样例 |
-| `skills/developer-tools-integrations/goal-meta-skill/references` | 目录 | 5 | 引用资料 |
-| `skills/developer-tools-integrations/goal-meta-skill/scripts` | 目录 | 1 | 可执行脚本 |
-| `skills/developer-tools-integrations/goal-meta-skill/tests` | 目录 | 1 | 自动化测试 |
+| `skills/developer-tools-integrations/goal-meta-skill/references` | 目录 | 6 | 引用资料 |
+| `skills/developer-tools-integrations/goal-meta-skill/reports` | 目录 | 1 | 顶层目录 |
+| `skills/developer-tools-integrations/goal-meta-skill/scripts` | 目录 | 2 | 可执行脚本 |
+| `skills/developer-tools-integrations/goal-meta-skill/tests` | 目录 | 2 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 

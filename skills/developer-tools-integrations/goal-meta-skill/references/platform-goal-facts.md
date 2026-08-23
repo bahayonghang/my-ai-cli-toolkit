@@ -1,152 +1,182 @@
 # Platform Goal Facts
 
-Single source of truth for platform-specific `/goal` behavior. Other files in
-this skill must reference these facts instead of restating them. If official
-docs change, update this file first, then the prose that cites it.
+Single source of truth for platform-specific `/goal` behavior. Other references
+may describe policy and launch shapes but must not invent or fork lifecycle,
+length, budget, permission, headless, or file-loading claims.
 
-Last verified: 2026-08-03 against
-https://developers.openai.com/codex/cli/slash-commands,
-https://developers.openai.com/codex/use-cases/follow-goals,
-https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex,
-https://learn.chatgpt.com/docs/long-running-work, and
-https://code.claude.com/docs/en/goal.
+Last verified: 2026-08-23 against the dated primary sources linked below.
 
-Evidence labels below are deliberate: `official` means documented platform
-behavior, `local-probe` means observed on the named local version, and
-`community-observed` is not a platform guarantee.
+Evidence labels: `official` is platform documentation or canonical source;
+`local-probe` is a named local observation; `community-observed` is not a
+platform guarantee; `missing evidence` means the inspected sources did not
+establish the claim.
 
-## Codex (CLI and app)
+## Compatibility matrix
 
-- Semantics (official): `/goal` attaches an objective to the current thread;
-  the goal text is both the first prompt and the completion criteria.
-- Commands (official): `/goal <text>` sets, `/goal` views, `/goal edit` revises,
-  `/goal pause` pauses, `/goal resume` resumes, and `/goal clear` removes a goal.
-- Availability (official): Goals are available starting in Codex 0.128.0.
-  A `local-probe` on Codex 0.146.0 reports `goals stable true`, so Goals are
-  stable and enabled by default there. If `/goal` is missing, use the official
-  troubleshooting fallback: enable `features.goals` in `config.toml` or run
-  `codex features enable goals`.
-- Length: objectives must be non-empty and at most 4,000 characters. Longer
-  contracts go in a file with a short `/goal` pointing at it.
-- Evaluation: official docs describe attach-and-track behavior. There is no
-  documented independent per-turn evaluator.
-- Permissions and decisions (official): starting a goal grants no broader
-  access; the existing sandbox and approval policy remain, and Codex pauses
-  when it needs a decision.
-- Lifecycle (official): states include active, paused, cleared, completed, and
-  budget-limited. User or system actions control pause, resume, clear, and
-  budget transfer; the model may create a goal and mark it complete only when
-  evidence supports completion.
-- Goal shape (official): use Outcome, Constraints, and Verification; the
-  cookbook expands these into outcome, verification surface, constraints,
-  boundaries, iteration policy, and blocked stop conditions.
-- Starting context (official): point Codex at files, docs, issues, logs, or a
-  plan to read first; work in checkpoints and keep a short progress log.
-- Neighbors (official): when the outcome is unclear, use `/plan` to interview
-  the user, identify constraints, and form measurable success criteria before
-  setting a goal.
+| Platform | Start | Management | States / completion | Length | File handoff |
+| --- | --- | --- | --- | --- | --- |
+| Codex | `/goal <objective>` | view/edit/pause/resume/clear | active/paused/cleared/completed/budget-limited; evidence required | official 4,000 | explicit `read ./GOAL.md`; arbitrary root file is not auto-loaded |
+| Claude Code | `/goal <condition>` | view/clear; no edit/pause/resume | transcript evaluator auto-continues or clears on success | official 4,000 | documented `@GOAL.md`; restate evidence in transcript |
+| Grok Build | `/goal <objective> [--budget N]` | status/pause/resume/clear | independent evidence review; missing proof remains active/paused | `missing evidence`; skill-owned 4,000 portability budget | explicit read; `@` inside `/goal` is unverified |
+| Oh My Pi | `/goal <objective>` or `set` | set/show/pause/resume/drop/budget | active/paused/budget-limited/complete/dropped; budget is not completion | `missing evidence`; skill-owned 4,000 portability budget | explicit read; arbitrary root file is not auto-loaded |
+| Kimi Code | `/goal <objective>` | status/pause/resume/cancel/replace/next | active/paused/blocked/complete | official 4,000 | explicit read; combined `@` + `/goal` is unverified |
 
-### Community-observed Codex behavior
+`both` in this skill remains the backward-compatible Codex+Claude linter
+aggregate. `all` means all five and is valid only for explicit multi-platform
+contracts/fixtures.
 
-- `community-observed` (openai/codex PR #21954): `/goal edit` opens the current
-  objective for revision. Active and paused goals keep their state, completed
-  goals become active, and budget-limited goals stay budget-limited. Editing
-  retains the goal's token budget and elapsed/token accounting; clear and
-  create a new goal when that accounting must reset.
-- `community-observed` (PR #21954 discussion): text such as `use up to 8000
-  tokens` does not set a platform runtime budget. Treat goal-text time, turn,
-  or token limits only as soft stop clauses and say so explicitly.
-- `community-observed` (win4r/goal-prompt-builder): a `continuation.md` audit
-  trail is a community workflow pattern, not an official Codex requirement.
+## Codex
+
+Sources (official unless labeled otherwise):
+
+- [Goal mode guidance](https://developers.openai.com/codex/long-running-work)
+- [AGENTS.md discovery](https://developers.openai.com/codex/agent-configuration/agents-md)
+- [Slash commands](https://developers.openai.com/codex/cli/slash-commands)
+- [Goal cookbook](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex)
+- [`/goal edit` PR, community-observed](https://github.com/openai/codex/pull/21954)
+
+Facts:
+
+- `/goal <text>` attaches an objective; the text is the first prompt and the
+  completion criteria. `/goal`, `edit`, `pause`, `resume`, and `clear` manage it.
+- Goals are documented from Codex 0.128.0. A prior `local-probe` on 0.146.0
+  reported `goals stable true`; managed/older environments may need
+  `features.goals` enabled.
+- Objectives are non-empty and at most 4,000 characters.
+- A goal grants no new sandbox/approval permissions and may pause for decisions.
+- `community-observed`: edit retains budget/accounting; clear and recreate to
+  reset it. Goal text token/turn wording is a soft stop clause, not a runtime
+  budget control.
+- Official automatic instruction discovery covers `AGENTS.md` and configured
+  fallbacks, not arbitrary root `GOAL.md`. Point the objective at the file.
+- When outcome is unclear, `/plan` is the neighbor for requirements discovery.
 
 ## Claude Code
 
-- Semantics: `/goal <condition>` sets a session-scoped completion condition.
-  After each turn an independent small fast model (default Haiku) reads the
-  transcript and decides yes/no; on "no" Claude starts the next turn
-  automatically, on "yes" the goal clears itself.
-- Commands: `/goal <condition>` sets (and immediately starts a turn with the
-  condition as the directive), `/goal` shows status (condition, elapsed time,
-  turns, token spend, latest evaluator reason), `/goal clear` removes it.
-  `stop`, `off`, `reset`, `none`, and `cancel` are aliases for `clear`.
-  Starting a new session with `/clear` also removes the active goal. There is
-  no `/goal pause` and no `/goal resume`.
-- Enablement: requires Claude Code v2.1.139+. Runs only in workspaces where
-  the trust dialog was accepted. Unavailable when `disableAllHooks` is set at
-  any settings level or `allowManagedHooksOnly` is set in managed settings.
-- Permissions: a goal does not change tool permissions. In default permission
-  mode, tool calls still require approval; unattended use must pair `/goal`
-  with auto mode.
-- Length: conditions can be up to 4,000 characters.
-- Evaluation constraint: the evaluator runs no tools and reads only the
-  transcript. Evidence must be something Claude's own output can demonstrate:
-  command exit codes, test output, lint output, `git status` / `git diff`
-  results, file listings. Screenshots or external human confirmation are not
-  visible to the evaluator.
-- Evaluation guidance: the evaluator returns a reason after every turn. Use
-  the latest reason, shown in status, to redirect the next attempt.
-- Goal shape: include a measurable end state, a stated verification method,
-  and key constraints.
-- Bounding: include a turn or time clause in the condition, such as
-  `or stop after 20 turns`. This is a soft boundary reported each turn and
-  judged from the conversation, not a hard timer or runtime budget.
-- Resume: an active goal is restored by `--resume` / `--continue`; elapsed
-  time, turn count, and token baselines reset.
-- Mechanism: `/goal` wraps a session-level prompt-based Stop hook whose
-  evaluator uses the configured small fast model (Haiku by default).
-- Non-interactive: `claude -p "/goal ..."` runs the loop to completion once;
-  default text output remains silent until completion, so prefer
-  `--output-format stream-json --verbose` when progress output is required.
-- Neighbors: `/loop` re-runs on a time interval; a Stop hook supports custom
-  evaluation logic. Route to those when a time cadence or scripted check fits
-  better than a completion condition.
+Sources (official):
 
-## Rendering Rules
+- [Goal mode](https://code.claude.com/docs/en/goal)
+- [Memory and CLAUDE.md](https://code.claude.com/docs/en/memory)
+- [Common workflows and file references](https://code.claude.com/docs/en/tutorials)
 
-Shared contract first: outcome, verification, constraints, boundaries,
-iteration policy, stop condition, pause/stop-and-report condition. Both
-platforms keep the same field labels (Chinese or English per the output
-contract). Platform differences enter at rendering time.
+Facts:
 
-### Codex rendering
+- `/goal <condition>` sets a session completion condition and immediately starts
+  a turn. An independent small model reads only the transcript after each turn;
+  “no” auto-continues and “yes” clears the goal.
+- `/goal` views status. `/goal clear` removes it; `stop`, `off`, `reset`, `none`,
+  and `cancel` are aliases. `/clear` also removes it. There is no goal
+  edit/pause/resume command.
+- Requires Claude Code v2.1.139+, accepted workspace trust, and hooks not
+  disabled by `disableAllHooks` or managed `allowManagedHooksOnly`.
+- Conditions are at most 4,000 characters. Always include an evaluator-judged
+  turn/time bound such as “stop after 20 turns”; it is not a hard runtime budget.
+- The evaluator runs no tools. Exit codes, test/lint output, diffs/status and
+  file listings must be surfaced in the transcript. Screenshots/human review
+  alone cannot prove completion to it.
+- Goals grant no permission. Unattended use also requires auto mode.
+- `@file` is documented message context, so `@GOAL.md` is the preferred launcher,
+  but the executing Claude must restate the contract/evidence in the transcript.
+- `claude -p "/goal ..."` is a one-shot non-interactive loop; stream JSON is
+  preferable when progress is required.
 
-- Phrase the objective as an outcome to reach ("deliver X with Y verified");
-  remember that the goal text is also the first prompt.
-- Keep existing field labels unchanged.
-- Management answers may use `/goal edit`, `/goal pause`, and `/goal resume`.
-  When discussing edit accounting, retain the `community-observed` label above.
-- Per the `community-observed` evidence above, treat time/token text only as a
-  soft stop clause, distinct from the official `budget-limited` runtime state.
-- Goals are stable and enabled by default on current Codex; troubleshooting
-  older or managed environments may point at `features.goals`.
+## Grok Build
 
-### Claude Code rendering
+Snapshot: [`xai-org/grok-build@07b2f714`](https://github.com/xai-org/grok-build/commit/07b2f7144fd5c5c9d3dd1966937a87852d2dbdb8).
+The latest-release endpoint returned 404 at verification time, so no release
+version or minimum-version claim is made.
 
-- Phrase the goal as a completion condition ("X is true, proven by Y").
-- Verification evidence must be transcript-visible: command exit codes, test
-  or lint output, `git status` / `git diff`, file existence listings. Rewrite
-  screenshot-only or human-confirmation evidence into a transcript-visible
-  check, or move it into constraints as guidance Claude follows but the
-  evaluator does not judge.
-- Always include a bounding clause such as
-  `否则在 20 轮后停止并总结剩余问题` / `or stop after 20 turns and summarize
-  remaining issues`, and describe it as evaluator-judged rather than a hard
-  runtime timer.
-- Keep the `暂停条件` / `Pause if` label, but write its body as
-  stop-and-report: Claude Code cannot pause a goal, so high-risk situations
-  must instruct Claude to stop, report, and wait for a human decision (the
-  user then clears or resets the goal).
-- Never recommend `/goal pause` or `/goal resume` to a Claude Code user. For
-  a pause request, explain the command does not exist and offer `/goal clear`
-  plus re-setting later, or simply interrupting the session.
-- For unattended use, remind the user to pair `/goal` with auto mode. Use the
-  latest evaluator reason as evidence for changing direction between turns.
+Sources (official canonical repository):
 
-## Platform Selection
+- [Slash commands](https://github.com/xai-org/grok-build/blob/07b2f7144fd5c5c9d3dd1966937a87852d2dbdb8/crates/codegen/xai-grok-pager/docs/user-guide/04-slash-commands.md)
+- [Goal command implementation](https://github.com/xai-org/grok-build/blob/07b2f7144fd5c5c9d3dd1966937a87852d2dbdb8/crates/codegen/xai-grok-tools-api/src/slash_commands.rs)
+- [File references](https://github.com/xai-org/grok-build/blob/07b2f7144fd5c5c9d3dd1966937a87852d2dbdb8/crates/codegen/xai-grok-pager/docs/user-guide/01-getting-started.md)
+- [Project rules](https://github.com/xai-org/grok-build/blob/07b2f7144fd5c5c9d3dd1966937a87852d2dbdb8/crates/codegen/xai-grok-pager/docs/user-guide/12-project-rules.md)
 
-1. Explicit statement wins: if the user names Codex or Claude Code, render for
-   that platform.
-2. Otherwise infer from the host environment the skill is running in.
-3. If still ambiguous, add one numbered choice to the existing 可选调整 block
-   (for example `0. 平台：A Claude Code / B Codex`) instead of opening a
-   separate questionnaire round.
+Facts:
+
+- `/goal <objective> [--budget <tokens>]` starts; `status`, `pause`, `resume`,
+  and `clear` manage it.
+- Completion candidates receive an independent evidence review. Missing or
+  irreproducible evidence keeps the goal active or pauses it with gaps.
+- Goal mode may be disabled for a session. A prompt cannot enable it.
+- Ordinary prompts support `@path`; survival through `/goal` parsing is
+  `missing evidence`, so use an explicit `read ./GOAL.md` objective.
+- Auto-discovered project-rule files do not include arbitrary root `GOAL.md`.
+- Objective length limit is `missing evidence`. This skill applies a 4,000
+  portability budget without attributing it to Grok.
+
+## Oh My Pi (OMP)
+
+Snapshot: [`can1357/oh-my-pi@160ed439`](https://github.com/can1357/oh-my-pi/commit/160ed439ac0df594347e7d7018b813a7ffdb5e81), observed release
+[`v18.0.3`](https://github.com/can1357/oh-my-pi/releases/tag/v18.0.3).
+The tag is an observation anchor, not a minimum version.
+
+Sources (official canonical repository):
+
+- [Built-in mode commands](https://github.com/can1357/oh-my-pi/blob/160ed439ac0df594347e7d7018b813a7ffdb5e81/packages/coding-agent/src/slash-commands/builtin-modes.ts)
+- [Goal state](https://github.com/can1357/oh-my-pi/blob/160ed439ac0df594347e7d7018b813a7ffdb5e81/packages/coding-agent/src/goals/state.ts)
+- [Goal tool](https://github.com/can1357/oh-my-pi/blob/160ed439ac0df594347e7d7018b813a7ffdb5e81/packages/coding-agent/src/goals/tools/goal-tool.ts)
+- [Active-goal prompt](https://github.com/can1357/oh-my-pi/blob/160ed439ac0df594347e7d7018b813a7ffdb5e81/packages/coding-agent/src/prompts/goals/goal-mode-active.md)
+- [Context files](https://github.com/can1357/oh-my-pi/blob/160ed439ac0df594347e7d7018b813a7ffdb5e81/docs/context-files.md)
+
+Facts:
+
+- `/goal <objective>` creates; `/goal set <objective>` sets/replaces. `show`,
+  `pause`, `resume`, `drop`, and `budget <N|off>` manage it. `/guided-goal` is a
+  different intake flow.
+- States are active, paused, budget-limited, complete, and dropped. The full
+  objective persists; completion requires a current-repository audit of every
+  deliverable. Budget exhaustion is explicitly not completion.
+- `goal.enabled` must be on. Goal mode conflicts with plan and vibe modes.
+- Recognized context-file discovery does not make arbitrary `GOAL.md` a context
+  file. Documented `@path` expansion inside context files is not prompt-level
+  attachment proof; use an explicit read objective.
+- Objective length limit is `missing evidence`; use the skill-owned 4,000
+  portability budget.
+
+## Kimi Code
+
+Snapshot: [`MoonshotAI/kimi-code@368b4b74`](https://github.com/MoonshotAI/kimi-code/commit/368b4b7400228028006c9b0d5789fcced85f75aa), observed release
+[`@moonshot-ai/kimi-code@0.38.0`](https://github.com/MoonshotAI/kimi-code/releases/tag/%40moonshot-ai/kimi-code%400.38.0).
+The tag is an observation anchor, not a minimum version.
+
+Sources (official canonical repository):
+
+- [Goal guide](https://github.com/MoonshotAI/kimi-code/blob/368b4b7400228028006c9b0d5789fcced85f75aa/docs/en/guides/goals.md)
+- [Slash commands](https://github.com/MoonshotAI/kimi-code/blob/368b4b7400228028006c9b0d5789fcced85f75aa/docs/en/reference/slash-commands.md)
+- [TUI parser and 4,000 check](https://github.com/MoonshotAI/kimi-code/blob/368b4b7400228028006c9b0d5789fcced85f75aa/apps/kimi-code/src/tui/commands/goal.ts)
+- [Headless exit contract](https://github.com/MoonshotAI/kimi-code/blob/368b4b7400228028006c9b0d5789fcced85f75aa/apps/kimi-code/src/cli/goal-prompt.ts)
+- [File references](https://github.com/MoonshotAI/kimi-code/blob/368b4b7400228028006c9b0d5789fcced85f75aa/docs/en/guides/interaction.md)
+- [Repository root GOAL.md precedent](https://github.com/MoonshotAI/kimi-code/blob/368b4b7400228028006c9b0d5789fcced85f75aa/GOAL.md)
+
+Facts:
+
+- `/goal <objective>` starts. `/goal` or `status`, plus `pause`, `resume`,
+  `cancel`, `replace <objective>`, and `next <objective>` manage it. `/goal --`
+  escapes a reserved first word.
+- States are active, paused, blocked, and complete. Restored active sessions
+  resume as paused; completion clears, while blocked/paused remain resumable.
+- Objectives are capped at 4,000 characters; the implementation recommends a
+  file path for longer content.
+- Stop limits belong in the current TUI objective; `/goal` exposes no generic
+  user budget flag.
+- Headless mode accepts create forms only. Completion exits 0, blocked exits 3,
+  and paused exits 6.
+- `@path` is documented, but combined `@GOAL.md` + `/goal` is provider-unverified;
+  use an explicit read objective.
+- The repository's own root `GOAL.md` is design precedent, not evidence of
+  automatic discovery in arbitrary projects.
+
+## Rendering and selection rules
+
+1. Explicit user platform wins, then host evidence, then one bounded platform
+   choice. `OMP` maps to Oh My Pi unless the user means another product.
+2. Render one neutral contract and only platform-specific launch/management,
+   budget and stop semantics. Never blend commands.
+3. Codex/Grok/OMP/Kimi explicitly read `./GOAL.md`. Claude may use `@GOAL.md`
+   and must require transcript-visible proof.
+4. Grok/OMP/Kimi prompt-level `@GOAL.md` remains `UNVERIFIED` until a named
+   provider-backed fresh-session transcript proves it.
+5. Enabling Goal mode never grants broader permission and never causes an
+   arbitrary root `GOAL.md` to load automatically.

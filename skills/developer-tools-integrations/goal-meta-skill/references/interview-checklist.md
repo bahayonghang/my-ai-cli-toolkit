@@ -4,9 +4,13 @@ Ask only the questions needed to write a safe and testable goal. If reconnaissan
 
 Prefer numbered choices with defaults; use open questions for intent or priority when choices would distort the answer. Ask at most four questions per round. The user should be able to reply with `按默认` or `1B 2A 3C`.
 
-First distinguish whether the user wants a new goal or active-goal management. If they want to inspect, edit, pause, resume, or clear the current goal, answer from `references/platform-goal-facts.md` instead of interviewing. Codex supports `/goal edit`; its accounting-retention behavior is explicitly `community-observed`. Claude Code has no edit/pause/resume command — offer clear-and-reset-later or interruption.
+First distinguish a new Goal, active-goal management, and a persisted handoff.
+Management uses the exact platform vocabulary in
+`references/platform-goal-facts.md` and never writes a file.
 
-Then determine the target platform (`references/platform-goal-facts.md`): explicit statement wins, otherwise infer from the host environment, otherwise add the platform choice below.
+Then determine the target platform (`references/platform-goal-facts.md`):
+explicit statement wins, otherwise infer from the host environment, otherwise
+add one Codex/Claude/Grok/OMP/Kimi platform choice below.
 
 ## Two-Phase Protocol
 
@@ -34,7 +38,7 @@ Present the complete platform-rendered draft, invite corrections, and revise it 
 
 Use these choices for a very vague but low-risk task. Include choice 0 only when the platform is ambiguous, and never exceed four choices in one round:
 
-0. 平台：A Claude Code / B Codex
+0. 平台：A 当前 host（默认） / B Claude Code / C Codex / D Grok Build / E OMP / F Kimi Code
 1. 项目形态：A 新建本地 MVP（默认） / B 改现有项目 / C 先做原型
 2. 范围：A 核心流程（默认） / B 加常见增强 / C 做完整产品
 3. 验证：A 本地运行检查（默认） / B 真机或线上检查 / C 发布前检查
@@ -50,7 +54,8 @@ Use open-ended questions only when choices would hide an important decision.
 - Is the desired result a code change, a document, a published artifact, a clean repo state, a deployment, or a verified diagnosis?
 - Who is the user or reviewer of the final result?
 - Is a "first version" acceptable, or does the task require production-ready completeness?
-- Is the requested contract short enough for an inline `/goal`, or should the detailed instructions live in a file that the goal points to?
+- Is the requested contract short enough for inline output, or did the user
+  authorize a root `GOAL.md` handoff?
 
 ### Verification
 
@@ -82,8 +87,26 @@ Use open-ended questions only when choices would hide an important decision.
 - What evidence proves completion strongly enough to stop?
 - What blocker requires the user: login, 2FA, paid service, destructive deletion, legal/medical/financial decision, account ownership, or product direction?
 - Should partial success be reported with remaining manual steps, or should the agent continue until the full outcome is proven?
-- If the goal would exceed the shared 4,000 character limit, is the standard `.planning/goal-<slug>.md` path acceptable? Output its content by default; write only on explicit request.
+- If the goal exceeds the portability budget, should it stay chat-only, use a
+  user-named legacy `.planning/goal-<slug>.md`, or become an explicitly approved
+  root `GOAL.md` handoff?
 - Claude Code only: what turn or time bounding clause fits (for example `or stop after 20 turns`), and is every piece of completion evidence something Claude's own output can show in the transcript?
+
+### Persistence authorization
+
+Do not ask these when the user did not request persistence and the contract is
+short. Otherwise establish, preferably from reconnaissance:
+
+- exact Git/workspace root and direct-child basename;
+- create-only vs an already-existing file;
+- whether replace is desired after showing the old SHA-256;
+- selected platform(s) and whether the file must travel to another worktree,
+  machine, teammate, or cloud session;
+- confirmation that the contract contains no secrets/private transcript data.
+
+At S4 show the path, full contract/diff, action and portability consequence.
+Only the subsequent relevant confirmation authorizes S6. `直接给` alone never
+answers these questions.
 
 ## Phase A Output Shape
 

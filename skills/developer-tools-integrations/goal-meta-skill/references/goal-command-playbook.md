@@ -2,7 +2,8 @@
 
 ## What This Skill Produces
 
-This skill produces a `/goal` command for the user's platform: Codex or Claude Code.
+This skill produces a `/goal` command for Codex, Claude Code, Grok Build, Oh My
+Pi, or Kimi Code, and optionally persists one approved root `GOAL.md` handoff.
 
 For Chinese users, the body of the goal can be fully Chinese, but the slash command should still start with `/goal`. Do not use `/目标` as the executable command unless the current client explicitly supports that alias.
 
@@ -12,63 +13,34 @@ Default stance: give the best copy-ready goal once the request is concrete. For 
 
 ## Platform Goal Commands
 
-Platform facts live in `references/platform-goal-facts.md`; that file wins on any conflict. Summary:
+`references/platform-goal-facts.md` is the sole lifecycle/length/budget/headless
+fact source. Select one platform from explicit user wording, then host evidence,
+then a bounded choice. Management requests receive only the minimal command for
+that platform; never blend `clear`, `drop`, `cancel`, `replace`, `next`, `show`,
+or `budget`.
 
-Codex:
-
-- `/goal <text>` sets the objective and is the first prompt.
-- `/goal` views the current goal.
-- `/goal edit` revises the current objective.
-- `/goal pause` / `/goal resume` pause and resume an active goal.
-- `/goal clear` removes the current goal.
-- A `local-probe` shows Goals stable and enabled by default on current Codex; consult the facts file for older-version troubleshooting.
-
-For a Codex edit-management request, answer with `/goal edit`. Accounting retention across edits is `community-observed`; when the user must reset accounting, tell them to `/goal clear` and create a new goal.
-
-Claude Code:
-
-- `/goal <condition>` sets a session completion condition and immediately starts a turn; an independent small model evaluates the transcript after each turn and auto-continues until the condition holds.
-- `/goal` shows status (condition, elapsed time, turns, tokens, latest evaluator reason).
-- `/goal clear` removes it; `stop`, `off`, `reset`, `none`, and `cancel` are aliases, and `/clear` also removes an active goal. There is no pause/resume/edit.
-- The latest evaluator reason can guide the next turn. A goal grants no extra permissions; pair unattended use with auto mode.
-- Requires v2.1.139+, an accepted trust dialog, and hooks not disabled.
-
-Goal objectives/conditions must be non-empty and at most 4,000 characters on both platforms. If the useful contract is longer or complex, output complete copy-ready `.planning/goal-<slug>.md` content and a short executable goal that points to it:
+Codex, Claude Code and Kimi officially cap objectives/conditions at 4,000
+characters. The same number is only a goal-meta portability budget for Grok and
+OMP. For an explicitly approved handoff, write the useful contract to root
+`GOAL.md` and return a short platform renderer:
 
 ```text
-/goal Follow the task contract in .planning/goal-checkout-discount.md and stop only when its Verification and Stop when sections are satisfied.
+/goal First read and follow ./GOAL.md as the approved execution contract; restate its Verification and Completion conditions, then work until they are evidenced or a pause condition is reached.
 ```
 
-The default is side-effect-free: tell the user to save the content, but do not write the file unless they explicitly ask. Use this two-part shape so the file is useful as a human record and its executable invocation is mechanically bounded:
+The default remains side-effect-free. Only an explicit save/handoff request or
+confirmation of the exact S4 write plan authorizes the helper. Use the fixed
+schema in `persistent-goal-contract.md`, not an ad-hoc frontmatter file.
 
-````markdown
----
-title: Checkout discount goal
-platform: codex
-status: draft
----
+After the helper succeeds, report its path/bytes/hash/action/Git visibility and
+then the selected-platform launcher. Explain that arbitrary `GOAL.md` is not
+auto-loaded. An untracked/ignored file does not appear in another worktree,
+clone or cloud workspace unless the user deliberately exposes it there.
 
-# Context
-[Why this outcome matters and the authoritative inputs to read first.]
-
-# Contract
-- Outcome: [final state]
-- Verification: [commands, reports, or artifact paths]
-- Constraints: [behavior that must not change]
-- Boundaries: [allowed writes and forbidden paths]
-- Iteration policy: [checks and checkpoints]
-- Stop/Pause: [completion proof and human decisions]
-
-<!-- invocation-start -->
-```text
-/goal Follow the task contract in .planning/goal-checkout-discount.md and stop only when its Verification and Stop/Pause conditions are satisfied.
-```
-<!-- invocation-end -->
-````
-
-After the user saves the file, tell them to paste the delimited invocation. Setting a Claude goal immediately starts a turn; for Codex, the goal text is the first prompt.
-
-If Trellis cadence is injected, put it in the file's Contract section. The short `/goal` still points at Verification and Stop/Pause in that file.
+If Trellis cadence is injected, link concrete task artifacts and put the cadence
+in Iteration policy and Completion conditions. The short launcher still points
+at the persisted contract. A user-named `.planning/goal-<slug>.md` remains a
+backward-compatible explicit path; do not silently migrate it.
 
 This skill drafts goal instructions. Do not start or execute the goal task unless the user explicitly asks for execution.
 
@@ -88,6 +60,7 @@ Do not force `/goal` for:
 - tasks whose success is obvious without agent persistence
 - existing active-goal management requests where the platform's management commands are the correct answer
 - Claude Code sessions where a time cadence (`/loop`) or a scripted Stop hook fits better than a completion condition
+- memory-vault, transcript-archive, progress-ledger, or multi-goal scheduler requests
 
 When the direction is undecided or the task is pure divergent exploration, refuse to produce a goal and suggest `/plan` or ordinary discussion. Repairable subjectivity is not a refusal: warn, translate it into evidence, and add a round limit plus stop-and-report clause.
 
@@ -367,3 +340,7 @@ Avoid:
 - recommending `/goal pause` or `/goal resume` to a Claude Code user (the commands do not exist there; offer `/goal clear` plus re-setting, or interrupting)
 - Claude Code conditions whose only evidence is a screenshot or human confirmation (the evaluator reads the transcript and runs no tools)
 - Claude Code conditions with no turn or time bounding clause
+- writes `GOAL.md` without explicit authorization, silently replaces it, or
+  claims a new Agent automatically loads it
+- borrows another platform's management command or calls the Grok/OMP 4,000
+  portability budget an official platform limit

@@ -1,12 +1,16 @@
 interface:
   display_name: "Goal Meta Skill"
-  short_description: "Turn vague work into a project-aware, verifiable /goal through read-only reconnaissance, bounded discussion, or a direct fast path."
-  default_prompt: "Use $goal-meta-skill to turn this task into a strong /goal for Claude Code or Codex. In an existing project, first perform the documented read-only reconnaissance, report project rules, real verification commands, boundary candidates, and git status for correction, and never run tests or write during reconnaissance. If material human decisions remain, restate the outcome and ask at most four questions per round; otherwise, or when I say directly/use defaults, take the one-turn fast path. Refuse a goal only for undecided pure exploration and suggest planning first; warn and proceed for repairable subjectivity with observable evidence and a round limit. Produce the Chinese recommended draft plus an English-compatible mirror unless I request one language. Keep inline goals under 4,000 characters; for longer contracts output copy-ready .planning/goal-<slug>.md content and do not write it unless explicitly asked. Use platform-correct management and rendering rules, including Codex /goal edit and Claude transcript-visible proof, a soft turn/time bound, and stop-and-report semantics. When the outcome is Trellis task implementation, encode commit-then-archive and delay parent archive until the named 发布门; after confirmation, deliver a text-fenced /goal plus 字段一览."
+  short_description: "Draft verifiable cross-platform /goal commands and optionally persist one approved root GOAL.md handoff."
+  default_prompt: "Use $goal-meta-skill to turn this task into a project-aware /goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code. Reconnaissance stays read-only. Use a bounded interview only for material human decisions. Ordinary goals remain chat-only; if I explicitly request save, persistence, or fresh-Agent handoff, show the exact root GOAL.md contract and create/replace effect, wait for the relevant confirmation, then use only the governed stdin helper. Never claim GOAL.md auto-loads, never silently overwrite it, and never modify Git state. Return only the selected platform's short explicit-read launcher and label provider-backed handoff evidence UNVERIFIED when no real fresh-session transcript exists. For Trellis implementation, link concrete task artifacts and preserve commit-then-archive plus the parent release gate."
 compatibility:
   canonical_format: "agent-skills"
   adapter_targets:
     - "openai"
     - "claude"
+    - "grok-build"
+    - "oh-my-pi"
+    - "kimi-code"
+    - "agent-skills-compatible"
     - "generic"
   activation:
     mode: "manual"
@@ -18,7 +22,12 @@ compatibility:
     source_tier: "local"
     remote_inline_execution: "forbid"
     remote_metadata_policy: "allow-metadata-only"
+    file_write: "one confirmed direct-child Markdown through persist_goal_contract.py"
+    git_mutation: "forbid"
   degradation:
-    openai: "drafts structured Codex /goal thread objectives with pause/resume management from available task context"
-    claude: "drafts native Claude Code /goal completion conditions with transcript-visible proof, bounding clauses, and stop-and-report pause semantics"
-    generic: "uses the canonical goal template and asks for missing criteria when needed"
+    openai: "uses an explicit read ./GOAL.md objective; arbitrary GOAL.md is not auto-loaded"
+    claude: "uses @GOAL.md and requires transcript-visible evidence plus bounded stop-and-report"
+    grok_build: "uses an explicit read; @GOAL.md inside /goal and provider handoff remain UNVERIFIED"
+    oh_my_pi: "uses an explicit read and reports goal.enabled or plan/vibe conflicts; budget exhaustion is not completion"
+    kimi_code: "uses an explicit read; headless creation is separate and provider handoff remains UNVERIFIED"
+    generic: "asks for a concrete platform and keeps the contract chat-only when root or authorization is unclear"

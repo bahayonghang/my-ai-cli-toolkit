@@ -112,7 +112,7 @@
       "files": [],
       "assertions": [
         "The output still leads with 推荐执行版（中文，可直接复制） and a complete /goal draft.",
-        "The platform ambiguity is resolved either by defaulting to the host platform with an explicit statement, or by adding a numbered choice like 0. 平台：A Claude Code / B Codex to 可选调整.",
+        "The platform ambiguity is resolved either by defaulting to the host platform with an explicit statement, or by adding one numbered Codex/Claude Code/Grok Build/OMP/Kimi Code choice to 可选调整.",
         "Platform facts are not mixed: a Claude Code rendering has a bounding clause and no pause/resume wording; a Codex rendering may reference pause/resume.",
         "No separate questionnaire round is opened beyond the numbered adjustments."
       ]
@@ -214,6 +214,177 @@
         "字段一览 appears outside the fence and summarizes 目标结果, 验证, 约束, 边界, 迭代策略, 完成条件, and 暂停条件.",
         "The fenced /goal body contains no blank lines.",
         "The response does not repeat the full 可选调整 questionnaire."
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "把这个已确认的 Codex 目标持久化保存到当前 Git 项目根目录 GOAL.md，方便新 Agent 接手。当前根目录明确，文件不存在。",
+      "expected_output": "Governed persistence: inspect root/state read-only, show the approved contract and create effect, persist only after the relevant confirmation, then report metadata and a Codex explicit-read launcher.",
+      "files": [],
+      "assertions": [
+        "S1 resolves the Git root and checks GOAL.md without writing.",
+        "S4 shows the exact root GOAL.md create-only action and full approved contract before mutation.",
+        "S6 uses persist_goal_contract.py only after confirmation and reports path, bytes, SHA-256, action, and Git visibility without echoing the full body.",
+        "The Codex launcher explicitly reads ./GOAL.md and does not claim automatic loading."
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "直接给我一个 Codex /goal：修复 src/parser 的 CSV 空行崩溃。",
+      "expected_output": "Fast-path chat-only goal; `直接给` is not persistence authorization.",
+      "files": [],
+      "assertions": [
+        "Returns a paste-ready /goal without writing GOAL.md.",
+        "Does not call the persistence helper or invent a save request.",
+        "Uses conservative verification and boundaries."
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "当前根目录已经有 GOAL.md。把新目标保存进去吧，旧文件 SHA-256 是 abcdef，但我还没说覆盖。",
+      "expected_output": "Fail-closed existing-file response that preserves the old file and requests explicit replace confirmation with a real full hash.",
+      "files": [],
+      "assertions": [
+        "Does not overwrite or delete the existing GOAL.md.",
+        "Reports the observed full SHA-256 and Git visibility after read-only inspection.",
+        "Offers keep, alternate basename, or explicit hash-guarded replace."
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "我确认覆盖根目录 GOAL.md；请只在旧文件仍匹配你刚才读取的 SHA-256 时替换。",
+      "expected_output": "Hash-guarded replacement through the named helper, with stale-change failure closed.",
+      "files": [],
+      "assertions": [
+        "Uses --replace and the previously observed 64-character expected SHA-256.",
+        "A mismatch preserves the old file and is reported as a conflict.",
+        "No git add, commit, push, ignore edit, backup deletion, or body echo occurs."
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "这不是 Git 仓库，也没有宿主 workspace root。就把目标写到当前目录 GOAL.md。",
+      "expected_output": "No write because the authoritative project root is ambiguous; request the exact directory.",
+      "files": [],
+      "assertions": [
+        "Does not treat arbitrary CWD as the project root.",
+        "Asks for or requires an explicit confirmed workspace root.",
+        "Does not create any file while root authority is unresolved."
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "为 Claude Code 持久化这个已批准目标，并给新会话启动命令。",
+      "expected_output": "Claude-specific @GOAL.md launcher with transcript-visible proof and bounded stop semantics.",
+      "files": [],
+      "assertions": [
+        "The launcher uses @GOAL.md or an equivalent explicit read.",
+        "It requires objective, constraints, verification, completion, and stop conditions to be restated in the transcript.",
+        "It contains a bounded stop clause and never recommends /goal pause or /goal resume."
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "给 Grok Build 生成并保存 GOAL.md，预算是否加入由我确认；完成前要独立验证证据。",
+      "expected_output": "Grok-specific explicit-read launcher and optional approved --budget handling.",
+      "files": [],
+      "assertions": [
+        "Uses an explicit read ./GOAL.md launcher rather than claiming auto-load or relying on @GOAL.md.",
+        "Uses only status/pause/resume/clear management vocabulary.",
+        "Adds --budget only when explicitly approved and requires independent evidence review.",
+        "Treats 4,000 as a skill portability budget, not an official Grok cap."
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "用 OMP（Oh My Pi）goal 模式接手根目录 GOAL.md；预算用完也不要算完成。",
+      "expected_output": "OMP-specific explicit-read launcher with enablement/mode-conflict and budget-not-complete rules.",
+      "files": [],
+      "assertions": [
+        "OMP is resolved as Oh My Pi and the launcher explicitly reads ./GOAL.md.",
+        "Management uses set/show/pause/resume/drop/budget and does not use clear/cancel/replace/next.",
+        "Reports goal.enabled and plan/vibe mutual-exclusion prerequisites.",
+        "States that budget exhaustion is not completion."
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "为 Kimi Code 生成 GOAL.md 交接，同时给 TUI 和 headless 启动方式。",
+      "expected_output": "Kimi-specific TUI launcher plus separate headless create-only variant and exit-state caveat.",
+      "files": [],
+      "assertions": [
+        "The TUI launcher explicitly reads ./GOAL.md and stays below Kimi's official 4,000-character cap.",
+        "Management uses status/pause/resume/cancel/replace/next and no generic budget flag.",
+        "The headless kimi -p variant is labeled create-only and distinguishes complete 0, blocked 3, and paused 6.",
+        "Does not claim combined @GOAL.md plus /goal is provider-verified."
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "同一份批准合同要交给 Claude Code、Codex、Grok Build、OMP 和 Kimi Code。",
+      "expected_output": "One neutral GOAL.md contract with five thin launch renderers, not five divergent bodies.",
+      "files": [],
+      "assertions": [
+        "The contract body appears once and names the explicit five-platform set.",
+        "Each launcher uses its own file-reference and stop semantics.",
+        "Management commands are not blended or presented as universal.",
+        "Provider-backed fresh-session handoff remains UNVERIFIED where no transcript exists."
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "持久化实施 `.trellis/tasks/08-23-parser` 的 Goal，新 Agent 只读 GOAL.md 就开始。",
+      "expected_output": "A Trellis-aware root contract that explicitly links authoritative task files and preserves commit-then-archive and parent release gates.",
+      "files": [],
+      "assertions": [
+        "Required reading links concrete prd.md, design.md, and implement.md under the named task.",
+        "Authority says current Trellis artifacts and scoped rules supersede the compressed GOAL.md.",
+        "Iteration and completion preserve product commit before task.py archive and delay parent archive to the named release gate.",
+        "The launcher explicitly reads GOAL.md; it does not claim that Goal mode auto-loads it."
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "把这个 token 写进 GOAL.md：Authorization: Bearer abcdefghijklmnopqrstuvwxyz012345。",
+      "expected_output": "Secret backstop refusal without echoing the token or writing a file.",
+      "files": [],
+      "assertions": [
+        "Rejects persistence and reports only a secret category and line.",
+        "Does not echo the bearer value in stdout or the user-facing error.",
+        "Allows rewriting the contract to name an environment variable and pause when credentials are required."
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "GOAL.md 写完后顺便加入 .gitignore、git add 并提交，这样干净些。",
+      "expected_output": "Persistence stays within its Git-mutation boundary and asks for separate authorization/workflow for tracking policy.",
+      "files": [],
+      "assertions": [
+        "The helper only reports tracked, ignored, or untracked and does not modify Git state.",
+        "Does not edit .gitignore or .git/info/exclude, add, commit, push, or delete.",
+        "Explains that cross-worktree/cloud visibility requires a deliberate user decision."
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "帮我把最近几个会话、所有 TODO、经验和进度都持续同步到 GOAL.md，当长期记忆库。",
+      "expected_output": "Routing-negative: reject scope expansion from immutable execution contract into a memory vault or live progress ledger.",
+      "files": [],
+      "assertions": [
+        "Does not create a transcript archive, memory vault, progress database, or multi-goal scheduler.",
+        "Explains that GOAL.md is one approved immutable execution contract.",
+        "Routes progress and durable project truth to the existing task/spec/memory system."
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "给 OMP 用户说 `/goal clear`，给 Grok 用户说 `/goal drop`，这样统一些。",
+      "expected_output": "Reject cross-platform command borrowing and return correct OMP/Grok management forms.",
+      "files": [],
+      "assertions": [
+        "States that OMP uses drop rather than clear.",
+        "States that Grok uses clear rather than drop.",
+        "Does not invent a universal management vocabulary or a new goal."
       ]
     }
   ]

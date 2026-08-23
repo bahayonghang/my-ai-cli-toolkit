@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 import sys
-import argparse
 from pathlib import Path
 
 
@@ -73,6 +73,49 @@ DANGEROUS_VAGUE_PATTERNS = [
 ]
 
 GOAL_OBJECTIVE_MAX_CHARS = 4000
+
+PLATFORMS = ("codex", "claude", "grok", "omp", "kimi", "both", "all")
+
+PLATFORM_MANAGEMENT_COMMANDS = {
+    "codex": {"edit", "pause", "resume", "clear"},
+    "claude": {"clear", "stop", "off", "reset", "none", "cancel"},
+    "grok": {"status", "pause", "resume", "clear"},
+    "omp": {"set", "show", "pause", "resume", "drop", "budget"},
+    "kimi": {"status", "pause", "resume", "cancel", "replace", "next"},
+}
+
+ALL_MANAGEMENT_COMMANDS = set().union(*PLATFORM_MANAGEMENT_COMMANDS.values())
+
+PLATFORM_LABELS = {
+    "codex": "Codex",
+    "claude": "Claude Code",
+    "grok": "Grok Build",
+    "omp": "Oh My Pi",
+    "kimi": "Kimi Code",
+}
+
+CONTRACT_REQUIRED_SECTIONS = (
+    "Contract metadata",
+    "Authority and startup",
+    "Objective",
+    "Required reading and current context",
+    "Scope and boundaries",
+    "Constraints",
+    "Verification",
+    "Iteration policy",
+    "Completion conditions",
+    "Pause / stop conditions",
+    "Launch commands",
+)
+
+CONTRACT_PLACEHOLDER_PATTERNS = (
+    r"\bTBD\b",
+    r"\bTODO\b",
+    r"\[(?:TBD|TODO|PLACEHOLDER)[^\]]*\]",
+    r"<[^>]+>",
+    r"待补充",
+    r"待定",
+)
 
 CLAUDE_FORBIDDEN_COMMAND_PATTERNS = [
     r"/goal\s+pause",
@@ -156,7 +199,9 @@ def lint_chinese_companion(text: str, source: str) -> list[str]:
     return errors
 
 
-def lint_goal_block_length(text: str, source: str) -> list[str]:
+def lint_goal_block_length(
+    text: str, source: str, *, platform: str = "both"
+) -> list[str]:
     """Check the pasted /goal block stays within the 4,000 character limit.
 
     Both Codex objectives and Claude Code conditions share the limit. The
@@ -175,10 +220,46 @@ def lint_goal_block_length(text: str, source: str) -> list[str]:
             block_lines.append(follower.strip())
         block_length = len("\n".join(block_lines))
         if block_length > GOAL_OBJECTIVE_MAX_CHARS:
+            if platform in {"grok", "omp"}:
+                errors.append(
+                    f"{source}: /goal block is {block_length} characters; the "
+                    f"goal-meta portability limit is {GOAL_OBJECTIVE_MAX_CHARS}. "
+                    "No official objective cap was found for this platform; move "
+                    "the contract into a file and point /goal at it"
+                )
+            else:
+                limit_owner = {
+                    "codex": "Codex caps objectives",
+                    "claude": "Claude Code caps conditions",
+                    "kimi": "Kimi Code caps objectives",
+                    "all": "Codex, Claude Code, and Kimi Code cap objectives/conditions",
+                    "both": "Codex and Claude Code cap objectives/conditions",
+                }.get(platform, "supported platforms cap objectives/conditions")
+                errors.append(
+                    f"{source}: /goal block is {block_length} characters; {limit_owner} "
+                    f"at {GOAL_OBJECTIVE_MAX_CHARS}. Move the "
+                    "contract into a file and point /goal at it"
+                )
+    return errors
+
+
+def lint_platform_commands(text: str, source: str, platform: str) -> list[str]:
+    """Reject slash-command verbs that belong to another platform."""
+    if platform not in PLATFORM_MANAGEMENT_COMMANDS:
+        return []
+
+    errors: list[str] = []
+    allowed = PLATFORM_MANAGEMENT_COMMANDS[platform]
+    for match in re.finditer(
+        r"/goal\s+(edit|pause|resume|clear|status|set|show|drop|budget|stop|off|reset|none|cancel|replace|next)\b",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        command = match.group(1).lower()
+        if command in ALL_MANAGEMENT_COMMANDS and command not in allowed:
             errors.append(
-                f"{source}: /goal block is {block_length} characters; both platforms "
-                f"cap objectives/conditions at {GOAL_OBJECTIVE_MAX_CHARS}. Move the "
-                "contract into a file and point /goal at it"
+                f"{source}: `/goal {command}` is not valid for {platform}; "
+                "use that platform's documented management vocabulary"
             )
     return errors
 
@@ -293,14 +374,213 @@ def lint_text(
         if content and len(content) < 12:
             errors.append(f"{source}: `{name}` content is too thin")
 
-    errors.extend(lint_goal_block_length(text, source))
+    errors.extend(lint_goal_block_length(text, source, platform=platform))
     errors.extend(lint_budget_misrepresentation(text, source))
+    errors.extend(lint_platform_commands(text, source, platform))
 
     if platform == "claude":
         errors.extend(lint_claude_platform(text, source))
 
     if require_chinese_companion:
         errors.extend(lint_chinese_companion(text, source))
+
+    return errors
+
+
+def _sections(text: str) -> dict[str, str]:
+    matches = list(re.finditer(r"^##\s+(.+?)\s*$", text, flags=re.MULTILINE))
+    result: dict[str, str] = {}
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        result[match.group(1).strip()] = text[match.end() : end].strip()
+    return result
+
+
+def _metadata(section: str) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for match in re.finditer(r"^-\s+([^:\n]+):\s*(.+?)\s*$", section, flags=re.MULTILINE):
+        result[match.group(1).strip()] = match.group(2).strip()
+    return result
+
+
+def _parse_contract_platforms(value: str) -> set[str]:
+    tokens = {
+        token.lower()
+        for token in re.findall(r"\b(?:codex|claude|grok|omp|kimi)\b", value, flags=re.IGNORECASE)
+    }
+    return tokens
+
+
+def _expected_platforms(platform: str) -> set[str]:
+    if platform == "both":
+        return {"codex", "claude"}
+    if platform == "all":
+        return {"codex", "claude", "grok", "omp", "kimi"}
+    return {platform}
+
+
+def _launch_commands(section: str) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for platform, label in PLATFORM_LABELS.items():
+        match = re.search(
+            rf"^-\s+{re.escape(label)}:\s+`?(/goal[^`\n]+)`?\s*$",
+            section,
+            flags=re.MULTILINE | re.IGNORECASE,
+        )
+        if match:
+            result[platform] = match.group(1).strip()
+    return result
+
+
+def lint_persisted_contract(
+    text: str,
+    source: str,
+    *,
+    expected_path: str = "GOAL.md",
+    platform: str | None = None,
+) -> list[str]:
+    """Validate the immutable root Markdown contract used for fresh-agent handoff."""
+    errors: list[str] = []
+    sections = _sections(text)
+
+    if not re.search(r"^# Goal Contract:\s+\S", text, flags=re.MULTILINE):
+        errors.append(f"{source}: missing non-empty `# Goal Contract: ...` title")
+
+    for heading in CONTRACT_REQUIRED_SECTIONS:
+        if heading not in sections:
+            errors.append(f"{source}: missing required contract section `## {heading}`")
+        elif not sections[heading]:
+            errors.append(f"{source}: contract section `## {heading}` is empty")
+
+    for pattern in CONTRACT_PLACEHOLDER_PATTERNS:
+        if re.search(pattern, text, flags=re.IGNORECASE):
+            errors.append(f"{source}: unresolved contract placeholder matched `{pattern}`")
+
+    if errors:
+        return errors
+
+    metadata = _metadata(sections["Contract metadata"])
+    required_metadata = (
+        "Status",
+        "Target platform",
+        "Generated by",
+        "Project root",
+        "Contract path",
+        "Baseline",
+        "Generated at",
+    )
+    for key in required_metadata:
+        if key not in metadata:
+            errors.append(f"{source}: missing contract metadata `{key}`")
+
+    if metadata.get("Status", "").lower() != "approved":
+        errors.append(f"{source}: contract Status must be `approved`")
+    if metadata.get("Generated by") != "goal-meta-skill 0.5.0":
+        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.5.0`")
+    if metadata.get("Project root") != ".":
+        errors.append(f"{source}: Project root must be the relative marker `.`")
+    if metadata.get("Contract path") != expected_path:
+        errors.append(
+            f"{source}: Contract path `{metadata.get('Contract path', '')}` does not "
+            f"match output `{expected_path}`"
+        )
+    if not re.search(
+        r"\S+\s+@\s+[0-9a-f]{40}\b.*\bdirty paths:\s*\S",
+        metadata.get("Baseline", ""),
+        flags=re.IGNORECASE,
+    ):
+        errors.append(
+            f"{source}: Baseline must include a full 40-character HEAD and dirty paths summary"
+        )
+    if not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})",
+        metadata.get("Generated at", ""),
+    ):
+        errors.append(f"{source}: Generated at must be ISO-8601 with a timezone")
+
+    declared_platforms = _parse_contract_platforms(metadata.get("Target platform", ""))
+    if not declared_platforms:
+        errors.append(f"{source}: Target platform must name at least one supported platform")
+    platform_residue = re.sub(
+        r"\b(?:codex|claude|grok|omp|kimi|and)\b|[,|+/&\s-]+",
+        "",
+        metadata.get("Target platform", ""),
+        flags=re.IGNORECASE,
+    )
+    if platform_residue:
+        errors.append(
+            f"{source}: Target platform contains unsupported value `{platform_residue}`"
+        )
+    if platform is not None and declared_platforms != _expected_platforms(platform):
+        errors.append(
+            f"{source}: Target platform metadata {sorted(declared_platforms)} does not "
+            f"match --platform {platform}"
+        )
+
+    authority = sections["Authority and startup"]
+    for label, pattern in (
+        ("system authority", r"\bsystem\b|系统"),
+        ("user authority", r"\buser\b|用户"),
+        ("scoped project rules", r"AGENTS\.md|CLAUDE\.md|project rules|项目规则"),
+        (
+            "drift/conflict stop",
+            r"(?:drift|conflict).{0,80}(?:stop|report)|(?:stop|report).{0,80}(?:drift|conflict)|"
+            r"(?:漂移|冲突).{0,40}(?:停止|报告)|(?:停止|报告).{0,40}(?:漂移|冲突)",
+        ),
+    ):
+        if not re.search(pattern, authority, flags=re.IGNORECASE | re.DOTALL):
+            errors.append(f"{source}: Authority and startup missing {label}")
+
+    verification = sections["Verification"]
+    if not re.search(r"\b(?:VERIFIED|UNVERIFIED)\b", verification):
+        errors.append(f"{source}: Verification must label evidence VERIFIED or UNVERIFIED")
+
+    if len(sections["Objective"]) < 20:
+        errors.append(f"{source}: Objective is too short to be observable")
+
+    if not re.search(NUMBERED_COMPLETION_PATTERN, sections["Completion conditions"], re.MULTILINE):
+        errors.append(f"{source}: Completion conditions must be numbered")
+
+    pause = sections["Pause / stop conditions"]
+    if not re.search(r"pause|stop|blocked|暂停|停止|阻塞", pause, flags=re.IGNORECASE):
+        errors.append(f"{source}: Pause / stop conditions must define a pause or stop state")
+
+    if re.search(
+        r"GOAL\.md.{0,30}(?:auto(?:matically)?[- ]?load|automatically (?:read|discover))|"
+        r"(?:自动加载|自动读取|自动发现).{0,30}GOAL\.md",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(f"{source}: arbitrary GOAL.md files are not automatically loaded")
+
+    launchers = _launch_commands(sections["Launch commands"])
+    for target_platform in sorted(declared_platforms):
+        command = launchers.get(target_platform)
+        if command is None:
+            errors.append(
+                f"{source}: Launch commands missing {PLATFORM_LABELS[target_platform]} renderer"
+            )
+            continue
+        pointer = f"@{expected_path}" if target_platform == "claude" else f"./{expected_path}"
+        if pointer not in command:
+            errors.append(
+                f"{source}: {target_platform} launch command must explicitly reference `{pointer}`"
+            )
+        if target_platform == "claude":
+            if "transcript" not in command.lower():
+                errors.append(f"{source}: Claude launch must surface evidence in the transcript")
+        elif not re.search(r"first read and follow", command, flags=re.IGNORECASE):
+            errors.append(f"{source}: {target_platform} launch must explicitly read and follow the file")
+        errors.extend(lint_goal_block_length(command, source, platform=target_platform))
+        errors.extend(lint_platform_commands(command, source, target_platform))
+
+    if ".trellis/tasks/" in text:
+        for artifact in ("prd.md", "design.md", "implement.md"):
+            if artifact not in sections["Required reading and current context"]:
+                errors.append(f"{source}: Trellis contract must link concrete `{artifact}`")
+        cadence = sections["Iteration policy"] + "\n" + sections["Completion conditions"]
+        if not re.search(r"commit|提交", cadence, flags=re.IGNORECASE) or "archive" not in cadence:
+            errors.append(f"{source}: Trellis contract must preserve commit-then-archive cadence")
 
     return errors
 
@@ -316,9 +596,19 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--platform",
-        choices=("codex", "claude", "both"),
-        default="both",
-        help="Target platform. `claude` adds Claude Code rules: no /goal pause|resume advice and a required turn/time bounding clause.",
+        choices=PLATFORMS,
+        default=None,
+        help="Target platform. Inline default is `both`; contracts infer metadata when omitted. `all` covers all five renderers.",
+    )
+    parser.add_argument(
+        "--contract",
+        action="store_true",
+        help="Validate the persisted GOAL.md contract schema instead of an inline draft.",
+    )
+    parser.add_argument(
+        "--expected-path",
+        default="GOAL.md",
+        help="Expected project-relative contract basename when --contract is used.",
     )
     parser.add_argument("files", nargs="+", help="Files to lint.")
     return parser.parse_args(argv[1:])
@@ -335,19 +625,29 @@ def main(argv: list[str]) -> int:
     for raw_path in args.files:
         path = Path(raw_path)
         try:
-            text = path.read_text(encoding="utf-8")
-        except OSError as exc:
+            text = path.read_text(encoding="utf-8-sig")
+        except (OSError, UnicodeDecodeError) as exc:
             all_errors.append(f"{path}: cannot read file: {exc}")
             continue
-        all_errors.extend(
-            lint_text(
-                text,
-                str(path),
-                require_chinese_companion=args.require_chinese_companion,
-                platform=args.platform,
+        if args.contract:
+            all_errors.extend(
+                lint_persisted_contract(
+                    text,
+                    str(path),
+                    expected_path=args.expected_path,
+                    platform=args.platform,
+                )
             )
-        )
-        all_warnings.extend(lint_completion_warnings(text, str(path)))
+        else:
+            all_errors.extend(
+                lint_text(
+                    text,
+                    str(path),
+                    require_chinese_companion=args.require_chinese_companion,
+                    platform=args.platform or "both",
+                )
+            )
+            all_warnings.extend(lint_completion_warnings(text, str(path)))
 
     for warning in all_warnings:
         print(f"warning: {warning}", file=sys.stderr)

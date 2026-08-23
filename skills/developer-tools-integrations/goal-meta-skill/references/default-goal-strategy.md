@@ -16,17 +16,22 @@ After the interview converges, Chinese-first drafts use this order:
 
 Do not put a half-filled template before the recommended executable goal. Users often copy the first block directly.
 
-If the user asks about an existing active goal, do not force a new draft. Answer with the smallest correct management command from `references/platform-goal-facts.md`. Codex also supports `/goal edit`; `community-observed` behavior retains accounting, while clearing and creating a new goal resets it. Claude Code has no pause/edit command — offer clear-and-reset-later or interrupting the session.
+If the user asks about an existing active goal, do not force a new draft or write
+a contract. Answer with the smallest correct platform command from
+`references/platform-goal-facts.md`; never blend Codex, Claude, Grok, OMP, or
+Kimi lifecycle verbs.
 
 ## Platform Determination
 
 Facts and rendering rules live in `references/platform-goal-facts.md`. Selection order:
 
-1. The user names Codex or Claude Code: render for that platform.
+1. The user names Codex, Claude Code, Grok Build, Oh My Pi/OMP, or Kimi Code:
+   render for that platform.
 2. Otherwise infer from the host environment running this skill.
-3. Still ambiguous: add `0. 平台：A Claude Code / B Codex` to the 可选调整 block; do not open a separate questionnaire round.
+3. Still ambiguous: add one short five-platform choice to the 可选调整 block;
+   do not open a separate questionnaire round.
 
-Claude Code rendering must produce a completion condition with transcript-visible proof and a turn/time bounding clause, and its 暂停条件 body must say stop-and-report.
+Claude Code rendering must produce a completion condition with transcript-visible proof and a turn/time bounding clause, and its 暂停条件 body must say stop-and-report. The other renderers use the exact lifecycle and stop semantics in the facts file.
 
 ## Applicability Gate
 
@@ -43,6 +48,10 @@ When a request targets an existing project, inspect before interviewing or draft
 2. Identify real command sources from `justfile`, `Makefile`, `package.json` scripts, `pyproject.toml`, `Cargo.toml`, and `.github/workflows/*.yml` filenames.
 3. Capture Git context with `git rev-parse --show-toplevel`, `git branch --show-current`, and `git status --porcelain -uall` so untracked files are visible.
 4. List only task-related top-level boundary candidates; do not recursively enumerate the repository.
+
+For a persistence candidate, also inspect whether root `GOAL.md` exists and
+whether it is tracked, ignored, or untracked. This remains read-only and does
+not authorize replacement.
 
 This pass is read-only: do not run tests/builds, write files, or inspect `.env*`, keys, credentials, `node_modules`, `dist`, `build`, `target`, `.venv`, or `.git` internals. Read only necessary file snippets. Report project type, governing rules, discovered verification commands, likely write boundaries, and dirty state; invite correction before relying on them.
 
@@ -79,14 +88,21 @@ Trellis task implementation.
 
 ## Goal Length Rule
 
-Goal objectives (Codex) and completion conditions (Claude Code) are both limited to 4,000 characters. Most goals should stay well under that limit. If the best contract needs more room, output copy-ready `.planning/goal-<slug>.md` content and make the executable goal point to it:
+Codex, Claude Code, and Kimi objectives/conditions have an official 4,000-character limit. This skill applies the same portability budget to Grok Build and OMP without claiming it is their platform cap. Most launchers should be much shorter.
+
+For explicit save/handoff requests, the recommended durable contract is root
+`GOAL.md` and must follow `persistent-goal-contract.md`. A user-named legacy
+`.planning/goal-<slug>.md` path remains supported for chat output or explicit
+write, but is not silently migrated.
 
 ```text
-/goal Follow the task contract in .planning/goal-local-mvp.md and stop only when its verification evidence is complete.
+/goal First read and follow ./GOAL.md as the approved execution contract; stop only when its verification evidence is complete or a pause condition is reached.
 ```
 
 Do not compress away verification, boundaries, stop conditions, or pause conditions just to fit a long objective inline.
-Do not write the contract file unless the user explicitly requests it; saving the provided content is a separate action.
+Do not write either path unless the user explicitly requests or confirms the
+exact S4 write plan. `直接给` alone is not authorization. After confirmation,
+use only `scripts/persist_goal_contract.py` for the root-contract path.
 
 ## Lazy-User Choices
 
@@ -185,6 +201,15 @@ or the 可选调整 questionnaire unless asked.
 
 Omit item 8 unless Trellis cadence was injected. Do not mention archive
 cadence in 字段一览 for ordinary non-task goals.
+
+For confirmed persistence, replace this chat-only finalization with:
+
+1. the final contract review/diff and exact create/replace action;
+2. helper result (`path`, bytes, SHA-256, action, Git visibility);
+3. one selected-platform short launcher;
+4. an explicit note that the target platform does not automatically load an
+   arbitrary `GOAL.md`, and that untracked/ignored files do not travel to other
+   worktrees or machines by themselves.
 
 Do not put blank lines inside the copy fence. Do not put 字段一览 inside
 the `/goal` body. The 字段一览 is a human edit map and does not count toward

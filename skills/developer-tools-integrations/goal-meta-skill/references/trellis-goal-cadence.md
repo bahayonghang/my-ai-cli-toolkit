@@ -4,7 +4,8 @@ Optional adapter. Load this file only when the `/goal` outcome is Trellis
 task or child-task implementation. Do not inject this cadence into ordinary
 code or doc work just because `.trellis/` exists.
 
-This skill only drafts `/goal` text. It does not run commits or
+This skill drafts `/goal` text and may persist an explicitly approved contract.
+It does not execute the contract's commits or
 `python ./.trellis/scripts/task.py archive`.
 
 Archive facts used here (do not copy Trellis script internals into
@@ -91,8 +92,13 @@ stop-and-report, and keep a turn/time bounding clause. Do not recommend
 
 Codex: pause is valid.
 
-## File-pointer goals
+## Persisted and legacy file-pointer goals
 
-If the contract is in `.planning/goal-<slug>.md`, put this cadence in that
-file's Contract section. The short `/goal` still points at Verification
-and Stop/Pause in that file.
+For root `GOAL.md`, Required reading must link the concrete task's `prd.md`,
+`design.md`, and `implement.md`. Put commit-then-archive in Iteration policy and
+Completion conditions, and keep the named parent 发布门. The contract remains a
+compressed handoff; current Trellis artifacts stay authoritative.
+
+If the user explicitly keeps a legacy `.planning/goal-<slug>.md`, put the same
+cadence in that file's Contract section. The short `/goal` points at
+Verification and Stop/Pause in the selected file.
