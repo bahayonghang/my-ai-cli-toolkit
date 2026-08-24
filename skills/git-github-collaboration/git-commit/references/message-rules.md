@@ -13,7 +13,7 @@
 
 - `type` 保持英文 Conventional Commit 关键字
 - `scope` 可选，推荐使用中文模块名
-- `[AI]` 标签仅在 agent 生成提交时插入，位于冒号之后、emoji 之前
+- `[AI]` 默认不插入。仅当用户明确说「加 AI 标记」「add [AI] tag」时插入，位于冒号之后、emoji 之前。compose 脚本会剥掉 `--summary` 开头的 `[AI]`，不要把标签写进 summary
 - 默认保留 emoji；仅在用户明确要求时关闭
 - `subject` 使用动宾短语；compose 脚本按显示宽度强制整个 header ≤ 72 列（默认值，目标仓库另有长度规则时经 `--max-header-width` 传入仓库上限；CJK 与 emoji 每字符按 2 列计），中文 subject 建议 25 字以内，英文 50 字符以内
 - 遇到不兼容变更时，可使用 `type(scope)!:` 头部形式
@@ -21,10 +21,10 @@
 示例：
 
 ```text
-feat(auth): [AI] ✨ 添加 SMS 兜底登录
+feat(auth): ✨ 添加 SMS 兜底登录
 fix(cart): 🐛 修复购物车总价未更新
 
-feat(auth): [AI] ✨ add SMS fallback login
+feat(auth): ✨ add SMS fallback login
 fix(cart): 🐛 fix cart total not updating
 ```
 
@@ -49,7 +49,7 @@ fix(cart): 🐛 fix cart total not updating
 对 `feat` / `fix` / `refactor` / `perf` 四类提交，body 首行必须是 `Why: <动机>`：
 
 ```text
-feat(auth): [AI] ✨ 添加 SMS 兜底登录
+feat(auth): ✨ 添加 SMS 兜底登录
 
 Why: 短信兜底降低验证码服务故障时的登录失败率
 ```
@@ -77,7 +77,7 @@ Agent 生成的提交追加以下 trailer，置于其他 footer 之后：
 | `Scope-risk`       | 影响半径 `narrow`/`moderate`/`broad`                  | agent-mode 推荐        |
 | `Tested`           | 验证方式，如 `just ci` / `pytest -k auth` / `未运行`  | agent-mode 推荐        |
 | `Agent-Task`       | 任务 ID 或 issue URL，缺失时为 `unspecified`          | 是                     |
-| `Agent-Model`      | 模型标识，例如 `claude-opus-4-8`                      | 是（与 `[AI]` 强绑定） |
+| `Agent-Model`      | 模型标识，例如 `claude-opus-4-8`                      | 是（agent-mode；不依赖 `[AI]`） |
 | `Agent-Prompt-Ref` | prompt 摘要 / hash / 短标签                           | 否                     |
 | `Generated-By`     | 固定值 `agent`，作为审计哨兵                          | 是                     |
 
@@ -107,10 +107,14 @@ git log --grep='^Agent-Model: claude-opus-4-8'
 
 ## 禁止项
 
-- 不要添加 `Co-Authored-By`
+- 不要添加 `Co-authored-by` / `Co-Authored-By`（包括 `Cursor` / `cursoragent@cursor.com`）
+- 不要添加 `Made-with:`、`Made with`、或 `Committed via …` 行
 - 不要附加 AI attribution 文案（例如 `🤖 Generated with Claude Code`）
+- 不要用 `git commit --trailer` 注入上述字段
 - 不要自行添加 `Signed-off-by`（DCO 签署主体必须是人；仓库要求 DCO 时，提示用户自行 `git commit -s`，边界表见 agent-workflow.md）
 - 不要在 message 中讨论 `git push`
 - 不要为了凑格式写空洞 body
+
+compose 脚本对上述 host/client 行以退出码 4 拒绝。GitHub 页面上的 “This commit was created on GitHub.com.” / “Committed via Cursor Agent” 来自提交通道，规则见 [agent-workflow.md](agent-workflow.md)。
 
 注意：`Generated-By: agent` 是结构化 trailer，不是 attribution。前者是机器可解析的审计字段，后者是面向人的署名文案，两者不同。

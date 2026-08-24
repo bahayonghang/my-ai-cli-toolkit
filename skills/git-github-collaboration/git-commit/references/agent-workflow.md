@@ -1,6 +1,6 @@
 # Agent Workflow Reference
 
-本文档集中说明 git-commit skill 在 agent 上下文下的特殊行为：何时注入 `[AI]` 标签和 agent trailer、agent context 如何识别、checkpoint 如何最终整理。
+本文档集中说明 git-commit skill 在 agent 上下文下的特殊行为：agent trailer 何时附加、`[AI]` 何时才插入（默认不插）、如何用本地 git 创建提交以免 GitHub 显示 “This commit was created on GitHub.com.” / “Committed via …”、checkpoint 如何最终整理。
 
 ## Agent Context 识别
 
@@ -9,7 +9,9 @@ skill 在 §1 Preflight 阶段判定当前是否处于 agent 上下文。判定�
 - skill 由 agent 调用（默认条件） → agent 上下文为真
 - 用户显式说「不要 AI 标记」「no ai tag」「不加 agent trailer」 → 退回普通 Conventional Commit 模式
 
-进入 agent 上下文后，按以下顺序解析必填的两个变量：
+进入 agent 上下文后，附加 `Agent-*` / `Generated-By` trailer，**不**在 header 插入 `[AI]`。仅当用户明确说「加 AI 标记」「add [AI] tag」「加上 [AI]」时才传 `--ai`。目标仓库 history 里已有 `[AI]` 只作观察，不复制到新提交。
+
+按以下顺序解析必填的两个变量：
 
 ### Agent-Model
 
@@ -95,7 +97,7 @@ Generated-By: agent
 ### 输出形式
 
 ```text
-chore(wip): [AI] 🔧 [WIP] <subject>
+chore(wip): 🔧 [WIP] <subject>
 
 Agent-Task: <value>
 Agent-Model: <value>
@@ -105,6 +107,7 @@ Generated-By: agent
 - type 固定 `chore(wip)`，便于后续 `git log --grep='^chore(wip):'` 检索
 - 跳过 `--require-why`
 - 仍带完整 agent trailer
+- 默认无 `[AI]`；用户显式要求时才加
 - 不带 `Closes` / `Refs`（issue 关闭留到最终 atomic commit）
 
 ### 整理路径
@@ -157,19 +160,36 @@ git log --grep='^chore(wip):' --format='%H %s'
 
 1. 按仓库实际格式输出该 trailer，经 compose 脚本 `--footer-line` 注入，例如 `--footer-line "Assisted-by: Claude:claude-opus-4"`（kernel 风格；TOOL 段仅在确实用了专用分析工具时追加）或 `--footer-line "Assisted-by: Claude Opus 4.5"`（OpenTelemetry 风格）。
 2. 同时省略本 skill 私有的 `Agent-*` / `Generated-By: agent` 组——两套并存会造成双重署名噪音。
-3. `[AI]` header 标签保留与否跟随仓库 history 是否出现过该标签。注意脚本约束：`--ai` 必须搭配 `--agent-model`（会一并输出 `Agent-Model` trailer）；若目标仓库既无 `[AI]` 习惯又要求零私有 trailer，连 `--ai` 一起省略。
+3. `[AI]` header 标签**不**跟随仓库 history。默认省略；仅用户显式要求时传 `--ai`。注意脚本约束：`--ai` 必须搭配 `--agent-model`（会一并输出 `Agent-Model` trailer）。
 4. 无论哪个分支，都不得自行添加 `Signed-off-by`：DCO 签署主体必须是人。仓库要求 DCO 时，提示用户自行 `git commit -s`，或在用户明确确认后以用户名义签署。
 
 ## 与现有禁止项的边界
 
 | 项 | 是否允许 |
 |----|----------|
-| `Co-Authored-By: ...` | 禁止 |
+| `Co-authored-by: ...` / `Co-Authored-By: ...` | 禁止 |
+| `Made-with:` / `Made with` / `Committed via …` | 禁止 |
+| `git commit --trailer` 注入上述字段 | 禁止 |
+| GitHub web / Contents API / Git Data API / GraphQL `createCommitOnBranch` / MCP `push_files` / `create_or_update_file` 创建提交 | 禁止 |
 | `🤖 Generated with Claude Code` 等 attribution 文案 | 禁止 |
 | 自行添加 `Signed-off-by: ...` | 禁止（DCO 只能由人类签署；仓库要求 DCO 时提示用户自行 `git commit -s`） |
+| header `[AI]` | 默认禁止；仅用户显式要求时允许 |
 | `Generated-By: agent` trailer | 允许（结构化字段，非署名） |
 | `Agent-Model: <id>` trailer | 允许 |
 | 仓库惯例的 `Assisted-by:` trailer（经 `--footer-line`） | 允许（仅在目标仓库已有该惯例时） |
 | 在 message 中讨论 `git push` | 禁止 |
 
-`Generated-By` 与 `Co-Authored-By` 的区别：前者是机器可解析的审计字段，写入 trailer 是为了后续 grep；后者是面向人的署名，会让 GitHub 把 commit 计入指定账号的贡献统计，因此本 skill 持续禁用。
+`Generated-By` 与 `Co-authored-by` 的区别：前者是机器可解析的审计字段，写入 trailer 是为了后续 grep；后者是面向人的署名，会让 GitHub 把 commit 计入指定账号的贡献统计，并常被渲染成 “Committed via Cursor Agent”，因此本 skill 持续禁用。
+
+## 提交通道与 GitHub 页面标签
+
+GitHub 提交页上的这两条不是 commit message 里的普通正文，而是托管端根据**如何创建提交**打上的标记：
+
+| GitHub 页面文案 | 触发条件 | 本 skill 的对应动作 |
+|-----------------|----------|---------------------|
+| `This commit was created on GitHub.com.` | GraphQL `committedViaWeb`；committer 为 `GitHub <noreply@github.com>`；经 GitHub web、Contents API、Git Data API、GraphQL `createCommitOnBranch`、MCP `push_files` / `create_or_update_file`、或 GitHub App 在服务端建 commit | 只用本地 `git commit -F <message-file>`（可用 `rtk git commit -F`）。不要用上述 API / App 通道 |
+| `Committed via Cursor Agent`（以及同类 Client 标签） | Cursor / 其它 agent 注入 `Co-authored-by: Cursor <cursoragent@cursor.com>`、`Made-with: Cursor`，或经 Cursor GitHub App 提交；IDE 里 `git commit --trailer` 也会写入 | 不要传 `--trailer`；不要把这些行写入 message file。compose 脚本对匹配行以退出码 4 拒绝 |
+
+> Last verified: 2026-08-24 against GitHub GraphQL `committedViaWeb` (`https://docs.github.com/en/graphql/reference/commits`), GitHub Contents API create-or-update file contents, GitHub MCP `push_files` server-side commit behavior (`https://github.com/github/github-mcp-server/issues/2190`), and Cursor attribution (`Co-authored-by: Cursor`, `Made-with: Cursor`; IDE Settings > Git & PRs > Attribution; CLI `attribution.attributeCommitsToAgent`).
+
+本地 `git commit` 后的 author/committer 来自该机器的 `git config user.name` / `user.email`。成功后用 `git log -1 --format='%an <%ae>%n%cn <%ce>%n%B'` 核对：message 里不得出现上表禁止行，committer 不应是 `GitHub <noreply@github.com>`。若宿主仍强行追加 trailer，报告该结果；本 skill 不 `commit --amend`。

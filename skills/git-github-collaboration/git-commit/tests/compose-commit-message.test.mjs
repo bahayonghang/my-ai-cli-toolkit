@@ -39,9 +39,30 @@ function compose(args) {
   });
 }
 
-// --- baseline regression (no new flags -> 1.10.0 output, empty stderr) ---
+// --- baseline: agent trailers without [AI]; --ai remains opt-in ---
 
-test("baseline feat with agent-mode defaults matches the golden output", { skip }, () => {
+test("agent trailers without --ai omit the [AI] tag", { skip }, () => {
+  const result = compose([
+    "--type", "feat", "--scope", "auth", "--summary", "add SMS fallback login",
+    "--why", "reduce login failures during OTP outages",
+    "--agent-model", "claude-opus-4-8", "--agent-task", "AUTH-42", "--generated-by-agent",
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(
+    result.stdout,
+    "feat(auth): ✨ add SMS fallback login\n" +
+      "\n" +
+      "Why: reduce login failures during OTP outages\n" +
+      "\n" +
+      "Agent-Task: AUTH-42\n" +
+      "Agent-Model: claude-opus-4-8\n" +
+      "Generated-By: agent\n",
+  );
+  assert.equal(result.stderr, "", "built-in types without --ai must not add stderr output");
+  assert.doesNotMatch(result.stdout, /\[AI\]/);
+});
+
+test("opt-in --ai still places [AI] after the colon and before emoji", { skip }, () => {
   const result = compose([
     "--type", "feat", "--scope", "auth", "--summary", "add SMS fallback login",
     "--why", "reduce login failures during OTP outages",
@@ -58,7 +79,47 @@ test("baseline feat with agent-mode defaults matches the golden output", { skip 
       "Agent-Model: claude-opus-4-8\n" +
       "Generated-By: agent\n",
   );
-  assert.equal(result.stderr, "", "built-in types without new flags must not add stderr output");
+});
+
+test("leading [AI] in --summary is stripped when --ai is absent", { skip }, () => {
+  const result = compose([
+    "--type", "chore", "--scope", "git-commit",
+    "--summary", "[AI] align git-commit skill with qiaomu-meta",
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "chore(git-commit): 🔧 align git-commit skill with qiaomu-meta\n");
+  assert.doesNotMatch(result.stdout, /\[AI\]/);
+});
+
+test("Co-authored-by footer is rejected", { skip }, () => {
+  const result = compose([
+    "--type", "chore", "--summary", "tweak script",
+    "--footer-line", "Co-authored-by: Cursor <cursoragent@cursor.com>",
+  ]);
+  assert.equal(result.status, 4);
+  assert.match(result.stderr, /Prohibited host\/client attribution line/);
+  assert.match(result.stderr, /Co-authored-by/);
+  assert.equal(result.stdout, "");
+});
+
+test("Committed via Cursor Agent footer is rejected", { skip }, () => {
+  const result = compose([
+    "--type", "chore", "--summary", "tweak script",
+    "--footer-line", "Committed via Cursor Agent",
+  ]);
+  assert.equal(result.status, 4);
+  assert.match(result.stderr, /Committed via Cursor Agent/);
+  assert.equal(result.stdout, "");
+});
+
+test("Made-with: Cursor footer is rejected", { skip }, () => {
+  const result = compose([
+    "--type", "chore", "--summary", "tweak script",
+    "--footer-line", "Made-with: Cursor",
+  ]);
+  assert.equal(result.status, 4);
+  assert.match(result.stderr, /Made-with: Cursor/);
+  assert.equal(result.stdout, "");
 });
 
 test("full trailer block keeps the documented order", { skip }, () => {

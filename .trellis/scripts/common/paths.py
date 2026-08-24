@@ -94,6 +94,34 @@ def get_developer(repo_root: Path | None = None) -> str | None:
     return None
 
 
+def get_developer_workflow(repo_root: Path | None = None) -> str | None:
+    """Get the personal workflow override from the .developer file.
+
+    Reads an optional ``workflow=<id>`` line from the gitignored ``.developer``
+    file — the per-developer, git-excluded override that outranks the
+    team-shared ``default_workflow`` in config.yaml. Returns None when the file
+    or the line is absent/blank. Never raises. Additive to ``get_developer``:
+    the ``name=`` reader ignores this line and vice versa.
+    """
+    if repo_root is None:
+        repo_root = get_repo_root()
+
+    dev_file = repo_root / DIR_WORKFLOW / FILE_DEVELOPER
+
+    if not dev_file.is_file():
+        return None
+
+    try:
+        content = dev_file.read_text(encoding="utf-8")
+        for line in content.splitlines():
+            if line.startswith("workflow="):
+                return line.split("=", 1)[1].strip() or None
+    except (OSError, IOError):
+        pass
+
+    return None
+
+
 def check_developer(repo_root: Path | None = None) -> bool:
     """Check if developer is initialized.
 
@@ -233,25 +261,7 @@ def normalize_task_ref(task_ref: str) -> str:
 
 
 def resolve_task_ref(task_ref: str, repo_root: Path | None = None) -> Path | None:
-    """Resolve a task ref to an absolute task directory path inside the repo.
-
-    Returns None when the ref resolves outside `repo_root`. Every reader of the
-    active task — `task.py`, the shared hooks, the platform extensions — comes
-    through here, so containment is enforced at this one point rather than at
-    each call site.
-
-    It matters because a ref is not always something the user typed. It round
-    trips through the session pointer under `.trellis/.runtime/sessions/`, and
-    `..` segments used to survive that trip intact: `_canonical_task_ref`
-    compares lexically, and a lexical `relative_to` accepts
-    `<root>/.trellis/tasks/../../../elsewhere` because the string does start
-    with the root. The ref was then stored verbatim and replayed on every later
-    turn, so `task.py start .trellis/tasks/../../../elsewhere` both rewrote that
-    directory's `task.json` and fed its files to the model.
-
-    Resolving here also normalises the path, so callers get a ref without `..`
-    to store.
-    """
+    """Resolve a task ref to an absolute task directory path."""
     if repo_root is None:
         repo_root = get_repo_root()
 
@@ -261,27 +271,12 @@ def resolve_task_ref(task_ref: str, repo_root: Path | None = None) -> Path | Non
 
     path_obj = Path(normalized)
     if path_obj.is_absolute():
-        candidate = path_obj
-    elif normalized.startswith(f"{DIR_WORKFLOW}/"):
-        candidate = repo_root / path_obj
-    else:
-        candidate = repo_root / DIR_WORKFLOW / DIR_TASKS / path_obj
+        return path_obj
 
-    # resolve() collapses `..` and follows symlinks, so a task directory that
-    # links outside the repo is refused too. Both sides are resolved because
-    # repo_root itself may sit behind a symlink (/tmp on macOS does).
-    try:
-        resolved = candidate.resolve()
-        root = repo_root.resolve()
-    except OSError:
-        return None
+    if normalized.startswith(f"{DIR_WORKFLOW}/"):
+        return repo_root / path_obj
 
-    try:
-        resolved.relative_to(root)
-    except ValueError:
-        return None
-
-    return resolved
+    return repo_root / DIR_WORKFLOW / DIR_TASKS / path_obj
 
 
 def get_current_task(

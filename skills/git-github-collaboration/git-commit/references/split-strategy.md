@@ -61,7 +61,7 @@
 | 触发时机 | 长任务的阶段性存档 | 单个完整变更 |
 | 是否要求可编译 | 不强制 | 必须 |
 | 是否进入最终历史 | 否（合并前 squash） | 是 |
-| Header 形式 | `chore(wip): [AI] 🔧 [WIP] <subject>` | `<type>(<scope>): [AI?] <emoji?> <subject>` |
+| Header 形式 | `chore(wip): 🔧 [WIP] <subject>` | `<type>(<scope>): [AI?] <emoji?> <subject>`（`[AI]` 仅用户显式要求时） |
 | Why 强制 | 否 | feat/fix/refactor/perf 强制 |
 
 checkpoint 在任务进行中保存现场，最终通过 interactive rebase 整理为一组语义清晰的 atomic commit 再合并到主干。本 skill 不直接执行 rebase，但会在 verify 阶段提示用户「该分支含 N 个 [WIP] commit，合并前需 squash」。

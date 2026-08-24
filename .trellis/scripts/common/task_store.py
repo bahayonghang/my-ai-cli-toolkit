@@ -56,6 +56,7 @@ from .task_utils import (
     resolve_task_dir,
     run_task_hooks,
 )
+from .workflow_selection import DIR_WORKFLOWS, WORKFLOW_ID_RE
 
 
 # =============================================================================
@@ -254,6 +255,31 @@ def cmd_create(args: argparse.Namespace) -> int:
         # Inferred: default_package → None (no task.json yet for create)
         package = resolve_package(repo_root=repo_root)
 
+    # Validate --workflow (CLI source: fail-fast on invalid id; a missing
+    # library file only warns — it may be saved later via `trellis workflow --save`)
+    workflow_id: str | None = getattr(args, "workflow", None)
+    if workflow_id:
+        if not WORKFLOW_ID_RE.match(workflow_id):
+            print(
+                colored(
+                    f"Error: invalid workflow id '{workflow_id}' (allowed: letters, digits, '-', '_')",
+                    Colors.RED,
+                ),
+                file=sys.stderr,
+            )
+            return 1
+        workflow_md = repo_root / DIR_WORKFLOW / DIR_WORKFLOWS / f"{workflow_id}.md"
+        if not workflow_md.is_file():
+            print(
+                colored(
+                    f"Warning: {DIR_WORKFLOW}/{DIR_WORKFLOWS}/{workflow_id}.md does not exist yet; "
+                    "default workflow resolution is used until it is saved "
+                    "(trellis workflow --save).",
+                    Colors.YELLOW,
+                ),
+                file=sys.stderr,
+            )
+
     # Default assignee to current developer
     assignee = args.assignee
     if not assignee:
@@ -385,6 +411,10 @@ def cmd_create(args: argparse.Namespace) -> int:
         "notes": "",
         "meta": meta,
     }
+    # Optional per-task workflow selection: key present only when opted in,
+    # so tasks without a selection keep today's task.json shape byte-for-byte.
+    if workflow_id:
+        task_data["workflow"] = workflow_id
 
     write_json(task_json_path, task_data)
 
@@ -410,10 +440,10 @@ def cmd_create(args: argparse.Namespace) -> int:
     # Handle --parent: establish bidirectional link
     if args.parent:
         parent_dir = resolve_task_dir(args.parent, repo_root)
-        if not parent_dir or not (parent_dir / FILE_TASK_JSON).is_file():
+        parent_json_path = parent_dir / FILE_TASK_JSON
+        if not parent_json_path.is_file():
             print(colored(f"Warning: Parent task.json not found: {args.parent}", Colors.YELLOW), file=sys.stderr)
         else:
-            parent_json_path = parent_dir / FILE_TASK_JSON
             parent_data = read_json(parent_json_path)
             if parent_data:
                 # Add child to parent's children list
@@ -723,14 +753,6 @@ def cmd_add_subtask(args: argparse.Namespace) -> int:
     parent_dir = resolve_task_dir(args.parent_dir, repo_root)
     child_dir = resolve_task_dir(args.child_dir, repo_root)
 
-    if not parent_dir:
-        print(colored(f"Error: Parent task.json not found: {args.parent_dir}", Colors.RED), file=sys.stderr)
-        return 1
-
-    if not child_dir:
-        print(colored(f"Error: Child task.json not found: {args.child_dir}", Colors.RED), file=sys.stderr)
-        return 1
-
     parent_json_path = parent_dir / FILE_TASK_JSON
     child_json_path = child_dir / FILE_TASK_JSON
 
@@ -784,14 +806,6 @@ def cmd_remove_subtask(args: argparse.Namespace) -> int:
     parent_dir = resolve_task_dir(args.parent_dir, repo_root)
     child_dir = resolve_task_dir(args.child_dir, repo_root)
 
-    if not parent_dir:
-        print(colored(f"Error: Parent task.json not found: {args.parent_dir}", Colors.RED), file=sys.stderr)
-        return 1
-
-    if not child_dir:
-        print(colored(f"Error: Child task.json not found: {args.child_dir}", Colors.RED), file=sys.stderr)
-        return 1
-
     parent_json_path = parent_dir / FILE_TASK_JSON
     child_json_path = child_dir / FILE_TASK_JSON
 
@@ -843,12 +857,6 @@ def cmd_set_branch(args: argparse.Namespace) -> int:
         print("Usage: python task.py set-branch <task-dir> <branch-name>")
         return 1
 
-    if not target_dir:
-        # target_dir is None here, so it must not appear in the message. This
-        # is also the branch a ref pointing outside the repo lands in.
-        print(colored(f"Error: Task not found: {args.dir}", Colors.RED))
-        return 1
-
     task_json = target_dir / FILE_TASK_JSON
     if not task_json.is_file():
         print(colored(f"Error: task.json not found at {target_dir}", Colors.RED))
@@ -883,12 +891,6 @@ def cmd_set_base_branch(args: argparse.Namespace) -> int:
         print("This sets the target branch for PR (the branch your feature will merge into).")
         return 1
 
-    if not target_dir:
-        # target_dir is None here, so it must not appear in the message. This
-        # is also the branch a ref pointing outside the repo lands in.
-        print(colored(f"Error: Task not found: {args.dir}", Colors.RED))
-        return 1
-
     task_json = target_dir / FILE_TASK_JSON
     if not task_json.is_file():
         print(colored(f"Error: task.json not found at {target_dir}", Colors.RED))
@@ -921,12 +923,6 @@ def cmd_set_scope(args: argparse.Namespace) -> int:
         print("Usage: python task.py set-scope <task-dir> <scope>")
         return 1
 
-    if not target_dir:
-        # target_dir is None here, so it must not appear in the message. This
-        # is also the branch a ref pointing outside the repo lands in.
-        print(colored(f"Error: Task not found: {args.dir}", Colors.RED))
-        return 1
-
     task_json = target_dir / FILE_TASK_JSON
     if not task_json.is_file():
         print(colored(f"Error: task.json not found at {target_dir}", Colors.RED))
@@ -957,12 +953,6 @@ def cmd_set_meta(args: argparse.Namespace) -> int:
     if not key:
         print(colored("Error: Missing arguments", Colors.RED))
         print("Usage: python task.py set-meta <task-dir> <key> <value>")
-        return 1
-
-    if not target_dir:
-        # target_dir is None here, so it must not appear in the message. This
-        # is also the branch a ref pointing outside the repo lands in.
-        print(colored(f"Error: Task not found: {args.dir}", Colors.RED))
         return 1
 
     task_json = target_dir / FILE_TASK_JSON
