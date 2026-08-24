@@ -7,7 +7,8 @@ PY_SCRIPT="$SCRIPT_DIR/compose_commit_message.py"
 # Probe each candidate by actually running it, mirroring the PowerShell wrapper.
 # The probe rejects the Microsoft Store stub (it exits non-zero) without path
 # heuristics. stderr is never redirected on the real invocation — the Python
-# script's validation messages (--require-why, --ai without --agent-model) must
+# script's validation messages (--require-why, --ai without --agent-model,
+# prohibited attribution lines) must
 # stay visible to the caller.
 usable() {
   command -v "$1" >/dev/null 2>&1 || return 1

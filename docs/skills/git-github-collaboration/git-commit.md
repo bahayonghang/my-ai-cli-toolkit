@@ -11,7 +11,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or all working-t
 - asked to write a commit message, split staged or working-tree changes, organize a messy index, or draft commit text without pushing
 - Auto-detects commit language
 - explicit phrases like 用中文提交 or 请使用中文拆分提交所有的改动 override
-- Not for push, pull-request creation, amend, rebase, or tag operations
+- Default headers have no [AI] tag
 
 ## 元数据
 
@@ -19,7 +19,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or all working-t
 | --- | --- |
 | 名称 | `git-commit` |
 | 分类 | `git-github-collaboration` (Git / GitHub 协作) |
-| 版本 | `1.11.0` |
+| 版本 | `1.12.0` |
 | 标签 | `git`, `conventional-commits`, `commit-message`, `agent-aware` |
 
 ## 安装命令

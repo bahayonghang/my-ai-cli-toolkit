@@ -8,6 +8,16 @@ import unicodedata
 from pathlib import Path
 
 TYPE_PATTERN = re.compile(r"^[a-z][a-z0-9-]*$")
+AI_TAG_PREFIX = re.compile(r"^\[AI\]\s*", re.IGNORECASE)
+# Host/client lines GitHub renders as extra avatars or "Committed via …".
+ATTRIBUTION_LINE = re.compile(
+    r"(?i)("
+    r"^co-authored-by\s*:"
+    r"|^committed[\s-]via\b"
+    r"|^made-with\s*:"
+    r"|generated with\s+(claude|cursor|copilot|codex|devin|grok)"
+    r")"
+)
 
 TYPE_EMOJIS = {
     "feat": "✨",
@@ -237,6 +247,18 @@ def main() -> int:
     if args.generated_by_agent:
         trailer_lines.append("Generated-By: agent")
 
+    blocked = find_prohibited_attribution_line(
+        [summary, args.why or "", *body_lines, *trailer_lines]
+    )
+    if blocked:
+        print(
+            "Prohibited host/client attribution line: "
+            f"{blocked!r}. Omit Co-authored-by, Made-with, and "
+            "'Committed via' text. Use local git commit -F without --trailer.",
+            file=sys.stderr,
+        )
+        return 4
+
     if body_lines or trailer_lines:
         lines.append("")
     lines.extend(body_lines)
@@ -276,9 +298,22 @@ def display_width(text: str) -> int:
 
 def normalize_summary(summary: str) -> str:
     summary = summary.strip()
+    while True:
+        stripped = AI_TAG_PREFIX.sub("", summary, count=1).strip()
+        if stripped == summary:
+            break
+        summary = stripped
     while summary.endswith(("。", ".", "!", "！")):
         summary = summary[:-1].rstrip()
     return summary
+
+
+def find_prohibited_attribution_line(lines: list[str]) -> str | None:
+    for line in lines:
+        text = line.strip()
+        if text and ATTRIBUTION_LINE.search(text):
+            return text
+    return None
 
 
 def normalize_issue_ref(ref: str) -> str | None:

@@ -105,22 +105,23 @@
     {
       "id": 10,
       "prompt": "I have a staged auth change that adds SMS fallback to the login flow. Please commit it. Use agent-mode defaults.",
-      "expected_output": "Header contains [AI] and emoji, body starts with a Why: line, trailers include Agent-Task, Agent-Model matching the running model id, and Generated-By: agent. No Co-Authored-By, no attribution line.",
+      "expected_output": "Header has emoji and no [AI] tag. Body starts with a Why: line. Trailers include Agent-Task, Agent-Model matching the running model id, and Generated-By: agent. Local git commit -F only. No Co-authored-by, Made-with, or Committed via line.",
       "files": [],
       "assertions": [
-        "Header contains the [AI] tag and an emoji",
+        "Header has an emoji and does NOT contain the [AI] tag",
         "Body starts with a Why: line explaining the motivation",
         "Trailers include Agent-Task, Agent-Model, and Generated-By: agent",
-        "No Co-Authored-By and no attribution line"
+        "Uses local git commit -F, not GitHub web/API",
+        "No Co-authored-by, Made-with, or Committed via line"
       ]
     },
     {
       "id": 11,
       "prompt": "I'm midway through refactoring refresh token rotation. Just give me a checkpoint commit so I don't lose progress. Don't worry about polishing the message.",
-      "expected_output": "Recognize checkpoint-mode. Produce a single chore(wip): [AI] checkpoint commit. Skip the Why-line requirement. Still attach Agent-Task / Agent-Model / Generated-By trailers. Remind the user to squash [WIP] commits before merging.",
+      "expected_output": "Recognize checkpoint-mode. Produce a single chore(wip) checkpoint commit with a [WIP] marker and no [AI] tag. Skip the Why-line requirement. Still attach Agent-Task / Agent-Model / Generated-By trailers. Remind the user to squash [WIP] commits before merging.",
       "files": [],
       "assertions": [
-        "Produces a single chore(wip) commit with [AI] and a [WIP] marker",
+        "Produces a single chore(wip) commit with a [WIP] marker and no [AI] tag",
         "Skips the Why-line requirement",
         "Still attaches Agent-Task / Agent-Model / Generated-By trailers",
         "Reminds the user to squash [WIP] commits before merging"
@@ -151,23 +152,23 @@
     {
       "id": 14,
       "prompt": "Write a commit message for fixing duplicate ledger writes in the payment callback, close #128, and link it to task tracker URL https://linear.app/x/issue/PAY-77.",
-      "expected_output": "Closes #128 stays in the standard footer. The task tracker URL is rendered as Agent-Task: https://linear.app/x/issue/PAY-77, not mixed into Closes. Agent-Model and Generated-By trailers attach. Header includes [AI] and a fix emoji and body has a Why line.",
+      "expected_output": "Closes #128 stays in the standard footer. The task tracker URL is rendered as Agent-Task: https://linear.app/x/issue/PAY-77, not mixed into Closes. Agent-Model and Generated-By trailers attach. Header includes a fix emoji, no [AI] tag, and the body has a Why line.",
       "files": [],
       "assertions": [
         "Closes #128 stays in the standard footer",
         "The Linear URL is rendered as Agent-Task:, not mixed into Closes",
         "Agent-Model and Generated-By trailers attach",
-        "Header includes [AI] and a fix emoji, and the body has a Why line"
+        "Header includes a fix emoji and no [AI] tag, and the body has a Why line"
       ]
     },
     {
       "id": 15,
       "prompt": "把我暂存的购物车总价修复提交了，这个 bug 是删除商品后总价没刷新。",
-      "expected_output": "The request is written in Chinese with no magic phrase, so the auto-detected commit-language is Chinese. Produce and execute a fix(cart) commit with a Chinese subject, [AI] tag, emoji, and a Why line, plus agent trailers.",
+      "expected_output": "The request is written in Chinese with no magic phrase, so the auto-detected commit-language is Chinese. Produce and execute a fix(cart) commit with a Chinese subject, emoji, no [AI] tag, a Why line, plus agent trailers.",
       "files": [],
       "assertions": [
         "Auto-detects the commit-language as Chinese from the request (no legacy magic phrase needed)",
-        "Header is a fix commit with [AI] and emoji",
+        "Header is a fix commit with emoji and no [AI] tag",
         "Subject and Why line are written in Chinese"
       ]
     },
@@ -293,6 +294,29 @@
         "Emits the repo's Assisted-by: trailer naming the model (via --footer-line or equivalent)",
         "Omits the private Agent-Task / Agent-Model / Generated-By trailer group to avoid double attribution",
         "Does not add Signed-off-by itself; points the user at git commit -s for the DCO sign-off"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "Commit my staged docs change. Use local git. Do not create the commit on GitHub.com, do not add Committed via Cursor Agent, and do not put [AI] in the subject.",
+      "expected_output": "Execute with local git commit -F only. Header has no [AI] tag. Message has no Co-authored-by, Made-with, or Committed via line. Does not use GitHub web, Contents API, GraphQL createCommitOnBranch, or MCP push_files / create_or_update_file.",
+      "files": [],
+      "assertions": [
+        "Uses local git commit -F (or rtk git commit -F) and does not use GitHub web/API/MCP file-commit tools",
+        "Header has no [AI] tag",
+        "No Co-authored-by, Made-with, or Committed via line in the message",
+        "Does not pass git commit --trailer for those keys"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "Commit my staged feat. Please add the [AI] tag to the header.",
+      "expected_output": "User opted in, so pass --ai. Header contains [AI] after the colon and before emoji. Still uses local git commit -F and still omits Co-authored-by / Made-with / Committed via.",
+      "files": [],
+      "assertions": [
+        "Header contains the [AI] tag because the user opted in",
+        "Uses local git commit -F",
+        "No Co-authored-by, Made-with, or Committed via line"
       ]
     }
   ]
