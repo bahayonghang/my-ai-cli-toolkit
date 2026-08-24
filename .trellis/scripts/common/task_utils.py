@@ -195,7 +195,7 @@ def archive_task_complete(
 # Task Directory Resolution
 # =============================================================================
 
-def resolve_task_dir(target_dir: str, repo_root: Path) -> Path | None:
+def resolve_task_dir(target_dir: str, repo_root: Path) -> Path:
     """Resolve task directory to absolute path.
 
     Supports:
@@ -208,9 +208,7 @@ def resolve_task_dir(target_dir: str, repo_root: Path) -> Path | None:
         repo_root: Repository root path.
 
     Returns:
-        Resolved absolute path, or None when it resolves outside
-        `repo_root`. Both sides are resolved before comparing, since
-        `repo_root` may itself sit behind a symlink (/tmp does on macOS).
+        Resolved absolute path.
     """
     if not target_dir:
         return Path()
@@ -221,29 +219,20 @@ def resolve_task_dir(target_dir: str, repo_root: Path) -> Path | None:
 
     # Absolute path
     if Path(target_dir).is_absolute():
-        candidate = Path(target_dir)
+        return Path(target_dir)
+
     # Relative path (contains path separator or starts with .trellis)
-    elif "/" in normalized or normalized.startswith(".trellis"):
-        candidate = repo_root / Path(normalized)
-    else:
-        # Task name - try to find in tasks directory; fall back to treating
-        # it as a relative path when not found.
-        tasks_dir = get_tasks_dir(repo_root)
-        found = find_task_by_name(target_dir, tasks_dir)
-        candidate = found if found else repo_root / Path(normalized)
+    if "/" in normalized or normalized.startswith(".trellis"):
+        return repo_root / Path(normalized)
 
-    try:
-        resolved = candidate.resolve()
-        root = repo_root.resolve()
-    except OSError:
-        return None
+    # Task name - try to find in tasks directory
+    tasks_dir = get_tasks_dir(repo_root)
+    found = find_task_by_name(target_dir, tasks_dir)
+    if found:
+        return found
 
-    try:
-        resolved.relative_to(root)
-    except ValueError:
-        return None
-
-    return resolved
+    # Fallback to treating as relative path
+    return repo_root / Path(normalized)
 
 
 # =============================================================================
