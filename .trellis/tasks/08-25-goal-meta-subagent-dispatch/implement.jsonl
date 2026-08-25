@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "skills/ frontmatter、evals vs mjs、docs-sync 在 version 变更后必须跑"}
+{"file": ".trellis/spec/guides/index.md", "reason": "改常量前先搜索；skill 作者约定入口"}
+{"file": ".trellis/spec/backend/index.md", "reason": "backend 层索引与 Pre-Development Checklist"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "派发缺失归 errors 而非 warnings"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "不手改生成 docs；mjs 测试路径；Python 可编译"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "DISPATCH 模式与现有 COMPLETION_ANCHOR_PATTERNS 同风格，先搜再改版本常量"}
+{"file": ".trellis/tasks/08-25-goal-meta-subagent-dispatch/research/host-directive-and-breadcrumb-evidence.md", "reason": "hypothesis 等级与不去改钩子的机制依据"}

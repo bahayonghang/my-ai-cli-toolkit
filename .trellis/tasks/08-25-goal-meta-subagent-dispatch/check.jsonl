@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "version 变更后 docs-check；evals.json 不进 CI；mjs 才是自动回归"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "质量门：just ci、不手改 catalog、测试发现路径"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "linter 合同缺陷必须是 errors"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "7 处版本号与 eval id 集合必须同步"}
+{"file": ".trellis/tasks/08-25-goal-meta-subagent-dispatch/research/host-directive-and-breadcrumb-evidence.md", "reason": "handoff 不得把派发率写成已验证"}
