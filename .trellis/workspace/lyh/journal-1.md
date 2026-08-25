@@ -1593,3 +1593,42 @@ trellis-plan-review 0.2.0：审阅报告写入被审项目 .trellis/reviews/，�
 ### Status
 
 [OK] **Completed**
+
+
+## Session 51: goal-meta-skill Trellis 子代理派发条款
+
+**Date**: 2026-08-26
+**Task**: goal-meta-skill Trellis 子代理派发条款
+**Branch**: `dev`
+
+### Summary
+
+goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / trellis-check 派发条款，覆盖 cadence、范本、linter 与 evals。普通任务与内联模式不注入。just ci 通过。派发率是否上升仍为 hypothesis。
+
+### Main Changes
+
+- cadence 增加 5 平台派发表与内联例外
+- playbook 两个 Trellis 范本在迭代策略/约束/完成条件追加派发
+- linter 对缺派发报 error；契约与内联分支共用辅助函数
+- evals 15/16/29 补派发断言；17 反向；新增 34/35 内联例外
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7a808aa4` | (see git log) |
+| `66b9dfcd` | (see git log) |
+
+### Testing
+
+- [OK] just ci
+- [OK] just node-test
+- [OK] python scripts/check.py skills
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 新会话执行含派发条款的 Trellis /goal，对照 research 基线统计 Task/Agent 调用
