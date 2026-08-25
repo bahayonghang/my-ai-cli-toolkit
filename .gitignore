@@ -45,3 +45,6 @@ docs/.vitepress/cache/
 
 # Local skill-creator evaluation workspaces
 ast-grep-workspace/
+
+# skill-session-review output (private session-derived reports)
+reports/skill-session-review/

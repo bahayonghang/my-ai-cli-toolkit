@@ -1,0 +1,87 @@
+{
+  "skill_name": "skill-session-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "分析 trellis-plan-review 的使用情况，根据历史对话给出改进反馈。",
+      "expected_output": "Scan invoked sessions, persist reports/skill-session-review/trellis-plan-review.md, and print a copyable qiaomu-meta handoff prompt without editing the target skill.",
+      "files": [],
+      "assertions": [
+        "Runs scan_invocations.py with the skill name",
+        "Writes reports/skill-session-review/trellis-plan-review.md via write_session_review.py",
+        "Chat includes a text fence handoff prompt with the report path",
+        "Does not edit the target SKILL.md"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This skill feels off in past Grok and Claude chats. Review git-commit sessions and tell me what to fix in the skill.",
+      "expected_output": "Session review for git-commit across platforms, report file, handoff prompt, no patch.",
+      "files": [],
+      "assertions": [
+        "Treats the request as skill-session-review",
+        "Does not emit a diff.patch",
+        "Does not call qiaomu-meta to apply edits in this turn"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Continue from my last Claude session on the auth bug.",
+      "expected_output": "Route to resume-claude; do not run skill-session-review.",
+      "files": [],
+      "assertions": [
+        "Does not trigger skill-session-review",
+        "Routes to resume-claude or equivalent session resume"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "优化这个仓库的 CLAUDE.md，精简上下文。",
+      "expected_output": "Route to claude-context-improver.",
+      "files": [],
+      "assertions": [
+        "Does not trigger skill-session-review",
+        "Routes to claude-context-improver"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "用 qiaomu-meta 把这段 SOP 做成一个新 skill。",
+      "expected_output": "Route to qiaomu-meta to create a skill; not a session review.",
+      "files": [],
+      "assertions": [
+        "Does not trigger skill-session-review",
+        "Routes to qiaomu-meta for skill creation"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Which skills did I use last week? Give me invocation counts.",
+      "expected_output": "Not this skill; usage counts are out of scope.",
+      "files": [],
+      "assertions": [
+        "Does not trigger skill-session-review",
+        "Does not write reports/skill-session-review"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Delete unused Claude skills I never invoked.",
+      "expected_output": "Unused-skill cleanup is out of scope.",
+      "files": [],
+      "assertions": [
+        "Does not trigger skill-session-review"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "用 qiaomu-meta 根据刚才的想法直接改 trellis-plan-review 的 SKILL.md。",
+      "expected_output": "Applying qiaomu-meta edits is a later turn; this skill only reports.",
+      "files": [],
+      "assertions": [
+        "Does not treat the request as skill-session-review apply",
+        "Does not edit the target SKILL.md in this skill"
+      ]
+    }
+  ]
+}

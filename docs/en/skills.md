@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 38 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 39 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -27,7 +27,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 10 skills
+`developer-tools-integrations` · 11 skills
 
 - [agents-md-improver](/en/skills/developer-tools-integrations/agents-md-improver) — Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation.
 - [ast-grep](/en/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
@@ -37,6 +37,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [goal-meta-skill](/en/skills/developer-tools-integrations/goal-meta-skill) — Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code.
 - [image-to-ui-skill](/en/skills/developer-tools-integrations/image-to-ui-skill) — 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 - [ripgrep](/en/skills/developer-tools-integrations/ripgrep) — Use when the user needs text or regex content search with ripgrep: composing rg commands, choosing flags, glob/type filtering, multiline or PCRE2 searches, pipeline output, grep-to-rg migration, or diagnosing why rg missed a file (gitignore, hidden, binary defaults).
+- [skill-session-review](/en/skills/developer-tools-integrations/skill-session-review) — Analyze how an existing agent skill was used in past Claude Code, Grok, Codex, and Oh My Pi conversations.
 - [uv-workflow](/en/skills/developer-tools-integrations/uv-workflow) — Use when a coding agent needs to run Python code, modules, one-liners, tools, tests, or standalone scripts through uv, or create and maintain PEP 723 scripts with uv init/add/remove --script.
 - [windows-dev-process-cleanup](/en/skills/developer-tools-integrations/windows-dev-process-cleanup) — Audit and safely clean Windows dev-process trees and UWP app background-task pileups, including orphan npm/npx, leaked Playwright MCP workers, workspace dev servers, IDE services, Phone Link, Dolby Access, and backgroundTaskHost.exe.
 

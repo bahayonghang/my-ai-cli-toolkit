@@ -1,0 +1,40 @@
+{
+  "note": "skill-session-review 0.1.0 trigger boundary. Domain concepts replace qiaomu-meta skill-authoring defaults.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["session_review", "existing_skill", "feedback_report"],
+  "positive_concepts": {
+    "session_review": ["session", "sessions", "conversation", "conversations", "历史对话", "会话", "使用情况"],
+    "existing_skill": ["skill", "SKILL.md", "agent skill", "这个 skill", "某 skill"],
+    "feedback_report": ["feedback", "session-review", "session review", "改进反馈", "用着有什么问题", "使用情况报告"],
+    "platforms": ["Claude", "Grok", "Codex", "Oh My Pi"]
+  },
+  "negative_patterns": [
+    "invocation count",
+    "用了几次",
+    "unused skill",
+    "CLAUDE.md",
+    "create a new skill",
+    "做成一个新 skill",
+    "resume my",
+    "Continue from my last",
+    "直接改"
+  ],
+  "should_trigger": [
+    {"text": "分析 trellis-plan-review 的使用情况，根据历史对话给出改进反馈。", "family": "usage-situation-zh"},
+    {"text": "这个 skill 用着有什么问题？看看过去的会话。", "family": "whats-wrong-zh"},
+    {"text": "根据历史对话反馈改进 git-commit 这个 skill。", "family": "feedback-improve-zh"},
+    {"text": "Review skill sessions for goal-meta-skill and write a session-review report.", "family": "session-review-en"},
+    {"text": "Analyze how this skill was followed in past Claude and Grok conversations.", "family": "followed-en"}
+  ],
+  "should_not_trigger": [
+    {"text": "Continue from my last Claude session on the auth bug.", "family": "resume"},
+    {"text": "优化这个仓库的 CLAUDE.md，精简上下文。", "family": "claude-md"},
+    {"text": "Which skills did I use last week? Give me invocation counts.", "family": "counts"},
+    {"text": "Delete unused Claude skills I never invoked.", "family": "unused"}
+  ],
+  "near_neighbor": [
+    {"text": "用 qiaomu-meta 把这段 SOP 做成一个新 skill。", "family": "create-skill"},
+    {"text": "用 qiaomu-meta 根据刚才的想法直接改 trellis-plan-review 的 SKILL.md。", "family": "apply-qiaomu"},
+    {"text": "审阅 trellis 任务 08-25-skill-usage-retro 的 prd 和 design。", "family": "plan-review"}
+  ]
+}
