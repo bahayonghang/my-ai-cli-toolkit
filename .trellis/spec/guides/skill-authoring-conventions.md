@@ -302,6 +302,19 @@ manual inventory and deterministic safety tests."
   The self-test is the cheapest case where the scanner's input contains its own
   rule text.
 
+## Walking up to `.trellis` is not enough
+
+> Distilled from the trellis-plan-review report writer (2026-08-25).
+
+- `Path.parents` can reach a `.trellis` directory in the user home, so a helper
+  that only calls "nearest ancestor with `.trellis/`" will treat a temp folder
+  as a project and write into `~\.trellis\`.
+- If the write target belongs to a Trellis task, also require the task path to
+  sit under that repo's `.trellis/tasks/` (including `archive/`) before creating
+  any sibling such as `.trellis/reviews/`.
+- Cover this with a test that passes `--repo-root` for one repo and a task
+  directory outside it; the helper must refuse and leave the destination absent.
+
 ## Repo-wide filename search needs a worktree exclusion
 
 - `rglob` over the repository root reaches `.claude/worktrees/<name>/...`, so a

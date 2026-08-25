@@ -1,6 +1,6 @@
 ---
 name: trellis-plan-review
-description: "Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, and reports evidence-backed findings with a verdict. Compares the plan against the real diff once the task has started. Use when the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation. Not for reviewing a code diff by itself (code-auditor for independent or full-spectrum review, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task."
+description: "Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, writes an evidence-backed Markdown report into the reviewed project's .trellis/reviews directory, and returns a copyable handoff prompt. Compares the plan against the real diff once the task has started. Use when the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation. Not for reviewing a code diff by itself (code-auditor for independent or full-spectrum review, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task."
 category: development-workflows
 tags:
   - trellis
@@ -8,23 +8,25 @@ tags:
   - spec-audit
   - acceptance-criteria
   - traceability
-  - read-only
-version: 0.1.0
+  - handoff
+version: 0.2.0
 argument-hint: [trellis-task-dir]
-allowed-tools: Read, Glob, Grep, Bash(python *), Bash(py -3 *), Bash(git diff *), Bash(git log *), Bash(git show *), Bash(git status *)
+allowed-tools: Read, Write, Glob, Grep, Bash(python *), Bash(py -3 *), Bash(git diff *), Bash(git log *), Bash(git show *), Bash(git status *)
 ---
 
-Review the Trellis planning artifacts at `$ARGUMENTS`. Report findings with evidence. Change nothing.
+Review the Trellis planning artifacts at `$ARGUMENTS`. Persist the report. Leave planning artifacts and product code unchanged.
 
 > Commands below write `<skill-dir>` as a placeholder. Substitute the literal skill directory
 > path announced when this skill loads. Use `py -3` where `python` is not on PATH.
 
 ## Hard gates
 
-- Do not edit `prd.md`, `design.md`, `implement.md`, `*.jsonl`, or `task.json`.
-- Do not edit code, and do not fix a defect you find.
+- Do not edit `prd.md`, `design.md`, `implement.md`, `*.jsonl`, `task.json`, or product code.
+- Do not fix a defect you find. Do not produce a revised plan.
+- The only allowed write is the review report under the reviewed project's
+  `.trellis/reviews/` directory, or a temporary `--input` file for the helper.
+  `Write` is not a grant to edit planning artifacts.
 - Do not run `task.py start`, `task.py finish`, or any Trellis command that writes state.
-- Do not produce a revised plan. Report the finding; the author decides the fix.
 - Every finding carries evidence. Drop any candidate you cannot cite.
 
 ## Output mode
@@ -80,13 +82,36 @@ Two rules carry most of the yield:
 
 Evidence rules per claim type: `references/claim-verification.md`.
 
-## 4. Report
+## 4. Persist the report
 
-Four sections, in this order: verdict line, numbered findings, unverified list, sound parts.
-Field definitions, severity rules, the anti-inflation rules, and the required blind-spot
-disclosure: `references/finding-contract.md`.
-
+Assemble the four sections in `references/finding-contract.md` (verdict line, numbered
+findings, unverified list, sound parts) using `references/report-template.md`.
 A plan with no defects gets an empty findings list. Do not manufacture findings to fill it.
+
+Write the file with the helper. The helper writes the file itself; never redirect with `>`.
+Prefer `--input` on Windows.
+
+```bash
+python "<skill-dir>/scripts/write_review_report.py" <task-dir> --input <filled-report.md>
+```
+
+The destination is the reviewed project's `.trellis/reviews/<task-dir-name>.md`.
+The same task overwrites the same file.
+
+On success, the chat contains only:
+
+1. The verdict line with counts.
+2. The report path (repo-relative and absolute).
+3. One `text` fence whose body is the filled template from `references/handoff-prompt.md`.
+
+Do not paste the TPR table into the chat. Fill every placeholder. Keep TPR bodies in the
+report file.
+
+If the helper exits nonzero: explain the error and the attempted path; print the
+four-section report in chat; do not emit a path-based handoff prompt.
+
+If the user asks to see the report in the conversation, print it after the fence.
+Still persist the file first.
 
 ## 5. Routing
 
@@ -101,7 +126,10 @@ A plan with no defects gets an empty findings list. Do not manufacture findings 
 - `references/trellis-artifact-map.md` — artifact semantics, required sections, entry lookup.
 - `references/review-passes.md` — Pass 0–7 criteria, triggers, worked examples.
 - `references/claim-verification.md` — claim types and their evidence rules.
-- `references/finding-contract.md` — output contract, severity, anti-inflation, disclosure.
+- `references/finding-contract.md` — output contract, severity, anti-inflation, disclosure, persist rules.
+- `references/report-template.md` — on-disk Markdown skeleton.
+- `references/handoff-prompt.md` — copyable prompt for the agent that revises the plan.
 - `references/case-study-font-picker.md` — a real seven-finding review, for severity calibration.
 - `scripts/plan_precheck.py` — Pass 0.
+- `scripts/write_review_report.py` — path-confined write to `.trellis/reviews/`.
 - `evals/evals.json` — trigger and behavior regression cases.

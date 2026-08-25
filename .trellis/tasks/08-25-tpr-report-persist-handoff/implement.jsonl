@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "SKILL.md script paths, frontmatter, interface.yaml, verification traps after metadata changes"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Python stdin UTF-8 on Windows; node tests under skills/**/tests/*.mjs; docs-sync after frontmatter"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Helper exit codes 0/1/2 and stderr for validation failures"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Keep the writer next to the skill under skills/**/scripts"}
+{"file": ".trellis/tasks/08-25-tpr-report-persist-handoff/research/handoff-prompt-prior-art.md", "reason": "Handoff prompt clauses mapped from the report template and prior-art keep/adapt/reject"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "Suite allowed-tools, eval schema, Write exception pattern"}
+{"file": "skills/development-workflows/trellis-plan-review/references/finding-contract.md", "reason": "Existing four-section report contract that the on-disk template must preserve"}
