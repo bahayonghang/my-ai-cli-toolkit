@@ -28,6 +28,23 @@ function pythonCommand() {
 
 const python = pythonCommand();
 
+// Mirror the script's own path canonicalization (Python Path.resolve()), because
+// Node's fs.realpathSync does not expand 8.3 short names (e.g. RUNNER~1) on Windows.
+function canonicalPath(p) {
+  const result = spawnSync(
+    python.command,
+    [
+      ...python.prefix,
+      "-c",
+      "import pathlib,sys; sys.stdout.write(pathlib.Path(sys.argv[1]).resolve().as_posix())",
+      p,
+    ],
+    { encoding: "utf8" },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  return result.stdout.trim();
+}
+
 function runWriter(args, options = {}) {
   return spawnSync(python.command, [...python.prefix, script, ...args], {
     encoding: "utf8",
@@ -58,10 +75,7 @@ test("writes UTF-8 LF report under .trellis/reviews/<task-dir-name>.md", () => {
 
   const payload = JSON.parse(result.stdout.trim());
   const dest = path.join(root, ".trellis", "reviews", "08-25-sample.md");
-  assert.equal(
-    fs.realpathSync(payload.path).replace(/\\/g, "/"),
-    fs.realpathSync(dest).replace(/\\/g, "/"),
-  );
+  assert.equal(payload.path.replace(/\\/g, "/"), canonicalPath(dest));
   const written = fs.readFileSync(dest);
   const expect = expectedSha(body);
   assert.equal(written.equals(expect.data), true);
@@ -80,10 +94,7 @@ test("second write overwrites the same path", () => {
   const dest = path.join(root, ".trellis", "reviews", "08-25-sample.md");
   assert.equal(fs.readFileSync(dest, "utf8"), "second\n");
   const payload = JSON.parse(second.stdout.trim());
-  assert.equal(
-    fs.realpathSync(payload.path).replace(/\\/g, "/"),
-    fs.realpathSync(dest).replace(/\\/g, "/"),
-  );
+  assert.equal(payload.path.replace(/\\/g, "/"), canonicalPath(dest));
 });
 
 test("refuses a task directory name that is not a safe basename", () => {
