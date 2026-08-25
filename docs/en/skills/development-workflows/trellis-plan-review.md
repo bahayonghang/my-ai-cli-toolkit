@@ -4,7 +4,7 @@
 
 ## Purpose overview
 
-Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, and reports evidence-backed findings with a verdict. Compares the plan against the real diff once the task has started.
+Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, writes an evidence-backed Markdown report into the reviewed project's .trellis/reviews directory, and returns a copyable handoff prompt. Compares the plan against the real diff once the task has started.
 
 ## Trigger scenarios
 
@@ -17,8 +17,8 @@ Independent review of Trellis task planning artifacts. Reads prd.md, design.md, 
 | --- | --- |
 | Name | `trellis-plan-review` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.0` |
-| Tags | `trellis`, `plan-review`, `spec-audit`, `acceptance-criteria`, `traceability`, `read-only` |
+| Version | `0.2.0` |
+| Tags | `trellis`, `plan-review`, `spec-audit`, `acceptance-criteria`, `traceability`, `handoff` |
 
 ## Install command
 
@@ -32,8 +32,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill trellis-plan-
 | --- | --- | ---: | --- |
 | `skills/development-workflows/trellis-plan-review/agents` | directory | 1 | Companion agents |
 | `skills/development-workflows/trellis-plan-review/evals` | directory | 1 | Evaluation samples |
-| `skills/development-workflows/trellis-plan-review/references` | directory | 5 | Reference material |
-| `skills/development-workflows/trellis-plan-review/scripts` | directory | 1 | Executable scripts |
+| `skills/development-workflows/trellis-plan-review/references` | directory | 7 | Reference material |
+| `skills/development-workflows/trellis-plan-review/scripts` | directory | 2 | Executable scripts |
+| `skills/development-workflows/trellis-plan-review/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -43,16 +44,16 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill trellis-plan-
 | evals | `skills/development-workflows/trellis-plan-review/evals` | Evaluation samples |
 | references | `skills/development-workflows/trellis-plan-review/references` | Reference material |
 | scripts | `skills/development-workflows/trellis-plan-review/scripts` | Executable scripts |
+| tests | `skills/development-workflows/trellis-plan-review/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
 just python-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

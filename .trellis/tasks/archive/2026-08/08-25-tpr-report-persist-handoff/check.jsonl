@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Check description length, angle brackets, docs-sync, <skill-dir> command form"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Check UTF-8 LF writes, node-test discovery, no hand-edited docs catalog"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Check helper failure codes and no silent path fallback"}
+{"file": "skills/development-workflows/trellis-plan-review/evals/evals.json", "reason": "Check evals no longer assert edits-nothing; routing negatives remain"}
+{"file": ".trellis/tasks/08-25-tpr-report-persist-handoff/prd.md", "reason": "Check AC1–AC12 against the shipped files"}

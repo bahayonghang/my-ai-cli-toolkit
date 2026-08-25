@@ -4,13 +4,14 @@
     {
       "id": 1,
       "prompt": "请深入分析和审阅 .trellis/tasks/08-20-settings-font-picker-repaint 这份规划",
-      "expected_output": "Skill triggers. Locates the task directory (searching other repositories when the path is not in the working repo), reads task.json before the artifacts, runs plan_precheck.py with the <skill-dir> placeholder path, then runs the judgment passes and returns the four-section report: verdict line, numbered findings with severity and evidence, unverified list, sound parts. Edits nothing.",
+      "expected_output": "Skill triggers. Locates the task directory (searching other repositories when the path is not in the working repo), reads task.json before the artifacts, runs plan_precheck.py with the skill-dir placeholder path, then runs the judgment passes. Writes the four-section report to the reviewed project's .trellis/reviews directory, prints the verdict and path, and emits a copyable handoff prompt in a text fence. Does not edit planning artifacts or product code.",
       "files": [],
       "assertions": [
         "Reads task.json first and uses its status to decide whether the drift pass applies",
         "Runs the bundled precheck script and reports blocking items before the judgment passes",
         "Verifies path:line citations against the actual repository instead of accepting them",
-        "Returns a verdict line plus numbered findings, an unverified list, and a sound-parts list",
+        "Writes the report to .trellis/reviews/<task-dir-name>.md via write_review_report.py",
+        "Prints a verdict line, the report path, and a copyable handoff prompt in a text fence",
         "Does not edit prd.md, design.md, implement.md, the jsonl manifests, or any code",
         "Does not run task.py start or any state-writing Trellis command"
       ]
@@ -18,7 +19,7 @@
     {
       "id": 2,
       "prompt": "Review the trellis plan under .trellis/tasks/08-19-ssh-remote-host-import before I start implementing. Another agent wrote it.",
-      "expected_output": "Skill triggers and writes the report in English. Traces every acceptance-criterion clause to a requirement and a design mechanism, recomputes any calculation in design.md, cross-checks requirements against out-of-scope and rejected options, and flags criteria whose result depends on an unstated condition.",
+      "expected_output": "Skill triggers and writes the on-disk report in English, then emits an English handoff prompt. Traces every acceptance-criterion clause to a requirement and a design mechanism, recomputes any calculation in design.md, cross-checks requirements against out-of-scope and rejected options, and flags criteria whose result depends on an unstated condition.",
       "files": [],
       "assertions": [
         "Writes the report in the language of the request",
@@ -38,7 +39,7 @@
         "Uses read-only git commands with -uall for untracked files",
         "Separates an undeclared change from a defective change: the missing declaration is the defect",
         "Reports that the review arrived after the change shipped",
-        "Still does not modify any file"
+        "Writes the review report file and does not modify planning artifacts or product code"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "Does not report a missing design.md or implement.md as a defect on a lightweight task",
         "Checks whether the change scope justifies the PRD-only shape",
         "Skips passes that depend on absent artifacts instead of inventing content",
-        "Keeps the four-section report shape even when the findings list is short"
+        "Keeps the four-section report shape even when the findings list is short",
+        "Still writes the report file and emits a handoff prompt"
       ]
     },
     {
@@ -62,7 +64,8 @@
         "Returns an empty findings list when no finding has evidence",
         "Does not manufacture findings to fill the report",
         "Drops candidate findings that cannot be cited",
-        "Includes the disclosure that an agent reviewing an agent's plan is not an independent second opinion"
+        "Includes the disclosure that an agent reviewing an agent's plan is not an independent second opinion",
+        "Still writes the report file and emits a handoff prompt even when the findings list is empty"
       ]
     },
     {
@@ -100,6 +103,18 @@
         "Searches design.md for the mechanism, not only prd.md for the requirement",
         "Gives available routes instead of a single decision",
         "Does not edit prd.md or design.md"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "审阅这份 trellis 规划，我只要结论，不用写成文件",
+      "expected_output": "Skill triggers and still persists the Markdown report under .trellis/reviews, then returns the verdict, the report path, and a copyable handoff prompt. Chat is not the source of the findings. Planning artifacts stay unchanged.",
+      "files": [],
+      "assertions": [
+        "Persists the report even when the user asks for a verdict only and says not to write a file",
+        "Chat output is the verdict, the report path, and a text-fenced handoff prompt",
+        "Does not treat the chat as the source of findings",
+        "Does not edit planning artifacts"
       ]
     }
   ]

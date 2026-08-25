@@ -101,6 +101,21 @@ Close the report with the limitation, in one or two sentences:
 ## What the report must not contain
 
 - A rewritten plan, a revised requirement, or a corrected criterion in final form. Give the route.
-- An edit to any artifact.
+- An edit to any planning artifact or to product code.
 - A claim that a check ran when the check did not run.
 - A severity raised to force a decision.
+
+## Persist the report
+
+After the four sections are ready, write the full report with
+`scripts/write_review_report.py`. The destination is
+`<repo-root>/.trellis/reviews/<task-dir-name>.md`. The file skeleton is
+`report-template.md`. Same task, same path; a later review overwrites.
+
+The chat is not the source of the findings. Print the verdict line, the report
+path, and one `text` fence with the filled template from `handoff-prompt.md`.
+Do not paste the TPR table into the chat unless the write failed or the user
+asked to see the report in the conversation.
+
+If the helper exits nonzero, explain the error and the attempted path, print
+the four-section report in chat, and do not emit a path-based handoff prompt.
