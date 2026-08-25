@@ -1572,3 +1572,24 @@ trellis-plan-review 0.2.0：审阅报告写入被审项目 .trellis/reviews/，�
 ### Status
 
 [OK] **Completed**
+
+
+## Session 50: skill-session-review
+
+**Date**: 2026-08-25
+**Task**: skill-session-review
+**Branch**: `dev`
+
+### Summary
+
+新增 skill-session-review：扫描 Claude/Grok/Codex/Oh My Pi 历史会话的使用情况，落盘 reports/skill-session-review 反馈报告并给出 qiaomu-meta 交接 Prompt；just ci 通过后归档 08-25-skill-usage-retro。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e60eb4ee` | (see git log) |
+
+### Status
+
+[OK] **Completed**
