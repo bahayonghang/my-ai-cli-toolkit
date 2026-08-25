@@ -1551,3 +1551,24 @@ goal-meta-skill 升到 0.4.0：实施 Trellis 任务时先提交该任务相关�
 ### Status
 
 [OK] **Completed**
+
+
+## Session 49: trellis-plan-review 报告落盘与交接 Prompt
+
+**Date**: 2026-08-25
+**Task**: trellis-plan-review 报告落盘与交接 Prompt
+**Branch**: `dev`
+
+### Summary
+
+trellis-plan-review 0.2.0：审阅报告写入被审项目 .trellis/reviews/，对话给出可复制交接 Prompt。just ci 已通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2409a31b` | (see git log) |
+
+### Status
+
+[OK] **Completed**
