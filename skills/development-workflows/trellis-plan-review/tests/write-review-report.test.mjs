@@ -58,7 +58,10 @@ test("writes UTF-8 LF report under .trellis/reviews/<task-dir-name>.md", () => {
 
   const payload = JSON.parse(result.stdout.trim());
   const dest = path.join(root, ".trellis", "reviews", "08-25-sample.md");
-  assert.equal(payload.path.replace(/\\/g, "/"), dest.replace(/\\/g, "/"));
+  assert.equal(
+    fs.realpathSync(payload.path).replace(/\\/g, "/"),
+    fs.realpathSync(dest).replace(/\\/g, "/"),
+  );
   const written = fs.readFileSync(dest);
   const expect = expectedSha(body);
   assert.equal(written.equals(expect.data), true);
@@ -77,7 +80,10 @@ test("second write overwrites the same path", () => {
   const dest = path.join(root, ".trellis", "reviews", "08-25-sample.md");
   assert.equal(fs.readFileSync(dest, "utf8"), "second\n");
   const payload = JSON.parse(second.stdout.trim());
-  assert.equal(payload.path.replace(/\\/g, "/"), dest.replace(/\\/g, "/"));
+  assert.equal(
+    fs.realpathSync(payload.path).replace(/\\/g, "/"),
+    fs.realpathSync(dest).replace(/\\/g, "/"),
+  );
 });
 
 test("refuses a task directory name that is not a safe basename", () => {
