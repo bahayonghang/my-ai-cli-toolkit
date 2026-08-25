@@ -2,7 +2,7 @@
 name: goal-meta-skill
 description: |
   Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.
-version: 0.5.0
+version: 0.6.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -17,7 +17,7 @@ argument-hint: "[vague-task-or-goal]"
 allowed-tools: Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)
 metadata:
   owner: lyh
-  review_cadence: quarterly-or-on-platform-goal-change
+  review_cadence: quarterly-or-on-platform-goal-or-trellis-dispatch-change
 ---
 
 # Goal Meta Skill
@@ -109,11 +109,11 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 
 ## Trellis adapter
 
-只有 outcome 明确是 Trellis task/child implementation 时才加载 `references/trellis-goal-cadence.md`。持久合同时必须链接具体 `prd.md`、`design.md`、`implement.md`，并保留“先提交该任务产品改动，再 archive；父任务等发布门”的节奏。`GOAL.md` 不能取代任务文档，skill 本身也不执行目标内的 commit/archive。
+只有 outcome 明确是 Trellis task/child implementation 时才加载 `references/trellis-goal-cadence.md`。持久合同时必须链接具体 `prd.md`、`design.md`、`implement.md`，并保留“先提交该任务产品改动，再 archive；父任务等发布门”的节奏。派发组平台的实施 `/goal` 还要求先读目标项目 `.trellis/workflow.md` Phase 2.1 / 2.2，代码实施派发 `trellis-implement`、验证派发 `trellis-check`，主会话不直接改产品文件；内联组或 `codex.dispatch_mode: inline` 不注入派发，改用该项目内联形状。`GOAL.md` 不能取代任务文档，skill 本身也不执行目标内的 commit/archive。
 
 ## Quality bar
 
-拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明。
+拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；Trellis 实施缺派发条款（目标平台在派发组时）；对内联模式平台注入派发条款；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明。
 
 ## Resources
 
@@ -121,7 +121,7 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 - `references/platform-goal-facts.md`：五平台 `/goal` 行为、管理命令、限制、权限、文件引用与 dated primary sources 的唯一事实源。
 - `references/goal-command-playbook.md`：普通/持久目标模板、验证锚点与示例。
 - `references/default-goal-strategy.md`：默认路径、侦察、风险、长合同与 S6 输出。
-- `references/trellis-goal-cadence.md`：可选 Trellis commit-then-archive adapter。
+- `references/trellis-goal-cadence.md`：可选 Trellis commit-then-archive 与子代理派发 adapter。
 - `references/interview-checklist.md`：有限访谈题库。
 - `evals/evals.json`：行为与路由 fixtures；CI 不执行，需人工审阅。
 - `scripts/lint_goal_command.py`：inline/contract linter 与平台命令隔离。

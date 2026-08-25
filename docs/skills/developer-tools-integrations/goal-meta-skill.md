@@ -17,7 +17,7 @@ Turn vague or complex agent tasks into project-aware, verifiable `/goal` command
 | --- | --- |
 | 名称 | `goal-meta-skill` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `0.5.0` |
+| 版本 | `0.6.0` |
 | 标签 | `codex`, `claude-code`, `grok`, `kimi-code`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
 
 ## 安装命令

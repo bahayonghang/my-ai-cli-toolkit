@@ -226,7 +226,7 @@ Budget, turn, or time wording is always a soft stop clause. Say, for example, `T
 - Allow model taste and implementation judgment inside the boundary, but do not allow scope expansion or weaker verification.
 - At S4, put the `/goal` body in a `text` fence with no blank lines inside the fence.
 - After confirmation, S6 is `最终可复制 /goal` plus 字段一览 as defined in `references/default-goal-strategy.md`.
-- When the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md`. Do not invent placeholder tokens in executable drafts.
+- When the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md`. That file owns commit-then-archive, parent 发布门, sub-agent dispatch, and inline exceptions. Do not invent placeholder tokens in executable drafts.
 
 ## Strong Examples
 
@@ -291,10 +291,10 @@ Codex (commit the child-task product files, then archive; keep the parent until 
 ```text
 /goal 实施 Trellis 子任务 .trellis/tasks/08-22-checkout-discount：先读该任务 prd.md、design.md 与根 AGENTS.md，按任务边界修复结账百分比优惠重复应用，每完成一个可独立验收的任务先提交该任务相关产品改动，再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount。
 验证：运行 just test-checkout 与 just ci，保存退出码和输出；用 git status --porcelain -uall 确认产品提交只含 src/checkout/ 与 tests/checkout/。
-约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。主会话不直接 Edit/Write 产品文件；产品改动由 trellis-implement 完成。
 边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
-迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
-完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. 发布门 just ci 退出码为 0。3. 父任务在发布门通过前保持未归档。
+迭代策略：先读 .trellis/workflow.md 的 Phase 2.1 / 2.2 确认本项目派发协议与 agent 名；代码实施派发 trellis-implement、验证派发 trellis-check；一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. 发布门 just ci 退出码为 0。3. 父任务在发布门通过前保持未归档。4. 每个任务的代码实施由 trellis-implement 完成、验证由 trellis-check 完成。
 暂停条件：任务范围外出现脏文件；归档自动提交失败；父任务仍有未归档子任务却被要求归档；出现 git add -f .trellis/ 请求；需要凭证、生产数据或破坏性操作。
 ```
 
@@ -303,10 +303,10 @@ Claude Code condition variant (transcript-visible proof, bounding clause, stop-a
 ```text
 /goal Trellis 子任务 .trellis/tasks/08-22-checkout-discount 已实施：百分比优惠只应用一次的回归证据已出现在对话中，just test-checkout 与 just ci 退出码为 0 且输出贴进对话，可独立验收的任务先提交相关产品改动再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount，git status --porcelain -uall 证明产品提交未混入归档提交，父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前未归档；否则在 20 轮后停止并总结剩余问题。
 验证：运行 just test-checkout 和 just ci 并展示退出码；把 git status --porcelain -uall 与归档命令输出贴进对话。
-约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。主会话不直接 Edit/Write 产品文件；产品改动由 trellis-implement 完成。
 边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
-迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
-完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. just ci 退出码为 0 且出现在对话中。3. 父任务在发布门通过前保持未归档。
+迭代策略：先读 .trellis/workflow.md 的 Phase 2.1 / 2.2 确认本项目派发协议与 agent 名；代码实施派发 trellis-implement、验证派发 trellis-check；一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. just ci 退出码为 0 且出现在对话中。3. 父任务在发布门通过前保持未归档。4. 每个任务的代码实施由 trellis-implement 完成、验证由 trellis-check 完成，派发记录出现在对话中。
 暂停条件：任务范围外出现脏文件、归档自动提交失败、父任务仍有未归档子任务却被要求归档、出现 git add -f .trellis/ 请求、需要凭证或破坏性操作时，停止并报告，等待人工决定。
 ```
 
@@ -344,3 +344,7 @@ Avoid:
   claims a new Agent automatically loads it
 - borrows another platform's management command or calls the Grok/OMP 4,000
   portability budget an official platform limit
+- Trellis implementation `/goal` that omits dispatch clauses while the
+  target platform is in the dispatch group
+- dispatch clauses injected for an inline-mode platform or
+  `codex.dispatch_mode: inline`

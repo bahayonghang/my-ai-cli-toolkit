@@ -17,7 +17,7 @@ Independent review of Trellis task planning artifacts. Reads prd.md, design.md, 
 | --- | --- |
 | Name | `trellis-plan-review` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Tags | `trellis`, `plan-review`, `spec-audit`, `acceptance-criteria`, `traceability`, `handoff` |
 
 ## Install command
@@ -34,7 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill trellis-plan-
 | `skills/development-workflows/trellis-plan-review/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/trellis-plan-review/references` | directory | 7 | Reference material |
 | `skills/development-workflows/trellis-plan-review/scripts` | directory | 2 | Executable scripts |
-| `skills/development-workflows/trellis-plan-review/tests` | directory | 1 | Automated tests |
+| `skills/development-workflows/trellis-plan-review/tests` | directory | 2 | Automated tests |
 
 ## Scripts, references, and test resources
 

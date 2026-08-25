@@ -175,7 +175,8 @@
         "Iteration policy or 完成条件/Stop when says to commit the task's related product changes first, then run python ./.trellis/scripts/task.py archive.",
         "The /goal names the concrete task directory .trellis/tasks/08-22-checkout-discount rather than a placeholder token.",
         "Constraints or 暂停条件/Pause if forbid git add -f .trellis/.",
-        "The skill itself does not execute git commit or task.py archive; it only drafts the /goal."
+        "The skill itself does not execute git commit or task.py archive; it only drafts the /goal.",
+        "Iteration policy, Constraints, and Completion conditions require trellis-implement for code and trellis-check for verification, and forbid the main session from Edit/Write on product files."
       ]
     },
     {
@@ -188,7 +189,8 @@
         "Parent archive is delayed until the 发布门 named just ci has passed.",
         "The 发布门 is the reconnaissance or user-named parent check just ci, not a GitHub Release unless the user asked for a release task.",
         "Deferral wording states that archiving a parent with active children would clear those children's parent field.",
-        "Child archive still follows commit-then-archive."
+        "Child archive still follows commit-then-archive.",
+        "Dispatch of trellis-implement and trellis-check remains required; parent-archive deferral until 发布门 just ci is unchanged and is not replaced by a GitHub Release."
       ]
     },
     {
@@ -200,7 +202,8 @@
         "The /goal does not mention task.py archive or Trellis 归档 cadence.",
         "The /goal does not instruct archiving a parent or child Trellis task.",
         "Verification uses just test-parser and boundaries stay on src/parser/ and tests/parser/.",
-        "Presence of .trellis/ in reconnaissance is not treated as a reason to inject commit-then-archive."
+        "Presence of .trellis/ in reconnaissance is not treated as a reason to inject commit-then-archive.",
+        "Does not inject trellis-implement, trellis-check, 子代理, or 派发 clauses; presence of .trellis/ in reconnaissance is not a reason to add dispatch."
       ]
     },
     {
@@ -340,7 +343,8 @@
         "Required reading links concrete prd.md, design.md, and implement.md under the named task.",
         "Authority says current Trellis artifacts and scoped rules supersede the compressed GOAL.md.",
         "Iteration and completion preserve product commit before task.py archive and delay parent archive to the named release gate.",
-        "The launcher explicitly reads GOAL.md; it does not claim that Goal mode auto-loads it."
+        "The launcher explicitly reads GOAL.md; it does not claim that Goal mode auto-loads it.",
+        "Iteration policy or Completion conditions require trellis-implement / trellis-check dispatch; Constraints keep product writes off the main session; the launcher still does not claim Goal mode auto-loads GOAL.md."
       ]
     },
     {
@@ -385,6 +389,30 @@
         "States that OMP uses drop rather than clear.",
         "States that Grok uses clear rather than drop.",
         "Does not invent a universal management vocabulary or a new goal."
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "直接给 Codex /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`：修结账百分比优惠重复应用。侦察到 `.trellis/config.yaml` 的 `codex.dispatch_mode` 为 `inline`。只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查是 `just ci`。",
+      "expected_output": "A Codex Trellis implementation /goal that keeps commit-then-archive but uses the inline shape and does not inject sub-agent dispatch.",
+      "files": [],
+      "assertions": [
+        "Iteration policy uses the inline shape (trellis-before-dev then edit then trellis-check) rather than dispatching trellis-implement for code.",
+        "Constraints do not forbid the main session from editing product files.",
+        "Commit-then-archive and parent 发布门 just ci remain.",
+        "Does not require the main session to dispatch trellis-implement as a sub-agent."
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "直接给 Claude Code /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`。我明确要求主会话内联实施，不要派发子代理。只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查 `just ci`。",
+      "expected_output": "A Claude Code Trellis implementation /goal that honors the explicit inline request: no dispatch clauses, inline shape, still commit-then-archive, transcript-visible stop-and-report.",
+      "files": [],
+      "assertions": [
+        "Does not instruct dispatching trellis-implement or trellis-check as sub-agents.",
+        "Iteration policy follows the inline main-session shape.",
+        "Still preserves product commit then task.py archive and defers parent archive to just ci.",
+        "Claude stop-and-report and a turn/time bounding clause remain; no /goal pause."
       ]
     }
   ]
