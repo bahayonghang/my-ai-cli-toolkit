@@ -112,6 +112,10 @@ After the four sections are ready, write the full report with
 `<repo-root>/.trellis/reviews/<task-dir-name>.md`. The file skeleton is
 `report-template.md`. Same task, same path; a later review overwrites.
 
+If the helper prints a gitignore note — the destination is neither ignored nor tracked — pass the
+note to the author. Do not edit `.gitignore`; ignoring or committing the report is the project's
+call.
+
 The chat is not the source of the findings. Print the verdict line, the report
 path, and one `text` fence with the filled template from `handoff-prompt.md`.
 Do not paste the TPR table into the chat unless the write failed or the user

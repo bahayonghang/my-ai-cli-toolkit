@@ -13,7 +13,8 @@
         "Writes the report to .trellis/reviews/<task-dir-name>.md via write_review_report.py",
         "Prints a verdict line, the report path, and a copyable handoff prompt in a text fence",
         "Does not edit prd.md, design.md, implement.md, the jsonl manifests, or any code",
-        "Does not run task.py start or any state-writing Trellis command"
+        "Does not run task.py start or any state-writing Trellis command",
+        "Reports the git state of the .trellis/reviews destination as a non-blocking note and never edits .gitignore"
       ]
     },
     {

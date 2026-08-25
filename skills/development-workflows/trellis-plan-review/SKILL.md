@@ -9,7 +9,7 @@ tags:
   - acceptance-criteria
   - traceability
   - handoff
-version: 0.2.0
+version: 0.3.0
 argument-hint: [trellis-task-dir]
 allowed-tools: Read, Write, Glob, Grep, Bash(python *), Bash(py -3 *), Bash(git diff *), Bash(git log *), Bash(git show *), Bash(git status *)
 ---
@@ -54,8 +54,10 @@ python "<skill-dir>/scripts/plan_precheck.py" <task-dir> --output <task-dir>/../
 Omit `--output` to print the JSON only. The script writes the file itself; never redirect with `>`.
 Exit `1` means a blocking item exists. Report those items before you start the judgment passes.
 
-The script decides only what strings and the filesystem can decide: artifact presence, template
-placeholder residue, `path:line` citation resolution, and `R`/`AC` identifier cross-reference.
+The script decides only what strings, the filesystem, and read-only git queries can decide:
+artifact presence, template placeholder residue, `path:line` citation resolution,
+`R`/`AC` identifier cross-reference, and whether the report destination is ignored or tracked
+by git. The git check is a note, never a blocking item.
 Claim truth, mechanism presence, and arithmetic stay with you.
 
 ## 3. Passes 1–7 — judgment
@@ -97,6 +99,9 @@ python "<skill-dir>/scripts/write_review_report.py" <task-dir> --input <filled-r
 
 The destination is the reviewed project's `.trellis/reviews/<task-dir-name>.md`.
 The same task overwrites the same file.
+If the destination is neither ignored nor tracked, the helper prints a gitignore note on
+stderr. Repeat that note in the chat after the handoff fence. Do not edit `.gitignore`;
+adding the ignore rule or committing the report is the project's decision.
 
 On success, the chat contains only:
 

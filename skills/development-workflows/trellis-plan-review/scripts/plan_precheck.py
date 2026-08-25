@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Mechanical precheck for a Trellis task planning directory.
 
-Decides only what strings and the filesystem can decide:
+Decides only what strings, the filesystem, and read-only git queries can decide:
   * artifact presence
   * template placeholder residue
   * path:line citation resolution
   * R / AC identifier cross-reference
+  * whether the review report destination is ignored or tracked (git hygiene note)
 
 Claim truth, mechanism presence, and arithmetic stay with the reviewer.
 
@@ -17,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -69,6 +71,64 @@ def find_repo_root(start: Path) -> Path | None:
     for candidate in (start, *start.parents):
         if (candidate / ".trellis").is_dir():
             return candidate
+    return None
+
+
+def _scan_gitignore_covers(repo_root: Path, rel_posix: str) -> bool:
+    """Fallback when git cannot run: literal scan of the two gitignore files.
+
+    Matches only rules that name the target path or one of its parent
+    directories literally (`reviews/`, `.trellis/reviews/`, `<task>.md`, with an
+    optional `**/` prefix). Globs and negation rules are out of scope, so the
+    scan can miss real coverage; it never invents coverage.
+    """
+    parts = rel_posix.split("/")
+    candidates = {"/".join(parts[i:]) for i in range(len(parts))} | {"reviews"}
+    for gitignore in (repo_root / ".gitignore", repo_root / ".trellis" / ".gitignore"):
+        if not gitignore.is_file():
+            continue
+        for line in read_text(gitignore).splitlines():
+            rule = line.strip().rstrip("/")
+            if not rule or rule.startswith("#") or rule.startswith("!"):
+                continue
+            if rule.startswith("**/"):
+                rule = rule[3:]
+            if rule in candidates:
+                return True
+    return False
+
+
+def git_path_state(repo_root: Path, rel_posix: str) -> str | None:
+    """Classify a repo-relative path the way `git status` would see it.
+
+    Returns "tracked", "ignored", "untracked", or None when git cannot answer
+    (no git work tree, git missing, or git refused). Only "untracked" — a new
+    untracked entry in `git status` — is worth a note.
+    """
+    try:
+        listed = subprocess.run(
+            ["git", "-C", str(repo_root), "ls-files", "--", rel_posix],
+            capture_output=True, encoding="utf-8", errors="replace", timeout=15,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        listed = None
+    if listed is not None and listed.returncode == 0:
+        if listed.stdout.strip():
+            return "tracked"
+        try:
+            ignored = subprocess.run(
+                ["git", "-C", str(repo_root), "check-ignore", "-q", "--", rel_posix],
+                capture_output=True, timeout=15,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        if ignored.returncode == 0:
+            return "ignored"
+        if ignored.returncode == 1:
+            return "untracked"
+        return None
+    if _scan_gitignore_covers(repo_root, rel_posix):
+        return "ignored"
     return None
 
 
@@ -302,6 +362,8 @@ def main(argv: list[str] | None = None) -> int:
     placeholders, block_p = check_placeholders(task_dir)
     citations, block_c = check_citations(task_dir, repo_root)
     identifiers, block_i = check_identifiers(task_dir)
+    reviews_rel = f".trellis/reviews/{task_dir.name}.md"
+    reviews_git = {"path": reviews_rel, "state": git_path_state(repo_root, reviews_rel)}
 
     blocking = [*block_a, *block_p, *block_c, *block_i]
     status_counts: dict[str, int] = {}
@@ -316,6 +378,7 @@ def main(argv: list[str] | None = None) -> int:
         "placeholders": placeholders,
         "citations": {"total": len(citations), "by_status": status_counts, "entries": citations},
         "identifiers": identifiers,
+        "reviews_git": reviews_git,
         "blocking": blocking,
         "drift_pass_required": read_task_status(task_dir) not in (None, "planning"),
     }
@@ -358,6 +421,12 @@ def summarize(report: dict) -> None:
     ]
     for item in report["blocking"]:
         lines.append(f"  - {item}")
+    reviews = report.get("reviews_git") or {}
+    if reviews.get("state") == "untracked":
+        lines.append(
+            f"note: {reviews['path']} is untracked and not ignored (will appear in git status); "
+            "add .trellis/reviews/ to .trellis/.gitignore or commit the report (the project decides)"
+        )
     print("\n".join(lines), file=sys.stderr)
 
 

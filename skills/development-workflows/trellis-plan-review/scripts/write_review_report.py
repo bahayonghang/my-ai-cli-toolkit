@@ -16,7 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-from plan_precheck import find_repo_root
+from plan_precheck import find_repo_root, git_path_state
 
 TASK_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 REVIEWS_DIRNAME = "reviews"
@@ -165,6 +165,13 @@ def main(argv: list[str] | None = None) -> int:
         "sha256": hashlib.sha256(data).hexdigest(),
     }
     print(json.dumps(payload, ensure_ascii=False))
+    rel_dest = dest.relative_to(repo_root).as_posix()
+    if git_path_state(repo_root, rel_dest) == "untracked":
+        print(
+            f"note: {rel_dest} is untracked and not ignored (will appear in git status); "
+            "add .trellis/reviews/ to .trellis/.gitignore or commit the report (the project decides)",
+            file=sys.stderr,
+        )
     return 0
 
 

@@ -148,3 +148,40 @@ test("refuses an empty body", () => {
   assert.equal(result.status, 1, result.stderr);
   assert.match(result.stderr, /empty/);
 });
+
+const hasGit = spawnSync("git", ["--version"], { encoding: "utf8" }).status === 0;
+
+function makeGitRepo() {
+  const { root, taskDir } = makeRepo();
+  const init = spawnSync("git", ["-C", root, "init", "-q"], { encoding: "utf8" });
+  assert.equal(init.status, 0, init.stderr);
+  return { root, taskDir };
+}
+
+test("notes when the report destination is untracked and not ignored", (t) => {
+  if (!hasGit) return t.skip("git not available");
+  const { taskDir } = makeGitRepo();
+  const result = runWriter([taskDir], { input: "# report\n" });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stderr, /untracked and not ignored/);
+});
+
+test("stays silent about gitignore when the reviews directory is ignored", (t) => {
+  if (!hasGit) return t.skip("git not available");
+  const { root, taskDir } = makeGitRepo();
+  fs.writeFileSync(path.join(root, ".trellis", ".gitignore"), "reviews/\n", "utf8");
+  const result = runWriter([taskDir], { input: "# report\n" });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.doesNotMatch(result.stderr, /untracked and not ignored/);
+});
+
+test("stays silent when the report destination is already tracked", (t) => {
+  if (!hasGit) return t.skip("git not available");
+  const { root, taskDir } = makeGitRepo();
+  fs.mkdirSync(path.join(root, ".trellis", "reviews"), { recursive: true });
+  fs.writeFileSync(path.join(root, ".trellis", "reviews", "08-25-sample.md"), "old\n", "utf8");
+  spawnSync("git", ["-C", root, "add", ".trellis/reviews/08-25-sample.md"], { encoding: "utf8" });
+  const result = runWriter([taskDir], { input: "# report\n" });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.doesNotMatch(result.stderr, /untracked and not ignored/);
+});

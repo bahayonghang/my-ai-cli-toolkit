@@ -19,7 +19,7 @@ python "<skill-dir>/scripts/plan_precheck.py" <task-dir> --output <path>.json
 Substitute the literal skill directory path for `<skill-dir>`. Use `py -3` where `python` is not on
 PATH. The script writes the output file itself. Do not redirect with `>`.
 
-The script reports four categories:
+The script reports five categories:
 
 | Category                                                                             | Blocking |
 | ------------------------------------------------------------------------------------ | -------- |
@@ -27,6 +27,7 @@ The script reports four categories:
 | Template placeholder residue (`_example`, `TBD`, `TODO`, `[PLACEHOLDER]`, `待补`)    | yes      |
 | A `path:line` citation that names a missing file, or a line past the end of the file | yes      |
 | An `AC` with no requirement annotation, or an `R`/`AC` reference with no definition  | no       |
+| The report destination is neither ignored nor tracked by git (an untracked entry in `git status`) | no       |
 
 Report the blocking items first. A blocking item often makes the later passes cheaper: an
 unresolvable citation tells you which claim to check first.
