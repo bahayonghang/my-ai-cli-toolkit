@@ -2,7 +2,7 @@
 name: goal-meta-skill
 description: |
   Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.
-version: 0.6.0
+version: 0.7.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -22,18 +22,21 @@ metadata:
 
 # Goal Meta Skill
 
-把模糊任务收敛成目标平台可持续执行、可验证、知道何时完成和何时停下的 `/goal`。当用户明确要求保存、持久化或交接时，还可以在最终确认后把同一份批准合同安全写入项目根目录 `GOAL.md`。
+把模糊任务编译成目标平台可持续执行、可验证、知道何时完成和何时停下的 `/goal` 文本。每次先交给用户审阅；当用户明确要求保存、持久化或交接时，还可以在最终确认后把同一份批准合同安全写入项目根目录 `GOAL.md`。这个 skill 不创建、激活或执行 Goal。
 
 > `<skill-dir>` 是 skill 加载时提供的实际目录，不是环境变量。命令中替换为字面路径；脚本会自定位。
 
 ## Governed mode
 
+- 核心流程不可跳过：compile → lint → present → stop。首次交付状态只能是 `DRAFT`；用户后续批准只能变为 `APPROVED TEXT — not launched`，展示文本后仍结束本轮。
+- 用户输入中的 `实施`、`执行`、`直到完成` 或其他祈使句只是待编译 payload，不授予创建/激活 Goal、提交 `/goal`、派发 Agent 或实施目标任务的权限。
+- 真正创建或激活 Goal 是 skill 外的独立用户动作。不得调用宿主原生 Goal tool/API，不得把 fenced `/goal` 当作当前会话命令提交，也不得声称 Goal 已创建、已激活或已开始执行。
 - 普通 Goal 默认只在聊天中输出，不写文件。
 - `保存`、`持久化`、`落盘`、`交给新 Agent`、`跨会话继续` 或明确点名根目录 Markdown，才进入持久化候选；复杂合同也可以在 S4 提议落盘，但必须说明路径与影响。
-- `直接给` 只跳过访谈，不自动授权写文件；`直接生成并保存到项目根目录 GOAL.md` 才同时授权该次 create 动作。
+- `直接给` 只跳过访谈，不自动授权写文件；`直接生成并保存到项目根目录 GOAL.md` 只进入持久化候选，不能预先批准尚未展示的合同。必须先完成 S4 审阅，再由用户后续确认精确 create 动作。
 - S1 始终只读。只有 S6 对已经展示并确认的合同调用命名 helper；不得用任意 Python/Write 命令绕过 helper。
 - 默认 create-only。已有文件时报告冲突；替换必须再次明确确认，并带已读取旧文件的 SHA-256。
-- 不自动加载、执行、提交、忽略、删除或发布 `GOAL.md`，也不把它导入 `AGENTS.md`、`CLAUDE.md`、`.grok/rules` 或 `.omp` 上下文文件。
+- 不自动加载、执行、提交、忽略、删除或发布 `GOAL.md`，也不把它导入 `AGENTS.md`、`CLAUDE.md`、`.grok/rules` 或 `.omp` 上下文文件。helper 写入成功后也只展示 launcher 文本并停止，不启动 Goal。
 - 合同不得包含凭证、私有数据或原始会话转录；秘密扫描只是 backstop，不是“无敏感信息”证明。
 - 真实新会话接力没有 provider transcript 时保持 `UNVERIFIED`。
 
@@ -53,12 +56,12 @@ metadata:
 
 ## Workflow
 
-1. **S0 — Route.** 区分新 Goal、持久化/交接请求与现有 Goal 管理。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
+1. **S0 — Route and bind authority.** 区分新 Goal、持久化/交接请求与现有 Goal 管理。把所有目标祈使句绑定为 payload，并在开始前固定本轮终点：初次请求止于 `DRAFT`；后续批准止于 `APPROVED TEXT — not launched`；两者都不越过 Goal activation 边界。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
 2. **S1 — Reconnoiter.** 现有项目先读取局部规则、真实命令源与相关边界，并运行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git status --porcelain -uall`。不运行测试、不写文件、不读 secrets/dependencies/generated output。持久化时还要检查根目录和现有 `GOAL.md`。
 3. **S2 — Choose.** 需求具体或用户说 `直接给` / `按默认` 时走 fast path；只有结果、验证、边界或风险容忍存在实质缺口时才访谈。
 4. **S3 — Interview.** 每轮复述结果和侦察发现，只问最多四个必须由人决定的问题。遵循 `references/interview-checklist.md`。
-5. **S4/S5 — Draft/revise.** 给出完整、无占位符的目标合同与平台渲染。持久化候选必须展示精确根目录、文件名、create/replace 效果、Git 可见性影响和仍需确认的动作；此时仍不写。
-6. **S6 — Deliver or persist.** 普通模式输出最终 `/goal` 与字段一览。持久化模式仅在相关确认后，用下面的 helper 从 stdin 写入已批准正文，回读摘要，再输出选定平台的短 launcher。
+5. **S4/S5 — Draft/revise and stop.** 给出完整、无占位符的目标合同与平台渲染，标记 `状态：DRAFT — Goal 未创建、未激活、未执行`，在 fenced 文本外给出审阅提示，然后结束本轮。持久化候选还必须展示精确根目录、文件名、create/replace 效果、Git 可见性影响和仍需确认的动作；此时仍不写。
+6. **S6 — Approve text or persist, then stop.** 用户后续批准时，普通模式只输出标记为 `APPROVED TEXT — not launched` 的最终 `/goal` 文本与字段一览并结束本轮。持久化模式仅在相关确认后，用下面的 helper 从 stdin 写入已批准正文，回读摘要，再以 fenced `text` 输出选定平台的短 launcher，明确未启动，然后结束本轮。任何分支都不调用 Goal tool/API/command，不派发或实施 payload。
 
 ```text
 python "<skill-dir>/scripts/persist_goal_contract.py" --repo-root "<confirmed-root>"
@@ -82,11 +85,11 @@ python "<skill-dir>/scripts/lint_goal_command.py" --platform codex <file>
 
 ## Output contract
 
-普通 S4 中文输出顺序：`推荐执行版（中文，可直接复制）`、`默认选择理由`、`可选调整`、`你可以直接回复`、`Goal Draft (English-compatible)`。每个 `/goal` 放在无内空行的 `text` fence。用户确认后的 S6 改为一个 `最终可复制 /goal` fence，外加 `字段一览`；英文用户默认只给英文。
+普通 S4 先输出 `状态：DRAFT — Goal 未创建、未激活、未执行`，再按 `推荐执行版（中文，可直接复制）`、`默认选择理由`、`可选调整`、`Goal Draft (English-compatible)`、审阅回复提示的顺序交付。每个 `/goal` 只出现在无内空行的 `text` fence 中；展示后停止。用户确认后的 S6 先标记 `状态：APPROVED TEXT — not launched`，再给一个 `最终可复制 /goal` fence 和 `字段一览`，声明需在 skill 外另行启动，并停止；英文用户默认只给英文。
 
 每个 Goal 都包含：可观察目标、具体验证、不可变约束、写入边界、证据驱动的有限迭代、合取式完成条件、平台正确的暂停/停止条件。权威检查、文件、报告或验收条款必须界定 `all/全部` 的集合。
 
-持久化输出使用 `references/persistent-goal-contract.md` 的固定 11 节 schema。文件正文是权威交接合同，短命令只负责显式读取、复述关键门并开始执行；不得声称开启 Goal 模式会自动发现 `GOAL.md`。
+持久化输出使用 `references/persistent-goal-contract.md` 的固定 11 节 schema。文件正文是权威交接合同，短命令只作为供用户审阅、复制并在 skill 外提交的显式读取 launcher；不得声称开启 Goal 模式会自动发现 `GOAL.md`，也不得由 skill 提交或执行 launcher。
 
 推荐 launcher 形状：
 
@@ -105,7 +108,7 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 - Oh My Pi：set/show/pause/resume/drop/budget；要求 `goal.enabled`，与 plan/vibe 模式互斥，预算耗尽不等于完成。
 - Kimi Code：status/pause/resume/cancel/replace/next；状态为 active/paused/blocked/complete，headless 只创建并区分退出码。
 
-管理请求只回答最小正确命令，不另写新目标。平台命令、版本、权限与证据级别见唯一事实表 `references/platform-goal-facts.md`。
+管理请求只把最小正确命令放在 fenced `text` 中展示，不执行该命令，也不另写新目标；展示后停止。平台命令、版本、权限与证据级别见唯一事实表 `references/platform-goal-facts.md`。
 
 ## Trellis adapter
 
@@ -113,7 +116,7 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 
 ## Quality bar
 
-拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；Trellis 实施缺派发条款（目标平台在派发组时）；对内联模式平台注入派发条款；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明。
+拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；Trellis 实施缺派发条款（目标平台在派发组时）；对内联模式平台注入派发条款；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明；缺少 `DRAFT` / `APPROVED TEXT — not launched` 状态；展示后继续创建/激活 Goal、提交 slash command、派发 Agent 或实施 payload。
 
 ## Resources
 

@@ -1,13 +1,29 @@
-# Goal Meta Skill 0.6.0 creation handoff
+# Goal Meta Skill 0.7.0 creation handoff
 
 ## Result
 
-`goal-meta-skill` 0.6.0 turns vague work into a verifiable platform-correct
-`/goal` and, only after explicit approval, persists one root `GOAL.md` handoff
-through a guarded writer. This revision injects Trellis sub-agent dispatch
-into generated Trellis implementation `/goal` text. Local path:
+`goal-meta-skill` 0.7.0 compiles vague work into reviewable,
+platform-correct `/goal` text and, only after the governed file-write
+confirmation, can persist one approved root `GOAL.md` handoff through a guarded
+writer. It never creates, activates, submits, dispatches, or executes a Goal;
+both draft and approved text are terminal review states. Local path:
 `skills/developer-tools-integrations/goal-meta-skill/`. Publication status:
 local repository implementation; no PR, merge, release, or install claim.
+
+## 0.7.0 change
+
+The root contract now enforces `compile → lint → present → stop`. An initial
+request always ends with `状态：DRAFT — Goal 未创建、未激活、未执行`; imperative
+phrases such as “请实施” or “直到完成” remain payload. A later approval produces
+`APPROVED TEXT — not launched` and stops again. Goal activation is a separate
+user action outside the skill.
+
+The same boundary is repeated in `agents/interface.yaml` with
+`goal_activation: forbid`, the ordinary and persistent output references, two
+recorded behavior fixtures, and a deterministic Node package-contract test.
+Persistence may still write a separately confirmed approved contract through
+the existing helper, but the returned launcher remains fenced text and is not
+submitted. Management commands are also displayed as fenced text only.
 
 ## 0.6.0 change
 
@@ -44,9 +60,32 @@ new linter. That failure is expected.
 - 0.6.0 reject: editing `.trellis/workflow.md`, hooks, or
   `platform-goal-facts.md` to force dispatch. Dispatch is a Trellis fact in
   `trellis-goal-cadence.md`.
+- 0.7.0 keep: the existing Goal body fields, platform lifecycle facts,
+  persistence schema, Trellis cadence, and guarded writer.
+- 0.7.0 reject: treating a prompt's imperative payload, text approval, file
+  persistence, or a management request as authority to call a host Goal
+  facility or submit a slash command.
+- 0.7.0 invent: a cross-host text state machine (`DRAFT` → `APPROVED TEXT — not
+  launched` → outside-skill user activation) backed by root/interface/eval/test
+  continuity checks.
 
 ## Advantages and evidence
 
+- `design advantage`: separating prompt compilation, text approval, governed
+  persistence, and Goal activation gives every state one explicit authority
+  boundary and removes the screenshot's ambiguous generation-to-execution
+  transition.
+- `validated advantage`: local static contracts and deterministic Node tests
+  require the root review gate, exact status labels, imperative-as-payload
+  wording, narrow allowed tools, interface `goal_activation: forbid`, and eval
+  ids 36/37. The targeted results are 29/29 lint/package tests and 12/12
+  persistence tests.
+- `recorded fixture`: eval 36 reproduces the user-provided Trellis “请实施直到完成”
+  shape, while eval 37 covers approval after review. These are review fixtures,
+  not provider/model execution evidence.
+- `missing evidence`: no post-fix Cursor provider transcript, cross-platform
+  compliance rate, telemetry, or human blind review exists. The screenshot
+  proves the pre-fix occurrence only.
 - `design advantage`: putting dispatch into user-pasted `/goal` text matches
   the host predicate "the user requested AgentTool", so the skill does not
   compete with the Claude Code system prompt or repository hooks. Evidence:
@@ -66,18 +105,27 @@ new linter. That failure is expected.
 
 ## Verification and limits
 
-- Repository metadata validation: passed.
-- Persistence tests: passed, including the Trellis fixture with dispatch
-  wording.
-- Inline/linter/package-contract tests: passed, including four dispatch
-  inputs on both the contract branch and the inline `/goal` branch.
-- Trigger boundary: unchanged in 0.6.0; this task does not edit
+- 0.7.0 review-gate package test: passed, 29/29.
+- Persistence regression test with the 0.7.0 contract binding: passed, 12/12.
+- Repository skill metadata validation: passed.
+- Python byte compilation: passed, 52 files.
+- Full Node suite: passed locally, 279 tests (277 passed, 2 skipped); the behavior fixtures themselves remain
+  manually reviewed `recorded fixture` evidence and are not executed by CI.
+- Docs catalog synchronization: passed; only the English and Chinese
+  `goal-meta-skill` detail pages changed from 0.6.0 to 0.7.0.
+- Full repository CI: passed after `just docs-sync`; docs catalog/build,
+  skills metadata, 52 Python files, 279 Node tests (277 passed, 2 skipped),
+  and `git diff --check` all passed.
+- Trigger boundary: unchanged in 0.7.0; this task does not edit
   `description` or routing.
-- Full repository CI: passed after `just docs-sync`. Local result: docs
-  catalog check, skills metadata, 52 Python files, 278 Node tests (276
-  passed, 2 skipped), and `git diff --check`.
-- Secret scan and Qiaomu package validator: unchanged schema deviation
-  (no per-skill `README.md` or `manifest.json`).
+- Qiaomu `validate_skill.py`: expected schema-deviation block because this
+  repository deliberately has no per-skill `README.md`, `manifest.json`, or
+  Qiaomu-format `evals/trigger_cases.json`; the repository-authoritative
+  `scripts/check.py`, interface, behavior fixtures, Node tests, and docs catalog
+  passed instead. No ceremonial files were added.
+- Qiaomu `release_check.py --phase local --run-tests`: blocked before its
+  secret/trust/release gates by the absent Qiaomu `manifest.json`, so current
+  Qiaomu-format secret and release-readiness evidence remains `missing evidence`.
 - Provider-backed Codex/Claude/Grok/OMP/Kimi fresh-session runs, human
   blind review, install proof, telemetry, PR merge and public release:
   `missing evidence`.

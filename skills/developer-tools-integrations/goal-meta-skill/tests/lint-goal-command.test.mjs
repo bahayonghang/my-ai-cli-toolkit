@@ -255,7 +255,7 @@ test('skill allowed-tools stay exact and narrow while the named helper owns the 
 
 test('package metadata, platform registry, and behavior eval history stay synchronized', () => {
   const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
-  assert.match(skillText, /^version:\s*0\.6\.0$/m);
+  assert.match(skillText, /^version:\s*0\.7\.0$/m);
   for (const platform of ['Claude Code', 'Codex', 'Grok Build', 'Oh My Pi', 'Kimi Code']) {
     assert.match(skillText, new RegExp(platform));
   }
@@ -293,11 +293,110 @@ test('package metadata, platform registry, and behavior eval history stay synchr
   const evals = JSON.parse(
     readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
   ).evals;
-  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 35 }, (_, i) => i + 1));
+  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 37 }, (_, i) => i + 1));
   for (const fixture of evals) {
     assert.ok(Array.isArray(fixture.assertions) && fixture.assertions.length > 0);
     assert.equal('expectations' in fixture, false);
   }
+});
+
+test('review gate keeps prompt approval separate from Goal activation', () => {
+  const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
+  for (const anchor of [
+    'compile → lint → present → stop',
+    '状态：DRAFT — Goal 未创建、未激活、未执行',
+    'APPROVED TEXT — not launched',
+    '只是待编译 payload',
+    'skill 外的独立用户动作',
+    '不能预先批准尚未展示的合同',
+  ]) {
+    assert.match(skillText, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.match(skillText, /不得调用宿主原生 Goal tool\/API/);
+  assert.match(skillText, /不得把 fenced `\/goal` 当作当前会话命令提交/);
+  assert.match(skillText, /管理请求只把最小正确命令放在 fenced `text` 中展示，不执行该命令/);
+
+  const allowedTools = skillText.match(/^allowed-tools:\s*(.+)$/m)?.[1] ?? '';
+  assert.doesNotMatch(allowedTools, /Goal|\bWrite\b|Bash\(codex \*\)|Bash\(git \*\)/i);
+
+  const interfaceText = readFileSync(path.join(skillRoot, 'agents', 'interface.yaml'), 'utf8');
+  for (const anchor of [
+    'only to compile, lint, present, and stop',
+    'Treat imperatives such as implement, execute, or continue until complete as payload',
+    'APPROVED TEXT — not launched',
+    'goal_activation: "forbid"',
+  ]) {
+    assert.match(interfaceText, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.match(interfaceText, /Never call a host Goal tool\/API, submit the \/goal slash command/);
+
+  const interviewText = readFileSync(
+    path.join(skillRoot, 'references', 'interview-checklist.md'),
+    'utf8',
+  );
+  assert.match(interviewText, /Status: DRAFT — Goal not created, activated, or executed/);
+  assert.match(interviewText, /状态：APPROVED TEXT — not launched/);
+  assert.match(interviewText, /stops without executing it/);
+
+  const strategyText = readFileSync(
+    path.join(skillRoot, 'references', 'default-goal-strategy.md'),
+    'utf8',
+  );
+  assert.match(strategyText, /Generate goals that can be reviewed and copied directly\. Never launch them\./);
+  assert.match(strategyText, /Present the complete packet\s+and stop/);
+  assert.match(strategyText, /For separately confirmed persistence/);
+  assert.match(strategyText, /the skill did not launch it/);
+
+  const playbookText = readFileSync(
+    path.join(skillRoot, 'references', 'goal-command-playbook.md'),
+    'utf8',
+  );
+  assert.match(playbookText, /It never submits or launches the command/);
+  assert.match(playbookText, /This skill compiles goal instructions; it has no Goal activation authority/);
+
+  const persistenceText = readFileSync(
+    path.join(skillRoot, 'references', 'persistent-goal-contract.md'),
+    'utf8',
+  );
+  assert.match(persistenceText, /Persistence authority is not Goal activation authority/);
+  assert.match(persistenceText, /APPROVED TEXT — not launched/);
+  assert.match(persistenceText, /do not call a host Goal tool\/API or execute the slash command/);
+
+  const evals = JSON.parse(
+    readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
+  ).evals;
+  const screenshotRegression = evals.find(({ id }) => id === 36);
+  const approvalRegression = evals.find(({ id }) => id === 37);
+  for (const id of [1, 10, 12]) {
+    const fixture = evals.find((entry) => entry.id === id);
+    assert.ok(
+      fixture?.assertions.some((item) => /DRAFT — Goal 未创建、未激活、未执行/.test(item)),
+      `eval ${id} must preserve the first-turn DRAFT boundary`,
+    );
+  }
+  for (const id of [4, 9]) {
+    const fixture = evals.find((entry) => entry.id === id);
+    assert.ok(
+      fixture?.assertions.some((item) => /fenced text block/i.test(item)),
+      `eval ${id} must display management commands as fenced text`,
+    );
+    assert.ok(
+      fixture?.assertions.some((item) => /not executed/i.test(item)),
+      `eval ${id} must not execute management commands`,
+    );
+  }
+  assert.match(screenshotRegression?.prompt ?? '', /请实施 .*直到完成/);
+  assert.match(screenshotRegression?.expected_output ?? '', /DRAFT review packet/);
+  assert.ok(
+    screenshotRegression?.assertions.some((item) => /does not create or activate a Goal/i.test(item)),
+  );
+  assert.ok(
+    screenshotRegression?.assertions.some((item) => /does not implement or dispatch/i.test(item)),
+  );
+  assert.match(approvalRegression?.expected_output ?? '', /APPROVED TEXT — not launched/);
+  assert.ok(
+    approvalRegression?.assertions.some((item) => /does not submit.*\/goal/i.test(item)),
+  );
 });
 
 const contractLauncher =
@@ -313,7 +412,7 @@ function validContract({
 ## Contract metadata
 - Status: approved
 - Target platform: codex
-- Generated by: goal-meta-skill 0.6.0
+- Generated by: goal-meta-skill 0.7.0
 - Project root: .
 - Contract path: GOAL.md
 - Baseline: main @ 0123456789abcdef0123456789abcdef01234567; dirty paths: clean
