@@ -9,13 +9,17 @@ This prompt tells the next agent how to read each section.
 | Token | Value |
 | --- | --- |
 | `{{repo_root}}` | Absolute repository root |
-| `{{task_dir}}` | Absolute task directory |
-| `{{task_rel}}` | Task directory relative to the repo root, posix |
-| `{{report_path}}` | Absolute report path |
-| `{{report_rel}}` | `.trellis/reviews/<task-dir-name>.md` |
+| `{{root_task_dir}}` | Absolute root task directory |
+| `{{root_task_rel}}` | Root task directory relative to the repo root, posix |
+| `{{root_task_name}}` | Root task basename |
+| `{{review_scope}}` | `single-task` or `task-tree` |
+| `{{task_count}}` | Number of members in the resolved scope |
+| `{{task_members}}` | Root-first member list with repo-relative task paths |
+| `{{task_statuses}}` | Member-to-status list in the same order |
+| `{{report_path}}` | Absolute combined report path |
+| `{{report_rel}}` | `.trellis/reviews/<root-task-name>.md` |
 | `{{verdict}}` | Verdict line value |
 | `{{counts}}` | `阻断 N / 应修 N / 提示 N` or the English equivalent |
-| `{{task_status}}` | `task.json.status` |
 
 Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上方报告,
 "see the previous message", or "see the report above".
@@ -23,21 +27,27 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
 ## Chinese
 
 ```text
-请根据审阅报告修订下面这个 Trellis 任务的规划产物。先读文件，再改规划。不要开始实现。
+请根据一份合并审阅报告修订下面这个 Trellis 审阅作用域的规划产物。该作用域可能包含根任务及其递归子任务。先读文件，再改规划。不要开始实现。
 
 定位
 - 项目根：{{repo_root}}
-- 任务目录：{{task_dir}}
-- 仓库内任务路径：{{task_rel}}
+- 根任务：{{root_task_name}}
+- 根任务目录：{{root_task_dir}}
+- 仓库内根任务路径：{{root_task_rel}}
+- 审阅模式：{{review_scope}}
+- 任务数量：{{task_count}}
+- 有序成员（根优先；顺序不代表依赖）：
+{{task_members}}
+- 成员状态：
+{{task_statuses}}
 - 审阅报告（问题真源）：{{report_path}}
 - 仓库内报告路径：{{report_rel}}
 - 报告结论：{{verdict}} — {{counts}}
-- 任务状态：{{task_status}}
 
 必读顺序
 1. 打开审阅报告全文。
-2. 打开任务目录里的 prd.md，以及已经存在的 design.md、implement.md、task.json。
-3. 对每条 TPR，打开其 Location 指出的原文，并核对其 Evidence。
+2. 按成员清单打开每个任务的 task.json、prd.md，以及已经存在的 design.md、implement.md 和 jsonl 清单。
+3. 对每条 TPR，按 Task、Affected tasks 和 Location 打开所有被点名原文，并核对其 Evidence。
 问题正文以报告为准。不要根据本 Prompt 猜测具体缺陷。
 
 按报告结构处理
@@ -49,6 +59,7 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
 2. 问题清单 TPR-NN
    - 顺序：阻断 → 应修 → 提示。
    - 每条先核对 Claim 与 Evidence，再在 Route 列出的路径中选一条落地。
+   - 同一个 TPR 点名多个 Affected tasks / Location 时，必须在同一轮同步修订全部点位，不能只修父任务或一个子任务。
    - 不要另起 Route 未给出的产品方案。Route 不够用时停止并说明。
    - 引用 TPR 编号。不要改写严重度。
 3. 未能核实
@@ -60,7 +71,7 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
    - 报告是待分诊列表，不是批准。修订后不要声称规划已获批准或可以开始实现。
 
 写入范围
-- 可改：prd.md、design.md、implement.md、implement.jsonl、check.jsonl。task.json 仅在报告指出其字段问题时改对应字段。
+- 可改：成员清单中各任务的 prd.md、design.md、implement.md、implement.jsonl、check.jsonl。task.json 仅在报告指出其字段问题时改对应字段。
 - 禁止：产品代码；运行 task.py start / finish / archive；修改审阅报告；扩大范围；把「提示」当成必须修改；重开规划已记录且证据未被推翻的产品决定。
 
 修订方法
@@ -71,6 +82,7 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
 完成标准
 - 每个「阻断」和「应修」：已写入规划产物，或在规划中写明不处理及理由。
 - 对话按 TPR 编号列出：处理了什么，或为何不处理。
+- 整个作用域只返回这一份修订结果；不要为每个子任务再生成报告或 handoff Prompt。
 - 不要运行 task.py start。
 - 报告文件缺失或无法打开：停止，不要猜测报告内容。
 ```
@@ -78,21 +90,27 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
 ## English
 
 ```text
-Revise the Trellis planning artifacts for this task using the review report. Read the files first. Do not start implementation.
+Revise the Trellis planning artifacts for this review scope using one combined report. The scope may contain a root task and recursive children. Read the files first. Do not start implementation.
 
 Location
 - Repository root: {{repo_root}}
-- Task directory: {{task_dir}}
-- Task path in the repo: {{task_rel}}
-- Review report (source of findings): {{report_path}}
+- Root task: {{root_task_name}}
+- Root task directory: {{root_task_dir}}
+- Root task path in the repo: {{root_task_rel}}
+- Review mode: {{review_scope}}
+- Task count: {{task_count}}
+- Ordered members (root first; order is not dependency):
+{{task_members}}
+- Member statuses:
+{{task_statuses}}
+- Combined review report (source of findings): {{report_path}}
 - Report path in the repo: {{report_rel}}
 - Verdict: {{verdict}} — {{counts}}
-- Task status: {{task_status}}
 
 Read in this order
 1. The full review report.
-2. prd.md in the task directory, plus design.md, implement.md, and task.json when they exist.
-3. For each TPR, the Location text and the Evidence it cites.
+2. For every listed member, task.json and prd.md, plus design.md, implement.md, and the jsonl manifests when they exist.
+3. For each TPR, every source named by Task, Affected tasks, and Location, plus the cited Evidence.
 Treat the report file as the source of each finding. Do not invent defects from this prompt.
 
 How to use each report section
@@ -104,6 +122,7 @@ How to use each report section
 2. Findings TPR-NN
    - Order: blocking, then should-fix, then notes.
    - Check Claim and Evidence, then take one path from Route.
+   - When one TPR names multiple Affected tasks or Locations, revise all of them in the same pass; do not repair only the parent or one child.
    - Do not invent a product option that Route does not list. Stop and explain if Route is insufficient.
    - Cite TPR ids. Do not change severity.
 3. Unverified list
@@ -115,7 +134,7 @@ How to use each report section
    - The report is a triage list, not an approval. After the edit, do not claim the plan is approved or ready to implement.
 
 Write scope
-- Allowed: prd.md, design.md, implement.md, implement.jsonl, check.jsonl. Edit task.json only when the report names a field there.
+- Allowed: prd.md, design.md, implement.md, implement.jsonl, and check.jsonl in the listed member directories. Edit task.json only when the report names a field there.
 - Forbidden: product code; task.py start / finish / archive; editing the review report; widening scope; treating notes as required; reopening a product decision the plan already recorded unless evidence overturned it.
 
 Revision method
@@ -126,6 +145,7 @@ Revision method
 Done when
 - Every blocking and should-fix finding is in the artifacts, or the plan records why it is not addressed.
 - The chat lists each TPR id with what changed, or why it did not.
+- Return one revision result for the whole scope; do not generate another report or handoff Prompt per child.
 - Do not run task.py start.
 - If the report file is missing or unreadable, stop. Do not guess its contents.
 ```
