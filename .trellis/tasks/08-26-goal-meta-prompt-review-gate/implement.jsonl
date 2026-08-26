@@ -1,0 +1,2 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Apply repository contracts for agent interfaces, behavior fixtures, static tests, version/docs synchronization, and evidence labels."}
+{"file":".trellis/tasks/08-26-goal-meta-prompt-review-gate/research/defect-evidence.md","reason":"Preserve the screenshot-derived failure mechanism and the boundary between observed behavior and missing provider evidence."}
