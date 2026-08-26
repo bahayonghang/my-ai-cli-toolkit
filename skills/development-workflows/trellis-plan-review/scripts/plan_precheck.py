@@ -392,9 +392,11 @@ def validate_tree_task_path(task_dir: Path, tasks_root: Path) -> tuple[Path, str
         if protected.exists() and is_reparse_point(protected):
             raise ScopeError(f"task root uses a symlink or reparse point: {protected}")
     try:
-        relative = task_abs.relative_to(tasks_abs)
+        # Compare canonical paths so an OS-level prefix alias such as the
+        # macOS /var -> /private/var symlink cannot split one real directory.
+        relative = task_abs.resolve().relative_to(tasks_abs.resolve())
     except ValueError as exc:
-        raise ScopeError(f"task path escapes {tasks_abs.as_posix()}: {task_abs}") from exc
+        raise ScopeError(f"task path resolves outside {tasks_abs.as_posix()}: {task_abs}") from exc
     location = _task_location(relative)
     if not TASK_NAME_RE.fullmatch(task_abs.name):
         raise ScopeError(
@@ -407,12 +409,7 @@ def validate_tree_task_path(task_dir: Path, tasks_root: Path) -> tuple[Path, str
         if current.exists() and is_reparse_point(current):
             raise ScopeError(f"task path uses a symlink or reparse point: {current}")
 
-    resolved = task_abs.resolve()
-    try:
-        resolved.relative_to(tasks_abs.resolve())
-    except ValueError as exc:
-        raise ScopeError(f"task path resolves outside {tasks_abs.as_posix()}: {task_abs}") from exc
-    return resolved, location
+    return task_abs.resolve(), location
 
 
 def read_task_metadata(task_dir: Path) -> dict:
