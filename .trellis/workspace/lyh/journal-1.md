@@ -1632,3 +1632,25 @@ goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / t
 ### Next Steps
 
 - 新会话执行含派发条款的 Trellis /goal，对照 research 基线统计 Task/Agent 调用
+
+
+## Session 52: Goal Meta Prompt 审阅门
+
+**Date**: 2026-08-26
+**Task**: Goal Meta Prompt 审阅门
+**Branch**: `dev`
+
+### Summary
+
+将 goal-meta-skill 升级到 0.7.0，强制 DRAFT 与 APPROVED TEXT 两阶段均只交付 fenced Prompt 并停止；Goal 激活留在 skill 外。新增截图同构与批准后不启动回归，专项 41/41 和 just ci 通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5a53bd26` | (see git log) |
+| `324d0010` | (see git log) |
+
+### Status
+
+[OK] **Completed**
