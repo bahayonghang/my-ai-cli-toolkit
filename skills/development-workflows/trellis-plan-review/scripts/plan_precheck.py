@@ -392,18 +392,27 @@ def validate_tree_task_path(task_dir: Path, tasks_root: Path) -> tuple[Path, str
         if protected.exists() and is_reparse_point(protected):
             raise ScopeError(f"task root uses a symlink or reparse point: {protected}")
     try:
-        # Compare canonical paths so an OS-level prefix alias such as the
-        # macOS /var -> /private/var symlink cannot split one real directory.
-        relative = task_abs.resolve().relative_to(tasks_abs.resolve())
+        # Membership on canonical paths so an OS-level alias above the root
+        # (macOS /var -> /private/var, Windows 8.3 names) cannot split one
+        # real directory into an escape false positive.
+        canonical = task_abs.resolve().relative_to(tasks_abs.resolve())
     except ValueError as exc:
         raise ScopeError(f"task path resolves outside {tasks_abs.as_posix()}: {task_abs}") from exc
-    location = _task_location(relative)
+    location = _task_location(canonical)
     if not TASK_NAME_RE.fullmatch(task_abs.name):
         raise ScopeError(
             f"task directory name is not a safe report basename: {task_abs.name!r}"
         )
 
-    current = tasks_abs
+    try:
+        relative = task_abs.relative_to(tasks_abs)
+        walk_base = tasks_abs
+    except ValueError:
+        # Same real tree behind the OS alias; walk the identical structure
+        # below the canonical root to keep caller-visible links checked.
+        relative = canonical
+        walk_base = tasks_abs.resolve()
+    current = walk_base
     for part in relative.parts:
         current = current / part
         if current.exists() and is_reparse_point(current):
