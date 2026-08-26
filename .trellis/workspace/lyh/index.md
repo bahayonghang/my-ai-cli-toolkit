@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 52
+- **Total Sessions**: 53
 - **Last Active**: 2026-08-26
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1656 | Active |
+| `journal-1.md` | ~1678 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 53 | 2026-08-26 | 统一 Trellis 父子任务审阅输出 | `bcae2b3f67bde8d40b51d3a6dc51f28109b18f15`, `0c6923641720ab0c726524dff850fb4c8939e7ee` | `dev` |
 | 52 | 2026-08-26 | Goal Meta Prompt 审阅门 | `5a53bd26`, `324d0010` | `dev` |
 | 51 | 2026-08-26 | goal-meta-skill Trellis 子代理派发条款 | `7a808aa4`, `66b9dfcd` | `dev` |
 | 50 | 2026-08-25 | skill-session-review | `e60eb4ee` | `dev` |

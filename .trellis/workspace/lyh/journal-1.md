@@ -1654,3 +1654,25 @@ goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / t
 ### Status
 
 [OK] **Completed**
+
+
+## Session 53: 统一 Trellis 父子任务审阅输出
+
+**Date**: 2026-08-26
+**Task**: 统一 Trellis 父子任务审阅输出
+**Branch**: `dev`
+
+### Summary
+
+将父任务及其子任务收敛为一个审阅范围、一个根报告和一条修订 Prompt；补齐树解析、写入安全、回归测试与规范，完成本地验证和归档。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bcae2b3f67bde8d40b51d3a6dc51f28109b18f15` | (see git log) |
+| `0c6923641720ab0c726524dff850fb4c8939e7ee` | (see git log) |
+
+### Status
+
+[OK] **Completed**
