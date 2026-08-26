@@ -1,0 +1,4 @@
+interface:
+  display_name: "Job Application Kit"
+  short_description: "Tailor resumes and cover letters to a job posting, polish experience honestly, and build stage-specific interview prep packs"
+  default_prompt: "Use $job-application-kit to evaluate a job posting, draft a tailored CV and cover letter, and verify the output for factual grounding."

@@ -349,3 +349,16 @@ payload itself said “execute”.
   skip-directory set alongside `node_modules`, `target`, `dist`, and
   `__pycache__`.
 
+## qiaomu-meta prior-art runner on Windows
+
+> Distilled from the job-application-kit task (2026-08-26).
+
+- `research_prior_art.py` fails on Windows: `subprocess.run(["npx", ...])`
+  cannot resolve `npx.cmd` (`FileNotFoundError [WinError 2]`). Do not patch the
+  user-global skill; run the underlying catalog calls directly in bash:
+  `npx --yes skills find "<query>"` works from Git Bash.
+- The SkillsMP helper (`search_skillsmp.py`) timed out after ~60s in the same
+  session. Record the catalog as `missing evidence`, keep skills.sh results,
+  and lower the affected claims — per qiaomu rules, do not retry past a
+  provider outage inside one task.
+

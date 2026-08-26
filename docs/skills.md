@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、39 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、40 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -59,11 +59,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 文档写作与发布
 
-`docs-writing-publishing` · 5 skills
+`docs-writing-publishing` · 6 skills
 
 - [beautiful-mermaid-editor](/skills/docs-writing-publishing/beautiful-mermaid-editor) — Modify the Beautiful Mermaid live editor itself rather than writing ordinary Mermaid diagrams.
 - [bidwriter](/skills/docs-writing-publishing/bidwriter) — 智能招投标文件编写专家，覆盖工程咨询、建筑设计、市政、IT、软件开发、货物与服务采购等各类招投标，工程建设类为深度强项。能解析招标文件、提取评分标准与废标条款、制定投标策略、撰写技术标与商务标、做逐条响应与合规性及废标风险审核。当用户提到标书、投标、招标、技术标、商务标、评分标准提取、废标风险、逐条响应、偏离表、政府采购、tender、RFP response 时使用。不适用于通用商务写作、营销文案、学术论文或与招投标无关的文档。
 - [document-writer](/skills/docs-writing-publishing/document-writer) — Write or update technical documentation grounded in the real codebase.
+- [job-application-kit](/skills/docs-writing-publishing/job-application-kit) — 求职申请与面试准备套件：针对目标职位（JD/职位描述）量身定制简历与求职信，在诚实边界内修改与包装既有经历， 生成阶段化面试准备包并支持模拟面试。触发词：写简历、改简历、简历定制、tailor resume、resume、CV、 resume writing、求职信、cover letter、投递、申请职位、job posting、JD、职位描述、岗位匹配、fit 评估、 面试准备、面试问题、interview prep、mock interview、模拟面试、包装经历、量化成果。
 - [renhua](/skills/docs-writing-publishing/renhua) — Chinese public-writing editor for AI/tech posts, X/Twitter threads, product notes, and public technical essays.
 - [touying](/skills/docs-writing-publishing/touying) — Author Typst slide decks with the Touying package.
 
