@@ -4,10 +4,10 @@
     {
       "id": 1,
       "prompt": "用 goal-meta-skill 帮我把“做一个本地记账 App MVP”写成 Codex /goal。我不想填长表，直接给推荐执行版和几个可选调整。",
-      "expected_output": "Chinese-first paste-ready /goal with default reason, optional adjustments, reply hint, and English-compatible mirror.",
+      "expected_output": "A DRAFT Chinese-first review packet with a paste-ready /goal, default reason, optional adjustments, reply hint, and English-compatible mirror; no launch.",
       "files": [],
       "assertions": [
-        "Output starts with 推荐执行版（中文，可直接复制） before explanation.",
+        "Output starts with 状态：DRAFT — Goal 未创建、未激活、未执行, followed by 推荐执行版（中文，可直接复制） before explanation.",
         "The executable command prefix is /goal, not /目标.",
         "The Chinese draft includes 验证, 约束, 边界, 迭代策略, 完成条件, and 暂停条件.",
         "The output includes 默认选择理由, 可选调整, 你可以直接回复, and Goal Draft (English-compatible)."
@@ -40,10 +40,11 @@
     {
       "id": 4,
       "prompt": "我已经在 Codex 里开了一个 goal，现在想暂停它，别帮我重新写目标。",
-      "expected_output": "Minimal management answer using /goal pause rather than a new /goal objective.",
+      "expected_output": "Minimal management answer that displays /goal pause as fenced text rather than executing it or drafting a new objective.",
       "files": [],
       "assertions": [
         "The answer recommends /goal pause.",
+        "The command appears in a fenced text block and is not executed by the skill.",
         "The answer does not draft a replacement task objective.",
         "It may briefly mention /goal resume or /goal clear only as related management commands."
       ]
@@ -96,11 +97,12 @@
     {
       "id": 9,
       "prompt": "我在 Claude Code 设了一个 goal，现在想暂停它，晚点再继续。",
-      "expected_output": "Platform-correct management answer: Claude Code has no /goal pause; offer /goal clear plus re-setting the same condition later, or interrupting the session.",
+      "expected_output": "Platform-correct management answer: Claude Code has no /goal pause; display /goal clear as fenced text plus re-setting the same condition later, or interrupting the session, without executing a command.",
       "files": [],
       "assertions": [
         "The answer states that Claude Code has no /goal pause or /goal resume.",
         "It offers /goal clear (or its aliases) plus re-setting the condition later, or interrupting the session, as the alternative.",
+        "Any management command appears in a fenced text block and is not executed by the skill.",
         "It does not draft a replacement task objective.",
         "It does not recommend Codex-only commands as if they worked in Claude Code."
       ]
@@ -108,10 +110,10 @@
     {
       "id": 10,
       "prompt": "帮我把“把这个 Python 脚本改造成带测试的 CLI 工具”写成 /goal，我没说用哪个工具。",
-      "expected_output": "Platform-ambiguous handling: default to the host platform (stated explicitly) or add a numbered platform choice to 可选调整, while still giving a paste-ready recommended draft first.",
+      "expected_output": "DRAFT platform-ambiguous review packet: default to the host platform (stated explicitly) or add a numbered platform choice to 可选调整, while still giving a paste-ready recommended draft.",
       "files": [],
       "assertions": [
-        "The output still leads with 推荐执行版（中文，可直接复制） and a complete /goal draft.",
+        "The output starts with 状态：DRAFT — Goal 未创建、未激活、未执行, then leads with 推荐执行版（中文，可直接复制） and a complete /goal draft.",
         "The platform ambiguity is resolved either by defaulting to the host platform with an explicit statement, or by adding one numbered Codex/Claude Code/Grok Build/OMP/Kimi Code choice to 可选调整.",
         "Platform facts are not mixed: a Claude Code rendering has a bounding clause and no pause/resume wording; a Codex rendering may reference pause/resume.",
         "No separate questionnaire round is opened beyond the numbered adjustments."
@@ -132,10 +134,11 @@
     {
       "id": 12,
       "prompt": "Single-turn fast-path fixture: 直接给 Codex 终稿，不要问我。为 `src/parser/` 修复 CSV 空行崩溃，只允许修改 `src/parser/` 和 `tests/parser/`，先读根 AGENTS.md，验证命令是 `just test-parser`，不允许新增依赖。",
-      "expected_output": "A one-turn S2 fast-path Codex goal using the supplied project facts and no interview round.",
+      "expected_output": "A one-turn S2 fast-path Codex DRAFT review packet using the supplied project facts and no interview round; the word 终稿 does not bypass review.",
       "files": [],
       "assertions": [
         "The response immediately gives a complete paste-ready /goal and does not ask follow-up questions.",
+        "The response remains labeled 状态：DRAFT — Goal 未创建、未激活、未执行 because this is the first generation request, even though the user says 终稿.",
         "The goal opens read-first with AGENTS.md, uses `just test-parser` as deterministic verification, and names the exact two write boundaries.",
         "The constraints forbid new dependencies and unrelated edits.",
         "The response remains side-effect-free and does not claim to run reconnaissance commands or tests."
@@ -175,7 +178,8 @@
         "Iteration policy or 完成条件/Stop when says to commit the task's related product changes first, then run python ./.trellis/scripts/task.py archive.",
         "The /goal names the concrete task directory .trellis/tasks/08-22-checkout-discount rather than a placeholder token.",
         "Constraints or 暂停条件/Pause if forbid git add -f .trellis/.",
-        "The skill itself does not execute git commit or task.py archive; it only drafts the /goal."
+        "The skill itself does not execute git commit or task.py archive; it only drafts the /goal.",
+        "Iteration policy, Constraints, and Completion conditions require trellis-implement for code and trellis-check for verification, and forbid the main session from Edit/Write on product files."
       ]
     },
     {
@@ -188,7 +192,8 @@
         "Parent archive is delayed until the 发布门 named just ci has passed.",
         "The 发布门 is the reconnaissance or user-named parent check just ci, not a GitHub Release unless the user asked for a release task.",
         "Deferral wording states that archiving a parent with active children would clear those children's parent field.",
-        "Child archive still follows commit-then-archive."
+        "Child archive still follows commit-then-archive.",
+        "Dispatch of trellis-implement and trellis-check remains required; parent-archive deferral until 发布门 just ci is unchanged and is not replaced by a GitHub Release."
       ]
     },
     {
@@ -200,20 +205,22 @@
         "The /goal does not mention task.py archive or Trellis 归档 cadence.",
         "The /goal does not instruct archiving a parent or child Trellis task.",
         "Verification uses just test-parser and boundaries stay on src/parser/ and tests/parser/.",
-        "Presence of .trellis/ in reconnaissance is not treated as a reason to inject commit-then-archive."
+        "Presence of .trellis/ in reconnaissance is not treated as a reason to inject commit-then-archive.",
+        "Does not inject trellis-implement, trellis-check, 子代理, or 派发 clauses; presence of .trellis/ in reconnaissance is not a reason to add dispatch."
       ]
     },
     {
       "id": 18,
       "prompt": "S6 fixture: 我已确认推荐执行版，请定稿，不要再给可选调整问卷。任务是为现有仪表盘修复筛选状态丢失，验证用项目最小测试，边界只改筛选状态相关文件。中文输出。",
-      "expected_output": "S6 dual-layer final: 最终可复制 /goal, one text fence containing the full /goal with no inner blank lines, then 字段一览 outside the fence.",
+      "expected_output": "S6 text-only final labeled APPROVED TEXT — not launched: 最终可复制 /goal, one text fence containing the full /goal with no inner blank lines, then 字段一览 outside the fence, followed by a stop.",
       "files": [],
       "assertions": [
         "The response includes the heading 最终可复制 /goal.",
         "The executable /goal body is inside a text fence.",
         "字段一览 appears outside the fence and summarizes 目标结果, 验证, 约束, 边界, 迭代策略, 完成条件, and 暂停条件.",
         "The fenced /goal body contains no blank lines.",
-        "The response does not repeat the full 可选调整 questionnaire."
+        "The response does not repeat the full 可选调整 questionnaire.",
+        "It does not submit the slash command, create or activate a Goal, dispatch an agent, or implement the payload."
       ]
     },
     {
@@ -225,7 +232,8 @@
         "S1 resolves the Git root and checks GOAL.md without writing.",
         "S4 shows the exact root GOAL.md create-only action and full approved contract before mutation.",
         "S6 uses persist_goal_contract.py only after confirmation and reports path, bytes, SHA-256, action, and Git visibility without echoing the full body.",
-        "The Codex launcher explicitly reads ./GOAL.md and does not claim automatic loading."
+        "The Codex launcher explicitly reads ./GOAL.md and does not claim automatic loading.",
+        "The launcher is fenced, labeled APPROVED TEXT — not launched, and is not submitted by the skill."
       ]
     },
     {
@@ -286,13 +294,14 @@
     {
       "id": 25,
       "prompt": "给 Grok Build 生成并保存 GOAL.md，预算是否加入由我确认；完成前要独立验证证据。",
-      "expected_output": "Grok-specific explicit-read launcher and optional approved --budget handling.",
+      "expected_output": "A DRAFT persistence review packet for Grok with an explicit-read launcher preview and optional --budget choice; no file write or Goal activation before subsequent approval.",
       "files": [],
       "assertions": [
         "Uses an explicit read ./GOAL.md launcher rather than claiming auto-load or relying on @GOAL.md.",
         "Uses only status/pause/resume/clear management vocabulary.",
         "Adds --budget only when explicitly approved and requires independent evidence review.",
-        "Treats 4,000 as a skill portability budget, not an official Grok cap."
+        "Treats 4,000 as a skill portability budget, not an official Grok cap.",
+        "The first response stays DRAFT, does not write GOAL.md, and does not launch the previewed command."
       ]
     },
     {
@@ -310,13 +319,14 @@
     {
       "id": 27,
       "prompt": "为 Kimi Code 生成 GOAL.md 交接，同时给 TUI 和 headless 启动方式。",
-      "expected_output": "Kimi-specific TUI launcher plus separate headless create-only variant and exit-state caveat.",
+      "expected_output": "A DRAFT Kimi persistence review packet with TUI and separate headless launcher previews plus the exit-state caveat; no write or launch before subsequent approval.",
       "files": [],
       "assertions": [
         "The TUI launcher explicitly reads ./GOAL.md and stays below Kimi's official 4,000-character cap.",
         "Management uses status/pause/resume/cancel/replace/next and no generic budget flag.",
         "The headless kimi -p variant is labeled create-only and distinguishes complete 0, blocked 3, and paused 6.",
-        "Does not claim combined @GOAL.md plus /goal is provider-verified."
+        "Does not claim combined @GOAL.md plus /goal is provider-verified.",
+        "The first response does not write GOAL.md, execute kimi -p, or activate a Goal."
       ]
     },
     {
@@ -340,7 +350,8 @@
         "Required reading links concrete prd.md, design.md, and implement.md under the named task.",
         "Authority says current Trellis artifacts and scoped rules supersede the compressed GOAL.md.",
         "Iteration and completion preserve product commit before task.py archive and delay parent archive to the named release gate.",
-        "The launcher explicitly reads GOAL.md; it does not claim that Goal mode auto-loads it."
+        "The launcher explicitly reads GOAL.md; it does not claim that Goal mode auto-loads it.",
+        "Iteration policy or Completion conditions require trellis-implement / trellis-check dispatch; Constraints keep product writes off the main session; the launcher still does not claim Goal mode auto-loads GOAL.md."
       ]
     },
     {
@@ -385,6 +396,54 @@
         "States that OMP uses drop rather than clear.",
         "States that Grok uses clear rather than drop.",
         "Does not invent a universal management vocabulary or a new goal."
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "直接给 Codex /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`：修结账百分比优惠重复应用。侦察到 `.trellis/config.yaml` 的 `codex.dispatch_mode` 为 `inline`。只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查是 `just ci`。",
+      "expected_output": "A Codex Trellis implementation /goal that keeps commit-then-archive but uses the inline shape and does not inject sub-agent dispatch.",
+      "files": [],
+      "assertions": [
+        "Iteration policy uses the inline shape (trellis-before-dev then edit then trellis-check) rather than dispatching trellis-implement for code.",
+        "Constraints do not forbid the main session from editing product files.",
+        "Commit-then-archive and parent 发布门 just ci remain.",
+        "Does not require the main session to dispatch trellis-implement as a sub-agent."
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "直接给 Claude Code /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`。我明确要求主会话内联实施，不要派发子代理。只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查 `just ci`。",
+      "expected_output": "A Claude Code Trellis implementation /goal that honors the explicit inline request: no dispatch clauses, inline shape, still commit-then-archive, transcript-visible stop-and-report.",
+      "files": [],
+      "assertions": [
+        "Does not instruct dispatching trellis-implement or trellis-check as sub-agents.",
+        "Iteration policy follows the inline main-session shape.",
+        "Still preserves product commit then task.py archive and defers parent archive to just ci.",
+        "Claude stop-and-report and a turn/time bounding clause remain; no /goal pause."
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "/goal-meta-skill 请实施 .trellis/tasks/08-26-profile-design-language/implement.md 以及关联的 trellis 子任务直到完成为止",
+      "expected_output": "A DRAFT review packet that compiles the imperative Trellis payload into fenced /goal text, asks for review, and stops without Goal activation or task execution.",
+      "files": [],
+      "assertions": [
+        "The response is labeled 状态：DRAFT — Goal 未创建、未激活、未执行 and places every /goal payload inside a fenced text block.",
+        "It treats 请实施 and 直到完成 as payload content rather than activation authority and asks the user to review or revise the Prompt.",
+        "It does not create or activate a Goal, submit the /goal command, or claim Goal active.",
+        "It does not implement or dispatch the named Trellis task or any child task and stops after presenting the review packet."
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "我已经审阅并批准刚才生成的 Prompt，请定稿。",
+      "expected_output": "The final fenced prompt labeled APPROVED TEXT — not launched, with no Goal creation, activation, command submission, dispatch, or payload execution.",
+      "files": [],
+      "assertions": [
+        "The response is labeled 状态：APPROVED TEXT — not launched and the final /goal appears only inside a fenced text block.",
+        "It states that launch is a separate user action outside goal-meta-skill and stops after text delivery.",
+        "It does not submit the /goal slash command, call a Goal tool or API, or claim that the Goal is active.",
+        "It does not dispatch agents or begin implementing the approved payload."
       ]
     }
   ]

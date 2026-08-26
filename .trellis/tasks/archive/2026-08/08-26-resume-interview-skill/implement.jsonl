@@ -1,0 +1,5 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": "skills/AGENTS.md", "reason": "skill 包结构/frontmatter/校验命令约定"}
+{"file": ".trellis/tasks/08-26-resume-interview-skill/research/ai-job-search-analysis.md", "reason": "源仓库机制分析与取舍依据"}
+{"file": "ref/repo/ai-job-search/.claude/skills/job-application-assistant/SKILL.md", "reason": "方法论主入口：四步工作流结构"}
+{"file": "ref/repo/ai-job-search/.claude/skills/job-application-assistant/04-job-evaluation.md", "reason": "fit 评估框架原文（两道门+五维）"}

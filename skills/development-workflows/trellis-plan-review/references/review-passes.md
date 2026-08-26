@@ -13,26 +13,31 @@ Every worked example below comes from one real review: `case-study-font-picker.m
 **Trigger**: always.
 
 ```bash
-python "<skill-dir>/scripts/plan_precheck.py" <task-dir> --output <path>.json
+python "<skill-dir>/scripts/plan_precheck.py" <root-task-dir> --include-descendants
 ```
 
 Substitute the literal skill directory path for `<skill-dir>`. Use `py -3` where `python` is not on
-PATH. The script writes the output file itself. Do not redirect with `>`.
+PATH. The command prints one aggregate JSON result. An optional `--output <path>.json` writes that
+same result itself; do not redirect with `>`.
 
-The script reports four categories:
+The script resolves the root's recursive current/archive children and reports these categories:
 
 | Category                                                                             | Blocking |
 | ------------------------------------------------------------------------------------ | -------- |
-| Missing `prd.md`                                                                     | yes      |
-| Template placeholder residue (`_example`, `TBD`, `TODO`, `[PLACEHOLDER]`, `待补`)    | yes      |
+| Missing/ambiguous member, malformed tree metadata, cycle, duplicate edge, backlink/path escape | yes |
+| Missing `prd.md` in any member                                                       | yes      |
+| Blocking template residue (`_example`, `TBD`, `[PLACEHOLDER]`, `待补`)               | yes      |
+| Advisory marker mention (`TODO`, `FIXME`, `???`)                                     | no       |
 | A `path:line` citation that names a missing file, or a line past the end of the file | yes      |
 | An `AC` with no requirement annotation, or an `R`/`AC` reference with no definition  | no       |
+| The report destination is neither ignored nor tracked by git (an untracked entry in `git status`) | no       |
 
 Report the blocking items first. A blocking item often makes the later passes cheaper: an
 unresolvable citation tells you which claim to check first.
 
-The script decides nothing about truth. Claim truth, mechanism presence, and arithmetic stay with
-Passes 1 to 7.
+The result contains one ordered scope, per-member mechanical results, aggregate blocking items, and
+only the root report destination. The script writes no review report. It decides nothing about
+truth; claim truth, mechanism presence, and arithmetic stay with Passes 1 to 7.
 
 ---
 
@@ -41,6 +46,9 @@ Passes 1 to 7.
 **Question**: does every statement about the repository hold?
 
 **Trigger**: always.
+
+Run this pass once per scope member. Use task-qualified evidence when two members cite similarly
+named artifacts.
 
 **Procedure**
 
@@ -215,12 +223,19 @@ wrong model.
 
 **Procedure**
 
-Compare four pairs:
+For each member, compare four pairs:
 
 1. Requirements against `Out of scope`.
 2. Requirements against `Key decisions`.
 3. Requirements against the `已考虑不做` list in `design.md`.
 4. The change list in `design.md` against the step list in `implement.md`.
+
+Then compare the task tree as a whole:
+
+5. Parent requirements against each child's declared scope, mechanisms, and acceptance criteria.
+6. Parent exclusions against behavior introduced by children.
+7. Cross-child ordering against explicit planning text; never accept tree order as dependency proof.
+8. Shared interfaces, evidence boundaries, delivery paths, and rollback contracts across members.
 
 **Findings**
 
@@ -228,6 +243,9 @@ Compare four pairs:
 - A decision reverses a requirement without amending the requirement.
 - A file appears in the change list and in no step, or in a step and in no change list.
 - A step introduces a mechanism that no requirement asks for.
+- A child omits or contradicts a parent obligation it claims to own.
+- Cross-child execution depends on an order that only the tree position implies.
+- Two members define incompatible forms of the same shared contract.
 
 **Worked example**
 

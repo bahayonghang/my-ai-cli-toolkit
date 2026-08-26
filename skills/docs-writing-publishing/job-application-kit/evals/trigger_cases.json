@@ -1,0 +1,37 @@
+{
+  "note": "job-application-kit 0.1.0 trigger boundary. Domain concept table replaces qiaomu-meta default skill-authoring concepts.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["resume", "job", "interview"],
+  "positive_concepts": {
+    "resume": ["resume", "cv", "简历"],
+    "cover_letter": ["cover letter", "cover-letter", "求职信"],
+    "job": ["job", "jd", "职位", "岗位", "vacancy", "posting"],
+    "fit": ["fit", "匹配", "评估", "值不值得"],
+    "interview": ["interview", "面试"],
+    "prep": ["prep", "准备", "模拟", "mock"],
+    "polish": ["包装", "polish"],
+    "tailor": ["tailor", "量身定制", "定制"]
+  },
+  "negative_patterns": ["营销文案", "学术论文", "筛选简历", "批量抓取"],
+  "should_trigger": [
+    {"text": "根据这个 JD 帮我量身定制一份简历。", "family": "tailor-zh"},
+    {"text": "Tailor my resume to this data analyst job description.", "family": "tailor-en"},
+    {"text": "我要投这个岗位，帮我写一封求职信，顺便看看简历要不要改。", "family": "cover-letter-zh"},
+    {"text": "Draft a cover letter for the product manager posting attached below.", "family": "cover-letter-en"},
+    {"text": "下周三要面试这家公司，帮我做个面试准备包，再模拟一轮。", "family": "interview-zh"},
+    {"text": "Prepare me for the Amazon PM interview and run a mock round with likely questions.", "family": "interview-en"},
+    {"text": "帮我把这份简历包装得更适合这个职位，只许用真实经历。", "family": "polish-zh"},
+    {"text": "评估一下这个职位值不值得投，先做岗位匹配度分析。", "family": "fit-zh"}
+  ],
+  "should_not_trigger": [
+    {"text": "帮我写一段新产品发布会的营销文案。", "family": "marketing-copy"},
+    {"text": "帮我润色这篇论文的摘要部分。", "family": "academic-abstract"},
+    {"text": "我是 HR，帮忙从这批简历里筛选出符合要求的候选人。", "family": "recruiter-screening"},
+    {"text": "从十个招聘网站批量抓取职位列表并存进表格。", "family": "bulk-scrape"}
+  ],
+  "near_neighbor": [
+    {"text": "帮我写一封催项目进度的跟进邮件。", "family": "generic-email"},
+    {"text": "帮我准备周五的周会汇报提纲。", "family": "meeting-prep"},
+    {"text": "优化这段 Python 代码的性能。", "family": "code-opt"}
+  ]
+}

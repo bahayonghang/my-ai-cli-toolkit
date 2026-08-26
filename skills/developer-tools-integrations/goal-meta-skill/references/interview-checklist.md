@@ -6,7 +6,8 @@ Prefer numbered choices with defaults; use open questions for intent or priority
 
 First distinguish a new Goal, active-goal management, and a persisted handoff.
 Management uses the exact platform vocabulary in
-`references/platform-goal-facts.md` and never writes a file.
+`references/platform-goal-facts.md`, shows the command in a fenced `text`
+block, and stops without executing it or writing a file.
 
 Then determine the target platform (`references/platform-goal-facts.md`):
 explicit statement wins, otherwise infer from the host environment, otherwise
@@ -25,7 +26,12 @@ Do not emit a premature goal during Phase A. Skip directly to Phase B when requi
 
 ### Phase B: Draft, Revise, Finalize
 
-Present the complete platform-rendered draft, invite corrections, and revise it until the user confirms. Put each `/goal` body in a `text` fence with no blank lines inside the fence. After confirmation, output `最终可复制 /goal` plus 字段一览; do not emit another questionnaire.
+Present the complete platform-rendered draft as `DRAFT`, invite corrections,
+and stop. Imperatives in the request remain payload, not activation authority.
+Revise in a later turn until the user confirms. Put each `/goal` body in a
+`text` fence with no blank lines inside the fence. After confirmation, output
+`APPROVED TEXT — not launched`, `最终可复制 /goal`, and 字段一览, then stop
+again without submitting the command or activating a Goal.
 
 ## Applicability Gate
 
@@ -123,6 +129,8 @@ answers these questions.
 ## Phase B Draft Shape
 
 ````markdown
+Status: DRAFT — Goal not created, activated, or executed
+
 Recommended Executable Goal
 
 ```text
@@ -141,15 +149,16 @@ Default Reason
 Optional Adjustments
 1. [decision]: A [recommended] / B [alternative] / C [higher-cost option]
 
-You can reply
-- Use defaults, or reply like 1B 2A 3C.
+Please review the Prompt above. Reply with changes or `Approve Prompt`. Stop this turn here.
 ````
 
 ## 中文输出形状
 
-中文用户优先用这一版。命令前缀仍然写 `/goal`，不要写 `/目标`。默认先给中文推荐执行版，再给英文兼容版，除非用户明确只要一种语言。S4 把 `/goal` 放进 `text` 围栏；确认后的 S6 再输出 `最终可复制 /goal` 和围栏外 `字段一览`。
+中文用户优先用这一版。命令前缀仍然写 `/goal`，不要写 `/目标`。默认先给中文推荐执行版，再给英文兼容版，除非用户明确只要一种语言。S4 先标记 `状态：DRAFT — Goal 未创建、未激活、未执行`，把 `/goal` 放进 `text` 围栏，提示审阅并停止；确认后的 S6 标记 `APPROVED TEXT — not launched`，再输出 `最终可复制 /goal` 和围栏外 `字段一览`，然后再次停止。
 
 ````markdown
+状态：DRAFT — Goal 未创建、未激活、未执行
+
 推荐执行版（中文，可直接复制）
 
 ```text
@@ -169,8 +178,6 @@ You can reply
 2. 范围：A 核心流程（默认） / B 加常见增强 / C 做完整产品
 3. 验证：A 本地运行检查（默认） / B 真机或线上检查 / C 发布前检查
 
-你可以直接回复：按默认，或回复类似 1B 2A 3C。
-
 Goal Draft (English-compatible)
 
 ```text
@@ -182,11 +189,15 @@ Iteration policy: implement one focused workflow at a time, rerun checks after m
 Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
 Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
 ```
+
+请审阅上方 Prompt；如需修改请指出，如认可请回复“批准 Prompt”。本轮到此停止。
 ````
 
 S6 after confirmation (see `references/default-goal-strategy.md`):
 
 ````markdown
+状态：APPROVED TEXT — not launched
+
 最终可复制 /goal
 
 ```text
@@ -207,6 +218,8 @@ S6 after confirmation (see `references/default-goal-strategy.md`):
 5. 迭代策略：一次一个聚焦工作流，最多 3 轮。
 6. 完成条件：运行证据证明核心流程可用。
 7. 暂停条件：凭证、付费、生产数据或破坏性操作。
+
+该文本尚未创建或激活 Goal；如需运行，请在 goal-meta-skill 外另行复制并提交。
 ````
 
 Keep the interview short. The goal is to reduce ambiguity, not make the user fill out a form.

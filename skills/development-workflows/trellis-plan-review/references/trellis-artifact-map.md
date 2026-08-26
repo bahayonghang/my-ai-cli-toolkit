@@ -15,8 +15,9 @@ What each artifact holds, what a reviewer must find in it, and how to locate the
   research/          optional research output
 ```
 
-Archived tasks move to `.trellis/tasks/archive/<YYYY-MM>/<MM-DD-slug>/`. Search the archive when
-the live `tasks/` directory holds only `archive/`.
+Archived tasks move to `.trellis/tasks/archive/<YYYY-MM>/<MM-DD-slug>/`. For every child basename,
+search both the live task directory and every archive period. Zero exact matches is missing; more
+than one exact match is ambiguous.
 
 ## Locating the task
 
@@ -39,7 +40,24 @@ this skill. Widen the search root before you report the task as missing.
 | `dev_type`               | `bugfix` requires a root cause per defect. `feature` requires scope boundaries.                                                 |
 | `scope` / `package`      | Sets the search root for claim verification.                                                                                    |
 | `branch` / `base_branch` | Supplies the diff range for Pass 7. A branch reused from an earlier task is a finding when the plan does not explain the reuse. |
-| `parent` / `children`    | Cross-child ordering must appear in the child artifacts, not in the tree position.                                              |
+| `parent` / `children`    | `children` defines recursive review membership; every child's `parent` must point back. Tree position never defines dependency order. |
+
+## One review scope
+
+The explicitly selected task is the root. Its recursive `children` closure is one atomic review
+scope, traversed root-first while preserving each declared child order. A leaf produces the same
+one-member scope and report path as before.
+
+- `children` is authoritative. Only when the key is absent may non-empty `subtasks` be used as a
+  deprecated fallback. Conflicting non-empty fields block the review.
+- A child basename must resolve exactly once under `.trellis/tasks/<child>` or
+  `.trellis/tasks/archive/*/<child>` in the same repository.
+- Missing or malformed `task.json`, missing/ambiguous children, unsafe or escaping paths, cycles,
+  duplicate edges/membership, and mismatched `parent` backlinks block report writing.
+- Hierarchy is ownership, not dependency. Pass 5 must find cross-child sequencing in the planning
+  artifacts themselves.
+- Review every member's artifacts under its own status, but aggregate and deduplicate findings once.
+  Persist only `.trellis/reviews/<root-task-name>.md`; never create one report per child.
 
 ## prd.md — required content
 

@@ -2,9 +2,10 @@
 
 House standard for the skills in this directory: `agent-skill-review`,
 `agents-md-improver`, `ast-grep`, `claude-context-improver`,
-`codex-workflow-recommender`, `file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`. These skills package
+`codex-workflow-recommender`, `file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`,
+`skill-session-review`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, goal
-authoring and governed Goal handoff persistence, local file review plans). They drifted apart on script paths, evals, and
+authoring and governed Goal handoff persistence, local file review plans, named-skill session review). They drifted apart on script paths, evals, and
 interface files; new or edited skills here should match the conventions below so
 the suite does not drift again. This file mirrors
 `../git-github-collaboration/AGENTS.md`; where the two agree, that file is the
@@ -54,6 +55,7 @@ bare `Bash` when the skill only runs a known command family.
 | goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named governed root-contract writer after confirmation |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |
+| skill-session-review       | `Read, Glob, Grep, Write, Bash(python *)`, `Bash(py *)`, `Bash(git rev-parse *)`, `Bash(git check-ignore *)` | scans local sessions; writes only the report dir and one gitignore line |
 
 The goal-meta Python grant covers exactly its documented linter and
 `persist_goal_contract.py` path. It is not a claim that the skill is wholly

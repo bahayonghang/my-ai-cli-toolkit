@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "SKILL.md <skill-dir>, frontmatter, evals.json is not CI, qiaomu trigger_eval cases and absolute --cases"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Python stdin UTF-8 on Windows; node tests under skills/**/tests/*.mjs"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Helper exit codes 0/1/2 and stderr"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Keep helpers under skills/**/scripts"}
+{"file": ".trellis/tasks/08-25-skill-usage-retro/research/clone-analysis.md", "reason": "Codex load vs invoke; read-only report"}
+{"file": ".trellis/tasks/08-25-skill-usage-retro/research/feasibility.md", "reason": "Local Claude/Grok/Codex/Oh My Pi fields and Grok nested sessions"}

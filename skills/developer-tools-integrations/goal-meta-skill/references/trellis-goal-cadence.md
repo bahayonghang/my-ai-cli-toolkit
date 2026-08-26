@@ -35,6 +35,79 @@ If detection is uncertain, add one numbered choice to the existing
 Fast-path `直接给` / `按默认` stays conservative: inject only when the
 outcome text already says Trellis task implementation.
 
+## Sub-agent dispatch
+
+Last verified: 2026-08-25.
+
+These are Trellis facts, not `/goal` lifecycle facts. Do not copy them
+into `platform-goal-facts.md`. Do not copy Trellis script internals into
+`SKILL.md`.
+
+Dispatch uses the same Detection gate as commit-then-archive. Inject
+only when the outcome is Trellis task or child-task implementation.
+Presence of `.trellis/` alone is not a reason.
+
+This skill must not assert that a target project has a given agent.
+Generated `/goal` text must require the executing agent to read that
+project's `.trellis/workflow.md` Phase 2.1 / 2.2 first, and to confirm
+the actual dispatch protocol and agent names.
+
+| Platform | Dispatch shape | Evidence |
+| --- | --- | --- |
+| Claude Code | `Task` / `Agent` tool; `subagent_type` is `trellis-implement` / `trellis-check` / `trellis-research` | `local-probe`: this machine has `.claude/agents/trellis-*.md`; `workflow.md:475-488` lists Claude Code in the dispatch group |
+| Codex | `.trellis/config.yaml` `codex.dispatch_mode`: `auto` dispatches, `inline` does not | `local-probe`: this machine's `config.yaml:125-145` records default `auto` and `inline` |
+| Oh My Pi | Dispatch group; agent names match Claude Code | `local-probe`: `.trellis/workflow.md` dispatch group (`:475-488`) |
+| Grok Build | `spawn_subagent` with `subagent_type` set to the Trellis agent name | `local-probe`: `.trellis/workflow.md` platform note (`:223`) and pull group (`:490-502`) |
+| Kimi Code | Built-in `coder` / `explore` sub-agents with `.kimi-code/skills/trellis-<role>/SKILL.md` | `local-probe`: `.trellis/workflow.md` platform note (`:223`) and pull group (`:490-502`) |
+
+No row in this table uses the `official` evidence label. Platform
+documentation does not define Trellis agent names. The table samples one
+project's `.trellis/workflow.md`.
+
+### Generated `/goal` fields
+
+Put dispatch into three fields. Do not add dispatch to `暂停条件` /
+`Pause if`. A missing agent or unsupported platform is a reconnaissance
+finding: switch to the inline shape before implementation. It is not a
+runtime pause event.
+
+**`迭代策略` / Iteration policy** — who runs, in what order, and what to
+read first:
+
+先读 `.trellis/workflow.md` 的 Phase 2.1 / 2.2 确认本项目派发协议与
+agent 名；一次完成一个可独立验收的 Trellis 任务，代码实施派发
+`trellis-implement`、验证派发 `trellis-check`；然后用 Conventional
+Commits 提交该任务相关产品文件；再运行
+`python ./.trellis/scripts/task.py archive` with the concrete task
+directory.
+
+**`约束` / Constraints** — who may write product files:
+
+主会话不直接 Edit/Write 产品文件；产品改动由 `trellis-implement` 完成。
+
+Put that sentence in `Constraints`, not in `Boundaries`. Who writes is a
+behavior constraint, not a path permission.
+
+**`完成条件` / Stop when** — dispatch evidence. Codex may cite commands
+and artifacts. Claude Code evidence must be transcript-visible:
+
+每个任务的代码实施由 `trellis-implement` 完成、验证由 `trellis-check`
+完成，派发记录出现在对话中。
+
+### Inline exceptions
+
+Do not inject dispatch clauses when any of these hold:
+
+1. The target platform is in that project's `workflow.md` inline group
+   (this machine: `codex-inline`, Kilo, Antigravity, Devin).
+2. The target platform is Codex and `.trellis/config.yaml`
+   `codex.dispatch_mode` is `inline`.
+3. The user explicitly asks the main session to implement inline.
+
+On an exception, `迭代策略` uses that project's inline shape (this
+machine: `trellis-before-dev` → edit → `trellis-check`). `约束` must not
+forbid the main session from editing product files.
+
 ## Commit then archive
 
 Encode in `迭代策略` / Iteration policy and `完成条件` / Stop when:
@@ -96,7 +169,9 @@ Codex: pause is valid.
 
 For root `GOAL.md`, Required reading must link the concrete task's `prd.md`,
 `design.md`, and `implement.md`. Put commit-then-archive in Iteration policy and
-Completion conditions, and keep the named parent 发布门. The contract remains a
+Completion conditions, and keep the named parent 发布门. Also put the dispatch
+clauses from Sub-agent dispatch into Iteration policy, Constraints, and
+Completion conditions, unless an inline exception applies. The contract remains a
 compressed handoff; current Trellis artifacts stay authoritative.
 
 If the user explicitly keeps a legacy `.planning/goal-<slug>.md`, put the same

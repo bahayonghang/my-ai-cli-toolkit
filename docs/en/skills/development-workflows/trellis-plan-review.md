@@ -4,12 +4,12 @@
 
 ## Purpose overview
 
-Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, writes an evidence-backed Markdown report into the reviewed project's .trellis/reviews directory, and returns a copyable handoff prompt. Compares the plan against the real diff once the task has started.
+Independent review of Trellis task planning artifacts. Treats the selected task and its recursive current or archived children as one review scope, verifies repository claims and path:line citations against code, traces every acceptance-criterion clause to a requirement and design mechanism, rechecks arithmetic and units, writes one combined evidence-backed Markdown report under the reviewed project's .trellis/reviews directory, and returns one copyable handoff prompt. Compares the plan with the real diff after the task starts.
 
 ## Trigger scenarios
 
-- the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation
-- Not for reviewing a code diff by itself (code-auditor for independent or full-spectrum review, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task
+- the user asks to 审阅 trellis 父子任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan or task tree, audit a plan another agent wrote, or verify plan claims before implementation
+- Not for a code-diff-only review, writing or repairing the plan, or running the task
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Independent review of Trellis task planning artifacts. Reads prd.md, design.md, 
 | --- | --- |
 | Name | `trellis-plan-review` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.2.0` |
+| Version | `0.4.0` |
 | Tags | `trellis`, `plan-review`, `spec-audit`, `acceptance-criteria`, `traceability`, `handoff` |
 
 ## Install command
@@ -34,7 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill trellis-plan-
 | `skills/development-workflows/trellis-plan-review/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/trellis-plan-review/references` | directory | 7 | Reference material |
 | `skills/development-workflows/trellis-plan-review/scripts` | directory | 2 | Executable scripts |
-| `skills/development-workflows/trellis-plan-review/tests` | directory | 1 | Automated tests |
+| `skills/development-workflows/trellis-plan-review/tests` | directory | 3 | Automated tests |
 
 ## Scripts, references, and test resources
 

@@ -1,0 +1,215 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "cover_letter",
+    "fit",
+    "interview",
+    "job",
+    "polish",
+    "prep",
+    "resume",
+    "tailor"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "根据这个 JD 帮我量身定制一份简历。",
+        "family": "tailor-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "job",
+          "resume",
+          "tailor"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Tailor my resume to this data analyst job description.",
+        "family": "tailor-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "job",
+          "resume",
+          "tailor"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "我要投这个岗位，帮我写一封求职信，顺便看看简历要不要改。",
+        "family": "cover-letter-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "cover_letter",
+          "job",
+          "resume"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Draft a cover letter for the product manager posting attached below.",
+        "family": "cover-letter-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "cover_letter",
+          "job"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "下周三要面试这家公司，帮我做个面试准备包，再模拟一轮。",
+        "family": "interview-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "interview",
+          "prep"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Prepare me for the Amazon PM interview and run a mock round with likely questions.",
+        "family": "interview-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "interview",
+          "prep"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我把这份简历包装得更适合这个职位，只许用真实经历。",
+        "family": "polish-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "job",
+          "polish",
+          "resume"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "评估一下这个职位值不值得投，先做岗位匹配度分析。",
+        "family": "fit-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "fit",
+          "job"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "帮我写一段新产品发布会的营销文案。",
+        "family": "marketing-copy",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "营销文案"
+      },
+      {
+        "prompt": "帮我润色这篇论文的摘要部分。",
+        "family": "academic-abstract",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "我是 HR，帮忙从这批简历里筛选出符合要求的候选人。",
+        "family": "recruiter-screening",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "resume"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "从十个招聘网站批量抓取职位列表并存进表格。",
+        "family": "bulk-scrape",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "job"
+        ],
+        "negative_pattern": "批量抓取"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "帮我写一封催项目进度的跟进邮件。",
+        "family": "generic-email",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "帮我准备周五的周会汇报提纲。",
+        "family": "meeting-prep",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "prep"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "优化这段 Python 代码的性能。",
+        "family": "code-opt",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

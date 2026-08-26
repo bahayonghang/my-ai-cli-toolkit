@@ -1,0 +1,24 @@
+interface:
+  display_name: "Skill Session Review"
+  short_description: "Review how a named skill was used in past sessions and persist a feedback report"
+  default_prompt: "Use $skill-session-review read-mostly. Scan Claude, Grok, Codex, and Oh My Pi sessions for a named skill instance, write reports/skill-session-review/<name>.md, and give a copyable qiaomu-meta handoff prompt. Do not edit the target skill."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+  activation:
+    mode: "implicit"
+  execution:
+    context: "inline"
+    shell: "posix-or-py"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+    side_effect_policy: "writes only reports/skill-session-review and one gitignore line"
+  degradation:
+    openai: "use local session files; gaps are missing evidence"
+    claude: "use local session files; do not infer remote history"
+    generic: "use local evidence; runtime gaps are missing evidence"

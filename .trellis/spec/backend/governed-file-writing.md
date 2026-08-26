@@ -24,7 +24,8 @@ Pass the complete artifact through raw standard input. Do not place contract con
 - Decode strict UTF-8, allow a leading BOM only when intentionally supported, and normalize line endings to LF before validation and hashing.
 - Validate the complete artifact schema and scan for likely secrets before any filesystem mutation.
 - Make creation no-clobber by default. Replacement must require an explicit flag plus the caller's SHA-256 of the previously reviewed file, rechecked immediately before finalization.
-- Write a temporary sibling, flush it, and finalize with an operation that cannot expose a partial destination. Clean up temporary files on failure.
+- Create the temporary sibling exclusively without following links; refuse a pre-existing sibling, track whether this invocation created it, and never delete foreign residue during cleanup.
+- Flush the owned temporary sibling and finalize with an operation that cannot expose a partial destination. On failure, clean up only the temporary file owned by this invocation.
 - Emit bounded metadata such as path, mode, byte count, SHA-256, and Git visibility. Never echo the artifact body or secret-like input.
 - Write exactly one requested file. Do not stage, commit, execute, or send network requests as a side effect.
 
@@ -39,6 +40,7 @@ Cover these cases before treating a governed writer as complete:
 | Destination already exists | Refuse creation without changing the file |
 | Replacement hash is stale | Refuse replacement and preserve the current bytes |
 | Destination is a symlink, reparse point, or path escape | Refuse without following it |
+| Temporary sibling already exists or is a link/reparse point | Refuse without changing or deleting the sibling, its target, or the destination |
 | Finalization fails | Preserve the previous version and remove temporary files where safely possible |
 | Finalization succeeds | Read back and verify the normalized bytes and SHA-256 |
 | Git repository state varies | Report ignored, tracked, untracked, or non-repository status without staging |
@@ -54,6 +56,7 @@ Bad: a skill silently writes to `$PWD`, accepts `../GOAL.md`, overwrites an exis
 ## 6. Test Requirements
 
 - Add deterministic tests for creation, existing-file refusal, authorized replacement, stale-hash refusal, invalid UTF-8, BOM/LF normalization, secret detection, path escape, and symlink/reparse rejection.
+- Cover stale ordinary temporary siblings and hostile temporary symlink/reparse paths; assert they and any external targets remain unchanged and that cleanup removes only invocation-owned files.
 - Verify both Git and non-Git reporting, including ignored, tracked, and untracked outcomes.
 - Exercise every platform or adapter named by the skill and preserve compatibility aliases intentionally exposed by the interface.
 - Assert failure safety: original bytes remain intact and temporary siblings do not leak.

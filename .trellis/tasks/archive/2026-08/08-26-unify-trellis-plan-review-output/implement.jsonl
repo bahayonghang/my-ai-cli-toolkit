@@ -1,0 +1,6 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Apply repository skill packaging, script path, eval, test, and Qiaomu schema-deviation contracts."}
+{"file":".trellis/spec/backend/index.md","reason":"Route skill-local Python helper work to the relevant backend operational-code guidelines."}
+{"file":".trellis/spec/backend/error-handling.md","reason":"Preserve explicit exit codes and fail-closed tree resolution errors."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Keep helpers local, tests discoverable, docs generated, and validation evidence scoped."}
+{"file":".trellis/spec/backend/governed-file-writing.md","reason":"Preserve path confinement, atomic single-file writes, bounded metadata, and failure safety."}
+{"file":".trellis/tasks/08-26-unify-trellis-plan-review-output/research/tree-review-evidence.md","reason":"Use the verified anti-case, current ownership analysis, Qiaomu generalization, and prior-art ledger."}

@@ -1572,3 +1572,128 @@ trellis-plan-review 0.2.0：审阅报告写入被审项目 .trellis/reviews/，�
 ### Status
 
 [OK] **Completed**
+
+
+## Session 50: skill-session-review
+
+**Date**: 2026-08-25
+**Task**: skill-session-review
+**Branch**: `dev`
+
+### Summary
+
+新增 skill-session-review：扫描 Claude/Grok/Codex/Oh My Pi 历史会话的使用情况，落盘 reports/skill-session-review 反馈报告并给出 qiaomu-meta 交接 Prompt；just ci 通过后归档 08-25-skill-usage-retro。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e60eb4ee` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 51: goal-meta-skill Trellis 子代理派发条款
+
+**Date**: 2026-08-26
+**Task**: goal-meta-skill Trellis 子代理派发条款
+**Branch**: `dev`
+
+### Summary
+
+goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / trellis-check 派发条款，覆盖 cadence、范本、linter 与 evals。普通任务与内联模式不注入。just ci 通过。派发率是否上升仍为 hypothesis。
+
+### Main Changes
+
+- cadence 增加 5 平台派发表与内联例外
+- playbook 两个 Trellis 范本在迭代策略/约束/完成条件追加派发
+- linter 对缺派发报 error；契约与内联分支共用辅助函数
+- evals 15/16/29 补派发断言；17 反向；新增 34/35 内联例外
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7a808aa4` | (see git log) |
+| `66b9dfcd` | (see git log) |
+
+### Testing
+
+- [OK] just ci
+- [OK] just node-test
+- [OK] python scripts/check.py skills
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 新会话执行含派发条款的 Trellis /goal，对照 research 基线统计 Task/Agent 调用
+
+
+## Session 52: Goal Meta Prompt 审阅门
+
+**Date**: 2026-08-26
+**Task**: Goal Meta Prompt 审阅门
+**Branch**: `dev`
+
+### Summary
+
+将 goal-meta-skill 升级到 0.7.0，强制 DRAFT 与 APPROVED TEXT 两阶段均只交付 fenced Prompt 并停止；Goal 激活留在 skill 外。新增截图同构与批准后不启动回归，专项 41/41 和 just ci 通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5a53bd26` | (see git log) |
+| `324d0010` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 53: 统一 Trellis 父子任务审阅输出
+
+**Date**: 2026-08-26
+**Task**: 统一 Trellis 父子任务审阅输出
+**Branch**: `dev`
+
+### Summary
+
+将父任务及其子任务收敛为一个审阅范围、一个根报告和一条修订 Prompt；补齐树解析、写入安全、回归测试与规范，完成本地验证和归档。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bcae2b3f67bde8d40b51d3a6dc51f28109b18f15` | (see git log) |
+| `0c6923641720ab0c726524dff850fb4c8939e7ee` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 54: job-application-kit 技能包落地
+
+**Date**: 2026-08-26
+**Task**: job-application-kit 技能包落地
+**Branch**: `dev`
+
+### Summary
+
+从 ref/repo/ai-job-search 提炼方法论，产出 skills/docs-writing-publishing/job-application-kit v1.0.0：三不变量+四工作流+九份 references+模板与 verify_pdf 移植；trigger eval 15/15，skills-check/python-check/docs-check 全过
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dab6a8c0` | (see git log) |
+
+### Status
+
+[OK] **Completed**

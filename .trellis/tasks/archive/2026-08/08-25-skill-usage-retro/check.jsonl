@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Description length, no angle brackets, docs-sync, trigger_eval vs just ci"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "UTF-8 LF writes, node-test discovery, no hand-edited docs catalog"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Helper failure codes and no silent path fallback"}
+{"file": ".trellis/tasks/08-25-skill-usage-retro/research/feasibility.md", "reason": "Invocation stores, empty ~/.pi, Grok nested chat_history.jsonl"}
+{"file": ".trellis/tasks/08-25-skill-usage-retro/research/clone-analysis.md", "reason": "loaded is not invoked for Codex"}

@@ -1,0 +1,93 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-08-26",
+  "package": {
+    "name": "job-application-kit",
+    "version": null,
+    "owner": null,
+    "maturity_tier": null,
+    "lifecycle_stage": null,
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "求职申请与面试准备套件：针对目标职位（JD/职位描述）量身定制简历与求职信，在诚实边界内修改与包装既有经历， 生成阶段化面试准备包并支持模拟面试。触发词：写简历、改简历、简历定制、tailor resume、resume、CV、 resume writing、求职信、cover letter、投递、申请职位、job posting、JD、职位描述、岗位匹配、fit 评估、 面试准备、面试问题、interview prep、mock interview、模拟面试、包装经历、量化成果。 不适用于：职位批量抓取与申请追踪管理、通用营销或商务文案、学术论文写作、招聘方视角的简历筛选。",
+    "job_to_be_done": "求职申请与面试准备套件：针对目标职位（JD/职位描述）量身定制简历与求职信，在诚实边界内修改与包装既有经历， 生成阶段化面试准备包并支持模拟面试。触发词：写简历、改简历、简历定制、tailor resume、resume、CV、 resume writing、求职信、cover letter、投递、申请职位、job posting、JD、职位描述、岗位匹配、fit 评估、 面试准备、面试问题、interview prep、mock interview、模拟面试、包装经历、量化成果。 不适用于：职位批量抓取与申请追踪管理、通用营销或商务文案、学术论文写作、招聘方视角的简历筛选。",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "根据这个 JD 帮我量身定制一份简历。",
+      "Tailor my resume to this data analyst job description.",
+      "我要投这个岗位，帮我写一封求职信，顺便看看简历要不要改。",
+      "Draft a cover letter for the product manager posting attached below.",
+      "下周三要面试这家公司，帮我做个面试准备包，再模拟一轮。",
+      "Prepare me for the Amazon PM interview and run a mock round with likely questions.",
+      "帮我把这份简历包装得更适合这个职位，只许用真实经历。",
+      "评估一下这个职位值不值得投，先做岗位匹配度分析。"
+    ],
+    "should_not_trigger": [
+      "帮我写一段新产品发布会的营销文案。",
+      "帮我润色这篇论文的摘要部分。",
+      "我是 HR，帮忙从这批简历里筛选出符合要求的候选人。",
+      "从十个招聘网站批量抓取职位列表并存进表格。"
+    ],
+    "near_neighbor": [
+      "帮我写一封催项目进度的跟进邮件。",
+      "帮我准备周五的周会汇报提纲。",
+      "优化这段 Python 代码的性能。"
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\application-forms.md",
+      "references\\cover-letter-writing.md",
+      "references\\interview-prep.md",
+      "references\\job-evaluation.md",
+      "references\\pdf-pipeline.md",
+      "references\\profile-schema.md",
+      "references\\resume-writing.md",
+      "references\\web-research.md",
+      "references\\writing-style.md"
+    ],
+    "scripts": [
+      "scripts\\verify_pdf.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\prior-art-research.md",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": null,
+    "adapter_targets": [],
+    "activation": {},
+    "execution": {},
+    "trust": {},
+    "permissions": {},
+    "degradation": {}
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

@@ -1,6 +1,13 @@
 # Finding contract
 
-The report has four sections, in this order. Write the report in the language of the request.
+The report begins with one review-scope section, followed by four evidence sections in this order.
+Write the report in the language of the request.
+
+## 0. Review scope
+
+Name the root task, `single-task` or `task-tree` mode, task count, and root-first ordered members with
+their statuses. This section defines membership, not dependency order. Every count and verdict below
+applies to this whole scope.
 
 ## 1. Verdict line
 
@@ -12,7 +19,9 @@ One line, one value:
 | 可执行但需修订 / Ready after revision | At least one should-fix finding, and no blocking finding. The plan's structure holds; specific clauses need an edit. |
 | 需返回规划 / Return to planning       | At least one blocking finding.                                                                                       |
 
-State the counts on the same line: for example, `可执行但需修订 — 阻断 0 / 应修 4 / 提示 3`.
+State the aggregate counts on the same line: for example,
+`可执行但需修订 — 阻断 0 / 应修 4 / 提示 3`. Compute the verdict after cross-task deduplication:
+any blocking finding returns the whole scope to planning; otherwise use the existing rules above.
 
 When the task has already started, add the task status and, if the change is committed, the commit
 identifier. A review that arrives after the change shipped is a retrospective record, and the report
@@ -20,18 +29,22 @@ must say so.
 
 ## 2. Findings
 
-Number each finding `TPR-01`, `TPR-02`, … Order by severity, then by artifact order.
+Before numbering, merge candidates only when they share the same violated contract and correction
+choice. Preserve distinct evidence or impacts as distinct findings. Number the resulting scope-wide
+set `TPR-01`, `TPR-02`, … Order by severity, then by root-first member order and artifact order.
 
 Each finding carries these fields:
 
-| Field    | Content                                                                    |
-| -------- | -------------------------------------------------------------------------- |
-| Severity | 阻断 / 应修 / 提示 (blocking / should-fix / note)                          |
-| Location | The artifact and the line or section: `prd.md:24`, `design.md` change list |
-| Claim    | What the plan states, quoted or closely paraphrased                        |
-| Evidence | The repository `path:line`, the command you ran, or the recomputed number  |
-| Impact   | What goes wrong if the plan ships unchanged                                |
-| Route    | The available fixes. Give the routes, not a decision.                      |
+| Field          | Content |
+| -------------- | ------- |
+| Severity       | 阻断 / 应修 / 提示 (blocking / should-fix / note) |
+| Task           | Owning task basename, or `cross-task` when no single member owns the defect |
+| Affected tasks | Every scope member that must be revised for this root cause |
+| Location       | Task-qualified artifacts and lines, for example `08-26-parent/prd.md:24`; list all locations for a merged finding |
+| Claim          | What the plan states, quoted or closely paraphrased |
+| Evidence       | The repository `path:line`, command, or recomputed number; qualify planning evidence by task |
+| Impact         | What goes wrong if the plan ships unchanged |
+| Route          | The available fixes. Give the routes, not a decision. |
 
 ### Severity rules
 
@@ -88,7 +101,8 @@ matches the real change boundaries.
 - Do not review the product decision. Review whether the artifacts state the decision, whether the
   artifacts agree, and whether the criteria can prove the decision was met.
 - Do not raise style preferences about the plan's prose.
-- Report one finding per defect. Do not split one defect across several numbers to raise the count.
+- Report one finding per root cause across the whole scope. Do not split the same defect into parent
+  and child numbers to raise the count; list all affected tasks and locations on the one TPR.
 
 ## Required disclosure
 
@@ -107,15 +121,20 @@ Close the report with the limitation, in one or two sentences:
 
 ## Persist the report
 
-After the four sections are ready, write the full report with
+After the scope and evidence sections are ready, write the full report with
 `scripts/write_review_report.py`. The destination is
-`<repo-root>/.trellis/reviews/<task-dir-name>.md`. The file skeleton is
-`report-template.md`. Same task, same path; a later review overwrites.
+`<repo-root>/.trellis/reviews/<root-task-name>.md`. The file skeleton is
+`report-template.md`. Invoke the writer once per scope. A later review overwrites only the same root
+path; never enumerate, delete, overwrite, or migrate historical child reports.
 
-The chat is not the source of the findings. Print the verdict line, the report
-path, and one `text` fence with the filled template from `handoff-prompt.md`.
+If the helper prints a gitignore note — the destination is neither ignored nor tracked — pass the
+note to the author. Do not edit `.gitignore`; ignoring or committing the report is the project's
+call.
+
+The chat is not the source of the findings. Print the verdict line, the one combined report path,
+and exactly one `text` fence with the scope-wide template from `handoff-prompt.md`.
 Do not paste the TPR table into the chat unless the write failed or the user
 asked to see the report in the conversation.
 
 If the helper exits nonzero, explain the error and the attempted path, print
-the four-section report in chat, and do not emit a path-based handoff prompt.
+the scope-plus-evidence report in chat, and do not emit a path-based handoff prompt.

@@ -1,0 +1,5 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Verify frontmatter, interface, script command, eval schema, docs sync, and repository-native Qiaomu boundaries."}
+{"file":".trellis/spec/backend/error-handling.md","reason":"Check deterministic failures, stderr messages, and exit-code compatibility for invalid task trees."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Check Python/Node placement, generated docs ownership, and the required validation chain."}
+{"file":".trellis/spec/backend/governed-file-writing.md","reason":"Audit one-file write scope, path/symlink confinement, atomicity, read-back metadata, and no child-report mutation."}
+{"file":".trellis/tasks/08-26-unify-trellis-plan-review-output/research/tree-review-evidence.md","reason":"Verify the implementation and evals against the anti-case and the one-scope atomic-output invariant."}

@@ -1,0 +1,2 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Verify behavior fixtures are not misreported as provider evidence and that deterministic package tests cover material forbidden behavior."}
+{"file":".trellis/tasks/08-26-goal-meta-prompt-review-gate/research/defect-evidence.md","reason":"Check the implementation closes the exact generation-to-activation defect without claiming post-fix provider proof."}

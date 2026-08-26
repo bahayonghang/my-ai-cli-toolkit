@@ -209,6 +209,32 @@ manual inventory and deterministic safety tests."
   while rejecting an unauthorized write. Do not require reproduction of a
   long sentence, and do not let one keyword prove the whole behavior.
 
+## Prompt compilers need a review-before-activation boundary
+
+- Apply when a skill generates a command, Goal, prompt, runbook, or other text
+  that the current host could also execute through a native tool or slash
+  command. Imperatives inside the requested artifact are **payload**, not
+  authority to execute that artifact.
+- Keep the state machine explicit: compile → validate → present → stop. A later
+  approval may mark the text approved, but activation remains a separate user
+  action outside the compiler skill unless another reviewed contract owns it.
+  File-persistence authority is not execution authority.
+- Put the invariant in the root `SKILL.md` and the host-facing
+  `agents/interface.yaml`; keep detailed output shapes in one reference. A
+  fenced command is inert delivery text, not a command for the current turn.
+- Cover both sides: a behavior fixture where the payload says “implement until
+  complete” must still stop at review, and a deterministic package test must
+  fail if the root/interface boundary or forbidden execution capability is
+  removed. Existing management-command fixtures must also be display-only.
+- Local fixtures and static tests prove the package contract only. Post-change
+  provider compliance, human review, and telemetry remain `missing evidence`
+  until run and recorded.
+
+Good: the skill labels draft/approved text, displays the fenced artifact, and
+stops. Base: ordinary non-executable prose needs no activation state machine.
+Bad: the skill generates a command and immediately submits it because the
+payload itself said “execute”.
+
 ## Trigger/boundary changes: two eval systems, not one
 
 > Distilled from the code-auditor project-audit upgrade (2026-07-17).
@@ -322,4 +348,17 @@ manual inventory and deterministic safety tests."
   copy) and an "ambiguous match" heuristic misfires. Add `worktrees` to the
   skip-directory set alongside `node_modules`, `target`, `dist`, and
   `__pycache__`.
+
+## qiaomu-meta prior-art runner on Windows
+
+> Distilled from the job-application-kit task (2026-08-26).
+
+- `research_prior_art.py` fails on Windows: `subprocess.run(["npx", ...])`
+  cannot resolve `npx.cmd` (`FileNotFoundError [WinError 2]`). Do not patch the
+  user-global skill; run the underlying catalog calls directly in bash:
+  `npx --yes skills find "<query>"` works from Git Bash.
+- The SkillsMP helper (`search_skillsmp.py`) timed out after ~60s in the same
+  session. Record the catalog as `missing evidence`, keep skills.sh results,
+  and lower the affected claims — per qiaomu rules, do not retry past a
+  provider outage inside one task.
 

@@ -1,6 +1,6 @@
 ---
 name: trellis-plan-review
-description: "Independent review of Trellis task planning artifacts. Reads prd.md, design.md, implement.md, implement.jsonl, check.jsonl, and task.json in a .trellis/tasks/ directory, verifies every repository claim and path:line citation against the actual code, traces each acceptance-criterion clause back to a requirement and a design mechanism, rechecks arithmetic and unit assumptions, writes an evidence-backed Markdown report into the reviewed project's .trellis/reviews directory, and returns a copyable handoff prompt. Compares the plan against the real diff once the task has started. Use when the user asks to 审阅 trellis 任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan, audit a plan another agent wrote, or verify plan claims before implementation. Not for reviewing a code diff by itself (code-auditor for independent or full-spectrum review, code-quality-review for maintainability), not for writing or repairing the plan, and not for running the task."
+description: "Independent review of Trellis task planning artifacts. Treats the selected task and its recursive current or archived children as one review scope, verifies repository claims and path:line citations against code, traces every acceptance-criterion clause to a requirement and design mechanism, rechecks arithmetic and units, writes one combined evidence-backed Markdown report under the reviewed project's .trellis/reviews directory, and returns one copyable handoff prompt. Compares the plan with the real diff after the task starts. Use when the user asks to 审阅 trellis 父子任务, 审阅规划, 审查 prd design implement, 检查验收标准有没有机制支撑, review a trellis plan or task tree, audit a plan another agent wrote, or verify plan claims before implementation. Not for a code-diff-only review, writing or repairing the plan, or running the task."
 category: development-workflows
 tags:
   - trellis
@@ -9,7 +9,7 @@ tags:
   - acceptance-criteria
   - traceability
   - handoff
-version: 0.2.0
+version: 0.4.0
 argument-hint: [trellis-task-dir]
 allowed-tools: Read, Write, Glob, Grep, Bash(python *), Bash(py -3 *), Bash(git diff *), Bash(git log *), Bash(git show *), Bash(git status *)
 ---
@@ -23,9 +23,11 @@ Review the Trellis planning artifacts at `$ARGUMENTS`. Persist the report. Leave
 
 - Do not edit `prd.md`, `design.md`, `implement.md`, `*.jsonl`, `task.json`, or product code.
 - Do not fix a defect you find. Do not produce a revised plan.
-- The only allowed write is the review report under the reviewed project's
+- The only allowed durable write is one review report under the reviewed project's
   `.trellis/reviews/` directory, or a temporary `--input` file for the helper.
   `Write` is not a grant to edit planning artifacts.
+- One selected review scope produces exactly one combined report and one handoff Prompt. Never
+  create a report or Prompt per child. Do not delete, overwrite, or migrate historical child reports.
 - Do not run `task.py start`, `task.py finish`, or any Trellis command that writes state.
 - Every finding carries evidence. Drop any candidate you cannot cite.
 
@@ -34,7 +36,7 @@ Review the Trellis planning artifacts at `$ARGUMENTS`. Persist the report. Leave
 Detect the language of the request and surrounding discussion. Write the report in that language.
 Keep file paths, identifiers, commands, and code excerpts exact.
 
-## 1. Locate the task
+## 1. Locate the root task
 
 The task directory may sit in another repository. Resolve it in this order:
 
@@ -42,26 +44,46 @@ The task directory may sit in another repository. Resolve it in this order:
 2. `python ./.trellis/scripts/task.py current` in the working repository.
 3. `find . -maxdepth 5 -type d -name "<slug>"` when only a slug is known, then widen the search root.
 
-Read `task.json` first. Its `status`, `dev_type`, `scope`, and `package` decide which passes apply.
-Then read the artifacts. Details: `references/trellis-artifact-map.md`.
+Read the root `task.json` first. Details: `references/trellis-artifact-map.md`.
 
-## 2. Pass 0 — mechanical precheck
+## 2. Resolve one review scope
+
+The root task and the recursive closure of `task.json.children` form one scope. Resolve children
+root-first, preserving each `children` list's order. Search exact basenames in live tasks and
+`archive/*/`; `subtasks` is a legacy fallback only when the `children` key is absent. A leaf is a
+one-member scope.
+
+Fail closed before judgment or report writing on a missing or ambiguous child, malformed metadata,
+cycle, duplicate edge/member, unsafe path, or incorrect child `parent` backlink. Hierarchy expresses
+ownership, not execution order. For every resolved member, read `task.json` and the existing planning
+artifacts; each member's status decides whether Pass 7 applies.
+
+## 3. Pass 0 — mechanical precheck
 
 ```bash
-python "<skill-dir>/scripts/plan_precheck.py" <task-dir> --output <task-dir>/../precheck.json
+python "<skill-dir>/scripts/plan_precheck.py" <root-task-dir> --include-descendants
 ```
 
-Omit `--output` to print the JSON only. The script writes the file itself; never redirect with `>`.
-Exit `1` means a blocking item exists. Report those items before you start the judgment passes.
+The default is one aggregate JSON document on stdout. Use `--output <path>` only when a persisted
+diagnostic is needed; the script writes that one file itself, so never redirect with `>`. Exit `1`
+means a tree or member blocking item exists. Report those items before the judgment passes and do not
+invoke the report writer while any blocking item remains.
 
-The script decides only what strings and the filesystem can decide: artifact presence, template
-placeholder residue, `path:line` citation resolution, and `R`/`AC` identifier cross-reference.
+The script decides only what strings, the filesystem, and read-only git queries can decide:
+tree membership and integrity, per-member artifact presence, template placeholder residue,
+`path:line` citation resolution, `R`/`AC` identifier cross-reference, and whether the single root
+report destination is ignored or tracked by git. The git check is a note, never a blocking item.
 Claim truth, mechanism presence, and arithmetic stay with you.
 
-## 3. Passes 1–7 — judgment
+## 4. Passes 1–7 — judgment
 
 Run each pass to answer one question. Full criteria and a worked example per pass:
 `references/review-passes.md`.
+
+Run Passes 1–7 for every member, using that member's status and artifacts. Pass 5 also compares the
+parent and children for requirement coverage, declared cross-task ordering, shared contracts, and
+scope exclusions. Before numbering findings, merge candidates that share the same violated contract
+and correction choice; one cross-task root cause gets one TPR with every affected task and location.
 
 | Pass           | Question                                                              | Applies when               |
 | -------------- | --------------------------------------------------------------------- | -------------------------- |
@@ -82,38 +104,44 @@ Two rules carry most of the yield:
 
 Evidence rules per claim type: `references/claim-verification.md`.
 
-## 4. Persist the report
+## 5. Persist one combined report
 
-Assemble the four sections in `references/finding-contract.md` (verdict line, numbered
-findings, unverified list, sound parts) using `references/report-template.md`.
+Assemble the scope section and four evidence sections in `references/finding-contract.md` (verdict,
+numbered findings, unverified list, sound parts) using `references/report-template.md`.
 A plan with no defects gets an empty findings list. Do not manufacture findings to fill it.
 
 Write the file with the helper. The helper writes the file itself; never redirect with `>`.
 Prefer `--input` on Windows.
 
 ```bash
-python "<skill-dir>/scripts/write_review_report.py" <task-dir> --input <filled-report.md>
+python "<skill-dir>/scripts/write_review_report.py" <root-task-dir> --input <filled-report.md>
 ```
 
-The destination is the reviewed project's `.trellis/reviews/<task-dir-name>.md`.
-The same task overwrites the same file.
+Invoke the helper exactly once. The destination is the reviewed project's
+`.trellis/reviews/<root-task-name>.md`; a leaf keeps its existing basename path. A later review of the
+same root overwrites only that root report. Existing child reports are historical files and stay
+byte-for-byte untouched.
+If the destination is neither ignored nor tracked, the helper prints a gitignore note on
+stderr. Repeat that note in the chat after the handoff fence. Do not edit `.gitignore`;
+adding the ignore rule or committing the report is the project's decision.
 
 On success, the chat contains only:
 
 1. The verdict line with counts.
-2. The report path (repo-relative and absolute).
-3. One `text` fence whose body is the filled template from `references/handoff-prompt.md`.
+2. The one combined report path (repo-relative and absolute).
+3. Exactly one `text` fence whose body is the filled scope-wide template from
+   `references/handoff-prompt.md`.
 
 Do not paste the TPR table into the chat. Fill every placeholder. Keep TPR bodies in the
 report file.
 
 If the helper exits nonzero: explain the error and the attempted path; print the
-four-section report in chat; do not emit a path-based handoff prompt.
+scope-plus-evidence report in chat; do not emit a path-based handoff prompt.
 
 If the user asks to see the report in the conversation, print it after the fence.
 Still persist the file first.
 
-## 5. Routing
+## 6. Routing
 
 - Reviewing a code diff on its own: `code-auditor` (independent git-diff / full-spectrum)
   or `code-quality-review` (maintainability only).

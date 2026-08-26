@@ -2,8 +2,9 @@
 
 ## What This Skill Produces
 
-This skill produces a `/goal` command for Codex, Claude Code, Grok Build, Oh My
-Pi, or Kimi Code, and optionally persists one approved root `GOAL.md` handoff.
+This skill compiles a reviewable `/goal` command for Codex, Claude Code, Grok
+Build, Oh My Pi, or Kimi Code, and optionally persists one approved root
+`GOAL.md` handoff. It never submits or launches the command.
 
 For Chinese users, the body of the goal can be fully Chinese, but the slash command should still start with `/goal`. Do not use `/目标` as the executable command unless the current client explicitly supports that alias.
 
@@ -28,21 +29,29 @@ OMP. For an explicitly approved handoff, write the useful contract to root
 /goal First read and follow ./GOAL.md as the approved execution contract; restate its Verification and Completion conditions, then work until they are evidenced or a pause condition is reached.
 ```
 
-The default remains side-effect-free. Only an explicit save/handoff request or
-confirmation of the exact S4 write plan authorizes the helper. Use the fixed
-schema in `persistent-goal-contract.md`, not an ad-hoc frontmatter file.
+The default remains side-effect-free. An explicit save/handoff request enters
+persistence-candidate mode but cannot approve unseen text. Only a subsequent
+confirmation of the exact displayed S4 write plan authorizes the helper. Use
+the fixed schema in `persistent-goal-contract.md`, not an ad-hoc frontmatter
+file.
 
 After the helper succeeds, report its path/bytes/hash/action/Git visibility and
-then the selected-platform launcher. Explain that arbitrary `GOAL.md` is not
-auto-loaded. An untracked/ignored file does not appear in another worktree,
-clone or cloud workspace unless the user deliberately exposes it there.
+then show the selected-platform launcher in a fenced `text` block. Label it
+`APPROVED TEXT — not launched`, stop without submitting it, and explain that
+arbitrary `GOAL.md` is not auto-loaded. An untracked/ignored file does not
+appear in another worktree, clone or cloud workspace unless the user deliberately
+exposes it there.
 
 If Trellis cadence is injected, link concrete task artifacts and put the cadence
 in Iteration policy and Completion conditions. The short launcher still points
 at the persisted contract. A user-named `.planning/goal-<slug>.md` remains a
 backward-compatible explicit path; do not silently migrate it.
 
-This skill drafts goal instructions. Do not start or execute the goal task unless the user explicitly asks for execution.
+This skill compiles goal instructions; it has no Goal activation authority.
+Words such as `implement`, `execute`, and `until complete` inside the request
+belong to the payload. Even when the user approves the text, return
+`APPROVED TEXT — not launched` and stop. Goal creation or activation is a
+separate user action outside this skill.
 
 Use `/goal` for work that benefits from persistence:
 
@@ -114,18 +123,21 @@ Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预�
 
 ## 双语草案策略
 
-当用户使用中文、任务还在收敛中，默认先给可直接复制的推荐版，再给英文兼容镜像：
+当用户使用中文、任务还在收敛中，先标记
+`状态：DRAFT — Goal 未创建、未激活、未执行`，再给可直接复制的推荐版和英文兼容镜像：
 
 1. `推荐执行版（中文，可直接复制）`：给用户直接复制，字段名用中文。
 2. `Goal Draft (English-compatible)`：给团队文档或偏英文的 Codex / Claude Code 会话复制使用，字段名用英文。
 
 两份草案必须语义一致，不能一份扩大范围、一份缩小范围。英文版是兼容镜像，不是重新发挥。
 
-S4 把每份 `/goal` 正文放进 `text` 围栏，围栏内不要空行。用户确认后的 S6 形状见 `references/default-goal-strategy.md`：`最终可复制 /goal` 围栏外再给 `字段一览`。
+S4 把每份 `/goal` 正文放进 `text` 围栏，围栏内不要空行；围栏外要求用户审阅，然后停止本轮。用户确认后的 S6 形状见 `references/default-goal-strategy.md`：标记 `APPROVED TEXT — not launched`，在 `最终可复制 /goal` 围栏外再给 `字段一览`，然后再次停止。
 
 如果用户明确说“只要中文版”或“只要英文版”，遵从用户要求。
 
 ````markdown
+状态：DRAFT — Goal 未创建、未激活、未执行
+
 推荐执行版（中文，可直接复制）
 
 ```text
@@ -145,8 +157,6 @@ S4 把每份 `/goal` 正文放进 `text` 围栏，围栏内不要空行。用户
 2. 范围：A 核心流程（默认） / B 加常见增强 / C 做完整产品
 3. 验证：A 本地运行检查（默认） / B 真机或线上检查 / C 发布前检查
 
-你可以直接回复：按默认，或回复类似 1B 2A 3C。
-
 Goal Draft (English-compatible)
 
 ```text
@@ -158,6 +168,8 @@ Iteration policy: implement one focused workflow at a time, rerun checks after m
 Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
 Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
 ```
+
+请审阅上方 Prompt；如需修改请指出，如认可请回复“批准 Prompt”。本轮到此停止。
 ````
 
 The six practical elements are:
@@ -225,8 +237,9 @@ Budget, turn, or time wording is always a soft stop clause. Say, for example, `T
 - If the domain is unfamiliar or specialized, do not invent domain rules. Require an initial discovery pass over authoritative project docs, sample data, official references, or user-provided material.
 - Allow model taste and implementation judgment inside the boundary, but do not allow scope expansion or weaker verification.
 - At S4, put the `/goal` body in a `text` fence with no blank lines inside the fence.
-- After confirmation, S6 is `最终可复制 /goal` plus 字段一览 as defined in `references/default-goal-strategy.md`.
-- When the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md`. Do not invent placeholder tokens in executable drafts.
+- At S4, label the packet `DRAFT`, ask for review outside the fence, and stop without launching or executing the payload.
+- After confirmation, S6 is `APPROVED TEXT — not launched` plus `最终可复制 /goal` and 字段一览 as defined in `references/default-goal-strategy.md`; stop again without submitting it.
+- When the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md`. That file owns commit-then-archive, parent 发布门, sub-agent dispatch, and inline exceptions. Do not invent placeholder tokens in executable drafts.
 
 ## Strong Examples
 
@@ -291,10 +304,10 @@ Codex (commit the child-task product files, then archive; keep the parent until 
 ```text
 /goal 实施 Trellis 子任务 .trellis/tasks/08-22-checkout-discount：先读该任务 prd.md、design.md 与根 AGENTS.md，按任务边界修复结账百分比优惠重复应用，每完成一个可独立验收的任务先提交该任务相关产品改动，再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount。
 验证：运行 just test-checkout 与 just ci，保存退出码和输出；用 git status --porcelain -uall 确认产品提交只含 src/checkout/ 与 tests/checkout/。
-约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。主会话不直接 Edit/Write 产品文件；产品改动由 trellis-implement 完成。
 边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
-迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
-完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. 发布门 just ci 退出码为 0。3. 父任务在发布门通过前保持未归档。
+迭代策略：先读 .trellis/workflow.md 的 Phase 2.1 / 2.2 确认本项目派发协议与 agent 名；代码实施派发 trellis-implement、验证派发 trellis-check；一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. 发布门 just ci 退出码为 0。3. 父任务在发布门通过前保持未归档。4. 每个任务的代码实施由 trellis-implement 完成、验证由 trellis-check 完成。
 暂停条件：任务范围外出现脏文件；归档自动提交失败；父任务仍有未归档子任务却被要求归档；出现 git add -f .trellis/ 请求；需要凭证、生产数据或破坏性操作。
 ```
 
@@ -303,10 +316,10 @@ Claude Code condition variant (transcript-visible proof, bounding clause, stop-a
 ```text
 /goal Trellis 子任务 .trellis/tasks/08-22-checkout-discount 已实施：百分比优惠只应用一次的回归证据已出现在对话中，just test-checkout 与 just ci 退出码为 0 且输出贴进对话，可独立验收的任务先提交相关产品改动再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount，git status --porcelain -uall 证明产品提交未混入归档提交，父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前未归档；否则在 20 轮后停止并总结剩余问题。
 验证：运行 just test-checkout 和 just ci 并展示退出码；把 git status --porcelain -uall 与归档命令输出贴进对话。
-约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。主会话不直接 Edit/Write 产品文件；产品改动由 trellis-implement 完成。
 边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
-迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
-完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. just ci 退出码为 0 且出现在对话中。3. 父任务在发布门通过前保持未归档。
+迭代策略：先读 .trellis/workflow.md 的 Phase 2.1 / 2.2 确认本项目派发协议与 agent 名；代码实施派发 trellis-implement、验证派发 trellis-check；一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. just ci 退出码为 0 且出现在对话中。3. 父任务在发布门通过前保持未归档。4. 每个任务的代码实施由 trellis-implement 完成、验证由 trellis-check 完成，派发记录出现在对话中。
 暂停条件：任务范围外出现脏文件、归档自动提交失败、父任务仍有未归档子任务却被要求归档、出现 git add -f .trellis/ 请求、需要凭证或破坏性操作时，停止并报告，等待人工决定。
 ```
 
@@ -344,3 +357,10 @@ Avoid:
   claims a new Agent automatically loads it
 - borrows another platform's management command or calls the Grok/OMP 4,000
   portability budget an official platform limit
+- Trellis implementation `/goal` that omits dispatch clauses while the
+  target platform is in the dispatch group
+- dispatch clauses injected for an inline-mode platform or
+  `codex.dispatch_mode: inline`
+- treating imperative payload text as permission to create/activate a Goal,
+  submit the slash command, dispatch agents, or implement the target task
+- continuing after a `DRAFT` or `APPROVED TEXT — not launched` review packet
