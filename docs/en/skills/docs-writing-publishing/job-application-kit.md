@@ -34,7 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill job-applicati
 | `skills/docs-writing-publishing/job-application-kit/evals` | directory | 2 | Evaluation samples |
 | `skills/docs-writing-publishing/job-application-kit/README.md` | file | 1 | Top-level file |
 | `skills/docs-writing-publishing/job-application-kit/references` | directory | 9 | Reference material |
-| `skills/docs-writing-publishing/job-application-kit/reports` | directory | 2 | Top-level directory |
+| `skills/docs-writing-publishing/job-application-kit/reports` | directory | 4 | Top-level directory |
 | `skills/docs-writing-publishing/job-application-kit/scripts` | directory | 1 | Executable scripts |
 
 ## Scripts, references, and test resources
