@@ -1719,3 +1719,39 @@ goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / t
 ### Status
 
 [OK] **Completed**
+
+
+## Session 56: 按纳入提交写功能性 PR 标题
+
+**Date**: 2026-08-27
+**Task**: 按纳入提交写功能性 PR 标题
+**Branch**: `dev`
+
+### Summary
+
+gh-pr-release 升至 3.0.1：GitHub 标题只写纳入提交的功能主语，完成后对话只报标识符；just ci 通过后归档。
+
+### Main Changes
+
+- create.md 以 base...HEAD 写功能标题并禁止 --fill
+- merge.md 对机械标题单独授权 gh pr edit
+- Completion 收成标识符；evals 39-42 回归
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b30aeb7a` | (see git log) |
+| `03d8000d` | (see git log) |
+
+### Testing
+
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无
