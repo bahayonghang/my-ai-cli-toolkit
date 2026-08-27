@@ -2,7 +2,7 @@
 name: goal-meta-skill
 description: |
   Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.
-version: 0.7.0
+version: 0.7.1
 category: developer-tools-integrations
 tags:
   - codex
@@ -112,11 +112,15 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 
 ## Trellis adapter
 
-只有 outcome 明确是 Trellis task/child implementation 时才加载 `references/trellis-goal-cadence.md`。持久合同时必须链接具体 `prd.md`、`design.md`、`implement.md`，并保留“先提交该任务产品改动，再 archive；父任务等发布门”的节奏。派发组平台的实施 `/goal` 还要求先读目标项目 `.trellis/workflow.md` Phase 2.1 / 2.2，代码实施派发 `trellis-implement`、验证派发 `trellis-check`，主会话不直接改产品文件；内联组或 `codex.dispatch_mode: inline` 不注入派发，改用该项目内联形状。`GOAL.md` 不能取代任务文档，skill 本身也不执行目标内的 commit/archive。
+只有 outcome 明确是 Trellis task/child implementation 时才加载 `references/trellis-goal-cadence.md`。编译出的 `/goal` 第一条陈述必须显式写明“优先使用 subagents（默认开启）”；只有用户明确要求不使用 subagents/主会话内联实施时才在首句标记“用户已明确关闭”。若目标项目 `.trellis/workflow.md`、平台能力或 `codex.dispatch_mode: inline` 证明无法派发，首句保留默认开启的偏好并标明 inline 技术降级原因；用户未提及、语义模糊或只说“按默认”都不是关闭授权。
+
+默认开启时，实施 `/goal` 要求先读目标项目 `.trellis/workflow.md` Phase 2.1 / 2.2，代码实施派发 `trellis-implement`、验证派发 `trellis-check`，主会话不直接改产品文件；明确 opt-out 或有原因的技术降级改用项目的 inline 形状。首句开关必须与后文的 `迭代策略`、`约束`和 `完成条件` 一致。
+
+当前任务收尾顺序固定为：完成并验证一个可独立验收的任务；提交该任务相关产品改动和当前任务规划产物；确认二者均进入版本历史；再对具体任务目录运行 `task.py archive`。规划产物仅指该 `/goal` 绑定的当前任务目录；明确排除其他活动/未跟踪任务目录和范围外脏文件。产品与规划可按仓库规范拆分为一个或多个语义清晰的 Conventional Commits；归档目录移动/状态更新由随后 `task.py archive` 的独立提交拥有。持久合同必须链接具体 `prd.md`、`design.md`、`implement.md` 并保留同一节奏；父任务等子任务逐个完成该闭环且发布门通过。`GOAL.md` 不能取代任务文档，skill 本身也不执行目标内的 commit/archive。
 
 ## Quality bar
 
-拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；Trellis 实施缺派发条款（目标平台在派发组时）；对内联模式平台注入派发条款；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明；缺少 `DRAFT` / `APPROVED TEXT — not launched` 状态；展示后继续创建/激活 Goal、提交 slash command、派发 Agent 或实施 payload。
+拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；Trellis 实施首句缺少 subagents 开关或把未提及/模糊表达当作关闭；默认开启却缺派发条款；opt-out/技术降级却仍要求派发；技术降级首句不说明能力原因；Trellis 收尾漏掉当前任务规划产物提交、版本历史确认或无关任务/范围外脏文件排除；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明；缺少 `DRAFT` / `APPROVED TEXT — not launched` 状态；展示后继续创建/激活 Goal、提交 slash command、派发 Agent 或实施 payload。
 
 ## Resources
 

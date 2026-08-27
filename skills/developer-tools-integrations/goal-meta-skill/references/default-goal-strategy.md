@@ -91,6 +91,13 @@ cadence for ordinary code or doc work merely because `.trellis/` exists.
 Fast-path `直接给` still injects only when the outcome text already names
 Trellis task implementation.
 
+For injected Trellis cadence, the first `/goal` statement exposes the
+subagent preference switch. It is default-on when the user is silent or
+ambiguous, explicit opt-out only when the user clearly disables subagents,
+and a reasoned inline technical fallback when project/platform capability
+prevents dispatch. Later iteration, constraint, and completion fields must
+match that first-statement state.
+
 ## Goal Length Rule
 
 Codex, Claude Code, and Kimi objectives/conditions have an official 4,000-character limit. This skill applies the same portability budget to Grok Build and OMP without claiming it is their platform cap. Most launchers should be much shorter.
@@ -207,7 +214,7 @@ the fenced command.
 5. 迭代策略：...
 6. 完成条件：...
 7. 暂停条件：...
-8. Trellis 节奏：（仅注入时）先提交该任务相关改动，再 archive；父任务等到发布门。
+8. Trellis 节奏：（仅注入时）首句声明 subagents 开关；完成验证后提交当前任务产品改动与规划产物，确认均进入版本历史且排除无关任务/范围外脏文件，再 archive；父任务等到发布门。
 
 该文本尚未创建或激活 Goal；如需运行，请在 goal-meta-skill 外另行复制并提交。
 ````

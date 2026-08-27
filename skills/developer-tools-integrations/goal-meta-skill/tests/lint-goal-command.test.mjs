@@ -255,7 +255,7 @@ test('skill allowed-tools stay exact and narrow while the named helper owns the 
 
 test('package metadata, platform registry, and behavior eval history stay synchronized', () => {
   const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
-  assert.match(skillText, /^version:\s*0\.7\.0$/m);
+  assert.match(skillText, /^version:\s*0\.7\.1$/m);
   for (const platform of ['Claude Code', 'Codex', 'Grok Build', 'Oh My Pi', 'Kimi Code']) {
     assert.match(skillText, new RegExp(platform));
   }
@@ -278,8 +278,8 @@ test('package metadata, platform registry, and behavior eval history stay synchr
     path.join(skillRoot, 'references', 'trellis-goal-cadence.md'),
     'utf8',
   );
-  assert.match(cadence, /Last verified: 2026-08-25/);
-  const dispatchSection = cadence.split('## Sub-agent dispatch')[1]?.split('## Commit then archive')[0] ?? '';
+  assert.match(cadence, /Last verified: 2026-08-27/);
+  const dispatchSection = cadence.split('## First-statement subagent switch')[1]?.split('## Commit then archive')[0] ?? '';
   const tableRows = (dispatchSection.match(/^\|.*\|$/gm) ?? []).filter(
     (row) => !/^\|\s*-+/.test(row) && !/^\|\s*Platform\s*\|/i.test(row),
   );
@@ -289,11 +289,26 @@ test('package metadata, platform registry, and behavior eval history stay synchr
   }
   assert.doesNotMatch(tableRows.join('\n'), /official/i);
   assert.match(cadence, /trellis-implement/);
+  for (const anchor of [
+    '优先使用 subagents（默认开启）',
+    '用户已明确关闭',
+    '技术降级',
+    'current-task planning artifacts',
+    'confirm both are in version history',
+    'other active or untracked task directories',
+    'out-of-scope dirty files',
+  ]) {
+    assert.match(cadence, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+
+  assert.match(interfaceText, /first \/goal statement say that subagents are preferred and default-on/);
+  assert.match(interfaceText, /current-task planning artifacts/);
+  assert.match(interfaceText, /exclude unrelated task directories and out-of-scope dirty files/);
 
   const evals = JSON.parse(
     readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
   ).evals;
-  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 37 }, (_, i) => i + 1));
+  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 41 }, (_, i) => i + 1));
   for (const fixture of evals) {
     assert.ok(Array.isArray(fixture.assertions) && fixture.assertions.length > 0);
     assert.equal('expectations' in fixture, false);
@@ -367,6 +382,10 @@ test('review gate keeps prompt approval separate from Goal activation', () => {
   ).evals;
   const screenshotRegression = evals.find(({ id }) => id === 36);
   const approvalRegression = evals.find(({ id }) => id === 37);
+  const cursorCloseoutRegression = evals.find(({ id }) => id === 38);
+  const defaultSubagentsRegression = evals.find(({ id }) => id === 39);
+  const explicitOptOutRegression = evals.find(({ id }) => id === 40);
+  const capabilityFallbackRegression = evals.find(({ id }) => id === 41);
   for (const id of [1, 10, 12]) {
     const fixture = evals.find((entry) => entry.id === id);
     assert.ok(
@@ -397,22 +416,40 @@ test('review gate keeps prompt approval separate from Goal activation', () => {
   assert.ok(
     approvalRegression?.assertions.some((item) => /does not submit.*\/goal/i.test(item)),
   );
+  assert.match(cursorCloseoutRegression?.prompt ?? '', /46 unrelated untracked planning directories/);
+  assert.ok(
+    cursorCloseoutRegression?.assertions.some((item) => /current-task planning artifacts/i.test(item)),
+  );
+  assert.ok(
+    cursorCloseoutRegression?.assertions.some((item) => /deterministic recorded_fixture/i.test(item)),
+  );
+  assert.ok(
+    defaultSubagentsRegression?.assertions.some((item) => /优先使用 subagents（默认开启）/.test(item)),
+  );
+  assert.ok(
+    explicitOptOutRegression?.assertions.some((item) => /用户已明确关闭/.test(item)),
+  );
+  assert.ok(
+    capabilityFallbackRegression?.assertions.some((item) => /technical-fallback reason/i.test(item)),
+  );
 });
 
 const contractLauncher =
   '/goal First read and follow ./GOAL.md as the approved execution contract. Restate its objective, constraints, verification, completion, and pause conditions before editing; then work until every completion gate is evidenced or a pause condition is reached.';
 
 function validContract({
+  objective = 'Repair the parser so blank CSV rows no longer crash the local command while preserving current output for nonblank rows.',
   iteration = 'Make one focused change, rerun the smallest failing check, inspect new evidence before retrying, and stop after three evidence-driven repair rounds.',
   completion = '1. The blank-row regression test passes.\n2. just test-parser exits zero and the current diff remains inside the approved boundary.',
   reading = '- Read AGENTS.md, src/parser/, tests/parser/, and the project command source before editing.',
+  constraints = '- Add no dependency, remote action, production mutation, destructive operation, credential, or paid service.',
 } = {}) {
   return `# Goal Contract: Parser recovery
 
 ## Contract metadata
 - Status: approved
 - Target platform: codex
-- Generated by: goal-meta-skill 0.7.0
+- Generated by: goal-meta-skill 0.7.1
 - Project root: .
 - Contract path: GOAL.md
 - Baseline: main @ 0123456789abcdef0123456789abcdef01234567; dirty paths: clean
@@ -422,7 +459,7 @@ function validContract({
 Follow system and user instructions, scoped AGENTS.md or CLAUDE.md rules, and authoritative project or Trellis task specifications before this contract. Recheck the baseline and stop to report any drift or conflict before risky edits.
 
 ## Objective
-Repair the parser so blank CSV rows no longer crash the local command while preserving current output for nonblank rows.
+${objective}
 
 ## Required reading and current context
 ${reading}
@@ -432,7 +469,7 @@ ${reading}
 - Write only under src/parser/ and tests/parser/; preserve unrelated dirty files and generated output.
 
 ## Constraints
-- Add no dependency, remote action, production mutation, destructive operation, credential, or paid service.
+${constraints}
 
 ## Verification
 - VERIFIED baseline command: run just test-parser and retain its exit code and output.
@@ -454,26 +491,34 @@ Pause or stop and report when authority conflicts, baseline drift, credentials, 
 
 const trellisTask = '.trellis/tasks/08-23-parser';
 const trellisReading = `- Read AGENTS.md, ${trellisTask}/prd.md, ${trellisTask}/design.md, ${trellisTask}/implement.md, and applicable specs before editing.`;
-const trellisIteration = `Make one focused change, rerun the smallest failing check, then commit only this task's product changes before running python ./.trellis/scripts/task.py archive ${trellisTask}.`;
+const trellisObjective = 'Prefer subagents (default on); repair the current Trellis parser task while preserving its approved scope.';
+const trellisConstraints = `- Keep unrelated and other task directories excluded and unchanged; preserve out-of-scope dirty files.
+- Keep the archive commit separate from product changes and pre-archive planning artifacts.
+- The main session does not Edit/Write product files; product changes are done by trellis-implement.
+- Add no dependency, remote action, production mutation, destructive operation, credential, or paid service.`;
+const trellisIteration = `Dispatch trellis-implement for code and trellis-check for verification after reading .trellis/workflow.md Phase 2.1 / 2.2. Make one focused change, rerun the smallest failing check, then commit this current task's related product changes and current task planning artifacts. Confirm both are in version history before running python ./.trellis/scripts/task.py archive ${trellisTask}.`;
 const trellisCompletion = `1. The blank-row regression test passes.
 2. just test-parser exits zero and the current diff remains inside the approved boundary.
-3. The task is archived only after its product commit; any parent waits for the named release gate.`;
+3. The current task's related product changes and current task planning artifacts are both in version history while unrelated task directories and out-of-scope dirty files remain excluded.
+4. The task is archived only after those commits; any parent waits for the named release gate.`;
 
-const trellisInlineMissingDispatch = `
-/goal 实施 Trellis 子任务 .trellis/tasks/08-22-checkout-discount：先读该任务 prd.md、design.md 与根 AGENTS.md，按任务边界修复结账百分比优惠重复应用，每完成一个可独立验收的任务先提交该任务相关产品改动，再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount。
+const trellisDefaultGoal = `
+/goal 优先使用 subagents（默认开启）；实施 Trellis 子任务 .trellis/tasks/08-22-checkout-discount，按任务边界修复结账百分比优惠重复应用；完成并验证后，提交当前任务相关产品改动和当前任务规划产物，确认二者均进入版本历史后再运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount。
 验证：运行 just test-checkout 与 just ci，保存退出码和输出；用 git status --porcelain -uall 确认产品提交只含 src/checkout/ 与 tests/checkout/。
-约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动不得进入归档提交；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档，以免把未归档子任务的 parent 写成 null。
+约束：不 push、不 amend；禁止 git add -f .trellis/；产品改动和归档前规划产物不得进入归档提交；其他活动或未跟踪任务目录保留不改且不纳入提交，范围外脏文件保留不改；主会话不直接 Edit/Write 产品文件，产品改动由 trellis-implement 完成；不修改 .trellis/scripts/；父任务 .trellis/tasks/08-22-checkout 在发布门 just ci 通过前不归档。
 边界：只修改 src/checkout/、tests/checkout/ 和当前任务直接需要的文件；不改无关脏文件。
-迭代策略：一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交该任务相关产品文件；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
-完成条件：1. 子任务在产品提交之后已由 python ./.trellis/scripts/task.py archive 归档。2. 发布门 just ci 退出码为 0。3. 父任务在发布门通过前保持未归档。
+迭代策略：先读 .trellis/workflow.md 的 Phase 2.1 / 2.2；代码实施派发 trellis-implement、验证派发 trellis-check；一次完成一个可独立验收的 Trellis 任务；用 Conventional Commits 提交当前任务相关产品改动和当前任务规划产物，确认二者均进入版本历史；然后运行 python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount；再处理下一个子任务。
+完成条件：1. 当前任务相关产品改动和当前任务规划产物均已提交并进入版本历史，无关任务目录与范围外脏文件未被纳入。2. 子任务随后已由 python ./.trellis/scripts/task.py archive 归档。3. 发布门 just ci 退出码为 0。4. 父任务在发布门通过前保持未归档。5. 代码实施由 trellis-implement 完成、验证由 trellis-check 完成。
 暂停条件：任务范围外出现脏文件；归档自动提交失败；父任务仍有未归档子任务却被要求归档；出现 git add -f .trellis/ 请求；需要凭证、生产数据或破坏性操作。
 `;
 
 test('contract Trellis text missing dispatch is an error', () => {
   const result = lintText(
     validContract({
+      objective: trellisObjective,
       reading: trellisReading,
-      iteration: trellisIteration,
+      constraints: trellisConstraints,
+      iteration: trellisIteration.replace('Dispatch trellis-implement for code and trellis-check for verification after reading .trellis/workflow.md Phase 2.1 / 2.2. ', ''),
       completion: trellisCompletion,
     }),
     ['--contract'],
@@ -486,8 +531,10 @@ test('contract Trellis text missing dispatch is an error', () => {
 test('contract Trellis text with dispatch passes', () => {
   const result = lintText(
     validContract({
+      objective: trellisObjective,
       reading: trellisReading,
-      iteration: `Dispatch trellis-implement for code and trellis-check for verification. ${trellisIteration}`,
+      constraints: trellisConstraints,
+      iteration: trellisIteration,
       completion: trellisCompletion,
     }),
     ['--contract'],
@@ -498,8 +545,10 @@ test('contract Trellis text with dispatch passes', () => {
 test('contract Trellis text in inline mode may omit dispatch', () => {
   const result = lintText(
     validContract({
+      objective: 'Prefer subagents (default on), but because codex.dispatch_mode: inline this is a technical fallback to inline execution; repair the current Trellis parser task.',
       reading: trellisReading,
-      iteration: `This project uses dispatch_mode: inline. ${trellisIteration}`,
+      constraints: trellisConstraints.replace('- The main session does not Edit/Write product files; product changes are done by trellis-implement.\n', ''),
+      iteration: `Use the project inline shape: trellis-before-dev, main-session edit, then trellis-check. ${trellisIteration.replace('Dispatch trellis-implement for code and trellis-check for verification after reading .trellis/workflow.md Phase 2.1 / 2.2. ', '')}`,
       completion: trellisCompletion,
     }),
     ['--contract'],
@@ -513,30 +562,131 @@ test('non-Trellis contract may omit dispatch', () => {
 });
 
 test('inline Trellis /goal missing dispatch is an error', () => {
-  const result = lintText(trellisInlineMissingDispatch);
+  const result = lintText(
+    trellisDefaultGoal
+      .replace('代码实施派发 trellis-implement、验证派发 trellis-check；', '')
+      .replace('5. 代码实施由 trellis-implement 完成、验证由 trellis-check 完成。', ''),
+  );
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /trellis-implement/);
   assert.doesNotMatch(result.stderr, /^warning:.*trellis-implement/m);
 });
 
 test('inline Trellis /goal with dispatch passes', () => {
+  const result = lintText(trellisDefaultGoal);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('inline Trellis /goal with explicit user opt-out passes without dispatch', () => {
   const result = lintText(
-    trellisInlineMissingDispatch.replace(
-      '迭代策略：一次完成一个可独立验收的 Trellis 任务',
-      '迭代策略：先读 .trellis/workflow.md 的 Phase 2.1 / 2.2 确认本项目派发协议与 agent 名；代码实施派发 trellis-implement、验证派发 trellis-check；一次完成一个可独立验收的 Trellis 任务',
-    ),
+    trellisDefaultGoal
+      .replace('优先使用 subagents（默认开启）；', 'subagents 偏好开关：用户已明确关闭，按主会话内联实施；')
+      .replace('代码实施派发 trellis-implement、验证派发 trellis-check；', '按 trellis-before-dev → 主会话编辑 → trellis-check 的内联形状实施；')
+      .replace('5. 代码实施由 trellis-implement 完成、验证由 trellis-check 完成。', '5. 主会话已按内联形状实施并完成 trellis-check。')
+      .replace('主会话不直接 Edit/Write 产品文件，产品改动由 trellis-implement 完成；', ''),
   );
   assert.equal(result.status, 0, result.stderr);
 });
 
-test('inline Trellis /goal in inline mode may omit dispatch', () => {
+test('inline Trellis /goal with capability fallback names the reason and passes', () => {
   const result = lintText(
-    trellisInlineMissingDispatch.replace(
-      '迭代策略：一次完成一个可独立验收的 Trellis 任务',
-      '迭代策略：本项目 Codex dispatch_mode 为 inline，按 trellis-before-dev 内联模式实施；一次完成一个可独立验收的 Trellis 任务',
-    ),
+    trellisDefaultGoal
+      .replace('优先使用 subagents（默认开启）；', '优先使用 subagents（默认开启），但因目标项目 codex.dispatch_mode: inline 技术降级为主会话内联实施；')
+      .replace('代码实施派发 trellis-implement、验证派发 trellis-check；', '按 trellis-before-dev → 主会话编辑 → trellis-check 的内联形状实施；')
+      .replace('5. 代码实施由 trellis-implement 完成、验证由 trellis-check 完成。', '5. 主会话已按技术降级的内联形状实施并完成 trellis-check。')
+      .replace('主会话不直接 Edit/Write 产品文件，产品改动由 trellis-implement 完成；', ''),
   );
   assert.equal(result.status, 0, result.stderr);
+});
+
+test('Trellis /goal missing the first-statement switch is an error', () => {
+  const result = lintText(
+    trellisDefaultGoal.replace('优先使用 subagents（默认开启）；', ''),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /优先使用 subagents/);
+});
+
+test('Trellis /goal cannot bury the default-on switch in a later statement', () => {
+  const result = lintText(
+    trellisDefaultGoal.replace(
+      '/goal 优先使用 subagents（默认开启）；实施 Trellis 子任务',
+      '/goal 实施并归档当前任务；优先使用 subagents（默认开启）；实施 Trellis 子任务',
+    ),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /first \/goal statement.*优先使用 subagents/i);
+});
+
+test('persisted Trellis Objective cannot bury the switch in a later statement', () => {
+  const result = lintText(
+    validContract({
+      objective: `Repair the current Trellis parser task first. ${trellisObjective}`,
+      reading: trellisReading,
+      constraints: trellisConstraints,
+      iteration: trellisIteration,
+      completion: trellisCompletion,
+    }),
+    ['--contract'],
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /first \/goal statement.*优先使用 subagents/i);
+});
+
+test('Trellis /goal missing current-task planning artifact commit is an error', () => {
+  const result = lintText(
+    trellisDefaultGoal.replaceAll('和当前任务规划产物', ''),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /planning artifacts before archive/);
+});
+
+test('Trellis /goal must name the concrete task in the archive command', () => {
+  const result = lintText(
+    trellisDefaultGoal.replaceAll(
+      'python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount',
+      'archive the current task',
+    ),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /task\.py archive.*concrete current task directory/i);
+});
+
+test('Trellis /goal must keep the archive commit separate', () => {
+  const result = lintText(
+    trellisDefaultGoal.replace(
+      '产品改动和归档前规划产物不得进入归档提交；',
+      '',
+    ),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /archive commit separate/i);
+});
+
+test('Trellis first-statement opt-out cannot contradict later dispatch', () => {
+  const result = lintText(
+    trellisDefaultGoal.replace(
+      '优先使用 subagents（默认开启）；',
+      'subagents 偏好开关：用户已明确关闭，按主会话内联实施；',
+    ),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /explicitly disabled.*later cadence still dispatches/i);
+});
+
+test('Trellis capability fallback cannot also claim an explicit user opt-out', () => {
+  const result = lintText(
+    trellisDefaultGoal
+      .replace(
+        '优先使用 subagents（默认开启）；',
+        '优先使用 subagents（默认开启），同时 subagents 用户已明确关闭，但因 codex.dispatch_mode: inline 技术降级为内联；',
+      )
+      .replace('代码实施派发 trellis-implement、验证派发 trellis-check；', '按 trellis-before-dev → 主会话编辑 → trellis-check 的内联形状实施；')
+      .replace('5. 代码实施由 trellis-implement 完成、验证由 trellis-check 完成。', '5. 主会话已按技术降级的内联形状实施并完成 trellis-check。')
+      .replace('主会话不直接 Edit/Write 产品文件，产品改动由 trellis-implement 完成；', ''),
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /both default-on and explicitly disabled/i);
 });
 
 test('non-Trellis inline /goal may omit dispatch', () => {
