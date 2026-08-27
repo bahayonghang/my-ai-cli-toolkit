@@ -45,14 +45,66 @@ COMPLETION_ANCHOR_PATTERNS = [
     r"(?:[\w.-]+[/\\])+[\w.-]+",
 ]
 
-DISPATCH_REQUIREMENT_PATTERNS = [
-    r"trellis-implement",
-    r"trellis-check",
-    r"spawn_subagent",
-    r"subagent_type",
-    r"派发",
-    r"子代理",
+SUBAGENT_DEFAULT_ON_PATTERNS = [
+    r"优先使用\s*(?:subagents?|sub-agents?|子代理).{0,24}(?:默认开启|默认启用|开关默认开启)",
+    r"(?:prefer|prioriti[sz]e)\s+(?:subagents?|sub-agents?).{0,24}(?:default(?:s)?\s+(?:to\s+)?(?:on|enabled)|enabled\s+by\s+default)",
 ]
+
+SUBAGENT_OPT_OUT_PATTERNS = [
+    r"(?:subagents?|sub-agents?|子代理).{0,40}(?:用户已明确关闭|用户明确关闭|用户已明确要求不使用)",
+    r"(?:subagents?|sub-agents?).{0,40}(?:explicit(?:ly)?\s+(?:disabled|opt(?:ed)?\s+out)|explicit\s+user\s+opt-out)",
+]
+
+SUBAGENT_FALLBACK_PATTERNS = [
+    r"(?:subagents?|sub-agents?|子代理).{0,70}(?:技术降级|technical\s+fallback|capability\s+fallback).{0,50}(?:inline|内联)",
+]
+
+SUBAGENT_FALLBACK_REASON_PATTERNS = [
+    r"dispatch_mode.{0,20}inline",
+    r"workflow\.md.{0,60}(?:inline|内联)",
+    r"(?:platform|host|平台|宿主).{0,50}(?:cannot|unsupported|不支持|无法).{0,30}(?:dispatch|subagent|派发|子代理)",
+]
+
+TRELLIS_PRODUCT_CHANGE_PATTERNS = [
+    r"(?:current|this)\s+task.{0,60}(?:related\s+)?product\s+(?:changes|files)",
+    r"(?:当前|本)任务.{0,30}(?:相关)?产品(?:改动|文件)",
+]
+
+TRELLIS_PLANNING_ARTIFACT_PATTERNS = [
+    r"(?:current|this)\s+task.{0,50}planning\s+artifacts?",
+    r"(?:当前|本)任务.{0,24}规划产物",
+]
+
+TRELLIS_HISTORY_CONFIRMATION_PATTERNS = [
+    r"(?:product\s+(?:changes|files).{0,80}planning\s+artifacts?|both).{0,80}(?:version|commit)\s+history",
+    r"(?:产品(?:改动|文件).{0,80}规划产物|二者|两类).{0,80}(?:版本历史|提交历史|均已提交)",
+]
+
+TRELLIS_UNRELATED_TASK_EXCLUSION_PATTERNS = [
+    r"(?:exclude|leave\s+out|preserve).{0,50}(?:unrelated|other).{0,30}task",
+    r"(?:unrelated|other).{0,30}task.{0,50}(?:excluded|left\s+out|unchanged)",
+    r"(?:排除|不纳入|保留).{0,40}(?:无关|其他).{0,24}任务",
+    r"(?:无关|其他).{0,24}任务.{0,40}(?:排除|不纳入|保留|不改)",
+]
+
+TRELLIS_OUT_OF_SCOPE_DIRTY_EXCLUSION_PATTERNS = [
+    r"(?:exclude|leave|preserve|do\s+not\s+(?:include|change)).{0,50}out-of-scope\s+dirty",
+    r"out-of-scope\s+dirty.{0,50}(?:excluded|left|preserved|unchanged)",
+    r"(?:排除|不纳入|保留|不改).{0,40}范围外(?:脏文件|改动)",
+    r"范围外(?:脏文件|改动).{0,40}(?:排除|不纳入|保留|不改)",
+]
+
+TRELLIS_ARCHIVE_COMMIT_SEPARATION_PATTERNS = [
+    r"archive\s+commit.{0,60}(?:separate|independent|own)",
+    r"(?:product.{0,40}planning|product/planning|both).{0,80}(?:must\s+not|do\s+not|cannot|excluded\s+from).{0,40}archive\s+commit",
+    r"(?:产品.{0,40}规划|产品/规划|二者).{0,60}(?:不得|不能|不应).{0,30}(?:进入|混入)?归档提交",
+    r"归档提交.{0,40}(?:独立|单独)",
+]
+
+TRELLIS_CONCRETE_ARCHIVE_PATTERN = (
+    r"task\.py\s+archive\s+[\"']?(?:\./)?\.trellis[\\/]tasks[\\/]"
+    r"[A-Za-z0-9][A-Za-z0-9._-]*[\"']?"
+)
 
 INLINE_MODE_PATTERNS = [
     r"dispatch_mode.{0,20}inline",
@@ -342,22 +394,168 @@ def _trellis_cadence_region(text: str) -> str:
     return "\n".join(parts) if parts else text
 
 
-def lint_trellis_dispatch(text: str, source: str, *, cadence: str) -> list[str]:
-    """Require dispatch on Trellis implementation text unless inline mode is stated.
+def _matches_any(text: str, patterns: list[str]) -> bool:
+    return any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in patterns)
 
-    Missing dispatch is a contract defect and belongs in errors, not warnings.
+
+def _trellis_first_statement(text: str) -> str:
+    """Return the first execution-policy statement, not a later dispatch hint."""
+    if re.search(r"^## Objective\s*$", text, flags=re.MULTILINE):
+        objective = _sections(text).get("Objective", "")
+        first_line = next((line.strip() for line in objective.splitlines() if line.strip()), "")
+    else:
+        match = re.search(r"^\s*/goal\s+(.+)$", text, flags=re.MULTILINE)
+        first_line = match.group(1).strip() if match else ""
+
+    # Inline /goal payloads commonly put the whole contract on one physical
+    # line. Treat semicolons and sentence-ending punctuation as statement
+    # boundaries so a switch buried in a later clause cannot satisfy the
+    # first-statement contract. Require whitespace after an ASCII period to
+    # avoid splitting paths such as `.trellis/tasks/...`.
+    return re.split(
+        r"(?<=[;；。！？])\s*|(?<=[.!?])\s+",
+        first_line,
+        maxsplit=1,
+    )[0].strip()
+
+
+def _has_trellis_dispatch(cadence: str) -> bool:
+    return bool(
+        re.search(r"trellis-implement", cadence, flags=re.IGNORECASE)
+        and re.search(r"trellis-check", cadence, flags=re.IGNORECASE)
+    )
+
+
+def lint_trellis_dispatch(text: str, source: str, *, cadence: str) -> list[str]:
+    """Require a first-statement subagent switch consistent with later execution policy.
+
+    Missing or contradictory policy is a contract defect and belongs in errors,
+    not warnings.
     """
-    if any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in INLINE_MODE_PATTERNS):
-        return []
-    if any(
-        re.search(pattern, cadence, flags=re.IGNORECASE)
-        for pattern in DISPATCH_REQUIREMENT_PATTERNS
+    errors: list[str] = []
+    first_statement = _trellis_first_statement(text)
+    default_on = _matches_any(first_statement, SUBAGENT_DEFAULT_ON_PATTERNS)
+    opt_out = _matches_any(first_statement, SUBAGENT_OPT_OUT_PATTERNS)
+    fallback = _matches_any(first_statement, SUBAGENT_FALLBACK_PATTERNS)
+    has_dispatch = _has_trellis_dispatch(cadence)
+
+    if default_on and opt_out:
+        errors.append(
+            f"{source}: Trellis first statement cannot mark subagents both default-on "
+            "and explicitly disabled by the user"
+        )
+        return errors
+
+    if fallback:
+        if not default_on:
+            errors.append(
+                f"{source}: Trellis inline technical fallback must keep the subagent "
+                "preference marked default-on in the first /goal statement"
+            )
+        if not _matches_any(first_statement, SUBAGENT_FALLBACK_REASON_PATTERNS):
+            errors.append(
+                f"{source}: Trellis inline technical fallback must name a workflow, "
+                "dispatch_mode, host, or platform capability reason in the first statement"
+            )
+        if has_dispatch:
+            errors.append(
+                f"{source}: Trellis first statement declares inline technical fallback "
+                "but later cadence still dispatches trellis-implement / trellis-check"
+            )
+        return errors
+
+    if opt_out:
+        if has_dispatch:
+            errors.append(
+                f"{source}: Trellis first statement says the user explicitly disabled "
+                "subagents but later cadence still dispatches them"
+            )
+        return errors
+
+    if not default_on:
+        errors.append(
+            f"{source}: Trellis implementation first /goal statement must say "
+            "`优先使用 subagents` and mark the switch default-on, or record an "
+            "explicit user opt-out / explained inline technical fallback"
+        )
+        return errors
+
+    if _matches_any(cadence, INLINE_MODE_PATTERNS) and not has_dispatch:
+        errors.append(
+            f"{source}: Trellis first statement marks subagents default-on but later "
+            "cadence silently switches to inline execution"
+        )
+    elif not has_dispatch:
+        errors.append(
+            f"{source}: Trellis implementation with subagents default-on must require "
+            "dispatch of `trellis-implement` / `trellis-check`"
+        )
+    return errors
+
+
+def lint_trellis_closeout(text: str, source: str, *, cadence: str) -> list[str]:
+    """Require current-task product/planning commits before task archive."""
+    errors: list[str] = []
+    product_match = next(
+        (
+            re.search(pattern, cadence, flags=re.IGNORECASE)
+            for pattern in TRELLIS_PRODUCT_CHANGE_PATTERNS
+            if re.search(pattern, cadence, flags=re.IGNORECASE)
+        ),
+        None,
+    )
+    planning_match = next(
+        (
+            re.search(pattern, cadence, flags=re.IGNORECASE)
+            for pattern in TRELLIS_PLANNING_ARTIFACT_PATTERNS
+            if re.search(pattern, cadence, flags=re.IGNORECASE)
+        ),
+        None,
+    )
+    archive_match = re.search(
+        TRELLIS_CONCRETE_ARCHIVE_PATTERN,
+        cadence,
+        flags=re.IGNORECASE,
+    )
+
+    if product_match is None:
+        errors.append(f"{source}: Trellis closeout must commit the current task's product changes")
+    if planning_match is None:
+        errors.append(
+            f"{source}: Trellis closeout must commit the current task's planning artifacts "
+            "before archive"
+        )
+    if not _matches_any(cadence, TRELLIS_HISTORY_CONFIRMATION_PATTERNS):
+        errors.append(
+            f"{source}: Trellis closeout must confirm product changes and current-task "
+            "planning artifacts are in version history before archive"
+        )
+    if archive_match is None:
+        errors.append(
+            f"{source}: Trellis closeout must run `task.py archive` with the concrete "
+            "current task directory"
+        )
+    if archive_match and (
+        (product_match is not None and product_match.start() > archive_match.start())
+        or (planning_match is not None and planning_match.start() > archive_match.start())
     ):
-        return []
-    return [
-        f"{source}: Trellis implementation must require dispatch of "
-        "`trellis-implement` / `trellis-check` unless the text states inline mode"
-    ]
+        errors.append(
+            f"{source}: Trellis archive must follow the current-task product and planning commits"
+        )
+    if not _matches_any(text, TRELLIS_UNRELATED_TASK_EXCLUSION_PATTERNS):
+        errors.append(
+            f"{source}: Trellis planning commit must explicitly exclude unrelated or other task directories"
+        )
+    if not _matches_any(text, TRELLIS_OUT_OF_SCOPE_DIRTY_EXCLUSION_PATTERNS):
+        errors.append(
+            f"{source}: Trellis closeout must explicitly preserve out-of-scope dirty files"
+        )
+    if not _matches_any(text, TRELLIS_ARCHIVE_COMMIT_SEPARATION_PATTERNS):
+        errors.append(
+            f"{source}: Trellis closeout must keep the archive commit separate from "
+            "product changes and pre-archive planning artifacts"
+        )
+    return errors
 
 
 def lint_budget_misrepresentation(text: str, source: str) -> list[str]:
@@ -424,8 +622,10 @@ def lint_text(
     errors.extend(lint_platform_commands(text, source, platform))
 
     if ".trellis/tasks/" in text and re.search(r"archive", text, flags=re.IGNORECASE):
+        cadence = _trellis_cadence_region(text)
+        errors.extend(lint_trellis_closeout(text, source, cadence=cadence))
         errors.extend(
-            lint_trellis_dispatch(text, source, cadence=_trellis_cadence_region(text))
+            lint_trellis_dispatch(text, source, cadence=cadence)
         )
 
     if platform == "claude":
@@ -525,8 +725,8 @@ def lint_persisted_contract(
 
     if metadata.get("Status", "").lower() != "approved":
         errors.append(f"{source}: contract Status must be `approved`")
-    if metadata.get("Generated by") != "goal-meta-skill 0.7.0":
-        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.7.0`")
+    if metadata.get("Generated by") != "goal-meta-skill 0.7.1":
+        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.7.1`")
     if metadata.get("Project root") != ".":
         errors.append(f"{source}: Project root must be the relative marker `.`")
     if metadata.get("Contract path") != expected_path:
@@ -631,6 +831,7 @@ def lint_persisted_contract(
         cadence = sections["Iteration policy"] + "\n" + sections["Completion conditions"]
         if not re.search(r"commit|提交", cadence, flags=re.IGNORECASE) or "archive" not in cadence:
             errors.append(f"{source}: Trellis contract must preserve commit-then-archive cadence")
+        errors.extend(lint_trellis_closeout(text, source, cadence=cadence))
         errors.extend(lint_trellis_dispatch(text, source, cadence=cadence))
 
     return errors

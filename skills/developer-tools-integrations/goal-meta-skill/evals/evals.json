@@ -171,11 +171,12 @@
     {
       "id": 15,
       "prompt": "直接给 Codex /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`：修结账百分比优惠重复应用，只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查是 `just ci`。",
-      "expected_output": "A paste-ready Codex /goal whose iteration policy and stop condition require a product commit for the child task, then python ./.trellis/scripts/task.py archive.",
+      "expected_output": "A paste-ready Codex /goal whose first statement marks subagents default-on and whose iteration/completion require current-task product and planning commits before python ./.trellis/scripts/task.py archive.",
       "files": [],
       "assertions": [
         "The executable command prefix is /goal.",
-        "Iteration policy or 完成条件/Stop when says to commit the task's related product changes first, then run python ./.trellis/scripts/task.py archive.",
+        "The first /goal statement says 优先使用 subagents（默认开启）.",
+        "Iteration policy or 完成条件/Stop when says to commit the current task's related product changes and current-task planning artifacts, confirm both are in version history, then run python ./.trellis/scripts/task.py archive.",
         "The /goal names the concrete task directory .trellis/tasks/08-22-checkout-discount rather than a placeholder token.",
         "Constraints or 暂停条件/Pause if forbid git add -f .trellis/.",
         "The skill itself does not execute git commit or task.py archive; it only drafts the /goal.",
@@ -192,7 +193,8 @@
         "Parent archive is delayed until the 发布门 named just ci has passed.",
         "The 发布门 is the reconnaissance or user-named parent check just ci, not a GitHub Release unless the user asked for a release task.",
         "Deferral wording states that archiving a parent with active children would clear those children's parent field.",
-        "Child archive still follows commit-then-archive.",
+        "Child archive follows current-task product-and-planning commit, version-history confirmation, then archive; unrelated task directories and out-of-scope dirty files remain excluded.",
+        "The first /goal statement keeps the subagent preference default-on.",
         "Dispatch of trellis-implement and trellis-check remains required; parent-archive deferral until 发布门 just ci is unchanged and is not replaced by a GitHub Release."
       ]
     },
@@ -349,7 +351,8 @@
       "assertions": [
         "Required reading links concrete prd.md, design.md, and implement.md under the named task.",
         "Authority says current Trellis artifacts and scoped rules supersede the compressed GOAL.md.",
-        "Iteration and completion preserve product commit before task.py archive and delay parent archive to the named release gate.",
+        "The first Objective statement marks subagents default-on and matches later trellis-implement / trellis-check dispatch.",
+        "Iteration and completion preserve current-task product and planning commits in version history before task.py archive, exclude unrelated tasks/out-of-scope dirt, and delay parent archive to the named release gate.",
         "The launcher explicitly reads GOAL.md; it does not claim that Goal mode auto-loads it.",
         "Iteration policy or Completion conditions require trellis-implement / trellis-check dispatch; Constraints keep product writes off the main session; the launcher still does not claim Goal mode auto-loads GOAL.md."
       ]
@@ -401,24 +404,26 @@
     {
       "id": 34,
       "prompt": "直接给 Codex /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`：修结账百分比优惠重复应用。侦察到 `.trellis/config.yaml` 的 `codex.dispatch_mode` 为 `inline`。只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查是 `just ci`。",
-      "expected_output": "A Codex Trellis implementation /goal that keeps commit-then-archive but uses the inline shape and does not inject sub-agent dispatch.",
+      "expected_output": "A Codex Trellis implementation /goal whose first statement keeps subagents default-on, names codex.dispatch_mode: inline as a technical fallback, and uses the inline shape without dispatch.",
       "files": [],
       "assertions": [
+        "The first /goal statement keeps 优先使用 subagents（默认开启） and names codex.dispatch_mode: inline as the technical-fallback reason.",
         "Iteration policy uses the inline shape (trellis-before-dev then edit then trellis-check) rather than dispatching trellis-implement for code.",
         "Constraints do not forbid the main session from editing product files.",
-        "Commit-then-archive and parent 发布门 just ci remain.",
+        "Current-task product and planning commits in version history, unrelated-task/out-of-scope-dirt exclusion, archive separation, and parent 发布门 just ci remain.",
         "Does not require the main session to dispatch trellis-implement as a sub-agent."
       ]
     },
     {
       "id": 35,
       "prompt": "直接给 Claude Code /goal，实施 Trellis 子任务 `.trellis/tasks/08-22-checkout-discount`。我明确要求主会话内联实施，不要派发子代理。只改 `src/checkout/` 和 `tests/checkout/`，验证 `just test-checkout`，父级检查 `just ci`。",
-      "expected_output": "A Claude Code Trellis implementation /goal that honors the explicit inline request: no dispatch clauses, inline shape, still commit-then-archive, transcript-visible stop-and-report.",
+      "expected_output": "A Claude Code Trellis implementation /goal whose first statement records the user's explicit subagent opt-out: no dispatch clauses, inline shape, current-task product/planning commits before archive, transcript-visible stop-and-report.",
       "files": [],
       "assertions": [
+        "The first /goal statement marks subagents as 用户已明确关闭.",
         "Does not instruct dispatching trellis-implement or trellis-check as sub-agents.",
         "Iteration policy follows the inline main-session shape.",
-        "Still preserves product commit then task.py archive and defers parent archive to just ci.",
+        "Still preserves current-task product and planning commits in version history before task.py archive, excludes unrelated tasks/out-of-scope dirt, and defers parent archive to just ci.",
         "Claude stop-and-report and a turn/time bounding clause remain; no /goal pause."
       ]
     },
@@ -444,6 +449,55 @@
         "It states that launch is a separate user action outside goal-meta-skill and stops after text delivery.",
         "It does not submit the /goal slash command, call a Goal tool or API, or claim that the Goal is active.",
         "It does not dispatch agents or begin implementing the approved payload."
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "Cursor screenshot regression: create a Codex /goal for six approved `.trellis/tasks/08-27-skills-cli-*` child tasks in order doctor-gate → bulk-cleanup → remote-seam → remote-inventory → remote-mutate → remote-install-update. Each task must use trellis-implement for code, trellis-check for verification, commit then archive, keep two parent tasks until `just ci`, and preserve 46 unrelated untracked planning directories. The user chose: do not commit the existing planning dirt now; after each task is complete, commit that task's related changes and that task, then archive it. Do not push, amend, force-add `.trellis/`, edit `.trellis/scripts/`, touch credentials, or silently include unrelated task directories.",
+      "expected_output": "A DRAFT recorded_fixture whose first /goal statement exposes the default-on subagent preference, then encodes per-child product-and-current-task-planning commits before archive while excluding unrelated planning directories.",
+      "files": [],
+      "assertions": [
+        "The first /goal statement says 优先使用 subagents and marks the switch 默认开启; it is not buried in Iteration policy.",
+        "Each child loop completes and verifies one task, commits that task's related product changes and current-task planning artifacts, confirms both are in version history, and only then runs task.py archive for the concrete task directory.",
+        "Other active or untracked task directories and out-of-scope dirty files remain excluded; the fixture does not ask the user to reconsider that already-stated choice.",
+        "Later Iteration policy, Constraints, and Completion conditions remain consistent with trellis-implement / trellis-check dispatch and the separate archive commit.",
+        "The response is a deterministic recorded_fixture and DRAFT review packet only; it does not claim provider execution, human blind-review agreement, Goal activation, commits, or archives."
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "按默认直接给 Codex /goal：实施并归档 `.trellis/tasks/08-27-parser-fix`，只改 `src/parser/`、测试和当前任务目录；验证 `just test-parser` 与 `just ci`。我没有特别说明 subagents。",
+      "expected_output": "A Trellis DRAFT whose first /goal statement keeps the subagent preference default-on and whose later clauses dispatch trellis-implement / trellis-check consistently.",
+      "files": [],
+      "assertions": [
+        "Silence about subagents is not treated as opt-out: the first /goal statement says 优先使用 subagents（默认开启）.",
+        "Iteration policy dispatches trellis-implement for code and trellis-check for verification after reading the target workflow protocol.",
+        "Current-task product changes and planning artifacts enter version history before task.py archive; unrelated tasks and out-of-scope dirt remain excluded.",
+        "The skill presents the DRAFT and stops without dispatching or implementing it."
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "直接给 Codex /goal，实施 `.trellis/tasks/08-27-parser-fix`。我明确要求不使用 subagents，由主会话内联实施；验证 `just test-parser`，完成后提交当前任务相关产品改动和规划产物再归档。",
+      "expected_output": "A Trellis DRAFT whose first /goal statement records the user's explicit subagent opt-out and whose later clauses use the project inline shape without dispatch requirements.",
+      "files": [],
+      "assertions": [
+        "The first /goal statement marks subagents as 用户已明确关闭 rather than default-off by inference.",
+        "Iteration policy uses the project's inline shape and does not dispatch trellis-implement; Constraints allow the main session to edit product files.",
+        "Completion still requires current-task product and planning commits in version history before the separate task.py archive step, excluding unrelated tasks and out-of-scope dirt.",
+        "The DRAFT review packet stops without Goal activation or inline implementation."
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "直接给 Codex /goal，实施 `.trellis/tasks/08-27-parser-fix`。侦察已确认 `.trellis/config.yaml` 的 `codex.dispatch_mode: inline`；用户没有关闭 subagents。完成后提交当前任务相关产品改动和规划产物再归档。",
+      "expected_output": "A Trellis DRAFT whose first /goal statement keeps the subagent preference default-on but names codex.dispatch_mode: inline as the technical-fallback reason, then uses a consistent inline shape.",
+      "files": [],
+      "assertions": [
+        "The first /goal statement says 优先使用 subagents（默认开启） and in the same statement names codex.dispatch_mode: inline as the inline technical-fallback reason.",
+        "The capability fallback is not mislabeled as a user opt-out and later clauses do not dispatch trellis-implement.",
+        "Current-task product and planning artifacts enter version history before the separate archive commit; unrelated task directories and out-of-scope dirty files remain excluded.",
+        "The recorded fixture is not presented as provider compliance, human review evidence, or telemetry."
       ]
     }
   ]

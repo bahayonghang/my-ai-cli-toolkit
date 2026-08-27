@@ -222,6 +222,22 @@ manual inventory and deterministic safety tests."
 - Put the invariant in the root `SKILL.md` and the host-facing
   `agents/interface.yaml`; keep detailed output shapes in one reference. A
   fenced command is inert delivery text, not a command for the current turn.
+- When a generated prompt has an execution-strategy switch (for example,
+  subagents preferred by default), put the state in the first **semantic
+  sentence**. Missing or ambiguous user input keeps the documented default;
+  only an explicit opt-out changes the preference. A platform/workflow
+  limitation is a separately labelled technical fallback with its evidence,
+  not a fabricated user opt-out.
+- A linter for one-line prompts must split semantic sentence boundaries before
+  checking the first-sentence contract. Returning the whole physical `/goal`
+  line lets a required switch buried in a later sentence pass. Test both
+  inline `/goal` text and persisted-contract Objective text with a deliberately
+  buried second-sentence marker.
+- For generated Trellis implementation prompts, make pre-archive ownership
+  explicit: current-task product changes and current-task planning artifacts
+  enter version history first; unrelated task directories and out-of-scope
+  dirt remain excluded; then a concrete `task.py archive
+  .trellis/tasks/<task>` command owns a separate archive commit.
 - Cover both sides: a behavior fixture where the payload says “implement until
   complete” must still stop at review, and a deterministic package test must
   fail if the root/interface boundary or forbidden execution capability is

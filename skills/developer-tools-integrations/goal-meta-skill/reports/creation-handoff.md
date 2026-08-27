@@ -1,14 +1,31 @@
-# Goal Meta Skill 0.7.0 creation handoff
+# Goal Meta Skill 0.7.1 creation handoff
 
 ## Result
 
-`goal-meta-skill` 0.7.0 compiles vague work into reviewable,
+`goal-meta-skill` 0.7.1 compiles vague work into reviewable,
 platform-correct `/goal` text and, only after the governed file-write
 confirmation, can persist one approved root `GOAL.md` handoff through a guarded
 writer. It never creates, activates, submits, dispatches, or executes a Goal;
 both draft and approved text are terminal review states. Local path:
 `skills/developer-tools-integrations/goal-meta-skill/`. Publication status:
 local repository implementation; no PR, merge, release, or install claim.
+
+## 0.7.1 change
+
+Trellis implementation Prompt text now exposes its subagent preference in the
+first `/goal` statement: default-on when the user is silent or ambiguous,
+explicitly disabled only after a clear user opt-out, or retained as default-on
+with a named inline technical-fallback reason when project/platform capability
+prevents dispatch. The linter rejects missing and contradictory first/later
+states.
+
+Task closeout now commits both the current task's related product changes and
+the planning artifacts under that concrete task directory, confirms both are
+in version history, excludes unrelated active/untracked task directories and
+out-of-scope dirty files, and only then runs `task.py archive`. Product/planning
+work may be split into semantically clear Conventional Commits; the archive
+move/state update remains a separate archive commit. Child tasks repeat the
+loop, and parents still wait for their children plus the named release gate.
 
 ## 0.7.0 change
 
@@ -68,6 +85,16 @@ new linter. That failure is expected.
 - 0.7.0 invent: a cross-host text state machine (`DRAFT` → `APPROVED TEXT — not
   launched` → outside-skill user activation) backed by root/interface/eval/test
   continuity checks.
+- 0.7.1 keep: the review-before-activation gate, concrete Trellis task binding,
+  dispatch capability boundary, Conventional Commit policy, separate archive
+  commit, and parent release gate.
+- 0.7.1 adapt: promote the screenshot's hidden dispatch preference into one
+  first-statement three-state switch, and expand task closeout from product-only
+  commit to current-task product plus planning artifacts without claiming all
+  untracked `.trellis/tasks/` directories.
+- 0.7.1 reject: inferring opt-out from silence, silently degrading to inline,
+  forcing subagents on an incapable platform, mixing unrelated task directories
+  into a commit, or folding product/planning changes into the archive commit.
 
 ## Advantages and evidence
 
@@ -102,30 +129,38 @@ new linter. That failure is expected.
   Trellis `/goal`, compare Task/Agent calls and main-session edits with the
   baseline table in `research/host-directive-and-breadcrumb-evidence.md`. Do
   not describe this rate change as validated.
+- `validated advantage`: deterministic linter/package tests cover default-on,
+  explicit opt-out, explained capability fallback, first/later consistency,
+  current-task product-and-planning commits before archive, and non-Trellis
+  negative routing. Evals 38–41 record the Cursor-like long Prompt, default
+  silence, explicit opt-out, and `codex.dispatch_mode: inline` fallback. These
+  fixtures remain local `recorded_fixture` evidence, not provider compliance.
 
 ## Verification and limits
 
-- 0.7.0 review-gate package test: passed, 29/29.
-- Persistence regression test with the 0.7.0 contract binding: passed, 12/12.
+- 0.7.1 targeted goal-meta tests: passed, 50/50 (38 linter/package-contract,
+  12 persistence).
 - Repository skill metadata validation: passed.
-- Python byte compilation: passed, 52 files.
-- Full Node suite: passed locally, 279 tests (277 passed, 2 skipped); the behavior fixtures themselves remain
-  manually reviewed `recorded fixture` evidence and are not executed by CI.
-- Docs catalog synchronization: passed; only the English and Chinese
-  `goal-meta-skill` detail pages changed from 0.6.0 to 0.7.0.
+- Python byte compilation: passed, 53 files.
+- Docs catalog synchronization/check and VitePress build: passed; only the
+  English and Chinese `goal-meta-skill` detail pages changed from 0.7.0 to
+  0.7.1.
 - Full repository CI: passed after `just docs-sync`; docs catalog/build,
-  skills metadata, 52 Python files, 279 Node tests (277 passed, 2 skipped),
+  skills metadata, 53 Python files, 314 Node tests (312 passed, 2 skipped),
   and `git diff --check` all passed.
-- Trigger boundary: unchanged in 0.7.0; this task does not edit
+- Behavior evals 38–41 are manually reviewed `recorded_fixture` assets and are
+  not executed by CI; they do not prove provider/model behavior.
+- Trigger boundary: unchanged in 0.7.1; this task does not edit
   `description` or routing.
-- Qiaomu `validate_skill.py`: expected schema-deviation block because this
+- Qiaomu `validate_skill.py`: rerun for 0.7.1 and produced the expected
+  schema-deviation block because this
   repository deliberately has no per-skill `README.md`, `manifest.json`, or
   Qiaomu-format `evals/trigger_cases.json`; the repository-authoritative
   `scripts/check.py`, interface, behavior fixtures, Node tests, and docs catalog
   passed instead. No ceremonial files were added.
-- Qiaomu `release_check.py --phase local --run-tests`: blocked before its
-  secret/trust/release gates by the absent Qiaomu `manifest.json`, so current
-  Qiaomu-format secret and release-readiness evidence remains `missing evidence`.
+- Qiaomu `release_check.py --phase local --run-tests` was not rerun for 0.7.1;
+  its prior schema boundary still lacks `manifest.json`, so current Qiaomu-format
+  secret and release-readiness evidence remains `missing evidence`.
 - Provider-backed Codex/Claude/Grok/OMP/Kimi fresh-session runs, human
   blind review, install proof, telemetry, PR merge and public release:
   `missing evidence`.

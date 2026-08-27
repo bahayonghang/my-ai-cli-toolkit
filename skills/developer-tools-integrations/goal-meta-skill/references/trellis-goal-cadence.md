@@ -35,9 +35,9 @@ If detection is uncertain, add one numbered choice to the existing
 Fast-path `直接给` / `按默认` stays conservative: inject only when the
 outcome text already says Trellis task implementation.
 
-## Sub-agent dispatch
+## First-statement subagent switch
 
-Last verified: 2026-08-25.
+Last verified: 2026-08-27.
 
 These are Trellis facts, not `/goal` lifecycle facts. Do not copy them
 into `platform-goal-facts.md`. Do not copy Trellis script internals into
@@ -46,6 +46,22 @@ into `platform-goal-facts.md`. Do not copy Trellis script internals into
 Dispatch uses the same Detection gate as commit-then-archive. Inject
 only when the outcome is Trellis task or child-task implementation.
 Presence of `.trellis/` alone is not a reason.
+
+The first `/goal` statement (or the first `Objective` statement in a
+persisted contract) owns the execution-policy switch. Use exactly one of
+these states and keep it consistent with `迭代策略`, `约束`, and `完成条件`:
+
+1. **Default-on:** `优先使用 subagents（默认开启）；...`
+2. **Explicit user opt-out:** `subagents 偏好开关：用户已明确关闭，按主会话内联实施；...`
+3. **Capability fallback:** `优先使用 subagents（默认开启），但因 <workflow/platform/dispatch_mode capability fact> 技术降级为 inline；...`
+
+Missing, ambiguous, or unmentioned user preference stays default-on. Only
+an explicit request such as `不使用 subagents` or `主会话内联实施`
+closes the preference switch. A technical fallback is not an opt-out and
+must name its verified capability reason in the same first statement. If
+the user explicitly requires subagents but the project cannot dispatch,
+the generated Prompt stops and reports the conflict instead of inventing
+support.
 
 This skill must not assert that a target project has a given agent.
 Generated `/goal` text must require the executing agent to read that
@@ -64,7 +80,7 @@ No row in this table uses the `official` evidence label. Platform
 documentation does not define Trellis agent names. The table samples one
 project's `.trellis/workflow.md`.
 
-### Generated `/goal` fields
+### Generated `/goal` fields for the default-on state
 
 Put dispatch into three fields. Do not add dispatch to `暂停条件` /
 `Pause if`. A missing agent or unsupported platform is a reconnaissance
@@ -77,7 +93,8 @@ read first:
 先读 `.trellis/workflow.md` 的 Phase 2.1 / 2.2 确认本项目派发协议与
 agent 名；一次完成一个可独立验收的 Trellis 任务，代码实施派发
 `trellis-implement`、验证派发 `trellis-check`；然后用 Conventional
-Commits 提交该任务相关产品文件；再运行
+Commits 提交当前任务相关产品改动和当前任务规划产物，确认
+二者均进入版本历史且无关任务/范围外脏文件保持排除；再运行
 `python ./.trellis/scripts/task.py archive` with the concrete task
 directory.
 
@@ -94,7 +111,7 @@ and artifacts. Claude Code evidence must be transcript-visible:
 每个任务的代码实施由 `trellis-implement` 完成、验证由 `trellis-check`
 完成，派发记录出现在对话中。
 
-### Inline exceptions
+### Explicit opt-out and inline technical fallback
 
 Do not inject dispatch clauses when any of these hold:
 
@@ -104,29 +121,43 @@ Do not inject dispatch clauses when any of these hold:
    `codex.dispatch_mode` is `inline`.
 3. The user explicitly asks the main session to implement inline.
 
-On an exception, `迭代策略` uses that project's inline shape (this
-machine: `trellis-before-dev` → edit → `trellis-check`). `约束` must not
-forbid the main session from editing product files.
+On an explicit opt-out, the first statement says the user explicitly
+disabled the switch. On a workflow/platform/`dispatch_mode` exception, the
+first statement keeps the preference default-on and names the inline
+technical-fallback reason. Then `迭代策略` uses that project's inline shape
+(this machine: `trellis-before-dev` → edit → `trellis-check`). `约束`
+must not forbid the main session from editing product files, and neither
+shape may later require `trellis-implement` dispatch.
 
 ## Commit then archive
 
 Encode in `迭代策略` / Iteration policy and `完成条件` / Stop when:
 
-1. Finish one independently verifiable Trellis task (leaf or child).
-2. Commit that task's related product files. Use Conventional Commits.
-   Do not push. Do not amend. Limit the commit to that task's files.
-3. Then run `python ./.trellis/scripts/task.py archive` with the concrete
+1. Finish and verify one independently acceptable Trellis task (leaf or child).
+2. Commit that task's related product changes **and the current task's
+   planning artifacts**, then confirm both are in version history. The
+   planning scope is only the concrete task directory bound into this
+   `/goal`: existing `task.json`, `prd.md`, optional `design.md` and
+   `implement.md`, `research/`, and context manifests. It never expands to
+   other active or untracked task directories.
+3. Product changes and current-task planning artifacts are one task
+   closeout and may use one or more semantically clear Conventional Commits
+   under the repository's commit policy. Do not push. Do not amend. Do not
+   use `git add -f .trellis/`. Explicitly exclude unrelated task directories
+   and preserve out-of-scope dirty files.
+4. Only after those commits are present in version history, run
+   `python ./.trellis/scripts/task.py archive` with the concrete
    task directory, for example
    `python ./.trellis/scripts/task.py archive .trellis/tasks/08-22-checkout-discount`.
-4. Repeat for the next child.
+5. Repeat this full loop for the next child.
 
 Write the concrete task directory in the executable `/goal`. Do not leave
 placeholder tokens.
 
 The archive commit belongs to `task.py archive`. The executing agent must
-not fold product files into that commit, and must not force-add `.trellis/`
-with `git add -f .trellis/`. Encode that prohibition in `约束` /
-Constraints of the generated `/goal`.
+not fold product files or pre-archive planning changes into that commit.
+Encode the separate archive-commit boundary and the `git add -f .trellis/`
+prohibition in `约束` / Constraints of the generated `/goal`.
 
 ## Parent and 发布门
 
@@ -135,7 +166,8 @@ Archiving a parent while children remain active sets those children's
 the parent until all of these hold:
 
 1. Every child has been archived on its own.
-2. Direct parent-task product changes, if any, are already committed.
+2. Direct parent-task product changes and the parent's own planning
+   artifacts, if any, are already committed and confirmed in version history.
 3. The 发布门 in this same contract has passed, or missing checks are
    reported and the agent pauses (Codex) or stops and reports (Claude Code).
 
@@ -168,11 +200,15 @@ Codex: pause is valid.
 ## Persisted and legacy file-pointer goals
 
 For root `GOAL.md`, Required reading must link the concrete task's `prd.md`,
-`design.md`, and `implement.md`. Put commit-then-archive in Iteration policy and
-Completion conditions, and keep the named parent 发布门. Also put the dispatch
-clauses from Sub-agent dispatch into Iteration policy, Constraints, and
-Completion conditions, unless an inline exception applies. The contract remains a
-compressed handoff; current Trellis artifacts stay authoritative.
+`design.md`, and `implement.md`. Its first Objective statement carries the
+same default-on / explicit-opt-out / technical-fallback switch. Put the full
+current-task product-and-planning commit-before-archive cadence in Iteration
+policy and Completion conditions, keep unrelated task directories and
+out-of-scope dirty files excluded, and retain the named parent 发布门. Also put
+the default-on dispatch clauses into Iteration policy, Constraints, and
+Completion conditions unless an explicit opt-out or explained capability
+fallback applies. The contract remains a compressed handoff; current Trellis
+artifacts stay authoritative.
 
 If the user explicitly keeps a legacy `.planning/goal-<slug>.md`, put the same
 cadence in that file's Contract section. The short `/goal` points at
