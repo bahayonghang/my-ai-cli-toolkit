@@ -1697,3 +1697,25 @@ goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / t
 ### Status
 
 [OK] **Completed**
+
+
+## Session 55: 完善 Goal Prompt 派发与归档闭环
+
+**Date**: 2026-08-27
+**Task**: 完善 Goal Prompt 派发与归档闭环
+**Branch**: `dev`
+
+### Summary
+
+完善 goal-meta-skill 的 Trellis Prompt 合同：首句显式声明 subagents 默认开启，仅允许明确 opt-out 或有证据的技术降级；任务完成时先提交相关产品改动和当前任务规划产物，再以独立提交归档。补充 linter、测试、eval、文档与规范，并通过 just ci。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ebdf692688d8fae73819338bc5a2c1792e20492a` | (see git log) |
+| `3ab606aeff6a05edaa9631af2c1bd073aeba5df8` | (see git log) |
+
+### Status
+
+[OK] **Completed**
