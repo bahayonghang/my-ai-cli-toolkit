@@ -1,0 +1,164 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-08-30",
+  "package": {
+    "name": "goal-meta-skill",
+    "version": "0.8.0",
+    "owner": "lyh",
+    "maturity_tier": "governed",
+    "lifecycle_stage": "governed",
+    "upstream_inspiration": "向阳乔木 goal meta skill",
+    "upstream_sync": {
+      "raw_exporter_role": "diagnostic skeleton only; never the final repository artifact",
+      "repo_native_enrichment": "deterministic governed overlay followed by task-local non-empty assertions"
+    }
+  },
+  "intent": {
+    "description": "Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.\n",
+    "job_to_be_done": "Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.\n",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [
+      "vague or complex task description",
+      "optional project and Trellis context",
+      "optional named scan/review/audit/report/finding source"
+    ],
+    "outputs": [
+      "reviewable DRAFT or APPROVED TEXT /goal contract",
+      "optional separately confirmed root GOAL.md handoff"
+    ],
+    "exclusions": [
+      "Goal activation or payload execution",
+      "pure read-only review",
+      "direct implementation without Goal authoring",
+      "second repair Prompt for same-scope findings"
+    ],
+    "qiaomu_defaults": {
+      "review_remediation": "explicit opt-in",
+      "max_focused_rounds": 3,
+      "same_signature_no_progress_rounds": 2
+    }
+  },
+  "triggers": {
+    "should_trigger": [
+      "Compile a Codex /goal for one-Prompt remediation of a named scan report.",
+      "把 Trellis 审阅 findings 的修复写成单 Prompt Goal 指令。",
+      "把 review findings 修复编译成 Goal 指令，不要生成第二条修复 Prompt。",
+      "Persist an approved review-remediation contract as GOAL.md."
+    ],
+    "should_not_trigger": [
+      "Directly fix the parser and run tests.",
+      "只读审阅报告，不要修改代码。",
+      "Show the current platform goal status command only."
+    ],
+    "near_neighbor": [
+      "Generate another repair Prompt after every review.",
+      "Use GOAL.md as a long-term memory vault.",
+      "Discuss possible scan strategies before choosing an outcome."
+    ]
+  },
+  "workflow": {
+    "router_rules": [
+      "Select review-remediation only when a named review source and requested implementation are both present.",
+      "Keep read-only review and ordinary direct implementation on their own routes."
+    ],
+    "compact_workflow": [
+      "reconnoiter read-only",
+      "compile",
+      "lint, adding --review-remediation when selected",
+      "present DRAFT or APPROVED TEXT",
+      "stop without activation"
+    ],
+    "gate_ladder": [
+      "review-before-activation",
+      "frozen scan envelope",
+      "stable finding ledger and bounded feedback",
+      "zero-open same-envelope completion",
+      "separate Trellis closeout"
+    ],
+    "output_contract": [
+      "One externally approved Prompt owns same-scope implementation and checking.",
+      "AskUserQuestion is limited to material user-owned decisions before first product write.",
+      "Round-cap or no-progress residuals end BLOCKED and never emit a second repair Prompt."
+    ]
+  },
+  "resources": {
+    "references": [
+      "references\\default-goal-strategy.md",
+      "references\\goal-command-playbook.md",
+      "references\\interview-checklist.md",
+      "references\\persistent-goal-contract.md",
+      "references\\platform-goal-facts.md",
+      "references\\review-remediation-contract.md",
+      "references\\trellis-goal-cadence.md"
+    ],
+    "scripts": [
+      "scripts\\lint_goal_command.py",
+      "scripts\\persist_goal_contract.py"
+    ],
+    "evals": [
+      "evals\\evals.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\skill-ir.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "grok-build",
+      "oh-my-pi",
+      "kimi-code",
+      "agent-skills-compatible",
+      "generic"
+    ],
+    "activation": {
+      "mode": "manual",
+      "paths": []
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "bash"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "allow-metadata-only",
+      "file_write": "one confirmed direct-child Markdown through persist_goal_contract.py",
+      "git_mutation": "forbid",
+      "goal_activation": "forbid"
+    },
+    "permissions": {
+      "reconnaissance": "Read/Glob/Grep plus read-only git root, branch, and status probes",
+      "deterministic_helpers": "run the bundled linter; write one confirmed root Markdown only through persist_goal_contract.py",
+      "question_tool": "not granted to goal-meta-skill; AskUserQuestion may appear only inside generated execution text",
+      "forbidden": "Goal activation, payload implementation, agent dispatch, commit, archive, push, publish, install, and arbitrary file writes"
+    },
+    "degradation": {
+      "openai": "uses an explicit read ./GOAL.md objective; arbitrary GOAL.md is not auto-loaded",
+      "claude": "uses @GOAL.md and requires transcript-visible evidence plus bounded stop-and-report",
+      "grok_build": "uses an explicit read; @GOAL.md inside /goal and provider handoff remain UNVERIFIED",
+      "oh_my_pi": "uses an explicit read and reports goal.enabled or plan/vibe conflicts; budget exhaustion is not completion",
+      "kimi_code": "uses an explicit read; headless creation is separate and provider handoff remains UNVERIFIED",
+      "generic": "asks for a concrete platform and keeps the contract chat-only when root or authorization is unclear"
+    }
+  },
+  "gates": {
+    "review_before_activation": "DRAFT or APPROVED TEXT only; present and stop",
+    "review_remediation_profile": "structured envelope, stable ledger, question exclusions, feedback edge, same-envelope zero-open completion, and residual BLOCKED state",
+    "repo_validation": "scripts/check.py, focused Node tests, Python byte compilation, docs sync/check, just ci, and git diff --check",
+    "trigger_boundary": "task-local Qiaomu cases because the repository forbids a second package eval schema",
+    "qiaomu_schema_deviation": "missing README.md, manifest.json, and package trigger schema remain missing evidence rather than a pass"
+  },
+  "evidence_boundary": {
+    "generated_reports_are_evidence": "only for the deterministic local gate they record",
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

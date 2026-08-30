@@ -106,6 +106,40 @@ TRELLIS_CONCRETE_ARCHIVE_PATTERN = (
     r"[A-Za-z0-9][A-Za-z0-9._-]*[\"']?"
 )
 
+TRELLIS_IMPLEMENTATION_INTENT_PATTERNS = [
+    r"\b(?:implement|repair|fix|remediate|execute|complete)\b",
+    r"(?:实施|修复|整改|执行|完成|收敛)",
+]
+
+TRELLIS_READ_ONLY_INTENT_PATTERNS = [
+    r"\b(?:read[- ]only|review only|report only|analysis only)\b",
+    r"\b(?:review|inspect|analy[sz]e|report).{0,80}\bwithout (?:any )?(?:edits?|changes?|implementation|repairs?)\b",
+    r"\bdo not (?:edit|change|implement|repair)(?: anything| any (?:code|files?))\b",
+    r"(?:只读(?:审阅|审查|分析|报告)|仅(?:审阅|审查|分析|报告)|"
+    r"(?:不要|不得)(?:修改|实施|修复)(?:任何)?(?:代码|文件|内容|改动)?(?:[，。；]|$))",
+]
+
+REVIEW_REMEDIATION_ENVELOPE_LABELS = {
+    "scanner": r"scanner|扫描器",
+    "scanner_identity": r"scanner[_ ]identity|扫描器身份",
+    "config": r"config|配置",
+    "inputs": r"inputs|输入(?:全集|集合)?",
+    "targets": r"targets|目标(?:路径|集合)?",
+    "baseline_report": r"baseline[_ ]report|基线报告",
+    "git_baseline": r"git[_ ]baseline|Git\s*基线",
+}
+
+REVIEW_REMEDIATION_LEDGER_FIELDS = (
+    "id",
+    "severity",
+    "path_or_scope",
+    "issue",
+    "fix_required",
+    "test_required",
+    "status",
+    "evidence",
+)
+
 INLINE_MODE_PATTERNS = [
     r"dispatch_mode.{0,20}inline",
     r"inline\s+mode",
@@ -398,6 +432,524 @@ def _matches_any(text: str, patterns: list[str]) -> bool:
     return any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in patterns)
 
 
+def _is_trellis_implementation(text: str) -> bool:
+    """Detect a named Trellis implementation without requiring archive wording."""
+    if ".trellis/tasks/" not in text:
+        return False
+    first_statement = _trellis_first_statement(text)
+    if _matches_any(first_statement, TRELLIS_READ_ONLY_INTENT_PATTERNS):
+        return False
+    return _matches_any(text, TRELLIS_IMPLEMENTATION_INTENT_PATTERNS)
+
+
+def _review_error(source: str, detail: str) -> str:
+    return f"{source}: review-remediation {detail}"
+
+
+def _inline_goal_blocks(text: str) -> list[str]:
+    """Return each contiguous inline /goal payload without wrapper prose."""
+    blocks: list[str] = []
+    lines = text.splitlines()
+    index = 0
+    while index < len(lines):
+        if not re.match(r"^\s*/goal\b", lines[index], flags=re.IGNORECASE):
+            index += 1
+            continue
+        block = [lines[index]]
+        index += 1
+        while index < len(lines) and lines[index].strip():
+            block.append(lines[index])
+            index += 1
+        blocks.append("\n".join(block))
+    return blocks
+
+
+def _inline_goal_sections(text: str) -> dict[str, str]:
+    """Parse inline Goal fields so profile rules cannot be satisfied by wrappers."""
+    marker_map = {
+        "Verification": REQUIRED_MARKER_GROUPS[1][1],
+        "Constraints": REQUIRED_MARKER_GROUPS[2][1],
+        "Boundaries": REQUIRED_MARKER_GROUPS[3][1],
+        "Iteration policy": REQUIRED_MARKER_GROUPS[4][1],
+        "Completion conditions": REQUIRED_MARKER_GROUPS[5][1],
+        "Pause / stop conditions": REQUIRED_MARKER_GROUPS[6][1],
+    }
+    sections = {name: "" for name in marker_map}
+    current: str | None = None
+    for raw_line in text.splitlines():
+        matched = False
+        for name, patterns in marker_map.items():
+            for pattern in patterns:
+                match = re.match(
+                    rf"^\s*{pattern}\s*(.*)$",
+                    raw_line,
+                    flags=re.IGNORECASE,
+                )
+                if match:
+                    current = name
+                    sections[name] = match.group(1).strip()
+                    matched = True
+                    break
+            if matched:
+                break
+        if not matched and current is not None:
+            sections[current] = (sections[current] + "\n" + raw_line.strip()).strip()
+    return sections
+
+
+def _review_regions(text: str, *, contract: bool) -> dict[str, str]:
+    sections = _sections(text) if contract else _inline_goal_sections(text)
+    return {
+        "envelope": "\n".join(
+            filter(
+                None,
+                (
+                    sections.get("Required reading and current context", ""),
+                    sections.get("Verification", ""),
+                ),
+            )
+        ),
+        "constraints": "\n".join(
+            filter(
+                None,
+                (
+                    sections.get("Scope and boundaries", ""),
+                    sections.get("Constraints", ""),
+                ),
+            )
+        ),
+        "iteration": sections.get("Iteration policy", ""),
+        "completion": sections.get("Completion conditions", ""),
+        "pause": sections.get("Pause / stop conditions", ""),
+    }
+
+
+def _extract_envelope_records(text: str) -> dict[str, list[str]]:
+    records: dict[str, list[str]] = {}
+    for name, label in REVIEW_REMEDIATION_ENVELOPE_LABELS.items():
+        pattern = (
+            rf"(?:^|[;\n])\s*(?:[-*]\s*)?(?:{label})\s*[:：]\s*([^;\n]*)"
+        )
+        records[name] = [
+            match.group(1).strip()
+            for match in re.finditer(pattern, text, flags=re.IGNORECASE)
+        ]
+    return records
+
+
+def _meaningful_envelope_value(name: str, value: str) -> bool:
+    if not value or re.fullmatch(
+        r"(?:TBD|TODO|unknown|待定|待补充|authoritative command or named entrypoint|"
+        r"version, commit, or UNVERIFIED|path/hash plus material flags|"
+        r"window/corpus/session IDs or a stable enumeration source|"
+        r"paths, modules, or files|path or artifact ID|branch \+ HEAD \+ dirty-scope summary)",
+        value,
+        flags=re.IGNORECASE,
+    ):
+        return False
+    anchors = {
+        "config": r"(?:[/\\]|\b(?:path|hash|sha-?256|flag|none)\b|路径|哈希|参数|无外部配置)",
+        "inputs": r"(?:[/\\]|\b(?:id|path|source|window|corpus|session|enumeration|list)\b|ID|路径|来源|窗口|语料|会话|枚举|集合)",
+        "targets": r"(?:[/\\]|\b(?:path|module|file|directory)\b|路径|模块|文件|目录)",
+        "baseline_report": r"(?:[/\\]|\b(?:path|artifact|report|id)\b|路径|产物|报告|ID)",
+    }
+    pattern = anchors.get(name)
+    return pattern is None or bool(re.search(pattern, value, flags=re.IGNORECASE))
+
+
+def _statement_has_unnegated_action(
+    text: str,
+    *,
+    subject_pattern: str,
+    action_pattern: str,
+) -> bool:
+    """Find affirmative dangerous clauses while tolerating explicit prohibitions."""
+    for statement in re.split(r"[;；。.!?\n]+", text):
+        if not re.search(subject_pattern, statement, flags=re.IGNORECASE):
+            continue
+        action = re.search(action_pattern, statement, flags=re.IGNORECASE)
+        if not action:
+            continue
+        prefix = statement[: action.start()]
+        if not re.search(
+            r"(?:do not|must not|never|cannot|不得|禁止|不能|不再|无需|不要求)",
+            prefix,
+            flags=re.IGNORECASE,
+        ):
+            return True
+    return False
+
+
+def lint_review_remediation_envelope(
+    regions: dict[str, str], source: str
+) -> list[str]:
+    """Require a reproducible scanner/config/input/target baseline envelope."""
+    errors: list[str] = []
+    envelope = regions["envelope"]
+    records = _extract_envelope_records(envelope)
+    for name, values in records.items():
+        if not values:
+            errors.append(_review_error(source, f"scan envelope missing `{name}` record"))
+            continue
+        if len(values) > 1:
+            errors.append(_review_error(source, f"scan envelope has ambiguous duplicate `{name}` records"))
+        if not _meaningful_envelope_value(name, values[0]):
+            errors.append(_review_error(source, f"scan envelope `{name}` needs a concrete non-placeholder value"))
+
+    identity_value = (records.get("scanner_identity") or [""])[0]
+    if not re.search(
+        r"\bUNVERIFIED\b|\b(?:version|commit)\b|\bv?\d+\.\d+(?:\.\d+)?\b|\b[0-9a-f]{7,40}\b",
+        identity_value,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(
+            _review_error(
+                source,
+                "`scanner_identity` must name a version/commit or use `UNVERIFIED`",
+            )
+        )
+
+    if re.search(r"\bUNVERIFIED\b", identity_value, flags=re.IGNORECASE):
+        evidence_policy = envelope + "\n" + regions["iteration"]
+        if not re.search(
+            r"(?:bounded|有限|有界).{0,30}(?:repeated runs|reruns|复跑|重复运行)",
+            evidence_policy,
+            flags=re.IGNORECASE | re.DOTALL,
+        ) or not re.search(
+            r"(?:second|independent|第二|独立).{0,20}(?:evidence source|evidence|证据源|证据)",
+            evidence_policy,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            errors.append(
+                _review_error(
+                    source,
+                    "`UNVERIFIED` scanner identity needs bounded reruns and a second evidence source",
+                )
+            )
+
+    git_value = (records.get("git_baseline") or [""])[0]
+    if git_value and not (
+        re.search(r"\bHEAD\b", git_value, flags=re.IGNORECASE)
+        and re.search(r"dirty|脏", git_value, flags=re.IGNORECASE)
+        and re.search(r"branch|分支|\b[^\s;]+/[^\s;]+", git_value, flags=re.IGNORECASE)
+    ):
+        errors.append(
+            _review_error(source, "`git_baseline` must bind branch, HEAD, and dirty-scope summary")
+        )
+
+    drift_text = envelope + "\n" + regions["pause"]
+    drift_named = re.search(
+        r"(?:scope|config|corpus|input|target|scanner).{0,30}drift|"
+        r"(?:范围|配置|语料|输入|目标|扫描器).{0,20}漂移",
+        drift_text,
+        flags=re.IGNORECASE,
+    )
+    drift_resolution = re.search(
+        r"(?:re[- ]?baseline|new baseline|重新建立基线|重建基线).{0,80}\bBLOCKED\b|"
+        r"\bBLOCKED\b.{0,80}(?:re[- ]?baseline|new baseline|重新建立基线|重建基线)",
+        drift_text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not drift_named or not drift_resolution:
+        errors.append(
+            _review_error(
+                source,
+                "must treat material scanner/config/corpus/target drift as re-baseline or `BLOCKED`",
+            )
+        )
+    if not re.search(
+        r"(?:drift|漂移).{0,100}(?:must not|cannot|never|不得|不能|不可).{0,50}(?:clean|归零|通过)",
+        drift_text,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(_review_error(source, "drifted comparisons must be forbidden from claiming clean"))
+    return errors
+
+
+def lint_review_remediation_feedback_loop(
+    regions: dict[str, str], source: str, *, trellis: bool
+) -> list[str]:
+    """Require one stable ledger and a checker-to-implementation feedback edge."""
+    errors: list[str] = []
+    iteration = regions["iteration"]
+    constraint_loop = regions["constraints"] + "\n" + iteration
+    ledger_match = re.search(
+        r"(?:finding(?:s)?\s+ledger|finding\s*台账|问题台账|发现项台账)",
+        iteration,
+        flags=re.IGNORECASE,
+    )
+    if not ledger_match:
+        errors.append(_review_error(source, "must name one stable finding ledger"))
+    elif not re.search(
+        r"(?:stable|稳定).{0,30}(?:finding(?:s)?\s+ledger|finding\s*台账|问题台账|发现项台账)|"
+        r"(?:finding(?:s)?\s+ledger|finding\s*台账|问题台账|发现项台账).{0,30}(?:stable|稳定)",
+        iteration,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(_review_error(source, "finding ledger must be explicitly stable across rounds"))
+
+    ledger_statement = ""
+    if ledger_match:
+        ledger_statement = re.split(r"[.\n。]", iteration[ledger_match.start() :], maxsplit=1)[0]
+    missing_fields = [
+        field
+        for field in REVIEW_REMEDIATION_LEDGER_FIELDS
+        if not re.search(rf"\b{re.escape(field)}\b", ledger_statement, flags=re.IGNORECASE)
+    ]
+    if missing_fields:
+        errors.append(
+            _review_error(
+                source,
+                "finding ledger missing fields: " + ", ".join(missing_fields),
+            )
+        )
+    if not re.search(
+        r"(?:finding\s+IDs?|发现项?\s*ID).{0,50}(?:remain|stay|保持).{0,30}(?:stable|unchanged|稳定|不变).{0,40}(?:round|轮)",
+        iteration,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(_review_error(source, "finding IDs must remain stable across rounds"))
+
+    for status in ("open", "fixed", "wontfix", "blocked"):
+        if not re.search(rf"\b{status}\b", ledger_statement, flags=re.IGNORECASE):
+            errors.append(_review_error(source, f"finding ledger missing `{status}` status"))
+
+    if not all(re.search(rf"\b{status}\b", iteration) for status in ("PASS", "FINDINGS", "BLOCKED")):
+        errors.append(
+            _review_error(source, "checker result vocabulary must be `PASS | FINDINGS | BLOCKED`")
+        )
+
+    findings_edge = re.search(
+        r"\bFINDINGS\b.{0,240}(?:trellis-implement|back to implementation|return to implementation|"
+        r"回灌.{0,30}(?:实施|实现)|返回.{0,30}(?:实施|实现)).{0,100}(?:same task|同一任务|当前任务)",
+        iteration,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not findings_edge:
+        errors.append(
+            _review_error(
+                source,
+                "checker `FINDINGS` must feed back to implementation in the same task",
+            )
+        )
+    if not re.search(
+        r"\bFINDINGS\b.{0,240}(?:implementation|trellis-implement|实施|实现).{0,160}"
+        r"(?:independent\s+)?(?:recheck|check again|复查|重新检查)",
+        iteration,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(
+            _review_error(source, "implementation feedback must return to an independent recheck")
+        )
+
+    same_scope_merge = re.search(
+        r"(?:same[- ]scope|within[- ]scope|同范围|原范围).{0,100}"
+        r"(?:append|merge|add|追加|合并|加入).{0,80}(?:ledger|台账)",
+        iteration,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not same_scope_merge:
+        errors.append(
+            _review_error(source, "same-scope new findings must merge into the existing ledger")
+        )
+
+    no_second_prompt = re.search(
+        r"(?:do not|must not|never|without|不得|禁止|不再|不能|无需|不要求).{0,100}"
+        r"(?:second|another|new|next|第二条|新的|下一条).{0,50}(?:repair\s+prompt|修复\s*Prompt|Prompt)",
+        constraint_loop,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not no_second_prompt:
+        errors.append(
+            _review_error(source, "must forbid requesting or emitting a second repair Prompt")
+        )
+    if _statement_has_unnegated_action(
+        constraint_loop,
+        subject_pattern=r"(?:second|another|new|next|第二条|新的|下一条).{0,50}(?:repair\s+prompt|修复\s*Prompt|Prompt)",
+        action_pattern=r"(?:emit|request|generate|create|return|ask|产生|生成|创建|请求|要求|返回)",
+    ):
+        errors.append(_review_error(source, "must not also authorize a new repair Prompt"))
+
+    round_cap = re.search(
+        r"(?:at most|maximum|max|最多|不超过).{0,20}(?:three|3|三).{0,30}(?:round|轮)",
+        iteration,
+        flags=re.IGNORECASE,
+    )
+    stall_gate = re.search(
+        r"(?:same finding signature|同一 finding signature|同一发现签名).{0,80}"
+        r"(?:two|2|两).{0,30}(?:round|轮).{0,80}(?:no progress|无进展).{0,80}\bBLOCKED\b",
+        iteration + "\n" + regions["pause"],
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not round_cap:
+        errors.append(_review_error(source, "must cap focused repair at three rounds"))
+    if not stall_gate:
+        errors.append(
+            _review_error(source, "must enter `BLOCKED` after two no-progress rounds for one signature")
+        )
+    if trellis and not re.search(
+        r"(?:only after|仅在|只有在).{0,100}(?:completion gate|完成门|完成条件).{0,160}"
+        r"(?:commit|提交).{0,200}(?:task\.py\s+archive|archive|归档)",
+        iteration,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(
+            _review_error(source, "Trellis commit/archive must follow the review-remediation completion gate")
+        )
+    return errors
+
+
+def lint_review_remediation_question_gate(
+    regions: dict[str, str], source: str
+) -> list[str]:
+    """Allow a question only for a material user-owned authority decision."""
+    errors: list[str] = []
+    text = regions["constraints"]
+    if "AskUserQuestion" not in text:
+        errors.append(
+            _review_error(source, "question gate must name Claude Code `AskUserQuestion`")
+        )
+    if not re.search(
+        r"(?:before the first product write|首次产品写入前|第一次产品写入前)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(_review_error(source, "question classification must happen before first product write"))
+    if not re.search(
+        r"(?:only|仅|只有).{0,100}(?:user-owned|用户所有|用户决策).{0,120}"
+        r"(?:scope|risk|cost|public behavior|authorization|范围|风险|成本|公开行为|授权)",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(
+            _review_error(
+                source,
+                "question gate must be exclusive to material user-owned scope/risk/cost/behavior/authority decisions",
+            )
+        )
+    if not re.search(
+        r"(?:do not|must not|never|不得|禁止|不能)[^.。\n]{0,120}"
+        r"(?:same[- ]scope|同范围|原范围)[^.。\n]{0,80}(?:finding|发现)[^.。\n]{0,100}"
+        r"(?:AskUserQuestion|question|ask|提问|询问)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(
+            _review_error(source, "same-scope findings must not trigger a user question")
+        )
+    if not re.search(
+        r"(?:do not|must not|never|不得|禁止|不能)[^.。\n]{0,120}"
+        r"(?:ordinary implementation|implementation detail|普通实现|实现细节)[^.。\n]{0,100}"
+        r"(?:AskUserQuestion|question|ask|提问|询问)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(_review_error(source, "ordinary implementation choices must not trigger a user question"))
+    if not re.search(
+        r"(?:do not|must not|never|不得|禁止|不能)[^.。\n]{0,160}"
+        r"(?:repository-readable|repository facts|原扫描|scanner rerun|per-batch|每批|仓库可回答)[^.。\n]{0,160}"
+        r"(?:AskUserQuestion|question|ask|提问|询问)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        errors.append(
+            _review_error(source, "repository facts, scanner reruns, and per-batch approval must stay outside the question gate")
+        )
+    if not re.search(
+        r"(?:another|other|其他).{0,30}(?:host|platform|宿主|平台).{0,60}(?:actual|available|实际|可用).{0,30}(?:equivalent|等价)",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    ) or not re.search(
+        r"(?:without|no|没有|无).{0,30}(?:structured|结构化).{0,30}(?:tool|工具).{0,50}(?:one|一个).{0,30}(?:concise|short|简短|简洁).{0,20}(?:question|问题)",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(
+            _review_error(source, "question gate must name the actual host equivalent and one concise no-tool fallback")
+        )
+    if _statement_has_unnegated_action(
+        text,
+        subject_pattern=r"(?:same[- ]scope|同范围|原范围).{0,80}(?:finding|发现)",
+        action_pattern=r"(?:may|can|use|trigger|可|可以|触发|使用).{0,40}(?:AskUserQuestion|question|ask|提问|询问)",
+    ):
+        errors.append(_review_error(source, "must not also authorize questions for same-scope findings"))
+    return errors
+
+
+def lint_review_remediation_completion(
+    regions: dict[str, str], source: str
+) -> list[str]:
+    """Require conjunctive zero-open, same-envelope rescan, regression and scope gates."""
+    errors: list[str] = []
+    completion = regions["completion"]
+    pause = regions["pause"]
+    if not re.search(
+        r"(?:complete only when|completion requires all|only when all|只有在.{0,60}全部|完成.*同时满足|合取)",
+        completion,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(_review_error(source, "completion conditions must make the final gate conjunctive"))
+    checks = [
+        (
+            r"(?:open actionable findings|可执行的 open findings|开放可执行发现).{0,20}(?:=|为|等于)\s*0",
+            "completion must require `open actionable findings = 0`",
+        ),
+        (
+            r"(?:original|same|原始|原参数|同参数).{0,50}(?:scanner|scan|扫描).{0,80}(?:same envelope|同一 envelope|同一扫描包络|原 envelope)",
+            "completion must rerun the original scanner with the same envelope",
+        ),
+        (
+            r"(?:regression|回归).{0,50}(?:pass|通过)",
+            "completion must require regression checks to pass",
+        ),
+        (
+            r"(?:just ci|final gate|最终门禁).{0,50}(?:pass|通过|exit(?:s| code)?\s*(?:zero|0)|退出码为\s*0)",
+            "completion must require the named final gate to pass",
+        ),
+        (
+            r"(?:diff|status).{0,80}(?:scope|boundary|越界|范围|边界)",
+            "completion must inspect diff/status for scope escape",
+        ),
+    ]
+    for pattern, message in checks:
+        if not re.search(pattern, completion, flags=re.IGNORECASE | re.DOTALL):
+            errors.append(_review_error(source, message))
+    if not re.search(
+        r"(?:third|3rd|第三|three|3|三).{0,30}(?:round|轮).{0,80}"
+        r"(?:open actionable|仍有.{0,30}(?:open|未关闭)).{0,80}\bBLOCKED\b",
+        pause,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(
+            _review_error(source, "round-cap residual findings must end `BLOCKED`, not complete")
+        )
+    if not re.search(
+        r"\bBLOCKED\b.{0,100}(?:residual ledger|剩余台账|残余台账|残余 ledger).{0,80}(?:stop|report|停止|报告)",
+        pause,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        errors.append(_review_error(source, "`BLOCKED` must stop with the residual ledger"))
+    return errors
+
+
+def lint_review_remediation(
+    text: str, source: str, *, contract: bool = False
+) -> list[str]:
+    errors: list[str] = []
+    regions = _review_regions(text, contract=contract)
+    errors.extend(lint_review_remediation_envelope(regions, source))
+    errors.extend(
+        lint_review_remediation_feedback_loop(
+            regions,
+            source,
+            trellis=_is_trellis_implementation(text),
+        )
+    )
+    errors.extend(lint_review_remediation_question_gate(regions, source))
+    errors.extend(lint_review_remediation_completion(regions, source))
+    return errors
+
+
 def _trellis_first_statement(text: str) -> str:
     """Return the first execution-policy statement, not a later dispatch hint."""
     if re.search(r"^## Objective\s*$", text, flags=re.MULTILINE):
@@ -584,6 +1136,7 @@ def lint_text(
     *,
     require_chinese_companion: bool = False,
     platform: str = "both",
+    review_remediation: bool = False,
 ) -> list[str]:
     errors: list[str] = []
 
@@ -621,12 +1174,24 @@ def lint_text(
     errors.extend(lint_budget_misrepresentation(text, source))
     errors.extend(lint_platform_commands(text, source, platform))
 
-    if ".trellis/tasks/" in text and re.search(r"archive", text, flags=re.IGNORECASE):
+    if _is_trellis_implementation(text):
         cadence = _trellis_cadence_region(text)
         errors.extend(lint_trellis_closeout(text, source, cadence=cadence))
         errors.extend(
             lint_trellis_dispatch(text, source, cadence=cadence)
         )
+
+    if review_remediation:
+        goal_blocks = _inline_goal_blocks(text)
+        if not goal_blocks:
+            errors.append(_review_error(source, "profile requires an inline `/goal` block"))
+        for index, block in enumerate(goal_blocks, start=1):
+            errors.extend(
+                lint_review_remediation(
+                    block,
+                    f"{source} /goal[{index}]",
+                )
+            )
 
     if platform == "claude":
         errors.extend(lint_claude_platform(text, source))
@@ -688,6 +1253,7 @@ def lint_persisted_contract(
     *,
     expected_path: str = "GOAL.md",
     platform: str | None = None,
+    review_remediation: bool = False,
 ) -> list[str]:
     """Validate the immutable root Markdown contract used for fresh-agent handoff."""
     errors: list[str] = []
@@ -725,8 +1291,8 @@ def lint_persisted_contract(
 
     if metadata.get("Status", "").lower() != "approved":
         errors.append(f"{source}: contract Status must be `approved`")
-    if metadata.get("Generated by") != "goal-meta-skill 0.7.1":
-        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.7.1`")
+    if metadata.get("Generated by") != "goal-meta-skill 0.8.0":
+        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.8.0`")
     if metadata.get("Project root") != ".":
         errors.append(f"{source}: Project root must be the relative marker `.`")
     if metadata.get("Contract path") != expected_path:
@@ -824,7 +1390,7 @@ def lint_persisted_contract(
         errors.extend(lint_goal_block_length(command, source, platform=target_platform))
         errors.extend(lint_platform_commands(command, source, target_platform))
 
-    if ".trellis/tasks/" in text:
+    if _is_trellis_implementation(text):
         for artifact in ("prd.md", "design.md", "implement.md"):
             if artifact not in sections["Required reading and current context"]:
                 errors.append(f"{source}: Trellis contract must link concrete `{artifact}`")
@@ -833,6 +1399,9 @@ def lint_persisted_contract(
             errors.append(f"{source}: Trellis contract must preserve commit-then-archive cadence")
         errors.extend(lint_trellis_closeout(text, source, cadence=cadence))
         errors.extend(lint_trellis_dispatch(text, source, cadence=cadence))
+
+    if review_remediation:
+        errors.extend(lint_review_remediation(text, source, contract=True))
 
     return errors
 
@@ -856,6 +1425,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--contract",
         action="store_true",
         help="Validate the persisted GOAL.md contract schema instead of an inline draft.",
+    )
+    parser.add_argument(
+        "--review-remediation",
+        action="store_true",
+        help="Fail closed on the frozen scan, finding-ledger feedback, question, and convergence contract.",
     )
     parser.add_argument(
         "--expected-path",
@@ -888,6 +1462,7 @@ def main(argv: list[str]) -> int:
                     str(path),
                     expected_path=args.expected_path,
                     platform=args.platform,
+                    review_remediation=args.review_remediation,
                 )
             )
         else:
@@ -897,6 +1472,7 @@ def main(argv: list[str]) -> int:
                     str(path),
                     require_chinese_companion=args.require_chinese_companion,
                     platform=args.platform or "both",
+                    review_remediation=args.review_remediation,
                 )
             )
             all_warnings.extend(lint_completion_warnings(text, str(path)))

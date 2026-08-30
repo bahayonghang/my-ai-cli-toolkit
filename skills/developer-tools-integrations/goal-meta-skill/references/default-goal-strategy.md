@@ -45,6 +45,12 @@ Claude Code rendering must produce a completion condition with transcript-visibl
 - **Proceed by default:** low-risk ambiguity is not a gate. State conservative assumptions and continue.
 - **Route neighbors:** translations, one-line outputs, guidance-file audits, time-cadence loops, and scripted Stop-hook tasks should use their direct workflow instead of `/goal`.
 
+When the outcome combines a named scan/review/audit/report/finding source with
+implementation, select the explicit review-remediation profile and load
+`references/review-remediation-contract.md`. A scan source without requested
+implementation stays read-only; implementation without a scan source stays on
+the ordinary Goal path. Do not infer the profile merely from a Trellis path.
+
 ## Read-Only Project Reconnaissance
 
 When a request targets an existing project, inspect before interviewing or drafting. Stop at the first useful source; do not crawl the whole tree.
@@ -97,6 +103,12 @@ ambiguous, explicit opt-out only when the user clearly disables subagents,
 and a reasoned inline technical fallback when project/platform capability
 prevents dispatch. Later iteration, constraint, and completion fields must
 match that first-statement state.
+
+If the same outcome is review-remediation, keep the Trellis switch but overlay
+the canonical frozen-envelope, stable-ledger, checker feedback, original-scan
+rerun, and bounded-convergence contract. Same-scope findings remain inside the
+one approved Prompt. Only user-owned decisions that materially change scope,
+risk, cost, public behavior, or authorization may reach the question gate.
 
 ## Goal Length Rule
 
@@ -188,6 +200,12 @@ Use bounded autonomy:
 ```
 
 Do not write `keep trying` or `until it looks good`.
+
+The ordinary three-round default is not a review-remediation completion claim.
+For that profile, round exhaustion or two no-progress rounds for one finding
+signature ends `BLOCKED`; completion additionally requires zero open actionable
+findings and a final scan under the frozen envelope. See the canonical reference
+instead of copying those rules into a new template.
 
 ## Finalization Rule
 

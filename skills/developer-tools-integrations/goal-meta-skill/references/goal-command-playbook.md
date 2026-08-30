@@ -126,6 +126,30 @@ Stop when（完成条件）：[哪些证据证明可以停止]。
 Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预算或破坏性操作的情况]。
 ```
 
+### Review-remediation overlay
+
+Use only for a Goal that implements a named scan/review/audit/report/finding
+source. Keep the ordinary fields above, then embed the canonical contract from
+`review-remediation-contract.md` without inventing a second authority source:
+
+- freeze `scanner / scanner_identity / config / inputs / targets /
+  baseline_report / git_baseline` before product writes;
+- keep one stable finding ledger with the canonical fields and statuses;
+- make `PASS | FINDINGS | BLOCKED` the checker vocabulary and feed actionable
+  same-scope `FINDINGS` back to implementation in the same task;
+- name the one user-question gate before first product write; Claude Code uses
+  `AskUserQuestion`, but same-scope findings and ordinary implementation choices
+  never qualify;
+- allow at most three focused rounds, with same-signature no-progress and
+  round-cap residuals ending `BLOCKED` rather than complete;
+- require original-parameter same-envelope rescan, zero open actionable
+  findings, regression/final gates, and diff/status scope evidence;
+- explicitly forbid requesting or emitting a second repair Prompt.
+
+Lint this overlay with `--review-remediation`. It applies equally to inline
+text and the matching sections of an approved persisted contract. The skill
+still presents the DRAFT/APPROVED TEXT and stops without launching it.
+
 ## 双语草案策略
 
 当用户使用中文、任务还在收敛中，先标记
@@ -215,6 +239,11 @@ Classify proposed verification before placing it in the goal:
 | Flaky       | Record failures, retry only within a stated bound, and corroborate another way. |
 
 Baseline capture may be recommended when before/after evidence matters, but this skill only drafts the instruction and does not run the command.
+
+For review-remediation, the baseline is mandatory and broader than a before/after
+number: it is the full scan envelope named above. If the scanner, configuration,
+corpus, targets, or input enumeration drifts, instruct the executor to establish
+a new baseline or stop `BLOCKED`; never label a drifted comparison clean.
 
 ## Read-First And Checkpoint Patterns
 
