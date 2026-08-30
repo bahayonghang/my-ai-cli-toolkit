@@ -18,6 +18,10 @@ openspec/
 .agents/
 .omx/
 .playwright-mcp/
+.omp/
+.kimi-code/
+.grok/
+
 
 .impeccable.md
 
