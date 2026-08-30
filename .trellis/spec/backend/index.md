@@ -17,6 +17,7 @@ This repository does not have a traditional application backend or database laye
 | [Logging Guidelines](./logging-guidelines.md) | Console output and local runtime logs | Documented |
 | [Skill Helper Command Contracts](./skill-helper-command-contracts.md) | Environment-backed argv templates, dry-run behavior, and regression gates | Documented |
 | [Governed File Writing](./governed-file-writing.md) | Consent, validation, atomic persistence, and verification for user-visible project files | Documented |
+| [Governed Report Subtree Writing](./governed-report-subtree-writing.md) | Fixed report subtrees, reusable validated JSON inputs, one-artifact writes, and proof-gated cleanup | Documented |
 
 ## How to Keep These Guidelines Current
 
