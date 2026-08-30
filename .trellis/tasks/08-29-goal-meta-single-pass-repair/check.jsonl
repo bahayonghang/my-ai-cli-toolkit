@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Audit prompt compiler, eval, evidence and metadata contracts"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Audit focused and full validation gates"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Audit fail-closed CLI behavior and error evidence"}
+{"file": ".trellis/tasks/08-29-goal-meta-single-pass-repair/research/current-gap-analysis.md", "reason": "Verify implementation closes every evidence-backed gap"}
+{"file": ".trellis/tasks/08-29-goal-meta-single-pass-repair/research/prior-art-research.md", "reason": "Verify adopted mechanisms and evidence claims remain bounded"}
