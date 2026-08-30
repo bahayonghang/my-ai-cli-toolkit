@@ -17,7 +17,7 @@ Analyze how an existing agent skill was used in past Claude Code, Grok, Codex, a
 | --- | --- |
 | Name | `skill-session-review` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `skills`, `session-review`, `claude-code`, `grok`, `codex`, `oh-my-pi`, `feedback` |
 
 ## Install command
@@ -32,9 +32,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill skill-session
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/skill-session-review/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/skill-session-review/evals` | directory | 1 | Evaluation samples |
-| `skills/developer-tools-integrations/skill-session-review/references` | directory | 4 | Reference material |
-| `skills/developer-tools-integrations/skill-session-review/scripts` | directory | 2 | Executable scripts |
-| `skills/developer-tools-integrations/skill-session-review/tests` | directory | 2 | Automated tests |
+| `skills/developer-tools-integrations/skill-session-review/references` | directory | 5 | Reference material |
+| `skills/developer-tools-integrations/skill-session-review/scripts` | directory | 8 | Executable scripts |
+| `skills/developer-tools-integrations/skill-session-review/tests` | directory | 11 | Automated tests |
 
 ## Scripts, references, and test resources
 
