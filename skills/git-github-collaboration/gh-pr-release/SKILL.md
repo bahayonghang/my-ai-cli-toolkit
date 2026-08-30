@@ -7,7 +7,7 @@ tags:
   - gh-cli
   - pull-request
   - pr-lifecycle
-version: 3.0.0
+version: 3.0.1
 allowed-tools: Read, Edit, Bash
 ---
 
@@ -40,4 +40,10 @@ Confirm `gh auth status`; resolve repository, ownership, refs, pinned commit, st
 
 ## Completion
 
-Fresh-read state; report identifiers, edits, writes, and missing evidence. Final-pass evidence: [risk](reports/output-risk-profile.md), [artifact design](reports/artifact-design-profile.md), [quality](reports/output_quality_scorecard.md), and [fixtures](evals/evals.json).
+After a fresh read, report only: PR number, title, URL, state, base/head refs, authorized writes that ran, head SHA, merge commit SHA when merged, and missing evidence.
+
+Do not include actor login, wall-clock time, the included-commit catalog, CI job names, or unauthorized-action lists unless the user asks.
+
+CI still gates merge in [merge](references/merge.md). Check state is an inspect fact, not a completion job roster.
+
+Final-pass evidence: [risk](reports/output-risk-profile.md), [artifact design](reports/artifact-design-profile.md), [quality](reports/output_quality_scorecard.md), and [fixtures](evals/evals.json).

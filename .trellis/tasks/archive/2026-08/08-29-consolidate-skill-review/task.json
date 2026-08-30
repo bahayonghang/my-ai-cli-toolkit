@@ -1,0 +1,32 @@
+{
+  "id": "consolidate-skill-review",
+  "name": "consolidate-skill-review",
+  "title": "精简 skill 套件：删除 skill-doctor 与 update-skill，并增强 skill-session-review",
+  "description": "删除未纳管的上游 skill skill-doctor 与 update-skill；把 skill-doctor 中经验证有价值的评分量表与建议晋级门槛并入既有 skill-session-review；为 skill-session-review 新增自包含、无厂商推广的 HTML 分析报告。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "skills/developer-tools-integrations",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-08-29",
+  "completedAt": "2026-08-30",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "skills/developer-tools-integrations/skill-session-review/SKILL.md",
+    "skills/developer-tools-integrations/skill-session-review/scripts/write_session_review.py",
+    "skills/developer-tools-integrations/skill-session-review/references/finding-contract.md",
+    "skills/developer-tools-integrations/skill-session-review/references/report-template.md",
+    "skills/developer-tools-integrations/AGENTS.md"
+  ],
+  "notes": "",
+  "meta": {}
+}

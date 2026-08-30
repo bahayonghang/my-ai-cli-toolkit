@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "断言用短语义锚点；recorded_fixture 不得写成 provider 证据；docs-sync 后才能过 docs-check"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "just ci 链：skills-check、python-check、docs-check；禁止手改 catalog 页"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/prd.md", "reason": "AC1–AC7 对照 create.md / merge.md / SKILL.md Completion / evals 39–42"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/design.md", "reason": "标题算法是否只在 create.md；完成回报是否复制了操作清单字段"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/research/qiaomu-analysis.md", "reason": "负例 PR #30 是否被升格成核心规则而不是只禁这一条标题"}

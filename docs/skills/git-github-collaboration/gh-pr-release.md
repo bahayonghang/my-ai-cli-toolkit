@@ -17,7 +17,7 @@ Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish
 | --- | --- |
 | 名称 | `gh-pr-release` |
 | 分类 | `git-github-collaboration` (Git / GitHub 协作) |
-| 版本 | `3.0.0` |
+| 版本 | `3.0.1` |
 | 标签 | `github`, `gh-cli`, `pull-request`, `pr-lifecycle` |
 
 ## 安装命令

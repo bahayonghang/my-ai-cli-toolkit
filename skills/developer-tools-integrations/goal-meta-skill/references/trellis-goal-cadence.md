@@ -80,6 +80,27 @@ No row in this table uses the `official` evidence label. Platform
 documentation does not define Trellis agent names. The table samples one
 project's `.trellis/workflow.md`.
 
+## Review-remediation feedback seam
+
+Apply this seam only when the Trellis implementation outcome also names a
+scan/review/audit/report/finding source. Load
+`review-remediation-contract.md`; ordinary Trellis implementation keeps the
+existing cadence unchanged.
+
+After `trellis-check`, `PASS` may proceed to the frozen-envelope rescan.
+`FINDINGS` is not a new handoff: the main session deduplicates same-scope
+actionable entries into the stable ledger and feeds them back to the current
+`trellis-implement`, then requests another independent check. A host that cannot
+reuse the worker may dispatch a replacement with the same task artifacts,
+envelope, and complete ledger, but cannot request a second user repair Prompt.
+`BLOCKED` stops with the residual ledger.
+
+Only after the original scanner passes with the same envelope, open actionable
+findings are zero, regression and final gates pass, and diff/status proves no
+scope escape may execution enter the Commit then archive section below. The
+question gate remains limited to material user-owned authority/product choices;
+new same-scope findings never qualify.
+
 ### Generated `/goal` fields for the default-on state
 
 Put dispatch into three fields. Do not add dispatch to `暂停条件` /

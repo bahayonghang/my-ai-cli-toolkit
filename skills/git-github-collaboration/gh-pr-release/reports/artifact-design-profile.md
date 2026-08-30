@@ -4,6 +4,10 @@
 
 PR and review text should read like compact engineering collaboration, not a generated report. Optimize for reviewers scanning intent, evidence, blockers, and next actions in GitHub's narrow content column.
 
+## PR Title
+
+- GitHub titles follow `references/create.md`. Do not copy that algorithm here.
+
 ## PR Description
 
 - Use repository templates when present.
@@ -44,6 +48,10 @@ PR and review text should read like compact engineering collaboration, not a gen
 - In Release notes, state the exact tag and target commit, asset/checksum set, compatibility notes, and known gaps supported by evidence.
 - Keep generated notes as a draft input. Review them before publication, and mark unavailable benchmarks, adoption data, or external validation as `missing evidence`.
 - Do not imply that registry publication or production deployment succeeded merely because the GitHub Release exists; report those workflow outcomes separately.
+
+## Completion Chat
+
+- Create and merge chat reports follow `SKILL.md` Completion. Do not copy that identifier list here.
 
 ## Final Check
 

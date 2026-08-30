@@ -1,8 +1,8 @@
 ---
 name: goal-meta-skill
 description: |
-  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure exploration, memory-vault creation, or active-goal management that only needs a platform command.
-version: 0.7.1
+  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.
+version: 0.8.0
 category: developer-tools-integrations
 tags:
   - codex
@@ -39,6 +39,7 @@ metadata:
 - 不自动加载、执行、提交、忽略、删除或发布 `GOAL.md`，也不把它导入 `AGENTS.md`、`CLAUDE.md`、`.grok/rules` 或 `.omp` 上下文文件。helper 写入成功后也只展示 launcher 文本并停止，不启动 Goal。
 - 合同不得包含凭证、私有数据或原始会话转录；秘密扫描只是 backstop，不是“无敏感信息”证明。
 - 真实新会话接力没有 provider transcript 时保持 `UNVERIFIED`。
+- review-remediation 中“一次完成”只表示一条外部 Prompt/一次用户启动动作拥有完整闭环；内部仍保留独立检查和最多三轮聚焦返修。可在原授权内修复的 finding 不得变成第二条用户修复 Prompt。
 
 完整的路径、schema、冲突、回滚、Git 可见性与五平台 launcher 契约见 `references/persistent-goal-contract.md`。
 
@@ -56,7 +57,7 @@ metadata:
 
 ## Workflow
 
-1. **S0 — Route and bind authority.** 区分新 Goal、持久化/交接请求与现有 Goal 管理。把所有目标祈使句绑定为 payload，并在开始前固定本轮终点：初次请求止于 `DRAFT`；后续批准止于 `APPROVED TEXT — not launched`；两者都不越过 Goal activation 边界。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
+1. **S0 — Route and bind authority.** 区分新 Goal、持久化/交接请求、review-remediation 与现有 Goal 管理。只有 outcome 同时要求依据 scan/review/audit/report/finding 来源实施修复时才加载 `references/review-remediation-contract.md`；纯只读审阅、普通直接修复和仅有 Trellis 路径不触发。把所有目标祈使句绑定为 payload，并在开始前固定本轮终点：初次请求止于 `DRAFT`；后续批准止于 `APPROVED TEXT — not launched`；两者都不越过 Goal activation 边界。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
 2. **S1 — Reconnoiter.** 现有项目先读取局部规则、真实命令源与相关边界，并运行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git status --porcelain -uall`。不运行测试、不写文件、不读 secrets/dependencies/generated output。持久化时还要检查根目录和现有 `GOAL.md`。
 3. **S2 — Choose.** 需求具体或用户说 `直接给` / `按默认` 时走 fast path；只有结果、验证、边界或风险容忍存在实质缺口时才访谈。
 4. **S3 — Interview.** 每轮复述结果和侦察发现，只问最多四个必须由人决定的问题。遵循 `references/interview-checklist.md`。
@@ -83,11 +84,20 @@ python "<skill-dir>/scripts/lint_goal_command.py" --platform codex <file>
 
 持久合同额外运行 `--contract --expected-path GOAL.md`。平台枚举为 `codex|claude|grok|omp|kimi|both|all`；`both` 保持 Codex+Claude 旧语义。
 
+若 S0 选中 review-remediation，inline 与持久合同分别额外运行：
+
+```text
+python "<skill-dir>/scripts/lint_goal_command.py" --review-remediation --platform codex <file>
+python "<skill-dir>/scripts/lint_goal_command.py" --review-remediation --contract --expected-path GOAL.md --platform codex <file>
+```
+
 ## Output contract
 
 普通 S4 先输出 `状态：DRAFT — Goal 未创建、未激活、未执行`，再按 `推荐执行版（中文，可直接复制）`、`默认选择理由`、`可选调整`、`Goal Draft (English-compatible)`、审阅回复提示的顺序交付。每个 `/goal` 只出现在无内空行的 `text` fence 中；展示后停止。用户确认后的 S6 先标记 `状态：APPROVED TEXT — not launched`，再给一个 `最终可复制 /goal` fence 和 `字段一览`，声明需在 skill 外另行启动，并停止；英文用户默认只给英文。
 
 每个 Goal 都包含：可观察目标、具体验证、不可变约束、写入边界、证据驱动的有限迭代、合取式完成条件、平台正确的暂停/停止条件。权威检查、文件、报告或验收条款必须界定 `all/全部` 的集合。
+
+review-remediation 输出还必须冻结 `scanner / scanner_identity / config / inputs / targets / baseline_report / git_baseline`，维护稳定 finding ledger，并把 checker 的同范围 `FINDINGS` 回灌同一任务。只有会实质改变范围、风险、成本、公开行为或授权的用户所有决策才可在首次产品写入前进入结构化问题门；Claude Code 文本点名 `AskUserQuestion`。同参数最终重扫、`open actionable findings = 0`、回归/最终门和 diff/status 范围证据是合取完成门。权威细节只见 `references/review-remediation-contract.md`。
 
 持久化输出使用 `references/persistent-goal-contract.md` 的固定 11 节 schema。文件正文是权威交接合同，短命令只作为供用户审阅、复制并在 skill 外提交的显式读取 launcher；不得声称开启 Goal 模式会自动发现 `GOAL.md`，也不得由 skill 提交或执行 launcher。
 
@@ -116,11 +126,13 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 
 默认开启时，实施 `/goal` 要求先读目标项目 `.trellis/workflow.md` Phase 2.1 / 2.2，代码实施派发 `trellis-implement`、验证派发 `trellis-check`，主会话不直接改产品文件；明确 opt-out 或有原因的技术降级改用项目的 inline 形状。首句开关必须与后文的 `迭代策略`、`约束`和 `完成条件` 一致。
 
+当该 Trellis outcome 同时属于 review-remediation 时，checker 不是终点：`FINDINGS` 由主会话去重后回灌同一任务的 implementer，随后复查并用冻结 envelope 原参数重扫。只有闭环达到零 open actionable findings 和最终门后，才进入下面的 commit/archive 节奏。普通 Trellis Goal 不注入这条扫描闭环。
+
 当前任务收尾顺序固定为：完成并验证一个可独立验收的任务；提交该任务相关产品改动和当前任务规划产物；确认二者均进入版本历史；再对具体任务目录运行 `task.py archive`。规划产物仅指该 `/goal` 绑定的当前任务目录；明确排除其他活动/未跟踪任务目录和范围外脏文件。产品与规划可按仓库规范拆分为一个或多个语义清晰的 Conventional Commits；归档目录移动/状态更新由随后 `task.py archive` 的独立提交拥有。持久合同必须链接具体 `prd.md`、`design.md`、`implement.md` 并保留同一节奏；父任务等子任务逐个完成该闭环且发布门通过。`GOAL.md` 不能取代任务文档，skill 本身也不执行目标内的 commit/archive。
 
 ## Quality bar
 
-拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；Trellis 节奏误注入普通任务；Trellis 实施首句缺少 subagents 开关或把未提及/模糊表达当作关闭；默认开启却缺派发条款；opt-out/技术降级却仍要求派发；技术降级首句不说明能力原因；Trellis 收尾漏掉当前任务规划产物提交、版本历史确认或无关任务/范围外脏文件排除；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明；缺少 `DRAFT` / `APPROVED TEXT — not launched` 状态；展示后继续创建/激活 Goal、提交 slash command、派发 Agent 或实施 payload。
+拒绝或修订以下输出：无验证；范围覆盖整机/整库；无限重试；主观“看起来不错”作为完成证据；未解析占位符；跨平台借用 `clear/drop/cancel/replace/next/budget`；Claude 使用 pause/resume；review-remediation 缺 scan envelope/ledger/同参数重扫、为同范围 finding 提问、把超限残余标 complete、或产生第二条修复 Prompt；Trellis 节奏误注入普通任务；Trellis 实施首句缺少 subagents 开关或把未提及/模糊表达当作关闭；默认开启却缺派发条款；opt-out/技术降级却仍要求派发；技术降级首句不说明能力原因；Trellis 收尾漏掉当前任务规划产物提交、版本历史确认或无关任务/范围外脏文件排除；未授权写入或静默覆盖；任何自动加载、自动 commit/push/ignore/delete 声明；缺少 `DRAFT` / `APPROVED TEXT — not launched` 状态；展示后继续创建/激活 Goal、提交 slash command、派发 Agent 或实施 payload。
 
 ## Resources
 
@@ -129,6 +141,7 @@ Grok/OMP/Kimi 的 `/goal @GOAL.md` 组合在真实 fresh-session 证据前不作
 - `references/goal-command-playbook.md`：普通/持久目标模板、验证锚点与示例。
 - `references/default-goal-strategy.md`：默认路径、侦察、风险、长合同与 S6 输出。
 - `references/trellis-goal-cadence.md`：可选 Trellis commit-then-archive 与子代理派发 adapter。
+- `references/review-remediation-contract.md`：扫描 envelope、finding ledger、提问门、返修 feedback edge、有限收敛与证据边界的唯一事实源。
 - `references/interview-checklist.md`：有限访谈题库。
 - `evals/evals.json`：行为与路由 fixtures；CI 不执行，需人工审阅。
 - `scripts/lint_goal_command.py`：inline/contract linter 与平台命令隔离。

@@ -1,14 +1,49 @@
-# Goal Meta Skill 0.7.1 creation handoff
+# Goal Meta Skill 0.8.0 creation handoff
 
 ## Result
 
-`goal-meta-skill` 0.7.1 compiles vague work into reviewable,
+`goal-meta-skill` 0.8.0 compiles vague work into reviewable,
 platform-correct `/goal` text and, only after the governed file-write
 confirmation, can persist one approved root `GOAL.md` handoff through a guarded
 writer. It never creates, activates, submits, dispatches, or executes a Goal;
 both draft and approved text are terminal review states. Local path:
 `skills/developer-tools-integrations/goal-meta-skill/`. Publication status:
 local repository implementation; no PR, merge, release, or install claim.
+
+## 0.8.0 change
+
+Review/scan remediation is now an explicit opt-in Goal-authoring profile. One
+approved external Prompt freezes the scanner/config/input/target/report/Git
+envelope, owns a stable finding ledger, sends independent checker `FINDINGS`
+back to implementation inside the same task, reruns the original scanner, and
+forbids requesting or emitting a second repair Prompt. Ordinary Goal lint and
+pure read-only review retain their existing routes.
+
+The generated execution contract names the only structured question gate:
+before first product write, Claude Code may use `AskUserQuestion` only for an
+unresolved user-owned choice that materially changes scope, risk, cost, public
+behavior, or authorization. Same-scope findings and routine implementation do
+not qualify. This wording does not add that tool to the meta-skill itself.
+
+Convergence is bounded to three focused rounds. Two no-progress rounds for one
+finding signature or residual actionable findings after round three end
+`BLOCKED` with the ledger; they never become completion or a new handoff. The
+new `--review-remediation` linter profile applies fail-closed checks to both
+inline text and persisted contracts while remaining opt-in for compatibility.
+
+Qiaomu alignment follows the repository-native package contract: trigger cases
+and their generated report live under the Trellis task, not as a second package
+eval schema. No per-skill README or manifest was added. Qiaomu validator/release
+schema differences remain `missing evidence`, not a pass.
+
+The Qiaomu raw IR exporter is diagnostic only for this package. Without the
+forbidden per-skill manifest it produces a useful schema skeleton but leaves
+governance, intent, trigger, workflow, and gate fields empty; it must never
+overwrite the canonical report or count as the final IR gate. The checked-in
+report receives a deterministic repository-native enrichment, then the task's
+`research/assert_skill_ir.py` fails closed unless version `0.8.0`, governed
+lifecycle, permissions, gates, trigger groups, workflow groups, and evidence
+limits are non-empty and no host absolute path is present.
 
 ## 0.7.1 change
 
@@ -95,6 +130,14 @@ new linter. That failure is expected.
 - 0.7.1 reject: inferring opt-out from silence, silently degrading to inline,
   forcing subagents on an incapable platform, mixing unrelated task directories
   into a commit, or folding product/planning changes into the archive commit.
+- 0.8.0 keep: bounded evidence-driven iteration, independent checking,
+  review-before-activation, the Trellis dispatch switch, and separate closeout.
+- 0.8.0 adapt: combine a frozen scan envelope, stable finding ledger, and
+  checker-to-implementation feedback edge inside one externally approved Goal.
+- 0.8.0 reject: external loop frameworks, broker/DAG dependencies, unlimited
+  retries, question-per-finding behavior, or post-check repair handoff prompts.
+- 0.8.0 invent: the negative question gate, same-signature stall state,
+  conjunctive zero-open completion, and an opt-in fail-closed linter profile.
 
 ## Advantages and evidence
 
@@ -135,8 +178,43 @@ new linter. That failure is expected.
   negative routing. Evals 38–41 record the Cursor-like long Prompt, default
   silence, explicit opt-out, and `codex.dispatch_mode: inline` fallback. These
   fixtures remain local `recorded_fixture` evidence, not provider compliance.
+- `validated advantage`: 0.8.0 deterministic tests cover complete inline and
+  persisted review-remediation contracts, every scan-envelope field,
+  checker feedback, no-second-Prompt wording, the question gate, same-envelope
+  rescan, drift, stall, round cap, opt-out/fallback, and read-only routing.
+- `recorded fixture`: evals 42–47 cover the output boundary and the task-local
+  Qiaomu trigger gate covers 19 routing cases, including the negated
+  “不要生成第二条修复 Prompt” trigger. Neither executes a provider.
+- `hypothesis`: one externally approved Prompt plus internal feedback reduces
+  real repair Prompt count and user-launched validation rounds.
+- `missing evidence`: provider-backed before/after runs, blind human review,
+  fresh-Agent execution, repair-count telemetry, and strict two-catalog
+  deduplication remain unavailable.
 
 ## Verification and limits
+
+- 0.8.0 targeted goal-meta tests: passed, 63/63 (51 linter/package-contract,
+  12 persistence).
+- 0.8.0 repository skill metadata validation: passed.
+- 0.8.0 targeted Python byte compilation: passed for both bundled helpers.
+- 0.8.0 Qiaomu task-local trigger gate: passed, 19/19 with no false positive
+  or false negative at threshold 0.34.
+- 0.8.0 repository-native Skill IR assertion: passed for version `0.8.0`,
+  governed lifecycle, non-empty permissions/gates/triggers/workflow, bounded
+  local evidence, and no host absolute path. Raw Qiaomu export remains a
+  diagnostic skeleton rather than final evidence.
+- 0.8.0 full repository `just ci`: passed, including docs catalog/build,
+  metadata validation, Python compilation, the full Node suite, and
+  `git diff --check`.
+- Qiaomu `validate_skill.py` / local `release_check.py` remain expected
+  `missing evidence` when their nonzero output is limited to absent per-skill
+  `README.md`, `manifest.json`, or the incompatible package trigger schema.
+  Repository-local rules deliberately forbid adding those ceremonial files.
+- Provider-backed Codex/Claude/Grok/OMP/Kimi runs, human blind review,
+  fresh-Agent execution, public install, release, and convergence telemetry:
+  `missing evidence`.
+
+Historical verification retained below for earlier versions:
 
 - 0.7.1 targeted goal-meta tests: passed, 50/50 (38 linter/package-contract,
   12 persistence).

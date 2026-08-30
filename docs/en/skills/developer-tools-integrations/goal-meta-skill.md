@@ -9,7 +9,7 @@ Turn vague or complex agent tasks into project-aware, verifiable `/goal` command
 ## Trigger scenarios
 
 - Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code
-- Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, 子任务实施, commit-then-archive cadence, or 终稿展示
+- Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Turn vague or complex agent tasks into project-aware, verifiable `/goal` command
 | --- | --- |
 | Name | `goal-meta-skill` |
 | Category | `developer-tools-integrations` (Developer Tools & Integrations) |
-| Version | `0.7.1` |
+| Version | `0.8.0` |
 | Tags | `codex`, `claude-code`, `grok`, `kimi-code`, `goal`, `prompt-engineering`, `agent-skills`, `verification` |
 
 ## Install command
@@ -32,8 +32,8 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill goal-meta-ski
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/goal-meta-skill/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/goal-meta-skill/evals` | directory | 1 | Evaluation samples |
-| `skills/developer-tools-integrations/goal-meta-skill/references` | directory | 6 | Reference material |
-| `skills/developer-tools-integrations/goal-meta-skill/reports` | directory | 1 | Top-level directory |
+| `skills/developer-tools-integrations/goal-meta-skill/references` | directory | 7 | Reference material |
+| `skills/developer-tools-integrations/goal-meta-skill/reports` | directory | 3 | Top-level directory |
 | `skills/developer-tools-integrations/goal-meta-skill/scripts` | directory | 2 | Executable scripts |
 | `skills/developer-tools-integrations/goal-meta-skill/tests` | directory | 2 | Automated tests |
 

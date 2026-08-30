@@ -499,6 +499,78 @@
         "Current-task product and planning artifacts enter version history before the separate archive commit; unrelated task directories and out-of-scope dirty files remain excluded.",
         "The recorded fixture is not presented as provider compliance, human review evidence, or telemetry."
       ]
+    },
+    {
+      "id": 42,
+      "prompt": "请把 `.trellis/tasks/08-29-parser-audit-fix` 的审阅报告修复任务编译成 Codex /goal：沿用原扫描参数，一条 Prompt 内让 Agents 修复、独立复查并收敛，不要再让我提供第二条修复 Prompt。",
+      "expected_output": "A DRAFT recorded_fixture for review-remediation with a frozen scan envelope, stable finding ledger, internal checker-to-implementation feedback, original-parameter rescan, and no second repair Prompt.",
+      "files": [],
+      "assertions": [
+        "The DRAFT freezes scanner identity/config/inputs/targets/baseline report/Git baseline and does not fabricate unavailable identity instead of marking it UNVERIFIED.",
+        "It keeps stable finding IDs/status/evidence and feeds same-scope FINDINGS back to implementation in the same task rather than returning a new repair Prompt.",
+        "Completion requires zero open actionable findings plus the original same-envelope scan, regression/final gates, and diff/status evidence; it does not equate one edit or one checker pass with completion.",
+        "The output is labeled recorded_fixture and is not claimed as provider compliance, human blind review, or repair-rate telemetry."
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "为 Claude Code 生成审阅报告整改 /goal。必要时用 AskUserQuestion，但普通实现细节、同范围新 finding 和每批修复不要问我；只有扩范围、改公开行为或新增授权才问。",
+      "expected_output": "A Claude DRAFT whose pre-write question gate is limited to material user-owned scope/risk/cost/public-behavior/authority decisions and whose same-scope findings remain autonomous inside the one Prompt.",
+      "files": [],
+      "assertions": [
+        "Before first product write it names AskUserQuestion only for an unresolved material user-owned decision and does not treat repository-readable facts as user questions.",
+        "It forbids questions for ordinary implementation, original-scan reruns, per-batch approval, and same-scope findings rather than asking ceremonially.",
+        "Claude's stop-and-report and bounded-turn semantics remain, and the skill itself does not receive AskUserQuestion authority or launch the Goal.",
+        "The result remains a DRAFT recorded_fixture, not evidence that Claude Code followed the gate in a provider run."
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "给我一个 Codex /goal，修复 session 扫描报告；扫描期间 corpus 可能增长，必须区分原全集和漂移后的全集。",
+      "expected_output": "A review-remediation DRAFT that freezes the session/corpus enumeration and requires re-baseline or BLOCKED on material drift instead of declaring a drifted before/after comparison clean.",
+      "files": [],
+      "assertions": [
+        "The scan envelope records stable session/window IDs or enumeration source and does not silently rescan a growing latest-session window.",
+        "Material scanner/config/corpus/target drift requires a new baseline or BLOCKED and cannot be reported as zero findings under the old envelope.",
+        "Unavailable nondeterministic evidence is labeled UNVERIFIED and bounded by repeated runs or a second source, not upgraded to VERIFIED by assertion.",
+        "The final result is a deterministic recorded_fixture and does not claim real corpus convergence telemetry."
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "把 audit findings 修复流程写成 /goal：最多三轮；同一个 finding 两轮没有进展就停，第三轮还有问题也不能算完成。",
+      "expected_output": "A bounded review-remediation DRAFT with stable signatures and BLOCKED residual-ledger states for no-progress or round-cap exhaustion.",
+      "files": [],
+      "assertions": [
+        "The contract allows at most three focused rounds and does not use an unlimited retry loop.",
+        "The same finding signature with two no-progress rounds ends BLOCKED with evidence rather than resetting IDs or claiming a fresh issue.",
+        "Open actionable findings after round three remain in the residual ledger and do not become complete or a second user repair Prompt.",
+        "Only a same-envelope zero-open final scan may complete; the fixture does not claim live convergence evidence."
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "直接给 Codex /goal，根据审阅报告修复 `.trellis/tasks/08-29-parser-fix`；我明确不要 subagents，主会话内联实施，但仍要独立检查和原参数复扫。",
+      "expected_output": "A review-remediation DRAFT whose first statement records explicit subagent opt-out while preserving the same ledger, independent-check feedback, bounded repair, and rescan semantics in the inline path.",
+      "files": [],
+      "assertions": [
+        "The first statement records the explicit user opt-out and does not later dispatch trellis-implement or mislabel it as a capability fallback.",
+        "The inline path keeps independent checking, same-scope FINDINGS feedback, the stable ledger, and the original same-envelope rescan rather than weakening verification.",
+        "Current-task product/planning history and separate archive cadence remain after convergence; unrelated task directories and out-of-scope dirt are not included.",
+        "The skill presents a recorded DRAFT and does not begin inline implementation or archive the task."
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "只读审阅 `.trellis/tasks/08-29-parser-fix` 的规划，列出问题和证据，不要修改代码，也不要生成修复 Goal。",
+      "expected_output": "A routing-negative result that stays in the read-only review workflow rather than selecting goal-meta review-remediation.",
+      "files": [],
+      "assertions": [
+        "The request routes to read-only review and does not manufacture a /goal merely because a Trellis path and review findings are present.",
+        "It reports evidence without implementing findings, creating a ledger feedback loop, or asking the user to approve a repair Prompt.",
+        "No Goal is created, activated, persisted, dispatched, committed, or archived.",
+        "Any report is evidence-limited and is not described as a provider-backed remediation run."
+      ]
     }
   ]
 }

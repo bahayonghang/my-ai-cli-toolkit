@@ -1719,3 +1719,95 @@ goal-meta-skill 升到 0.6.0：Trellis 实施 /goal 注入 trellis-implement / t
 ### Status
 
 [OK] **Completed**
+
+
+## Session 56: 按纳入提交写功能性 PR 标题
+
+**Date**: 2026-08-27
+**Task**: 按纳入提交写功能性 PR 标题
+**Branch**: `dev`
+
+### Summary
+
+gh-pr-release 升至 3.0.1：GitHub 标题只写纳入提交的功能主语，完成后对话只报标识符；just ci 通过后归档。
+
+### Main Changes
+
+- create.md 以 base...HEAD 写功能标题并禁止 --fill
+- merge.md 对机械标题单独授权 gh pr edit
+- Completion 收成标识符；evals 39-42 回归
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b30aeb7a` | (see git log) |
+| `03d8000d` | (see git log) |
+
+### Testing
+
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无
+
+
+## Session 57: goal-meta-skill 单 Prompt 修复闭环收尾
+
+**Date**: 2026-08-30
+**Task**: goal-meta-skill 单 Prompt 修复闭环收尾
+**Branch**: `fix/gm`
+
+### Summary
+
+完成单 Prompt 扫描返修闭环、同范围反馈与原参数重扫约束，并归档 08-29-goal-meta-single-pass-repair。
+
+### Main Changes
+
+- 升级 goal-meta-skill 至 0.8.0 并固化单轮返修契约
+- 新增 fail-closed lint、回归测试、触发评测与 Skill IR 断言
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `76535469c1efccf62bd59c860ad21c49e4740fbe` | (see git log) |
+| `4ab0b72adae6caccbc397fb08dad834ff1cfa2a7` | (see git log) |
+
+### Testing
+
+- [OK] just ci
+- [OK] node --test goal-meta-skill/tests/*.test.mjs（63/63）
+- [OK] task.py validate 与 assert_skill_ir.py
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 58: 完成 skill-session-review 合并改造与归档
+
+**Date**: 2026-08-30
+**Task**: 完成 skill-session-review 合并改造与归档
+**Branch**: `dev`
+
+### Summary
+
+work_commits=79c4fb12ec665270097e444cdd06be1e87678484,e017fee997993316ea02f330d1c04a8d45df292a,aed9a5354289298912951a7c5a1cc3e2c512c8a4; backup=%USERPROFILE%/.claude-skill-backup/08-29-consolidate-skill-review; governed=28/d8aaae56cf834141b81d658308a48ad503dd522d5c057ddce3a67ff352e16290; physical=34/f531893622531b73c16b2829f8065b3665d3a5d7926d0b0f1b34f6f82b675c21; deleted=true; residual=false; failure_phase=null; failure_category=null; residual_probe_category=null; retry_proof=not-applicable; retry_proof_category=null; retryable=false; requires_new_task=false
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `79c4fb12ec665270097e444cdd06be1e87678484` | (see git log) |
+| `e017fee997993316ea02f330d1c04a8d45df292a` | (see git log) |
+| `aed9a5354289298912951a7c5a1cc3e2c512c8a4` | (see git log) |
+
+### Status
+
+[OK] **Completed**

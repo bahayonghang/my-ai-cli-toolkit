@@ -1,0 +1,168 @@
+{
+  "note": "goal-meta-skill 0.8.0 trigger boundary, including explicit one-Prompt review-remediation without routing direct implementation or read-only review into Goal authoring.",
+  "recommended_threshold": 0.34,
+  "description_required_concepts": [
+    "goal_task",
+    "review_source",
+    "remediation",
+    "one_prompt"
+  ],
+  "positive_concepts": {
+    "goal_task": [
+      "/goal",
+      "goal command",
+      "goal prompt",
+      "Goal 指令",
+      "目标指令"
+    ],
+    "review_source": [
+      "review",
+      "scan",
+      "audit",
+      "report",
+      "finding",
+      "扫描",
+      "审阅",
+      "审计",
+      "报告"
+    ],
+    "remediation": [
+      "remediation",
+      "repair",
+      "fix findings",
+      "修复",
+      "整改",
+      "返修",
+      "收敛"
+    ],
+    "one_prompt": [
+      "one Prompt",
+      "single Prompt",
+      "single-pass",
+      "一次完成",
+      "一条 Prompt",
+      "单 Prompt",
+      "不再生成第二条"
+    ],
+    "trellis": [
+      "Trellis task",
+      "Trellis child task",
+      "Trellis 任务",
+      "Trellis 子任务",
+      ".trellis/tasks/"
+    ],
+    "platform": [
+      "Codex",
+      "Claude Code",
+      "Grok Build",
+      "Oh My Pi",
+      "OMP",
+      "Kimi Code"
+    ],
+    "persistence": [
+      "GOAL.md",
+      "persist",
+      "持久化",
+      "跨会话",
+      "fresh Agent"
+    ]
+  },
+  "negative_patterns": [
+    "只读审阅",
+    "read-only review",
+    "不要修改代码",
+    "不要生成修复 Goal",
+    "直接修复",
+    "每次 review 结束都生成第二条修复 Prompt",
+    "状态命令",
+    "status command",
+    "不要创建目标",
+    "还没决定",
+    "memory vault",
+    "长期记忆库",
+    "Conventional Commit",
+    "发布 GitHub Release"
+  ],
+  "should_trigger": [
+    {
+      "text": "请把这份扫描报告的整改工作编译成 Codex /goal，一条 Prompt 内修复、复查并收敛。",
+      "family": "review-remediation-zh"
+    },
+    {
+      "text": "Create a Claude Code /goal for single-pass remediation of this audit report.",
+      "family": "review-remediation-en"
+    },
+    {
+      "text": "把 `.trellis/tasks/08-29-parser-fix` 的 findings 修复写成 Goal 指令，不再生成第二条 Prompt。",
+      "family": "trellis-findings-zh"
+    },
+    {
+      "text": "Write one Prompt as a Codex goal command that fixes review findings and reruns the same scan.",
+      "family": "one-prompt-rescan-en"
+    },
+    {
+      "text": "为 Claude Code 生成审计报告返修 /goal，必要的产品决策才提问。",
+      "family": "question-gate-zh"
+    },
+    {
+      "text": "把这次 scan remediation 做成单 Prompt 跨会话 GOAL.md 交接合同。",
+      "family": "persisted-remediation-zh"
+    },
+    {
+      "text": "Create a Kimi Code /goal for fixing findings from the named report in one Prompt.",
+      "family": "kimi-remediation-en"
+    },
+    {
+      "text": "用 OMP 的目标指令让 audit findings 最多三轮收敛，超限 BLOCKED。",
+      "family": "omp-bounded-remediation-zh"
+    },
+    {
+      "text": "把 review findings 修复编译成 Goal 指令，只用一条 Prompt，不要生成第二条修复 Prompt。",
+      "family": "negated-second-prompt-zh"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "直接修复 src/parser 的空行崩溃并运行测试。",
+      "family": "direct-implementation"
+    },
+    {
+      "text": "只读审阅这份 audit report，不要修改代码。",
+      "family": "read-only-review"
+    },
+    {
+      "text": "Write a Conventional Commit for the staged scan fix.",
+      "family": "commit"
+    },
+    {
+      "text": "发布 GitHub Release 并上传构建产物。",
+      "family": "release"
+    },
+    {
+      "text": "把今天下午三点开会翻译成英文。",
+      "family": "translation"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "只读审阅 `.trellis/tasks/08-29-parser-fix`，列出 findings，不要生成修复 Goal。",
+      "family": "trellis-read-only"
+    },
+    {
+      "text": "每次 review 结束都生成第二条修复 Prompt 给用户。",
+      "family": "multi-prompt-handoff"
+    },
+    {
+      "text": "告诉我 Codex 的 goal status command，不要创建目标。",
+      "family": "management-only"
+    },
+    {
+      "text": "把历史 audit report 全部写入 GOAL.md 当长期记忆库。",
+      "family": "memory-vault"
+    },
+    {
+      "text": "先讨论 scan、review 和 manual QA 三种方向，还没决定要修复什么。",
+      "family": "pure-exploration"
+    }
+  ]
+}

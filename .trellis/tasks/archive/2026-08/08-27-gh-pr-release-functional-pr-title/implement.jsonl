@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "evals.json 是手审行为夹具、docs-sync、一处真源、禁止为 qiaomu validate 补 README"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "禁止手改生成 docs；frontmatter 与目录一致；改元数据后跑 docs-sync"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/research/qiaomu-analysis.md", "reason": "SkillOps 信号、泛化门、create.md:25 与 Completion 过宽是失效机制"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/research/prior-art-research.md", "reason": "pr-creator 的整段 changeset 标题与短完成回报；拒绝百科式生命周期"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/prd.md", "reason": "功能主语标题、禁止机械 merge 句、完成回报标识符、授权改标题"}
+{"file": ".trellis/tasks/08-27-gh-pr-release-functional-pr-title/design.md", "reason": "标题算法、机械标题判定、Completion 字段清单、3.0.1 不重生 Governed 报告"}

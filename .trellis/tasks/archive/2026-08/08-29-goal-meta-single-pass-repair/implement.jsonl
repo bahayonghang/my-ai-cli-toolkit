@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill frontmatter, interface, eval, prompt compiler, Windows and evidence contracts"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Python and Node helper placement plus repository validation requirements"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Fail-closed CLI validation and actionable stderr behavior"}
+{"file": ".trellis/tasks/08-29-goal-meta-single-pass-repair/research/current-gap-analysis.md", "reason": "Verified current failure chain and scope boundaries"}
+{"file": ".trellis/tasks/08-29-goal-meta-single-pass-repair/research/prior-art-research.md", "reason": "Qiaomu keep-adapt-reject-invent synthesis and missing evidence"}

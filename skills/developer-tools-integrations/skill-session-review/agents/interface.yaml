@@ -1,7 +1,7 @@
 interface:
   display_name: "Skill Session Review"
   short_description: "Review how a named skill was used in past sessions and persist a feedback report"
-  default_prompt: "Use $skill-session-review read-mostly. Scan Claude, Grok, Codex, and Oh My Pi sessions for a named skill instance, write reports/skill-session-review/<name>.md, and give a copyable qiaomu-meta handoff prompt. Do not edit the target skill."
+  default_prompt: "Use $skill-session-review read-mostly. Scan Claude, Grok, Codex, and Oh My Pi sessions with scanner --skill-name. If invoked sessions exist, preview the exact root, canonical name, input, Markdown, and HTML paths plus create-remove-open effects; obtain one confirmation for that immutable named package, then use canonical --name to persist one validated review JSON, write Markdown and self-contained HTML separately, remove the input only with complete hash proof, and open the HTML. Invalidate and re-confirm on snapshot drift; confirm each replacement and any separately governed repo-root .gitignore operation independently. Do not edit the target skill."
 compatibility:
   canonical_format: "agent-skills"
   adapter_targets:
@@ -17,7 +17,7 @@ compatibility:
     source_tier: "local"
     remote_inline_execution: "forbid"
     remote_metadata_policy: "allow-metadata-only"
-    side_effect_policy: "writes only reports/skill-session-review and one gitignore line"
+    side_effect_policy: "requires one explicit confirmation for the exact named report package before fixed-subtree create/remove/open effects; each replacement and the separately governed repo-root gitignore operation require its own confirmation"
   degradation:
     openai: "use local session files; gaps are missing evidence"
     claude: "use local session files; do not infer remote history"

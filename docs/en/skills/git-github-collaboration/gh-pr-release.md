@@ -17,7 +17,7 @@ Operate GitHub pull requests and releases with gh CLI: create/draft PRs, publish
 | --- | --- |
 | Name | `gh-pr-release` |
 | Category | `git-github-collaboration` (Git & GitHub Collaboration) |
-| Version | `3.0.0` |
+| Version | `3.0.1` |
 | Tags | `github`, `gh-cli`, `pull-request`, `pr-lifecycle` |
 
 ## Install command

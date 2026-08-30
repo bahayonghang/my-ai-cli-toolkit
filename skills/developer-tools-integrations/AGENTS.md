@@ -34,8 +34,8 @@ older reference.
 - Bundled scripts self-locate via `Path(__file__)`, so only the script _path_ must
   resolve. Keep the Windows-friendly interpreter fallback (`python` / `py -3`)
   that `goal-meta-skill` shows; do not assume a single interpreter name.
-- `goal-meta-skill` and `file-sorter` ship scripts. The read/audit
-  skills legitimately have none — that is not a gap.
+- `goal-meta-skill`, `file-sorter`, and `skill-session-review` ship scripts. The
+  remaining read/audit skills legitimately have none — that is not a gap.
 
 ## `allowed-tools`
 
@@ -55,7 +55,7 @@ bare `Bash` when the skill only runs a known command family.
 | goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named governed root-contract writer after confirmation |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |
-| skill-session-review       | `Read, Glob, Grep, Write, Bash(python *)`, `Bash(py *)`, `Bash(git rev-parse *)`, `Bash(git check-ignore *)` | scans local sessions; writes only the report dir and one gitignore line |
+| skill-session-review       | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git rev-parse *), Bash(git check-ignore *)` | scans local sessions; after exact confirmation, independent helpers govern the repo-root `.gitignore` and one payload at a time in the fixed report subtree, proof-clean the review JSON, and open HTML only after both reports succeed |
 
 The goal-meta Python grant covers exactly its documented linter and
 `persist_goal_contract.py` path. It is not a claim that the skill is wholly

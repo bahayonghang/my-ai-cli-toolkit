@@ -87,6 +87,28 @@ Use open-ended questions only when choices would hide an important decision.
 - After repeated failures, should it inspect logs, search docs, reduce to a minimal repro, or pause?
 - Is there a soft stop clause for attempts, time, or tokens? For Codex, label the evidence that goal text does not set a runtime budget as `community-observed`; Claude's evaluator-judged soft-boundary behavior is official.
 - If the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md` rather than inventing archive order.
+- If the outcome implements a named scan/review/audit/report/finding source,
+  load `references/review-remediation-contract.md`; repository-readable scan
+  commands, config, inputs, targets, and Git facts are reconnaissance, not
+  interview questions.
+
+### Review-remediation question gate
+
+Classify decisions before the first product write. Do not ask for repository
+facts, ordinary implementation choices, permission to fix an already approved
+finding, permission to rerun the original scan, per-batch approval, or a new
+same-scope finding. The generated Claude Code Prompt names `AskUserQuestion`;
+other hosts name their actual structured equivalent.
+
+Ask at most one concise question only when an unresolved user-owned choice would
+materially change scope, risk, cost, public behavior, or authorization, such as:
+
+- expanding write scope or changing public API/compatibility/product semantics;
+- adding a dependency or using credentials, paid/remote/production systems;
+- push, publish, destructive work, overwrite, or mutually exclusive product policy.
+
+If no such decision exists, do not add a ceremonial confirmation. Same-scope
+checker findings flow back to implementation under the same Prompt.
 
 ### Stop And Pause
 

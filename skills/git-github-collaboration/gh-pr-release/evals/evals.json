@@ -429,6 +429,55 @@
         "Does not run cargo publish",
         "States that direct registry publishing is outside this skill"
       ]
+    },
+    {
+      "id": 39,
+      "prompt": "Merge dev into main. Unmerged commits: fix(goal-meta-skill): 完善 Trellis Prompt 派发与归档闭环; chore(trellis): 记录 Goal Prompt 收尾契约任务; chore(task): 归档 08-27-goal-prompt-submit-plan-archive; chore: record journal. Draft the GitHub PR title first.",
+      "expected_output": "Use create mode: inspect BASE...HEAD, drop journal and task-archive chores, and reuse the remaining feat/fix header as the GitHub title. Do not put a branch-merge phrase in the title. Do not pass --fill.",
+      "files": [],
+      "assertions": [
+        "Routes to references/create.md",
+        "Drafts a title with the functional subject from the remaining feat/fix commit",
+        "Does not use merge dev into main or 合并 dev in the GitHub title",
+        "Does not pass gh pr create --fill"
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "Create a PR from dev into main. Use this exact title: feat: merge dev into main",
+      "expected_output": "Use create mode: the user supplied a complete title string, so use feat: merge dev into main exactly.",
+      "files": [],
+      "assertions": [
+        "Routes to references/create.md",
+        "Uses the user-supplied title feat: merge dev into main exactly",
+        "Does not replace the supplied title with a functional subject"
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "PR #30 is open with title feat: merge dev into main. Merge it into main when the gates pass.",
+      "expected_output": "Use merge mode: classify the open title as mechanical, draft a functional replacement via create.md, show gh pr edit --title, and authorize that edit separately from the head-pinned merge.",
+      "files": [],
+      "assertions": [
+        "Routes to references/merge.md",
+        "Classifies the open PR title as mechanical",
+        "Shows gh pr edit --title with a functional replacement",
+        "Authorizes the title edit separately from merge",
+        "Does not retitle a MERGED PR"
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "The authorized merge of PR #30 succeeded. Give me the completion report.",
+      "expected_output": "After a fresh read, report only PR number, title, URL, state, base/head, authorized writes that ran, head SHA, merge commit SHA, and missing evidence.",
+      "files": [],
+      "assertions": [
+        "Reports PR number, title, URL, state, base/head, authorized writes, and SHAs",
+        "Does not include actor login",
+        "Does not include wall-clock time",
+        "Does not catalog included commits",
+        "Does not list CI job names"
+      ]
     }
   ]
 }

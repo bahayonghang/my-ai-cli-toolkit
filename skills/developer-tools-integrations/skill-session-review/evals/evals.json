@@ -3,41 +3,114 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "分析 trellis-plan-review 的使用情况，根据历史对话给出改进反馈。",
-      "expected_output": "Scan invoked sessions, persist reports/skill-session-review/trellis-plan-review.md, and print a copyable qiaomu-meta handoff prompt without editing the target skill.",
+      "prompt": "分析 trellis-plan-review 的使用情况，根据历史对话给出带评分的 Markdown 和 HTML 改进反馈。",
+      "expected_output": "Scan with --skill-name, score invoked sessions, preview and confirm one exact named report package, then use --name for the validated JSON, separate Markdown and HTML writes, proof-gated cleanup, browser open, and a copyable handoff prompt without editing the target skill.",
       "files": [],
       "assertions": [
-        "Runs scan_invocations.py with the skill name",
-        "Writes reports/skill-session-review/trellis-plan-review.md via write_session_review.py",
-        "Chat includes a text fence handoff prompt with the report path",
+        "Runs scan_invocations.py with scanner --skill-name",
+        "Uses execution_efficiency and instruction_fit with declared overall and grade",
+        "Previews the exact root, canonical name, input path, Markdown path, HTML path, and create-remove-open effects before any report helper",
+        "Obtains one explicit confirmation for the immutable named report package",
+        "Uses canonical --name for manage_review_input.py, write_session_review.py, and open_report.py",
+        "Creates one validated review JSON, writes Markdown and self-contained HTML separately, removes input only with complete hash proof, then opens HTML",
+        "Chat includes both report paths, a file URI fallback, and a text-fenced handoff prompt",
         "Does not edit the target SKILL.md"
       ]
     },
     {
       "id": 2,
-      "prompt": "This skill feels off in past Grok and Claude chats. Review git-commit sessions and tell me what to fix in the skill.",
-      "expected_output": "Session review for git-commit across platforms, report file, handoff prompt, no patch.",
+      "prompt": "Review git-commit sessions. instruction_fit 没有足够证据，但 execution_efficiency 有证据，请生成报告。",
+      "expected_output": "Treat only instruction_fit as insufficient evidence, exclude it from that dimension mean, substitute raw 0.5 for the weighted calculation with an unverified note, and still produce a six-decimal two-dimension overall and grade after authorization.",
       "files": [],
       "assertions": [
-        "Treats the request as skill-session-review",
-        "Does not emit a diff.patch",
-        "Does not call qiaomu-meta to apply edits in this turn"
+        "Does not allow insufficient_evidence for execution_efficiency",
+        "Does not lower the instruction_fit mean by treating insufficient_evidence as zero",
+        "Uses Decimal ROUND_HALF_UP quantization to six places for mean, curve, and overall",
+        "Uses no third scoring item and treats invocation counts as display-only",
+        "Explains the null instruction_fit substitution under unverified"
       ]
     },
     {
       "id": 3,
-      "prompt": "Continue from my last Claude session on the auth bug.",
-      "expected_output": "Route to resume-claude; do not run skill-session-review.",
+      "prompt": "Review skill sessions, but all four Claude, Grok, Codex, and Oh My Pi stores are missing.",
+      "expected_output": "Return bounded unrated: no-session-stores with four-platform coverage and counts, then stop.",
       "files": [],
       "assertions": [
-        "Does not trigger skill-session-review",
-        "Routes to resume-claude or equivalent session resume"
+        "Returns unrated: no-session-stores",
+        "Does not read private session slices or construct review JSON",
+        "Does not calculate a mean, ratio, overall, or grade",
+        "Does not call an input, report, ignore, or browser helper"
       ]
     },
     {
       "id": 4,
+      "prompt": "Scan skill-session-review history. Stores exist, but the only signals are loaded and available; there are zero invoked sessions.",
+      "expected_output": "Return bounded unrated: no-invoked-sessions with coverage and counts, then stop without artifacts.",
+      "files": [],
+      "assertions": [
+        "Returns unrated: no-invoked-sessions",
+        "Does not score loaded or available sessions",
+        "Does not create JSON, Markdown, or HTML and does not open a browser"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Prepare a skill-session-review report, show me exactly what it would touch, but do not confirm anything yet.",
+      "expected_output": "Preview the confirmed root, canonical name, three exact paths, and create-input/create-Markdown/create-HTML/proof-remove/open effects, with zero helper calls until explicit confirmation.",
+      "files": [],
+      "assertions": [
+        "Shows the complete exact report-package snapshot",
+        "Does not call any side-effect helper before explicit confirmation",
+        "Does not treat an allowed side effect as authorization"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I confirmed the report package, but now use a different repo root and a shorter report name.",
+      "expected_output": "Reject the old authorization because root and name drifted, re-derive all paths and effects, and request a fresh named-package confirmation before helpers.",
+      "files": [],
+      "assertions": [
+        "Invalidates authorization on root, name, path, or effect drift",
+        "Does not refresh the snapshot silently",
+        "Does not call report helpers before a new confirmation"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "The confirmed report target already exists. Replace it with this new review.",
+      "expected_output": "Stop no-clobber creation, show the exact existing path, current SHA-256, and replacement effect, then obtain a separate replacement confirmation before --replace --expected-sha256.",
+      "files": [],
+      "assertions": [
+        "Does not infer replace permission from the report-package confirmation",
+        "Shows the current SHA-256 and exact target path",
+        "Uses --replace --expected-sha256 only after separate confirmation"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "The report directory is not ignored yet. Generate the report package.",
+      "expected_output": "Preview the complete repo-root .gitignore candidate and obtain its own governed confirmation before the independently confirmed named report package.",
+      "files": [],
+      "assertions": [
+        "Keeps .gitignore authorization separate from the report package",
+        "Uses ensure_report_ignore.py rather than an input or report helper to change .gitignore",
+        "Requires a current SHA-256 and separate confirmation for .gitignore replacement"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Continue from my last Claude session on the auth bug.",
+      "expected_output": "Route to resume-claude or the equivalent session-resume capability; do not run skill-session-review.",
+      "files": [],
+      "assertions": [
+        "Does not trigger skill-session-review",
+        "Routes to session resume"
+      ]
+    },
+    {
+      "id": 10,
       "prompt": "优化这个仓库的 CLAUDE.md，精简上下文。",
-      "expected_output": "Route to claude-context-improver.",
+      "expected_output": "Route to claude-context-improver rather than reviewing skill sessions.",
       "files": [],
       "assertions": [
         "Does not trigger skill-session-review",
@@ -45,19 +118,9 @@
       ]
     },
     {
-      "id": 5,
-      "prompt": "用 qiaomu-meta 把这段 SOP 做成一个新 skill。",
-      "expected_output": "Route to qiaomu-meta to create a skill; not a session review.",
-      "files": [],
-      "assertions": [
-        "Does not trigger skill-session-review",
-        "Routes to qiaomu-meta for skill creation"
-      ]
-    },
-    {
-      "id": 6,
+      "id": 11,
       "prompt": "Which skills did I use last week? Give me invocation counts.",
-      "expected_output": "Not this skill; usage counts are out of scope.",
+      "expected_output": "Route to a usage-count capability; do not create a session-review report.",
       "files": [],
       "assertions": [
         "Does not trigger skill-session-review",
@@ -65,22 +128,13 @@
       ]
     },
     {
-      "id": 7,
-      "prompt": "Delete unused Claude skills I never invoked.",
-      "expected_output": "Unused-skill cleanup is out of scope.",
-      "files": [],
-      "assertions": [
-        "Does not trigger skill-session-review"
-      ]
-    },
-    {
-      "id": 8,
+      "id": 12,
       "prompt": "用 qiaomu-meta 根据刚才的想法直接改 trellis-plan-review 的 SKILL.md。",
-      "expected_output": "Applying qiaomu-meta edits is a later turn; this skill only reports.",
+      "expected_output": "Route to qiaomu-meta for a separate apply turn; skill-session-review does not edit the target skill.",
       "files": [],
       "assertions": [
-        "Does not treat the request as skill-session-review apply",
-        "Does not edit the target SKILL.md in this skill"
+        "Does not treat the request as a skill-session-review apply operation",
+        "Does not edit the target SKILL.md through this skill"
       ]
     }
   ]

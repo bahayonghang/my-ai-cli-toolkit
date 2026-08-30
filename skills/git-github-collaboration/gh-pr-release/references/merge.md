@@ -8,7 +8,7 @@ Inspect is read-only. Merge, auto-merge, branch deletion, and admin bypass are s
 
    ```bash
    gh pr view PR --repo OWNER/REPO \
-     --json url,state,isDraft,headRefOid,baseRefName,headRefName,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup
+     --json url,state,isDraft,title,headRefOid,baseRefName,headRefName,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup
    ```
 
 2. Classify checks without collapsing distinct states:
@@ -28,6 +28,19 @@ Inspect is read-only. Merge, auto-merge, branch deletion, and admin bypass are s
    ```
 
 7. `gh pr view --json` does not expose queue fields in gh 2.96. Use plain `gh api graphql` to read PullRequest `isMergeQueueEnabled`, `isInMergeQueue`, and `mergeQueueEntry`.
+
+## Mechanical Title
+
+A title is mechanical when, after you strip Conventional Commit type, scope, and emoji, the remaining subject is only a branch-merge phrase.
+
+If the PR is open and the title is mechanical:
+
+1. Draft a replacement with the title algorithm in [create](create.md), using the PR base and head.
+2. Show `gh pr edit PR --repo OWNER/REPO --title "..."`.
+3. Authorize that edit separately from merge.
+4. Fresh-read the PR after the edit. Merge still pins `--match-head-commit`.
+
+Do not retitle a MERGED PR.
 
 ## Select A Method
 
@@ -57,6 +70,6 @@ Never add these implicitly:
 
 ## Verify
 
-Read `gh pr view PR --repo OWNER/REPO --json state,mergedAt,mergedBy,mergeCommit,headRefOid,url`. Confirm `MERGED` and a merge commit OID, or confirm the queue/auto-merge state when the action intentionally deferred completion.
+Read `gh pr view PR --repo OWNER/REPO --json number,url,title,state,baseRefName,headRefName,mergeCommit,headRefOid`. Confirm `MERGED` and a merge commit OID, or confirm the queue/auto-merge state when the action intentionally deferred completion. Chat report fields follow SKILL.md Completion.
 
 If the approved request continues into a release, pass the fresh `mergeCommit` OID to [release-publish](release-publish.md). Merge authorization does not authorize tag creation, Release creation, asset upload, publication, or a Latest change.

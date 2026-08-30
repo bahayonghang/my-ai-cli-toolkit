@@ -1,0 +1,292 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "goal_task",
+    "one_prompt",
+    "persistence",
+    "platform",
+    "remediation",
+    "review_source",
+    "trellis"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 19,
+    "passed": 19,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "请把这份扫描报告的整改工作编译成 Codex /goal，一条 Prompt 内修复、复查并收敛。",
+        "family": "review-remediation-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "platform",
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Create a Claude Code /goal for single-pass remediation of this audit report.",
+        "family": "review-remediation-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "platform",
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把 `.trellis/tasks/08-29-parser-fix` 的 findings 修复写成 Goal 指令，不再生成第二条 Prompt。",
+        "family": "trellis-findings-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "remediation",
+          "trellis"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Write one Prompt as a Codex goal command that fixes review findings and reruns the same scan.",
+        "family": "one-prompt-rescan-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "platform",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "为 Claude Code 生成审计报告返修 /goal，必要的产品决策才提问。",
+        "family": "question-gate-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "platform",
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把这次 scan remediation 做成单 Prompt 跨会话 GOAL.md 交接合同。",
+        "family": "persisted-remediation-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "persistence",
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Create a Kimi Code /goal for fixing findings from the named report in one Prompt.",
+        "family": "kimi-remediation-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "platform",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 OMP 的目标指令让 audit findings 最多三轮收敛，超限 BLOCKED。",
+        "family": "omp-bounded-remediation-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "platform",
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "把 review findings 修复编译成 Goal 指令，只用一条 Prompt，不要生成第二条修复 Prompt。",
+        "family": "negated-second-prompt-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "one_prompt",
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "直接修复 src/parser 的空行崩溃并运行测试。",
+        "family": "direct-implementation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "remediation"
+        ],
+        "negative_pattern": "直接修复"
+      },
+      {
+        "prompt": "只读审阅这份 audit report，不要修改代码。",
+        "family": "read-only-review",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "review_source"
+        ],
+        "negative_pattern": "只读审阅"
+      },
+      {
+        "prompt": "Write a Conventional Commit for the staged scan fix.",
+        "family": "commit",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "review_source"
+        ],
+        "negative_pattern": "Conventional Commit"
+      },
+      {
+        "prompt": "发布 GitHub Release 并上传构建产物。",
+        "family": "release",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "发布 GitHub Release"
+      },
+      {
+        "prompt": "把今天下午三点开会翻译成英文。",
+        "family": "translation",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "只读审阅 `.trellis/tasks/08-29-parser-fix`，列出 findings，不要生成修复 Goal。",
+        "family": "trellis-read-only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "goal_task",
+          "remediation",
+          "review_source",
+          "trellis"
+        ],
+        "negative_pattern": "只读审阅"
+      },
+      {
+        "prompt": "每次 review 结束都生成第二条修复 Prompt 给用户。",
+        "family": "multi-prompt-handoff",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": "每次 review 结束都生成第二条修复 Prompt"
+      },
+      {
+        "prompt": "告诉我 Codex 的 goal status command，不要创建目标。",
+        "family": "management-only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "goal_task",
+          "platform"
+        ],
+        "negative_pattern": "status command"
+      },
+      {
+        "prompt": "把历史 audit report 全部写入 GOAL.md 当长期记忆库。",
+        "family": "memory-vault",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "goal_task",
+          "persistence",
+          "review_source"
+        ],
+        "negative_pattern": "长期记忆库"
+      },
+      {
+        "prompt": "先讨论 scan、review 和 manual QA 三种方向，还没决定要修复什么。",
+        "family": "pure-exploration",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "remediation",
+          "review_source"
+        ],
+        "negative_pattern": "还没决定"
+      }
+    ]
+  }
+}

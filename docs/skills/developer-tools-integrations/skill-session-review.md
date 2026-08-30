@@ -17,7 +17,7 @@ Analyze how an existing agent skill was used in past Claude Code, Grok, Codex, a
 | --- | --- |
 | 名称 | `skill-session-review` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `0.1.0` |
+| 版本 | `0.2.0` |
 | 标签 | `skills`, `session-review`, `claude-code`, `grok`, `codex`, `oh-my-pi`, `feedback` |
 
 ## 安装命令
@@ -32,9 +32,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill skill-session
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/skill-session-review/agents` | 目录 | 1 | 配套 agent |
 | `skills/developer-tools-integrations/skill-session-review/evals` | 目录 | 1 | 评测样例 |
-| `skills/developer-tools-integrations/skill-session-review/references` | 目录 | 4 | 引用资料 |
-| `skills/developer-tools-integrations/skill-session-review/scripts` | 目录 | 2 | 可执行脚本 |
-| `skills/developer-tools-integrations/skill-session-review/tests` | 目录 | 2 | 自动化测试 |
+| `skills/developer-tools-integrations/skill-session-review/references` | 目录 | 5 | 引用资料 |
+| `skills/developer-tools-integrations/skill-session-review/scripts` | 目录 | 8 | 可执行脚本 |
+| `skills/developer-tools-integrations/skill-session-review/tests` | 目录 | 11 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
