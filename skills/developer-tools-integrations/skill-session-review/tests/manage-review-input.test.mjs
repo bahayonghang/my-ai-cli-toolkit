@@ -205,6 +205,29 @@ test("create validates first, normalizes UTF-8 LF, and emits disk identity", () 
   assert.equal(json(result).path.replaceAll("\\", "/"), p.input.replaceAll("\\", "/"), "canonical-name-positive");
 });
 
+test("resolve_repo_root keeps caller-visible absolute identity", () => {
+  const root = makeRoot();
+  const source = [
+    "import os,sys",
+    `sys.path.insert(0, ${JSON.stringify(scriptsDir)})`,
+    "from review_contract import resolve_repo_root",
+    "got=resolve_repo_root(sys.argv[1])",
+    "visible=os.path.abspath(sys.argv[1]).replace('\\\\','/')",
+    "resolved=os.path.realpath(sys.argv[1]).replace('\\\\','/')",
+    "print(got.as_posix())",
+    "print(visible)",
+    "print(resolved)",
+  ].join("; ");
+  const result = spawnSync(python.command, [...python.prefix, "-c", source, root], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const [got, visible, resolved] = result.stdout.trim().split(/\r?\n/);
+  assert.equal(got, visible, "caller-visible-identity");
+  assert.equal(got, root.replaceAll("\\", "/"), "matches-node-root");
+  if (visible !== resolved) {
+    assert.notEqual(got, resolved, "must-not-rewrite-os-alias");
+  }
+});
+
 test("create is no-clobber and replace requires the current exact hash", () => {
   const root = makeRoot();
   const created = create(root);

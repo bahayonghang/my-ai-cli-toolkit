@@ -648,7 +648,11 @@ def resolve_repo_root(repo_root_arg: str) -> Path:
         raise ContractError("repo root not found", code=2, category="invalid-root") from exc
     if not resolved.is_dir() or is_reparse(resolved):
         raise ContractError("repo root invalid", code=2, category="invalid-root")
-    return resolved
+    # Keep the caller-visible absolute path. Path.resolve() rewrites OS aliases
+    # above the root (macOS /var -> /private/var, Windows 8.3 names) and would
+    # desynchronize derived paths from --repo-root / --review-json. Reparse
+    # walks still inspect these raw components; resolve() only proves existence.
+    return Path(os.path.abspath(literal))
 
 
 def validate_name(name: str) -> str:
