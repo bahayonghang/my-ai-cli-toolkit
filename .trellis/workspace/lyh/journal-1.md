@@ -1755,3 +1755,36 @@ gh-pr-release 升至 3.0.1：GitHub 标题只写纳入提交的功能主语，�
 ### Next Steps
 
 - 无
+
+
+## Session 57: goal-meta-skill 单 Prompt 修复闭环收尾
+
+**Date**: 2026-08-30
+**Task**: goal-meta-skill 单 Prompt 修复闭环收尾
+**Branch**: `fix/gm`
+
+### Summary
+
+完成单 Prompt 扫描返修闭环、同范围反馈与原参数重扫约束，并归档 08-29-goal-meta-single-pass-repair。
+
+### Main Changes
+
+- 升级 goal-meta-skill 至 0.8.0 并固化单轮返修契约
+- 新增 fail-closed lint、回归测试、触发评测与 Skill IR 断言
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `76535469c1efccf62bd59c860ad21c49e4740fbe` | (see git log) |
+| `4ab0b72adae6caccbc397fb08dad834ff1cfa2a7` | (see git log) |
+
+### Testing
+
+- [OK] just ci
+- [OK] node --test goal-meta-skill/tests/*.test.mjs（63/63）
+- [OK] task.py validate 与 assert_skill_ir.py
+
+### Status
+
+[OK] **Completed**
