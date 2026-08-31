@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Eval schema, recorded_fixture vs missing evidence, no README/manifest, description budget"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Node tests under skills/**/tests and just ci validation chain"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "Suite evals/interface/allowed-tools conventions"}
+{"file": ".trellis/tasks/08-31-plan-review-ask-confirm/research/current-gap-analysis.md", "reason": "Verified dump-and-wait failure chain and file anchors"}
+{"file": ".trellis/tasks/08-31-plan-review-ask-confirm/research/prior-art-research.md", "reason": "Keep-adapt-reject-invent and missing evidence"}
+{"file": ".trellis/tasks/08-31-plan-review-ask-confirm/research/target-handoff-clause.md", "reason": "Target handoff semantic cluster for AskUserQuestion gate"}
