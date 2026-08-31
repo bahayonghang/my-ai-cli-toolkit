@@ -9,7 +9,7 @@ tags:
   - acceptance-criteria
   - traceability
   - handoff
-version: 0.4.0
+version: 0.5.0
 argument-hint: [trellis-task-dir]
 allowed-tools: Read, Write, Glob, Grep, Bash(python *), Bash(py -3 *), Bash(git diff *), Bash(git log *), Bash(git show *), Bash(git status *)
 ---
@@ -132,8 +132,9 @@ On success, the chat contains only:
 3. Exactly one `text` fence whose body is the filled scope-wide template from
    `references/handoff-prompt.md`.
 
-Do not paste the TPR table into the chat. Fill every placeholder. Keep TPR bodies in the
-report file.
+The fenced handoff is the reviser's contract and includes a structured
+confirmation gate (`references/revision-question-gate.md`). This skill's agent
+still does not ask, edit planning artifacts, or start the task.
 
 If the helper exits nonzero: explain the error and the attempted path; print the
 scope-plus-evidence report in chat; do not emit a path-based handoff prompt.
@@ -156,7 +157,9 @@ Still persist the file first.
 - `references/claim-verification.md` — claim types and their evidence rules.
 - `references/finding-contract.md` — output contract, severity, anti-inflation, disclosure, persist rules.
 - `references/report-template.md` — on-disk Markdown skeleton.
-- `references/handoff-prompt.md` — copyable prompt for the agent that revises the plan.
+- `references/handoff-prompt.md` — copyable prompt for the agent that revises the plan,
+  including the reviser confirmation gate.
+- `references/revision-question-gate.md` — reviser structured confirmation duty; reviewer does not ask.
 - `references/case-study-font-picker.md` — a real seven-finding review, for severity calibration.
 - `scripts/plan_precheck.py` — Pass 0.
 - `scripts/write_review_report.py` — path-confined write to `.trellis/reviews/`.

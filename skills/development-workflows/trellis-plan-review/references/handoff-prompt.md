@@ -58,7 +58,7 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
    - 问题清单为空：不要改规划产物。
 2. 问题清单 TPR-NN
    - 顺序：阻断 → 应修 → 提示。
-   - 每条先核对 Claim 与 Evidence，再在 Route 列出的路径中选一条落地。
+   - 每条先核对 Claim 与 Evidence。Route 只有一条可执行路径时直接落地。Route 列出互斥产品选项时列入确认门，不要自行选定。
    - 同一个 TPR 点名多个 Affected tasks / Location 时，必须在同一轮同步修订全部点位，不能只修父任务或一个子任务。
    - 不要另起 Route 未给出的产品方案。Route 不够用时停止并说明。
    - 引用 TPR 编号。不要改写严重度。
@@ -68,7 +68,7 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
 4. 可靠部分
    - 不要重做，不要推翻。
 5. 盲区声明
-   - 报告是待分诊列表，不是批准。修订后不要声称规划已获批准或可以开始实现。
+   - 报告是待分诊列表，不是批准。修订后不要声称规划已获批准，也不要在本会话开始实现。本轮结束后规划应可被一次后续实施请求直接执行。
 
 写入范围
 - 可改：成员清单中各任务的 prd.md、design.md、implement.md、implement.jsonl、check.jsonl。task.json 仅在报告指出其字段问题时改对应字段。
@@ -79,8 +79,16 @@ Do not paste TPR bodies into the prompt. Do not write 见上一条消息, 见上
 - 需求变更时同步验收标准与设计机制。
 - 每条被改到的 AC 子句仍能追溯到一条 R 和一处机制。
 
+确认门
+- 先把剩余阻塞项分成三类：仓库可回答事实、已批准范围内的实现判断、用户所有且会改变范围/产品语义/风险/成本/授权的确认项（含 TPR Route 里互斥的产品选项，以及本轮修订新引入的 start 前门）。
+- 第三类仍存在时，必须在继续写规划前用宿主结构化问题工具一次收口（最多 4 题）：Claude Code 使用 AskUserQuestion；Oh My Pi 使用 ask；Codex 使用实际可用的 request_user_input 或当前等价名；无工具则问一个简短编号题。每题带推荐项与互斥选项。先确认实际工具名，不得把未拥有的工具写成可调用 API。
+- 禁止把确认清单只写进聊天并等待用户提醒「请使用 AskUserQuestion」。无第三类项时不得仪式性提问。仓库可回答事实与普通实现细节不得提问。
+- 回答后在同一轮写入被决定条款，并处理全部「阻断」和「应修」。不要再开一轮等人提醒后才完善规划。若写回后又出现新的第三类项，可以再来一轮结构化提问（仍 ≤4），但不得退回聊天罗列。
+- 仍禁止运行 task.py start / finish / archive。本轮结束后规划应可被一次后续实施请求直接执行。
+
 完成标准
 - 每个「阻断」和「应修」：已写入规划产物，或在规划中写明不处理及理由。
+- 用户所有确认项已用结构化工具一次收口并写回，或无第三类项故未提问。禁止把确认清单只写进聊天等待提醒。
 - 对话按 TPR 编号列出：处理了什么，或为何不处理。
 - 整个作用域只返回这一份修订结果；不要为每个子任务再生成报告或 handoff Prompt。
 - 不要运行 task.py start。
@@ -121,7 +129,7 @@ How to use each report section
    - Empty findings list: do not edit planning artifacts.
 2. Findings TPR-NN
    - Order: blocking, then should-fix, then notes.
-   - Check Claim and Evidence, then take one path from Route.
+   - Check Claim and Evidence. Take a unique Route immediately. Mutually exclusive product options in Route are class-3 items for the confirmation gate; do not pick them yourself.
    - When one TPR names multiple Affected tasks or Locations, revise all of them in the same pass; do not repair only the parent or one child.
    - Do not invent a product option that Route does not list. Stop and explain if Route is insufficient.
    - Cite TPR ids. Do not change severity.
@@ -131,7 +139,7 @@ How to use each report section
 4. Sound parts
    - Do not redo them. Do not reverse them.
 5. Disclosure
-   - The report is a triage list, not an approval. After the edit, do not claim the plan is approved or ready to implement.
+   - The report is a triage list, not an approval. After the edit, do not claim the plan is approved and do not start implementation in this session. Leave the plan ready for a later implementation request.
 
 Write scope
 - Allowed: prd.md, design.md, implement.md, implement.jsonl, and check.jsonl in the listed member directories. Edit task.json only when the report names a field there.
@@ -142,8 +150,16 @@ Revision method
 - When a requirement changes, update the matching criteria and mechanisms.
 - Every edited AC clause still traces to one requirement and one mechanism.
 
+Confirmation gate
+- Classify remaining blockers: repository-answerable facts, implementation choices inside approved contracts, and user-owned decisions that change scope, product semantics, risk, cost, or authorization (including mutually exclusive TPR Route options and start-front items this revision introduced).
+- If any third-class item remains, you must call the host structured question tool once before writing further planning artifacts (at most 4 questions): Claude Code uses AskUserQuestion; Oh My Pi uses ask; Codex uses the live request_user_input or current equivalent; if none, ask one concise numbered question. Each question has a recommended option and mutually exclusive choices. Confirm the live tool name; do not write a tool you do not have as a callable API.
+- Do not dump a confirmation list and wait for the user to type "please use AskUserQuestion". Do not ask ceremonially when no third-class item remains. Do not ask about repository-answerable facts or ordinary implementation details.
+- After answers, write the decided clauses in the same turn and handle every blocking and should-fix finding. Do not open another reminder round to finish the plan. If write-back creates new third-class items, run one more structured batch (still ≤4); never dump a list.
+- Still do not run task.py start / finish / archive. When this session ends, the plan must be ready for a later implementation request.
+
 Done when
 - Every blocking and should-fix finding is in the artifacts, or the plan records why it is not addressed.
+- User-owned confirmations were closed with the structured tool and written back, or no third-class item remained so no question ran. Do not dump a confirmation list and wait.
 - The chat lists each TPR id with what changed, or why it did not.
 - Return one revision result for the whole scope; do not generate another report or handoff Prompt per child.
 - Do not run task.py start.

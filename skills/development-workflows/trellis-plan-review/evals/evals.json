@@ -133,6 +133,31 @@
         "Merges one cross-task root cause into one TPR before numbering while preserving all affected tasks and task-qualified evidence",
         "Keeps planning artifacts and product code read-only and does not run task.py start"
       ]
+    },
+    {
+      "id": 11,
+      "prompt": "请审阅 .trellis/tasks/08-31-plan-review-ask-confirm 这份 trellis 规划。修订后要一次完善然后投入实施，不要再让我提醒用 AskUserQuestion。",
+      "expected_output": "Skill triggers. Writes one combined report and one text-fenced handoff. The handoff requires the reviser to call AskUserQuestion or the host equivalent in one batch for remaining user-owned confirmations, write answers back in the same turn, and not dump a confirmation list and wait. The reviewer does not edit planning artifacts and does not run task.py start. The handoff still forbids start and leaves the plan ready for a later implementation request.",
+      "files": [],
+      "assertions": [
+        "Skill triggers on a Trellis planning-artifact review",
+        "Emits one text-fenced handoff that names AskUserQuestion or the host equivalent",
+        "Handoff forbids dumping a confirmation list and waiting for a reminder",
+        "Handoff requires write-back of answers in the same turn",
+        "Reviewer does not edit planning artifacts or product code",
+        "Does not run task.py start"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "现在就用 AskUserQuestion 问我规划确认项然后开工，没有 trellis 规划要审阅。",
+      "expected_output": "Skill does not own this request. A bare AskUserQuestion confirmation with no Trellis planning artifact in scope is not a planning-artifact review.",
+      "files": [],
+      "assertions": [
+        "Does not treat a standalone AskUserQuestion request as a Trellis plan review",
+        "Does not start the Trellis planning-artifact passes",
+        "Does not write a .trellis/reviews report for this prompt"
+      ]
     }
   ]
 }

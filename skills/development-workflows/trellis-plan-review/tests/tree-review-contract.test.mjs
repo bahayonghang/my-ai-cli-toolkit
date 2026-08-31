@@ -15,7 +15,7 @@ test("root and interface lock one recursive scope to one root report and one han
   const skill = read("SKILL.md");
   const interfaceYaml = read(path.join("agents", "interface.yaml"));
 
-  assert.match(skill, /^version: 0\.4\.0$/m);
+  assert.match(skill, /^version: 0\.5\.0$/m);
   assert.match(skill, /--include-descendants/);
   assert.match(skill, /exactly one combined report and one handoff Prompt/i);
   assert.match(skill, /\.trellis\/reviews\/<root-task-name>\.md/);
@@ -31,7 +31,7 @@ test("report and handoff templates carry task-qualified whole-scope fields", () 
   const handoff = read(path.join("references", "handoff-prompt.md"));
 
   for (const field of [
-    "version: 0.4.0",
+    "version: 0.5.0",
     "review_scope:",
     "task_count:",
     "task_members:",
@@ -55,8 +55,8 @@ test("report and handoff templates carry task-qualified whole-scope fields", () 
 
 test("behavior fixture makes single-output and cross-task deduplication material", () => {
   const evals = JSON.parse(read(path.join("evals", "evals.json")));
-  assert.deepEqual(evals.evals.map(({ id }) => id), Array.from({ length: 10 }, (_, index) => index + 1));
-  const treeCase = evals.evals.at(-1);
+  assert.deepEqual(evals.evals.map(({ id }) => id), Array.from({ length: 12 }, (_, index) => index + 1));
+  const treeCase = evals.evals.find((item) => item.id === 10);
   const contract = [treeCase.expected_output, ...treeCase.assertions].join("\n");
 
   assert.match(treeCase.prompt, /父任务.*所有子任务/s);
@@ -66,4 +66,48 @@ test("behavior fixture makes single-output and cross-task deduplication material
   assert.match(contract, /one cross-task root cause into one TPR/i);
   assert.match(contract, /Does not create, replace, delete, or migrate a report named after either child/i);
   assert.match(contract, /no per-child prompts/i);
+});
+
+test("handoff requires structured confirmation gate and still forbids start", () => {
+  const skill = read("SKILL.md");
+  const handoff = read(path.join("references", "handoff-prompt.md"));
+  const gate = read(path.join("references", "revision-question-gate.md"));
+  const evals = JSON.parse(read(path.join("evals", "evals.json")));
+
+  assert.match(skill, /^version: 0\.5\.0$/m);
+  assert.match(skill, /revision-question-gate/);
+  assert.match(skill, /still does not ask, edit planning artifacts, or start the task/);
+  assert.doesNotMatch(skill, /AskUserQuestion/);
+  assert.doesNotMatch(skill, /allowed-tools:.*AskUserQuestion/);
+
+  assert.match(gate, /AskUserQuestion/);
+  assert.match(gate, /Dump-and-wait is forbidden/);
+  assert.match(gate, /at most four questions/i);
+
+  assert.match(handoff, /AskUserQuestion/);
+  assert.match(handoff, /一次收口/);
+  assert.match(handoff, /禁止把确认清单只写进聊天并等待用户提醒/);
+  assert.match(handoff, /do not dump a confirmation list and wait/i);
+  assert.match(handoff, /同一轮写入/);
+  assert.match(handoff, /write the decided clauses in the same turn/i);
+  assert.match(handoff, /仓库可回答事实/);
+  assert.match(handoff, /普通实现细节/);
+  assert.match(handoff, /repository-answerable facts/);
+  assert.match(handoff, /ordinary implementation details/);
+  assert.match(handoff, /后续实施请求/);
+  assert.match(handoff, /later implementation request/);
+  assert.match(handoff, /不要运行 task\.py start/);
+  assert.match(handoff, /Do not run task\.py start/);
+  assert.doesNotMatch(handoff, /批准规划并开工/);
+
+  const screenshot = evals.evals.find((item) => item.id === 11);
+  const neighbor = evals.evals.find((item) => item.id === 12);
+  const screenshotContract = [screenshot.expected_output, ...screenshot.assertions].join("\n");
+  const neighborContract = [neighbor.expected_output, ...neighbor.assertions].join("\n");
+  assert.match(screenshot.prompt, /AskUserQuestion/i);
+  assert.match(screenshotContract, /AskUserQuestion/);
+  assert.match(screenshotContract, /not dump a confirmation list/i);
+  assert.match(screenshotContract, /does not run task\.py start/i);
+  assert.match(neighbor.prompt, /AskUserQuestion/);
+  assert.match(neighborContract, /does not own|does not trigger|not a planning-artifact review/i);
 });
