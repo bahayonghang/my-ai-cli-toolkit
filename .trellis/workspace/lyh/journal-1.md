@@ -1811,3 +1811,39 @@ work_commits=79c4fb12ec665270097e444cdd06be1e87678484,e017fee997993316ea02f330d1
 ### Status
 
 [OK] **Completed**
+
+
+## Session 59: trellis-plan-review 交接确认门
+
+**Date**: 2026-08-31
+**Task**: trellis-plan-review 交接确认门
+**Branch**: `dev`
+
+### Summary
+
+为 trellis-plan-review 交接 Prompt 增加 AskUserQuestion 一次收口门，修订后规划可投入实施且不 start。
+
+### Main Changes
+
+- 交接中英文确认门与 revision-question-gate.md
+- version 0.5.0、evals 11/12、合同测试
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `88cee2fb` | (see git log) |
+| `fbe7a4e8` | (see git log) |
+
+### Testing
+
+- [OK] focused Node 42/42
+- [OK] just ci 409 pass / 0 fail / 3 skip
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无需跟进；goal-meta 文档 CRLF 脏文件未纳入
