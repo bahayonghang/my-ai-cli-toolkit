@@ -57,6 +57,7 @@ docs-sync:
 # 检查 docs catalog 是否最新，并执行 VitePress build
 docs-check:
     {{ python_cmd }} docs/scripts/sync_docs_catalog.py --check
+    {{ python_cmd }} docs/scripts/test_sync_docs_catalog.py
     {{ python_cmd }} docs/scripts/ensure_docs_deps.py
     {{ npm_cmd }} --prefix docs run build
 
