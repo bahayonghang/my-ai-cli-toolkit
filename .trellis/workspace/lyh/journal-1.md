@@ -1811,3 +1811,60 @@ work_commits=79c4fb12ec665270097e444cdd06be1e87678484,e017fee997993316ea02f330d1
 ### Status
 
 [OK] **Completed**
+
+
+## Session 59: trellis-plan-review 交接确认门
+
+**Date**: 2026-08-31
+**Task**: trellis-plan-review 交接确认门
+**Branch**: `dev`
+
+### Summary
+
+为 trellis-plan-review 交接 Prompt 增加 AskUserQuestion 一次收口门，修订后规划可投入实施且不 start。
+
+### Main Changes
+
+- 交接中英文确认门与 revision-question-gate.md
+- version 0.5.0、evals 11/12、合同测试
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `88cee2fb` | (see git log) |
+| `fbe7a4e8` | (see git log) |
+
+### Testing
+
+- [OK] focused Node 42/42
+- [OK] just ci 409 pass / 0 fail / 3 skip
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无需跟进；goal-meta 文档 CRLF 脏文件未纳入
+
+
+## Session 60: 迁入 storage-analyzer
+
+**Date**: 2026-09-02
+**Task**: 迁入 storage-analyzer
+**Branch**: `dev`
+
+### Summary
+
+将 khazix storage-analyzer 迁入 skills/developer-tools-integrations/storage-analyzer。默认静态 HTML 报告；废纸篓仅在本轮批准已展示路径后可用，拒绝 rm。Windows 默认热点扫描。just 等价校验与全量 node-test 通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0f3997a1` | (see git log) |
+
+### Status
+
+[OK] **Completed**

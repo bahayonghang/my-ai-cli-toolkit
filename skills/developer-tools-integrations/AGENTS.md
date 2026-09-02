@@ -3,9 +3,9 @@
 House standard for the skills in this directory: `agent-skill-review`,
 `agents-md-improver`, `ast-grep`, `claude-context-improver`,
 `codex-workflow-recommender`, `file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`,
-`skill-session-review`. These skills package
+`skill-session-review`, `storage-analyzer`, `windows-dev-process-cleanup`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, goal
-authoring and governed Goal handoff persistence, local file review plans, named-skill session review). They drifted apart on script paths, evals, and
+authoring and governed Goal handoff persistence, local file review plans, named-skill session review, disk hotspot reports). They drifted apart on script paths, evals, and
 interface files; new or edited skills here should match the conventions below so
 the suite does not drift again. This file mirrors
 `../git-github-collaboration/AGENTS.md`; where the two agree, that file is the
@@ -34,7 +34,7 @@ older reference.
 - Bundled scripts self-locate via `Path(__file__)`, so only the script _path_ must
   resolve. Keep the Windows-friendly interpreter fallback (`python` / `py -3`)
   that `goal-meta-skill` shows; do not assume a single interpreter name.
-- `goal-meta-skill`, `file-sorter`, and `skill-session-review` ship scripts. The
+- `goal-meta-skill`, `file-sorter`, `skill-session-review`, and `storage-analyzer` ship scripts. The
   remaining read/audit skills legitimately have none — that is not a gap.
 
 ## `allowed-tools`
@@ -52,6 +52,7 @@ bare `Bash` when the skill only runs a known command family.
 | claude-context-improver    | `Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git *), Bash(find *)` | audits + edits CLAUDE.md/rules/code_map; asks repo-vs-global scope |
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
 | file-sorter                | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | scans one folder; apply --execute only after plan approval |
+| storage-analyzer           | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | hotspot scan and static HTML; server.py trash only after this-turn path approval |
 | goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named governed root-contract writer after confirmation |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |

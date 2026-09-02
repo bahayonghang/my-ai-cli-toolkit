@@ -17,7 +17,7 @@ Independent review of Trellis task planning artifacts. Treats the selected task 
 | --- | --- |
 | Name | `trellis-plan-review` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.4.0` |
+| Version | `0.5.0` |
 | Tags | `trellis`, `plan-review`, `spec-audit`, `acceptance-criteria`, `traceability`, `handoff` |
 
 ## Install command
@@ -32,7 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill trellis-plan-
 | --- | --- | ---: | --- |
 | `skills/development-workflows/trellis-plan-review/agents` | directory | 1 | Companion agents |
 | `skills/development-workflows/trellis-plan-review/evals` | directory | 1 | Evaluation samples |
-| `skills/development-workflows/trellis-plan-review/references` | directory | 7 | Reference material |
+| `skills/development-workflows/trellis-plan-review/references` | directory | 8 | Reference material |
 | `skills/development-workflows/trellis-plan-review/scripts` | directory | 2 | Executable scripts |
 | `skills/development-workflows/trellis-plan-review/tests` | directory | 3 | Automated tests |
 

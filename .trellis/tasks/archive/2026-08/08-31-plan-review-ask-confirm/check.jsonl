@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Audit recorded_fixture vs missing evidence and no second eval schema"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Audit focused and full validation gates"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "Audit suite evals/interface/read-only tool grants"}
+{"file": ".trellis/tasks/08-31-plan-review-ask-confirm/research/current-gap-analysis.md", "reason": "Verify implementation closes the dump-and-wait gap"}
+{"file": ".trellis/tasks/08-31-plan-review-ask-confirm/research/prior-art-research.md", "reason": "Verify adopted mechanisms stay bounded"}
+{"file": ".trellis/tasks/08-31-plan-review-ask-confirm/research/target-handoff-clause.md", "reason": "Verify handoff cluster matches AC2-AC4"}

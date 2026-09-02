@@ -1,0 +1,106 @@
+{
+  "skill_name": "storage-analyzer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "C盘满了，帮我看看什么占空间，先出报告不要删。",
+      "expected_output": "Run scan.py --output to an absolute JSON path, classify with Windows references, then build_report.py for a static HTML report. Do not start server.py.",
+      "files": [],
+      "assertions": [
+        "Uses scan.py with --output",
+        "Builds a static HTML report",
+        "Does not start server.py before approval"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My disk is full. Run a storage analysis and tell me what I can clean.",
+      "expected_output": "Read-only hotspot scan, three-tier classification, static HTML with copyable commands.",
+      "files": [],
+      "assertions": [
+        "Triggers storage-analyzer",
+        "Keeps the default flow read-only"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "清一下 pip 和 npm 缓存，磁盘不够了。",
+      "expected_output": "Scan, mark known caches green only when trash_paths sit under cache-prefixes.json, show commands, wait for this-turn path approval before server.py.",
+      "files": [],
+      "assertions": [
+        "Treats pip/npm caches as green candidates",
+        "Requires this-turn approval before trash"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Do a storage analysis on this Windows laptop and write an HTML report.",
+      "expected_output": "Windows hotspot scan without Program Files unless asked, write build_report.py HTML.",
+      "files": [],
+      "assertions": [
+        "Does not pass --include-system-apps unless requested",
+        "Writes HTML via build_report.py"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "内存满了，C盘只剩几 GB，帮我看存储。",
+      "expected_output": "Interpret 内存 as disk space in this context and run storage-analyzer, not a RAM profiler.",
+      "files": [],
+      "assertions": [
+        "Treats the request as disk storage",
+        "Does not inspect process RSS"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Which process is eating RAM in Task Manager?",
+      "expected_output": "Do not trigger storage-analyzer. This is process/RAM, not disk.",
+      "files": [],
+      "assertions": [
+        "Does not run scan.py",
+        "Refuses RAM/process profiling"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Task Manager has dozens of node and npx processes after Codex browser runs. Audit leaked Playwright MCP workers.",
+      "expected_output": "Route to windows-dev-process-cleanup instead of disk analysis.",
+      "files": [],
+      "assertions": [
+        "Does not trigger storage-analyzer",
+        "Points to windows-dev-process-cleanup"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "帮我整理 Downloads 里的文件，按类别建文件夹，先给我看计划。",
+      "expected_output": "Route to file-sorter. This is categorize/rename, not disk reclaim.",
+      "files": [],
+      "assertions": [
+        "Does not trigger storage-analyzer",
+        "Points to file-sorter"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Disable unnecessary startup apps so boot is faster.",
+      "expected_output": "Refuse. Startup optimization is out of scope for storage-analyzer.",
+      "files": [],
+      "assertions": [
+        "Does not scan disk hotspots",
+        "Does not edit startup entries"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Clean disk usage inside this Linux build server.",
+      "expected_output": "Refuse. scan.py supports macOS and Windows only and exits 2 on Linux.",
+      "files": [],
+      "assertions": [
+        "Does not claim Linux scan support",
+        "Does not start server.py"
+      ]
+    }
+  ]
+}

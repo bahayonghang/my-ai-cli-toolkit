@@ -1,0 +1,913 @@
+{
+  "ok": true,
+  "complete": false,
+  "researched_at": "2026-08-31",
+  "queries": [
+    "plan review handoff confirmation questions",
+    "AskUserQuestion plan revision",
+    "independent spec review do not fix",
+    "structured user question after review"
+  ],
+  "metric_semantics": {
+    "skills_sh_installs": "ecosystem install telemetry; not ratings or correctness",
+    "skillsmp_repo_stars": "GitHub repository stars; not installs, ratings, or skill-specific quality",
+    "cross_catalog_score": "not calculated; metrics remain separate"
+  },
+  "query_runs": [
+    {
+      "query": "plan review handoff confirmation questions",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 8
+    },
+    {
+      "query": "AskUserQuestion plan revision",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 8
+    },
+    {
+      "query": "independent spec review do not fix",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 9
+    },
+    {
+      "query": "structured user question after review",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 6
+    }
+  ],
+  "candidate_family_count": 31,
+  "candidates": [
+    {
+      "family_key": "openclaw/openclaw:auto-qa",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "auto-qa",
+        "author": "openclaw",
+        "description": "Continuously audit, live-test, and stress-test the current OpenClaw codebase across at least ten independently scoped subsystem lanes; default to 100 independently verified, landed root-cause fixes, maintain an evidence-backed report, and announce each merged pull request immediately. Use for OpenClaw-wide autonomous QA, live-provider campaigns, gateway, CLI, web, plugin, native-app, scenario, packaging, and extended soak testing.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/auto-qa",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-auto-qa",
+        "repo_stars": 388044,
+        "catalog_updated_at": "2026-08-16T15:25:04+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/auto-qa",
+        "family_key": "openclaw/openclaw:auto-qa",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:autoreview",
+      "queries": [
+        "structured user question after review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "autoreview",
+        "author": "openclaw",
+        "description": "Structured Codex, Claude, Amp, Pi, or Kimi code review when explicitly requested.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/autoreview",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-autoreview",
+        "repo_stars": 388044,
+        "catalog_updated_at": "2026-08-30T00:20:07+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/autoreview",
+        "family_key": "openclaw/openclaw:autoreview",
+        "aliases": [],
+        "query": "structured user question after review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:openclaw-release-validation",
+      "queries": [
+        "structured user question after review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "openclaw-release-validation",
+        "author": "openclaw",
+        "description": "Test the latest OpenClaw main commit through an isolated OCM copy or an explicitly approved in-place gateway update, then guide structured release feedback.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/openclaw-release-validation",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-openclaw-release-validation",
+        "repo_stars": 388044,
+        "catalog_updated_at": "2026-08-26T00:58:39+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/openclaw-release-validation",
+        "family_key": "openclaw/openclaw:openclaw-release-validation",
+        "aliases": [],
+        "query": "structured user question after review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:release-openclaw-plugin-testing",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "release-openclaw-plugin-testing",
+        "author": "openclaw",
+        "description": "Plan and run pre-release OpenClaw plugin validation across bundled plugins, package artifacts, lifecycle commands, doctor/fix, config round-trip, gateway startup, SDK compatibility, Docker E2E, Package Acceptance, and Testbox proof.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/release-openclaw-plugin-testing",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-release-openclaw-plugin-testing",
+        "repo_stars": 388044,
+        "catalog_updated_at": "2026-08-16T15:25:04+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/release-openclaw-plugin-testing",
+        "family_key": "openclaw/openclaw:release-openclaw-plugin-testing",
+        "aliases": [],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:dispatching-parallel-agents",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "dispatching-parallel-agents",
+        "author": "obra",
+        "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-dispatching-parallel-agents",
+        "repo_stars": 279573,
+        "catalog_updated_at": "2026-07-24T00:27:16+00:00",
+        "source_key": "obra/superpowers:skills/dispatching-parallel-agents",
+        "family_key": "obra/superpowers:dispatching-parallel-agents",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:executing-plans",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "executing-plans",
+        "author": "obra",
+        "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/executing-plans",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-executing-plans",
+        "repo_stars": 279573,
+        "catalog_updated_at": "2026-07-24T00:27:16+00:00",
+        "source_key": "obra/superpowers:skills/executing-plans",
+        "family_key": "obra/superpowers:executing-plans",
+        "aliases": [],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:subagent-driven-development",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "subagent-driven-development",
+        "author": "obra",
+        "description": "Use when executing implementation plans with independent tasks in the current session",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-subagent-driven-development",
+        "repo_stars": 279573,
+        "catalog_updated_at": "2026-08-12T16:53:21+00:00",
+        "source_key": "obra/superpowers:skills/subagent-driven-development",
+        "family_key": "obra/superpowers:subagent-driven-development",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "react/react:plan-update",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "plan-update",
+        "author": "react",
+        "description": "Use when you need to update a plan document with deep research across all compiler passes. Launches parallel subagents to analyze how a topic affects every compiler phase, then consolidates findings into the plan doc.",
+        "content_language": "en",
+        "github_url": "https://github.com/react/react/tree/main/compiler/.claude/skills/plan-update",
+        "skillsmp_url": "https://skillsmp.com/creators/react/react/compiler-claude-skills-plan-update",
+        "repo_stars": 248327,
+        "catalog_updated_at": "2026-06-09T21:53:06+00:00",
+        "source_key": "react/react:compiler/.claude/skills/plan-update",
+        "family_key": "react/react:plan-update",
+        "aliases": [],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "react/react:rust-port-status",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "rust-port-status",
+        "author": "react",
+        "description": "Show the status of all Rust port plan documents and recent related commits. Use when you need to understand what's been done vs what remains.",
+        "content_language": "en",
+        "github_url": "https://github.com/react/react/tree/main/compiler/.claude/skills/rust-port-status",
+        "skillsmp_url": "https://skillsmp.com/creators/react/react/compiler-claude-skills-rust-port-status",
+        "repo_stars": 248327,
+        "catalog_updated_at": "2026-06-09T21:53:06+00:00",
+        "source_key": "react/react:compiler/.claude/skills/rust-port-status",
+        "family_key": "react/react:rust-port-status",
+        "aliases": [],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:agent-sort",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "agent-sort",
+        "author": "affaan-m",
+        "description": "Build an evidence-backed ECC install plan for a specific repo by sorting skills, commands, rules, hooks, and extras into DAILY vs LIBRARY buckets using parallel repo-aware review passes. Use when ECC should be trimmed to what a project actually needs instead of loading the full bundle.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/agent-sort",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-agent-sort",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-06-11T12:12:21+00:00",
+        "source_key": "affaan-m/ecc:skills/agent-sort",
+        "family_key": "affaan-m/ecc:agent-sort",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.agents/skills/agent-sort"
+          }
+        ],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:article-writing",
+      "queries": [
+        "structured user question after review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "article-writing",
+        "author": "affaan-m",
+        "description": "Write articles, guides, blog posts, tutorials, newsletter issues, and other long-form content in a distinctive voice derived from supplied examples or brand guidance. Use when the user wants polished written content longer than a paragraph, especially when voice consistency, structure, and credibility matter.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/article-writing",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-article-writing",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-06-11T12:12:21+00:00",
+        "source_key": "affaan-m/ecc:skills/article-writing",
+        "family_key": "affaan-m/ecc:article-writing",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.cursor/skills/article-writing"
+          },
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.cursor/skills/article-writing"
+          },
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.agents/skills/article-writing"
+          }
+        ],
+        "query": "structured user question after review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:blueprint",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "blueprint",
+        "author": "affaan-m",
+        "description": "Turn a one-line objective into a step-by-step construction plan for multi-session, multi-agent engineering projects. Each step has a self-contained context brief so a fresh agent can execute it cold. Includes adversarial review gate, dependency graph, parallel step detection, anti-pattern catalog, and plan mutation protocol. TRIGGER when: user requests a plan, blueprint, or roadmap for a complex multi-PR task, or describes work that needs multiple sessions. DO NOT TRIGGER when: task is completable in a single PR or fewer than 3 tool calls, or user says \"just do it\".",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/blueprint",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-blueprint",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-06-11T12:12:21+00:00",
+        "source_key": "affaan-m/ecc:skills/blueprint",
+        "family_key": "affaan-m/ecc:blueprint",
+        "aliases": [],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:code-tour",
+      "queries": [
+        "structured user question after review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "code-tour",
+        "author": "affaan-m",
+        "description": "Create CodeTour `.tour` files — persona-targeted, step-by-step walkthroughs with real file and line anchors. Use for onboarding tours, architecture walkthroughs, PR tours, RCA tours, and structured \"explain how this works\" requests. Use when the user asks for a code tour, onboarding walkthrough, PR tour, or an explanation of how a subsystem works.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/code-tour",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-code-tour",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/code-tour",
+        "family_key": "affaan-m/ecc:code-tour",
+        "aliases": [],
+        "query": "structured user question after review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:content-hash-cache-pattern",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "content-hash-cache-pattern",
+        "author": "affaan-m",
+        "description": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation. Use when repeated file processing is slow and results should be cached and invalidated by content rather than path.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/content-hash-cache-pattern",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-content-hash-cache-pattern",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/content-hash-cache-pattern",
+        "family_key": "affaan-m/ecc:content-hash-cache-pattern",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.kiro/skills/content-hash-cache-pattern"
+          }
+        ],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:loop-design-check",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "loop-design-check",
+        "author": "affaan-m",
+        "description": "Design a goal-oriented agent loop, and review it for the ways loops go wrong — spinning and burning tokens, Goodhart-gaming the verifier, or running a wrong answer to completion. Two actions: (1) WRITE a loop — gate whether to build it, define a machine-decidable goal, pick the loop type, pick a skeleton; (2) REVIEW a loop — run it past five failure modes plus decidability, boundaries, fallback, judge independence, and keep-judgment-with-the-human red lines. Use when designing an autonomous agent loop, or when you already have one and worry it will spin, cheat, or run a wrong answer to the end. Complements the mechanism-layer loop skills (autonomous-loops, continuous-agent-loop) by covering the judgment layer they don't. 中文触发：写 loop、设计 loop、做一个 loop、检查 loop 对不对、loop 体检、loop 会不会跑飞、可判定目标、五个崩法、plan build judge。English triggers: design an agent loop, write a loop, check a loop, loop review, prevent a runaway loop, goal-oriented loop, decidable goal, plan/build/judge.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/loop-design-check",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-loop-design-check",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-07-17T21:13:49+00:00",
+        "source_key": "affaan-m/ecc:skills/loop-design-check",
+        "family_key": "affaan-m/ecc:loop-design-check",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:orch-pipeline",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "orch-pipeline",
+        "author": "affaan-m",
+        "description": "Shared orchestration engine for the orch-* skill family. Defines the gated Research-Plan-TDD-Review-Commit pipeline, the size classifier, the agent map, and the two human gates that the orch-* operation skills delegate to. Not usually invoked directly. Not usually invoked directly; it applies when an orch-* skill delegates its gated Research-Plan-TDD-Review-Commit pipeline.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/orch-pipeline",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-orch-pipeline",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/orch-pipeline",
+        "family_key": "affaan-m/ecc:orch-pipeline",
+        "aliases": [],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:parallel-execution-optimizer",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "parallel-execution-optimizer",
+        "author": "affaan-m",
+        "description": "Use when the user wants a task done much faster through parallel work, concurrent agents, batched tool calls, isolated worktrees, or many independent verification lanes without losing correctness.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/parallel-execution-optimizer",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-parallel-execution-optimizer",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-07-17T21:13:49+00:00",
+        "source_key": "affaan-m/ecc:skills/parallel-execution-optimizer",
+        "family_key": "affaan-m/ecc:parallel-execution-optimizer",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:plan-canvas",
+      "queries": [
+        "plan review handoff confirmation questions"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "plan-canvas",
+        "author": "affaan-m",
+        "description": "Open plans and HTML artifacts in a local browser canvas where the human annotates elements, chats, and approves or requests changes without leaving the page. Use when presenting a plan for review, or when feedback like \"move this, change that\" is easier pointed at than typed.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/plan-canvas",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-plan-canvas",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/plan-canvas",
+        "family_key": "affaan-m/ecc:plan-canvas",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.agents/skills/plan-canvas"
+          }
+        ],
+        "query": "plan review handoff confirmation questions"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:regex-vs-llm-structured-text",
+      "queries": [
+        "structured user question after review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "regex-vs-llm-structured-text",
+        "author": "affaan-m",
+        "description": "Decision framework for choosing between regex and LLM when parsing structured text — start with regex, add LLM only for low-confidence edge cases.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/regex-vs-llm-structured-text",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-regex-vs-llm-structured-text",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-06-11T12:12:21+00:00",
+        "source_key": "affaan-m/ecc:skills/regex-vs-llm-structured-text",
+        "family_key": "affaan-m/ecc:regex-vs-llm-structured-text",
+        "aliases": [
+          {
+            "language": "zh",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/zh-CN/skills/regex-vs-llm-structured-text"
+          },
+          {
+            "language": "zh",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/zh-CN/skills/regex-vs-llm-structured-text"
+          },
+          {
+            "language": "ja",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/ja-JP/skills/regex-vs-llm-structured-text"
+          }
+        ],
+        "query": "structured user question after review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:santa-method",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "santa-method",
+        "author": "affaan-m",
+        "description": "Multi-agent adversarial verification with convergence loop. Two independent review agents must both pass before output ships. Use when output must clear two independent adversarial reviewers before it ships.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/santa-method",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-santa-method",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/santa-method",
+        "family_key": "affaan-m/ecc:santa-method",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:seo",
+      "queries": [
+        "structured user question after review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "seo",
+        "author": "affaan-m",
+        "description": "Audit, plan, and implement SEO improvements across technical SEO, on-page optimization, structured data, Core Web Vitals, and content strategy. Use when the user wants better search visibility, SEO remediation, schema markup, sitemap/robots work, or keyword mapping.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/seo",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-seo",
+        "repo_stars": 244512,
+        "catalog_updated_at": "2026-06-11T12:12:21+00:00",
+        "source_key": "affaan-m/ecc:skills/seo",
+        "family_key": "affaan-m/ecc:seo",
+        "aliases": [],
+        "query": "structured user question after review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "n8n-io/n8n:intent-recognition",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "intent-recognition",
+        "author": "n8n-io",
+        "description": "Classifies automation requests using two decisions: anchor (which primitive owns the top-level control flow — workflow-anchored, agent-anchored, needs-clarification, or out-of-scope) and embeds_other (whether the other primitive appears embedded inside — an agent step inside a workflow, or a workflow invoked as an agent tool). Must be used whenever the current turn requires choosing or reconsidering the intent of an automation request, including compound requests, independent automations introduced mid-build, one-off questions or reports that need external systems you cannot query directly, and requests that need clarification before an anchor can be chosen. Do not load for routine edits or extensions when the conversation already targets a workflow or Agent.",
+        "content_language": "en",
+        "github_url": "https://github.com/n8n-io/n8n/tree/master/packages/%40n8n/instance-ai/skills/intent-recognition",
+        "skillsmp_url": "https://skillsmp.com/creators/n8n-io/n8n/packages-n8n-instance-ai-skills-intent-recognition",
+        "repo_stars": 202841,
+        "catalog_updated_at": "2026-08-14T11:50:10+00:00",
+        "source_key": "n8n-io/n8n:packages/%40n8n/instance-ai/skills/intent-recognition",
+        "family_key": "n8n-io/n8n:intent-recognition",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "anthropics/claude-code:command-development",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "command-development",
+        "author": "anthropics",
+        "description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs guidance on slash command structure, YAML frontmatter fields, dynamic arguments, bash execution in commands, user interaction patterns, or command development best practices for Claude Code.",
+        "content_language": "en",
+        "github_url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/command-development",
+        "skillsmp_url": "https://skillsmp.com/creators/anthropics/claude-code/plugins-plugin-dev-skills-command-development",
+        "repo_stars": 143448,
+        "catalog_updated_at": "2025-11-17T12:09:00+00:00",
+        "source_key": "anthropics/claude-code:plugins/plugin-dev/skills/command-development",
+        "family_key": "anthropics/claude-code:command-development",
+        "aliases": [],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "nexu-io/open-design:ve-midnight-editorial",
+      "queries": [
+        "independent spec review do not fix"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "ve-midnight-editorial",
+        "author": "nexu-io",
+        "description": "OpenDesign's financial review: runway, burn, and the sustainability plan that keeps the project independent. Built as a decision-grade data & finance deck for board, leadership.",
+        "content_language": "en",
+        "github_url": "https://github.com/nexu-io/open-design/tree/main/plugins/_official/examples/ve-midnight-editorial",
+        "skillsmp_url": "https://skillsmp.com/creators/nexu-io/open-design/plugins-official-examples-ve-midnight-editorial",
+        "repo_stars": 92765,
+        "catalog_updated_at": "2026-08-18T07:09:45+00:00",
+        "source_key": "nexu-io/open-design:plugins/_official/examples/ve-midnight-editorial",
+        "family_key": "nexu-io/open-design:ve-midnight-editorial",
+        "aliases": [],
+        "query": "independent spec review do not fix"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "anthropics/claude-plugins-official:command-development",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "command-development",
+        "author": "anthropics",
+        "description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs guidance on slash command structure, YAML frontmatter fields, dynamic arguments, bash execution in commands, user interaction patterns, or command development best practices for Claude Code.",
+        "content_language": "en",
+        "github_url": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/command-development",
+        "skillsmp_url": "https://skillsmp.com/creators/anthropics/claude-plugins-official/plugins-plugin-dev-skills-command-development",
+        "repo_stars": 35571,
+        "catalog_updated_at": "2026-03-17T22:45:25+00:00",
+        "source_key": "anthropics/claude-plugins-official:plugins/plugin-dev/skills/command-development",
+        "family_key": "anthropics/claude-plugins-official:command-development",
+        "aliases": [],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "alirezarezvani/claude-skills:interview",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "interview",
+        "author": "alirezarezvani",
+        "description": "Phase 1 of building a Claude Managed Agent — interview the founder about the one job the agent should do, then produce a build sheet (CMA primitives table + v1/v2 deferrals + eval plan) WITHOUT needing their API key yet. Use when the user says \"help me scope an agent\", \"I have an idea for an agent\", \"what should this agent be\", or when the orchestrator routes phase=interview. Drives the six intake slots (job, trigger, inputs, actions, definition-of-done, recurrence) via AskUserQuestion, maps them to primitives with interview_planner.py, assembles build-sheet.json with build_sheet_builder.py, and validates limits with primitives_validator.py. Connectors are mockable in v0 (schema-true custom tools); real MCP servers become v1 deferrals. Distinct from stage-launch (which turns the sheet into payloads).",
+        "content_language": "en",
+        "github_url": "https://github.com/alirezarezvani/claude-skills/tree/main/agent-launcher/skills/interview",
+        "skillsmp_url": "https://skillsmp.com/creators/alirezarezvani/claude-skills/agent-launcher-skills-interview",
+        "repo_stars": 25242,
+        "catalog_updated_at": "2026-08-24T17:29:25+00:00",
+        "source_key": "alirezarezvani/claude-skills:agent-launcher/skills/interview",
+        "family_key": "alirezarezvani/claude-skills:interview",
+        "aliases": [],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "galaxy-dawn/claude-scholar:command-development",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "command-development",
+        "author": "Galaxy-Dawn",
+        "description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs guidance on slash command structure, YAML frontmatter fields, dynamic arguments, bash execution in commands, user interaction patterns, or command development best practices for Claude Code.",
+        "content_language": "en",
+        "github_url": "https://github.com/Galaxy-Dawn/claude-scholar/tree/main/skills/command-development",
+        "skillsmp_url": "https://skillsmp.com/creators/galaxy-dawn/claude-scholar/skills-command-development",
+        "repo_stars": 5256,
+        "catalog_updated_at": "2026-03-23T11:34:03+00:00",
+        "source_key": "galaxy-dawn/claude-scholar:skills/command-development",
+        "family_key": "galaxy-dawn/claude-scholar:command-development",
+        "aliases": [],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "brycewang-stanford/auto-empirical-research-skills:command-development",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "command-development",
+        "author": "brycewang-stanford",
+        "description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs guidance on slash command structure, YAML frontmatter fields, dynamic arguments, bash execution in commands, user interaction patterns, or command development best practices for Claude Code.",
+        "content_language": "en",
+        "github_url": "https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/tree/main/skills/67-econfin-workflow-toolkit/command-development",
+        "skillsmp_url": "https://skillsmp.com/creators/brycewang-stanford/auto-empirical-research-skills/skills-67-econfin-workflow-toolkit-command-development",
+        "repo_stars": 3592,
+        "catalog_updated_at": "2026-07-19T07:57:42+00:00",
+        "source_key": "brycewang-stanford/auto-empirical-research-skills:skills/67-econfin-workflow-toolkit/command-development",
+        "family_key": "brycewang-stanford/auto-empirical-research-skills:command-development",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/tree/main/skills/33-Galaxy-Dawn-claude-scholar/skills/command-development"
+          }
+        ],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "brycewang-stanford/auto-empirical-research-skills:humanize",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "humanize",
+        "author": "brycewang-stanford",
+        "description": "Humanization Pipeline Orchestrator v3.1 - Multi-pass 4-layer transformation pipeline\nOrchestrates G5 (Auditor), G6 (Humanizer), F5 (Verifier) in sequential passes\nEnforces checkpoints between every pass with mandatory AskUserQuestion\nSupports conservative (L1-2), balanced (L1-3), balanced-fast (L1-3 merged), aggressive (L1-4) modes\nRich Checkpoint v2.0: section-level scores, selective humanization, target auto-stop\nG5+F5 parallel execution, section-selective humanization\nTriggers: humanize, humanize my draft, humanize manuscript, make natural, remove AI patterns\nKorean triggers: 휴먼화, 자연스럽게, AI 패턴 제거",
+        "content_language": "en",
+        "github_url": "https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/tree/main/skills/25-HosungYou-Diverga/skills/humanize",
+        "skillsmp_url": "https://skillsmp.com/creators/brycewang-stanford/auto-empirical-research-skills/skills-25-hosungyou-diverga-skills-humanize",
+        "repo_stars": 3592,
+        "catalog_updated_at": "2026-04-03T02:07:17+00:00",
+        "source_key": "brycewang-stanford/auto-empirical-research-skills:skills/25-hosungyou-diverga/skills/humanize",
+        "family_key": "brycewang-stanford/auto-empirical-research-skills:humanize",
+        "aliases": [],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "pcvelz/superpowers:specifying-gates",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "specifying-gates",
+        "author": "pcvelz",
+        "description": "Use when a user-gate task has requiresUserSpecification=true OR the agent's \"do I know HOW?\" self-check returns no. Locks down verification mechanics through a short AskUserQuestion sequence and writes the answers back into the task's metadata. Does NOT run the verification itself.",
+        "content_language": "en",
+        "github_url": "https://github.com/pcvelz/superpowers/tree/main/skills/specifying-gates",
+        "skillsmp_url": "https://skillsmp.com/creators/pcvelz/superpowers/skills-specifying-gates",
+        "repo_stars": 1260,
+        "catalog_updated_at": "2026-07-24T13:55:03+00:00",
+        "source_key": "pcvelz/superpowers:skills/specifying-gates",
+        "family_key": "pcvelz/superpowers:specifying-gates",
+        "aliases": [],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "modu-ai/moai-adk:moai-harness-learner",
+      "queries": [
+        "AskUserQuestion plan revision"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "moai-harness-learner",
+        "author": "modu-ai",
+        "description": "Harness learning subsystem coordinator. Produces Tier 4 auto-update proposal payloads consumed by the orchestrator (which surfaces them via AskUserQuestion) and orchestrates Apply/Rollback flows. Triggers when harness learning proposals are pending or learning lifecycle management is needed.",
+        "content_language": "en",
+        "github_url": "https://github.com/modu-ai/moai-adk/tree/main/.claude/skills/moai-harness-learner",
+        "skillsmp_url": "https://skillsmp.com/creators/modu-ai/moai-adk/claude-skills-moai-harness-learner",
+        "repo_stars": 1191,
+        "catalog_updated_at": "2026-08-16T12:31:19+00:00",
+        "source_key": "modu-ai/moai-adk:.claude/skills/moai-harness-learner",
+        "family_key": "modu-ai/moai-adk:moai-harness-learner",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/modu-ai/moai-adk/tree/main/internal/template/templates/.claude/skills/moai-harness-learner"
+          },
+          {
+            "language": "en",
+            "github_url": "https://github.com/modu-ai/moai-adk/tree/main/internal/template/templates/.claude/skills/moai-harness-learner"
+          }
+        ],
+        "query": "AskUserQuestion plan revision"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    }
+  ],
+  "missing_evidence": [],
+  "next_steps": [
+    "shortlist by job relevance and role coverage, not combined popularity",
+    "open canonical GitHub source and inspect SKILL.md before adoption",
+    "verify license, maintenance, permissions, security, duplication, and rating evidence",
+    "write keep/adapt/reject/invent synthesis before authoring"
+  ]
+}

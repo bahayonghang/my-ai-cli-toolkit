@@ -7,7 +7,7 @@ Keep YAML keys, file paths, identifiers, and TPR ids exact.
 ```markdown
 ---
 skill: trellis-plan-review
-version: 0.4.0
+version: 0.5.0
 task_dir: ROOT_TASK_DIR_ABSOLUTE
 task_name: ROOT_TASK_NAME
 task_status: ROOT_TASK_STATUS

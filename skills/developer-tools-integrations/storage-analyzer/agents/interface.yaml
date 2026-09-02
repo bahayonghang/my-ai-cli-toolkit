@@ -1,0 +1,30 @@
+interface:
+  display_name: "Storage Analyzer"
+  short_description: "Read-only macOS/Windows disk hotspot scan with a static HTML report; Trash only after this-turn path approval"
+  default_prompt: "Use $storage-analyzer to scan known disk hotspots, classify cache vs user data, and write a static HTML report. Do not start the local server or move items to Trash until the user approves the shown absolute paths in this turn. Never hard-delete. Do not treat RAM, process cleanup, Downloads sorting, startup apps, or Linux hosts as this job."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "vscode"
+    - "agent-skills-compatible"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "posix-or-py"
+    platform: "windows-or-macos"
+    minimum_runtime: "Python 3"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "deny"
+    side_effect_policy: "scan.py and build_report.py are read-only aside from JSON/HTML outputs; server.py trash requires this-turn path approval; rm is disabled"
+  degradation:
+    openai: "metadata-adapter; host must keep server.py behind user approval"
+    claude: "neutral-source-plus-adapter; host remains responsible for filesystem permission"
+    generic: "neutral-source; do not trash files without an equivalent confirmation control"
+    vscode: "workspace trust is not authorization to trash files"

@@ -114,7 +114,7 @@ Close the report with the limitation, in one or two sentences:
 
 ## What the report must not contain
 
-- A rewritten plan, a revised requirement, or a corrected criterion in final form. Give the route.
+- A rewritten plan, a revised requirement, or a corrected criterion in final form. Give the route. Asking which route to take and writing the answer belongs to the handoff reviser, not this report.
 - An edit to any planning artifact or to product code.
 - A claim that a check ran when the check did not run.
 - A severity raised to force a decision.
