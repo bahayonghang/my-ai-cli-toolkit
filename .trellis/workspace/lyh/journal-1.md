@@ -1868,3 +1868,42 @@ work_commits=79c4fb12ec665270097e444cdd06be1e87678484,e017fee997993316ea02f330d1
 ### Status
 
 [OK] **Completed**
+
+
+## Session 61: 按分类 live-link 一方 skills
+
+**Date**: 2026-09-02
+**Task**: 按分类 live-link 一方 skills
+**Branch**: `dev`
+
+### Summary
+
+落地 just install-projects：按分类列出一方 skills，TTY 先选 skills 再选 agents，live-link 到项目级目录。任务已归档。
+
+### Main Changes
+
+- 新增 scripts/install_projects.py 与 unittest
+- just install-projects / install-projects-test 接入 just ci
+- README、AGENTS、code_map、directory-structure 同步入口
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2ea981d4` | (see git log) |
+| `e11fa037` | (see git log) |
+| `83d5309f` | (see git log) |
+
+### Testing
+
+- [OK] python scripts/test_install_projects.py
+- [OK] just python-check
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 需要时再 push
