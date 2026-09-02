@@ -41,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill storage-analy
 | `skills/developer-tools-integrations/storage-analyzer/reports` | directory | 5 | Top-level directory |
 | `skills/developer-tools-integrations/storage-analyzer/scripts` | directory | 4 | Executable scripts |
 | `skills/developer-tools-integrations/storage-analyzer/security` | directory | 1 | Top-level directory |
-| `skills/developer-tools-integrations/storage-analyzer/skills` | directory | 2 | Top-level directory |
 | `skills/developer-tools-integrations/storage-analyzer/tests` | directory | 1 | Automated tests |
 | `skills/developer-tools-integrations/storage-analyzer/THIRD_PARTY_NOTICES.md` | file | 1 | Top-level file |
 

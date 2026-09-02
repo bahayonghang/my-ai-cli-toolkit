@@ -41,7 +41,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill storage-analy
 | `skills/developer-tools-integrations/storage-analyzer/reports` | 目录 | 5 | 顶层目录 |
 | `skills/developer-tools-integrations/storage-analyzer/scripts` | 目录 | 4 | 可执行脚本 |
 | `skills/developer-tools-integrations/storage-analyzer/security` | 目录 | 1 | 顶层目录 |
-| `skills/developer-tools-integrations/storage-analyzer/skills` | 目录 | 2 | 顶层目录 |
 | `skills/developer-tools-integrations/storage-analyzer/tests` | 目录 | 1 | 自动化测试 |
 | `skills/developer-tools-integrations/storage-analyzer/THIRD_PARTY_NOTICES.md` | 文件 | 1 | 顶层文件 |
 
