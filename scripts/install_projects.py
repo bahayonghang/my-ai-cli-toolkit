@@ -152,7 +152,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--project",
         metavar="DIR",
-        help="Project root to receive links. Default: current working directory.",
+        help="Project root to receive links. Default: process working directory (not the user home).",
     )
     parser.add_argument(
         "--agent",
@@ -261,6 +261,7 @@ class SkillPicker:
         self, skills: Sequence[Skill], project_root: Path | None = None
     ) -> None:
         self.skills = list(skills)
+        self.project_root = project_root
         self.selected: set[str] = set()
         self.cursor = 0
         self.installed = {
@@ -356,7 +357,7 @@ class SkillPicker:
 
 
 DETAIL_LINES = 2
-PICKER_CHROME = 8  # title, bar, more, bar, Description, 2 details, hint
+PICKER_CHROME = 9  # title, project, bar, more, bar, Description, 2 details, hint
 _DIM = "\x1b[2m"
 _GREEN = "\x1b[32m"
 _RESET = "\x1b[0m"
@@ -455,6 +456,12 @@ def _terminal_size() -> tuple[int, int]:
         return 80, 24
 
 
+def _project_root_line(project_root: Path | None) -> str:
+    if project_root is None:
+        return f"{_DIM}│{_RESET}"
+    return f"{_DIM}{project_root.resolve()}{_RESET}"
+
+
 def render_picker(picker: SkillPicker, window: int, cols: int = 80) -> list[str]:
     total = len(picker.skills)
     selected_n = len(picker.selected)
@@ -464,6 +471,7 @@ def render_picker(picker: SkillPicker, window: int, cols: int = 80) -> list[str]
     visible = picker.rows[start : start + window]
     lines = [
         f"{_GREEN}◆{_RESET} Select skills to install (space to toggle)",
+        _project_root_line(picker.project_root),
         f"{_DIM}│{_RESET}",
     ]
     for offset in range(window):
@@ -639,12 +647,12 @@ def agent_rel_path(key: str) -> Path:
 
 
 class AgentPicker:
-    """Flat checkbox list of agents. Default: every known agent selected."""
+    """Flat checkbox list of agents. Default: dests already present in the project."""
 
     def __init__(self, project_root: Path) -> None:
         self.keys = ordered_agent_keys()
         self.project_root = project_root
-        self.selected = set(self.keys)
+        self.selected = set(auto_agent_keys(project_root))
         self.cursor = 0
 
     def move(self, delta: int) -> None:
@@ -696,6 +704,7 @@ def render_agent_picker(picker: AgentPicker, window: int, cols: int = 80) -> lis
     visible = rows[start : start + window]
     lines = [
         f"{_GREEN}◆{_RESET} Select agents (space to toggle)",
+        _project_root_line(picker.project_root),
         f"{_DIM}│{_RESET}",
     ]
     for offset in range(window):
@@ -876,13 +885,28 @@ def install_links(skills: Sequence[Skill], dest_dirs: Sequence[Path]) -> list[st
     return lines
 
 
+def is_home_directory(path: Path) -> bool:
+    try:
+        return os.path.normcase(str(path.resolve())) == os.path.normcase(
+            str(Path.home().resolve())
+        )
+    except OSError:
+        return False
+
+
 def resolve_project_root(raw: str | None) -> Path:
-    if raw is None:
-        return Path.cwd()
-    path = Path(raw)
+    path = Path.cwd() if raw is None else Path(raw)
     if not path.is_dir():
         raise InstallError(f"Project directory does not exist: {path}")
-    return path
+    resolved = path.resolve()
+    if is_home_directory(resolved):
+        raise InstallError(
+            "Refusing to install into the home directory: "
+            f"{resolved}. Run from a project, or pass --project <dir>. "
+            "Destinations are project-level (./.agents/skills), "
+            "not user-global folders such as ~/.trae/skills."
+        )
+    return resolved
 
 
 def run(argv: Sequence[str] | None = None) -> int:

@@ -259,24 +259,42 @@ class PickerTests(unittest.TestCase):
             picker = install_projects.SkillPicker(self.skills, Path(raw))
             self.assertEqual(picker.installed["git-commit"], ())
 
+    def test_render_includes_project_root(self) -> None:
+        with TemporaryDirectory() as raw:
+            project = Path(raw)
+            picker = install_projects.SkillPicker(self.skills, project)
+            rendered = "\n".join(install_projects.render_picker(picker, 12, 120))
+            self.assertIn(str(project.resolve()), rendered)
+
 
 
 class AgentPickerTests(unittest.TestCase):
-    def test_default_selects_every_known_agent(self) -> None:
+    def test_default_selects_detected_agents_only(self) -> None:
         with TemporaryDirectory() as raw:
             project = Path(raw)
             picker = install_projects.AgentPicker(project)
-            self.assertEqual(picker.all_state(), "all")
-            self.assertEqual(set(picker.selected_keys()), set(install_projects.ordered_agent_keys()))
+            self.assertEqual(picker.all_state(), "partial")
+            self.assertEqual(set(picker.selected_keys()), {"universal"})
+            dests = install_projects.dests_from_keys(project, picker.selected_keys())
+            self.assertEqual(dests, [project / ".agents" / "skills"])
+
+    def test_default_includes_existing_agent_root(self) -> None:
+        with TemporaryDirectory() as raw:
+            project = Path(raw)
+            (project / ".claude").mkdir()
+            picker = install_projects.AgentPicker(project)
+            self.assertEqual(set(picker.selected_keys()), {"universal", "claude-code"})
 
     def test_toggle_one_agent_leaves_partial(self) -> None:
         with TemporaryDirectory() as raw:
             project = Path(raw)
+            (project / ".claude").mkdir()
             picker = install_projects.AgentPicker(project)
             picker.cursor = picker.keys.index("claude-code") + 1
             picker.toggle()
             self.assertEqual(picker.all_state(), "partial")
             self.assertNotIn("claude-code", picker.selected_keys())
+            self.assertEqual(set(picker.selected_keys()), {"universal"})
 
     def test_dests_from_keys_only_selected_agents(self) -> None:
         with TemporaryDirectory() as raw:
@@ -298,6 +316,62 @@ class AgentPickerTests(unittest.TestCase):
             keys = install_projects.auto_agent_keys(project)
             self.assertEqual(keys, {"universal", "claude-code"})
 
+    def test_render_detected_only_for_existing_roots(self) -> None:
+        with TemporaryDirectory() as raw:
+            project = Path(raw)
+            (project / ".claude").mkdir()
+            picker = install_projects.AgentPicker(project)
+            lines = install_projects.render_agent_picker(picker, 20, 120)
+            rendered = "\n".join(lines)
+            self.assertIn(str(project.resolve()), rendered)
+            claude_line = next(line for line in lines if ".claude/skills" in line)
+            trae_line = next(line for line in lines if ".trae/skills" in line)
+            self.assertIn("detected", claude_line)
+            self.assertNotIn("detected", trae_line)
+
+
+class HomeDirectoryTests(unittest.TestCase):
+    def test_refuses_implicit_home_cwd(self) -> None:
+        sentinel = Path.home() / ".agents" / "skills" / "storage-analyzer"
+        existed = sentinel.exists()
+        previous = Path.cwd()
+        err = io.StringIO()
+        try:
+            os.chdir(Path.home())
+            with redirect_stdout(io.StringIO()), redirect_stderr(err):
+                code = install_projects.main(["--skill", "storage-analyzer"])
+        finally:
+            os.chdir(previous)
+        self.assertEqual(code, 1)
+        self.assertIn("home directory", err.getvalue())
+        if not existed:
+            self.assertFalse(sentinel.exists())
+
+    def test_refuses_explicit_home_project(self) -> None:
+        err = io.StringIO()
+        with redirect_stdout(io.StringIO()), redirect_stderr(err):
+            code = install_projects.main(
+                ["--project", str(Path.home()), "--skill", "storage-analyzer"]
+            )
+        self.assertEqual(code, 1)
+        self.assertIn("home directory", err.getvalue())
+
+    def test_project_flag_from_home_cwd_still_installs(self) -> None:
+        with TemporaryDirectory() as raw:
+            project = Path(raw)
+            previous = Path.cwd()
+            os.chdir(Path.home())
+            try:
+                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                    code = install_projects.main(
+                        ["--project", str(project), "--skill", "git-commit"]
+                    )
+            finally:
+                os.chdir(previous)
+            self.assertEqual(code, 0)
+            self.assertTrue(
+                (project / ".agents" / "skills" / "git-commit" / "SKILL.md").is_file()
+            )
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)
