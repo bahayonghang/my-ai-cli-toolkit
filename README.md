@@ -37,6 +37,20 @@ It can manage a shared `~/.agents/skills/` library, import skills from GitHub, a
 
 Use `skills/` as the first-party source for this repository.
 
+### Live-link first-party skills for local testing
+
+After you clone this repository, you can live-link selected catalog skills into the current project. The default destination is project-level `.agents/skills/` (never `.agent/`). Extra agent directories are linked only when that agent root already exists.
+
+```bash
+python scripts/install_projects.py --list
+just install-projects --skill git-commit
+just install-projects --category git-github-collaboration
+python scripts/install_projects.py --project <other-repo> --skill git-commit
+```
+
+Use `python`, not `python3`. `just install-projects` with no flags opens an `npx skills`-style checkbox list for skills, then another list for agents (all selected by default). Space toggles, arrows move, Enter continues.
+
+
 ### Clone for local validation
 
 Clone the repository only when you want to validate or contribute changes locally:
@@ -48,7 +62,7 @@ cd my-claude-code-settings
 just ci
 ```
 
-`just ci` runs skills metadata validation, Python compile checks, Node skill tests, and `git diff --check`.
+`just ci` runs skills metadata validation, Python compile checks, the project installer tests, Node skill tests, and `git diff --check`.
 
 ## Repository layout
 
@@ -71,6 +85,7 @@ just ci
 
 The current first-party catalog under `skills/` uses these category directories:
 
+- `academic-research-tools`
 - `development-workflows`
 - `developer-tools-integrations`
 - `git-github-collaboration`

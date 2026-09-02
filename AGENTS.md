@@ -8,10 +8,12 @@ This repository organizes content at the repo root. Installable skills live unde
 ## Build, Test, and Development Commands
 Use `just` from the repository root:
 
-- `just ci` — full local CI: `docs-check`, `skills-check`, `python-check`, `node-test`, then `git diff --check`.
+- `just ci` — full local CI: `docs-check`, `skills-check`, `python-check`, `install-projects-test`, `node-test`, then `git diff --check`.
 - `just lint` — `skills-check` + `python-check`.
 - `just skills-check` — runs `scripts/check.py` over `skills/`.
 - `just python-check` — byte-compiles every `*.py` under `skills/`, `platforms/`, and `scripts/` (skips `scaffolds`).
+- `just install-projects` — live-links selected first-party skills into the current project (default `.agents/skills`).
+- `just install-projects-test` — runs `scripts/test_install_projects.py`.
 - `just node-test` — discovers and runs Node skill tests under `skills/**/tests/*.mjs`.
 
 ## Coding Style & Naming Conventions

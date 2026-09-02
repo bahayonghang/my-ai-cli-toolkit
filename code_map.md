@@ -7,7 +7,7 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 - `platforms/<platform>/` — platform-scoped source assets such as commands, agents, prompts, rules, and hooks.
 - `platforms/codex/` — Codex native subagent templates; start with `platforms/codex/code_map.md` before editing this subtree.
 - `platforms/claude/hooks/` — Claude Code runtime hook assets and hook JSON.
-- `scripts/` — shared repository validation and maintenance scripts.
+- `scripts/` — shared repository validation, maintenance, and local skill live-link scripts.
 - `docs/` — VitePress documentation site and generated catalog pages; `docs/scripts/sync_docs_catalog.py` owns catalog synchronization.
 - `.github/workflows/` — GitHub Actions CI; mirrors root `just ci` across OS matrix.
 - `ref/` — ignored third-party/reference checkout area, not first-party source.
@@ -17,12 +17,13 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 - `justfile` — local command source of truth for docs, skill, Python, Node, and aggregate CI gates.
 - `scripts/check.py` — skill metadata validator used by `just skills-check`.
 - `docs/scripts/sync_docs_catalog.py` — scans `skills/` and `platforms/` to generate docs catalog/sidebar content.
+- `scripts/install_projects.py` — live-link first-party skills into a project; used by `just install-projects`.
 - `platforms/codex/agents/*.toml` — reusable Codex native subagent templates.
 
 ## Search Anchors
 - `name:` in `SKILL.md` — skill identifier/frontmatter entry point.
 - `category:` in `SKILL.md` — public skill category used by validators and docs generation.
-- `docs-check`, `skills-check`, `python-check`, `node-test`, `ci:` — root `justfile` verification recipes.
+- `docs-check`, `skills-check`, `python-check`, `install-projects-test`, `node-test`, `ci:` — root `justfile` verification recipes.
 - `discover_platforms` — platform catalog discovery in `docs/scripts/sync_docs_catalog.py`.
 - `model = "gpt-` — explicit model pinning in Codex agent templates; avoid stale pins unless intentional.
 - `platforms.toml` — absence indicates current platform consumers own install/link target resolution.
@@ -40,6 +41,8 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 - `just docs-check` — check docs catalog drift and build the VitePress site.
 - `just skills-check` — validate `skills/` metadata.
 - `just python-check` — byte-compile Python under `skills/`, `platforms/`, and `scripts/`.
+- `just install-projects` — live-link selected catalog skills into the current project.
+- `just install-projects-test` — unit tests for the project installer.
 - `just node-test` — run Node skill tests under `skills/**/tests/*.mjs`.
-- `just ci` — full local finish-line gate.
+- `just ci` — full local finish-line gate, including installer tests.
 - `git diff --check` — whitespace sanity check used by `just ci`.
