@@ -1,0 +1,116 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-09-02",
+  "package": {
+    "name": "storage-analyzer",
+    "version": "0.1.0",
+    "owner": "lyh",
+    "maturity_tier": "governed",
+    "lifecycle_stage": "governed",
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Use when the user wants a read-only disk/storage analysis on macOS or Windows: 磁盘满了, C盘满了, 空间不够, 存储分析, 占空间, 清缓存, storage analysis, disk cleanup, or Chinese 内存满了 when they mean disk space. Scans known hotspots, classifies cache vs user data vs keep, and writes an HTML report with copyable commands. After this-turn approval of shown paths, may start a local report server that only moves allowlisted cache paths to Trash. Do not use for RAM/process memory, Windows dev-process cleanup, Downloads file sorting, startup-app optimization, or Linux-only hosts.",
+    "job_to_be_done": "Use when the user wants a read-only disk/storage analysis on macOS or Windows: 磁盘满了, C盘满了, 空间不够, 存储分析, 占空间, 清缓存, storage analysis, disk cleanup, or Chinese 内存满了 when they mean disk space. Scans known hotspots, classifies cache vs user data vs keep, and writes an HTML report with copyable commands. After this-turn approval of shown paths, may start a local report server that only moves allowlisted cache paths to Trash. Do not use for RAM/process memory, Windows dev-process cleanup, Downloads file sorting, startup-app optimization, or Linux-only hosts.",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "C盘满了，帮我看看什么占空间，先出报告不要删。",
+      "My disk is full. Run a storage analysis.",
+      "清一下 pip 和 npm 缓存，磁盘不够了。",
+      "Do a storage analysis on this Windows laptop and write an HTML report.",
+      "内存满了，C盘只剩几 GB，帮我看存储。",
+      "storage analysis and disk cleanup suggestions please"
+    ],
+    "should_not_trigger": [
+      "Which process is eating RAM in Task Manager?",
+      "Kill leaked Playwright MCP node processes.",
+      "帮我整理 Downloads 里的文件，按类别建文件夹。",
+      "Disable unnecessary startup apps so boot is faster."
+    ],
+    "near_neighbor": [
+      "Clean disk usage inside this Linux build server.",
+      "Delete duplicate PDFs in Downloads.",
+      "Profile CPU, memory, disk, and startup apps and optimize everything."
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\cache-prefixes.json",
+      "references\\classification.md",
+      "references\\macos.md",
+      "references\\report-schema.md",
+      "references\\scan-safety.md",
+      "references\\windows.md"
+    ],
+    "scripts": [
+      "scripts\\build_report.py",
+      "scripts\\paths.py",
+      "scripts\\scan.py",
+      "scripts\\server.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\secret-scan.md"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "vscode",
+      "agent-skills-compatible"
+    ],
+    "activation": {
+      "mode": "manual",
+      "paths": []
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "posix-or-py",
+      "platform": "windows-or-macos",
+      "minimum_runtime": "Python 3"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "deny",
+      "side_effect_policy": "scan.py and build_report.py are read-only aside from JSON/HTML outputs; server.py trash requires this-turn path approval; rm is disabled"
+    },
+    "permissions": {},
+    "degradation": {
+      "openai": "metadata-adapter; host must keep server.py behind user approval",
+      "claude": "neutral-source-plus-adapter; host remains responsible for filesystem permission",
+      "generic": "neutral-source; do not trash files without an equivalent confirmation control",
+      "vscode": "workspace trust is not authorization to trash files"
+    }
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

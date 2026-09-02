@@ -1,0 +1,42 @@
+{
+  "win32": {
+    "prefixes": [
+      "{TEMP}",
+      "{LOCALAPPDATA}/Temp",
+      "{LOCALAPPDATA}/pip/Cache",
+      "{LOCALAPPDATA}/uv/cache",
+      "{LOCALAPPDATA}/Yarn",
+      "{LOCALAPPDATA}/npm-cache",
+      "{APPDATA}/npm-cache",
+      "{HOME}/.cache",
+      "{HOME}/.npm",
+      "{HOME}/.pnpm-store",
+      "{HOME}/.gradle/caches",
+      "{HOME}/.m2/repository",
+      "{HOME}/.nuget/packages",
+      "{HOME}/.cargo/registry",
+      "{LOCALAPPDATA}/ms-playwright",
+      "{LOCALAPPDATA}/go-build"
+    ],
+    "cache_globs": [
+      "google/chrome/user data/*/cache",
+      "microsoft/edge/user data/*/cache",
+      "mozilla/firefox/profiles/*/cache2"
+    ]
+  },
+  "darwin": {
+    "prefixes": [
+      "{HOME}/Library/Caches",
+      "{HOME}/.cache",
+      "{HOME}/.npm",
+      "{HOME}/.pnpm-store",
+      "{HOME}/.cargo/registry",
+      "{HOME}/.gradle",
+      "{HOME}/.m2",
+      "{HOME}/Library/pnpm",
+      "{HOME}/Library/Developer/Xcode/DerivedData",
+      "{HOME}/Library/Developer/CoreSimulator"
+    ],
+    "cache_globs": []
+  }
+}

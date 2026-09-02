@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "reviewed_at": "2026-09-02",
+  "capabilities": {
+    "filesystem_scan": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "scripts/scan.py may read directory metadata under the default hotspot roots or --include-system-apps Program Files. It must skip junctions/symlinks and write only an optional absolute --output JSON.",
+      "reason": "A storage report needs local size inventory.",
+      "expires_at": "2026-12-02",
+      "evidence": [
+        "SKILL.md",
+        "references/scan-safety.md",
+        "tests/storage-analyzer.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Permission metadata only; the host must authorize directory reads.",
+        "claude": "Bash may run the helper; scan remains non-mutating aside from optional JSON output.",
+        "generic": "Permission metadata for downstream host enforcement.",
+        "vscode": "Workspace trust is not authorization to scan arbitrary disks."
+      }
+    },
+    "filesystem_trash": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "server.py may move allowlisted paths to Trash after this-turn approval. Green paths must match cache-prefixes.json and stay under the user home. Yellow trash must be listed and approved. Tests must use --check-allowlist or --stub-actions.",
+      "reason": "Optional reclaim after review. Recycle Bin is the only mutation.",
+      "expires_at": "2026-12-02",
+      "evidence": [
+        "SKILL.md",
+        "scripts/server.py",
+        "tests/storage-analyzer.test.mjs"
+      ],
+      "target_enforcement": {
+        "openai": "Host must require this-turn path approval before server.py.",
+        "claude": "SKILL forbids server.py without this-turn approval.",
+        "generic": "Equivalent confirmation control required.",
+        "vscode": "Workspace trust is not authorization to trash files."
+      }
+    },
+    "filesystem_delete": {
+      "decision": "not-approved",
+      "reviewer": "lyh",
+      "scope": "v1 must not expose rm, shutil.rmtree, or OS permanent delete.",
+      "reason": "Hard delete is irreversible and was removed from the public contract.",
+      "expires_at": "2026-12-02",
+      "evidence": [
+        "SKILL.md",
+        "scripts/server.py",
+        "assets/report_template.html"
+      ],
+      "target_enforcement": {
+        "openai": "Deny permanent delete.",
+        "claude": "Deny permanent delete.",
+        "generic": "Deny permanent delete.",
+        "vscode": "Deny permanent delete."
+      }
+    },
+    "network": {
+      "decision": "approved",
+      "reviewer": "lyh",
+      "scope": "Optional server.py binds 127.0.0.1 only. No outbound network.",
+      "reason": "Local report UI after approval.",
+      "expires_at": "2026-12-02",
+      "evidence": ["scripts/server.py"],
+      "target_enforcement": {
+        "openai": "Loopback only.",
+        "claude": "Loopback only.",
+        "generic": "Loopback only.",
+        "vscode": "Loopback only."
+      }
+    }
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "cleanup",
+    "disk",
+    "full",
+    "report",
+    "storage"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 13,
+    "passed": 13,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "C盘满了，帮我看看什么占空间，先出报告不要删。",
+        "family": "c-drive-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "disk",
+          "full",
+          "report",
+          "storage"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "My disk is full. Run a storage analysis.",
+        "family": "disk-full-en",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "disk",
+          "full",
+          "report",
+          "storage"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "清一下 pip 和 npm 缓存，磁盘不够了。",
+        "family": "cache-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "disk",
+          "full"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Do a storage analysis on this Windows laptop and write an HTML report.",
+        "family": "html-report",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "report",
+          "storage"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "内存满了，C盘只剩几 GB，帮我看存储。",
+        "family": "colloquial-memory",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "disk",
+          "full",
+          "storage"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "storage analysis and disk cleanup suggestions please",
+        "family": "en-cleanup",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "cleanup",
+          "disk",
+          "report",
+          "storage"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Which process is eating RAM in Task Manager?",
+        "family": "ram",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "which process"
+      },
+      {
+        "prompt": "Kill leaked Playwright MCP node processes.",
+        "family": "process-cleanup",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "playwright mcp"
+      },
+      {
+        "prompt": "帮我整理 Downloads 里的文件，按类别建文件夹。",
+        "family": "file-sorter",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "整理 Downloads"
+      },
+      {
+        "prompt": "Disable unnecessary startup apps so boot is faster.",
+        "family": "startup",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "startup apps"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "Clean disk usage inside this Linux build server.",
+        "family": "linux",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "disk"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Delete duplicate PDFs in Downloads.",
+        "family": "dedupe",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Profile CPU, memory, disk, and startup apps and optimize everything.",
+        "family": "general-optimize",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "disk"
+        ],
+        "negative_pattern": "startup apps"
+      }
+    ]
+  }
+}

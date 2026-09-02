@@ -1,0 +1,46 @@
+{
+  "name": "storage-analyzer",
+  "version": "0.1.0",
+  "owner": "lyh",
+  "updated_at": "2026-09-02",
+  "review_cadence": "quarterly",
+  "status": "active",
+  "maturity_tier": "governed",
+  "lifecycle_stage": "governed",
+  "context_budget_tier": "governed",
+  "category": "developer-tools-integrations",
+  "license": "MIT",
+  "release_gates": {
+    "local": ["validate_skill", "trigger_eval", "node-test"],
+    "published": ["missing evidence"]
+  },
+  "complexity_tier": "complex",
+  "factory_components": [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "security",
+    "scripts",
+    "tests",
+    "assets"
+  ],
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic",
+    "vscode"
+  ],
+  "contracts": {
+    "input_files": {
+      "classification": "user-local-paths",
+      "paths": [
+        "tests/storage-analyzer.test.mjs"
+      ],
+      "rule": "Tests create temporary directories. Production scans hotspot roots on the local machine. Helpers must skip junctions and must not trash without this-turn approval."
+    },
+    "output contract": "Scan JSON, static HTML, optional REPORT_URL. server.py accepts trash and open only; rm is disabled.",
+    "rollback boundary": "Trash is reversible until the Recycle Bin is emptied. Static reports do not mutate. No undo sidecar in v1.",
+    "trust report": "reports/secret-scan.md"
+  }
+}

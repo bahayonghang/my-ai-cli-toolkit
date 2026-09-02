@@ -62,6 +62,13 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   and the declared parameter stays null. Cleanup ran as a silent no-op while
   reporting success. Always cover the destructive path with a shim test.
 
+## Windows helper scan traps (storage-analyzer 0.1.0)
+
+- Validate `--output` (absolute path, argparse errors) **before** walking disks. A relative `--output` that is checked after `scandir` will still scan the real home directory in tests.
+- Do not probe `A:\\`–`Z:\\` with `os.path.exists`. Missing floppy/optical letters can stall for tens of seconds. Use `GetLogicalDrives` and only call `disk_usage` on bits that are set.
+- `ProgramFiles` vs `PROGRAMFILES` can both appear in a Node `spawnSync` env block; Windows keeps one case. Tests that must not walk `C:\Program Files` should pass an explicit `--program-files` absolute override.
+- Treat directory junctions as links (`os.path.isjunction` and `FILE_ATTRIBUTE_REPARSE_POINT`), not only `os.path.islink`.
+
 ## Verification traps in this repo
 
 - `git status` looks clean while untracked files exist: the repo sets
