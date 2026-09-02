@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "scripts/ ownership; no new src/ or shared package"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "CLI exit codes, stderr, no traceback for validation"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "python-check, no dest framework, ignore runtime dirs"}
+{"file": ".trellis/spec/backend/skill-helper-command-contracts.md", "reason": "Windows argv list, no shell=True; python not python3"}
+{"file": ".trellis/tasks/09-02-install-projects-cli/research/tech-selection.md", "reason": "Language and live-link research"}

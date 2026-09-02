@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Fail closed, no half install, stderr contract"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Installer stays in scripts/; no platforms.toml dest dump"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "just ci / python-check / no hand-edited generated docs"}
+{"file": ".trellis/tasks/09-02-install-projects-cli/research/tech-selection.md", "reason": "Must not regress to npx snapshot or Rust/Node package"}
