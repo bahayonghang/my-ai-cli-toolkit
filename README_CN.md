@@ -39,7 +39,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '*' -g -y -a 
 
 ### 本地测试时按分类 live-link 一方 skills
 
-克隆本仓库后，可以把选中的 catalog skills live-link 到当前项目。默认目标是项目级 `.agents/skills/`（不会写入 `.agent/`）。其他 agent 目录仅在对应根目录已经存在时才追加链接。
+克隆本仓库后，可以把选中的 catalog skills live-link 到当前项目。默认目标是项目级 `.agents/skills/`（不会写入 `.agent/`）。其他 agent 目录仅在对应根目录已经存在时才追加链接。如果进程工作目录是用户主目录，命令会拒绝安装，避免写入 `~/.trae/skills` 这类全局目录。
 
 ```bash
 python scripts/install_projects.py --list
@@ -48,7 +48,7 @@ just install-projects --category git-github-collaboration
 python scripts/install_projects.py --project <other-repo> --skill git-commit
 ```
 
-命令用 `python`，不要用 `python3`。无参数的 `just install-projects` 先选 skills，回车后再选 Agents（默认全选，可取消）。空格勾选，方向键移动，Enter 继续。
+命令用 `python`，不要用 `python3`。无参数的 `just install-projects` 先选 skills，回车后再选 Agents（默认只勾选当前项目里已经存在的 agent 根）。选择器会显示项目的绝对路径。
 
 
 ### 本地校验时再克隆
