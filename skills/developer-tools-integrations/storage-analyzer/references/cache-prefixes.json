@@ -26,6 +26,7 @@
   },
   "darwin": {
     "prefixes": [
+      "{TEMP}",
       "{HOME}/Library/Caches",
       "{HOME}/.cache",
       "{HOME}/.npm",
@@ -36,6 +37,18 @@
       "{HOME}/Library/pnpm",
       "{HOME}/Library/Developer/Xcode/DerivedData",
       "{HOME}/Library/Developer/CoreSimulator"
+    ],
+    "cache_globs": []
+  },
+  "linux": {
+    "prefixes": [
+      "{TEMP}",
+      "{HOME}/.cache",
+      "{HOME}/.npm",
+      "{HOME}/.pnpm-store",
+      "{HOME}/.cargo/registry",
+      "{HOME}/.gradle",
+      "{HOME}/.m2"
     ],
     "cache_globs": []
   }

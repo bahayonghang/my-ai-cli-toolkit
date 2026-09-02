@@ -100,6 +100,15 @@ test("SKILL.md uses skill-dir and forbids tmp capture", () => {
   assert.match(text, /server\.py/);
 });
 
+test("cache prefixes include TEMP on unix CI platforms", () => {
+  const data = JSON.parse(
+    fs.readFileSync(path.join(skillDir, "references", "cache-prefixes.json"), "utf8"),
+  );
+  assert.ok(data.win32.prefixes.includes("{TEMP}"));
+  assert.ok(data.darwin.prefixes.includes("{TEMP}"));
+  assert.ok(data.linux.prefixes.includes("{TEMP}"));
+});
+
 test("relative --output is rejected", { skip }, () => {
   const result = runPython(scanScript, ["--output", "scan.json"]);
   assert.equal(result.status, 2);
