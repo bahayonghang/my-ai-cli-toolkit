@@ -907,7 +907,7 @@ test('review-remediation keeps equivalent feedback semantics for opt-out and cap
 });
 
 test('ordinary published examples preserve completion conjunction and remain lintable', () => {
-  const playbook = readFileSync(path.join(skillRoot, 'references/goal-command-playbook.md'), 'utf8');
+  const playbook = readFileSync(path.join(skillRoot, 'references/goal-command-playbook.md'), 'utf8').replaceAll('\r\n', '\n');
   const ordinaryPacket = playbook.split('````markdown')[1].split('````')[0];
   const examples = [...ordinaryPacket.matchAll(/```text\n([\s\S]*?)\n```/g)];
   assert.equal(examples.length, 2);
@@ -921,7 +921,7 @@ test('ordinary published examples preserve completion conjunction and remain lin
     assert.match(match[1], /未完成|incomplete/);
     assert.doesNotMatch(match[1], /检查通过或|checks pass or/);
   }
-  const persistent = readFileSync(path.join(skillRoot, 'references/persistent-goal-contract.md'), 'utf8');
+  const persistent = readFileSync(path.join(skillRoot, 'references/persistent-goal-contract.md'), 'utf8').replaceAll('\r\n', '\n');
   const completion = persistent.split('## Completion conditions')[1].split('## Pause / stop conditions')[0];
   assert.match(completion, /deliverable exists/);
   assert.match(completion, /behavior is verified through its named entry point/);
