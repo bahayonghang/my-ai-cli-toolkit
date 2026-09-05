@@ -3,7 +3,7 @@
   "generated_at": "2026-08-30",
   "package": {
     "name": "goal-meta-skill",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "owner": "lyh",
     "maturity_tier": "governed",
     "lifecycle_stage": "governed",

@@ -1,5 +1,22 @@
 # Goal Meta Skill 0.8.0 creation handoff
 
+## 0.8.1 maintenance — 2026-09-05
+
+Ordinary bilingual examples and the persistent schema now require deliverable
+existence, named-entry behavior, required checks, and authorized diff/status
+together. Missing checks/access or exhausted rounds remain incomplete. Pause
+categories, Trellis rules, compile-only authority, and same-turn authorized
+create-only persistence are unchanged. The package version, Skill IR, linter
+metadata check, and contract test metadata are aligned to 0.8.1; the historical
+0.8.0 evidence below remains dated evidence, not a claim about this patch.
+
+Local regression evidence: both Node suites pass 64/64; Python compilation
+passes. Added ordinary behavior evals 50–56 are review cases, not provider runs.
+Description/interface routing is unchanged, so trigger evaluation is not
+applicable to this maintenance patch. Actual installation/new-session discovery,
+provider compliance, human blind review and telemetry remain missing evidence.
+Full repository CI and discovery disposition are owned by the parent task.
+
 ## Result
 
 `goal-meta-skill` 0.8.0 compiles vague work into reviewable,

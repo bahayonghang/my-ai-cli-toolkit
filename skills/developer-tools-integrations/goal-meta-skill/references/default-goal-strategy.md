@@ -163,7 +163,7 @@ Verification: identify and inspect project docs, existing scripts, sample data, 
 Constraints: do not invent domain rules, compliance claims, data semantics, or user-facing promises that are not supported by the inspected context.
 Boundaries: edit only the files directly required for the first workflow; keep unrelated modules, production data, credentials, and public contracts unchanged.
 Iteration policy: complete a discovery pass first, state working assumptions, implement one focused slice, rerun checks, and use new evidence rather than repeated retries after failures.
-Stop when: the first workflow works under documented assumptions and evidence proves the result; unresolved domain questions are listed clearly.
+Stop when: the first-workflow deliverables exist, the entry point named during discovery proves the workflow under documented assumptions, required checks pass, and diff/status shows only authorized changes. Missing required evidence or unresolved domain questions necessary to verify the result mean incomplete.
 Pause if: required domain authority, legal/medical/financial judgment, compliance approval, production data, paid services, or destructive actions are required.
 ```
 
@@ -206,6 +206,13 @@ Use bounded autonomy:
 ```
 
 Do not write `keep trying` or `until it looks good`.
+
+For ordinary non-Trellis goals, apply the conjunction in
+`goal-command-playbook.md` under Canonical Goal Template. Reaching the round
+limit with unmet conditions means incomplete: report remaining work and
+evidence. Missing required access or checks cannot satisfy completion merely
+because the gap was reported. Describe blocked outcomes only as the actual
+host permits; the compiler does not invoke status APIs.
 
 The ordinary three-round default is not a review-remediation completion claim.
 For that profile, round exhaustion or two no-progress rounds for one finding
