@@ -228,12 +228,12 @@
     {
       "id": 19,
       "prompt": "把这个已确认的 Codex 目标持久化保存到当前 Git 项目根目录 GOAL.md，方便新 Agent 接手。当前根目录明确，文件不存在。",
-      "expected_output": "Governed persistence: inspect root/state read-only, show the approved contract and create effect, persist only after the relevant confirmation, then report metadata and a Codex explicit-read launcher.",
+      "expected_output": "Same-turn governed persistence: inspect the established root, lint and display the complete contract and create effect, use the helper under the existing save request, verify read-back, and return a Codex launcher without launching.",
       "files": [],
       "assertions": [
         "S1 resolves the Git root and checks GOAL.md without writing.",
         "S4 shows the exact root GOAL.md create-only action and full approved contract before mutation.",
-        "S6 uses persist_goal_contract.py only after confirmation and reports path, bytes, SHA-256, action, and Git visibility without echoing the full body.",
+        "S6 uses persist_goal_contract.py in the same turn without asking for another approval, verifies read-back content, bytes and SHA-256, then reports path, action and Git visibility.",
         "The Codex launcher explicitly reads ./GOAL.md and does not claim automatic loading.",
         "The launcher is fenced, labeled APPROVED TEXT — not launched, and is not submitted by the skill."
       ]
@@ -296,14 +296,14 @@
     {
       "id": 25,
       "prompt": "给 Grok Build 生成并保存 GOAL.md，预算是否加入由我确认；完成前要独立验证证据。",
-      "expected_output": "A DRAFT persistence review packet for Grok with an explicit-read launcher preview and optional --budget choice; no file write or Goal activation before subsequent approval.",
+      "expected_output": "A Grok persistence review packet that asks only about the user-reserved budget decision before saving; no Goal activation.",
       "files": [],
       "assertions": [
         "Uses an explicit read ./GOAL.md launcher rather than claiming auto-load or relying on @GOAL.md.",
         "Uses only status/pause/resume/clear management vocabulary.",
         "Adds --budget only when explicitly approved and requires independent evidence review.",
         "Treats 4,000 as a skill portability budget, not an official Grok cap.",
-        "The first response stays DRAFT, does not write GOAL.md, and does not launch the previewed command."
+        "Clarifies only the explicitly reserved budget choice and any unresolved root; once resolved, uses the original save authorization without a second ceremonial approval."
       ]
     },
     {
@@ -320,15 +320,15 @@
     },
     {
       "id": 27,
-      "prompt": "为 Kimi Code 生成 GOAL.md 交接，同时给 TUI 和 headless 启动方式。",
-      "expected_output": "A DRAFT Kimi persistence review packet with TUI and separate headless launcher previews plus the exit-state caveat; no write or launch before subsequent approval.",
+      "prompt": "为 Kimi Code 生成并保存 GOAL.md 交接，同时给 TUI 和 headless 启动方式。当前项目根目录明确，文件不存在。",
+      "expected_output": "Same-turn Kimi contract persistence with TUI and separate headless launcher text plus the exit-state caveat; no execution of either launcher.",
       "files": [],
       "assertions": [
         "The TUI launcher explicitly reads ./GOAL.md and stays below Kimi's official 4,000-character cap.",
         "Management uses status/pause/resume/cancel/replace/next and no generic budget flag.",
         "The headless kimi -p variant is labeled create-only and distinguishes complete 0, blocked 3, and paused 6.",
         "Does not claim combined @GOAL.md plus /goal is provider-verified.",
-        "The first response does not write GOAL.md, execute kimi -p, or activate a Goal."
+        "Uses the governed helper and verifies the saved contract in the same turn, but never executes kimi -p or activates a Goal."
       ]
     },
     {
@@ -570,6 +570,28 @@
         "It reports evidence without implementing findings, creating a ledger feedback loop, or asking the user to approve a repair Prompt.",
         "No Goal is created, activated, persisted, dispatched, committed, or archived.",
         "Any report is evidence-limited and is not described as a provider-backed remediation run."
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "直接生成并保存到已确定项目根目录 GOAL.md，平台 Codex。目标：实施 src/parser 空行崩溃修复直到完成，验证 parser 的现有测试，只允许该模块及相关回归测试。GOAL.md 不存在。",
+      "expected_output": "Compile, lint, show, create and read back GOAL.md in the same turn under the explicit save authorization; no payload execution.",
+      "files": [],
+      "assertions": [
+        "Inspects the root and destination read-only, shows the complete contract and create-only effect, and uses persist_goal_contract.py without requiring another user message.",
+        "Verifies read-back content, bytes and SHA-256 and reports the file saved with Goal not launched.",
+        "Does not call Goal APIs, submit /goal, dispatch agents, run payload tests or implement the parser fix despite the imperative payload."
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "生成并保存 Codex GOAL.md，只编译 parser 修复目标。根目录明确且文件不存在。侦察发现若同时重写 auth 模块能统一错误处理，但那不在我的原始要求内。",
+      "expected_output": "Keep the generated contract within the authorized parser scope and save it in the same turn; any proposed auth expansion needs a separate material-scope decision.",
+      "files": [],
+      "assertions": [
+        "Does not add auth changes to the saved contract or execute either module's work.",
+        "If an auth change is actually necessary, explains the concrete missing scope decision and asks only that question before writing an expanded contract.",
+        "An optional expansion does not block a complete parser-only contract or create a ceremonial approval requirement."
       ]
     }
   ]

@@ -1868,3 +1868,78 @@ work_commits=79c4fb12ec665270097e444cdd06be1e87678484,e017fee997993316ea02f330d1
 ### Status
 
 [OK] **Completed**
+
+
+## Session 61: 按分类 live-link 一方 skills
+
+**Date**: 2026-09-02
+**Task**: 按分类 live-link 一方 skills
+**Branch**: `dev`
+
+### Summary
+
+落地 just install-projects：按分类列出一方 skills，TTY 先选 skills 再选 agents，live-link 到项目级目录。任务已归档。
+
+### Main Changes
+
+- 新增 scripts/install_projects.py 与 unittest
+- just install-projects / install-projects-test 接入 just ci
+- README、AGENTS、code_map、directory-structure 同步入口
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2ea981d4` | (see git log) |
+| `e11fa037` | (see git log) |
+| `83d5309f` | (see git log) |
+
+### Testing
+
+- [OK] python scripts/test_install_projects.py
+- [OK] just python-check
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 需要时再 push
+
+
+## Session 62: 技能授权连续性优化实施与归档
+
+**Date**: 2026-09-05
+**Task**: 技能授权连续性优化实施与归档
+**Branch**: `dev`
+
+### Summary
+
+完成 Goal 同轮保存、PR 实质风险授权与 commit 后续交接；修复非 Git 基线校验，独立审阅和保存复评通过，归档父任务及三个子任务。
+
+### Main Changes
+
+- 同步三个技能入口、引用、接口、evals 及 Goal 写入规范
+- 提交全部改动并完成四任务归档，未推送远程
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1726e0b8` | (see git log) |
+| `a959b7ab` | (see git log) |
+
+### Testing
+
+- [OK] just ci 通过；Goal 63、PR 22、commit 21 项局部测试通过
+- [OK] 独立非 Git 保存复评通过，未启动 Goal；归档上下文验证通过
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 真实远程操作与跨平台新会话接力仍为 UNVERIFIED

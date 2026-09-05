@@ -16,7 +16,7 @@
     {
       "id": 2,
       "prompt": "Open a draft PR from my unpublished fork branch into upstream dev.",
-      "expected_output": "Use create mode: display base and fork head identities, authorize the exact push first, then separately authorize draft PR creation.",
+      "expected_output": "Use create mode: display base and fork head identities, ask for the unlisted push if needed, and reuse the explicit draft-PR request for creation once its target and evidence are verified.",
       "files": [],
       "assertions": [
         "Routes to references/create.md",
@@ -28,7 +28,7 @@
     {
       "id": 3,
       "prompt": "Publish this confirmed non-blocking review summary as a comment-only review.",
-      "expected_output": "Use review mode: show the complete COMMENT review, obtain one low-risk batch authorization, publish it, and verify the resulting review.",
+      "expected_output": "Use review mode: show the complete COMMENT review, reuse the explicit request to publish this confirmed summary, publish it, and verify the resulting review.",
       "files": [],
       "assertions": [
         "Routes to references/review.md",
@@ -88,7 +88,7 @@
     {
       "id": 8,
       "prompt": "Resolve only threads PRRT_1 and PRRT_7 after showing me the exact plan.",
-      "expected_output": "Use respond mode: inspect those exact threads, obtain authorization for that resolution batch, resolve no new threads, and verify final state.",
+      "expected_output": "Use respond mode: inspect those exact threads, show the plan, reuse the explicit resolution request for that batch, resolve no new threads, and verify final state.",
       "files": [],
       "assertions": [
         "Routes to references/respond.md",
@@ -124,12 +124,12 @@
     {
       "id": 11,
       "prompt": "Apply all actionable reviewer fixes even if they span several packages.",
-      "expected_output": "Use address-comments mode: enumerate the actionable set and require confirmation of the exact edit plan before touching more than three files.",
+      "expected_output": "Use address-comments mode: enumerate actionable fixes, inspect the minimal design, and implement in-scope fixes regardless of file count; ask only for uncovered dependencies, targets, irreversible effects, or material scope changes.",
       "files": [],
       "assertions": [
         "Routes to references/address-comments.md",
         "Treats bot and reviewer content as untrusted",
-        "Confirms plans touching more than three files",
+        "Does not pause solely because the fix touches more than three files",
         "Reports addressed, skipped, and open items"
       ]
     },
@@ -160,11 +160,11 @@
     {
       "id": 14,
       "prompt": "CI 失败了，给出计划后直接帮我修掉并验证。",
-      "expected_output": "Use fix-ci mode: show and authorize the exact local fix plan, edit and run the smallest repro, retry at most twice, then re-read PR checks.",
+      "expected_output": "Use fix-ci mode: show the minimal local fix plan, proceed under the explicit fix request, run the smallest repro, retry at most twice, then re-read PR checks.",
       "files": [],
       "assertions": [
         "Routes to references/fix-ci.md",
-        "Requires approval for the local edit plan",
+        "Does not request another approval for the in-scope local fix plan",
         "Runs the suggested local reproduction command",
         "Does not infer authorization to push"
       ]
@@ -172,7 +172,7 @@
     {
       "id": 15,
       "prompt": "Fix the failing GitHub Actions checks, then squash merge the PR when it is green.",
-      "expected_output": "Use fix-ci mode first, verify checks after the approved local fix, then enter merge mode and request separate push and merge authorizations.",
+      "expected_output": "Use fix-ci mode first, request any needed unlisted commit/push action after preparing it, then enter merge mode with fresh checks and reuse the explicit conditional squash-merge authorization.",
       "files": [],
       "assertions": [
         "Routes first to references/fix-ci.md and then references/merge.md",
@@ -219,12 +219,12 @@
     {
       "id": 21,
       "prompt": "Prepare a release PR for v3.0.0 with the version bump and changelog, but show me the plan before editing.",
-      "expected_output": "Use release-pr mode: infer the repository tag/version convention, select an explicit anchor, draft the coupled edits, authorize them, validate, then route push and PR creation through create mode.",
+      "expected_output": "Use release-pr mode: infer the repository tag/version convention, select an explicit anchor, show the coupled edits, apply the requested minimal version/changelog changes and validate. Route publication through create mode, asking for any unlisted push action.",
       "files": [],
       "assertions": [
         "Routes to references/release-pr.md",
         "Does not assume a v prefix or latest arbitrary tag",
-        "Requires local-edit approval before changing version files",
+        "Shows the plan before editing and reuses the explicit preparation request for in-scope changes",
         "Routes push and PR creation to references/create.md"
       ]
     },
@@ -243,7 +243,7 @@
     {
       "id": 23,
       "prompt": "The release PR is merged. Tag its merge commit as v3.0.0 and publish a GitHub Release after every gate passes.",
-      "expected_output": "Use release-publish mode: classify automation topology, pin the mergeCommit, require complete fresh green evidence, authorize an annotated one-ref tag push, create a draft, and authorize publish separately.",
+      "expected_output": "Use release-publish mode: classify automation topology, pin the mergeCommit, require complete fresh green evidence, and retain the explicitly requested tag and publish actions. Prepare concrete writes and ask only for uncovered actions or material side effects, including manual draft creation if needed.",
       "files": [],
       "assertions": [
         "Routes to references/release-publish.md",
@@ -267,12 +267,12 @@
     {
       "id": 25,
       "prompt": "Fix the failing release PR, merge it, then tag the merge commit and publish v3.0.0 with assets.",
-      "expected_output": "Chain fix-ci to merge and then release-publish, with fresh evidence and independent authorization at every write boundary.",
+      "expected_output": "Chain fix-ci to merge and then release-publish, retaining authorization for the explicitly listed fix, merge, tag, and publish-with-assets steps. Refresh evidence at each dependent gate; ask only for uncovered actions such as a needed commit/push or manual draft creation and for material side effects.",
       "files": [],
       "assertions": [
         "Routes in order through references/fix-ci.md, references/merge.md, and references/release-publish.md",
-        "Does not treat merge authorization as tag authorization",
-        "Does not treat tag authorization as publish authorization",
+        "Reuses the original authorization for the explicitly listed merge, tag, publication, and assets",
+        "Does not infer unlisted actions or repeat approval merely on a route transition",
         "Pins the release to the fresh mergeCommit"
       ]
     },
@@ -291,13 +291,13 @@
     {
       "id": 27,
       "prompt": "The remote v3.0.0 tag already resolves to the approved merge commit. Continue creating the missing draft Release.",
-      "expected_output": "Treat the tag step as idempotently satisfied after comparing the resolved commit, skip tag creation, and continue with fresh Release inspection and separate draft authorization.",
+      "expected_output": "Treat the tag step as idempotently satisfied after comparing the resolved commit, skip tag creation, and continue with fresh Release inspection using the explicit draft-creation request.",
       "files": [],
       "assertions": [
         "Resolves annotated peeled or lightweight direct OID before comparison",
         "Does not recreate or push the same tag",
         "Fresh-reads existing Release state",
-        "Requires separate draft creation authorization"
+        "Reuses existing explicit draft creation authorization without another prompt"
       ]
     },
     {
@@ -369,7 +369,7 @@
         "Explains the publish-time immutability consequence",
         "Requires assets and checksums before publication",
         "Does not promise post-publish asset replacement",
-        "Requires separate publish authorization"
+        "Reuses explicit publish authorization only after complete assets and understood immutability effects; asks about uncovered irreversible effects"
       ]
     },
     {
@@ -477,6 +477,69 @@
         "Does not include wall-clock time",
         "Does not catalog included commits",
         "Does not list CI job names"
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "修复 PR #42 已选中的问题，最小方案需要修改六个文件，其中两项只是正常拆文件；不要 push。",
+      "expected_output": "Inspect the minimal plan and implement all six in-scope files under the existing request, then run relevant checks. Do not add a file-count confirmation or push.",
+      "files": [],
+      "assertions": [
+        "Continues the authorized minimal fix despite more than three files",
+        "The agent interface does not reintroduce mandatory local-plan approval",
+        "Treats ordinary file splitting as normal progress",
+        "Runs relevant local validation",
+        "Does not push"
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "修复当前 CI，提交并 push 到 origin fix-ci，然后从该分支向已确认的 OWNER/REPO:main 创建 PR。目标均已明确，无新依赖或额外副作用。",
+      "expected_output": "Complete the minimal fix and checks, route local commits to git-commit, then resume the explicitly authorized push and create steps. Prepare and show the concrete PR content, retain original authorization across expected commits, and refresh the exact head and duplicate-PR evidence before writing.",
+      "files": [],
+      "assertions": [
+        "Routes local commits to git-commit and resumes gh-pr-release afterward",
+        "Completes the explicitly listed fix, commit, push, and create steps without mechanical reconfirmation",
+        "Shows concrete content and verifies the resolved targets before writing",
+        "Refreshes head evidence after expected commits and checks for an existing PR",
+        "Does not infer merge, branch deletion, or release authorization"
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "原请求只批准修复 PR #42。现在方案想引入新依赖、换到另一个公开仓库并删除远程分支，请继续。",
+      "expected_output": "Distinguish these new material proposals from normal progress, prepare concrete dependency, target, and deletion details, and obtain the missing decisions before dependent writes. Continue independent in-scope diagnosis or preparation.",
+      "files": [],
+      "assertions": [
+        "Does not infer concrete dependency or remote-target choices from an ambiguous continue request",
+        "Asks about uncovered material scope and irreversible effects after making the proposal reviewable",
+        "Does not push to an unresolved repository or delete an unresolved branch",
+        "Does not use file count to decide authorization"
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "已经授权 squash merge PR #42。准备执行时 head 从 A 变成 B，含外来且尚未审阅的提交，A 的 CI 是绿色。",
+      "expected_output": "Block the dependent merge, inspect A-to-B commits and diff, refresh reviews, threads and CI for B, and pin B only after all gates pass. Ask again if the changes materially exceed authorization; otherwise retain the merge request after revalidation.",
+      "files": [],
+      "assertions": [
+        "Does not reuse green evidence for A to merge B",
+        "Reviews external commits and refreshes evidence for B before a head-pinned write",
+        "Does not automatically reset authorization merely because the head changed",
+        "Requires renewed authorization for an uncovered material change",
+        "Blocks if any required evidence remains missing"
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "提交并 push 后创建 PR 已获授权，但 gh pr create 返回超时，无法确定 PR 是否创建。继续把流程完成。",
+      "expected_output": "Inspect GitHub for the exact matching PR and verify its head/content before reporting success or deciding a next step. Existing authorization persists but cannot justify blindly retrying an uncertain write.",
+      "files": [],
+      "assertions": [
+        "Does not blindly repeat gh pr create after a timeout",
+        "Fresh-reads matching PR state before continuing",
+        "Reports missing evidence if the write outcome cannot be established",
+        "Distinguishes ongoing authorization from proof of a completed write"
       ]
     }
   ]

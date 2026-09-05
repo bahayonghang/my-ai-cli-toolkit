@@ -27,7 +27,7 @@ Do not respond in anger, invent a completed fix, or hide an unresolved concern. 
 
 ## Publish Replies
 
-Show every thread id and full reply body. One low-risk batch authorization may cover that exact reviewed set. Write each body to a UTF-8 file, then send:
+Show every thread id and full reply body. One low-risk batch authorization may cover that exact reviewed set, including an existing request explicitly authorizing those replies. Do not ask again merely because an authorized fix or commit preceded the replies; ensure every claim matches fresh evidence. Write each body to a UTF-8 file, then send:
 
 ```bash
 bash "<skill-dir>/scripts/pr_review" reply --repo . --pr PR \

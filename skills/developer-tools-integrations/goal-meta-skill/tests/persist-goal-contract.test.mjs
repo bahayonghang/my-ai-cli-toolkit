@@ -321,9 +321,19 @@ test('Git visibility distinguishes ignored and tracked contracts', () => {
 test('an explicitly confirmed non-Git workspace reports honest degradation', () => {
   const root = mkdtempSync(path.join(tmpdir(), 'goal-contract-workspace-'));
   try {
-    const result = persist(root, contract());
+    writeFileSync(path.join(root, 'README.md'), 'Standalone documentation project.\n');
+    const baseline = `not-a-repository; source snapshot: README.md SHA-256 ${hash(readFileSync(path.join(root, 'README.md'), 'utf8'))}`;
+    const body = contract().replace(
+      'main @ 0123456789abcdef0123456789abcdef01234567; dirty paths: clean',
+      baseline,
+    );
+    const invalid = persist(root, body.replace(baseline, 'not-a-repository; source snapshot: '));
+    assert.notEqual(invalid.status, 0);
+    assert.equal(existsSync(path.join(root, 'GOAL.md')), false);
+    const result = persist(root, body);
     assert.equal(result.status, 0, result.stderr);
     assert.equal(JSON.parse(result.stdout).git_visibility, 'not-a-repository');
+    assert.equal(readFileSync(path.join(root, 'GOAL.md'), 'utf8'), body);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

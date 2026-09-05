@@ -10,7 +10,9 @@ The repo does not have a service backend. This section covers the files that act
 
 ```text
 scripts/
-└── check.py
+├── check.py
+├── install_projects.py
+└── test_install_projects.py
 
 docs/scripts/
 ├── ensure_docs_deps.py
@@ -59,6 +61,7 @@ skills/
 ## Examples
 
 - `scripts/check.py` is the repo-wide skill metadata validator.
+- `scripts/install_projects.py` live-links first-party skills into a project-level `.agents/skills/` directory.
 - `docs/scripts/sync_docs_catalog.py` is the source-to-docs generator.
 - `platforms/claude/hooks/pre-bash.py` is a small runtime hook executable.
 - `skills/git-github-collaboration/git-commit/scripts/compose_commit_message.py` is a skill-owned helper.

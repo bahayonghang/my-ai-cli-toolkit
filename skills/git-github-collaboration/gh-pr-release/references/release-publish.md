@@ -2,6 +2,8 @@
 
 Use this mode after a release commit is selected. It may tag, create a draft GitHub Release, attach verified assets, publish, and monitor release workflows. Direct npm/cargo/pypi publication is out of scope even when a tag indirectly triggers it.
 
+Each action below needs explicit authorization, which may already be present in one request listing multiple steps. Check that request before asking again. Show the concrete targets, content, and effects before writing; ask only for uncovered actions or material changes. Refresh evidence for the selected commit at every dependent gate even when authorization persists.
+
 ## 0. Classify The Release Topology
 
 Inspect `.github/workflows/` plus release-please, Changesets, semantic-release, and repository release docs before any write.
@@ -10,7 +12,7 @@ Inspect `.github/workflows/` plus release-please, Changesets, semantic-release, 
 | --- | --- | --- |
 | A: automation owns tag and Release | bot or workflow creates both | monitor output; operate an existing draft only with authorization |
 | B: tag workflow owns Release/assets | tag push triggers Release creation | push the authorized tag, monitor the exact run, then inspect its Release |
-| C: manual | no automation owns tag/Release | tag, draft, upload, publish, and monitor as separately authorized actions |
+| C: manual | no automation owns tag/Release | tag, draft, upload, publish, and monitor with explicit authorization for each action |
 
 Multiple creators, incomplete config, or unclear ownership is ambiguous: report it and stop rather than defaulting to C. A workflow triggered by `release: published` cannot be green before publish; use target-commit CI as the pre-publish gate and disclose the post-publish workflow in the authorization.
 
@@ -47,11 +49,11 @@ git ls-remote REMOTE "refs/tags/TAG" "refs/tags/TAG^{}"
 - Same tag and same resolved commit: treat tag creation as already satisfied and continue with fresh Release inspection.
 - Same tag and another commit: hard stop. Refuse delete/re-push and propose a new version.
 
-Before authorization, enumerate every workflow matched by the tag or Release event, its environment, and its publication/deployment target. Include indirect registry, container, signing, or production deployment effects even though their direct commands are out of scope. Inspect existing Releases and immutability evidence; do not claim repository-wide immutability when only one published Release proves it.
+Before execution, enumerate every workflow matched by the tag or Release event, its environment, and its publication/deployment target. Include indirect registry, container, signing, or production deployment effects even though their direct commands are out of scope. Check existing authorization against these effects and ask about any uncovered material impact. Inspect existing Releases and immutability evidence; do not claim repository-wide immutability when only one published Release proves it.
 
 ## 3. Create The Tag
 
-Only topology B/C may create a tag. Show tag, full SHA, message, resolved remote, and side effects, then request tag-push authorization.
+Only topology B/C may create a tag. Show tag, full SHA, message, resolved remote, and side effects; verify existing tag-push authorization covers them or request the missing authorization.
 
 ```bash
 git tag -a TAG -m "RELEASE MESSAGE" TARGET_SHA
@@ -62,14 +64,14 @@ Push one ref; never use `git push --tags`. A ruleset rejection is a blocker, not
 
 ## 4. Create A Draft Release
 
-Only topology C creates the Release. Show title, notes source, target tag, prerelease state, and side effects. After separate authorization:
+Only topology C creates the Release. Show title, notes source, target tag, prerelease state, and side effects. With explicit draft-creation authorization, including an existing request that covers these details:
 
 ```bash
 gh release create TAG --repo OWNER/REPO --draft --verify-tag \
   --title "TITLE" --notes-file NOTES_FILE
 ```
 
-Use `--generate-notes` with an optional `--notes-start-tag`, or `--notes-from-tag`, only when reviewed. `--prerelease` is separately authorized. Keep `--verify-tag`; do not let `gh release create` fabricate a tag from a moving default-branch head.
+Use `--generate-notes` with an optional `--notes-start-tag`, or `--notes-from-tag`, only when reviewed. `--prerelease` needs explicit authorization. Keep `--verify-tag`; do not let `gh release create` fabricate a tag from a moving default-branch head.
 
 ## 5. Attach Verified Assets
 
@@ -81,7 +83,7 @@ sha256sum DOWNLOAD_DIR/ASSET...
 gh release upload TAG DOWNLOAD_DIR/ASSET... --repo OWNER/REPO
 ```
 
-Never select "latest" run artifacts. If local building is necessary, first approve the command, output set, worktree path, and cleanup; build in a clean detached worktree pinned to the resolved tag commit, not the user's current tree. Record checksums and map every uploaded file to its producing run or pinned build.
+Never select "latest" run artifacts. If local building is necessary, show the command, output set, worktree path, and proposed cleanup; continue the minimal build when the request already covers it. Ask only for uncovered actions, dependencies, targets, irreversible effects, or material scope changes, including destructive cleanup that lacks authorization. Build in a clean detached worktree pinned to the resolved tag commit, not the user's current tree. Record checksums and map every uploaded file to its producing run or pinned build.
 
 If an asset name already exists, stop. `--clobber` deletes the old asset before uploading the replacement and may lose both; refuse it by default and require a separate data-loss warning and authorization if the user persists.
 
@@ -93,7 +95,7 @@ Show the fresh draft state, assets/checksums, prerelease value, immutability con
 gh release edit TAG --repo OWNER/REPO --draft=false --latest=false
 ```
 
-Changing Latest is another action. Only after separate authorization:
+Changing Latest is another action. Only with explicit authorization covering this Latest change, which may already be in the original request:
 
 ```bash
 gh release edit TAG --repo OWNER/REPO --latest
@@ -111,7 +113,7 @@ gh run list --repo OWNER/REPO --branch TAG \
 gh run view RUN_ID --repo OWNER/REPO --json status,conclusion,headSha,url
 ```
 
-Use [fix-ci](fix-ci.md) discipline for failures: at most 50 useful log lines, external providers separated, and local fixes require an approved plan. Never retry an uncertain tag, Release, upload, publish, or Latest write.
+Use [fix-ci](fix-ci.md) discipline for failures: at most 50 useful log lines, external providers separated, and local fixes limited to the authorized scope. Diagnosis alone grants no edit permission; reuse an explicit fix request for its minimal plan. Never retry an uncertain tag, Release, upload, publish, or Latest write.
 
 Verify with fresh reads:
 

@@ -2,6 +2,18 @@
 # pin LF so core.autocrlf=true checkouts cannot break the comparison.
 skills/docs-writing-publishing/archify/** text eol=lf
 
+# Generated docs catalog is written with LF by docs/scripts/sync_docs_catalog.py.
+# Pin LF so core.autocrlf=true does not mark unchanged pages dirty after sync.
+docs/.vitepress/generated/** text eol=lf
+docs/skills.md text eol=lf
+docs/en/skills.md text eol=lf
+docs/hooks.md text eol=lf
+docs/en/hooks.md text eol=lf
+docs/commands.md text eol=lf
+docs/en/commands.md text eol=lf
+docs/skills/** text eol=lf
+docs/en/skills/** text eol=lf
+
 # Trellis: append-only developer journals should merge cleanly across
 # parallel sessions/worktrees — each session only appends a new block, so
 # there is nothing to actually conflict on.

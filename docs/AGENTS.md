@@ -7,7 +7,7 @@ This `AGENTS.md` governs `docs/**` and narrows the root guidance for the VitePre
 
 ## Local Rules
 - Keep VitePress configuration and dependency changes in `docs/.vitepress/config.mts`, `docs/package.json`, and `docs/package-lock.json`.
-- `docs/scripts/sync_docs_catalog.py` owns catalog synchronization. Do not hand-edit generated outputs it writes: `docs/.vitepress/generated/catalog.mjs`, `docs/skills/**`, `docs/en/skills/**`, `docs/skills.md`, `docs/en/skills.md`, `docs/hooks.md`, `docs/en/hooks.md`, `docs/commands.md`, and `docs/en/commands.md`.
+- `docs/scripts/sync_docs_catalog.py` owns catalog synchronization. Do not hand-edit generated outputs it writes: `docs/.vitepress/generated/catalog.mjs`, `docs/skills/**`, `docs/en/skills/**`, `docs/skills.md`, `docs/en/skills.md`, `docs/hooks.md`, `docs/en/hooks.md`, `docs/commands.md`, and `docs/en/commands.md`. Those generated pages are LF-only (`.gitattributes` `eol=lf`).
 - For generated catalog changes, edit the source skill/platform/hook content or the sync script, then run `just docs-sync` or `just docs-check`.
 - Do not edit dependency/cache/build output under `docs/node_modules/`, `docs/.vitepress/cache/`, or `docs/.vitepress/dist/`.
 

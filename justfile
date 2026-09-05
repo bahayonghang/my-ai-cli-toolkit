@@ -31,10 +31,12 @@ help:
     @echo "  just skills-check  - 校验 skills/ 元数据"
     @echo "  just python-check  - 编译检查 skills/ platforms/ scripts/ 下的 Python 脚本"
     @echo "  just node-test     - 运行仓库内 Node.js 技能测试"
+    @echo "  just install-projects-test - 运行项目安装器单元测试"
     @echo "  just lint          - skills-check + python-check"
     @echo "  just ci            - 完整本地 CI 流程"
     @echo ""
     @echo "🔧 其他："
+    @echo "  just install-projects - 按分类 live-link 一方 skills 到当前项目"
     @echo "  just check-deps    - 检查运行依赖（just / node / npm / python）"
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
@@ -57,6 +59,7 @@ docs-sync:
 # 检查 docs catalog 是否最新，并执行 VitePress build
 docs-check:
     {{ python_cmd }} docs/scripts/sync_docs_catalog.py --check
+    {{ python_cmd }} docs/scripts/test_sync_docs_catalog.py
     {{ python_cmd }} docs/scripts/ensure_docs_deps.py
     {{ npm_cmd }} --prefix docs run build
 
@@ -85,19 +88,22 @@ ci:
     @echo "  🚀 开始执行本地 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📚 步骤 1/5: 文档 catalog 与站点构建校验..."
+    @echo "📚 步骤 1/6: 文档 catalog 与站点构建校验..."
     {{ just_cmd }} docs-check
     @echo ""
-    @echo "🧩 步骤 2/5: 技能元数据校验..."
+    @echo "🧩 步骤 2/6: 技能元数据校验..."
     {{ just_cmd }} skills-check
     @echo ""
-    @echo "🐍 步骤 3/5: Python 脚本编译检查..."
+    @echo "🐍 步骤 3/6: Python 脚本编译检查..."
     {{ just_cmd }} python-check
     @echo ""
-    @echo "🧪 步骤 4/5: Node.js 技能测试..."
+    @echo "🔗 步骤 4/6: 项目安装器测试..."
+    {{ just_cmd }} install-projects-test
+    @echo ""
+    @echo "🧪 步骤 5/6: Node.js 技能测试..."
     {{ just_cmd }} node-test
     @echo ""
-    @echo "🧹 步骤 5/5: Git 空白检查..."
+    @echo "🧹 步骤 6/6: Git 空白检查..."
     git diff --check
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"
@@ -105,6 +111,14 @@ ci:
     @echo "════════════════════════════════════════════════════════════════"
 
 # ============ 工具 ============
+
+# 按分类把一方 skills live-link 到当前项目（默认 .agents/skills）
+install-projects *args:
+    {{ python_cmd }} scripts/install_projects.py {{ args }}
+
+# 项目安装器单元测试
+install-projects-test:
+    {{ python_cmd }} scripts/test_install_projects.py
 
 # 检查运行依赖是否已安装
 check-deps:

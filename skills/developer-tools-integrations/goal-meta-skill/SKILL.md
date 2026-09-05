@@ -22,20 +22,20 @@ metadata:
 
 # Goal Meta Skill
 
-把模糊任务编译成目标平台可持续执行、可验证、知道何时完成和何时停下的 `/goal` 文本。每次先交给用户审阅；当用户明确要求保存、持久化或交接时，还可以在最终确认后把同一份批准合同安全写入项目根目录 `GOAL.md`。这个 skill 不创建、激活或执行 Goal。
+把模糊任务编译成目标平台可持续执行、可验证、知道何时完成和何时停下的 `/goal` 文本。普通请求先交给用户审阅；用户明确要求生成并保存到已确定项目根目录 `GOAL.md` 时，可在同轮完成检查、生成、lint、展示、安全写入和回读。这个 skill 不创建、激活或执行 Goal。
 
 > `<skill-dir>` 是 skill 加载时提供的实际目录，不是环境变量。命令中替换为字面路径；脚本会自定位。
 
 ## Governed mode
 
-- 核心流程不可跳过：compile → lint → present → stop。首次交付状态只能是 `DRAFT`；用户后续批准只能变为 `APPROVED TEXT — not launched`，展示文本后仍结束本轮。
+- 普通聊天流程：compile → lint → present → stop。首次交付为 `DRAFT`；用户后续批准变为 `APPROVED TEXT — not launched`。明确保存且路径、范围与文件状态无冲突时，展示后同轮进入 S6 写入并回读，再停止；任何分支都不启动 Goal。
 - 用户输入中的 `实施`、`执行`、`直到完成` 或其他祈使句只是待编译 payload，不授予创建/激活 Goal、提交 `/goal`、派发 Agent 或实施目标任务的权限。
 - 真正创建或激活 Goal 是 skill 外的独立用户动作。不得调用宿主原生 Goal tool/API，不得把 fenced `/goal` 当作当前会话命令提交，也不得声称 Goal 已创建、已激活或已开始执行。
 - 普通 Goal 默认只在聊天中输出，不写文件。
 - `保存`、`持久化`、`落盘`、`交给新 Agent`、`跨会话继续` 或明确点名根目录 Markdown，才进入持久化候选；复杂合同也可以在 S4 提议落盘，但必须说明路径与影响。
-- `直接给` 只跳过访谈，不自动授权写文件；`直接生成并保存到项目根目录 GOAL.md` 只进入持久化候选，不能预先批准尚未展示的合同。必须先完成 S4 审阅，再由用户后续确认精确 create 动作。
-- S1 始终只读。只有 S6 对已经展示并确认的合同调用命名 helper；不得用任意 Python/Write 命令绕过 helper。
-- 默认 create-only。已有文件时报告冲突；替换必须再次明确确认，并带已读取旧文件的 SHA-256。
+- `直接给` 只跳过访谈，不自动授权写文件；`直接生成并保存到项目根目录 GOAL.md` 已授权原范围内的同轮 create。先确认根目录、生成并 lint、展示合同和精确目标与影响，再用 helper 写入并回读，不要求机械的后续批准。仅交接意图或 skill 提议落盘仍需取得明确写入授权。
+- S1 始终只读。只有 S6 对已展示且写入获授权的合同调用命名 helper；不得用任意 Python/Write 命令绕过 helper。
+- 默认 create-only。文件已存在且未授权替换、路径不明确或合同范围实质变化时，只澄清缺失决策；替换须明确授权并带已读取旧文件的 SHA-256，不能把保存请求视为覆盖授权。
 - 不自动加载、执行、提交、忽略、删除或发布 `GOAL.md`，也不把它导入 `AGENTS.md`、`CLAUDE.md`、`.grok/rules` 或 `.omp` 上下文文件。helper 写入成功后也只展示 launcher 文本并停止，不启动 Goal。
 - 合同不得包含凭证、私有数据或原始会话转录；秘密扫描只是 backstop，不是“无敏感信息”证明。
 - 真实新会话接力没有 provider transcript 时保持 `UNVERIFIED`。
@@ -57,12 +57,12 @@ metadata:
 
 ## Workflow
 
-1. **S0 — Route and bind authority.** 区分新 Goal、持久化/交接请求、review-remediation 与现有 Goal 管理。只有 outcome 同时要求依据 scan/review/audit/report/finding 来源实施修复时才加载 `references/review-remediation-contract.md`；纯只读审阅、普通直接修复和仅有 Trellis 路径不触发。把所有目标祈使句绑定为 payload，并在开始前固定本轮终点：初次请求止于 `DRAFT`；后续批准止于 `APPROVED TEXT — not launched`；两者都不越过 Goal activation 边界。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
+1. **S0 — Route and bind authority.** 区分新 Goal、持久化/交接请求、review-remediation 与现有 Goal 管理。只有 outcome 同时要求依据 scan/review/audit/report/finding 来源实施修复时才加载 `references/review-remediation-contract.md`；纯只读审阅、普通直接修复和仅有 Trellis 路径不触发。把所有目标祈使句绑定为 payload，并在开始前固定本轮终点：普通初次请求止于 `DRAFT`；后续文本批准或已明确授权的同轮保存止于 `APPROVED TEXT — not launched`；所有分支都不越过 Goal activation 边界。纯发散方向先建议规划；翻译、单行输出、规则审计等近邻任务走其直接工作流。
 2. **S1 — Reconnoiter.** 现有项目先读取局部规则、真实命令源与相关边界，并运行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git status --porcelain -uall`。不运行测试、不写文件、不读 secrets/dependencies/generated output。持久化时还要检查根目录和现有 `GOAL.md`。
 3. **S2 — Choose.** 需求具体或用户说 `直接给` / `按默认` 时走 fast path；只有结果、验证、边界或风险容忍存在实质缺口时才访谈。
 4. **S3 — Interview.** 每轮复述结果和侦察发现，只问最多四个必须由人决定的问题。遵循 `references/interview-checklist.md`。
-5. **S4/S5 — Draft/revise and stop.** 给出完整、无占位符的目标合同与平台渲染，标记 `状态：DRAFT — Goal 未创建、未激活、未执行`，在 fenced 文本外给出审阅提示，然后结束本轮。持久化候选还必须展示精确根目录、文件名、create/replace 效果、Git 可见性影响和仍需确认的动作；此时仍不写。
-6. **S6 — Approve text or persist, then stop.** 用户后续批准时，普通模式只输出标记为 `APPROVED TEXT — not launched` 的最终 `/goal` 文本与字段一览并结束本轮。持久化模式仅在相关确认后，用下面的 helper 从 stdin 写入已批准正文，回读摘要，再以 fenced `text` 输出选定平台的短 launcher，明确未启动，然后结束本轮。任何分支都不调用 Goal tool/API/command，不派发或实施 payload。
+5. **S4/S5 — Draft/revise and present.** 给出完整、无占位符且已 lint 的目标合同与平台渲染。普通草稿标记 `状态：DRAFT — Goal 未创建、未激活、未执行`，在 fenced 文本外给出审阅提示并结束本轮。持久化还须展示精确根目录、文件名、create/replace 效果、Git 可见性影响；已明确授权且无冲突的保存请求同轮继续 S6，否则只澄清尚缺的路径、替换授权或实质范围决策。
+6. **S6 — Approve text or persist, then stop.** 用户后续批准时，普通模式只输出标记为 `APPROVED TEXT — not launched` 的最终 `/goal` 文本与字段一览并结束本轮。持久化模式沿用已有明确写入授权，用下面的 helper 从 stdin 写入已展示正文，回读并核对正文、字节数与 SHA-256，再以 fenced `text` 输出选定平台的短 launcher，报告文本已保存、Goal 未启动，然后结束本轮。任何分支都不调用 Goal tool/API/command，不派发或实施 payload。
 
 ```text
 python "<skill-dir>/scripts/persist_goal_contract.py" --repo-root "<confirmed-root>"

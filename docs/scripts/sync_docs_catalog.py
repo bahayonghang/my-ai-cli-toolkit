@@ -893,6 +893,13 @@ def normalize_content(content: str) -> str:
     return content.rstrip() + "\n"
 
 
+def should_rewrite(path: Path, desired: str) -> bool:
+    encoded = normalize_content(desired).encode("utf-8")
+    if not path.exists():
+        return True
+    return path.read_bytes() != encoded
+
+
 def check(files: list[GeneratedFile], expected_skill_pages: set[Path]) -> int:
     drift: list[str] = []
     for generated in files:
@@ -920,6 +927,8 @@ def check(files: list[GeneratedFile], expected_skill_pages: set[Path]) -> int:
 def write(files: list[GeneratedFile], expected_skill_pages: set[Path]) -> int:
     for generated in files:
         generated.path.parent.mkdir(parents=True, exist_ok=True)
+        if not should_rewrite(generated.path, generated.content):
+            continue
         generated.path.write_text(normalize_content(generated.content), encoding="utf-8", newline="\n")
     stale = sorted(existing_skill_pages() - expected_skill_pages)
     for path in stale:

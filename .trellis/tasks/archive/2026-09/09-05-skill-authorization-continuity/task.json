@@ -1,0 +1,30 @@
+{
+  "id": "skill-authorization-continuity",
+  "name": "skill-authorization-continuity",
+  "title": "技能授权连续性优化",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-05",
+  "completedAt": "2026-09-05",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-05-goal-save-same-turn",
+    "09-05-pr-risk-based-authorization",
+    "09-05-commit-workflow-handoff"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

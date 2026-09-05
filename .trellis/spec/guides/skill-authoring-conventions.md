@@ -76,6 +76,10 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   `git ls-files --others --exclude-standard` before trusting "clean".
 - After changing any SKILL.md frontmatter, run `just docs-sync` and commit the
   regenerated `docs/` catalog pages, or `just ci` fails at step 1 (`docs-check`).
+- Generated catalog pages are LF (`docs/**` rules in `.gitattributes`). On
+  Windows with `core.autocrlf=true`, rewriting those pages as CRLF (or running
+  an old `docs-sync` that always overwrote files) makes Git show empty diffs.
+  The generator skips a write when the UTF-8 bytes already match.
 - The post-edit formatter hook rewrites markdown tables/fences. A markdown
   example block that itself contains ``` fences must use a 4-backtick outer
   fence, or the formatter's auto-closing produces swallowed sections (bit both
