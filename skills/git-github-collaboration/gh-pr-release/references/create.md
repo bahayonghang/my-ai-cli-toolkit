@@ -56,18 +56,18 @@ Read changed files only until the main purpose is clear.
 - Issue links: use `Closes #N`, `Fixes #N`, or `Resolves #N` only when the PR targets the repository default branch. For other bases use `Refs #N` and explain that merge will not auto-close it.
 - Draft state: recommend `--draft` for work in progress or a change too large for focused review. Treat size thresholds as guidance, not a hard gate.
 
-Show the title, full body, base/head, reviewers/labels, and draft state before requesting authorization.
+Show the title, full body, base/head, reviewers/labels, and draft state before writing. Ask for authorization only for actions or material details not already covered by the request.
 
 ## Publish
 
-1. When the branch is unpublished, request separate authorization for the exact push target, then run the narrow push command such as:
+1. When the branch is unpublished, verify explicit push authorization covers the resolved remote/ref. An existing request to push and create the PR covers both steps; ask only if push or its target is uncovered or ambiguous. Then run the narrow push command such as:
 
    ```bash
    git push --set-upstream REMOTE HEAD:BRANCH
    ```
 
 2. Re-run the existing-PR and base/head-difference checks after the push.
-3. Request separate authorization to create the PR. Write the body to a UTF-8 temporary file and use `--body-file`:
+3. Verify explicit PR-creation authorization covers the displayed plan; reuse the original request when it does. Write the body to a UTF-8 temporary file and use `--body-file`:
 
    ```bash
    gh pr create --repo OWNER/REPO --base BASE --head HEAD_OWNER:BRANCH \

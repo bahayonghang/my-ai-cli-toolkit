@@ -6,6 +6,10 @@
 
 This guide applies to helpers that persist generated contracts, plans, prompts, configuration, or other user-visible artifacts. Drafting, reconnaissance, planning approval, or a request to "show" content does not authorize a write. Before invoking a writer, the agent must show the exact target and effect, then obtain explicit authorization for creation or replacement.
 
+For `goal-meta-skill`, an explicit request to generate and save a new root `GOAL.md` supplies creation authorization in the same turn when the root and content scope are clear. Complete reconnaissance and lint, show the concrete target and effect, then invoke the existing helper and verify readback without requiring another message. An existing-file conflict, ambiguous root, or material scope change requires the missing decision; replacement still requires explicit authorization and the reviewed file hash. Saving never authorizes launching the Goal. Other writers retain their documented approval flow.
+
+Goal contracts for an explicitly established non-Git root use `Baseline: not-a-repository; source snapshot: <observed file summary>` with a nonempty file listing or available hashes. Do not fabricate a Git HEAD. The existing contract linter accepts this documented baseline alongside the unchanged Git HEAD/dirty-path format; the writer still reports actual Git visibility independently. This text is recorded context, not proof of filesystem identity. The non-Git persistence regression uses a real README hash, rejects an empty snapshot before writing, and checks exact readback.
+
 ## 2. Command Signature
 
 Prefer a narrow helper interface whose destination is derived from a confirmed repository root:

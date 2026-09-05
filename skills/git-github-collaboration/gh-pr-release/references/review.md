@@ -62,7 +62,7 @@ bash "<skill-dir>/scripts/pr_review" prepare-review \
 
 The helper pins `commit_id` to the current `headRefOid`, validates every inline location against paginated PR file patches, and writes UTF-8 with LF. Do not create a pending GitHub review merely for preview.
 
-Show the prepared target repository/PR, head SHA, event, summary, and every path/line/body. If the prepared file changes, obtain authorization again.
+Show the prepared target repository/PR, head SHA, event, summary, and every path/line/body. Reuse existing explicit authorization for this review. If the prepared file or head changes, inspect the change and regenerate/revalidate affected content against the exact head; obtain authorization again only for an uncovered material change to target, findings, event, or scope. The helper's stale-head rejection still blocks submission until this preparation is complete.
 
 ## Inline Review Publish
 

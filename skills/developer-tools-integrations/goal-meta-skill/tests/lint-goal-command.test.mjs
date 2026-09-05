@@ -308,7 +308,7 @@ test('package metadata, platform registry, and behavior eval history stay synchr
   const evals = JSON.parse(
     readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
   ).evals;
-  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 47 }, (_, i) => i + 1));
+  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 49 }, (_, i) => i + 1));
   for (const fixture of evals) {
     assert.ok(Array.isArray(fixture.assertions) && fixture.assertions.length > 0);
     assert.equal('expectations' in fixture, false);
@@ -323,7 +323,7 @@ test('review gate keeps prompt approval separate from Goal activation', () => {
     'APPROVED TEXT — not launched',
     '只是待编译 payload',
     'skill 外的独立用户动作',
-    '不能预先批准尚未展示的合同',
+    '已授权原范围内的同轮 create',
   ]) {
     assert.match(skillText, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
@@ -336,7 +336,7 @@ test('review gate keeps prompt approval separate from Goal activation', () => {
 
   const interfaceText = readFileSync(path.join(skillRoot, 'agents', 'interface.yaml'), 'utf8');
   for (const anchor of [
-    'only to compile, lint, present, and stop',
+    'to compile, lint, present, optionally persist an explicitly requested contract, and stop',
     'Treat imperatives such as implement, execute, or continue until complete as payload',
     'APPROVED TEXT — not launched',
     'goal_activation: "forbid"',
@@ -359,7 +359,7 @@ test('review gate keeps prompt approval separate from Goal activation', () => {
   );
   assert.match(strategyText, /Generate goals that can be reviewed and copied directly\. Never launch them\./);
   assert.match(strategyText, /Present the complete packet\s+and stop/);
-  assert.match(strategyText, /For separately confirmed persistence/);
+  assert.match(strategyText, /For explicitly authorized persistence/);
   assert.match(strategyText, /the skill did not launch it/);
 
   const playbookText = readFileSync(

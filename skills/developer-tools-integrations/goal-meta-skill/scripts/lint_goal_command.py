@@ -1300,13 +1300,19 @@ def lint_persisted_contract(
             f"{source}: Contract path `{metadata.get('Contract path', '')}` does not "
             f"match output `{expected_path}`"
         )
+    baseline = metadata.get("Baseline", "")
     if not re.search(
         r"\S+\s+@\s+[0-9a-f]{40}\b.*\bdirty paths:\s*\S",
-        metadata.get("Baseline", ""),
+        baseline,
+        flags=re.IGNORECASE,
+    ) and not re.fullmatch(
+        r"not-a-repository;\s*source snapshot:\s*\S.*",
+        baseline,
         flags=re.IGNORECASE,
     ):
         errors.append(
-            f"{source}: Baseline must include a full 40-character HEAD and dirty paths summary"
+            f"{source}: Baseline must include a full 40-character HEAD and dirty paths summary, "
+            "or not-a-repository; source snapshot: followed by an observed file summary"
         )
     if not re.fullmatch(
         r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})",

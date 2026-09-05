@@ -37,7 +37,7 @@ If the PR is open and the title is mechanical:
 
 1. Draft a replacement with the title algorithm in [create](create.md), using the PR base and head.
 2. Show `gh pr edit PR --repo OWNER/REPO --title "..."`.
-3. Authorize that edit separately from merge.
+3. Verify explicit authorization for that title edit; merge approval alone does not cover it. Reuse a request that already includes the edit, otherwise ask after showing the replacement.
 4. Fresh-read the PR after the edit. Merge still pins `--match-head-commit`.
 
 Do not retitle a MERGED PR.
@@ -50,7 +50,7 @@ Do not retitle a MERGED PR.
 - Use merge commit when repository history intentionally preserves the branch topology.
 - Use rebase only when each commit is already meaningful and the repository allows it.
 
-Show the selected method, exact head SHA, queue behavior, commit subject/body, and any optional flags before authorization.
+Show the selected method, exact head SHA, queue behavior, commit subject/body, and any optional flags before execution. Check each action against existing authorization; a request explicitly listing multiple actions can cover them together. Head changes require renewed commit review and fresh evidence under the Safety Contract, not an automatic new approval for expected in-scope commits.
 
 ## Execute
 
@@ -64,12 +64,12 @@ Use `--merge` or `--rebase` only when selected above. On a required merge queue,
 
 Never add these implicitly:
 
-- `--auto`: separately authorize enabling deferred execution;
-- `--delete-branch`: separately authorize because it deletes local and remote refs and may overlap repository auto-delete settings;
-- `--admin`: separately authorize only after explaining which protection or queue it bypasses.
+- `--auto`: require explicit authorization for deferred execution;
+- `--delete-branch`: require explicit authorization because it deletes local and remote refs and may overlap repository auto-delete settings;
+- `--admin`: require explicit authorization that covers the explained protection or queue bypass.
 
 ## Verify
 
 Read `gh pr view PR --repo OWNER/REPO --json number,url,title,state,baseRefName,headRefName,mergeCommit,headRefOid`. Confirm `MERGED` and a merge commit OID, or confirm the queue/auto-merge state when the action intentionally deferred completion. Chat report fields follow SKILL.md Completion.
 
-If the approved request continues into a release, pass the fresh `mergeCommit` OID to [release-publish](release-publish.md). Merge authorization does not authorize tag creation, Release creation, asset upload, publication, or a Latest change.
+If the approved request continues into a release, pass the fresh `mergeCommit` OID to [release-publish](release-publish.md) and retain authorization for its explicitly listed actions. Merge authorization alone does not authorize tag creation, Release creation, asset upload, publication, or a Latest change.

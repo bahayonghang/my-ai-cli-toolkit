@@ -26,12 +26,13 @@ Do not emit a premature goal during Phase A. Skip directly to Phase B when requi
 
 ### Phase B: Draft, Revise, Finalize
 
-Present the complete platform-rendered draft as `DRAFT`, invite corrections,
+For ordinary chat-only authoring, present the complete platform-rendered draft as `DRAFT`, invite corrections,
 and stop. Imperatives in the request remain payload, not activation authority.
 Revise in a later turn until the user confirms. Put each `/goal` body in a
 `text` fence with no blank lines inside the fence. After confirmation, output
 `APPROVED TEXT — not launched`, `最终可复制 /goal`, and 字段一览, then stop
-again without submitting the command or activating a Goal.
+again without submitting the command or activating a Goal. An explicit request
+to generate and save root `GOAL.md` uses the same-turn persistence branch below.
 
 ## Applicability Gate
 
@@ -130,11 +131,13 @@ short. Otherwise establish, preferably from reconnaissance:
 - whether replace is desired after showing the old SHA-256;
 - selected platform(s) and whether the file must travel to another worktree,
   machine, teammate, or cloud session;
-- confirmation that the contract contains no secrets/private transcript data.
+- inspect the contract for secrets/private transcript data; omit sensitive content.
 
-At S4 show the path, full contract/diff, action and portability consequence.
-Only the subsequent relevant confirmation authorizes S6. `直接给` alone never
-answers these questions.
+At S4 show the path, linted full contract/diff, action and portability consequence.
+An explicit generate-and-save request with an established root and no conflict
+already authorizes S6 in the same turn. Ask only for missing path authority,
+unapproved replacement, or a material scope decision; do not ask again for an
+already authorized create. `直接给` alone never authorizes a write.
 
 ## Phase A Output Shape
 
@@ -176,7 +179,7 @@ Please review the Prompt above. Reply with changes or `Approve Prompt`. Stop thi
 
 ## 中文输出形状
 
-中文用户优先用这一版。命令前缀仍然写 `/goal`，不要写 `/目标`。默认先给中文推荐执行版，再给英文兼容版，除非用户明确只要一种语言。S4 先标记 `状态：DRAFT — Goal 未创建、未激活、未执行`，把 `/goal` 放进 `text` 围栏，提示审阅并停止；确认后的 S6 标记 `APPROVED TEXT — not launched`，再输出 `最终可复制 /goal` 和围栏外 `字段一览`，然后再次停止。
+中文用户优先用这一版。命令前缀仍然写 `/goal`，不要写 `/目标`。默认先给中文推荐执行版，再给英文兼容版，除非用户明确只要一种语言。普通聊天型 S4 先标记 `状态：DRAFT — Goal 未创建、未激活、未执行`，把 `/goal` 放进 `text` 围栏，提示审阅并停止；确认后的 S6 标记 `APPROVED TEXT — not launched`，再输出 `最终可复制 /goal` 和围栏外 `字段一览`，然后再次停止。
 
 ````markdown
 状态：DRAFT — Goal 未创建、未激活、未执行

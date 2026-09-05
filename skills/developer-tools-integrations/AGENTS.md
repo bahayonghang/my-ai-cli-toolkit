@@ -53,7 +53,7 @@ bare `Bash` when the skill only runs a known command family.
 | codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
 | file-sorter                | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | scans one folder; apply --execute only after plan approval |
 | storage-analyzer           | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | hotspot scan and static HTML; server.py trash only after this-turn path approval |
-| goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named governed root-contract writer after confirmation |
+| goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named writer under explicit save authorization, including same-turn creation |
 | image-to-ui-skill          | `Read, Write, Edit, Bash, Glob, Grep`                               | recreates UI from references: generates image2 assets, writes demo code, runs scripts/screenshots |
 | ripgrep                    | `Read, Glob, Grep, Bash, Write`                                      | runs rg, writes pattern/config files         |
 | skill-session-review       | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git rev-parse *), Bash(git check-ignore *)` | scans local sessions; after exact confirmation, independent helpers govern the repo-root `.gitignore` and one payload at a time in the fixed report subtree, proof-clean the review JSON, and open HTML only after both reports succeed |
@@ -61,7 +61,9 @@ bare `Bash` when the skill only runs a known command family.
 The goal-meta Python grant covers exactly its documented linter and
 `persist_goal_contract.py` path. It is not a claim that the skill is wholly
 read-only: reconnaissance is read-only, while the named helper may write one
-confirmed root Markdown contract. Git remains inspection-only; the helper must
+authorized root Markdown contract. An explicit request to generate and save a new
+`GOAL.md` may complete in the same turn after root, scope, and create-only checks;
+conflicts or material scope changes require the missing decision. Git remains inspection-only; the helper must
 not add, commit, push, ignore, or delete the contract.
 
 ## Evals

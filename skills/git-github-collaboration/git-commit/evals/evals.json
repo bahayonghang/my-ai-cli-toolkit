@@ -318,6 +318,51 @@
         "Uses local git commit -F",
         "No Co-authored-by, Made-with, or Committed via line"
       ]
+    },
+    {
+      "id": 29,
+      "prompt": "请提交已暂存的购物车总价修复，push 到 origin 的当前分支，再向同一仓库的 main 创建 PR。不要包含未暂存改动。",
+      "expected_output": "Verify the staged-only local commit, then hand the already-authorized push and PR creation to the main coordinator for gh-pr-release or the appropriate workflow in the same request.",
+      "files": [],
+      "assertions": [
+        "Uses local git commit only and excludes unstaged changes",
+        "Hands off repository, branch, created SHA(s), final HEAD, verification results, ordered remaining actions, and known remote/base targets",
+        "Continues the authorized push and PR workflow without treating them as the end of an out-of-scope request or asking for the same authorization again",
+        "Preserves receiving-workflow target and exact-head checks"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "提交并 push，再创建 PR。本地 git commit 已被 pre-commit hook 以 lint 错误拒绝，退出码为 1，没有生成新提交。",
+      "expected_output": "Report the hook rejection and the unfinished commit, push, and PR steps; do not execute dependent remote actions or bypass the failure through GitHub commit APIs.",
+      "files": [],
+      "assertions": [
+        "Reports the original hook failure and does not claim commit success",
+        "Does not execute push or PR steps that depend on the failed commit",
+        "Does not create a replacement commit through GitHub web or file-commit APIs"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "提交并 push，再创建 PR。本地提交已成功且完成验证，远程目标也明确，但当前环境没有可用的网络连接或远程操作工具。",
+      "expected_output": "Return the verified local commit evidence and identify push and PR creation as unfinished due to unavailable remote access.",
+      "files": [],
+      "assertions": [
+        "Reports the repository, branch, verified commit SHA, and verification results",
+        "Names the unavailable continuation capability and remaining push/PR actions",
+        "Does not claim the entire request is complete or invent remote success"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "请提交已暂存的修复并 push，再创建 PR。仓库有两个不同的远程目标且没有 upstream；请求和仓库上下文都没有说明要用哪个。",
+      "expected_output": "Complete the safe local commit and verification, then ask only for the unresolved remote target before executing dependent remote steps.",
+      "files": [],
+      "assertions": [
+        "Keeps safe authorized local work moving and records the verified SHA",
+        "Clarifies the missing target without repeating the already-given commit/push/PR authorization",
+        "Does not guess a remote destination"
+      ]
     }
   ]
 }

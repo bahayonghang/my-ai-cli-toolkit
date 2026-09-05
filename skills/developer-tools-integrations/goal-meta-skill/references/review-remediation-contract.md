@@ -5,9 +5,11 @@ review, audit, report, or finding ledger with implementation that must converge.
 It does not apply to read-only review, ordinary bug fixing without a scan source,
 or Goal lifecycle management.
 
-The skill remains a compiler. It produces reviewable text through
-`compile -> lint -> present -> stop`; it does not activate the Goal, dispatch an
-agent, or implement the payload. "One completion" means one externally approved
+The skill remains a compiler. Ordinary chat-only authoring follows
+`compile -> lint -> present -> stop`; an explicitly authorized save follows
+the same-turn persistence branch in `persistent-goal-contract.md`, then stops.
+Neither branch activates the Goal, dispatches an agent, or implements the
+payload. "One completion" means one externally approved
 Prompt and one user launch action, with bounded internal implementation and
 independent checking. It never means skipping verification.
 

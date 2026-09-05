@@ -29,9 +29,12 @@ OMP. For an explicitly approved handoff, write the useful contract to root
 /goal First read and follow ./GOAL.md as the approved execution contract; restate its Verification and Completion conditions, then work until they are evidenced or a pause condition is reached.
 ```
 
-The default remains side-effect-free. An explicit save/handoff request enters
-persistence-candidate mode but cannot approve unseen text. Only a subsequent
-confirmation of the exact displayed S4 write plan authorizes the helper. Use
+The default remains chat-only. An explicit generate-and-save request for root
+`GOAL.md` authorizes same-turn creation when the root and scope are established
+and no file conflict exists. Compile and lint, display the full S4 contract and
+exact target/effect, use the helper, and verify the read-back. Clarify only an
+unresolved root, unapproved replacement, or material scope change. A handoff
+intention or proposed save alone still needs explicit write authorization. Use
 the fixed schema in `persistent-goal-contract.md`, not an ad-hoc frontmatter
 file.
 
@@ -160,7 +163,7 @@ still presents the DRAFT/APPROVED TEXT and stops without launching it.
 
 两份草案必须语义一致，不能一份扩大范围、一份缩小范围。英文版是兼容镜像，不是重新发挥。
 
-S4 把每份 `/goal` 正文放进 `text` 围栏，围栏内不要空行；围栏外要求用户审阅，然后停止本轮。用户确认后的 S6 形状见 `references/default-goal-strategy.md`：标记 `APPROVED TEXT — not launched`，在 `最终可复制 /goal` 围栏外再给 `字段一览`，然后再次停止。
+普通聊天型 S4 把每份 `/goal` 正文放进 `text` 围栏，围栏内不要空行；围栏外要求用户审阅，然后停止本轮。用户确认后的 S6 形状见 `references/default-goal-strategy.md`：标记 `APPROVED TEXT — not launched`，在 `最终可复制 /goal` 围栏外再给 `字段一览`，然后再次停止。
 
 如果用户明确说“只要中文版”或“只要英文版”，遵从用户要求。
 
@@ -271,8 +274,8 @@ Budget, turn, or time wording is always a soft stop clause. Say, for example, `T
 - If the domain is unfamiliar or specialized, do not invent domain rules. Require an initial discovery pass over authoritative project docs, sample data, official references, or user-provided material.
 - Allow model taste and implementation judgment inside the boundary, but do not allow scope expansion or weaker verification.
 - At S4, put the `/goal` body in a `text` fence with no blank lines inside the fence.
-- At S4, label the packet `DRAFT`, ask for review outside the fence, and stop without launching or executing the payload.
-- After confirmation, S6 is `APPROVED TEXT — not launched` plus `最终可复制 /goal` and 字段一览 as defined in `references/default-goal-strategy.md`; stop again without submitting it.
+- For ordinary chat-only authoring, label the S4 packet `DRAFT`, ask for review outside the fence, and stop without launching or executing the payload.
+- After text confirmation, chat-only S6 is `APPROVED TEXT — not launched` plus `最终可复制 /goal` and 字段一览 as defined in `references/default-goal-strategy.md`; stop again without submitting it. Explicitly authorized persistence follows that reference's persistence finalization, including same-turn creation when no conflict exists.
 - When the outcome is Trellis task implementation, load `references/trellis-goal-cadence.md`. That file owns commit-then-archive, parent 发布门, sub-agent dispatch, and inline exceptions. Do not invent placeholder tokens in executable drafts.
 
 ## Strong Examples

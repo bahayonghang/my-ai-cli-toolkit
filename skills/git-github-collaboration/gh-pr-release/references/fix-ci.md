@@ -29,8 +29,8 @@ Extract `RUN_ID` and `JOB_ID` from the check `link`. A link without a GitHub Act
 ## Plan, Fix, Verify
 
 1. Summarize each failure with its check name, smallest useful error block (maximum 50 lines), URL, and suggested local reproduction command.
-2. Show a concise edit and validation plan. Diagnosis-only requests stop here; fixes require approval for that exact local plan.
+2. Show a concise edit and validation plan. Diagnosis-only requests stop here. An explicit fix request authorizes its minimal local implementation; ask only for uncovered dependencies, targets, irreversible effects, or material scope changes.
 3. Apply the approved fix and run the smallest reproduction command. Diagnose and retry at most twice if it still fails.
 4. After local success, rerun `gh pr checks` and report the fresh state.
 
-Local fix approval never authorizes push, merge, auto-merge, or admin bypass. Request those separately through the relevant route.
+Local fix approval alone never authorizes push, merge, auto-merge, or admin bypass. If the same request explicitly includes a follow-up action, continue through the relevant route without another mechanical confirmation; fresh-read and validate its exact head before writing. Ask only for uncovered actions or material changes.

@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Safely orchestrate Conventional Commits for staged Git changes, or all working-tree changes when the user explicitly asks to include everything. Use when asked to write a commit message, split staged or working-tree changes, organize a messy index, or draft commit text without pushing. Auto-detects commit language; explicit phrases like 用中文提交 or 请使用中文拆分提交所有的改动 override. Default headers have no [AI] tag; add it only when asked (加 AI 标记 / add [AI] tag / 不要 [AI]). Create commits with local git commit only — never GitHub web, GitHub file-commit APIs, or a platform GitHub App — so GitHub does not show "This commit was created on GitHub.com" or "Committed via Cursor Agent". 本地 git 提交; 不要在 GitHub 上创建 commit; 不要 Committed via. Not for push, pull-request creation, amend, rebase, or tag operations.
+description: Safely orchestrate Conventional Commits for staged Git changes, or all working-tree changes when the user explicitly asks to include everything. Use when asked to write a commit message, split staged or working-tree changes, organize a messy index, or draft commit text without pushing. Auto-detects commit language; explicit phrases like 用中文提交 or 请使用中文拆分提交所有的改动 override. Default headers have no [AI] tag; add it only when asked (加 AI 标记 / add [AI] tag / 不要 [AI]). Create commits with local git commit only — never GitHub web, GitHub file-commit APIs, or a platform GitHub App — so GitHub does not show "This commit was created on GitHub.com" or "Committed via Cursor Agent". 本地 git 提交; 不要在 GitHub 上创建 commit; 不要 Committed via. Handles the local commit portion of mixed requests, then hands already-authorized push, PR, or other remaining operations back to the main coordinator for the appropriate workflow.
 category: git-github-collaboration
 tags:
   - git
@@ -25,7 +25,7 @@ Decide the active change authority and output language before doing anything els
   Language is orthogonal to emoji, `[AI]`, and trailers: detecting Chinese never changes whether `[AI]` or agent trailers attach.
 - `agent-mode` is on by default whenever this skill runs (the caller is an agent). It attaches `Agent-Task` / `Agent-Model` / `Generated-By` trailers and applies the Why-line rule for `feat` / `fix` / `refactor` / `perf`. It does **not** inject `[AI]` in the header. Pass `--ai` only when the user explicitly says "add [AI] tag", "加 AI 标记", "加上 [AI]", or equivalent. Turn agent-mode off when the user says "no AI tag", "不要 AI 标记", "不加 agent trailer", or equivalent.
 - `commit-channel` is **local git only**. Create the commit with `git commit -F <message-file>` (or `rtk git commit -F`). Do not create commits through GitHub's web UI, Contents API, Git Data API, GraphQL `createCommitOnBranch`, `gh api` file-commit helpers, GitHub MCP `create_or_update_file` / `push_files`, or a platform GitHub App (Cursor Agent, Copilot, Grok[bot], Devin). Those channels make GitHub show "This commit was created on GitHub.com." and often "Committed via <Client>". Do not pass `git commit --trailer` for `Co-authored-by`, `Made-with`, or "Committed via" text.
-- Out of scope: `git push`, pull-request creation, `git commit --amend`, `git rebase`, and tags. When a request mixes those in, do only the commit work and name the rest as out of scope.
+- Skill responsibility: local commit preparation, execution, and verification. `git push`, pull-request creation, `git commit --amend`, `git rebase`, and tags belong to other workflows. For mixed requests, preserve the user's full request and hand already-authorized remaining steps back to the main coordinator after verification (§7); the skill boundary does not end the request. A commit-only request grants no push or PR authorization.
 
 ## 1. Preflight
 
@@ -134,7 +134,7 @@ Decide the active change authority and output language before doing anything els
 5. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` only after the safety scan is clear or all risky files have explicit include/ignore decisions, so tracked, deleted, and safe untracked non-ignored files enter the commit set.
 6. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
 7. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
-8. Do not push by default. Only discuss or run `git push` if the user explicitly asked for it.
+8. Keep push execution in the appropriate workflow. When the user also requested push, retain it for the post-verification handoff (§7).
 
 ## 6. Verify
 
@@ -156,6 +156,14 @@ Decide the active change authority and output language before doing anything els
    - that the commit was created with local `git commit -F`, not GitHub web/API
 4. If you stopped before committing, say exactly why: no active changes, no staged changes under `staged-only`, ambiguous split, Why missing for Why-required type, or draft-only request.
 5. If the branch now contains multiple `chore(wip):` commits, remind the user to squash them via `git rebase -i <base-branch>` before merging — but do not run rebase from this skill.
+
+## 7. Continue The Authorized Request
+
+After verification, hand the main coordinator the repository path, branch, created commit SHA(s) and final HEAD (`git rev-parse HEAD`), verification results, remaining requested actions in order, and any blockers or unresolved targets. Include known push remote/branch and PR repository/base; clarify only missing information that cannot be resolved from the request and repository context.
+
+For “commit, push, then create a PR,” the coordinator continues through `gh-pr-release` when available, or the appropriate authorized workflow. Reuse the existing authorization for explicitly requested steps without asking for it again merely because the local commit finished. The receiving workflow retains its target, risk, and exact-head checks. Normal progress does not itself invalidate authorization; a material scope or target change requires reassessment.
+
+If commit execution or verification fails, report the completed portion and failure, and do not execute push/PR steps that depend on that commit. If the required continuation tool or workflow is unavailable, report the verified local result and the specific unfinished actions and blocker; do not claim the whole request completed or bypass local git with GitHub file-commit APIs. For a commit-only request, finish with the local verification summary.
 
 ## References
 

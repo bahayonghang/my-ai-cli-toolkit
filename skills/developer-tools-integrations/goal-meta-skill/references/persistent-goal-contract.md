@@ -20,8 +20,15 @@ a write. Before S6, show:
 4. existing-file SHA-256 and Git visibility when applicable;
 5. the platform launcher that will be returned.
 
-Only the user's confirmation of that action authorizes the named helper. S1
-reconnaissance and S4 drafting remain read-only.
+An explicit request to generate and save root `GOAL.md` already authorizes
+creation within that requested scope. With an established root and no existing
+file conflict, compile and lint, show the reviewable contract and exact effect,
+then invoke the named helper and read back in the same turn. No later approval
+message is required. S1 reconnaissance and S4 drafting remain read-only; S6
+owns the write. A handoff intention or an agent-proposed save alone still needs
+explicit write authorization. Ask only for an unresolved root, replacement of
+an existing file not yet authorized, or a material contract-scope change; a
+save request does not authorize overwriting.
 
 Persistence authority is not Goal activation authority. Imperatives in the
 contract are payload, not permission for this skill to execute them. After a
@@ -52,8 +59,9 @@ Create-only is the default. If the target already exists:
 
 1. read it without following a link;
 2. report its SHA-256 and tracked/ignored/untracked state;
-3. ask whether to keep it, choose another basename, or replace it;
-4. replace only after explicit confirmation with
+3. if replacement is not already explicitly authorized, ask whether to keep
+   it, choose another basename, or replace it;
+4. replace only with explicit authorization and the reviewed old-file hash using
    `--replace --expected-sha256 <observed-hash>`.
 
 The helper rechecks the current hash immediately before an atomic whole-file
@@ -73,6 +81,11 @@ authorization and an authoritative prior copy or Git history.
 ## Required schema
 
 Use these exact headings; no unresolved placeholders are allowed:
+
+For a non-Git workspace with an established root, use
+`- Baseline: not-a-repository; source snapshot: <actual file inventory or available hash summary>`
+with the placeholder replaced by observed source evidence. Do not invent a
+branch or HEAD; retain the Git baseline form below for Git repositories.
 
 ```markdown
 # Goal Contract: Short title

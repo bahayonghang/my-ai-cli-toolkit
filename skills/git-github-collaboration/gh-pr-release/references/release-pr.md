@@ -28,14 +28,14 @@ Use this mode for a version-bump/changelog PR before tagging. It prepares reposi
 
 ## Edit And Validate
 
-1. Show the exact version files and changelog section before requesting local-edit approval. Plans over three files need explicit confirmation.
+1. Show the exact version files and changelog section. An explicit request to prepare the release changes authorizes the minimal implementation, including coupled manifests/lockfiles regardless of file count. Ask only if the proposed version, dependency, target, irreversible effect, or scope materially exceeds that request.
 2. Apply only the approved bump/changelog changes. Keep generated lockfiles coupled with their manifest when repository tooling requires it.
 3. Run the repository's smallest version-consistency, changelog, format, and test gates. A failing or unavailable gate is evidence, not permission to continue silently.
 4. Re-read the diff and confirm the proposed tag still matches every version carrier.
 
 ## Publish The PR
 
-Choose a branch name that follows repository convention, such as `release/vX.Y.Z`. Route push and PR creation to [create](create.md), including its duplicate-PR guard and separate push/create authorizations. The PR body should state the anchor, version rationale, included changes, validation, automation ownership, and out-of-scope registry publication.
+Choose a branch name that follows repository convention, such as `release/vX.Y.Z`. Route push and PR creation to [create](create.md), including its duplicate-PR guard and explicit authorization for each action. Reuse a request that already authorizes both; local preparation alone does not authorize either. The PR body should state the anchor, version rationale, included changes, validation, automation ownership, and out-of-scope registry publication.
 
 ## Verify
 
