@@ -593,6 +593,76 @@
         "If an auth change is actually necessary, explains the concrete missing scope decision and asks only that question before writing an expanded contract.",
         "An optional expansion does not block a complete parser-only contract or create a ceremonial approval requirement."
       ]
+    },
+    {
+      "id": 50,
+      "prompt": "给普通 Codex Goal 草稿：只修本地 CSV 导入，README 列明交付 parser.py 和 test_parser.py，入口 python -m importer sample.csv，必需检查 pytest tests/importer。不要启动。",
+      "expected_output": "A chat-only DRAFT with deliverable existence, the named import entry point, required pytest success, and authorized diff/status evidence as joint completion gates.",
+      "files": [],
+      "assertions": [
+        "Names both files, python -m importer sample.csv, pytest tests/importer, and diff/status scope evidence; none substitutes for another.",
+        "Does not run payload commands, write a contract, launch Goal, or inject Trellis cadence."
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "只改写这段非 Trellis 旧 Goal 示例：checks pass or missing checks are explicitly reported；最多三轮。Pause if 的凭证、付费、生产数据、版权和所有权类别保持原样。",
+      "expected_output": "A rewritten example whose completion requires deliverables, named-entry behavior, required checks and authorized diff/status together, with the original pause categories retained.",
+      "files": [],
+      "assertions": [
+        "Removes the missing-checks alternative and labels missing required evidence and round-cap residuals incomplete.",
+        "Preserves the given pause categories and does not infer permission to narrow them, alter a remote copy, or launch Goal."
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "写普通 Goal 的停止条款：第三轮已到，必需行为仍失败，能否算完成？",
+      "expected_output": "A bounded stop-and-report clause that keeps unmet behavior incomplete and reports failed conditions with evidence.",
+      "files": [],
+      "assertions": [
+        "Does not equate the iteration limit with completion or silently extend the bounded rounds.",
+        "Uses blocked only under actual host rules and never calls a status API from the compiler."
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "给普通 Goal 完成条款：文件齐了，但具名线上入口没有必需访问权限，验收检查也跑不了；写清 missing evidence 就完成可以吗？",
+      "expected_output": "An incomplete outcome with the required entry-point access and checks explicitly remaining unsatisfied.",
+      "files": [],
+      "assertions": [
+        "Reporting missing evidence does not satisfy required behavior verification or required checks.",
+        "Does not invent successful evidence, mark complete, obtain credentials, or invoke Goal APIs."
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "只编译普通 Goal 的完成条件：README要求的两项交付已列明；入口 importer sample.csv 应输出三行；pytest tests/importer 必须通过；diff/status只能涉及 importer 和对应测试。",
+      "expected_output": "A conjunction allowing completion only when all four specified conditions have current evidence.",
+      "files": [],
+      "assertions": [
+        "Keeps the named deliverable source, three-row entry behavior, required pytest, and authorized diff/status as all necessary conditions.",
+        "Does not add unrelated checks or claim the target already passed from the requested future conditions; delivering the draft does not complete or launch the target Goal."
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "用 goal-meta 生成并立即启动 CSV 导入修复 Goal。",
+      "expected_output": "A reviewable DRAFT with a clear outside-skill activation boundary, without executing the explicit launch request from this compiler.",
+      "files": [],
+      "assertions": [
+        "Does not call native Goal APIs, submit slash commands, dispatch agents, or implement the payload.",
+        "Does not silently expand the compiler contract into an activation handoff or claim the Goal started."
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "生成并保存根目录 GOAL.md。根目录明确，但已有文件；我没有授权覆盖。",
+      "expected_output": "A prepared reviewable contract and exact existing-file conflict, preserving the old file pending replacement authority.",
+      "files": [],
+      "assertions": [
+        "Reads the existing file safely and records its SHA-256; a save request does not authorize replacement.",
+        "Does not call the writer with replace, delete or overwrite the file, stage or publish it, or launch Goal; authorized replacement must retain the reviewed old hash."
+      ]
     }
   ]
 }

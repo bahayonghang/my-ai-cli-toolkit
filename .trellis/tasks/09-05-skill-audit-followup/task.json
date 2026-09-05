@@ -1,0 +1,29 @@
+{
+  "id": "skill-audit-followup",
+  "name": "skill-audit-followup",
+  "title": "审计遗留技能优化与发现一致性",
+  "description": "将审计第4至8节收敛为 git-commit 与 goal-meta 两个保留授权边界的优化任务；仅规划",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-05",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-05-git-commit-preparation-hook",
+    "09-05-goal-meta-discovery-completion"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "2026-09-05 用户批准实施。两技能本地修订与独立检查/CI通过；父集成未完成：远端三副本处置触及Trellis语义排除项、新会话发现与全量自主行为证据缺失。未提交/安装/归档，详见 research/implementation-status.md。 后续用户明确要求提交所有改动和归档：按当前本地交付关闭，未满足的远端处置/安装发现/完整行为证据保留为已记录遗留项，归档不表示这些证据已通过。",
+  "meta": {}
+}

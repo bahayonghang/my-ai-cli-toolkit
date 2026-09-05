@@ -50,12 +50,14 @@
     },
     {
       "id": 5,
-      "prompt": "There are no staged changes in the repo, but I want to commit now. What should you do under this skill?",
-      "expected_output": "Stop clearly and tell the user to stage files first instead of inventing a commit or running git commit anyway.",
+      "prompt": "Commit now. Nothing is staged. README.md has an unstaged typo fix and docs/setup.md is a new untracked setup guide. I have not asked to include all changes.",
+      "expected_output": "Stay staged-only, inspect safe candidate content, list states and supported groups, and prepare docs message drafts. Explain that staging is unauthorized and the index is empty, while commit consent is already given.",
       "files": [],
       "assertions": [
-        "Stops and tells the user to stage files first",
-        "Does not invent a commit or run git commit"
+        "Lists README.md as unstaged and docs/setup.md as untracked with no staged changes",
+        "Provides supported candidate groups and message drafts without presenting candidates as approved scope",
+        "Names missing staging authority rather than asking again whether to commit",
+        "Leaves index bytes, working files and HEAD unchanged; does not run git add or git commit"
       ]
     },
     {
@@ -217,11 +219,11 @@
     {
       "id": 20,
       "prompt": "Commit my staged change. Heads up: this repo has a pre-commit hook that reformats files and aborts the commit when it rewrites anything.",
-      "expected_output": "The first commit attempt is aborted by the formatter hook. The skill should re-inspect git status, re-stage the hook's edits, retry the same commit message, and attribute the reformatting to the hook rather than treating it as its own change.",
+      "expected_output": "If the formatter aborts the commit, inspect complete status and both diffs. Re-stage and retry the same message only when formatting is safely isolated within authorized content; otherwise present the concrete scope decision. Attribute reformatting to the hook.",
       "files": [],
       "assertions": [
         "Re-inspects git status after the hook aborts the commit",
-        "Re-stages the hook's edits and retries the same commit message",
+        "Re-stages only safely isolated authorized formatting and retries with hooks enabled; never absorbs pre-existing unstaged content or unrelated paths",
         "Reports that the hook reformatted files instead of claiming the change as its own",
         "Does not rewrite the commit message in response to the formatter abort"
       ]
@@ -302,7 +304,7 @@
       "expected_output": "Execute with local git commit -F only. Header has no [AI] tag. Message has no Co-authored-by, Made-with, or Committed via line. Does not use GitHub web, Contents API, GraphQL createCommitOnBranch, or MCP push_files / create_or_update_file.",
       "files": [],
       "assertions": [
-        "Uses local git commit -F (or rtk git commit -F) and does not use GitHub web/API/MCP file-commit tools",
+        "Uses local git commit -F (or rtk proxy git commit -F) and does not use GitHub web/API/MCP file-commit tools",
         "Header has no [AI] tag",
         "No Co-authored-by, Made-with, or Committed via line in the message",
         "Does not pass git commit --trailer for those keys"
@@ -334,10 +336,10 @@
     {
       "id": 30,
       "prompt": "提交并 push，再创建 PR。本地 git commit 已被 pre-commit hook 以 lint 错误拒绝，退出码为 1，没有生成新提交。",
-      "expected_output": "Report the hook rejection and the unfinished commit, push, and PR steps; do not execute dependent remote actions or bypass the failure through GitHub commit APIs.",
+      "expected_output": "Preserve the rejection, diagnose the lint error from available output and prepare a concrete correction or identify missing diagnostic evidence. Report commit, push and PR as unfinished while repair authority is unresolved; do not execute dependent remote actions or bypass the hook.",
       "files": [],
       "assertions": [
-        "Reports the original hook failure and does not claim commit success",
+        "Reports original output and exit status, prepares the supported correction or names missing evidence, and does not claim commit success",
         "Does not execute push or PR steps that depend on the failed commit",
         "Does not create a replacement commit through GitHub web or file-commit APIs"
       ]
@@ -363,6 +365,104 @@
         "Clarifies the missing target without repeating the already-given commit/push/PR authorization",
         "Does not guess a remote destination"
       ]
+    },
+    {
+      "id": 33,
+      "prompt": "请直接提交。当前 staged、unstaged、untracked 都没有改动。",
+      "expected_output": "Report that the repository has no content to commit; do not fabricate a draft, ask to stage nonexistent files, or make an empty commit.",
+      "files": [],
+      "assertions": ["Checks untracked files even if status.showUntrackedFiles is no", "Reports nothing to commit and leaves index and HEAD unchanged"]
+    },
+    {
+      "id": 34,
+      "prompt": "提交 README.md。现在 index 为空；README.md 有一处错字修复，src/api.ts 同时混了接口修改与重构，我没说所有改动。",
+      "expected_output": "Draft the supported README correction with candidate status, explain the unresolved API grouping only as context, and keep staging blocked. Naming a file does not create another staging mode.",
+      "files": [],
+      "assertions": ["Does not stage README.md merely because it was named", "Does not invent an API split or final commit set", "Gives the supported README draft and exact staging blocker without asking again for commit consent"]
+    },
+    {
+      "id": 35,
+      "prompt": "只起草提交消息。index 为空，docs/help.md 有尚未暂存的帮助文档修正。",
+      "expected_output": "Read the safe diff and return a docs message draft with the candidate state. Drafting succeeds without requiring staging or commit permission.",
+      "files": [],
+      "assertions": ["Returns a content-supported draft instead of stopping at no staged changes", "Does not stage, commit, or ask for permission to execute a draft-only request"]
+    },
+    {
+      "id": 36,
+      "prompt": "提交已经暂存的购物车修复。cart.ts 的另一个独立 hunk 是我尚未暂存的实验，保留原样。",
+      "expected_output": "Use the staged snapshot only, show its message and file set, and execute the authorized safe local commit without extra consent or absorbing the experimental hunk.",
+      "files": [],
+      "assertions": ["Does not git add the entire partially staged file", "Verifies committed content excludes the experimental hunk", "Keeps unstaged experimental bytes and does not ask again whether to commit"]
+    },
+    {
+      "id": 37,
+      "prompt": "现在提交。index 为空，有 README.md 错字修复、未跟踪的 .env 和 180MB 的 output/demo.mp4。",
+      "expected_output": "Prepare the safe README draft while listing risky paths, states and sizes without exposing secret values. Explain missing staging authority and the per-path risk decisions; do not sweep candidates into history.",
+      "files": [],
+      "assertions": ["Does not print .env contents or read the video as text", "Lists risk and staging blockers separately while completing safe preparation", "Does not stage, commit, or edit .gitignore without approval"]
+    },
+    {
+      "id": 38,
+      "prompt": "提交暂存的文档修正。commit-msg 返回退出码 1，原文是 subject may not be empty [subject-empty]。我没有授权修复提交消息。",
+      "expected_output": "Preserve the hook output and status, diagnose the empty subject, and show the exact corrected message based on the staged diff. Ask once for message-fix authority and do not retry yet.",
+      "files": [],
+      "assertions": ["Gives the precise message proposal and original failure", "Does not infer message-remediation permission from commit permission", "Does not bypass, disable, or reconfigure the hook"]
+    },
+    {
+      "id": 39,
+      "prompt": "提交文档修正；如果 commitlint 明确拒绝纯消息格式，修好消息再重试。hook 退出码 1：header must not be longer than 72 characters [header-max-length]；文档内容与提交范围不变。",
+      "expected_output": "Show the original failure and an exact shorter message preserving meaning and references, apply the explicitly authorized format correction, and retry local git commit with hooks enabled before verification.",
+      "files": [],
+      "assertions": ["Uses both explicit format-remediation authorization and diagnostic evidence", "Preserves file set, issue references, breaking status and attribution", "Reruns hooks and verifies the actual result without repeating already-given authorization"]
+    },
+    {
+      "id": 40,
+      "prompt": "提交暂存的购物车修复。pre-commit 退出码 1：src/cart.ts:10 no-unused-vars，变量 unused 未使用。此前请求仅授权提交。",
+      "expected_output": "Keep the original failure, inspect the relevant source and propose the exact safe product correction. Hand that proposal to the coordinator for one needed decision; do not edit product files or retry as if repair were authorized.",
+      "files": [],
+      "assertions": ["Diagnoses from the named error and source rather than inventing a fix", "Does not treat commit-only authority as product-edit authority", "Leaves dependent commit/push/PR execution blocked and does not bypass the hook"]
+    },
+    {
+      "id": 41,
+      "prompt": "修复购物车删除后的总价刷新错误，解决这个修复引起的 lint 问题并提交。现在 pre-commit 退出码 1：src/cart.ts:10 no-unused-vars，unused 是本次修复遗留的无副作用局部变量。",
+      "expected_output": "Report the hook failure and exact authorized correction, continue the product fix through the owning implementation workflow, rerun lint, and retry the local commit with hooks enabled within the original staged scope.",
+      "files": [],
+      "assertions": ["Recognizes existing task-specific product repair authorization without repeating permission", "Does not broaden staging or fix unrelated product failures", "Verifies remediation and commit success before declaring completion"]
+    },
+    {
+      "id": 42,
+      "prompt": "提交已暂存的 docs/help.md；hook 格式化它并退出 1，HEAD 没变。它没有原先未暂存的 hunk，hook 没碰其它文件，消息不变。",
+      "expected_output": "Inspect status and staged/unstaged diffs, re-stage only the authorized formatting edits in docs/help.md, and retry the same message with hooks enabled.",
+      "files": [],
+      "assertions": ["Checks file set and content before re-staging", "Attributes edits to the formatter and does not use git add -A", "Verifies retry result and final HEAD"]
+    },
+    {
+      "id": 43,
+      "prompt": "提交暂存的 docs/help.md。formatter 退出 1；它改了 help.md，也改了无关的 src/experimental.ts 并生成 formatter-report.txt。help.md 本来还有我没暂存的实验段落。",
+      "expected_output": "Compare staged and unstaged content to the original scope, list formatter changes and pre-existing hunks, and stop at a concrete proposal if formatting cannot be safely isolated. Do not absorb any unrelated or pre-existing unstaged content.",
+      "files": [],
+      "assertions": ["Does not git add -A or stage the full partially staged file", "Does not include the new report or unrelated experimental file", "Does not discard user or formatter changes; asks only for the unresolved scope decision"]
+    },
+    {
+      "id": 44,
+      "prompt": "提交之后 hook 留下了格式化改动，但 git commit 退出 0，HEAD 已经前进。",
+      "expected_output": "Verify the existing new commit and report remaining formatter changes. Do not assume the attempt failed, retry blindly, create an extra commit, or amend.",
+      "files": [],
+      "assertions": ["Checks commit output and HEAD before recovery", "Reports actual committed content and leftover changes separately", "Does not amend, rewrite history, or create an unrequested second commit"]
+    },
+    {
+      "id": 45,
+      "prompt": "直接提交。index 为空，只有未跟踪的 docs/new.md；仓库设置 status.showUntrackedFiles=no，宿主要求使用 RTK。",
+      "expected_output": "Use raw proxy status with optional locks disabled and all untracked files included. Prepare the supported candidate draft and report missing staging authority without entering commit execution despite existing commit consent.",
+      "files": [],
+      "assertions": ["Does not substitute compact status or falsely report a clean repository", "Preserves index bytes, working files and HEAD", "Completes the preparation-only branch without staging or running git commit"]
+    },
+    {
+      "id": 46,
+      "prompt": "只为所有改动起草消息，不执行。已有部分暂存的 README.md，还有未跟踪的 docs/new.md。",
+      "expected_output": "Draft supported messages for all candidate changes while leaving partial staging, working files and history untouched; all-changes scope does not override draft-only execution authority.",
+      "files": [],
+      "assertions": ["Returns drafts without rebuilding the index or staging files", "Does not request commit execution consent or invoke commit"]
     }
   ]
 }

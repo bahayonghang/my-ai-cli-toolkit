@@ -93,6 +93,15 @@ Then draft a final `/goal ...` command.
 
 ## Canonical Goal Template
 
+For ordinary non-Trellis goals, completion is a conjunction: every requested
+deliverable exists, every required observable behavior is verified through its
+named entry point, all required checks pass, and diff/status evidence shows
+only authorized changes. Bind those sets and entry points during reconnaissance.
+Missing required access or checks, a pause condition, and an exhausted iteration
+limit are incomplete outcomes, not alternative completion gates. Report the
+remaining conditions and evidence; use blocked status only under the actual
+host rules. This compiler never calls a status API.
+
 ```text
 /goal [Outcome].
 Verification: [commands/artifacts/evidence].
@@ -113,7 +122,7 @@ Pause if: [blocked conditions / human decisions / budget cap].
 约束：[不能改变的行为、接口、数据、风格或分支规则]。
 边界：[允许写入的位置 / 禁止触碰的路径或系统]。
 迭代策略：[一次只做一个聚焦改动，重跑检查，基于日志调整]。
-完成条件：[哪些证据证明可以停止]。
+完成条件：[哪些证据证明上述四项完成门全部满足]。
 暂停条件：[需要人工决定、凭证、外部权限、预算或破坏性操作的情况]。
 ```
 
@@ -125,7 +134,7 @@ Verification（验证）：[命令 / 产物 / 截图 / 日志 / 外部证据]。
 Constraints（约束）：[不能改变的行为、接口、数据、风格或分支规则]。
 Boundaries（边界）：[允许写入的位置 / 禁止触碰的路径或系统]。
 Iteration policy（迭代策略）：[一次只做一个聚焦改动，重跑检查，基于日志调整]。
-Stop when（完成条件）：[哪些证据证明可以停止]。
+Stop when（完成条件）：[哪些证据证明上述四项完成门全部满足]。
 Pause if（暂停条件）：[需要人工决定、凭证、外部权限、预算或破坏性操作的情况]。
 ```
 
@@ -178,7 +187,7 @@ still presents the DRAFT/APPROVED TEXT and stops without launching it.
 约束：不加入账号、付费服务、生产变更、破坏性操作或无关功能，除非用户明确要求。
 边界：只写入新项目目录，或只修改现有项目中与该功能直接相关的文件。
 迭代策略：一次实现一个聚焦工作流，每次有意义改动后重跑检查，重试前先读日志，最多做 3 轮聚焦改进后报告剩余风险。
-完成条件：核心流程有运行证据证明可用，检查通过或明确说明缺少配置。
+完成条件：需求中列明的交付均存在，核心流程通过侦察确认并点名的运行入口验证，项目规定的必需检查全部通过，且 diff/status 证明改动均在授权范围内。缺少必需访问或检查、达到三轮上限仍有未满足条件时均为未完成，报告剩余条件与证据。
 暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时暂停。
 ```
 
@@ -197,7 +206,7 @@ Verification: run the smallest project-provided checks, start the local app or r
 Constraints: do not add accounts, paid services, production changes, destructive operations, or unrelated features unless requested.
 Boundaries: write only inside the new project directory or the directly related existing project files.
 Iteration policy: implement one focused workflow at a time, rerun checks after meaningful changes, inspect logs before retrying, and make at most 3 focused improvement rounds before reporting remaining risks.
-Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
+Stop when: every deliverable named in the request exists, the core workflow is verified through the runtime entry point identified and named during reconnaissance, all project-required checks pass, and diff/status proves only authorized changes. Missing required access or checks, or remaining unmet conditions at the three-round limit, means incomplete; report the remaining conditions and evidence.
 Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
 ```
 
@@ -288,14 +297,14 @@ Verification: run the repo's checkout unit tests, add or update a regression tes
 Constraints: do not change public coupon API names, database schema, gift-card behavior, or unrelated checkout UI copy.
 Boundaries: edit only checkout pricing logic, coupon tests, and directly required fixtures; do not touch payment provider configuration or migration files.
 Iteration policy: make one focused change at a time, rerun the failing check after each change, and inspect test output before changing strategy.
-Stop when: the regression test fails before the fix, passes after the fix, and the relevant lint/typecheck command passes.
+Stop when: the pricing fix and regression test exist, the checkout test entry point proves the regression fails before the fix and passes after it, the required lint/typecheck command passes, and diff/status shows only authorized checkout changes.
 Pause if: payment credentials, production data, a schema migration, or a product decision about stacking rules is required.
 ```
 
 Claude Code condition variant (same contract, condition-first with transcript proof and a bounding clause; `Pause if` becomes stop-and-report):
 
 ```text
-/goal The checkout discount bug is fixed: the new percentage-coupon regression test failed before the fix and passes after it, the repo's checkout unit tests and smallest lint/typecheck command exit 0 with output shown in the conversation, and git diff touches only checkout pricing logic, coupon tests, and required fixtures; or stop after 20 turns and summarize remaining issues.
+/goal The checkout pricing fix and regression test exist: the checkout test entry point proves the new percentage-coupon regression failed before the fix and passes after it, the repo's checkout unit tests and smallest required lint/typecheck command exit 0 with output shown in the conversation, and diff/status shows only authorized checkout pricing logic, coupon tests, and required fixtures; otherwise stop after 20 turns and report remaining conditions as incomplete.
 ```
 
 ### UI Polish
@@ -306,14 +315,14 @@ Verification: run the configured frontend checks, open the local app, capture de
 Constraints: preserve existing editor commands, keyboard shortcuts, saved document format, and visual identity.
 Boundaries: edit only toolbar layout/components/styles and directly related tests; do not redesign the editor shell or change document serialization.
 Iteration policy: adjust one layout issue at a time, rerun checks, and use screenshots to compare before/after.
-Stop when: checks pass and screenshots show the toolbar fits at desktop and mobile widths with all primary controls accessible.
+Stop when: the toolbar changes exist, the local toolbar page is verified at desktop and mobile widths with screenshots showing all primary controls accessible, required checks pass, and diff/status shows only authorized layout changes.
 Pause if: the design requires removing a primary command, adding a new design system dependency, or changing product navigation.
 ```
 
 Claude Code condition variant (screenshot judgment cannot be seen by the transcript evaluator, so the condition cites checks and reported measurements instead):
 
 ```text
-/goal The editor toolbar works on mobile: the configured frontend checks exit 0 with output shown in the conversation, and a layout check (test, DOM measurement, or viewport audit run by Claude) reported in the conversation confirms no horizontal overflow or overlapping controls at desktop and mobile widths; or stop after 15 turns and summarize remaining issues.
+/goal The editor toolbar changes exist and work on mobile: the configured frontend checks exit 0 with output shown in the conversation, a layout check at the local toolbar entry point (test, DOM measurement, or viewport audit run by Claude) reported in the conversation confirms no horizontal overflow or overlapping controls at desktop and mobile widths, and diff/status proves only authorized toolbar changes; otherwise stop after 15 turns and report remaining conditions as incomplete.
 ```
 
 ### Skill Creation
@@ -324,14 +333,14 @@ Verification: inspect the generated files, run YAML/JSON syntax checks if presen
 Constraints: keep the skill concise, Chinese-first when appropriate, and include appropriate copyright/contact metadata; do not publish to GitHub unless explicitly requested.
 Boundaries: write only under ~/.agents/skills/goal-example-skill and any explicitly requested temporary verification files; do not modify existing unrelated skills.
 Iteration policy: create the minimal package first, validate structure, then add only references or scripts that improve reliability.
-Stop when: all required files exist, validation passes, and the README explains usage, boundaries, and local checks.
+Stop when: all required package files exist, the README usage entry point is exercised successfully, required validation passes, the README explains boundaries and local checks, and diff/status shows only authorized package changes.
 Pause if: the workflow requires private credentials, external publishing, unclear ownership, or a naming change from the user.
 ```
 
 Claude Code condition variant:
 
 ```text
-/goal The goal-example-skill package is complete: all required files exist under the requested skill root (file listing shown in the conversation), YAML/JSON syntax checks and the validation script exit 0 with output in the conversation, and no files outside the skill directory changed per git status; or stop after 12 turns and summarize remaining issues.
+/goal The goal-example-skill package is complete: all required files exist under the requested skill root (file listing shown in the conversation), the README usage entry point is exercised successfully, YAML/JSON syntax checks and the validation script exit 0 with output in the conversation, and diff/status shows only authorized package changes; otherwise stop after 12 turns and report remaining conditions as incomplete.
 ```
 
 ### Trellis Task Implementation
@@ -376,7 +385,7 @@ Verification: run frontend checks, open the local app, capture desktop and mobil
 Constraints: keep existing data sources, routing, auth flow, and analytics events unchanged.
 Boundaries: edit only dashboard view components, layout styles, and directly related tests.
 Iteration policy: change one visual/workflow issue at a time, rerun checks, and compare screenshots after each meaningful layout change.
-Stop when: checks pass and screenshots show the key metrics plus primary action in the first viewport on desktop and mobile.
+Stop when: the dashboard changes exist, the local dashboard entry point is verified with screenshots showing the key metrics plus primary action in the first viewport on desktop and mobile, required checks pass, and diff/status shows only authorized dashboard changes.
 Pause if: new product priorities, new analytics events, or backend API changes are required.
 ```
 

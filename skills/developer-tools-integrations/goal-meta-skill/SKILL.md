@@ -2,7 +2,7 @@
 name: goal-meta-skill
 description: |
   Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.
-version: 0.8.0
+version: 0.8.1
 category: developer-tools-integrations
 tags:
   - codex

@@ -187,7 +187,7 @@ GitHub 提交页上的这两条不是 commit message 里的普通正文，而是
 
 | GitHub 页面文案 | 触发条件 | 本 skill 的对应动作 |
 |-----------------|----------|---------------------|
-| `This commit was created on GitHub.com.` | GraphQL `committedViaWeb`；committer 为 `GitHub <noreply@github.com>`；经 GitHub web、Contents API、Git Data API、GraphQL `createCommitOnBranch`、MCP `push_files` / `create_or_update_file`、或 GitHub App 在服务端建 commit | 只用本地 `git commit -F <message-file>`（可用 `rtk git commit -F`）。不要用上述 API / App 通道 |
+| `This commit was created on GitHub.com.` | GraphQL `committedViaWeb`；committer 为 `GitHub <noreply@github.com>`；经 GitHub web、Contents API、Git Data API、GraphQL `createCommitOnBranch`、MCP `push_files` / `create_or_update_file`、或 GitHub App 在服务端建 commit | 只用本地 `git commit -F <message-file>`（可用 `rtk proxy git commit -F` 保留原始 hook 输出）。不要用上述 API / App 通道 |
 | `Committed via Cursor Agent`（以及同类 Client 标签） | Cursor / 其它 agent 注入 `Co-authored-by: Cursor <cursoragent@cursor.com>`、`Made-with: Cursor`，或经 Cursor GitHub App 提交；IDE 里 `git commit --trailer` 也会写入 | 不要传 `--trailer`；不要把这些行写入 message file。compose 脚本对匹配行以退出码 4 拒绝 |
 
 > Last verified: 2026-08-24 against GitHub GraphQL `committedViaWeb` (`https://docs.github.com/en/graphql/reference/commits`), GitHub Contents API create-or-update file contents, GitHub MCP `push_files` server-side commit behavior (`https://github.com/github/github-mcp-server/issues/2190`), and Cursor attribution (`Co-authored-by: Cursor`, `Made-with: Cursor`; IDE Settings > Git & PRs > Attribution; CLI `attribution.attributeCommitsToAgent`).

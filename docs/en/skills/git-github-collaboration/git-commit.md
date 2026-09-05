@@ -19,7 +19,7 @@ Safely orchestrate Conventional Commits for staged Git changes, or all working-t
 | --- | --- |
 | Name | `git-commit` |
 | Category | `git-github-collaboration` (Git & GitHub Collaboration) |
-| Version | `1.12.0` |
+| Version | `1.13.0` |
 | Tags | `git`, `conventional-commits`, `commit-message`, `agent-aware` |
 
 ## Install command

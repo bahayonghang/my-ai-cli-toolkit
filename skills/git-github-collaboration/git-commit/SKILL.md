@@ -7,7 +7,7 @@ tags:
   - conventional-commits
   - commit-message
   - agent-aware
-version: 1.12.0
+version: 1.13.0
 allowed-tools: Read, Bash
 ---
 
@@ -24,23 +24,24 @@ Decide the active change authority and output language before doing anything els
   4. Fall back to English only when none of the above gives a clear signal.
   Language is orthogonal to emoji, `[AI]`, and trailers: detecting Chinese never changes whether `[AI]` or agent trailers attach.
 - `agent-mode` is on by default whenever this skill runs (the caller is an agent). It attaches `Agent-Task` / `Agent-Model` / `Generated-By` trailers and applies the Why-line rule for `feat` / `fix` / `refactor` / `perf`. It does **not** inject `[AI]` in the header. Pass `--ai` only when the user explicitly says "add [AI] tag", "加 AI 标记", "加上 [AI]", or equivalent. Turn agent-mode off when the user says "no AI tag", "不要 AI 标记", "不加 agent trailer", or equivalent.
-- `commit-channel` is **local git only**. Create the commit with `git commit -F <message-file>` (or `rtk git commit -F`). Do not create commits through GitHub's web UI, Contents API, Git Data API, GraphQL `createCommitOnBranch`, `gh api` file-commit helpers, GitHub MCP `create_or_update_file` / `push_files`, or a platform GitHub App (Cursor Agent, Copilot, Grok[bot], Devin). Those channels make GitHub show "This commit was created on GitHub.com." and often "Committed via <Client>". Do not pass `git commit --trailer` for `Co-authored-by`, `Made-with`, or "Committed via" text.
+- `commit-channel` is **local git only**. Create the commit with `git commit -F <message-file>` (or `rtk proxy git commit -F`). Do not create commits through GitHub's web UI, Contents API, Git Data API, GraphQL `createCommitOnBranch`, `gh api` file-commit helpers, GitHub MCP `create_or_update_file` / `push_files`, or a platform GitHub App (Cursor Agent, Copilot, Grok[bot], Devin). Those channels make GitHub show "This commit was created on GitHub.com." and often "Committed via <Client>". Do not pass `git commit --trailer` for `Co-authored-by`, `Made-with`, or "Committed via" text.
 - Skill responsibility: local commit preparation, execution, and verification. `git push`, pull-request creation, `git commit --amend`, `git rebase`, and tags belong to other workflows. For mixed requests, preserve the user's full request and hand already-authorized remaining steps back to the main coordinator after verification (§7); the skill boundary does not end the request. A commit-only request grants no push or PR authorization.
 
 ## 1. Preflight
 
-1. Inspect `git status --short` first. Then inspect the active change set:
+1. Inspect `git --no-optional-locks status --short --untracked-files=all` first (include untracked files even when repository display defaults hide them). Then inspect the active change set:
    - `staged-only`: `git diff --staged --stat` and `git diff --staged`
    - `all-changes`: `git diff --stat`, `git diff`, `git diff --staged --stat`, and `git diff --staged`
-   If `rtk` is available, prefer `rtk git status`, `rtk git diff --staged`, and `rtk git diff` for model-visible inspection.
+   If `rtk` is required, use `rtk proxy git --no-optional-locks status --short --untracked-files=all` for the same complete status; do not replace it with compact `rtk git status`. Preserve optional-lock disabling for read-only preparation. Compact diffs may supplement inspection, but use unfiltered diffs when deciding file/hunk scope.
 2. Explicitly note:
    - the active change authority (`staged-only` or `all-changes`)
    - staged changes ready to commit
    - unstaged changes that might make the index misleading
    - untracked files that are intentionally excluded vs accidentally forgotten
 3. Branch immediately on preflight results:
-   - `staged-only` + no staged changes: stop and tell the user to stage files first.
-   - `all-changes` + no staged, unstaged, or untracked changes: stop and say there is nothing to commit.
+   - Either mode + no staged, unstaged, or untracked changes: say there is nothing to commit.
+   - `staged-only` + no staged changes but working-tree changes exist: continue read-only preparation. List candidate paths with staged/unstaged/untracked states; check paths and sizes for secrets/large/binary risks before reading the necessary safe diffs or untracked text. Continue through repository conventions, supported split planning, classification, and message drafts. Label candidates as unapproved for staging; do not change the index, product files, or history, or run `git commit`. Use read-only inspection with optional Git locks disabled so even index refresh is avoided. Report the exact blocker: the index is empty and staging is not authorized by this mode. Distinguish this from missing commit consent; do not ask again whether to commit when that is already authorized.
+     If candidate grouping or intent is unclear, give only supported groups/drafts and the unresolved decision instead of inventing a final file set or message. A risky path may be listed without exposing its contents; preparation of other safe candidates can continue. This branch does not enable a new staging mode or authorize staging named files.
    - The active change set exists but is obviously mixed and cannot be safely separated from inspection alone: do not improvise a commit. Output a split plan and stop.
    - The user explicitly asked only for commit text, a draft, or suggestions: continue through classification and composition, but do not run `git commit`.
 4. **Detect agent context** (skip when user disabled `agent-mode`):
@@ -125,7 +126,7 @@ Decide the active change authority and output language before doing anything els
 
 ## 5. Commit Or Draft
 
-1. If the user asked only for a draft, return the proposed commit text and stop.
+1. If the user asked only for a draft, return the proposed commit text and stop without staging or editing files. If preflight found an empty index under `staged-only`, return the supported candidate groups, drafts, and exact staging blocker, then go directly to the no-commit report in §6.4 and handoff in §7. Do not enter the execution steps below even when commit consent already exists. A completely clean repository likewise goes directly to the no-commit report.
 2. **Execution consent checkpoint**: Before any `git commit`, display the final commit message (header + body + footer) and the list of files to be committed. Explicitly call out that the channel is local `git commit -F` (not GitHub web/API), whether `[AI]` is in the header (default: no), whether Why is present, and which agent trailers will attach. Then decide whether to pause:
    - Proceed without an extra confirmation when the user's current request already authorizes execution, such as "commit it", "execute the commit", "commit all changes", "直接提交", "提交了", "按方案执行", or `请使用中文拆分提交所有的改动`, and preflight found no secret/large-binary risk, no ambiguous split, no missing Why, and no draft-only wording.
    - Wait for explicit confirmation when execution was not clearly requested, when the user asked to review/plan/draft first, when the proposed file set or message differs materially from the requested scope, or when any safety gate in this workflow says to ask before committing.
@@ -133,15 +134,15 @@ Decide the active change authority and output language before doing anything els
 4. If the safety scan found large/binary files, wait for an explicit decision for each risky path before any broad staging command. If the correct outcome is to ignore generated artifacts, edit or ask for a `.gitignore` update first, then re-run preflight so ignored files are no longer part of the candidate set. Include `.gitignore` only when the user approved that ignore policy.
 5. If the user asked to commit and `all-changes` is active for a single atomic commit, run `git add -A` only after the safety scan is clear or all risky files have explicit include/ignore decisions, so tracked, deleted, and safe untracked non-ignored files enter the commit set.
 6. If the user asked to split-commit in `all-changes` mode, rebuild the index one commit at a time using file/path boundaries only. Use full-worktree staging plus path-based staging or unstaging as needed, but stop if the split would require hunk-level staging or other hidden reconstruction.
-7. If `rtk` is available and the user wants compact feedback, `rtk git commit -F <message-file>` is acceptable for the final commit step.
+7. Preserve unfiltered commit/hook output and exit status. If `rtk` is required, use `rtk proxy git commit -F <message-file>`; summarize only after retaining the original diagnostic output.
 8. Keep push execution in the appropriate workflow. When the user also requested push, retain it for the post-verification handoff (§7).
 
 ## 6. Verify
 
 1. Read the `git commit` output before claiming success.
-2. Distinguish two hook outcomes before reacting:
-   - **Hook rejected the commit** (non-zero exit, message-format or lint failure): stop and report the original hook failure. Do not silently rewrite the message unless the output clearly says the format is invalid and the user asked you to fix it.
-   - **Hook rewrote files** (a formatter such as prettier/black/gofmt modified tracked files and left them unstaged, aborting or staling the commit): re-inspect `git status`, re-stage the hook's edits, and retry the same commit message. Say that the hook reformatted files — do not treat the reformatting as your own change.
+2. Diagnose hook failures before deciding whether execution can continue. Preserve the original output and exit status, report the cause supported by that evidence, and prepare the exact correction (or identify missing diagnostic evidence). Never bypass or disable a hook, including through `--no-verify` or a hooks-path override.
+   - **Hook rejected the commit** (non-zero exit, message-format or lint failure): apply the correction only when the existing remediation rule and user authorization permit it. A message rewrite still requires both output clearly identifying invalid message format and an explicit user request to fix it; ordinary commit authorization alone does not grant this. Otherwise show the precise correction and ask once for the needed decision. Product-file fixes may continue only when the original request already authorizes those fixes; otherwise hand the concrete fix proposal to the main coordinator for that decision. Stop dependent execution if remediation changes the requested scope or meaning, needs destructive history editing, or introduces a new external or production action. After authorized remediation, rerun the relevant check and local commit with hooks enabled, then verify the result.
+   - **Hook rewrote files** (a formatter such as prettier/black/gofmt modified files): inspect status and both staged and unstaged diffs against the pre-commit file set. Re-stage only formatting edits within the already-authorized commit content, then retry the same message with hooks enabled if the attempt was aborted. Do not absorb pre-existing unstaged hunks, newly created paths, unrelated files, or semantic changes; if they cannot be separated safely, stop at a concrete proposal/decision. Never fall back to `git add -A` for hook recovery. If HEAD already advanced, verify what was committed and report leftover formatter edits; do not retry as though no commit exists or amend implicitly. Say that the hook reformatted files — do not treat the reformatting as your own change.
 3. After a successful commit, inspect `git log -1 --format='%an <%ae>%n%cn <%ce>%n%B'` before claiming success. If the message contains `Co-authored-by`, `Made-with`, or `Committed via`, or the committer is `GitHub <noreply@github.com>`, the wrong channel or a host wrapper added provenance GitHub will render as "This commit was created on GitHub.com." / "Committed via …". Report that outcome. Do not amend (amend is out of scope). Then summarize:
    - the final header
    - whether `staged-only` or `all-changes` mode was used
@@ -154,7 +155,7 @@ Decide the active change authority and output language before doing anything els
    - whether untracked files were included
    - whether issues or breaking changes were attached
    - that the commit was created with local `git commit -F`, not GitHub web/API
-4. If you stopped before committing, say exactly why: no active changes, no staged changes under `staged-only`, ambiguous split, Why missing for Why-required type, or draft-only request.
+4. If no commit was created, report the preparation completed and the exact blocker or draft-only outcome: no changes at all; an empty index under `staged-only` with candidates/drafts prepared but staging unauthorized; unresolved grouping; missing Why; or a diagnosed hook failure with its correction and outstanding authorization/evidence. Do not report prepared candidates as committed or approved for staging.
 5. If the branch now contains multiple `chore(wip):` commits, remind the user to squash them via `git rebase -i <base-branch>` before merging — but do not run rebase from this skill.
 
 ## 7. Continue The Authorized Request
