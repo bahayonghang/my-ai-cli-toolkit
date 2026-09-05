@@ -1,4 +1,0 @@
-{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"技能源码、边界 eval 与证据分层规范"}
-{"file":".trellis/spec/backend/governed-file-writing.md","reason":"受控写入和授权边界"}
-{"file":".trellis/tasks/09-05-skill-audit-followup/research/current-evidence.md","reason":"当前审计差异、来源与未验证范围"}
-{"file":".trellis/tasks/09-05-skill-audit-followup/research/audit-input.md","reason":"原始需求和未批准扩权候选"}
