@@ -220,6 +220,18 @@ manual inventory and deterministic safety tests."
   while rejecting an unauthorized write. Do not require reproduction of a
   long sentence, and do not let one keyword prove the whole behavior.
 
+## Path links are not host discovery
+
+- A path in `SKILL.md`, `AGENTS.md`, an installer dest map, or `hooks.json` is
+  a repo contract. Path links are not host discovery. A live Claude Code,
+  Codex, Grok Build, Kimi Code CLI, or OMP session must still prove load.
+- Fixtures are not provider behavior. Local unittest and recorded fixtures
+  prove a deterministic package contract. Client registration, new-session
+  skill discovery, and hosted matrices stay `UNVERIFIED` until a named run
+  records them. Five-host load facts live in
+  [`docs/harnesses.md`](../../../docs/harnesses.md); do not copy that matrix
+  into a skill.
+
 ## Prompt compilers need a review-before-activation boundary
 
 - Apply when a skill generates a command, Goal, prompt, runbook, or other text
