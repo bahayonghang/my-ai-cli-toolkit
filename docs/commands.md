@@ -1,11 +1,11 @@
 # Commands / Prompts
 
-平台内容位于 `platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 prompts、agents 或 rules。
+平台内容位于 `platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 agents、hooks 或 rules。本页只列出仓库里实际存在的文件。
 
 ## 何时添加 command / prompt / agent / rule
 
 - **Command**：用户显式调用的工作流入口，适合有参数、固定步骤和平台 command 语义的任务。
-- **Prompt**：平台遗留或专用提示资产；Codex 可复用工作流优先做成 `skills/` 中的 `$skill-name` 入口。
+- **Prompt**：仅当平台源目录里确实有 prompt 文件时使用。本仓库当前没有 `platforms/codex/prompts/`。
 - **Agent**：角色化执行面，适合长期保持独立职责、模型/工具边界或子任务分派。
 - **Rule / AGENTS.md**：项目或平台的基础指导，适合默认约束、目录规则和安全边界。
 
@@ -71,9 +71,9 @@
 #### Hooks
 
 - `platforms/claude/hooks/hooks.json`
-- `platforms/claude/hooks/inject-spec.py`
 - `platforms/claude/hooks/log-prompt.py`
 - `platforms/claude/hooks/pre-bash.py`
+- `platforms/claude/hooks/tests/test_hooks.py`
 
 #### Root files
 
@@ -96,7 +96,7 @@
 - `platforms/codex/AGENTS.md`
 - `platforms/codex/code_map.md`
 
-Codex 可复用工作流优先使用 `skills/` 中的 `$skill-name` 入口，例如 `$archive-planning`；`platforms/codex/prompts/` 仅保留遗留或平台专用提示资产。
+本仓库的 Codex 源目前只有 `platforms/codex/agents/`。可复用工作流放在 `skills/`（例如 `$git-commit`）。不要假定存在 `platforms/codex/prompts/` 或 `$archive-planning`。
 
 ## 修改后验证
 

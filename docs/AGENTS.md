@@ -3,7 +3,7 @@
 This `AGENTS.md` governs `docs/**` and narrows the root guidance for the VitePress documentation site. Root `AGENTS.md` still applies. Before broad search in this subtree, read `./code_map.md`.
 
 ## Subtree Purpose
-`docs/` contains the VitePress site, bilingual documentation entry points, and generated catalog pages produced from first-party `skills/` and `platforms/` source assets.
+`docs/` contains the VitePress site, bilingual documentation entry points, authored harness fact pages (`harnesses.md` / `en/harnesses.md`), and generated catalog pages produced from first-party `skills/` and `platforms/` source assets.
 
 ## Local Rules
 - Keep VitePress configuration and dependency changes in `docs/.vitepress/config.mts`, `docs/package.json`, and `docs/package-lock.json`.

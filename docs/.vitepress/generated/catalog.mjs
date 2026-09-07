@@ -2,7 +2,7 @@
 export const catalogStats = {
   "skills": 41,
   "categories": 6,
-  "hooks": 4,
+  "hooks": 3,
   "platforms": 3
 };
 export const zhSkillsSidebar = [
@@ -446,10 +446,6 @@ export const zhHooksSidebar = [
         "link": "/hooks#hooks-json"
       },
       {
-        "text": "inject-spec.py",
-        "link": "/hooks#inject-spec-py"
-      },
-      {
         "text": "log-prompt.py",
         "link": "/hooks#log-prompt-py"
       },
@@ -477,10 +473,6 @@ export const enHooksSidebar = [
       {
         "text": "hooks.json",
         "link": "/en/hooks#hooks-json"
-      },
-      {
-        "text": "inject-spec.py",
-        "link": "/en/hooks#inject-spec-py"
       },
       {
         "text": "log-prompt.py",

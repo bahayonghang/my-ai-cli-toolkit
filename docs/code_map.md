@@ -12,6 +12,7 @@ VitePress documentation site plus generated catalog pages for skills, hooks, and
 - `scripts/ensure_docs_deps.py` — docs dependency bootstrap used by `just docs-check`.
 - `package.json` / `package-lock.json` — docs-site Node dependencies and VitePress scripts.
 - `index.md` / `en/index.md` — authored bilingual landing pages.
+- `harnesses.md` / `en/harnesses.md` — authored bilingual five-harness fact tables.
 - `skills.md`, `en/skills.md`, `skills/**`, `en/skills/**` — generated skill index and detail pages.
 - `hooks.md`, `en/hooks.md`, `commands.md`, `en/commands.md` — generated hook and platform catalog pages.
 

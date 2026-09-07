@@ -2,20 +2,23 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Cross-platform AI content repository: installable skills, platform-scoped commands/agents/prompts/rules, and runtime hooks.
+Cross-platform AI content repository: installable skills, platform-scoped source assets, and Claude Code runtime hooks.
 
 The repository is organized at the root:
 
 - `skills/` — first-party skill catalog
-- `platforms/<platform>/` — platform-scoped commands, agents, prompts, rules
-- `platforms/claude/hooks/` — runtime hook assets for Claude Code
-- `scripts/` — shared validation and maintenance scripts
+- `platforms/antigravity/` — command sources
+- `platforms/claude/agents/` and `platforms/claude/hooks/` — Claude agent prompts and runtime hook assets
+- `platforms/codex/agents/` — Codex agent templates (no `prompts/` directory)
+- `scripts/` — shared validation, maintenance, and local live-link scripts
+
+Five-harness native load, skill, hook, delegation, and permission bounds: [`docs/harnesses.md`](docs/harnesses.md) ([English](docs/en/harnesses.md)). Those pages are source bounds, not client-load proof.
 
 ## Quick start
 
 ### Install skills directly from GitHub
 
-You do not need to clone this repository to install skills.
+You do not need to clone this repository to install skills. This path uses the third-party `npx skills` CLI. It is not the local live-link installer, and the `-a` agent list below is only the usage already shown. Do not treat it as discovery proof for every client.
 
 Direct first-party catalog install:
 
@@ -39,7 +42,9 @@ Use `skills/` as the first-party source for this repository.
 
 ### Live-link first-party skills for local testing
 
-After you clone this repository, you can live-link selected catalog skills into the current project. The default destination is project-level `.agents/skills/` (never `.agent/`). Extra agent directories are linked only when that agent root already exists. The command refuses the user home directory so it cannot write `~/.trae/skills` or other user-global folders.
+After you clone this repository, you can live-link selected catalog skills into the current project. This is a different tool from `npx skills add`. The default destination is project-level `.agents/skills/` (never `.agent/`). Extra agent directories are linked only when that agent root already exists. The command refuses the user home directory so it cannot write `~/.trae/skills` or other user-global folders.
+
+Static destination maps in `scripts/install_projects.py` (including `.claude/skills`, `.codex/skills`, `.grok/skills`, `.kimi-code/skills`, and `.omp/skills`) are a repo contract. They are not new-session discovery proof.
 
 ```bash
 python scripts/install_projects.py --list
@@ -62,23 +67,22 @@ cd my-claude-code-settings
 just ci
 ```
 
-`just ci` runs skills metadata validation, Python compile checks, the project installer tests, Node skill tests, and `git diff --check`.
+`just ci` runs `docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`, `node-test`, then `git diff --check`.
 
 ## Repository layout
 
 ```text
 .
-├── skills/             # First-party skill catalog
+├── skills/                  # First-party skill catalog
 │   └── <category>/<skill-name>/
 ├── platforms/
-│   └── <platform>/
-│       ├── commands/   # Platform command / workflow sources when present
-│       ├── agents/     # Platform agent definitions when present
-│       ├── prompts/    # Platform prompt packs when present
-│       ├── rules/      # Platform base guidance files when present
-│       └── hooks/      # Runtime hook assets (currently under platforms/claude/)
-├── scripts/            # Shared validation and maintenance scripts
-└── justfile            # Local validation entrypoints
+│   ├── antigravity/commands/
+│   ├── claude/agents/       # Claude agent prompt assets
+│   ├── claude/hooks/        # Claude Code runtime hooks
+│   └── codex/agents/        # Codex agent templates only
+├── scripts/                 # Shared validation and live-link installer
+├── docs/                    # VitePress site; harness facts in docs/harnesses.md
+└── justfile                 # Local validation entrypoints
 ```
 
 ## Active skill categories
@@ -92,9 +96,19 @@ The current first-party catalog under `skills/` uses these category directories:
 - `docs-writing-publishing`
 - `research-learning-knowledge`
 
+Not every skill is semantically equivalent on Claude Code, Codex, Grok Build, Kimi Code CLI, and OMP. See [`docs/harnesses.md`](docs/harnesses.md).
+
 ## Platform content
 
-Platform-specific source files live under `platforms/<platform>/`. Runtime tools that consume this repository own their install/link target resolution, so this repo no longer carries a separate `platforms.toml` mapping file.
+Platform-specific source files live under `platforms/<platform>/` when that platform has them. Runtime tools that consume this repository own their install/link target resolution, so this repo no longer carries a separate `platforms.toml` mapping file.
+
+Current source trees:
+
+- Claude Code: `platforms/claude/agents/` and `platforms/claude/hooks/`
+- Codex: `platforms/codex/agents/` only
+- Antigravity: `platforms/antigravity/commands/`
+
+There is no `platforms/codex/prompts/` directory and no `platforms/grok/`, `platforms/kimi/`, or `platforms/omp/` source tree.
 
 ## License
 

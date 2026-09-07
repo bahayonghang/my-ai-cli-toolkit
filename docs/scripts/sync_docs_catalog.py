@@ -83,16 +83,14 @@ IMPORTANT_RESOURCE_NAMES = set(RESOURCE_LABELS_EN) - IGNORED_RESOURCE_NAMES
 
 HOOK_ROLE_ZH = {
     "hooks.json": "声明 hook 入口、matcher 与命令调用顺序。",
-    "pre-bash.py": "在 Bash 调用前做保守危险命令拦截。",
-    "inject-spec.py": "兼容保留的 no-op spec 注入入口。",
-    "log-prompt.py": "记录 UserPromptSubmit 输入，写入本地会话日志。",
+    "pre-bash.py": "PreToolUse Bash 护栏：读取官方 stdin JSON 的 tool_input.command；命中危险模式时以 exit 2 阻断。",
+    "log-prompt.py": "按事件 session_id 与 cwd 记录 UserPromptSubmit 输入，写入会话隔离日志。",
 }
 
 HOOK_ROLE_EN = {
     "hooks.json": "Declares hook entrypoints, matchers, and command order.",
-    "pre-bash.py": "Blocks conservative dangerous Bash fragments before execution.",
-    "inject-spec.py": "Compatibility no-op for the former spec-injection hook.",
-    "log-prompt.py": "Logs UserPromptSubmit input to local session logs.",
+    "pre-bash.py": "PreToolUse Bash guard. Reads official stdin JSON tool_input.command. Exit 2 blocks a matched dangerous pattern.",
+    "log-prompt.py": "Logs UserPromptSubmit input using event session_id and cwd into session-isolated files.",
 }
 
 PLATFORM_LABELS_ZH = {
@@ -672,18 +670,18 @@ def hooks_page(hooks: list[HookEntry], lang: str) -> str:
         lines.extend(
             [
                 "- Hooks 是运行时资源，不是 docs 站构建步骤。",
-                "- `pre-bash.py` 只做保守字符串匹配；它是安全护栏，不替代对命令副作用的判断。",
-                "- `inject-spec.py` 目前必须保持可执行且无副作用，以兼容仍引用它的旧 hook 配置。",
+                "- `pre-bash.py` 只做保守字符串匹配；官方 PreToolUse 阻断使用 exit 2。它是安全护栏，不替代对命令副作用的判断。",
                 "- `log-prompt.py` 写入 `.claude/state/`；该目录属于本地运行状态，不应作为内容源提交。",
+                "- 仓库里的 `hooks.json` 不是 Claude Code 客户端已注册或已加载这些 hook 的证明。",
             ]
         )
     else:
         lines.extend(
             [
                 "- Hooks are runtime assets, not part of the docs-site build pipeline.",
-                "- `pre-bash.py` is a conservative string-match guardrail; it does not replace review of command side effects.",
-                "- `inject-spec.py` should stay executable and side-effect free while older hook configs still reference it.",
+                "- `pre-bash.py` is a conservative string-match guardrail; official PreToolUse blocking uses exit 2. It does not replace review of command side effects.",
                 "- `log-prompt.py` writes local runtime state under `.claude/state/`; that directory is not a content source to commit.",
+                "- `hooks.json` in this repository is not proof that a Claude Code client registered or loaded these hooks.",
             ]
         )
     lines.extend(
@@ -693,6 +691,7 @@ def hooks_page(hooks: list[HookEntry], lang: str) -> str:
             "",
             "```bash",
             "just python-check",
+            "just python-test",
             "just docs-check",
             "just ci",
             "```",
@@ -719,9 +718,9 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
         "# Commands / Prompts",
         "",
         (
-            "平台内容位于 `platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 prompts、agents 或 rules。"
+            "平台内容位于 `platforms/<platform>/`。不同平台消费内容的方式不同：有的平台使用 command 文件，有的平台使用 agents、hooks 或 rules。本页只列出仓库里实际存在的文件。"
             if zh
-            else "Platform content lives under `platforms/<platform>/`. Each platform consumes content differently: some use command files, while others use prompts, agents, or rules."
+            else "Platform content lives under `platforms/<platform>/`. Each platform consumes content differently: some use command files, while others use agents, hooks, or rules. This page lists files that exist in the repository."
         ),
         "",
         "## 何时添加 command / prompt / agent / rule" if zh else "## When to add a command, prompt, agent, or rule",
@@ -731,7 +730,7 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
         lines.extend(
             [
                 "- **Command**：用户显式调用的工作流入口，适合有参数、固定步骤和平台 command 语义的任务。",
-                "- **Prompt**：平台遗留或专用提示资产；Codex 可复用工作流优先做成 `skills/` 中的 `$skill-name` 入口。",
+                "- **Prompt**：仅当平台源目录里确实有 prompt 文件时使用。本仓库当前没有 `platforms/codex/prompts/`。",
                 "- **Agent**：角色化执行面，适合长期保持独立职责、模型/工具边界或子任务分派。",
                 "- **Rule / AGENTS.md**：项目或平台的基础指导，适合默认约束、目录规则和安全边界。",
             ]
@@ -740,7 +739,7 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
         lines.extend(
             [
                 "- **Command**: user-invoked workflow entrypoint with arguments, fixed steps, and platform command semantics.",
-                "- **Prompt**: legacy or platform-specific prompt asset; reusable Codex workflows should prefer `$skill-name` entries under `skills/`.",
+                "- **Prompt**: use only when a platform source tree actually ships prompt files. This repository has no `platforms/codex/prompts/` directory.",
                 "- **Agent**: role-specialized execution surface with stable responsibility, model/tool boundaries, or subtask routing.",
                 "- **Rule / AGENTS.md**: baseline project or platform guidance for default constraints, directory rules, and safety boundaries.",
             ]
@@ -756,9 +755,9 @@ def commands_page(platforms: list[PlatformEntry], lang: str) -> str:
             lines.append("")
         if platform.name == "codex":
             lines.append(
-                "Codex 可复用工作流优先使用 `skills/` 中的 `$skill-name` 入口，例如 `$archive-planning`；`platforms/codex/prompts/` 仅保留遗留或平台专用提示资产。"
+                "本仓库的 Codex 源目前只有 `platforms/codex/agents/`。可复用工作流放在 `skills/`（例如 `$git-commit`）。不要假定存在 `platforms/codex/prompts/` 或 `$archive-planning`。"
                 if zh
-                else "Reusable Codex workflows should prefer `$skill-name` entries under `skills/`, such as `$archive-planning`; `platforms/codex/prompts/` is only for legacy or platform-specific prompt assets."
+                else "This repository's Codex source currently ships `platforms/codex/agents/` only. Reusable workflows belong in `skills/` (for example `$git-commit`). Do not assume a `platforms/codex/prompts/` directory or a `$archive-planning` skill."
             )
             lines.append("")
     lines.extend(
