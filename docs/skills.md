@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、41 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、43 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -27,7 +27,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 开发者工具集成
 
-`developer-tools-integrations` · 12 skills
+`developer-tools-integrations` · 13 skills
 
 - [agents-md-improver](/skills/developer-tools-integrations/agents-md-improver) — Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation.
 - [ast-grep](/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
@@ -35,6 +35,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [codex-workflow-recommender](/skills/developer-tools-integrations/codex-workflow-recommender) — Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change.
 - [file-sorter](/skills/developer-tools-integrations/file-sorter) — Use when the user wants to categorize, sort, organize, or suggest renames for files in a local folder such as Downloads, or for files that share one parent directory.
 - [goal-meta-skill](/skills/developer-tools-integrations/goal-meta-skill) — Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code.
+- [herdr-orchestra](/skills/developer-tools-integrations/herdr-orchestra) — Use when the user explicitly asks to coordinate worker agents in Herdr, delegate tasks across Herdr panes, or collect and compare their results; 支持 Herdr 多 Agent 编排、分工、交叉核验和结果收集。Do not use for ordinary local subagents, simple pane inspection, documentation research, work outside Herdr, or when already assigned as a leaf worker.
 - [image-to-ui-skill](/skills/developer-tools-integrations/image-to-ui-skill) — 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 - [ripgrep](/skills/developer-tools-integrations/ripgrep) — Use when the user needs text or regex content search with ripgrep: composing rg commands, choosing flags, glob/type filtering, multiline or PCRE2 searches, pipeline output, grep-to-rg migration, or diagnosing why rg missed a file (gitignore, hidden, binary defaults).
 - [skill-session-review](/skills/developer-tools-integrations/skill-session-review) — Analyze how an existing agent skill was used in past Claude Code, Grok, Codex, and Oh My Pi conversations.
@@ -44,13 +45,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 开发工作流
 
-`development-workflows` · 11 skills
+`development-workflows` · 12 skills
 
 - [code-auditor](/skills/development-workflows/code-auditor) — Independent pre-merge review of a git diff, PR, or named files.
 - [code-quality-review](/skills/development-workflows/code-quality-review) — Run a maintainability and structure review focused on abstraction quality, branching complexity, file growth, canonical ownership, duplication, and refactoring opportunities.
 - [code-refactor](/skills/development-workflows/code-refactor) — Implement safe, behavior-preserving code refactors after inspecting the existing project.
 - [codex-bridge](/skills/development-workflows/codex-bridge) — Use when the user explicitly asks the current agent to involve Codex CLI by reviewing a plan, implementing code, revising an implementation after review, or verifying extrapolated findings.
 - [codex-dynamic-workflows](/skills/development-workflows/codex-dynamic-workflows) — Use only when the user explicitly asks for swarm, subagents, parallel agents, dynamic workflow, multi-agent orchestration, 多智能体编排, or when the task truly needs coordinated research plus implementation plus review plus verification packets.
+- [codex-review](/skills/development-workflows/codex-review) — Use when the user asks an Agent inside Herdr to start Codex for an independent review through herdr-orchestra, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer.
 - [html-artifact](/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts (single-file by default, split bundles when oversized) for complex, reviewable, or shareable work outputs.
 - [rust-build-optimization](/skills/development-workflows/rust-build-optimization) — Use when a Rust or Cargo build is slow and the user wants it diagnosed or sped up: profiling compile times with cargo --timings or -Zself-profile, finding whether the bottleneck is dependencies, codegen/LLVM, linking, or one oversized crate, and applying targeted fixes such as faster linkers (lld, mold, wild), incremental compilation, dev/release profile tuning, workspace splitting, Cranelift, the nightly parallel frontend, or CI caching with sccache.
 - [spark](/skills/development-workflows/spark) — Turn an idea into an approved implementation plan before coding — plan-first brainstorming.

@@ -1,0 +1,32 @@
+{
+  "id": "herdr-review-skills",
+  "name": "herdr-review-skills",
+  "title": "Herdr 编排与 Codex 审查 skills",
+  "description": "研究参考与最新官方文档，规划 Herdr 编排和 Codex 只读审查两个一方 skill 及组合验收",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "skills",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-08",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-08-herdr-orchestra-skill",
+    "09-08-herdr-codex-review-skill"
+  ],
+  "parent": null,
+  "relatedFiles": [
+    "skills/developer-tools-integrations/herdr-orchestra/",
+    "skills/development-workflows/codex-review/"
+  ],
+  "notes": "Integration complete: both packages checked, docs-sync and final just ci passed, isolated links verified. All five source/package ACs met; runtime/discovery remain unverified. Commit/archive/journal approval pending; temp trial cleanup blocked by policy.",
+  "meta": {}
+}

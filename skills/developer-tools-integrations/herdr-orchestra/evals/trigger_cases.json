@@ -1,0 +1,31 @@
+{
+  "positive_concepts": {
+    "herdr_context": ["Herdr", "herdr-orchestra"],
+    "orchestration": ["coordinate", "delegate", "collect", "compare", "编排", "分工", "交叉核验", "结果收集"]
+  },
+  "description_required_concepts": ["herdr_context", "orchestration"],
+  "recommended_threshold": 0.5,
+  "negative_patterns": [],
+  "should_trigger": [
+    {"text": "Coordinate two independent worker agents in Herdr.", "family": "parallel"},
+    {"text": "Delegate this bounded task across Herdr panes.", "family": "single"},
+    {"text": "Collect and compare the completed Herdr worker results.", "family": "receipt"},
+    {"text": "在 Herdr 中进行多 Agent 编排，先设计后实现。", "family": "pipeline"},
+    {"text": "在 Herdr 给两个 worker 分工，只读核验两个接口。", "family": "ownership"},
+    {"text": "调用 herdr-orchestra 做这个已授权任务的结果收集。", "family": "adapter"},
+    {"text": "请在 Herdr 对既有证据做独立交叉核验。", "family": "crosscheck"}
+  ],
+  "should_not_trigger": [
+    {"text": "Review my current diff.", "family": "generic-review"},
+    {"text": "请用本地 subagents 并行分析两个模块。", "family": "native-subagents"},
+    {"text": "Explain how to coordinate workers in Herdr; research only, do not launch anything.", "family": "research"},
+    {"text": "I am a leaf worker assigned to review the Herdr orchestration code; do not delegate.", "family": "leaf"},
+    {"text": "Coordinate workers outside Herdr using the native subagent tools.", "family": "outside-environment"}
+  ],
+  "near_neighbor": [
+    {"text": "在 Herdr 查看当前 pane 的日志。", "family": "official-herdr"},
+    {"text": "List panes in Herdr.", "family": "official-herdr"},
+    {"text": "Ask Codex directly for an independent code review.", "family": "codex-bridge"},
+    {"text": "在 Herdr 让 Codex 审查当前提交。", "family": "codex-review-adapter"}
+  ]
+}

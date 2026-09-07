@@ -315,6 +315,11 @@ payload itself said “execute”.
   and `manifest.json`. Those are qiaomu-package conventions, not this repo's
   (authoritative gates: `scripts/check.py` + docs-sync catalog pages). Record
   the two failures as an intentional schema deviation; do not add the files.
+- The current qiaomu `export_skill_ir.py` reads `package.version`, ownership,
+  and maturity from `manifest.json` only. Without that file, preserve the raw
+  null/empty fields and explain the exporter limitation in the handoff; the
+  package version remains the `SKILL.md` frontmatter value. Do not hand-edit
+  generated IR or add a manifest to manufacture complete metadata.
 
 ## resource_boundary_check default budget vs reality
 

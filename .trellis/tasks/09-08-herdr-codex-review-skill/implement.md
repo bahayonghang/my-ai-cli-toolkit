@@ -1,0 +1,10 @@
+# Implementation plan: Codex review
+
+1. Wait for final parent-plan approval and the orchestra child's checked delegation reference. Start this child, load curated JSONL/spec/research and artifacts, then dispatch `trellis-implement` with exclusive ownership of the new review directory. The worker is not alone and must preserve other edits.
+2. Write description first and test its intended routing against ordinary review, codex-bridge and leaf work. Match neutral interface to the final route.
+3. Write the scope/review prompt/result contract and one current Codex CLI reference. Use verified local root flags after Herdr's `--`; retain explicit user model or current config. Do not copy outdated model pins or turn noninteractive commands into an agent-start fallback.
+4. Add C01–C12 behavior/output fixtures and qiaomu trigger cases. Evaluate variants separately; record actually reviewed candidate outputs/actions and conclusions. Keep keyword-smoke scores distinct from semantic/real model evidence.
+5. Run qiaomu `validate_skill.py`, `export_skill_ir.py`, `trigger_eval.py` with resolved absolute paths. Preserve real schema deviations and failures; do not fabricate install evidence or manufacture extra package files only to satisfy incompatible metadata conventions.
+6. Run `rtk proxy just skills-check`; dispatch `trellis-check` for this child plus its cross-package handoff. Parent owns docs synchronization and the final integrated `just ci` gate.
+7. If a live review trial is authorized, use a task-owned scope, exactly one fresh reviewer, no-alt-screen/read-only/never, complete results and before/after input evidence. Otherwise keep authentication, sandbox enforcement, detection, result retrieval, model quality and new-session discovery as missing evidence. Do not alter the current third-party activation.
+8. Deliver source path, studied candidate lessons, actual checks and evidence limits to the parent for final synthesis/local closeout. No remote publication, push, auto-fix or independent global installation.

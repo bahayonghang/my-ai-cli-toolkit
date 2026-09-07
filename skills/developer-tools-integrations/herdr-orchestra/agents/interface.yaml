@@ -1,0 +1,17 @@
+interface:
+  display_name: Herdr Orchestra
+  short_description: 在 Herdr 内委派有范围的 worker 任务并收集可核验结果。
+  default_prompt: >-
+    仅在用户明确要求 Herdr 编排或已有授权的上层委派时使用 herdr-orchestra。
+    若我是被分配的 leaf worker，则直接完成任务，不再次编排。
+    先检查 HERDR_ENV 和 caller context，保留 cwd/focus，以原生 agent 接口执行有权限和 ownership 边界的任务。
+    返回实际身份、生命周期、范围、完整响应和未验证项；不自动处理 trust、不扩大写权限或清理资源。
+compatibility:
+  canonical_format: agent-skills
+  adapter_targets: [openai, claude, generic, agent-skills-compatible]
+  activation:
+    mode: explicit
+  degradation:
+    generic: >-
+      格式目标不等于已验证加载。缺少 HERDR_ENV、所需 CLI 或调用能力时报告未完成；
+      不安装、不绕过 Herdr、不伪称跨宿主运行通过。

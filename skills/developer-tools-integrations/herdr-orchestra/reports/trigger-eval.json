@@ -1,0 +1,267 @@
+{
+  "ok": false,
+  "threshold": 0.5,
+  "description_concepts": [
+    "herdr_context",
+    "orchestration"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 16,
+    "passed": 13,
+    "false_positive": 3,
+    "false_negative": 0,
+    "pass_rate": 0.812
+  },
+  "failures": [
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "Explain how to coordinate workers in Herdr; research only, do not launch anything.",
+      "family": "research",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 0.667,
+      "matched_concepts": [
+        "herdr_context",
+        "orchestration"
+      ],
+      "negative_pattern": null
+    },
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "I am a leaf worker assigned to review the Herdr orchestration code; do not delegate.",
+      "family": "leaf",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 0.667,
+      "matched_concepts": [
+        "herdr_context",
+        "orchestration"
+      ],
+      "negative_pattern": null
+    },
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "Coordinate workers outside Herdr using the native subagent tools.",
+      "family": "outside-environment",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 0.667,
+      "matched_concepts": [
+        "herdr_context",
+        "orchestration"
+      ],
+      "negative_pattern": null
+    }
+  ],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "Coordinate two independent worker agents in Herdr.",
+        "family": "parallel",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Delegate this bounded task across Herdr panes.",
+        "family": "single",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Collect and compare the completed Herdr worker results.",
+        "family": "receipt",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 中进行多 Agent 编排，先设计后实现。",
+        "family": "pipeline",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 给两个 worker 分工，只读核验两个接口。",
+        "family": "ownership",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "调用 herdr-orchestra 做这个已授权任务的结果收集。",
+        "family": "adapter",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "请在 Herdr 对既有证据做独立交叉核验。",
+        "family": "crosscheck",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Review my current diff.",
+        "family": "generic-review",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "请用本地 subagents 并行分析两个模块。",
+        "family": "native-subagents",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Explain how to coordinate workers in Herdr; research only, do not launch anything.",
+        "family": "research",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "I am a leaf worker assigned to review the Herdr orchestration code; do not delegate.",
+        "family": "leaf",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Coordinate workers outside Herdr using the native subagent tools.",
+        "family": "outside-environment",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 0.667,
+        "matched_concepts": [
+          "herdr_context",
+          "orchestration"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "在 Herdr 查看当前 pane 的日志。",
+        "family": "official-herdr",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "herdr_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "List panes in Herdr.",
+        "family": "official-herdr",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "herdr_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Ask Codex directly for an independent code review.",
+        "family": "codex-bridge",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 让 Codex 审查当前提交。",
+        "family": "codex-review-adapter",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "herdr_context"
+        ],
+        "negative_pattern": null
+      }
+    ]
+  }
+}

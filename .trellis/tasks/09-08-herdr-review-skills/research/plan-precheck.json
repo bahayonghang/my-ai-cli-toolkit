@@ -1,0 +1,327 @@
+{
+  "repo_root": "D:/Documents/Code/Agents/my-claude-code-settings",
+  "review_scope": {
+    "mode": "task-tree",
+    "root": "09-08-herdr-review-skills",
+    "task_count": 3,
+    "members": [
+      {
+        "name": "09-08-herdr-review-skills",
+        "path": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/09-08-herdr-review-skills",
+        "location": "active",
+        "status": "planning"
+      },
+      {
+        "name": "09-08-herdr-orchestra-skill",
+        "path": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/09-08-herdr-orchestra-skill",
+        "location": "active",
+        "status": "planning"
+      },
+      {
+        "name": "09-08-herdr-codex-review-skill",
+        "path": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/09-08-herdr-codex-review-skill",
+        "location": "active",
+        "status": "planning"
+      }
+    ],
+    "edges": [
+      {
+        "parent": "09-08-herdr-review-skills",
+        "child": "09-08-herdr-orchestra-skill"
+      },
+      {
+        "parent": "09-08-herdr-review-skills",
+        "child": "09-08-herdr-codex-review-skill"
+      }
+    ],
+    "legacy_fallback_tasks": []
+  },
+  "tasks": [
+    {
+      "task_dir": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/09-08-herdr-review-skills",
+      "task_status": "planning",
+      "artifacts": {
+        "present": {
+          "prd.md": true,
+          "design.md": true,
+          "implement.md": true,
+          "implement.jsonl": true,
+          "check.jsonl": true,
+          "task.json": true
+        },
+        "shape": "complex",
+        "note": ""
+      },
+      "placeholders": [],
+      "citations": {
+        "total": 3,
+        "by_status": {
+          "resolved": 3
+        },
+        "entries": [
+          {
+            "artifact": "prd.md",
+            "artifact_line": 10,
+            "citation": "skills/development-workflows/codex-bridge/SKILL.md:3",
+            "status": "resolved",
+            "resolved_path": "skills/development-workflows/codex-bridge/SKILL.md",
+            "file_lines": 60
+          },
+          {
+            "artifact": "prd.md",
+            "artifact_line": 11,
+            "citation": "agents/skills/codex-review/SKILL.md:3",
+            "status": "resolved",
+            "resolved_path": ".agents/skills/codex-review/SKILL.md",
+            "file_lines": 37
+          },
+          {
+            "artifact": "design.md",
+            "artifact_line": 77,
+            "citation": "trellis/spec/guides/skill-authoring-conventions.md:314",
+            "status": "resolved",
+            "resolved_path": ".trellis/spec/guides/skill-authoring-conventions.md",
+            "file_lines": 403
+          }
+        ]
+      },
+      "identifiers": {
+        "requirements": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6",
+          "R7",
+          "R8"
+        ],
+        "criteria": [
+          {
+            "id": "AC1",
+            "requirements": [
+              "R1",
+              "R5",
+              "R6"
+            ],
+            "clause_hint": 3
+          },
+          {
+            "id": "AC2",
+            "requirements": [
+              "R1",
+              "R2",
+              "R7"
+            ],
+            "clause_hint": 8
+          },
+          {
+            "id": "AC3",
+            "requirements": [
+              "R3",
+              "R4",
+              "R5"
+            ],
+            "clause_hint": 3
+          },
+          {
+            "id": "AC4",
+            "requirements": [
+              "R4",
+              "R7"
+            ],
+            "clause_hint": 8
+          },
+          {
+            "id": "AC5",
+            "requirements": [
+              "R6",
+              "R8"
+            ],
+            "clause_hint": 5
+          }
+        ],
+        "criteria_without_requirement": [],
+        "requirements_without_criterion": [],
+        "referenced_but_undefined": []
+      },
+      "blocking": [],
+      "drift_pass_required": false,
+      "task_name": "09-08-herdr-review-skills",
+      "location": "active"
+    },
+    {
+      "task_dir": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/09-08-herdr-orchestra-skill",
+      "task_status": "planning",
+      "artifacts": {
+        "present": {
+          "prd.md": true,
+          "design.md": true,
+          "implement.md": true,
+          "implement.jsonl": true,
+          "check.jsonl": true,
+          "task.json": true
+        },
+        "shape": "complex",
+        "note": ""
+      },
+      "placeholders": [],
+      "citations": {
+        "total": 0,
+        "by_status": {},
+        "entries": []
+      },
+      "identifiers": {
+        "requirements": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6"
+        ],
+        "criteria": [
+          {
+            "id": "AC1",
+            "requirements": [
+              "R1",
+              "R6"
+            ],
+            "clause_hint": 5
+          },
+          {
+            "id": "AC2",
+            "requirements": [
+              "R2",
+              "R3",
+              "R4"
+            ],
+            "clause_hint": 5
+          },
+          {
+            "id": "AC3",
+            "requirements": [
+              "R2",
+              "R4",
+              "R5"
+            ],
+            "clause_hint": 9
+          },
+          {
+            "id": "AC4",
+            "requirements": [
+              "R5",
+              "R6"
+            ],
+            "clause_hint": 3
+          }
+        ],
+        "criteria_without_requirement": [],
+        "requirements_without_criterion": [],
+        "referenced_but_undefined": []
+      },
+      "blocking": [],
+      "drift_pass_required": false,
+      "task_name": "09-08-herdr-orchestra-skill",
+      "location": "active"
+    },
+    {
+      "task_dir": "D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/09-08-herdr-codex-review-skill",
+      "task_status": "planning",
+      "artifacts": {
+        "present": {
+          "prd.md": true,
+          "design.md": true,
+          "implement.md": true,
+          "implement.jsonl": true,
+          "check.jsonl": true,
+          "task.json": true
+        },
+        "shape": "complex",
+        "note": ""
+      },
+      "placeholders": [],
+      "citations": {
+        "total": 1,
+        "by_status": {
+          "resolved": 1
+        },
+        "entries": [
+          {
+            "artifact": "prd.md",
+            "artifact_line": 10,
+            "citation": "agents/skills/codex-review/SKILL.md:3",
+            "status": "resolved",
+            "resolved_path": ".agents/skills/codex-review/SKILL.md",
+            "file_lines": 37
+          }
+        ]
+      },
+      "identifiers": {
+        "requirements": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6"
+        ],
+        "criteria": [
+          {
+            "id": "AC1",
+            "requirements": [
+              "R1",
+              "R6"
+            ],
+            "clause_hint": 3
+          },
+          {
+            "id": "AC2",
+            "requirements": [
+              "R2",
+              "R3"
+            ],
+            "clause_hint": 2
+          },
+          {
+            "id": "AC3",
+            "requirements": [
+              "R3",
+              "R4"
+            ],
+            "clause_hint": 2
+          },
+          {
+            "id": "AC4",
+            "requirements": [
+              "R4",
+              "R5"
+            ],
+            "clause_hint": 4
+          },
+          {
+            "id": "AC5",
+            "requirements": [
+              "R1",
+              "R5",
+              "R6"
+            ],
+            "clause_hint": 3
+          }
+        ],
+        "criteria_without_requirement": [],
+        "requirements_without_criterion": [],
+        "referenced_but_undefined": []
+      },
+      "blocking": [],
+      "drift_pass_required": false,
+      "task_name": "09-08-herdr-codex-review-skill",
+      "location": "active"
+    }
+  ],
+  "reviews_git": {
+    "path": ".trellis/reviews/09-08-herdr-review-skills.md",
+    "state": "untracked"
+  },
+  "blocking": []
+}

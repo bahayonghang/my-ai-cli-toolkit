@@ -1,0 +1,97 @@
+{
+  "positive_concepts": {
+    "herdr_context": [
+      "Herdr",
+      "herdr-orchestra"
+    ],
+    "codex_reviewer": [
+      "Codex",
+      "codex-review"
+    ],
+    "review_action": [
+      "review",
+      "审查"
+    ]
+  },
+  "description_required_concepts": [
+    "herdr_context",
+    "codex_reviewer",
+    "review_action"
+  ],
+  "recommended_threshold": 1,
+  "negative_patterns": [],
+  "should_trigger": [
+    {
+      "text": "Start Codex inside Herdr for an independent review.",
+      "family": "current"
+    },
+    {
+      "text": "在 Herdr 中让 Codex 审查当前改动。",
+      "family": "current-zh"
+    },
+    {
+      "text": "Use Codex in Herdr to review staged-only changes.",
+      "family": "staged"
+    },
+    {
+      "text": "在 Herdr 让 Codex 审查 main 以来的提交。",
+      "family": "base"
+    },
+    {
+      "text": "Ask Codex in Herdr to review this commit.",
+      "family": "commit"
+    },
+    {
+      "text": "在 Herdr 中让 Codex 审查这两个文件。",
+      "family": "files"
+    },
+    {
+      "text": "Use herdr-orchestra to start Codex for a plan review.",
+      "family": "plan"
+    },
+    {
+      "text": "调用 codex-review；Herdr 任务上下文已建立，继续审查。",
+      "family": "explicit"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "Review my current diff for correctness.",
+      "family": "generic"
+    },
+    {
+      "text": "Research how Codex review works in Herdr; do not launch anything.",
+      "family": "research"
+    },
+    {
+      "text": "I am the leaf Codex reviewer in Herdr; review the assigned patch myself.",
+      "family": "leaf"
+    },
+    {
+      "text": "Use Codex outside Herdr for an independent review.",
+      "family": "outside"
+    },
+    {
+      "text": "在 Herdr 让 Codex 审查并自动修复、生成 CHANGELOG。",
+      "family": "auto-fix"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "Bundle these files with codex-bridge for a Codex review.",
+      "family": "bundle"
+    },
+    {
+      "text": "在 Herdr 查看当前 pane。",
+      "family": "pane"
+    },
+    {
+      "text": "Coordinate two independent workers in Herdr.",
+      "family": "orchestra"
+    },
+    {
+      "text": "只做可维护性审查，不启动其他工具。",
+      "family": "quality"
+    }
+  ]
+}

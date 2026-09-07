@@ -1,0 +1,320 @@
+{
+  "ok": false,
+  "threshold": 1.0,
+  "description_concepts": [
+    "codex_reviewer",
+    "herdr_context",
+    "review_action"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 17,
+    "passed": 13,
+    "false_positive": 4,
+    "false_negative": 0,
+    "pass_rate": 0.765
+  },
+  "failures": [
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "Research how Codex review works in Herdr; do not launch anything.",
+      "family": "research",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 1.0,
+      "matched_concepts": [
+        "codex_reviewer",
+        "herdr_context",
+        "review_action"
+      ],
+      "negative_pattern": null
+    },
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "I am the leaf Codex reviewer in Herdr; review the assigned patch myself.",
+      "family": "leaf",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 1.0,
+      "matched_concepts": [
+        "codex_reviewer",
+        "herdr_context",
+        "review_action"
+      ],
+      "negative_pattern": null
+    },
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "Use Codex outside Herdr for an independent review.",
+      "family": "outside",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 1.0,
+      "matched_concepts": [
+        "codex_reviewer",
+        "herdr_context",
+        "review_action"
+      ],
+      "negative_pattern": null
+    },
+    {
+      "bucket": "should_not_trigger",
+      "kind": "false_positive",
+      "prompt": "在 Herdr 让 Codex 审查并自动修复、生成 CHANGELOG。",
+      "family": "auto-fix",
+      "expected_trigger": false,
+      "predicted_trigger": true,
+      "passed": false,
+      "score": 1.0,
+      "matched_concepts": [
+        "codex_reviewer",
+        "herdr_context",
+        "review_action"
+      ],
+      "negative_pattern": null
+    }
+  ],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "Start Codex inside Herdr for an independent review.",
+        "family": "current",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 中让 Codex 审查当前改动。",
+        "family": "current-zh",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use Codex in Herdr to review staged-only changes.",
+        "family": "staged",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 让 Codex 审查 main 以来的提交。",
+        "family": "base",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Ask Codex in Herdr to review this commit.",
+        "family": "commit",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 中让 Codex 审查这两个文件。",
+        "family": "files",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use herdr-orchestra to start Codex for a plan review.",
+        "family": "plan",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "调用 codex-review；Herdr 任务上下文已建立，继续审查。",
+        "family": "explicit",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Review my current diff for correctness.",
+        "family": "generic",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Research how Codex review works in Herdr; do not launch anything.",
+        "family": "research",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "I am the leaf Codex reviewer in Herdr; review the assigned patch myself.",
+        "family": "leaf",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use Codex outside Herdr for an independent review.",
+        "family": "outside",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 让 Codex 审查并自动修复、生成 CHANGELOG。",
+        "family": "auto-fix",
+        "expected_trigger": false,
+        "predicted_trigger": true,
+        "passed": false,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_reviewer",
+          "herdr_context",
+          "review_action"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "Bundle these files with codex-bridge for a Codex review.",
+        "family": "bundle",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "codex_reviewer",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "在 Herdr 查看当前 pane。",
+        "family": "pane",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "herdr_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Coordinate two independent workers in Herdr.",
+        "family": "orchestra",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "herdr_context"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "只做可维护性审查，不启动其他工具。",
+        "family": "quality",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "review_action"
+        ],
+        "negative_pattern": null
+      }
+    ]
+  }
+}
