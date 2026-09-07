@@ -373,5 +373,96 @@ class HomeDirectoryTests(unittest.TestCase):
                 (project / ".agents" / "skills" / "git-commit" / "SKILL.md").is_file()
             )
 
+
+# Written dest contract for the five harnesses. Do not generate expected
+# dests from DETECT_AGENTS or dests_from_keys.
+_SHARED_SKILLS = Path(".agents") / "skills"
+_FIVE_HARNESS_LAYOUTS = (
+    (".claude", Path(".claude") / "skills"),
+    (".codex", Path(".codex") / "skills"),
+    (".grok", Path(".grok") / "skills"),
+    (".kimi-code", Path(".kimi-code") / "skills"),
+    (".omp", Path(".omp") / "skills"),
+)
+_GIT_COMMIT_SOURCE = (
+    Path("skills") / "git-github-collaboration" / "git-commit"
+)
+
+
+class FiveHarnessLayoutTests(unittest.TestCase):
+    def _git_commit_source(self) -> Path:
+        return install_projects.catalog_root() / _GIT_COMMIT_SOURCE
+
+    def _install_detected_roots(self, detect_roots: tuple[str, ...]) -> None:
+        dest_by_root = {root: dest for root, dest in _FIVE_HARNESS_LAYOUTS}
+        unknown = [root for root in detect_roots if root not in dest_by_root]
+        if unknown:
+            raise AssertionError(f"unknown detect roots in written contract: {unknown}")
+        source = self._git_commit_source()
+        with TemporaryDirectory() as raw:
+            outer = Path(raw)
+            project = outer / "proj"
+            sibling = outer / "sibling"
+            cwd = outer / "cwd"
+            project.mkdir()
+            sibling.mkdir()
+            cwd.mkdir()
+            for root in detect_roots:
+                (project / root).mkdir()
+            previous = Path.cwd()
+            os.chdir(cwd)
+            try:
+                out = io.StringIO()
+                with redirect_stdout(out), redirect_stderr(io.StringIO()):
+                    code = install_projects.main(
+                        ["--project", str(project), "--skill", "git-commit"]
+                    )
+            finally:
+                os.chdir(previous)
+            self.assertEqual(code, 0, out.getvalue())
+            self.assertEqual(
+                {path.name for path in outer.iterdir()},
+                {"proj", "sibling", "cwd"},
+            )
+            self.assertEqual(list(sibling.iterdir()), [])
+            self.assertEqual(list(cwd.iterdir()), [])
+            self.assertEqual(
+                {path.name for path in project.iterdir()},
+                {".agents", *detect_roots},
+            )
+            shared = project / _SHARED_SKILLS / "git-commit"
+            self.assertTrue((shared / "SKILL.md").is_file())
+            self.assertEqual(shared.resolve(), source.resolve())
+            selected = set(detect_roots)
+            for root, dest_rel in _FIVE_HARNESS_LAYOUTS:
+                dest = project / dest_rel / "git-commit"
+                if root in selected:
+                    self.assertTrue((dest / "SKILL.md").is_file())
+                    self.assertEqual(dest.resolve(), source.resolve())
+                else:
+                    self.assertFalse((project / root).exists())
+                    self.assertFalse(dest.exists())
+
+    def test_claude_code_root_links_claude_skills_and_agents(self) -> None:
+        self._install_detected_roots((".claude",))
+
+    def test_codex_root_links_codex_skills_and_agents(self) -> None:
+        self._install_detected_roots((".codex",))
+
+    def test_grok_root_links_grok_skills_and_agents(self) -> None:
+        self._install_detected_roots((".grok",))
+
+    def test_kimi_code_root_links_kimi_code_skills_and_agents(self) -> None:
+        self._install_detected_roots((".kimi-code",))
+
+    def test_omp_root_links_omp_skills_and_agents(self) -> None:
+        self._install_detected_roots((".omp",))
+
+    def test_five_harness_roots_install_shared_and_native_dests(self) -> None:
+        self._install_detected_roots(
+            tuple(root for root, _dest in _FIVE_HARNESS_LAYOUTS)
+        )
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
