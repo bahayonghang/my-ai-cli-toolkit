@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/index.md","reason":"Repository operational code ownership and quality routing"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"General diagnostics; existing Claude exit-1 example is stale: follow C1 official exit-2 contract, with formal spec correction owned by C4"}
+{"file":".trellis/tasks/09-07-five-harness-evergreen-alignment/research/audit-report.md","reason":"Prioritized evidence, authorization scope and child ownership"}
+{"file":".trellis/tasks/09-07-five-harness-evergreen-alignment/research/test-baseline.md","reason":"Actual test baseline and safe hook reproductions"}
+{"file":".trellis/tasks/09-07-five-harness-evergreen-alignment/research/harness-capabilities.md","reason":"Five harness capability boundaries and dated primary sources"}
