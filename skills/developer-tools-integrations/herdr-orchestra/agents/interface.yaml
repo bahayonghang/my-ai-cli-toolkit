@@ -4,7 +4,9 @@ interface:
   default_prompt: >-
     仅在用户明确要求 Herdr 编排或已有授权的上层委派时使用 herdr-orchestra。
     若我是被分配的 leaf worker，则直接完成任务，不再次编排。
-    先检查 HERDR_ENV 和 caller context，保留 cwd/focus，以原生 agent 接口执行有权限和 ownership 边界的任务。
+    先检查 HERDR_ENV 和 caller context，保留 cwd/focus。
+    在 agent start 前选择 pane 或 agent surface；未登记 identity 则 incomplete，不换 transport。
+    以所选 surface 执行有权限和 ownership 边界的任务。
     返回实际身份、生命周期、范围、完整响应和未验证项；不自动处理 trust、不扩大写权限或清理资源。
 compatibility:
   canonical_format: agent-skills

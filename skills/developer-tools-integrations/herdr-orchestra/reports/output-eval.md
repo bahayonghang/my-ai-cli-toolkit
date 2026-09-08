@@ -29,5 +29,9 @@
 | route-review | 本地普通 review | 交给既有 review/native tools；无 Herdr 编排 | routing-negative，PASS |
 | route-research | 研究 Herdr delegation | 阅读文档，未操作会话 | 单词命中不等于动作授权，PASS |
 | route-leaf | 已分配 leaf | 直接审查输入，未再调 orchestra | 防递归，PASS |
+| H13-pane-cli | 调用 omp 查询当前 Google/Gemini 模型 | env/caller 后读 omp `--help`；验收可由非交互 `omp models` 满足，故选 pane surface；split sibling、确认 shell、`pane run` 该命令、非碰撞 wait；无 `agent start` | 先选 pane，TUI start 非必要，PASS |
+| H13-agent-chat | 在 Herdr 让 omp 审查当前 diff | env/caller 后按契约：用户要求 omp 审查当前 diff，非交互目录查询不能满足该验收 → agent surface；owned sibling 上 `agent start --kind omp`，ready identity 后一次 `agent prompt --wait`；不以 `omp models` 一类目录查询代替 | 交互走 start/prompt，PASS |
+| H14-start-undetected | start timeout、TUI 可见、unknown、name 丢失 | 检查同一 owned pane：`pane get`、`process-info`、visible/detection、`agent get`、`integration status`；receipt 分列 timeout/unknown、可见 TUI、incomplete；无 prompt、raw 输入、`report-agent`、第二 pane、事后 kind CLI | 严格 incomplete，PASS |
+| H15-marker-collision | wait needle 是 `pane run` 命令子串 | 该次 `wait-output` 命中不视为命令结束；改用运行时拼接的非碰撞标记，或等待并非命令原文的末行/prompt | 碰撞 wait 无效，PASS |
 
-结果：25 个 source-guided trace 的候选动作符合上述期望；不构成 25 个真实运行通过。覆盖 H01–H12 的分支及四个 routing-negative。命令返回内容、实际 shell argv、自动检测、请求接受、完整输出和 UI 副作用均待真实环境验证。
+结果：29 个 source-guided trace 的候选动作符合上述期望；不构成 29 个真实运行通过，也不是 live Herdr 证明。覆盖 H01–H15 的分支及四个 routing-negative。命令返回内容、实际 shell argv、自动检测、请求接受、完整输出和 UI 副作用均待真实环境验证。

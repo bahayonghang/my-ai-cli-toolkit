@@ -21,19 +21,29 @@
 
 通过 `herdr pane current --current` 和当前环境的 caller ID 解析调用者；`herdr pane layout --pane <caller-id>` 查看几何。默认同 tab sibling、显式 cwd、`--no-focus`；宽 pane 向右，窄/高 pane 向下，避免连续切成不可用区域。只有用户要求才建其他 tab/workspace/worktree 或换 cwd。
 
-按当前 CLI 执行 `pane split`，从 JSON `.result.pane.pane_id` 取新 ID。启动前确认目标为可用交互 shell：shell 在前台 prompt，无编辑器、命令或其他 Agent。无法确认就不投送。不得挪用忙碌或无 ownership 的既有 pane。
+**Surface 选择。** 确认 `HERDR_ENV` 和 caller 之后、创建 sibling 与 `agent start` 之前判定：
 
-执行 `herdr agent start <name> --kind <kind> --pane <returned-id> -- <native-argv...>`。原生参数逐项传递；不把整个命令拼成 shell 字符串。start 成功表示 Herdr 检测到预期交互 Agent 且 ready；如 startup blocked/not ready，读取同一身份的状态/可见输出并报告待决问题，绝不自动按 Enter 接受 trust 或改变审批策略。
+1. 用户明确要求启动该 kind 的交互 TUI/Agent → **agent surface**。
+2. 否则阅读该 kind 当前 `--help`。若存在已文档化的非交互调用（子命令或 `-p`/`--print`/`exec` 等），其 stdout/exit 能满足本任务验收 → **pane surface**。
+3. 其余 → **agent surface**。
 
-start 不是创建布局的命令。one-shot `exec` 或 `review` 不能塞进等待交互 readiness 的 start 路径；普通程序属于 pane surface，需要独立的退出状态/结果证据，不能拿 agent lifecycle 代替。
+不在本契约枚举 kind 子命令表。两种 surface 都使用本任务新建的 sibling pane。start 不是创建布局的命令。
+
+按当前 CLI 执行 `pane split`，从 JSON `.result.pane.pane_id` 取新 ID。投送前确认目标为可用交互 shell：shell 在前台 prompt，无编辑器、命令或其他 Agent。无法确认就不投送。不得挪用忙碌或无 ownership 的既有 pane。
+
+**pane surface。** 执行 `herdr pane run <pane-id> <command...>`，用命令退出后的输出和完成标记收集结果。不得用 agent idle/done 代替命令结束。one-shot `exec`/`review` 与普通程序走这条路径，需要独立的退出状态/结果证据，不能拿 agent lifecycle 代替。`pane wait-output` 所用完成标记不得作为子串出现在已发送的命令文本中；构造方式见 [示例](patterns-and-recovery.md#pane-surface-示例)。
+
+**agent surface。** 执行 `herdr agent start <name> --kind <kind> --pane <returned-id> -- <native-argv...>`。原生参数逐项传递；不把整个命令拼成 shell 字符串。start 成功表示 Herdr 检测到预期交互 Agent 且 ready；如 startup blocked/not ready，读取同一身份的状态/可见输出并报告待决问题，绝不自动按 Enter 接受 trust 或改变审批策略。
 
 使用 `herdr agent prompt <name> <assignment-text> --wait --timeout <finite-ms>` 提交一次。只投递给新建或已明确接管且 known-idle 的任务 worker；已经 working 的 Agent 结束上一轮可能满足 wait，不能用它跟踪新任务。prompt 文本是一项参数，禁止通过 `pane run` 将任务输入交互 Agent。shell 写法见 [示例](patterns-and-recovery.md#shell-参数示例)。
+
+**未登记 identity。** `agent start` 返回 timeout / not-ready / 非零，或随后对该 name 的 `agent get` 为 `agent_not_found` 时，检查本任务创建的 pane，即使 start 所用 name 已不在：`pane get`、`process-info`、passive `visible`/`detection`、`agent get`、`herdr integration status`。进程在而 name 不在，仍是该 worker 的启动失败，不是空 shell。子进程可能是 bun/node/python shim，而标题/TUI 显示 kind；这是诊断，不是换 transport 的授权。预期 kind 未成为 Herdr 可寻址 identity（unique live name，或已宿主该 agent 的 pane）时停止输入。禁止：`agent prompt`；raw `pane send-text`/`send-keys`/`pane run` 把 assignment 打进该 TUI；`pane report-agent` 冒充集成；再 split 第二个 pane/worker；超时后再跑 kind CLI。receipt 分开写 timeout/unknown、可见 TUI 证据、incomplete。保留该 pane。检查命令见 [start 超时检查](patterns-and-recovery.md#start-超时检查)。已登记但 state=unknown 的 worker 仍按下方生命周期处理。
 
 ## 生命周期与身份
 
 wait 的默认 settled 状态含 idle、done、blocked，不必重复指定 `--until`。用 `--until` 仅表达确实需要的特定状态；所有等待设置有限 timeout。一次 settled 结果仍需确认当前 assignment 的活动与响应。
 
-提示未引起观察到的变化、timeout、unknown、start 失败或任何非零操作结果：保留错误，先 `agent get` 和授权范围内的 `agent read` 检查同一 worker。检查前不要再次提交、另起替代 worker、改 transport 或读取旧文字后报成功。必要时可在当前任务权限内继续有限等待。
+提示未引起观察到的变化、timeout、unknown、start 失败或任何非零操作结果：保留错误，先检查同一 worker。start 后 name 已不在时，检查本任务创建的 pane（见未登记 identity）；不要把丢失的 name 当成空 shell。已登记 identity 用 `agent get` 和授权范围内的 `agent read`。检查前不要再次提交、另起替代 worker、改 transport 或读取旧文字后报成功。必要时可在当前任务权限内继续有限等待。
 
 blocked 表示具体问题或批准界面；向调用者返回内容和缺少的决定，不代答。unknown 不证明 idle 或完成。`agent get`/read 若显示已退出、释放、替换或身份不能确认，就停止该目标的输入；不要退回 raw pane 输入。target 必须是 unique live agent name 或宿主 pane ID，不使用 terminal ID 或 bare kind。
 
