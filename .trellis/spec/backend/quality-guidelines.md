@@ -13,6 +13,7 @@ Quality here means the repo stays machine-checkable and source-driven. Every cha
 - Adding a database, service layer, or dependency-heavy framework for file-backed catalog work.
 - Leaving `SKILL.md` frontmatter out of sync with its `skills/<category>/<skill-name>/` directory.
 - Editing ignored runtime state, dependency output, or build cache paths unless the task is explicitly about recovery.
+- Treating `just python-check` (byte-compile) as event-protocol testing.
 
 ## Required Patterns
 
@@ -45,10 +46,15 @@ silent mojibake.
 
 - `just skills-check` for skill metadata or `SKILL.md` changes.
 - `just python-check` for Python helpers under `skills/`, `platforms/`, or `scripts/`.
+- `just python-test` for stdlib unittest of `gh-pr-release` and `platforms/claude/hooks`.
 - `just node-test` for Node tests under `skills/**/tests/*.mjs`.
 - `just docs-sync` or `just docs-check` when public skill/platform content changes.
 - `git diff --check` for whitespace sanity.
 - `just ci` before finishing when the change touches repo-wide source or generated output.
+
+Compile is not event-protocol testing. `just python-check` byte-compiles
+Python files. Hook stdin, exit codes, and session isolation require
+`just python-test` or the owning unittest suite.
 
 ## Code Review Checklist
 
@@ -56,6 +62,7 @@ silent mojibake.
 - Are generated files updated only through the owning generator?
 - Do new skill files keep `SKILL.md` frontmatter in the top-level form: `name`, `description`, `category`, `tags`, `version`?
 - Are tests or validation commands matched to the file type that changed?
+- Did Python event-protocol changes run `just python-test`, not only `just python-check`?
 - Did the change avoid host-local state such as `.claude/`, `.codex/`, `.agents/`, and `docs/node_modules/`?
 
 ## Examples

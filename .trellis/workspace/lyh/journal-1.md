@@ -1976,3 +1976,24 @@ work_commits=79c4fb12ec665270097e444cdd06be1e87678484,e017fee997993316ea02f330d1
 ### Next Steps
 
 - 远端三份旧副本处置、全局安装及新会话发现、完整模型自主行为证据待另行处理；未push
+
+
+## Session 64: Herdr orchestration and Codex review skills
+
+**Date**: 2026-09-08
+**Task**: Herdr orchestration and Codex review skills
+**Branch**: `dev`
+
+### Summary
+
+Implemented two 0.1.0 instruction-first skills and their shared delegation contract, prior-art research, 52 manual behavior traces, and honest qiaomu reports. Independent child and full-scope checks passed. Final just ci passed: 43 skills, Node 419 pass / 4 existing skips / 0 fail, docs build, Python and installer checks. Isolated install links resolved correctly and the existing third-party review entry stayed unchanged. Lexical smoke remains 13/16 and 13/17; README/manifest validator differences and raw IR null fields are documented. Real Herdr/model execution, effective sandbox and fresh-session discovery remain unverified. User approved commit and archive; all three tasks archived under archive/2026-09. Temporary install junction cleanup was rejected by automatic approval review with blocked by policy; retained location is recorded in archived parent research/verification.md.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b6dfbc6d` | (see git log) |
+
+### Status
+
+[OK] **Completed**

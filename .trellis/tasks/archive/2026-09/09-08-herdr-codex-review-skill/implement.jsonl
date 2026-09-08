@@ -1,0 +1,5 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Frontmatter, neutral interface, eval tiers, intentional qiaomu schema deviations and evidence limits"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Repository validation and generated source ownership"}
+{"file":".trellis/tasks/09-08-herdr-review-skills/research/herdr-audit.md","reason":"Current Herdr mechanics and line-anchored reference defects"}
+{"file":".trellis/tasks/09-08-herdr-review-skills/research/codex-review.md","reason":"Codex interactive review, readonly flags and complete result contract"}
+{"file":".trellis/tasks/09-08-herdr-review-skills/research/prior-art-research.md","reason":"Candidate lessons, routing collision, package scope and missing evidence"}

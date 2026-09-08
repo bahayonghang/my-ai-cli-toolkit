@@ -1,5 +1,5 @@
 {
-  "description": "ClaudeKit global hooks: dangerous command blocker, spec injection, prompt logging, session review",
+  "description": "Claude Code hooks: dangerous command blocker and prompt logging",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,11 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/pre-bash.py \"$CLAUDE_TOOL_INPUT\""
-          },
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/inject-spec.py"
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/pre-bash.py\""
           }
         ]
       }
@@ -21,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/log-prompt.py"
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/log-prompt.py\""
           }
         ]
       }

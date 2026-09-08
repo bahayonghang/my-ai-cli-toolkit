@@ -20,23 +20,56 @@ This repo uses explicit, user-facing failures instead of hidden recovery logic. 
 - Do not swallow exceptions unless the script can meaningfully continue.
 - If a hook blocks something, block it completely rather than half-applying it.
 
-## API Error Responses
+## Exit codes
 
-There is no HTTP API in this repository. For CLI-style helpers, the standard response is:
+There is no HTTP API in this repository. CLI-style helpers use:
 
 - `0` for success
-- `1` for validation or policy failure
-- A different nonzero code only when a script already uses it to distinguish argument errors from general failures
+- `1` for generic CLI validation or policy failure
+- A host-documented nonzero code when that host protocol requires it
+
+Generic CLI exit `1` is not a Claude PreToolUse block. Do not copy Claude
+codes as a universal rule for all tools. Other hosts document their own
+contracts in [`docs/harnesses.md`](../../../docs/harnesses.md).
+
+### Generic CLI
+
+Validation scripts and generators exit `1` on expected failure. A skill helper
+may use other nonzero codes to distinguish argument errors from format
+failures. Those helper codes are local to that command and are not a host
+hook protocol.
+
+### Claude Code PreToolUse (host protocol exception)
+
+Applies only to `platforms/claude/hooks/pre-bash.py` on PreToolUse. Official
+PreToolUse input is stdin JSON. Exit `2` blocks the tool call. Exit `1` does
+not block.
+
+- Dangerous-command match: exit `2`.
+- Invalid PreToolUse event (bad JSON, missing `tool_input.command`, or other
+  malformed event): exit `2`.
+
+### Claude Code UserPromptSubmit (host protocol exception)
+
+Applies only to `platforms/claude/hooks/log-prompt.py` on UserPromptSubmit.
+Prompt-log failure is not a permission gate.
+
+- Missing or invalid `session_id`, invalid project directory, invalid JSON,
+  or write error: exit `1`, not `2`.
 
 ## Common Mistakes
 
 - Tracebacks for normal validation failures.
 - Silent fallback to a default path, agent, or config when the file is missing.
 - Continuing after a failing policy check.
+- Treating generic CLI exit `1` as a Claude PreToolUse block.
+- Treating UserPromptSubmit prompt-log failure as a PreToolUse block.
+- Copying Claude PreToolUse exit codes as a universal hook protocol.
 
 ## Examples
 
 - `scripts/check.py` prints validation errors for invalid skills and exits `1`.
 - `skills/git-github-collaboration/git-commit/scripts/compose_commit_message.py` returns `2` when `--ai` is missing `--agent-model`, `3` when `--why` is required but missing, and `1` for length or format failures.
-- `platforms/claude/hooks/pre-bash.py` exits `1` on blocked commands.
+- `platforms/claude/hooks/pre-bash.py` returns `2` for blocked commands and invalid PreToolUse events.
+- `platforms/claude/hooks/log-prompt.py` returns `1` on prompt-log failure.
 - `docs/scripts/sync_docs_catalog.py` exits `1` when generated docs drift from source.

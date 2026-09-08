@@ -1,0 +1,804 @@
+{
+  "ok": true,
+  "complete": false,
+  "researched_at": "2026-09-08",
+  "queries": [
+    "herdr orchestration",
+    "codex independent review",
+    "multi agent cross review"
+  ],
+  "metric_semantics": {
+    "skills_sh_installs": "ecosystem install telemetry; not ratings or correctness",
+    "skillsmp_repo_stars": "GitHub repository stars; not installs, ratings, or skill-specific quality",
+    "cross_catalog_score": "not calculated; metrics remain separate"
+  },
+  "query_runs": [
+    {
+      "query": "herdr orchestration",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 10
+    },
+    {
+      "query": "codex independent review",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 10
+    },
+    {
+      "query": "multi agent cross review",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 9
+    }
+  ],
+  "candidate_family_count": 29,
+  "candidates": [
+    {
+      "family_key": "openclaw/openclaw:acp-router",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "acp-router",
+        "author": "openclaw",
+        "description": "Route plain-language requests for Claude Code, Cursor, Copilot, OpenClaw ACP, OpenCode, Gemini CLI, Qwen, Kiro, Kimi, iFlow, Factory Droid, Kilocode, or explicit ACP harness work into either OpenClaw ACP runtime sessions or direct acpx-driven sessions (\"telephone game\" flow). For coding-agent thread requests, read this skill first, then use only `sessions_spawn` for thread creation. Codex chat binding defaults to the native Codex app-server plugin unless ACP is explicit or background spawn needs ACP.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/extensions/acpx/skills/acp-router",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/extensions-acpx-skills-acp-router",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-08-29T09:07:05+00:00",
+        "source_key": "openclaw/openclaw:extensions/acpx/skills/acp-router",
+        "family_key": "openclaw/openclaw:acp-router",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:autoreview",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "autoreview",
+        "author": "openclaw",
+        "description": "Structured Codex, Claude, Amp, Pi, or Kimi code review when explicitly requested.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/autoreview",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-autoreview",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-09-02T12:10:39+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/autoreview",
+        "family_key": "openclaw/openclaw:autoreview",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:browser-automation",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "browser-automation",
+        "author": "openclaw",
+        "description": "Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/extensions/browser/skills/browser-automation",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/extensions-browser-skills-browser-automation",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-08-28T19:23:47+00:00",
+        "source_key": "openclaw/openclaw:extensions/browser/skills/browser-automation",
+        "family_key": "openclaw/openclaw:browser-automation",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:coding-agent",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "coding-agent",
+        "author": "openclaw",
+        "description": "Delegate coding work to Codex, Claude Code, or OpenCode as background workers; not simple edits or read-only code lookup.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/coding-agent",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-coding-agent",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-07-29T05:43:42+00:00",
+        "source_key": "openclaw/openclaw:skills/coding-agent",
+        "family_key": "openclaw/openclaw:coding-agent",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:model-usage",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "model-usage",
+        "author": "openclaw",
+        "description": "Summarize CodexBar local cost logs by model for Codex or Claude, including current or full breakdowns.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/model-usage",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-model-usage",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-07-21T18:04:46+00:00",
+        "source_key": "openclaw/openclaw:skills/model-usage",
+        "family_key": "openclaw/openclaw:model-usage",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:node-connect",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "node-connect",
+        "author": "openclaw",
+        "description": "Diagnose OpenClaw Control UI browser and native Android, iOS, or macOS node connection failures across route, auth, pairing, QR/setup-code, and reconnect states.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/node-connect",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-node-connect",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-08-14T18:17:33+00:00",
+        "source_key": "openclaw/openclaw:skills/node-connect",
+        "family_key": "openclaw/openclaw:node-connect",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:openclaw-debugging",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "openclaw-debugging",
+        "author": "openclaw",
+        "description": "Debug OpenClaw model, provider, tool-surface, code-mode, streaming, and live/Crabbox behavior by choosing the right logs, probes, and proof path before changing code, including fetching stored sessions, transcripts, and attachments as evidence.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/openclaw-debugging",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-openclaw-debugging",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-08-16T18:13:47+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/openclaw-debugging",
+        "family_key": "openclaw/openclaw:openclaw-debugging",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:taskflow",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "taskflow",
+        "author": "openclaw",
+        "description": "Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/taskflow",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-taskflow",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-08-25T20:28:48+00:00",
+        "source_key": "openclaw/openclaw:skills/taskflow",
+        "family_key": "openclaw/openclaw:taskflow",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "openclaw/openclaw:update-team-server",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "update-team-server",
+        "author": "openclaw",
+        "description": "Update the operator-configured Team server unattended through its canonical deployment owner; verify serving code, supported migrations, session continuity, and recovery without duplicating the hourly scheduler.",
+        "content_language": "en",
+        "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/update-team-server",
+        "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-update-team-server",
+        "repo_stars": 389030,
+        "catalog_updated_at": "2026-08-28T17:56:04+00:00",
+        "source_key": "openclaw/openclaw:.agents/skills/update-team-server",
+        "family_key": "openclaw/openclaw:update-team-server",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:receiving-code-review",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "receiving-code-review",
+        "author": "obra",
+        "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/receiving-code-review",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-receiving-code-review",
+        "repo_stars": 280785,
+        "catalog_updated_at": "2026-07-24T00:27:16+00:00",
+        "source_key": "obra/superpowers:skills/receiving-code-review",
+        "family_key": "obra/superpowers:receiving-code-review",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:requesting-code-review",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "requesting-code-review",
+        "author": "obra",
+        "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/requesting-code-review",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-requesting-code-review",
+        "repo_stars": 280785,
+        "catalog_updated_at": "2026-08-12T16:53:21+00:00",
+        "source_key": "obra/superpowers:skills/requesting-code-review",
+        "family_key": "obra/superpowers:requesting-code-review",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:test-driven-development",
+      "queries": [
+        "codex independent review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "test-driven-development",
+        "author": "obra",
+        "description": "Use when implementing any feature or bugfix, before writing implementation code",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/test-driven-development",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-test-driven-development",
+        "repo_stars": 280785,
+        "catalog_updated_at": "2026-07-24T00:27:16+00:00",
+        "source_key": "obra/superpowers:skills/test-driven-development",
+        "family_key": "obra/superpowers:test-driven-development",
+        "aliases": [],
+        "query": "codex independent review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "obra/superpowers:writing-plans",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "writing-plans",
+        "author": "obra",
+        "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+        "content_language": "en",
+        "github_url": "https://github.com/obra/superpowers/tree/main/skills/writing-plans",
+        "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-writing-plans",
+        "repo_stars": 280785,
+        "catalog_updated_at": "2026-08-12T16:53:21+00:00",
+        "source_key": "obra/superpowers:skills/writing-plans",
+        "family_key": "obra/superpowers:writing-plans",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:agentic-os",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "agentic-os",
+        "author": "affaan-m",
+        "description": "Build persistent multi-agent operating systems on Claude Code. Covers kernel architecture, specialist agents, slash commands, file-based memory, scheduled automation, and state management without external databases. Use when building a persistent multi-agent system on Claude Code with its own memory, commands, and scheduling.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/agentic-os",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-agentic-os",
+        "repo_stars": 246148,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/agentic-os",
+        "family_key": "affaan-m/ecc:agentic-os",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:autonomous-loops",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "autonomous-loops",
+        "author": "affaan-m",
+        "description": "Patterns and architectures for autonomous Claude Code loops — from simple sequential pipelines to RFC-driven multi-agent DAG systems.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/.kiro/skills/autonomous-loops",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/kiro-skills-autonomous-loops",
+        "repo_stars": 246148,
+        "catalog_updated_at": "2026-06-07T05:26:37+00:00",
+        "source_key": "affaan-m/ecc:.kiro/skills/autonomous-loops",
+        "family_key": "affaan-m/ecc:autonomous-loops",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:claude-devfleet",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "claude-devfleet",
+        "author": "affaan-m",
+        "description": "Orchestrate multi-agent coding tasks via Claude DevFleet — plan projects, dispatch parallel agents in isolated worktrees, monitor progress, and read structured reports. Use when dispatching parallel coding agents across isolated worktrees and tracking their reports.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/claude-devfleet",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-claude-devfleet",
+        "repo_stars": 246148,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/claude-devfleet",
+        "family_key": "affaan-m/ecc:claude-devfleet",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:dmux-workflows",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "dmux-workflows",
+        "author": "affaan-m",
+        "description": "Multi-agent orchestration using dmux (tmux pane manager for AI agents). Patterns for parallel agent workflows across Claude Code, Codex, OpenCode, and other harnesses. Use when running multiple agent sessions in parallel or coordinating multi-agent development workflows.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/dmux-workflows",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-dmux-workflows",
+        "repo_stars": 246148,
+        "catalog_updated_at": "2026-06-11T12:12:21+00:00",
+        "source_key": "affaan-m/ecc:skills/dmux-workflows",
+        "family_key": "affaan-m/ecc:dmux-workflows",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/.agents/skills/dmux-workflows"
+          }
+        ],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:ralphinho-rfc-pipeline",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "ralphinho-rfc-pipeline",
+        "author": "affaan-m",
+        "description": "RFC-driven multi-agent DAG execution pattern with quality gates, merge queues, and work unit orchestration. Use when running RFC-driven multi-agent execution with quality gates and a merge queue.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/ralphinho-rfc-pipeline",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-ralphinho-rfc-pipeline",
+        "repo_stars": 246148,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/ralphinho-rfc-pipeline",
+        "family_key": "affaan-m/ecc:ralphinho-rfc-pipeline",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:santa-method",
+      "queries": [
+        "multi agent cross review"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "santa-method",
+        "author": "affaan-m",
+        "description": "Multi-agent adversarial verification with convergence loop. Two independent review agents must both pass before output ships. Use when output must clear two independent adversarial reviewers before it ships.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/santa-method",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-santa-method",
+        "repo_stars": 246148,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/santa-method",
+        "family_key": "affaan-m/ecc:santa-method",
+        "aliases": [],
+        "query": "multi agent cross review"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "herdrdev/herdr:herdr",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr",
+        "author": "herdrdev",
+        "description": "Control Herdr, a terminal multiplexer for coding agents. Use only when the user explicitly mentions Herdr or asks to use Herdr to inspect or control panes, tabs, workspaces, commands, or another agent. Do not use merely because a task could benefit from a background terminal, delegation, or parallel work. Requires HERDR_ENV=1.",
+        "content_language": "en",
+        "github_url": "https://github.com/herdrdev/herdr/tree/master/skills/herdr",
+        "skillsmp_url": "https://skillsmp.com/creators/herdrdev/herdr/skills-herdr",
+        "repo_stars": 35573,
+        "catalog_updated_at": "2026-08-19T17:49:54+00:00",
+        "source_key": "herdrdev/herdr:skills/herdr",
+        "family_key": "herdrdev/herdr:herdr",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "herdrdev/herdr:herdr-pre-release-audit",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr-pre-release-audit",
+        "author": "herdrdev",
+        "description": "Audit herdr release readiness by comparing commits since the base release against next-release changelog and docs. Use when asked to run or apply the repo's pre-release audit, validate docs/next before release, inspect issue refs that release CI will close, or finalize release docs for herdr.",
+        "content_language": "en",
+        "github_url": "https://github.com/herdrdev/herdr/tree/master/.agents/skills/herdr-pre-release-audit",
+        "skillsmp_url": "https://skillsmp.com/creators/herdrdev/herdr/agents-skills-herdr-pre-release-audit",
+        "repo_stars": 35573,
+        "catalog_updated_at": "2026-09-01T11:48:45+00:00",
+        "source_key": "herdrdev/herdr:.agents/skills/herdr-pre-release-audit",
+        "family_key": "herdrdev/herdr:herdr-pre-release-audit",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "herdrdev/herdr:herdr-throwaway-repro",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr-throwaway-repro",
+        "author": "herdrdev",
+        "description": "Create and control a disposable named Herdr session from inside an existing Herdr session. Use for isolated Herdr runtime, pane, terminal, process, API, persistence, or agent reproductions that should be driven through the CLI/API without touching the default session.",
+        "content_language": "en",
+        "github_url": "https://github.com/herdrdev/herdr/tree/master/.agents/skills/herdr-throwaway-repro",
+        "skillsmp_url": "https://skillsmp.com/creators/herdrdev/herdr/agents-skills-herdr-throwaway-repro",
+        "repo_stars": 35573,
+        "catalog_updated_at": "2026-07-25T17:58:20+00:00",
+        "source_key": "herdrdev/herdr:.agents/skills/herdr-throwaway-repro",
+        "family_key": "herdrdev/herdr:herdr-throwaway-repro",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "herdrdev/herdr:triage",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "triage",
+        "author": "herdrdev",
+        "description": "Triage open herdr GitHub issues into a concise decision-first Markdown table. Use when the user says \"triage\", asks to triage open issues, asks which issues need attention, or wants issue priority/recommendation lights for herdr.",
+        "content_language": "en",
+        "github_url": "https://github.com/herdrdev/herdr/tree/master/.agents/skills/triage",
+        "skillsmp_url": "https://skillsmp.com/creators/herdrdev/herdr/agents-skills-triage",
+        "repo_stars": 35573,
+        "catalog_updated_at": "2026-08-05T22:16:37+00:00",
+        "source_key": "herdrdev/herdr:.agents/skills/triage",
+        "family_key": "herdrdev/herdr:triage",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "mastra-ai/mastra:herdr-kit-workflows",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr-kit-workflows",
+        "author": "mastra-ai",
+        "description": "Set up and operate Herdr Kit safely: install and configure the plugin and Mastra Code integration, manage Review and Work repository scope, open primary repository workspaces, synchronize managers, materialize or dematerialize managed worktrees, and update Herdr Kit settings or shortcuts.",
+        "content_language": "en",
+        "github_url": "https://github.com/mastra-ai/mastra/tree/main/.mastracode/skills/herdr-kit-workflows",
+        "skillsmp_url": "https://skillsmp.com/creators/mastra-ai/mastra/mastracode-skills-herdr-kit-workflows",
+        "repo_stars": 27650,
+        "catalog_updated_at": "2026-08-20T20:02:19+00:00",
+        "source_key": "mastra-ai/mastra:.mastracode/skills/herdr-kit-workflows",
+        "family_key": "mastra-ai/mastra:herdr-kit-workflows",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "mastra-ai/mastra:herdr-manager-query",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr-manager-query",
+        "author": "mastra-ai",
+        "description": "Query the authoritative global Herdr Review and Work Manager inventory, recommend actionable PR work, and explicitly materialize confirmed remote-only Review Manager records through the plugin's stable public CLI.",
+        "content_language": "en",
+        "github_url": "https://github.com/mastra-ai/mastra/tree/main/.mastracode/skills/herdr-manager-query",
+        "skillsmp_url": "https://skillsmp.com/creators/mastra-ai/mastra/mastracode-skills-herdr-manager-query",
+        "repo_stars": 27650,
+        "catalog_updated_at": "2026-07-28T17:45:00+00:00",
+        "source_key": "mastra-ai/mastra:.mastracode/skills/herdr-manager-query",
+        "family_key": "mastra-ai/mastra:herdr-manager-query",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "ogulcancelik/herdr:herdr",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr",
+        "author": "ogulcancelik",
+        "description": "Control Herdr, a terminal multiplexer for coding agents. Use only when the user explicitly mentions Herdr or asks to use Herdr to inspect or control panes, tabs, workspaces, commands, or another agent. Do not use merely because a task could benefit from a background terminal, delegation, or parallel work. Requires HERDR_ENV=1.",
+        "content_language": "en",
+        "github_url": "https://github.com/ogulcancelik/herdr/tree/master/skills/herdr",
+        "skillsmp_url": "https://skillsmp.com/creators/ogulcancelik/herdr/skills-herdr",
+        "repo_stars": 22326,
+        "catalog_updated_at": "2026-07-29T18:21:22+00:00",
+        "source_key": "ogulcancelik/herdr:skills/herdr",
+        "family_key": "ogulcancelik/herdr:herdr",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "ogulcancelik/herdr:herdr-pre-release-audit",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr-pre-release-audit",
+        "author": "ogulcancelik",
+        "description": "Audit herdr release readiness by comparing commits since the base release against next-release changelog and docs. Use when asked to run or apply the repo's pre-release audit, validate docs/next before release, inspect issue refs that release CI will close, or finalize release docs for herdr.",
+        "content_language": "en",
+        "github_url": "https://github.com/ogulcancelik/herdr/tree/master/.agents/skills/herdr-pre-release-audit",
+        "skillsmp_url": "https://skillsmp.com/creators/ogulcancelik/herdr/agents-skills-herdr-pre-release-audit",
+        "repo_stars": 22326,
+        "catalog_updated_at": "2026-07-25T18:04:01+00:00",
+        "source_key": "ogulcancelik/herdr:.agents/skills/herdr-pre-release-audit",
+        "family_key": "ogulcancelik/herdr:herdr-pre-release-audit",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "ogulcancelik/herdr:triage",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "triage",
+        "author": "ogulcancelik",
+        "description": "Triage open herdr GitHub issues into a concise decision-first Markdown table. Use when the user says \"triage\", asks to triage open issues, asks which issues need attention, or wants issue priority/recommendation lights for herdr.",
+        "content_language": "en",
+        "github_url": "https://github.com/ogulcancelik/herdr/tree/master/.agents/skills/triage",
+        "skillsmp_url": "https://skillsmp.com/creators/ogulcancelik/herdr/agents-skills-triage",
+        "repo_stars": 22326,
+        "catalog_updated_at": "2026-07-25T18:04:01+00:00",
+        "source_key": "ogulcancelik/herdr:.agents/skills/triage",
+        "family_key": "ogulcancelik/herdr:triage",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "davidondrej/skills:herdr",
+      "queries": [
+        "herdr orchestration"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "herdr",
+        "author": "davidondrej",
+        "description": "Operate and coordinate AI agents running inside Herdr in Ghostty. Use when the user says \"Use the Herdr skill,\" mentions Herdr, or asks to inspect, message, wait for, or coordinate agents in a Herdr workspace. Herdr-specific; do not use for cmux or ordinary terminal sessions.",
+        "content_language": "en",
+        "github_url": "https://github.com/davidondrej/skills/tree/main/skills/agent-orchestration/herdr",
+        "skillsmp_url": "https://skillsmp.com/creators/davidondrej/skills/skills-agent-orchestration-herdr",
+        "repo_stars": 3956,
+        "catalog_updated_at": "2026-09-06T08:13:28+00:00",
+        "source_key": "davidondrej/skills:skills/agent-orchestration/herdr",
+        "family_key": "davidondrej/skills:herdr",
+        "aliases": [],
+        "query": "herdr orchestration"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    }
+  ],
+  "missing_evidence": [],
+  "next_steps": [
+    "shortlist by job relevance and role coverage, not combined popularity",
+    "open canonical GitHub source and inspect SKILL.md before adoption",
+    "verify license, maintenance, permissions, security, duplication, and rating evidence",
+    "write keep/adapt/reject/invent synthesis before authoring"
+  ]
+}

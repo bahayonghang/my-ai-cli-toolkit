@@ -1,11 +1,11 @@
 # Commands / Prompts
 
-Platform content lives under `platforms/<platform>/`. Each platform consumes content differently: some use command files, while others use prompts, agents, or rules.
+Platform content lives under `platforms/<platform>/`. Each platform consumes content differently: some use command files, while others use agents, hooks, or rules. This page lists files that exist in the repository.
 
 ## When to add a command, prompt, agent, or rule
 
 - **Command**: user-invoked workflow entrypoint with arguments, fixed steps, and platform command semantics.
-- **Prompt**: legacy or platform-specific prompt asset; reusable Codex workflows should prefer `$skill-name` entries under `skills/`.
+- **Prompt**: use only when a platform source tree actually ships prompt files. This repository has no `platforms/codex/prompts/` directory.
 - **Agent**: role-specialized execution surface with stable responsibility, model/tool boundaries, or subtask routing.
 - **Rule / AGENTS.md**: baseline project or platform guidance for default constraints, directory rules, and safety boundaries.
 
@@ -71,9 +71,9 @@ Platform content lives under `platforms/<platform>/`. Each platform consumes con
 #### Hooks
 
 - `platforms/claude/hooks/hooks.json`
-- `platforms/claude/hooks/inject-spec.py`
 - `platforms/claude/hooks/log-prompt.py`
 - `platforms/claude/hooks/pre-bash.py`
+- `platforms/claude/hooks/tests/test_hooks.py`
 
 #### Root files
 
@@ -96,7 +96,7 @@ Platform content lives under `platforms/<platform>/`. Each platform consumes con
 - `platforms/codex/AGENTS.md`
 - `platforms/codex/code_map.md`
 
-Reusable Codex workflows should prefer `$skill-name` entries under `skills/`, such as `$archive-planning`; `platforms/codex/prompts/` is only for legacy or platform-specific prompt assets.
+This repository's Codex source currently ships `platforms/codex/agents/` only. Reusable workflows belong in `skills/` (for example `$git-commit`). Do not assume a `platforms/codex/prompts/` directory or a `$archive-planning` skill.
 
 ## Validation after changes
 

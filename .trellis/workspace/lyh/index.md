@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 63
-- **Last Active**: 2026-09-05
+- **Total Sessions**: 64
+- **Last Active**: 2026-09-08
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1978 | Active |
+| `journal-1.md` | ~1999 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 64 | 2026-09-08 | Herdr orchestration and Codex review skills | `b6dfbc6d` | `dev` |
 | 63 | 2026-09-05 | 技能审计优化提交与归档 | `45c7d175` | `dev` |
 | 62 | 2026-09-05 | 技能授权连续性优化实施与归档 | `1726e0b8`, `a959b7ab` | `dev` |
 | 61 | 2026-09-02 | 按分类 live-link 一方 skills | `2ea981d4`, `e11fa037`, `83d5309f` | `dev` |

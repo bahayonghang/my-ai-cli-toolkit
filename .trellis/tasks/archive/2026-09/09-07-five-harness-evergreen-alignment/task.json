@@ -1,0 +1,31 @@
+{
+  "id": "five-harness-evergreen-alignment",
+  "name": "five-harness-evergreen-alignment",
+  "title": "五套 Harness 常青项目审查与对齐改造",
+  "description": "只读审查与已授权规划：五套 harness 能力边界、实际测试与失败根因、四子项文件与验收计划；待用户批准实施",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-07",
+  "completedAt": "2026-09-07",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-07-claude-hook-runtime-contract",
+    "09-07-harness-guidance-alignment",
+    "09-07-harness-verification-coverage",
+    "09-07-harness-model-routing-knowledge"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
