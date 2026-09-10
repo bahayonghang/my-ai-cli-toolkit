@@ -13,7 +13,7 @@ version: 0.1.0
 
 ## Router Rules
 
-- 仅在明确要求 Herdr + Codex 审查，或本技能调用已有该任务上下文时使用。普通正确性审查交给现有 review 流程；可维护性问题沿用 `code-quality-review`；非 Herdr 的 Codex bundle 协作沿用 `codex-bridge`。
+- 仅在明确要求 Herdr + Codex 审查，或本技能调用已有该任务上下文时使用。普通正确性审查交给现有 review 流程；可维护性问题沿用 `code-quality-review`；非 Herdr 的 Codex 协作不要走本技能。
 - 若已被分配为 leaf reviewer，直接完成审查，不调用本技能、orchestra 或更多 Agent。讨论/研究这些技能不授权启动进程。
 - 通过已加载的 `herdr-orchestra` 名称/实际路径读取其 `references/delegation.md`；它是唯一进程控制 owner。本包不分配 pane、不重复环境探测、不直接启动 Codex。缺少依赖时报告源路径 `skills/developer-tools-integrations/herdr-orchestra/` 与未完成项，不绕过 Herdr。
 - 核对当前加载的本包身份；同名第三方入口不等于此源。若仍加载含自动 CHANGELOG 的旧入口，报告不匹配，不修改安装、全局配置或 hooks。宿主加载边界见仓库 `docs/harnesses.md`。

@@ -146,7 +146,8 @@ Still persist the file first.
 
 - Reviewing a code diff on its own: `code-auditor` (independent git-diff / full-spectrum)
   or `code-quality-review` (maintainability only).
-- Diagnosing an underspecified task or listing unknowns: `unknowns-first`.
+- Diagnosing an underspecified task or listing unknowns: not this skill; it only
+  reviews an existing Trellis plan.
 - Writing, repairing, or executing the plan: the project's own Trellis planning and execution
   flow. Not this skill.
 

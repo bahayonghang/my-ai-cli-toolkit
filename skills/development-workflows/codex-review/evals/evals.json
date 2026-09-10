@@ -21,8 +21,8 @@
     },
     {
       "id": "C02-bundle",
-      "prompt": "用 codex-bridge 把这些文件打包交给 Codex，不使用 Herdr。",
-      "expected_output": "Preserve the non-Herdr bundle route.",
+      "prompt": "把这些文件打包交给 Codex，不使用 Herdr。",
+      "expected_output": "Do not take over a non-Herdr Codex request.",
       "files": [],
       "assertions": [
         "Does not hijack the request into Herdr review or replace the chosen workflow."

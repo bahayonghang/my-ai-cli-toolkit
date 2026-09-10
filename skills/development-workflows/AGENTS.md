@@ -1,9 +1,9 @@
 # development-workflows — suite conventions
 
 House standard for the skills in this directory: `code-auditor`, `code-quality-review`,
-`code-refactor`, `codex-dynamic-workflows`, `html-artifact`, `rust-build-optimization`,
-`spark`, `unknowns-first`.
-These skills cover code review, refactoring, task diagnosis, planning, and artifact
+`code-refactor`, `codex-review`, `html-artifact`, `rust-build-optimization`,
+`trellis-plan-review`.
+These skills cover code review, refactoring, Trellis plan review, and artifact
 generation. They drifted apart on script paths, eval schemas, and interface files; new or
 edited skills here should match the conventions below so the suite does not drift again.
 
@@ -32,9 +32,8 @@ where they agree, those files are the older reference.
 - Bundled scripts self-locate via `Path(__file__)`, so only the script _path_ must
   resolve. Keep a Windows-friendly interpreter fallback (`python` / `py -3`); do not
   assume a single interpreter name.
-- Several skills ship scripts (`code-auditor`, `codex-dynamic-workflows`, `html-artifact`,
-  `spark`). The advisory/thinking skills (e.g. `unknowns-first`) legitimately have none —
-  that is not a gap.
+- Several skills ship scripts (`code-auditor`, `html-artifact`, `trellis-plan-review`).
+  Skills that only produce chat output legitimately have none — that is not a gap.
 
 ## `allowed-tools`
 
@@ -44,8 +43,8 @@ where they agree, those files are the older reference.
 - Declare exactly the real Claude Code tools the skill uses — no invalid tokens (`python`
   is not a tool; use `Bash(python *)`), no missing tools a step needs, no unused
   over-declarations.
-- Advisory skills that only produce chat output (e.g. `unknowns-first`) may omit
-  `allowed-tools` entirely; do not add file-writing tools to a skill whose hard gate is
+- Advisory skills that only produce chat output may omit `allowed-tools` entirely;
+  do not add file-writing tools to a skill whose hard gate is
   "do not write code or modify files".
 
 ## Evals
@@ -59,7 +58,7 @@ where they agree, those files are the older reference.
   `expected_output` and `assertions` in English.
 - Include at least two near-neighbor **routing-negative** cases asserting the request
   should route elsewhere (e.g. `code-refactor` → `code-quality-review` for review-only;
-  `unknowns-first` → `spark` for feature-to-plan brainstorming, not task diagnosis).
+  `trellis-plan-review` → `code-auditor` for a code-diff review, not a planning-artifact review).
 - Evals are review and future-tooling assets: CI does **not** execute them
   (`scripts/check.py` validates only SKILL.md frontmatter; `node-test` runs `tests/*.mjs`).
   Skills without evals are a known gap, not a hard failure; add evals when the skill's
@@ -73,8 +72,8 @@ where they agree, those files are the older reference.
   blocks are allowed but optional.
 - Skill instruction text should be host-neutral. Do not hardcode a specific runner (e.g.
   "Codex") as the acting agent in a skill that installs for any agent; say "the agent",
-  "the model", or address the reader as "you". `spark` is the deliberate exception: it
-  names Codex and Claude Code because it branches on those concrete plan-mode surfaces.
+  "the model", or address the reader as "you". Codex-named skills (`codex-review`) may
+  name that runner because the trigger is that runner.
 
 ## Self-containment
 
@@ -84,8 +83,8 @@ where they agree, those files are the older reference.
   no in-repo skill, use generic phrasing ("a planning workflow", "your environment's
   testing workflow", "if available"). Naming a non-bundled skill is
   acceptable only as an explicit, lowest-priority fallback rubric, never as a hard route
-  ("stop and invoke X first") — `spark` names `writing-plans` this way and locks it with a
-  test. Do not hard-depend on, or unconditionally route to, an external or deleted skill.
+  ("stop and invoke X first"). Do not hard-depend on, or unconditionally route to, an
+  external or deleted skill.
 - When a skill is removed, grep the suite for references to it and repoint or genericize
   them in the same change.
 
