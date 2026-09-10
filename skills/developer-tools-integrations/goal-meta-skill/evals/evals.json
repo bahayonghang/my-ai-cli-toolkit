@@ -663,6 +663,40 @@
         "Reads the existing file safely and records its SHA-256; a save request does not authorize replacement.",
         "Does not call the writer with replace, delete or overwrite the file, stage or publish it, or launch Goal; authorized replacement must retain the reviewed old hash."
       ]
+    },
+    {
+      "id": 57,
+      "prompt": "只生成聊天型 Codex Goal，中英文草稿都要，批准后还要能给最终版。目标是本地 MVP；完成条件沿用 interview 示例。必需检查没配置，报告后能否完成？",
+      "expected_output": "Consistent draft and final contracts requiring deliverables, named-entry behavior, required checks, and authorized diff/status together; a missing check remains incomplete.",
+      "files": [],
+      "assertions": [
+        "Both language variants preserve all four completion gates and report missing checks or round-cap residuals as incomplete; reporting the gap never substitutes for success.",
+        "Lints each complete Goal independently through stdin without temporary file writes, then presents DRAFT and stops; it does not run payload checks or launch Goal.",
+        "A later text approval preserves the same completion semantics and the APPROVED TEXT — not launched boundary."
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "生成并保存到 .planning/goal-parser.md；项目根目录已经明确。沿用旧路径，不要迁移。",
+      "expected_output": "A reviewable chat contract explaining that the writer cannot save a nested path; the existing path is not migrated or modified.",
+      "files": [],
+      "assertions": [
+        "Distinguishes the explicit requested path from the writer's direct-child Markdown capability and preserves the requested existing path unchanged.",
+        "Does not pass .planning as a substitute repo-root, extend the writer, use arbitrary Python or Write, silently relocate the file, or claim a save succeeded.",
+        "May present the chat draft and explain the supported root GOAL.md or alternate basename option; saving to a different target requires the user's missing path decision."
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "请用精简后的 goal-meta 生成一个 Prompt，实施 Trellis 子任务中指定审阅报告的全部修复；按默认，别在检查后再让我发第二条修复 Prompt。只给草稿，不启动。",
+      "expected_output": "A DRAFT combining the linked Trellis cadence and review-remediation contracts, retaining default-on subagents and the complete same-Prompt feedback loop.",
+      "files": [],
+      "assertions": [
+        "Loads both references from the root workflow: the first semantic statement preserves default-on subagents, and later implementation/check dispatch agrees with it.",
+        "Requires the frozen scan envelope, stable finding IDs, same-task independent recheck, original-envelope rescan, zero open actionable findings, regression and final gates; residuals at the bounded cap remain BLOCKED.",
+        "Permits questions only for unresolved material user decisions, forbids a second repair Prompt, and retains current-task product/planning history before a separate archive commit and the parent release gate.",
+        "Produces recorded review text only; no agent is dispatched and no Goal, target implementation, commit or archive is executed."
+      ]
     }
   ]
 }

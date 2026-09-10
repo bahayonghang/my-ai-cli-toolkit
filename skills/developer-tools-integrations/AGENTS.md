@@ -70,8 +70,8 @@ not add, commit, push, ignore, or delete the contract.
 - One format and location: `evals/evals.json` using the git-commit schema
   (`{ skill_name, evals: [ { id, prompt, expected_output, files, assertions[] } ] }`).
   Use the key **`assertions`**, not `expectations`, so the repo has one eval
-  dialect. `ast-grep` and `goal-meta-skill` currently use `expectations` — drift
-  to fix.
+  dialect. `ast-grep` currently uses `expectations` — drift to fix;
+  `goal-meta-skill` uses `assertions`.
 - Keep prompts in their natural language (中文/English as written); write
   `expected_output` and `assertions` in English.
 - Include at least two near-neighbor **routing-negative** cases asserting the

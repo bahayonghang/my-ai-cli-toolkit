@@ -52,8 +52,9 @@ consistent. Iteration policy and Completion conditions commit the current
 task's related product changes and planning artifacts, confirm both are in
 version history, exclude unrelated task directories and out-of-scope dirty
 files, and only then archive. The short launcher still points at the persisted
-contract. A user-named `.planning/goal-<slug>.md` remains a backward-compatible
-explicit path; do not silently migrate it.
+contract. A user-named `.planning/goal-<slug>.md` may be referenced in chat only;
+this skill does not write nested paths or silently migrate them. Use the root
+direct-child basename policy in `persistent-goal-contract.md` for saving.
 
 This skill compiles goal instructions; it has no Goal activation authority.
 Words such as `implement`, `execute`, and `until complete` inside the request

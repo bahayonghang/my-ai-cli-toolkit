@@ -119,9 +119,12 @@ risk, cost, public behavior, or authorization may reach the question gate.
 Codex, Claude Code, and Kimi objectives/conditions have an official 4,000-character limit. This skill applies the same portability budget to Grok Build and OMP without claiming it is their platform cap. Most launchers should be much shorter.
 
 For explicit save/handoff requests, the recommended durable contract is root
-`GOAL.md` and must follow `persistent-goal-contract.md`. A user-named legacy
-`.planning/goal-<slug>.md` path remains supported for chat output or explicit
-write, but is not silently migrated.
+`GOAL.md` and must follow `persistent-goal-contract.md`. The writer supports
+only a direct-child Markdown basename under the established project root,
+including an explicitly selected alternate basename. A user-named legacy
+`.planning/goal-<slug>.md` may be discussed or referenced in chat, but this skill
+does not write that nested path or silently migrate it. Never pass its subdirectory
+as a substitute `--repo-root` to bypass the direct-child boundary.
 
 ```text
 /goal First read and follow ./GOAL.md as the approved execution contract; stop only when its verification evidence is complete or a pause condition is reached.
@@ -134,7 +137,8 @@ the complete S4 contract and exact effect, then use only
 `scripts/persist_goal_contract.py` and verify the read-back. Ask only for an
 unresolved path, unapproved replacement, or material scope change. A handoff
 intention, an agent-proposed save, or `直接给` alone does not authorize writing.
-Other paths still require their exact write authorization; do not infer it.
+An alternate root basename still requires exact write authorization; it does
+not expand the writer's supported path boundary.
 
 ## Lazy-User Choices
 
