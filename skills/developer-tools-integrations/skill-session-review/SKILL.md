@@ -143,5 +143,5 @@ python "<skill-dir>/scripts/open_report.py" --repo-root <abs> --name <name>
 
 - Usage counts or unused-skill deletion: not this skill.
 - Resume a previous chat: `resume-claude` / `resume-codex` / `resume-cursor`.
-- Optimize CLAUDE.md or AGENTS.md: `claude-context-improver` / `agents-md-improver`.
+- Optimize CLAUDE.md or AGENTS.md: `claude-context-improver` / `codex-context-improver`.
 - Create or rewrite a skill from materials: qiaomu-meta, in a later turn using the handoff prompt.

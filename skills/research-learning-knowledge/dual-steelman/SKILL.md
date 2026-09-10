@@ -1,6 +1,6 @@
 ---
 name: dual-steelman
-description: Bidirectional steelman deep-thinking protocol for one pending decision, stance, or contested choice. Restates the user's real problem in its strongest form, steelmans both the user's current position and its opposition (or every candidate option), names the true crux and the decisive variables, asks exactly one key question and stops, then returns a committed verdict with reasons and next actions after the user answers. Use for 双向钢人论证, 钢人论证, steelman, 帮我想清楚, 要不要 / 该不该 / 选哪个类决策, 纠结拿不定主意, 深度思考一个决定, 挑战我的想法, 别顺着我说. Not for multi-figure open discussion (roundtable), cited web research (deep-research-pro / web-research), red-teaming a document's assumptions, factual questions, or tasks the user wants directly executed.
+description: Bidirectional steelman deep-thinking protocol for one pending decision, stance, or contested choice. Restates the user's real problem in its strongest form, steelmans both the user's current position and its opposition (or every candidate option), names the true crux and the decisive variables, asks exactly one key question and stops, then returns a committed verdict with reasons and next actions after the user answers. Use for 双向钢人论证, 钢人论证, steelman, 帮我想清楚, 要不要 / 该不该 / 选哪个类决策, 纠结拿不定主意, 深度思考一个决定, 挑战我的想法, 别顺着我说. Not for multi-figure open discussion (roundtable), cited web research (deep-research-pro), red-teaming a document's assumptions, factual questions, or tasks the user wants directly executed.
 category: research-learning-knowledge
 tags:
   - steelman
@@ -114,7 +114,7 @@ Assistant: [给出站定一边的明确判断 + 决定性理由 + 2-4 条下一�
 ### 边界与路由
 
 - 多位真实人物观点碰撞、开放议题探索：`roundtable`。
-- 需要外部证据、带来源的调研比较：`deep-research-pro` / `web-research`。
+- 需要外部证据、带来源的调研比较：`deep-research-pro`。
 - 对一份方案/PRD 做假设攻击与失效排序：红队类流程。本 skill 裁决的是"用户的待决选择"，不是"文档的假设清单"。
 - 代码与工程方案评审：`code-quality-review` 等评审 skill。
 - 事实性问题、直接执行类任务：正常回答或执行，不套流程。

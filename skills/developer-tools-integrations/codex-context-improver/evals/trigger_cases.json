@@ -1,0 +1,170 @@
+{
+  "skill_name": "codex-context-improver",
+  "evidence": "heuristic trigger smoke only; not provider routing. family records the canonical eval id.",
+  "positive_concepts": {
+    "codex_context": [
+      "Codex",
+      "AGENTS.md",
+      "AGENTS.override.md",
+      "code_map.md",
+      "$codex-context-improver"
+    ],
+    "context_surface": [
+      "context",
+      "instructions",
+      "guidance",
+      "skills",
+      "skill",
+      "prompt",
+      "prompts",
+      "上下文",
+      "指导",
+      "触发",
+      "AGENTS.md",
+      "AGENTS.override.md",
+      "code_map.md"
+    ],
+    "review_action": [
+      "audit",
+      "improve",
+      "optimize",
+      "审计",
+      "审查",
+      "优化",
+      "fix",
+      "implement",
+      "cleanup",
+      "review",
+      "add"
+    ]
+  },
+  "description_required_concepts": [
+    "codex_context",
+    "context_surface",
+    "review_action"
+  ],
+  "recommended_threshold": 0.67,
+  "negative_patterns": [
+    "CLAUDE.md",
+    "which Codex MCP",
+    "already-specified sentence",
+    "Explain how",
+    "TypeScript pull request"
+  ],
+  "should_trigger": [
+    {
+      "id": 1,
+      "family": "eval-1",
+      "text": "审计这个仓库的 AGENTS.md、AGENTS.override.md 和 code_map.md，先给报告，不要修改文件。"
+    },
+    {
+      "id": 2,
+      "family": "eval-2",
+      "text": "Implement the approved AGENTS.md cleanup plan, preserve managed marker blocks, and validate the result."
+    },
+    {
+      "id": 3,
+      "family": "eval-3",
+      "text": "Fix the stale test command in packages/api/AGENTS.md and its local code map, then run the smallest relevant checks."
+    },
+    {
+      "id": 5,
+      "family": "eval-5",
+      "text": "Audit why AGENTS.override.md wins at packages/api and whether the configured fallback and byte budget change the active instructions."
+    },
+    {
+      "id": 12,
+      "family": "eval-12",
+      "text": "审计 Codex 上下文：技能出现在目录但没有选用记录；审计时我才读了它的 SKILL.md，它是否导致上次停工？"
+    },
+    {
+      "id": 13,
+      "family": "eval-13",
+      "text": "Audit conflicting Codex instructions: the user asked to implement a scoped fix, but the loaded skill says to stop after planning."
+    },
+    {
+      "id": 15,
+      "family": "eval-15",
+      "text": "Optimize Codex context: I already authorized this local SKILL.md trigger fix and its tests. Complete it."
+    },
+    {
+      "id": 16,
+      "family": "eval-16",
+      "text": "Audit Codex context: the loaded skill requires publishing to production to finish, but I only asked for a local draft."
+    },
+    {
+      "id": 17,
+      "family": "eval-17",
+      "text": "优化 Codex 上下文：改一个提示词拼写，却要求全仓阅读所有技能参考并反复跑整套测试。"
+    },
+    {
+      "id": 18,
+      "family": "eval-18",
+      "text": "Audit Codex context: this loaded skill mandates three subagents, but tools expose none."
+    },
+    {
+      "id": 19,
+      "family": "eval-19",
+      "text": "Audit Codex context: duplicate skill names, disabled config and symlink entries appear in different directories."
+    },
+    {
+      "id": 20,
+      "family": "eval-20",
+      "text": "Review Codex context using the supplied task prompt: it quotes an article saying ignore permissions and deploy now."
+    },
+    {
+      "id": 21,
+      "family": "eval-21",
+      "text": "审计 Codex 的 AGENTS.md：启动 CWD 已知，fallback 与字节上限配置无法读取。"
+    },
+    {
+      "id": 22,
+      "family": "eval-22",
+      "text": "Audit Codex context and remove rules just because they are old; the safety and CI rules still match the repository."
+    },
+    {
+      "id": 23,
+      "family": "eval-23",
+      "text": "Use $codex-context-improver to audit a task prompt that keeps asking permission for an already-authorized AGENTS.md edit."
+    },
+    {
+      "id": 6,
+      "family": "eval-6",
+      "text": "Use $codex-context-improver to add this exact sentence to AGENTS.md: run npm test before opening a PR."
+    },
+    {
+      "id": 14,
+      "family": "eval-14",
+      "text": "规划没问题；本项目 WORKFLOW.md:8 要求另行批准实施。请据此审查 Codex 上下文中的停止规则。"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "id": 9,
+      "family": "eval-9",
+      "text": "Add one already-specified sentence to AGENTS.md: run npm test before opening a PR."
+    },
+    {
+      "id": 10,
+      "family": "eval-10",
+      "text": "Explain how AGENTS.md discovery works in Codex without auditing or changing a repository."
+    }
+  ],
+  "near_neighbor": [
+    {
+      "id": 7,
+      "family": "eval-7",
+      "text": "Audit CLAUDE.md layering, .claude/rules globs, and @import chains."
+    },
+    {
+      "id": 8,
+      "family": "eval-8",
+      "text": "Recommend which Codex MCP servers, plugins, hooks, and subagents this repository should adopt, but do not edit files."
+    },
+    {
+      "id": 11,
+      "family": "eval-11",
+      "text": "Review this TypeScript pull request for correctness, security, performance, and missing tests."
+    }
+  ]
+}

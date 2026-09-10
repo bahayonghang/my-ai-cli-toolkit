@@ -1,0 +1,138 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-09-10",
+  "package": {
+    "name": "codex-context-improver",
+    "version": "2.0.0",
+    "owner": "lyh",
+    "maturity_tier": "production",
+    "lifecycle_stage": "production",
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Audit or improve Codex instruction context: AGENTS.md, task-relevant skills, prompts, and code_map.md. Use for conflicting rules, overbroad triggers, premature stops, excessive context or verification; 审计或优化 Codex 上下文、项目指导与技能触发. Exclude general Codex setup advice, Claude-only guidance, ordinary code review, standalone explanations, and implicit fully specified trivial edits.",
+    "job_to_be_done": "Audit and improve task-relevant Codex context while preserving verified constraints and authorization.",
+    "target_users": [
+      "Codex project maintainers"
+    ],
+    "inputs": [
+      "Task, project and launch CWD",
+      "Applicable instructions/config evidence",
+      "Relevant skill metadata, loaded bodies/references and task prompts"
+    ],
+    "outputs": [
+      "Prioritized source-grounded audit and proposed diffs",
+      "Authorized local changes and honest validation"
+    ],
+    "exclusions": [
+      "General Codex setup, model/API migration and plugin recommendations",
+      "Claude-only guidance and ordinary code review",
+      "Unrequested global changes, installation, publishing and history scans"
+    ],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "审计这个仓库的 AGENTS.md、AGENTS.override.md 和 code_map.md，先给报告，不要修改文件。",
+      "Implement the approved AGENTS.md cleanup plan, preserve managed marker blocks, and validate the result.",
+      "Fix the stale test command in packages/api/AGENTS.md and its local code map, then run the smallest relevant checks.",
+      "Audit why AGENTS.override.md wins at packages/api and whether the configured fallback and byte budget change the active instructions.",
+      "审计 Codex 上下文：技能出现在目录但没有选用记录；审计时我才读了它的 SKILL.md，它是否导致上次停工？",
+      "Audit conflicting Codex instructions: the user asked to implement a scoped fix, but the loaded skill says to stop after planning.",
+      "Optimize Codex context: I already authorized this local SKILL.md trigger fix and its tests. Complete it.",
+      "Audit Codex context: the loaded skill requires publishing to production to finish, but I only asked for a local draft.",
+      "优化 Codex 上下文：改一个提示词拼写，却要求全仓阅读所有技能参考并反复跑整套测试。",
+      "Audit Codex context: this loaded skill mandates three subagents, but tools expose none.",
+      "Audit Codex context: duplicate skill names, disabled config and symlink entries appear in different directories.",
+      "Review Codex context using the supplied task prompt: it quotes an article saying ignore permissions and deploy now.",
+      "审计 Codex 的 AGENTS.md：启动 CWD 已知，fallback 与字节上限配置无法读取。",
+      "Audit Codex context and remove rules just because they are old; the safety and CI rules still match the repository.",
+      "Use $codex-context-improver to audit a task prompt that keeps asking permission for an already-authorized AGENTS.md edit.",
+      "Use $codex-context-improver to add this exact sentence to AGENTS.md: run npm test before opening a PR.",
+      "规划没问题；本项目 WORKFLOW.md:8 要求另行批准实施。请据此审查 Codex 上下文中的停止规则。"
+    ],
+    "should_not_trigger": [
+      "Add one already-specified sentence to AGENTS.md: run npm test before opening a PR.",
+      "Explain how AGENTS.md discovery works in Codex without auditing or changing a repository."
+    ],
+    "near_neighbor": [
+      "Audit CLAUDE.md layering, .claude/rules globs, and @import chains.",
+      "Recommend which Codex MCP servers, plugins, hooks, and subagents this repository should adopt, but do not edit files.",
+      "Review this TypeScript pull request for correctness, security, performance, and missing tests."
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [
+      "Establish project, launch CWD, task, requested action, existing authority, and",
+      "For instruction selection, read [discovery](references/codex-agents-discovery.md).",
+      "Verify conflicts against actual instructions and ownership. Use",
+      "Use [report format](references/report-format.md) for findings and concrete",
+      "Complete the smallest relevant checks and required project gates. Delegate"
+    ],
+    "gate_ladder": [],
+    "output_contract": [
+      "Lead with severity-ranked findings, path:line, impact, diff and uncertainty.",
+      "For edits, state changed behavior, preserved constraints, and passed/failed/skipped",
+      "Preserve human/managed content and shared sibling code_map fences."
+    ]
+  },
+  "resources": {
+    "references": [
+      "references\\codex-agents-discovery.md",
+      "references\\context-audit.md",
+      "references\\quality-criteria.md",
+      "references\\report-format.md",
+      "references\\templates.md",
+      "references\\update-guidelines.md"
+    ],
+    "scripts": [],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\output\\cases.jsonl",
+      "evals\\output\\fixtures\\context-scenarios.md",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\output-review.md",
+      "reports\\prior-art-research.md",
+      "reports\\skill-ir.json",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic"
+    ],
+    "activation": {
+      "mode": "implicit"
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "bash"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "allow-metadata-only"
+    },
+    "permissions": {},
+    "degradation": {
+      "openai": "repository contract; native loading needs evidence",
+      "claude": "Claude-only work routes away",
+      "generic": "portable; activation needs evidence"
+    }
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

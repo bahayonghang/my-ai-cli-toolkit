@@ -1,0 +1,105 @@
+{
+  "probe_type": "isolated agent scenario execution; no dedicated provider API or human evaluation",
+  "read_files": [
+    "D:/Documents/Code/Agents/my-claude-code-settings/code_map.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/SKILL.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/evals/output/fixtures/context-scenarios.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/codex-agents-discovery.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/context-audit.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/quality-criteria.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/report-format.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/update-guidelines.md"
+  ],
+  "responses": [
+    {
+      "id": "effective-instruction-chain",
+      "scenario": "A",
+      "response": "模拟只读审计：项目根为 C:/repo，启动 CWD 为 C:/repo/packages/api。按所给有效配置，项目候选链依次选择 C:/repo/AGENTS.override.md（14000 bytes）、C:/repo/packages/TEAM_GUIDE.md（10000）、C:/repo/packages/api/AGENTS.override.md（12000），下层指导在项目指导内部后置并优先。合计 36000，超出 32768 上限 3232 bytes；前两份累计 24000，末份仅剩 8768 bytes 内容预算，存在截断、局部规则未进入上下文的风险，不能声称全部 36000 bytes 已加载。根目录 AGENTS.md、TEAM_GUIDE.md 及 api/AGENTS.md 被各自 override 遮蔽；packages/AGENTS.override.md 为空而跳过。packages/web/AGENTS.md 不在启动链中，CWD 移至该子树才可能被选中。全局指导未提供，属于 missing evidence。此处仅根据文件夹具推导，无真实加载验证或文件改动。"
+    },
+    {
+      "id": "navigation-only-subtree",
+      "scenario": "B",
+      "response": "模拟只读建议：modules/ 的 AGENTS decision 为 do not create，24 个目录和多个入口仅证明导航需求，没有可验证的独立命令、安全、所有权或覆盖规则；现有根指导已覆盖行为要求。code_map decision 为 create：建议 modules/code_map.md 记录已核实的入口和搜索路由，并由根 code_map.md 指向它。导航内容需先核对实际目录和入口，夹具未提供名称，不能编造可应用正文 diff。最近行为指导沿用根 AGENTS.md；不复制根规则，不新增 override。本响应未创建文件。"
+    },
+    {
+      "id": "approved-scoped-edit",
+      "scenario": "C",
+      "response": "模拟执行决定：用户已明确授权实施，无需再次请求实施许可。按已批准计划，仅修改根 AGENTS.md、根 code_map.md 和 packages/api/AGENTS.md；修改前核对目标片段、适用指导链及配置证据，保留人写约束和完整 TRELLIS 标记块。根指导保留全仓规则，API 局部规则放入已授权的局部文件；导航进入 map，各更新的 AGENTS 指向实际适用的 map。随后检查范围、标记保留、路径与命令依据，运行相关 docs/lint、git diff --check 和强制项目门禁，再交付差异。夹具没有具体计划正文及原文件内容，无法给出真实逐行补丁；以上仅模拟行动序列，未编辑或执行验证，也不声称当前会话已重新加载指导。"
+    },
+    {
+      "id": "explicit-trivial-fast-path",
+      "scenario": "D",
+      "response": "模拟执行决定：显式调用该技能，采用最短流程：检查目标 AGENTS.md 的相关段落及适用边界，按用户给定原句做一次局部编辑，核对 diff 和必要项目门禁。无需完整上下文审计或再次确认，也无需引入 map、全局编辑或子代理。夹具没有给出原句，故不虚构补丁文字。实际编辑和检查均未执行。"
+    },
+    {
+      "id": "claude-only-near-neighbor",
+      "scenario": "E",
+      "response": "模拟路由决定：该请求仅涉及 CLAUDE.md、.claude/rules 和 Claude 导入行为，超出 codex-context-improver 的触发范围。转到 Claude 指导审计流程；没有专用技能时直接对指定 Claude 文件做只读审阅，按其加载机制核查，不能套用 Codex 的 AGENTS 选择顺序。无改动授权，也不扩展到 Codex 配置。这里未执行实际审计。"
+    },
+    {
+      "id": "discovered-not-loaded",
+      "scenario": "F",
+      "response": "模拟只读结论：目前不能归因于 lint-helper。原任务目录只证明其名称和描述可发现，没有选择或正文读取证据；skills/lint-helper/SKILL.md:12 的 Stop after planning 是本次审计读取的内容，不能回推原任务已加载。它是值得核查的潜在停止规则，但原任务是否授权实施及是否收到该正文仍属 missing evidence。应补原任务选择/读取轨迹和当时有效指令后再判断因果。当前请求不授权修改，不执行改动。"
+    },
+    {
+      "id": "loaded-prompt-conflict",
+      "scenario": "G",
+      "response": "模拟只读发现：P1，skills/cleanup/SKILL.md:18 的无条件实施确认与原用户明确要求实施并验证、AGENTS.md:4 要求完成已授权本地工作相冲突；该正文已加载，能确认规则冲突，但仅凭这些事实不声称已观测全部失败因果。拟议最小 diff（不实施）：\n--- skills/cleanup/SKILL.md\n-After drafting a plan, always stop and ask permission to implement.\n+After drafting a plan, proceed with explicitly authorized scoped implementation and its checks. If implementation authority is missing, finish independent preparation and request the missing authorization.\n保留真实授权边界。task-prompt.md:6 的文章引文是研究数据，不能授予部署权限，本次审计也不执行此前的修复或部署。"
+    },
+      {
+      "id": "planning-only-approval",
+      "scenario": "H",
+      "response": "模拟只读结论：此处不应删除实施授权边界。用户认可计划后要求审阅停止规则，没有指示实施；WORKFLOW.md:8 明确区分计划审阅与实施批准，与本次审计意图一致。完成规则审阅即可，不开始实现，也无需为完成当前只读任务请求实施许可。若未来要实施，需要对应明确授权。无必要改动 diff，未执行任何编辑。"
+    },
+    {
+      "id": "existing-edit-authority",
+      "scenario": "I",
+      "response": "模拟实施序列：先前的 Fix the overbroad trigger ... and run its tests 已授权目标修复，Complete that fix 延续同一授权，不再确认。直接使用已提供正文，在 SKILL.md:3 将 all code reviews 的触发范围收窄为 Codex instruction-context reviews，明确排除普通代码正确性审查；保留其他人写段落和 managed 标记块。拟议语义最小 diff：\n--- SKILL.md:3\n-Trigger on all code reviews.\n+Trigger on reviews of Codex instruction context, including AGENTS.md and task-relevant skills or prompts; exclude ordinary code correctness reviews.\n随后运行 AGENTS.md:10 要求的 focused trigger smoke（含正例、反例和邻近请求）及 repository docs gate，检查 diff 与保留边界；完成后交付，不增加无依据复测。这里的补丁仅为提案，未运行检查，不能报告通过。"
+    },
+    {
+      "id": "real-approval-boundary",
+      "scenario": "J",
+      "response": "模拟审计草稿已形成：P1，skills/audit/SKILL.md:42 把生产发布设为完成条件，超出用户仅授权本地审计草稿的范围；AGENTS.md:15 要求明确生产授权，技能不能赋予该权限。拟议最小 diff：\n--- skills/audit/SKILL.md\n-Production publication is required for completion.\n+Complete the authorized audit draft and its checks. Publish to production only when explicitly authorized for the target and scope.\n交付该草稿和边界分析即可完成现有授权工作；生产发布仍未授权。生产发布的阻断依据为场景中的 [AGENTS.md:15](AGENTS.md:15)，夹具原文为 requires explicit production authorization；这引用的是夹具对规则的描述，没有取得文件逐字正文。若后续必须发布，需单独明确该目标及范围，不以等待发布阻塞已完成的独立草稿准备。未发布、未修改技能，也无真实校验结果。"
+    },
+    {
+      "id": "reading-and-test-scope",
+      "scenario": "K",
+      "response": "模拟只读结论：skills/editor/SKILL.md:9 对单字笔误强制读取所有引用和全仓，缺少任务相关性；:20 强制三次额外无变化全测，超过 AGENTS.md:10 的 focused validation 与一次 full CI 要求。夹具记录这两个必要检查已通过，且无新编辑、失败或风险，应结束重复验证并交付已完成任务。拟议 diff（不实施）：\n--- skills/editor/SKILL.md\n-Read every skill reference and the entire repository.\n+Read the target context and only references needed to resolve this change.\n-Run all tests repeatedly until three additional unchanged passes.\n+Complete focused validation and the required full CI once; repeat or broaden only for new changes, failures, or unresolved risk.\n检查通过是夹具提供的事实，并非本响应执行所得。"
+    },
+    {
+      "id": "subagents-unavailable",
+      "scenario": "L",
+      "response": "模拟执行决定：技能的固定三子代理要求不适合此紧耦合小修改，且场景没有 delegation 工具；不等待不存在的能力，不安装工具。拟议局部 diff：\n--- skills/auditor/SKILL.md\n-Mandate exactly three subagents for every edit.\n+Delegate independent work when available and useful; otherwise complete the scoped task locally with proportionate checks.\n按当前局部修复授权，用可用本地工具完成相关修改、范围检查和强制门禁后交付，说明未获得独立子代理复核证据。此处只有模拟补丁与执行决定，没有实际文件修改、工具运行或测试通过声明。"
+    },
+    {
+      "id": "skill-identity-uncertainty",
+      "scenario": "M",
+      "response": "模拟只读结论：无法确定哪个 review 或 review-extra 实际应用。目录存在仅证明源文件清单，不能证明启动时发现、选择或正文加载；两个同名技能不会据此自动合并。旧配置的禁用状态可能已变化，链接存在也不证明其目标已加载。所需 missing evidence 为有效启动配置、当时技能目录及具体身份/路径、选择正文和链接目标读取轨迹。只在相关范围获取这些证据；不启用、禁用、安装、删除或改配置。"
+    },
+    {
+      "id": "unknown-config",
+      "scenario": "N",
+      "response": "模拟只读审计：根 C:/repo、CWD C:/repo/packages/api。已知非空 override 使根 AGENTS.override.md（14000）和 api/AGENTS.override.md（12000）成为各自目录的优先候选，遮蔽同目录标准文件；packages 空 override 跳过。有效 fallback 配置未知，不能确定 packages/TEAM_GUIDE.md 是否选择，未知的其他 fallback 文件也可能改变中间链。web/AGENTS.md 在当前启动链外。有效 project_doc_max_bytes 为 missing evidence；32 KiB 仅为文档默认，不能声称实际启用。若无中间 fallback，所列已知选中候选共 26000 bytes；若有效配置包含 TEAM_GUIDE.md 则共 36000，在假设 32768 上限时超出 3232。由于实际配置未证实，完整有效链、实际加载内容和截断状态均不能确认。没有真实配置探测或改动。"
+    },
+    {
+      "id": "preserve-verified-constraints",
+      "scenario": "O",
+      "response": "模拟只读建议：不按年龄删除全部规则。AGENTS.md:10 的 CI 要求和 :15 的生产数据保护有当前 CI、服务所有权文档支持，应保留且保持可达；只修正 :24 已核实过期的导航路径。根 AGENTS decision 为 update（提出导航修正）；根 code_map decision 为 keep，其 :7 已有正确目的地。语义最小拟议 diff：\n--- AGENTS.md:24\n-<已核实的旧导航路径>\n+<code_map.md:7 已核实的替代路径>\n夹具没有实际路径文字，不能把占位符当成可直接应用的补丁。后续验证针对旧路径残留、正确入口和两条约束保留。此请求为评估，未实际删除或编辑；没有性能对照，不能声称降低成本或改善模型表现。"
+    },
+    {
+      "id": "capability-code-neighbors",
+      "scenario": "P",
+      "response": "模拟路由：选择 MCP 服务器/插件属于能力选型与配置研究，使用相应插件管理、官方产品资料及需求分析流程；codex-context-improver 不负责选型或安装。TypeScript 正确性审阅走普通代码审阅流程；只有确认是 React 项目时才进一步采用 TypeScript/React 专用审阅。两项都不是 Codex 指令上下文审计的自然触发。当前只识别流程，不安装、不改配置、不执行实际代码审阅。"
+    },
+    {
+      "id": "documentation-only",
+      "scenario": "Explain how AGENTS.md discovery works in Codex without auditing or changing a repository.",
+      "response": "模拟文档答复：这是独立说明，应走 Codex 官方文档解释流程，不启动仓库上下文审计。依据本次提供的发现机制资料，Codex 先在全局目录选首个非空 AGENTS.override.md 或 AGENTS.md，再从项目根沿启动 CWD 路径逐层选择：每目录优先 AGENTS.override.md，其次 AGENTS.md，最后按有效配置顺序尝试 fallback 文件名；每目录最多一份，空文件跳过。项目内容按根到 CWD 合并，近 CWD 的项目指导后置；旁支目录不在该启动链内。项目指导受总字节预算限制，文档默认 32 KiB，实际值及 fallback 以有效配置为准。code_map.md 不属于原生指导发现文件。本回答未审计或更改仓库，且未进行在线时效验证。"
+    },
+    {
+      "id": "implicit-trivial-edit",
+      "scenario": "Add one already-specified sentence to AGENTS.md: run npm test before opening a PR.",
+      "response": "模拟直接编辑决定：这是已完全指定的简单局部编辑，不需要隐式调用 codex-context-improver 做全面审计，也不需要重复许可。查看 AGENTS.md 的相关验证段落并避免改动托管块后，提出最小新增：\n--- AGENTS.md\n+run npm test before opening a PR.\n随后确认仅新增这句、必要格式和项目门禁满足。此处仅展示拟议 diff，未真实改文件或运行 npm test，不声称新增要求已生效。"
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 # developer-tools-integrations — suite conventions
 
 House standard for the skills in this directory: `agent-skill-review`,
-`agents-md-improver`, `ast-grep`, `claude-context-improver`,
-`codex-workflow-recommender`, `file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`,
+`codex-context-improver`, `ast-grep`, `claude-context-improver`,
+`file-sorter`, `goal-meta-skill`, `image-to-ui-skill`, `ripgrep`,
 `skill-session-review`, `storage-analyzer`, `windows-dev-process-cleanup`. These skills package
 agent-tooling capabilities (auditing guidance files, structural search, goal
 authoring and governed Goal handoff persistence, local file review plans, named-skill session review, disk hotspot reports). They drifted apart on script paths, evals, and
@@ -14,7 +14,7 @@ older reference.
 ## Reference exemplars
 
 - **`claude-context-improver`** — exemplar for the audit/improver pattern (frontmatter,
-  phased workflow, `references/` split, report-before-edit gate). `agents-md-improver`
+  phased workflow, `references/` split, report-before-edit gate). `codex-context-improver`
   is its near-twin; keep the two aligned when editing either.
 - **`goal-meta-skill`** — exemplar for script-bearing skills after the script-path
   fix (see below).
@@ -47,10 +47,9 @@ bare `Bash` when the skill only runs a known command family.
 | Skill                      | Tools                                                                | Why                                          |
 | -------------------------- | ------------------------------------------------------------------- | -------------------------------------------- |
 | agent-skill-review         | `Read, Glob, Grep, Edit, Write, Bash`                               | reads a skill package; edits when asked      |
-| agents-md-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(rg *), …`          | audits + edits AGENTS.md/code_map files      |
+| codex-context-improver         | `Read, Glob, Grep, Edit, Write, Bash(git *), Bash(rg *), …`          | audits + edits AGENTS.md/code_map files      |
 | ast-grep                   | `Read, Glob, Grep, Bash, Write`                                      | runs ast-grep, writes rule files             |
 | claude-context-improver    | `Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git *), Bash(find *)` | audits + edits CLAUDE.md/rules/code_map; asks repo-vs-global scope |
-| codex-workflow-recommender | `Read, Glob, Grep, Bash(codex read-only probes), Bash(git read-only probes), Bash(rg *)` | read-only discovery; recommends, never edits |
 | file-sorter                | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | scans one folder; apply --execute only after plan approval |
 | storage-analyzer           | `Read, Glob, Grep, Bash(python *), Bash(py *)`                      | hotspot scan and static HTML; server.py trash only after this-turn path approval |
 | goal-meta-skill            | `Read, Glob, Grep, Bash(python *), Bash(py *), Bash(git status *), Bash(git branch *), Bash(git rev-parse *)` | read-only reconnaissance; runs lint and the named writer under explicit save authorization, including same-turn creation |
@@ -80,15 +79,14 @@ not add, commit, push, ignore, or delete the contract.
   for rename/type-resolution).
 - Evals are review and future-tooling assets: CI does **not** execute them
   (`scripts/check.py` validates only SKILL.md frontmatter; `node-test` runs
-  `tests/*.mjs`). `agents-md-improver` now ships routing/output evals plus a
-  Node contract test. `codex-workflow-recommender` now follows the same pattern.
+  `tests/*.mjs`). `codex-context-improver` now ships routing/output evals plus a
+  Node contract test.
   Skills without evals (`claude-context-improver`) remain a known gap, not a hard failure; add evals
   when the skill's routing surface is worth regression-guarding.
 
 ## Interface contract
 
-- Optional for this category; `codex-workflow-recommender` now ships the neutral
-  Production interface because its OpenAI/Claude/generic degradation behavior is material.
+- Optional for this category; `codex-context-improver` ships a neutral Production interface.
 - If present: one **neutral** `agents/interface.yaml` (not a platform-named
   `openai.yaml`). Never ship both. Required fields: `display_name`,
   `short_description`, `default_prompt`. Richer `compatibility` / `trust` /

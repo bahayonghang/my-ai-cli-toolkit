@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 43 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 41 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -27,12 +27,11 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 13 skills
+`developer-tools-integrations` · 12 skills
 
-- [agents-md-improver](/en/skills/developer-tools-integrations/agents-md-improver) — Audit or improve repository-scoped Codex AGENTS.md, AGENTS.override.md, configured fallback instructions, and companion code_map.md navigation.
 - [ast-grep](/en/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
 - [claude-context-improver](/en/skills/developer-tools-integrations/claude-context-improver) — Audit and improve the Claude Code context layer — CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and companion code_map.md navigation maps — against Claude 5 context-engineering rules (judgement over rules, progressive disclosure, no cross-layer conflicts). Asks whether to optimize the current repository (default) or the global ~/.claude context.
-- [codex-workflow-recommender](/en/skills/developer-tools-integrations/codex-workflow-recommender) — Audit a repository and current Codex capabilities, then recommend the smallest evidence-backed read-only improvement or no change.
+- [codex-context-improver](/en/skills/developer-tools-integrations/codex-context-improver) — Audit or improve Codex instruction context: AGENTS.md, task-relevant skills, prompts, and code_map.md.
 - [file-sorter](/en/skills/developer-tools-integrations/file-sorter) — Use when the user wants to categorize, sort, organize, or suggest renames for files in a local folder such as Downloads, or for files that share one parent directory.
 - [goal-meta-skill](/en/skills/developer-tools-integrations/goal-meta-skill) — Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code.
 - [herdr-orchestra](/en/skills/developer-tools-integrations/herdr-orchestra) — Use when the user explicitly asks to coordinate worker agents in Herdr, delegate tasks across Herdr panes, or collect and compare their results; 支持 Herdr 多 Agent 编排、分工、交叉核验和结果收集。Do not use for ordinary local subagents, simple pane inspection, documentation research, work outside Herdr, or when already assigned as a leaf worker.
@@ -45,7 +44,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Development Workflows
 
-`development-workflows` · 12 skills
+`development-workflows` · 11 skills
 
 - [code-auditor](/en/skills/development-workflows/code-auditor) — Independent pre-merge review of a git diff, PR, or named files.
 - [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a maintainability and structure review focused on abstraction quality, branching complexity, file growth, canonical ownership, duplication, and refactoring opportunities.
@@ -58,7 +57,6 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [spark](/en/skills/development-workflows/spark) — Turn an idea into an approved implementation plan before coding — plan-first brainstorming.
 - [trellis-plan-review](/en/skills/development-workflows/trellis-plan-review) — Independent review of Trellis task planning artifacts. Treats the selected task and its recursive current or archived children as one review scope, verifies repository claims and path:line citations against code, traces every acceptance-criterion clause to a requirement and design mechanism, rechecks arithmetic and units, writes one combined evidence-backed Markdown report under the reviewed project's .trellis/reviews directory, and returns one copyable handoff prompt. Compares the plan with the real diff after the task starts.
 - [unknowns-first](/en/skills/development-workflows/unknowns-first) — Diagnose a task before execution when the user may not yet know how to define success.
-- [web-research](/en/skills/development-workflows/web-research) — 跨平台互联网来源发现、核验与本地归档。.
 
 ### Docs, Writing & Publishing
 

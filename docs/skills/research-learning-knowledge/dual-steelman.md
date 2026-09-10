@@ -11,7 +11,7 @@ Bidirectional steelman deep-thinking protocol for one pending decision, stance, 
 - Bidirectional steelman deep-thinking protocol for one pending decision, stance, or contested choice
 - Restates the user's real problem in its strongest form, steelmans both the user's current position and its opposition (or every candidate option), names the true crux and the decisive variables, asks exactly one key question and stops, then returns a committed verdict with reasons and next actions after the user answers
 - Use for 双向钢人论证, 钢人论证, steelman, 帮我想清楚, 要不要 / 该不该 / 选哪个类决策, 纠结拿不定主意, 深度思考一个决定, 挑战我的想法, 别顺着我说
-- Not for multi-figure open discussion (roundtable), cited web research (deep-research-pro / web-research), red-teaming a document's assumptions, factual questions, or tasks the user wants directly executed
+- Not for multi-figure open discussion (roundtable), cited web research (deep-research-pro), red-teaming a document's assumptions, factual questions, or tasks the user wants directly executed
 
 ## 元数据
 

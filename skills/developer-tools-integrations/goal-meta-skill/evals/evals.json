@@ -73,11 +73,11 @@
     {
       "id": 7,
       "prompt": "帮我审计并优化这个仓库的 AGENTS.md，看看 nested 指导有没有冲突、命令是不是过期。",
-      "expected_output": "Routing-negative near-neighbor: auditing/optimizing AGENTS.md guidance is agents-md-improver's job, not goal authoring. The skill should defer to agents-md-improver rather than wrapping the request in a /goal command.",
+      "expected_output": "Routing-negative near-neighbor: auditing/optimizing AGENTS.md guidance is codex-context-improver's job, not goal authoring. The skill should defer to codex-context-improver rather than wrapping the request in a /goal command.",
       "files": [],
       "assertions": [
         "Does NOT force the AGENTS.md audit into a /goal command.",
-        "Routes the request to agents-md-improver (the sibling skill that audits AGENTS.md / code_map files).",
+        "Routes the request to codex-context-improver (the sibling skill that audits AGENTS.md / code_map files).",
         "Only offers a /goal afterward if the user explicitly wants bounded agent execution of the resulting fixes."
       ]
     },

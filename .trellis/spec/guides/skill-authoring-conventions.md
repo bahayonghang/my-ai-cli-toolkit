@@ -366,7 +366,7 @@ payload itself said “execute”.
   rerun until the ceiling result has zero unused-resource warnings.
 
 
-- When two skills maintain the same output file (e.g. `agents-md-improver` and
+- When two skills maintain the same output file (e.g. `codex-context-improver` and
   `claude-context-improver` both own `code_map.md` templates), the shared template
   wording must be byte-identical in both skills, each templates file must carry
   a symmetric "shared with <sibling>; edit both together" note, and each

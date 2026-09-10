@@ -1,0 +1,21 @@
+{
+  "probe_type": "isolated agent scenario execution; no dedicated provider API or human evaluation",
+  "read_files": [
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/SKILL.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/codex-agents-discovery.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/references/report-format.md",
+    "D:/Documents/Code/Agents/my-claude-code-settings/skills/developer-tools-integrations/codex-context-improver/evals/output/fixtures/context-scenarios.md"
+  ],
+  "responses": [
+    {
+      "id": "effective-instruction-chain",
+      "scenario": "A",
+      "response": "模拟只读审计：P1，C:/repo/packages/api/AGENTS.override.md 所在项目指导链的候选内容共 36000 bytes，超过所给有效上限 32768 bytes，超额 3232 bytes。末层规则存在截断、缺失风险，不能声称完整指导已经加载；候选选择与算术判断的置信度高，真实会话加载内容仍属 missing evidence。建议先检查三份选中文件正文，识别确证重复或可按需读取的内容，在保留命令、安全和所有权约束的前提下准备缩减补丁，使总量低于有效预算；夹具没有正文和行号，无法给出可靠逐行 diff，不自行扩大或修改全局预算。\n项目根为 C:/repo，启动 CWD 为 C:/repo/packages/api，有效 fallback 为 [TEAM_GUIDE.md]。按根到 CWD 的项目候选顺序：① C:/repo/AGENTS.override.md，14000 bytes；② C:/repo/packages/TEAM_GUIDE.md，10000 bytes；③ C:/repo/packages/api/AGENTS.override.md，12000 bytes。前两份累计 24000，末份算术上剩余 8768 bytes 内容预算；不能据此伪造精确已加载文本。下层项目指导后置优先，但不覆盖更高权限指令。\n根 AGENTS.md、根 TEAM_GUIDE.md 和 api/AGENTS.md 被各自非空 override 遮蔽；packages/AGENTS.override.md 为空而跳过。packages/web/AGENTS.md 不在启动链上，CWD 进入 web 子树时才可能参与选择。全局指导未提供。完成条件是清楚报告候选链、遮蔽、预算风险和证据缺口；本响应未修改文件、探测配置或运行加载验证。"
+    },
+    {
+      "id": "claude-only-near-neighbor",
+      "scenario": "E",
+      "response": "模拟路由决定：这是 CLAUDE.md、.claude/rules 与 import 行为的专属只读审计，排除 codex-context-improver。若会话中 claude-context-improver 可用，将请求交给该技能；技能名称被提及不等于已安装或可调用，夹具没有提供可用性证据。若不可用，直接采用范围相同的 Claude 指导审阅流程，检查这些指定文件和真实导入关系，不套用 Codex AGENTS 的逐目录选择机制。当前没有编辑授权，不安装技能、不修改配置、不扩展为 Codex 仓库审计。这里只给出模拟流程选择，没有执行实际文件审阅或变更。"
+    }
+  ]
+}
