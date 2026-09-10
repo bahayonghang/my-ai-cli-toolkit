@@ -62,3 +62,39 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Status
 
 [OK] **Completed**
+
+
+## Session 67: Goal Meta Skill 0.8.2 收尾
+
+**Date**: 2026-09-10
+**Task**: Goal Meta Skill 0.8.2 收尾
+**Branch**: `dev`
+
+### Summary
+
+提交 stdin lint 与入口精简、忽略 reviews，并归档三个 goal-meta 任务。
+
+### Main Changes
+
+- goal-meta-skill 0.8.2：stdin lint、逐命令校验、入口精简到 references
+- 忽略 .trellis/reviews 并删除已入库审阅稿
+- 归档 09-10-goal-meta-lint-boundaries、contract-consolidation、reference-optimization
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b145f1e6` | (see git log) |
+| `d1f56073` | (see git log) |
+
+### Testing
+
+- [OK] node lint-goal-command.test.mjs 61 pass; persist-goal-contract.test.mjs 12 pass; py_compile lint_goal_command.py
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 无活动 Trellis 任务
