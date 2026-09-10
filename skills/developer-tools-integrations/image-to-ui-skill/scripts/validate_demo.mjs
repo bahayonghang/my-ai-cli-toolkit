@@ -38,8 +38,10 @@ export function createNulDecoder(onMessage) {
   };
 }
 
+export const DEFAULT_CDP_TIMEOUT_MS = 30_000;
+
 export class CdpPipe {
-  constructor(input, output, browserProcess, timeoutMs = 10_000) {
+  constructor(input, output, browserProcess, timeoutMs = DEFAULT_CDP_TIMEOUT_MS) {
     this.input = input;
     this.output = output;
     this.browserProcess = browserProcess;
@@ -215,6 +217,28 @@ async function capture(cdp, sessionId, viewport, output) {
   if (statSync(output).size <= 10_000) throw new DemoValidationError(`Screenshot is too small: ${output}`);
 }
 
+export function browserLaunchArgs(profile) {
+  return [
+    '--headless=new', '--disable-gpu', '--disable-extensions', '--hide-scrollbars',
+    '--no-first-run', '--no-default-browser-check', '--no-sandbox', '--disable-dev-shm-usage',
+    '--remote-debugging-pipe', `--user-data-dir=${profile}`, 'about:blank',
+  ];
+}
+
+export async function connectDemoPage(cdp, url) {
+  await cdp.send('Browser.getVersion');
+  const { targetInfos = [] } = await cdp.send('Target.getTargets');
+  const existing = targetInfos.find((target) => target.type === 'page');
+  const targetId = existing?.targetId
+    ?? (await cdp.send('Target.createTarget', { url: 'about:blank' })).targetId;
+  const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
+  await cdp.send('Page.enable', {}, sessionId);
+  await cdp.send('Runtime.enable', {}, sessionId);
+  const navigated = await cdp.send('Page.navigate', { url }, sessionId);
+  if (navigated.errorText) throw new Error(`Page.navigate failed: ${navigated.errorText}`);
+  return sessionId;
+}
+
 export async function stopBrowser(child, { closeBrowser, timeoutMs = 2_000 } = {}) {
   if (!child || child.exitCode !== null || child.signalCode !== null) return;
 
@@ -258,19 +282,17 @@ export async function runDemo(config, demoDir, options = {}) {
   const profile = mkdtempSync(path.join(tmpdir(), `${config.name}-chrome-`));
   let child;
   let cdp;
+  let stderr = '';
   try {
-    child = spawn(browser.path, [
-      '--headless=new', '--disable-gpu', '--disable-extensions', '--hide-scrollbars',
-      '--no-first-run', '--no-default-browser-check', '--remote-debugging-pipe',
-      `--user-data-dir=${profile}`, 'about:blank',
-    ], { stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe'] });
-    let stderr = '';
+    child = spawn(browser.path, browserLaunchArgs(profile), {
+      stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe'],
+    });
     child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
+    if (!child.stdio[3] || !child.stdio[4]) {
+      throw new DemoValidationError('Chrome CDP pipes were not created', 4);
+    }
     cdp = new CdpPipe(child.stdio[3], child.stdio[4], child);
-    const { targetId } = await cdp.send('Target.createTarget', { url: server.url });
-    const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
-    await cdp.send('Page.enable', {}, sessionId);
-    await cdp.send('Runtime.enable', {}, sessionId);
+    const sessionId = await connectDemoPage(cdp, server.url);
     await waitFor(cdp, sessionId, config.readyExpression);
 
     const screenshotsDir = path.join(demoDir, 'screenshots');
@@ -290,7 +312,10 @@ export async function runDemo(config, demoDir, options = {}) {
     return { ok: true, name: config.name, url: server.url, screenshots: [desktop, mobile], steps, brokenImages };
   } catch (error) {
     if (error instanceof DemoValidationError) throw error;
-    throw new DemoValidationError(`${error.message}${child?.exitCode ? `; browser=${child.exitCode}` : ''}`, 4);
+    const detail = [error.message];
+    if (child?.exitCode) detail.push(`browser=${child.exitCode}`);
+    if (stderr.trim()) detail.push(`stderr=${stderr.trim()}`);
+    throw new DemoValidationError(detail.join('; '), 4);
   } finally {
     await stopBrowser(child, { closeBrowser: cdp ? () => cdp.send('Browser.close') : undefined });
     await server.close().catch(() => {});

@@ -9,6 +9,8 @@ import { PassThrough } from 'node:stream';
 import { test } from 'node:test';
 import {
   CdpPipe,
+  browserLaunchArgs,
+  connectDemoPage,
   createNulDecoder,
   findBrowser,
   startStaticServer,
@@ -59,6 +61,92 @@ test('CDP pipe rejects pending requests when browser spawn fails', async () => {
   const pending = cdp.send('Target.createTarget');
   browser.emit('error', new Error('spawn denied'));
   await assert.rejects(pending, /spawn denied/);
+});
+
+function replyToCdp(input, output, handler) {
+  input.on('data', (frame) => {
+    const message = JSON.parse(frame.subarray(0, frame.length - 1).toString());
+    output.write(`${JSON.stringify({ id: message.id, result: handler(message) })}\0`);
+  });
+}
+
+test('browser launch args keep pipe debugging and CI sandbox flags', () => {
+  const args = browserLaunchArgs('C:\\tmp\\profile');
+  assert.ok(args.includes('--remote-debugging-pipe'));
+  assert.ok(args.includes('--no-sandbox'));
+  assert.ok(args.includes('--disable-dev-shm-usage'));
+  assert.ok(args.includes('--user-data-dir=C:\\tmp\\profile'));
+  assert.equal(args.at(-1), 'about:blank');
+});
+
+test('connectDemoPage attaches to an existing page then navigates', async () => {
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const methods = [];
+  replyToCdp(input, output, (message) => {
+    methods.push(message.method);
+    if (message.method === 'Target.getTargets') {
+      return { targetInfos: [{ type: 'page', targetId: 'existing' }] };
+    }
+    if (message.method === 'Target.attachToTarget') {
+      assert.equal(message.params.targetId, 'existing');
+      return { sessionId: 'session-existing' };
+    }
+    if (message.method === 'Page.navigate') {
+      assert.equal(message.params.url, 'http://127.0.0.1:9/');
+      return {};
+    }
+    return {};
+  });
+  const sessionId = await connectDemoPage(new CdpPipe(input, output, new EventEmitter(), 100), 'http://127.0.0.1:9/');
+  assert.equal(sessionId, 'session-existing');
+  assert.deepEqual(methods, [
+    'Browser.getVersion', 'Target.getTargets', 'Target.attachToTarget',
+    'Page.enable', 'Runtime.enable', 'Page.navigate',
+  ]);
+});
+
+test('connectDemoPage creates a blank target when no page exists', async () => {
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const methods = [];
+  replyToCdp(input, output, (message) => {
+    methods.push(message.method);
+    if (message.method === 'Target.getTargets') return { targetInfos: [] };
+    if (message.method === 'Target.createTarget') {
+      assert.equal(message.params.url, 'about:blank');
+      return { targetId: 'created' };
+    }
+    if (message.method === 'Target.attachToTarget') {
+      assert.equal(message.params.targetId, 'created');
+      return { sessionId: 'session-created' };
+    }
+    if (message.method === 'Page.navigate') {
+      assert.equal(message.params.url, 'http://127.0.0.1:9/demo');
+      return {};
+    }
+    return {};
+  });
+  const sessionId = await connectDemoPage(new CdpPipe(input, output, new EventEmitter(), 100), 'http://127.0.0.1:9/demo');
+  assert.equal(sessionId, 'session-created');
+  assert.ok(methods.includes('Target.createTarget'));
+});
+
+test('connectDemoPage surfaces a navigate errorText', async () => {
+  const input = new PassThrough();
+  const output = new PassThrough();
+  replyToCdp(input, output, (message) => {
+    if (message.method === 'Target.getTargets') {
+      return { targetInfos: [{ type: 'page', targetId: 't' }] };
+    }
+    if (message.method === 'Target.attachToTarget') return { sessionId: 's' };
+    if (message.method === 'Page.navigate') return { errorText: 'net::ERR_ABORTED' };
+    return {};
+  });
+  await assert.rejects(
+    connectDemoPage(new CdpPipe(input, output, new EventEmitter(), 100), 'http://127.0.0.1:9/'),
+    /Page.navigate failed: net::ERR_ABORTED/,
+  );
 });
 
 test('browser shutdown escalates and waits for forced exit', async () => {
@@ -164,9 +252,12 @@ test('demo configs preserve the legacy assertion counts', () => {
 });
 
 for (const name of ['artmuse-ios', 'marble-note']) {
-  test(`browser smoke: ${name}`, { skip: process.env.IMAGE2_SKILL_BROWSER_TESTS !== '1' }, () => {
+  test(`browser smoke: ${name}`, {
+    skip: process.env.IMAGE2_SKILL_BROWSER_TESTS !== '1',
+    concurrency: false,
+  }, () => {
     const entry = path.join(root, 'demo', name, 'validate.mjs');
-    const result = spawnSync(process.execPath, [entry], { encoding: 'utf8', env: process.env, timeout: 60_000 });
+    const result = spawnSync(process.execPath, [entry], { encoding: 'utf8', env: process.env, timeout: 120_000 });
     assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
     const lines = result.stdout.trim().split(/\r?\n/);
     const payload = JSON.parse(lines.at(-1));

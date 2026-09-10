@@ -5,7 +5,8 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const skillDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const read = (...parts) => fs.readFileSync(path.join(skillDir, ...parts), "utf8");
+const normalizeNewlines = (text) => text.replace(/\r\n/g, "\n");
+const read = (...parts) => normalizeNewlines(fs.readFileSync(path.join(skillDir, ...parts), "utf8"));
 const json = (...parts) => JSON.parse(read(...parts));
 const outputCases = () => read("evals", "output", "cases.jsonl").trim().split(/\r?\n/).map(JSON.parse);
 
@@ -44,7 +45,7 @@ test("single renamed identity and compact inline entrypoint", () => {
   assert.equal(manifest.maturity_tier, "production");
   assert.deepEqual(walk(skillDir).filter(p => path.basename(p) === "SKILL.md"), [path.join(skillDir, "SKILL.md")]);
   assert.ok(!fs.existsSync(path.join(skillDir, "..", "agents-md-improver")));
-  const estimate = [skill, iface].reduce((sum, s) => sum + Math.floor(s.replace(/\r\n/g, "\n").length / 4), 0);
+  const estimate = [skill, iface].reduce((sum, s) => sum + Math.floor(s.length / 4), 0);
   assert.ok(estimate <= 1000, "initial context estimate " + estimate);
   assert.doesNotMatch(skill, /Bash\(git \*\)|Bash\(find \*\)/);
 });
@@ -125,6 +126,7 @@ test("current IR and evidence replace obsolete score reports", () => {
   }
   const review = read("reports", "output-review.md");
   assert.ok(review.includes(manifest.name + " " + manifest.version));
+  assert.ok(normalizeNewlines("## effective-instruction-chain\r\n").includes("## effective-instruction-chain\n"));
   for (const c of outputCases()) assert.ok(review.includes("## " + c.id + "\n"), "missing output review: " + c.id);
   const retired = /^(output_quality_scorecard|output_blind_|output-risk-profile|artifact-design-profile|prompt-quality-profile)/;
   assert.ok(!fs.readdirSync(path.join(skillDir, "reports")).some(name => retired.test(name)));
@@ -148,7 +150,7 @@ test("local reference links resolve and report keeps conditional evidence", () =
 });
 
 test("shared root and nested map fences remain identical", () => {
-  const sibling = fs.readFileSync(path.resolve(skillDir, "../claude-context-improver/references/templates.md"), "utf8");
+  const sibling = normalizeNewlines(fs.readFileSync(path.resolve(skillDir, "../claude-context-improver/references/templates.md"), "utf8"));
   const target = read("references", "templates.md");
   for (const kind of ["Root", "Nested"]) assert.equal(sharedBlock(target, kind), sharedBlock(sibling, kind));
 });
