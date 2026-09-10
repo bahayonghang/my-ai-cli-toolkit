@@ -25,7 +25,7 @@
   "near_neighbor": [
     {"text": "在 Herdr 查看当前 pane 的日志。", "family": "official-herdr"},
     {"text": "List panes in Herdr.", "family": "official-herdr"},
-    {"text": "Ask Codex directly for an independent code review.", "family": "codex-bridge"},
+    {"text": "Ask Codex directly for an independent code review.", "family": "direct-codex"},
     {"text": "在 Herdr 让 Codex 审查当前提交。", "family": "codex-review-adapter"}
   ]
 }

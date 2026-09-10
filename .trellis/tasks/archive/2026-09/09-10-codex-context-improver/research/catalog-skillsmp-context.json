@@ -1,0 +1,291 @@
+{
+  "source": "skillsmp",
+  "query": "codex context audit",
+  "request": {
+    "attempts": 1,
+    "max_attempts": 1
+  },
+  "metric_semantics": {
+    "repo_stars": "GitHub repository stars; not installs, ratings, or skill-specific quality",
+    "catalog_updated_at": "SkillsMP indexed update time; verify the repository for current source"
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 21,
+    "totalPages": 2,
+    "hasNext": true,
+    "hasPrev": false,
+    "totalIsExact": false
+  },
+  "rate_limit": {
+    "daily_limit": "50",
+    "daily_remaining": "49",
+    "minute_limit": "10",
+    "minute_remaining": "9"
+  },
+  "raw_candidate_count": 20,
+  "deduplicated_candidate_count": 17,
+  "candidates": [
+    {
+      "source": "skillsmp",
+      "name": "autoreview",
+      "author": "openclaw",
+      "description": "Structured Codex, Claude, Amp, Pi, or Kimi code review when explicitly requested.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/autoreview",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-autoreview",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-09-02T12:10:39+00:00",
+      "source_key": "openclaw/openclaw:.agents/skills/autoreview",
+      "family_key": "openclaw/openclaw:autoreview",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "coding-agent",
+      "author": "openclaw",
+      "description": "Delegate coding work to Codex, Claude Code, or OpenCode as background workers; not simple edits or read-only code lookup.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/coding-agent",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-coding-agent",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-07-29T05:43:42+00:00",
+      "source_key": "openclaw/openclaw:skills/coding-agent",
+      "family_key": "openclaw/openclaw:coding-agent",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "model-usage",
+      "author": "openclaw",
+      "description": "Summarize CodexBar local cost logs by model for Codex or Claude, including current or full breakdowns.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/model-usage",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-model-usage",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-07-21T18:04:46+00:00",
+      "source_key": "openclaw/openclaw:skills/model-usage",
+      "family_key": "openclaw/openclaw:model-usage",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "acp-router",
+      "author": "openclaw",
+      "description": "Route plain-language requests for Claude Code, Cursor, Copilot, OpenClaw ACP, OpenCode, Gemini CLI, Qwen, Kiro, Kimi, iFlow, Factory Droid, Kilocode, or explicit ACP harness work into either OpenClaw ACP runtime sessions or direct acpx-driven sessions (\"telephone game\" flow). For coding-agent thread requests, read this skill first, then use only `sessions_spawn` for thread creation. Codex chat binding defaults to the native Codex app-server plugin unless ACP is explicit or background spawn needs ACP.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/extensions/acpx/skills/acp-router",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/extensions-acpx-skills-acp-router",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-08-29T09:07:05+00:00",
+      "source_key": "openclaw/openclaw:extensions/acpx/skills/acp-router",
+      "family_key": "openclaw/openclaw:acp-router",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "update-team-server",
+      "author": "openclaw",
+      "description": "Update the operator-configured Team server unattended through its canonical deployment owner; verify serving code, supported migrations, session continuity, and recovery without duplicating the hourly scheduler.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/update-team-server",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-update-team-server",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-08-28T17:56:04+00:00",
+      "source_key": "openclaw/openclaw:.agents/skills/update-team-server",
+      "family_key": "openclaw/openclaw:update-team-server",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "openclaw-debugging",
+      "author": "openclaw",
+      "description": "Debug OpenClaw model, provider, tool-surface, code-mode, streaming, and live/Crabbox behavior by choosing the right logs, probes, and proof path before changing code, including fetching stored sessions, transcripts, and attachments as evidence.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/.agents/skills/openclaw-debugging",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/agents-skills-openclaw-debugging",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-08-16T18:13:47+00:00",
+      "source_key": "openclaw/openclaw:.agents/skills/openclaw-debugging",
+      "family_key": "openclaw/openclaw:openclaw-debugging",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "node-connect",
+      "author": "openclaw",
+      "description": "Diagnose OpenClaw Control UI browser and native Android, iOS, or macOS node connection failures across route, auth, pairing, QR/setup-code, and reconnect states.",
+      "content_language": "en",
+      "github_url": "https://github.com/openclaw/openclaw/tree/main/skills/node-connect",
+      "skillsmp_url": "https://skillsmp.com/creators/openclaw/openclaw/skills-node-connect",
+      "repo_stars": 389030,
+      "catalog_updated_at": "2026-08-14T18:17:33+00:00",
+      "source_key": "openclaw/openclaw:skills/node-connect",
+      "family_key": "openclaw/openclaw:node-connect",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "receiving-code-review",
+      "author": "obra",
+      "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation",
+      "content_language": "en",
+      "github_url": "https://github.com/obra/superpowers/tree/main/skills/receiving-code-review",
+      "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-receiving-code-review",
+      "repo_stars": 282954,
+      "catalog_updated_at": "2026-07-24T00:27:16+00:00",
+      "source_key": "obra/superpowers:skills/receiving-code-review",
+      "family_key": "obra/superpowers:receiving-code-review",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "requesting-code-review",
+      "author": "obra",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements",
+      "content_language": "en",
+      "github_url": "https://github.com/obra/superpowers/tree/main/skills/requesting-code-review",
+      "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-requesting-code-review",
+      "repo_stars": 282954,
+      "catalog_updated_at": "2026-08-12T16:53:21+00:00",
+      "source_key": "obra/superpowers:skills/requesting-code-review",
+      "family_key": "obra/superpowers:requesting-code-review",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "test-driven-development",
+      "author": "obra",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code",
+      "content_language": "en",
+      "github_url": "https://github.com/obra/superpowers/tree/main/skills/test-driven-development",
+      "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-test-driven-development",
+      "repo_stars": 282954,
+      "catalog_updated_at": "2026-07-24T00:27:16+00:00",
+      "source_key": "obra/superpowers:skills/test-driven-development",
+      "family_key": "obra/superpowers:test-driven-development",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "writing-plans",
+      "author": "obra",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+      "content_language": "en",
+      "github_url": "https://github.com/obra/superpowers/tree/main/skills/writing-plans",
+      "skillsmp_url": "https://skillsmp.com/creators/obra/superpowers/skills-writing-plans",
+      "repo_stars": 282954,
+      "catalog_updated_at": "2026-08-12T16:53:21+00:00",
+      "source_key": "obra/superpowers:skills/writing-plans",
+      "family_key": "obra/superpowers:writing-plans",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "code-review",
+      "author": "mattpocock",
+      "description": "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\".",
+      "content_language": "en",
+      "github_url": "https://github.com/mattpocock/skills/tree/main/skills/engineering/code-review",
+      "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-engineering-code-review",
+      "repo_stars": 256360,
+      "catalog_updated_at": "2026-08-19T13:01:26+00:00",
+      "source_key": "mattpocock/skills:skills/engineering/code-review",
+      "family_key": "mattpocock/skills:code-review",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "git-guardrails-claude-code",
+      "author": "mattpocock",
+      "description": "Set up Claude Code hooks to block dangerous git commands (push, reset --hard, clean, branch -D, etc.) before they execute. Use when user wants to prevent destructive git operations, add git safety hooks, or block git push/reset in Claude Code.",
+      "content_language": "en",
+      "github_url": "https://github.com/mattpocock/skills/tree/main/skills/misc/git-guardrails-claude-code",
+      "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-misc-git-guardrails-claude-code",
+      "repo_stars": 256360,
+      "catalog_updated_at": "2026-08-19T10:03:37+00:00",
+      "source_key": "mattpocock/skills:skills/misc/git-guardrails-claude-code",
+      "family_key": "mattpocock/skills:git-guardrails-claude-code",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "implement-spec",
+      "author": "mattpocock",
+      "description": "Implement a specification in code.",
+      "content_language": "en",
+      "github_url": "https://github.com/mattpocock/skills/tree/main/skills/in-progress/implement-spec",
+      "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-in-progress-implement-spec",
+      "repo_stars": 256360,
+      "catalog_updated_at": "2026-08-21T10:56:33+00:00",
+      "source_key": "mattpocock/skills:skills/in-progress/implement-spec",
+      "family_key": "mattpocock/skills:implement-spec",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "codebase-design",
+      "author": "mattpocock",
+      "description": "Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.",
+      "content_language": "en",
+      "github_url": "https://github.com/mattpocock/skills/tree/main/skills/engineering/codebase-design",
+      "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-engineering-codebase-design",
+      "repo_stars": 256360,
+      "catalog_updated_at": "2026-08-19T10:03:37+00:00",
+      "source_key": "mattpocock/skills:skills/engineering/codebase-design",
+      "family_key": "mattpocock/skills:codebase-design",
+      "aliases": []
+    },
+    {
+      "source": "skillsmp",
+      "name": "context-budget",
+      "author": "affaan-m",
+      "description": "Audits Claude Code context window consumption across agents, skills, MCP servers, and rules. Identifies bloat, redundant components, and produces prioritized token-savings recommendations. Use when the context window is filling up too fast and the agents, skills, MCP servers, or rules consuming it need to be identified.",
+      "content_language": "en",
+      "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/context-budget",
+      "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-context-budget",
+      "repo_stars": 253169,
+      "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+      "source_key": "affaan-m/ecc:skills/context-budget",
+      "family_key": "affaan-m/ecc:context-budget",
+      "aliases": [
+        {
+          "language": "zh",
+          "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/zh-CN/skills/context-budget"
+        },
+        {
+          "language": "zh",
+          "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/zh-CN/skills/context-budget"
+        }
+      ]
+    },
+    {
+      "source": "skillsmp",
+      "name": "unified-memory",
+      "author": "affaan-m",
+      "description": "Share durable, inspectable context and handoffs between Claude, Codex, Hermes, Cursor, OpenCode, and other agents through the local ECC Memory Vault. Use when an agent must save work state, transfer context, resume another agent's task, or search shared project knowledge.",
+      "content_language": "en",
+      "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/unified-memory",
+      "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-unified-memory",
+      "repo_stars": 253169,
+      "catalog_updated_at": "2026-07-26T09:46:59+00:00",
+      "source_key": "affaan-m/ecc:skills/unified-memory",
+      "family_key": "affaan-m/ecc:unified-memory",
+      "aliases": [
+        {
+          "language": "en",
+          "github_url": "https://github.com/affaan-m/ECC/tree/main/.cursor/skills/unified-memory"
+        },
+        {
+          "language": "en",
+          "github_url": "https://github.com/affaan-m/ECC/tree/main/.cursor/skills/unified-memory"
+        },
+        {
+          "language": "en",
+          "github_url": "https://github.com/affaan-m/ECC/tree/main/.agents/skills/unified-memory"
+        }
+      ]
+    }
+  ]
+}

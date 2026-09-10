@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0.0-qiaomu-lite",
-  "generated_at": "2026-08-30",
+  "generated_at": "2026-09-10",
   "package": {
     "name": "goal-meta-skill",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "owner": "lyh",
     "maturity_tier": "governed",
     "lifecycle_stage": "governed",
@@ -26,7 +26,7 @@
     ],
     "outputs": [
       "reviewable DRAFT or APPROVED TEXT /goal contract",
-      "optional separately confirmed root GOAL.md handoff"
+      "optional explicitly authorized root GOAL.md handoff, including same-turn creation"
     ],
     "exclusions": [
       "Goal activation or payload execution",
@@ -65,9 +65,12 @@
     ],
     "compact_workflow": [
       "reconnoiter read-only",
+      "select platform and load outcome-specific reference contracts",
+      "use defaults or bounded material-only interview",
       "compile",
-      "lint, adding --review-remediation when selected",
+      "lint each payload through stdin or files, adding --review-remediation when selected",
       "present DRAFT or APPROVED TEXT",
+      "if explicitly authorized, persist the shown direct-child contract and verify read-back in the same turn",
       "stop without activation"
     ],
     "gate_ladder": [
@@ -80,7 +83,9 @@
     "output_contract": [
       "One externally approved Prompt owns same-scope implementation and checking.",
       "AskUserQuestion is limited to material user-owned decisions before first product write.",
-      "Round-cap or no-progress residuals end BLOCKED and never emit a second repair Prompt."
+      "Round-cap or no-progress residuals end BLOCKED and never emit a second repair Prompt.",
+      "Ordinary completion requires deliverables, named-entry behavior, required checks and authorized diff/status together.",
+      "Saving supports only established-root direct-child Markdown basenames; nested legacy paths remain chat-only."
     ]
   },
   "resources": {
@@ -129,13 +134,13 @@
       "source_tier": "local",
       "remote_inline_execution": "forbid",
       "remote_metadata_policy": "allow-metadata-only",
-      "file_write": "one confirmed direct-child Markdown through persist_goal_contract.py",
+      "file_write": "one explicitly authorized direct-child Markdown through persist_goal_contract.py",
       "git_mutation": "forbid",
       "goal_activation": "forbid"
     },
     "permissions": {
       "reconnaissance": "Read/Glob/Grep plus read-only git root, branch, and status probes",
-      "deterministic_helpers": "run the bundled linter; write one confirmed root Markdown only through persist_goal_contract.py",
+      "deterministic_helpers": "run the bundled linter; write one explicitly authorized root Markdown only through persist_goal_contract.py",
       "question_tool": "not granted to goal-meta-skill; AskUserQuestion may appear only inside generated execution text",
       "forbidden": "Goal activation, payload implementation, agent dispatch, commit, archive, push, publish, install, and arbitrary file writes"
     },

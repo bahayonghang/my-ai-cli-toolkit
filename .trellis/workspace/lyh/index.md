@@ -7,9 +7,9 @@
 ## Current Status
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-1.md`
-- **Total Sessions**: 64
-- **Last Active**: 2026-09-08
+- **Active File**: `journal-2.md`
+- **Total Sessions**: 67
+- **Last Active**: 2026-09-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,8 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1999 | Active |
+| `journal-2.md` | ~100 | Active |
+| `journal-1.md` | ~1999 | Archived |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +30,9 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 67 | 2026-09-10 | Goal Meta Skill 0.8.2 收尾 | `b145f1e6`, `d1f56073` | `dev` |
+| 66 | 2026-09-10 | Codex 上下文技能升级与弃用技能清理收尾 | `e9916058`, `2e38428e` | `dev` |
+| 65 | 2026-09-08 | herdr-orchestra 0.2.0 运行时路由 | `420aabbda1e2c2f7e0ddb4a5cafa4d20f582ce59`, `f66f7631dfa5ae8d5f2db3021cbee4c8a28e203e` | `dev` |
 | 64 | 2026-09-08 | Herdr orchestration and Codex review skills | `b6dfbc6d` | `dev` |
 | 63 | 2026-09-05 | 技能审计优化提交与归档 | `45c7d175` | `dev` |
 | 62 | 2026-09-05 | 技能授权连续性优化实施与归档 | `1726e0b8`, `a959b7ab` | `dev` |

@@ -1,0 +1,5 @@
+{"file":".trellis/spec/guides/skill-authoring-conventions.md","reason":"Verify meaningful contracts, correct eval interpretation and explicit schema deviations"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Check source-generated output, ownership and required gates"}
+{"file":".trellis/tasks/09-10-codex-context-improver/research/source-guidance.md","reason":"Independently check source attribution and nonclaims"}
+{"file":".trellis/tasks/09-10-codex-context-improver/research/repository-analysis.md","reason":"Regression risks: discovery, stale reports, references and existing deletions"}
+{"file":".trellis/tasks/09-10-codex-context-improver/research/prior-art-research.md","reason":"Verify source synthesis and avoid importing arbitrary hard rules"}

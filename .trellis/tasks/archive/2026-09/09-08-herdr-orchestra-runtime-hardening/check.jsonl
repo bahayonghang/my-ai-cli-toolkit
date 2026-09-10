@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Check version/docs-sync, evals vs trigger_eval split, no README/manifest added, recorded_fixture claims."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Reject hand-edited docs catalog and frontmatter/directory drift."}
+{"file": ".trellis/tasks/09-08-herdr-orchestra-runtime-hardening/research/incident-2026-09-08-omp-google-models.md", "reason": "AC1-AC3 must not reintroduce silent second-pane CLI fallback or omp-specific core rules."}

@@ -283,3 +283,65 @@ process = subprocess.run(
 ```
 
 The explicit encoding makes the native command's output contract authoritative instead of the host console code page.
+
+## Scenario: Lint chat payloads without creating files
+
+### 1. Scope / Trigger
+
+Apply when a skill promises chat-only output but requires its generated command
+to pass a bundled linter. The reference is goal-meta-skill's
+`scripts/lint_goal_command.py` and `tests/lint-goal-command.test.mjs`.
+
+### 2. Signatures
+
+```text
+python "<skill-dir>/scripts/lint_goal_command.py" --platform codex -
+python "<skill-dir>/scripts/lint_goal_command.py" --contract --expected-path GOAL.md -
+```
+
+Pass the candidate on stdin; existing UTF-8 file arguments remain available.
+
+### 3. Contracts
+
+- Decode stdin bytes as UTF-8 with optional BOM. A candidate contract must not
+  silently replace invalid bytes or require a temporary file to be linted.
+- Validate each copied `/goal` payload separately. Wrapper prose and another
+  command cannot supply missing fields or a platform's positive completion proof.
+- Raw commands end at an empty line or the next `/goal`; fenced commands end
+  at their closing fence or the next `/goal`. Retain fenced blank lines for
+  explicit rejection instead of accepting a truncated prefix.
+- Measure only the extracted objective, excluding `/goal` and Markdown fences.
+- Keep envelope layout and whole-output forbidden-command checks at their
+  existing layer. Persisted contracts keep their separate section parser;
+  short launchers are not full inline contracts.
+
+### 4. Validation & Error Matrix
+
+| Input | Result |
+| --- | --- |
+| Valid UTF-8/BOM through a file or stdin | Same validation outcome; no candidate output file |
+| Invalid UTF-8 or repeated `-` | Nonzero exit with an input/argument error |
+| Incomplete command plus complete wrapper or adjacent command | Nonzero exit identifying the incomplete Goal |
+| Fenced command with an internal blank line | Nonzero exit; no silent truncation |
+| Objective at the existing budget, raw or fenced | Same length result; no wrapper characters counted |
+
+### 5. Good/Base/Bad Cases
+
+Good: lint the reviewed Chinese candidate through stdin before presenting it.
+Base: lint an existing file through the same validation path.
+Bad: let the English mirror supply fields missing from the Chinese command.
+
+### 6. Tests Required
+
+Cover stdin/file parity, BOM, invalid UTF-8, duplicate stdin arguments, no
+candidate output files, wrapper borrowing, a malformed second Goal, exact
+length and length-plus-one, and fenced blank lines. Keep writer and optional
+profile regressions passing; these tests do not prove provider behavior.
+
+### 7. Wrong vs Correct
+
+Wrong: validate required fields against the entire presentation packet and
+count characters until a blank line, including the closing fence.
+
+Correct: extract each command once for local validation and length accounting;
+validate the presentation envelope separately without lending it to a command.

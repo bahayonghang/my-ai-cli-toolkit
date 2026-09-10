@@ -1,4 +1,60 @@
-# Goal Meta Skill 0.8.0 creation handoff
+# Goal Meta Skill 0.8.2 creation handoff
+
+## 0.8.2 reference consolidation — 2026-09-10
+
+This maintenance uses the user-selected local `qiaomu-goal-meta-skill` reference
+(manifest 0.2.0, source commit `f29e0189f2ea03392c50b4f1c7230886bd838a13`,
+MIT) and Qiaomu Meta Skill 2.8.1 as the authoring method. The reference's compact
+root and short interface are adapted; its weak missing-check completion
+alternative and cwd-relative script invocation are rejected. No reference code
+was executed. Full provenance and deliberate keep/adapt/reject/invent choices
+are in `prior-art-research.md`.
+
+- `design advantage`: root workflow routes to existing authority references;
+  interface retains intent, activation prohibition and permissions. Platform,
+  persistence, Trellis and review-remediation details are no longer copied into
+  both entry surfaces.
+- `validated advantage`: all four interview draft/final examples now require
+  deliverables, named-entry behavior, required checks and authorized diff/status
+  together; the existing published-example test covers them. Legacy nested
+  paths are chat-only, consistent with the unchanged direct-child writer.
+- `validated advantage`: the first child adds stdin lint and validates each
+  Goal's own fields/length, excluding wrappers and neighboring Goals. It keeps
+  first-line trailing whitespace inside the payload budget.
+- `validated advantage`: LF-normalized UTF-8 text counts are root 6,237 plus
+  interface 2,804 = 9,041 characters, versus the audited 15,049 baseline:
+  6,008 fewer characters (39.92%). This is a character metric, not token or
+  provider-performance evidence.
+- `hypothesis`: clearer reference ownership improves future agent adherence
+  and maintenance; no provider comparison or human study was run.
+
+Preserved authority:
+
+| Capability | Current authority |
+| --- | --- |
+| DRAFT / APPROVED TEXT, no activation | root Governed authority and interface permissions |
+| Explicit same-turn save, create-only, hash replacement, reparse refusal, read-back | root S6 and persistent-goal-contract |
+| Non-Git source snapshot and five platform renderers | persistent-goal-contract and platform-goal-facts |
+| Ordinary completion conjunction and bounded material-only interview | goal-command-playbook and interview-checklist |
+| Frozen scan envelope, stable ledger, independent feedback/rescan, no second Prompt | root S0 route and review-remediation-contract |
+| Default-on, opt-out and technical fallback; product/planning history before separate archive | root S0 route and trellis-goal-cadence |
+| Evidence and provenance | existing reports and assertions eval fixtures |
+
+Current local evidence: both Node suites pass 73/73, 0 failed, 0 skipped.
+New evals 57–59 are manually reviewed `recorded_fixture` cases; CI does not
+execute them. They cover bilingual/final completion consistency, unsupported
+nested saving and combined Trellis/review routing. Source version, contract
+metadata, linter version assertion and enriched Skill IR are aligned to 0.8.2.
+Interface has no version field. The raw exporter was not run over the enriched
+IR. Skill metadata validation and compilation of all 65 Python files pass.
+`just docs-sync` changes only the Chinese/English goal-meta detail-page version
+entries; `git diff --check` passes. Final integrated `just ci` and independent
+acceptance belong to the parent and are not claimed here.
+
+The description's routing boundary is unchanged; no new trigger-provider run
+was performed. Provider compliance, new-session handoff/discovery, installation,
+human review and telemetry remain `missing evidence`. The historical sections
+below retain their original dates, counts and limitations.
 
 ## 0.8.1 maintenance — 2026-09-05
 

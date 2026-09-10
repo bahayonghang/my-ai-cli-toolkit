@@ -85,6 +85,35 @@ name)` → `Invoke-Expression $fn.Extent.Text` (see `audit-scripts.test.mjs`).
   fence, or the formatter's auto-closing produces swallowed sections (bit both
   `update-guidelines.md` files in the md-improver skills).
 
+## Compact workflow must name every surface
+
+> Distilled from herdr-orchestra 0.2.0 (2026-09-08).
+
+- Operators follow the root `SKILL.md` numbered Compact Workflow first. A
+  pane-vs-agent (or CLI-vs-TUI) exception that lives only in a reference will
+  not run.
+- If a reference allows more than one execution surface, the compact steps
+  must choose that surface before the default start command. Keep the long
+  rule in one reference; the root file only names the decision and points.
+
+Wrong: Compact step 3 always `agent start`, while `delegation.md` says one-shot
+jobs use `pane run`.
+
+Correct: Compact step 3 selects pane or agent; `delegation.md` owns the
+criteria.
+
+## Wait needles must not be in the sent command
+
+> Distilled from herdr-orchestra 0.2.0 (2026-09-08).
+
+- `herdr pane wait-output --match TEXT` (and similar terminal wait matchers)
+  search the buffer immediately. If `TEXT` is a substring of the command just
+  sent, the wait returns before the process finishes.
+- Put the pane id in the position the live `herdr pane` help lists (currently
+  the first positional). Construct the end marker so the wait needle is not a
+  contiguous substring of the `pane run` text (runtime concatenation, or wait
+  for a line that is not the command itself).
+
 ## Governed PowerShell trust evidence
 
 ### 1. Scope / Trigger
@@ -337,7 +366,7 @@ payload itself said “execute”.
   rerun until the ceiling result has zero unused-resource warnings.
 
 
-- When two skills maintain the same output file (e.g. `agents-md-improver` and
+- When two skills maintain the same output file (e.g. `codex-context-improver` and
   `claude-context-improver` both own `code_map.md` templates), the shared template
   wording must be byte-identical in both skills, each templates file must carry
   a symmetric "shared with <sibling>; edit both together" note, and each

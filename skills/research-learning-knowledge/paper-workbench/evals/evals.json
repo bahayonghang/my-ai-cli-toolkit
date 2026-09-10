@@ -66,11 +66,11 @@
     {
       "id": 7,
       "prompt": "帮我调研 2026 年 RAG 的最新进展，要带网页来源的综述。",
-      "expected_output": "Routing-negative: current-topic web research with citations should route to deep-research-pro, not paper-workbench.",
+      "expected_output": "Routing-negative: current-topic web research with citations is not paper-workbench intake.",
       "files": [],
       "assertions": [
         "Does NOT treat this as paper intake/normalization",
-        "Defers to deep-research-pro for cited web research"
+        "Defers to current-topic cited web research rather than paper-workbench"
       ]
     }
   ]

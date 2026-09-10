@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -8,12 +8,12 @@ import { test } from 'node:test';
 const skillRoot = path.resolve('skills/developer-tools-integrations/goal-meta-skill');
 const linter = path.join(skillRoot, 'scripts', 'lint_goal_command.py');
 
-function runPython(args) {
+function runPython(args, options = {}) {
   const python = process.env.PYTHON ?? 'python';
   const env = { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' };
-  const result = spawnSync(python, args, { encoding: 'utf8', env });
+  const result = spawnSync(python, args, { encoding: 'utf8', env, ...options });
   if (result.error && python === 'python' && process.platform === 'win32') {
-    return spawnSync('py', ['-3', ...args], { encoding: 'utf8', env });
+    return spawnSync('py', ['-3', ...args], { encoding: 'utf8', env, ...options });
   }
   return result;
 }
@@ -77,6 +77,119 @@ test('base goal can pass normal lint without companion sections', () => {
   assert.equal(result.status, 0, result.stderr);
 });
 
+test('stdin and file inputs accept the same UTF-8 and BOM content without output files', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'goal-meta-stdin-'));
+  try {
+    for (const prefix of ['', '\uFEFF']) {
+      const input = prefix + validChineseCompanion;
+      const fileResult = lintText(input, ['--require-chinese-companion']);
+      const result = runPython([linter, '--require-chinese-companion', '-'], { input, cwd: dir });
+      assert.equal(fileResult.status, 0, fileResult.stderr);
+      assert.equal(result.status, fileResult.status, result.stderr);
+      assert.equal(result.stdout, fileResult.stdout);
+      assert.deepEqual(readdirSync(dir), []);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('stdin rejects invalid UTF-8 and repeated stdin arguments without echoing the payload', () => {
+  const result = runPython([linter, '-'], { input: Buffer.from([0x66, 0x80]) });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /stdin.*utf-8.*decode/i);
+  const repeated = runPython([linter, '-', '-'], { input: baseGoalOnly });
+  assert.equal(repeated.status, 2, repeated.stderr);
+  assert.match(repeated.stderr, /stdin.*only once/i);
+  assert.doesNotMatch(repeated.stderr, /为现有仪表盘/);
+});
+
+test('file and stdin inputs can be combined and any input failure makes the CLI fail', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'goal-meta-inputs-'));
+  const file = path.join(dir, 'goal.txt');
+  try {
+    writeFileSync(file, baseGoalOnly, 'utf8');
+    const passed = runPython([linter, file, '-'], { input: baseGoalOnly });
+    assert.equal(passed.status, 0, passed.stderr);
+    const incomplete = runPython([linter, '-', file], { input: incompleteGoal });
+    assert.notEqual(incomplete.status, 0);
+    assert.match(incomplete.stderr, /stdin \/goal\[1\].*missing required marker/);
+    writeFileSync(file, Buffer.from([0x66, 0x80]));
+    const invalid = runPython([linter, file, '-'], { input: baseGoalOnly });
+    assert.notEqual(invalid.status, 0);
+    assert.match(invalid.stderr, /goal\.txt.*utf-8.*decode/i);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+const incompleteGoal = '/goal Fix the dashboard filter state loss with the smallest authorized implementation change.';
+const fencedGoal = (goal) => `\`\`\`text\n${goal.trim()}\n\`\`\``;
+
+test('ordinary Goal cannot borrow required fields from raw or fenced wrapper prose', () => {
+  const fields = baseGoalOnly.trim().split('\n').slice(1).join('\n');
+  for (const text of [
+    `${incompleteGoal}\n\nExplanation only:\n${fields}`,
+    `${fencedGoal(incompleteGoal)}\n${fields}`,
+  ]) {
+    const result = lintText(text);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /\/goal\[1\].*missing required marker/);
+  }
+});
+
+test('every adjacent raw or fenced Goal validates independently', () => {
+  for (const render of [(goal) => goal.trim(), fencedGoal]) {
+    for (const separator of ['\n', '\n\n']) {
+      const complete = lintText(`${render(baseGoalOnly)}${separator}${render(baseGoalOnly)}`);
+      assert.equal(complete.status, 0, complete.stderr);
+      const incomplete = lintText(`${render(baseGoalOnly)}${separator}${render(incompleteGoal)}`);
+      assert.notEqual(incomplete.status, 0);
+      assert.match(incomplete.stderr, /\/goal\[2\].*missing required marker/);
+    }
+  }
+  const sharedFence = lintText(fencedGoal(`${baseGoalOnly.trim()}\n${incompleteGoal}`));
+  assert.notEqual(sharedFence.status, 0);
+  assert.match(sharedFence.stderr, /\/goal\[2\].*missing required marker/);
+});
+
+function goalWithBodyLength(length) {
+  const goal = baseGoalOnly.trim();
+  const bodyLength = goal.slice('/goal '.length).length;
+  return goal.replace('/goal ', `/goal ${'补'.repeat(length - bodyLength)}`);
+}
+
+test('4000 and 4001 character boundaries count only each raw or fenced Goal body', () => {
+  for (const length of [4000, 4001]) {
+    const goal = goalWithBodyLength(length);
+    for (const text of [goal, fencedGoal(goal), `${goal}\n${baseGoalOnly.trim()}`, `${fencedGoal(goal)}\n后续说明：${'附'.repeat(4100)}`]) {
+      const result = lintText(text, ['--platform', 'codex']);
+      if (length === 4000) {
+        assert.equal(result.status, 0, result.stderr);
+      } else {
+        assert.notEqual(result.status, 0);
+        assert.match(result.stderr, /\/goal\[1\].*4001 characters/);
+      }
+    }
+  }
+});
+
+test('fenced Goal blank lines are rejected rather than truncating a valid prefix', () => {
+  const result = lintText(fencedGoal(`${baseGoalOnly.trim()}\n\n${'补'.repeat(4100)}`));
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /\/goal\[1\].*blank line/i);
+  assert.match(result.stderr, /characters/);
+});
+
+test('first-line trailing whitespace remains part of a multiline Goal body length', () => {
+  const goal = goalWithBodyLength(4000).replace('\n', ' \n');
+  for (const text of [goal, fencedGoal(goal)]) {
+    const result = lintText(text, ['--platform', 'codex']);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /\/goal\[1\].*4001 characters/);
+  }
+});
+
 test('strict contract rejects valid base goal missing Chinese companion sections', () => {
   const result = lintText(baseGoalOnly, ['--require-chinese-companion']);
   assert.notEqual(result.status, 0);
@@ -132,6 +245,17 @@ test('claude platform rejects goal without a turn or time bounding clause', () =
   const result = lintText(baseGoalOnly, ['--platform', 'claude']);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /bounding clause/);
+});
+
+test('claude bounding clauses cannot come from another Goal or wrapper advice', () => {
+  for (const text of [
+    `${claudeConditionGoal}\n${baseGoalOnly}`,
+    `${fencedGoal(baseGoalOnly)}\n否则在 20 轮后停止并总结剩余问题。`,
+  ]) {
+    const result = lintText(text, ['--platform', 'claude']);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /\/goal\[\d\].*bounding clause/);
+  }
 });
 
 test('codex platform keeps base behavior for goals without bounding clause', () => {
@@ -255,7 +379,9 @@ test('skill allowed-tools stay exact and narrow while the named helper owns the 
 
 test('package metadata, platform registry, and behavior eval history stay synchronized', () => {
   const skillText = readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
-  assert.match(skillText, /^version:\s*0\.8\.1$/m);
+  assert.match(skillText, /^version:\s*0\.8\.2$/m);
+  const ir = JSON.parse(readFileSync(path.join(skillRoot, 'reports/skill-ir.json'), 'utf8'));
+  assert.equal(ir.package.version, skillText.match(/^version:\s*(\S+)$/m)[1]);
   for (const platform of ['Claude Code', 'Codex', 'Grok Build', 'Oh My Pi', 'Kimi Code']) {
     assert.match(skillText, new RegExp(platform));
   }
@@ -301,14 +427,18 @@ test('package metadata, platform registry, and behavior eval history stay synchr
     assert.match(cadence, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 
-  assert.match(interfaceText, /first \/goal statement say that subagents are preferred and default-on/);
-  assert.match(interfaceText, /current-task planning artifacts/);
-  assert.match(interfaceText, /exclude unrelated task directories and out-of-scope dirty files/);
+  // The interface routes through the root; detailed dispatch/closeout rules
+  // above remain in the linked canonical cadence instead of being duplicated.
+  assert.match(interfaceText, /Follow SKILL\.md.*Trellis references/);
+  assert.match(skillText, /outcome 是 Trellis task\/child implementation.*\(references\/trellis-goal-cadence\.md\)/);
+  assert.match(cadence, /first.*statement|first.*Objective/i);
+  assert.match(cadence, /archive commit belongs to.*task\.py archive/);
+  assert.match(cadence, /Every child has been archived on its own/);
 
   const evals = JSON.parse(
     readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
   ).evals;
-  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 56 }, (_, i) => i + 1));
+  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 59 }, (_, i) => i + 1));
   for (const fixture of evals) {
     assert.ok(Array.isArray(fixture.assertions) && fixture.assertions.length > 0);
     assert.equal('expectations' in fixture, false);
@@ -450,7 +580,7 @@ function validContract({
 ## Contract metadata
 - Status: approved
 - Target platform: codex
-- Generated by: goal-meta-skill 0.8.1
+- Generated by: goal-meta-skill 0.8.2
 - Project root: .
 - Contract path: GOAL.md
 - Baseline: main @ 0123456789abcdef0123456789abcdef01234567; dirty paths: clean
@@ -731,18 +861,21 @@ test('review-remediation inline profile accepts the complete one-Prompt loop', (
 });
 
 test('review-remediation persisted contract accepts the same feedback contract', () => {
-  const result = lintText(
-    validContract({
-      objective: trellisObjective,
-      reading: `${trellisReading}\n- ${reviewEnvelope}`,
-      constraints: `${trellisConstraints}\n- ${reviewQuestionGate}\n- ${noSecondPrompt}`,
-      iteration: `Dispatch trellis-implement for code and trellis-check for verification after reading .trellis/workflow.md Phase 2.1 / 2.2. ${reviewLoop} Only after the review-remediation completion gate passes, commit this current task's related product changes and current task planning artifacts, confirm both are in version history, then run python ./.trellis/scripts/task.py archive ${trellisTask}.`,
-      completion: `${reviewCompletion}\n6. Current-task product changes and planning artifacts are in version history while unrelated tasks and out-of-scope dirty files remain excluded; the task is archived only after those commits.`,
-      pause: reviewPause,
-    }),
-    ['--contract', '--review-remediation', '--platform', 'codex'],
-  );
-  assert.equal(result.status, 0, result.stderr);
+  const contract = validContract({
+    objective: trellisObjective,
+    reading: `${trellisReading}\n- ${reviewEnvelope}`,
+    constraints: `${trellisConstraints}\n- ${reviewQuestionGate}\n- ${noSecondPrompt}`,
+    iteration: `Dispatch trellis-implement for code and trellis-check for verification after reading .trellis/workflow.md Phase 2.1 / 2.2. ${reviewLoop} Only after the review-remediation completion gate passes, commit this current task's related product changes and current task planning artifacts, confirm both are in version history, then run python ./.trellis/scripts/task.py archive ${trellisTask}.`,
+    completion: `${reviewCompletion}\n6. Current-task product changes and planning artifacts are in version history while unrelated tasks and out-of-scope dirty files remain excluded; the task is archived only after those commits.`,
+    pause: reviewPause,
+  });
+  const args = ['--contract', '--review-remediation', '--platform', 'codex'];
+  for (const result of [
+    lintText(contract, args),
+    runPython([linter, ...args, '-'], { input: `\uFEFF${contract}` }),
+  ]) {
+    assert.equal(result.status, 0, result.stderr);
+  }
 });
 
 test('review-remediation profile fails closed when any scan-envelope field is missing', () => {
@@ -909,8 +1042,13 @@ test('review-remediation keeps equivalent feedback semantics for opt-out and cap
 test('ordinary published examples preserve completion conjunction and remain lintable', () => {
   const playbook = readFileSync(path.join(skillRoot, 'references/goal-command-playbook.md'), 'utf8').replaceAll('\r\n', '\n');
   const ordinaryPacket = playbook.split('````markdown')[1].split('````')[0];
-  const examples = [...ordinaryPacket.matchAll(/```text\n([\s\S]*?)\n```/g)];
-  assert.equal(examples.length, 2);
+  const interview = readFileSync(path.join(skillRoot, 'references/interview-checklist.md'), 'utf8').replaceAll('\r\n', '\n');
+  // Only complete copyable Goals: the interview also has a Phase A placeholder
+  // template, while its four real Goals cover English/Chinese draft and final.
+  const interviewExamples = [...interview.matchAll(/```text\n(\/goal [\s\S]*?)\n```/g)];
+  assert.equal(interviewExamples.length, 4);
+  const examples = [...ordinaryPacket.matchAll(/```text\n([\s\S]*?)\n```/g), ...interviewExamples];
+  assert.equal(examples.length, 6);
   for (const match of examples) {
     const result = lintText(match[1]);
     assert.equal(result.status, 0, result.stderr);
@@ -934,6 +1072,19 @@ test('ordinary published examples preserve completion conjunction and remain lin
   const completeExamples = [...strongExamples.matchAll(/```text\n(\/goal [\s\S]*?)\n```/g)]
     .map(([, example]) => example).filter((example) => example.includes('\nVerification:'));
   assert.equal(completeExamples.length, 3);
+  const antiPatternSection = playbook.split('## Anti-Patterns')[1];
+  const betterExamples = [...antiPatternSection.matchAll(/```text\n(\/goal [\s\S]*?)\n```/g)]
+    .map(([, example]) => example).filter((example) => example.includes('\nVerification:'));
+  assert.equal(betterExamples.length, 1);
+  for (const example of [...completeExamples, ...betterExamples]) {
+    const result = lintText(example);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(example, /exist/);
+    assert.match(example, /entry point|local toolbar page/);
+    assert.match(example, /required.*pass/);
+    assert.match(example, /diff\/status.*only authorized/);
+    assert.doesNotMatch(example, /checks pass or/);
+  }
   for (const [index, [, variant]] of claudeVariants.entries()) {
     assert.match(variant, /exist/);
     assert.match(variant, /entry point/);

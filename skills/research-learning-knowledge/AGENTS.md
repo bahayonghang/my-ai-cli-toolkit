@@ -1,7 +1,7 @@
 # research-learning-knowledge — suite conventions
 
-House standard for the four skills in this directory: `deep-research-pro`,
-`literature-mentor`, `paper-workbench`, `roundtable`. `paper-workbench` is the
+House standard for the skills in this directory: `humanizer-paper`,
+`literature-mentor`, `paper-workbench`. `paper-workbench` is the
 structural exemplar (lean `SKILL.md` + `references/` with a `modes/` layer +
 bundled `scripts/` and `tests/`); new or edited skills here should match these
 conventions so the suite does not drift apart.
@@ -15,7 +15,7 @@ conventions so the suite does not drift apart.
   invocations). `${CLAUDE_SKILL_DIR}` is a Claude-Code-only load-time token; the
   literal-substitution pattern above is portable and is what this suite uses.
 - Bundled scripts self-locate via `Path(__file__)`, so only the script _path_
-  must resolve. Only `paper-workbench` currently ships scripts.
+  must resolve. `paper-workbench` and `humanizer-paper` currently ship scripts.
 
 ## Frontmatter
 
@@ -39,8 +39,8 @@ conventions so the suite does not drift apart.
   request should route to a sibling skill, not this one. The most important
   boundary here is `literature-mentor` (single-paper, Zotero-first, interactive
   CS/DL tutor) vs `paper-workbench` (multi-paper, researcher-profile-driven,
-  arXiv/DOI normalization); also `deep-research-pro` (cited web research) vs
-  `roundtable` (structured multi-figure debate).
+  arXiv/DOI normalization). `humanizer-paper` polishes academic language; it
+  does not read, synthesize, or normalize papers.
 - Note: evals are not executed by CI (`scripts/check.py` validates only
   `SKILL.md` frontmatter; `node-test` runs `tests/*.mjs`). They are review and
   future-tooling assets.
@@ -61,9 +61,9 @@ conventions so the suite does not drift apart.
   automation single-paper deep reading; it is allowed to be opinionated about
   domain. Keep its routing boundary vs `paper-workbench` explicit in both
   descriptions.
-- `deep-research-pro` and `roundtable` are prompt-only skills (no scripts);
-  `deep-research-pro` uses whatever web tools the environment provides — do not
-  reintroduce references to a bundled `scripts/research` CLI.
+- `humanizer-paper` is a register-aware academic language polisher, not a paper
+  reader. Cited current-topic web research is out of scope for this suite;
+  do not reintroduce a bundled `scripts/research` CLI.
 
 ## After structural changes
 

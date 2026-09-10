@@ -231,6 +231,8 @@ Completion conditions unless an explicit opt-out or explained capability
 fallback applies. The contract remains a compressed handoff; current Trellis
 artifacts stay authoritative.
 
-If the user explicitly keeps a legacy `.planning/goal-<slug>.md`, put the same
-cadence in that file's Contract section. The short `/goal` points at
-Verification and Stop/Pause in the selected file.
+If the user explicitly keeps a legacy `.planning/goal-<slug>.md`, a chat-only
+draft may describe the same Contract cadence and point at Verification and
+Stop/Pause in that existing file. This skill does not write nested paths or
+silently migrate them; saving follows the root direct-child basename policy in
+`persistent-goal-contract.md`.

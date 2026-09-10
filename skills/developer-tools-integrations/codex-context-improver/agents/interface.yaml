@@ -1,0 +1,25 @@
+interface:
+  display_name: "Codex Context Improver"
+  short_description: "Audit Codex instructions, skills and prompts"
+  default_prompt: "Use $codex-context-improver for relevant context. Audit/plan read-only; complete explicit scoped edits and checks without repeat approval. Planning approval alone does not authorize implementation. Distinguish discovered, loaded and audit-read sources; report missing evidence."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+  activation:
+    mode: "implicit"
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+  degradation:
+    openai: "repository contract; native loading needs evidence"
+    claude: "Claude-only work routes away"
+    generic: "portable; activation needs evidence"
+policy:
+  allow_implicit_invocation: true

@@ -116,9 +116,10 @@ checker findings flow back to implementation under the same Prompt.
 - What evidence proves completion strongly enough to stop?
 - What blocker requires the user: login, 2FA, paid service, destructive deletion, legal/medical/financial decision, account ownership, or product direction?
 - Should partial success be reported with remaining manual steps, or should the agent continue until the full outcome is proven?
-- If the goal exceeds the portability budget, should it stay chat-only, use a
-  user-named legacy `.planning/goal-<slug>.md`, or become an explicitly approved
-  root `GOAL.md` handoff?
+- If the goal exceeds the portability budget, should it stay chat-only
+  (optionally referencing an existing user-named legacy `.planning/goal-<slug>.md`)
+  or become an explicitly authorized root direct-child Markdown handoff?
+  The writer cannot save to a nested legacy path.
 - Claude Code only: what turn or time bounding clause fits (for example `or stop after 20 turns`), and is every piece of completion evidence something Claude's own output can show in the transcript?
 
 ### Persistence authorization
@@ -164,7 +165,7 @@ Verification: run the smallest project-provided checks, start the local app or r
 Constraints: do not add accounts, paid services, production changes, destructive operations, or unrelated features unless requested.
 Boundaries: write only inside the new project directory or the directly related existing project files.
 Iteration policy: implement one focused workflow at a time, rerun checks after meaningful changes, inspect logs before retrying, and make at most 3 focused improvement rounds before reporting remaining risks.
-Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
+Stop when: every deliverable identified during project discovery exists, the core workflow is verified through the discovered runtime entry point, all project-required checks pass, and diff/status shows only authorized changes. Missing required checks or access, or unmet conditions after 3 rounds, mean incomplete; report remaining conditions and evidence.
 Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
 ```
 
@@ -192,7 +193,7 @@ Please review the Prompt above. Reply with changes or `Approve Prompt`. Stop thi
 约束：不加入账号、付费服务、生产变更、破坏性操作或无关功能，除非用户明确要求。
 边界：只写入新项目目录，或只修改现有项目中与该功能直接相关的文件。
 迭代策略：一次实现一个聚焦工作流，每次有意义改动后重跑检查，重试前先读日志，最多做 3 轮聚焦改进后报告剩余风险。
-完成条件：核心流程有运行证据证明可用，检查通过或明确说明缺少配置。
+完成条件：项目侦察明确的交付均存在，核心流程通过已发现的运行入口验证，必需检查全部通过，且 diff/status 证明只有授权改动。缺少必需检查或访问权限，或 3 轮后仍有未满足条件，均为未完成；报告剩余条件和证据。
 暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时暂停。
 ```
 
@@ -211,7 +212,7 @@ Verification: run the smallest project-provided checks, start the local app or r
 Constraints: do not add accounts, paid services, production changes, destructive operations, or unrelated features unless requested.
 Boundaries: write only inside the new project directory or the directly related existing project files.
 Iteration policy: implement one focused workflow at a time, rerun checks after meaningful changes, inspect logs before retrying, and make at most 3 focused improvement rounds before reporting remaining risks.
-Stop when: the core workflow is proven by runtime evidence and checks pass or missing checks are explicitly reported.
+Stop when: every deliverable identified during project discovery exists, the core workflow is verified through the discovered runtime entry point, all project-required checks pass, and diff/status shows only authorized changes. Missing required checks or access, or unmet conditions after 3 rounds, mean incomplete; report remaining conditions and evidence.
 Pause if: credentials, payments, production data, destructive changes, legal/medical/financial decisions, copyrighted assets, or unclear ownership is required.
 ```
 
@@ -231,7 +232,7 @@ S6 after confirmation (see `references/default-goal-strategy.md`):
 约束：不加入账号、付费服务、生产变更、破坏性操作或无关功能，除非用户明确要求。
 边界：只写入新项目目录，或只修改现有项目中与该功能直接相关的文件。
 迭代策略：一次实现一个聚焦工作流，每次有意义改动后重跑检查，重试前先读日志，最多做 3 轮聚焦改进后报告剩余风险。
-完成条件：核心流程有运行证据证明可用，检查通过或明确说明缺少配置。
+完成条件：项目侦察明确的交付均存在，核心流程通过已发现的运行入口验证，必需检查全部通过，且 diff/status 证明只有授权改动。缺少必需检查或访问权限，或 3 轮后仍有未满足条件，均为未完成；报告剩余条件和证据。
 暂停条件：需要凭证、付费、生产数据、破坏性操作、法律/医疗/金融判断、版权素材或所有权不清时暂停。
 ```
 
@@ -241,7 +242,7 @@ S6 after confirmation (see `references/default-goal-strategy.md`):
 3. 约束：无账号、付费、生产变更或无关功能。
 4. 边界：新项目目录或直接相关文件。
 5. 迭代策略：一次一个聚焦工作流，最多 3 轮。
-6. 完成条件：运行证据证明核心流程可用。
+6. 完成条件：交付存在、具名入口行为验证、必需检查通过、授权 diff/status 同时成立；缺证据或超限仍未完成。
 7. 暂停条件：凭证、付费、生产数据或破坏性操作。
 
 该文本尚未创建或激活 Goal；如需运行，请在 goal-meta-skill 外另行复制并提交。

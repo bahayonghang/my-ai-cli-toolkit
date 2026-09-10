@@ -1,0 +1,57 @@
+{
+  "name": "codex-context-improver",
+  "version": "2.0.0",
+  "owner": "lyh",
+  "updated_at": "2026-09-10",
+  "review_cadence": "quarterly",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "production",
+  "category": "developer-tools-integrations",
+  "license": "MIT",
+  "complexity_tier": "medium",
+  "factory_components": [
+    "agents",
+    "evals",
+    "references",
+    "reports",
+    "tests"
+  ],
+  "target_platforms": [
+    "openai",
+    "claude",
+    "generic"
+  ],
+  "contracts": {
+    "input_files": {
+      "classification": "file-backed fixture",
+      "paths": [
+        "evals/output/fixtures/context-scenarios.md"
+      ],
+      "rule": "Task/project/CWD, instruction/configuration evidence, relevant skill metadata, selected bodies, read references and supplied prompts. Audit-time reads do not prove original loading; defaults do not prove effective configuration."
+    },
+    "output contract": "Evidence-first findings with source/authority, impact, proposed diff and uncertainty; or authorized scoped changes with preservation and passed/failed/skipped checks. AGENTS and code_map decisions are independent. Planning approval alone does not authorize implementation.",
+    "rollback boundary": "All package behavior is local prompt, reference, metadata, fixture, and report content. Repository guidance edits remain limited to the caller-authorized files; user-global and external writes are outside the default boundary."
+  },
+  "intent": {
+    "job_to_be_done": "Audit and improve task-relevant Codex context while preserving verified constraints and authorization.",
+    "target_users": [
+      "Codex project maintainers"
+    ],
+    "inputs": [
+      "Task, project and launch CWD",
+      "Applicable instructions/config evidence",
+      "Relevant skill metadata, loaded bodies/references and task prompts"
+    ],
+    "outputs": [
+      "Prioritized source-grounded audit and proposed diffs",
+      "Authorized local changes and honest validation"
+    ],
+    "exclusions": [
+      "General Codex setup, model/API migration and plugin recommendations",
+      "Claude-only guidance and ordinary code review",
+      "Unrequested global changes, installation, publishing and history scans"
+    ]
+  }
+}

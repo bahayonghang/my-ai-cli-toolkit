@@ -304,45 +304,37 @@ def lint_chinese_companion(text: str, source: str) -> list[str]:
 def lint_goal_block_length(
     text: str, source: str, *, platform: str = "both"
 ) -> list[str]:
-    """Check the pasted /goal block stays within the 4,000 character limit.
-
-    Both Codex objectives and Claude Code conditions share the limit. The
-    block is measured from each /goal line to the next blank line, matching
-    what a user would paste as one message.
-    """
+    """Measure each extracted payload, excluding its prefix and wrappers."""
     errors: list[str] = []
-    lines = text.splitlines()
-    for index, line in enumerate(lines):
-        if not line.strip().startswith("/goal"):
-            continue
-        block_lines = [line.strip().removeprefix("/goal").strip()]
-        for follower in lines[index + 1 :]:
-            if not follower.strip():
-                break
-            block_lines.append(follower.strip())
-        block_length = len("\n".join(block_lines))
-        if block_length > GOAL_OBJECTIVE_MAX_CHARS:
-            if platform in {"grok", "omp"}:
-                errors.append(
-                    f"{source}: /goal block is {block_length} characters; the "
-                    f"goal-meta portability limit is {GOAL_OBJECTIVE_MAX_CHARS}. "
-                    "No official objective cap was found for this platform; move "
-                    "the contract into a file and point /goal at it"
-                )
-            else:
-                limit_owner = {
-                    "codex": "Codex caps objectives",
-                    "claude": "Claude Code caps conditions",
-                    "kimi": "Kimi Code caps objectives",
-                    "all": "Codex, Claude Code, and Kimi Code cap objectives/conditions",
-                    "both": "Codex and Claude Code cap objectives/conditions",
-                }.get(platform, "supported platforms cap objectives/conditions")
-                errors.append(
-                    f"{source}: /goal block is {block_length} characters; {limit_owner} "
-                    f"at {GOAL_OBJECTIVE_MAX_CHARS}. Move the "
-                    "contract into a file and point /goal at it"
-                )
+    for index, block in enumerate(_inline_goal_blocks(text), start=1):
+        errors.extend(_lint_goal_payload_length(block, f"{source} /goal[{index}]", platform))
     return errors
+
+
+def _lint_goal_payload_length(block: str, source: str, platform: str) -> list[str]:
+    # Keep internal whitespace: it is part of the copied objective.
+    block_length = len(block[len("/goal"):].lstrip())
+    if block_length <= GOAL_OBJECTIVE_MAX_CHARS:
+        return []
+    if platform in {"grok", "omp"}:
+        return [
+            f"{source}: /goal block is {block_length} characters; the "
+            f"goal-meta portability limit is {GOAL_OBJECTIVE_MAX_CHARS}. "
+            "No official objective cap was found for this platform; move "
+            "the contract into a file and point /goal at it"
+        ]
+    limit_owner = {
+        "codex": "Codex caps objectives",
+        "claude": "Claude Code caps conditions",
+        "kimi": "Kimi Code caps objectives",
+        "all": "Codex, Claude Code, and Kimi Code cap objectives/conditions",
+        "both": "Codex and Claude Code cap objectives/conditions",
+    }.get(platform, "supported platforms cap objectives/conditions")
+    return [
+        f"{source}: /goal block is {block_length} characters; {limit_owner} "
+        f"at {GOAL_OBJECTIVE_MAX_CHARS}. Move the "
+        "contract into a file and point /goal at it"
+    ]
 
 
 def lint_platform_commands(text: str, source: str, platform: str) -> list[str]:
@@ -366,7 +358,9 @@ def lint_platform_commands(text: str, source: str, platform: str) -> list[str]:
     return errors
 
 
-def lint_claude_platform(text: str, source: str) -> list[str]:
+def lint_claude_platform(
+    text: str, source: str, *, require_bounding_clause: bool = True
+) -> list[str]:
     errors: list[str] = []
 
     for pattern in CLAUDE_FORBIDDEN_COMMAND_PATTERNS:
@@ -376,16 +370,21 @@ def lint_claude_platform(text: str, source: str) -> list[str]:
                 "Use /goal clear (or interrupt) and re-set the goal later"
             )
 
+    if require_bounding_clause:
+        errors.extend(_lint_claude_bounding_clause(text, source))
+    return errors
+
+
+def _lint_claude_bounding_clause(text: str, source: str) -> list[str]:
     if not any(
         re.search(pattern, text, flags=re.IGNORECASE)
         for pattern in CLAUDE_BOUNDING_CLAUSE_PATTERNS
     ):
-        errors.append(
+        return [
             f"{source}: Claude Code goals need a bounding clause such as "
             "`or stop after 20 turns` / `否则在 20 轮后停止并总结剩余问题`"
-        )
-
-    return errors
+        ]
+    return []
 
 
 def lint_completion_warnings(text: str, source: str) -> list[str]:
@@ -447,19 +446,38 @@ def _review_error(source: str, detail: str) -> str:
 
 
 def _inline_goal_blocks(text: str) -> list[str]:
-    """Return each contiguous inline /goal payload without wrapper prose."""
+    """Extract raw or fenced payloads without borrowing another Goal's fields.
+
+    Raw blocks end at an empty line; fenced blocks retain empty lines so the
+    caller can reject them instead of silently accepting a truncated prefix.
+    A new /goal always starts a separate payload, even in the same fence.
+    """
     blocks: list[str] = []
-    lines = text.splitlines()
-    index = 0
-    while index < len(lines):
-        if not re.match(r"^\s*/goal\b", lines[index], flags=re.IGNORECASE):
-            index += 1
+    block: list[str] = []
+    fence = ""
+    for line in text.splitlines():
+        stripped = line.strip()
+        marker = re.match(r"^(`{3,}|~{3,})(.*)$", stripped)
+        if marker and (
+            not fence
+            or (marker[1][0] == fence[0] and len(marker[1]) >= len(fence) and not marker[2].strip())
+        ):
+            if block:
+                blocks.append("\n".join(block))
+                block = []
+            fence = "" if fence else marker[1]
             continue
-        block = [lines[index]]
-        index += 1
-        while index < len(lines) and lines[index].strip():
-            block.append(lines[index])
-            index += 1
+        if re.match(r"^/goal\b", stripped, flags=re.IGNORECASE):
+            if block:
+                blocks.append("\n".join(block))
+            block = [line.lstrip()]
+        elif block:
+            if not stripped and not fence:
+                blocks.append("\n".join(block))
+                block = []
+            else:
+                block.append(line)
+    if block:
         blocks.append("\n".join(block))
     return blocks
 
@@ -1143,11 +1161,7 @@ def lint_text(
     if re.search(r"^\s*/目标\b", text, flags=re.MULTILINE):
         errors.append(f"{source}: use `/goal`, not `/目标`, as the executable command")
 
-    for name, patterns in REQUIRED_MARKER_GROUPS:
-        if not any(re.search(pattern, text) for pattern in patterns):
-            readable = " or ".join(pattern.replace(r"[:：]", ":") for pattern in patterns)
-            errors.append(f"{source}: missing required marker `{readable}`")
-
+    # Negative output rules also govern advice outside the copied commands.
     for pattern in PLACEHOLDER_PATTERNS:
         if re.search(pattern, text, flags=re.IGNORECASE):
             errors.append(f"{source}: unresolved placeholder matched `{pattern}`")
@@ -1156,10 +1170,39 @@ def lint_text(
         if re.search(pattern, text, flags=re.IGNORECASE):
             errors.append(f"{source}: dangerous vague instruction matched `{pattern}`")
 
-    if "/goal" in text:
-        goal_line = next((line.strip() for line in text.splitlines() if line.strip().startswith("/goal")), "")
-        if len(goal_line.removeprefix("/goal").strip()) < 20:
-            errors.append(f"{source}: /goal outcome is too short to be actionable")
+    errors.extend(lint_budget_misrepresentation(text, source))
+    errors.extend(lint_platform_commands(text, source, platform))
+    if platform == "claude":
+        errors.extend(lint_claude_platform(text, source, require_bounding_clause=False))
+
+    goal_blocks = _inline_goal_blocks(text)
+    if not goal_blocks:
+        errors.append(f"{source}: missing required marker `/goal` at the start of an inline block")
+    for index, block in enumerate(goal_blocks, start=1):
+        block_source = f"{source} /goal[{index}]"
+        errors.extend(_lint_inline_goal(block, block_source, platform, review_remediation))
+
+    if require_chinese_companion:
+        errors.extend(lint_chinese_companion(text, source))
+
+    return errors
+
+
+def _lint_inline_goal(
+    text: str, source: str, platform: str, review_remediation: bool
+) -> list[str]:
+    """Positive requirements must hold inside this one extracted payload."""
+    errors: list[str] = []
+    for name, patterns in REQUIRED_MARKER_GROUPS[1:]:
+        if not any(re.search(pattern, text) for pattern in patterns):
+            readable = " or ".join(pattern.replace(r"[:：]", ":") for pattern in patterns)
+            errors.append(f"{source}: missing required marker `{readable}`")
+
+    lines = text.split("\n")
+    if any(not line.strip() for line in lines):
+        errors.append(f"{source}: blank lines inside a fenced /goal violate the contiguous output contract")
+    if len(lines[0][len("/goal"):].strip()) < 20:
+        errors.append(f"{source}: /goal outcome is too short to be actionable")
 
     verification = find_marker_content(text, REQUIRED_MARKER_GROUPS[1][1])
     if verification and not any(re.search(pattern, verification, flags=re.IGNORECASE) for pattern in VERIFICATION_EVIDENCE_PATTERNS):
@@ -1170,9 +1213,7 @@ def lint_text(
         if content and len(content) < 12:
             errors.append(f"{source}: `{name}` content is too thin")
 
-    errors.extend(lint_goal_block_length(text, source, platform=platform))
-    errors.extend(lint_budget_misrepresentation(text, source))
-    errors.extend(lint_platform_commands(text, source, platform))
+    errors.extend(_lint_goal_payload_length(text, source, platform))
 
     if _is_trellis_implementation(text):
         cadence = _trellis_cadence_region(text)
@@ -1182,22 +1223,10 @@ def lint_text(
         )
 
     if review_remediation:
-        goal_blocks = _inline_goal_blocks(text)
-        if not goal_blocks:
-            errors.append(_review_error(source, "profile requires an inline `/goal` block"))
-        for index, block in enumerate(goal_blocks, start=1):
-            errors.extend(
-                lint_review_remediation(
-                    block,
-                    f"{source} /goal[{index}]",
-                )
-            )
+        errors.extend(lint_review_remediation(text, source))
 
     if platform == "claude":
-        errors.extend(lint_claude_platform(text, source))
-
-    if require_chinese_companion:
-        errors.extend(lint_chinese_companion(text, source))
+        errors.extend(_lint_claude_bounding_clause(text, source))
 
     return errors
 
@@ -1291,8 +1320,8 @@ def lint_persisted_contract(
 
     if metadata.get("Status", "").lower() != "approved":
         errors.append(f"{source}: contract Status must be `approved`")
-    if metadata.get("Generated by") != "goal-meta-skill 0.8.1":
-        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.8.1`")
+    if metadata.get("Generated by") != "goal-meta-skill 0.8.2":
+        errors.append(f"{source}: Generated by must be `goal-meta-skill 0.8.2`")
     if metadata.get("Project root") != ".":
         errors.append(f"{source}: Project root must be the relative marker `.`")
     if metadata.get("Contract path") != expected_path:
@@ -1442,8 +1471,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         default="GOAL.md",
         help="Expected project-relative contract basename when --contract is used.",
     )
-    parser.add_argument("files", nargs="+", help="Files to lint.")
-    return parser.parse_args(argv[1:])
+    parser.add_argument("files", nargs="+", help="UTF-8 files to lint, or '-' for stdin (once).")
+    args = parser.parse_args(argv[1:])
+    if args.files.count("-") > 1:
+        parser.error("stdin '-' may be specified only once")
+    return args
 
 
 def main(argv: list[str]) -> int:
@@ -1455,17 +1487,20 @@ def main(argv: list[str]) -> int:
     all_errors: list[str] = []
     all_warnings: list[str] = []
     for raw_path in args.files:
-        path = Path(raw_path)
+        source = "stdin" if raw_path == "-" else str(Path(raw_path))
         try:
-            text = path.read_text(encoding="utf-8-sig")
+            if raw_path == "-":
+                text = sys.stdin.buffer.read().decode("utf-8-sig")
+            else:
+                text = Path(raw_path).read_text(encoding="utf-8-sig")
         except (OSError, UnicodeDecodeError) as exc:
-            all_errors.append(f"{path}: cannot read file: {exc}")
+            all_errors.append(f"{source}: cannot read input: {exc}")
             continue
         if args.contract:
             all_errors.extend(
                 lint_persisted_contract(
                     text,
-                    str(path),
+                    source,
                     expected_path=args.expected_path,
                     platform=args.platform,
                     review_remediation=args.review_remediation,
@@ -1475,13 +1510,14 @@ def main(argv: list[str]) -> int:
             all_errors.extend(
                 lint_text(
                     text,
-                    str(path),
+                    source,
                     require_chinese_companion=args.require_chinese_companion,
                     platform=args.platform or "both",
                     review_remediation=args.review_remediation,
                 )
             )
-            all_warnings.extend(lint_completion_warnings(text, str(path)))
+            for index, block in enumerate(_inline_goal_blocks(text), start=1):
+                all_warnings.extend(lint_completion_warnings(block, f"{source} /goal[{index}]"))
 
     for warning in all_warnings:
         print(f"warning: {warning}", file=sys.stderr)

@@ -17,7 +17,7 @@ Use when the user explicitly asks to coordinate worker agents in Herdr, delegate
 | --- | --- |
 | 名称 | `herdr-orchestra` |
 | 分类 | `developer-tools-integrations` (开发者工具集成) |
-| 版本 | `0.1.0` |
+| 版本 | `0.2.0` |
 | 标签 | `herdr`, `orchestration`, `agents`, `delegation` |
 
 ## 安装命令

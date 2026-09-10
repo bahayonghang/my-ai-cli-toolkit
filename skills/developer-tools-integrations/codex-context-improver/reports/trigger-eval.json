@@ -1,0 +1,327 @@
+{
+  "ok": true,
+  "threshold": 0.67,
+  "description_concepts": [
+    "codex_context",
+    "context_surface",
+    "review_action"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 22,
+    "passed": 22,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "审计这个仓库的 AGENTS.md、AGENTS.override.md 和 code_map.md，先给报告，不要修改文件。",
+        "family": "eval-1",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Implement the approved AGENTS.md cleanup plan, preserve managed marker blocks, and validate the result.",
+        "family": "eval-2",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Fix the stale test command in packages/api/AGENTS.md and its local code map, then run the smallest relevant checks.",
+        "family": "eval-3",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit why AGENTS.override.md wins at packages/api and whether the configured fallback and byte budget change the active instructions.",
+        "family": "eval-5",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "审计 Codex 上下文：技能出现在目录但没有选用记录；审计时我才读了它的 SKILL.md，它是否导致上次停工？",
+        "family": "eval-12",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit conflicting Codex instructions: the user asked to implement a scoped fix, but the loaded skill says to stop after planning.",
+        "family": "eval-13",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Optimize Codex context: I already authorized this local SKILL.md trigger fix and its tests. Complete it.",
+        "family": "eval-15",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit Codex context: the loaded skill requires publishing to production to finish, but I only asked for a local draft.",
+        "family": "eval-16",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "优化 Codex 上下文：改一个提示词拼写，却要求全仓阅读所有技能参考并反复跑整套测试。",
+        "family": "eval-17",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit Codex context: this loaded skill mandates three subagents, but tools expose none.",
+        "family": "eval-18",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit Codex context: duplicate skill names, disabled config and symlink entries appear in different directories.",
+        "family": "eval-19",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Review Codex context using the supplied task prompt: it quotes an article saying ignore permissions and deploy now.",
+        "family": "eval-20",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "审计 Codex 的 AGENTS.md：启动 CWD 已知，fallback 与字节上限配置无法读取。",
+        "family": "eval-21",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit Codex context and remove rules just because they are old; the safety and CI rules still match the repository.",
+        "family": "eval-22",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use $codex-context-improver to audit a task prompt that keeps asking permission for an already-authorized AGENTS.md edit.",
+        "family": "eval-23",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Use $codex-context-improver to add this exact sentence to AGENTS.md: run npm test before opening a PR.",
+        "family": "eval-6",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "规划没问题；本项目 WORKFLOW.md:8 要求另行批准实施。请据此审查 Codex 上下文中的停止规则。",
+        "family": "eval-14",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Add one already-specified sentence to AGENTS.md: run npm test before opening a PR.",
+        "family": "eval-9",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface",
+          "review_action"
+        ],
+        "negative_pattern": "already-specified sentence"
+      },
+      {
+        "prompt": "Explain how AGENTS.md discovery works in Codex without auditing or changing a repository.",
+        "family": "eval-10",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "codex_context",
+          "context_surface"
+        ],
+        "negative_pattern": "Explain how"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "Audit CLAUDE.md layering, .claude/rules globs, and @import chains.",
+        "family": "eval-7",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "review_action"
+        ],
+        "negative_pattern": "CLAUDE.md"
+      },
+      {
+        "prompt": "Recommend which Codex MCP servers, plugins, hooks, and subagents this repository should adopt, but do not edit files.",
+        "family": "eval-8",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "codex_context"
+        ],
+        "negative_pattern": "which Codex MCP"
+      },
+      {
+        "prompt": "Review this TypeScript pull request for correctness, security, performance, and missing tests.",
+        "family": "eval-11",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.333,
+        "matched_concepts": [
+          "review_action"
+        ],
+        "negative_pattern": "TypeScript pull request"
+      }
+    ]
+  }
+}

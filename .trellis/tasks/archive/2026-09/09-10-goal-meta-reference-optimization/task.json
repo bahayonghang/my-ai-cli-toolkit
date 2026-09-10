@@ -1,0 +1,29 @@
+{
+  "id": "goal-meta-reference-optimization",
+  "name": "goal-meta-reference-optimization",
+  "title": "Goal Meta Skill 参考对照与精简优化",
+  "description": "对照指定 qiaomu 参考包，规划 lint 输入与验证边界修复、示例契约统一和重复入口精简；仅规划，不实施",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-10",
+  "completedAt": "2026-09-10",
+  "branch": null,
+  "base_branch": "dev",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-10-goal-meta-lint-boundaries",
+    "09-10-goal-meta-contract-consolidation"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "All parent/child implementation acceptance criteria passed on 2026-09-10. goal-meta-skill 0.8.2; independent check and final just ci passed (421 Node passed, 4 skipped, 0 failed). See research/implementation-result.md. Uncommitted and unarchived; preserve existing user gitignore/review changes.",
+  "meta": {}
+}

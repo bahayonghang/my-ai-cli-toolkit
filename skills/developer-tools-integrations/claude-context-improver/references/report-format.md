@@ -13,7 +13,7 @@ Skeletons for the two required outputs. Keep table columns; replace placeholder 
 
 - Files found: X (CLAUDE.md: X, CLAUDE.local.md: X, .claude/rules: X, code_map: X)
 - Project root guidance: present at <path>/missing
-- Root code map: present/missing/shared with agents-md-improver
+- Root code map: present/missing/shared with codex-context-improver
 - Nested project files: X (X over 200 lines)
 - Average score: X/100
 - Files needing update: X
@@ -44,7 +44,7 @@ Cross-layer findings that no single file's score captures. Omit rows with nothin
 
 | Map           | Covers    | Referenced by            | Notes                          |
 | ------------- | --------- | ------------------------ | ------------------------------ |
-| `code_map.md` | repo root | `CLAUDE.md`, `AGENTS.md` | shared with agents-md-improver |
+| `code_map.md` | repo root | `CLAUDE.md`, `AGENTS.md` | shared with codex-context-improver |
 
 ### Nested Guidance Candidates
 

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill frontmatter, docs-sync, qiaomu README/manifest deviation, recorded_fixture labeling, one-home facts."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Do not hand-edit generated docs; keep skills-check and catalog in sync."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Avoid copying delegation rules into SKILL.md; extend existing contract instead of a parallel path."}
+{"file": ".trellis/tasks/09-08-herdr-orchestra-runtime-hardening/research/incident-2026-09-08-omp-google-models.md", "reason": "Live failure chain and qiaomu generalization classes for fixture-only omp details."}

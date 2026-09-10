@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "qiaomu-meta-skill": {
+      "source": "joeseesun/qiaomu-meta-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "9aef56cc33983e85f26814fa0a025727712a2874891dff33ccd20ef69fbe8e76"
+    }
+  }
+}
