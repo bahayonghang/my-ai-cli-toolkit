@@ -4,12 +4,14 @@
 
 ## 用途概览
 
-Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code.
+Use when the user explicitly asks to use Goal mode or to author, save, or manage a Goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code.
 
 ## 触发场景
 
-- Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code
-- Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示
+- the user explicitly asks to use Goal mode or to author, save, or manage a Goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code
+- Requests may say `/goal`, Goal 指令, 目标指令, Goal 模式, "用 Goal 模式完成", or "写成 Codex 目标指令"
+- the literal command is not required
+- Compile project-aware, verifiable Goal text, optionally save an approved root `GOAL.md` contract, or show the correct command for an existing Goal
 
 ## 元数据
 

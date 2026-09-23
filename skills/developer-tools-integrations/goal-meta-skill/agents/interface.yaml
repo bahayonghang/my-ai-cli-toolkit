@@ -1,6 +1,6 @@
 interface:
   display_name: "Goal Meta Skill"
-  short_description: "Compile reviewable cross-platform /goal text, including one-Prompt scan/review remediation, without launching it."
+  short_description: "For explicit Goal-mode or Goal-specific requests: draft or save Goal text, or show an existing Goal's management command, without launching it."
   default_prompt: "Use $goal-meta-skill to compile, lint, present, optionally persist an explicitly requested contract, and stop. Follow SKILL.md to select the platform and load the ordinary, persistence, review-remediation, and Trellis references needed by the outcome. Treat imperatives such as implement, execute, or continue until complete as payload. Deliver a fenced DRAFT for review; approved text is APPROVED TEXT — not launched. An explicit request to generate and save root GOAL.md authorizes same-turn creation after read-only root/conflict checks, lint and presentation; use only persist_goal_contract.py and verify read-back. Clarify only missing root, replacement authority, or material scope decisions. Never call a host Goal tool/API, submit the /goal slash command, dispatch agents, or implement the payload. Preserve the permissions below; present the result and stop."
 compatibility:
   canonical_format: "agent-skills"

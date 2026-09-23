@@ -14,13 +14,13 @@
     }
   },
   "intent": {
-    "description": "Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.\n",
-    "job_to_be_done": "Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.\n",
+    "description": "Use when the user explicitly asks to use Goal mode or to author, save, or manage a Goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code. Requests may say `/goal`, Goal 指令, 目标指令, Goal 模式, \"用 Goal 模式完成\", or \"写成 Codex 目标指令\"; the literal command is not required. Compile project-aware, verifiable Goal text, optionally save an approved root `GOAL.md` contract, or show the correct command for an existing Goal. After Goal intent is established, support Trellis implementation Goals, scan/review remediation Goals, and cross-session Goal handoffs.\n",
+    "job_to_be_done": "Use when the user explicitly asks to use Goal mode or to author, save, or manage a Goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code. Requests may say `/goal`, Goal 指令, 目标指令, Goal 模式, \"用 Goal 模式完成\", or \"写成 Codex 目标指令\"; the literal command is not required. Compile project-aware, verifiable Goal text, optionally save an approved root `GOAL.md` contract, or show the correct command for an existing Goal. After Goal intent is established, support Trellis implementation Goals, scan/review remediation Goals, and cross-session Goal handoffs.\n",
     "target_users": [
       "Qiaomu operator"
     ],
     "inputs": [
-      "vague or complex task description",
+      "explicit Goal-mode or Goal authoring, saving, or management request",
       "optional project and Trellis context",
       "optional named scan/review/audit/report/finding source"
     ],
@@ -42,6 +42,11 @@
   },
   "triggers": {
     "should_trigger": [
+      "用 Goal 模式完成这项工作，先写一个可审阅的目标。",
+      "把迁移计划写成 Claude Code Goal 指令。",
+      "Write a Codex /goal for the parser repair.",
+      "把已确认的 Goal 合同保存到项目根目录 GOAL.md。",
+      "管理 Codex 中现有的 Goal，告诉我如何暂停。",
       "Compile a Codex /goal for one-Prompt remediation of a named scan report.",
       "把 Trellis 审阅 findings 的修复写成单 Prompt Goal 指令。",
       "把 review findings 修复编译成 Goal 指令，不要生成第二条修复 Prompt。",
@@ -50,7 +55,7 @@
     "should_not_trigger": [
       "Directly fix the parser and run tests.",
       "只读审阅报告，不要修改代码。",
-      "Show the current platform goal status command only."
+      "基于 dev 分支规划 lib 重构，创建供下个对话实施的 Prompt，暂不实施。"
     ],
     "near_neighbor": [
       "Generate another repair Prompt after every review.",
@@ -60,6 +65,8 @@
   },
   "workflow": {
     "router_rules": [
+      "Select this skill only for explicit Goal-mode use or Goal-specific authoring, saving, or management, including equivalent natural-language requests.",
+      "Treat Trellis implementation, scan/review remediation, and cross-session handoff as profiles only after Goal intent is established.",
       "Select review-remediation only when a named review source and requested implementation are both present.",
       "Keep read-only review and ordinary direct implementation on their own routes."
     ],

@@ -438,7 +438,7 @@ test('package metadata, platform registry, and behavior eval history stay synchr
   const evals = JSON.parse(
     readFileSync(path.join(skillRoot, 'evals', 'evals.json'), 'utf8'),
   ).evals;
-  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 59 }, (_, i) => i + 1));
+  assert.deepEqual(evals.map(({ id }) => id), Array.from({ length: 66 }, (_, i) => i + 1));
   for (const fixture of evals) {
     assert.ok(Array.isArray(fixture.assertions) && fixture.assertions.length > 0);
     assert.equal('expectations' in fixture, false);
