@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Script path and output encoding conventions"}
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "Node test rules: deterministic, temp dirs, no pytest"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/figures4papers-catalog.md", "reason": "Palette hex values, api.md claim check, gaps G2-G4 G6 G10 G25-G27"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/skill-audit.md", "reason": "Gaps C1 and C4"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/design.md", "reason": "Parent file ownership and ordering"}

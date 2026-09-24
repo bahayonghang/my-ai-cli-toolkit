@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Plotting layout defaults and script path conventions"}
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "Suite test and eval rules"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/skill-audit.md", "reason": "Defect ids S2, A1-A18, B1-B6 with evidence and fixes"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/figures4papers-catalog.md", "reason": "Claim verification (section 2) and code resemblance (section 4.3)"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/design.md", "reason": "Parent file ownership and ordering"}
