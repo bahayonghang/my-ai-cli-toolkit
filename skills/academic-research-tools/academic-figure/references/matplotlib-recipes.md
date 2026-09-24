@@ -297,6 +297,10 @@ OKABE_ITO = ["#E69F00",  # orange
 NEUTRAL_GRAY = "#999999"  # ground truth and context series; not a palette member
 ```
 
+`scripts/figstyle.py` exports the same `OKABE_ITO` and `NEUTRAL_GRAY`.
+Its `check_palette()` tests a color list under simulated color-vision
+deficiency and in grayscale.
+
 Alternative categorical — **Paul Tol `bright` (7 colors):**
 `["#4477AA", "#EE6677", "#228833", "#CCBB44", "#66CCEE", "#AA3377", "#BBBBBB"]`.
 

@@ -106,6 +106,8 @@ DISPLAY_SCALE = {              # posters and slides only, never a journal figure
 
 One call should write every format the deliverable needs. The upstream scripts
 call `savefig` once per format; the helper contract below is this skill's own.
+`save_figure()` in `scripts/figstyle.py` implements this contract, and
+`apply_style("display")` applies the display tier.
 Whatever helper you write, hold this contract:
 
 - Accept a base path without an extension plus a format list, and write every
