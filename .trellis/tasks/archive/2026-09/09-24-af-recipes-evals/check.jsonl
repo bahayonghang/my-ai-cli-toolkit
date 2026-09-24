@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Plotting layout defaults: one reference owns layout numbers"}
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "Eval format and coverage rules"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/skill-audit.md", "reason": "Gaps C5 S4 S5"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/design.md", "reason": "Parent file ownership and ordering"}
+{"file": ".trellis/tasks/09-24-af-figstyle-module/design.md", "reason": "figstyle API used by recipes"}
