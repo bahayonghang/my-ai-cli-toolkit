@@ -5,30 +5,55 @@ what each project contributed, and how. "Rewritten" means the rule or the number
 comes from the upstream document, but every sentence here is original. "Ported"
 means a source file was carried over, with its upstream copyright header kept.
 
-All snapshots are shallow clones that were read on 2026-08-16.
+All snapshots are shallow clones that were read on 2026-08-16. The
+figures4papers snapshot was read again on 2026-09-24.
 
-| Project                                                                                                                          | License                    | Snapshot                      | Contribution and method                                                                                                                                                                                                                                                                                         |
-| -------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [ChenLiu-1996/figures4papers](https://github.com/ChenLiu-1996/figures4papers)                                                    | **None**                   | `6790a93`, 2026-08-06         | Semantic palette roles, the two-tier font and line-width system, the wide-panel ratio rule, and the unified export contract, in `design-theory.md`. **Rewritten.** No code, text, or image was copied.                                                                                                          |
-| [Trae1ounG/paper-plot-skills](https://github.com/Trae1ounG/paper-plot-skills)                                                    | **None**                   | `cde5e84`, 2026-04-20         | The eight style documents, nine scripts, and ten source figures behind `from-data` and `from-image`. **Copied** in an earlier commit, with two edits. See the next section.                                                                                                                                     |
-| [Yuan1z0825/nature-skills](https://github.com/Yuan1z0825/nature-skills) (skill `nature-figure`, manifest 2.5.0)                  | Apache-2.0                 | `7316aff`, 2026-08-16         | The figure contract in `figure-contract.md`; the per-panel audit and the 5 pt glyph floor in `qa-checklist.md`; `figure-legend-conventions.md`; `panel-layout-patterns.md`; the template reuse ladder in `modes/from-data.md`. **Rewritten.** `scripts/audit_pdf_text.py` is **ported**.                        |
-| [Haojae/scipilot-figure-skill](https://github.com/Haojae/scipilot-figure-skill)                                                  | MIT, (c) 2026 Haojae       | `43098dd`, 2026-06-15         | The advisor protocol in `modes/advise.md`; `chart-selection.md`; the P1–P18 list in `viz-pitfalls.md`; `visual-review.md`; the CJK font chain in `matplotlib-recipes.md`. **Rewritten.** `scripts/visual_qa.py` is **ported**.                                                                                  |
-| [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (skill `scientific-visualization`) | MIT, (c) 2025 K-Dense Inc. | `336c4f8`, 2026-08-15         | The submission phase dimension and the figure type by DPI by format table in `journal-specs.md`; the post-export machine checks, the WCAG and greyscale criteria, and the provenance fields in `qa-checklist.md`; the misleading-encoding rows M1–M7 in `viz-pitfalls.md`. **Rewritten.** No script was copied. |
-| [Dsadd4/AgentFigureGallery](https://github.com/Dsadd4/AgentFigureGallery)                                                        | MIT                        | `62f6094`, 2026-05-29         | The reference-first rule and the CLI workflow, in `agent-figure-gallery-integration.md`. **Described only.** No candidate asset, index file, or script was copied.                                                                                                                                              |
-| [Galaxy-Dawn/pubfig](https://github.com/Galaxy-Dawn/pubfig)                                                                      | MIT                        | `4eec116`, 2026-04-23, v0.3.0 | The optional backend guide in `pubfig-integration.md`: the 41 plot kinds, the JSON spec contract, and the export behavior. **Described only.**                                                                                                                                                                  |
+| Project                                                                                                                          | License                    | Snapshot                      | Contribution and method                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ChenLiu-1996/figures4papers](https://github.com/ChenLiu-1996/figures4papers)                                                    | **CC BY-NC 4.0**           | `3c181f8`, 2026-09-06         | Semantic palette roles, the two-tier font and line-width system, the wide-panel ratio rule, and the unified export contract, in `design-theory.md`; the wide-canvas ratio and the hidden-tick rule in `panel-layout-patterns.md`. **Rewritten.** Indirect content, through nature-figure: the cross-cutting bar patterns in `chart-recipes.md` (alpha-gradient ablation, hatch, brightness-aware text) and the grouped-bar, hatched-band, and event-annotation snippets in `panel-layout-patterns.md`. See the figures4papers section below. |
+| [Trae1ounG/paper-plot-skills](https://github.com/Trae1ounG/paper-plot-skills)                                                    | **None**                   | `cde5e84`, 2026-04-20         | The eight style documents, nine scripts, and ten source figures behind `from-data` and `from-image`. **Copied** in an earlier commit, with two edits. See the next section.                                                                                                                                                                                                                                                                                                                                                                  |
+| [Yuan1z0825/nature-skills](https://github.com/Yuan1z0825/nature-skills) (skill `nature-figure`, manifest 2.5.0)                  | Apache-2.0                 | `7316aff`, 2026-08-16         | The figure contract in `figure-contract.md`; the per-panel audit and the 5 pt glyph floor in `qa-checklist.md`; `figure-legend-conventions.md`; `panel-layout-patterns.md`; the template reuse ladder in `modes/from-data.md`. **Rewritten.** `scripts/audit_pdf_text.py` is **ported**.                                                                                                                                                                                                                                                     |
+| [Haojae/scipilot-figure-skill](https://github.com/Haojae/scipilot-figure-skill)                                                  | MIT, (c) 2026 Haojae       | `43098dd`, 2026-06-15         | The advisor protocol in `modes/advise.md`; `chart-selection.md`; the P1–P18 list in `viz-pitfalls.md`; `visual-review.md`; the CJK font chain in `matplotlib-recipes.md`. **Rewritten.** `scripts/visual_qa.py` is **ported**.                                                                                                                                                                                                                                                                                                               |
+| [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (skill `scientific-visualization`) | MIT, (c) 2025 K-Dense Inc. | `336c4f8`, 2026-08-15         | The submission phase dimension and the figure type by DPI by format table in `journal-specs.md`; the post-export machine checks and the greyscale criterion in `qa-checklist.md`; the misleading-encoding rows M1–M7 in `viz-pitfalls.md`, with the provenance fields in row M7. **Rewritten.** No script was copied.                                                                                                                                                                                                                              |
+| [Dsadd4/AgentFigureGallery](https://github.com/Dsadd4/AgentFigureGallery)                                                        | MIT                        | `62f6094`, 2026-05-29         | The reference-first rule and the CLI workflow, in `agent-figure-gallery-integration.md`. **Described only.** No candidate asset, index file, or script was copied.                                                                                                                                                                                                                                                                                                                                                                           |
+| [Galaxy-Dawn/pubfig](https://github.com/Galaxy-Dawn/pubfig)                                                                      | MIT                        | `4eec116`, 2026-04-23, v0.3.0 | The optional backend guide in `pubfig-integration.md`: the 41 plot kinds, the JSON spec contract, and the export behavior. **Described only.**                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## Projects without a license
 
-`figures4papers` and `paper-plot-skills` carry no LICENSE file. A recursive search
-for `licen`, `copying`, and `notice` found none in either repository. Copyright
-therefore stays with the author, and no redistribution right is granted.
+`paper-plot-skills` carries no LICENSE file. A recursive search for `licen`,
+`copying`, and `notice` found none in that repository. Copyright therefore stays
+with the author, and no redistribution right is granted.
 
-- From `figures4papers`, this skill keeps **factual design rules only**: numeric
-  parameters, layout principles, and color roles. Facts of that kind are not
-  copyrightable expression. Every sentence in `design-theory.md` is original.
-  Do not copy a script or an image from that repository into this one.
 - `paper-plot-skills` content is already in this repository from an earlier
   commit. This file records that history; it is not a new decision to copy.
+
+## figures4papers (CC BY-NC 4.0)
+
+- **License fact.** Commit `3c181f8` (2026-09-06) added a root `LICENSE` file
+  with the text of Creative Commons Attribution-NonCommercial 4.0 International.
+  The file names no copyright holder. The earlier snapshot `6790a93`
+  (2026-08-06) did not contain that file. Between the two snapshots only `LICENSE`
+  and `README.md` changed; every figure script is byte-identical.
+- **Rewritten content.** `design-theory.md` and parts of
+  `panel-layout-patterns.md` restate design facts (numbers, layout rules, color
+  roles) in original words. The cross-cutting patterns in `chart-recipes.md` and
+  three snippets in `panel-layout-patterns.md` reach this skill through
+  nature-figure, which derives them from figures4papers scripts. Each of those
+  places names the figures4papers source.
+- **User decision, 2026-09-24.** This project is open source and non-commercial.
+  The user allows a port of figures4papers scripts and source figures into this
+  skill under these conditions:
+  1. Credit figures4papers in the acknowledgement section of the skill README.
+  2. Add a port record table to this file. Each row gives the upstream path,
+     the snapshot `3c181f8`, and the changes made during the port. CC BY
+     requires a statement of changes; the table holds it.
+  3. Keep ported files under `scripts/figures4papers/` and
+     `assets/originals/figures4papers/`, so the CC BY-NC 4.0 material stays
+     separate from the rest of the skill.
+- **Scope of the terms.** Ported files keep the CC BY-NC 4.0 terms: use for
+  non-commercial purposes only, with attribution. The MIT license of this
+  repository does not cover them. The source figures also appear in published
+  papers, so publisher rights can apply in addition.
 
 Third-party note: `nature-skills` carries an Apache-2.0 root license, but its
 `skills/nature-figure/assets/figures4papers/` directory is excluded from it. That

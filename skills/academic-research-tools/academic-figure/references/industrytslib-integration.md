@@ -6,10 +6,12 @@ registry-based plotter, matplotlib + plotly backends, five journal styles
 (`ieee` / `elsevier` / `nature` / `springer` / `chinese_thesis`), and an export
 pipeline. **Call it, never modify it.**
 
-Every API name, module path, and backend note below is transcribed from the task
-research report `research/industrytslib-viz-inventory.md`; the section tags (for
-example "inv §1.1") point back to it. Do not invent method names — if a family is
-not in the mapping table, use the generic path (B) below.
+Every API name, module path, and backend note below comes from an inventory of
+the industrytslib visualization package made in 2026-07. The section tags (for
+example "inv §1.1") name sections of that inventory, which does not ship with
+this skill; confirm a name against the installed library before you call it. Do
+not invent method names — if a family is not in the mapping table, use the
+generic path (B) below.
 
 ## Detection
 

@@ -6,13 +6,13 @@ from the resolved card in `journal-specs.md` and drop them into one of the
 presets below. seaborn is treated here as a matplotlib-layer API, not a separate
 backend — specs still resolve down to rcParams.
 
-Every technical claim in this file is grounded in this task's research report
-`research/journal-specs-and-tooling.md` (toolchain §4, CJK §5); its source URLs
-are collected at the bottom. Numbers that the research traced to a journal are
-labelled as such (e.g. "spec card"); numbers that are presentational defaults
-(line widths, aspect ratios) are labelled as defaults — journals do not mandate
-them. Default heights follow `layout-defaults.md` (16:9 of the card width). Anything the research did not establish is marked
-`[missing evidence]`; do not invent it.
+Every technical claim in this file comes from the toolchain and CJK research
+of 2026-07; its source URLs are collected at the bottom. Numbers that the
+research traced to a journal are labelled as such (e.g. "spec card"); numbers
+that are presentational defaults (line widths, aspect ratios) are labelled as
+defaults — journals do not mandate them. Default heights follow
+`layout-defaults.md` (16:9 of the card width). Anything the research did not
+establish is marked `[missing evidence]`; do not invent it.
 
 ---
 
@@ -61,16 +61,13 @@ embed TrueType fonts to avoid Type-3 rejection.
 import matplotlib as mpl
 from cycler import cycler
 
-# Colorblind-safe categorical default (Okabe-Ito, 8 colors) — see palette section.
-OKABE_ITO = ["#E69F00", "#56B4E9", "#009E73", "#F0E442",
-             "#0072B2", "#D55E00", "#CC79A7", "#000000"]
+# OKABE_ITO: copy the list from the palette section below (single definition).
 
 # --- IEEE: single 3.5 in / double 7.16 in; ~9-10 pt (old FAQ 8 pt); B/W line art >600 dpi; PS/EPS/PDF ---
 IEEE_RCPARAMS = {
     "figure.figsize": (3.5, 1.97),     # single-column 3.5 in wide (spec card); height 16:9 (layout-defaults.md)
     "savefig.dpi": 600,                # IEEE B/W line art >600 dpi (spec card); use 300 for color/grayscale
     "savefig.format": "pdf",           # IEEE prefers vector PS/EPS/PDF (spec card)
-    "savefig.bbox": "tight",
     "font.family": "serif",
     "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],  # IEEE Times family (spec card)
     "font.size": 9,                    # ~9-10 pt at full size (spec card)
@@ -87,7 +84,6 @@ ELSEVIER_RCPARAMS = {
     "figure.figsize": (3.54, 1.99),    # ~90 mm single column (spec card, secondary-sourced); height 16:9 (layout-defaults.md)
     "savefig.dpi": 1000,               # line-art minimum (spec card); 300 halftone / 500 combination
     "savefig.format": "pdf",           # EPS/PDF vector; PNG is NOT accepted by Elsevier (spec card)
-    "savefig.bbox": "tight",
     "font.family": "sans-serif",
     "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],   # from Elsevier allowed set (spec card)
     "font.size": 7,                    # body 7 pt at final size (spec card)
@@ -102,9 +98,8 @@ ELSEVIER_RCPARAMS = {
 # --- Nature: single 89 mm (3.5 in) / double 183 mm (7.2 in); 5-7 pt, panel labels 8 pt bold; sans-serif Helvetica/Arial; photo >=300 dpi; vector AI/EPS/PDF/SVG ---
 NATURE_RCPARAMS = {
     "figure.figsize": (3.5, 1.97),     # 89 mm single column (spec card); height 16:9 (layout-defaults.md)
-    "savefig.dpi": 300,                # photo minimum (spec card); prefer vector for line art
+    "savefig.dpi": 300,                # photo minimum (spec card); the research-figure guide asks for >=450 (journal-specs.md); prefer vector for line art
     "savefig.format": "pdf",           # editable vector preferred (spec card)
-    "savefig.bbox": "tight",
     "font.family": "sans-serif",
     "font.sans-serif": ["Helvetica", "Arial", "DejaVu Sans"],   # Nature prefers Helvetica/Arial (spec card)
     "font.size": 7,                    # max 7 pt, min 5 pt (spec card)
@@ -196,11 +191,12 @@ with mpl.rc_context(PRESETS["nature"]):     # scoped; global rcParams stay clean
 
 - `layout="constrained"` at figure creation reserves room for titles, labels,
   and colorbars **inside** the canvas, so the saved size stays `figsize`.
-- `fig.tight_layout()` switches constrained layout off. Do not call both.
-- `bbox_inches="tight"` trims the saved file to the drawn content, so the saved
-  width is not `figsize`. The presets above set `savefig.bbox = "tight"`, which
-  is safe while a slightly narrower figure is acceptable. When the card width
-  must be exact, drop that key and rely on `layout="constrained"`.
+- `fig.tight_layout()` switches constrained layout off. Do not call both. A
+  journal figure uses `layout="constrained"` only; `tight_layout` is for
+  display-tier figures (`design-theory.md`).
+- Save without trimming. A trimmed save (the `bbox_inches` argument) makes the
+  saved width differ from `figsize`. The presets above do not trim. The single
+  exception is in "Export at final size" of `qa-checklist.md`.
 - Export at the final physical size and do not rescale the figure in Word or
   LaTeX: rescaling changes every effective font size and line width.
 
@@ -285,7 +281,9 @@ IEEE and Nature require figures to stay readable in grayscale and to avoid
 red–green as the only distinction, so **color is never the only channel** — add
 line style and marker as redundant channels.
 
-**Categorical — Okabe-Ito (8 colors, CVD-safe, adopted by Nature Methods):**
+**Categorical — Okabe-Ito (8 colors, CVD-safe, adopted by Nature Methods).**
+This is the single definition of the palette in this skill; the presets above,
+`plotly-recipes.md`, and `chart-recipes.md` copy it from here.
 
 ```python
 OKABE_ITO = ["#E69F00",  # orange
@@ -295,7 +293,8 @@ OKABE_ITO = ["#E69F00",  # orange
              "#0072B2",  # blue
              "#D55E00",  # vermillion
              "#CC79A7",  # reddish purple
-             "#999999"]  # gray (8th); use "#000000" black as the alternate 8th
+             "#000000"]  # black (8th color of the published set, Wong 2011)
+NEUTRAL_GRAY = "#999999"  # ground truth and context series; not a palette member
 ```
 
 Alternative categorical — **Paul Tol `bright` (7 colors):**
@@ -308,8 +307,9 @@ matplotlib also ships a built-in `tableau-colorblind10` style:
 `plt.style.use("tableau-colorblind10")`.
 
 **Rules:** keep categorical sets to ≤6–8 colors; Okabe-Ito/Tol for categorical,
-viridis/cividis for continuous; never rely on red–green alone; keep categorical
-colors close in lightness; simulate deuteranopia/protanopia after plotting.
+viridis/cividis for continuous; never rely on red–green alone; separate
+categorical colors in lightness, so the grayscale copy stays separable; simulate
+deuteranopia/protanopia after plotting.
 
 **Grayscale redundancy** (for IEEE/Nature grayscale readability): distinguish
 series by `linestyle` and `marker` in addition to color.
@@ -324,7 +324,7 @@ for i, (x, y) in enumerate(series):
 
 ---
 
-## Sources (from research report §4–5)
+## Sources
 
 - matplotlib customizing / rcParams: https://matplotlib.org/stable/users/explain/customizing.html
 - SciencePlots README: https://github.com/garrettj403/SciencePlots/blob/master/README.md

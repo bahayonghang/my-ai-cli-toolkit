@@ -81,7 +81,7 @@ Never retouch the preview image.
 | Finding                         | Fix                                                                                                          |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Missing glyphs                  | Set the CJK font chain and `axes.unicode_minus = False` (`matplotlib-recipes.md`)                            |
-| Clipped text                    | Build with `layout="constrained"`; shorten or wrap the text; `bbox_inches="tight"` changes the physical size |
+| Clipped text                    | Build with `layout="constrained"`; shorten or wrap the text; a trimmed save changes the physical size (`qa-checklist.md`) |
 | Legend over data                | `ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1.0), frameon=False)`, or direct-label the series         |
 | Annotations overlap             | Change the `xytext` offset, or annotate fewer items                                                          |
 | Tick labels collide             | `ax.tick_params(axis="x", rotation=30)`, fewer ticks, or shorter labels                                      |

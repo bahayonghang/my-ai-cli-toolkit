@@ -43,6 +43,14 @@ contract in `SKILL.md`. Work the eight steps in order.
    `<skill-dir>/scripts/visual_qa.py`, read the preview against the ten
    perceptual items, fix at the source, and render again. Three rounds is the
    limit. A missing-glyph `FAIL` blocks the export.
+   **plotly branch.** `audit_layout` accepts only a matplotlib Figure. For a
+   plotly figure: export a PNG with Kaleido under the sizing rule in
+   `../plotly-recipes.md` (`scale = DPI / 72`); pass that PNG to
+   `render_preview` (CLI:
+   `python "<skill-dir>/scripts/visual_qa.py" figure.png --preview preview.png`);
+   skip `audit_layout`; then check the ten perceptual items one by one, with
+   extra attention to missing glyphs and clipped text, which no machine check
+   covers here. Record in the delivery note that the machine audit did not run.
 8. **Export and QA.** Export under the selected `journal-spec` contract, then
    walk every applicable item in `../qa-checklist.md`, including the post-export
    machine checks. For a PDF, audit the smallest rendered glyph with

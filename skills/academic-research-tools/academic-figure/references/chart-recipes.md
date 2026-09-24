@@ -17,16 +17,19 @@ library axes and loaded the matching library recipe. Every recipe assumes:
 | Symbol                             | Meaning (from `journal-specs.md` card)                                 |
 | ---------------------------------- | ---------------------------------------------------------------------- |
 | `W`, `H`                           | figure width / height in **inches**; square panels use `(W, W)`        |
-| `W_px`, `H_px`                     | same size in pixels for plotly, `round(W*DPI)` / `round(H*DPI)`        |
+| `W_px`, `H_px`                     | same size in plotly logical pixels, `round(W*72)` / `round(H*72)` (`plotly-recipes.md` sizing) |
 | `DPI`                              | raster resolution for the target journal + image type                  |
 | `FONT_PT`                          | body font size in points                                               |
 | `LW`                               | data line width                                                        |
-| `OKABE_ITO`                        | colorblind-safe categorical palette (hex list) from the library recipe |
+| `OKABE_ITO`                        | colorblind-safe categorical palette, defined in the palette section of `matplotlib-recipes.md` |
+| `NEUTRAL_GRAY`                     | neutral color for ground truth and context series, defined in the same section |
 | `JOURNAL_TEMPLATE`, `JOURNAL_FONT` | plotly template name + font family from `plotly-recipes.md`            |
 
 Export is vector-first (`.pdf`/`.svg`/`.eps` per the card); raster fallbacks use
 `DPI`. matplotlib embeds fonts with `pdf.fonttype=42`; plotly's kaleido v1 does
 **not** support EPS (export PDF/SVG then convert). See the library recipes.
+Every matplotlib skeleton builds the figure with `layout="constrained"` and
+saves it at the card size; see "Export at final size" in `qa-checklist.md`.
 
 ---
 
@@ -40,13 +43,13 @@ Export is vector-first (`.pdf`/`.svg`/`.eps` per the card); raster fallbacks use
 ```python
 import matplotlib.pyplot as plt
 
-fig, axes = plt.subplots(n_vars, 1, figsize=(W, H), sharex=True)
+fig, axes = plt.subplots(n_vars, 1, figsize=(W, H), sharex=True, layout="constrained")
 for ax, (name, series) in zip(axes, variables.items()):
     ax.plot(t, series, color=OKABE_ITO[0], lw=LW)
     ax.set_ylabel(name)                       # direct label, no legend
     ax.spines[["top", "right"]].set_visible(False)
 axes[-1].set_xlabel("Time")
-fig.savefig("timeseries.pdf", bbox_inches="tight")   # vector-first per spec card
+fig.savefig("timeseries.pdf")   # vector-first per spec card
 ```
 
 ```python
@@ -66,23 +69,23 @@ fig.write_image("timeseries.pdf")   # PDF/SVG vector; EPS unsupported in kaleido
 
 - **Archetype**: quantitative grid with a hero panel — the main comparison is the
   hero; residuals/controls go in quieter subordinate panels.
-- **Journal params**: keep ground-truth neutral (`OKABE_ITO[7]`) and prediction a
+- **Journal params**: keep ground-truth neutral (`NEUTRAL_GRAY`) and prediction a
   signal color; optional confidence band uses low alpha.
 
 ```python
-fig, ax = plt.subplots(figsize=(W, H))
-ax.plot(t, y_true, color=OKABE_ITO[7], lw=LW, label="Ground truth")
+fig, ax = plt.subplots(figsize=(W, H), layout="constrained")
+ax.plot(t, y_true, color=NEUTRAL_GRAY, lw=LW, label="Ground truth")
 ax.plot(t, y_pred, color=OKABE_ITO[0], lw=LW, label="Prediction")
 ax.fill_between(t, lo, hi, color=OKABE_ITO[0], alpha=0.15, lw=0)   # optional CI band
 ax.set_xlabel("Time"); ax.set_ylabel("Value")
 ax.legend(frameon=False, loc="best")
 ax.spines[["top", "right"]].set_visible(False)
-fig.savefig("pred.pdf", bbox_inches="tight")
+fig.savefig("pred.pdf")
 ```
 
 ```python
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=t, y=y_true, name="Ground truth", line=dict(color=OKABE_ITO[7], width=LW)))
+fig.add_trace(go.Scatter(x=t, y=y_true, name="Ground truth", line=dict(color=NEUTRAL_GRAY, width=LW)))
 fig.add_trace(go.Scatter(x=t, y=y_pred, name="Prediction",  line=dict(color=OKABE_ITO[0], width=LW)))
 fig.update_layout(template=JOURNAL_TEMPLATE, font=dict(family=JOURNAL_FONT, size=FONT_PT),
                   width=W_px, height=H_px, legend=dict(bgcolor="rgba(0,0,0,0)"))
@@ -97,14 +100,14 @@ fig.write_image("pred.pdf")
   print survives because position + edge carry the signal.
 
 ```python
-fig, ax = plt.subplots(figsize=(W, H))
+fig, ax = plt.subplots(figsize=(W, H), layout="constrained")
 bp = ax.boxplot(data_by_group, patch_artist=True, widths=0.6)
 for patch, c in zip(bp["boxes"], OKABE_ITO):
     patch.set_facecolor(c); patch.set_alpha(0.8); patch.set_edgecolor("black")
 ax.set_xticklabels(group_labels)
 ax.set_ylabel("Absolute error")
 ax.spines[["top", "right"]].set_visible(False)
-fig.savefig("box.pdf", bbox_inches="tight")
+fig.savefig("box.pdf")
 ```
 
 ```python
@@ -123,13 +126,13 @@ fig.write_image("box.pdf")
   different families (not red/green) for the split.
 
 ```python
-fig, ax = plt.subplots(figsize=(W, H))
+fig, ax = plt.subplots(figsize=(W, H), layout="constrained")
 ax.hist(train, bins=40, density=True, color=OKABE_ITO[0], alpha=0.5, label="Train")
 ax.hist(test,  bins=40, density=True, color=OKABE_ITO[5], alpha=0.5, label="Test")
 ax.set_xlabel(feature_name); ax.set_ylabel("Density")
 ax.legend(frameon=False)
 ax.spines[["top", "right"]].set_visible(False)
-fig.savefig("dist.pdf", bbox_inches="tight")
+fig.savefig("dist.pdf")
 ```
 
 ```python
@@ -151,12 +154,12 @@ fig.write_image("dist.pdf")
   never a rainbow map; label ticks with feature names.
 
 ```python
-fig, ax = plt.subplots(figsize=(W, W))               # square
+fig, ax = plt.subplots(figsize=(W, W), layout="constrained")  # square
 im = ax.imshow(corr, cmap="RdBu_r", vmin=-1, vmax=1)  # diverging, centered at 0
 ax.set_xticks(range(len(labels))); ax.set_xticklabels(labels, rotation=90)
 ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels)
 cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04); cbar.set_label("Pearson r")
-fig.savefig("corr.pdf", bbox_inches="tight")
+fig.savefig("corr.pdf")
 ```
 
 ```python
@@ -171,18 +174,31 @@ fig.write_image("corr.pdf")
 
 - **Archetype**: quantitative grid — convergence curves; log-scale when the loss
   spans orders of magnitude.
-- **Journal params**: thin lines (`LW`); shared legend; GAN G/D uses a second y
-  axis via `ax.twinx()`, VAE multi-component uses one line per component.
+- **Journal params**: thin lines (`LW`); shared legend; VAE multi-component uses
+  one line per component. GAN generator and discriminator losses go on two
+  panels stacked on a shared x axis (`sharex=True`), not on a second y axis
+  (pitfall P2 in `viz-pitfalls.md`).
 
 ```python
-fig, ax = plt.subplots(figsize=(W, H))
+fig, ax = plt.subplots(figsize=(W, H), layout="constrained")
 ax.plot(epochs, train_loss, color=OKABE_ITO[0], lw=LW, label="Train")
 ax.plot(epochs, val_loss,   color=OKABE_ITO[5], lw=LW, label="Validation")
 ax.set_xlabel("Epoch"); ax.set_ylabel("Loss")
 ax.set_yscale("log")                     # if loss spans orders of magnitude
 ax.legend(frameon=False)
 ax.spines[["top", "right"]].set_visible(False)
-fig.savefig("loss.pdf", bbox_inches="tight")
+fig.savefig("loss.pdf")
+```
+
+```python
+# GAN: generator and discriminator loss on two stacked panels, shared x axis
+fig, (ax_g, ax_d) = plt.subplots(2, 1, figsize=(W, H), sharex=True, layout="constrained")
+ax_g.plot(epochs, g_loss, color=OKABE_ITO[0], lw=LW); ax_g.set_ylabel("Generator loss")
+ax_d.plot(epochs, d_loss, color=OKABE_ITO[5], lw=LW); ax_d.set_ylabel("Discriminator loss")
+ax_d.set_xlabel("Epoch")
+for ax in (ax_g, ax_d):
+    ax.spines[["top", "right"]].set_visible(False)
+fig.savefig("gan_loss.pdf")
 ```
 
 ```python
@@ -203,13 +219,13 @@ fig.write_image("loss.pdf")
   the legend; keep the point line above the band.
 
 ```python
-fig, ax = plt.subplots(figsize=(W, H))
-ax.plot(t, y_true, color=OKABE_ITO[7], lw=LW, label="Ground truth")
+fig, ax = plt.subplots(figsize=(W, H), layout="constrained")
+ax.plot(t, y_true, color=NEUTRAL_GRAY, lw=LW, label="Ground truth")
 ax.plot(t, y_pred, color=OKABE_ITO[0], lw=LW, label="Prediction")
 ax.fill_between(t, lower, upper, color=OKABE_ITO[0], alpha=0.2, lw=0, label="90% PI")
 ax.set_xlabel("Time"); ax.set_ylabel("Value"); ax.legend(frameon=False)
 ax.spines[["top", "right"]].set_visible(False)
-fig.savefig("interval.pdf", bbox_inches="tight")
+fig.savefig("interval.pdf")
 ```
 
 ```python
@@ -231,14 +247,14 @@ fig.write_image("interval.pdf")
   per class; enlarge legend markers with `markerscale`.
 
 ```python
-fig, ax = plt.subplots(figsize=(W, W))
+fig, ax = plt.subplots(figsize=(W, W), layout="constrained")
 for cls, c in zip(classes, OKABE_ITO):
     m = labels == cls
     ax.scatter(emb[m, 0], emb[m, 1], s=8, color=c, edgecolors="none", label=str(cls))
 ax.set_xlabel("t-SNE 1"); ax.set_ylabel("t-SNE 2")
 ax.legend(frameon=False, markerscale=2, loc="best")
 ax.spines[["top", "right"]].set_visible(False)
-fig.savefig("tsne.pdf", bbox_inches="tight")
+fig.savefig("tsne.pdf")
 ```
 
 ```python
@@ -260,21 +276,21 @@ fig.write_image("tsne.pdf")
   reuse the true/pred color pair from family 2 for a shared visual vocabulary.
 
 ```python
-fig, axes = plt.subplots(rows, cols, figsize=(W, H), sharex=True)
+fig, axes = plt.subplots(rows, cols, figsize=(W, H), sharex=True, layout="constrained")
 for ax, v in zip(axes.ravel(), range(n_vars)):
-    ax.plot(seq_true[:, v], color=OKABE_ITO[7], lw=LW)
+    ax.plot(seq_true[:, v], color=NEUTRAL_GRAY, lw=LW)
     ax.plot(seq_pred[:, v], color=OKABE_ITO[0], lw=LW)
     ax.set_title(var_names[v], fontsize=plt.rcParams["axes.titlesize"])
     ax.spines[["top", "right"]].set_visible(False)
-fig.supxlabel("Step"); fig.tight_layout()
-fig.savefig("sequences.pdf", bbox_inches="tight")
+fig.supxlabel("Step")
+fig.savefig("sequences.pdf")
 ```
 
 ```python
 fig = make_subplots(rows=rows, cols=cols, subplot_titles=var_names, shared_xaxes=True)
 for v in range(n_vars):
     r, c = v // cols + 1, v % cols + 1
-    fig.add_trace(go.Scatter(y=seq_true[:, v], line=dict(color=OKABE_ITO[7], width=LW), showlegend=False), row=r, col=c)
+    fig.add_trace(go.Scatter(y=seq_true[:, v], line=dict(color=NEUTRAL_GRAY, width=LW), showlegend=False), row=r, col=c)
     fig.add_trace(go.Scatter(y=seq_pred[:, v], line=dict(color=OKABE_ITO[0], width=LW), showlegend=False), row=r, col=c)
 fig.update_layout(template=JOURNAL_TEMPLATE, font=dict(family=JOURNAL_FONT, size=FONT_PT), width=W_px, height=H_px)
 fig.write_image("sequences.pdf")
@@ -305,6 +321,8 @@ CSV as the source-data file. industrytslib projects should instead use
 
 Adapted from nature-figure's `design-theory.md` and `common-patterns.md` — these
 are journal- and library-agnostic and apply on top of any family above.
+nature-figure derives these patterns from the scripts of
+`ChenLiu-1996/figures4papers` (CC BY-NC 4.0); see `attribution.md`.
 
 - **Hero panel + subordinate row.** Give the primary evidence more area than the
   controls: `gridspec.GridSpec(2, k, height_ratios=[2.2, 1.0])` puts the hero on

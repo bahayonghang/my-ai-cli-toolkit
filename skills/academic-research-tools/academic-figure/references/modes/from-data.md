@@ -37,7 +37,10 @@ style template and fill it with user data.
 - 若类别数变化（如从 4 组改为 6 组），同步调整颜色列表和宽度计算
 - x 轴标签、图例标签直接修改对应字符串列表
 - 输出路径由 `argv[1]` 控制（缺省写入当前目录的 `*_repro.png`）；
-  `line_selfdistill.py` 产出两张图，分别由 `argv[1]`、`argv[2]` 控制
+  `line_selfdistill.py` 产出两张图，分别由 `argv[1]`、`argv[2]` 控制。
+  脚本成功后打印实际输出路径
+- `bar_memevolve.py` 的增益标签（`+x.x%`）与 y 轴范围由 `baseline`、`method`
+  计算，替换数据后不要手写这两项
 
 ## Template reuse ladder
 
@@ -73,8 +76,15 @@ sizes, spine settings, and tick directions before generating:
 
 ## Runtime dependencies
 
-- All scripts require `matplotlib` and `numpy`.
-- `scatter_break.py` also requires `scipy`.
+- All scripts require `matplotlib` and `numpy`. Each script selects the
+  non-interactive `Agg` backend before it imports `pyplot`.
+- `scatter_break.py` uses `scipy` for the few-shot spline. Without `scipy`, it
+  draws that curve with linear interpolation (`numpy.interp`) and prints one
+  warning.
 - `bar_spice.py`, `line_selfdistill.py`, `line_loss_inset.py`, and
-  `scatter_tsne.py` use `text.usetex=True` and require a working LaTeX install.
-  If LaTeX is unavailable, set `text.usetex` to `False` in the copied script.
+  `scatter_tsne.py` use `text.usetex` when a `latex` executable is on `PATH`.
+  Without `latex`, or with the environment variable `ACADEMIC_FIGURE_NO_TEX=1`,
+  they switch to mathtext (`mathtext.fontset = "cm"`) and the Computer Modern
+  fonts that matplotlib ships: `cmr10` for body text, `cmb10` for bold, and
+  `cmti10` for italic. No raw TeX command appears in the figure. Do not edit
+  `text.usetex` by hand in a copied script.

@@ -22,9 +22,9 @@ compatibility:
   permissions:
     local_reads: "user-supplied data files, figure images, and plotting scripts"
     local_writes: "only the requested figure and script artifacts"
-    network: "none"
+    network: "none, except an optional loopback server on 127.0.0.1 for the AgentFigureGallery UI"
     credentials: "forbid"
   degradation:
-    no_latex: "set text.usetex=False and keep mathtext for the math labels"
+    no_latex: "the usetex catalog scripts detect a missing latex executable and switch to mathtext with the bundled Computer Modern fonts; set ACADEMIC_FIGURE_NO_TEX=1 to force that path"
     no_matplotlib: "report the missing dependency and stop; do not install it unasked"
     no_optional_backend: "without pubfig or AgentFigureGallery, take the built-in path and say the optional step was skipped"
