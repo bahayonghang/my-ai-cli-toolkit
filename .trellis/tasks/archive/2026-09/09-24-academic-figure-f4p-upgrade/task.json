@@ -1,0 +1,31 @@
+{
+  "id": "academic-figure-f4p-upgrade",
+  "name": "academic-figure-f4p-upgrade",
+  "title": "完善 academic-figure skill（对照 figures4papers）",
+  "description": "对照 ref/repo/figures4papers 修复 academic-figure 的许可证记录、事实错误与功能缺失，补齐缺失图型与 house style 工具链",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-24",
+  "completedAt": "2026-09-24",
+  "branch": "dev",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "09-24-af-defect-fixes",
+    "09-24-af-figstyle-module",
+    "09-24-af-f4p-port",
+    "09-24-af-recipes-evals"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

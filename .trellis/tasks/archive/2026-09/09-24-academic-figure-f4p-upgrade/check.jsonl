@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill frontmatter, script path, and plotting layout conventions for this repo"}
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "Suite rules for academic-figure: evals, tests, docs-sync"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/figures4papers-catalog.md", "reason": "Upstream technique catalog, claim verification, gap table G1-G27, licensing"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/skill-audit.md", "reason": "Skill defects S/A/B/C/D with evidence and proposed fixes"}
