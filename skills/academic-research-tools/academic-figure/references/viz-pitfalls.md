@@ -30,7 +30,7 @@ Template:
 | --- | ------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | P1  | Mean-only bar chart                               | n = 3 and n = 300 draw the same bar; a bimodal or skewed shape disappears                     | Box plot or violin with an overlaid strip plot; below n = 10 plot the raw points only                                          |
 | P2  | Dual y axis                                       | Each axis range is free, so the apparent match or divergence is an authoring choice           | Share one axis, plot the two variables against each other, or stack two panels on a shared x axis                              |
-| P3  | Pie chart or any 3D chart                         | People read length about three times better than angle; perspective distorts values           | Value-sorted horizontal bar; stacked bar for parts of a total; 2D heat map or contour for a third dimension                    |
+| P3  | Pie chart or any 3D data chart                    | People read length about three times better than angle; perspective distorts values           | Value-sorted horizontal bar; stacked bar for parts of a total; 2D heat map or contour for a third dimension                    |
 | P4  | Truncated y axis                                  | A 2% rise reads as a doubling                                                                 | Start proportions at zero or a stated baseline; use a log axis across orders of magnitude; draw and declare a break            |
 | P5  | Continuous color without a colorbar               | The reader cannot map a shade to a value, and shades differ between figures                   | Add a colorbar with variable name and unit; lock `vmin`/`vmax` across compared figures                                         |
 | P6  | Line through categorical points                   | A line claims a continuous relation between categories                                        | Bar, box, or dot plot; for ordered discrete levels a thin guide line needs a caption note                                      |
@@ -46,6 +46,11 @@ Template:
 | P16 | Missing glyphs: CJK text, minus sign, Greek       | matplotlib only warns and still writes the file, so boxes appear after export                 | Set the CJK font chain and `axes.unicode_minus = False` (`matplotlib-recipes.md`); the layout audit fails on any missing glyph |
 | P17 | Clipped text, or a legend over the data           | A clipped label removes information; a legend over data hides data                            | Build with `layout="constrained"`; move the legend outside the axes or direct-label; rotate long tick labels                   |
 | P18 | Panel labels placed in each axes' own coordinates | Labels do not line up, and mixed `a` and `(a)` reads as careless                              | Anchor every label at the axes-fraction (0, 1) corner and apply one shared point offset (`panel-layout-patterns.md`)           |
+
+P3 applies to data charts: do not draw measured values in 3D. A concept
+illustration that shows no measured values (a sphere, an energy surface) may use
+3D. Its caption must state that the figure is schematic. The catalog families
+`f4p_sphere_illustration` and `f4p_surface_landscape` are in this class.
 
 P4 applies to proportions and to counts that have a natural zero. It does not
 apply to a continuous metric with no natural zero (loss, current, temperature,

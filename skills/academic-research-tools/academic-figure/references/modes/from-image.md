@@ -39,6 +39,27 @@ one of those entries, read `../styles/<name>.md` for exact parameters and adapt
 `<skill-dir>/assets/originals/` to confirm the visual match. Runtime dependencies
 and LaTeX caveats are recorded in `from-data.md#runtime-dependencies`.
 
+figures4papers match table. The originals are under
+`<skill-dir>/assets/originals/figures4papers/`, resized to a long edge of at most 1800 px;
+the style documents list the exact files.
+
+| Visual cues in the uploaded image                                                             | Style family                  |
+| --------------------------------------------------------------------------------------------- | ----------------------------- |
+| 100% stacked bars, hatch per layer, gold values with a black outline, separate hatch legend   | `f4p_bar_stacked_composition` |
+| One plain bar panel per category, hidden x ticks, legend in its own panel, ↓/↑ in titles      | `f4p_bar_panel_legend`        |
+| Mean bars with error caps, value text above the caps, dark-blue proposed method, light others | `f4p_bar_mean_std`            |
+| Bars grouped by dataset with a one-bar gap, scientific-notation y ticks                       | `f4p_bar_grouped_datasets`    |
+| Dashed full-model baseline with red drop arrows, or horizontal bars in one blue alpha ramp    | `f4p_bar_ablation`            |
+| Heat map colored per column with a summary row, or a count heat map with `(n=…)` tick labels  | `f4p_heatmap_annotated`       |
+| Hyperparameter sweep panels, faded dashed reference line, one panel with a twin y axis        | `f4p_line_sweep`              |
+| Line whose segments grow more opaque along the x axis                                         | `f4p_line_alpha_graded`       |
+| Radar with polygon grid and tick values printed on every spoke, different range per benchmark | `f4p_radar_multirange`        |
+| Overlapping Gaussian curves with a gap arrow; KDE contour clouds along curved paths           | `f4p_concept_density`         |
+| Shaded spheres with points, great-circle arrows, a 3D panel with arrows                       | `f4p_sphere_illustration`     |
+| 3D surface with a smooth colormap, optionally gray hole patches                               | `f4p_surface_landscape`       |
+| Red transition-matrix heat map beside a point cloud with probability-weighted edges           | `f4p_graph_diffusion`         |
+| Two stacked cumulative-area panels over months, hatched areas, event labels with arrows       | `f4p_trend_month_events`      |
+
 ### 3. If no match → analyze from scratch
 
 Read `../reproduction_guide.md` for the full analysis checklist covering:
@@ -84,8 +105,11 @@ eight named papers, plus one user screenshot — key lessons:
 ## Resources
 
 - **Analysis guide**: `../reproduction_guide.md` — step-by-step checklist for new images
-- **Style library**: `../styles/` — 8 pre-built style parameter files
-- **Script templates**: `<skill-dir>/scripts/` — 8 working style scripts + `classwise_iou_table.py`
-- **Originals**: `<skill-dir>/assets/originals/` — paper figures used in development
+- **Style library**: `../styles/` — 8 pre-built style parameter files plus 14
+  figures4papers families (`f4p_*.md`)
+- **Script templates**: `<skill-dir>/scripts/` — 8 working style scripts + `classwise_iou_table.py`;
+  `<skill-dir>/scripts/figures4papers/` — 24 ported scripts + `raw_data.py`
+- **Originals**: `<skill-dir>/assets/originals/` — paper figures used in development;
+  `<skill-dir>/assets/originals/figures4papers/` — 29 figures4papers outputs
 - **External reference library**: `../agent-figure-gallery-integration.md` — optional,
   only when AgentFigureGallery is already installed
