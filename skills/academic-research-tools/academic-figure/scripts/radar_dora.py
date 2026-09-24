@@ -5,7 +5,10 @@ Style: sans-serif, dashed octagonal grid, white-bg value annotations,
 """
 
 import numpy as np
+import os
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
@@ -144,9 +147,7 @@ ax.set_ylim(0, 1.32)   # 缩小上下留白，让多边形撑满
 ax.set_frame_on(False)
 
 fig.subplots_adjust(left=0.10, right=0.90, top=0.86, bottom=0.06)
-fig.savefig(
-    (sys.argv[1] if len(sys.argv) > 1 else 'radar_dora_repro.png'),
-    dpi=300, facecolor='white',
-)
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'radar_dora_repro.png'
+fig.savefig(out_path, dpi=300, facecolor='white')
 plt.close(fig)
-print('saved: radar_dora_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')

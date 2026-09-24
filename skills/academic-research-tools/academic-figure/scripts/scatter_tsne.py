@@ -5,16 +5,43 @@ Style: serif (Computer Modern via usetex), light gray grid,
 """
 
 import numpy as np
+import os
+import shutil
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-plt.rcParams.update({
-    'text.usetex': True,
-    'font.family': 'serif',
-    'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
-    'axes.unicode_minus': False,
-})
+# ── LaTeX 检测 ─────────────────────────────────────────────
+# PATH 中有 latex 时启用 usetex。没有 latex，或设置环境变量
+# ACADEMIC_FIGURE_NO_TEX=1 时，改用 mathtext 与 matplotlib 自带的 Computer
+# Modern 字体（cmr10 常规、cmb10 粗体、cmti10 斜体），图中不出现未解析的 TeX 命令。
+USE_TEX = (shutil.which('latex') is not None
+           and os.environ.get('ACADEMIC_FIGURE_NO_TEX') != '1')
+if USE_TEX:
+    plt.rcParams.update({
+        'text.usetex': True,
+        'font.family': 'serif',
+        'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
+        'axes.unicode_minus': False,
+    })
+else:
+    plt.rcParams.update({
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['cmr10', 'DejaVu Serif'],
+        'mathtext.fontset': 'cm',
+        'axes.formatter.use_mathtext': True,   # cmr10 无减号字形，刻度走 mathtext
+        'axes.unicode_minus': False,
+    })
+# 粗体：usetex 用 fontweight；降级路径用 cmb10 字体（cmb10 只有常规字重，不能再叠加 bold）
+BOLD = {'fontweight': 'bold'} if USE_TEX else {'fontfamily': 'cmb10'}
+
+
+def tex_bold(text):
+    """粗体标签：usetex 时返回 \\textbf{...}，否则返回原文（调用处再传 BOLD）。"""
+    return r'\textbf{' + text + '}' if USE_TEX else text
 
 rng = np.random.default_rng(42)
 
@@ -69,9 +96,9 @@ for ann in ANNOTS:
     rgba = list(mcolors.to_rgba(color))
     rgba[3] = 0.28   # alpha for facecolor
     ax.annotate(
-        r'\textbf{' + ann['name'] + r'}',
+        tex_bold(ann['name']),
         xy=ann['xy'], xytext=ann['xytext'],
-        fontsize=10.0,
+        fontsize=10.0, **BOLD,
         bbox=dict(
             boxstyle='round,pad=0.30',
             facecolor=tuple(rgba),
@@ -82,12 +109,12 @@ for ann in ANNOTS:
     )
 
 # ---- Axes 样式 ----
-ax.set_xlabel(r'\textbf{t-SNE Component 1}', fontsize=12)
-ax.set_ylabel(r'\textbf{t-SNE Component 2}', fontsize=12)
+ax.set_xlabel(tex_bold('t-SNE Component 1'), fontsize=12, **BOLD)
+ax.set_ylabel(tex_bold('t-SNE Component 2'), fontsize=12, **BOLD)
 ax.set_title(
-    r'\textbf{Latent Memory Visualization}' + '\n'
-    r'\textbf{(across all benchmarks)}',
-    fontsize=13.5, pad=8, linespacing=1.4,
+    tex_bold('Latent Memory Visualization') + '\n'
+    + tex_bold('(across all benchmarks)'),
+    fontsize=13.5, pad=8, linespacing=1.4, **BOLD,
 )
 
 ax.set_xlim(-88, 70)
@@ -126,9 +153,7 @@ leg = ax.legend(
 )
 
 fig.tight_layout(pad=0.9)
-fig.savefig(
-    (sys.argv[1] if len(sys.argv) > 1 else 'scatter_tsne_repro.png'),
-    dpi=300, facecolor='white',
-)
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'scatter_tsne_repro.png'
+fig.savefig(out_path, dpi=300, facecolor='white')
 plt.close(fig)
-print('saved: scatter_tsne_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')

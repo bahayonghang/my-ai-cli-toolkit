@@ -5,11 +5,18 @@ Uses two side-by-side axes with shared y-axis.
 """
 
 import numpy as np
+import os
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
-from scipy.interpolate import make_interp_spline
+
+try:
+    from scipy.interpolate import make_interp_spline
+except ImportError:   # scipy 为可选依赖：缺失时样条退回线性插值
+    make_interp_spline = None
 
 plt.rcParams.update({
     'font.family': 'sans-serif',
@@ -70,9 +77,14 @@ for ax in [ax1, ax2]:
 ax1.set_xlim(-3000, 53000)
 
 # Few-shot 样条曲线（原图明显为 S 形平滑曲线）
-spl = make_interp_spline(few_x, few_y, k=3)
 spl_x = np.linspace(few_x[0], few_x[-1], 300)
-spl_y = spl(spl_x)
+if make_interp_spline is not None:
+    spl_y = make_interp_spline(few_x, few_y, k=3)(spl_x)
+else:
+    print('warning: scipy not installed; few-shot curve uses linear '
+          'interpolation (numpy.interp) instead of a cubic spline',
+          file=sys.stderr)
+    spl_y = np.interp(spl_x, few_x, few_y)
 ax1.plot(spl_x, spl_y, color=C_FEW_LINE, lw=1.8, zorder=2)
 ax1.scatter(few_x, few_y,
             marker='o', s=70, color=C_FEW,
@@ -162,9 +174,7 @@ leg = ax1.legend(
     handletextpad=0.4,
 )
 
-fig.savefig(
-    (sys.argv[1] if len(sys.argv) > 1 else 'scatter_break_repro.png'),
-    dpi=300, facecolor='white',
-)
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'scatter_break_repro.png'
+fig.savefig(out_path, dpi=300, facecolor='white')
 plt.close(fig)
-print('saved: scatter_break_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')
