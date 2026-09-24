@@ -4,20 +4,26 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 
-// Every skill-relative path in inline code spans of SKILL.md and
-// references/modes/*.md must exist. A span token such as `references/x.md`,
-// `scripts/y.py`, `assets/z/`, or `<skill-dir>/scripts/y.py` counts. Tokens
-// with a `*` or `<` placeholder are skipped.
+// Every skill-relative path in inline code spans of SKILL.md,
+// references/modes/*.md, and references/styles/f4p_*.md must exist. A span
+// token such as `references/x.md`, `scripts/y.py`, `assets/z/`, or
+// `<skill-dir>/scripts/y.py` counts. Tokens with a `*` or `<` placeholder are
+// skipped.
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(__dirname, "..");
 const modesDir = path.join(skillRoot, "references", "modes");
+const stylesDir = path.join(skillRoot, "references", "styles");
 
 const docs = [
   path.join(skillRoot, "SKILL.md"),
   ...readdirSync(modesDir)
     .filter((name) => name.endsWith(".md"))
     .map((name) => path.join(modesDir, name)),
+  // figures4papers style docs; an empty match adds no file.
+  ...readdirSync(stylesDir)
+    .filter((name) => name.startsWith("f4p_") && name.endsWith(".md"))
+    .map((name) => path.join(stylesDir, name)),
 ];
 
 const PATH_TOKEN =
@@ -36,7 +42,7 @@ function referencedPaths(text) {
   return found;
 }
 
-test("backtick paths in SKILL.md and modes/*.md exist", () => {
+test("backtick paths in SKILL.md, modes/*.md, and styles/f4p_*.md exist", () => {
   let checked = 0;
   const missing = [];
   for (const doc of docs) {
