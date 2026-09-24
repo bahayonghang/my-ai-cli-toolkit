@@ -40,8 +40,9 @@ content + bundled `scripts`, `assets`, `tests`, and `evals`.
   `test-prompts.json`.
 - Keep prompts in their natural language; write `expected_output` and
   `assertions` in English.
-- Cover all three internal modes (`journal-spec`, `from-data`, `from-image`),
-  the explicit-journal precedence rule, and create/review behavior. Include at
+- Cover all four internal modes (`advise`, `journal-spec`, `from-data`,
+  `from-image`), the display branch of `from-data`, the explicit-journal
+  precedence rule, and create/review behavior. Include at
   least two near-neighbor routing negatives for `literature-mentor`
   (single-paper reading) and `paper-workbench` (multi-paper synthesis).
 - Note: evals are not executed by CI (`scripts/check.py` validates only
@@ -61,9 +62,11 @@ content + bundled `scripts`, `assets`, `tests`, and `evals`.
 
 ## Scope & boundaries
 
-- `academic-figure` owns three modes and selects one output contract before
-  loading branch guidance. `journal-spec` is vector/compliance-first;
-  `from-data` and `from-image` are matplotlib/300-DPI-PNG mimicry modes.
+- `academic-figure` owns four modes and selects one output contract before
+  loading branch guidance. `advise` recommends a chart and draws nothing.
+  `journal-spec` is vector/compliance-first; `from-data` and `from-image` are
+  matplotlib/300-DPI-PNG mimicry modes. The `from-data` display branch serves
+  poster, slide, and README figures with no journal target.
 - An explicit journal or thesis target selects `journal-spec`, even when a
   style or reference image is also present. If exact mimicry and journal
   compliance are both explicit, ask once which contract is authoritative.
