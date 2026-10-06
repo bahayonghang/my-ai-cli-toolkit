@@ -1,0 +1,29 @@
+{
+  "id": "repo-test-skill",
+  "name": "repo-test-skill",
+  "title": "创建仓库测试完善 skill",
+  "description": "结合本仓库、同类仓库与公开资料，规划并落地一个覆盖测试位置、目录结构和完善程度的 skill。",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-10-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-06-repo-test-audit-package",
+    "10-06-repo-test-audit-backfill"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
