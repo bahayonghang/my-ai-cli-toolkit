@@ -53,6 +53,7 @@ import io
 import logging
 import math
 import os
+import shutil
 import sys
 import warnings
 
@@ -376,19 +377,23 @@ def audit_layout(
     return issues
 
 
-def render_preview(fig_or_path, out_png: str = "_preview.png", dpi: int = 150) -> str:
+def render_preview(fig_or_path, out_png: str | None = None, dpi: int = 150) -> str:
     """Write a PNG preview for the agent to read.
 
     Args:
         fig_or_path: a matplotlib Figure (the normal path: preview before
             export), or the path of a raster image already on disk.
-        out_png: output PNG path.
-        dpi: preview resolution. 150 shows text and overlaps at a small size.
+        out_png: output PNG path. For a Figure, the default is
+            ``_preview.png``. For a raster file, ``None`` returns the input
+            path unchanged; a path writes a PNG copy there.
+        dpi: preview resolution for a Figure. 150 shows text and overlaps at a
+            small size. A raster file keeps its own pixels.
 
     Returns:
         The path of a PNG that the Read tool can open.
     """
     if hasattr(fig_or_path, "savefig"):
+        out_png = out_png or "_preview.png"
         _ensure_parent(out_png)
         fig_or_path.savefig(out_png, dpi=dpi, bbox_inches="tight")
         return out_png
@@ -398,7 +403,21 @@ def render_preview(fig_or_path, out_png: str = "_preview.png", dpi: int = 150) -
         raise FileNotFoundError(path)
     ext = os.path.splitext(path)[1].lower().lstrip(".")
     if ext in {"png", "tif", "tiff", "jpg", "jpeg", "bmp"}:
-        return path
+        if out_png is None:
+            return path
+        _ensure_parent(out_png)
+        if os.path.abspath(out_png) == os.path.abspath(path):
+            return path
+        if ext == "png":
+            shutil.copyfile(path, out_png)
+        else:
+            from PIL import Image  # Pillow is a matplotlib dependency
+
+            with Image.open(path) as im:
+                if im.mode not in {"1", "L", "LA", "P", "RGB", "RGBA", "I", "I;16"}:
+                    im = im.convert("RGB")  # for example CMYK TIFF
+                im.save(out_png, format="PNG")
+        return out_png
     raise RuntimeError(
         f"Cannot build a preview from .{ext}. Pass the Figure object before "
         "export, or pass a raster image."

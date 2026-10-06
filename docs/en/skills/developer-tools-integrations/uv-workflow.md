@@ -33,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill uv-workflow
 | `skills/developer-tools-integrations/uv-workflow/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/uv-workflow/evals` | directory | 1 | Evaluation samples |
 | `skills/developer-tools-integrations/uv-workflow/references` | directory | 1 | Reference material |
+| `skills/developer-tools-integrations/uv-workflow/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -41,15 +42,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill uv-workflow
 | agents | `skills/developer-tools-integrations/uv-workflow/agents` | Companion agents |
 | evals | `skills/developer-tools-integrations/uv-workflow/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/uv-workflow/references` | Reference material |
+| tests | `skills/developer-tools-integrations/uv-workflow/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

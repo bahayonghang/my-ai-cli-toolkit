@@ -46,18 +46,9 @@ minimum set of panels that make it clear and defensible.
 ## Resolving the library + journal-style axis
 
 This replaces the old "ask Python or R first" gate. Infer both axes; only ask when
-inference fails, and never more than once.
-
-- **Journal style** — resolve in order: explicit request > submission context
-  (the target journal named anywhere in the request) > saved preference
-  (`academic_figure_pref.py get journal_style`) > ask once
-  ("Target journal style? ieee / elsevier / nature, or springer / chinese-thesis").
-  Persist the answer with the matching `set`.
-- **Library** — resolve in order: explicit request > project context (libraries
-  already imported; an industrytslib project uses its matplotlib/plotly backend) >
-  saved preference (`academic_figure_pref.py get library`) > default matplotlib
-  (recommend plotly only for interactive/web output). seaborn is not a separate
-  axis; it is a matplotlib-layer API and specs still resolve down to rcParams.
+inference fails, and never more than once. The priority order for each axis is
+in steps 3 (journal style) and 4 (library) of `modes/journal-spec.md`; that file
+is the single source of the rule.
 
 Once resolved, the chosen library + style is exclusive for this figure: all
 drawing, previewing, exporting, and visual QA use it. Do not render a preview in

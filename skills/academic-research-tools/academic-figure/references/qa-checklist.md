@@ -30,7 +30,7 @@ reviewed 2026-08-16).
 | Text size                   | Body/tick/legend text is at least the card's minimum at final size (do not shrink below it)                                                 |
 | Panel labels                | Lowercase, bold, near top-left, at the card's panel-label size; consistent across all panels                                                |
 | Editable text               | Vector text stays selectable/editable (`svg.fonttype="none"`, `pdf.fonttype=42`); no outlined text unless unavoidable                       |
-| Font                        | Matches the card family — Times-family serif for IEEE, Helvetica/Arial sans for Nature/Elsevier, CJK for chinese-thesis — used consistently |
+| Font                        | A font from the card's allowed list, used consistently. Preset defaults: Times family for IEEE, Helvetica/Arial for Nature/Elsevier, a CJK chain for chinese-thesis |
 | Vector-first                | Line art / plots exported as vector (PDF/EPS/SVG per the card); raster only where required                                                  |
 | Color mode                  | Matches the card (RGB default; CMYK only where the target journal requires it)                                                              |
 | Color accessibility         | No rainbow colormaps; red/green is not the only encoding; grayscale print stays interpretable                                               |
@@ -107,6 +107,8 @@ Run the loop in `visual-review.md` **before** the export block below: render a
 PNG preview, run the machine audit in `<skill-dir>/scripts/visual_qa.py`, read
 the preview against the ten perceptual items, fix at the source, and render
 again. A missing-glyph `FAIL` blocks the export. Three rounds is the limit.
+`audit_layout` needs a matplotlib Figure; a plotly figure takes the plotly
+branch in step 7 of `modes/journal-spec.md`.
 
 ## Export checks
 
@@ -121,12 +123,12 @@ import matplotlib as mpl
 mpl.rcParams["svg.fonttype"] = "none"   # keep SVG text editable
 mpl.rcParams["pdf.fonttype"] = 42       # embed TrueType, avoid Type 3 rejection
 mpl.rcParams["ps.fonttype"] = 42
-# bbox_inches="tight" trims to the drawn content; drop it when the exported
-# width must equal the card width (see "Export at final size" below).
-fig.savefig("figure.pdf", bbox_inches="tight")            # vector-first
-fig.savefig("figure.svg", bbox_inches="tight")
-fig.savefig("figure.eps", bbox_inches="tight")            # if the journal needs EPS
-fig.savefig("figure.tiff", dpi=DPI, bbox_inches="tight")  # raster fallback at card DPI
+# Build the figure with layout="constrained" and save it untrimmed, so the
+# saved size equals the card size (see "Export at final size" below).
+fig.savefig("figure.pdf")            # vector-first
+fig.savefig("figure.svg")
+fig.savefig("figure.eps")            # if the journal needs EPS
+fig.savefig("figure.tiff", dpi=DPI)  # raster fallback at card DPI
 ```
 
 ### plotly
@@ -137,10 +139,14 @@ pio.defaults.default_width = None    # avoid overriding layout size (kaleido #37
 pio.defaults.default_height = None
 fig.write_image("figure.pdf")        # vector
 fig.write_image("figure.svg")        # vector
-fig.write_image("figure.png", scale=2)   # raster; scale up density
+fig.write_image("figure.png", scale=DPI / 72)   # 72 px/in canvas; see the sizing rule
 # EPS: kaleido v1 dropped it — export PDF/SVG and convert, or pin kaleido<1.0.
 # CJK: set layout.font.family to an installed CJK font before export.
 ```
+
+Canvas size, font size, and `scale` follow the single sizing rule in
+`plotly-recipes.md` ("Sizing: one rule for canvas, font, and scale"). For a
+PDF, read the page box before the glyph audit; that section gives the check.
 
 After export, open the SVG/PDF and confirm text is selectable, labels do not
 overlap, colors survive a grayscale check, and the figure reads at final printed
@@ -153,8 +159,9 @@ size.
   afterwards: scaling changes every effective font size and line width, so a
   compliant 7 pt label becomes a non-compliant one.
 - `bbox_inches="tight"` trims to the drawn content and therefore changes the
-  physical size. Do not use it when the width must match the card exactly. Use
-  `layout="constrained"` to keep labels inside a fixed canvas instead.
+  physical size. Use it only when the exported width does not need to equal
+  the card width, for example a `from-image` reproduction. For every journal
+  figure, use `layout="constrained"` to keep labels inside a fixed canvas.
 - Write a grayscale copy next to the deliverable
   (`fig.savefig("figure_grayscale.png")` after converting the palette, or
   convert the exported raster with PIL) and confirm every series stays

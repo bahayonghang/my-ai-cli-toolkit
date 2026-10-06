@@ -22,7 +22,7 @@ features:
   - title: 平台源分层
     details: Claude 源是 agents/ 与 hooks/；Codex 源只有 agents/（没有 prompts/）；Antigravity 使用 commands/。静态安装映射不是新会话发现证明。
   - title: 本地可验证
-    details: just ci 依次运行 docs-check、skills-check、python-check、python-test、install-projects-test、node-test，然后 git diff --check。
+    details: just ci 依次运行 docs-check、skills-check、python-check、python-test、install-projects-test、node-test、evals-check，然后 git diff --check。
 ---
 
 ## 五套 Harness 能力边界

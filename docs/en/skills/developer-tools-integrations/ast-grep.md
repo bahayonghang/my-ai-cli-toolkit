@@ -10,6 +10,7 @@ Write, debug, and validate ast-grep structural code search rules.
 
 - Write, debug, and validate ast-grep structural code search rules
 - Use for syntax-aware code search, AST pattern matching, structural refactor discovery, or searches plain text tools like rg can miss — functions with particular descendants, calls inside specific contexts, decorators, or other Tree-sitter-backed structures
+- Not for plain-text ripgrep search or semantic renames
 
 ## Metadata
 
@@ -32,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill ast-grep
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/ast-grep/evals` | directory | 1 | Evaluation samples |
 | `skills/developer-tools-integrations/ast-grep/references` | directory | 1 | Reference material |
+| `skills/developer-tools-integrations/ast-grep/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -39,15 +41,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill ast-grep
 | --- | --- | --- |
 | evals | `skills/developer-tools-integrations/ast-grep/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/ast-grep/references` | Reference material |
+| tests | `skills/developer-tools-integrations/ast-grep/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

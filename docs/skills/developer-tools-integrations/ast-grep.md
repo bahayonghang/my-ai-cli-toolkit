@@ -10,6 +10,7 @@ Write, debug, and validate ast-grep structural code search rules.
 
 - Write, debug, and validate ast-grep structural code search rules
 - Use for syntax-aware code search, AST pattern matching, structural refactor discovery, or searches plain text tools like rg can miss — functions with particular descendants, calls inside specific contexts, decorators, or other Tree-sitter-backed structures
+- Not for plain-text ripgrep search or semantic renames
 
 ## 元数据
 
@@ -32,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill ast-grep
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/ast-grep/evals` | 目录 | 1 | 评测样例 |
 | `skills/developer-tools-integrations/ast-grep/references` | 目录 | 1 | 引用资料 |
+| `skills/developer-tools-integrations/ast-grep/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -39,15 +41,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill ast-grep
 | --- | --- | --- |
 | evals | `skills/developer-tools-integrations/ast-grep/evals` | 评测样例 |
 | references | `skills/developer-tools-integrations/ast-grep/references` | 引用资料 |
+| tests | `skills/developer-tools-integrations/ast-grep/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

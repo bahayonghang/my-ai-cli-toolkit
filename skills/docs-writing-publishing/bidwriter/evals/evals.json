@@ -75,6 +75,16 @@
         "The skill description should not pull academic paper writing into the tender-writing workflow.",
         "If referenced, the response should redirect to a general or academic writing skill rather than tender analysis or chapter drafting."
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "帮我写一段公司宣传用的营销文案，再写一篇学术论文摘要。",
+      "expected_output": "Routing-negative: general business copy and academic papers are outside tender writing.",
+      "files": [],
+      "assertions": [
+        "Does not treat 通用商务写作 as a tender document.",
+        "Does not draft 学术论文 content in the bid workflow."
+      ]
     }
   ]
 }

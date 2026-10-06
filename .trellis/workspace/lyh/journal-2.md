@@ -98,3 +98,24 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Next Steps
 
 - 无活动 Trellis 任务
+
+
+## Session 68: goal-meta-skill Goal 模式触发条件优化
+
+**Date**: 2026-09-23
+**Task**: goal-meta-skill Goal 模式触发条件优化
+**Branch**: `dev`
+
+### Summary
+
+以明确使用 Goal 模式或编写、保存、管理 Goal 的意图限定触发；新增正向与截图边界用例，同步 Skill IR 和文档；just ci 通过，真实 Claude Code 路由复测未执行。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0cff7734` | (see git log) |
+
+### Status
+
+[OK] **Completed**

@@ -22,7 +22,7 @@ features:
   - title: Platform source layout
     details: Claude sources are agents/ and hooks/. Codex sources are agents/ only (no prompts/). Antigravity uses commands/. Static installer maps are not new-session discovery proof.
   - title: Locally verifiable
-    details: just ci runs docs-check, skills-check, python-check, python-test, install-projects-test, node-test, then git diff --check.
+    details: just ci runs docs-check, skills-check, python-check, python-test, install-projects-test, node-test, evals-check, then git diff --check.
 ---
 
 ## Five-harness capability bounds

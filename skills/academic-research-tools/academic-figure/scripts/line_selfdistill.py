@@ -5,7 +5,11 @@ image3: 离散点折线 + 置信区间阴影（模型规模 scaling）
 来源：Reinforcement learning via self-distillation
 """
 
+import os
+import shutil
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
@@ -17,12 +21,36 @@ import numpy as np
 # Grid：无
 # 颜色：绿 #3A8B3A (SDPO) | 蓝 #3B6BB5 (GRPO) | 灰 #999999 (base)
 # 阴影：主线颜色 alpha=0.15 的半透明填充
-plt.rcParams.update({
-    'text.usetex': True,
-    'font.family': 'serif',
-    'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
-    'axes.unicode_minus': False,
-})
+# ── LaTeX 检测 ─────────────────────────────────────────────
+# PATH 中有 latex 时启用 usetex。没有 latex，或设置环境变量
+# ACADEMIC_FIGURE_NO_TEX=1 时，改用 mathtext 与 matplotlib 自带的 Computer
+# Modern 字体（cmr10 常规、cmb10 粗体、cmti10 斜体），图中不出现未解析的 TeX 命令。
+USE_TEX = (shutil.which('latex') is not None
+           and os.environ.get('ACADEMIC_FIGURE_NO_TEX') != '1')
+if USE_TEX:
+    plt.rcParams.update({
+        'text.usetex': True,
+        'font.family': 'serif',
+        'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
+        'axes.unicode_minus': False,
+    })
+else:
+    plt.rcParams.update({
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['cmr10', 'DejaVu Serif'],
+        'mathtext.fontset': 'cm',
+        'axes.formatter.use_mathtext': True,   # cmr10 无减号字形，刻度走 mathtext
+        'axes.unicode_minus': False,
+    })
+# 粗体：usetex 用 fontweight；降级路径用 cmb10 字体（cmb10 只有常规字重，不能再叠加 bold）
+BOLD = {'fontweight': 'bold'} if USE_TEX else {'fontfamily': 'cmb10'}
+ITALIC = {} if USE_TEX else {'fontfamily': 'cmti10'}   # 降级路径的斜体
+
+
+def tex_bold(text):
+    """粗体标签：usetex 时返回 \\textbf{...}，否则返回原文（调用处再传 BOLD）。"""
+    return r'\textbf{' + text + '}' if USE_TEX else text
 
 C_SDPO  = '#2CA02C'   # matplotlib tab green
 C_GRPO  = '#1F77B4'   # matplotlib tab blue
@@ -61,7 +89,7 @@ ax2.fill_between(steps, sdpo_mean - sdpo_std, sdpo_mean + sdpo_std,
                  color=C_SDPO, alpha=0.20)
 ax2.fill_between(steps, grpo_mean - grpo_std, grpo_mean + grpo_std,
                  color=C_GRPO, alpha=0.20)
-ax2.plot(steps, sdpo_mean, color=C_SDPO, lw=2.5, label=r'\textbf{SDPO}')
+ax2.plot(steps, sdpo_mean, color=C_SDPO, lw=2.5, label=tex_bold('SDPO'))
 ax2.plot(steps, grpo_mean, color=C_GRPO, lw=2.5, label='GRPO')
 # 原图 Claude 参考线为稀疏圆点线，非虚线
 ax2.axhline(0.406, color='#AAAAAA', lw=1.8,
@@ -83,7 +111,7 @@ leg2 = ax2.legend(fontsize=11, loc='lower right',
                   handlelength=2.2, borderaxespad=0.5, labelspacing=0.3)
 for text in leg2.get_texts():
     if 'SDPO' in text.get_text():
-        text.set_fontweight('bold')
+        text.update(BOLD)
 
 # 四边框 + 向内刻度（与原图一致）
 for sp in ax2.spines.values():
@@ -93,10 +121,10 @@ ax2.tick_params(direction='in', length=5, width=1.2, labelsize=11)
 ax2.grid(False)
 
 fig2.tight_layout(pad=0.9)
-fig2.savefig((sys.argv[1] if len(sys.argv) > 1 else 'line_selfdistill_v6_repro.png'),
-             dpi=300, facecolor='white')
+out_v6 = sys.argv[1] if len(sys.argv) > 1 else 'line_selfdistill_v6_repro.png'
+fig2.savefig(out_v6, dpi=300, facecolor='white')
 plt.close(fig2)
-print('saved: line_selfdistill_v6_repro.png')
+print(f'saved: {os.path.abspath(out_v6)}')
 
 # ══════════════════════════════════════════════════════════
 # 图 3：模型 scaling 折线（Model scaling Qwen3）
@@ -127,7 +155,7 @@ MEC = 'black'   # 原图标记点有黑色描边
 ax3.plot(x_pos, sdpo_pts, color=C_SDPO, lw=2.5,
          marker='o', ms=7, mfc=C_SDPO,
          markeredgecolor=MEC, markeredgewidth=1.0,
-         label=r'\textbf{SDPO}')
+         label=tex_bold('SDPO'))
 ax3.plot(x_pos, grpo_pts, color=C_GRPO, lw=2.5,
          marker='o', ms=7, mfc=C_GRPO,
          markeredgecolor=MEC, markeredgewidth=1.0,
@@ -142,7 +170,7 @@ ax3.set_xticklabels(param_labels, fontsize=11)
 ax3.set_xlim(-0.35, 3.35)
 ax3.set_ylim(0.08, 0.51)   # 与原图 0.1~0.5 刻度对齐，留极小顶部空
 ax3.set_xlabel('Model parameters (B)', fontsize=13)
-ax3.set_ylabel(r'\textit{Accuracy}', fontsize=13)
+ax3.set_ylabel(r'\textit{Accuracy}' if USE_TEX else 'Accuracy', fontsize=13, **ITALIC)
 ax3.set_title('Model scaling (Qwen3)', fontsize=15, pad=7)
 ax3.yaxis.set_major_locator(ticker.MultipleLocator(0.1))
 
@@ -153,7 +181,7 @@ leg3 = ax3.legend(fontsize=11, loc='lower right',
                   handlelength=2.2, borderaxespad=0.5, labelspacing=0.3)
 for text in leg3.get_texts():
     if 'SDPO' in text.get_text():
-        text.set_fontweight('bold')
+        text.update(BOLD)
 
 # 四边框 + 向内刻度
 for sp in ax3.spines.values():
@@ -163,7 +191,7 @@ ax3.tick_params(direction='in', length=5, width=1.2, labelsize=11)
 ax3.grid(False)
 
 fig3.tight_layout(pad=0.9)
-fig3.savefig((sys.argv[2] if len(sys.argv) > 2 else 'line_selfdistill_scaling_repro.png'),
-             dpi=300, facecolor='white')
+out_scaling = sys.argv[2] if len(sys.argv) > 2 else 'line_selfdistill_scaling_repro.png'
+fig3.savefig(out_scaling, dpi=300, facecolor='white')
 plt.close(fig3)
-print('saved: line_selfdistill_scaling_repro.png')
+print(f'saved: {os.path.abspath(out_scaling)}')

@@ -39,7 +39,7 @@ title_position = 'upper left inside axes'
 
 | 元素 | 字体族 | 字号 | 加粗 |
 |------|--------|------|------|
-| 子图标题（"OWL-Workforce"） | serif（Palatino / Times） | 11.5 | **是** |
+| 子图标题（"OWL-Workforce"） | serif（STIXGeneral） | 11.5 | **是** |
 | 红色增益标注（"+7.1%"） | serif（继承全局） | 9.5 | **是** |
 | Y 轴标签（"Accuracy (Pass@1)"） | serif（继承全局） | 10 | 否 |
 | X 轴刻度标签 | serif（继承全局） | 10 | 否 |
@@ -48,7 +48,8 @@ title_position = 'upper left inside axes'
 ```python
 plt.rcParams.update({
     'font.family': 'serif',
-    'font.serif': ['Palatino', 'Times New Roman', 'DejaVu Serif'],
+    'font.serif': ['STIXGeneral', 'DejaVu Serif', 'Times New Roman'],
+    'mathtext.fontset': 'stix',
 })
 ```
 
@@ -72,7 +73,7 @@ plt.rcParams.update({
 groups   = ['Web', 'xBench', 'TaskCraft', 'GAIA']
 baseline = [58.1, 55.2, 58.7, 59.3]
 method   = [62.3, 61.2, 65.5, 61.0]
-delta    = ['+7.1%', '+10.9%', '+11.9%', '+2.7%']
+# 增益标签 (method - baseline) / baseline 与 y 轴范围由脚本计算，不手写
 title    = 'OWL-Workforce'
 ylabel   = 'Accuracy (Pass@1)'
 ```

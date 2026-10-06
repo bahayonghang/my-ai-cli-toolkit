@@ -32,6 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill bidwriter
 | `skills/docs-writing-publishing/bidwriter/agents` | 目录 | 1 | 配套 agent |
 | `skills/docs-writing-publishing/bidwriter/evals` | 目录 | 1 | 评测样例 |
 | `skills/docs-writing-publishing/bidwriter/references` | 目录 | 4 | 引用资料 |
+| `skills/docs-writing-publishing/bidwriter/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -40,15 +41,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill bidwriter
 | agents | `skills/docs-writing-publishing/bidwriter/agents` | 配套 agent |
 | evals | `skills/docs-writing-publishing/bidwriter/evals` | 评测样例 |
 | references | `skills/docs-writing-publishing/bidwriter/references` | 引用资料 |
+| tests | `skills/docs-writing-publishing/bidwriter/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

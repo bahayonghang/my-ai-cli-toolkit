@@ -46,11 +46,14 @@ silent mojibake.
 
 - `just skills-check` for skill metadata or `SKILL.md` changes.
 - `just python-check` for Python helpers under `skills/`, `platforms/`, or `scripts/`.
-- `just python-test` for stdlib unittest of `gh-pr-release` and `platforms/claude/hooks`.
+- `just python-test` runs `scripts/run_python_tests.py --dynamic-unittest-discover`. It discovers `platforms/claude/hooks/tests`, every `skills/**/tests` directory that contains `test_*.py`, and `scripts/tests`. It does not discover all of `scripts/`, because `scripts/test_install_projects.py` stays on `just install-projects-test`.
 - `just node-test` for Node tests under `skills/**/tests/*.mjs`.
+- `just evals-check` runs `scripts/check_skill_evals.py`. Every first-party skill needs `evals/evals.json` with `skill_name` plus `evals[]` items that contain `id`, `prompt`, `expected_output`, `files`, and a non-empty `assertions` array. The checker does not call a model.
+- Every first-party skill needs at least one test collected by `just node-test` or `just python-test`. A skill with no executable script still gets `tests/<slug>.test.mjs` that locks the exclusion text in `SKILL.md` and at least two named routing-negative assertions.
+- Do not add pytest to CI. Existing pytest-style functions must be `unittest.TestCase` before `python-test` can collect them. A module of bare `def test_*` functions makes `unittest discover` report 0 tests and exit 0.
 - `just docs-sync` or `just docs-check` when public skill/platform content changes.
 - `git diff --check` for whitespace sanity.
-- `just ci` before finishing when the change touches repo-wide source or generated output.
+- `just ci` is eight steps: `docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`, `node-test`, `evals-check`, `git diff --check`. Step labels in `justfile` and the root `AGENTS.md` list must stay on the same eight names.
 
 Compile is not event-protocol testing. `just python-check` byte-compiles
 Python files. Hook stdin, exit codes, and session isolation require

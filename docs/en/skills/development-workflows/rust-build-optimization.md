@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill rust-build-op
 | `skills/development-workflows/rust-build-optimization/agents` | directory | 1 | Companion agents |
 | `skills/development-workflows/rust-build-optimization/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/rust-build-optimization/references` | directory | 2 | Reference material |
+| `skills/development-workflows/rust-build-optimization/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -42,15 +43,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill rust-build-op
 | agents | `skills/development-workflows/rust-build-optimization/agents` | Companion agents |
 | evals | `skills/development-workflows/rust-build-optimization/evals` | Evaluation samples |
 | references | `skills/development-workflows/rust-build-optimization/references` | Reference material |
+| tests | `skills/development-workflows/rust-build-optimization/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

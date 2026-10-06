@@ -68,6 +68,10 @@ each claim needs a different chart.
 | Composition of a total               | Stacked bar, treemap         | 100% stacked bar          | Pie chart, 3D pie chart        |
 | Binary classifier performance        | ROC or PR curve              | Confusion-matrix heat map | Accuracy-only bar              |
 
+Treemap ("Composition of a total"): matplotlib has no treemap function. Use
+the stacked bar recipe, `chart-recipes.md` section 11 "Grouped, stacked, and
+100% stacked bars". Install `squarify` only when the user asks for a treemap.
+
 ## One dataset, several claims
 
 Example: 30 subjects × 2 drugs × 5 time points = 300 measurements.

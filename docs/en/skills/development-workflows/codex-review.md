@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-review
 | `skills/development-workflows/codex-review/evals` | directory | 2 | Evaluation samples |
 | `skills/development-workflows/codex-review/references` | directory | 2 | Reference material |
 | `skills/development-workflows/codex-review/reports` | directory | 5 | Top-level directory |
+| `skills/development-workflows/codex-review/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -42,15 +43,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill codex-review
 | agents | `skills/development-workflows/codex-review/agents` | Companion agents |
 | evals | `skills/development-workflows/codex-review/evals` | Evaluation samples |
 | references | `skills/development-workflows/codex-review/references` | Reference material |
+| tests | `skills/development-workflows/codex-review/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

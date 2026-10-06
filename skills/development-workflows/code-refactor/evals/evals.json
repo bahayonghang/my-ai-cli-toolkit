@@ -39,6 +39,16 @@
         "Does not remove public/exported symbols without approval or migration evidence",
         "Reports required decisions and verification plan for risky removals"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Don't edit anything. Review this diff for regressions, and separately do a maintainability review.",
+      "expected_output": "Routing-negative: review-only requests go to code-auditor or code-quality-review, not an edit.",
+      "files": [],
+      "assertions": [
+        "Routes a review-only diff to code-auditor instead of editing.",
+        "Routes a maintainability review to code-quality-review instead of editing."
+      ]
     }
   ]
 }

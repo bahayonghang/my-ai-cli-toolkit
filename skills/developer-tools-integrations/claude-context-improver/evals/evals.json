@@ -1,0 +1,23 @@
+{
+  "skill_name": "claude-context-improver",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add this exact sentence to the CLAUDE.md section I already named, and do not audit the rest of the file.",
+      "expected_output": "Routing-negative: a fully specified trivial single-line edit is outside the audit workflow.",
+      "files": [],
+      "assertions": [
+        "Does not run the audit workflow for trivial single-line edits the user has already fully specified."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The one-line change and the target file are already written. Put that line in CLAUDE.md and stop.",
+      "expected_output": "Routing-negative: do not start a context audit for this trivial single-line edit.",
+      "files": [],
+      "assertions": [
+        "Names trivial single-line edits as outside the audit workflow."
+      ]
+    }
+  ]
+}

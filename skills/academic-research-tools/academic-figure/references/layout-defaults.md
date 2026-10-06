@@ -15,11 +15,11 @@ than a reproduction.
 Completion: `figsize` (or plotly `width`/`height`) is set, and the ratio matches
 the row below unless an exception applies.
 
-| Condition | Width | Height |
-| --------- | ----- | ------ |
-| Journal card resolved | Card single- or double-column width | `width × 9/16`, then cap at the card max height |
-| No card (`chinese-thesis` with no physical size, or journal unset) | `8.0` in | `4.5` in |
-| User names a ratio or a size | User value | User value |
+| Condition                                                          | Width                               | Height                                          |
+| ------------------------------------------------------------------ | ----------------------------------- | ----------------------------------------------- |
+| Journal card resolved                                              | Card single- or double-column width | `width × 9/16`, then cap at the card max height |
+| No card (`chinese-thesis` with no physical size, or journal unset) | `8.0` in                            | `4.5` in                                        |
+| User names a ratio or a size                                       | User value                          | User value                                      |
 
 `16:9` means `width / height = 16/9` (±0.02). Worked single-column heights:
 
@@ -42,7 +42,7 @@ fig, ax = plt.subplots(figsize=(WIDTH, HEIGHT), layout="constrained")
 ```
 
 ```python
-width_px = round(WIDTH * DPI)
+width_px = round(WIDTH * 72)          # plotly logical px, 72 per inch (plotly-recipes.md)
 height_px = round(width_px * 9 / 16)
 ```
 
@@ -73,10 +73,10 @@ Completion: labels stay subordinate to the plot box. On a single-panel cartesian
 figure, after `layout="constrained"`, the axes window box is at least **0.68** of
 the figure width and **0.58** of the figure height.
 
-| Path | Body | Tick / legend |
-| ---- | ---- | ------------- |
-| Journal card | Card body size (IEEE ~9 pt, Elsevier/Nature ~7 pt) | Card tick size |
-| No card | 10–11 pt | Body minus 1 pt |
+| Path         | Body                                               | Tick / legend   |
+| ------------ | -------------------------------------------------- | --------------- |
+| Journal card | Card body size (IEEE ~9 pt, Elsevier/Nature ~7 pt) | Card tick size  |
+| No card      | 10–11 pt                                           | Body minus 1 pt |
 
 - Set `axes.labelsize` to the body size. Do not raise it so that Chinese glyphs
   “look larger”. Fix missing CJK glyphs with the font chain in
@@ -90,10 +90,10 @@ the figure width and **0.58** of the figure height.
 
 ## 4. Exceptions
 
-| Case | Rule |
-| ---- | ---- |
-| User sets `figsize`, ratio, or `ylim` | Keep the user value |
-| from-image / catalog style script | Match the source figure |
-| Square family | Square panel |
-| Polar, broken axis, twin y | Follow the family recipe; skip the single-panel fraction check |
-| Dual y (P2) | Still intercept P2; do not “fix” it with headroom alone |
+| Case                                  | Rule                                                           |
+| ------------------------------------- | -------------------------------------------------------------- |
+| User sets `figsize`, ratio, or `ylim` | Keep the user value                                            |
+| from-image / catalog style script     | Match the source figure                                        |
+| Square family                         | Square panel                                                   |
+| Polar, broken axis, twin y            | Follow the family recipe; skip the single-panel fraction check |
+| Dual y (P2)                           | Still intercept P2; do not “fix” it with headroom alone        |

@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-quality-
 | --- | --- | ---: | --- |
 | `skills/development-workflows/code-quality-review/assets` | 目录 | 1 | 素材资源 |
 | `skills/development-workflows/code-quality-review/evals` | 目录 | 2 | 评测样例 |
+| `skills/development-workflows/code-quality-review/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -41,15 +42,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-quality-
 | --- | --- | --- |
 | assets | `skills/development-workflows/code-quality-review/assets` | 素材资源 |
 | evals | `skills/development-workflows/code-quality-review/evals` | 评测样例 |
+| tests | `skills/development-workflows/code-quality-review/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

@@ -1,0 +1,30 @@
+{
+  "id": "trellis-optimization",
+  "name": "trellis-optimization",
+  "title": "明确 goal-meta-skill 的 Goal 模式触发条件",
+  "description": "以用户明确使用 Goal 模式的意图定义 goal-meta-skill 触发条件",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "skills/developer-tools-integrations/goal-meta-skill",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-09-23",
+  "completedAt": "2026-09-23",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "skills/developer-tools-integrations/goal-meta-skill/SKILL.md",
+    "skills/developer-tools-integrations/goal-meta-skill/evals/evals.json",
+    "skills/developer-tools-integrations/goal-meta-skill/reports/skill-ir.json"
+  ],
+  "notes": "",
+  "meta": {}
+}

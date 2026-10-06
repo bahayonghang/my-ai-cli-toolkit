@@ -1,13 +1,13 @@
 # Journal Spec Cards
 
-Per-journal figure specifications for the **journal-style axis** (SKILL.md step 2).
+Per-journal figure specifications for the **journal-style axis** (step 3 of
+`modes/journal-spec.md`).
 Read only the card for the resolved style, then hand its numbers to the matched
 library recipe (`matplotlib-recipes.md` / `plotly-recipes.md`).
 
-Every value in the IEEE / Elsevier / Nature cards is transcribed from this task's
-research report `research/journal-specs-and-tooling.md`; each spec table carries
-a **Source** column and each card ends with a **Sources** list resolving those
-names to URLs. Values the research could not confirm against an official page
+Every value in the IEEE / Elsevier / Nature cards is transcribed from the
+journal research of 2026-07; each spec table carries a **Source** column and
+each card ends with a **Sources** list resolving those names to URLs. Values the research could not confirm against an official page
 are kept as `[missing evidence]` — do not invent a number to fill them. Where the
 research found version drift (IEEE font size, Nature column widths), both
 readings are listed side by side. The two "Snapshot cards" at the end of this
@@ -205,10 +205,9 @@ Nature pages already listed below):
 
 ## Extensions (short)
 
-These two presets are supported but were **not** covered by this task's journal
-research (`research/journal-specs-and-tooling.md` documents only IEEE / Elsevier
-/ Nature). Numeric specs below are therefore marked `[missing evidence]` against
-that corpus; do not fabricate them. When the project uses **industrytslib**, its
+These two presets are supported but were **not** covered by the 2026-07
+journal research, which documents only IEEE / Elsevier / Nature. Numeric specs
+below are therefore marked `[missing evidence]` against that corpus; do not fabricate them. When the project uses **industrytslib**, its
 built-in `springer` and `chinese_thesis` styles ship concrete values — drive
 those through `references/industrytslib-integration.md` rather than copying
 numbers here.
@@ -224,7 +223,7 @@ numbers here.
 
 ### chinese-thesis (中文学位论文)
 
-Focus here is **CJK font handling**, which the research _does_ cover (report §5).
+Focus here is **CJK font handling**, which the 2026-07 research _does_ cover.
 The GB / university thesis figure conventions (physical size, 字号/字体 rules)
 are institution-specific and **[missing evidence — not in this research
 corpus]**; defer to the user's university 学位论文格式规范.

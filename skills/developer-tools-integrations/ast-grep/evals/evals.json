@@ -61,6 +61,16 @@
         "Explains that ast-grep matches structure and does not resolve references or guarantee rename safety.",
         "Does NOT present an ast-grep rewrite as a safe whole-codebase rename mechanism."
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Find the exact string TODO in this repo, and also rename UserService safely across imports.",
+      "expected_output": "Routing-negative: plain-text search goes to ripgrep, and semantic renames go to language tooling.",
+      "files": [],
+      "assertions": [
+        "Routes the exact-string lookup to ripgrep rather than an ast-grep rule.",
+        "Routes semantic renames to language tooling rather than ast-grep."
+      ]
     }
   ]
 }

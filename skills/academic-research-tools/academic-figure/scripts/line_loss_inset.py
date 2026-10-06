@@ -6,18 +6,38 @@ Style: serif, tab10 colors, black dashed connection lines.
 """
 
 import numpy as np
+import os
+import shutil
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import ConnectionPatch, FancyArrowPatch
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset, inset_axes
 
-plt.rcParams.update({
-    'text.usetex': True,
-    'font.family': 'serif',
-    'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
-    'axes.unicode_minus': False,
-})
+# ── LaTeX 检测 ─────────────────────────────────────────────
+# PATH 中有 latex 时启用 usetex。没有 latex，或设置环境变量
+# ACADEMIC_FIGURE_NO_TEX=1 时，改用 mathtext 与 matplotlib 自带的 Computer
+# Modern 字体（cmr10 常规、cmb10 粗体、cmti10 斜体），图中不出现未解析的 TeX 命令。
+USE_TEX = (shutil.which('latex') is not None
+           and os.environ.get('ACADEMIC_FIGURE_NO_TEX') != '1')
+if USE_TEX:
+    plt.rcParams.update({
+        'text.usetex': True,
+        'font.family': 'serif',
+        'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
+        'axes.unicode_minus': False,
+    })
+else:
+    plt.rcParams.update({
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['cmr10', 'DejaVu Serif'],
+        'mathtext.fontset': 'cm',
+        'axes.formatter.use_mathtext': True,   # cmr10 无减号字形，刻度走 mathtext
+        'axes.unicode_minus': False,
+    })
 
 rng = np.random.default_rng(7)
 
@@ -150,9 +170,7 @@ con2 = ConnectionPatch(
 fig.add_artist(con1)
 fig.add_artist(con2)
 
-fig.savefig(
-    (sys.argv[1] if len(sys.argv) > 1 else 'line_loss_inset_repro.png'),
-    dpi=300, facecolor='white',
-)
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'line_loss_inset_repro.png'
+fig.savefig(out_path, dpi=300, facecolor='white')
 plt.close(fig)
-print('saved: line_loss_inset_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')

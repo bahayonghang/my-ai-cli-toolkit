@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | `skills/docs-writing-publishing/touying/evals` | 目录 | 1 | 评测样例 |
 | `skills/docs-writing-publishing/touying/examples` | 目录 | 9 | 示例 |
 | `skills/docs-writing-publishing/touying/references` | 目录 | 2 | 引用资料 |
+| `skills/docs-writing-publishing/touying/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -43,15 +44,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill touying
 | evals | `skills/docs-writing-publishing/touying/evals` | 评测样例 |
 | examples | `skills/docs-writing-publishing/touying/examples` | 示例 |
 | references | `skills/docs-writing-publishing/touying/references` | 引用资料 |
+| tests | `skills/docs-writing-publishing/touying/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

@@ -4,7 +4,11 @@
 来源：SPICE: Self-play in corpus environments improves reasoning
 """
 
+import os
+import shutil
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -17,14 +21,34 @@ import numpy as np
 # 间距：三柱较细，组间留白明显，子图整体更扁，接近原图长宽比
 # 边框：四边框都保留，且柱子层级低于边框
 # 分辨率：300 dpi
+# ── LaTeX 检测 ─────────────────────────────────────────────
+# PATH 中有 latex 时启用 usetex。没有 latex，或设置环境变量
+# ACADEMIC_FIGURE_NO_TEX=1 时，改用 mathtext 与 matplotlib 自带的 Computer
+# Modern 字体（cmr10 常规、cmb10 粗体、cmti10 斜体），图中不出现未解析的 TeX 命令。
+USE_TEX = (shutil.which('latex') is not None
+           and os.environ.get('ACADEMIC_FIGURE_NO_TEX') != '1')
+if USE_TEX:
+    plt.rcParams.update({
+        'text.usetex': True,
+        'font.family': 'serif',
+        'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
+        'axes.unicode_minus': False,
+    })
+else:
+    plt.rcParams.update({
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['cmr10', 'DejaVu Serif'],
+        'mathtext.fontset': 'cm',
+        'axes.formatter.use_mathtext': True,   # cmr10 无减号字形，刻度走 mathtext
+        'axes.unicode_minus': False,
+    })
 plt.rcParams.update({
-    'text.usetex': True,
-    'font.family': 'serif',
-    'font.serif': ['Computer Modern Roman', 'STIX Two Text', 'DejaVu Serif'],
-    'axes.unicode_minus': False,
     'hatch.color': 'white',     # 原图是白色斜线刻在红底上
     'hatch.linewidth': 1.4,
 })
+# 粗体：usetex 用 fontweight；降级路径用 cmb10 字体（cmb10 只有常规字重，不能再叠加 bold）
+BOLD = {'fontweight': 'bold'} if USE_TEX else {'fontfamily': 'cmb10'}
 
 # ── 颜色 & 填充 ───────────────────────────────────────────
 # 左图 (ablation)
@@ -85,15 +109,14 @@ def draw_panel(
                     v + 0.5, f'{v}',
                     ha='center', va='bottom',
                     fontsize=8.7,
-                    fontweight='bold' if is_best else 'normal',
                     color='black',   # 原图数值全部黑色，仅粗细区分
-                    zorder=3)
+                    zorder=3, **(BOLD if is_best else {}))
 
     # 轴
     ax.set_xticks(x)
     ax.set_xticklabels(benchmarks, fontsize=10.8)
     ax.set_xlabel('Benchmark', fontsize=11.2)
-    ax.set_ylabel(r'Accuracy (\%)', fontsize=11.2)
+    ax.set_ylabel(r'Accuracy (\%)' if USE_TEX else 'Accuracy (%)', fontsize=11.2)
     ax.set_ylim(0, 85)
     ax.set_xlim(*xlim)
     ax.set_title(title, fontsize=13.2, pad=5)
@@ -128,7 +151,7 @@ def draw_panel(
     # 只将主方法（BEST_METHOD）的图例文字加粗
     for text in leg.get_texts():
         if text.get_text() == BEST_METHOD:
-            text.set_fontweight('bold')
+            text.update(BOLD)
 
 
 # ── 画布 ─────────────────────────────────────────────────
@@ -160,7 +183,7 @@ draw_panel(
     legend_anchor=(0.992, 0.986),
 )
 
-plt.savefig((sys.argv[1] if len(sys.argv) > 1 else 'bar_spice_repro.png'),
-            dpi=300, facecolor='white')
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'bar_spice_repro.png'
+plt.savefig(out_path, dpi=300, facecolor='white')
 plt.close()
-print('saved: bar_spice_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')

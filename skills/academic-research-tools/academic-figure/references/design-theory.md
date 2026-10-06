@@ -1,9 +1,11 @@
 # Display-Scale Design Theory
 
-Source: `ChenLiu-1996/figures4papers` (HEAD `6790a93`, 2026-08-06). That
-repository ships **no LICENSE file**, so nothing here is copied. Every rule
-below is restated in this skill's own wording from the design facts observed in
-that repository; no code, text, or image is reused.
+Source: `ChenLiu-1996/figures4papers` (snapshot `3c181f8`, 2026-09-06),
+licensed CC BY-NC 4.0. Every rule below restates, in this skill's own wording,
+a design fact observed in the figure scripts of that repository. A path in
+brackets, such as `[CellSpliceNet/plot_ablation.py:76]`, names the upstream
+script that shows the fact. The license terms and the port decision are in
+`attribution.md`.
 
 **Scope.** These rules describe a house style for poster, slide, and repository
 README figures built with matplotlib. A submission figure takes its type sizes,
@@ -20,6 +22,9 @@ figure, or when you need the reasoning behind a semantic color role.
 | Display | large bar and comparison panels on posters, slides | 24 pt     | 3               |
 | Compact | analytic subfigures inside a document              | 15–16 pt  | 2               |
 
+Upstream counts: 24 pt with line width 3 in 14 scripts; 15–16 pt with line
+width 2 in 4 scripts (for example `[RNAGenScape/plot_sweep.py:30]`).
+
 - Use one tier per figure. Do not mix the two.
 - Both tiers hide the top and right spines and use frameless legends.
 - **Journal exception.** The journal cards put body text between 5 and 10 pt.
@@ -29,6 +34,8 @@ figure, or when you need the reasoning behind a semantic color role.
   the user asked for a poster or a slide.
 - Declare a font fallback stack, because Helvetica is absent on most Windows and
   Linux systems: `["Arial", "Helvetica", "DejaVu Sans"]` in `font.sans-serif`.
+  Upstream sets `font.family = 'helvetica'` with no fallback in 19 scripts; the
+  fallback stack is this skill's addition.
 - Turn on `text.usetex` only when the labels need real math and a LaTeX
   installation is present. `svg.fonttype = "none"` keeps SVG text editable.
 
@@ -71,24 +78,37 @@ DISPLAY_SCALE = {              # posters and slides only, never a journal figure
 
 - Print the value above or inside each bar, so the reader gets exact numbers
   without a grid.
-- Set the tick positions explicitly instead of leaving them to the locator.
-- Give bars black edges at line width 1.5–3, so neighbors separate in print.
-- Encode an ordered ablation as one hue with rising alpha, 0.2 to 1.0.
-- Add a hatch when two bars share one hue. See `panel-layout-patterns.md` for
-  the layout side of these figures.
+- When a panel shows a fixed range, such as 0 to 1, pass an explicit tick list
+  with `ax.set_yticks([...])` (`[CellSpliceNet/plot_ablation.py:76]`,
+  `[VIGIL/plot_ablation.py:73]`). Other panels keep the default locator.
+- Black bar edges (line width 2–3) occur in 2 of the 12 upstream bar scripts,
+  and both of them also use a hatch (`[Brainteaser/plot_brute_force.py:126]`,
+  `[Brainteaser/plot_rewriting.py]`). Add black edges when bars carry a hatch;
+  they are not a general rule.
+- Encode an ordered ablation as one hue with rising alpha, 0.2 to 1.0
+  (`[ImmunoStruct/plot_bars.py:80]`).
+- Add a hatch when two bars share one hue (`[Brainteaser/plot_brute_force.py:24]`).
+  See `panel-layout-patterns.md` for the layout side of these figures.
 
 ## Trend and scatter encoding
 
 - Keep 2–4 primary curves per axes; more curves need small multiples.
-- Use line width 2–3 with controlled alpha, and keep the grid minimal or absent.
-- Use `fill_between` for uncertainty, and state in the legend what the band is.
+- Use line width 2–3 with controlled alpha, and keep the grid minimal or absent
+  (`[RNAGenScape/plot_sweep.py:52-65]`, `[VIGIL/plot_ablation.py:64-66]`).
+- Upstream uses `fill_between` for filled density curves and cumulative areas
+  (`[VIGIL/plot_concept.py:59-63]`, `[ophthal_review/plot_trend.py:89-110]`),
+  not for uncertainty bands. For an uncertainty band, follow the uncertainty
+  rules in `qa-checklist.md`.
 - Conceptual scenes lower the alpha of dense geometry and drop the ticks; a
   saturated warm accent plus arrows then carries the reading path.
 
 ## Export contract
 
-One call should write every format the deliverable needs. Whatever helper you
-write, hold this contract:
+One call should write every format the deliverable needs. The upstream scripts
+call `savefig` once per format; the helper contract below is this skill's own.
+`save_figure()` in `scripts/figstyle.py` implements this contract, and
+`apply_style("display")` applies the display tier.
+Whatever helper you write, hold this contract:
 
 - Accept a base path without an extension plus a format list, and write every
   format from the same figure object.
@@ -97,10 +117,14 @@ write, hold this contract:
   and fail on anything else.
 - Return the written paths, so the caller can log or check them.
 - Default the raster DPI to 300, and raise it to 600 for dense bar panels.
-- Run the layout pass once before saving: padded `tight_layout` for display
-  figures, with a smaller pad for compact multi-panel figures.
+  Upstream uses dpi 300 in 27 of 32 save calls and dpi 600 for the dense
+  ImmunoStruct bars (`[ImmunoStruct/plot_bars.py:70]`).
+- Run the layout pass once before saving. A display figure uses
+  `tight_layout(pad=2)` (23 of 27 upstream calls); a compact multi-panel
+  figure can use a smaller pad. A journal figure uses `layout="constrained"`
+  instead (`matplotlib-recipes.md`).
 - Select a non-interactive backend (`matplotlib.use("Agg")`) before the pyplot
-  import in batch runs.
+  import in batch runs. Upstream scripts do not do this; it is this skill's rule.
 - Write outputs under a `figures/` directory with stable base names.
 
 For a submission figure, the format list, DPI, and color mode come from the

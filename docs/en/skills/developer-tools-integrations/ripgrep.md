@@ -33,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill ripgrep
 | `skills/developer-tools-integrations/ripgrep/agents` | directory | 1 | Companion agents |
 | `skills/developer-tools-integrations/ripgrep/evals` | directory | 1 | Evaluation samples |
 | `skills/developer-tools-integrations/ripgrep/references` | directory | 1 | Reference material |
+| `skills/developer-tools-integrations/ripgrep/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -41,15 +42,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill ripgrep
 | agents | `skills/developer-tools-integrations/ripgrep/agents` | Companion agents |
 | evals | `skills/developer-tools-integrations/ripgrep/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/ripgrep/references` | Reference material |
+| tests | `skills/developer-tools-integrations/ripgrep/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

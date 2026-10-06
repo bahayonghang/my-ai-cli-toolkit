@@ -1,7 +1,7 @@
 interface:
   display_name: "Academic Figure"
   short_description: "Advise, create, or audit publication-ready academic figures"
-  default_prompt: "Use $academic-figure when I need a paper or journal figure. Pick one mode first: advise when the chart type is open, journal-spec for a submission target or a compliance review, from-data for a named catalog style, from-image to reproduce an uploaded figure. Report every matched pitfall, and audit the exported file against the journal card before you call the figure done."
+  default_prompt: "Use $academic-figure when I need a paper or journal figure. Pick one mode first: advise when the chart type is open, journal-spec for a submission target or a compliance review, from-data for a named catalog style or a poster, slide, or README figure with no journal target, from-image to reproduce an uploaded figure. Report every matched pitfall, and audit the exported file against the journal card before you call the figure done."
 compatibility:
   canonical_format: "agent-skills"
   adapter_targets:
@@ -22,9 +22,10 @@ compatibility:
   permissions:
     local_reads: "user-supplied data files, figure images, and plotting scripts"
     local_writes: "only the requested figure and script artifacts"
-    network: "none"
+    network: "none, except an optional loopback server on 127.0.0.1 for the AgentFigureGallery UI"
     credentials: "forbid"
   degradation:
-    no_latex: "set text.usetex=False and keep mathtext for the math labels"
+    no_latex: "the usetex catalog scripts detect a missing latex executable and switch to mathtext with the bundled Computer Modern fonts; set ACADEMIC_FIGURE_NO_TEX=1 to force that path"
     no_matplotlib: "report the missing dependency and stop; do not install it unasked"
+    no_scipy_or_seaborn: "skip the ported figures4papers scripts that need scipy or seaborn, say which module is missing, and do not install it unasked"
     no_optional_backend: "without pubfig or AgentFigureGallery, take the built-in path and say the optional step was skipped"

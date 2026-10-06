@@ -5,7 +5,10 @@ Style: sans-serif, 4-spine box, no grid, right-bottom legend.
 """
 
 import numpy as np
+import os
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
@@ -87,9 +90,7 @@ leg = ax.legend(
 )
 
 fig.tight_layout(pad=0.8)
-fig.savefig(
-    (sys.argv[1] if len(sys.argv) > 1 else 'line_aime_repro.png'),
-    dpi=300, facecolor='white',
-)
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'line_aime_repro.png'
+fig.savefig(out_path, dpi=300, facecolor='white')
 plt.close(fig)
-print('saved: line_aime_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')

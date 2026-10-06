@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill frontmatter, script path placeholder, and node test discovery"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Repo validation chain and the rule that python-check is not test execution"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Where skill scripts and tests live"}
+{"file": ".trellis/tasks/10-06-repo-test-skill/research/local-repo-test-layouts.md", "reason": "Sibling repo test locations and commands"}
+{"file": ".trellis/tasks/10-06-repo-test-skill/research/prior-art-test-skills.md", "reason": "Public keep, adapt, and reject list for the test audit skill"}

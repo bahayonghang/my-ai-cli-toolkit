@@ -5,10 +5,11 @@ description: >
   the data and recommends a chart type when none is fixed. journal-spec creates
   or reviews publication-ready figures for journal submission specs using
   matplotlib, seaborn, plotly, industrytslib, or the optional pubfig backend.
-  from-data fills a named paper-style catalog with user data. from-image
+  from-data fills a named paper-style catalog with user data, including a
+  display branch for poster, slide, and README figures. from-image
   reproduces an uploaded paper figure as a matplotlib script and 300 dpi PNG.
   Use for 论文配图, 期刊图, 科研绘图, 审阅投稿图, 用某论文风格画数据, 复现这张图,
-  a named catalog style, 不知道用什么图 / 选图 / 怎么展示这份实验数据, what chart
+  a named catalog style, figures4papers 风格, 海报图 / 幻灯片配图, 不知道用什么图 / 选图 / 怎么展示这份实验数据, what chart
   should I use, 投稿前审计图的字号 DPI 与导出合规, pre-submission figure audit, or
   参考图筛选 with AgentFigureGallery. An explicit journal target takes precedence
   over a style or reference image. Exploratory data checks with no publication
@@ -30,11 +31,13 @@ tags:
     from-image,
     chart-advisor,
     figure-audit,
+    figures4papers,
+    poster-figure,
     visual-qa,
     pubfig,
     reference-gallery,
   ]
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Academic Figure
@@ -49,7 +52,7 @@ Pick one mode before loading its reference or writing plotting code.
 | Input intent                                                                                            | Mode             | Read                               |
 | ------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------- |
 | Journal/thesis target, generic `论文配图`, or compliance review                                         | **journal-spec** | `references/modes/journal-spec.md` |
-| User data plus a named catalog style                                                                    | **from-data**    | `references/modes/from-data.md`    |
+| User data plus a named catalog style, or a poster, slide, or README figure with no journal target       | **from-data**    | `references/modes/from-data.md`    |
 | Uploaded paper figure, with no journal target                                                           | **from-image**   | `references/modes/from-image.md`   |
 | Data in hand with the chart type still open, or a request for a chart recommendation (`不知道用什么图`) | **advise**       | `references/modes/advise.md`       |
 
@@ -69,7 +72,7 @@ The selected row is authoritative.
 | Mode                           | Required output behavior                                                                                                                                |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **journal-spec**               | Vector-first PDF/SVG/EPS; target size, font, and DPI; colorblind-safe defaults; `fonttype=42`; every applicable QA item checked                         |
-| **from-data** / **from-image** | Matplotlib script and `dpi=300` PNG; deliberately mimic the selected style or source; journal QA is not imposed by default                              |
+| **from-data** / **from-image** | Matplotlib script and `dpi=300` PNG; deliberately mimic the selected style or source; journal QA is not imposed by default; the display branch adds a same-name PDF |
 | **advise**                     | One recommended chart type with the reason and one or two alternates, every matched pitfall reported, and a named hand-off mode; advise draws no figure |
 
 ## Route elsewhere
@@ -98,8 +101,9 @@ The selected row is authoritative.
 - **Integrations**: `references/industrytslib-integration.md`,
   `references/pubfig-integration.md`,
   `references/agent-figure-gallery-integration.md`
-- **Reproduction**: `references/styles/`,
-  `references/reproduction_guide.md`, `scripts/`, `assets/originals/`,
-  `references/attribution.md`
-- **Scripts & evals**: `scripts/academic_figure_pref.py`,
-  `scripts/visual_qa.py`, `scripts/audit_pdf_text.py`, `evals/evals.json`
+- **Reproduction**: `references/styles/` (including `f4p_*`),
+  `references/reproduction_guide.md`, `scripts/`, `scripts/figures4papers/`,
+  `assets/originals/`, `references/attribution.md`
+- **Scripts & evals**: `scripts/figstyle.py`, `scripts/academic_figure_pref.py`,
+  `scripts/visual_qa.py`, `scripts/audit_pdf_text.py`, `evals/evals.json`,
+  `evals/trigger_cases.json`

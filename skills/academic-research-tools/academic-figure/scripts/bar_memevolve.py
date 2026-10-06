@@ -4,7 +4,11 @@
 来源：MemEvolve: Meta-Evolution of Agent Memory Systems
 """
 
+import math
+import os
 import sys
+import matplotlib
+matplotlib.use('Agg')   # 非交互后端，须在导入 pyplot 之前设置
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.ticker as ticker
@@ -34,18 +38,28 @@ panels = [
         'groups': ['Web', 'xBench', 'TaskCraft', 'GAIA'],
         'baseline': [58.1, 55.2, 58.7, 59.3],
         'method':   [62.3, 61.2, 65.5, 61.0],
-        'delta':    ['+7.1%', '+10.9%', '+11.9%', '+2.7%'],
-        'ylim':     (40, 71),   # 原图左图 Y 轴 40-70
     },
     {
         'title': 'CK-Pro',
         'groups': ['Web', 'xBench', 'TaskCraft', 'GAIA'],
         'baseline': [61.2, 55.8, 63.8, 58.1],
         'method':   [63.8, 64.8, 67.8, 63.1],
-        'delta':    ['+4.2%', '+16.1%', '+4.8%', '+8.4%'],
-        'ylim':     (40, 76),   # 原图右图 Y 轴 40-75
     },
 ]
+
+
+# ── 由数据计算的派生量（替换数据后无需手改）────────────────
+def gain_labels(baseline, method):
+    """相对增益 (method - baseline) / baseline，格式 '+7.2%'。"""
+    return [f'{(m - b) / b * 100:+.1f}%' for b, m in zip(baseline, method)]
+
+
+def y_range(baseline, method):
+    """下限：最小 baseline 减 15 后向下取整到 5 的倍数；上限：最大 method 加 5
+    后向上取整，为箭头和增益标注留出空间。"""
+    low = math.floor((min(baseline) - 15) / 5) * 5
+    high = math.ceil(max(method) + 5)
+    return low, high
 
 # ── 画布 ─────────────────────────────────────────────────
 fig, axes = plt.subplots(1, 2, figsize=(10, 4.5), sharey=False)
@@ -59,7 +73,7 @@ for ax, panel in zip(axes, panels):
     groups   = panel['groups']
     baseline = np.array(panel['baseline'])
     method   = np.array(panel['method'])
-    delta    = panel['delta']
+    delta    = gain_labels(baseline, method)
     n        = len(groups)
     x        = np.arange(n)
 
@@ -89,7 +103,7 @@ for ax, panel in zip(axes, panels):
     ax.set_xticks(x)
     ax.set_xticklabels(groups, fontsize=10.5, fontweight='bold')
     ax.set_ylabel('Accuracy (Pass@1)', fontsize=10.5, fontweight='bold')
-    ax.set_ylim(*panel['ylim'])
+    ax.set_ylim(*y_range(baseline, method))
     ax.yaxis.set_major_locator(plt.MultipleLocator(5))
 
     # 四边框全显，线宽偏厚（原图有明显框线）
@@ -104,7 +118,7 @@ for ax, panel in zip(axes, panels):
             fontsize=12, fontweight='bold', va='top', ha='left',
             color='#003F6C', fontfamily='serif')
 
-plt.savefig((sys.argv[1] if len(sys.argv) > 1 else 'bar_memevolve_repro.png'),
-            dpi=300, bbox_inches='tight', facecolor='white')
+out_path = sys.argv[1] if len(sys.argv) > 1 else 'bar_memevolve_repro.png'
+plt.savefig(out_path, dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
-print('saved: bar_memevolve_repro.png')
+print(f'saved: {os.path.abspath(out_path)}')

@@ -697,6 +697,76 @@
         "Permits questions only for unresolved material user decisions, forbids a second repair Prompt, and retains current-task product/planning history before a separate archive commit and the parent release gate.",
         "Produces recorded review text only; no agent is dispatched and no Goal, target implementation, commit or archive is executed."
       ]
+    },
+    {
+      "id": 60,
+      "prompt": "请用 Goal 模式完成本仓库的 CSV 导入修复，先根据项目约束写出可审阅的目标。",
+      "expected_output": "Routing-positive: the explicit Goal-mode request selects goal-meta-skill and produces a reviewable draft without launching the Goal.",
+      "files": [],
+      "assertions": [
+        "Routes the request to goal-meta-skill because the user explicitly asks for Goal mode without writing the /goal command literally.",
+        "Presents a project-aware DRAFT Goal for review and does not implement or activate the repair."
+      ]
+    },
+    {
+      "id": 61,
+      "prompt": "把这个迁移计划写成 Claude Code Goal 指令，列明验证和停止条件。",
+      "expected_output": "Routing-positive: natural-language Goal instruction authoring selects goal-meta-skill and produces a Claude Code draft.",
+      "files": [],
+      "assertions": [
+        "Routes to goal-meta-skill because Goal instruction authoring is explicit, even though the user does not write /goal.",
+        "Uses Claude Code Goal semantics and presents the draft without launching it."
+      ]
+    },
+    {
+      "id": 62,
+      "prompt": "写一个 Codex /goal，限定 parser 修复范围并给出具体验收证据。",
+      "expected_output": "Routing-positive: an explicit /goal authoring request selects goal-meta-skill and produces a bounded Codex draft.",
+      "files": [],
+      "assertions": [
+        "Routes to goal-meta-skill for the requested /goal command.",
+        "Includes a concrete parser boundary and verification evidence in a reviewable DRAFT; does not submit the command."
+      ]
+    },
+    {
+      "id": 63,
+      "prompt": "把刚才已确认的 Goal 合同保存到项目根目录 GOAL.md，供下次会话读取；根目录已确定，文件不存在。",
+      "expected_output": "Routing-positive: an explicit Goal-contract save request selects goal-meta-skill and follows the authorized create-only path.",
+      "files": [],
+      "assertions": [
+        "Routes to goal-meta-skill for the explicitly requested Goal contract persistence.",
+        "Shows the reviewed contract and create-only effect, then uses the named writer and read-back checks within the authorized scope; does not launch Goal."
+      ]
+    },
+    {
+      "id": 64,
+      "prompt": "我在 Codex 的 Goal 模式中已有一个运行中的目标，告诉我怎样暂停当前 Goal。",
+      "expected_output": "Routing-positive: management of an existing Goal selects goal-meta-skill and displays the correct platform command.",
+      "files": [],
+      "assertions": [
+        "Routes to goal-meta-skill because management of the existing Goal is explicit.",
+        "Shows the Codex management command as fenced text without executing it or replacing the objective."
+      ]
+    },
+    {
+      "id": 65,
+      "prompt": "我想要基于 dev 这个分支新建一个分支重构这个 lib，重新设计架构，注意应用架构和分层设计，解耦功能，优化性能，先不要开始实施，先根据我的需求和仓库内容创建一个在下一个对话中实施的 Prompt。",
+      "expected_output": "Routing-negative screenshot regression: the cross-session design prompt does not request Goal mode or a Goal-specific operation, so goal-meta-skill is not selected.",
+      "files": [],
+      "assertions": [
+        "Does not route to goal-meta-skill solely because the user requests a prompt for a later conversation.",
+        "Does not add /goal syntax or a GOAL.md contract to the requested design handoff."
+      ]
+    },
+    {
+      "id": 66,
+      "prompt": "我想要基于 dev 这个分支新建一个分支重构这个 lib。请用 Codex Goal 模式为下个对话写目标指令，先根据我的需求和仓库内容规划，暂不实施。",
+      "expected_output": "Routing-positive paired case: the same refactor handoff explicitly requests Codex Goal mode and selects goal-meta-skill.",
+      "files": [],
+      "assertions": [
+        "Routes to goal-meta-skill because the user explicitly requests Codex Goal mode and a Goal instruction.",
+        "Presents a reviewable project-aware Goal draft for the later conversation without creating a branch, implementing the refactor, or launching Goal."
+      ]
     }
   ]
 }

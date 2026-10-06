@@ -6,6 +6,8 @@ Original: 1671x209 px  AR=8.00
 from __future__ import annotations
 
 import sys
+import matplotlib
+matplotlib.use("Agg")  # non-interactive backend; set it before the pyplot import
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle

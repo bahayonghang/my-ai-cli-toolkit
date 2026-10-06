@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Catalog reproduction scripts keep source figsize and ylim; script path rules"}
+{"file": "skills/academic-research-tools/AGENTS.md", "reason": "Suite test rules and docs-sync requirement"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/figures4papers-catalog.md", "reason": "Per-script catalog, output inventory, gaps G1-G24, upstream bugs"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/research/skill-audit.md", "reason": "Gaps C2 C3, script contract B1 B2"}
+{"file": ".trellis/tasks/09-24-academic-figure-f4p-upgrade/design.md", "reason": "Parent file ownership, license boundary, script contract"}
+{"file": ".trellis/tasks/09-24-af-defect-fixes/design.md", "reason": "USE_TEX fallback mechanism and path-existence test"}

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "CI recipes and python-check versus test execution"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Where new tests and the eval checker live"}
+{"file": ".trellis/tasks/10-06-repo-test-skill/design.md", "reason": "Eight-step CI and per-skill test shape"}
+{"file": ".trellis/tasks/10-06-repo-test-skill/research/local-repo-test-layouts.md", "reason": "Current discover roots and the 18 skills without tests"}

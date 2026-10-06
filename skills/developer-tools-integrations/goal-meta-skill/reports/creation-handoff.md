@@ -1,5 +1,19 @@
 # Goal Meta Skill 0.8.2 creation handoff
 
+## Positive Goal routing — 2026-09-23
+
+- `design advantage`: the frontmatter and S0 now require explicit intent to use
+  Goal mode or author, save, or manage a Goal. Trellis implementation,
+  scan/review remediation, and cross-session handoff remain supported after
+  that intent is established. Natural Goal wording does not require `/goal`.
+- `recorded fixture`: evals 60–64 cover Goal mode, Goal instruction, `/goal`,
+  contract saving, and existing-Goal management. Evals 65–66 pair the reported
+  lib-refactor handoff with the same task explicitly requested as a Codex Goal.
+  The screenshot records one pre-change misroute; its internal cause is unknown.
+- `missing evidence`: these fixtures are reviewed routing expectations, not a
+  Claude Code provider run. Post-change provider selection and human review
+  remain unverified until a named run records them.
+
 ## 0.8.2 reference consolidation — 2026-09-10
 
 This maintenance uses the user-selected local `qiaomu-goal-meta-skill` reference

@@ -62,7 +62,7 @@ cd my-claude-code-settings
 just ci
 ```
 
-`just ci` 会执行 skills 元数据校验、Python 编译检查、项目安装器测试、Node 技能测试和 `git diff --check`。
+`just ci` 会执行 docs-check、skills-check、python-check、python-test、install-projects-test、node-test、evals-check，然后 `git diff --check`。
 
 ## 仓库结构
 

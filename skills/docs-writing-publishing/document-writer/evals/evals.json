@@ -43,6 +43,16 @@
         "The skill description should not pull general prose polishing into the technical-documentation workflow.",
         "If referenced, the response should redirect to a prose or copy writing skill rather than codebase doc generation."
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "Write a product marketing blurb and localize the slogan for a social post.",
+      "expected_output": "Routing-negative: marketing copy and non-technical localization are outside codebase documentation.",
+      "files": [],
+      "assertions": [
+        "Does not treat marketing copy as technical documentation.",
+        "Does not treat non-technical localization as a codebase doc task."
+      ]
     }
   ]
 }

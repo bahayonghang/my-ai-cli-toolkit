@@ -32,6 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill beautiful-mer
 | --- | --- | ---: | --- |
 | `skills/docs-writing-publishing/beautiful-mermaid-editor/evals` | directory | 1 | Evaluation samples |
 | `skills/docs-writing-publishing/beautiful-mermaid-editor/references` | directory | 3 | Reference material |
+| `skills/docs-writing-publishing/beautiful-mermaid-editor/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -39,15 +40,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill beautiful-mer
 | --- | --- | --- |
 | evals | `skills/docs-writing-publishing/beautiful-mermaid-editor/evals` | Evaluation samples |
 | references | `skills/docs-writing-publishing/beautiful-mermaid-editor/references` | Reference material |
+| tests | `skills/docs-writing-publishing/beautiful-mermaid-editor/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

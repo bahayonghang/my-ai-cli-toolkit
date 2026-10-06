@@ -1,0 +1,95 @@
+{
+  "recommended_threshold": 0.34,
+  "description_required_concepts": ["location", "collection", "completeness"],
+  "positive_concepts": {
+    "location": ["测试放在哪", "测试目录", "where tests live", "where do tests live", "test directory", "test location"],
+    "collection": ["哪些测试没进 CI", "not collected", "collected", "runner"],
+    "completeness": ["测试完善程度", "completeness", "how complete"],
+    "inventory": ["盘点", "inventory"]
+  },
+  "negative_patterns": [
+    "diff 审查",
+    "diff review",
+    "PR review",
+    "可维护性审查",
+    "maintainability review",
+    "只要重构",
+    "refactor",
+    "失败栈",
+    "failure stack"
+  ],
+  "should_trigger": [
+    {
+      "text": "这个仓库的测试放在哪？哪些测试没进 CI？",
+      "family": "zh-location-collection"
+    },
+    {
+      "text": "请盘点测试目录，并给出测试完善程度。",
+      "family": "zh-inventory-completeness"
+    },
+    {
+      "text": "Where do tests live, and which files are not collected by the runner?",
+      "family": "en-location-collection"
+    },
+    {
+      "text": "Inventory the test directory and report completeness.",
+      "family": "en-inventory-completeness"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "只要 diff 审查，不要看别的。",
+      "family": "diff-only"
+    },
+    {
+      "text": "只要可维护性审查。",
+      "family": "maintainability-only"
+    },
+    {
+      "text": "只要重构这个模块。",
+      "family": "refactor-only"
+    },
+    {
+      "text": "只要解释某一段失败栈。",
+      "family": "stack-only"
+    },
+    {
+      "text": "Only do a diff review of this pull request.",
+      "family": "en-diff-only"
+    },
+    {
+      "text": "Only do a maintainability review of the current change.",
+      "family": "en-maintainability-only"
+    },
+    {
+      "text": "Please refactor this module and keep the public API.",
+      "family": "en-refactor-only"
+    },
+    {
+      "text": "Only explain this failure stack.",
+      "family": "en-stack-only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "请独立审查这个 PR 的 diff，找功能回归和测试盲区。",
+      "family": "code-auditor"
+    },
+    {
+      "text": "只做可维护性审查，看抽象、分支复杂度和分层。",
+      "family": "code-quality-review"
+    },
+    {
+      "text": "帮我重构 orderService.ts，把校验和支付拆开。",
+      "family": "code-refactor"
+    },
+    {
+      "text": "这段失败栈里的 AssertionError 是什么意思？只解释这一段。",
+      "family": "stack-explain"
+    },
+    {
+      "text": "审一下这份 Trellis 计划，不要改代码。",
+      "family": "trellis-plan-review"
+    }
+  ]
+}

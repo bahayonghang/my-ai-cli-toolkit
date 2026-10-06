@@ -327,6 +327,149 @@
         "Sets height from the 16:9 default in references/layout-defaults.md",
         "Keeps Nature 5-7 pt type and vector-first export"
       ]
+    },
+    {
+      "id": 27,
+      "prompt": "把这张上传的论文图一模一样地复现出来，同时成图必须完全符合 IEEE 投稿规范。",
+      "expected_output": "Detects that exact mimicry and journal compliance are both explicit, applies conflict rule 2, and asks once which contract wins before any plotting code. After the answer it follows only the chosen output contract.",
+      "files": ["figure.png"],
+      "assertions": [
+        "Recognizes that exact mimicry and IEEE compliance are both explicit",
+        "Applies conflict rule 2 in SKILL.md and asks once which contract is authoritative",
+        "Does not write plotting code or export a figure before the answer",
+        "After the answer, follows only one output contract: journal-spec vector QA or the from-image 300-DPI PNG",
+        "Does not silently merge the two contracts"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "这份 CSV 是 4 个 baseline 方法和我们的方法在 3 个 benchmark 上的准确率，我不知道用什么图好。你推荐完之后，如果有现成的论文风格模板就直接用模板出图，不投特定期刊。",
+      "expected_output": "Routes to advise because the chart type is open. Profiles the data, confirms the claim, recommends a paired baseline-vs-method bar with gain labels, and hands off to from-data because the agreed chart matches the bar_paired_delta catalog style.",
+      "files": ["results.csv"],
+      "assertions": [
+        "Routes to academic-figure advise mode first",
+        "Profiles the data inline and confirms the argument goal",
+        "Recommends one chart type with one or two alternates",
+        "Hands off to from-data because the agreed chart matches a named catalog style (bar_paired_delta)",
+        "Follows the from-data output contract (matplotlib script and 300-DPI PNG) after the hand-off, not journal-spec"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "帮我给学术会议海报画一张 4 个方法在 3 个数据集上的准确率对比柱状图，字要大，站远了也能看清。",
+      "expected_output": "Routes to the from-data display-tier branch because the target is a poster, with no journal target and no named catalog style. Selects the closest figures4papers bar family, applies figstyle apply_style(\"display\"), and delivers a matplotlib script, a 300-DPI PNG, and a PDF with the same name.",
+      "files": [],
+      "assertions": [
+        "Routes to the academic-figure from-data display-tier branch, not journal-spec",
+        "Selects the closest figures4papers catalog style for grouped bars (for example f4p_bar_grouped_datasets)",
+        "Applies figstyle apply_style(\"display\") (24 pt type, axis line width 3)",
+        "Delivers a matplotlib script, a 300-DPI PNG, and a PDF with the same base name",
+        "Does not apply a journal card or the journal 5-10 pt type sizes"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "画一张投 Science 的双栏折线图，比较三种材料在不同温度下的电导率。",
+      "expected_output": "Routes to journal-spec with a Science target. Reads the Science snapshot card, drives rcParams from the nature preset, uses the 121 mm double-column width and about 7 pt type (never below 5 pt), and tells the user to confirm the snapshot numbers on the official Science page.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode",
+        "Reads the Science snapshot card in references/journal-specs.md",
+        "Uses the nature preset for rcParams because science is not a saved journal-style value",
+        "Uses the Science double-column width of 121 mm and type of about 7 pt, not below 5 pt",
+        "States that the snapshot values are not verified and must be confirmed on the official Science author page"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Make a single-column box plot with raw points for a Cell Press submission; 18 samples per group.",
+      "expected_output": "Routes to journal-spec with a Cell Press target. Reads the Cell snapshot card, uses the 85 mm single-column width, Arial at about 6-8 pt, capital panel labels, and RGB, and loads the box-plot-with-raw-points recipe because n is between 10 and 30.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode",
+        "Reads the Cell Press snapshot card in references/journal-specs.md and drives rcParams from the nature preset",
+        "Uses the 85 mm single-column width, Arial at about 6-8 pt, capital panel labels, and RGB color",
+        "Loads the box plot with raw points recipe in references/chart-recipes.md",
+        "States that the snapshot values must be confirmed on the official Cell Press page"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "用 plotly 画一张 IEEE 单栏的训练损失曲线，导出前帮我做一遍视觉检查。",
+      "expected_output": "Routes to journal-spec with plotly and IEEE. Takes the plotly branch of the visual review step: exports a PNG with Kaleido at scale = DPI / 72, previews it with visual_qa.py, skips audit_layout, checks the ten perceptual items, and records that the machine audit did not run.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure journal-spec mode with plotly and IEEE",
+        "Takes the plotly branch of the visual review step in references/modes/journal-spec.md",
+        "Exports a PNG with Kaleido using scale = DPI / 72 and previews it with python \"<skill-dir>/scripts/visual_qa.py\" figure.png --preview preview.png",
+        "Skips audit_layout because it accepts only a matplotlib Figure, and checks the ten perceptual items by hand",
+        "Records in the delivery note that the machine layout audit did not run"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "用 radar_dual_series 风格画我的数据：12 个模型在 3 个随机种子下，loss 随训练步数的变化曲线。",
+      "expected_output": "Routes to from-data because a catalog style is named, then applies the template reuse ladder. A radar chart answers a different question than loss over training steps for 12 models, so the level is Build anew. The agent explains this and does not force the radar template.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure from-data mode and reads references/modes/from-data.md",
+        "Assigns the template to a level of the template reuse ladder before editing it",
+        "Selects Build anew because the radar template answers a different question than the loss-over-steps data",
+        "Does not force 12 models x 3 seeds x training steps into radar_dora.py",
+        "Draws from references/figure-contract.md and tells the user why the named style was not used"
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "按 figures4papers 那种海报风格画 100% 堆叠柱：每个题目类别里正确、部分正确、错误各占多少，每一层用不同的斜线填充，数值文字带描边，颜色图例和填充图例分开放。",
+      "expected_output": "Routes to from-data and matches the figures4papers stacked-composition family. Reads its style document, adapts the ported script with the user data, and keeps the upstream figsize and type size under the catalog reproduction rule.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure from-data mode",
+        "Selects the f4p_bar_stacked_composition catalog family and reads its style document in references/styles/",
+        "Keeps a hatch per layer, outlined value text, and separate color and hatch legends",
+        "Keeps the upstream figsize, type size, and palette instead of journal defaults",
+        "Produces a matplotlib script and a 300-DPI PNG under the from-data contract"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "用 figures4papers 的风格画 5 个模型在 3 个任务上的均值±标准差柱状图，误差帽上方标数值，纵轴数值很大要用科学计数法。",
+      "expected_output": "Routes to from-data and matches the figures4papers mean-plus-SD bar family. Reads its style document, adapts the ported script, keeps the value above the error cap and scientific-notation ticks, and states the error type.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure from-data mode",
+        "Selects the f4p_bar_mean_std catalog family and reads its style document in references/styles/",
+        "Places the value above each error cap and uses scientific-notation tick labels",
+        "States that the error bars are SD and gives n",
+        "Produces a matplotlib script and a 300-DPI PNG under the from-data contract"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "照 figures4papers 那种雷达图，对比 4 个模型在 6 个指标上的表现；每个指标的量程不一样（有的是百分比，有的是毫秒），每条辐条都要有自己的刻度。",
+      "expected_output": "Routes to from-data and matches the figures4papers multi-range radar family, not radar_dual_series, because each axis needs its own range and its own tick labels.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure from-data mode",
+        "Selects the f4p_radar_multirange catalog family rather than radar_dual_series",
+        "Keeps one value range per axis and tick labels on each spoke",
+        "Keeps the polygon grid of the source style",
+        "Produces a matplotlib script and a 300-DPI PNG under the from-data contract"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "把 2019 到 2024 年每个月发表的相关论文数画成累积面积趋势图，在时间轴上标出几个关键事件，用 figures4papers 的趋势图风格。",
+      "expected_output": "Routes to from-data and matches the figures4papers monthly-trend-with-events family. Checks the optional date dependency declared in the style document before running the ported script.",
+      "files": [],
+      "assertions": [
+        "Routes to academic-figure from-data mode",
+        "Selects the f4p_trend_month_events catalog family and reads its style document in references/styles/",
+        "Keeps the cumulative monthly area and the stacked event labels on the time axis",
+        "Checks the optional dependency (dateutil) that the style document declares before it runs the script",
+        "Produces a matplotlib script and a 300-DPI PNG under the from-data contract"
+      ]
     }
   ]
 }

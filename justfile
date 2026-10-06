@@ -30,8 +30,9 @@ help:
     @echo "✅ 内容校验："
     @echo "  just skills-check  - 校验 skills/ 元数据"
     @echo "  just python-check  - 编译检查 skills/ platforms/ scripts/ 下的 Python 脚本"
-    @echo "  just python-test   - 运行 gh-pr-release 与 Claude hook 标准库 unittest"
+    @echo "  just python-test   - 运行 hooks、skills 与 scripts/tests 的标准库 unittest"
     @echo "  just node-test     - 运行仓库内 Node.js 技能测试"
+    @echo "  just evals-check   - 校验一方 skill 的 evals/evals.json schema"
     @echo "  just install-projects-test - 运行项目安装器单元测试"
     @echo "  just lint          - skills-check + python-check"
     @echo "  just ci            - 完整本地 CI 流程"
@@ -74,14 +75,17 @@ skills-check:
 python-check:
     {{ python_cmd }} -c "from pathlib import Path; import py_compile; roots=['skills','platforms','scripts']; paths=[p for root in roots for p in Path(root).rglob('*.py') if 'scaffolds' not in p.parts and 'node_modules' not in p.parts]; [py_compile.compile(str(p), doraise=True) for p in paths]; print(f'Checked {len(paths)} Python files')"
 
-# 运行 gh-pr-release 与 Claude hook 标准库 unittest；任一组失败即停止
+# 运行 hooks、skills/**/tests 与 scripts/tests 的标准库 unittest；任一组失败即停止
 python-test:
-    {{ python_cmd }} -m unittest discover -s skills/git-github-collaboration/gh-pr-release/tests -p "test_*.py"
-    {{ python_cmd }} -m unittest discover -s platforms/claude/hooks/tests -p "test_*.py"
+    {{ python_cmd }} scripts/run_python_tests.py --dynamic-unittest-discover
 
 # 运行仓库内 Node.js 技能测试
 node-test:
     {{ node_cmd }} -e "const fs = require('node:fs'); const path = require('node:path'); const { spawnSync } = require('node:child_process'); const files = []; const walk = (dir) => { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const filePath = path.join(dir, entry.name); if (entry.isDirectory()) walk(filePath); else if (entry.isFile() && filePath.split(/[\\/]/).includes('tests') && entry.name.endsWith('.mjs')) files.push(filePath); } }; walk('skills'); if (files.length === 0) { console.log('No Node skill tests found'); process.exit(0); } const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
+
+# 校验每个一方 skill 的 evals/evals.json schema；不调用模型
+evals-check:
+    {{ python_cmd }} scripts/check_skill_evals.py
 
 # 运行仓库内容 lint
 lint: skills-check python-check
@@ -94,25 +98,28 @@ ci:
     @echo "  🚀 开始执行本地 CI 流程"
     @echo "════════════════════════════════════════════════════════════════"
     @echo ""
-    @echo "📚 步骤 1/7: 文档 catalog 与站点构建校验..."
+    @echo "📚 步骤 1/8: 文档 catalog 与站点构建校验..."
     {{ just_cmd }} docs-check
     @echo ""
-    @echo "🧩 步骤 2/7: 技能元数据校验..."
+    @echo "🧩 步骤 2/8: 技能元数据校验..."
     {{ just_cmd }} skills-check
     @echo ""
-    @echo "🐍 步骤 3/7: Python 脚本编译检查..."
+    @echo "🐍 步骤 3/8: Python 脚本编译检查..."
     {{ just_cmd }} python-check
     @echo ""
-    @echo "🧪 步骤 4/7: Python 标准库 unittest..."
+    @echo "🧪 步骤 4/8: Python 标准库 unittest..."
     {{ just_cmd }} python-test
     @echo ""
-    @echo "🔗 步骤 5/7: 项目安装器测试..."
+    @echo "🔗 步骤 5/8: 项目安装器测试..."
     {{ just_cmd }} install-projects-test
     @echo ""
-    @echo "🧪 步骤 6/7: Node.js 技能测试..."
+    @echo "🧪 步骤 6/8: Node.js 技能测试..."
     {{ just_cmd }} node-test
     @echo ""
-    @echo "🧹 步骤 7/7: Git 空白检查..."
+    @echo "📋 步骤 7/8: skill evals schema 校验..."
+    {{ just_cmd }} evals-check
+    @echo ""
+    @echo "🧹 步骤 8/8: Git 空白检查..."
     git diff --check
     @echo ""
     @echo "════════════════════════════════════════════════════════════════"

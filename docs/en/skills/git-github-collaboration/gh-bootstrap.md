@@ -33,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 | `skills/git-github-collaboration/gh-bootstrap/evals` | directory | 1 | Evaluation samples |
 | `skills/git-github-collaboration/gh-bootstrap/scripts` | directory | 1 | Executable scripts |
 | `skills/git-github-collaboration/gh-bootstrap/specs` | directory | 1 | Specs |
+| `skills/git-github-collaboration/gh-bootstrap/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -42,6 +43,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 | evals | `skills/git-github-collaboration/gh-bootstrap/evals` | Evaluation samples |
 | scripts | `skills/git-github-collaboration/gh-bootstrap/scripts` | Executable scripts |
 | specs | `skills/git-github-collaboration/gh-bootstrap/specs` | Specs |
+| tests | `skills/git-github-collaboration/gh-bootstrap/tests` | Automated tests |
 
 ## Validation
 

@@ -1,7 +1,7 @@
 ---
 name: goal-meta-skill
 description: |
-  Turn vague or complex agent tasks into project-aware, verifiable `/goal` commands and optional approved root `GOAL.md` handoff contracts for Claude Code, Codex, Grok Build, Oh My Pi, and Kimi Code. Use for Goal 指令, 目标指令, `/goal` prompts, 中文 Goal 模板, goal 持久化/保存/落盘, fresh-Agent or 跨会话交接, plan-to-goal interviews, bounded agent work definitions, Trellis 任务实施, review or scan remediation in one Prompt, 扫描审阅报告驱动修复, 单 Prompt 闭环返修, commit-then-archive cadence, or 终稿展示. Do not use for ordinary one-line work, pure read-only review, direct implementation without Goal authoring, memory-vault creation, or active-goal management that only needs a platform command.
+  Use when the user explicitly asks to use Goal mode or to author, save, or manage a Goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code. Requests may say `/goal`, Goal 指令, 目标指令, Goal 模式, "用 Goal 模式完成", or "写成 Codex 目标指令"; the literal command is not required. Compile project-aware, verifiable Goal text, optionally save an approved root `GOAL.md` contract, or show the correct command for an existing Goal. After Goal intent is established, support Trellis implementation Goals, scan/review remediation Goals, and cross-session Goal handoffs.
 version: 0.8.2
 category: developer-tools-integrations
 tags:
@@ -39,7 +39,7 @@ metadata:
 
 ## Workflow
 
-1. **S0 — Route and select.** 区分新 Goal、持久化候选和现有 Goal 管理。纯发散方向先规划；翻译、单行输出、纯只读审阅、无需 Goal 的直接实施等近邻走直接工作流。平台按用户显式名称 → 当前 host 明确证据 → 现有可选调整中的一个选择确定；`OMP` 默认指 Oh My Pi。加载 [Platform Goal Facts](references/platform-goal-facts.md) 选择五平台渲染，禁止混合生命周期命令。只有明确多平台交接才输出多个 launcher，合同正文仍为一份。
+1. **S0 — Route and select.** 先确认用户明确要求使用 Goal 模式，或请求编写 `/goal`/Goal 指令、保存 Goal 合同、管理现有 Goal；“用 Goal 模式完成”“写成 Codex 目标指令”等自然语言同样满足条件。用户显式调用本 skill 时按其指定处理。满足 Goal 意图后，区分新 Goal、持久化候选和现有 Goal 管理；目标方向未定时先规划。未表达 Goal 意图的请求留给对应的直接工作流。平台按用户显式名称 → 当前 host 明确证据 → 现有可选调整中的一个选择确定；`OMP` 默认指 Oh My Pi。加载 [Platform Goal Facts](references/platform-goal-facts.md) 选择五平台渲染，禁止混合生命周期命令。只有明确多平台交接才输出多个 launcher，合同正文仍为一份。
    - outcome 同时要求根据 scan/review/audit/report/finding 来源实施修复时，必须加载 [Review-Remediation Contract](references/review-remediation-contract.md)，把 scan envelope、稳定 ledger、独立检查回灌、同参数重扫与有限收敛编入同一 Prompt。纯审阅、无扫描来源的直接修复、仅有 Trellis 路径不触发。
    - outcome 是 Trellis task/child implementation 时，必须加载 [Trellis Goal Cadence](references/trellis-goal-cadence.md)，编入首句 subagents 默认开启开关、明确 opt-out 或带原因的技术降级，以及当前任务产品/规划提交后归档节奏。与 review-remediation 同时触发时，两份契约均须满足。
 2. **S1 — Reconnoiter read-only.** 按 [Default Goal Strategy](references/default-goal-strategy.md) 读取局部规则、真实命令源与任务边界；运行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git status --porcelain -uall`。不运行目标测试/构建，不写文件，不读 secrets、依赖或生成输出。持久化还检查根目录与目标文件；非 Git 根目录及 source snapshot 按 persistence reference 处理，不能虚构 branch/HEAD。失败则报告缺证据，使用 discovery-first Goal。

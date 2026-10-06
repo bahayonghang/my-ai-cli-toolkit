@@ -59,6 +59,15 @@
         "Does not recommend cargo, rustc flags, or Rust linker changes",
         "Defers to appropriate non-Rust tooling help"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "The compiled Rust server is slow at runtime. Make the hot path faster.",
+      "expected_output": "Routing-negative: runtime optimization of the built program is outside build-speed work.",
+      "files": [],
+      "assertions": [
+        "Routes runtime optimization of the built program away from cargo build tuning."
+      ]
     }
   ]
 }

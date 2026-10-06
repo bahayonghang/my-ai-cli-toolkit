@@ -7,9 +7,11 @@ patterns" section holds the core set; this file adds only the rest.
 Adapted from nature-figure's `common-patterns.md` (`Yuan1z0825/nature-skills`,
 skill `nature-figure`, Apache-2.0, reviewed 2026-08-16), without the upstream
 poster-scale numbers. The wide-canvas ratio and the hidden-tick rule restate
-design facts observed in `ChenLiu-1996/figures4papers` (HEAD `6790a93`, no
-LICENSE — rules only, rewritten, no copied code). The panel-label recipe follows
-the anchor-plus-offset mechanism in scipilot-figure-skill's `layout_tools.py`
+design facts observed in `ChenLiu-1996/figures4papers` (snapshot `3c181f8`,
+CC BY-NC 4.0; see `attribution.md`). Three snippets below (grouped bars,
+hatched fill-between, event annotations) come from figures4papers scripts
+through nature-figure; each section names its original source. The panel-label
+recipe follows the anchor-plus-offset mechanism in scipilot-figure-skill's `layout_tools.py`
 (MIT, `Haojae/scipilot-figure-skill`); the code below is original.
 
 > **Scale warning.** These patterns come from poster- and slide-scale figures.
@@ -34,7 +36,9 @@ below the card minimum.
 ## Grouped bars inside grouped datasets
 
 Two nesting levels (methods inside datasets) need manual x positions and one
-legend entry per method:
+legend entry per method. Original source: figures4papers
+`figure_Cflows/plot_comparison_Trajectory.py:47-60`, through nature-figure's
+`common-patterns.md`.
 
 ```python
 n_methods = len(methods)
@@ -50,7 +54,9 @@ ax.set_xticks(tick_pos); ax.set_xticklabels(datasets)
 ## Hatched fill-between for grayscale
 
 A filled band survives grayscale print when it carries a hatch. The hatch draws
-a border artifact, so erase it with a second transparent pass:
+a border artifact, so erase it with a second transparent pass. Original
+source: figures4papers `figure_ophthal_review/plot_trend.py:103-110`, through
+nature-figure's `common-patterns.md`.
 
 ```python
 ax.fill_between(x, 0, y, color=fill_color, hatch="///", edgecolor="black", label=name)
@@ -60,7 +66,9 @@ ax.fill_between(x, 0, y, facecolor="none", edgecolor="white", linewidth=2)
 ## Event annotations on a trend line
 
 Anchor each annotation on its data point and offset the text by a fraction of
-the y range, so neighboring events stack instead of collide:
+the y range, so neighboring events stack instead of collide. Original source:
+figures4papers `figure_ophthal_review/plot_trend.py:52-72`, through
+nature-figure's `common-patterns.md`.
 
 ```python
 dy = 0.1 * (ax.get_ylim()[1] - ax.get_ylim()[0])   # rank stacks nearby events
@@ -134,7 +142,8 @@ def add_panel_labels(fig, axes=None, template="{}", dx_pt=-18.0, dy_pt=2.0,
 - Panels in one column share a left edge and panels in one row share a top edge,
   so one shared offset in points puts every label on a line, whatever the panel
   size. Axes without a subplotspec (colorbars, insets) are skipped.
-- Call it after the layout engine has run (`fig.canvas.draw()`, or after
-  `tight_layout()`); otherwise the sort reads stale positions.
+- Call it after the layout engine has run (`fig.canvas.draw()` runs
+  `layout="constrained"`; a display figure calls it after `tight_layout()`);
+  otherwise the sort reads stale positions.
 - Case and brackets follow the journal: Nature uses lowercase bold at 8 pt
   (`template="{}"`), IEEE and Elsevier commonly use `(a)` (`template="({})"`).

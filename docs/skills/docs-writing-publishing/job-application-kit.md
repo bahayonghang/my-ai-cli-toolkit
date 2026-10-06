@@ -36,6 +36,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill job-applicati
 | `skills/docs-writing-publishing/job-application-kit/references` | 目录 | 9 | 引用资料 |
 | `skills/docs-writing-publishing/job-application-kit/reports` | 目录 | 4 | 顶层目录 |
 | `skills/docs-writing-publishing/job-application-kit/scripts` | 目录 | 1 | 可执行脚本 |
+| `skills/docs-writing-publishing/job-application-kit/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -46,6 +47,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill job-applicati
 | evals | `skills/docs-writing-publishing/job-application-kit/evals` | 评测样例 |
 | references | `skills/docs-writing-publishing/job-application-kit/references` | 引用资料 |
 | scripts | `skills/docs-writing-publishing/job-application-kit/scripts` | 可执行脚本 |
+| tests | `skills/docs-writing-publishing/job-application-kit/tests` | 自动化测试 |
 
 ## 验证方式
 

@@ -11,6 +11,7 @@ Implement safe, behavior-preserving code refactors after inspecting the existing
 - the user asks to refactor, split large files, extract methods, reduce duplication, rename, clean dead code, or says 重构代码, 拆分模块, 提取方法, 优化命名, 优化注释, 删除未调用代码
 - For broad requests, plan safe slices and wait for approval
 - for narrow ones, implement the smallest verifiable slice
+- Not for review-only code-auditor or code-quality-review
 
 ## Metadata
 
@@ -32,21 +33,22 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-refactor
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/code-refactor/evals` | directory | 1 | Evaluation samples |
+| `skills/development-workflows/code-refactor/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
 | Resource | Path | Purpose |
 | --- | --- | --- |
 | evals | `skills/development-workflows/code-refactor/evals` | Evaluation samples |
+| tests | `skills/development-workflows/code-refactor/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 
