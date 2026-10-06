@@ -1,8 +1,8 @@
 # development-workflows — suite conventions
 
 House standard for the skills in this directory: `code-auditor`, `code-quality-review`,
-`code-refactor`, `codex-review`, `html-artifact`, `rust-build-optimization`,
-`trellis-plan-review`.
+`code-refactor`, `codex-review`, `html-artifact`, `repo-test-audit`,
+`rust-build-optimization`, `trellis-plan-review`.
 These skills cover code review, refactoring, Trellis plan review, and artifact
 generation. They drifted apart on script paths, eval schemas, and interface files; new or
 edited skills here should match the conventions below so the suite does not drift again.

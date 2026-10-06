@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Check the new skill against authoring conventions"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Check the inventory script stays read-only and byte-compilable"}

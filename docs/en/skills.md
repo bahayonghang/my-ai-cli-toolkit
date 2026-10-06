@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 34 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 35 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -44,13 +44,14 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Development Workflows
 
-`development-workflows` · 7 skills
+`development-workflows` · 8 skills
 
 - [code-auditor](/en/skills/development-workflows/code-auditor) — Independent pre-merge review of a git diff, PR, or named files.
 - [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a maintainability and structure review focused on abstraction quality, branching complexity, file growth, canonical ownership, duplication, and refactoring opportunities.
 - [code-refactor](/en/skills/development-workflows/code-refactor) — Implement safe, behavior-preserving code refactors after inspecting the existing project.
 - [codex-review](/en/skills/development-workflows/codex-review) — Use when the user asks an Agent inside Herdr to start Codex for an independent review through herdr-orchestra, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer.
 - [html-artifact](/en/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts (single-file by default, split bundles when oversized) for complex, reviewable, or shareable work outputs.
+- [repo-test-audit](/en/skills/development-workflows/repo-test-audit) — Use when the user asks where tests live, which test directory holds them, how complete the tests are, or which tests are not collected by CI.
 - [rust-build-optimization](/en/skills/development-workflows/rust-build-optimization) — Use when a Rust or Cargo build is slow and the user wants it diagnosed or sped up: profiling compile times with cargo --timings or -Zself-profile, finding whether the bottleneck is dependencies, codegen/LLVM, linking, or one oversized crate, and applying targeted fixes such as faster linkers (lld, mold, wild), incremental compilation, dev/release profile tuning, workspace splitting, Cranelift, the nightly parallel frontend, or CI caching with sccache.
 - [trellis-plan-review](/en/skills/development-workflows/trellis-plan-review) — Independent review of Trellis task planning artifacts. Treats the selected task and its recursive current or archived children as one review scope, verifies repository claims and path:line citations against code, traces every acceptance-criterion clause to a requirement and design mechanism, rechecks arithmetic and units, writes one combined evidence-backed Markdown report under the reviewed project's .trellis/reviews directory, and returns one copyable handoff prompt. Compares the plan with the real diff after the task starts.
 

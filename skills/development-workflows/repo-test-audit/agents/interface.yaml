@@ -1,0 +1,26 @@
+interface:
+  display_name: "Repo Test Audit"
+  short_description: "Read-only inventory of where tests live, whether the runner collects them, and whether assertions check behavior"
+  default_prompt: "Use repo-test-audit to inventory the repository. Report test location, whether the declared runner collects each file, and whether assertions check behavior. Do not review a diff, do not do a maintainability review, do not refactor, and do not explain a single failure stack. Do not edit files unless the user explicitly asks to change tests. Follow the user's language."
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "agent-skills-compatible"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "portable-python"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+  degradation:
+    openai: "metadata-adapter"
+    claude: "neutral-source-plus-adapter"
+    generic: "neutral-source"
+    vscode: "agent-skills-source-with-vscode-notes"

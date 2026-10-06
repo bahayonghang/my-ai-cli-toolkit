@@ -1,0 +1,87 @@
+{
+  "skill_name": "repo-test-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "这个仓库的测试放在哪？哪些测试没进 CI？请按位置、收集、行为三列做只读盘点。",
+      "expected_output": "Runs the read-only inventory script against the repository justfile, then reports location, collection, and behavior. Reclassifies needs-review to Covered or Shallow after reading assertions. Does not edit files, run recipes, or claim a coverage percentage.",
+      "files": [],
+      "assertions": [
+        "Uses the target repository justfile as the collection contract",
+        "Reports location, collection, and behavior with a path or recipe citation",
+        "Does not treat needs-review as Covered without reading the test",
+        "Does not edit files in audit mode",
+        "Does not report a coverage percentage"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Inventory the test directory and report completeness. There is no justfile.",
+      "expected_output": "Lists test file locations only, sets collection to runner-not-declared, and does not treat pytest or node --test default globs as facts for that repository. An optional contrast note names the upstream source.",
+      "files": [],
+      "assertions": [
+        "Does not invent a runner when no justfile exists",
+        "Does not mark files collected by pytest or Node default globs",
+        "Keeps upstream default globs in a labeled contrast note",
+        "Does not edit files"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "请盘点测试目录，并给出测试完善程度。不要改任何文件。",
+      "expected_output": "Read-only three-column report. Final behavior words are only Covered, Shallow, and Missing. python-check is described as compilation. evals-check, if present, is schema collection, not model execution.",
+      "files": [],
+      "assertions": [
+        "Uses only Covered, Shallow, and Missing in the final report",
+        "Does not describe python-check as a passing test run",
+        "Does not claim a model executed evals/evals.json",
+        "States that model routing from description is missing evidence",
+        "Does not edit files"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "只要 diff 审查，看功能回归和测试盲区，不要做测试目录盘点。",
+      "expected_output": "Does not run repo-test-audit. The request is a diff review and routes to code-auditor.",
+      "files": [],
+      "assertions": [
+        "Does not trigger repo-test-audit",
+        "Routes a diff review to code-auditor",
+        "Does not inventory the test tree as the main task"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "只要可维护性审查，看抽象和分层，不要盘点测试。",
+      "expected_output": "Does not run repo-test-audit. The request is a maintainability review and routes to code-quality-review.",
+      "files": [],
+      "assertions": [
+        "Does not trigger repo-test-audit",
+        "Routes a maintainability review to code-quality-review",
+        "Does not produce the three-column test inventory"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "只要重构 src/order.ts，按功能拆文件。不要写测试报告。",
+      "expected_output": "Does not run repo-test-audit. The request is a refactor and routes to code-refactor.",
+      "files": [],
+      "assertions": [
+        "Does not trigger repo-test-audit",
+        "Routes a refactor request to code-refactor",
+        "Does not start by inventorying tests"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "只要解释这一段失败栈：AssertionError: 1 != 2。不要盘点仓库测试。",
+      "expected_output": "Does not run repo-test-audit. Explains the given failure stack or defers to the owning test workflow.",
+      "files": [],
+      "assertions": [
+        "Does not trigger repo-test-audit",
+        "Does not replace the stack explanation with a repository test inventory",
+        "Does not edit tests while explaining the stack"
+      ]
+    }
+  ]
+}

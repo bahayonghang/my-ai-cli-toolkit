@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Package frontmatter, interface.yaml, and script path form"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Skill-local scripts and tests layout"}
+{"file": ".trellis/tasks/10-06-repo-test-skill/research/prior-art-test-skills.md", "reason": "Mechanisms the package may adapt"}
+{"file": ".trellis/tasks/10-06-repo-test-skill/design.md", "reason": "Report fields and skill file tree"}

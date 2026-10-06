@@ -1,0 +1,137 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-10-06",
+  "package": {
+    "name": "repo-test-audit",
+    "version": null,
+    "owner": null,
+    "maturity_tier": null,
+    "lifecycle_stage": null,
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "Use when the user asks where tests live, which test directory holds them, how complete the tests are, or which tests are not collected by CI. 测试放在哪、测试目录、测试完善程度、哪些测试没进 CI. Inventory test location, runner collection, and completeness. Do not use for a diff review, a PR review, a maintainability review, a refactor, or explaining one failure stack. 不用于 diff 审查、PR 审查、可维护性审查、重构，也不用于只解释一段失败栈。",
+    "job_to_be_done": "Use when the user asks where tests live, which test directory holds them, how complete the tests are, or which tests are not collected by CI. 测试放在哪、测试目录、测试完善程度、哪些测试没进 CI. Inventory test location, runner collection, and completeness. Do not use for a diff review, a PR review, a maintainability review, a refactor, or explaining one failure stack. 不用于 diff 审查、PR 审查、可维护性审查、重构，也不用于只解释一段失败栈。",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [
+      "这个仓库的测试放在哪？哪些测试没进 CI？",
+      "请盘点测试目录，并给出测试完善程度。",
+      "Where do tests live, and which files are not collected by the runner?",
+      "Inventory the test directory and report completeness."
+    ],
+    "should_not_trigger": [
+      "只要 diff 审查，不要看别的。",
+      "只要可维护性审查。",
+      "只要重构这个模块。",
+      "只要解释某一段失败栈。",
+      "Only do a diff review of this pull request.",
+      "Only do a maintainability review of the current change.",
+      "Please refactor this module and keep the public API.",
+      "Only explain this failure stack."
+    ],
+    "near_neighbor": [
+      "请独立审查这个 PR 的 diff，找功能回归和测试盲区。",
+      "只做可维护性审查，看抽象、分支复杂度和分层。",
+      "帮我重构 orderService.ts，把校验和支付拆开。",
+      "这段失败栈里的 AssertionError 是什么意思？只解释这一段。",
+      "审一下这份 Trellis 计划，不要改代码。"
+    ]
+  },
+  "workflow": {
+    "router_rules": [
+      "Where tests live, which test directory holds them, how complete the tests are, or which tests are not collected by CI: use this skill.",
+      "A diff or PR review, including functional regressions and test gaps in a change: use `code-auditor`. Do not use this skill.",
+      "A maintainability or structure review: use `code-quality-review`. Do not use this skill.",
+      "Applying a refactor: use `code-refactor`. Do not use this skill.",
+      "Explaining one failure stack: answer the stack, or use the owning test workflow. Do not use this skill.",
+      "A Trellis planning-artifact review: use `trellis-plan-review`. Do not use this skill."
+    ],
+    "compact_workflow": [
+      "Resolve the repository root. Default to the current workspace when the user does not name one.",
+      "Run the inventory command in Command. Read stdout as one JSON object. Do not execute the target repository's recipes. Do not use the network.",
+      "Read `<skill-dir>/references/report-contract.md` and write the three-column report in the user's language.",
+      "Reclassify every `needs-review` row to `Covered` or `Shallow` after reading the test. Do not leave `needs-review` in the report. Do not treat a keyword as proof of `Covered`.",
+      "When `runner_status` is `runner-not-declared`, list locations only. Do not treat pytest or `node --test` default globs as that repository's collection facts. A separate note may say which filenames would fall outside those upstream defaults, and it must name the source.",
+      "Stop. `collected_by` means the declared recipe would collect the file. It does not mean the test passed. `python-check` in `runners` is compilation, not a passing test. `evals-check` in `runners` means a schema recipe exists. It does not mean a model executed `evals/evals.json`. Whether a model routes from `description` is missing evidence."
+    ],
+    "gate_ladder": [
+      "Audit is the default. Do not edit files in audit mode.",
+      "Apply only when the current request explicitly asks to change tests. Edit or add test files only. Do not change product code as part of the audit.",
+      "Do not write `Covered` from the script value `needs-review` without reading the assertion.",
+      "Do not report a coverage percentage as completeness.",
+      "Do not treat an external `tests/` directory as the only legal layout.",
+      "Do not publish this package from this workflow."
+    ],
+    "output_contract": [
+      "Report three columns: location, collection, and behavior. See [report contract](references/report-contract.md).",
+      "The target repository's `justfile` is the collection contract. See [runner notes](references/this-repo-runners.md).",
+      "Every cell cites a path or a recipe command.",
+      "Final behavior words are only `Covered`, `Shallow`, and `Missing`.",
+      "Model routing is missing evidence. Do not claim it."
+    ]
+  },
+  "resources": {
+    "references": [
+      "references\\report-contract.md",
+      "references\\this-repo-runners.md"
+    ],
+    "scripts": [
+      "scripts\\inventory_tests.py"
+    ],
+    "evals": [
+      "evals\\evals.json",
+      "evals\\trigger_cases.json"
+    ],
+    "reports": [
+      "reports\\creation-handoff.md",
+      "reports\\prior-art-research.md",
+      "reports\\skill-ir.json",
+      "reports\\trigger-eval.json"
+    ]
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "agent-skills-compatible"
+    ],
+    "activation": {
+      "mode": "manual",
+      "paths": []
+    },
+    "execution": {
+      "context": "inline",
+      "shell": "portable-python"
+    },
+    "trust": {
+      "source_tier": "local",
+      "remote_inline_execution": "forbid",
+      "remote_metadata_policy": "allow-metadata-only"
+    },
+    "permissions": {},
+    "degradation": {
+      "openai": "metadata-adapter",
+      "claude": "neutral-source-plus-adapter",
+      "generic": "neutral-source",
+      "vscode": "agent-skills-source-with-vscode-notes"
+    }
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}
