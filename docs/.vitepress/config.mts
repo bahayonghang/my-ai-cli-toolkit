@@ -66,6 +66,7 @@ export default defineConfig({
   title: 'My Claude Code Settings',
   description: 'Installable skills, platform prompts, commands, agents, rules, and runtime hooks.',
   cleanUrls: true,
+  srcExclude: ['agents/**'],
   locales: {
     root: {
       label: '简体中文',
