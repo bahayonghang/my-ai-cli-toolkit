@@ -28,6 +28,17 @@ DISCOVER_RE = re.compile(
     r"""unittest\s+discover\b[^\n]*?-s(?:=|\s+)("[^"]+"|'[^']+'|\S+)""",
     re.IGNORECASE,
 )
+DYNAMIC_DISCOVER_MARKER = "--dynamic-unittest-discover"
+DYNAMIC_SKIP_PARTS = {
+    ".git",
+    "node_modules",
+    "__pycache__",
+    "ref",
+    ".agents",
+    ".claude",
+    ".trellis",
+    "scaffolds",
+}
 RECIPE_HEADER_RE = re.compile(r"^([A-Za-z_][\w-]*)\b[^:]*:(?!=)(.*)$")
 PATH_RE = re.compile(r"(?P<path>(?:[A-Za-z0-9_.@{}\\/-]+)\.(?:py|mjs))\b")
 NAMED_RECIPES = ("install-projects-test", "docs-check")
@@ -149,12 +160,69 @@ def to_repo_rel(root: Path, token: str) -> str | None:
     return token
 
 
-def discover_dirs(body: str) -> list[str]:
+def _dynamic_skip_dir(path: Path) -> bool:
+    name = path.name
+    if name.startswith(".") or name in DYNAMIC_SKIP_PARTS:
+        return True
+    if path.is_symlink() or os.path.isjunction(path):
+        return True
+    return False
+
+
+def dynamic_python_test_dirs(root: Path) -> list[str]:
+    """Directory list for a python-test recipe that calls run_python_tests.py.
+
+    Keep the skip set aligned with scripts/run_python_tests.py.
+    """
+    found: list[str] = []
+
+    def add(directory: Path) -> None:
+        if not directory.is_dir() or _dynamic_skip_dir(directory):
+            return
+        try:
+            relative_parts = directory.relative_to(root).parts
+        except ValueError:
+            return
+        if any(part in DYNAMIC_SKIP_PARTS or part.startswith(".") for part in relative_parts):
+            return
+        if not any(path.is_file() for path in directory.glob("test_*.py")):
+            return
+        rel = directory.relative_to(root).as_posix()
+        if rel not in found:
+            found.append(rel)
+
+    add(root / "platforms" / "claude" / "hooks" / "tests")
+    skills = root / "skills"
+    skill_dirs: list[str] = []
+    if skills.is_dir() and not _dynamic_skip_dir(skills):
+        for dirpath, dirnames, filenames in os.walk(skills, followlinks=False):
+            current = Path(dirpath)
+            dirnames[:] = [name for name in dirnames if not _dynamic_skip_dir(current / name)]
+            if current.name != "tests":
+                continue
+            if not any(name.startswith("test_") and name.endswith(".py") for name in filenames):
+                continue
+            rel = current.relative_to(root).as_posix()
+            if any(part in DYNAMIC_SKIP_PARTS or part.startswith(".") for part in Path(rel).parts):
+                continue
+            skill_dirs.append(rel)
+    for rel in sorted(skill_dirs):
+        if rel not in found:
+            found.append(rel)
+    add(root / "scripts" / "tests")
+    return found
+
+
+def discover_dirs(body: str, root: Path | None = None) -> list[str]:
     found: list[str] = []
     for match in DISCOVER_RE.finditer(body):
         rel = normalize_rel(match.group(1))
         if rel and ".." not in Path(rel).parts and rel not in found:
             found.append(rel)
+    if root is not None and DYNAMIC_DISCOVER_MARKER in body:
+        for rel in dynamic_python_test_dirs(root):
+            if rel not in found:
+                found.append(rel)
     return found
 
 
@@ -296,7 +364,7 @@ def inventory(root: Path) -> dict[str, object]:
         runner_status = None
     recipes = dict(recipes_list)
     runners = [name for name, _body in recipes_list]
-    discover = discover_dirs(recipes.get("python-test", ""))
+    discover = discover_dirs(recipes.get("python-test", ""), root)
     node_test_enabled = "node-test" in recipes
     named = named_test_files(root, recipes)
     named_paths: set[str] = set()

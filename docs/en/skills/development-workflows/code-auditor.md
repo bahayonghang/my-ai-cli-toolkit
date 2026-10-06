@@ -37,6 +37,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 | `skills/development-workflows/code-auditor/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/code-auditor/references` | directory | 23 | Reference material |
 | `skills/development-workflows/code-auditor/scripts` | directory | 3 | Executable scripts |
+| `skills/development-workflows/code-auditor/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -47,6 +48,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 | evals | `skills/development-workflows/code-auditor/evals` | Evaluation samples |
 | references | `skills/development-workflows/code-auditor/references` | Reference material |
 | scripts | `skills/development-workflows/code-auditor/scripts` | Executable scripts |
+| tests | `skills/development-workflows/code-auditor/tests` | Automated tests |
 
 ## Validation
 

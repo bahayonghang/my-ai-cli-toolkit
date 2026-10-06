@@ -45,9 +45,9 @@ content + bundled `scripts`, `assets`, `tests`, and `evals`.
   precedence rule, and create/review behavior. Include at
   least two near-neighbor routing negatives for `literature-mentor`
   (single-paper reading) and `paper-workbench` (multi-paper synthesis).
-- Note: evals are not executed by CI (`scripts/check.py` validates only
-  `SKILL.md` frontmatter; `node-test` runs `tests/*.mjs`). They are review and
-  future-tooling assets.
+- `just evals-check` checks this schema. It does not call a model.
+  `scripts/check.py` still validates only `SKILL.md` frontmatter, and
+  `node-test` runs `tests/*.mjs`.
 
 ## Tests
 

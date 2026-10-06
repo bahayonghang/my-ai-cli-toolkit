@@ -31,23 +31,26 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill claude-contex
 | 路径 | 类型 | 文件数 | 说明 |
 | --- | --- | ---: | --- |
 | `skills/developer-tools-integrations/claude-context-improver/agents` | 目录 | 1 | 配套 agent |
+| `skills/developer-tools-integrations/claude-context-improver/evals` | 目录 | 1 | 评测样例 |
 | `skills/developer-tools-integrations/claude-context-improver/references` | 目录 | 6 | 引用资料 |
+| `skills/developer-tools-integrations/claude-context-improver/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
 | 资源 | 路径 | 用途 |
 | --- | --- | --- |
 | agents | `skills/developer-tools-integrations/claude-context-improver/agents` | 配套 agent |
+| evals | `skills/developer-tools-integrations/claude-context-improver/evals` | 评测样例 |
 | references | `skills/developer-tools-integrations/claude-context-improver/references` | 引用资料 |
+| tests | `skills/developer-tools-integrations/claude-context-improver/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

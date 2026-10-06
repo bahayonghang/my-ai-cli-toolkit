@@ -5,7 +5,7 @@ description: >-
   syntax-aware code search, AST pattern matching, structural refactor
   discovery, or searches plain text tools like rg can miss — functions with
   particular descendants, calls inside specific contexts, decorators, or other
-  Tree-sitter-backed structures.
+  Tree-sitter-backed structures. Not for plain-text ripgrep search or semantic renames.
 version: 0.1.0
 category: developer-tools-integrations
 tags:

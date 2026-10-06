@@ -111,7 +111,7 @@ term-like tokens and honestly labels that as a non-semantic frequency heuristic.
 | `references/zh-dissertation.md` | Chinese dissertation norm pack. |
 | `scripts/polish_lint.py` | Mechanical linter (pure stdlib, self-locating, `--target`/`--file`/`--glossary`/`--json`/`--save`). |
 | `evals/evals.json` | Trigger and routing-negative cases. |
-| `tests/` | Optional local `pytest` smoke (not wired into CI). |
+| `tests/` | Stdlib `unittest` smoke collected by `just python-test`. |
 
 ## References
 

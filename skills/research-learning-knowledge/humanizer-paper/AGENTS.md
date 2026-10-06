@@ -77,7 +77,7 @@ When you change behavior or content:
 
 - `python scripts/check.py skills/research-learning-knowledge/humanizer-paper`
   validates frontmatter (it must be `[OK]` with no `compatibility` warning).
-- `just python-check` does `py_compile` on the script (CI gate). `pytest` under
-  `tests/` is **local/optional** and not wired into CI.
+- `just python-check` byte-compiles the script. `just python-test` runs the
+  stdlib `unittest` files under `tests/`. Do not add `pytest`.
 - Adding/removing resource folders drifts the docs catalog — run `just docs-sync`,
   then `just ci` (which runs `docs-check`) must pass clean.

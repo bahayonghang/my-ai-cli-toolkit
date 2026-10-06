@@ -41,19 +41,14 @@ conventions so the suite does not drift apart.
   CS/DL tutor) vs `paper-workbench` (multi-paper, researcher-profile-driven,
   arXiv/DOI normalization). `humanizer-paper` polishes academic language; it
   does not read, synthesize, or normalize papers.
-- Note: evals are not executed by CI (`scripts/check.py` validates only
-  `SKILL.md` frontmatter; `node-test` runs `tests/*.mjs`). They are review and
-  future-tooling assets.
+- `just evals-check` checks this schema. It does not call a model.
+  `scripts/check.py` still validates only `SKILL.md` frontmatter, and
+  `node-test` runs `tests/*.mjs`.
 
 ## Python tests
 
-- `paper-workbench` ships `pytest` tests under `tests/`. `pytest` is **not** a
-  declared repo dependency (`just check-deps` covers only just/node/npm/python)
-  and is not guaranteed in CI; `just python-check` does `py_compile`, not test
-  execution. Treat these as **local/optional**: run
-  `pytest skills/research-learning-knowledge/paper-workbench` manually. Do **not**
-  wire `pytest` into `just ci` — that would add an unguaranteed dependency and
-  break the dependency-light CI.
+- `humanizer-paper` and `paper-workbench` ship stdlib `unittest` tests under
+  `tests/`. `just python-test` collects them. Do not add `pytest`.
 
 ## Scope & boundaries
 

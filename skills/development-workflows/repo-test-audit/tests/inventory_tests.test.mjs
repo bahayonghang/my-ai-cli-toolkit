@@ -196,3 +196,54 @@ test("named recipe files are collected and evals json is not", () => {
   );
   assert.ok(payload.runners.includes("evals-check"));
 });
+
+test("dynamic python-test marker collects skill, hook, and scripts tests", () => {
+  const payload = withRepo((root) => {
+    write(
+      root,
+      "skills/demo/tests/test_demo.py",
+      "import unittest\nclass T(unittest.TestCase):\n    def test_ok(self):\n        self.assertTrue(True)\n",
+    );
+    write(
+      root,
+      "skills/scaffolds/demo/tests/test_skip.py",
+      "def test_ok():\n    assert True\n",
+    );
+    write(
+      root,
+      "scripts/tests/test_check.py",
+      "def test_ok():\n    assert True\n",
+    );
+    write(
+      root,
+      "scripts/test_install_projects.py",
+      "def test_ok():\n    assert True\n",
+    );
+    write(
+      root,
+      "platforms/claude/hooks/tests/test_hooks.py",
+      "import unittest\nclass T(unittest.TestCase):\n    def test_ok(self):\n        self.assertEqual(1, 1)\n",
+    );
+    write(
+      root,
+      "justfile",
+      "python-test:\n    python scripts/run_python_tests.py --dynamic-unittest-discover\n",
+    );
+  });
+  const demo = payload.files.find((item) => item.path === "skills/demo/tests/test_demo.py");
+  const skipped = payload.files.find(
+    (item) => item.path === "skills/scaffolds/demo/tests/test_skip.py",
+  );
+  const scripts = payload.files.find((item) => item.path === "scripts/tests/test_check.py");
+  const install = payload.files.find((item) => item.path === "scripts/test_install_projects.py");
+  const hooks = payload.files.find(
+    (item) => item.path === "platforms/claude/hooks/tests/test_hooks.py",
+  );
+  assert.equal(demo.collected_by, "python-test");
+  assert.equal(demo.behavior, "needs-review");
+  assert.equal(skipped.collected_by, "");
+  assert.equal(skipped.behavior, "Missing");
+  assert.equal(scripts.collected_by, "python-test");
+  assert.equal(hooks.collected_by, "python-test");
+  assert.equal(install.collected_by, "");
+});

@@ -14,7 +14,9 @@ This `AGENTS.md` governs `skills/**` and narrows the root guidance for first-par
 - When public skill metadata changes, refresh/check generated docs with `just docs-sync` or `just docs-check`.
 
 ## Verification
+- Every first-party skill has at least one test collected by `just node-test` or `just python-test`.
 - For any skill metadata or `SKILL.md` change, run `just skills-check`.
 - For Python helpers under `skills/**/scripts/` or Python tests, run `just python-check`.
 - For Node skill tests under `skills/**/tests/*.mjs`, run `just node-test`.
+- For `evals/evals.json`, run `just evals-check`. It checks schema only and does not score evals with a model.
 - For public catalog-impacting skill changes, run `just docs-check`; use `just ci` as the final finish-line gate when feasible.

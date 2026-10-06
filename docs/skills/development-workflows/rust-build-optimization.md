@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill rust-build-op
 | `skills/development-workflows/rust-build-optimization/agents` | 目录 | 1 | 配套 agent |
 | `skills/development-workflows/rust-build-optimization/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/rust-build-optimization/references` | 目录 | 2 | 引用资料 |
+| `skills/development-workflows/rust-build-optimization/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -42,15 +43,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill rust-build-op
 | agents | `skills/development-workflows/rust-build-optimization/agents` | 配套 agent |
 | evals | `skills/development-workflows/rust-build-optimization/evals` | 评测样例 |
 | references | `skills/development-workflows/rust-build-optimization/references` | 引用资料 |
+| tests | `skills/development-workflows/rust-build-optimization/tests` | 自动化测试 |
 
 ## 验证方式
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-此 skill 没有检测到 `tests/*.mjs`；如新增 Node 测试，请让 `just node-test` 覆盖它。
 
 ## 源码路径
 

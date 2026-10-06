@@ -35,6 +35,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill renhua
 | `skills/docs-writing-publishing/renhua/evals` | directory | 1 | Evaluation samples |
 | `skills/docs-writing-publishing/renhua/references` | directory | 1 | Reference material |
 | `skills/docs-writing-publishing/renhua/scripts` | directory | 1 | Executable scripts |
+| `skills/docs-writing-publishing/renhua/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -44,6 +45,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill renhua
 | evals | `skills/docs-writing-publishing/renhua/evals` | Evaluation samples |
 | references | `skills/docs-writing-publishing/renhua/references` | Reference material |
 | scripts | `skills/docs-writing-publishing/renhua/scripts` | Executable scripts |
+| tests | `skills/docs-writing-publishing/renhua/tests` | Automated tests |
 
 ## Validation
 

@@ -67,7 +67,7 @@ cd my-claude-code-settings
 just ci
 ```
 
-`just ci` runs `docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`, `node-test`, then `git diff --check`.
+`just ci` runs `docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`, `node-test`, `evals-check`, then `git diff --check`.
 
 ## Repository layout
 

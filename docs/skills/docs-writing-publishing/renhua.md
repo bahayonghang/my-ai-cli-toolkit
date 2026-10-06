@@ -35,6 +35,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill renhua
 | `skills/docs-writing-publishing/renhua/evals` | 目录 | 1 | 评测样例 |
 | `skills/docs-writing-publishing/renhua/references` | 目录 | 1 | 引用资料 |
 | `skills/docs-writing-publishing/renhua/scripts` | 目录 | 1 | 可执行脚本 |
+| `skills/docs-writing-publishing/renhua/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -44,6 +45,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill renhua
 | evals | `skills/docs-writing-publishing/renhua/evals` | 评测样例 |
 | references | `skills/docs-writing-publishing/renhua/references` | 引用资料 |
 | scripts | `skills/docs-writing-publishing/renhua/scripts` | 可执行脚本 |
+| tests | `skills/docs-writing-publishing/renhua/tests` | 自动化测试 |
 
 ## 验证方式
 

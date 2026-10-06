@@ -243,6 +243,16 @@
       "assertions": [
         "Does not claim new-session discovery or overwrite, relink, install or remove the third-party skill."
       ]
+    },
+    {
+      "id": "C13-route",
+      "prompt": "Do a generic review of this diff outside Herdr. You are already the leaf reviewer.",
+      "expected_output": "Routing-negative: a generic review and an assigned leaf reviewer stay outside this launcher.",
+      "files": [],
+      "assertions": [
+        "Does not launch Codex for a generic review.",
+        "Does not delegate again when already assigned as the leaf reviewer."
+      ]
     }
   ]
 }

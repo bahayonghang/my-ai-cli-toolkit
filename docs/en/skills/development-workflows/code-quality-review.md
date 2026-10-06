@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-quality-
 | --- | --- | ---: | --- |
 | `skills/development-workflows/code-quality-review/assets` | directory | 1 | Assets |
 | `skills/development-workflows/code-quality-review/evals` | directory | 2 | Evaluation samples |
+| `skills/development-workflows/code-quality-review/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -41,15 +42,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-quality-
 | --- | --- | --- |
 | assets | `skills/development-workflows/code-quality-review/assets` | Assets |
 | evals | `skills/development-workflows/code-quality-review/evals` | Evaluation samples |
+| tests | `skills/development-workflows/code-quality-review/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

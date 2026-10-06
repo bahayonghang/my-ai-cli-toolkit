@@ -33,6 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 | `skills/git-github-collaboration/gh-bootstrap/evals` | 目录 | 1 | 评测样例 |
 | `skills/git-github-collaboration/gh-bootstrap/scripts` | 目录 | 1 | 可执行脚本 |
 | `skills/git-github-collaboration/gh-bootstrap/specs` | 目录 | 1 | 规格说明 |
+| `skills/git-github-collaboration/gh-bootstrap/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -42,6 +43,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill gh-bootstrap
 | evals | `skills/git-github-collaboration/gh-bootstrap/evals` | 评测样例 |
 | scripts | `skills/git-github-collaboration/gh-bootstrap/scripts` | 可执行脚本 |
 | specs | `skills/git-github-collaboration/gh-bootstrap/specs` | 规格说明 |
+| tests | `skills/git-github-collaboration/gh-bootstrap/tests` | 自动化测试 |
 
 ## 验证方式
 

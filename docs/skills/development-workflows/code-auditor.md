@@ -37,6 +37,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 | `skills/development-workflows/code-auditor/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/code-auditor/references` | 目录 | 23 | 引用资料 |
 | `skills/development-workflows/code-auditor/scripts` | 目录 | 3 | 可执行脚本 |
+| `skills/development-workflows/code-auditor/tests` | 目录 | 1 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 
@@ -47,6 +48,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill code-auditor
 | evals | `skills/development-workflows/code-auditor/evals` | 评测样例 |
 | references | `skills/development-workflows/code-auditor/references` | 引用资料 |
 | scripts | `skills/development-workflows/code-auditor/scripts` | 可执行脚本 |
+| tests | `skills/development-workflows/code-auditor/tests` | 自动化测试 |
 
 ## 验证方式
 

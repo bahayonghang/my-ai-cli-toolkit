@@ -35,7 +35,8 @@ older reference.
   resolve. Keep the Windows-friendly interpreter fallback (`python` / `py -3`)
   that `goal-meta-skill` shows; do not assume a single interpreter name.
 - `goal-meta-skill`, `file-sorter`, `skill-session-review`, and `storage-analyzer` ship scripts. The
-  remaining read/audit skills legitimately have none — that is not a gap.
+  remaining read/audit skills may omit scripts. Every first-party skill still has at least one test
+  collected by `just node-test` or `just python-test`.
 
 ## `allowed-tools`
 
@@ -69,20 +70,14 @@ not add, commit, push, ignore, or delete the contract.
 
 - One format and location: `evals/evals.json` using the git-commit schema
   (`{ skill_name, evals: [ { id, prompt, expected_output, files, assertions[] } ] }`).
-  Use the key **`assertions`**, not `expectations`, so the repo has one eval
-  dialect. `ast-grep` currently uses `expectations` — drift to fix;
-  `goal-meta-skill` uses `assertions`.
+  Use the key **`assertions`**, not `expectations`.
 - Keep prompts in their natural language (中文/English as written); write
   `expected_output` and `assertions` in English.
 - Include at least two near-neighbor **routing-negative** cases asserting the
   request should route elsewhere (e.g. ast-grep → `rg` for exact strings or LSP
   for rename/type-resolution).
-- Evals are review and future-tooling assets: CI does **not** execute them
-  (`scripts/check.py` validates only SKILL.md frontmatter; `node-test` runs
-  `tests/*.mjs`). `codex-context-improver` now ships routing/output evals plus a
-  Node contract test.
-  Skills without evals (`claude-context-improver`) remain a known gap, not a hard failure; add evals
-  when the skill's routing surface is worth regression-guarding.
+- `just evals-check` checks this schema only. Model scoring is not in CI.
+  `scripts/check.py` still validates only SKILL.md frontmatter, and `node-test` runs `tests/*.mjs`.
 
 ## Interface contract
 
@@ -109,5 +104,6 @@ not add, commit, push, ignore, or delete the contract.
 
 Adding/removing `evals/`, scripts, or `agents/` interface files, or renaming
 interface files, can drift the docs catalog. Run `just docs-sync`, then `just ci`
-(which runs `docs-check`, `skills-check`, `python-check`, `node-test`, and
+(which runs `docs-check`, `skills-check`, `python-check`, `python-test`,
+`install-projects-test`, `node-test`, `evals-check`, and
 `git diff --check`) must pass clean.

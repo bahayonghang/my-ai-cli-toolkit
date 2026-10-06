@@ -10,11 +10,12 @@ This repository organizes content at the repo root. Installable skills live unde
 ## Build, Test, and Development Commands
 Use `just` from the repository root:
 
-- `just ci` — full local CI: `docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`, `node-test`, then `git diff --check`.
+- `just ci` — full local CI: `docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`, `node-test`, `evals-check`, then `git diff --check`.
 - `just lint` — `skills-check` + `python-check`.
 - `just skills-check` — runs `scripts/check.py` over `skills/`.
 - `just python-check` — byte-compiles every `*.py` under `skills/`, `platforms/`, and `scripts/` (skips `scaffolds`).
-- `just python-test` — stdlib unittest for `gh-pr-release` and `platforms/claude/hooks/tests`.
+- `just python-test` — stdlib unittest discovered under `platforms/claude/hooks/tests`, `skills/**/tests`, and `scripts/tests`.
+- `just evals-check` — schema check for each first-party `evals/evals.json`. It does not score evals with a model.
 - `just install-projects` — live-links selected first-party skills into the current project (default `.agents/skills`). Extra agent destinations are linked only when that agent root already exists. Destination maps are a repo contract, not new-session discovery proof.
 - `just install-projects-test` — runs `scripts/test_install_projects.py`.
 - `just node-test` — discovers and runs Node skill tests under `skills/**/tests/*.mjs`.

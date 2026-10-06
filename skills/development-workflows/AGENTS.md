@@ -33,7 +33,7 @@ where they agree, those files are the older reference.
   resolve. Keep a Windows-friendly interpreter fallback (`python` / `py -3`); do not
   assume a single interpreter name.
 - Several skills ship scripts (`code-auditor`, `html-artifact`, `trellis-plan-review`).
-  Skills that only produce chat output legitimately have none — that is not a gap.
+  A chat-only skill may omit scripts. Every first-party skill still has at least one test collected by `just node-test` or `just python-test`.
 
 ## `allowed-tools`
 
@@ -59,10 +59,8 @@ where they agree, those files are the older reference.
 - Include at least two near-neighbor **routing-negative** cases asserting the request
   should route elsewhere (e.g. `code-refactor` → `code-quality-review` for review-only;
   `trellis-plan-review` → `code-auditor` for a code-diff review, not a planning-artifact review).
-- Evals are review and future-tooling assets: CI does **not** execute them
-  (`scripts/check.py` validates only SKILL.md frontmatter; `node-test` runs `tests/*.mjs`).
-  Skills without evals are a known gap, not a hard failure; add evals when the skill's
-  routing surface is worth regression-guarding.
+- `just evals-check` checks this schema only. Model scoring is not in CI.
+  `scripts/check.py` still validates only SKILL.md frontmatter.
 
 ## Interface contract
 
@@ -139,5 +137,5 @@ They differ on purpose, trigger surface, stance, and output contract:
 
 Adding/removing `evals/`, scripts, or `agents/` interface files, or renaming interface
 files, can drift the docs catalog. Run `just docs-sync`, then `just ci` (which runs
-`docs-check`, `skills-check`, `python-check`, `node-test`, and `git diff --check`) must
-pass clean.
+`docs-check`, `skills-check`, `python-check`, `python-test`, `install-projects-test`,
+`node-test`, `evals-check`, and `git diff --check`) must pass clean.

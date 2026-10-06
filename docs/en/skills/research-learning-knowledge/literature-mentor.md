@@ -31,6 +31,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill literature-me
 | --- | --- | ---: | --- |
 | `skills/research-learning-knowledge/literature-mentor/evals` | directory | 1 | Evaluation samples |
 | `skills/research-learning-knowledge/literature-mentor/references` | directory | 4 | Reference material |
+| `skills/research-learning-knowledge/literature-mentor/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -38,15 +39,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill literature-me
 | --- | --- | --- |
 | evals | `skills/research-learning-knowledge/literature-mentor/evals` | Evaluation samples |
 | references | `skills/research-learning-knowledge/literature-mentor/references` | Reference material |
+| tests | `skills/research-learning-knowledge/literature-mentor/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

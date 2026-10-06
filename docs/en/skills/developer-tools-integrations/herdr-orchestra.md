@@ -34,6 +34,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill herdr-orchest
 | `skills/developer-tools-integrations/herdr-orchestra/evals` | directory | 2 | Evaluation samples |
 | `skills/developer-tools-integrations/herdr-orchestra/references` | directory | 2 | Reference material |
 | `skills/developer-tools-integrations/herdr-orchestra/reports` | directory | 5 | Top-level directory |
+| `skills/developer-tools-integrations/herdr-orchestra/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -42,15 +43,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill herdr-orchest
 | agents | `skills/developer-tools-integrations/herdr-orchestra/agents` | Companion agents |
 | evals | `skills/developer-tools-integrations/herdr-orchestra/evals` | Evaluation samples |
 | references | `skills/developer-tools-integrations/herdr-orchestra/references` | Reference material |
+| tests | `skills/developer-tools-integrations/herdr-orchestra/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

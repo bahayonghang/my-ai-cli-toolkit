@@ -32,6 +32,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill document-writ
 | --- | --- | ---: | --- |
 | `skills/docs-writing-publishing/document-writer/evals` | directory | 1 | Evaluation samples |
 | `skills/docs-writing-publishing/document-writer/references` | directory | 4 | Reference material |
+| `skills/docs-writing-publishing/document-writer/tests` | directory | 1 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -39,15 +40,15 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill document-writ
 | --- | --- | --- |
 | evals | `skills/docs-writing-publishing/document-writer/evals` | Evaluation samples |
 | references | `skills/docs-writing-publishing/document-writer/references` | Reference material |
+| tests | `skills/docs-writing-publishing/document-writer/tests` | Automated tests |
 
 ## Validation
 
 ```bash
 just skills-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

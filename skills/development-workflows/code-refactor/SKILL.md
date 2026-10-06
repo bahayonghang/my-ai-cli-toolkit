@@ -1,6 +1,6 @@
 ---
 name: code-refactor
-description: "Implement safe, behavior-preserving code refactors after inspecting the existing project. Use when the user asks to refactor, split large files, extract methods, reduce duplication, rename, clean dead code, or says 重构代码, 拆分模块, 提取方法, 优化命名, 优化注释, 删除未调用代码. For broad requests, plan safe slices and wait for approval; for narrow ones, implement the smallest verifiable slice."
+description: "Implement safe, behavior-preserving code refactors after inspecting the existing project. Use when the user asks to refactor, split large files, extract methods, reduce duplication, rename, clean dead code, or says 重构代码, 拆分模块, 提取方法, 优化命名, 优化注释, 删除未调用代码. For broad requests, plan safe slices and wait for approval; for narrow ones, implement the smallest verifiable slice. Not for review-only code-auditor or code-quality-review."
 category: development-workflows
 tags:
   - refactoring
