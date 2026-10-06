@@ -35,6 +35,17 @@ Project-local Codex activation files may live under `.codex/`, but that director
 
 ## Commit & Pull Request Guidelines
 Use Conventional Commits with an optional scope and emoji, for example `feat(skills): ✨ add drawio skill` or `chore(platforms): 🧹 prune dead command source`. Keep subjects imperative and scoped. Run `just ci` before committing and fix any failures. Pull requests should summarize the change, list the verification commands used (typically `just ci`), and link related issues; include screenshots only when a skill or platform asset has a visible artifact worth showing.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for `bahayonghang/my-ai-cli-toolkit`. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+single-context. See `docs/agents/domain.md`.
+
 <!-- TRELLIS:START -->
 # Trellis Instructions
 
