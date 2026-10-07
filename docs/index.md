@@ -18,7 +18,7 @@ hero:
 
 features:
   - title: 根级工作区
-    details: skills/ platforms/ scripts/ 三个工作区直接挂在仓库根；docs/ 只负责说明和导航，不改变现有安装或运行逻辑。
+    details: skills/、platforms/、scripts/、rules/ 直接挂在仓库根；docs/ 只负责说明和导航，不改变现有安装或运行逻辑。
   - title: 平台源分层
     details: Claude 源是 agents/ 与 hooks/；Codex 源只有 agents/（没有 prompts/）；Antigravity 使用 commands/。静态安装映射不是新会话发现证明。
   - title: 本地可验证
@@ -39,6 +39,7 @@ Kimi 指当前 Kimi Code CLI，不是旧 kimi-cli。OMP 不借用 Pi 的能力�
 - `platforms/codex/agents/`：Codex agent 模板；没有 `platforms/codex/prompts/`。
 - `platforms/antigravity/commands/`：现有 Antigravity command 源。
 - `skills/`：按分类组织的一方 skill catalog。
+- `rules/`：Claude Code 与 OMP 的共享行为规则；Codex 从全局 `AGENTS.md` 用 `@` 引用。见 [Rules](/rules)。
 
 第三方 `npx skills add` 按该 CLI 的目标安装。克隆后的 `just install-projects` 是本地 live-link，默认写到项目 `.agents/skills/`，并且只在对应 agent 根目录已存在时额外链接。`scripts/install_projects.py` 里的 dest 映射不是新会话 discovery 证明。
 

@@ -13,6 +13,7 @@ VitePress documentation site plus generated catalog pages for skills, hooks, and
 - `package.json` / `package-lock.json` — docs-site Node dependencies and VitePress scripts.
 - `index.md` / `en/index.md` — authored bilingual landing pages.
 - `harnesses.md` / `en/harnesses.md` — authored bilingual five-harness fact tables.
+- `rules.md` / `en/rules.md` — authored bilingual placement for root `rules/`: Claude Code and OMP rules directories, plus Codex global `AGENTS.md` `@` references.
 - `skills.md`, `en/skills.md`, `skills/**`, `en/skills/**` — generated skill index and detail pages.
 - `hooks.md`, `en/hooks.md`, `commands.md`, `en/commands.md` — generated hook and platform catalog pages.
 

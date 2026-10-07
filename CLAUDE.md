@@ -13,5 +13,6 @@ Claude-specific source in this repository:
 - `platforms/claude/agents/` — agent prompt assets
 - `platforms/claude/hooks/` — hook wiring (`hooks.json`) and scripts
 - `platforms/claude/AGENTS.md` — subtree rules for those assets
+- `rules/` — shared behavioral rule markdown. Claude Code reads `.claude/rules/` and `~/.claude/rules/`, not the repository-root directory name. Placement: [`docs/rules.md`](docs/rules.md) ([English](docs/en/rules.md)).
 
 Native instruction, skill, hook, subagent, and permission facts: [`docs/harnesses.md`](docs/harnesses.md) ([English](docs/en/harnesses.md)). Do not apply Codex per-layer `AGENTS.md` selection to Claude. Hook files in this repo are not proof that a Claude Code client has registered them.

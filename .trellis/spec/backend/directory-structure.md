@@ -48,6 +48,7 @@ skills/
 - Docs catalog generation lives in `docs/scripts/`; the generated pages live under `docs/` and must not be hand-edited.
 - Claude runtime hook logic lives under `platforms/claude/hooks/`; `hooks.json` declares wiring and Python files contain executable behavior.
 - Platform source assets live under `platforms/<platform>/`, grouped by the runtime concept they export: `commands/`, `agents/`, `prompts/`, `rules/`, or `hooks/`.
+- Root `rules/` is the shared behavioral rule set for Claude Code and OMP rules directories, with Codex global `AGENTS.md` `@` references documented in `docs/rules.md`. It is not a `platforms/<platform>/rules/` source tree.
 - Skill-local helpers stay inside the owning skill package under `skills/<category>/<skill-name>/scripts/`; tests stay under that skill's `tests/` directory.
 - Do not create a top-level `src/`, `backend/`, or shared utility package unless multiple existing owners genuinely need the same code.
 

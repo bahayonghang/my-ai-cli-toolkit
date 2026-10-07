@@ -9,6 +9,7 @@
 - `skills/`：一方技能目录
 - `platforms/<platform>/`：平台级 commands、agents、prompts、rules
 - `platforms/claude/hooks/`：Claude Code 运行时 hook 资源
+- `rules/`：Claude Code 与 OMP 的共享行为规则；Codex 从全局 `AGENTS.md` 用 `@` 引用。见 [`docs/rules.md`](docs/rules.md)（[English](docs/en/rules.md)）
 - `scripts/`：共享的校验与维护脚本
 
 ## 快速开始
@@ -75,8 +76,9 @@ just ci
 │       ├── commands/   # 平台 command / workflow 源（存在时）
 │       ├── agents/     # 平台 agent 定义（存在时）
 │       ├── prompts/    # 平台 prompt packs（存在时）
-│       ├── rules/      # 平台基础指导文件（存在时）
+│       ├── rules/      # 平台源里的 rules（存在时）；与仓库根 rules/ 不是同一处
 │       └── hooks/      # 运行时 hook 资源（当前位于 platforms/claude/ 下）
+├── rules/              # 共享行为规则；说明见 docs/rules.md
 ├── scripts/            # 共享的校验与维护脚本
 └── justfile            # 本地校验入口
 ```

@@ -53,6 +53,7 @@ Goal start, management, and completion semantics live in one fact source: [`skil
 Sources (2026-09-07, official): [memory](https://code.claude.com/docs/en/memory), [skills](https://code.claude.com/docs/en/skills), [subagents](https://code.claude.com/docs/en/subagents), [hooks](https://code.claude.com/docs/en/hooks).
 
 - Root `CLAUDE.md` uses the documented `@AGENTS.md` import for shared rules and keeps Claude loader notes only (repo contract).
+- Root `rules/` is the shared behavioral source. Claude Code reads `.claude/rules/` and `~/.claude/rules/`, not the repository-root directory name (official, 2026-10-07). Placement: [Rules](/en/rules).
 - Hook scripts read official PreToolUse stdin JSON `tool_input.command` and block dangerous patterns with **exit 2** (repo contract). `log-prompt.py` writes session-isolated logs from event `session_id` and `cwd` (repo contract). These are script contracts, not proof that a client loaded the hooks.
 - Real Claude Code registration and new-session skill discovery: UNVERIFIED.
 
@@ -62,6 +63,7 @@ Sources (2026-09-07, official): [AGENTS](https://learn.chatgpt.com/docs/agent-co
 
 - Official subagents may pick model and reasoning effort. Narrower execution may use an efficiency role. Do not infer cost or quality gains for this project from that fact.
 - Reusable workflows belong under `skills/` (for example `$git-commit`). This page does not claim a `platforms/codex/prompts/` directory or a `$archive-planning` skill.
+- The same `rules/` files are added from the selected global file: non-empty `~/.codex/AGENTS.override.md` wins, otherwise `~/.codex/AGENTS.md`, with one `@` line per file (repo contract). The AGENTS guide and `agents_md.rs` on `openai/codex` `main`, both read 2026-10-07, describe whole-file concatenation and do not describe `@` expansion: UNVERIFIED. See [Rules](/en/rules).
 
 ### Grok Build
 
@@ -83,11 +85,13 @@ Sources (2026-09-07, official canonical main): [context](https://github.com/can1
 
 - Do not fill the OMP row from Pi docs.
 - `main` is a floating source. Installed version/commit was not checked: UNVERIFIED.
+- Modular rules directories are `~/.omp/agent/rules/` and `<cwd>/.omp/rules/` (official, canonical main, 2026-10-07). Root `rules/` is the shared source. Current files have no `alwaysApply` / `description` frontmatter; canonical `main` drops a rule that has neither. `RULES.md` is a separate always-applied channel. See [Rules](/en/rules).
 
 ## Coverage in this repository
 
 | Asset | Status |
 | --- | --- |
+| Root `rules/` | Shared source for Claude / OMP rules directories; Codex global `AGENTS.md` uses `@` references. Client load UNVERIFIED. See [Rules](/en/rules) |
 | Root `AGENTS.md` | Shared rules (repo contract) |
 | Root `CLAUDE.md` | `@AGENTS.md` import plus Claude loader notes (repo contract) |
 | `platforms/claude/agents/`, `platforms/claude/hooks/` | Claude sources (repo contract) |
