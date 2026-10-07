@@ -10,6 +10,7 @@ The repository is organized at the root:
 - `platforms/antigravity/` — command sources
 - `platforms/claude/agents/` and `platforms/claude/hooks/` — Claude agent prompts and runtime hook assets
 - `platforms/codex/agents/` — Codex agent templates (no `prompts/` directory)
+- `rules/` — shared behavioral rules for Claude Code and OMP rules directories; Codex can `@`-reference the same files from the global `AGENTS.md`. See [`docs/rules.md`](docs/rules.md) ([English](docs/en/rules.md)).
 - `scripts/` — shared validation, maintenance, and local live-link scripts
 
 Five-harness native load, skill, hook, delegation, and permission bounds: [`docs/harnesses.md`](docs/harnesses.md) ([English](docs/en/harnesses.md)). Those pages are source bounds, not client-load proof.
@@ -80,6 +81,7 @@ just ci
 │   ├── claude/agents/       # Claude agent prompt assets
 │   ├── claude/hooks/        # Claude Code runtime hooks
 │   └── codex/agents/        # Codex agent templates only
+├── rules/                   # Shared behavioral rules; see docs/rules.md
 ├── scripts/                 # Shared validation and live-link installer
 ├── docs/                    # VitePress site; harness facts in docs/harnesses.md
 └── justfile                 # Local validation entrypoints

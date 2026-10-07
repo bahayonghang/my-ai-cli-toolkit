@@ -10,6 +10,7 @@ import {
 
 const zhNav = [
   { text: '首页', link: '/' },
+  { text: 'Rules', link: '/rules' },
   { text: 'Hooks', link: '/hooks' },
   { text: 'Commands', link: '/commands' },
   { text: 'Skills', link: '/skills' }
@@ -17,6 +18,7 @@ const zhNav = [
 
 const enNav = [
   { text: 'Home', link: '/en/' },
+  { text: 'Rules', link: '/en/rules' },
   { text: 'Hooks', link: '/en/hooks' },
   { text: 'Commands', link: '/en/commands' },
   { text: 'Skills', link: '/en/skills' }
@@ -27,6 +29,7 @@ const zhGuideSidebar = [
     text: '内容指南',
     items: [
       { text: '概览', link: '/' },
+      { text: 'Rules', link: '/rules' },
       { text: 'Hooks', link: '/hooks' },
       { text: 'Commands', link: '/commands' },
       { text: 'Skills', link: '/skills' }
@@ -39,6 +42,7 @@ const enGuideSidebar = [
     text: 'Content Guide',
     items: [
       { text: 'Overview', link: '/en/' },
+      { text: 'Rules', link: '/en/rules' },
       { text: 'Hooks', link: '/en/hooks' },
       { text: 'Commands', link: '/en/commands' },
       { text: 'Skills', link: '/en/skills' }

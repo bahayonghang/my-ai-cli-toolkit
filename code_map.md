@@ -4,7 +4,8 @@ Use this map for navigation and search routing. Behavioral rules, required comma
 
 ## Top-Level Routing
 - `skills/<category>/<skill-name>/` — first-party installable skills; start here for skill behavior, frontmatter, bundled scripts, tests, references, and evals.
-- `platforms/<platform>/` — platform-scoped source assets such as commands, agents, prompts, rules, and hooks.
+- `rules/` — shared behavioral rule markdown. Claude Code and OMP read it from their own rules directories; Codex global `AGENTS.md` can `@`-reference the same files. Placement facts: `docs/rules.md`.
+- `platforms/<platform>/` — platform-scoped source assets such as commands, agents, prompts, rules, and hooks. A `platforms/<platform>/rules/` directory is not the root `rules/` set. This repo currently has no platform `rules/` directory.
 - `platforms/codex/` — Codex native subagent templates; start with `platforms/codex/code_map.md` before editing this subtree.
 - `platforms/claude/hooks/` — Claude Code runtime hook assets and hook JSON.
 - `scripts/` — shared repository validation, maintenance, and local skill live-link scripts.

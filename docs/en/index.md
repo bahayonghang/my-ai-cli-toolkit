@@ -18,7 +18,7 @@ hero:
 
 features:
   - title: Root-level workspaces
-    details: skills/ platforms/ scripts/ live directly at the repository root; docs/ only documents and navigates the repository.
+    details: skills/, platforms/, scripts/, and rules/ live directly at the repository root; docs/ only documents and navigates the repository.
   - title: Platform source layout
     details: Claude sources are agents/ and hooks/. Codex sources are agents/ only (no prompts/). Antigravity uses commands/. Static installer maps are not new-session discovery proof.
   - title: Locally verifiable
@@ -39,6 +39,7 @@ This documentation site covers the repository's core areas:
 - `platforms/codex/agents/`: Codex agent templates. There is no `platforms/codex/prompts/`.
 - `platforms/antigravity/commands/`: existing Antigravity command sources.
 - `skills/`: the first-party skill catalog organized by category.
+- `rules/`: shared behavioral rules for Claude Code and OMP rules directories. Codex `@`-references the same files from the global `AGENTS.md`. See [Rules](/en/rules).
 
 The third-party `npx skills add` CLI installs according to that CLI's targets. After clone, `just install-projects` is the local live-link installer. It writes to project `.agents/skills/` by default and links extra agent directories only when that agent root already exists. Destination maps in `scripts/install_projects.py` are not new-session discovery proof.
 

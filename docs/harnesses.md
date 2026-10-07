@@ -53,6 +53,7 @@ Goal 的启动、管理、完成语义见单一事实源 [`skills/developer-tool
 来源（2026-09-07，official）：[memory](https://code.claude.com/docs/en/memory)、[skills](https://code.claude.com/docs/en/skills)、[subagents](https://code.claude.com/docs/en/subagents)、[hooks](https://code.claude.com/docs/en/hooks)。
 
 - 根 `CLAUDE.md` 使用文档支持的 `@AGENTS.md` 导入共用规则，只保留 Claude 加载说明（repo contract）。
+- 根 `rules/` 是共享行为规则源。Claude Code 读取 `.claude/rules/` 与 `~/.claude/rules/`，不按仓库根目录名发现（official，2026-10-07）。接入说明见 [Rules](/rules)。
 - Hook 脚本读取官方 PreToolUse stdin JSON 的 `tool_input.command`；危险模式以 **exit 2** 阻断（repo contract）。`log-prompt.py` 按事件 `session_id` 与 `cwd` 写会话隔离日志（repo contract）。这些是脚本契约，不是客户端已加载证明。
 - 真实 Claude Code 注册、新会话 skill 发现：UNVERIFIED。
 
@@ -62,6 +63,7 @@ Goal 的启动、管理、完成语义见单一事实源 [`skills/developer-tool
 
 - 官方子代理可分别选模型/推理级别；较窄执行可选择效率角色。不据此推导本项目的实际费用或质量收益。
 - 仓库可复用工作流放在 `skills/`（例如 `$git-commit`），不声称存在 `platforms/codex/prompts/` 或 `$archive-planning`。
+- 同一批 `rules/` 从实际被选中的全局文件接入：非空 `~/.codex/AGENTS.override.md` 优先，否则 `~/.codex/AGENTS.md`，用 `@` 一行引用一个文件（repo contract）。2026-10-07 的 AGENTS 说明和 `openai/codex` `main` 的 `agents_md.rs` 只写整文件拼接，没有写 `@` 展开：UNVERIFIED。见 [Rules](/rules)。
 
 ### Grok Build
 
@@ -83,11 +85,13 @@ Goal 的启动、管理、完成语义见单一事实源 [`skills/developer-tool
 
 - 不要把 Pi 文档填进 OMP 行。
 - `main` 是浮动来源。已装版本/commit 未核：UNVERIFIED。
+- 模块化 rules 目录是 `~/.omp/agent/rules/` 与 `<cwd>/.omp/rules/`（official，canonical main，2026-10-07）。根 `rules/` 是共享源。当前文件没有 `alwaysApply` / `description` frontmatter；canonical `main` 会丢掉两者都没有的规则。`RULES.md` 是另一条始终生效通道。见 [Rules](/rules)。
 
 ## 本仓库覆盖
 
 | 资产 | 状态 |
 | --- | --- |
+| 根 `rules/` | Claude / OMP rules 目录的共享源；Codex 全局 `AGENTS.md` 用 `@` 引用。客户端加载 UNVERIFIED。见 [Rules](/rules) |
 | 根 `AGENTS.md` | 共用规则（repo contract） |
 | 根 `CLAUDE.md` | `@AGENTS.md` 导入 + Claude 加载说明（repo contract） |
 | `platforms/claude/agents/`、`platforms/claude/hooks/` | Claude 源（repo contract） |
