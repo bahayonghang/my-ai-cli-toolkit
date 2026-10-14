@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Repo skill contracts: <skill-dir> paths, frontmatter, interface.yaml, UTF-8/LF script output"}
+{"file": "skills/AGENTS.md", "reason": "skills/** subtree rules and verification commands"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "Suite conventions: allowed-tools, evals schema, interface contract, self-containment"}
+{"file": ".trellis/tasks/10-14-design-md-skill/research/upstream-analysis.md", "reason": "Upstream counts, formats, commits, licenses, category coverage"}
