@@ -1,0 +1,49 @@
+{
+  "categories": [
+    {"id": "brand-ai-llm", "kind": "brand", "en": "AI & LLM Platforms", "zh": "AI 与大模型平台", "order": 1},
+    {"id": "brand-devtools", "kind": "brand", "en": "Developer Tools & IDEs", "zh": "开发者工具与 IDE", "order": 2},
+    {"id": "brand-backend-devops", "kind": "brand", "en": "Backend, Database & DevOps", "zh": "后端、数据库与 DevOps", "order": 3},
+    {"id": "brand-productivity-saas", "kind": "brand", "en": "Productivity & SaaS", "zh": "效率工具与 SaaS", "order": 4},
+    {"id": "brand-design-creative", "kind": "brand", "en": "Design & Creative Tools", "zh": "设计与创意工具", "order": 5},
+    {"id": "brand-fintech-crypto", "kind": "brand", "en": "Fintech & Crypto", "zh": "金融科技与加密货币", "order": 6},
+    {"id": "brand-ecommerce-retail", "kind": "brand", "en": "E-commerce & Retail", "zh": "电商与零售", "order": 7},
+    {"id": "brand-media-consumer", "kind": "brand", "en": "Media & Consumer Tech", "zh": "媒体与消费科技", "order": 8},
+    {"id": "brand-automotive", "kind": "brand", "en": "Automotive", "zh": "汽车", "order": 9},
+    {"id": "brand-retro-web", "kind": "brand", "en": "Retro Web", "zh": "复古网页", "order": 10},
+    {"id": "style-minimal-clean", "kind": "style", "en": "Minimal & Clean", "zh": "极简与留白", "order": 11},
+    {"id": "style-editorial-print", "kind": "style", "en": "Editorial & Print", "zh": "编辑与印刷", "order": 12},
+    {"id": "style-product-systems", "kind": "style", "en": "Product & Enterprise Systems", "zh": "产品与企业系统", "order": 13},
+    {"id": "style-bold-expressive", "kind": "style", "en": "Bold & Expressive", "zh": "高对比与表现力", "order": 14},
+    {"id": "style-tactile-depth", "kind": "style", "en": "Tactile & Depth", "zh": "质感与空间深度", "order": 15},
+    {"id": "style-tech-dark", "kind": "style", "en": "Tech & Dark", "zh": "科技与暗色", "order": 16},
+    {"id": "style-retro-game", "kind": "style", "en": "Retro & Game", "zh": "复古与游戏", "order": 17},
+    {"id": "style-friendly-handdrawn", "kind": "style", "en": "Friendly & Hand-drawn", "zh": "亲和与手绘", "order": 18}
+  ],
+  "brand": {
+    "readme_heading_prefixes": [
+      ["AI & LLM Platforms", "brand-ai-llm"],
+      ["Developer Tools & IDEs", "brand-devtools"],
+      ["Backend, Database & DevOps", "brand-backend-devops"],
+      ["Productivity & SaaS", "brand-productivity-saas"],
+      ["Design & Creative Tools", "brand-design-creative"],
+      ["Fintech & Crypto", "brand-fintech-crypto"],
+      ["E-commerce & Retail", "brand-ecommerce-retail"],
+      ["Media & Consumer Tech", "brand-media-consumer"],
+      ["Automotive", "brand-automotive"],
+      ["Retro Web", "brand-retro-web"]
+    ],
+    "overrides": {
+      "slack": "brand-productivity-saas"
+    }
+  },
+  "style": {
+    "style-minimal-clean": ["minimal", "clean", "spacious", "sleek", "geometric", "square", "refined", "contemporary", "flat"],
+    "style-editorial-print": ["editorial", "basic", "modern", "paper", "riso", "terracotta", "impeccable", "storytelling", "claude"],
+    "style-product-systems": ["ant", "corporate", "enterprise", "professional", "stitch", "material", "shadcn", "roku", "levels", "agentic", "bento"],
+    "style-bold-expressive": ["bold", "artistic", "dramatic", "expressive", "colorful", "vibrant", "gradient", "pulse", "creative", "brutalism", "neobrutalism"],
+    "style-tactile-depth": ["glassmorphism", "claymorphism", "neumorphism", "skeumorphism", "perspective", "immersive"],
+    "style-tech-dark": ["cosmic", "futuristic", "neon", "matrix", "mono", "power", "premium", "codex"],
+    "style-retro-game": ["retro", "vintage", "dithered", "pacman", "sega", "tetris", "fantasy"],
+    "style-friendly-handdrawn": ["friendly", "cafe", "doodle", "sketch", "fiction", "lingo"]
+  }
+}
