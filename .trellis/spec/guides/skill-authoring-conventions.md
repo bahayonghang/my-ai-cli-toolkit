@@ -435,3 +435,20 @@ payload itself said “execute”.
   and lower the affected claims — per qiaomu rules, do not retry past a
   provider outage inside one task.
 
+
+## Vendored catalogs inside a skill
+
+> Distilled from design-md 0.1.0 (2026-10-14).
+
+- No file under a skill may be named `SKILL.md` except the skill root entrypoint.
+  `docs/scripts/sync_docs_catalog.py` (`discover_skills()`) and `scripts/check.py`
+  collect every `SKILL.md` under `skills/` recursively. Store vendored entries as
+  `<slug>.md`, and generate upstream-shaped test fixtures in a temp directory
+  instead of committing them.
+- Normalize vendored text at build time: CRLF to LF, strip trailing whitespace,
+  end with one `\n`. Upstream Markdown often carries trailing spaces, and
+  `git diff --check` in `just ci` rejects them.
+- Keep the build step in a maintainer script that reads the upstream checkout
+  (for example under the ignored `ref/`), records the upstream commit, and fails
+  without writing when an entry has no category. The skill runtime reads only the
+  committed catalog.

@@ -119,3 +119,41 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Status
 
 [OK] **Completed**
+
+
+## Session 69: 新增 design-md 设计系统 skill
+<!-- trellis-session: v=2 fp=e7bf83f48d154f9c -->
+
+**Date**: 2026-10-14
+**Task**: 新增 design-md 设计系统 skill
+**Branch**: `dev`
+
+### Summary
+
+新增 design-md 0.1.0：离线目录含 84 个品牌条目和 67 个通用风格，文档站目录与技能同一次提交。skill 内嵌目录约定已写入 spec。任务已归档到 archive/2026-10/10-14-design-md-skill。未推送。
+
+### Main Changes
+
+- design-md 0.1.0：分类目录、写入 DESIGN.md、按文件实施 UI
+- docs catalog 与技能放在同一次提交，避免 docs-check 中间态漂移
+- skill-authoring：内嵌目录不得命名为 SKILL.md，构建时规范化换行
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `16da8ff7d18177594327a9173fabb98f1ed266e7` | feat(design-md): ✨ 新增离线设计系统 skill |
+| `2ef56f8c31682f787723abe097a2f0bd81875acb` | docs(spec): 📝 记录 skill 内嵌目录的构建约定 |
+
+### Testing
+
+- [OK] python -m unittest discover -s skills/development-workflows/design-md/tests：22 通过
+- [OK] 本次未重跑 just ci
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 未推送
