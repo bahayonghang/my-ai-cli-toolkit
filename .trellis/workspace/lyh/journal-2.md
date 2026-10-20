@@ -157,3 +157,35 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Next Steps
 
 - 未推送
+
+
+## Session 70: 完成 laoyeye 整合技能并提交归档
+<!-- trellis-session: v=2 fp=cd3774ab7cfd912f -->
+
+**Date**: 2026-10-20
+**Task**: 完成 laoyeye 整合技能并提交归档
+**Branch**: `codex/laoyeye-integrated-skill`
+
+### Summary
+
+按用户授权本地提交全部 81 个文件，完成 laoyeye 单入口技能与任务归档；未推送、安装或发布。
+
+### Main Changes
+
+- 以一个 SKILL.md 与 24 个内部方法覆盖原 25 个入口，保留许可、权限边界及上下文取舍证据。
+- 同步双语技能目录，归档 10-20-laoyeye-integrated-skill 并记录工作提交。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `58d6f1b3e0aa753a48b71187c96c5330da91bde7` | feat(laoyeye): ✨ 整合单入口思考与学习技能 |
+
+### Testing
+
+- [OK] 实施后 just ci 八步通过；技能单测 10/10；lexical smoke 57/57；独立集成审查 PASS；暂存区空白检查通过。
+- [OK] 实际新宿主发现、token/latency、公平质量比较、完整多轮和 HTML 视觉验收未验证；qiaomu manifest schema 差异如实保留。
+
+### Status
+
+[OK] **Completed**
