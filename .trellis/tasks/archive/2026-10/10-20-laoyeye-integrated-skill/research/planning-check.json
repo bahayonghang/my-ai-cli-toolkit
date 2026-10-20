@@ -1,0 +1,24 @@
+{
+  "evidence_kind": "planning_static_check",
+  "ok": true,
+  "checks": {
+    "planning_status": true,
+    "artifacts_exist": true,
+    "no_template_markers": true,
+    "context_files_valid": true,
+    "coverage_25_to_24": true,
+    "coverage_source_paths_exist": true,
+    "source_hashes_match": true,
+    "baseline_metrics_match": true,
+    "product_not_created": true,
+    "reference_checkout_unchanged": true,
+    "no_tracked_product_diff": true,
+    "planning_text_whitespace": true,
+    "planning_links_resolve": true,
+    "ci_exit_zero": true
+  },
+  "source_entry_count": 26,
+  "capability_entry_count": 25,
+  "distinct_method_count": 24,
+  "product_implementation": "NOT_RUN"
+}

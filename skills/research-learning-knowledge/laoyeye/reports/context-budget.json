@@ -1,0 +1,945 @@
+{
+  "ok": true,
+  "errors": [],
+  "evidence": "deterministic package checks; not provider execution",
+  "upstream_commit": "5af2b57ceb169d81b2da90cc902556a2cad11c0a",
+  "entrypoints": [
+    "SKILL.md"
+  ],
+  "checked_local_and_external_markdown_links": 90,
+  "coverage": {
+    "source_entries": 25,
+    "distinct_methods": 24
+  },
+  "budgets": {
+    "limits": {
+      "metadata_chars": 650,
+      "root_chars": 4000,
+      "root_utf8_bytes": 9000
+    },
+    "measured": {
+      "metadata_chars": 290,
+      "root_chars": 2814,
+      "root_utf8_bytes": 4686
+    }
+  },
+  "scenarios": {
+    "discovery": {
+      "old_entrypoints": 26,
+      "old_model_eligible_entrypoints": 21,
+      "new_entrypoints": 1,
+      "old_all_metadata_chars": 4923,
+      "old_model_eligible_metadata_chars": 4484,
+      "new_metadata_chars": 290,
+      "client_injection": "UNVERIFIED"
+    },
+    "routed_single_method": [
+      {
+        "source_entry": "socratic-inquiry",
+        "mode": "socratic",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/socratic.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/asking/socratic-inquiry/SKILL.md"
+        ],
+        "old": {
+          "chars": 9878,
+          "utf8_bytes": 22847
+        },
+        "new": {
+          "chars": 3195,
+          "utf8_bytes": 5773
+        },
+        "delta_chars": -6683,
+        "within_budget": true
+      },
+      {
+        "source_entry": "matt-grilling",
+        "mode": "grilling",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/grilling.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/asking/matt-grilling/SKILL.md"
+        ],
+        "old": {
+          "chars": 10313,
+          "utf8_bytes": 20703
+        },
+        "new": {
+          "chars": 3327,
+          "utf8_bytes": 6041
+        },
+        "delta_chars": -6986,
+        "within_budget": true
+      },
+      {
+        "source_entry": "matt-grill-me",
+        "mode": "grilling",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/grilling.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/asking/matt-grill-me/SKILL.md",
+          "skills/asking/matt-grilling/SKILL.md"
+        ],
+        "old": {
+          "chars": 10480,
+          "utf8_bytes": 20870
+        },
+        "new": {
+          "chars": 3327,
+          "utf8_bytes": 6041
+        },
+        "delta_chars": -7153,
+        "within_budget": true
+      },
+      {
+        "source_entry": "johari-window",
+        "mode": "johari",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/johari.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/asking/johari-window/SKILL.md"
+        ],
+        "old": {
+          "chars": 9951,
+          "utf8_bytes": 23137
+        },
+        "new": {
+          "chars": 3160,
+          "utf8_bytes": 5680
+        },
+        "delta_chars": -6791,
+        "within_budget": true
+      },
+      {
+        "source_entry": "no-fluff-output",
+        "mode": "concise",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/concise.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/asking/no-fluff-output/SKILL.md"
+        ],
+        "old": {
+          "chars": 15825,
+          "utf8_bytes": 27879
+        },
+        "new": {
+          "chars": 3245,
+          "utf8_bytes": 5853
+        },
+        "delta_chars": -12580,
+        "within_budget": true
+      },
+      {
+        "source_entry": "two-layer-explain",
+        "mode": "explain",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/explain.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/two-layer-explain/SKILL.md"
+        ],
+        "old": {
+          "chars": 9430,
+          "utf8_bytes": 21591
+        },
+        "new": {
+          "chars": 3164,
+          "utf8_bytes": 5688
+        },
+        "delta_chars": -6266,
+        "within_budget": true
+      },
+      {
+        "source_entry": "reverse-teardown",
+        "mode": "teardown",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/teardown.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/reverse-teardown/SKILL.md"
+        ],
+        "old": {
+          "chars": 9536,
+          "utf8_bytes": 21878
+        },
+        "new": {
+          "chars": 3189,
+          "utf8_bytes": 5747
+        },
+        "delta_chars": -6347,
+        "within_budget": true
+      },
+      {
+        "source_entry": "horizontal-vertical-analysis",
+        "mode": "research",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/research.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/horizontal-vertical-analysis/SKILL.md"
+        ],
+        "old": {
+          "chars": 9889,
+          "utf8_bytes": 22776
+        },
+        "new": {
+          "chars": 3312,
+          "utf8_bytes": 6090
+        },
+        "delta_chars": -6577,
+        "within_budget": true
+      },
+      {
+        "source_entry": "fact-check",
+        "mode": "fact-check",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/fact-check.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/fact-check/SKILL.md"
+        ],
+        "old": {
+          "chars": 9741,
+          "utf8_bytes": 22356
+        },
+        "new": {
+          "chars": 3224,
+          "utf8_bytes": 5848
+        },
+        "delta_chars": -6517,
+        "within_budget": true
+      },
+      {
+        "source_entry": "parable",
+        "mode": "parable",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/parable.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/parable/SKILL.md"
+        ],
+        "old": {
+          "chars": 10530,
+          "utf8_bytes": 24416
+        },
+        "new": {
+          "chars": 3178,
+          "utf8_bytes": 5730
+        },
+        "delta_chars": -7352,
+        "within_budget": true
+      },
+      {
+        "source_entry": "memory-parable",
+        "mode": "memory-story",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/memory-story.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/memory-parable/SKILL.md"
+        ],
+        "old": {
+          "chars": 9789,
+          "utf8_bytes": 21711
+        },
+        "new": {
+          "chars": 3192,
+          "utf8_bytes": 5772
+        },
+        "delta_chars": -6597,
+        "within_budget": true
+      },
+      {
+        "source_entry": "eli5",
+        "mode": "visual-explain",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/visual-explain.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/eli5/SKILL.md"
+        ],
+        "old": {
+          "chars": 9554,
+          "utf8_bytes": 21550
+        },
+        "new": {
+          "chars": 3291,
+          "utf8_bytes": 5919
+        },
+        "delta_chars": -6263,
+        "within_budget": true
+      },
+      {
+        "source_entry": "matt-teach",
+        "mode": "teaching",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/teaching.md",
+          "references/teaching-workspace.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/learning/matt-teach/SKILL.md",
+          "skills/learning/matt-teach/MISSION-FORMAT.md",
+          "skills/learning/matt-teach/RESOURCES-FORMAT.md",
+          "skills/learning/matt-teach/LEARNING-RECORD-FORMAT.md",
+          "skills/learning/matt-teach/GLOSSARY-FORMAT.md"
+        ],
+        "old": {
+          "chars": 26173,
+          "utf8_bytes": 36555
+        },
+        "new": {
+          "chars": 5186,
+          "utf8_bytes": 10294
+        },
+        "delta_chars": -20987,
+        "within_budget": true
+      },
+      {
+        "source_entry": "expert-panel",
+        "mode": "panel",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/panel.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/solving/expert-panel/SKILL.md"
+        ],
+        "old": {
+          "chars": 9587,
+          "utf8_bytes": 21957
+        },
+        "new": {
+          "chars": 3151,
+          "utf8_bytes": 5649
+        },
+        "delta_chars": -6436,
+        "within_budget": true
+      },
+      {
+        "source_entry": "first-principles",
+        "mode": "first-principles",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/first-principles.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/solving/first-principles/SKILL.md"
+        ],
+        "old": {
+          "chars": 9609,
+          "utf8_bytes": 21979
+        },
+        "new": {
+          "chars": 3231,
+          "utf8_bytes": 5871
+        },
+        "delta_chars": -6378,
+        "within_budget": true
+      },
+      {
+        "source_entry": "cross-domain-borrow",
+        "mode": "cross-domain",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/cross-domain.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/solving/cross-domain-borrow/SKILL.md"
+        ],
+        "old": {
+          "chars": 9528,
+          "utf8_bytes": 21854
+        },
+        "new": {
+          "chars": 3191,
+          "utf8_bytes": 5751
+        },
+        "delta_chars": -6337,
+        "within_budget": true
+      },
+      {
+        "source_entry": "inversion",
+        "mode": "inversion",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/inversion.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/solving/inversion/SKILL.md"
+        ],
+        "old": {
+          "chars": 9698,
+          "utf8_bytes": 22336
+        },
+        "new": {
+          "chars": 3163,
+          "utf8_bytes": 5677
+        },
+        "delta_chars": -6535,
+        "within_budget": true
+      },
+      {
+        "source_entry": "carl-idea-king",
+        "mode": "adversarial",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/adversarial.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/solving/carl-idea-king/SKILL.md",
+          "skills/solving/carl-idea-king/references/adversarial-checklist.md"
+        ],
+        "old": {
+          "chars": 21322,
+          "utf8_bytes": 32100
+        },
+        "new": {
+          "chars": 3485,
+          "utf8_bytes": 6527
+        },
+        "delta_chars": -17837,
+        "within_budget": true
+      },
+      {
+        "source_entry": "matt-diagnosing-bugs",
+        "mode": "debugging",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/debugging.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/solving/matt-diagnosing-bugs/SKILL.md"
+        ],
+        "old": {
+          "chars": 16864,
+          "utf8_bytes": 27245
+        },
+        "new": {
+          "chars": 3605,
+          "utf8_bytes": 6857
+        },
+        "delta_chars": -13259,
+        "within_budget": true
+      },
+      {
+        "source_entry": "steelman-both-sides",
+        "mode": "steelman",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/steelman.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/deciding/steelman-both-sides/SKILL.md"
+        ],
+        "old": {
+          "chars": 9526,
+          "utf8_bytes": 21858
+        },
+        "new": {
+          "chars": 3185,
+          "utf8_bytes": 5745
+        },
+        "delta_chars": -6341,
+        "within_budget": true
+      },
+      {
+        "source_entry": "minimum-experiment",
+        "mode": "experiment",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/experiment.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/deciding/minimum-experiment/SKILL.md"
+        ],
+        "old": {
+          "chars": 9505,
+          "utf8_bytes": 21789
+        },
+        "new": {
+          "chars": 3259,
+          "utf8_bytes": 5948
+        },
+        "delta_chars": -6246,
+        "within_budget": true
+      },
+      {
+        "source_entry": "kaz-leader",
+        "mode": "brief",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/brief.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/doing/kaz-leader/SKILL.md",
+          "skills/doing/kaz-leader/references/anatomy.md"
+        ],
+        "old": {
+          "chars": 13078,
+          "utf8_bytes": 30660
+        },
+        "new": {
+          "chars": 4061,
+          "utf8_bytes": 8021
+        },
+        "delta_chars": -9017,
+        "within_budget": true
+      },
+      {
+        "source_entry": "kaz-neat-freak",
+        "mode": "reconcile",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/reconcile.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/doing/kaz-neat-freak/SKILL.md",
+          "skills/doing/kaz-neat-freak/references/agent-paths.md",
+          "skills/doing/kaz-neat-freak/references/governance.md",
+          "skills/doing/kaz-neat-freak/references/sync-matrix.md",
+          "skills/doing/kaz-neat-freak/references/verification.md"
+        ],
+        "old": {
+          "chars": 25373,
+          "utf8_bytes": 52591
+        },
+        "new": {
+          "chars": 4069,
+          "utf8_bytes": 7763
+        },
+        "delta_chars": -21304,
+        "within_budget": true
+      },
+      {
+        "source_entry": "hidden-talent",
+        "mode": "talent",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/talent.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/self-knowledge/hidden-talent/SKILL.md"
+        ],
+        "old": {
+          "chars": 10294,
+          "utf8_bytes": 23956
+        },
+        "new": {
+          "chars": 3376,
+          "utf8_bytes": 6274
+        },
+        "delta_chars": -6918,
+        "within_budget": true
+      },
+      {
+        "source_entry": "life-design",
+        "mode": "life-design",
+        "package_files": [
+          "SKILL.md",
+          "references/modes/life-design.md"
+        ],
+        "upstream_files": [
+          "skills/laoyeye/SKILL.md",
+          "skills/self-knowledge/life-design/SKILL.md"
+        ],
+        "old": {
+          "chars": 11208,
+          "utf8_bytes": 26475
+        },
+        "new": {
+          "chars": 3578,
+          "utf8_bytes": 6860
+        },
+        "delta_chars": -7630,
+        "within_budget": true
+      }
+    ],
+    "direct_old_leaf": [
+      {
+        "source_entry": "socratic-inquiry",
+        "old": {
+          "chars": 1545,
+          "utf8_bytes": 4136
+        },
+        "new": {
+          "chars": 3195,
+          "utf8_bytes": 5773
+        },
+        "delta_chars": 1650,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "matt-grilling",
+        "old": {
+          "chars": 1980,
+          "utf8_bytes": 1992
+        },
+        "new": {
+          "chars": 3327,
+          "utf8_bytes": 6041
+        },
+        "delta_chars": 1347,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "matt-grill-me",
+        "old": {
+          "chars": 2147,
+          "utf8_bytes": 2159
+        },
+        "new": {
+          "chars": 3327,
+          "utf8_bytes": 6041
+        },
+        "delta_chars": 1180,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "johari-window",
+        "old": {
+          "chars": 1618,
+          "utf8_bytes": 4426
+        },
+        "new": {
+          "chars": 3160,
+          "utf8_bytes": 5680
+        },
+        "delta_chars": 1542,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "no-fluff-output",
+        "old": {
+          "chars": 7492,
+          "utf8_bytes": 9168
+        },
+        "new": {
+          "chars": 3245,
+          "utf8_bytes": 5853
+        },
+        "delta_chars": -4247,
+        "new_is_larger": false
+      },
+      {
+        "source_entry": "two-layer-explain",
+        "old": {
+          "chars": 1097,
+          "utf8_bytes": 2880
+        },
+        "new": {
+          "chars": 3164,
+          "utf8_bytes": 5688
+        },
+        "delta_chars": 2067,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "reverse-teardown",
+        "old": {
+          "chars": 1203,
+          "utf8_bytes": 3167
+        },
+        "new": {
+          "chars": 3189,
+          "utf8_bytes": 5747
+        },
+        "delta_chars": 1986,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "horizontal-vertical-analysis",
+        "old": {
+          "chars": 1556,
+          "utf8_bytes": 4065
+        },
+        "new": {
+          "chars": 3312,
+          "utf8_bytes": 6090
+        },
+        "delta_chars": 1756,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "fact-check",
+        "old": {
+          "chars": 1408,
+          "utf8_bytes": 3645
+        },
+        "new": {
+          "chars": 3224,
+          "utf8_bytes": 5848
+        },
+        "delta_chars": 1816,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "parable",
+        "old": {
+          "chars": 2197,
+          "utf8_bytes": 5705
+        },
+        "new": {
+          "chars": 3178,
+          "utf8_bytes": 5730
+        },
+        "delta_chars": 981,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "memory-parable",
+        "old": {
+          "chars": 1456,
+          "utf8_bytes": 3000
+        },
+        "new": {
+          "chars": 3192,
+          "utf8_bytes": 5772
+        },
+        "delta_chars": 1736,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "eli5",
+        "old": {
+          "chars": 1221,
+          "utf8_bytes": 2839
+        },
+        "new": {
+          "chars": 3291,
+          "utf8_bytes": 5919
+        },
+        "delta_chars": 2070,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "matt-teach",
+        "old": {
+          "chars": 17840,
+          "utf8_bytes": 17844
+        },
+        "new": {
+          "chars": 5186,
+          "utf8_bytes": 10294
+        },
+        "delta_chars": -12654,
+        "new_is_larger": false
+      },
+      {
+        "source_entry": "expert-panel",
+        "old": {
+          "chars": 1254,
+          "utf8_bytes": 3246
+        },
+        "new": {
+          "chars": 3151,
+          "utf8_bytes": 5649
+        },
+        "delta_chars": 1897,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "first-principles",
+        "old": {
+          "chars": 1276,
+          "utf8_bytes": 3268
+        },
+        "new": {
+          "chars": 3231,
+          "utf8_bytes": 5871
+        },
+        "delta_chars": 1955,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "cross-domain-borrow",
+        "old": {
+          "chars": 1195,
+          "utf8_bytes": 3143
+        },
+        "new": {
+          "chars": 3191,
+          "utf8_bytes": 5751
+        },
+        "delta_chars": 1996,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "inversion",
+        "old": {
+          "chars": 1365,
+          "utf8_bytes": 3625
+        },
+        "new": {
+          "chars": 3163,
+          "utf8_bytes": 5677
+        },
+        "delta_chars": 1798,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "carl-idea-king",
+        "old": {
+          "chars": 12989,
+          "utf8_bytes": 13389
+        },
+        "new": {
+          "chars": 3485,
+          "utf8_bytes": 6527
+        },
+        "delta_chars": -9504,
+        "new_is_larger": false
+      },
+      {
+        "source_entry": "matt-diagnosing-bugs",
+        "old": {
+          "chars": 8531,
+          "utf8_bytes": 8534
+        },
+        "new": {
+          "chars": 3605,
+          "utf8_bytes": 6857
+        },
+        "delta_chars": -4926,
+        "new_is_larger": false
+      },
+      {
+        "source_entry": "steelman-both-sides",
+        "old": {
+          "chars": 1193,
+          "utf8_bytes": 3147
+        },
+        "new": {
+          "chars": 3185,
+          "utf8_bytes": 5745
+        },
+        "delta_chars": 1992,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "minimum-experiment",
+        "old": {
+          "chars": 1172,
+          "utf8_bytes": 3078
+        },
+        "new": {
+          "chars": 3259,
+          "utf8_bytes": 5948
+        },
+        "delta_chars": 2087,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "kaz-leader",
+        "old": {
+          "chars": 4745,
+          "utf8_bytes": 11949
+        },
+        "new": {
+          "chars": 4061,
+          "utf8_bytes": 8021
+        },
+        "delta_chars": -684,
+        "new_is_larger": false
+      },
+      {
+        "source_entry": "kaz-neat-freak",
+        "old": {
+          "chars": 17040,
+          "utf8_bytes": 33880
+        },
+        "new": {
+          "chars": 4069,
+          "utf8_bytes": 7763
+        },
+        "delta_chars": -12971,
+        "new_is_larger": false
+      },
+      {
+        "source_entry": "hidden-talent",
+        "old": {
+          "chars": 1961,
+          "utf8_bytes": 5245
+        },
+        "new": {
+          "chars": 3376,
+          "utf8_bytes": 6274
+        },
+        "delta_chars": 1415,
+        "new_is_larger": true
+      },
+      {
+        "source_entry": "life-design",
+        "old": {
+          "chars": 2875,
+          "utf8_bytes": 7764
+        },
+        "new": {
+          "chars": 3578,
+          "utf8_bytes": 6860
+        },
+        "delta_chars": 703,
+        "new_is_larger": true
+      }
+    ],
+    "long_session": {
+      "note": "Previously read files remain in conversation history; method changes do not reclaim context. These are unique-file totals for using every method, not measured session usage.",
+      "old_all_runtime_resources": {
+        "chars": 104709,
+        "utf8_bytes": 182013
+      },
+      "new_all_runtime_resources": {
+        "chars": 17295,
+        "utf8_bytes": 43600
+      },
+      "old_unique_files": 36,
+      "new_unique_files": 26
+    }
+  },
+  "token_measurement": {
+    "status": "unavailable",
+    "reason": "No tokenizer or live client measurement; characters are not tokens."
+  }
+}

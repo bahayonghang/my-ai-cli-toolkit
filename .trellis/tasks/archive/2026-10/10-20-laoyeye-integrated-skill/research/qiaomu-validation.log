@@ -1,0 +1,10 @@
+{
+  "ok": false,
+  "root": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\research-learning-knowledge\\laoyeye",
+  "failures": [
+    "missing required file: manifest.json"
+  ],
+  "warnings": [
+    "README may be missing install command"
+  ]
+}

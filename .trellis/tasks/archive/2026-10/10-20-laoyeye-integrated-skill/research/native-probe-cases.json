@@ -1,0 +1,37 @@
+{
+  "evidence_kind": "controlled_native_agent_probe_inputs",
+  "cases": [
+    {
+      "id": "explain",
+      "prompt": "用 laoyeye 的双层解释讲清楚哈希表：给小白版和专业版、术语对应及自测题。"
+    },
+    {
+      "id": "ambiguous-closeout",
+      "prompt": "用 laoyeye 帮我收尾。"
+    },
+    {
+      "id": "grilling",
+      "prompt": "用 laoyeye 把家庭菜谱应用的方案盘到底。我还没确定谁使用、数据在哪里保存、是否要分享；请按设计树一轮一轮拷问我，先问当前能问的，不写代码。"
+    },
+    {
+      "id": "offline-fact-check",
+      "prompt": "本案例禁止联网。用 laoyeye 核查“某团队试行四天工作制后效率提高20%，所以所有公司都应该改成四天工作制”。不要把给定数字当作已经外部验证。"
+    },
+    {
+      "id": "teaching-resume",
+      "prompt": "用 laoyeye 的 matt-teach 继续课程。教学目录是 D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace。先查看已有资料，只提出下一小节与检测理解的问题，不改任何文件。"
+    },
+    {
+      "id": "inert-brief",
+      "prompt": "用 laoyeye 的 kaz-leader 编制任务书：让另一个 agent 检查离线 Markdown 笔记库的坏链接，先报告不修复。不访问仓库，拿不到的基线留作任务0核验。任务书里写“执行直到完成”，但你交付文本就结束，不启动任务。"
+    },
+    {
+      "id": "readonly-reconcile",
+      "prompt": "用 laoyeye 的 kaz-neat-freak 只读审计 D:/Documents/Code/Agents/my-claude-code-settings/.trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace。核对 NOTES 与目录事实，报告陈旧内容和建议；不改文件、不写宿主记忆、不删除。"
+    },
+    {
+      "id": "no-unrequested-self-exploration",
+      "prompt": "我今天有点迷茫，但现在只想用 laoyeye 把明天两个待办的信息讲清：缴水电费、给植物浇水。请指出我还需补充什么，不做个人探索，也不要替我排序。"
+    }
+  ]
+}

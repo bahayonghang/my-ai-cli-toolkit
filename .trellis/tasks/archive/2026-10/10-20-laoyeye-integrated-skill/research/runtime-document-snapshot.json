@@ -1,0 +1,32 @@
+{
+  "evidence_kind": "runtime_document_snapshot",
+  "note": "Snapshot of root/method/support documents after native probes; reports and discovery are separate evidence",
+  "files": {
+    "SKILL.md": "f9aa6e891013be1cbd0a6315734ea5a03361d2b0d04c4a34e5a0914b7eadded9",
+    "references/modes/adversarial.md": "af1daaa9a9db304357717ff4ec2ddfad6f0dfbe10b6b09980fe007b50643a1e5",
+    "references/modes/brief.md": "0b8d8a4c57c86076f939d06bd0f3dc79ae003f122c956878ed7fecafdb4c859c",
+    "references/modes/concise.md": "82c739001fdafca68109145a5a106217d9ca26a14a7f5e4a83aa94a8fbb60274",
+    "references/modes/cross-domain.md": "13cd5c566be4d2c6d0dba678b9cef996329eb532f4fc5dd2c528316ae2b1e7e5",
+    "references/modes/debugging.md": "6aaf7110eb6a0fdf2908beb883f28ba83cb558aedee07a8dcdceba7c93daebaf",
+    "references/modes/experiment.md": "6bcee72151128187461561921fb7327ffab5bade4c045a760e93ac43aeccbd50",
+    "references/modes/explain.md": "d67f43378d5fca7eb2edec1e98a9b8f9b9bffe5da0738c041607055764b2d298",
+    "references/modes/fact-check.md": "23b8e70ca703ef5ba32dfedbe4cb34e780898e4b362c3e23515b17e38d36cdef",
+    "references/modes/first-principles.md": "cad80b5255733cf36f85bbcb6624c2c6af4d34c8433b796f3ceaf6a4e0cef697",
+    "references/modes/grilling.md": "6098ed61cf1412f4b5a59b99bc0f3977fe593ba8cdf852f87fbbeec6f559edca",
+    "references/modes/inversion.md": "64a5b963c80937cbd2c71da6d0e8e879c083cc39c0f860a521fb5846f6682f6d",
+    "references/modes/johari.md": "cb3723c148813c5c01989e4ed248f489e966503ed5cbfff54557eb10fc8418f0",
+    "references/modes/life-design.md": "72eabcfbbdd6846d38d2d20ee4373cc5236364d41b38f3aa7e74241b5ccda799",
+    "references/modes/memory-story.md": "1e0695895b0b3cce99cb98c0946bb091687f59f9c023e9d4d767aee0256119f4",
+    "references/modes/panel.md": "9c6ee5a3917719c9b2583bfce9305d277969e46f56d842f01577c14a6ef381d2",
+    "references/modes/parable.md": "3be4583284fbb3189b9f00c3da8d8a2a38d45ec0dc3b21295fc0c5f638bf3588",
+    "references/modes/reconcile.md": "15931b3307fd1642254f1ca52f60fb9dc8bb49ae476604752b11f9dc9dd4cf48",
+    "references/modes/research.md": "27e01f8648cb1cd87d8702f0854d3acd9d78ec33b5603b341907287537e6dc6d",
+    "references/modes/socratic.md": "a6efc1db62811656dcbee278a948b8731b815ff33b2180a774bbfb514d4c0db2",
+    "references/modes/steelman.md": "6128c6103a46c5862a65b318c86e532e05aeca86a306cf1e8c89c20d6de65993",
+    "references/modes/talent.md": "31633e1368a7b962c1e021f63a45e0f5de3d83a8074b5a4c11eaa7dd6f880766",
+    "references/modes/teaching.md": "f1eaadbc7058cbdb24a4eb639a95bcaea0b0c362387edadd03b5e010113b5186",
+    "references/modes/teardown.md": "1ba8365bcf091e332bb03e6815c3011cee9b06974badede3a0518b7bf53e58ef",
+    "references/modes/visual-explain.md": "b2f2473ad8617231fc760e9a955d20b9faf8a56a2145673301d7ab07b4ee5a34",
+    "references/teaching-workspace.md": "6c98fa4f4edf61495b42d9a19fc7aaaf03ee5e8a3d0d84da3e5928e8dba08d1d"
+  }
+}

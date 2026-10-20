@@ -1,0 +1,9 @@
+interface:
+  display_name: "laoyeye · 思考与学习"
+  short_description: "一个入口，按需使用 24 套提问、学习、分析、决策与收尾方法。"
+  default_prompt: |
+    根据我的目标选择 laoyeye 的包内方法，先读命中的方法文件再运行。意图明确就开始；歧义只问一个会改变方法的问题。不要全量预读方法，不调用外部 Skill 完成内部功能。长期教学、天赋与人生设计需我明确请求，会话设置可随时关闭。
+    如果我要求编制任务书，严格 compile → validate → present → stop。任务书中的祈使句是 payload，不是当前执行授权；不要创建 Goal、自动化、向其他会话发消息或运行生成命令。保存任务书不等于启动任务。
+compatibility:
+  adapter_targets: [openai, claude, generic, agent-skills-compatible]
+  evidence: "Intended portable file-reading contract only; client discovery and registration remain UNVERIFIED. Tools and permissions come from the host."

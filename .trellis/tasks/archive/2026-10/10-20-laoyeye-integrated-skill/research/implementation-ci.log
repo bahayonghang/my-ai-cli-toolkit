@@ -1,0 +1,650 @@
+════════════════════════════════════════════════════════════════
+  🚀 开始执行本地 CI 流程
+════════════════════════════════════════════════════════════════
+
+📚 步骤 1/8: 文档 catalog 与站点构建校验...
+just docs-check
+python docs/scripts/sync_docs_catalog.py --check
+Docs catalog is up to date (37 skills, 81 generated files checked).
+python docs/scripts/test_sync_docs_catalog.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.005s
+
+OK
+python docs/scripts/ensure_docs_deps.py
+Docs dependencies already present; skipping dependency install.
+Run `just docs-deps` to force a clean reinstall.
+npm.cmd --prefix docs run build
+npm notice run build
+npm notice run vitepress build .
+
+  vitepress v2.0.0-alpha.17
+
+- building client + server bundles...
+node_modules/@vueuse/core/dist/index.js (3362:0): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+node_modules/@vueuse/core/dist/index.js (5780:22): A comment
+
+"/* #__PURE__ */"
+
+in "node_modules/@vueuse/core/dist/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+✓ building client + server bundles...
+- rendering pages...
+✓ rendering pages...
+build complete in 3.23s.
+
+🧩 步骤 2/8: 技能元数据校验...
+just skills-check
+python scripts/check.py skills
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\academic-research-tools\academic-figure
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\academic-research-tools\idea-bib-review
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\ast-grep
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\claude-context-improver
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\codex-context-improver
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\file-sorter
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\goal-meta-skill
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\herdr-orchestra
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\image-to-ui-skill
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\ripgrep
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\skill-session-review
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\storage-analyzer
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\uv-workflow
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\developer-tools-integrations\windows-dev-process-cleanup
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\code-auditor
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\code-quality-review
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\code-refactor
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\codex-review
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\design-md
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\html-artifact
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\repo-test-audit
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\rust-build-optimization
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\development-workflows\trellis-plan-review
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\docs-writing-publishing\beautiful-mermaid-editor
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\docs-writing-publishing\bidwriter
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\docs-writing-publishing\document-writer
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\docs-writing-publishing\job-application-kit
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\docs-writing-publishing\renhua
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\docs-writing-publishing\touying
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\git-github-collaboration\gh-bootstrap
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\git-github-collaboration\gh-pr-release
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\git-github-collaboration\git-commit
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\git-github-collaboration\git-worktree
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\research-learning-knowledge\humanizer-paper
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\research-learning-knowledge\laoyeye
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\research-learning-knowledge\literature-mentor
+[OK] D:\Documents\Code\Agents\my-claude-code-settings\skills\research-learning-knowledge\paper-workbench
+
+🐍 步骤 3/8: Python 脚本编译检查...
+just python-check
+python -c "from pathlib import Path; import py_compile; roots=['skills','platforms','scripts']; paths=[p for root in roots for p in Path(root).rglob('*.py') if 'scaffolds' not in p.parts and 'node_modules' not in p.parts]; [py_compile.compile(str(p), doraise=True) for p in paths]; print(f'Checked {len(paths)} Python files')"
+Checked 98 Python files
+
+🧪 步骤 4/8: Python 标准库 unittest...
+just python-test
+python scripts/run_python_tests.py --dynamic-unittest-discover
+unittest discover -s platforms/claude/hooks/tests
+................
+----------------------------------------------------------------------
+Ran 16 tests in 1.151s
+
+OK
+unittest discover -s skills/development-workflows/code-auditor/tests
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+unittest discover -s skills/development-workflows/design-md/tests
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 2.255s
+
+OK
+unittest discover -s skills/docs-writing-publishing/job-application-kit/tests
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.003s
+
+OK
+unittest discover -s skills/docs-writing-publishing/renhua/tests
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+unittest discover -s skills/git-github-collaboration/gh-bootstrap/tests
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.013s
+
+OK
+unittest discover -s skills/git-github-collaboration/gh-pr-release/tests
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 0.006s
+
+OK
+unittest discover -s skills/research-learning-knowledge/humanizer-paper/tests
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.006s
+
+OK
+unittest discover -s skills/research-learning-knowledge/laoyeye/tests
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 1.096s
+
+OK
+unittest discover -s skills/research-learning-knowledge/paper-workbench/tests
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 3.521s
+
+OK
+unittest discover -s scripts/tests
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.167s
+
+OK
+
+🔗 步骤 5/8: 项目安装器测试...
+just install-projects-test
+python scripts/test_install_projects.py
+...................................
+----------------------------------------------------------------------
+Ran 35 tests in 1.278s
+
+OK
+
+🧪 步骤 6/8: Node.js 技能测试...
+just node-test
+node -e "const fs = require('node:fs'); const path = require('node:path'); const { spawnSync } = require('node:child_process'); const files = []; const walk = (dir) => { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const filePath = path.join(dir, entry.name); if (entry.isDirectory()) walk(filePath); else if (entry.isFile() && filePath.split(/[\\/]/).includes('tests') && entry.name.endsWith('.mjs')) files.push(filePath); } }; walk('skills'); if (files.length === 0) { console.log('No Node skill tests found'); process.exit(0); } const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' }); process.exit(result.status ?? 1);"
+✔ a missing file exits non-zero with a clear error (83.5913ms)
+✔ a file that is not a PDF is rejected (115.0142ms)
+✔ text above the floor passes (105.2324ms)
+✔ text below the floor fails with exit 1 (96.5756ms)
+✔ --json reports the offending run (105.1993ms)
+✔ a PDF without text runs is not auditable (123.0718ms)
+✔ a non-positive --min-pt is rejected (118.2802ms)
+✔ the port table lists 24 plot scripts, all present (2.9086ms)
+✔ figure_Brainteaser/plot_brute_force.py writes brute_force.png (2377.5366ms)
+✔ figure_Brainteaser/plot_correctness_by_category.py writes correctness_by_category.png (1598.7069ms)
+✔ figure_Brainteaser/plot_correctness_by_subcategory.py writes correctness_by_subcategory.png (2380.757ms)
+✔ figure_Brainteaser/plot_rewriting.py writes rewriting.png (1355.2932ms)
+✔ figure_Brainteaser/plot_selfcorrection_math.py writes selfcorrection_math.png (1429.4195ms)
+✔ figure_CellSpliceNet/plot_ablation.py writes ablation.png (1060.0649ms)
+✔ figure_CellSpliceNet/plot_comparison.py writes comparison_worm.png, comparison_human.png (1436.6933ms)
+﹣ figure_Cflows/diffusion_swiss_roll.py writes diffusion_swiss_roll.png (0.1222ms) # requires python module(s): scipy
+✔ figure_Cflows/plot_comparison_Ablation.py writes figX_comparison_Ablation.png (1375.1579ms)
+✔ figure_Cflows/plot_comparison_GeneRegulatory.py writes fig2_comparison_GeneRegulatory.png (1339.7183ms)
+✔ figure_Cflows/plot_comparison_Trajectory.py writes fig2_comparison_Trajectory.png (1193.1043ms)
+✔ figure_Dispersion/plot_idea.py writes idea.png (735.4496ms)
+✔ figure_Dispersion/plot_illustration.py writes illustration.png (1029.8479ms)
+✔ figure_ImmunoStruct/plot_bars.py writes bars_comparison_IEDB.png, bars_ablation_IEDB.png, bars_comparison_Cancer.png, bars_ablation_Cancer.png (1381.1926ms)
+✔ figure_RNAGenScape/plot_comparison.py writes results_comparison_speed.png, results_comparison_optimization.png (1434.8459ms)
+✔ figure_RNAGenScape/plot_hole_manifold.py writes manifold_holes.png (782.9666ms)
+✔ figure_RNAGenScape/plot_manifold.py writes manifold.png (640.1007ms)
+✔ figure_RNAGenScape/plot_sweep.py writes results_sweep.png (813.3804ms)
+✔ figure_VIGIL/plot_ablation.py writes ablation_curves.png (949.8349ms)
+✔ figure_VIGIL/plot_comparison_radar.py writes comparison_radar.png (886.0238ms)
+﹣ figure_VIGIL/plot_concept.py writes concept.png (0.0841ms) # requires python module(s): scipy
+✔ figure_VIGIL/plot_posttraining.py writes comparison_posttraining.png (789.8887ms)
+﹣ figure_ophthal_review/plot_composition.py writes composition_heatmap.png (0.0723ms) # requires python module(s): seaborn
+✔ figure_ophthal_review/plot_trend.py writes trend_by_month.png (1034.0396ms)
+✔ --help exits 0 and lists the check-palette subcommand (726.4005ms)
+✔ save_figure rejects a format outside the whitelist and writes nothing (1007.6677ms)
+✔ save_figure creates parent dirs and returns the written paths (1663.5663ms)
+✔ match_width=True keeps the PNG width equal to figsize width x dpi (1099.6019ms)
+✔ apply_style sets the tier and restores rcParams on exit (689.2945ms)
+✔ apply_style rejects a journal tier with a missing card key (731.5873ms)
+✔ text_color_for returns white on dark and black on light backgrounds (678.5284ms)
+✔ check-palette warns for a red-green pair (659.359ms)
+✔ check-palette passes the first four Okabe-Ito colors (695.9493ms)
+✔ set then get round-trips both keys (376.2613ms)
+✔ get on an unset key prints nothing and exits 0 (115.8157ms)
+✔ clear drops a saved value (361.6611ms)
+✔ an invalid value is rejected with a non-zero exit (114.4262ms)
+✔ path reports the ACADEMIC_FIGURE_CONFIG override (122.4773ms)
+✔ backtick paths in SKILL.md, modes/*.md, and styles/f4p_*.md exist (14.7814ms)
+✔ bar_memevolve.py renders its PNG without LaTeX (1402.7585ms)
+✔ bar_spice.py renders its PNG without LaTeX (1573.1975ms)
+✔ classwise_iou_table.py renders its PNG without LaTeX (1403.071ms)
+✔ line_aime.py renders its PNG without LaTeX (1226.7578ms)
+✔ line_loss_inset.py renders its PNG without LaTeX (1390.0249ms)
+✔ line_selfdistill.py renders its PNG without LaTeX (1371.7715ms)
+✔ radar_dora.py renders its PNG without LaTeX (965.0777ms)
+✔ scatter_break.py renders its PNG without LaTeX (930.9281ms)
+✔ scatter_tsne.py renders its PNG without LaTeX (1149.1235ms)
+✔ --help exits 0 and documents the CLI (957.3427ms)
+✔ demo audits a bad layout and writes a preview (1562.5576ms)
+✔ audit_layout returns graded issues for a clean figure (1137.046ms)
+✔ audit_layout warns when a line series kisses the y limits (1082.3554ms)
+✔ audit_layout warns when labels crowd out the plot box (1073.6048ms)
+✔ a preview of a missing file exits non-zero (1007.0001ms)
+✔ inventory parses nested, quoted, macro-concatenated, and Unicode BibTeX (121.6913ms)
+✔ inventory fails closed and writes JSON for truncated input (115.869ms)
+✔ inventory rejects an empty BibTeX corpus (136.7405ms)
+✔ inventory distinguishes exact keys, case collisions, duplicate DOI, and missing fields (142.1543ms)
+✔ BibTeX prompt injection remains inert field data (137.1761ms)
+✔ audit accepts fully covered Pandoc citations and preserves the semantic boundary (150.1244ms)
+✔ audit rejects normalized draft hash drift (175.1494ms)
+✔ audit rejects abstract-only evidence for a quantitative claim (174.8817ms)
+✔ audit rejects an empty draft and empty claim ledger (184.9328ms)
+✔ audit rejects deliverable claims whose source identity is not verified (626.1426ms)
+✔ audit requires synthesis evidence to align with at least two cited sources (198.6373ms)
+✔ audit rejects empty evidence anchors (244.4993ms)
+✔ candidate citations remain blocked until the same file is explicitly approved (320.3673ms)
+✔ audit rejects a citation key absent from every declared corpus (186.2195ms)
+✔ audit supports LaTeX citations and requires occurrence coverage (145.2772ms)
+✔ package keeps one root entrypoint, reachable references, and repository eval coverage (2.2718ms)
+✔ description and evals name exclusions (0.8479ms)
+✔ description and evals name exclusions (0.975ms)
+✔ single renamed identity and compact inline entrypoint (3.6494ms)
+✔ discovery keeps source roots, effective config and scope distinctions (1.3279ms)
+✔ main behavior oracle and output inputs have complete distinct coverage (2.8318ms)
+✔ trigger smoke projects real main prompts and current generated results (1.3033ms)
+✔ current IR and evidence replace obsolete score reports (3.3392ms)
+✔ local reference links resolve and report keeps conditional evidence (3.2718ms)
+✔ shared root and nested map fences remain identical (0.9121ms)
+✔ relative root is rejected (245.0256ms)
+✔ junk, hidden, git root, node child, blend weak, families (588.6309ms)
+✔ consistent vs refined and whitelist (2003.8055ms)
+✔ label and filename validation (1031.286ms)
+✔ dry-run apply does not move; execute writes undo and undo restores (1678.5318ms)
+✔ mtime drift and existing destination refuse execute (1934.0836ms)
+✔ cross-parent proposal is rejected (504.354ms)
+✔ valid Chinese companion output passes strict contract lint (125.1737ms)
+✔ base goal can pass normal lint without companion sections (126.2683ms)
+✔ stdin and file inputs accept the same UTF-8 and BOM content without output files (521.5397ms)
+✔ stdin rejects invalid UTF-8 and repeated stdin arguments without echoing the payload (272.176ms)
+✔ file and stdin inputs can be combined and any input failure makes the CLI fail (555.9403ms)
+✔ ordinary Goal cannot borrow required fields from raw or fenced wrapper prose (300.6882ms)
+✔ every adjacent raw or fenced Goal validates independently (1407.7744ms)
+✔ 4000 and 4001 character boundaries count only each raw or fenced Goal body (1207.6189ms)
+✔ fenced Goal blank lines are rejected rather than truncating a valid prefix (136.6116ms)
+✔ first-line trailing whitespace remains part of a multiline Goal body length (280.6859ms)
+✔ strict contract rejects valid base goal missing Chinese companion sections (219.4144ms)
+✔ linter rejects non-executable Chinese slash command alias (111.7601ms)
+✔ linter rejects unresolved placeholders and vague verification (138.2606ms)
+✔ claude platform accepts condition-style goal with bounding clause (154.6802ms)
+✔ claude platform rejects /goal pause advice (154.7338ms)
+✔ claude platform rejects goal without a turn or time bounding clause (134.3782ms)
+✔ claude bounding clauses cannot come from another Goal or wrapper advice (259.4766ms)
+✔ codex platform keeps base behavior for goals without bounding clause (202.5238ms)
+✔ grok and omp use the skill-owned portability limit wording (335.3525ms)
+✔ platform-specific management commands cannot be borrowed (697.4278ms)
+✔ both remains Codex plus Claude and all five platform values parse (985.4455ms)
+✔ linter rejects /goal blocks beyond the 4,000 character platform limit (134.5729ms)
+✔ unanchored completion quantifiers produce a warning without failing (138.0046ms)
+✔ authoritative test suite anchor avoids the broad-quantifier warning (115.9328ms)
+✔ unnumbered completion conditions produce a recommendation warning (103.2303ms)
+✔ linter rejects claims that goal text configures runtime budget (112.617ms)
+✔ linter accepts an explicit soft-stop budget disclaimer (105.5647ms)
+✔ skill allowed-tools stay exact and narrow while the named helper owns the governed write (1.1427ms)
+✔ package metadata, platform registry, and behavior eval history stay synchronized (5.2229ms)
+✔ review gate keeps prompt approval separate from Goal activation (3.9842ms)
+✔ contract Trellis text missing dispatch is an error (104.7944ms)
+✔ contract Trellis text with dispatch passes (98.3138ms)
+✔ contract Trellis text in inline mode may omit dispatch (98.9637ms)
+✔ non-Trellis contract may omit dispatch (114.7816ms)
+✔ inline Trellis /goal missing dispatch is an error (106.395ms)
+✔ inline Trellis /goal with dispatch passes (108.3758ms)
+✔ inline Trellis /goal with explicit user opt-out passes without dispatch (111.3477ms)
+✔ inline Trellis /goal with capability fallback names the reason and passes (108.5023ms)
+✔ Trellis /goal missing the first-statement switch is an error (109.7965ms)
+✔ Trellis /goal cannot bury the default-on switch in a later statement (98.5756ms)
+✔ persisted Trellis Objective cannot bury the switch in a later statement (99.8853ms)
+✔ Trellis /goal missing current-task planning artifact commit is an error (95.3461ms)
+✔ Trellis /goal must name the concrete task in the archive command (93.7482ms)
+✔ Trellis /goal must keep the archive commit separate (104.1567ms)
+✔ Trellis first-statement opt-out cannot contradict later dispatch (132.6398ms)
+✔ Trellis capability fallback cannot also claim an explicit user opt-out (114.4802ms)
+✔ non-Trellis inline /goal may omit dispatch (94.2518ms)
+✔ Trellis implementation detection is not disabled by an unrelated-edit exclusion (105.3211ms)
+✔ review-remediation inline profile accepts the complete one-Prompt loop (116.9802ms)
+✔ review-remediation persisted contract accepts the same feedback contract (249.9164ms)
+✔ review-remediation profile fails closed when any scan-envelope field is missing (760.909ms)
+✔ review-remediation rejects empty or template-like scan-envelope records (299.3954ms)
+✔ review-remediation accepts a concrete scanner version instead of forcing UNVERIFIED (110.3114ms)
+✔ review-remediation profile rejects broken feedback, question, and completion clusters (857.0637ms)
+✔ review-remediation rejects policy keywords outside their canonical Goal fields (135.1159ms)
+✔ review-remediation validates every inline Goal block independently (160.5227ms)
+✔ review-remediation rejects contradictory second-Prompt authorization (107.7087ms)
+✔ review-remediation rejects missing same-task recheck and question exclusions (415.7687ms)
+✔ review-remediation keeps equivalent feedback semantics for opt-out and capability fallback (206.6486ms)
+✔ ordinary published examples preserve completion conjunction and remain lintable (1225.0562ms)
+✔ review-remediation remains opt-in and pure read-only Trellis review does not trigger implementation gates (191.7518ms)
+✔ create-only writes UTF-8 LF, reports untracked metadata, and does not echo body (494.7665ms)
+✔ existing target is preserved until replace has the matching SHA-256 (1899.513ms)
+✔ unsafe basenames and absolute paths fail without creating output (777.4541ms)
+✔ symlink or reparse target is refused without changing its destination (544.4046ms)
+✔ lint, invalid UTF-8, and secret failures leave no target or temp file (742.0533ms)
+✔ environment variable names and a credentials pause rule are allowed (731.6589ms)
+✔ UTF-8 BOM input is accepted and removed from persisted bytes (605.6672ms)
+✔ Git visibility distinguishes ignored and tracked contracts (2019.3926ms)
+✔ an explicitly confirmed non-Git workspace reports honest degradation (331.5719ms)
+✔ all five platform launch contracts pass and a wrong management command is rejected (1886.2011ms)
+✔ one neutral contract can carry all five thin launch renderers (375.5794ms)
+✔ Trellis contracts link authoritative artifacts and preserve commit-then-archive (562.782ms)
+✔ description and evals name exclusions (1.1008ms)
+✔ NUL decoder handles split and combined frames (1.0804ms)
+✔ CDP pipe routes session requests and errors (1.615ms)
+✔ CDP pipe times out pending requests (23.448ms)
+✔ CDP pipe rejects pending requests when browser spawn fails (0.5892ms)
+✔ browser launch args keep pipe debugging and CI sandbox flags (0.2385ms)
+✔ connectDemoPage attaches to an existing page then navigates (0.7219ms)
+✔ connectDemoPage creates a blank target when no page exists (0.4469ms)
+✔ connectDemoPage surfaces a navigate errorText (0.4777ms)
+✔ browser shutdown escalates and waits for forced exit (1.4242ms)
+✔ browser shutdown requests a graceful close before sending signals (0.3095ms)
+✔ browser discovery covers explicit, Windows, macOS, and Linux paths (0.4954ms)
+✔ static server handles MIME, missing files, and traversal (51.366ms)
+✔ demo configs preserve the legacy assertion counts (0.2718ms)
+﹣ browser smoke: artmuse-ios (0.0452ms) # SKIP
+﹣ browser smoke: marble-note (0.0313ms) # SKIP
+✔ full IMAGE2_COMMAND template preserves injected argv values (269.5747ms)
+✔ single supported optional placeholder makes a complete template (646.7234ms)
+✔ configured command without placeholders receives the standard arguments (390.9249ms)
+✔ unknown IMAGE2_COMMAND placeholder fails without a traceback (145.7257ms)
+✔ fallback dry-run reports every missing prerequisite without filesystem writes (147.3691ms)
+✔ native dry-run is side-effect free and reports a planned channel (158.9178ms)
+✔ missing native command and unusable real fallback keep distinct exit codes (308.3798ms)
+✔ SKILL.md invokes the wrapper through the literal skill directory (0.5921ms)
+✔ required skill files and demo entrypoints exist (9.2245ms)
+✔ SKILL.md reference index covers every reference document (1.0035ms)
+✔ README local links resolve (1.8415ms)
+✔ interface and eval contracts are structurally complete (0.5837ms)
+✔ description and evals name exclusions (0.9711ms)
+ensure-report-ignore cases: root-missing,root-not-directory,root-reparse,invalid-utf8-before-mutation,nul-before-mutation,create-exact-artifact-only,secret-before-mutation,bom-crlf-normalizes-lf,existing-exact-line-unchanged,existing-no-replace-refused,replace-stale-hash-preserves-old,replace-exact-delta-succeeds,replace-removal-reorder-change-refused,target-link-refused,predictable-temp-regular-ignored-preserved,predictable-temp-link-ignored-preserved,finalization-failure-preserves-old,readback-hash-matches-stdout,git-visibility-ignored,git-visibility-tracked,git-visibility-untracked,git-visibility-non-repo,stdout-bounded-no-body-secret,git-index-unchanged,only-gitignore-payload-changed
+▶ rejects missing, non-directory, and reparse roots
+  ✔ root-reparse (150.0528ms)
+✔ rejects missing, non-directory, and reparse roots (433.2454ms)
+✔ validates encoding, artifact shape, and secrets before mutation (791.0078ms)
+✔ normalizes BOM and CRLF, reports disk hash, and changes one payload (304.6006ms)
+✔ enforces unchanged, no-clobber, stale-hash, and exact-delta replacement (1486.6252ms)
+▶ refuses target links but ignores and preserves predictable temp residue
+  ✔ target-link-refused (159.0039ms)
+  ✔ predictable-temp-link-ignored-preserved (298.0168ms)
+✔ refuses target links but ignores and preserves predictable temp residue (771.3712ms)
+✔ injected finalization failure preserves old bytes and removes only owned temp (194.6041ms)
+✔ reports all four Git visibility states and never mutates the index (2322.9311ms)
+✔ stdout is bounded metadata and never includes body or secret input (431.5649ms)
+✔ contract case-name matrix remains explicit (0.5252ms)
+gbk-no-utf8-env cases: ensure_report_ignore.py,manage_review_input.py,open_report.py,render_review_html.py,report_headings.py,review_contract.py,scan_invocations.py,write_session_review.py
+✔ planned scripts set is exact and every case emits strict UTF-8 without UTF-8 env overrides (1868.3602ms)
+✔ generated HTML is self-contained while a URL text node remains allowed (181.3372ms)
+✔ resource scanner rejects every governed carrier and CSS form (0.3905ms)
+✔ create validates first, normalizes UTF-8 LF, and emits disk identity (239.0554ms)
+✔ resolve_repo_root keeps caller-visible absolute identity (132.4279ms)
+✔ create is no-clobber and replace requires the current exact hash (1258.5991ms)
+✔ schema, identity, zero-sample, secret, and UTF-8 failures precede parent creation (2258.7877ms)
+✔ Git repositories require the fixed subtree ignore without mutating .gitignore (608.2333ms)
+▶ legacy flag, unsafe names, input target links, and linked parents are refused
+  ✔ input-target-link-negative (160.0606ms)
+  ✔ input-parent-link-negative (160.0733ms)
+✔ legacy flag, unsafe names, input target links, and linked parents are refused (685.0483ms)
+▶ unpredictable temp names ignore and preserve predictable residue
+  ✔ predictable-temp-link-ignored-preserved (527.3088ms)
+✔ unpredictable temp names ignore and preserve predictable residue (1099.3034ms)
+✔ remove requires complete current input and both artifact proofs (1495.0032ms)
+✔ remove rejects and restores a byte-identical input with a different inode (476.0051ms)
+▶ remove serializes input, Markdown, and HTML leases and releases held prefixes
+  ✔ remove-input-lease-contention (645.4716ms)
+manage-review-input cases: create-normalized-json,create-hash-readback,create-parent-after-validation,create-no-clobber,replace-correct-hash,replace-stale-hash,schema-invalid-before-mutation,payload-name-mismatch,zero-invoked,zero-scored-sessions,zero-ratio-denominator,cross-field-aggregate-mismatch,secret-before-mutation,invalid-utf8-before-mutation,bom-crlf-normalizes-lf,git-ignore-required,non-repo-allowed,canonical-name-positive,legacy-skill-name-negative,unsafe-name-negative,input-target-link-negative,input-parent-link-negative,predictable-temp-regular-ignored-preserved,predictable-temp-link-ignored-preserved,finalization-failure-preserves-old,remove-proof-missing,remove-proof-duplicate,remove-input-hash-stale,remove-artifact-missing,remove-artifact-hash-stale,remove-input-lease-contention,remove-artifact-lease-prefix-release,remove-late-replace-preserves-new,remove-late-artifact-replace-preserves-new,remove-complete-proof-only-input,remove-second-refused,partial-html-failure-retains-input-markdown,partial-retry-converges-remove,stdout-bounded,git-index-unchanged
+  ✔ remove-artifact-lease-prefix-release (721.7049ms)
+✔ remove serializes input, Markdown, and HTML leases and releases held prefixes (1368.0933ms)
+✔ remove rejects a byte-identical artifact with a different inode (365.6997ms)
+✔ partial failure retains input and Markdown; retry proof removes only input (780.6291ms)
+✔ stdout is bounded and Git index remains byte-for-byte unchanged (752.5352ms)
+✔ input lifecycle case-name matrix remains explicit (0.3879ms)
+✔ canonical --name opens the derived HTML target through the injected stub (201.0636ms)
+✔ legacy basename flag and unsafe names are argparse/path errors (352.7341ms)
+✔ missing targets and link targets outside the governed subtree are refused (454.8807ms)
+✔ browser False return is non-fatal and bounded (222.9043ms)
+✔ browser exception is non-fatal and bounded (256.2869ms)
+✔ renders every registered section, scorecard values, and escaped content (153.7107ms)
+✔ renders null instruction fit as insufficient evidence, never numeric zero (162.7064ms)
+✔ renderer CLI exposes no arbitrary output option (166.0464ms)
+✔ markdown headings follow language while stable field names and content remain (280.4036ms)
+✔ html headings follow language while stable field names and content remain (342.8563ms)
+✔ heading dictionary has one source definition and both renderers import it (3.1147ms)
+✔ Claude Skill tool is invoked; second cwd appears only in global scope (534.2449ms)
+✔ Claude explicit skill path excludes name-only and other-instance invocation signals (361.199ms)
+✔ Grok nested session id and skills_referenced path match (289.1334ms)
+✔ Grok explicit skill path excludes name-only and other-instance references (398.532ms)
+✔ Grok keeps name-only invocation fallback when skill path is not explicit (285.3286ms)
+✔ Codex host_skills is available; read is loaded; workflow marker is invoked (202.3423ms)
+✔ Codex explicit skill path excludes a same-name instance at another path (158.342ms)
+✔ Codex real response_item carriers establish target reads from allowlisted payload fields (212.3176ms)
+✔ Codex JSON carrier commands keep actions outside unquoted path spans (218.1896ms)
+✔ Codex escaped JSON quoted paths with spaces work in all allowlisted carriers (178.7263ms)
+✔ Codex nested JSON escaped paths preserve exact target identity (214.9895ms)
+✔ Codex quoted paths with spaces do not emit a target-matching bare suffix (141.3001ms)
+✔ path span extraction keeps escaped Windows and POSIX paths whole (196.523ms)
+✔ Codex read actions must occur outside target SKILL.md path spans (832.6619ms)
+✔ Codex cwd scope fails closed on missing, invalid, conflicting, and mismatched session metadata (378.6947ms)
+✔ Codex rollout stems stay unique when forks share a root payload session id (138.6562ms)
+✔ Oh My Pi read-only is loaded; workflow after read is invoked; missing pi store ignored (270.8799ms)
+✔ Oh My Pi explicit skill path excludes another same-name instance (264.6619ms)
+✔ Codex and Oh My Pi require target load before a canonical workflow marker (277.0445ms)
+✔ Codex and Oh My Pi tool-bearing assistant events do not promote loaded sessions (372.2004ms)
+✔ canonical assistant bodies reject untyped text and every tool-bearing event layer (245.7968ms)
+✔ Claude SKILL.md injection without Skill tool stays loaded (224.2925ms)
+✔ missing stores are coverage notes and exit 0 (178.1ms)
+✔ ambiguous skill names list targets and exit 1 (157.915ms)
+﹣ path normalization preserves case distinctions on case-sensitive platforms (0.3106ms) # Windows path comparison follows normcase case-insensitive semantics
+✔ bare SKILL.md path extraction stays bounded after a long non-path token (224.7628ms)
+skill-workflow-contract cases: authorization-preview-before-helper,authorization-confirmed-exact-snapshot,authorization-root-drift-rejected,authorization-name-drift-rejected,authorization-path-drift-rejected,authorization-effect-drift-rejected,authorization-existing-target-needs-replace-confirmation,authorization-gitignore-separate
+✔ unconfirmed workflow produces the exact preview and zero helper calls (2.5971ms)
+✔ confirmed immutable snapshot executes input, both reports, proof removal, then open (1622.368ms)
+✔ root, name, path, and effect drift each invalidate prior authorization (1.5545ms)
+✔ an existing target requires path/hash/effect preview and separate replace confirmation (4.219ms)
+✔ gitignore authorization remains outside the report-package snapshot (1.1781ms)
+✔ all adapter targets share canonical basename, dual artifacts, proof cleanup, and opener (0.3839ms)
+✔ zero-sample branches are bounded and perform no slice read or helper call (0.2631ms)
+✔ authorization case-name matrix is exact (0.3929ms)
+✔ markdown: create writes one deterministic UTF-8 artifact with bounded identity (312.0336ms)
+✔ markdown: no-clobber and hash-authorized replace preserve old bytes on refusal (1394.3305ms)
+✔ html: create writes one deterministic UTF-8 artifact with bounded identity (285.4956ms)
+✔ html: no-clobber and hash-authorized replace preserve old bytes on refusal (1179.8747ms)
+✔ both formats revalidate tampered input before creating destination or temp (3307.2947ms)
+✔ Decimal label mapping, phased rounding, equivalent literals, and grades are canonical (1218.4375ms)
+✔ instruction-fit insufficient evidence is excluded and rendered as unverified (462.2052ms)
+✔ coverage ratio is display-only and cannot change overall or grade (396.9917ms)
+✔ suggestion support, reasons, language, and finding partition are closed contracts (3541.729ms)
+▶ input identity and removed flags are strict; only exact absolute .input/name.json works
+  ✔ input symlink (111.6032ms)
+✔ input identity and removed flags are strict; only exact absolute .input/name.json works (1186.3375ms)
+▶ target/temp links and finalization failures preserve foreign or old bytes
+  ✔ markdown target symlink (115.7581ms)
+  ✔ html target symlink (109.8391ms)
+✔ target/temp links and finalization failures preserve foreign or old bytes (1333.7467ms)
+✔ late temp exchange after the former last check is rejected and replace rollback restores old bytes (1107.6231ms)
+security-boundary: advisory lock + GUID temp; excludes non-cooperative same-user tampering
+✔ advisory lease reuses residue, rejects live contention, and recovers after owner death (845.478ms)
+✔ same input yields same finding/score and stable hashes in both formats (675.8311ms)
+✔ writer argument contract, stdout bounds, Git visibility, and source IO policy (939.6295ms)
+✔ SKILL.md uses skill-dir and forbids tmp capture (1.6978ms)
+✔ cache prefixes include TEMP on unix CI platforms (0.9746ms)
+✔ relative --output is rejected (429.1544ms)
+﹣ unsupported platform JSON on linux (0.8016ms) # linux-only
+✔ windows hotspot scan skips Program Files and junctions (907.1919ms)
+✔ build_report rejects missing schema and writes nothing (280.7059ms)
+✔ green trash outside cache prefixes is rejected (843.2126ms)
+✔ temp prefix green trash and script injection (692.2611ms)
+✔ static report has no delete buttons (272.0104ms)
+✔ windows shfileop buffer keeps extra NUL (277.5951ms)
+✔ description and evals name exclusions (0.6774ms)
+✔ parse gate: both scripts parse without syntax errors (1143.623ms)
+✔ Stop-Pids binds TargetPids, dedups, and reports per-PID outcomes (662.1132ms)
+✔ Get-CategoryFromLines classifies known command lines (638.814ms)
+✔ dev audit facts expose summary plus mixed-tree fields (827.9713ms)
+✔ UWP fixture audit exposes summary counters (738.5011ms)
+✔ UWP Dolby fixture -WhatIf previews and never flags registry change (686.7136ms)
+✔ uwp cleanup without an explicit profile fails fast (598.4842ms)
+✔ SKILL.md keeps repo conventions (skill-dir paths, full frontmatter) (0.5594ms)
+✔ Get-Recommendation distinguishes stale codex playwright trees (637.006ms)
+✔ StaleMinutes rejects zero and negative values before enumeration (3615.0463ms)
+✔ ignored mode parameters are disclosed as warnings (396.9479ms)
+✔ dev cleanup aggregate preserves result semantics (400.4696ms)
+✔ workspace matching respects Windows path segment boundaries (436.8108ms)
+✔ full descendant audit blocks protected and unknown members (508.1832ms)
+✔ missing process identity blocks automatic cleanup (508.4869ms)
+✔ workspace cleanup rejects a nonexistent directory (400.3022ms)
+✔ cleanup precondition blocks PID identity drift without calling taskkill (630.1717ms)
+✔ taskkill exit zero cannot hide surviving planned members (593.6853ms)
+✔ tasklist CSV parsing is strict and keeps full package identity (408.9343ms)
+✔ UWP selection requires package and complete process identity (408.6851ms)
+✔ UWP cleanup blocks missing or changed PID identity (375.0009ms)
+✔ undocumented Phone Link registry mutation is fail-closed (375.189ms)
+✔ description and evals name exclusions (1.1553ms)
+✔ description and evals name exclusions (0.8282ms)
+✔ description and evals name exclusions (1.0534ms)
+✔ valid_offline_artifact_passes (240.9259ms)
+✔ large_artifact_warns_above_size_threshold (294.9608ms)
+✔ split_bundle_pages_validate_independently (509.4468ms)
+✔ missing_body_fails (141.8668ms)
+✔ external_script_fails (137.3094ms)
+✔ remote_stylesheet_fails (153.8001ms)
+✔ fetch_call_fails_by_default (117.0972ms)
+✔ allow_external_flag_allows_http_but_not_missing_structure (294.9582ms)
+✔ inline_svg_with_xmlns_passes (150.9397ms)
+✔ main_without_id_fails (148.8491ms)
+✔ missing_viewport_fails (231.0646ms)
+✔ preload_link_fails (145.1474ms)
+✔ starter_template_uses_fluid_wide_desktop_shell (0.5698ms)
+✔ hardcoded_color_count_warning_fires_above_threshold (170.1161ms)
+✔ hardcoded_color_count_includes_eight_digit_hex (131.5904ms)
+✔ hardcoded_color_count_no_warning_when_inside_token_definitions (122.1017ms)
+✔ svg_hardcoded_fill_warning_when_not_using_token (139.4478ms)
+✔ svg_currentcolor_fill_does_not_warn (127.1199ms)
+✔ table_without_caption_warns (270.2988ms)
+✔ svg_text_legibility_warning_flags_stroked_shadowed_long_labels (147.1895ms)
+✔ svg_fill_only_short_labels_with_text_equivalent_do_not_warn (206.4057ms)
+✔ multiple_h1_fails (129.0501ms)
+✔ raw_mermaid_warns (157.6705ms)
+✔ diagram_frame_without_figcaption_warns (155.4693ms)
+✔ informative_svg_missing_title_desc_accessible_name_warns (170.5179ms)
+✔ informative_svg_with_title_desc_accessible_name_does_not_warn (133.6799ms)
+✔ additional_offline_network_surfaces_fail (666.6248ms)
+✔ starter_template_includes_architecture_audit_primitives (0.25ms)
+✔ python-test discover miss is Missing (252.0792ms)
+✔ node-test collects skills tests mjs as needs-review (154.115ms)
+✔ missing justfile does not apply default globs (189.0504ms)
+✔ collected file without assert is Shallow (144.8862ms)
+✔ python-check does not collect tests (291.8228ms)
+✔ named recipe files are collected and evals json is not (252.2365ms)
+✔ dynamic python-test marker collects skill, hook, and scripts tests (240.7045ms)
+✔ description and evals name exclusions (1.109ms)
+✔ reports an untracked reviews destination as a note without failing (561.7092ms)
+✔ reports an ignored reviews destination without a note (617.4544ms)
+✔ state is null outside a git work tree and exit code stays 0 (270.8688ms)
+✔ the git note never changes the blocking exit code (621.6642ms)
+✔ tree mode aggregates a root, live child, and archived child in declared DFS order (280.6568ms)
+✔ tree mode --output persists the same single aggregate JSON with LF (248.7574ms)
+✔ tree mode keeps leaf behavior as one single-task scope (245.3204ms)
+✔ tree mode resolves deprecated subtasks only when children is absent (284.8045ms)
+✔ tree mode blocks conflicting non-empty children and subtasks (336.682ms)
+✔ tree mode blocks a missing child without creating report residue (225.9864ms)
+✔ tree mode blocks an active and archived child-name ambiguity (307.4114ms)
+✔ tree mode blocks cycles (244.7505ms)
+✔ tree mode blocks duplicate edges (379.1429ms)
+✔ tree mode blocks a child whose parent backlink disagrees (317.7117ms)
+✔ tree mode blocks child references that are not safe basenames (261.2946ms)
+✔ tree mode rejects an unsafe root basename before producing a report target (141.9218ms)
+✔ tree mode rejects a reparse-point tasks root (174.0218ms)
+✔ tree mode blocks a child directory that escapes through a symlink or junction (344.0376ms)
+✔ tree mode blocks malformed member task.json (242.7024ms)
+✔ tree mode blocks a member whose status cannot select the drift pass (205.9042ms)
+✔ root and interface lock one recursive scope to one root report and one handoff (2.143ms)
+✔ report and handoff templates carry task-qualified whole-scope fields (1.6125ms)
+✔ behavior fixture makes single-output and cross-task deduplication material (1.3389ms)
+✔ handoff requires structured confirmation gate and still forbids start (2.4302ms)
+✔ writes UTF-8 LF report under .trellis/reviews/<task-dir-name>.md (483.5033ms)
+✔ second write overwrites the same path (663.1022ms)
+✔ a parent-scope write creates only the root report and preserves historical child reports (294.2924ms)
+✔ refuses a reviews directory that is a symlink or junction (237.1464ms)
+✔ refuses a task alias instead of changing the report basename after resolution (198.9877ms)
+✔ refuses an existing report symlink without changing its target (169.9048ms)
+✔ keeps canonical output when the repository root is reached through an alias (712.9286ms)
+✔ refuses an ordinary pre-existing temp sibling without deleting it (202.3391ms)
+✔ refuses a pre-existing temp symlink without changing external or report bytes (218.394ms)
+✔ refuses a task directory name that is not a safe basename (230.2216ms)
+✔ refuses a task directory outside repo .trellis/tasks (130.2877ms)
+✔ without --repo-root, a directory that is not under .trellis/tasks is refused (176.0584ms)
+✔ exits 1 when --repo-root has no .trellis directory (151.568ms)
+✔ reads --input as UTF-8 including Chinese text (294.3195ms)
+✔ refuses an empty body (154.6534ms)
+✔ notes when the report destination is untracked and not ignored (634.3313ms)
+✔ stays silent about gitignore when the reviews directory is ignored (484.1168ms)
+✔ stays silent when the report destination is already tracked (593.0097ms)
+✔ description and evals name exclusions (0.8099ms)
+✔ description and evals name exclusions (0.7456ms)
+✔ description and evals name exclusions (0.9745ms)
+✔ description and evals name exclusions (0.7717ms)
+✔ agent trailers without --ai omit the [AI] tag (259.518ms)
+✔ opt-in --ai still places [AI] after the colon and before emoji (243.5488ms)
+✔ leading [AI] in --summary is stripped when --ai is absent (321.6915ms)
+✔ Co-authored-by footer is rejected (274.0474ms)
+✔ Committed via Cursor Agent footer is rejected (295.1813ms)
+✔ Made-with: Cursor footer is rejected (223.5378ms)
+✔ full trailer block keeps the documented order (236.3575ms)
+✔ --ai without --agent-model exits 2 (226.6219ms)
+✔ --require-why on a Why-required type without --why exits 3 (246.8708ms)
+✔ CJK header at exactly 72 display columns passes, 74 fails (621.7528ms)
+✔ --max-header-width 100 admits a 78-column header (244.4137ms)
+✔ --max-header-width 60 rejects a 61-column header with exit 1 (234.5476ms)
+✔ default limit stays 72 when the flag is absent (73 columns exits 1) (258.8509ms)
+✔ --max-header-width below 20 is rejected as a usage error (404.5262ms)
+✔ custom type with an explicit --emoji composes normally (201.1502ms)
+✔ custom type without --emoji emits no emoji plus a stderr note, exit 0 (243.9075ms)
+✔ --no-emoji wins over the missing-emoji note for custom types (276.173ms)
+✔ --emoji overrides the built-in mapping for built-in types (340.3547ms)
+✔ malformed --type fails argparse validation (206.5648ms)
+✔ --output writes UTF-8 without BOM and a single trailing newline (203.2238ms)
+✔ summary trailing punctuation is stripped and issue refs normalize (237.6332ms)
+✔ default root is .worktrees when nothing exists (1704.8859ms)
+✔ existing .agents/worktrees is used when it is the only local root (1627.468ms)
+✔ registered .claude/worktrees wins over a later default .worktrees (1891.9509ms)
+✔ explicit root overrides registered and default roots (1158.2304ms)
+✔ explicit-root escapes are rejected with exit 2 (1509.4392ms)
+✔ symlink escape is rejected (866.5296ms)
+✔ inspect does not write a missing gitignore (989.6044ms)
+✔ plan-create appends the convention root to .gitignore then allows create (2170.698ms)
+✔ plan-create does not rewrite gitignore when a parent rule already covers the root (1398.6905ms)
+✔ global exclude alone does not satisfy the ignore gate (924.016ms)
+✔ parent .agents/ rule covers .agents/worktrees via check-ignore (940.0771ms)
+✔ slug converts feat/login to feat-login (984.2771ms)
+✔ illegal slug exits 2 (864.2031ms)
+✔ plan-create refuses existing local branch and existing path (2521.2026ms)
+✔ plan-create without new-branch mode is rejected (854.4541ms)
+✔ plan-remove requires -uall cleanliness, exact path, and owner (3854.4357ms)
+✔ plan-prune never sets ok_to_prune (655.6627ms)
+✔ ensure-ignore without --apply does not write (868.5651ms)
+✔ description and evals name exclusions (0.9648ms)
+ℹ tests 451
+ℹ suites 0
+ℹ pass 444
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 7
+ℹ todo 0
+ℹ duration_ms 29024.4815
+
+📋 步骤 7/8: skill evals schema 校验...
+just evals-check
+python scripts/check_skill_evals.py
+Checked 37 skill eval files
+
+🧹 步骤 8/8: Git 空白检查...
+git diff --check
+
+════════════════════════════════════════════════════════════════
+  ✅ 本地 CI 流程执行完成！
+════════════════════════════════════════════════════════════════

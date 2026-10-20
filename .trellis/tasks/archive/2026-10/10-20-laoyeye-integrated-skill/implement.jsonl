@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Authoritative skill metadata, qiaomu schema adaptation, eval, path, discovery and source conventions"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Repo CI, stdlib unittest discovery and evidence boundaries"}
+{"file": ".trellis/tasks/10-20-laoyeye-integrated-skill/research/source-analysis.md", "reason": "Complete 25-to-24 capability mapping, dependencies, source anchors and licensing boundaries"}
+{"file": ".trellis/tasks/10-20-laoyeye-integrated-skill/research/context-evaluation.md", "reason": "Measured baseline, strict context budgets, direct-leaf tradeoff and trace evidence contract"}

@@ -1,0 +1,466 @@
+{
+  "upstream_repository": "https://github.com/LearnPrompt/laoyeye",
+  "upstream_commit": "5af2b57ceb169d81b2da90cc902556a2cad11c0a",
+  "observed_at": "2026-10-19 America/New_York",
+  "measurement": "UTF-8 decoded text with CRLF/CR normalized to LF; chars are Unicode code points, never token estimates. Raw SHA256 retains original bytes. Metadata values were parsed as YAML in research/source-inventory.json.",
+  "dependency_policy": "Full ordinary route dependency closure: grill-me includes grilling; teaching includes all four format files; brief includes anatomy; adversarial includes checklist; reconciliation includes all four reference documents. Optional style and Bash helpers are excluded from ordinary mode comparison. Teaching comparison includes the complete new workspace appendix.",
+  "discovery": {
+    "entrypoints": 26,
+    "all_metadata_chars": 4923,
+    "model_eligible_entrypoints": 21,
+    "model_eligible_metadata_chars": 4484
+  },
+  "router": {
+    "path": "skills/laoyeye/SKILL.md",
+    "size": {
+      "chars": 8333,
+      "utf8_bytes": 18711
+    },
+    "raw_sha256": "087473a8e2e2fc1ab37377e05a4d0c65d31099c6b4517a8188e3b81bb0beebf3"
+  },
+  "sources": [
+    {
+      "id": "01",
+      "source_entry": "socratic-inquiry",
+      "mode": "socratic",
+      "path": "skills/asking/socratic-inquiry/SKILL.md",
+      "size": {
+        "chars": 1545,
+        "utf8_bytes": 4136
+      },
+      "raw_sha256": "603352853e1c4c19c8c889266acd37d629e298d9c610b0661ac3881876bcc4ae",
+      "parsed_metadata_chars": 149,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "02",
+      "source_entry": "matt-grilling",
+      "mode": "grilling",
+      "path": "skills/asking/matt-grilling/SKILL.md",
+      "size": {
+        "chars": 1980,
+        "utf8_bytes": 1992
+      },
+      "raw_sha256": "b263a9862d8acbaae511016d8428793e436c710cdd10f00093fa25e42fca9add",
+      "parsed_metadata_chars": 165,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "03",
+      "source_entry": "matt-grill-me",
+      "mode": "grilling",
+      "path": "skills/asking/matt-grill-me/SKILL.md",
+      "size": {
+        "chars": 167,
+        "utf8_bytes": 167
+      },
+      "raw_sha256": "9eb9a01d4692b5484ea1e60b63ffb7f00fe36625c78daacd8f91b013893a05b9",
+      "parsed_metadata_chars": 64,
+      "model_eligible": false,
+      "required_dependencies": [
+        {
+          "path": "skills/asking/matt-grilling/SKILL.md",
+          "size": {
+            "chars": 1980,
+            "utf8_bytes": 1992
+          },
+          "raw_sha256": "b263a9862d8acbaae511016d8428793e436c710cdd10f00093fa25e42fca9add"
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "source_entry": "johari-window",
+      "mode": "johari",
+      "path": "skills/asking/johari-window/SKILL.md",
+      "size": {
+        "chars": 1618,
+        "utf8_bytes": 4426
+      },
+      "raw_sha256": "34e12975c3b9b19e8d377c4f387d05f704d480128ec77eb61d99c0f9bf6dd8ea",
+      "parsed_metadata_chars": 146,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "05",
+      "source_entry": "no-fluff-output",
+      "mode": "concise",
+      "path": "skills/asking/no-fluff-output/SKILL.md",
+      "size": {
+        "chars": 7492,
+        "utf8_bytes": 9168
+      },
+      "raw_sha256": "d18dd80e21e9e9e123cdc4d6cc415869393df18d0f1dd388e8665514fcf859c2",
+      "parsed_metadata_chars": 157,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "06",
+      "source_entry": "two-layer-explain",
+      "mode": "explain",
+      "path": "skills/learning/two-layer-explain/SKILL.md",
+      "size": {
+        "chars": 1097,
+        "utf8_bytes": 2880
+      },
+      "raw_sha256": "e66cac1680bfcebb890ba457a3d0a44e59fae12ba446b69242899bedcd88bbae",
+      "parsed_metadata_chars": 153,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "07",
+      "source_entry": "reverse-teardown",
+      "mode": "teardown",
+      "path": "skills/learning/reverse-teardown/SKILL.md",
+      "size": {
+        "chars": 1203,
+        "utf8_bytes": 3167
+      },
+      "raw_sha256": "0532a96edf3ad4841eaa1d0a7aee46cb1cd55bbcfb2e105773c15d1fd28dd45a",
+      "parsed_metadata_chars": 157,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "08",
+      "source_entry": "horizontal-vertical-analysis",
+      "mode": "research",
+      "path": "skills/learning/horizontal-vertical-analysis/SKILL.md",
+      "size": {
+        "chars": 1556,
+        "utf8_bytes": 4065
+      },
+      "raw_sha256": "17bd2703b7ae67ead0a985c055946d54dd074842ab4451e2bc49f457d0026f07",
+      "parsed_metadata_chars": 165,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "09",
+      "source_entry": "fact-check",
+      "mode": "fact-check",
+      "path": "skills/learning/fact-check/SKILL.md",
+      "size": {
+        "chars": 1408,
+        "utf8_bytes": 3645
+      },
+      "raw_sha256": "adbe389491f1e6057e804110552b632165c1703c6d55054a53f84033bcab147b",
+      "parsed_metadata_chars": 131,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "10",
+      "source_entry": "parable",
+      "mode": "parable",
+      "path": "skills/learning/parable/SKILL.md",
+      "size": {
+        "chars": 2197,
+        "utf8_bytes": 5705
+      },
+      "raw_sha256": "d8eca604f78764b539b1c87255ce782a87b9109f3159aa9299034894c1d91f4a",
+      "parsed_metadata_chars": 198,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "11",
+      "source_entry": "memory-parable",
+      "mode": "memory-story",
+      "path": "skills/learning/memory-parable/SKILL.md",
+      "size": {
+        "chars": 1456,
+        "utf8_bytes": 3000
+      },
+      "raw_sha256": "b7465c9aa288201171aa81c970fec89e3dd2de952797bcd51295cd22a876b019",
+      "parsed_metadata_chars": 202,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "12",
+      "source_entry": "eli5",
+      "mode": "visual-explain",
+      "path": "skills/learning/eli5/SKILL.md",
+      "size": {
+        "chars": 1221,
+        "utf8_bytes": 2839
+      },
+      "raw_sha256": "5e43d8eef6511ccabf6fa4edb5f478a8c5c175db560064b0176edb746f494b84",
+      "parsed_metadata_chars": 170,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "13",
+      "source_entry": "matt-teach",
+      "mode": "teaching",
+      "path": "skills/learning/matt-teach/SKILL.md",
+      "size": {
+        "chars": 9511,
+        "utf8_bytes": 9511
+      },
+      "raw_sha256": "4741036e529d2212f6323c781cacca4a4fc5b9ee3b10360f8ef8ab73e12189b2",
+      "parsed_metadata_chars": 71,
+      "model_eligible": false,
+      "required_dependencies": [
+        {
+          "path": "skills/learning/matt-teach/MISSION-FORMAT.md",
+          "size": {
+            "chars": 1538,
+            "utf8_bytes": 1540
+          },
+          "raw_sha256": "44ea82d5f57a626086bde99c70cd229cdef67998e8502c1cbcd50504f57f989a"
+        },
+        {
+          "path": "skills/learning/matt-teach/RESOURCES-FORMAT.md",
+          "size": {
+            "chars": 1924,
+            "utf8_bytes": 1924
+          },
+          "raw_sha256": "377e70f83d41fdc2623037410600194655a2f7df41000925c24cc437da074ab5"
+        },
+        {
+          "path": "skills/learning/matt-teach/LEARNING-RECORD-FORMAT.md",
+          "size": {
+            "chars": 2747,
+            "utf8_bytes": 2747
+          },
+          "raw_sha256": "d49c754ea416a075534d0ba1428a0beba1327ae527c2d1af0333908d08e25d05"
+        },
+        {
+          "path": "skills/learning/matt-teach/GLOSSARY-FORMAT.md",
+          "size": {
+            "chars": 2120,
+            "utf8_bytes": 2122
+          },
+          "raw_sha256": "22f851b265a3bec5a333937cc7ff1250136c9b6512787ae2eb51a2a14e35c341"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "source_entry": "expert-panel",
+      "mode": "panel",
+      "path": "skills/solving/expert-panel/SKILL.md",
+      "size": {
+        "chars": 1254,
+        "utf8_bytes": 3246
+      },
+      "raw_sha256": "ad568df8e1001386f6b47fcd0f6bffd726d4d3aca9f83d97fd9f87948e14f308",
+      "parsed_metadata_chars": 132,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "15",
+      "source_entry": "first-principles",
+      "mode": "first-principles",
+      "path": "skills/solving/first-principles/SKILL.md",
+      "size": {
+        "chars": 1276,
+        "utf8_bytes": 3268
+      },
+      "raw_sha256": "9e20d479eb51f12a320317355da1fa3584f3e7e2239ae2864c69817275c9c79f",
+      "parsed_metadata_chars": 195,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "16",
+      "source_entry": "cross-domain-borrow",
+      "mode": "cross-domain",
+      "path": "skills/solving/cross-domain-borrow/SKILL.md",
+      "size": {
+        "chars": 1195,
+        "utf8_bytes": 3143
+      },
+      "raw_sha256": "e0e7b865b0188e5af3da7f57712d72155a27d41a1bf5df4b00c883f3d375e671",
+      "parsed_metadata_chars": 130,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "17",
+      "source_entry": "inversion",
+      "mode": "inversion",
+      "path": "skills/solving/inversion/SKILL.md",
+      "size": {
+        "chars": 1365,
+        "utf8_bytes": 3625
+      },
+      "raw_sha256": "e8cd0febef0979a62d5a83ee58c6ef06446941b465d3651c134602ac17de761b",
+      "parsed_metadata_chars": 191,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "18",
+      "source_entry": "carl-idea-king",
+      "mode": "adversarial",
+      "path": "skills/solving/carl-idea-king/SKILL.md",
+      "size": {
+        "chars": 8653,
+        "utf8_bytes": 9045
+      },
+      "raw_sha256": "20f6fabd4c7c8ab14be823dc06e6a8b1302e2607e30ea9fd986756d8400a50cb",
+      "parsed_metadata_chars": 488,
+      "model_eligible": true,
+      "required_dependencies": [
+        {
+          "path": "skills/solving/carl-idea-king/references/adversarial-checklist.md",
+          "size": {
+            "chars": 4336,
+            "utf8_bytes": 4344
+          },
+          "raw_sha256": "d651c5cda055cdf73b0a1f999772c395968fead2e9f40fc0867a70d703da1538"
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "source_entry": "matt-diagnosing-bugs",
+      "mode": "debugging",
+      "path": "skills/solving/matt-diagnosing-bugs/SKILL.md",
+      "size": {
+        "chars": 8531,
+        "utf8_bytes": 8534
+      },
+      "raw_sha256": "1ba5a8107c024c710d8c413c1f91f9aec4b95f519a2083c83f393c6c95c00672",
+      "parsed_metadata_chars": 176,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "20",
+      "source_entry": "steelman-both-sides",
+      "mode": "steelman",
+      "path": "skills/deciding/steelman-both-sides/SKILL.md",
+      "size": {
+        "chars": 1193,
+        "utf8_bytes": 3147
+      },
+      "raw_sha256": "a21a15a9770239e49d06d498e25256c0b01c36ff780864787fcb203750f0fde4",
+      "parsed_metadata_chars": 149,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "21",
+      "source_entry": "minimum-experiment",
+      "mode": "experiment",
+      "path": "skills/deciding/minimum-experiment/SKILL.md",
+      "size": {
+        "chars": 1172,
+        "utf8_bytes": 3078
+      },
+      "raw_sha256": "9063841dcd374760552f677e2bd065cc4de9648cc4b101aa7ccf0690a3fb34c4",
+      "parsed_metadata_chars": 161,
+      "model_eligible": true,
+      "required_dependencies": []
+    },
+    {
+      "id": "22",
+      "source_entry": "kaz-leader",
+      "mode": "brief",
+      "path": "skills/doing/kaz-leader/SKILL.md",
+      "size": {
+        "chars": 2896,
+        "utf8_bytes": 7173
+      },
+      "raw_sha256": "1a83eb9c4ae599c5fc32c4def2be2955a1bf559da690bdcdbc65d37bc3c8dfe2",
+      "parsed_metadata_chars": 253,
+      "model_eligible": true,
+      "required_dependencies": [
+        {
+          "path": "skills/doing/kaz-leader/references/anatomy.md",
+          "size": {
+            "chars": 1849,
+            "utf8_bytes": 4776
+          },
+          "raw_sha256": "56abc0a35774e16d6097b5b54148ec5c9ad713150c4fd81077f427c44026eab9"
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "source_entry": "kaz-neat-freak",
+      "mode": "reconcile",
+      "path": "skills/doing/kaz-neat-freak/SKILL.md",
+      "size": {
+        "chars": 7616,
+        "utf8_bytes": 15458
+      },
+      "raw_sha256": "399535d5302e32e1cc3a432296aeb2aaeb1051847d433d68243acb1c7f8a35bb",
+      "parsed_metadata_chars": 816,
+      "model_eligible": true,
+      "required_dependencies": [
+        {
+          "path": "skills/doing/kaz-neat-freak/references/agent-paths.md",
+          "size": {
+            "chars": 2975,
+            "utf8_bytes": 5267
+          },
+          "raw_sha256": "dab831ddb704d0423f802ee4e352bbeb2e9efc385a524e9a7796a9c0ba41b127"
+        },
+        {
+          "path": "skills/doing/kaz-neat-freak/references/governance.md",
+          "size": {
+            "chars": 1902,
+            "utf8_bytes": 4296
+          },
+          "raw_sha256": "a14d71cba34e00ce1ef12b56e2f6b78623ab57754c07eaa6628c1931e576d93d"
+        },
+        {
+          "path": "skills/doing/kaz-neat-freak/references/sync-matrix.md",
+          "size": {
+            "chars": 2217,
+            "utf8_bytes": 4817
+          },
+          "raw_sha256": "c6cc84430b1e910cba22becffe74f556cfa794a9452061f5ffe92c9d7ac62c62"
+        },
+        {
+          "path": "skills/doing/kaz-neat-freak/references/verification.md",
+          "size": {
+            "chars": 2330,
+            "utf8_bytes": 4042
+          },
+          "raw_sha256": "f393db14c841ddadf296ce5d0a253fe8a4d7f0fa9c932ff5ff5c28f223734266"
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "source_entry": "hidden-talent",
+      "mode": "talent",
+      "path": "skills/self-knowledge/hidden-talent/SKILL.md",
+      "size": {
+        "chars": 1961,
+        "utf8_bytes": 5245
+      },
+      "raw_sha256": "d5848eff05c2d9eb234cfcfbebd78b169036c303496b19678a4eb5731158b7c2",
+      "parsed_metadata_chars": 116,
+      "model_eligible": false,
+      "required_dependencies": []
+    },
+    {
+      "id": "25",
+      "source_entry": "life-design",
+      "mode": "life-design",
+      "path": "skills/self-knowledge/life-design/SKILL.md",
+      "size": {
+        "chars": 2875,
+        "utf8_bytes": 7764
+      },
+      "raw_sha256": "85bac02015537af3a23575681fce716948b5ec994e4dc0ec70278644e239c74b",
+      "parsed_metadata_chars": 119,
+      "model_eligible": false,
+      "required_dependencies": []
+    }
+  ]
+}
