@@ -1,0 +1,11 @@
+{
+  "evidence_kind": "probe_fixture_integrity",
+  "paths_are": "relative to probe-workspace",
+  "before": {
+    "learning-records/0001-lazy-map.md": "27db32f77990ed4804af3d3ecaab0c528df7f6f6b28e253010304c90fb5bcc38",
+    "lessons/0001-lazy-map.html": "9e3350a9d7003929e6ddd0252f5ec4a2021290888ac9f17d63083ed796fb97da",
+    "MISSION.md": "541915d5127af47475de2b5454e6a0ba4b85ceb51e915964af39c1694f75e394",
+    "NOTES.md": "64a992efcf52bf2e3e68110828d45bb2d04b3308ea27ec7ff24f94012244bb29",
+    "RESOURCES.md": "619c48b487c80156f67b986a5d5b69efc1c536af753b22a53d4cc8f09a7cbc0b"
+  }
+}

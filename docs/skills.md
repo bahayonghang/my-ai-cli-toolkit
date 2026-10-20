@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、36 个 skill**；每个条目都有独立详情页。
+`skills/` 是一方 skill catalog。当前自动索引到 **6 个分类、37 个 skill**；每个条目都有独立详情页。
 
 ## 快速安装
 
@@ -78,9 +78,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### 研究、学习与知识
 
-`research-learning-knowledge` · 3 skills
+`research-learning-knowledge` · 4 skills
 
 - [humanizer-paper](/skills/research-learning-knowledge/humanizer-paper) — Register-aware academic language polisher for English journal articles and Chinese doctoral dissertations: removes AI-writing tells while keeping academic norms.
+- [laoyeye](/skills/research-learning-knowledge/laoyeye) — 整合式思考与学习伙伴：理清问题、追问设计、讲透概念、拆解范例、横纵深度研究、核查说法、多视角解题、比较两项选择、设计最小实验；明确请求时做持续教学、agent 任务书、知识收尾、天赋探索与人生设计。支持 Socratic questioning, grilling, critical thinking, first principles, steelman, fact check；可点名原方法。排除普通润色翻译、学术论文精读综述、生产 UI 实施、专业 diff 或 Trellis 规划审查、原生 Goal 管理；代码诊断与治理仅在明确选择本包或其流程内执行。
 - [literature-mentor](/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇论文综合、对比、找研究空白或批量规范化时改用 paper-workbench。
 - [paper-workbench](/skills/research-learning-knowledge/paper-workbench) — Researcher-profile-driven paper intake and literature workbench for academic workflows.
 

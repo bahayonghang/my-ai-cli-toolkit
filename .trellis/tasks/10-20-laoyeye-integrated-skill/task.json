@@ -1,0 +1,32 @@
+{
+  "id": "laoyeye-integrated-skill",
+  "name": "laoyeye-integrated-skill",
+  "title": "整合 laoyeye 为单入口渐进加载思维技能",
+  "description": "研究 laoyeye 的 25 项能力及上下文成本，规划 skills/research-learning-knowledge 下的单包整合技能与可验证迁移任务",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "research-learning-knowledge",
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-10-20",
+  "completedAt": null,
+  "branch": "codex/laoyeye-integrated-skill",
+  "base_branch": "dev",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "planning_only": "false",
+    "implementation_approved": "用户已审阅规划，指定名称为 laoyeye 并要求开始实施",
+    "implementation_verified": "true",
+    "pending_commit": "true",
+    "commit_archive_authorized": "用户要求提交所有改动，然后归档任务；仅本地提交，不推送"
+  }
+}

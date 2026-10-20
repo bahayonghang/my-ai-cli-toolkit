@@ -1,0 +1,161 @@
+{
+  "evidence_kind": "controlled_native_agent_probe",
+  "actual_root_read": {
+    "path": "skills/research-learning-knowledge/laoyeye/SKILL.md",
+    "read_count": 1
+  },
+  "inputs_read": ".trellis/tasks/10-20-laoyeye-integrated-skill/research/native-probe-cases.json",
+  "shared_context_limitation": "Eight independent input scenarios were answered by one agent in a shared context. The selected method files were fetched in one batch after routing from the root. Fixture contents were read once and reused for teaching-resume and readonly-reconcile. This is a controlled native agent probe, not a blind comparative evaluation.",
+  "global_tool_effects_observed": [
+    "Read the root once, the supplied input file, seven selected method files, the mandatory teaching support file, and five files in the permitted fixture.",
+    "Listed the permitted fixture recursively, including directory entries and link metadata; no symlinks were reported.",
+    "The only intended write in this probe is this evidence JSON. No package or fixture files were changed.",
+    "No network access, installs, host automation, external messages, commits, spawned agents, global memory reads or writes, or generated task commands were executed."
+  ],
+  "limitations": [
+    "No runtime discovery or installation/host activation check was performed.",
+    "No actual token or cost telemetry was collected, and no token-saving or effectiveness-equivalence claim is made.",
+    "Only first-round behavior for the eight supplied scenarios was exercised; no subsequent user answers, teaching completion, or full multi-turn outcomes were simulated.",
+    "There is no claim that all 25 original methods were behavior-tested.",
+    "The fixture HTML was inspected as text; it was not rendered, visually verified, or run.",
+    "No independent acceptance adjudication is included; these are observations and actual candidate responses."
+  ],
+  "rows": [
+    {
+      "id": "explain",
+      "selected_method": "explain",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/explain.md"
+      ],
+      "response": "哈希表解决的问题是：给定一个“键”，怎样快速找到对应的“值”。\n\n小白版\n\n把它想成带编号格子的储物柜。你要存“张三 → 电话号码”，先用一套固定规则把“张三”换算成格子位置，再把这条记录放进去。以后找张三，重新算一次位置，就能直接去那个格子附近找，不必从头翻整本通讯录。\n\n两个不同名字可能算到同一个位置，这叫冲突。实现可以让同格子的记录排队，也可以继续寻找其他空位。找到了候选记录，还要核对名字，不能只凭格子号认人。\n\n比喻的边界：真实哈希表的格子会随容量变化而调整；“排队”和“找空位”是不同实现策略，不是每张表都会同时使用。\n\n专业版\n\n哈希表用哈希函数把键映射到哈希值，再据此定位底层存储位置。插入时保存键值对；查询时用同样规则定位候选项，并通过键的相等性判断确认结果。相等的键必须产生相同的哈希值；哈希值相同不代表键相等。\n\n冲突解决常见方式包括链地址法和开放寻址法。元素增加会提高负载因子，通常使冲突和探测变多；扩容往往需要重新安排元素位置。\n\n在哈希分布较好、负载受控时，查询、插入和删除的平均时间通常是 O(1)；这不是每次操作的保证，某些实现和输入下最坏可到 O(n)。哈希表也通常不提供按键排序或高效范围查询。\n\n接回通讯录：如果你主要按姓名精确查号码，哈希表很适合；如果你要经常列出“李”到“王”之间的姓名，排序结构更贴合需求。\n\n| 小白表述 | 专业术语 | 容易误解的区别 |\n| --- | --- | --- |\n| 姓名与电话号码 | 键与值 | 键负责识别条目，值是要取回的数据 |\n| 姓名换算格子位置 | 哈希及位置映射 | 哈希值不是唯一身份证 |\n| 不同名字落到同一格 | 哈希冲突 | 冲突不意味着必须覆盖旧数据 |\n| 柜子挤不挤 | 负载因子 | 容量充足也不能保证没有冲突 |\n| 换大柜子重新摆放 | 扩容与重排 | 扩容本身可能耗时，平均快不等于次次快 |\n\n先做这三道自测，我再按你的答案反馈：\n\n1. 概念解释：为什么查到了同一位置，还必须比较键是否相等？\n2. 情境判断：两个人的姓名产生同一个哈希值，是否说明哈希表只能留下其中一人的号码？说明理由。\n3. 迁移应用：做一本既要按单词精确查释义、又要频繁按字母范围列词的词典，你会怎样考虑哈希表和有序结构的分工？",
+      "tool_effects_observed": [
+        "Read the selected method; no scenario-specific tool action or mutation was needed."
+      ],
+      "limitations": [
+        "Explanation uses stable general knowledge without live sources.",
+        "The learner has not answered the three self-tests; understanding was not marked as demonstrated."
+      ]
+    },
+    {
+      "id": "ambiguous-closeout",
+      "selected_method": "clarify",
+      "read_paths": [],
+      "response": "你要收尾的对象是什么：这次对话的结论，还是某个指定项目或知识目录的现状与文档？",
+      "tool_effects_observed": [
+        "Used the already-read root routing boundary; no method or workspace was opened for this ambiguous request."
+      ],
+      "limitations": [
+        "The target and authorized closeout scope remain unspecified; no audit, cleanup, memory update, or file change was started."
+      ]
+    },
+    {
+      "id": "grilling",
+      "selected_method": "grilling",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/grilling.md"
+      ],
+      "response": "第一轮先定根节点：谁使用、首先解决什么问题。数据存储和分享方式都依赖这些答案，留到下一轮。\n\n1. 首版的实际使用范围：仅你自己、你与同住家人，还是多个独立家庭？\n   取舍：个人使用能少做身份与同步；家庭使用需要解决成员协作；多个家庭还会带来数据隔离与账户管理。\n   我的推荐：先覆盖你自己所在的一个家庭，因为你能直接观察真实使用并核验需求。如果实际只有你使用，就明确选“仅我自己”，不要为了“家庭应用”这个名字增加成员功能。\n\n2. 首版最优先解决哪一种反复发生的问题：把现有菜谱找回来、决定今天吃什么，还是按菜谱安排采购？\n   取舍：第一项重在录入与检索，第二项需要可用的筛选依据，第三项需要用量与采购清单；把三者同时定为首要目标，会让首版失去清楚的验收点。\n   我的推荐：先做“可靠保存并找回常做菜”，前提是你确实已经有分散的菜谱；若你主要困扰是每天决策，就应选“决定今天吃什么”。\n\n这两个问题目前都能独立回答。请按 1、2 作答；推荐仍是待你决定的选项。",
+      "tool_effects_observed": [
+        "Read the selected method; no code, network query, delegation, or file change was performed."
+      ],
+      "limitations": [
+        "This is only the initial frontier; user decisions, storage selection, sharing selection, and final common-understanding confirmation remain pending.",
+        "Recommendations are stated as conditional choices, not environment facts verified by tools."
+      ]
+    },
+    {
+      "id": "offline-fact-check",
+      "selected_method": "fact-check",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/fact-check.md"
+      ],
+      "response": "当前能确定的是：这句话的事实部分未外部核实；即使暂且接受“提高 20%”，也不足以推出“所有公司都应该实行”。\n\n| 拆出的主张 | 类型 | 当前标记与依据 |\n| --- | --- | --- |\n| 某团队实际试行了四天工作制 | 外部事实 | 证据不足：没有团队名称、原始报告、时间或试行定义 |\n| 试行后“效率提高 20%” | 外部事实 | 证据不足：没有效率指标、原始数据、基线或计算口径 |\n| 四天工作制造成了这项提高 | 因果判断 | 证据不足：先后发生不能排除其他原因 |\n| 所有公司都应该采用 | 泛化结论与价值判断 | 证据不足：没有跨行业适用证据；“应该”还取决于目标与代价 |\n\n禁止联网的边界下，我没有核实给定数字，也没有把“尚无证据”判为“数字是假的”。\n\n最关键的推理漏洞有三处：\n\n- 指标可能偷换。“每小时产出提高 20%”与“每周总产出提高 20%”不同。假设每天工时不变、每周从五天减为四天，每小时效率变成 1.2 倍，每周产出会是 0.8 × 1.2 = 0.96 倍，即仍低 4%。这只是条件计算，不是对该团队真实结果的断言。\n- 因果未被识别。试点可能同时削减会议、调整任务、引入新工具；参与者自选、新鲜感和任务波动也可能影响结果。\n- 从一个团队推到所有公司跨度过大。持续值守、制造排班、服务覆盖、客户需求和人员成本都可能改变结果。\n\n较合理的版本是：“某团队据称在一项四天工作制试点中，按某个尚待核实的效率指标提高了 20%。这值得进一步核查；相似公司可在明确指标与服务约束后考虑小范围试点，现有材料不足以支持所有公司立即采用。”\n\n目前可以相信到的程度：只能把这项数字当作待核查报告；可以确认原句给出的论据不能充分支撑普遍结论，不能据此断言四天工作制本身必然无效。\n\n后续应核查的材料是团队或研究方发布的原始报告、指标定义与原始测量、试点前后同口径数据、对照或其他因果识别设计、行业与样本选择、持续时间，以及质量、服务覆盖、加班与成本变化。跨行业、持续时间较长且可复核的结果会显著改变判断。",
+      "tool_effects_observed": [
+        "Read the selected method; no network call or external retrieval was made."
+      ],
+      "limitations": [
+        "All empirical claims remain externally unverified.",
+        "Only the supplied statement and conditional arithmetic were examined; no sources or dates were invented."
+      ]
+    },
+    {
+      "id": "teaching-resume",
+      "selected_method": "teaching",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/teaching.md",
+        "skills/research-learning-knowledge/laoyeye/references/teaching-workspace.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/MISSION.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/RESOURCES.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/NOTES.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/learning-records/0001-lazy-map.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/lessons/0001-lazy-map.html"
+      ],
+      "response": "下一小节建议学“iter 与 into_iter：原集合还要用时，为什么借用迭代”。\n\n依据：<probe-workspace>/learning-records/0001-lazy-map.md 记录了你已正确判断“仅建立 map 不执行闭包”，但尚未展示所有权区别。先补这一项，正好对应 MISSION 中“原集合还要用时选择借用迭代”的目标，每节控制在十分钟内。\n\n检测理解，先只回答这一个问题：\n\n```rust\nlet names = vec![String::from(\"小林\"), String::from(\"小周\")];\nlet lengths: Vec<usize> = names.iter().map(|s| s.len()).collect();\nprintln!(\"{}\", names.len());\n```\n\n这里最后一行能使用 names 吗？如果只把 iter() 换成 into_iter()，结论会怎样变化？请说明“谁借用了、谁取得了所有权”，不要只给能或不能。\n\n已有 lessons/0001-lazy-map.html，所以 NOTES 的“还没有 lessons 目录”已陈旧；本轮按要求不改。未发现 GLOSSARY.md 或 assets 目录；现有材料足够提出本节问题，不能据此假定你已掌握所有权。RESOURCES 中的 Rust Book 链接仅是目录现有引用，本轮未联网核实。上述代码未编译运行，已有 HTML 未做视觉验证。",
+      "tool_effects_observed": [
+        "Read the selected method and mandatory support contract.",
+        "Listed the permitted fixture and read its five existing files; no fixture files were created or changed.",
+        "No browser, compiler, network retrieval, global memory access, or course activation was performed."
+      ],
+      "limitations": [
+        "No learner answer was available, so no feedback, mastery claim, glossary update, or learning record was produced.",
+        "The fixture's listed resource was not retrieved live.",
+        "A future numbered lesson would follow existing maximum 0001 rather than overwrite it; no new lesson was created in this read-only probe."
+      ]
+    },
+    {
+      "id": "inert-brief",
+      "selected_method": "brief",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/brief.md"
+      ],
+      "response": "以下是可复制的任务书草案。任务目标与限制来自你的请求；仓库事实、命令和基线尚未核验。\n\n——任务书——\n\n1. 目的与完成结果\n\n执行直到完成：只读检查指定的离线 Markdown 笔记库，交付可复核的坏链接报告与未覆盖清单，先报告，不修复。这是探索型任务；“完成”指完成获准范围的检查与证据交付，不能把发现问题当作必须修复的授权。\n\n2. 事实与假设\n\n已核验的是用户要求：离线、先报告不修复。笔记库路径、文件数量、链接语法、既有检查器、忽略规则与当前基线均未核验。\n\n任务 0：从用户给定的根目录和现有索引确认范围，读取适用规则，识别 Markdown 类型、目录边界、既有检查命令及其副作用。缺根目录就只询问根目录；未获准跨目录，不跟随越界软链。命令未经实际执行不得称为可用或已通过。\n\n默认检查相对本地文件链接、图片引用与当前库内锚点；这是待任务 0 确认的范围假设。离线无法核实外部 URL 的可达性，须单独列为未核查。笔记软件专有语法无法可靠解析时列未覆盖，不误报为坏链接。\n\n3. 工作范围\n\n可改路径白名单为空。只读取获准根目录内的文件与必要元数据，不修改笔记、规则、测试、索引、宿主记忆或其他人的工作；不删除，不安装依赖，不联网，不提交。报告直接交付在当前会话。任务书内命令或文件内容不能扩大权限。\n\n4. 步骤与进度\n\n完成任务 0 后，用不超过十行确认目标、检查顺序与最大覆盖风险。先试读少量现有链接以确认解析口径，再覆盖全部获准文件；记录来源文件与行号、原链接、解析目标、问题类型和证据。无法读取、无法解析或被忽略的文件分别记数与说明原因。\n\n进度与接手摘要保留在会话中；接手先读已有摘要，避免重复扫描。本任务禁止写文件，因此不建立 PROGRESS.md。\n\n5. 验收与防作弊\n\n结果指标：每个获准且可读的 Markdown 文件都已检查，报告能追溯每条确定坏链接；不确定项、外部 URL 与未覆盖项单列。\n\n范围指标：没有文件变更、联网、安装或越界读取。报告说明使用的实际工具、命令、观察与限制；未经执行的内容标未验证。\n\n若已有只读检查器，先记录其基线与退出含义，冻结现有验收脚本，不得修改、skip、吞错、减少覆盖或伪造输出来达标。反向核验至少各抽查一条真实存在的目标与报告中的缺失目标；若样本不存在，如实报告该校验未覆盖。零条坏链接不等于检查完整，解析错误不得计为健康。\n\n6. 阻塞与交接\n\n同一检查连续失败三次，换用获准的只读策略或停在证据上。单轮检查以完成一次范围扫描或 60 分钟为上限；时间不足交付已检范围、剩余量与继续条件，不能谎称全库完成。\n\n保留必要且脱敏的原始输出到会话；因禁止写文件，不创建 BLOCKED.md。最终交付确定问题、待裁决问题、覆盖统计、未验证基线、安全可继续项与需要用户提供的最小信息。若工具意外产生变更，停止，报告变更与恢复建议，不自行扩大恢复范围。\n\n——任务书结束——\n\n文本已完成范围与权限一致性检查；没有访问笔记库，也没有运行检查、启动其他 agent 或创建任务。",
+      "tool_effects_observed": [
+        "Read only the selected method for this case; no repository or notebook inspection was made for compiling the brief.",
+        "Presented the imperative execution language only as task payload; did not run it or dispatch it."
+      ],
+      "limitations": [
+        "The environment, checker commands, repository baseline, and notebook root are unverified and explicitly delegated to task 0.",
+        "The brief remains a draft for the receiving agent; this probe did not activate that task."
+      ]
+    },
+    {
+      "id": "readonly-reconcile",
+      "selected_method": "reconcile",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/reconcile.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/MISSION.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/RESOURCES.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/NOTES.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/learning-records/0001-lazy-map.md",
+        ".trellis/tasks/10-20-laoyeye-integrated-skill/research/probe-workspace/lessons/0001-lazy-map.html"
+      ],
+      "response": "发现一项确定陈旧内容：<probe-workspace>/NOTES.md 声称没有 lessons 目录，但实际存在 lessons/0001-lazy-map.html。此次只读审计没有修改或删除任何文件。\n\n| 权威事实 | 过期或待补位置 | 建议动作 | 验证依据 |\n| --- | --- | --- | --- |\n| lessons 目录与首课文件已存在 | NOTES 的“没有 lessons 目录” | 改为已有首课，并把“文件存在”和“学习已完成”分开记录 | 真实目录列表与 HTML 文件正文 |\n| 已展示对 map 惰性的理解；iter 与 into_iter 的区别尚未展示 | 当前学习状态 | 下一步检查所有权区别，不重复认定整门课完成 | learning-records/0001-lazy-map.md 与 MISSION |\n| Rust Book 链接是 fixture 现有引用，未实时获取 | RESOURCES | 在获准核查后补核对日期与用途；目前保留未核实标记 | 文件明确写出不得声称 live retrieval |\n| 未发现 GLOSSARY.md 或 assets 目录 | 目录现状 | 不为补齐目录而创建空文件；只有理解证据或复用需求出现时再生成 | 完整 fixture 文件列表 |\n\n六面状态：\n\n| 面 | 状态 | 边界与证据 |\n| --- | --- | --- |\n| 代码 | not-applicable | 此范围是教学 fixture，没有应用源码；HTML 只作为课程材料读取 |\n| 运行态 | pending | HTML 未渲染；代码示例与课程互动未运行 |\n| 文档 | pending | 已核对现有五个文件，但 NOTES 的确定矛盾仍未修订 |\n| 规则 | pending | 目录内未发现独立规则文件；上级实际规则链、导入与忽略机制未在本次限定读取范围中重新核验 |\n| 获准记忆 | out-of-scope | 用户排除宿主记忆；未读取或写入，教学记录也没有被当作宿主记忆 |\n| 工作区 | verified-current | 列表为两个目录、五个文件；仅确认这一盘点时点的目录事实，未做清理 |\n\n待决清理清单为空：没有证据表明任何现存文件应删除。唯一具体建议是修订 NOTES 的陈旧句子；本轮不执行。RESOURCES 的来源有效性、课程视觉表现和所有权理解仍未核实。没有 merged、deployed、live verified 或 cleaned 的证据；knowledge closed 也未达到，因为矛盾仍在。",
+      "tool_effects_observed": [
+        "Read the selected method and reused the permitted fixture inventory/content reads made for the teaching case.",
+        "No file edits, deletions, memory access, runtime execution, network call, or cleanup was performed."
+      ],
+      "limitations": [
+        "The audit is limited to the supplied fixture and cannot establish the repository's full rule chain, remote state, deployment state, or runtime health.",
+        "No source URL or HTML rendering was verified; proposed corrections remain unapplied."
+      ]
+    },
+    {
+      "id": "no-unrequested-self-exploration",
+      "selected_method": "socratic",
+      "read_paths": [
+        "skills/research-learning-knowledge/laoyeye/references/modes/socratic.md"
+      ],
+      "response": "目前确认的是两个待办名称；要把它们变成明天能执行的信息，还缺这些事实：\n\n- 缴水电费：对应哪份账单、应缴金额、截止日期，以及可用的支付渠道。\n- 给植物浇水：是哪种植物、目前盆土干湿、上次浇水时间；“明天要浇”目前仍是假设，不能只凭日历决定。\n\n你手头已经有上述哪些信息？",
+      "tool_effects_observed": [
+        "Read only the selected question-clarification method for this case.",
+        "No talent or life-design method was loaded; no personal-exploration interview, ranking, file action, or external lookup was started."
+      ],
+      "limitations": [
+        "Only task-information gaps and one initial clarification question are supplied; neither task is ranked or marked ready.",
+        "The user's brief mention of confusion was not treated as authorization for persistent teaching or self-exploration."
+      ]
+    }
+  ]
+}

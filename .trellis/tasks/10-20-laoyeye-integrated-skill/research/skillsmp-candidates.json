@@ -1,0 +1,765 @@
+{
+  "ok": true,
+  "complete": false,
+  "researched_at": "2026-10-20",
+  "queries": [
+    "critical thinking",
+    "socratic questioning",
+    "decision making"
+  ],
+  "metric_semantics": {
+    "skills_sh_installs": "ecosystem install telemetry; not ratings or correctness",
+    "skillsmp_repo_stars": "GitHub repository stars; not installs, ratings, or skill-specific quality",
+    "cross_catalog_score": "not calculated; metrics remain separate"
+  },
+  "query_runs": [
+    {
+      "query": "critical thinking",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 9
+    },
+    {
+      "query": "socratic questioning",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 10
+    },
+    {
+      "query": "decision making",
+      "skills_sh": "not_run",
+      "skillsmp": "ok",
+      "skillsmp_candidates": 8
+    }
+  ],
+  "candidate_family_count": 27,
+  "candidates": [
+    {
+      "family_key": "mattpocock/skills:grilling",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "grilling",
+        "author": "mattpocock",
+        "description": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+        "content_language": "en",
+        "github_url": "https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling",
+        "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-productivity-grilling",
+        "repo_stars": 292968,
+        "catalog_updated_at": "2026-10-07T10:21:22+00:00",
+        "source_key": "mattpocock/skills:skills/productivity/grilling",
+        "family_key": "mattpocock/skills:grilling",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "mattpocock/skills:to-questionnaire",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "to-questionnaire",
+        "author": "mattpocock",
+        "description": "Turn a decision you can't fully answer into a questionnaire for someone else to fill in.",
+        "content_language": "en",
+        "github_url": "https://github.com/mattpocock/skills/tree/main/skills/productivity/to-questionnaire",
+        "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-productivity-to-questionnaire",
+        "repo_stars": 292968,
+        "catalog_updated_at": "2026-08-19T10:03:37+00:00",
+        "source_key": "mattpocock/skills:skills/productivity/to-questionnaire",
+        "family_key": "mattpocock/skills:to-questionnaire",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "mattpocock/skills:wayfinder",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "wayfinder",
+        "author": "mattpocock",
+        "description": "Plan a huge chunk of work (more than one agent session can hold) as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.",
+        "content_language": "en",
+        "github_url": "https://github.com/mattpocock/skills/tree/main/skills/engineering/wayfinder",
+        "skillsmp_url": "https://skillsmp.com/creators/mattpocock/skills/skills-engineering-wayfinder",
+        "repo_stars": 292968,
+        "catalog_updated_at": "2026-10-07T10:20:24+00:00",
+        "source_key": "mattpocock/skills:skills/engineering/wayfinder",
+        "family_key": "mattpocock/skills:wayfinder",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:architecture-decision-records",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "architecture-decision-records",
+        "author": "affaan-m",
+        "description": "Capture architectural decisions as numbered ADR markdown files in docs/adr/ with context, alternatives considered, consequences, and an index README. Use when the user says 'record this decision' or 'ADR this', chooses between frameworks or databases, discusses trade-offs, or asks why the codebase is shaped this way.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/pi/core/skills/architecture-decision-records",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/pi-core-skills-architecture-decision-records",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-09-30T01:24:05+00:00",
+        "source_key": "affaan-m/ecc:pi/core/skills/architecture-decision-records",
+        "family_key": "affaan-m/ecc:architecture-decision-records",
+        "aliases": [
+          {
+            "language": "zh",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/zh-CN/skills/architecture-decision-records"
+          },
+          {
+            "language": "zh",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/zh-CN/skills/architecture-decision-records"
+          },
+          {
+            "language": "ja",
+            "github_url": "https://github.com/affaan-m/ECC/tree/main/docs/ja-JP/skills/architecture-decision-records"
+          }
+        ],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:competitive-report-structure",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "competitive-report-structure",
+        "author": "affaan-m",
+        "description": "Assemble scored competitor profile cards (from benchmark-methodology) into a decision-grade competitive report with landscape map, competitor tiers, benchmarking matrix, white-space analysis, strategic recommendations, and team alignment trigger questions. Use when presenting competitive findings to leadership or a board, writing a competitive landscape report, or as the final step of the competitive analysis pipeline.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/competitive-report-structure",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-competitive-report-structure",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-09-27T20:46:07+00:00",
+        "source_key": "affaan-m/ecc:skills/competitive-report-structure",
+        "family_key": "affaan-m/ecc:competitive-report-structure",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:healthcare-cdss-patterns",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "healthcare-cdss-patterns",
+        "author": "affaan-m",
+        "description": "Clinical Decision Support System (CDSS) development patterns. Drug interaction checking, dose validation, clinical scoring (NEWS2, qSOFA), alert severity classification, and integration into EMR workflows. Use when building clinical decision support — drug interaction checks, dose validation, clinical scoring, or alert severity.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/healthcare-cdss-patterns",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-healthcare-cdss-patterns",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-08-12T03:58:14+00:00",
+        "source_key": "affaan-m/ecc:skills/healthcare-cdss-patterns",
+        "family_key": "affaan-m/ecc:healthcare-cdss-patterns",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:latency-critical-systems",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "latency-critical-systems",
+        "author": "affaan-m",
+        "description": "Optimize and verify latency-sensitive systems — realtime dashboards, market data feeds, streaming agents, execution gateways, queues, and caches — by tracking p50/p95/p99 latency, freshness age, and queue depth, mapping hot paths, and running live readbacks. Use when p95 latency, throughput, or data freshness matters.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/pi/core/skills/latency-critical-systems",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/pi-core-skills-latency-critical-systems",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-09-30T01:24:05+00:00",
+        "source_key": "affaan-m/ecc:pi/core/skills/latency-critical-systems",
+        "family_key": "affaan-m/ecc:latency-critical-systems",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:prisma-patterns",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "prisma-patterns",
+        "author": "affaan-m",
+        "description": "Prisma ORM patterns for TypeScript backends — schema design, query optimization, transactions, pagination, and critical traps like updateMany returning count not records, $transaction timeouts, migrate dev resetting the DB, @updatedAt skipped on bulk writes, and serverless connection exhaustion. Use when writing a Prisma schema or query, or debugging transactions, migrations, or serverless connection limits.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/pi/core/skills/prisma-patterns",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/pi-core-skills-prisma-patterns",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-09-30T01:24:05+00:00",
+        "source_key": "affaan-m/ecc:pi/core/skills/prisma-patterns",
+        "family_key": "affaan-m/ecc:prisma-patterns",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:recursive-decision-ledger",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "recursive-decision-ledger",
+        "author": "affaan-m",
+        "description": "Run repeated rollouts (\"Prime Gauss\" style recursive prompting) while keeping an append-only decision ledger of trials, marks, coherence checks, and promotion gates, so recursive confidence never auto-approves live trading, deploy, or destructive actions. Use when the user asks for repeated rollouts, marked decision processes, high-dimensional search, stochastic optimization, local-optima exploration, ensemble comparison, or recursive reasoning with a visible evidence trail.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/skills/recursive-decision-ledger",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/skills-recursive-decision-ledger",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-09-27T20:46:07+00:00",
+        "source_key": "affaan-m/ecc:skills/recursive-decision-ledger",
+        "family_key": "affaan-m/ecc:recursive-decision-ledger",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "affaan-m/ecc:regex-vs-llm-structured-text",
+      "queries": [
+        "decision making"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "regex-vs-llm-structured-text",
+        "author": "affaan-m",
+        "description": "Decision framework for parsing structured text (quizzes, forms, invoices, receipts, tables) with a hybrid regex-first pipeline — regex extraction handles 95%+ cheaply, a confidence scorer flags low-confidence items, and an LLM validator fixes only the edge cases. Use when choosing between regex and LLM for text extraction, building a cheap document parser, or optimizing extraction cost and accuracy.",
+        "content_language": "en",
+        "github_url": "https://github.com/affaan-m/ECC/tree/main/pi/core/skills/regex-vs-llm-structured-text",
+        "skillsmp_url": "https://skillsmp.com/creators/affaan-m/ecc/pi-core-skills-regex-vs-llm-structured-text",
+        "repo_stars": 279616,
+        "catalog_updated_at": "2026-09-30T01:24:05+00:00",
+        "source_key": "affaan-m/ecc:pi/core/skills/regex-vs-llm-structured-text",
+        "family_key": "affaan-m/ecc:regex-vs-llm-structured-text",
+        "aliases": [],
+        "query": "decision making"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "shubhamsaboo/awesome-llm-apps:mcp-apps-builder",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "mcp-apps-builder",
+        "author": "Shubhamsaboo",
+        "description": "**MANDATORY for ALL MCP server work** - mcp-use framework best practices and patterns.\n\n**READ THIS FIRST** before any MCP server work, including:\n- Creating new MCP servers\n- Modifying existing MCP servers (adding/updating tools, resources, prompts, widgets)\n- Debugging MCP server issues or errors\n- Reviewing MCP server code for quality, security, or performance\n- Answering questions about MCP development or mcp-use patterns\n- Making ANY changes to server.tool(), server.resource(), server.prompt(), or widgets\n\nThis skill contains critical architecture decisions, security patterns, and common pitfalls.\nAlways consult the relevant reference files BEFORE implementing MCP features.",
+        "content_language": "en",
+        "github_url": "https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder",
+        "skillsmp_url": "https://skillsmp.com/creators/shubhamsaboo/awesome-llm-apps/generative-ui-agents-ai-mcp-app-builder-apps-mcp-use-server-agent-skills-mcp-apps-builder",
+        "repo_stars": 141919,
+        "catalog_updated_at": "2026-04-28T14:50:17+00:00",
+        "source_key": "shubhamsaboo/awesome-llm-apps:generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder",
+        "family_key": "shubhamsaboo/awesome-llm-apps:mcp-apps-builder",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "nexu-io/open-design:imagegen-frontend-web",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "imagegen-frontend-web",
+        "author": "nexu-io",
+        "description": "Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.",
+        "content_language": "en",
+        "github_url": "https://github.com/nexu-io/open-design/tree/main/skills/imagegen-frontend-web",
+        "skillsmp_url": "https://skillsmp.com/creators/nexu-io/open-design/skills-imagegen-frontend-web",
+        "repo_stars": 101372,
+        "catalog_updated_at": "2026-06-02T07:34:30+00:00",
+        "source_key": "nexu-io/open-design:skills/imagegen-frontend-web",
+        "family_key": "nexu-io/open-design:imagegen-frontend-web",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "ruvnet/ruview:v3-security-overhaul",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "v3-security-overhaul",
+        "author": "ruvnet",
+        "description": "Complete security architecture overhaul for claude-flow v3. Addresses critical CVEs (CVE-1, CVE-2, CVE-3) and implements secure-by-default patterns. Use for security-first v3 implementation.",
+        "content_language": "en",
+        "github_url": "https://github.com/ruvnet/RuView/tree/main/.claude/skills/v3-security-overhaul",
+        "skillsmp_url": "https://skillsmp.com/creators/ruvnet/ruview/claude-skills-v3-security-overhaul",
+        "repo_stars": 98230,
+        "catalog_updated_at": "2026-01-13T03:11:16+00:00",
+        "source_key": "ruvnet/ruview:.claude/skills/v3-security-overhaul",
+        "family_key": "ruvnet/ruview:v3-security-overhaul",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "leonxlnx/taste-skill:imagegen-frontend-web",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "imagegen-frontend-web",
+        "author": "Leonxlnx",
+        "description": "Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.",
+        "content_language": "en",
+        "github_url": "https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-web",
+        "skillsmp_url": "https://skillsmp.com/creators/leonxlnx/taste-skill/skills-imagegen-frontend-web",
+        "repo_stars": 97410,
+        "catalog_updated_at": "2026-05-04T19:44:57+00:00",
+        "source_key": "leonxlnx/taste-skill:skills/imagegen-frontend-web",
+        "family_key": "leonxlnx/taste-skill:imagegen-frontend-web",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "puppeteer/puppeteer:puppeteer-verification",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "puppeteer-verification",
+        "author": "puppeteer",
+        "description": "MANDATORY: Activate this skill ANY TIME you need to build the project, run tests, or verify code health in Puppeteer. You MUST use this skill before executing commands like npm test, npm run build, or linters, as it contains critical, repository-specific instructions on how to correctly format these commands, filter test runs, and interpret failures.",
+        "content_language": "en",
+        "github_url": "https://github.com/puppeteer/puppeteer/tree/main/.agents/skills/puppeteer-verification",
+        "skillsmp_url": "https://skillsmp.com/creators/puppeteer/puppeteer/agents-skills-puppeteer-verification",
+        "repo_stars": 95700,
+        "catalog_updated_at": "2026-07-01T11:49:05+00:00",
+        "source_key": "puppeteer/puppeteer:.agents/skills/puppeteer-verification",
+        "family_key": "puppeteer/puppeteer:puppeteer-verification",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "koala73/worldmonitor:trace-trade-flows",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "trace-trade-flows",
+        "author": "koala73",
+        "description": "Retrieve strategic UN Comtrade commodity flows with anomaly flags. Use when the user asks who trades a critical commodity, which flows changed sharply, or how trade exposure is shifting.",
+        "content_language": "en",
+        "github_url": "https://github.com/koala73/worldmonitor/tree/main/skills/trace-trade-flows",
+        "skillsmp_url": "https://skillsmp.com/creators/koala73/worldmonitor/skills-trace-trade-flows",
+        "repo_stars": 88520,
+        "catalog_updated_at": "2026-09-05T06:09:23+00:00",
+        "source_key": "koala73/worldmonitor:skills/trace-trade-flows",
+        "family_key": "koala73/worldmonitor:trace-trade-flows",
+        "aliases": [
+          {
+            "language": "en",
+            "github_url": "https://github.com/koala73/worldmonitor/tree/main/public/.well-known/agent-skills/trace-trade-flows"
+          }
+        ],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "ruvnet/ruflo:v3-security-overhaul",
+      "queries": [
+        "critical thinking"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "v3-security-overhaul",
+        "author": "ruvnet",
+        "description": "Complete security architecture overhaul for claude-flow v3. Addresses critical CVEs (CVE-1, CVE-2, CVE-3) and implements secure-by-default patterns. Use for security-first v3 implementation.",
+        "content_language": "en",
+        "github_url": "https://github.com/ruvnet/ruflo/tree/main/.agents/skills/v3-security-overhaul",
+        "skillsmp_url": "https://skillsmp.com/creators/ruvnet/ruflo/agents-skills-v3-security-overhaul",
+        "repo_stars": 75283,
+        "catalog_updated_at": "2026-02-07T17:30:31+00:00",
+        "source_key": "ruvnet/ruflo:.agents/skills/v3-security-overhaul",
+        "family_key": "ruvnet/ruflo:v3-security-overhaul",
+        "aliases": [],
+        "query": "critical thinking"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "bmad-code-org/bmad-method:bmad-advanced-elicitation",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "bmad-advanced-elicitation",
+        "author": "bmad-code-org",
+        "description": "Push the LLM to reconsider, refine, and improve its recent output. Use when user asks for deeper critique or mentions a known deeper critique method, e.g. socratic, first principles, pre-mortem, red team",
+        "content_language": "en",
+        "github_url": "https://github.com/bmad-code-org/BMAD-METHOD/tree/main/skills/bmad-advanced-elicitation",
+        "skillsmp_url": "https://skillsmp.com/creators/bmad-code-org/bmad-method/skills-bmad-advanced-elicitation",
+        "repo_stars": 54201,
+        "catalog_updated_at": "2026-09-29T12:20:28+00:00",
+        "source_key": "bmad-code-org/bmad-method:skills/bmad-advanced-elicitation",
+        "family_key": "bmad-code-org/bmad-method:bmad-advanced-elicitation",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "imbad0202/academic-research-skills:academic-paper-reviewer",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "academic-paper-reviewer",
+        "author": "Imbad0202",
+        "description": "Multi-perspective academic paper review with dynamic reviewer personas. Runs a 5-seat, role-separated review panel (Journal-Fit Reviewer + 3 peer-review roles + Devil's Advocate) with field-specific expertise; role separation is not a claim of independent error processes. Supports full review, re-review (verification), quick assessment, methodology focus, Socratic guided, and calibration modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy, 審查論文, 論文審查, 模擬審查, 同儕審查, 幫我審這篇, 以審查人角度評估, 審查者校準, 논문 심사, 동료 심사, 모의 심사, 심사자 관점에서 평가, 심사자 보정, revisar artículo, revisión entre pares, revisión de manuscrito, informe de árbitro, revisa mi artículo, criticar artículo, simular revisión, revisión editorial, calibrar revisor.",
+        "content_language": "en",
+        "github_url": "https://github.com/Imbad0202/academic-research-skills/tree/main/academic-paper-reviewer",
+        "skillsmp_url": "https://skillsmp.com/creators/imbad0202/academic-research-skills/academic-paper-reviewer",
+        "repo_stars": 52271,
+        "catalog_updated_at": "2026-10-13T17:41:19+00:00",
+        "source_key": "imbad0202/academic-research-skills:academic-paper-reviewer",
+        "family_key": "imbad0202/academic-research-skills:academic-paper-reviewer",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "imbad0202/academic-research-skills:deep-research",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "deep-research",
+        "author": "Imbad0202",
+        "description": "Universal deep research agent team. 13-agent pipeline for rigorous academic research on any topic. 8 modes: full research, quick brief, paper review, lit-review, fact-check, three-way literature scan, Socratic guided research dialogue, and systematic review with optional meta-analysis. Covers research question formulation, Socratic mentoring, methodology design, systematic literature search, source verification, cross-source synthesis, risk of bias assessment, meta-analysis, APA 7.0 report compilation, editorial review, devil's advocate challenges, ethics review, and post-research literature monitoring. Triggers on: research, deep research, literature review, systematic review, meta-analysis, PRISMA, evidence synthesis, fact-check, WHY HOW WHAT papers, 3W literature scan, guide my research, help me think through, 研究, 深度研究, 文獻回顧, 文獻探討, 系統性回顧, 後設分析, 事實查核, 三段式文獻掃描, 引導我的研究, 幫我釐清, 幫我想想, 我不確定要研究什麼, 研究方向, 研究主題, 심층 연구, 문헌 조사, 체계적 문헌고찰, 메타분석, 사실 확인, 연구 방향을 잡아줘, 연구 주제 정하는 것을 도와줘, revisión de literatura, metaanálisis",
+        "content_language": "en",
+        "github_url": "https://github.com/Imbad0202/academic-research-skills/tree/main/deep-research",
+        "skillsmp_url": "https://skillsmp.com/creators/imbad0202/academic-research-skills/deep-research",
+        "repo_stars": 52271,
+        "catalog_updated_at": "2026-10-13T17:41:19+00:00",
+        "source_key": "imbad0202/academic-research-skills:deep-research",
+        "family_key": "imbad0202/academic-research-skills:deep-research",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "thu-maic/openmaic:feynman-learning",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "feynman-learning",
+        "author": "THU-MAIC",
+        "description": "Turn any concept, lesson, slide deck, or source material into a Feynman learning cycle in which learners explain first, expose the smallest gap, rebuild the explanation through Socratic prompts, strip jargon, stress-test analogies, and transfer the idea to a new context. Use when the user asks for teach-back, learning by explaining, or a Feynman-style classroom. Do not use when the Feynman technique itself is merely the lesson topic or when study strategy should remain a parallel goal.",
+        "content_language": "zh",
+        "github_url": "https://github.com/THU-MAIC/OpenMAIC/tree/main/skills/agent-runtime/feynman-learning",
+        "skillsmp_url": "https://skillsmp.com/creators/thu-maic/openmaic/skills-agent-runtime-feynman-learning",
+        "repo_stars": 40858,
+        "catalog_updated_at": "2026-08-27T11:26:25+00:00",
+        "source_key": "thu-maic/openmaic:skills/agent-runtime/feynman-learning",
+        "family_key": "thu-maic/openmaic:feynman-learning",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "github/awesome-copilot:mentoring-juniors",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "mentoring-juniors",
+        "author": "github",
+        "description": "Socratic mentoring for junior developers and AI newcomers. Guides through questions, never answers. Triggers: \"help me understand\", \"explain this code\", \"I'm stuck\", \"Im stuck\", \"I'm confused\", \"Im confused\", \"I don't understand\", \"I dont understand\", \"can you teach me\", \"teach me\", \"mentor me\", \"guide me\", \"what does this error mean\", \"why doesn't this work\", \"why does not this work\", \"I'm a beginner\", \"Im a beginner\", \"I'm learning\", \"Im learning\", \"I'm new to this\", \"Im new to this\", \"walk me through\", \"how does this work\", \"what's wrong with my code\", \"what's wrong\", \"can you break this down\", \"ELI5\", \"step by step\", \"where do I start\", \"what am I missing\", \"newbie here\", \"junior dev\", \"first time using\", \"how do I\", \"what is\", \"is this right\", \"not sure\", \"need help\", \"struggling\", \"show me\", \"help me debug\", \"best practice\", \"too complex\", \"overwhelmed\", \"lost\", \"debug this\", \"/socratic\", \"/hint\", \"/concept\", \"/pseudocode\". Progressive clue systems, teaching techniques, and success metrics.",
+        "content_language": "en",
+        "github_url": "https://github.com/github/awesome-copilot/tree/main/skills/mentoring-juniors",
+        "skillsmp_url": "https://skillsmp.com/creators/github/awesome-copilot/skills-mentoring-juniors",
+        "repo_stars": 40063,
+        "catalog_updated_at": "2026-03-02T23:06:32+00:00",
+        "source_key": "github/awesome-copilot:skills/mentoring-juniors",
+        "family_key": "github/awesome-copilot:mentoring-juniors",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "yeachan-heo/oh-my-claudecode:deep-interview",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "deep-interview",
+        "author": "Yeachan-Heo",
+        "description": "Socratic deep interview with mathematical ambiguity gating before explicit execution approval",
+        "content_language": "en",
+        "github_url": "https://github.com/Yeachan-Heo/oh-my-claudecode/tree/main/skills/deep-interview",
+        "skillsmp_url": "https://skillsmp.com/creators/yeachan-heo/oh-my-claudecode/skills-deep-interview",
+        "repo_stars": 39946,
+        "catalog_updated_at": "2026-10-09T05:45:35+00:00",
+        "source_key": "yeachan-heo/oh-my-claudecode:skills/deep-interview",
+        "family_key": "yeachan-heo/oh-my-claudecode:deep-interview",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "yeachan-heo/oh-my-codex:deep-interview",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "deep-interview",
+        "author": "Yeachan-Heo",
+        "description": "Socratic deep interview with mathematical ambiguity gating before execution",
+        "content_language": "en",
+        "github_url": "https://github.com/Yeachan-Heo/oh-my-codex/tree/main/plugins/oh-my-codex/skills/deep-interview",
+        "skillsmp_url": "https://skillsmp.com/creators/yeachan-heo/oh-my-codex/plugins-oh-my-codex-skills-deep-interview",
+        "repo_stars": 33548,
+        "catalog_updated_at": "2026-09-09T10:03:45+00:00",
+        "source_key": "yeachan-heo/oh-my-codex:plugins/oh-my-codex/skills/deep-interview",
+        "family_key": "yeachan-heo/oh-my-codex:deep-interview",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "vercel/ai:adr-skill",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "adr-skill",
+        "author": "vercel",
+        "description": "Create and maintain Architecture Decision Records (ADRs) optimized for agentic coding workflows. Use when you need to propose, write, update, accept/reject, deprecate, or supersede an ADR; bootstrap an adr folder and index; consult existing ADRs before implementing changes; or enforce ADR conventions. This skill uses Socratic questioning to capture intent before drafting, and validates output against an agent-readiness checklist.",
+        "content_language": "en",
+        "github_url": "https://github.com/vercel/ai/tree/main/skills/adr-skill",
+        "skillsmp_url": "https://skillsmp.com/creators/vercel/ai/skills-adr-skill",
+        "repo_stars": 27341,
+        "catalog_updated_at": "2026-05-08T10:20:07+00:00",
+        "source_key": "vercel/ai:skills/adr-skill",
+        "family_key": "vercel/ai:adr-skill",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "open-gsd/gsd-core:gsd-explore",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "gsd-explore",
+        "author": "open-gsd",
+        "description": "Socratic ideation and idea routing — think through ideas before committing to plans",
+        "content_language": "en",
+        "github_url": "https://github.com/open-gsd/gsd-core/tree/next/skills/gsd-explore",
+        "skillsmp_url": "https://skillsmp.com/creators/open-gsd/gsd-core/skills-gsd-explore",
+        "repo_stars": 10569,
+        "catalog_updated_at": "2026-06-22T22:07:35+00:00",
+        "source_key": "open-gsd/gsd-core:skills/gsd-explore",
+        "family_key": "open-gsd/gsd-core:gsd-explore",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    },
+    {
+      "family_key": "anthropics/claude-for-legal:socratic-drill",
+      "queries": [
+        "socratic questioning"
+      ],
+      "skills_sh": null,
+      "skillsmp": {
+        "source": "skillsmp",
+        "name": "socratic-drill",
+        "author": "anthropics",
+        "description": "Socratic drilling — it asks, you answer, it pushes back. Does NOT give you the answer until you've earned it. Use when the user says \"drill me on\", \"quiz me\", \"socratic\", \"test me on [subject]\", or wants to study actively.",
+        "content_language": "en",
+        "github_url": "https://github.com/anthropics/claude-for-legal/tree/main/law-student/skills/socratic-drill",
+        "skillsmp_url": "https://skillsmp.com/creators/anthropics/claude-for-legal/law-student-skills-socratic-drill",
+        "repo_stars": 9696,
+        "catalog_updated_at": "2026-05-11T20:44:26+00:00",
+        "source_key": "anthropics/claude-for-legal:law-student/skills/socratic-drill",
+        "family_key": "anthropics/claude-for-legal:socratic-drill",
+        "aliases": [],
+        "query": "socratic questioning"
+      },
+      "catalogs": [
+        "skillsmp"
+      ],
+      "requires_source_review": true
+    }
+  ],
+  "missing_evidence": [],
+  "next_steps": [
+    "shortlist by job relevance and role coverage, not combined popularity",
+    "open canonical GitHub source and inspect SKILL.md before adoption",
+    "verify license, maintenance, permissions, security, duplication, and rating evidence",
+    "write keep/adapt/reject/invent synthesis before authoring"
+  ]
+}

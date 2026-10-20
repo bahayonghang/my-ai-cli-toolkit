@@ -1,0 +1,372 @@
+{
+  "evidence_status": "LEXICAL_SMOKE_SPECIFICATION: no model behavior is demonstrated.",
+  "positive_concepts": {
+    "package_selection": [
+      "laoyeye",
+      "老爷爷",
+      "本包"
+    ],
+    "method_choice": [
+      "方法",
+      "模式"
+    ],
+    "questioning": [
+      "理清问题",
+      "追问设计",
+      "Socratic questioning",
+      "grilling",
+      "苏格拉底",
+      "问清",
+      "拷问",
+      "追问",
+      "澄清"
+    ],
+    "learning": [
+      "学习",
+      "概念",
+      "解释",
+      "教学",
+      "范例",
+      "寓言",
+      "故事",
+      "记忆",
+      "大图",
+      "HTML"
+    ],
+    "analysis": [
+      "思考",
+      "解题",
+      "研究",
+      "核查",
+      "证据",
+      "first principles",
+      "critical thinking",
+      "fact check",
+      "第一性原理",
+      "对抗",
+      "方案",
+      "因果",
+      "多视角",
+      "机制"
+    ],
+    "decision": [
+      "比较",
+      "两项",
+      "选择",
+      "steelman",
+      "最小实验",
+      "实验",
+      "决策",
+      "取舍",
+      "验证",
+      "七天"
+    ],
+    "explicit_long": [
+      "持续",
+      "深度",
+      "任务书",
+      "知识收尾",
+      "天赋",
+      "人生"
+    ]
+  },
+  "description_required_concepts": [
+    "package_selection",
+    "method_choice",
+    "questioning",
+    "learning",
+    "analysis",
+    "decision",
+    "explicit_long"
+  ],
+  "recommended_threshold": 0.34,
+  "negative_patterns": [
+    "论文精读",
+    "论文综述",
+    "学术润色",
+    "翻译全文",
+    "写作润色",
+    "磁盘清理",
+    "定时提醒",
+    "普通 bug 修复",
+    "代码 diff",
+    "专业代码审查",
+    "Trellis 规划审查",
+    "Trellis计划审查",
+    "原生 Goal",
+    "Goal 模式",
+    "生产 UI",
+    "生产网站",
+    "全局 agent 配置"
+  ],
+  "should_trigger": [
+    {
+      "text": "我总在换工具，却说不清想解决什么。用 laoyeye 的 socratic-inquiry 方法帮我先问清问题，先别建议。",
+      "family": "explicit_package_selection",
+      "source_entry": "socratic-inquiry"
+    },
+    {
+      "text": "用 laoyeye 的 matt-grilling 方法拷问这个设计：离线笔记同步。还没决定单人还是团队；冲突策略依赖这个决定。",
+      "family": "explicit_package_selection",
+      "source_entry": "matt-grilling"
+    },
+    {
+      "text": "我主动要求你拷问我。用 laoyeye 的 matt-grill-me 方法，帮我把离线笔记同步计划问扎实。",
+      "family": "explicit_package_selection",
+      "source_entry": "matt-grill-me"
+    },
+    {
+      "text": "用 laoyeye 的 johari-window 方法作为这次会话的协作设置：我知道业务，你熟悉技术，未知风险要指出。",
+      "family": "explicit_package_selection",
+      "source_entry": "johari-window"
+    },
+    {
+      "text": "用 laoyeye 的 no-fluff-output 方法，先说行动和完成状态；这是格式示例：API_TOKEN=<示例占位符>，跟当前问题无关。",
+      "family": "explicit_package_selection",
+      "source_entry": "no-fluff-output"
+    },
+    {
+      "text": "用 laoyeye 的 two-layer-explain 方法讲透缓存失效：先给新手例子，再解释专业机制和边界。",
+      "family": "explicit_package_selection",
+      "source_entry": "two-layer-explain"
+    },
+    {
+      "text": "用 laoyeye 的 reverse-teardown 方法拆这个优秀 onboarding 范例：首屏只要邮箱，下一步才问团队规模；每步解释用途；最后预览成果。",
+      "family": "explicit_package_selection",
+      "source_entry": "reverse-teardown"
+    },
+    {
+      "text": "用 laoyeye 的 horizontal-vertical-analysis 方法研究城市共享单车，做纵向历史和同维横向比较，并给三条未来路径。",
+      "family": "explicit_package_selection",
+      "source_entry": "horizontal-vertical-analysis"
+    },
+    {
+      "text": "用 laoyeye 的 fact-check 方法核查：某博主说“用了这个方法，所有人的记忆力都会翻倍”，只给了三名学员截图。",
+      "family": "explicit_package_selection",
+      "source_entry": "fact-check"
+    },
+    {
+      "text": "我听完机会成本还是没懂。用 laoyeye 的 parable 方法讲一个短寓言，最后才揭开概念。",
+      "family": "explicit_package_selection",
+      "source_entry": "parable"
+    },
+    {
+      "text": "用 laoyeye 的 memory-parable 方法，帮我记住数据库事务的 ACID；挑关键概念，借一个异域故事串起来。",
+      "family": "explicit_package_selection",
+      "source_entry": "memory-parable"
+    },
+    {
+      "text": "用 laoyeye 的 eli5 方法做一个大图少字的 HTML，讲清 DNS 查询；请保存到我指定的 course/dns.html。",
+      "family": "explicit_package_selection",
+      "source_entry": "eli5"
+    },
+    {
+      "text": "用 laoyeye 的 matt-teach 方法持续教我线性代数，教学目录 course 已获准。里面有 0004-vectors.html 和 0007-basis.md 学习记录，先恢复再继续。",
+      "family": "explicit_package_selection",
+      "source_entry": "matt-teach"
+    },
+    {
+      "text": "用 laoyeye 的 expert-panel 方法，从三种互补视角分析社区图书馆要不要取消逾期费。",
+      "family": "explicit_package_selection",
+      "source_entry": "expert-panel"
+    },
+    {
+      "text": "用 laoyeye 的 first-principles 方法重推配送方案；现方案默认每单都要当日达，但这个约束从未验证。",
+      "family": "explicit_package_selection",
+      "source_entry": "first-principles"
+    },
+    {
+      "text": "用 laoyeye 的 cross-domain-borrow 方法，为图书馆借还排队找跨行业思路，至少找三个远距领域的同构案例。",
+      "family": "explicit_package_selection",
+      "source_entry": "cross-domain-borrow"
+    },
+    {
+      "text": "用 laoyeye 的 inversion 方法，先想一个社区活动会怎样被我们搞砸，再反推防护。",
+      "family": "explicit_package_selection",
+      "source_entry": "inversion"
+    },
+    {
+      "text": "用 laoyeye 的 carl-idea-king 方法，攻击这个已经成型的方案：所有客户日志都永久集中保存，默认所有同事可读。",
+      "family": "explicit_package_selection",
+      "source_entry": "carl-idea-king"
+    },
+    {
+      "text": "用 laoyeye 的 matt-diagnosing-bugs 方法修这个已授权的小项目问题：搜索中文后返回空列表。先复现再改，敏感日志要脱敏。",
+      "family": "explicit_package_selection",
+      "source_entry": "matt-diagnosing-bugs"
+    },
+    {
+      "text": "用 laoyeye 的 steelman-both-sides 方法，比较恰好两个选择：留在现团队，或者去初创公司。先别替我选。",
+      "family": "explicit_package_selection",
+      "source_entry": "steelman-both-sides"
+    },
+    {
+      "text": "用 laoyeye 的 minimum-experiment 方法，设计一次低成本验证：我不确定附近居民是否愿意买周末面包，先设计，别替我发广告。",
+      "family": "explicit_package_selection",
+      "source_entry": "minimum-experiment"
+    },
+    {
+      "text": "用 laoyeye 的 kaz-leader 方法，写一份给 agent 的任务书：在现有项目加 CSV 导入。只交可复制文本，不要开始实现。",
+      "family": "explicit_package_selection",
+      "source_entry": "kaz-leader"
+    },
+    {
+      "text": "用 laoyeye 的 kaz-neat-freak 方法，只审计当前项目知识收尾，给我预览；文档规则跟代码有出入，先不准写入或清场。",
+      "family": "explicit_package_selection",
+      "source_entry": "kaz-neat-freak"
+    },
+    {
+      "text": "用 laoyeye 的 hidden-talent 方法做深入天赋探索。我愿意逐个回答问题，请根据我实际经历分析，而不是测人格标签。",
+      "family": "explicit_package_selection",
+      "source_entry": "hidden-talent"
+    },
+    {
+      "text": "用 laoyeye 的 life-design 方法做完整人生设计。我愿意逐步聊，最后保留三个都值得考虑的五年版本，再做原型行动。",
+      "family": "explicit_package_selection",
+      "source_entry": "life-design"
+    },
+    {
+      "text": "用苏格拉底追问帮我理清问题，找到最值得思考的变量。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "我想把缓存这个概念讲透，请用例子连接机制和专业解释。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "请研究这项技术的纵向历史，并用同维度比较三条路线。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "请用事实核查方法检查这条说法里的因果推论，给出证据等级和结论边界。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "从第一性原理重推方案，把未验证约束和事实分开。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "我在两项选择之间犹豫，请用双向钢人方法比较最强理由和关键分歧。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "我明确想持续学习统计，建立专用教学目录和学习证据。",
+      "family": "implicit_intent"
+    },
+    {
+      "text": "我明确要求天赋探索，根据个人经历做深入分析，设计可逆验证。",
+      "family": "implicit_intent"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "今天纽约天气如何？",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "把 17 乘以 23，直接给结果。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "请翻译全文，保留专有名词。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "做普通写作润色，把周报缩短。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "帮我做磁盘清理，先找缓存目录。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "请给这张照片换一个背景。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "这个 JSON 少了一个逗号，补上就好。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "把一月、二月、三月按原顺序排成列表。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "帮我发邮件确认明天的会议时间。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "设置定时提醒，每天上午通知我学习。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "我今天有点迷茫，只要列出已经给你的待办。",
+      "family": "unrelated_or_unrequested"
+    },
+    {
+      "text": "普通 bug 修复：改掉空指针并运行项目原有测试。",
+      "family": "unrelated_or_unrequested"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "请做论文精读：从 Zotero 打开这篇论文，逐节教学。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "请做论文综述：把五篇 arXiv 论文按研究画像归一化，再比较证据。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "只做学术润色，保留研究结论和专业概念。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "请审查这个代码 diff 的回归问题和方案风险。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "对这个仓库做专业代码审查，查证安全问题，不是模拟视角。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "请做 Trellis 规划审查，核对需求、设计、实施和验收证据。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "请做 Trellis计划审查，比较父子任务的依赖和验收机制。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "用原生 Goal 管理持续学习任务，现在查看并执行目标。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "用 Goal 模式执行这个已批准的研究方案，不是在写文本。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "实现生产 UI，用 React 做教学产品并接入用户系统。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "构建生产网站来讲解数学概念并上线，不是单页教学 artifact。",
+      "family": "specialist_implicit_boundary"
+    },
+    {
+      "text": "检查全局 agent 配置和技能发现是否失效，按专门治理流程查证。",
+      "family": "specialist_implicit_boundary"
+    }
+  ],
+  "scope_limitations": "Lexical smoke covers explicit package/method selection and multi-family natural intents. It does not demonstrate implicit natural-language recall or provider behavior. The sparse natural intents below are output-eval specifications, not scored smoke successes.",
+  "not_scored_natural_intents": [
+    {
+      "text": "核查这条说法里的因果推论，给出证据等级和结论边界。",
+      "reason": "Only one lexical family at the selected threshold; retain as a behavioral holdout, not an asserted pass."
+    },
+    {
+      "text": "我在两项选择之间犹豫，帮我比较最强理由和关键分歧。",
+      "reason": "Only one lexical family at the selected threshold; retain as a behavioral holdout, not an asserted pass."
+    }
+  ]
+}
