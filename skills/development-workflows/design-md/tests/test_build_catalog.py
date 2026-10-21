@@ -279,6 +279,50 @@ class BuildCatalogTests(unittest.TestCase):
         self.assertEqual(run_build(design_md, skills, out).returncode, 0)
         self.assertFalse((out / "brands" / "gone.md").exists())
 
+    def test_first_party_is_kept_and_other_stale_styles_are_removed(self) -> None:
+        design_md, skills, out = make_upstreams(self.root)
+        source = "---\nname: Airy\n---\n\n## Overview\n\nLight field.\n"
+        entry = {
+            "id": "style:airy-glass",
+            "kind": "style",
+            "slug": "airy-glass",
+            "name": "轻盈毛玻璃",
+            "category": "style-min",
+            "description": "轻盈毛玻璃 is airy frosted glass.",
+            "format": "stitch",
+            "path": "styles/airy-glass.md",
+            "source": "first-party",
+            "upstream_path": "assets/catalog/first-party/airy-glass.md",
+        }
+        write(
+            out / "first-party" / "manifest.json",
+            json.dumps(entry, ensure_ascii=False, indent=2) + "\n",
+        )
+        write(out / "first-party" / "airy-glass.md", source)
+        write(out / "styles" / "orphan.md", "stale style\n")
+        result = run_build(design_md, skills, out)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        index = json.loads((out / "index.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            [item["id"] for item in index["entries"]],
+            [
+                "brand:acme",
+                "brand:extra",
+                "brand:old",
+                "style:airy-glass",
+                "style:calm",
+                "style:plain",
+            ],
+        )
+        self.assertEqual(
+            (out / "styles" / "airy-glass.md").read_text(encoding="utf-8"), source
+        )
+        self.assertFalse((out / "styles" / "orphan.md").exists())
+        self.assertNotIn("first-party", index["sources"])
+        kept = next(item for item in index["entries"] if item["id"] == "style:airy-glass")
+        self.assertEqual(kept["source"], "first-party")
+        self.assertEqual(kept["name"], "轻盈毛玻璃")
+
     def test_uncategorized_entry_fails(self) -> None:
         design_md, skills, out = make_upstreams(self.root, uncategorized=True)
         result = run_build(design_md, skills, out)

@@ -6,10 +6,10 @@ Use this file when you read a catalog entry, customize a project `DESIGN.md`, or
 
 | `format` in `index.json` | Count | How to read tokens                                                                                                                                                                        |
 | ------------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `stitch`                 | 141   | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
+| `stitch`                 | 142   | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
 | `legacy`                 | 10    | No frontmatter. Tokens are in numbered body sections ("2. Color Palette & Roles", "3. Typography Rules") as lists and tables. Copy them into a token layer by hand.                       |
 
-Style entries (`style:*`) use a short stitch file: frontmatter tokens, Overview, Style Foundations, Colors, then Brand Character, Accessibility, Writing Tone, and Do's and Don'ts. They do not define components; build components with `design-system-core.md` section 4 and the entry's tokens.
+Upstream style entries (`style:*`) use a short stitch file: frontmatter tokens, Overview, Style Foundations, Colors, then Brand Character, Accessibility, Writing Tone, and Do's and Don'ts. A first-party style may also add Layout, Elevation & Depth, Shapes, Responsive Behavior, and Known Gaps, in that stitch order. Style entries do not define a component library; build components with `design-system-core.md` section 4 and the entry's tokens.
 
 ## 2. Frontmatter keys
 

@@ -77,6 +77,10 @@ def resolve(entries: list[dict], wanted: str) -> dict:
 
 
 def provenance(index: dict, entry: dict) -> str:
+    if entry["source"] == "first-party":
+        return (
+            f"<!-- design-md: entry={entry['id']}; source=first-party; license=MIT -->"
+        )
     source = index["sources"][entry["source"]]
     return (
         f"<!-- design-md: entry={entry['id']}; source={source['repo']}@{source['commit'][:7]}; "

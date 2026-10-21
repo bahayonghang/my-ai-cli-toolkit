@@ -10,6 +10,8 @@ Inputs:
 
 Outputs (under --out): brands/*.md, styles/*.md, LICENSES/*, index.json.
 Exit 1 when any entry has no category; nothing is written in that case.
+If out/first-party/manifest.json exists, those entries are merged before writing.
+A missing manifest is skipped. first-party is not an upstream source.
 """
 
 from __future__ import annotations
@@ -231,6 +233,86 @@ def build_styles(
     return entries, files
 
 
+def insert_entry(entries: list[dict], item: dict) -> None:
+    """Place an entry among the same kind, ordered by slug."""
+    kind = item["kind"]
+    slug = item["slug"]
+    indexes = [index for index, entry in enumerate(entries) if entry["kind"] == kind]
+    if not indexes:
+        entries.append(item)
+        return
+    for index in indexes:
+        if entries[index]["slug"] > slug:
+            entries.insert(index, item)
+            return
+    entries.insert(indexes[-1] + 1, item)
+
+
+def merge_first_party(
+    out: Path,
+    entries: list[dict],
+    files: dict[str, str],
+    known_categories: set[str],
+    errors: list[str],
+) -> None:
+    """Merge out/first-party/manifest.json. Skip the merge when it is absent."""
+    manifest_path = out / "first-party" / "manifest.json"
+    if not manifest_path.is_file():
+        return
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        errors.append(f"first-party manifest is not valid JSON: {error}")
+        return
+    if isinstance(payload, dict):
+        items = [payload]
+    elif isinstance(payload, list):
+        items = payload
+    else:
+        errors.append("first-party manifest must be an entry object or a list")
+        return
+
+    existing_ids = {entry["id"] for entry in entries}
+    staged: list[tuple[dict, str, str]] = []
+    local_errors: list[str] = []
+    for item in items:
+        if not isinstance(item, dict):
+            local_errors.append("first-party manifest entry must be an object")
+            continue
+        entry_id = str(item.get("id") or "")
+        slug = str(item.get("slug") or "")
+        kind = str(item.get("kind") or "")
+        category = str(item.get("category") or "")
+        rel = str(item.get("path") or "")
+        label = entry_id or "first-party entry"
+        if not (entry_id and slug and kind and category and rel):
+            local_errors.append(f"{label} is missing id, kind, slug, category, or path")
+            continue
+        if entry_id in existing_ids or any(
+            staged_item["id"] == entry_id for staged_item, _, _ in staged
+        ):
+            local_errors.append(f"{entry_id} conflicts with an existing entry")
+            continue
+        if category not in known_categories:
+            local_errors.append(f"{entry_id} uses unknown category {category}")
+            continue
+        source = out / "first-party" / f"{slug}.md"
+        if not source.is_file():
+            local_errors.append(f"{entry_id} source file is missing")
+            continue
+        if rel in files or any(staged_rel == rel for _, staged_rel, _ in staged):
+            local_errors.append(f"{entry_id} conflicts with an upstream file {rel}")
+            continue
+        staged.append((item, rel, normalize(source.read_text(encoding="utf-8"))))
+
+    if local_errors:
+        errors.extend(local_errors)
+        return
+    for item, rel, text in staged:
+        files[rel] = text
+        insert_entry(entries, item)
+
+
 def write_if_changed(path: Path, text: str) -> bool:
     data = text.encode("utf-8")
     if path.is_file() and path.read_bytes() == data:
@@ -275,12 +357,13 @@ def main(argv: list[str] | None = None) -> int:
     for entry in entries:
         if entry["category"] not in known_categories:
             errors.append(f"{entry['id']} uses unknown category {entry['category']}")
+    files = {**brand_files, **style_files}
+    merge_first_party(args.out, entries, files, known_categories, errors)
     if errors:
         for error in errors:
             print(f"error: {error}", file=sys.stderr)
         return 1
 
-    files = {**brand_files, **style_files}
     files["LICENSES/awesome-design-md.LICENSE"] = normalize(
         (args.design_md / "LICENSE").read_text(encoding="utf-8")
     )
@@ -317,8 +400,10 @@ def main(argv: list[str] | None = None) -> int:
             if f"{folder}/{stale.name}" not in files:
                 stale.unlink()
                 removed += 1
+    brand_count = sum(entry["kind"] == "brand" for entry in entries)
+    style_count = sum(entry["kind"] == "style" for entry in entries)
     print(
-        f"brands={len(brand_entries)} styles={len(style_entries)} "
+        f"brands={brand_count} styles={style_count} "
         f"files_written={changed} files_removed={removed}"
     )
     return 0

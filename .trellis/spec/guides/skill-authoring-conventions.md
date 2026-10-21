@@ -157,6 +157,24 @@ python "<yao-meta-dir>/scripts/trust_check.py" "<skill-dir>" `
 - Bad: publish `Scripts: 0` as proof that a PowerShell package has no executable
   risk.
 
+## design-md first-party catalog entries
+
+`skills/development-workflows/design-md/scripts/build_catalog.py` rebuilds
+`assets/catalog/styles/*.md` and `index.json` from the two upstream checkouts,
+then deletes any style file that is not in that output.
+
+- Put an original style in `assets/catalog/first-party/<slug>.md` plus one
+  object in `assets/catalog/first-party/manifest.json`.
+- Set `source` to `first-party`. Do not add it to `index.json` `sources`, and
+  do not add the slug to the upstream list in `categories.json`.
+- `build_catalog.py` copies the markdown to `styles/<slug>.md` and inserts the
+  entry in style-slug order only when the manifest exists.
+- `design_catalog.py` provenance for `source == "first-party"` must not cite
+  the VoltAgent or Bergside commits.
+- Keep the two markdown copies byte-identical, UTF-8, LF, no trailing
+  whitespace. A hand edit that touches only `styles/<slug>.md` is overwritten
+  on the next rebuild.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

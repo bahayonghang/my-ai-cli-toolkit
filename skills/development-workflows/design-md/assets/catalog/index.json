@@ -1164,6 +1164,18 @@
       "upstream_path": "skills/agentic/DESIGN.md + skills/agentic/SKILL.md"
     },
     {
+      "id": "style:airy-glass",
+      "kind": "style",
+      "slug": "airy-glass",
+      "name": "轻盈毛玻璃",
+      "category": "style-tactile-depth",
+      "description": "轻盈毛玻璃 is airy frosted glass: a light field, white paper, and two semantic colors, green for input and purple for output.",
+      "format": "stitch",
+      "path": "styles/airy-glass.md",
+      "source": "first-party",
+      "upstream_path": "assets/catalog/first-party/airy-glass.md"
+    },
+    {
       "id": "style:ant",
       "kind": "style",
       "slug": "ant",

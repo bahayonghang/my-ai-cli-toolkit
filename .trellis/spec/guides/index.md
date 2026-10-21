@@ -23,7 +23,7 @@ These guides help you **ask the right questions before coding**.
 | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)     | Identify patterns and reduce duplication                                                                                                                 | When you notice repeated patterns                |
 | [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)   | Think through data flow across layers                                                                                                                    | Features spanning multiple layers                |
-| [Skill Authoring Conventions](./skill-authoring-conventions.md) | Repo contracts for skills: skill-dir paths, frontmatter, interface.yaml, ps1 testing, verification traps, script output encoding, overridable validators | Creating or refactoring anything under `skills/` |
+| [Skill Authoring Conventions](./skill-authoring-conventions.md) | Repo contracts for skills: skill-dir paths, frontmatter, interface.yaml, ps1 testing, verification traps, script output encoding, overridable validators, design-md first-party catalog entries | Creating or refactoring anything under `skills/` |
 | [Harness Execution Routing](./harness-execution-routing.md)     | Strong-model review versus cheap-model execution on Claude Code, Codex, Grok Build, Kimi Code CLI, and OMP. No brand ranking.                            | Planning, review, or bounded execution on those hosts |
 
 ---
