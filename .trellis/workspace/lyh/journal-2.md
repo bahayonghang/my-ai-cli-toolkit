@@ -189,3 +189,34 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Status
 
 [OK] **Completed**
+
+
+## Session 71: 加入轻盈毛玻璃风格
+<!-- trellis-session: v=2 fp=10120ea47b062930 -->
+
+**Date**: 2026-10-21
+**Task**: 加入轻盈毛玻璃风格
+**Branch**: `dev`
+
+### Summary
+
+把轻盈毛玻璃作为 style:airy-glass 加入 design-md，并让目录重建保留 first-party 条目。
+
+### Main Changes
+
+- 新增 style:airy-glass，材料 token 与无障碍回退写入目录。
+- build_catalog 在存在 first-party manifest 时合并条目，否则行为不变。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7e3e6b8ef9e3e43438017408cb9387fa222d13b9` | feat(design-md): ✨ 加入轻盈毛玻璃风格 |
+
+### Testing
+
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
