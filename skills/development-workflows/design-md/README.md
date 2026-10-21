@@ -4,7 +4,7 @@
 
 Pick a design language from a categorized offline catalog, write it as the project-root `DESIGN.md`, then build and verify UI from it.
 
-目录共 151 个条目：84 个受真实产品启发的品牌 DESIGN.md，67 个通用风格。
+目录共 152 个条目：84 个受真实产品启发的品牌 DESIGN.md，68 个通用风格。
 
 ## 适用场景
 
@@ -68,7 +68,7 @@ python skills/development-workflows/design-md/scripts/design_catalog.py apply st
 | 编辑与印刷 / Editorial & Print                     | 9    | editorial, paper, riso, terracotta       |
 | 产品与企业系统 / Product & Enterprise Systems      | 11   | shadcn, material, ant, bento             |
 | 高对比与表现力 / Bold & Expressive                 | 11   | bold, brutalism, neobrutalism, gradient  |
-| 质感与空间深度 / Tactile & Depth                   | 6    | glassmorphism, claymorphism, neumorphism |
+| 质感与空间深度 / Tactile & Depth                   | 7    | glassmorphism, claymorphism, neumorphism, airy-glass |
 | 科技与暗色 / Tech & Dark                           | 8    | cosmic, neon, matrix, codex              |
 | 复古与游戏 / Retro & Game                          | 7    | retro, pacman, sega, tetris              |
 | 亲和与手绘 / Friendly & Hand-drawn                 | 6    | friendly, doodle, sketch, lingo          |

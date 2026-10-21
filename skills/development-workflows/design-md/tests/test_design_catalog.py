@@ -31,9 +31,9 @@ class CatalogAssetTests(unittest.TestCase):
 
     def test_counts(self) -> None:
         entries = self.index["entries"]
-        self.assertEqual(len(entries), 151)
+        self.assertEqual(len(entries), 152)
         self.assertEqual(sum(e["kind"] == "brand" for e in entries), 84)
-        self.assertEqual(sum(e["kind"] == "style" for e in entries), 67)
+        self.assertEqual(sum(e["kind"] == "style" for e in entries), 68)
         self.assertEqual(len(self.index["categories"]), 18)
 
     def test_every_entry_has_file_and_known_category(self) -> None:
@@ -68,6 +68,30 @@ class CatalogAssetTests(unittest.TestCase):
     def test_no_asset_is_named_skill_md(self) -> None:
         self.assertEqual(list(CATALOG.rglob("SKILL.md")), [])
 
+    def test_airy_glass_matches_first_party_source(self) -> None:
+        entry = next(
+            item for item in self.index["entries"] if item["id"] == "style:airy-glass"
+        )
+        self.assertEqual(entry["name"], "轻盈毛玻璃")
+        self.assertEqual(entry["category"], "style-tactile-depth")
+        self.assertEqual(entry["source"], "first-party")
+        self.assertNotIn("first-party", self.index["sources"])
+        style_slugs = [
+            item["slug"] for item in self.index["entries"] if item["kind"] == "style"
+        ]
+        self.assertEqual(style_slugs, sorted(style_slugs))
+        self.assertLess(style_slugs.index("agentic"), style_slugs.index("airy-glass"))
+        styles = CATALOG / "styles" / "airy-glass.md"
+        source = CATALOG / "first-party" / "airy-glass.md"
+        self.assertEqual(styles.read_bytes(), source.read_bytes())
+        text = styles.read_text(encoding="utf-8")
+        self.assertIn("### Do", text)
+        self.assertNotIn("## Components", text)
+        self.assertNotIn("\u2014", text)
+        config = json.loads((CATALOG / "categories.json").read_text(encoding="utf-8"))
+        slugs = [slug for names in config["style"].values() for slug in names]
+        self.assertNotIn("airy-glass", slugs)
+
     def test_licenses_present(self) -> None:
         for source in self.index["sources"].values():
             self.assertEqual(source["license"], "MIT")
@@ -82,7 +106,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(sum(line.startswith("## ") for line in result.stdout.splitlines()), 18)
         self.assertIn("AI 与大模型平台", result.stdout)
         self.assertIn("brand:linear.app", result.stdout)
-        self.assertIn("151", result.stdout)
+        self.assertIn("152 entries", result.stdout)
 
     def test_list_json_filters(self) -> None:
         result = run("list", "--kind", "brand", "--format", "json")
@@ -112,6 +136,8 @@ class CliTests(unittest.TestCase):
         self.assertIn("brand:linear.app", result.stdout)
         self.assertIn("style:minimal", run("search", "minimal").stdout)
         self.assertIn("style:minimal", run("search", "极简").stdout)
+        self.assertIn("style:airy-glass", run("search", "轻盈毛玻璃").stdout)
+        self.assertIn("style:airy-glass", run("search", "airy-glass").stdout)
         self.assertEqual(run("search", "zzzz-no-match").returncode, 1)
 
     def test_show_and_ambiguity(self) -> None:
@@ -147,6 +173,21 @@ class ApplyTests(unittest.TestCase):
             text[closing:].startswith("<!-- design-md: entry=brand:vercel;")
         )
         self.assertIn("license=MIT", text[closing : closing + 300])
+
+    def test_apply_first_party_provenance_is_not_an_upstream_repo(self) -> None:
+        result = run("apply", "style:airy-glass", "--root", str(self.root))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = (self.root / "DESIGN.md").read_text(encoding="utf-8")
+        comment = next(
+            line for line in text.splitlines() if line.startswith("<!-- design-md:")
+        )
+        self.assertEqual(
+            comment,
+            "<!-- design-md: entry=style:airy-glass; source=first-party; license=MIT -->",
+        )
+        self.assertNotIn("awesome-design-md", comment)
+        self.assertNotIn("awesome-design-skills", comment)
+        self.assertNotIn("github.com", comment)
 
     def test_apply_legacy_entry_puts_comment_first(self) -> None:
         self.assertEqual(

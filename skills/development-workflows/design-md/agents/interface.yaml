@@ -1,4 +1,4 @@
 interface:
   display_name: "Design MD"
-  short_description: "List 151 categorized brand and style designs, write the project-root DESIGN.md, and implement UI from it"
+  short_description: "List 152 categorized brand and style designs, write the project-root DESIGN.md, and implement UI from it"
   default_prompt: "Use $design-md to choose a design language for this project. If the project root already has DESIGN.md, implement from it. Otherwise run the bundled design_catalog.py list or search command, offer 2-3 entries with one reason each, and after the choice run apply to write DESIGN.md. Then build one token layer for the project stack, implement the requested UI with all component states, and verify it in a running page with desktop and mobile screenshots. For brand entries, do not copy logos, wordmarks, brand names, imagery, or proprietary font files."
