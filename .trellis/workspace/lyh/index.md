@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 71
-- **Last Active**: 2026-10-21
+- **Total Sessions**: 72
+- **Last Active**: 2026-10-25
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~222 | Active |
+| `journal-2.md` | ~244 | Active |
 | `journal-1.md` | ~1999 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 72 | 2026-10-25 | 为 design-md 增加 BI 场景设计 | `538f86b5960d901359ace68ee8d13f286a33b906` | `dev` |
 | 71 | 2026-10-21 | 加入轻盈毛玻璃风格 | `7e3e6b8ef9e3e43438017408cb9387fa222d13b9` | `dev` |
 | 70 | 2026-10-20 | 完成 laoyeye 整合技能并提交归档 | `58d6f1b3e0aa753a48b71187c96c5330da91bde7` | `codex/laoyeye-integrated-skill` |
 | 69 | 2026-10-14 | 新增 design-md 设计系统 skill | `16da8ff7d18177594327a9173fabb98f1ed266e7`, `2ef56f8c31682f787723abe097a2f0bd81875acb` | `dev` |

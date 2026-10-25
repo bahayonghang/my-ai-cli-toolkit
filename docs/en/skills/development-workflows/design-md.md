@@ -4,11 +4,11 @@
 
 ## Purpose overview
 
-Pick a design language from a categorized offline catalog of 152 entries (84 brand-inspired DESIGN.md files and 68 generic styles), write it as DESIGN.md in the project root, then implement or restyle production UI from that file and verify it in a running page.
+Pick a design language from a categorized offline catalog of 153 entries (84 brands, 68 styles, 1 business scene), write it as DESIGN.md in the project root, then implement or restyle production UI from that file and verify it in a running page.
 
 ## Trigger scenarios
 
-- the user asks to list or compare design styles, build a page in the style of a known product (Linear, Vercel, Stripe, Claude, Apple), choose a look such as minimal, editorial, glassmorphism, airy glass, 轻盈毛玻璃, brutalism, or retro, create or update DESIGN.md, or implement UI from an existing DESIGN.md / 列出设计风格、分类查看设计、选一个设计系统、按某品牌风格做页面、生成 DESIGN.md、在根目录创建 design.md、按 DESIGN.md 实施 UI、统一设计 token
+- the user asks to list or compare design styles, build a page in the style of a known product (Linear, Vercel, Stripe, Claude, Apple), choose a look such as minimal, editorial, glassmorphism, airy glass, 轻盈毛玻璃, brutalism, or retro, build a BI, analytics, 经营分析, or 数据看板 workbench, create or update DESIGN.md, or implement UI from an existing DESIGN.md / 列出设计风格、按场景选设计、BI 工作台、生成 DESIGN.md、按 DESIGN.md 实施 UI
 - Not for HTML reports, plans, or slide-like artifacts (use html-artifact)
 - not for recreating a screenshot or mockup (use image-to-ui-skill)
 - not for backend or non-UI work
@@ -19,7 +19,7 @@ Pick a design language from a categorized offline catalog of 152 entries (84 bra
 | --- | --- |
 | Name | `design-md` |
 | Category | `development-workflows` (Development Workflows) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility` |
 
 ## Install command
@@ -33,7 +33,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-md
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-md/agents` | directory | 1 | Companion agents |
-| `skills/development-workflows/design-md/assets` | directory | 158 | Assets |
+| `skills/development-workflows/design-md/assets` | directory | 160 | Assets |
 | `skills/development-workflows/design-md/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/design-md/README.md` | file | 1 | Top-level file |
 | `skills/development-workflows/design-md/references` | directory | 4 | Reference material |

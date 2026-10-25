@@ -20,7 +20,7 @@ If the project already has a token layer, extend or replace it. Do not add a sec
 ## 2. Build the token layer
 
 1. Map every frontmatter token to one variable. Keep the role name: `colors.surface-card` → `--color-surface-card`.
-2. For `legacy` entries, copy values from the color and typography sections into the same structure.
+2. For brand `legacy` entries, copy values from the color and typography sections into the same structure. For `scene:*`, do not look for "2. Color Palette & Roles". `scene:bi` keeps color, type, spacing, and radius in the 「视觉设计系统」 tables; build the token layer from that table.
 3. Load fonts: use an open font that the entry names as a substitute, or a system stack. Do not download or embed a licensed brand font (see `brand-boundary.md`).
 4. Add `prefers-reduced-motion` handling and a `:focus-visible` style in the same global file.
 5. Check the contrast of each text/background pair that the entry's components use before you build components. Upstream pairs can fail WCAG AA: in `brand:claude`, white text on `primary` (#cc785c) is 3.28:1, below 4.5:1 for 14px button text. When a pair fails, change the token in `DESIGN.md` (for example, a darker button background or a larger, bolder label), record the change in `Known Gaps`, and then update the token layer.
@@ -61,6 +61,7 @@ Example (plain CSS):
 ## 4. Compose pages
 
 - Follow the entry's Layout, Do's and Don'ts, and Responsive Behavior sections. Rhythm rules (for example, alternating light and dark bands) are part of the design.
+- For `scene:bi`, the page follows the four information-architecture layers, the chart section, the table section, the accessibility section, and the delivery order in section 12. The opening 「角色与设计目标」 note is part of the design source. It is not a second skill workflow; keep following this file and `SKILL.md`. Component states still come from `design-system-core.md`.
 - Use real or clearly marked placeholder content. Do not invent customers, metrics, or testimonials.
 - Use the entry's imagery rules. Without real images, use neutral placeholders with correct aspect ratios.
 

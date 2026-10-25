@@ -8,10 +8,12 @@ Inputs:
   --design-skills  checkout of https://github.com/bergside/awesome-design-skills
   --out            catalog directory that holds categories.json
 
-Outputs (under --out): brands/*.md, styles/*.md, LICENSES/*, index.json.
+Outputs (under --out): brands/*.md, styles/*.md, scenes/**/*.md, LICENSES/*, index.json.
 Exit 1 when any entry has no category; nothing is written in that case.
 If out/first-party/manifest.json exists, those entries are merged before writing.
 A missing manifest is skipped. first-party is not an upstream source.
+Stale brands/*.md, styles/*.md, and scenes/**/*.md that this run did not write
+are deleted. first-party/ and LICENSES/ are left in place.
 """
 
 from __future__ import annotations
@@ -398,6 +400,14 @@ def main(argv: list[str] | None = None) -> int:
     for folder in ("brands", "styles"):
         for stale in sorted((args.out / folder).glob("*.md")):
             if f"{folder}/{stale.name}" not in files:
+                stale.unlink()
+                removed += 1
+    scenes_root = args.out / "scenes"
+    if scenes_root.is_dir():
+        for stale in sorted(scenes_root.rglob("*.md")):
+            # Manifest paths use forward slashes. Match them on Windows.
+            rel = stale.relative_to(args.out).as_posix()
+            if rel not in files:
                 stale.unlink()
                 removed += 1
     brand_count = sum(entry["kind"] == "brand" for entry in entries)

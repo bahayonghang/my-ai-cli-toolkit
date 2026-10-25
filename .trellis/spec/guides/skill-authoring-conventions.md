@@ -160,20 +160,26 @@ python "<yao-meta-dir>/scripts/trust_check.py" "<skill-dir>" `
 ## design-md first-party catalog entries
 
 `skills/development-workflows/design-md/scripts/build_catalog.py` rebuilds
-`assets/catalog/styles/*.md` and `index.json` from the two upstream checkouts,
-then deletes any style file that is not in that output.
+`assets/catalog/brands/*.md`, `assets/catalog/styles/*.md`, and `index.json`
+from the two upstream checkouts. It then deletes any `brands/*.md`,
+`styles/*.md`, or `scenes/**/*.md` file that is not in that output. It does
+not delete `first-party/` or `LICENSES/`.
 
-- Put an original style in `assets/catalog/first-party/<slug>.md` plus one
-  object in `assets/catalog/first-party/manifest.json`.
+- Put an original style in `assets/catalog/first-party/<slug>.md`. Put a scene
+  entry at `assets/catalog/scenes/<category>/<slug>.md` and keep the same bytes
+  in `assets/catalog/first-party/<slug>.md`.
+- `assets/catalog/first-party/manifest.json` may be one entry object or an
+  array of entry objects. `style:airy-glass` stays a first-party style entry.
 - Set `source` to `first-party`. Do not add it to `index.json` `sources`, and
   do not add the slug to the upstream list in `categories.json`.
-- `build_catalog.py` copies the markdown to `styles/<slug>.md` and inserts the
-  entry in style-slug order only when the manifest exists.
+- `build_catalog.py` copies each first-party markdown to the entry `path`.
+  A style is inserted in style-slug order. A scene uses
+  `scenes/<category>/<slug>.md`. The merge runs only when the manifest exists.
 - `design_catalog.py` provenance for `source == "first-party"` must not cite
   the VoltAgent or Bergside commits.
 - Keep the two markdown copies byte-identical, UTF-8, LF, no trailing
-  whitespace. A hand edit that touches only `styles/<slug>.md` is overwritten
-  on the next rebuild.
+  whitespace. A hand edit that touches only `styles/<slug>.md` or
+  `scenes/<category>/<slug>.md` is overwritten on the next rebuild.
 
 ### 6. Tests Required
 

@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Skill frontmatter limit, docs-sync, and design-md first-party catalog contract"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Do not hand-edit generated docs; keep skill Python byte-compilable"}
+{"file": ".trellis/tasks/10-25-design-md-scenes/research/scene-catalog-fit.md", "reason": "Scene catalog fit, BI source constraints, and rebuild risks"}
