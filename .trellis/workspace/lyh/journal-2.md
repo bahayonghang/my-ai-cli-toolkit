@@ -220,3 +220,25 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Status
 
 [OK] **Completed**
+
+
+## Session 72: 为 design-md 增加 BI 场景设计
+<!-- trellis-session: v=2 fp=c9afaae467f55e50 -->
+
+**Date**: 2026-10-25
+**Task**: 为 design-md 增加 BI 场景设计
+**Branch**: `dev`
+
+### Summary
+
+加入 scene:bi。选中后写成项目根 DESIGN.md。目录重建会保留这条自有规范。design-md 测试与 just ci 已通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `538f86b5960d901359ace68ee8d13f286a33b906` | feat(design-md): ✨ 加入 BI 场景设计 |
+
+### Status
+
+[OK] **Completed**
