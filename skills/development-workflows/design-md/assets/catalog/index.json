@@ -140,6 +140,13 @@
       "en": "Friendly & Hand-drawn",
       "zh": "亲和与手绘",
       "order": 18
+    },
+    {
+      "id": "scene-analytics",
+      "kind": "scene",
+      "en": "Analytics and BI",
+      "zh": "分析与 BI",
+      "order": 19
     }
   ],
   "entries": [
@@ -1966,6 +1973,18 @@
       "path": "styles/vintage.md",
       "source": "awesome-design-skills",
       "upstream_path": "skills/vintage/DESIGN.md + skills/vintage/SKILL.md"
+    },
+    {
+      "id": "scene:bi",
+      "kind": "scene",
+      "slug": "bi",
+      "name": "企业级 BI 工作台",
+      "category": "scene-analytics",
+      "description": "浅色、高信息密度的企业级 BI 工作台，用于经营分析和数据看板，覆盖 KPI、趋势、明细表和待办。",
+      "format": "legacy",
+      "path": "scenes/analytics/bi.md",
+      "source": "first-party",
+      "upstream_path": "assets/catalog/first-party/bi.md"
     }
   ]
 }

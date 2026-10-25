@@ -7,6 +7,7 @@ scripts/check.py collect every SKILL.md under skills/.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
@@ -322,6 +323,72 @@ class BuildCatalogTests(unittest.TestCase):
         kept = next(item for item in index["entries"] if item["id"] == "style:airy-glass")
         self.assertEqual(kept["source"], "first-party")
         self.assertEqual(kept["name"], "轻盈毛玻璃")
+
+    def test_scene_manifest_array_appends_scene_and_removes_stale_scene_file(self) -> None:
+        design_md, skills, out = make_upstreams(self.root)
+        categories = json.loads((out / "categories.json").read_text(encoding="utf-8"))
+        categories["categories"].append(
+            {
+                "id": "scene-analytics",
+                "kind": "scene",
+                "en": "Analytics and BI",
+                "zh": "分析与 BI",
+                "order": 19,
+            }
+        )
+        write(out / "categories.json", json.dumps(categories, ensure_ascii=False))
+        style_entry = {
+            "id": "style:airy-glass",
+            "kind": "style",
+            "slug": "airy-glass",
+            "name": "轻盈毛玻璃",
+            "category": "style-min",
+            "description": "轻盈毛玻璃 is airy frosted glass.",
+            "format": "stitch",
+            "path": "styles/airy-glass.md",
+            "source": "first-party",
+            "upstream_path": "assets/catalog/first-party/airy-glass.md",
+        }
+        scene_entry = {
+            "id": "scene:bi",
+            "kind": "scene",
+            "slug": "bi",
+            "name": "企业级 BI 工作台",
+            "category": "scene-analytics",
+            "description": "浅色、高信息密度的企业级 BI 工作台，用于经营分析和数据看板，覆盖 KPI、趋势、明细表和待办。",
+            "format": "legacy",
+            "path": "scenes/analytics/bi.md",
+            "source": "first-party",
+            "upstream_path": "assets/catalog/first-party/bi.md",
+        }
+        write(
+            out / "first-party" / "manifest.json",
+            json.dumps([style_entry, scene_entry], ensure_ascii=False, indent=2) + "\n",
+        )
+        write(
+            out / "first-party" / "airy-glass.md",
+            "---\nname: Airy\n---\n\n## Overview\n\nLight field.\n",
+        )
+        scene_source = "# 企业级 BI\r\n\r\n浅色工作台。   \r\n"
+        write(out / "first-party" / "bi.md", scene_source)
+        write(out / "scenes" / "analytics" / "stale.md", "stale scene\n")
+        result = run_build(design_md, skills, out)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        index = json.loads((out / "index.json").read_text(encoding="utf-8"))
+        ids = [item["id"] for item in index["entries"]]
+        self.assertEqual(ids[-1], "scene:bi")
+        self.assertIn("style:airy-glass", ids)
+        spec = importlib.util.spec_from_file_location("design_md_build_catalog", BUILD)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        expected = module.normalize(scene_source).encode("utf-8")
+        self.assertEqual((out / "scenes" / "analytics" / "bi.md").read_bytes(), expected)
+        self.assertFalse((out / "scenes" / "analytics" / "stale.md").exists())
+        self.assertEqual(
+            (out / "first-party" / "bi.md").read_bytes(), scene_source.encode("utf-8")
+        )
+        self.assertTrue((out / "first-party" / "manifest.json").is_file())
 
     def test_uncategorized_entry_fails(self) -> None:
         design_md, skills, out = make_upstreams(self.root, uncategorized=True)

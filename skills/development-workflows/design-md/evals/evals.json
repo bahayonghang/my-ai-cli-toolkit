@@ -4,12 +4,12 @@
     {
       "id": 1,
       "prompt": "列出你能用的所有设计风格，按类别分组给我看",
-      "expected_output": "Skill triggers, runs the bundled catalog list command, and returns entries grouped under the 18 categories with Chinese and English category names, without writing DESIGN.md or editing code.",
+      "expected_output": "Skill triggers, runs the bundled catalog list command, and returns entries grouped under the 19 categories with Chinese and English category names, distinguishing brand, style, and scene entries, without writing DESIGN.md or editing code.",
       "files": [],
       "assertions": [
         "Runs design_catalog.py list through the skill-dir path",
         "Shows entries grouped by category with category names",
-        "Distinguishes brand entries from style entries",
+        "Distinguishes brand, style, and scene entries",
         "Does not write DESIGN.md or modify project files"
       ]
     },
@@ -91,6 +91,19 @@
       "assertions": [
         "Does not trigger design-md",
         "Routes to image-to-ui-skill for screenshot or mockup recreation"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "做一个经营分析用的数据看板，按 BI 工作台规范实现 KPI、趋势和明细",
+      "expected_output": "Skill selects scene:bi, runs apply to write DESIGN.md in the project root, implements KPI, trend, and detail regions from that spec, and verifies the page at runtime.",
+      "files": [],
+      "assertions": [
+        "Selects scene:bi rather than a brand or generic style",
+        "Writes DESIGN.md with the apply command",
+        "Builds tokens from the visual design system tables and follows the information architecture, charts, tables, accessibility, and delivery order",
+        "Implements KPI, trend, and detail regions",
+        "Runs the page and reports runtime verification, or lists each check that did not run"
       ]
     }
   ]

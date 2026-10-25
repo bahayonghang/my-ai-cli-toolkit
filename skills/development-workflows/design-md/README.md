@@ -4,13 +4,14 @@
 
 Pick a design language from a categorized offline catalog, write it as the project-root `DESIGN.md`, then build and verify UI from it.
 
-目录共 152 个条目：84 个受真实产品启发的品牌 DESIGN.md，68 个通用风格。
+目录共 153 个条目：84 个受真实产品启发的品牌 DESIGN.md，68 个通用风格，1 个业务场景。
 
 ## 适用场景
 
 - 列出或搜索可用设计，按类别浏览
 - 按某个产品的设计语言做页面（Linear、Vercel、Stripe、Claude、Apple 等）
 - 选一种通用风格（极简、编辑排版、玻璃拟态、新粗野主义、复古像素等）
+- 按业务场景做页面，例如 BI、经营分析或数据看板工作台
 - 给项目创建、定制或更换 `DESIGN.md`
 - 按已有 `DESIGN.md` 实施或改造页面与组件
 
@@ -35,6 +36,7 @@ npx skills add https://github.com/bahayonghang/my-ai-cli-toolkit --skill design-
 - 列出所有可用的设计风格，按类别分组
 - 用 Linear 的风格给这个项目做一个定价页
 - 我们是面向开发者的数据库产品，推荐几个合适的设计风格
+- 做一个经营分析用的 BI 工作台，按场景规范生成 DESIGN.md
 - Create a DESIGN.md for this project using the minimal style
 - Implement the landing page from our existing DESIGN.md
 - Switch our design from brutalism to editorial and keep a backup of the old DESIGN.md
@@ -72,8 +74,9 @@ python skills/development-workflows/design-md/scripts/design_catalog.py apply st
 | 科技与暗色 / Tech & Dark                           | 8    | cosmic, neon, matrix, codex              |
 | 复古与游戏 / Retro & Game                          | 7    | retro, pacman, sega, tetris              |
 | 亲和与手绘 / Friendly & Hand-drawn                 | 6    | friendly, doodle, sketch, lingo          |
+| 分析与 BI / Analytics and BI                       | 1    | bi                                       |
 
-前 10 类是品牌条目（`brand:*`），后 8 类是通用风格（`style:*`）。
+前 10 类是品牌条目（`brand:*`），接着 8 类是通用风格（`style:*`），最后 1 类是业务场景（`scene:*`）。
 
 ## 输出
 

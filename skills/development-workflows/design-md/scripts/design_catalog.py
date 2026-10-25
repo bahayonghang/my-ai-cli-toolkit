@@ -2,8 +2,8 @@
 """List, search, show, and apply design-md catalog entries.
 
 Commands:
-  list   [--kind brand|style] [--category ID] [--format text|json]
-  search QUERY [--kind brand|style] [--format text|json]
+  list   [--kind brand|style|scene] [--category ID] [--format text|json]
+  search QUERY [--kind brand|style|scene] [--format text|json]
   show   ID                      ID is kind:slug, or a slug when it is unique
   apply  ID [--root DIR] [--force]
 
@@ -42,8 +42,10 @@ def enrich(index: dict) -> list[dict]:
 
 def print_grouped(index: dict, items: list[dict]) -> None:
     brands = sum(item["kind"] == "brand" for item in items)
+    styles = sum(item["kind"] == "style" for item in items)
+    scenes = sum(item["kind"] == "scene" for item in items)
     print(
-        f"# design-md catalog: {len(items)} entries ({brands} brand, {len(items) - brands} style)"
+        f"# design-md catalog: {len(items)} entries ({brands} brand, {styles} style, {scenes} scene)"
     )
     for category in sorted(index["categories"], key=lambda c: c["order"]):
         group = [item for item in items if item["category"] == category["id"]]
@@ -137,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
 
     list_cmd = commands.add_parser("list", help="list entries grouped by category")
-    list_cmd.add_argument("--kind", choices=("brand", "style"))
+    list_cmd.add_argument("--kind", choices=("brand", "style", "scene"))
     list_cmd.add_argument("--category")
     list_cmd.add_argument("--format", choices=("text", "json"), default="text")
 
@@ -145,7 +147,7 @@ def main(argv: list[str] | None = None) -> int:
         "search", help="search id, name, description, and category names"
     )
     search_cmd.add_argument("query")
-    search_cmd.add_argument("--kind", choices=("brand", "style"))
+    search_cmd.add_argument("--kind", choices=("brand", "style", "scene"))
     search_cmd.add_argument("--format", choices=("text", "json"), default="text")
 
     show_cmd = commands.add_parser("show", help="print one entry")

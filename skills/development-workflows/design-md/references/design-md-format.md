@@ -7,9 +7,11 @@ Use this file when you read a catalog entry, customize a project `DESIGN.md`, or
 | `format` in `index.json` | Count | How to read tokens                                                                                                                                                                        |
 | ------------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `stitch`                 | 142   | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
-| `legacy`                 | 10    | No frontmatter. Tokens are in numbered body sections ("2. Color Palette & Roles", "3. Typography Rules") as lists and tables. Copy them into a token layer by hand.                       |
+| `legacy`                 | 11    | No frontmatter. Brand entries keep tokens in numbered sections such as "2. Color Palette & Roles" and "3. Typography Rules". `scene:*` entries also use `legacy`.                        |
 
 Upstream style entries (`style:*`) use a short stitch file: frontmatter tokens, Overview, Style Foundations, Colors, then Brand Character, Accessibility, Writing Tone, and Do's and Don'ts. A first-party style may also add Layout, Elevation & Depth, Shapes, Responsive Behavior, and Known Gaps, in that stitch order. Style entries do not define a component library; build components with `design-system-core.md` section 4 and the entry's tokens.
+
+`scene:*` entries currently use `legacy`. They have no YAML frontmatter. For `scene:bi`, read color, type, spacing, and radius from the 「视觉设计系统」 tables. Those tokens are not in a section named "2. Color Palette & Roles".
 
 ## 2. Frontmatter keys
 

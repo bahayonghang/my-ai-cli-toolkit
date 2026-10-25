@@ -1,12 +1,26 @@
-{
-  "id": "style:airy-glass",
-  "kind": "style",
-  "slug": "airy-glass",
-  "name": "轻盈毛玻璃",
-  "category": "style-tactile-depth",
-  "description": "轻盈毛玻璃 is airy frosted glass: a light field, white paper, and two semantic colors, green for input and purple for output.",
-  "format": "stitch",
-  "path": "styles/airy-glass.md",
-  "source": "first-party",
-  "upstream_path": "assets/catalog/first-party/airy-glass.md"
-}
+[
+  {
+    "id": "style:airy-glass",
+    "kind": "style",
+    "slug": "airy-glass",
+    "name": "轻盈毛玻璃",
+    "category": "style-tactile-depth",
+    "description": "轻盈毛玻璃 is airy frosted glass: a light field, white paper, and two semantic colors, green for input and purple for output.",
+    "format": "stitch",
+    "path": "styles/airy-glass.md",
+    "source": "first-party",
+    "upstream_path": "assets/catalog/first-party/airy-glass.md"
+  },
+  {
+    "id": "scene:bi",
+    "kind": "scene",
+    "slug": "bi",
+    "name": "企业级 BI 工作台",
+    "category": "scene-analytics",
+    "description": "浅色、高信息密度的企业级 BI 工作台，用于经营分析和数据看板，覆盖 KPI、趋势、明细表和待办。",
+    "format": "legacy",
+    "path": "scenes/analytics/bi.md",
+    "source": "first-party",
+    "upstream_path": "assets/catalog/first-party/bi.md"
+  }
+]

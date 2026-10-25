@@ -31,10 +31,12 @@ class CatalogAssetTests(unittest.TestCase):
 
     def test_counts(self) -> None:
         entries = self.index["entries"]
-        self.assertEqual(len(entries), 152)
+        self.assertEqual(len(entries), 153)
         self.assertEqual(sum(e["kind"] == "brand" for e in entries), 84)
         self.assertEqual(sum(e["kind"] == "style" for e in entries), 68)
-        self.assertEqual(len(self.index["categories"]), 18)
+        self.assertEqual(sum(e["kind"] == "scene" for e in entries), 1)
+        self.assertEqual(len(self.index["categories"]), 19)
+        self.assertEqual(entries[-1]["id"], "scene:bi")
 
     def test_every_entry_has_file_and_known_category(self) -> None:
         categories = {c["id"] for c in self.index["categories"]}
@@ -92,6 +94,45 @@ class CatalogAssetTests(unittest.TestCase):
         slugs = [slug for names in config["style"].values() for slug in names]
         self.assertNotIn("airy-glass", slugs)
 
+    def test_scene_bi_matches_first_party_source(self) -> None:
+        entry = next(item for item in self.index["entries"] if item["id"] == "scene:bi")
+        self.assertEqual(entry["kind"], "scene")
+        self.assertEqual(entry["name"], "企业级 BI 工作台")
+        self.assertEqual(entry["category"], "scene-analytics")
+        self.assertEqual(entry["format"], "legacy")
+        self.assertEqual(entry["path"], "scenes/analytics/bi.md")
+        self.assertEqual(entry["source"], "first-party")
+        self.assertEqual(
+            entry["upstream_path"], "assets/catalog/first-party/bi.md"
+        )
+        self.assertIn("BI", entry["description"])
+        self.assertIn("经营分析", entry["description"])
+        self.assertIn("数据看板", entry["description"])
+        self.assertNotIn("first-party", self.index["sources"])
+        scene = (CATALOG / "scenes" / "analytics" / "bi.md").read_bytes()
+        source = (CATALOG / "first-party" / "bi.md").read_bytes()
+        self.assertEqual(scene, source)
+        text = scene.decode("utf-8")
+        self.assertTrue(text.startswith("# 企业级 B 端 Web 工作台 UI/UX 设计规范\n"))
+        self.assertIn("## 4. 视觉设计系统（Visual Design System）", text)
+        self.assertFalse(text.startswith("---\n"))
+        config = json.loads((CATALOG / "categories.json").read_text(encoding="utf-8"))
+        slugs = [slug for names in config["style"].values() for slug in names]
+        self.assertNotIn("bi", slugs)
+        category = next(
+            item for item in self.index["categories"] if item["id"] == "scene-analytics"
+        )
+        self.assertEqual(
+            category,
+            {
+                "id": "scene-analytics",
+                "kind": "scene",
+                "en": "Analytics and BI",
+                "zh": "分析与 BI",
+                "order": 19,
+            },
+        )
+
     def test_licenses_present(self) -> None:
         for source in self.index["sources"].values():
             self.assertEqual(source["license"], "MIT")
@@ -103,10 +144,12 @@ class CliTests(unittest.TestCase):
     def test_list_text_groups_by_category(self) -> None:
         result = run("list")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(sum(line.startswith("## ") for line in result.stdout.splitlines()), 18)
+        self.assertEqual(sum(line.startswith("## ") for line in result.stdout.splitlines()), 19)
         self.assertIn("AI 与大模型平台", result.stdout)
         self.assertIn("brand:linear.app", result.stdout)
-        self.assertIn("152 entries", result.stdout)
+        self.assertIn("153 entries (84 brand, 68 style, 1 scene)", result.stdout)
+        self.assertIn("分析与 BI / Analytics and BI", result.stdout)
+        self.assertIn("scene:bi", result.stdout)
 
     def test_list_json_filters(self) -> None:
         result = run("list", "--kind", "brand", "--format", "json")
@@ -126,6 +169,9 @@ class CliTests(unittest.TestCase):
             self.assertIn(key, items[0])
         result = run("list", "--category", "style-tech-dark", "--format", "json")
         self.assertEqual(len(json.loads(result.stdout)), 8)
+        scene = run("list", "--kind", "scene", "--format", "json")
+        self.assertEqual(scene.returncode, 0, scene.stderr)
+        self.assertEqual([item["id"] for item in json.loads(scene.stdout)], ["scene:bi"])
 
     def test_list_unknown_category(self) -> None:
         self.assertEqual(run("list", "--category", "nope").returncode, 2)
@@ -138,6 +184,10 @@ class CliTests(unittest.TestCase):
         self.assertIn("style:minimal", run("search", "极简").stdout)
         self.assertIn("style:airy-glass", run("search", "轻盈毛玻璃").stdout)
         self.assertIn("style:airy-glass", run("search", "airy-glass").stdout)
+        for word in ("BI", "经营分析", "数据看板"):
+            found = run("search", word)
+            self.assertEqual(found.returncode, 0, found.stderr)
+            self.assertIn("scene:bi", found.stdout, word)
         self.assertEqual(run("search", "zzzz-no-match").returncode, 1)
 
     def test_show_and_ambiguity(self) -> None:
@@ -151,6 +201,12 @@ class CliTests(unittest.TestCase):
         self.assertIn("style:claude", ambiguous.stderr)
         self.assertEqual(run("show", "linear.app").returncode, 0)
         self.assertEqual(run("show", "brand:nope").returncode, 2)
+        shown = run("show", "scene:bi")
+        self.assertEqual(shown.returncode, 0, shown.stderr)
+        self.assertTrue(
+            shown.stdout.startswith("# 企业级 B 端 Web 工作台 UI/UX 设计规范\n")
+        )
+        self.assertIn("## 4. 视觉设计系统（Visual Design System）", shown.stdout)
 
 
 class ApplyTests(unittest.TestCase):
@@ -215,6 +271,37 @@ class ApplyTests(unittest.TestCase):
         self.assertIn(
             "entry=style:minimal", (self.root / "DESIGN.md").read_text(encoding="utf-8")
         )
+
+    def test_apply_scene_bi_writes_first_party_provenance(self) -> None:
+        result = run("apply", "scene:bi", "--root", str(self.root))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = (self.root / "DESIGN.md").read_text(encoding="utf-8")
+        self.assertTrue(
+            text.startswith(
+                "<!-- design-md: entry=scene:bi; source=first-party; license=MIT -->\n"
+                "# 企业级 B 端 Web 工作台 UI/UX 设计规范\n"
+            )
+        )
+        self.assertNotIn("github.com", text.splitlines()[0])
+        self.assertNotIn("awesome-design", text.splitlines()[0])
+
+    def test_apply_scene_bi_refuses_without_force_and_backs_up_with_force(self) -> None:
+        existing = self.root / "design.md"
+        existing.write_bytes(b"mine\n")
+        refused = run("apply", "scene:bi", "--root", str(self.root))
+        self.assertEqual(refused.returncode, 3)
+        self.assertIn("--force", refused.stderr)
+        self.assertEqual(existing.read_bytes(), b"mine\n")
+        self.assertEqual([path.name for path in self.root.iterdir()], ["design.md"])
+        forced = run("apply", "scene:bi", "--root", str(self.root), "--force")
+        self.assertEqual(forced.returncode, 0, forced.stderr)
+        backups = [path for path in self.root.iterdir() if ".bak-" in path.name]
+        self.assertEqual(len(backups), 1)
+        self.assertRegex(backups[0].name, r"^design\.md\.bak-\d{8}-\d{6}$")
+        self.assertEqual(backups[0].read_bytes(), b"mine\n")
+        written = (self.root / "DESIGN.md").read_text(encoding="utf-8")
+        self.assertIn("source=first-party", written)
+        self.assertIn("# 企业级 B 端 Web 工作台 UI/UX 设计规范", written)
 
     def test_apply_bad_root(self) -> None:
         self.assertEqual(

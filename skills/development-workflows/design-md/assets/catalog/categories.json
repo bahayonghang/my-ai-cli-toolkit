@@ -17,7 +17,8 @@
     {"id": "style-tactile-depth", "kind": "style", "en": "Tactile & Depth", "zh": "质感与空间深度", "order": 15},
     {"id": "style-tech-dark", "kind": "style", "en": "Tech & Dark", "zh": "科技与暗色", "order": 16},
     {"id": "style-retro-game", "kind": "style", "en": "Retro & Game", "zh": "复古与游戏", "order": 17},
-    {"id": "style-friendly-handdrawn", "kind": "style", "en": "Friendly & Hand-drawn", "zh": "亲和与手绘", "order": 18}
+    {"id": "style-friendly-handdrawn", "kind": "style", "en": "Friendly & Hand-drawn", "zh": "亲和与手绘", "order": 18},
+    {"id": "scene-analytics", "kind": "scene", "en": "Analytics and BI", "zh": "分析与 BI", "order": 19}
   ],
   "brand": {
     "readme_heading_prefixes": [
