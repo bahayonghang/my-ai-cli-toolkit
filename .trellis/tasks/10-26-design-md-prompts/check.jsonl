@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "核对推荐方案是否违反仓库技能合同"}
+{"file": ".trellis/tasks/10-26-design-md-prompts/prd.md", "reason": "验收清单与范围"}
+{"file": ".trellis/tasks/10-26-design-md-prompts/design.md", "reason": "工作假设与最终推荐应回填的栏位"}
+{"file": "skills/development-workflows/design-md/references/brand-boundary.md", "reason": "品牌条目限制，场景参考不能放宽或误用"}
+{"file": ".agents/skills/qiaomu-meta-skill/SKILL.md", "reason": "单一创建权威、不整篇复制、证据不足要标明"}
+{"file": "ref/repo/ai-design-skills/README.md", "reason": "MIT 与上游署名的索引"}
