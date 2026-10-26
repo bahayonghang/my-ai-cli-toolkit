@@ -1,0 +1,139 @@
+{
+  "note": "草案，供后续实现任务使用。这些用例没有执行，也没有跑触发评估。现场 skills.sh / SkillsMP 检索是 missing evidence，见 research/license.md。",
+  "group_meaning": {
+    "should_trigger": "应触发 design-md。落地页与动效用例还要读对应参考；按 DESIGN.md 实施 UI 只读工程规范。",
+    "should_not_trigger": "不应触发 design-md。",
+    "near_neighbor": "容易读错参考。经营分析、只列风格、产品内 hover 仍可触发技能，但不得读取落地页或 motion 长参考。HTML 报告、截图复原、后端不应触发本技能。"
+  },
+  "should_trigger": [
+    {
+      "id": "landing-zh",
+      "prompt": "帮我做一版产品落地页，只推一个注册行动。",
+      "why": "含推荐 description 里的「落地页」。应读 landing-page.md，视觉仍以 DESIGN.md 为准。"
+    },
+    {
+      "id": "landing-en",
+      "prompt": "Build a landing page with one signup action for this product.",
+      "why": "含推荐 description 里的 landing page。应读落地页参考，不套用固定字体或 Phosphor。"
+    },
+    {
+      "id": "marketing-zh",
+      "prompt": "写一个营销页，受众是第一次来的团队管理员。",
+      "why": "含推荐 description 里的「营销页」。与落地页同一参考，不是 scene 条目。"
+    },
+    {
+      "id": "marketing-en",
+      "prompt": "Build a marketing page that asks for a demo.",
+      "why": "含推荐 description 里的 marketing page。一个行动、一个受众。"
+    },
+    {
+      "id": "motion-zh",
+      "prompt": "把这个已经定好的界面做成动效演示。",
+      "why": "含推荐 description 里的「动效演示」。应读 design-motion.md，不跑 Figma、ffmpeg 或 PSNR。"
+    },
+    {
+      "id": "loop-zh",
+      "prompt": "给这些功能卡片做一段循环动画。",
+      "why": "含推荐 description 里的「循环动画」。故事循环留在页内，不是产品内 hover。"
+    },
+    {
+      "id": "loop-en",
+      "prompt": "Make a loop animation of this feature grid.",
+      "why": "含推荐 description 里的 loop animation。与循环动画同一模式。"
+    },
+    {
+      "id": "animate-en",
+      "prompt": "Animate this design so the visuals tell a short story.",
+      "why": "含推荐 description 里的 animate this design。不是 screenshot 复原。"
+    },
+    {
+      "id": "implement-zh",
+      "prompt": "按 DESIGN.md 实施 UI，把设置页做出来。",
+      "why": "含推荐 description 里的「按 DESIGN.md 实施 UI」。应读工程规范，不读落地页或 motion 长参考。"
+    },
+    {
+      "id": "brand-landing-zh",
+      "prompt": "用目录里的 Linear 风格做落地页，视觉以 DESIGN.md 为准。",
+      "why": "同时含品牌选择和「落地页」。先 apply 品牌条目，再读工程规范与落地页参考。不合并第二条目录正文。"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "id": "report-zh",
+      "prompt": "把迭代计划做成一份可以转发的 HTML 报告。",
+      "why": "含推荐 description 里的「报告」。应走 html-artifact，不读三份新参考。"
+    },
+    {
+      "id": "slides-en",
+      "prompt": "Turn the roadmap into slide-like artifacts for the review meeting.",
+      "why": "对应 description 里的 slide-like artifacts。幻灯片不是落地页，也不是动效演示。"
+    },
+    {
+      "id": "shot-en",
+      "prompt": "Recreate this screenshot as the page. Use the mockup as the source of truth.",
+      "why": "对应 description 里的 screenshot / mockup 与 image-to-ui-skill。不把复原当成 animate this design。"
+    },
+    {
+      "id": "shot-zh",
+      "prompt": "请按这张截图复原界面。",
+      "why": "含推荐 description 里的「截图」。应走 image-to-ui-skill。"
+    },
+    {
+      "id": "api-zh",
+      "prompt": "只加后端接口，这次没有界面。",
+      "why": "含推荐 description 里的「后端」。技能不处理非界面任务。"
+    },
+    {
+      "id": "api-en",
+      "prompt": "Add the backend endpoint only. This is not UI work.",
+      "why": "对应 description 里的 backend / non-UI work。"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "id": "bi-zh",
+      "prompt": "做一个经营分析用的数据看板，按 BI 工作台来。",
+      "why": "含「经营分析」「数据看板」「BI」。应查 scene:bi 并 apply，不读落地页或 motion 参考。"
+    },
+    {
+      "id": "bi-en",
+      "prompt": "Build a BI analytics workbench for this operations team.",
+      "why": "含 BI 与 analytics。设计源是 scene:bi，不是落地页结构，也不是展示片。"
+    },
+    {
+      "id": "hover-zh",
+      "prompt": "给按钮补 hover，并统一菜单和 toast 的过渡。",
+      "why": "含推荐 description 里的 hover、菜单、toast。走工程规范的短动效，不读 design-motion.md。"
+    },
+    {
+      "id": "hover-en",
+      "prompt": "Add hover, menu, and toast transitions to the product UI.",
+      "why": "含 hover, menu, and toast。description 写明它们 stay on the 工程规范。"
+    },
+    {
+      "id": "list-zh",
+      "prompt": "只列出设计风格，按类别分组，不要写界面。",
+      "why": "含「列出设计风格」。技能可以触发，但停在目录输出，不读三份长参考。"
+    },
+    {
+      "id": "compare-en",
+      "prompt": "List or compare design styles and stop. Do not implement UI.",
+      "why": "含 list or compare design styles。只比较时不加载工程规范、落地页和 motion。"
+    },
+    {
+      "id": "report-near",
+      "prompt": "把周报做成 HTML 报告，再导出几页幻灯片。",
+      "why": "含「报告」与「幻灯片」。相邻技能是 html-artifact，不是 design-md 的落地页模式。"
+    },
+    {
+      "id": "shot-near",
+      "prompt": "照着这张截图重做一版界面。",
+      "why": "含「截图」。相邻技能是 image-to-ui-skill。本技能的动效触发词不是截图。"
+    },
+    {
+      "id": "backend-near",
+      "prompt": "这次只改后端，不要动界面。",
+      "why": "含「后端」。请求在技能之外，不读取任何 design-md 参考。"
+    }
+  ]
+}

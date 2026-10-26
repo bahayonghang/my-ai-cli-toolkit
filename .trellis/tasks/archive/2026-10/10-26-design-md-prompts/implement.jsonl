@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "技能包合同：description 上限、interface、禁止嵌套 SKILL.md、first-party 目录重建、两套 eval"}
+{"file": "skills/development-workflows/design-md/SKILL.md", "reason": "当前路由、目录流程，以及实施 UI 的步骤"}
+{"file": "skills/development-workflows/design-md/references/implementation.md", "reason": "技术栈探测和 token 单层约束，默认工程规范不能覆盖它"}
+{"file": "skills/development-workflows/design-md/agents/interface.yaml", "reason": "现有 default_prompt，默认启用要改的是首句而不是整段规范"}
+{"file": "skills/development-workflows/design-md/references/design-system-core.md", "reason": "已有组件状态与 QA，避免把 instruct 的重复规则再写一套"}
+{"file": ".agents/skills/qiaomu-meta-skill/references/skill-engineering-method.md", "reason": "keep/adapt/reject/invent 与只借机制的规则"}
+{"file": ".agents/skills/qiaomu-meta-skill/references/resource-boundaries.md", "reason": "根 SKILL.md 与 references 的分工"}
+{"file": "ref/design/instruct.md", "reason": "默认工程规范的源材料"}
+{"file": "ref/repo/ai-design-skills/skills/landing-page-design/SKILL.md", "reason": "landing page 场景源"}
+{"file": "ref/repo/ai-design-skills/skills/design-to-motion/SKILL.md", "reason": "motion 场景源"}
