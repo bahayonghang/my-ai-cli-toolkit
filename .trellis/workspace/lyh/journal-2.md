@@ -242,3 +242,25 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Status
 
 [OK] **Completed**
+
+
+## Session 73: design-md 默认工程规范与场景接入分析
+<!-- trellis-session: v=2 fp=6164b72c87b9294a -->
+
+**Date**: 2026-10-26
+**Task**: design-md 默认工程规范与场景接入分析
+**Branch**: `dev`
+
+### Summary
+
+用 qiaomu-meta-skill 写完 design-md 的接入方案：工程规范默认在实施 UI 时读取，落地页和 motion 按请求读取且不进 scene 目录，导出流水线延后。技能包未改。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3d40e899` | docs(design-md): 📝 记录默认工程规范与场景接入方案 |
+
+### Status
+
+[OK] **Completed**
