@@ -66,6 +66,7 @@ Run this list in code review or after implementation:
 - [ ] Labels are specific ("Save draft", not "OK").
 - [ ] The entry's Do's and Don'ts hold on every new screen.
 - [ ] No brand asset violates `brand-boundary.md`.
+- [ ] `anti-slop.md` holds: `slop_check` reports 0 FAIL, every REFLEX is fixed or waived in `DESIGN.md`, and the judged checklist (section 6) is walked.
 
 ## Source
 

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drift</title>
+<style>
+:root {
+  --color-paper: #f5f3ee;
+  --color-ink: #1a1917;
+  --font-body: "Public Sans", sans-serif;
+}
+html, body { overflow-x: clip; }
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(2rem); } }
+.banner { animation: drift 8s linear infinite alternate; }
+</style>
+</head>
+<body>
+  <h1 class="banner">Harbour festival</h1>
+  <p>Boats leave at dusk.</p>
+</body>
+</html>
