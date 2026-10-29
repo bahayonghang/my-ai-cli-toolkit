@@ -28,6 +28,7 @@
 - [ ] `evals/evals.json`：合并子任务新增的用例，确认至少包含 prd.md 验收项列出的 5 类，且近邻反例 ≥ 2。
 - [ ] 端到端演练：在 scratchpad 中建 fixture 项目（含中文 README 与 package.json），按 SKILL.md 走一遍“自动路由 → apply → 写一个页面 → slop_check”。记录命令与输出到 `research/e2e-run.md`。
 - [ ] Skill IR：`python ".claude/skills/qiaomu-meta-skill/scripts/export_skill_ir.py" skills/development-workflows/design-atlas --output skills/development-workflows/design-atlas/reports/skill-ir.json`。若 exporter 不兼容本仓库布局，记 `missing evidence` 并说明原因，不手写伪造。
+  - 结果（2026-10-29）：exporter 只读取 qiaomu 专用的 manifest 与 `evals/trigger_cases.json`，导出的 IR 中 triggers 为空、version 为 null，因此未提交，记为 `missing evidence`。
 - [ ] `just docs-sync`，再运行 `just ci`。
 - [ ] `trellis-check`（父任务全量）。
 - [ ] 更新 spec：`.trellis/spec/guides/skill-authoring-conventions.md` 中 “design-md first-party catalog entries” 一节改名，并补充 overlays/、theme 构建、slop_check 测试约定（trellis-update-spec）。

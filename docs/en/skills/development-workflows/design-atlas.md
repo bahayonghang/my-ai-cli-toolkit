@@ -4,14 +4,12 @@
 
 ## Purpose overview
 
-Pick a design language from a categorized offline catalog of 153 entries (84 brands, 68 styles, 1 business scene), write it as DESIGN.md in the project root, then implement or restyle production UI from that file and verify it in a running page.
+UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates.
 
 ## Trigger scenarios
 
-- the user asks to list or compare design styles, build a page in the style of a known product (Linear, Vercel, Stripe, Claude, Apple), choose a look such as minimal, editorial, glassmorphism, airy glass, 轻盈毛玻璃, brutalism, or retro, build a BI, analytics, 经营分析, or 数据看板 workbench, create or update DESIGN.md, or implement UI from an existing DESIGN.md / 列出设计风格、按场景选设计、BI 工作台、生成 DESIGN.md、按 DESIGN.md 实施 UI
-- Not for HTML reports, plans, or slide-like artifacts (use html-artifact)
-- not for recreating a screenshot or mockup (use image-to-ui-skill)
-- not for backend or non-UI work
+- the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, or audit a page for AI slop / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味
+- Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), or backend work
 
 ## Metadata
 
@@ -20,7 +18,7 @@ Pick a design language from a categorized offline catalog of 153 entries (84 bra
 | Name | `design-atlas` |
 | Category | `development-workflows` (Development Workflows) |
 | Version | `0.3.0` |
-| Tags | `design-system`, `design-atlas`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility` |
+| Tags | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility`, `anti-ai-slop` |
 
 ## Install command
 
@@ -33,12 +31,12 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | Path | Type | Files | Notes |
 | --- | --- | ---: | --- |
 | `skills/development-workflows/design-atlas/agents` | directory | 1 | Companion agents |
-| `skills/development-workflows/design-atlas/assets` | directory | 160 | Assets |
+| `skills/development-workflows/design-atlas/assets` | directory | 213 | Assets |
 | `skills/development-workflows/design-atlas/evals` | directory | 1 | Evaluation samples |
 | `skills/development-workflows/design-atlas/README.md` | file | 1 | Top-level file |
-| `skills/development-workflows/design-atlas/references` | directory | 4 | Reference material |
-| `skills/development-workflows/design-atlas/scripts` | directory | 2 | Executable scripts |
-| `skills/development-workflows/design-atlas/tests` | directory | 2 | Automated tests |
+| `skills/development-workflows/design-atlas/references` | directory | 8 | Reference material |
+| `skills/development-workflows/design-atlas/scripts` | directory | 3 | Executable scripts |
+| `skills/development-workflows/design-atlas/tests` | directory | 27 | Automated tests |
 
 ## Scripts, references, and test resources
 
@@ -56,10 +54,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 ```bash
 just skills-check
 just python-check
+just node-test
 just ci
 ```
-
-This skill has no detected `tests/*.mjs`; if you add Node tests, make sure `just node-test` covers them.
 
 ## Source path
 

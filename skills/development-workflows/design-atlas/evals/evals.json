@@ -4,24 +4,24 @@
     {
       "id": 1,
       "prompt": "列出你能用的所有设计风格，按类别分组给我看",
-      "expected_output": "Skill triggers, runs the bundled catalog list command, and returns entries grouped under the 19 categories with Chinese and English category names, distinguishing brand, style, and scene entries, without writing DESIGN.md or editing code.",
+      "expected_output": "Skill triggers, runs the bundled catalog list command, and returns entries grouped under the 23 categories with Chinese and English category names, distinguishing brand, style, theme, and scene entries, without writing DESIGN.md or editing code.",
       "files": [],
       "assertions": [
         "Runs design_catalog.py list through the skill-dir path",
         "Shows entries grouped by category with category names",
-        "Distinguishes brand, style, and scene entries",
+        "Distinguishes brand, style, theme, and scene entries",
         "Does not write DESIGN.md or modify project files"
       ]
     },
     {
       "id": 2,
       "prompt": "我们是一个面向开发者的数据库 SaaS，帮我挑一个合适的设计风格，然后在项目根目录生成 DESIGN.md",
-      "expected_output": "Skill searches or filters the catalog, offers 2-3 candidate entries with one reason each, waits for the user's choice, then runs apply to write DESIGN.md in the project root.",
+      "expected_output": "Skill checks for an existing DESIGN.md, runs signals and route with the user's words, takes the first pick without waiting, shows the Picks block (chosen entry, one reason, two alternates, how to switch), then runs apply to write DESIGN.md in the project root.",
       "files": [],
       "assertions": [
         "Checks whether the project root already has a DESIGN.md before selecting",
-        "Uses search or list --category to find candidates",
-        "Offers 2-3 entries with one reason each and waits for a choice",
+        "Runs design_catalog.py signals and route through the skill-dir path",
+        "Takes the first pick without asking the user to choose and shows the Picks block",
         "Writes DESIGN.md with the apply command, not by hand-copying an entry file"
       ]
     },
@@ -76,7 +76,7 @@
     {
       "id": 7,
       "prompt": "把这次迭代的实施计划做成一个可以分享的 HTML 报告",
-      "expected_output": "Routing-negative. The request is a shareable HTML report artifact, so it routes to html-artifact instead of design-md.",
+      "expected_output": "Routing-negative. The request is a shareable HTML report artifact, so it routes to html-artifact instead of design-atlas.",
       "files": [],
       "assertions": [
         "Does not trigger design-atlas",
@@ -86,7 +86,7 @@
     {
       "id": 8,
       "prompt": "这是一张 App 设计稿截图，帮我复刻成可以点击的前端 demo",
-      "expected_output": "Routing-negative. The request recreates a reference image, so it routes to image-to-ui-skill instead of design-md.",
+      "expected_output": "Routing-negative. The request recreates a reference image, so it routes to image-to-ui-skill instead of design-atlas.",
       "files": [],
       "assertions": [
         "Does not trigger design-atlas",
@@ -104,6 +104,80 @@
         "Builds tokens from the visual design system tables and follows the information architecture, charts, tables, accessibility, and delivery order",
         "Implements KPI, trend, and detail regions",
         "Runs the page and reports runtime verification, or lists each check that did not run"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "帮我给精酿啤酒厂做个官网，项目里还没有 DESIGN.md",
+      "expected_output": "Skill confirms no DESIGN.md exists, runs signals and route with the user's words, takes the first pick without asking the user to choose, writes DESIGN.md with apply, shows a Picks block with the chosen entry, a one-line reason, two alternates and how to switch, then continues to implementation and the anti-slop check.",
+      "files": [],
+      "assertions": [
+        "Runs design_catalog.py route through the skill-dir path with the user's request as --prompt",
+        "Does not stop to ask the user to choose between candidates",
+        "Outputs a Picks block naming the chosen entry with a reason, two alternates, and how to switch",
+        "Writes DESIGN.md with the apply command for the first pick",
+        "Runs slop_check.mjs on the built page before reporting done"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Build a landing page for our open-source CLI tool. No design system yet.",
+      "expected_output": "Skill runs signals on the project root and route with the request, takes the top entry without waiting, writes DESIGN.md with apply, shows the Picks block with two alternates and the switch instruction, builds the page, and runs the anti-slop check.",
+      "files": [],
+      "assertions": [
+        "Runs signals and route through the skill-dir path before choosing",
+        "Does not wait for the user to pick an entry",
+        "Outputs a Picks block with the chosen entry, one reason, two alternates, and how to switch",
+        "Writes DESIGN.md with apply, not by hand-copying an entry file",
+        "Mentions low confidence and the signals used when route reports confidence low"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "我在做一个儿童编程夏令营的报名页，给我推荐三个主题比较一下，我自己选",
+      "expected_output": "Skill runs route with n 3, presents three entries with one reason each, and waits for the user's choice without writing DESIGN.md or editing code.",
+      "files": [],
+      "assertions": [
+        "Runs design_catalog.py route with --n 3 or the default three picks",
+        "Presents three entries with one reason each",
+        "Waits for the user's choice",
+        "Does not run apply or write DESIGN.md before the user chooses"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "audit ./site — 看看这个落地页有没有 AI 模板味，先别改代码",
+      "expected_output": "Skill takes the audit branch: runs slop_check on ./site, reports findings by tier with file:line and fixes, walks the judged checklist, and changes no files.",
+      "files": [],
+      "assertions": [
+        "Runs node slop_check.mjs through the skill-dir path on ./site",
+        "Lists Floor, House, and Reflex findings with file:line",
+        "Walks the judged checklist from references/anti-slop.md",
+        "Does not modify any file under ./site or DESIGN.md",
+        "Offers fixes as a list for approval instead of applying them"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "帮我把这段产品文案去 AI 味：『我们的平台无缝赋能每一个团队，释放无限潜能。』",
+      "expected_output": "Routing-negative. The request rewrites prose, not UI, so it routes to the write skill instead of design-atlas.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas",
+        "Does not run slop_check or read or create DESIGN.md",
+        "Routes to the write skill for copy editing"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Build the homepage in the riso theme.",
+      "expected_output": "Skill resolves theme:riso by name, runs apply to write DESIGN.md with oklch tokens, implements the page from it, and runs slop_check and the judged checklist before reporting.",
+      "files": [],
+      "assertions": [
+        "Selects theme:riso without running route",
+        "Writes DESIGN.md with the apply command",
+        "Builds one token layer from the DESIGN.md oklch tokens",
+        "Runs slop_check.mjs and reports the summary line"
       ]
     }
   ]
