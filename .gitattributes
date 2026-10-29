@@ -14,9 +14,9 @@ docs/en/commands.md text eol=lf
 docs/skills/** text eol=lf
 docs/en/skills/** text eol=lf
 
-# design-md catalog tests reject CR bytes and trailing whitespace.
+# design-atlas catalog tests reject CR bytes and trailing whitespace.
 # Pin LF so core.autocrlf=true checkouts cannot fail that check.
-skills/development-workflows/design-md/assets/catalog/** text eol=lf
+skills/development-workflows/design-atlas/assets/catalog/** text eol=lf
 
 # Trellis: append-only developer journals should merge cleanly across
 # parallel sessions/worktrees — each session only appends a new block, so

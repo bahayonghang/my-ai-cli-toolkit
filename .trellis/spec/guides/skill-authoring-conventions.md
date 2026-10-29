@@ -157,9 +157,9 @@ python "<yao-meta-dir>/scripts/trust_check.py" "<skill-dir>" `
 - Bad: publish `Scripts: 0` as proof that a PowerShell package has no executable
   risk.
 
-## design-md first-party catalog entries
+## design-atlas first-party catalog entries
 
-`skills/development-workflows/design-md/scripts/build_catalog.py` rebuilds
+`skills/development-workflows/design-atlas/scripts/build_catalog.py` (formerly `design-md`) rebuilds
 `assets/catalog/brands/*.md`, `assets/catalog/styles/*.md`, and `index.json`
 from the two upstream checkouts. It then deletes any `brands/*.md`,
 `styles/*.md`, or `scenes/**/*.md` file that is not in that output. It does
@@ -180,6 +180,38 @@ not delete `first-party/` or `LICENSES/`.
 - Keep the two markdown copies byte-identical, UTF-8, LF, no trailing
   whitespace. A hand edit that touches only `styles/<slug>.md` or
   `scenes/<category>/<slug>.md` is overwritten on the next rebuild.
+
+### Hallmark themes, overlays, and slop_check (design-atlas 0.3.0)
+
+> Distilled from the design-atlas upgrade (2026-10-29).
+
+- `theme:*` files under `assets/catalog/themes/` are build output from the
+  hallmark checkout. Change a theme by changing the converter in
+  `build_catalog.py`, then rerun
+  `build_catalog.py --themes-only --hallmark <checkout> --out <catalog>`.
+  `--themes-only` keeps brand, style and scene entries byte-identical, so a
+  theme refresh never needs the VoltAgent or Bergside checkouts.
+- `assets/catalog/overlays/dedup.json` and `overlays/routing.json` are
+  first-party and never cleaned by a rebuild. A new upstream theme slug fails
+  the build until `dedup.json` has a verdict for it. `routing.json` must cover
+  every routable entry (non-superseded style, scene, theme); the overlay
+  validation test in `tests/test_routing.py` enforces coverage and cluster
+  consistency with `dedup.json`.
+- A superseded entry keeps its id and file. It is hidden from `list`,
+  `search` and `route` by default, and `show`/`apply` still work with a stderr
+  note, so existing project `DESIGN.md` provenance stays valid.
+- The theme converter fails the build on any `*.md` reference outside the
+  allow-list (`texture.md`, `anti-slop.md`, `design-system-core.md`). Theme
+  bodies cite hallmark gate numbers; `references/anti-slop.md` keeps those
+  numbers, and lists unadopted ones in its appendix so no citation dangles.
+- `scripts/slop_check.mjs` keeps its gate→tier map in sync with the gate
+  table in `references/anti-slop.md`; `tests/slop_check.test.mjs` parses the
+  table and fails on drift. Change both together.
+- Do not vendor hallmark `sloplint.mjs`: it hard-fails any page without a
+  Hallmark CSS stamp and reads fixed token names (`--color-paper`,
+  `--space-*`). Port single gates with token-name-agnostic detection instead.
+- Running `slop_check.mjs` on the whole skill directory exits 1 by design,
+  because `tests/fixtures/slop/` holds deliberately failing pages.
 
 ### 6. Tests Required
 
