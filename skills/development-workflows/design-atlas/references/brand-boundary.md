@@ -1,6 +1,6 @@
 # Brand Boundary
 
-Use this file every time you implement UI from a `brand:*` entry. Style entries (`style:*`) are generic and need only rule 4. `scene:*` entries do not copy brand assets and do not use these prohibitions. Apply this file only when the chosen entry is `brand:*`. If the user also selected a `brand:*` entry, the brand boundary applies to that brand; do not merge the two bodies into one `DESIGN.md`.
+Use this file every time you implement UI from a `brand:*` entry. Style entries (`style:*`) are generic and need only rule 4. `scene:*` entries do not copy brand assets and do not use these prohibitions. `theme:*` entries describe a material (paper, ink, faces, controls) and name no real brand, logo, or product, so these prohibitions do not apply to them; their fonts still follow the license note in each theme's `Known Gaps`. Apply this file only when the chosen entry is `brand:*`. If the user also selected a `brand:*` entry, the brand boundary applies to that brand; do not merge the two bodies into one `DESIGN.md`.
 
 The brand entries describe publicly visible CSS values of real websites. The upstream collection states that it does not claim ownership of any site's visual identity. The output of this skill is UI inspired by a design language, not a copy of a brand.
 
@@ -23,5 +23,6 @@ Catalog entries come from:
 
 - [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) — MIT, Copyright (c) 2026 VoltAgent
 - [bergside/awesome-design-skills](https://github.com/bergside/awesome-design-skills) — MIT, Copyright (c) 2026 Bergside
+- [Nutlope/hallmark](https://github.com/Nutlope/hallmark) — MIT, Copyright (c) 2026 Hallmark contributors (`theme:*` entries and `references/texture.md`)
 
 Full license texts: `assets/catalog/LICENSES/`. Source commits: `assets/catalog/index.json` → `sources`.

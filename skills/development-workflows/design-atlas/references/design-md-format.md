@@ -2,16 +2,39 @@
 
 Use this file when you read a catalog entry, customize a project `DESIGN.md`, or write one from scratch. `DESIGN.md` is a plain Markdown design-system file in the project root. Coding agents read it to keep UI consistent. The format follows the Google Stitch DESIGN.md convention.
 
-## 1. Two formats in the catalog
+## 1. Three formats in the catalog
 
-| `format` in `index.json` | Count | How to read tokens                                                                                                                                                                        |
-| ------------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `stitch`                 | 142   | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
-| `legacy`                 | 11    | No frontmatter. Brand entries keep tokens in numbered sections such as "2. Color Palette & Roles" and "3. Typography Rules". `scene:*` entries also use `legacy`.                        |
+| `format` in `index.json` | Count | How to read tokens |
+| --- | --- | --- |
+| `stitch` | 142 | YAML frontmatter holds machine-readable tokens. The body refers to them as `{colors.primary}`, `{typography.body-md}`, `{rounded.lg}`, `{spacing.section}`, `{component.button-primary}`. |
+| `theme` | 50 | `theme:*` entries from hallmark. Stitch-shaped YAML frontmatter with OKLCH color strings, an `x-theme` block, and the original `:root` CSS block under `## Colors`. See section 1.1. |
+| `legacy` | 11 | No frontmatter. Brand entries keep tokens in numbered sections such as "2. Color Palette & Roles" and "3. Typography Rules". `scene:*` entries also use `legacy`. |
 
 Upstream style entries (`style:*`) use a short stitch file: frontmatter tokens, Overview, Style Foundations, Colors, then Brand Character, Accessibility, Writing Tone, and Do's and Don'ts. A first-party style may also add Layout, Elevation & Depth, Shapes, Responsive Behavior, and Known Gaps, in that stitch order. Style entries do not define a component library; build components with `design-system-core.md` section 4 and the entry's tokens.
 
 `scene:*` entries currently use `legacy`. They have no YAML frontmatter. For `scene:bi`, read color, type, spacing, and radius from the 「视觉设计系统」 tables. Those tokens are not in a section named "2. Color Palette & Roles".
+
+### 1.1 `theme` entries
+
+A theme is a **material**: paper, ink, faces, rules, radius, depth, texture, controls, motion, and voice. It is not a page structure. It sets no section order, no hero, no nav, and no component that a page must include. Its `## Layout` section lists what the material composes well (its range), not a page outline. Take structure from the project and from `design-system-core.md`.
+
+Frontmatter roles map from the hallmark `:root` tokens:
+
+| Frontmatter key | CSS token |
+| --- | --- |
+| `colors.canvas` / `surface` / `surface-strong` | `--color-paper` / `--color-paper-2` / `--color-paper-3` |
+| `colors.ink` / `ink-muted` / `muted` / `rule` | `--color-ink` / `--color-ink-2` / `--color-muted` / `--color-rule` |
+| `colors.primary` / `on-primary` / `focus` / `slot` | `--color-accent` / `--color-accent-ink` / `--color-focus` / `--color-slot` (when present) |
+| `typography.display` / `body` / `outlier` `.fontFamily` | `--font-display` / `--font-body` / `--font-outlier` |
+| `typography.display.fontWeight` / `letterSpacing` | `--display-weight` / `--tracking-display` |
+| `rounded.card` / `pill`, `elevation.card`, `rule.hair` | `--radius-card` / `--radius-pill`, `--shadow-card`, `--rule-hair` |
+
+- Color values stay as `oklch()` strings. Browsers without OKLCH support need a hex fallback; generate it in the project when that matters. The catalog does not convert values.
+- `x-theme` copies the upstream header: `genre`, `paper` (`band`, `L`, `hue`), `display` (`class`, `face`), `accent` (`band`, `hue`), `posture`, `photo`, `material`, `pictured`, and `keywords`. `x-theme.tokens` keeps every other `:root` token (for example `--texture-opacity`) unchanged.
+- Copy the `:root` block under `## Colors` into the project's token layer as written. Colourway tables in that section are alternates; state the chosen one in `DESIGN.md`.
+- Body sections: Overview, Colors, Typography, Layout (material range), Elevation & Depth, Components, Motion, Voice, Do's and Don'ts, Implementation Hint, Known Gaps.
+- Gate numbers such as `(83)` or `waive 38iii` refer to `anti-slop.md`. Record a waiver under `## Anti-slop Waivers` in `DESIGN.md`. Texture recipes are in `texture.md`.
+- `Known Gaps` lists shared tokens the theme uses but does not define (`--dur-*`, `--ease-*`, `--space-*`), font sources, and the online preview picture (`preview_url` in `index.json`, not bundled).
 
 ## 2. Frontmatter keys
 
@@ -81,4 +104,4 @@ Use the stitch frontmatter in section 2 and the section order in section 3. Foll
 
 ## Source
 
-Structure observed in [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) (MIT) and [bergside/awesome-design-skills](https://github.com/bergside/awesome-design-skills) (MIT). DESIGN.md concept: Google Stitch.
+Structure observed in [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) (MIT) and [bergside/awesome-design-skills](https://github.com/bergside/awesome-design-skills) (MIT). Theme material from [Nutlope/hallmark](https://github.com/Nutlope/hallmark) (MIT). DESIGN.md concept: Google Stitch.

@@ -18,7 +18,11 @@
     {"id": "style-tech-dark", "kind": "style", "en": "Tech & Dark", "zh": "科技与暗色", "order": 16},
     {"id": "style-retro-game", "kind": "style", "en": "Retro & Game", "zh": "复古与游戏", "order": 17},
     {"id": "style-friendly-handdrawn", "kind": "style", "en": "Friendly & Hand-drawn", "zh": "亲和与手绘", "order": 18},
-    {"id": "scene-analytics", "kind": "scene", "en": "Analytics and BI", "zh": "分析与 BI", "order": 19}
+    {"id": "theme-editorial", "kind": "theme", "en": "Editorial Themes", "zh": "主题·编辑出版", "order": 19},
+    {"id": "theme-modern-minimal", "kind": "theme", "en": "Modern Minimal Themes", "zh": "主题·现代极简", "order": 20},
+    {"id": "theme-atmospheric", "kind": "theme", "en": "Atmospheric Themes", "zh": "主题·氛围沉浸", "order": 21},
+    {"id": "theme-playful", "kind": "theme", "en": "Playful Themes", "zh": "主题·活泼趣味", "order": 22},
+    {"id": "scene-analytics", "kind": "scene", "en": "Analytics and BI", "zh": "分析与 BI", "order": 23}
   ],
   "brand": {
     "readme_heading_prefixes": [
@@ -46,5 +50,13 @@
     "style-tech-dark": ["cosmic", "futuristic", "neon", "matrix", "mono", "power", "premium", "codex"],
     "style-retro-game": ["retro", "vintage", "dithered", "pacman", "sega", "tetris", "fantasy"],
     "style-friendly-handdrawn": ["friendly", "cafe", "doodle", "sketch", "fiction", "lingo"]
+  },
+  "theme": {
+    "genres": {
+      "editorial": "theme-editorial",
+      "modern-minimal": "theme-modern-minimal",
+      "atmospheric": "theme-atmospheric",
+      "playful": "theme-playful"
+    }
   }
 }

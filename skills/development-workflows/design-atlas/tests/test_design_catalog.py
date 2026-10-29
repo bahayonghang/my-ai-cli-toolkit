@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -31,11 +32,13 @@ class CatalogAssetTests(unittest.TestCase):
 
     def test_counts(self) -> None:
         entries = self.index["entries"]
-        self.assertEqual(len(entries), 153)
+        self.assertEqual(len(entries), 203)
         self.assertEqual(sum(e["kind"] == "brand" for e in entries), 84)
         self.assertEqual(sum(e["kind"] == "style" for e in entries), 68)
+        self.assertEqual(sum(e["kind"] == "theme" for e in entries), 50)
         self.assertEqual(sum(e["kind"] == "scene" for e in entries), 1)
-        self.assertEqual(len(self.index["categories"]), 19)
+        self.assertEqual(len(self.index["categories"]), 23)
+        self.assertEqual(self.index["categories"][-1]["id"], "scene-analytics")
         self.assertEqual(entries[-1]["id"], "scene:bi")
 
     def test_every_entry_has_file_and_known_category(self) -> None:
@@ -102,9 +105,7 @@ class CatalogAssetTests(unittest.TestCase):
         self.assertEqual(entry["format"], "legacy")
         self.assertEqual(entry["path"], "scenes/analytics/bi.md")
         self.assertEqual(entry["source"], "first-party")
-        self.assertEqual(
-            entry["upstream_path"], "assets/catalog/first-party/bi.md"
-        )
+        self.assertEqual(entry["upstream_path"], "assets/catalog/first-party/bi.md")
         self.assertIn("BI", entry["description"])
         self.assertIn("经营分析", entry["description"])
         self.assertIn("数据看板", entry["description"])
@@ -129,7 +130,7 @@ class CatalogAssetTests(unittest.TestCase):
                 "kind": "scene",
                 "en": "Analytics and BI",
                 "zh": "分析与 BI",
-                "order": 19,
+                "order": 23,
             },
         )
 
@@ -140,14 +141,86 @@ class CatalogAssetTests(unittest.TestCase):
             self.assertTrue(source["commit"])
 
 
+class ThemeAssetTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.index = json.loads((CATALOG / "index.json").read_text(encoding="utf-8"))
+        cls.themes = [e for e in cls.index["entries"] if e["kind"] == "theme"]
+
+    def test_theme_files_and_fields(self) -> None:
+        self.assertEqual(len(list((CATALOG / "themes").glob("*.md"))), 50)
+        source = self.index["sources"]["hallmark"]
+        self.assertEqual(source["commit"], "8f6969f8922caabde9de1784959eae11ddf68073")
+        self.assertTrue((CATALOG / "LICENSES" / "hallmark.LICENSE").is_file())
+        prefix = (
+            f"https://raw.githubusercontent.com/Nutlope/hallmark/{source['commit']}/"
+        )
+        for entry in self.themes:
+            self.assertEqual(entry["format"], "theme", entry["id"])
+            self.assertEqual(entry["source"], "hallmark", entry["id"])
+            self.assertTrue(entry["category"].startswith("theme-"), entry["id"])
+            for key in ("genre", "paper", "display", "accent", "material", "keywords"):
+                self.assertIn(key, entry["theme"], entry["id"])
+            self.assertTrue(entry["preview_url"].startswith(prefix), entry["id"])
+
+    def test_theme_references_resolve_inside_the_skill(self) -> None:
+        references = SKILL_ROOT / "references"
+        for path in sorted((CATALOG / "themes").glob("*.md")):
+            text = path.read_text(encoding="utf-8")
+            for name in ("layout.md", "craft.md", "imagery.md", "gates.md", "flow.md"):
+                self.assertNotIn(name, text, path.name)
+            for ref in re.findall(r"\b([a-z][a-z-]*\.md)\b", text):
+                self.assertIn(
+                    ref,
+                    {"texture.md", "anti-slop.md", "design-system-core.md"},
+                    path.name,
+                )
+            for ref in re.findall(r"references/([a-z-]+\.md)", text):
+                if ref != "anti-slop.md":  # written by the anti-slop subtask
+                    self.assertTrue((references / ref).is_file(), f"{path.name}: {ref}")
+            self.assertIn("oklch(", text, path.name)
+            for heading in (
+                "## Overview",
+                "## Colors",
+                "## Typography",
+                "## Layout",
+                "## Elevation & Depth",
+                "## Components",
+                "## Do's and Don'ts",
+                "## Known Gaps",
+            ):
+                self.assertIn(heading, text, path.name)
+
+    def test_dedup_overlay_covers_every_theme(self) -> None:
+        dedup = json.loads(
+            (CATALOG / "overlays" / "dedup.json").read_text(encoding="utf-8")
+        )["verdicts"]
+        self.assertEqual(sorted(dedup), sorted(e["slug"] for e in self.themes))
+        by_id = {e["id"]: e for e in self.index["entries"]}
+        for slug, item in dedup.items():
+            self.assertIn(item["verdict"], {"supersede", "cluster", "distinct"}, slug)
+            self.assertGreaterEqual(len(item["reason"]), 12, slug)
+            if item["verdict"] == "supersede":
+                self.assertEqual(
+                    by_id[item["target"]]["superseded_by"], f"theme:{slug}"
+                )
+        self.assertEqual(by_id["style:riso"]["superseded_by"], "theme:riso")
+
+
 class CliTests(unittest.TestCase):
     def test_list_text_groups_by_category(self) -> None:
         result = run("list")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(sum(line.startswith("## ") for line in result.stdout.splitlines()), 19)
+        self.assertEqual(
+            sum(line.startswith("## ") for line in result.stdout.splitlines()), 23
+        )
         self.assertIn("AI 与大模型平台", result.stdout)
         self.assertIn("brand:linear.app", result.stdout)
-        self.assertIn("153 entries (84 brand, 68 style, 1 scene)", result.stdout)
+        self.assertIn(
+            "202 entries (84 brand, 67 style, 50 theme, 1 scene)", result.stdout
+        )
+        self.assertNotIn("style:riso", result.stdout)
+        self.assertIn("theme:riso", result.stdout)
         self.assertIn("分析与 BI / Analytics and BI", result.stdout)
         self.assertIn("scene:bi", result.stdout)
 
@@ -171,7 +244,43 @@ class CliTests(unittest.TestCase):
         self.assertEqual(len(json.loads(result.stdout)), 8)
         scene = run("list", "--kind", "scene", "--format", "json")
         self.assertEqual(scene.returncode, 0, scene.stderr)
-        self.assertEqual([item["id"] for item in json.loads(scene.stdout)], ["scene:bi"])
+        self.assertEqual(
+            [item["id"] for item in json.loads(scene.stdout)], ["scene:bi"]
+        )
+
+    def test_list_kind_theme_and_all(self) -> None:
+        themes = run("list", "--kind", "theme", "--format", "json")
+        self.assertEqual(themes.returncode, 0, themes.stderr)
+        self.assertEqual(len(json.loads(themes.stdout)), 50)
+        styles = json.loads(run("list", "--kind", "style", "--format", "json").stdout)
+        self.assertNotIn("style:riso", [item["id"] for item in styles])
+        everything = run("list", "--all")
+        self.assertIn("203 entries", everything.stdout)
+        line = next(
+            row
+            for row in everything.stdout.splitlines()
+            if row.startswith("- style:riso ")
+        )
+        self.assertTrue(line.endswith("[superseded \u2192 theme:riso]"), line)
+        hidden = run("search", "risograph", "--kind", "style")
+        self.assertEqual(hidden.returncode, 1)
+        shown = run("search", "risograph", "--kind", "style", "--all")
+        self.assertIn("style:riso", shown.stdout)
+
+    def test_search_covers_theme_keywords_and_material(self) -> None:
+        self.assertIn("theme:riso", run("search", "small press").stdout)
+        self.assertIn("theme:riso", run("search", "fluorescent pink drum").stdout)
+        self.assertIn(
+            "theme:terminal", run("search", "Martian Mono", "--kind", "theme").stdout
+        )
+
+    def test_show_superseded_prints_notice(self) -> None:
+        result = run("show", "style:riso")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("superseded by theme:riso", result.stderr)
+        self.assertTrue(result.stdout.startswith("---\n"))
+        self.assertEqual(run("show", "riso").returncode, 2)
+        self.assertEqual(run("show", "theme:riso").stderr, "")
 
     def test_list_unknown_category(self) -> None:
         self.assertEqual(run("list", "--category", "nope").returncode, 2)
@@ -244,6 +353,30 @@ class ApplyTests(unittest.TestCase):
         self.assertNotIn("awesome-design-md", comment)
         self.assertNotIn("awesome-design-skills", comment)
         self.assertNotIn("github.com", comment)
+
+    def test_apply_theme_writes_hallmark_provenance(self) -> None:
+        result = run("apply", "theme:riso", "--root", str(self.root))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = (self.root / "DESIGN.md").read_text(encoding="utf-8")
+        closing = text.index("\n---\n", 4) + len("\n---\n")
+        comment = text[closing:].splitlines()[0]
+        self.assertTrue(
+            comment.startswith("<!-- design-atlas: entry=theme:riso;"), comment
+        )
+        self.assertIn("hallmark@8f6969f", comment)
+        self.assertIn("license=MIT", comment)
+        self.assertIn('primary: "oklch(68% 0.235 356)"', text[:closing])
+        self.assertIn("x-theme:", text[:closing])
+        for heading in ("## Overview", "## Colors", "## Typography", "## Known Gaps"):
+            self.assertIn(heading, text)
+
+    def test_apply_superseded_style_still_works(self) -> None:
+        result = run("apply", "style:riso", "--root", str(self.root))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("superseded by theme:riso", result.stderr)
+        self.assertIn(
+            "entry=style:riso", (self.root / "DESIGN.md").read_text(encoding="utf-8")
+        )
 
     def test_apply_legacy_entry_puts_comment_first(self) -> None:
         self.assertEqual(

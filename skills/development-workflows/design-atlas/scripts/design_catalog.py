@@ -2,10 +2,14 @@
 """List, search, show, and apply design-atlas catalog entries.
 
 Commands:
-  list   [--kind brand|style|scene] [--category ID] [--format text|json]
-  search QUERY [--kind brand|style|scene] [--format text|json]
+  list   [--kind brand|style|theme|scene] [--category ID] [--all] [--format text|json]
+  search QUERY [--kind brand|style|theme|scene] [--all] [--format text|json]
   show   ID                      ID is kind:slug, or a slug when it is unique
   apply  ID [--root DIR] [--force]
+
+list and search hide entries that a theme supersedes; --all shows them with a
+[superseded → theme:x] mark. show and apply still accept them and print a note
+on stderr. search also matches theme keywords and material.
 
 apply writes DIR/DESIGN.md (UTF-8, LF). An existing design.md in any letter
 case stops the command with exit 3 unless --force is given; --force first
@@ -23,6 +27,7 @@ from datetime import datetime
 from pathlib import Path
 
 CATALOG = Path(__file__).resolve().parents[1] / "assets" / "catalog"
+KINDS = ("brand", "style", "theme", "scene")
 
 
 def load_index() -> dict:
@@ -40,13 +45,29 @@ def enrich(index: dict) -> list[dict]:
     return items
 
 
+def visible(items: list[dict], show_all: bool) -> list[dict]:
+    if show_all:
+        return items
+    return [item for item in items if not item.get("superseded_by")]
+
+
+def search_text(item: dict) -> list[str]:
+    fields = [
+        str(item[key])
+        for key in ("id", "name", "description", "category_en", "category_zh")
+    ]
+    theme = item.get("theme") or {}
+    fields.extend(theme.get("keywords", []))
+    if theme.get("material"):
+        fields.append(theme["material"])
+    return fields
+
+
 def print_grouped(index: dict, items: list[dict]) -> None:
-    brands = sum(item["kind"] == "brand" for item in items)
-    styles = sum(item["kind"] == "style" for item in items)
-    scenes = sum(item["kind"] == "scene" for item in items)
-    print(
-        f"# design-atlas catalog: {len(items)} entries ({brands} brand, {styles} style, {scenes} scene)"
+    counts = ", ".join(
+        f"{sum(item['kind'] == kind for item in items)} {kind}" for kind in KINDS
     )
+    print(f"# design-atlas catalog: {len(items)} entries ({counts})")
     for category in sorted(index["categories"], key=lambda c: c["order"]):
         group = [item for item in items if item["category"] == category["id"]]
         if not group:
@@ -55,7 +76,12 @@ def print_grouped(index: dict, items: list[dict]) -> None:
             f"\n## {category['zh']} / {category['en']} ({len(group)}) [{category['id']}]\n"
         )
         for item in group:
-            print(f"- {item['id']} — {item['name']} — {item['description']}")
+            mark = (
+                f" [superseded → {item['superseded_by']}]"
+                if item.get("superseded_by")
+                else ""
+            )
+            print(f"- {item['id']} — {item['name']} — {item['description']}{mark}")
 
 
 def emit(index: dict, items: list[dict], fmt: str) -> None:
@@ -80,9 +106,7 @@ def resolve(entries: list[dict], wanted: str) -> dict:
 
 def provenance(index: dict, entry: dict) -> str:
     if entry["source"] == "first-party":
-        return (
-            f"<!-- design-atlas: entry={entry['id']}; source=first-party; license=MIT -->"
-        )
+        return f"<!-- design-atlas: entry={entry['id']}; source=first-party; license=MIT -->"
     source = index["sources"][entry["source"]]
     return (
         f"<!-- design-atlas: entry={entry['id']}; source={source['repo']}@{source['commit'][:7]}; "
@@ -97,6 +121,15 @@ def with_provenance(text: str, comment: str) -> str:
             cut = end + len("\n---\n")
             return f"{text[:cut]}{comment}\n{text[cut:]}"
     return f"{comment}\n{text}"
+
+
+def note_superseded(entry: dict) -> None:
+    if entry.get("superseded_by"):
+        print(
+            f"note: {entry['id']} is superseded by {entry['superseded_by']}; "
+            "continuing with the requested entry.",
+            file=sys.stderr,
+        )
 
 
 def apply(index: dict, entry: dict, root: Path, force: bool) -> int:
@@ -139,15 +172,22 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
 
     list_cmd = commands.add_parser("list", help="list entries grouped by category")
-    list_cmd.add_argument("--kind", choices=("brand", "style", "scene"))
+    list_cmd.add_argument("--kind", choices=KINDS)
     list_cmd.add_argument("--category")
+    list_cmd.add_argument(
+        "--all", action="store_true", help="include superseded entries"
+    )
     list_cmd.add_argument("--format", choices=("text", "json"), default="text")
 
     search_cmd = commands.add_parser(
-        "search", help="search id, name, description, and category names"
+        "search",
+        help="search id, name, description, category names, theme keywords and material",
     )
     search_cmd.add_argument("query")
-    search_cmd.add_argument("--kind", choices=("brand", "style", "scene"))
+    search_cmd.add_argument("--kind", choices=KINDS)
+    search_cmd.add_argument(
+        "--all", action="store_true", help="include superseded entries"
+    )
     search_cmd.add_argument("--format", choices=("text", "json"), default="text")
 
     show_cmd = commands.add_parser("show", help="print one entry")
@@ -174,7 +214,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         selected = [
             item
-            for item in items
+            for item in visible(items, args.all)
             if (not args.kind or item["kind"] == args.kind)
             and (not args.category or item["category"] == args.category)
         ]
@@ -185,12 +225,9 @@ def main(argv: list[str] | None = None) -> int:
         query = args.query.casefold()
         selected = [
             item
-            for item in items
+            for item in visible(items, args.all)
             if (not args.kind or item["kind"] == args.kind)
-            and any(
-                query in str(item[key]).casefold()
-                for key in ("id", "name", "description", "category_en", "category_zh")
-            )
+            and any(query in field.casefold() for field in search_text(item))
         ]
         if not selected:
             print(
@@ -206,6 +243,7 @@ def main(argv: list[str] | None = None) -> int:
     except LookupError as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
+    note_superseded(entry)
     if args.command == "show":
         sys.stdout.write((CATALOG / entry["path"]).read_text(encoding="utf-8"))
         return 0

@@ -12,6 +12,12 @@
       "commit": "f631a09b4fcc0166f2e2c1a8c81906ef680c57e8",
       "license": "MIT",
       "license_file": "LICENSES/awesome-design-skills.LICENSE"
+    },
+    "hallmark": {
+      "repo": "https://github.com/Nutlope/hallmark",
+      "commit": "8f6969f8922caabde9de1784959eae11ddf68073",
+      "license": "MIT",
+      "license_file": "LICENSES/hallmark.LICENSE"
     }
   },
   "categories": [
@@ -142,11 +148,39 @@
       "order": 18
     },
     {
+      "id": "theme-editorial",
+      "kind": "theme",
+      "en": "Editorial Themes",
+      "zh": "主题·编辑出版",
+      "order": 19
+    },
+    {
+      "id": "theme-modern-minimal",
+      "kind": "theme",
+      "en": "Modern Minimal Themes",
+      "zh": "主题·现代极简",
+      "order": 20
+    },
+    {
+      "id": "theme-atmospheric",
+      "kind": "theme",
+      "en": "Atmospheric Themes",
+      "zh": "主题·氛围沉浸",
+      "order": 21
+    },
+    {
+      "id": "theme-playful",
+      "kind": "theme",
+      "en": "Playful Themes",
+      "zh": "主题·活泼趣味",
+      "order": 22
+    },
+    {
       "id": "scene-analytics",
       "kind": "scene",
       "en": "Analytics and BI",
       "zh": "分析与 BI",
-      "order": 19
+      "order": 23
     }
   ],
   "entries": [
@@ -1180,7 +1214,8 @@
       "format": "stitch",
       "path": "styles/airy-glass.md",
       "source": "first-party",
-      "upstream_path": "assets/catalog/first-party/airy-glass.md"
+      "upstream_path": "assets/catalog/first-party/airy-glass.md",
+      "cluster": "glass"
     },
     {
       "id": "style:ant",
@@ -1216,7 +1251,8 @@
       "format": "stitch",
       "path": "styles/basic.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/basic/DESIGN.md + skills/basic/SKILL.md"
+      "upstream_path": "skills/basic/DESIGN.md + skills/basic/SKILL.md",
+      "cluster": "print-paper"
     },
     {
       "id": "style:bento",
@@ -1240,7 +1276,8 @@
       "format": "stitch",
       "path": "styles/bold.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/bold/DESIGN.md + skills/bold/SKILL.md"
+      "upstream_path": "skills/bold/DESIGN.md + skills/bold/SKILL.md",
+      "cluster": "poster"
     },
     {
       "id": "style:brutalism",
@@ -1252,7 +1289,8 @@
       "format": "stitch",
       "path": "styles/brutalism.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/brutalism/DESIGN.md + skills/brutalism/SKILL.md"
+      "upstream_path": "skills/brutalism/DESIGN.md + skills/brutalism/SKILL.md",
+      "cluster": "brutalist"
     },
     {
       "id": "style:cafe",
@@ -1384,7 +1422,8 @@
       "format": "stitch",
       "path": "styles/dithered.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/dithered/DESIGN.md + skills/dithered/SKILL.md"
+      "upstream_path": "skills/dithered/DESIGN.md + skills/dithered/SKILL.md",
+      "cluster": "print-dot"
     },
     {
       "id": "style:doodle",
@@ -1408,7 +1447,8 @@
       "format": "stitch",
       "path": "styles/dramatic.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/dramatic/DESIGN.md + skills/dramatic/SKILL.md"
+      "upstream_path": "skills/dramatic/DESIGN.md + skills/dramatic/SKILL.md",
+      "cluster": "dark-poster"
     },
     {
       "id": "style:editorial",
@@ -1420,7 +1460,8 @@
       "format": "stitch",
       "path": "styles/editorial.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/editorial/DESIGN.md + skills/editorial/SKILL.md"
+      "upstream_path": "skills/editorial/DESIGN.md + skills/editorial/SKILL.md",
+      "cluster": "magazine"
     },
     {
       "id": "style:enterprise",
@@ -1432,7 +1473,8 @@
       "format": "stitch",
       "path": "styles/enterprise.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/enterprise/DESIGN.md + skills/enterprise/SKILL.md"
+      "upstream_path": "skills/enterprise/DESIGN.md + skills/enterprise/SKILL.md",
+      "cluster": "dark-glass"
     },
     {
       "id": "style:expressive",
@@ -1444,7 +1486,8 @@
       "format": "stitch",
       "path": "styles/expressive.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/expressive/DESIGN.md + skills/expressive/SKILL.md"
+      "upstream_path": "skills/expressive/DESIGN.md + skills/expressive/SKILL.md",
+      "cluster": "poster"
     },
     {
       "id": "style:fantasy",
@@ -1492,7 +1535,8 @@
       "format": "stitch",
       "path": "styles/friendly.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/friendly/DESIGN.md + skills/friendly/SKILL.md"
+      "upstream_path": "skills/friendly/DESIGN.md + skills/friendly/SKILL.md",
+      "cluster": "friendly"
     },
     {
       "id": "style:futuristic",
@@ -1516,7 +1560,8 @@
       "format": "stitch",
       "path": "styles/geometric.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/geometric/DESIGN.md + skills/geometric/SKILL.md"
+      "upstream_path": "skills/geometric/DESIGN.md + skills/geometric/SKILL.md",
+      "cluster": "swiss"
     },
     {
       "id": "style:glassmorphism",
@@ -1528,7 +1573,8 @@
       "format": "stitch",
       "path": "styles/glassmorphism.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/glassmorphism/DESIGN.md + skills/glassmorphism/SKILL.md"
+      "upstream_path": "skills/glassmorphism/DESIGN.md + skills/glassmorphism/SKILL.md",
+      "cluster": "glass"
     },
     {
       "id": "style:gradient",
@@ -1588,7 +1634,8 @@
       "format": "stitch",
       "path": "styles/lingo.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/lingo/DESIGN.md + skills/lingo/SKILL.md"
+      "upstream_path": "skills/lingo/DESIGN.md + skills/lingo/SKILL.md",
+      "cluster": "friendly"
     },
     {
       "id": "style:material",
@@ -1612,7 +1659,8 @@
       "format": "stitch",
       "path": "styles/matrix.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/matrix/DESIGN.md + skills/matrix/SKILL.md"
+      "upstream_path": "skills/matrix/DESIGN.md + skills/matrix/SKILL.md",
+      "cluster": "terminal-mono"
     },
     {
       "id": "style:minimal",
@@ -1648,7 +1696,8 @@
       "format": "stitch",
       "path": "styles/mono.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/mono/DESIGN.md + skills/mono/SKILL.md"
+      "upstream_path": "skills/mono/DESIGN.md + skills/mono/SKILL.md",
+      "cluster": "terminal-mono"
     },
     {
       "id": "style:neobrutalism",
@@ -1660,7 +1709,8 @@
       "format": "stitch",
       "path": "styles/neobrutalism.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/neobrutalism/DESIGN.md + skills/neobrutalism/SKILL.md"
+      "upstream_path": "skills/neobrutalism/DESIGN.md + skills/neobrutalism/SKILL.md",
+      "cluster": "brutalist"
     },
     {
       "id": "style:neon",
@@ -1696,7 +1746,8 @@
       "format": "stitch",
       "path": "styles/pacman.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/pacman/DESIGN.md + skills/pacman/SKILL.md"
+      "upstream_path": "skills/pacman/DESIGN.md + skills/pacman/SKILL.md",
+      "cluster": "retro-arcade"
     },
     {
       "id": "style:paper",
@@ -1708,7 +1759,8 @@
       "format": "stitch",
       "path": "styles/paper.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/paper/DESIGN.md + skills/paper/SKILL.md"
+      "upstream_path": "skills/paper/DESIGN.md + skills/paper/SKILL.md",
+      "cluster": "print-paper"
     },
     {
       "id": "style:perspective",
@@ -1732,7 +1784,8 @@
       "format": "stitch",
       "path": "styles/power.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/power/DESIGN.md + skills/power/SKILL.md"
+      "upstream_path": "skills/power/DESIGN.md + skills/power/SKILL.md",
+      "cluster": "dark-poster"
     },
     {
       "id": "style:premium",
@@ -1780,7 +1833,8 @@
       "format": "stitch",
       "path": "styles/refined.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/refined/DESIGN.md + skills/refined/SKILL.md"
+      "upstream_path": "skills/refined/DESIGN.md + skills/refined/SKILL.md",
+      "cluster": "refined-serif"
     },
     {
       "id": "style:retro",
@@ -1804,7 +1858,8 @@
       "format": "stitch",
       "path": "styles/riso.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/riso/DESIGN.md + skills/riso/SKILL.md"
+      "upstream_path": "skills/riso/DESIGN.md + skills/riso/SKILL.md",
+      "superseded_by": "theme:riso"
     },
     {
       "id": "style:roku",
@@ -1828,7 +1883,8 @@
       "format": "stitch",
       "path": "styles/sega.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/sega/DESIGN.md + skills/sega/SKILL.md"
+      "upstream_path": "skills/sega/DESIGN.md + skills/sega/SKILL.md",
+      "cluster": "retro-arcade"
     },
     {
       "id": "style:shadcn",
@@ -1840,7 +1896,8 @@
       "format": "stitch",
       "path": "styles/shadcn.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/shadcn/DESIGN.md + skills/shadcn/SKILL.md"
+      "upstream_path": "skills/shadcn/DESIGN.md + skills/shadcn/SKILL.md",
+      "cluster": "devtool-light"
     },
     {
       "id": "style:sketch",
@@ -1936,7 +1993,8 @@
       "format": "stitch",
       "path": "styles/terracotta.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/terracotta/DESIGN.md + skills/terracotta/SKILL.md"
+      "upstream_path": "skills/terracotta/DESIGN.md + skills/terracotta/SKILL.md",
+      "cluster": "warm-serif"
     },
     {
       "id": "style:tetris",
@@ -1948,7 +2006,8 @@
       "format": "stitch",
       "path": "styles/tetris.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/tetris/DESIGN.md + skills/tetris/SKILL.md"
+      "upstream_path": "skills/tetris/DESIGN.md + skills/tetris/SKILL.md",
+      "cluster": "retro-arcade"
     },
     {
       "id": "style:vibrant",
@@ -1960,7 +2019,8 @@
       "format": "stitch",
       "path": "styles/vibrant.md",
       "source": "awesome-design-skills",
-      "upstream_path": "skills/vibrant/DESIGN.md + skills/vibrant/SKILL.md"
+      "upstream_path": "skills/vibrant/DESIGN.md + skills/vibrant/SKILL.md",
+      "cluster": "poster"
     },
     {
       "id": "style:vintage",
@@ -1973,6 +2033,2756 @@
       "path": "styles/vintage.md",
       "source": "awesome-design-skills",
       "upstream_path": "skills/vintage/DESIGN.md + skills/vintage/SKILL.md"
+    },
+    {
+      "id": "theme:almanac",
+      "kind": "theme",
+      "slug": "almanac",
+      "name": "Almanac",
+      "category": "theme-editorial",
+      "description": "The register of a reference book: cool slate stock, blue-black ink, Hanken Grotesk heads over Newsreader prose, figures in mono lined up to the decimal, rules in two weights, and one deep magenta, the colour a sea chart prints its lights in, kept small.",
+      "format": "theme",
+      "path": "themes/almanac.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/almanac.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "mid",
+          "L": 84,
+          "hue": 245
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Hanken Grotesk"
+        },
+        "accent": {
+          "band": "chromatic-magenta",
+          "hue": 350
+        },
+        "posture": "restrained",
+        "photo": "muted",
+        "material": "cool slate stock with a pale printed sheet, blue-black ink, Hanken Grotesk heads over Newsreader prose with mono figures, two rule weights and square corners, one chart magenta",
+        "pictured": "Workbench, Stage hero",
+        "keywords": [
+          "almanac",
+          "yearbook",
+          "field guide",
+          "reference",
+          "handbook",
+          "manual",
+          "index",
+          "catalogue",
+          "encyclopedia",
+          "data",
+          "figures",
+          "tables",
+          "statistics",
+          "research",
+          "dataset",
+          "records",
+          "directory",
+          "glossary",
+          "specifications"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/almanac.jpg"
+    },
+    {
+      "id": "theme:arcade",
+      "kind": "theme",
+      "slug": "arcade",
+      "name": "Arcade",
+      "category": "theme-playful",
+      "description": "A late-night cabinet: an aubergine ground under a CRT screen, Bungee capitals split in RGB over Chivo, Silkscreen figures, hard offset shadows, two loud inks that take turns like two players.",
+      "format": "theme",
+      "path": "themes/arcade.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/arcade.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "dark",
+          "L": 14,
+          "hue": 312
+        },
+        "display": {
+          "class": "pixel",
+          "face": "Silkscreen and Bungee"
+        },
+        "accent": {
+          "band": "chromatic-ember",
+          "hue": 40
+        },
+        "posture": "full-palette",
+        "photo": "tint accent",
+        "material": "aubergine CRT ground, lilac-white ink, Bungee capitals split in RGB over Chivo, Silkscreen figures, hard offset shadows, ember and acid signals",
+        "pictured": "Marquee Hero, Stage hero",
+        "keywords": [
+          "game",
+          "indie",
+          "game studio",
+          "launch party",
+          "demo night",
+          "hackathon",
+          "festival",
+          "meetup",
+          "retro",
+          "pixel",
+          "arcade",
+          "nostalgia",
+          "synth",
+          "lo-fi",
+          "toy",
+          "zine",
+          "club night",
+          "loud"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/arcade.jpg",
+      "cluster": "retro-arcade"
+    },
+    {
+      "id": "theme:atelier",
+      "kind": "theme",
+      "slug": "atelier",
+      "name": "Atelier",
+      "category": "theme-editorial",
+      "description": "The register of a maker's catalogue held in still air: limewash paper with a slow, luminous haze moving behind it, deep umber ink, Sentient light in heads and statements, Hanken Grotesk for reading, hairlines, one slate signal nearly as dark as the ink.",
+      "format": "theme",
+      "path": "themes/atelier.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/atelier.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 94.5,
+          "hue": 76
+        },
+        "display": {
+          "class": "roman-serif",
+          "face": "Sentient"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 248
+        },
+        "posture": "restrained",
+        "photo": "warm con=-6 vib=-10",
+        "material": "limewash paper under a slow luminous air, deep umber ink, Sentient light over Hanken Grotesk, cotton card stock with fibre and pressed type, hairlines, matted prints in warm daylight, one cool slate signal",
+        "pictured": "Gallery Hang, Diffusion hero",
+        "keywords": [
+          "fashion",
+          "atelier",
+          "couture",
+          "fragrance",
+          "gallery",
+          "exhibition",
+          "museum",
+          "ceramics",
+          "furniture",
+          "homeware",
+          "architecture",
+          "design studio",
+          "lookbook",
+          "collection",
+          "craft",
+          "small-batch",
+          "made by hand",
+          "brand story",
+          "luxury",
+          "object",
+          "hotel",
+          "boutique hotel",
+          "hospitality",
+          "stay"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/atelier.jpg",
+      "cluster": "refined-serif"
+    },
+    {
+      "id": "theme:bloom",
+      "kind": "theme",
+      "slug": "bloom",
+      "name": "Bloom",
+      "category": "theme-atmospheric",
+      "description": "Daylight on a working sheet: warm off-white paper with a faint grain, the medium's own grid (a piano roll, a timeline, a ruler) printed into the ground and fading out from the stage, umber ink, Ranade with one roman Gambarino moment.",
+      "format": "theme",
+      "path": "themes/bloom.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/bloom.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "light",
+          "L": 97,
+          "hue": 72
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Ranade"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 36
+        },
+        "posture": "committed",
+        "photo": "warm exp=4",
+        "material": "warm off-white paper with grain and a generated working grid, two quiet terracotta blooms, warm umber ink, Ranade with one roman Gambarino figure, rubber and cased parts lit from above, part tones on rounded clips",
+        "pictured": "Workbench, Stage hero",
+        "keywords": [
+          "generative",
+          "ai creative",
+          "music",
+          "song",
+          "video",
+          "image",
+          "voice",
+          "art",
+          "make",
+          "create",
+          "compose",
+          "render",
+          "imagine",
+          "prompt",
+          "creative studio",
+          "playground",
+          "expressive",
+          "warm",
+          "daylight",
+          "consumer creative",
+          "portrait",
+          "headshot",
+          "selfie",
+          "retouch"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/bloom.jpg"
+    },
+    {
+      "id": "theme:blueprint",
+      "kind": "theme",
+      "slug": "blueprint",
+      "name": "Blueprint",
+      "category": "theme-modern-minimal",
+      "description": "A drafting sheet as a material: Prussian-blue paper, a white line for ink, Chakra Petch drafted capitals over IBM Plex Sans, mono measurements with their units, keylines instead of cards, and photographs printed as cyanotypes, the sheet's blue in the shadows and its white in the light.",
+      "format": "theme",
+      "path": "themes/blueprint.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/blueprint.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "mid",
+          "L": 35,
+          "hue": 256
+        },
+        "display": {
+          "class": "geometric-sans",
+          "face": "Chakra Petch"
+        },
+        "accent": {
+          "band": "neutral",
+          "hue": 240
+        },
+        "posture": "drenched",
+        "photo": "duotone paper-3 ink con=30 exp=-10",
+        "material": "prussian-blue sheet, white line ink, Chakra Petch capitals over IBM Plex Sans with mono measurements, square double keylines and dimension strings, photographs printed as cyanotypes, the white line as the only signal",
+        "pictured": "Bento Grid, Poster hero",
+        "keywords": [
+          "architecture",
+          "architect",
+          "engineering",
+          "construction",
+          "structural",
+          "interiors",
+          "planning",
+          "surveying",
+          "cad",
+          "drafting",
+          "fabrication",
+          "prefab",
+          "developer",
+          "technical",
+          "spec",
+          "permit",
+          "renovation",
+          "build",
+          "drawings",
+          "architecture studio",
+          "timber"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/blueprint.jpg"
+    },
+    {
+      "id": "theme:broadside",
+      "kind": "theme",
+      "slug": "broadside",
+      "name": "Broadside",
+      "category": "theme-editorial",
+      "description": "A printer's bill: grained buff stock, near-black ink, Six Caps fitted to the measure over Bevan, Archivo Narrow small print, rules at one point or five, one vermilion.",
+      "format": "theme",
+      "path": "themes/broadside.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/broadside.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 92,
+          "hue": 88
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Six Caps"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 33
+        },
+        "posture": "committed",
+        "photo": "duotone ink paper con=20",
+        "material": "grained buff stock, near-black ink, Six Caps and Bevan wood capitals over Archivo Narrow, ink rules at one point or five, one vermilion",
+        "pictured": "Marquee Hero, Settled hero",
+        "keywords": [
+          "auction",
+          "sale",
+          "market",
+          "fair",
+          "event",
+          "one night",
+          "announcement",
+          "town",
+          "notice",
+          "poster",
+          "bill",
+          "lots",
+          "machinery",
+          "tools",
+          "festival",
+          "fete",
+          "hammer",
+          "date",
+          "venue",
+          "tickets"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/broadside.jpg",
+      "cluster": "poster"
+    },
+    {
+      "id": "theme:brutal",
+      "kind": "theme",
+      "slug": "brutal",
+      "name": "Brutal",
+      "category": "theme-editorial",
+      "description": "A raw, engineered sheet: near-white poster stock, near-black ink that arrives as 3px rules, boxed cells and solid fills, Libre Franklin at its blackest in tight capitals, zero radius, and one acid yellow that only ever fills.",
+      "format": "theme",
+      "path": "themes/brutal.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/brutal.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 97.5,
+          "hue": 95
+        },
+        "display": {
+          "class": "grotesk-heavy",
+          "face": "Libre Franklin"
+        },
+        "accent": {
+          "band": "chromatic-yellow",
+          "hue": 105
+        },
+        "posture": "committed",
+        "photo": "duotone ink paper con=24",
+        "material": "near-white poster stock, near-black ink as 3px rules, boxed cells and solid fills, uppercase Libre Franklin 900 over its 400, zero radius, one acid-yellow fill",
+        "pictured": "Marquee Hero, Poster hero",
+        "keywords": [
+          "brutalist",
+          "raw",
+          "bold",
+          "high-contrast",
+          "statement",
+          "agency",
+          "design studio",
+          "portfolio",
+          "streetwear",
+          "drop",
+          "zine",
+          "type-forward",
+          "graphic design",
+          "poster",
+          "festival",
+          "collective",
+          "no-nonsense",
+          "uncompromising"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/brutal.jpg",
+      "cluster": "brutalist"
+    },
+    {
+      "id": "theme:carnival",
+      "kind": "theme",
+      "slug": "carnival",
+      "name": "Carnival",
+      "category": "theme-editorial",
+      "description": "A loud, screen-printed register: tinted paper, deep warm ink, Big Shoulders Display capitals over Golos Text, a hard ink shadow and two accents that compete.",
+      "format": "theme",
+      "path": "themes/carnival.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/carnival.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 92,
+          "hue": 50
+        },
+        "display": {
+          "class": "display-heavy",
+          "face": "Big Shoulders Display"
+        },
+        "accent": {
+          "band": "chromatic-yellow",
+          "hue": 95
+        },
+        "posture": "full-palette",
+        "photo": "natural vib=20 con=10",
+        "material": "tinted paper, deep warm ink, Big Shoulders Display 800 capitals set poster-large over Golos Text, 2px rules, a hard 4px ink shadow, two accents that compete as whole fields",
+        "pictured": "Label and Ledger, Stage hero",
+        "keywords": [
+          "record label",
+          "podcast",
+          "comedy",
+          "indie",
+          "zine",
+          "poster",
+          "illustrator",
+          "games",
+          "hot sauce",
+          "merch",
+          "streetwear",
+          "cassette",
+          "vinyl",
+          "live show",
+          "festival",
+          "loud",
+          "maximalist",
+          "scrappy"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/carnival.jpg",
+      "cluster": "poster"
+    },
+    {
+      "id": "theme:cobalt",
+      "kind": "theme",
+      "slug": "cobalt",
+      "name": "Cobalt",
+      "category": "theme-modern-minimal",
+      "description": "An exact, technical register: cool near-white paper ruled with hairlines, Familjen Grotesk heads over IBM Plex Sans, and a ground made of characters, a generated ASCII field snapped to an 8 by 16 cell that shows the product's own traffic in cobalt tints.",
+      "format": "theme",
+      "path": "themes/cobalt.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/cobalt.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 98.5,
+          "hue": 250
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Familjen Grotesk"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 256
+        },
+        "posture": "restrained",
+        "photo": "duotone graphite paper",
+        "material": "cool near-white paper, blue-grey ink and hairlines, Familjen Grotesk over IBM Plex Sans, a generated ASCII field on an 8 by 16 cell, keycaps and cut-corner panels, JetBrains Mono on graphite, one electric cobalt signal",
+        "pictured": "Feature Ledger, Field hero",
+        "keywords": [
+          "api",
+          "sdk",
+          "cli",
+          "dev tool",
+          "developer platform",
+          "docs",
+          "documentation",
+          "infrastructure",
+          "backend",
+          "database",
+          "observability",
+          "webhooks",
+          "events",
+          "type-safe",
+          "open source",
+          "ship",
+          "deploy",
+          "developer experience",
+          "technical"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/cobalt.jpg",
+      "cluster": "devtool-light"
+    },
+    {
+      "id": "theme:console",
+      "kind": "theme",
+      "slug": "console",
+      "name": "Console",
+      "category": "theme-modern-minimal",
+      "description": "An instrument kept by careful people: a graphite ground stepped in three lightnesses, hairline panels cut from one surface, Host Grotesk for what a person reads, Atkinson Hyperlegible Mono for what an instrument measured, amber for a person and cool blue for an instrument.",
+      "format": "theme",
+      "path": "themes/console.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/console.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "dark",
+          "L": 17,
+          "hue": 250
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Host Grotesk"
+        },
+        "accent": {
+          "band": "chromatic-amber",
+          "hue": 80
+        },
+        "posture": "restrained",
+        "photo": "duotone paper-3 ink",
+        "material": "graphite ground in three lightness steps, pale ink, hairline panels cut from one surface, Host Grotesk 500 for reading, Atkinson Hyperlegible Mono for what was measured, amber for a person and cool blue for an instrument",
+        "pictured": "Audit Trail, Stage hero",
+        "keywords": [
+          "lab",
+          "laboratory",
+          "protocol",
+          "experiment",
+          "notebook",
+          "science",
+          "research",
+          "observability",
+          "monitoring",
+          "version control",
+          "audit",
+          "compliance",
+          "instruments",
+          "data",
+          "devtools",
+          "engineering",
+          "telemetry",
+          "record",
+          "operations",
+          "dark",
+          "developer"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/console.jpg"
+    },
+    {
+      "id": "theme:coral",
+      "kind": "theme",
+      "slug": "coral",
+      "name": "Coral",
+      "category": "theme-modern-minimal",
+      "description": "A warm, plain product voice made physical: fine stationery on a felt desk, seen from above in one daylight from the left.",
+      "format": "theme",
+      "path": "themes/coral.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/coral.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 97,
+          "hue": 55
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "General Sans"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 30
+        },
+        "posture": "restrained",
+        "photo": "muted sepia=8",
+        "material": "warm grey paper and a felt desk, cotton stationery lit from the left, General Sans throughout with Geist Mono figures, letterpress card controls, coral pressed into the stock for the one settled state",
+        "pictured": "Conversational FAQ, Desk hero",
+        "keywords": [
+          "saas",
+          "platform",
+          "billing",
+          "payments",
+          "invoicing",
+          "dashboard",
+          "b2b",
+          "startup",
+          "product",
+          "pricing",
+          "analytics",
+          "fintech",
+          "workflow",
+          "team",
+          "onboarding",
+          "trust",
+          "warm",
+          "human",
+          "calm"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/coral.jpg"
+    },
+    {
+      "id": "theme:darkroom",
+      "kind": "theme",
+      "slug": "darkroom",
+      "name": "Darkroom",
+      "category": "theme-atmospheric",
+      "description": "A print room with the lights off: a warm black ground a step lighter than a print's own black, so a photograph sits on it as an object; fibre-white ink; hairline extra-condensed capitals over Barlow; one amber safelight.",
+      "format": "theme",
+      "path": "themes/darkroom.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/darkroom.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "dark",
+          "L": 12.5,
+          "hue": 55
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Sofia Sans Extra Condensed"
+        },
+        "accent": {
+          "band": "chromatic-amber",
+          "hue": 58
+        },
+        "posture": "restrained",
+        "photo": "mono high=-20 shad=-12",
+        "material": "warm print-black ground, a fine light grain, fibre-white ink, hairline Sofia Sans Extra Condensed capitals over Barlow, zero radius, black-and-white photographs printed deeper than the ground, one amber safelight",
+        "pictured": "Photographic, Poster hero",
+        "keywords": [
+          "photographer",
+          "photography",
+          "film",
+          "analogue",
+          "darkroom",
+          "prints",
+          "portfolio",
+          "exhibition",
+          "gallery",
+          "edition",
+          "commission",
+          "cinematographer",
+          "negative",
+          "archive",
+          "monochrome",
+          "lab",
+          "moody",
+          "black and white",
+          "night",
+          "print shop",
+          "travel",
+          "places",
+          "landscape",
+          "portrait",
+          "photo studio"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/darkroom.jpg"
+    },
+    {
+      "id": "theme:dose",
+      "kind": "theme",
+      "slug": "dose",
+      "name": "Dose",
+      "category": "theme-modern-minimal",
+      "description": "Translucent plastic and daylight: warm morning paper with a fine fibre grain, window light falling across it, bands of soft tinted plastic like a pill organiser, green-black ink, Schibsted Grotesk heads over Instrument Sans, and DM Mono for the time and the dose, set like a pharmacy label.",
+      "format": "theme",
+      "path": "themes/dose.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/dose.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 97.6,
+          "hue": 88
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Schibsted Grotesk"
+        },
+        "accent": {
+          "band": "chromatic-green",
+          "hue": 160
+        },
+        "posture": "committed",
+        "photo": "natural sat=-15 con=-6",
+        "material": "warm morning paper with a fibre grain and window light, translucent tinted plastic, green-black ink, Schibsted Grotesk over Instrument Sans with DM Mono pharmacy labels, moulded controls, one pharmacy green",
+        "pictured": "Care Register, Organiser hero",
+        "keywords": [
+          "health",
+          "medication",
+          "pharmacy",
+          "care",
+          "carer",
+          "family",
+          "reminders",
+          "schedule",
+          "app",
+          "mobile",
+          "medicine",
+          "patients",
+          "clinic",
+          "prescription",
+          "tracking",
+          "calm",
+          "trust",
+          "routine",
+          "elderly",
+          "parents"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/dose.jpg"
+    },
+    {
+      "id": "theme:dusk",
+      "kind": "theme",
+      "slug": "dusk",
+      "name": "Dusk",
+      "category": "theme-modern-minimal",
+      "description": "Money software at the calm end of the day: a real photograph of land at dusk behind the hero, the head set dark on its palest part, the product beside it in smoked glass.",
+      "format": "theme",
+      "path": "themes/dusk.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/dusk.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "dark",
+          "L": 17.5,
+          "hue": 268
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Wix Madefor Display"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 274
+        },
+        "posture": "committed",
+        "photo": "natural con=4 vib=6",
+        "material": "a real landscape at the turn of the light behind the hero, slate below it, the product in smoked glass with a lit top edge, Wix Madefor Display at a quiet weight over Wix Madefor Text, bone wells for light surfaces, one periwinkle signal and one apricot",
+        "pictured": "Narrative Workflow, Stage hero",
+        "keywords": [
+          "treasury",
+          "banking",
+          "fintech",
+          "payments",
+          "reconciliation",
+          "ledger",
+          "accounting",
+          "close",
+          "month end",
+          "audit",
+          "balance",
+          "cash management",
+          "payouts",
+          "settlement",
+          "compliance",
+          "controller",
+          "bookkeeping",
+          "finance team",
+          "invoicing",
+          "payroll",
+          "overnight",
+          "automation"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/dusk.jpg",
+      "cluster": "dark-glass"
+    },
+    {
+      "id": "theme:editorial",
+      "kind": "theme",
+      "slug": "editorial",
+      "name": "Editorial",
+      "category": "theme-editorial",
+      "description": "A contemporary magazine voice: warm white uncoated stock, a printed black with a faint cool tilt that runs through the reading text too, Bricolage Grotesque at 800 squeezed to width 75 for every head, Source Serif 4 for reading and the standfirst, square corners, a heavy ink rule over 1px hairlines, one printer's green.",
+      "format": "theme",
+      "path": "themes/editorial.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/editorial.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 97,
+          "hue": 86
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Bricolage Grotesque"
+        },
+        "accent": {
+          "band": "chromatic-green",
+          "hue": 152
+        },
+        "posture": "restrained",
+        "photo": "natural sat=-10 con=4",
+        "material": "warm white uncoated stock, printed black ink with a cool tilt, Bricolage Grotesque condensed at 800 over Source Serif 4, square corners, a heavy ink rule over 1px hairlines, one printer's green",
+        "pictured": "Marquee Hero, Stage hero",
+        "keywords": [
+          "magazine",
+          "editorial",
+          "feature",
+          "culture",
+          "fashion",
+          "design annual",
+          "interview",
+          "longform",
+          "publication",
+          "issue",
+          "contemporary",
+          "art direction",
+          "profile",
+          "lookbook",
+          "brand story",
+          "journal",
+          "considered",
+          "travel",
+          "city guide",
+          "guide"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/editorial.jpg",
+      "cluster": "magazine"
+    },
+    {
+      "id": "theme:formwork",
+      "kind": "theme",
+      "slug": "formwork",
+      "name": "Formwork",
+      "category": "theme-editorial",
+      "description": "A site-office voice: warm grey concrete for paper, near-black ink, Oswald 700 capitals over Archivo, square cast edges, hard shadows and one safety orange.",
+      "format": "theme",
+      "path": "themes/formwork.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/formwork.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "mid",
+          "L": 74,
+          "hue": 80
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Oswald"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 38
+        },
+        "posture": "restrained",
+        "photo": "natural sat=-100 con=35 exp=8",
+        "material": "warm grey concrete paper with a speck grain, near-black ink, Oswald capitals over Archivo, square cast edges and hard shadows, hard black-and-white photographs of poured concrete, one safety orange signal",
+        "pictured": "Site Board, Poster hero",
+        "keywords": [
+          "construction",
+          "concrete",
+          "skatepark",
+          "contractor",
+          "civil",
+          "landscape",
+          "foundry",
+          "industrial",
+          "fabrication",
+          "workshop",
+          "engineering",
+          "cast",
+          "welded",
+          "builders",
+          "hardware",
+          "tools",
+          "site",
+          "heavy"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/formwork.jpg"
+    },
+    {
+      "id": "theme:furrow",
+      "kind": "theme",
+      "slug": "furrow",
+      "name": "Furrow",
+      "category": "theme-modern-minimal",
+      "description": "A working records voice drawn on the land itself: warm manila paper, near-black ink, and the place the work happens generated as a survey map (contours, hedges, walls, water, the holding edged in tangerine like a title plan) with the records pinned where they happened.",
+      "format": "theme",
+      "path": "themes/furrow.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/furrow.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 96,
+          "hue": 85
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Red Hat Display"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 40
+        },
+        "posture": "committed",
+        "photo": "natural con=8 sat=-6",
+        "material": "warm manila paper, near-black ink in rules, a generated survey map in sienna contours and slate water, Red Hat Display 600 over Red Hat Text with Red Hat Mono figures, moulded 6px keys, a waterproof notebook card, one tangerine signal and a grass green for what is in date",
+        "pictured": "Field Record, Map hero",
+        "keywords": [
+          "farm",
+          "agriculture",
+          "land",
+          "field",
+          "livestock",
+          "sheep",
+          "cattle",
+          "crop",
+          "records",
+          "compliance",
+          "inspection",
+          "fleet",
+          "field service",
+          "rural",
+          "contractor",
+          "hectares",
+          "yard",
+          "outdoors",
+          "seasonal",
+          "working",
+          "units"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/furrow.jpg"
+    },
+    {
+      "id": "theme:garden",
+      "kind": "theme",
+      "slug": "garden",
+      "name": "Garden",
+      "category": "theme-editorial",
+      "description": "A grower's voice: warm oat paper, a near-black green ink, Vollkorn heads and old-style figures over Hanken Grotesk, hairlines, soft moss and clay tints, the place photographed in daylight, one leaf-green signal.",
+      "format": "theme",
+      "path": "themes/garden.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/garden.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 95.8,
+          "hue": 90
+        },
+        "display": {
+          "class": "roman-serif",
+          "face": "Vollkorn"
+        },
+        "accent": {
+          "band": "chromatic-green",
+          "hue": 140
+        },
+        "posture": "committed",
+        "photo": "natural con=6 sat=-6",
+        "material": "warm oat paper, deep green ink, Vollkorn 600 with old-style figures over Hanken Grotesk, hairlines and soft moss or clay tints, daylight photographs in true colour, one leaf-green signal",
+        "pictured": "Field Guide, Stage hero",
+        "keywords": [
+          "farm",
+          "apiary",
+          "honey",
+          "cidery",
+          "orchard",
+          "pick your own",
+          "apples",
+          "seed",
+          "nursery",
+          "herbalist",
+          "botanical",
+          "tea",
+          "preserves",
+          "single-origin",
+          "seasonal",
+          "harvest",
+          "small-maker",
+          "csa",
+          "provenance",
+          "grown",
+          "field",
+          "homestead"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/garden.jpg"
+    },
+    {
+      "id": "theme:grid",
+      "kind": "theme",
+      "slug": "grid",
+      "name": "Grid",
+      "category": "theme-editorial",
+      "description": "Swiss international style as it is practised now: a white sheet, a blue-black ink, one neo-grotesque in two optical cuts, and two flat colours with separate jobs, an ultramarine that floods fields and a Swiss red that marks the one chosen thing.",
+      "format": "theme",
+      "path": "themes/grid.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/grid.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 97.5,
+          "hue": 90
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Radio Canada Big"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 266
+        },
+        "posture": "full-palette",
+        "photo": "duotone ink paper-2 con=12",
+        "material": "white poster stock, blue-black ink, Radio Canada Big 700 in sentence case over Radio Canada, flat fields of ultramarine and one Swiss red mark, no strokes",
+        "pictured": "Poster Sequence, Poster hero",
+        "keywords": [
+          "identity",
+          "brand system",
+          "wayfinding",
+          "signage",
+          "design studio",
+          "type specimen",
+          "editorial grid",
+          "institution",
+          "museum",
+          "archive",
+          "index",
+          "directory",
+          "systems",
+          "modular",
+          "swiss",
+          "grotesque",
+          "manual",
+          "programme",
+          "poster",
+          "collection"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/grid.jpg",
+      "cluster": "swiss"
+    },
+    {
+      "id": "theme:halftone",
+      "kind": "theme",
+      "slug": "halftone",
+      "name": "Halftone",
+      "category": "theme-playful",
+      "description": "A loud one-colour print voice: butter-cream stock, brown-black ink, a fat Ultra slab for heads, Chivo for everything else, 3px ink rules and one vermilion that prints solid on controls and as a dot screen on a band or a well.",
+      "format": "theme",
+      "path": "themes/halftone.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/halftone.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "light",
+          "L": 96.2,
+          "hue": 94
+        },
+        "display": {
+          "class": "slab-serif",
+          "face": "Ultra"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 33
+        },
+        "posture": "committed",
+        "photo": "natural vib=25 sat=10 con=6",
+        "material": "butter-cream stock, brown-black ink, Ultra over Chivo, three-pixel ink rules and square wells, one vermilion printed solid and through a dot screen, photographs in full colour",
+        "pictured": "Back of the Can, Settled hero",
+        "keywords": [
+          "drinks",
+          "soda",
+          "food brand",
+          "print shop",
+          "zine",
+          "magazine",
+          "record label",
+          "packaging",
+          "campaign",
+          "label",
+          "bottle",
+          "can",
+          "screen print",
+          "bold",
+          "one colour",
+          "retail",
+          "craft",
+          "loud",
+          "fruit",
+          "snack"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/halftone.jpg",
+      "cluster": "print-dot"
+    },
+    {
+      "id": "theme:hedgerow",
+      "kind": "theme",
+      "slug": "hedgerow",
+      "name": "Hedgerow",
+      "category": "theme-editorial",
+      "description": "A dark page that reads as green, not night: a deep leaf-green ground, cream ink, Prata's sharp high-contrast names over a quiet Manrope, plants photographed close in shade, and one chartreuse that marks the controls and the few lines the page draws.",
+      "format": "theme",
+      "path": "themes/hedgerow.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/hedgerow.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "dark",
+          "L": 24,
+          "hue": 158
+        },
+        "display": {
+          "class": "high-contrast-serif",
+          "face": "Prata"
+        },
+        "accent": {
+          "band": "chromatic-green",
+          "hue": 118
+        },
+        "posture": "drenched",
+        "photo": "natural sat=-10 con=8 exp=-8",
+        "material": "deep leaf-green paper, cream ink, Prata heads over Manrope, low-key photographs in true colour, square flat surfaces with pill controls, one chartreuse signal with a moss strength for cream",
+        "pictured": "Field Guide, Poster hero",
+        "keywords": [
+          "distillery",
+          "gin",
+          "brewery",
+          "forager",
+          "botanicals",
+          "nature reserve",
+          "walking",
+          "trail",
+          "seeds",
+          "plants",
+          "nursery",
+          "hedge",
+          "countryside",
+          "field guide",
+          "provenance",
+          "harvest",
+          "batch",
+          "seasonal",
+          "map",
+          "miles"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/hedgerow.jpg"
+    },
+    {
+      "id": "theme:hum",
+      "kind": "theme",
+      "slug": "hum",
+      "name": "Hum",
+      "category": "theme-playful",
+      "description": "Cut paper made by hand, cheerful without turning childish: cream paper with a visible grain and fibre, sheets torn along their edges so a pale core shows, card stock you can press, all lit from the top left.",
+      "format": "theme",
+      "path": "themes/hum.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/hum.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "light",
+          "L": 97,
+          "hue": 95
+        },
+        "display": {
+          "class": "rounded-sans",
+          "face": "Chillax"
+        },
+        "accent": {
+          "band": "chromatic-yellow",
+          "hue": 95
+        },
+        "posture": "full-palette",
+        "photo": "natural vib=12 exp=4",
+        "material": "grained cream paper pulled toward pear-yellow, torn paper edges with a pale fibre core, card-stock controls that press down, blue-black ink, Chillax throughout, three accents that never blend and a mint for growth",
+        "pictured": "Workbench, Settled hero",
+        "keywords": [
+          "daily",
+          "habit",
+          "streak",
+          "practice",
+          "learning",
+          "reading",
+          "curiosity",
+          "mood",
+          "energy",
+          "friendship",
+          "community",
+          "kids",
+          "family",
+          "parents",
+          "school",
+          "game",
+          "puzzle",
+          "creative",
+          "playful",
+          "alive"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/hum.jpg",
+      "cluster": "friendly"
+    },
+    {
+      "id": "theme:ink",
+      "kind": "theme",
+      "slug": "ink",
+      "name": "Ink",
+      "category": "theme-editorial",
+      "description": "A notice printed in plain black: white paper, a black with no hue, Epilogue at 700 for the head and 400 for everything you read, hairline rules, and one teal that means in or open.",
+      "format": "theme",
+      "path": "themes/ink.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/ink.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 99.5,
+          "hue": 100
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Epilogue"
+        },
+        "accent": {
+          "band": "chromatic-teal",
+          "hue": 190
+        },
+        "posture": "restrained",
+        "photo": "muted",
+        "material": "white paper, a black with no hue, Epilogue 700 over Epilogue 400, hairline rules and state pills, one teal that means in",
+        "pictured": "Catalogue, Settled hero",
+        "keywords": [
+          "library",
+          "lending",
+          "community",
+          "civic",
+          "notice board",
+          "catalogue",
+          "rota",
+          "volunteer",
+          "non-profit",
+          "neighbourhood",
+          "borrow",
+          "tools",
+          "repair",
+          "membership",
+          "events",
+          "local",
+          "competent",
+          "monochrome"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/ink.jpg"
+    },
+    {
+      "id": "theme:kiln",
+      "kind": "theme",
+      "slug": "kiln",
+      "name": "Kiln",
+      "category": "theme-atmospheric",
+      "description": "A dark workshop with the kiln door open a crack: a near-black ground, cream ink, Boska's cut high-contrast serif over a plain Geist, and heat only where something is hot.",
+      "format": "theme",
+      "path": "themes/kiln.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/kiln.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "dark",
+          "L": 13,
+          "hue": 40
+        },
+        "display": {
+          "class": "high-contrast-serif",
+          "face": "Boska"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 45
+        },
+        "posture": "full-palette",
+        "photo": "warm sepia=50 sat=-12 con=8 exp=-6",
+        "material": "near-black ground, cream ink, Boska over Geist, smoked wells, photographs lit by the work, a heat ramp that marks temperature, one ember signal",
+        "pictured": "Workbench, Stage hero",
+        "keywords": [
+          "kiln",
+          "ceramics",
+          "pottery",
+          "firing",
+          "glaze",
+          "heat",
+          "temperature",
+          "ceramics studio",
+          "craft",
+          "sensor",
+          "monitor",
+          "hardware",
+          "iot",
+          "warmth",
+          "dark",
+          "glow",
+          "schedule",
+          "workshop"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/kiln.jpg"
+    },
+    {
+      "id": "theme:loom",
+      "kind": "theme",
+      "slug": "loom",
+      "name": "Loom",
+      "category": "theme-editorial",
+      "description": "A weaving studio speaking quietly: ecru paper, Caslon cut for display with a book's calm over a plain Hanken Grotesk, thin rules, and one deep indigo, the colour of dyed yarn, that arrives as a band or a button and never as a wash.",
+      "format": "theme",
+      "path": "themes/loom.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/loom.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 95,
+          "hue": 85
+        },
+        "display": {
+          "class": "roman-serif",
+          "face": "Libre Caslon Display"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 266
+        },
+        "posture": "committed",
+        "photo": "natural sat=-12 con=-4",
+        "material": "ecru paper with sand steps, warm near-black ink, Libre Caslon Display heads and prices over Hanken Grotesk, thin rules and one ink rule, cloth photographed close in window light, one deep indigo",
+        "pictured": "Narrative Workflow, Poster hero",
+        "keywords": [
+          "weaving",
+          "textile",
+          "linen",
+          "wool",
+          "weaving studio",
+          "cloth",
+          "craft",
+          "atelier",
+          "handmade",
+          "natural",
+          "indigo",
+          "fabric",
+          "by the metre",
+          "workshop",
+          "maker",
+          "slow",
+          "commission",
+          "interiors",
+          "samples"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/loom.jpg"
+    },
+    {
+      "id": "theme:lumen",
+      "kind": "theme",
+      "slug": "lumen",
+      "name": "Lumen",
+      "category": "theme-atmospheric",
+      "description": "A night console with a literary voice: a violet-black ground, near-white ink, Instrument Serif set all in lowercase and a step large over Geist, hairline wells and one molten brass signal.",
+      "format": "theme",
+      "path": "themes/lumen.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/lumen.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "dark",
+          "L": 12.5,
+          "hue": 290
+        },
+        "display": {
+          "class": "roman-serif",
+          "face": "Instrument Serif"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 62
+        },
+        "posture": "restrained",
+        "photo": "duotone paper ink-2",
+        "material": "violet-black ground, near-white ink, lowercase Instrument Serif heads a step large over Geist and Geist Mono, hairline wells, a faint blueprint grid, one molten brass signal and one rose verb",
+        "pictured": "Map / Diagram, Settled hero",
+        "keywords": [
+          "inference",
+          "model",
+          "llm",
+          "ai tool",
+          "agent",
+          "voice",
+          "synthesis",
+          "api",
+          "gpu",
+          "serverless",
+          "runtime",
+          "tokens",
+          "latency",
+          "open models",
+          "developer",
+          "research lab",
+          "ml platform",
+          "dev tools",
+          "premium"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/lumen.jpg"
+    },
+    {
+      "id": "theme:manifesto",
+      "kind": "theme",
+      "slug": "manifesto",
+      "name": "Manifesto",
+      "category": "theme-editorial",
+      "description": "A declaration printed on a dark sheet: a warm near-black ground, warm off-white ink, Anton capitals set as big as the width allows and leaded tight, a small plain Public Sans body, hairlines, one heavy ink bar, square edges and one fighting red.",
+      "format": "theme",
+      "path": "themes/manifesto.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/manifesto.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "dark",
+          "L": 13,
+          "hue": 60
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Anton"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 28
+        },
+        "posture": "committed",
+        "photo": "duotone paper ink con=24",
+        "material": "warm near-black ground, warm off-white ink, Anton capitals at poster size leaded tight over a quiet Public Sans body, hairlines, a heavy ink bar and square edges, one fighting red",
+        "pictured": "Manifesto, Ledge hero",
+        "keywords": [
+          "manifesto",
+          "statement",
+          "declaration",
+          "principles",
+          "beliefs",
+          "mission",
+          "movement",
+          "protest",
+          "cause",
+          "campaign",
+          "petition",
+          "activism",
+          "advocacy",
+          "rights",
+          "values",
+          "take a stand",
+          "bold launch",
+          "defiant",
+          "punk",
+          "record label"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/manifesto.jpg",
+      "cluster": "dark-poster"
+    },
+    {
+      "id": "theme:midnight",
+      "kind": "theme",
+      "slug": "midnight",
+      "name": "Midnight",
+      "category": "theme-atmospheric",
+      "description": "A cold, calm night instrument whose blue is the ground itself: deep midnight blue to every edge, cool white ink, Mona Sans at an expanded 300 for the heads like titles on a film, the same family at its normal width for reading, surfaces cut square in steps of lighter blue, one azure signal.",
+      "format": "theme",
+      "path": "themes/midnight.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/midnight.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "dark",
+          "L": 14,
+          "hue": 264
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Mona Sans"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 230
+        },
+        "posture": "committed",
+        "photo": "duotone paper ink-2",
+        "material": "midnight-blue ground to every edge, cool white ink, Mona Sans expanded at 300 over its normal width, square-cut surfaces in lightness steps, photographs as moonlight, one azure signal",
+        "pictured": "Narrative Workflow, Settled hero",
+        "keywords": [
+          "render",
+          "3d",
+          "animation",
+          "vfx",
+          "film",
+          "video",
+          "frames",
+          "pipeline",
+          "generative",
+          "ai tool",
+          "model playground",
+          "dark mode",
+          "nocturnal",
+          "late-night",
+          "after-hours",
+          "overnight",
+          "moody",
+          "cinematic",
+          "cerebral",
+          "calm",
+          "technical",
+          "midnight"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/midnight.jpg"
+    },
+    {
+      "id": "theme:newsprint",
+      "kind": "theme",
+      "slug": "newsprint",
+      "name": "Newsprint",
+      "category": "theme-editorial",
+      "description": "A broadsheet in a browser: pale newsprint stock, warm black ink, a blunt Zilla Slab head over a calm Spectral book serif, hairlines and column rules for ordinary breaks, a double rule for the major ones, and a dried-brick signal that never fills anything.",
+      "format": "theme",
+      "path": "themes/newsprint.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/newsprint.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 94,
+          "hue": 92
+        },
+        "display": {
+          "class": "slab-serif",
+          "face": "Zilla Slab"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 32
+        },
+        "posture": "restrained",
+        "photo": "mono",
+        "material": "pale newsprint stock, warm black ink, Zilla Slab heads over a Spectral body with Libre Franklin agate for listed figures, justified columns under hairline column rules, a double rule, one dried-brick signal",
+        "pictured": "Broadsheet Front, Stage hero",
+        "keywords": [
+          "newspaper",
+          "broadsheet",
+          "journalism",
+          "publication",
+          "magazine",
+          "newsletter",
+          "local news",
+          "op-ed",
+          "opinion",
+          "essay",
+          "longform",
+          "column",
+          "reportage",
+          "press",
+          "gazette",
+          "review",
+          "dispatch",
+          "literary"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/newsprint.jpg",
+      "cluster": "print-paper"
+    },
+    {
+      "id": "theme:overprint",
+      "kind": "theme",
+      "slug": "overprint",
+      "name": "Overprint",
+      "category": "theme-playful",
+      "description": "A two-colour screenprint on cheap stock: grey newsprint, near-black ink, wide heavy Anybody capitals over a plain Archivo body, and two transparent flat inks, teal and orange, that print a deep moss where they cross.",
+      "format": "theme",
+      "path": "themes/overprint.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/overprint.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "light",
+          "L": 91.5,
+          "hue": 92
+        },
+        "display": {
+          "class": "grotesk-heavy",
+          "face": "Anybody"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 212
+        },
+        "posture": "full-palette",
+        "photo": "mono con=30",
+        "material": "grey newsprint stock, near-black ink, wide heavy Anybody capitals over Archivo, flat square fills, a teal pass and an orange pass that print moss where they cross, photographs pulled through one pass",
+        "pictured": "Marquee Hero, Poster hero",
+        "keywords": [
+          "venue",
+          "gigs",
+          "live music",
+          "festival",
+          "music",
+          "label",
+          "print studio",
+          "bar",
+          "club",
+          "poster",
+          "tickets",
+          "events",
+          "nightlife",
+          "two-colour",
+          "screenprint",
+          "punk",
+          "zine",
+          "loud",
+          "listings",
+          "door"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/overprint.jpg"
+    },
+    {
+      "id": "theme:pasteup",
+      "kind": "theme",
+      "slug": "pasteup",
+      "name": "Paste-up",
+      "category": "theme-playful",
+      "description": "A hand-made flyer: kraft board, near-black toner, League Gothic capitals at poster size over a Newsreader galley, white copy paper on real paper shadows, controls on hard ink offsets, one sheet of fluorescent yellow.",
+      "format": "theme",
+      "path": "themes/pasteup.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/pasteup.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "mid",
+          "L": 73,
+          "hue": 70
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "League Gothic"
+        },
+        "accent": {
+          "band": "chromatic-yellow",
+          "hue": 112
+        },
+        "posture": "committed",
+        "photo": "mono con=45",
+        "material": "kraft board, a fibre wash, near-black toner, League Gothic capitals over a Newsreader galley, white copy paper on paper lifts, hard ink offsets, one sheet of fluorescent yellow",
+        "pictured": "Bento Grid, Stage hero",
+        "keywords": [
+          "zine",
+          "fair",
+          "market",
+          "festival",
+          "print fair",
+          "book fair",
+          "exhibitors",
+          "punk",
+          "diy",
+          "collective",
+          "gig",
+          "poster",
+          "workshop",
+          "night market",
+          "flea",
+          "indie",
+          "community",
+          "launch",
+          "loud",
+          "photocopy",
+          "flyer"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/pasteup.jpg"
+    },
+    {
+      "id": "theme:piste",
+      "kind": "theme",
+      "slug": "piste",
+      "name": "Piste",
+      "category": "theme-playful",
+      "description": "A mountain morning in print: snow-white paper, cold near-black ink, Barlow Condensed 800 in capitals for every head and figure, square edges on 2px ink rules, and one cobalt doing all the colour work, from the primary control to a full field.",
+      "format": "theme",
+      "path": "themes/piste.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/piste.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "light",
+          "L": 98.5,
+          "hue": 260
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Barlow Condensed"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 265
+        },
+        "posture": "committed",
+        "photo": "natural con=10 vib=15",
+        "material": "snow-white paper, cold near-black ink, Barlow Condensed 800 caps over Barlow, square edges on 2px ink rules, one cobalt for signal and field",
+        "pictured": "Morning Report, Poster hero",
+        "keywords": [
+          "ski",
+          "mountain",
+          "resort",
+          "snow",
+          "winter",
+          "outdoor",
+          "sport",
+          "trail",
+          "lift",
+          "race",
+          "alpine",
+          "tickets",
+          "season pass",
+          "conditions",
+          "weather",
+          "club",
+          "active",
+          "bold"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/piste.jpg"
+    },
+    {
+      "id": "theme:refract",
+      "kind": "theme",
+      "slug": "refract",
+      "name": "Refract",
+      "category": "theme-atmospheric",
+      "description": "White plaster in strong sun, with light doing the decorating: a net of water caustics moving across the ground, or a prism throwing a spectrum and its bright cusps over the page.",
+      "format": "theme",
+      "path": "themes/refract.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/refract.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "light",
+          "L": 98.2,
+          "hue": 95
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Funnel Display"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 232
+        },
+        "posture": "restrained",
+        "photo": "natural con=3 exp=4",
+        "material": "sunlit white plaster with real light falling across it, water caustics or prism dispersion rendered live, deep pool-blue ink, Funnel Display at a light weight over Funnel Sans, clear surfaces that cast tinted shadows, one water signal",
+        "pictured": "Timetable-led, Stage hero",
+        "keywords": [
+          "pool",
+          "lido",
+          "swim",
+          "spa",
+          "hotel",
+          "resort",
+          "water",
+          "skincare",
+          "sunscreen",
+          "eyewear",
+          "glass",
+          "optics",
+          "light",
+          "daylight",
+          "architecture",
+          "interiors",
+          "studio",
+          "wellness",
+          "bathhouse",
+          "summer",
+          "clean",
+          "calm",
+          "product launch",
+          "hardware"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/refract.jpg",
+      "cluster": "glass"
+    },
+    {
+      "id": "theme:ribbon",
+      "kind": "theme",
+      "slug": "ribbon",
+      "name": "Ribbon",
+      "category": "theme-atmospheric",
+      "description": "The hour before sleep, set quietly: Instrument Sans at 400, upright and tightly set, for every head, Figtree in a soft grey for reading, hairline rules instead of boxes, and the night itself drawn as slow light behind a machined instrument that really sets the levels.",
+      "format": "theme",
+      "path": "themes/ribbon.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/ribbon.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "light",
+          "L": 98.5,
+          "hue": 85
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Instrument Sans"
+        },
+        "accent": {
+          "band": "chromatic-teal",
+          "hue": 190
+        },
+        "posture": "committed",
+        "photo": "muted sepia=14",
+        "material": "warm off-white or blue-black night, Instrument Sans at a quiet weight over Figtree, machined parts lit from above, the hour drawn as light on a generated canvas, one signal",
+        "pictured": "Night Notes, Stage hero, in the two-in-the-morning colourway",
+        "keywords": [
+          "sleep",
+          "sound",
+          "soundscape",
+          "audio",
+          "night",
+          "rest",
+          "calm",
+          "wellness",
+          "meditation",
+          "white noise",
+          "ambient",
+          "listen",
+          "headphones",
+          "wind down",
+          "bedtime",
+          "quiet",
+          "breathing",
+          "app",
+          "subscription"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/ribbon.jpg"
+    },
+    {
+      "id": "theme:rim",
+      "kind": "theme",
+      "slug": "rim",
+      "name": "Rim",
+      "category": "theme-modern-minimal",
+      "description": "An instrument at night: warm black paper, warm off-white ink, Switzer at a medium weight for every head, Geist Mono for every number that measures something, square surfaces parted by hairlines, an orange signal and a sky-blue second, and the earth shown the way an instrument sees it, from straight above.",
+      "format": "theme",
+      "path": "themes/rim.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/rim.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "dark",
+          "L": 9,
+          "hue": 75
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Switzer"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 45
+        },
+        "posture": "committed",
+        "photo": "natural sat=-20 con=10",
+        "material": "warm black paper, warm off-white ink, Switzer 500 with Geist Mono for every measurement, square hairline surfaces, the earth photographed straight down, an orange signal and a sky-blue second",
+        "pictured": "Map / Diagram, Ledge hero",
+        "keywords": [
+          "space",
+          "satellite",
+          "earth observation",
+          "orbit",
+          "imagery",
+          "ground station",
+          "telemetry",
+          "hardware",
+          "schedule",
+          "utc",
+          "infrastructure",
+          "mission",
+          "sensor",
+          "monitoring",
+          "instrument",
+          "night",
+          "dark",
+          "measured"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/rim.jpg"
+    },
+    {
+      "id": "theme:riso",
+      "kind": "theme",
+      "slug": "riso",
+      "name": "Riso",
+      "category": "theme-editorial",
+      "description": "A small-press run from two drums and nothing else: bright uncoated stock, a medium blue drum that sets every word and a fluorescent pink drum for the fills, crossing in a purple nobody mixed.",
+      "format": "theme",
+      "path": "themes/riso.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/riso.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 97,
+          "hue": 90
+        },
+        "display": {
+          "class": "grotesk-heavy",
+          "face": "Cabinet Grotesk"
+        },
+        "accent": {
+          "band": "chromatic-pink",
+          "hue": 356
+        },
+        "posture": "committed",
+        "photo": "duotone ink paper-2 con=14",
+        "material": "bright uncoated stock and no black, a medium blue drum for every word, a fluorescent pink drum for the fills, purple where they cross, Cabinet Grotesk 800 over Literata, grain, one word a hair out of register",
+        "pictured": "Job Sheet, Stage hero",
+        "keywords": [
+          "risograph",
+          "riso",
+          "print studio",
+          "print fair",
+          "zine",
+          "small press",
+          "poster",
+          "art book",
+          "spot colour",
+          "two colour",
+          "indie press",
+          "diy",
+          "handmade",
+          "prints",
+          "open studio"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/riso.jpg"
+    },
+    {
+      "id": "theme:solstice",
+      "kind": "theme",
+      "slug": "solstice",
+      "name": "Solstice",
+      "category": "theme-editorial",
+      "description": "An almanac's warmth: cream paper, warm brown ink, Yeseva One heads, Archivo for the reading and Archivo Narrow for the small print, gold hairlines doing the ruling, square surfaces on hard paper shadows, photographs taken in low late light, and one vermilion signal.",
+      "format": "theme",
+      "path": "themes/solstice.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/solstice.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 94,
+          "hue": 80
+        },
+        "display": {
+          "class": "high-contrast-serif",
+          "face": "Yeseva One"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 24
+        },
+        "posture": "restrained",
+        "photo": "warm high=-12",
+        "material": "cream paper, warm brown ink, Yeseva One over Archivo and Archivo Narrow, gold hairlines and hard paper shadows, photographs in low warm light, one vermilion signal",
+        "pictured": "Midsummer, Stage hero",
+        "keywords": [
+          "farm",
+          "orchard",
+          "cider",
+          "perry",
+          "winery",
+          "harvest",
+          "seasonal",
+          "food",
+          "almanac",
+          "produce",
+          "vineyard",
+          "calendar",
+          "market",
+          "craft drink",
+          "label",
+          "bottle",
+          "rural",
+          "slow",
+          "sun",
+          "midsummer"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/solstice.jpg",
+      "cluster": "warm-serif"
+    },
+    {
+      "id": "theme:specimen",
+      "kind": "theme",
+      "slug": "specimen",
+      "name": "Specimen",
+      "category": "theme-editorial",
+      "description": "A foundry's material: warm oat paper, warm near-black ink, Bodoni Moda 400 pinned at its highest optical size so the hairlines thin to a razor against the stems, a Geist body beneath it, square 1px rules and one ink-blue signal.",
+      "format": "theme",
+      "path": "themes/specimen.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/specimen.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 96.5,
+          "hue": 82
+        },
+        "display": {
+          "class": "high-contrast-serif",
+          "face": "Bodoni Moda"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 262
+        },
+        "posture": "restrained",
+        "photo": "duotone ink paper con=8",
+        "material": "warm oat paper, warm near-black ink, razor-hairline Bodoni Moda over Geist, square 1px rules, one ink-blue signal that also draws the metric guides",
+        "pictured": "Specimen Book, Poster hero",
+        "keywords": [
+          "typography",
+          "type specimen",
+          "foundry",
+          "letterform",
+          "portfolio",
+          "editorial",
+          "magazine",
+          "essay",
+          "type studio",
+          "agency",
+          "brand story",
+          "print",
+          "publication",
+          "craft",
+          "considered",
+          "literary"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/specimen.jpg"
+    },
+    {
+      "id": "theme:spore",
+      "kind": "theme",
+      "slug": "spore",
+      "name": "Spore",
+      "category": "theme-atmospheric",
+      "description": "A cellar at night: coffee-ground black warmed toward brown, a warm grain on its wells, parchment Young Serif over Instrument Sans, soft pills, photographs lit only by lamps and candles, and one oyster-mushroom pink.",
+      "format": "theme",
+      "path": "themes/spore.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/spore.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "dark",
+          "L": 15,
+          "hue": 60
+        },
+        "display": {
+          "class": "roman-serif",
+          "face": "Young Serif"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 30
+        },
+        "posture": "committed",
+        "photo": "warm con=6 exp=-4",
+        "material": "coffee-ground black with a warm grain, parchment ink, Young Serif over Instrument Sans, soft pills and grained wells, photographs lit by lamps and candles, one oyster pink",
+        "pictured": "Photographic, Stage hero",
+        "keywords": [
+          "grower",
+          "mushroom",
+          "fungi",
+          "farm",
+          "food",
+          "producer",
+          "fermentation",
+          "wine",
+          "natural wine",
+          "wine bar",
+          "bottle shop",
+          "cellar",
+          "preserves",
+          "dark",
+          "culture",
+          "night market",
+          "harvest",
+          "subscription",
+          "small batch"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/spore.jpg"
+    },
+    {
+      "id": "theme:sport",
+      "kind": "theme",
+      "slug": "sport",
+      "name": "Sport",
+      "category": "theme-editorial",
+      "description": "A results-sheet material: cool concrete paper, blue-black ink, Saira Condensed 800 in capitals over an Albert Sans body, big condensed figures and JetBrains Mono times, hairlines and one heavier bar rule, and volt as the only colour.",
+      "format": "theme",
+      "path": "themes/sport.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/sport.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 98,
+          "hue": 250
+        },
+        "display": {
+          "class": "display-condensed",
+          "face": "Saira Condensed"
+        },
+        "accent": {
+          "band": "chromatic-volt",
+          "hue": 120
+        },
+        "posture": "restrained",
+        "photo": "duotone ink paper con=20",
+        "material": "cool concrete paper, blue-black ink, uppercase Saira Condensed over Albert Sans, condensed figures and mono times, two-weight rules, one volt fill",
+        "pictured": "Stat-Led, Poster hero",
+        "keywords": [
+          "running",
+          "marathon",
+          "race",
+          "training",
+          "fitness",
+          "gym",
+          "team",
+          "league",
+          "fixtures",
+          "standings",
+          "scoreboard",
+          "athletics",
+          "performance",
+          "splits",
+          "sportswear",
+          "club",
+          "match",
+          "tournament"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/sport.jpg"
+    },
+    {
+      "id": "theme:squeeze",
+      "kind": "theme",
+      "slug": "squeeze",
+      "name": "Squeeze",
+      "category": "theme-playful",
+      "description": "A market stall in colour: a forest-green ground with real chroma, warm white ink, Gabarito's round, heavy heads and figures over a sturdy Manrope, soft tiles a step lighter or deeper, fruit photographed bright and close, juicy peach controls and one warm-white card.",
+      "format": "theme",
+      "path": "themes/squeeze.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/squeeze.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "mid",
+          "L": 41,
+          "hue": 154
+        },
+        "display": {
+          "class": "geometric-sans",
+          "face": "Gabarito"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 56
+        },
+        "posture": "drenched",
+        "photo": "natural vib=12 con=4",
+        "material": "forest-green paper with real chroma, warm white ink, Gabarito 800 heads and figures over Manrope, soft rounded tiles a step lighter or deeper, fruit photographed bright and close, juicy peach controls",
+        "pictured": "Bento Grid, Stage hero",
+        "keywords": [
+          "fruit",
+          "food box",
+          "grocer",
+          "market",
+          "delivery",
+          "weekly",
+          "seasonal",
+          "farm shop",
+          "subscription",
+          "produce",
+          "veg box",
+          "cheerful",
+          "family",
+          "treats",
+          "stall",
+          "orchard",
+          "local",
+          "fresh"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/squeeze.jpg"
+    },
+    {
+      "id": "theme:sticker",
+      "kind": "theme",
+      "slug": "sticker",
+      "name": "Sticker",
+      "category": "theme-playful",
+      "description": "A print shop's material: a warm off-white sheet, warm black ink, Bowlby One SC capitals over Sofia Sans, hot pink and lime fills, every raised surface edged in a thick white die-cut on a hard offset shadow.",
+      "format": "theme",
+      "path": "themes/sticker.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/sticker.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "light",
+          "L": 95.7,
+          "hue": 82
+        },
+        "display": {
+          "class": "display-heavy",
+          "face": "Bowlby One SC"
+        },
+        "accent": {
+          "band": "chromatic-magenta",
+          "hue": 2
+        },
+        "posture": "full-palette",
+        "photo": "natural vib=15 con=5",
+        "material": "warm off-white paper, warm black ink, Bowlby One SC over Sofia Sans, white die-cut borders on hard offset shadows, hot pink, lime and ink fills set with type",
+        "pictured": "Bento Grid, Stage hero",
+        "keywords": [
+          "stickers",
+          "print",
+          "merch",
+          "shop",
+          "maker",
+          "creator",
+          "diy",
+          "craft",
+          "vinyl",
+          "packaging",
+          "labels",
+          "small business",
+          "ecommerce",
+          "fun",
+          "loud",
+          "pink",
+          "cut",
+          "ship",
+          "order"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/sticker.jpg"
+    },
+    {
+      "id": "theme:studio",
+      "kind": "theme",
+      "slug": "studio",
+      "name": "Studio",
+      "category": "theme-editorial",
+      "description": "A design studio's proof sheet, caught mid-build: cool studio-white paper with an ink dot grid and a fine grain, blue-black ink, Hedvig Letters Serif for the heads (a contemporary serif with a calligraphic hand in its joins), a clean Geist body, crop marks at the corners of every printed piece, and one cadmium orange that both fills the action and draws the construction: metric guides, clear-space boxes, redlines.",
+      "format": "theme",
+      "path": "themes/studio.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/studio.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 97.2,
+          "hue": 215
+        },
+        "display": {
+          "class": "roman-serif",
+          "face": "Hedvig Letters Serif"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 52
+        },
+        "posture": "restrained",
+        "photo": "natural",
+        "material": "cool studio-white proof paper with an ink dot grid and grain, blue-black ink, Hedvig Letters Serif heads over Geist, crop marks on every printed piece, orange construction guides, the work photographed in true colour, one cadmium-orange signal",
+        "pictured": "Portfolio Index, Ledge hero",
+        "keywords": [
+          "design studio",
+          "creative studio",
+          "branding",
+          "brand identity",
+          "art direction",
+          "agency",
+          "portfolio",
+          "case study",
+          "selected work",
+          "editorial design",
+          "typography",
+          "creative direction",
+          "graphic design",
+          "considered",
+          "curatorial"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/studio.jpg"
+    },
+    {
+      "id": "theme:terminal",
+      "kind": "theme",
+      "slug": "terminal",
+      "name": "Terminal",
+      "category": "theme-atmospheric",
+      "description": "The page is the terminal surface, and its pictures are printed in type.",
+      "format": "theme",
+      "path": "themes/terminal.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/terminal.md",
+      "theme": {
+        "genre": "atmospheric",
+        "paper": {
+          "band": "dark",
+          "L": 12.5,
+          "hue": 150
+        },
+        "display": {
+          "class": "mono",
+          "face": "Martian Mono"
+        },
+        "accent": {
+          "band": "chromatic-green",
+          "hue": 142
+        },
+        "posture": "committed",
+        "photo": "duotone paper accent con=20",
+        "material": "a near-black ground with a green cast in three lightness steps, pale phosphor ink and one bright phosphor signal with a dim wash of itself, every glyph Martian Mono with heads wide and text narrow, and pictures printed in the page's own glyphs: a photograph rendered as a grid of characters taken from the product's own text, dim cells small, bright cells full, stirred by the cursor",
+        "pictured": "Session, Split hero",
+        "keywords": [
+          "cli",
+          "terminal",
+          "shell",
+          "command-line",
+          "tui",
+          "self-hosted",
+          "open-source",
+          "binary",
+          "ssh",
+          "sysadmin",
+          "devops",
+          "homelab",
+          "install script",
+          "package manager",
+          "repl",
+          "dotfiles",
+          "developer tool",
+          "phosphor"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/terminal.jpg",
+      "cluster": "terminal-mono"
+    },
+    {
+      "id": "theme:terrazzo",
+      "kind": "theme",
+      "slug": "terrazzo",
+      "name": "Terrazzo",
+      "category": "theme-modern-minimal",
+      "description": "A materials library's specification voice: off-white paper, near-black ink, wide Syne heads over a plain Onest body, JetBrains Mono for the codes and the millimetres, and white card surfaces ruled in 2px ink over a hard offset, holding the surfaces themselves photographed flat-on and close.",
+      "format": "theme",
+      "path": "themes/terrazzo.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/terrazzo.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 96,
+          "hue": 82
+        },
+        "display": {
+          "class": "geometric-sans",
+          "face": "Syne"
+        },
+        "accent": {
+          "band": "warm",
+          "hue": 38
+        },
+        "posture": "restrained",
+        "photo": "natural con=4",
+        "material": "off-white paper, white card surfaces ruled in ink over a hard offset, wide Syne heads over Onest, JetBrains Mono for codes and millimetres, surfaces photographed flat-on in true colour, rust the one signal",
+        "pictured": "Sample Drawer, Ledge hero",
+        "keywords": [
+          "materials",
+          "library",
+          "architects",
+          "samples",
+          "catalogue",
+          "surfaces",
+          "stone",
+          "timber",
+          "terrazzo",
+          "ceramic",
+          "tile",
+          "interiors",
+          "interiors studio",
+          "showroom",
+          "specification",
+          "swatches",
+          "supplier",
+          "drawer",
+          "photography",
+          "tactile"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/terrazzo.jpg"
+    },
+    {
+      "id": "theme:ultraviolet",
+      "kind": "theme",
+      "slug": "ultraviolet",
+      "name": "Ultraviolet",
+      "category": "theme-modern-minimal",
+      "description": "A producer's tool in one pigment: a paper tinted the same hue as the ink, one saturated violet in two strengths, Outfit set lowercase on every head and control, pills throughout, depth held to a hairline, photographs pulled into the violet.",
+      "format": "theme",
+      "path": "themes/ultraviolet.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/ultraviolet.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 95,
+          "hue": 300
+        },
+        "display": {
+          "class": "geometric-sans",
+          "face": "Outfit"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 290
+        },
+        "posture": "committed",
+        "photo": "tint accent con=10",
+        "material": "lavender paper or a violet-black night, Outfit set lowercase over Onest, hairline pills, one saturated violet in two strengths, photographs pulled into the violet",
+        "pictured": "Workbench, Stage hero, in the night colourway",
+        "keywords": [
+          "music",
+          "audio",
+          "stems",
+          "remix",
+          "dj",
+          "producer",
+          "player",
+          "streaming",
+          "tempo",
+          "playlist",
+          "creator",
+          "app",
+          "consumer",
+          "lowercase",
+          "violet",
+          "sound",
+          "beats",
+          "recording studio"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/ultraviolet.jpg"
+    },
+    {
+      "id": "theme:vantage",
+      "kind": "theme",
+      "slug": "vantage",
+      "name": "Vantage",
+      "category": "theme-modern-minimal",
+      "description": "Reality capture at night: the thing itself, a site, a ridge, an object, rendered as tens of thousands of measured points on a blue-black ground, turning slowly while a sweep passes through and lights them.",
+      "format": "theme",
+      "path": "themes/vantage.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/vantage.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "dark",
+          "L": 13.5,
+          "hue": 235
+        },
+        "display": {
+          "class": "grotesk-sans",
+          "face": "Geologica"
+        },
+        "accent": {
+          "band": "chromatic-lime",
+          "hue": 126
+        },
+        "posture": "restrained",
+        "photo": "muted con=6 sat=-20",
+        "material": "blue-black ground, a live point cloud of the real thing as the hero's light, a sweep that lights it, pale steel ink, Geologica with sharpened corners at a light weight, hairline frames with corner ticks, one lime signal for what was found",
+        "pictured": "Feature Ledger, Stage hero",
+        "keywords": [
+          "lidar",
+          "scan",
+          "survey",
+          "mapping",
+          "3d",
+          "spatial",
+          "point cloud",
+          "robotics",
+          "autonomy",
+          "drone",
+          "construction",
+          "digital twin",
+          "geospatial",
+          "measurement",
+          "sensor",
+          "inspection",
+          "engineering",
+          "heritage",
+          "digitisation",
+          "infrastructure",
+          "reality capture",
+          "terrain"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/vantage.jpg"
+    },
+    {
+      "id": "theme:vellum",
+      "kind": "theme",
+      "slug": "vellum",
+      "name": "Vellum",
+      "category": "theme-editorial",
+      "description": "An old printing house: a parchment ground, umber ink, Grenze Gotisch for the heads, its roman sibling Grenze for a sentence set large, a plain Hanken Grotesk for everything read, hairlines and double rules, and ultramarine as the one pigment.",
+      "format": "theme",
+      "path": "themes/vellum.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/vellum.md",
+      "theme": {
+        "genre": "editorial",
+        "paper": {
+          "band": "light",
+          "L": 94,
+          "hue": 82
+        },
+        "display": {
+          "class": "blackletter",
+          "face": "Grenze Gotisch"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 268
+        },
+        "posture": "committed",
+        "photo": "warm con=6",
+        "material": "parchment paper, a long tan fibre wash on bands, umber ink, Grenze Gotisch heads over Hanken Grotesk with Grenze roman for statements, hairline and double rules, one ultramarine pigment",
+        "pictured": "Trade Ledger, Poster hero",
+        "keywords": [
+          "roastery",
+          "coffee",
+          "bakery",
+          "wine",
+          "cellar",
+          "apothecary",
+          "bookshop",
+          "press",
+          "letterpress",
+          "guild",
+          "heritage",
+          "artisan",
+          "manuscript",
+          "parchment",
+          "edition",
+          "tasting",
+          "vintage",
+          "craft",
+          "old world",
+          "slow"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/vellum.jpg"
+    },
+    {
+      "id": "theme:wayfind",
+      "kind": "theme",
+      "slug": "wayfind",
+      "name": "Wayfind",
+      "category": "theme-modern-minimal",
+      "description": "Public signage set as a page: cool grey paper, blue-black ink, every glyph in Chivo Mono (a sober grotesk cut to the fixed cell of a departure board), square 2px ink borders, ink plates that carry a sign, cobalt for what is live and amber for figures.",
+      "format": "theme",
+      "path": "themes/wayfind.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/wayfind.md",
+      "theme": {
+        "genre": "modern-minimal",
+        "paper": {
+          "band": "light",
+          "L": 95.5,
+          "hue": 250
+        },
+        "display": {
+          "class": "mono",
+          "face": "Chivo Mono"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 264
+        },
+        "posture": "committed",
+        "photo": "natural sat=-12 con=10",
+        "material": "cool grey paper, blue-black ink, Chivo Mono throughout, square 2px ink borders, ink plates, cobalt for what is live, amber for figures on ink",
+        "pictured": "Station Sequence, Stage hero",
+        "keywords": [
+          "transit",
+          "metro",
+          "rail",
+          "station",
+          "wayfinding",
+          "departures",
+          "timetable",
+          "live",
+          "map",
+          "commute",
+          "city",
+          "platform",
+          "signage",
+          "logistics",
+          "status",
+          "operations",
+          "schedule",
+          "mobility",
+          "travel",
+          "trip",
+          "journey",
+          "itinerary",
+          "booking",
+          "flights",
+          "airport"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/wayfind.jpg"
+    },
+    {
+      "id": "theme:werkstatt",
+      "kind": "theme",
+      "slug": "werkstatt",
+      "name": "Werkstatt",
+      "category": "theme-playful",
+      "description": "A design school's printed prospectus: a warm putty ground, near-black ink, heavy Jost capitals over a plain Karla body, square 2px and 3px ink rules, and three flat primaries, blue, red and yellow, each with one job.",
+      "format": "theme",
+      "path": "themes/werkstatt.md",
+      "source": "hallmark",
+      "upstream_path": "skills/hallmark/references/themes/werkstatt.md",
+      "theme": {
+        "genre": "playful",
+        "paper": {
+          "band": "mid",
+          "L": 84,
+          "hue": 82
+        },
+        "display": {
+          "class": "geometric-sans",
+          "face": "Jost"
+        },
+        "accent": {
+          "band": "cool",
+          "hue": 264
+        },
+        "posture": "full-palette",
+        "photo": "mono",
+        "material": "warm putty ground with a lighter well, near-black ink, Jost 700 capitals and numerals over Karla, square 2px and 3px ink rules that box cells, flat ultramarine, vermilion and yellow primaries",
+        "pictured": "Catalogue, Settled hero",
+        "keywords": [
+          "school",
+          "programme",
+          "workshop",
+          "maker",
+          "course",
+          "bootcamp",
+          "academy",
+          "apply",
+          "admissions",
+          "tuition",
+          "timetable",
+          "bauhaus",
+          "craft",
+          "design education",
+          "design school",
+          "residency",
+          "cohort",
+          "prospectus"
+        ]
+      },
+      "preview_url": "https://raw.githubusercontent.com/Nutlope/hallmark/8f6969f8922caabde9de1784959eae11ddf68073/skills/hallmark/references/themes/werkstatt.jpg"
     },
     {
       "id": "scene:bi",
