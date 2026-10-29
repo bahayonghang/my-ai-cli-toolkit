@@ -1,20 +1,21 @@
 ---
-name: design-md
+name: design-atlas
 description: "Pick a design language from a categorized offline catalog of 153 entries (84 brands, 68 styles, 1 business scene), write it as DESIGN.md in the project root, then implement or restyle production UI from that file and verify it in a running page. Use when the user asks to list or compare design styles, build a page in the style of a known product (Linear, Vercel, Stripe, Claude, Apple), choose a look such as minimal, editorial, glassmorphism, airy glass, 轻盈毛玻璃, brutalism, or retro, build a BI, analytics, 经营分析, or 数据看板 workbench, create or update DESIGN.md, or implement UI from an existing DESIGN.md / 列出设计风格、按场景选设计、BI 工作台、生成 DESIGN.md、按 DESIGN.md 实施 UI. Not for HTML reports, plans, or slide-like artifacts (use html-artifact); not for recreating a screenshot or mockup (use image-to-ui-skill); not for backend or non-UI work."
 category: development-workflows
 tags:
   - design-system
+  - design-atlas
   - design-md
   - frontend
   - ui
   - design-tokens
   - accessibility
-version: 0.2.0
+version: 0.3.0
 argument-hint: "[entry-id-or-style-request]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-# design-md
+# design-atlas
 
 Turn a design choice into a project-root `DESIGN.md`, then build UI that follows it.
 

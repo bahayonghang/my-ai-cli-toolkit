@@ -226,7 +226,7 @@ class ApplyTests(unittest.TestCase):
         self.assertTrue(text.startswith("---\n"))
         closing = text.index("\n---\n", 4) + len("\n---\n")
         self.assertTrue(
-            text[closing:].startswith("<!-- design-md: entry=brand:vercel;")
+            text[closing:].startswith("<!-- design-atlas: entry=brand:vercel;")
         )
         self.assertIn("license=MIT", text[closing : closing + 300])
 
@@ -235,11 +235,11 @@ class ApplyTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         text = (self.root / "DESIGN.md").read_text(encoding="utf-8")
         comment = next(
-            line for line in text.splitlines() if line.startswith("<!-- design-md:")
+            line for line in text.splitlines() if line.startswith("<!-- design-atlas:")
         )
         self.assertEqual(
             comment,
-            "<!-- design-md: entry=style:airy-glass; source=first-party; license=MIT -->",
+            "<!-- design-atlas: entry=style:airy-glass; source=first-party; license=MIT -->",
         )
         self.assertNotIn("awesome-design-md", comment)
         self.assertNotIn("awesome-design-skills", comment)
@@ -250,7 +250,7 @@ class ApplyTests(unittest.TestCase):
             run("apply", "brand:kraken", "--root", str(self.root)).returncode, 0
         )
         text = (self.root / "DESIGN.md").read_text(encoding="utf-8")
-        self.assertTrue(text.startswith("<!-- design-md: entry=brand:kraken;"))
+        self.assertTrue(text.startswith("<!-- design-atlas: entry=brand:kraken;"))
 
     def test_apply_refuses_existing_file_without_force(self) -> None:
         existing = self.root / "design.md"
@@ -278,7 +278,7 @@ class ApplyTests(unittest.TestCase):
         text = (self.root / "DESIGN.md").read_text(encoding="utf-8")
         self.assertTrue(
             text.startswith(
-                "<!-- design-md: entry=scene:bi; source=first-party; license=MIT -->\n"
+                "<!-- design-atlas: entry=scene:bi; source=first-party; license=MIT -->\n"
                 "# 企业级 B 端 Web 工作台 UI/UX 设计规范\n"
             )
         )

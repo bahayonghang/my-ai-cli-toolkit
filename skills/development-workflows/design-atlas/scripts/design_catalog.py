@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""List, search, show, and apply design-md catalog entries.
+"""List, search, show, and apply design-atlas catalog entries.
 
 Commands:
   list   [--kind brand|style|scene] [--category ID] [--format text|json]
@@ -45,7 +45,7 @@ def print_grouped(index: dict, items: list[dict]) -> None:
     styles = sum(item["kind"] == "style" for item in items)
     scenes = sum(item["kind"] == "scene" for item in items)
     print(
-        f"# design-md catalog: {len(items)} entries ({brands} brand, {styles} style, {scenes} scene)"
+        f"# design-atlas catalog: {len(items)} entries ({brands} brand, {styles} style, {scenes} scene)"
     )
     for category in sorted(index["categories"], key=lambda c: c["order"]):
         group = [item for item in items if item["category"] == category["id"]]
@@ -81,11 +81,11 @@ def resolve(entries: list[dict], wanted: str) -> dict:
 def provenance(index: dict, entry: dict) -> str:
     if entry["source"] == "first-party":
         return (
-            f"<!-- design-md: entry={entry['id']}; source=first-party; license=MIT -->"
+            f"<!-- design-atlas: entry={entry['id']}; source=first-party; license=MIT -->"
         )
     source = index["sources"][entry["source"]]
     return (
-        f"<!-- design-md: entry={entry['id']}; source={source['repo']}@{source['commit'][:7]}; "
+        f"<!-- design-atlas: entry={entry['id']}; source={source['repo']}@{source['commit'][:7]}; "
         f"license={source['license']} -->"
     )
 

@@ -157,9 +157,9 @@ python "<yao-meta-dir>/scripts/trust_check.py" "<skill-dir>" `
 - Bad: publish `Scripts: 0` as proof that a PowerShell package has no executable
   risk.
 
-## design-md first-party catalog entries
+## design-atlas first-party catalog entries
 
-`skills/development-workflows/design-md/scripts/build_catalog.py` rebuilds
+`skills/development-workflows/design-atlas/scripts/build_catalog.py` (formerly `design-md`) rebuilds
 `assets/catalog/brands/*.md`, `assets/catalog/styles/*.md`, and `index.json`
 from the two upstream checkouts. It then deletes any `brands/*.md`,
 `styles/*.md`, or `scenes/**/*.md` file that is not in that output. It does

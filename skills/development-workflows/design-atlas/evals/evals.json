@@ -1,5 +1,5 @@
 {
-  "skill_name": "design-md",
+  "skill_name": "design-atlas",
   "evals": [
     {
       "id": 1,
@@ -79,7 +79,7 @@
       "expected_output": "Routing-negative. The request is a shareable HTML report artifact, so it routes to html-artifact instead of design-md.",
       "files": [],
       "assertions": [
-        "Does not trigger design-md",
+        "Does not trigger design-atlas",
         "Routes to html-artifact for report-style HTML output"
       ]
     },
@@ -89,7 +89,7 @@
       "expected_output": "Routing-negative. The request recreates a reference image, so it routes to image-to-ui-skill instead of design-md.",
       "files": [],
       "assertions": [
-        "Does not trigger design-md",
+        "Does not trigger design-atlas",
         "Routes to image-to-ui-skill for screenshot or mockup recreation"
       ]
     },

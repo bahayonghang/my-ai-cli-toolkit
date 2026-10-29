@@ -104,8 +104,8 @@ export const zhSkillsSidebar = [
         "link": "/skills/development-workflows/codex-review"
       },
       {
-        "text": "design-md",
-        "link": "/skills/development-workflows/design-md"
+        "text": "design-atlas",
+        "link": "/skills/development-workflows/design-atlas"
       },
       {
         "text": "html-artifact",
@@ -299,8 +299,8 @@ export const enSkillsSidebar = [
         "link": "/en/skills/development-workflows/codex-review"
       },
       {
-        "text": "design-md",
-        "link": "/en/skills/development-workflows/design-md"
+        "text": "design-atlas",
+        "link": "/en/skills/development-workflows/design-atlas"
       },
       {
         "text": "html-artifact",

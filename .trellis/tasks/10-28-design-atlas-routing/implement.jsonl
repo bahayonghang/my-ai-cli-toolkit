@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Repo skill contracts: <skill-dir> paths, frontmatter, evals schema, design catalog first-party rules"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "development-workflows suite conventions: script paths, allowed-tools, evals"}
+{"file": ".trellis/tasks/10-28-design-atlas-upgrade/design.md", "reason": "Cross-task contracts for design-atlas (index schema, routing, anti-slop tiers, workflow)"}
+{"file": ".trellis/tasks/10-28-design-atlas-upgrade/research/hallmark-analysis.md", "reason": "Hallmark inventory, dedup verdicts, sloplint coupling facts"}
+{"file": "ref/repo/hallmark/skills/hallmark/references/themes/index.json", "reason": "Upstream theme metadata used for routing"}

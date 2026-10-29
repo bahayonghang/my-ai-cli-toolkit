@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild the design-md catalog from upstream checkouts.
+"""Rebuild the design-atlas catalog from upstream checkouts.
 
 Maintainer tool. The skill runtime never reads the upstream checkouts.
 

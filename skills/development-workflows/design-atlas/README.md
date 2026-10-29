@@ -1,4 +1,6 @@
-# design-md
+# design-atlas
+
+> 原名 `design-md`。0.3.0 起改名为 `design-atlas`；项目里生成的文件仍叫 `DESIGN.md`。旧的 `--skill design-atlas` 安装命令已失效，请改用下面的命令。
 
 从一个离线、分类的设计目录里选定设计语言，写成项目根目录的 `DESIGN.md`，再按它实施前端 UI，并在运行中的页面上核对。
 
@@ -28,7 +30,7 @@ just install-projects
 或从 GitHub 安装：
 
 ```bash
-npx skills add https://github.com/bahayonghang/my-ai-cli-toolkit --skill design-md
+npx skills add https://github.com/bahayonghang/my-ai-cli-toolkit --skill design-atlas
 ```
 
 ## 示例请求
@@ -44,10 +46,10 @@ npx skills add https://github.com/bahayonghang/my-ai-cli-toolkit --skill design-
 ## 命令
 
 ```bash
-python skills/development-workflows/design-md/scripts/design_catalog.py list
-python skills/development-workflows/design-md/scripts/design_catalog.py search 极简
-python skills/development-workflows/design-md/scripts/design_catalog.py show brand:linear.app
-python skills/development-workflows/design-md/scripts/design_catalog.py apply style:minimal --root .
+python skills/development-workflows/design-atlas/scripts/design_catalog.py list
+python skills/development-workflows/design-atlas/scripts/design_catalog.py search 极简
+python skills/development-workflows/design-atlas/scripts/design_catalog.py show brand:linear.app
+python skills/development-workflows/design-atlas/scripts/design_catalog.py apply style:minimal --root .
 ```
 
 `apply` 写入 `<root>/DESIGN.md`（UTF-8、LF），并在 frontmatter 后加一行来源注释。根目录已有任何大小写形式的 `design.md` 时，命令拒绝写入（退出码 3）；加 `--force` 会先把旧文件改名为 `design.md.bak-<时间戳>` 再写入。
@@ -102,7 +104,7 @@ python skills/development-workflows/design-md/scripts/design_catalog.py apply st
 许可证原文在 `assets/catalog/LICENSES/`。维护者更新目录：
 
 ```bash
-python skills/development-workflows/design-md/scripts/build_catalog.py --design-md <awesome-design-md-checkout> --design-skills <awesome-design-skills-checkout> --out skills/development-workflows/design-md/assets/catalog
+python skills/development-workflows/design-atlas/scripts/build_catalog.py --design-md <awesome-design-md-checkout> --design-skills <awesome-design-skills-checkout> --out skills/development-workflows/design-atlas/assets/catalog
 ```
 
 任何条目缺少类别时构建失败，且不写入文件；新类别映射在 `assets/catalog/categories.json` 中维护。
