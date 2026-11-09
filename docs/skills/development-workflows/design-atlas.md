@@ -8,8 +8,8 @@ UI design skill with an offline catalog of 202 design languages (84 brands, 67 s
 
 ## 触发场景
 
-- the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, or audit a page for AI slop / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味
-- Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), or backend work
+- the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格
+- Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), 3D scene or SVG asset work, code animation or video, or backend work
 
 ## 元数据
 
@@ -17,7 +17,7 @@ UI design skill with an offline catalog of 202 design languages (84 brands, 67 s
 | --- | --- |
 | 名称 | `design-atlas` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.3.0` |
+| 版本 | `0.4.0` |
 | 标签 | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility`, `anti-ai-slop` |
 
 ## 安装命令
@@ -34,9 +34,9 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill design-atlas
 | `skills/development-workflows/design-atlas/assets` | 目录 | 213 | 素材资源 |
 | `skills/development-workflows/design-atlas/evals` | 目录 | 1 | 评测样例 |
 | `skills/development-workflows/design-atlas/README.md` | 文件 | 1 | 顶层文件 |
-| `skills/development-workflows/design-atlas/references` | 目录 | 8 | 引用资料 |
+| `skills/development-workflows/design-atlas/references` | 目录 | 9 | 引用资料 |
 | `skills/development-workflows/design-atlas/scripts` | 目录 | 3 | 可执行脚本 |
-| `skills/development-workflows/design-atlas/tests` | 目录 | 27 | 自动化测试 |
+| `skills/development-workflows/design-atlas/tests` | 目录 | 33 | 自动化测试 |
 
 ## 脚本、引用与测试资源
 

@@ -8,6 +8,8 @@ Gate numbers follow [Nutlope/hallmark](https://github.com/nutlope/hallmark) (MIT
 
 ## 1. Tiers
 
+Ids prefixed `DA` are design-atlas's own series. Hallmark numbers and `F*` finish ids stay in their own series.
+
 | Tier   | What it covers                                                                                                                                                          | Unanswered grade | May it be waived?                                                                                     |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------- |
 | Floor  | Access, correctness, honesty. No good page breaks these on purpose.                                                                                                     | `FAIL`           | Never. A waiver naming a Floor gate is rejected and the gate still fails.                             |
@@ -51,7 +53,7 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 11    | Reflex | J     | The same lift or scale on every card, an image that scales or rotates on hover, a hover state on something that does nothing.                              | One signal per element, on the container.                                            |
 | 12    | Reflex | M     | Bounce or overshoot easing on UI state (`cubic-bezier` with a y value outside 0 to 1, `animate-bounce`).                                                   | An exponential ease-out.                                                             |
 | 15    | Floor  | M     | A focus ring that transitions in.                                                                                                                          | The ring appears at once.                                                            |
-| 19    | House  | M     | Copy tells: placeholder people (Jane Doe), stock company names (Acme, Nexus), buzzwords (seamless, robust, unleash, supercharge, effortless, world-class), Latin em or en dashes between words, a repeated "Not X. Y." cadence, stock second actions (Learn more, Get started, Book a demo). | Say what the product does in its own nouns.                                          |
+| 19    | House  | M     | Copy tells: placeholder people (Jane Doe), stock company names (Acme, Nexus), buzzwords (seamless, robust, unleash, supercharge, effortless, world-class; 赋能, 无缝, 一站式, 全方位, 释放…潜能, 开启…之旅, 颠覆性, 极致体验, 重新定义), Latin em or en dashes between words, a repeated "Not X. Y." cadence, stock second actions (Learn more, Get started, Book a demo, 了解更多). | Say what the product does in its own nouns.                                          |
 | 26a   | Floor  | M     | Interactive elements and no `:focus-visible` / `:focus` styling anywhere, or `outline: none` on focus with nothing drawn instead.                            | A ring with 3:1 contrast, shown at once.                                             |
 | 26b   | Reflex | M     | No `:active` styling anywhere, or form controls and no `:disabled` styling.                                                                                | Style every state in `design-system-core.md` section 4.                              |
 | 27    | Floor  | M     | Keyframes or transform transitions with no `prefers-reduced-motion` fallback (Tailwind: no `motion-reduce:` / `motion-safe:`).                              | Add the fallback.                                                                    |
@@ -78,7 +80,7 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | 53    | Floor  | M     | CSS-only radio tabs at `position: absolute; top: 0` with no script guard, so the page jumps on each click.                                                | Radios in flow at zero size, or a handler using `preventScroll`.                     |
 | 54    | House  | M+J   | The eyebrow: short inert text above a heading that only announces it ("Features", "01 / The tour"), in any shape.                                         | Open the section another way; if the line carries a fact, keep it as a fact.          |
 | 55a   | Floor  | M     | An uppercase display heading that can wrap, with `line-height` under 1.0.                                                                                 | 1.0 or more.                                                                         |
-| 58    | House  | J     | More than about 80 words in one 900px-tall screen, or a hero with more than two text blocks before its actions.                                            | Headline, one sentence, actions; cut the rest or move it down.                       |
+| 58    | House  | J     | More than about 80 words in one 900px-tall screen, or a hero with more than two text blocks before its actions.                                            | Headline, one sentence, actions; cut restatement, not a constraint, an error, or a price. |
 | 62    | Floor  | M     | Content hidden at rest (`opacity: 0`, `visibility: hidden`) by a reveal class that needs a script to show it.                                              | Visible by default; hide only under a `.js` class or use `@starting-style`.          |
 | 63    | House  | M+J   | Template punctuation: meta strings joined by middle dots (`A · B · C`), an arrow glued to link text (`Read more →`), decorative status dots, `WORD - fragment` labels. | Line breaks, columns, rules; a verb as the label.                                    |
 | 64    | Reflex | M     | Monospace on labels, captions, meta rows, or table heads when neither the display nor the body face is monospace and the text is not code or a figure.     | Labels in the body face, a step smaller, normal case.                                |
@@ -99,6 +101,16 @@ Only gates this skill adopts appear here. Clause letters (`a`, `b`, `i`) are sep
 | F21   | Finish | J     | A skipped heading level.                                                                                                                                   | Use consecutive levels.                                                              |
 | F23   | Finish | J     | A document without `lang`, `<title>`, or a meta description.                                                                                              | Add them.                                                                            |
 | F26   | Finish | J     | A paragraph ending on one word, or a heading ending on a stub, at 375 or 1280.                                                                            | Rewrite, or `text-wrap: pretty` on copy.                                             |
+| DA1   | House  | J     | A subtitle, helper line, or card description that restates its heading or the button beside it.                                                            | Say it once; let grouping, position, and spacing carry the relation. Keep text that adds a constraint, an error, or a consequence. |
+| DA2   | Floor  | J     | De-cluttering removed or hid information a visitor needs: a form label, an input limit, an error, a price, consent or legal text, a risk or irreversible-action warning, a credit; or moved it into a hover-only tooltip. | Restore it as visible text, reachable by keyboard and touch. |
+| DA3   | Reflex | J     | One screen of an ordinary product page uses more than about five type sizes, or sizes outside the `DESIGN.md` scale, while the reading order is still unclear. | Fewer sizes; separate levels with weight, spacing, and contrast. Editorial and data-dense pages may need more levels. |
+| DA4   | Finish | J     | An icon that is box-centred but looks off its label; nested corners where the inner radius equals the outer radius across a gap.                         | Align the visible shape; inner radius = outer radius - gap when `DESIGN.md` names no inner radius. |
+| DA5   | Reflex | J     | Low-frequency settings or extra choices stand before the page's main task; repeated confirmations on a reversible step.                                   | Required input first; optional settings behind a findable disclosure. Keep confirmation for authorisation, payment, deletion, and irreversible actions. |
+| DA6   | Reflex | J     | Every card staggers in before it can be read, or decoration keeps moving while nothing happens.                                                           | Keep motion that shows a state change, guides attention once, or tells the content's story; remove the rest. |
+| DA7   | Floor  | J     | A headline, price, figure, or caption baked into a raster image or outlined paths.                                                                       | Live text over or beside the image. A logo is exempt; brand logos remain under `brand-boundary.md`. |
+| DA8   | Reflex | J     | Inline icons in one set drawn differently: mixed `viewBox`, stroke width, caps, or fill style; a monochrome icon with a hard-coded fill; detail unreadable at its rendered size. | One drawing rule per set; `currentColor` for monochrome icons; check at the rendered size. |
+
+Gate 19 matches the Chinese words in that row on visible text, with no word boundary. A longer ordinary word that only contains a listed piece is not a hit: `天赋能力`, `禀赋能力`, and `天衣无缝`. A literal unseamed product is not a hit either (`无缝钢管`, `无缝焊接`, `无缝内衣`, `无缝针织`, `无缝服装`, `无缝袜`). `全方位` matches only before a slogan object (`服务`, `解决`, `方案`, `体验`, `护航`, `覆盖`, `升级`, `打通`, `整合`, `赋能`), so `全方位检查` stays quiet. `重新定义` matches a slogan and does not match the ordinary verb (`重新定义函数`, `重新定义快捷键`, `重新定义为`). The `释放…潜能` gap does not cross `按钮`, `点击`, `查看`, or `设置`. `打造`, `助力`, `智能`, and `高效` are not on the list. `了解更多` matches only as the whole label of a link or button, after a trailing arrow is removed.
 
 ## 4. Declared material
 
@@ -135,21 +147,25 @@ Rules the script applies:
 - Every rejection prints `NOTE <gate> … waiver rejected: <why>`. The original finding keeps its grade.
 - Waivers cover the whole project that `DESIGN.md` covers. There is no per-file waiver. More than three waivers is reported as a `NOTE`: a house style belongs in the `DESIGN.md` body, not in exceptions.
 
+## Keep list
+
+Anti-slop fixes never remove: form labels and their association, input limits and formats, error and recovery text, prices and fees, consent and legal text, risk and irreversible-action warnings, credits and image attributions, the user's declared brand choices. A finding that seems to require removing one of these is fixed by moving or restyling it, not by deleting it. Gate 58's word ceiling counts these words but is met by cutting restatement, not constraints.
+
 ## 6. Judged checklist
 
-Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`, `fixed: <what>`, or `n/a: <why>` for each id in the report.
+Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`, `fixed: <what>`, or `n/a: <why>` for each id in the report. The Keep list above names text you may move or restyle and may not delete.
 
 - [ ] **8** Could this sequence of sections sit under a different business's name? If yes, reorder by what the visitor came to do.
 - [ ] **9** Are sections separated in more than one way?
 - [ ] **46a** Is every number, quote, rating, customer name, and logo supplied by the user or the project? Remove or mark any that are not.
-- [ ] **54** For each short line above a heading: delete it and reread. If nothing but a name for the next block was lost, it was an eyebrow. Keep it only when it carries a fact, a destination, or an identifier.
+- [ ] **54** For each short line above a heading: delete it and reread. If nothing but a name for the next block was lost, it was an eyebrow. Keep it only when it carries a fact, a destination, or an identifier. On a Chinese page, an English uppercase line such as `PLATFORM` above `潮汐时刻表` is the same test.
 - [ ] **58** Count words in each 900px-tall screen at 1440 wide, labels and table cells included. About 80 is the ceiling; the hero is a headline, one sentence, and its actions.
-- [ ] **63** Each remaining single middle dot: is it in a byline, a caption, or a live state? Otherwise replace it.
+- [ ] **63** Each remaining single middle dot: is it in a byline, a caption, or a live state? Otherwise replace it. On a Chinese page, a habit string such as `产品 · 价格 · 文档` is the same tell.
 - [ ] **69** Is any price, date, time, or count printed in four or more sections?
 - [ ] **70** Does every form either post to a real endpoint or say that nothing was sent?
 - [ ] **84** Does the product already run? Then the page shows captures of it, not a drawn mock.
 - [ ] **85** Is the last section before the footer an email sign-up? Keep it only when a mailing list is the visitor's goal.
-- [ ] **3** Do three equal icon tiles stand where one stronger composition would do?
+- [ ] **3** Do three equal icon tiles stand where one stronger composition would do? Related figures split into separate shadowed tiles also count; put them in one section and separate them with alignment and hairlines. On a Chinese page, three shadowed tiles each holding one figure (注册用户, 本月订单, 平均时长) count the same way.
 - [ ] **6b** Is the hero four things stacked on one centre line?
 - [ ] **11** Does each element have at most one hover signal, on the container, and only when it is interactive?
 - [ ] **29** Is there a blurred orb, halo, or coloured glow behind content?
@@ -170,6 +186,14 @@ Answer each item after the script reaches `0 FAIL` and `0 REFLEX`. Write `pass`,
 - [ ] **F21** Heading levels consecutive?
 - [ ] **F23** `lang`, `<title>`, and meta description present?
 - [ ] **F26** No one-word last lines in copy at 375 and 1280?
+- [ ] **DA1** Does a subtitle, helper line, or card description restate its heading or the button beside it? Say it once. Keep text that adds a constraint, an error, or a consequence.
+- [ ] **DA2** Did de-cluttering remove or hide a form label, an input limit, an error, a price, consent or legal text, a risk or irreversible-action warning, or a credit, including by moving it into a hover-only tooltip? Restore it as visible text, reachable by keyboard and touch.
+- [ ] **DA3** Does one screen of an ordinary product page use more than about five type sizes, or sizes outside the `DESIGN.md` scale, while the reading order is still unclear? Editorial and data-dense pages may need more levels.
+- [ ] **DA4** Is an icon box-centred but optically off its label, or do nested corners keep the inner radius equal to the outer radius across a gap? When `DESIGN.md` names no inner radius, inner radius = outer radius - gap.
+- [ ] **DA5** Do low-frequency settings or extra choices stand before the page's main task, or does a reversible step ask for confirmation twice? Keep confirmation for authorisation, payment, deletion, and irreversible actions.
+- [ ] **DA6** Does every card stagger in before it can be read, or does decoration keep moving while nothing happens? Keep motion that shows a state change, guides attention once, or tells the content's story.
+- [ ] **DA7** Is a headline, price, figure, or caption baked into a raster image or outlined paths? Use live text over or beside the image. A logo is exempt; brand logos stay under `brand-boundary.md`.
+- [ ] **DA8** Are inline icons in one set drawn differently (mixed `viewBox`, stroke width, caps, or fill), is a monochrome icon given a hard-coded fill instead of `currentColor`, or is detail unreadable at its rendered size?
 
 ## 7. Do not invent facts
 

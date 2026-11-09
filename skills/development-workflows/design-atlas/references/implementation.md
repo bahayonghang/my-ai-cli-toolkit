@@ -64,6 +64,12 @@ Example (plain CSS):
 - For `scene:bi`, the page follows the four information-architecture layers, the chart section, the table section, the accessibility section, and the delivery order in section 12. The opening 「角色与设计目标」 note is part of the design source. It is not a second skill workflow; keep following this file and `SKILL.md`. Component states still come from `design-system-core.md`.
 - Use real or clearly marked placeholder content. Do not invent customers, metrics, or testimonials.
 - Use the entry's imagery rules. Without real images, use neutral placeholders with correct aspect ratios.
+- When the request covers more than one page, build and verify the main page's first screen before spreading the same treatment. Do not wait for approval of that screen unless the user asked to review it first.
+- A 3D canvas, video, code animation, or illustration on the page is content: House and Reflex judgements apply to the UI around it, Floor gates still apply to the embed element, and modelling, lighting, and drawing inside the embed stay out of scope (`references/restyle.md`).
+
+### Motion spec
+
+Write each motion down before coding it: trigger, object, property or path, duration and easing token, end state, repeat, a touch alternative when the trigger is hover, and the `prefers-reduced-motion: reduce` result. Scroll-triggered motion plays once after a threshold and then stays in its end state. Scroll-linked motion follows scroll progress from a defined start to a defined end, and it has a resting state when scrolling stops. State the narrow-viewport behavior for both. Use CSS, or motion the project already depends on. Do not add a library in order to style the page, and do not claim the result is faster or smoother without a measurement.
 
 ### Anti-slop build rules
 

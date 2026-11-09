@@ -2,9 +2,9 @@
 
 > 原名 `design-md`，0.3.0 起改名为 `design-atlas`。项目里生成的文件仍叫 `DESIGN.md`。旧的 `--skill design-md` 安装命令已失效，请改用下面的命令。
 
-一个完整的 UI 设计 skill：从离线设计目录里为项目选定设计语言（项目没指定时自动选），写成项目根目录的 `DESIGN.md`，按它实施前端 UI，并用 anti-AI-slop 门禁检查结果，避免页面看起来像 AI 生成的模板。
+一个完整的 UI 设计 skill：从离线设计目录里为项目选定设计语言（项目没指定时自动选），写成项目根目录的 `DESIGN.md`，按它实施或改稿前端 UI，并用 anti-AI-slop 门禁检查结果，避免页面看起来像 AI 生成的模板。
 
-A complete UI design skill: pick a design language from an offline catalog (automatically when the project has none), write it as the project-root `DESIGN.md`, build UI from it, and check the result against anti-AI-slop gates.
+A complete UI design skill: pick a design language from an offline catalog (automatically when the project has none), write it as the project-root `DESIGN.md`, build or restyle UI from it, and check the result against anti-AI-slop gates.
 
 目录共 202 个可见条目：84 个受真实产品启发的品牌、67 个通用风格、50 个材质主题（来自 hallmark）、1 个业务场景。
 
@@ -16,9 +16,10 @@ A complete UI design skill: pick a design language from an offline catalog (auto
 - 选一种通用风格或材质主题（极简、编辑排版、riso 双色印刷、报纸、终端、玻璃拟态等）
 - 按业务场景做页面，例如 BI、经营分析或数据看板工作台
 - 给项目创建、定制或更换 `DESIGN.md`，按已有 `DESIGN.md` 实施或改造页面
+- 改已有页面或组件：保留当前外观并去掉模板感，或换成另一种设计语言，同时保留业务逻辑和必要信息
 - 审查已有页面的“AI 模板味”（只出报告，不改文件）
 
-不适用：文案或段落的去 AI 味改写（用 `write`）；HTML 报告、计划、幻灯片式产出物（用 `html-artifact`）；截图或设计稿复刻（用 `image-to-ui-skill`）；非 UI 任务。
+不适用：文案或段落的去 AI 味改写（用 `write`）；HTML 报告、计划、幻灯片式产出物（用 `html-artifact`）；截图或设计稿的忠实复刻（用 `image-to-ui-skill`；只借鉴点名的网格、字号比例等属性仍用本技能）；3D 场景建模与灯光、独立 SVG 资产优化、代码动画或视频；非 UI 任务。
 
 ## 安装
 
@@ -45,6 +46,7 @@ npx skills add https://github.com/bahayonghang/my-ai-cli-toolkit --skill design-
 - 做一个经营分析用的 BI 工作台，按场景规范生成 DESIGN.md
 - Implement the landing page from our existing DESIGN.md
 - audit ./site — 看看这个落地页有没有 AI 模板味，先别改代码
+- 这个后台首页太像模板了，按品牌继续用 Inter，别动表单和业务逻辑
 
 ## 命令
 
@@ -77,6 +79,8 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - **Finish**：工艺细节，只报告。
 
 `slop_check.mjs` 检查 33 个可机械判断的 gate；其余由 agent 按判断清单检查，并做一次新鲜上下文复核（`references/review-prompt.md`）。
+
+一方判断项 `DA1`–`DA8` 只登记层级，由判断清单回答，不改变 `slop_check` 的退出码。gate 19 同时检查一组高精度中文套话和套路次要行动（与英文 buzzword 同为 House，可在 `DESIGN.md` 豁免）；页面因此被命中时，退出码会从 0 变为 1。这是 0.4.0 的有意变化。
 
 ## 类别概览
 
@@ -122,6 +126,8 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - 主题条目的颜色是 OKLCH；需要兼容旧浏览器时由项目自行加 hex 回退。主题预览图不随包提供，条目里的 `preview_url` 指向上游固定 commit。
 - 主题是“材质”，不规定页面结构；hallmark 的页面构成库、图片库、截图采集与渲染层检查没有引入。
 - `slop_check.mjs` 只做静态检查，不启动浏览器。
+- 3D 场景建模与灯光、独立 SVG 资产优化、代码动画与视频不在本技能范围内。页面里嵌着画布、视频或插画时，仍可改外围界面，不改嵌入物自身的建模、灯光或绘制。
+- `DA1`–`DA8` 不改变 `slop_check` 退出码。gate 19 的中文套话命中会使退出码从 0 变为 1。
 - 目录是离线快照，不自动跟随上游更新。
 
 ## 来源与许可
@@ -131,6 +137,8 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | `3b60532` | MIT, Copyright (c) 2026 VoltAgent |
 | [bergside/awesome-design-skills](https://github.com/bergside/awesome-design-skills) | `f631a09` | MIT, Copyright (c) 2026 Bergside |
 | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | `8f6969f` | MIT（主题、texture 配方，以及 anti-slop gate 与 sloplint 检查逻辑的移植） |
+
+[LearnPrompt/vibecoding-humanizer](https://github.com/LearnPrompt/vibecoding-humanizer) commit `51f8b09`：思路参考；上游未附许可证，未复制文本。
 
 许可证原文在 `assets/catalog/LICENSES/`。维护者更新目录：
 

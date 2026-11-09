@@ -213,6 +213,21 @@ not delete `first-party/` or `LICENSES/`.
 - Running `slop_check.mjs` on the whole skill directory exits 1 by design,
   because `tests/fixtures/slop/` holds deliberately failing pages.
 
+### Restyle branch and judged DA gates (design-atlas 0.4.0)
+
+- `DA1`–`DA8` are design-atlas-owned ids, class `J`. Register each one in
+  `TIERS`, `CLASSES`, and the `references/anti-slop.md` gate table, and do not
+  add a detector. They must not change `slop_check` exit codes. Floor gates
+  `DA2` and `DA7` reject `waive` with a NOTE; a Reflex `DA*` waiver is
+  accepted. Lock both outcomes in `tests/fixtures/slop/da-waiver/`.
+- Gate 19 Chinese hits fail at House, same as the English hits, and stay
+  waivable. Do not use a bare substring when the token sits inside an ordinary
+  word (`天赋能力`, `天衣无缝`, `重新定义函数`, `全方位检查`). Lock one slogan
+  hit and one ordinary miss. Do not add `打造`, `助力`, `智能`, or `高效`.
+- Restyle rules live in `references/restyle.md` and must be listed in the
+  SKILL.md References table. Do not copy text from
+  LearnPrompt/vibecoding-humanizer; that checkout ships no license.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

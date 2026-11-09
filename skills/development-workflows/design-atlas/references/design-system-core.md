@@ -39,6 +39,16 @@ For every interactive component, define these states where they apply: default, 
 - State the token for spacing, type, and color of each part. Example: "button-primary: background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button}`, height 40px".
 - Cover edge cases: long labels, empty states, overflow, and right-to-left text when the product needs it.
 
+### Icons
+
+Inline icons that belong to one set follow one drawing rule.
+
+- Share one `viewBox`, stroke width, line cap, and fill style across the set.
+- A monochrome icon uses `currentColor`. Do not recolor a multi-color illustration as if it were a monochrome icon.
+- When you optimize an SVG, keep every `id`, `class`, and `defs` entry that CSS, script, or animation still references.
+- Check the icon at the size it renders. A shape that is unreadable at that size does not belong in the set.
+- A decorative icon is `aria-hidden="true"`. An icon-only button or link has an accessible name.
+
 ## 5. Responsive rules
 
 - Define breakpoints with a name, a width range, and the layout change at each range.
@@ -67,6 +77,7 @@ Run this list in code review or after implementation:
 - [ ] The entry's Do's and Don'ts hold on every new screen.
 - [ ] No brand asset violates `brand-boundary.md`.
 - [ ] `anti-slop.md` holds: `slop_check` reports 0 FAIL, every REFLEX is fixed or waived in `DESIGN.md`, and the judged checklist (section 6) is walked.
+- [ ] Inline icons in one set follow one drawing rule (DA8): a shared `viewBox`, stroke, and caps; monochrome icons use `currentColor`; each icon is readable at its rendered size.
 
 ## Source
 

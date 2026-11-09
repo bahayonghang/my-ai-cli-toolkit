@@ -239,6 +239,35 @@ test('a Floor waiver is refused and gate 27 stays FAIL', () => {
   assert.equal(r.code, 1);
 });
 
+test('gate 19 reports Chinese buzzwords and 了解更多, and stays quiet on ordinary Chinese', () => {
+  const bad = check(join(FIX, 'cjk-copy-fail'));
+  const msgs = hits(bad, '19', ['FAIL']).map((f) => f.message);
+  assert.ok(hits(bad, '19').every((f) => f.grade === 'FAIL' && f.tier === 'house'), bad.output);
+  for (const word of ['赋能', '无缝', '一站式', '全方位', '释放团队潜能', '开启协作之旅', '颠覆性', '极致体验', '重新定义', '了解更多']) {
+    assert.ok(msgs.some((m) => m.includes(word)), `missing ${word}:\n${bad.output}`);
+  }
+  assert.ok(msgs.some((m) => /stock action label/.test(m) && m.includes('了解更多')), bad.output);
+  const failHtml = readFileSync(join(FIX, 'cjk-copy-fail', 'index.html'), 'utf8');
+  assert.ok(failHtml.includes('聊天赋能'), 'fail fixture must keep the 聊天赋能 case');
+  const passHtml = readFileSync(join(FIX, 'cjk-copy-pass', 'index.html'), 'utf8');
+  for (const phrase of ['天赋能力', '禀赋能力', '天衣无缝', '无缝钢管', '无缝内衣', '无缝焊接', '重新定义快捷键', '重新定义一个函数', '重新定义为', '全方位检查', '释放按钮', '释放。潜能', '开启。之旅', '打造', '助力', '智能', '高效', '了解更多细节']) {
+    assert.ok(passHtml.includes(phrase), `pass fixture dropped ${phrase}`);
+  }
+  const good = check(join(FIX, 'cjk-copy-pass'));
+  assert.equal(hits(good, '19').length, 0, good.output);
+});
+
+test('waive DA3 is accepted and Floor waive DA2 is rejected', () => {
+  const r = check(join(FIX, 'da-waiver'));
+  const notes = r.findings.filter((f) => f.grade === 'NOTE');
+  assert.equal(notes.length, 1, r.output);
+  assert.equal(notes[0].gate, 'DA2');
+  assert.equal(notes[0].rule, 'waiver-rejected');
+  assert.match(notes[0].message, /waiver rejected/);
+  assert.match(notes[0].message, /Floor/);
+  assert.equal(r.code, 0, r.output);
+});
+
 test('waiver reason must relate to the page', () => {
   const design = PLAIN_DESIGN + '\n## Anti-slop Waivers\n\n- waive 1 · --font-display · quarterly velocity metrics demand neutrality everywhere\n';
   withProject({ 'DESIGN.md': design, 'index.html': page({ tokens: '--font-display: "Inter", sans-serif;' }) }, (dir) => {

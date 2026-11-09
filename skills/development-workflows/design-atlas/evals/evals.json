@@ -179,6 +179,78 @@
         "Builds one token layer from the DESIGN.md oklch tokens",
         "Runs slop_check.mjs and reports the summary line"
       ]
+    },
+    {
+      "id": 16,
+      "prompt": "这个后台首页看着太 AI 了，品牌规定用 Inter，帮我去去模板味，别动业务逻辑和表单。",
+      "expected_output": "Skill takes the Restyle branch, captures the existing look into DESIGN.md and declares Inter as the display face, keeps form labels and validation, compares before and after at the same viewport, and reports what was kept, what changed, and what is unverified.",
+      "files": [],
+      "assertions": [
+        "Uses the Restyle branch rather than building a new page from a fresh catalog pick",
+        "Captures the existing look into DESIGN.md and declares Inter as a brand material",
+        "Keeps form labels and validation text",
+        "Does not change business logic",
+        "Compares before and after at the same viewport and reports kept, changed, and unverified items"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "把这个落地页改稿，换一个更有辨识度的风格，内容和价格别动。",
+      "expected_output": "Skill takes the Restyle branch and changes the look with route and apply, using --force when a DESIGN.md already exists, and keeps prices and the existing content.",
+      "files": [],
+      "assertions": [
+        "Uses the Restyle branch and selects a new entry with route and apply",
+        "Uses apply --force when a DESIGN.md already exists",
+        "Keeps prices and fees visible (DA2)",
+        "Does not rewrite or remove the page content"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "audit ./admin，看看哪些说明文字是多余的，先别改代码。",
+      "expected_output": "Skill takes the Audit branch, reports redundant explanation as DA1, includes a Keep section, changes no files, and does not conclude that the page was AI-generated.",
+      "files": [],
+      "assertions": [
+        "Uses the Audit branch and runs slop_check.mjs on ./admin",
+        "Reports redundant explanation under DA1",
+        "Includes a Keep section listing required information and deliberate choices to leave alone",
+        "Does not modify any file",
+        "Does not conclude that the page was AI-generated"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "落地页首屏嵌了一个 Three.js 模型，帮我把页面去 AI 味。",
+      "expected_output": "Skill takes the Restyle branch, judges House and Reflex tells only on the UI around the canvas, applies Floor gates 33 and 27 to the canvas element, and does not change the scene lighting or modelling.",
+      "files": [],
+      "assertions": [
+        "Uses the Restyle branch on the page",
+        "Judges House and Reflex findings only on the UI around the embed",
+        "Applies gates 33 and 27 to the canvas element",
+        "Does not change the Three.js scene lighting or modelling"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "这个 Three.js 浮空岛场景里的树在飘，帮我修正接触关系和光影，保留 low-poly。",
+      "expected_output": "Routing-negative. The request is 3D scene modelling and lighting, so it does not trigger design-atlas.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas",
+        "Does not write DESIGN.md or run slop_check",
+        "Treats 3D scene modelling and lighting as out of scope"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "做一支 15 秒动态图形 showreel，写代码逐帧渲染成视频。",
+      "expected_output": "Routing-negative. The request is code animation rendered to video, so it does not trigger design-atlas.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas",
+        "Does not write DESIGN.md or edit a web UI",
+        "Treats code animation and video as out of scope"
+      ]
     }
   ]
 }
