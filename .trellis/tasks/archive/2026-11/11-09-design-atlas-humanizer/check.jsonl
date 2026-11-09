@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "Repo skill contracts and design-atlas gate table/TIERS sync rule"}
+{"file": "skills/development-workflows/AGENTS.md", "reason": "Suite conventions to verify: description limits, evals schema, interface"}
+{"file": ".trellis/tasks/11-09-design-atlas-humanizer/research/humanizer-analysis.md", "reason": "Verify no humanizer text copied and scope stays within option B"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Avoid duplicating existing gates when adding DA gates"}
