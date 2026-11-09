@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 73
-- **Last Active**: 2026-10-26
+- **Total Sessions**: 74
+- **Last Active**: 2026-11-09
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~266 | Active |
+| `journal-2.md` | ~297 | Active |
 | `journal-1.md` | ~1999 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 74 | 2026-11-09 | 吸收 humanizer 到 design-atlas 0.4.0 | `fbd7a5d1` | `dev` |
 | 73 | 2026-10-26 | design-md 默认工程规范与场景接入分析 | `3d40e899` | `dev` |
 | 72 | 2026-10-25 | 为 design-md 增加 BI 场景设计 | `538f86b5960d901359ace68ee8d13f286a33b906` | `dev` |
 | 71 | 2026-10-21 | 加入轻盈毛玻璃风格 | `7e3e6b8ef9e3e43438017408cb9387fa222d13b9` | `dev` |
