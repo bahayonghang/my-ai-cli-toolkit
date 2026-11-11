@@ -15,7 +15,14 @@ python "<skill-dir>/scripts/design_catalog.py" route --prompt "<the user's reque
   dependencies), `pyproject.toml`, `Cargo.toml`, the first 4 KB of the README,
   CSS token blocks (`:root`, `@theme`, `[data-theme]`), Tailwind config, and
   whether `DESIGN.md` exists. Anything missing or unreadable is listed in
-  `notes`.
+  `notes`. The `palette` object carries the paper band and the accent token
+  (`accent_var`, `accent_hue`, `accent_C`, `accent_hex`). When the token
+  layer has an accent but no readable paper token, `band`, `paper_var`, and
+  `L` are `null`; `route` then gives no `palette` point. `accents` lists up
+  to 8 accent-named tokens in name order (`var`, `hue`, `C`, `hex`); the
+  colourway dial uses the first one with enough chroma and lightness, so a
+  near-gray `--accent` does not hide a chromatic `--primary`, and a near-black
+  `--primary` (OKLCH L under 0.25) is not read as a brand colour.
 - `route` prints the top 3 with a score breakdown
   (`kw`, `genre`, `scene`, `palette`, `deps`), the matched keywords, and
   `confidence: high|low`. Options: `--n N`, `--reroll K` (skip the entries
@@ -58,6 +65,13 @@ Picks
   phrase about the material.
 - Alternates are #2 and #3 from the same `route` run. They come from
   different clusters, so they are real alternatives.
+- When the chosen entry has a colourway dial (`style:airy-glass`), add the
+  `palette:` line that `apply` printed, as the name and the reason:
+  `- Palette: sky — accent --color-primary #2563EB. Switch with --palette <preset|hue:N>.`
+  In Chinese: `- 色板：sky（依据：--color-primary #2563EB），可用 --palette 切换。`
+  Say so when the reason is `fallback`. Pass the user's words to `apply` as
+  `--prompt`, so content keywords can pick the colourway when the project
+  has no accent token.
 - When `confidence` is `low`, add one line:
   `- Match: weak (signals: <signals_used or "prompt only">). Confirm or name another entry.`
   In Chinese: `- 匹配度：低（依据：…），建议确认，或直接点名其他条目。`
@@ -69,6 +83,10 @@ Picks
 - "show me others" / "再换一批": `route ... --reroll 1` (then 2, …), and present
   the new three.
 - Any named entry: `show` it, then `apply ... --force`.
+- "换个色板" / "make it blue" on `style:airy-glass`:
+  `apply style:airy-glass --root <project-root> --force --palette <preset|hue:N>`.
+  Presets: `mint`, `sky`, `apricot`, `slate`. `palette style:airy-glass --root
+  <project-root>` previews the choice and its contrast table without writing.
 
 ## How scores are built
 

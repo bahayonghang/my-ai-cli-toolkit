@@ -251,6 +251,32 @@
         "Does not write DESIGN.md or edit a web UI",
         "Treats code animation and video as out of scope"
       ]
+    },
+    {
+      "id": 22,
+      "prompt": "用轻盈毛玻璃做一个运营后台首页。项目里已经有 :root { --color-primary: #2563EB; --color-bg: #ffffff }，主色别换。",
+      "expected_output": "Skill applies style:airy-glass with the default auto colourway. apply reads --color-primary #2563EB, picks the blue sky colourway instead of the mint default, and writes DESIGN.md with that colourway's measured contrast table. The Picks block names the colourway and cites --color-primary as the reason.",
+      "files": [],
+      "assertions": [
+        "Runs apply style:airy-glass through the skill-dir path and does not hand-edit hex values",
+        "The colourway follows the project's blue accent: DESIGN.md does not contain the mint defaults #E7F6F1, #187A56, or #6D4BD6",
+        "Reports the palette line from apply, with --color-primary #2563EB as the reason",
+        "DESIGN.md carries the measured contrast table for the chosen colourway, every text pair at 4.5:1 or above",
+        "Keeps the airy-glass material rules: one blur on paper only, opaque fallback, solid wells"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "轻盈毛玻璃风格，做一个餐饮会员系统的后台，项目是新的，还没有任何配色。",
+      "expected_output": "Skill applies style:airy-glass and passes the user's words as --prompt. With no accent token in the project, apply matches the content keyword 餐饮 to the warm apricot colourway and writes DESIGN.md with its measured contrast table. The reply states the colourway, the keyword reason, and how to switch with --palette.",
+      "files": [],
+      "assertions": [
+        "Passes the user's request to apply as --prompt, or previews with the palette command first",
+        "Picks the warm apricot colourway from the content keyword, not the mint fallback",
+        "States the reason for the colourway (the 餐饮 keyword) and that --palette switches it",
+        "Does not invent a brand color or edit the colourway hex values by hand",
+        "DESIGN.md records the colourway in the palette comment under the provenance comment"
+      ]
     }
   ]
 }

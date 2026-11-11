@@ -778,6 +778,19 @@ class HallmarkThemeTests(unittest.TestCase):
         self.assertTrue((self.out / "themes" / "alpha.md").is_file())
         self.assertTrue((self.out / "overlays" / "dedup.json").is_file())
 
+    def test_rebuilds_keep_the_palette_overlay(self) -> None:
+        palettes = self.out / "overlays" / "palettes.json"
+        data = b'{"style:plain": {"default": "mint"}}\n'
+        palettes.write_bytes(data)
+        full = run_full(self.design_md, self.skills, self.out, self.hallmark)
+        self.assertEqual(full.returncode, 0, full.stderr)
+        self.assertEqual(palettes.read_bytes(), data)
+        self.assertEqual(run_themes_only(self.hallmark, self.out).returncode, 0)
+        self.assertEqual(palettes.read_bytes(), data)
+        without = run_full(self.design_md, self.skills, self.out, None)
+        self.assertEqual(without.returncode, 0, without.stderr)
+        self.assertEqual(palettes.read_bytes(), data)
+
     def test_build_without_hallmark_keeps_themes(self) -> None:
         self.assertEqual(
             run_full(self.design_md, self.skills, self.out, self.hallmark).returncode, 0

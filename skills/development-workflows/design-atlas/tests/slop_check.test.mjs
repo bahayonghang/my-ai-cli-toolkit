@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { run, TIERS, CLASSES, IMPLEMENTED, parseYaml } from '../scripts/slop_check.mjs';
+import { run, TIERS, CLASSES, IMPLEMENTED, parseYaml, DECLARED, readDesign, parseColor } from '../scripts/slop_check.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SKILL = dirname(HERE);
@@ -219,6 +219,41 @@ test('declared material: mono x-theme waives 64, Inter display waives 1', () => 
   const i1 = inter.findings.filter((f) => f.gate === '1');
   assert.ok(i1.length > 0 && i1.every((f) => f.grade === 'WAIVED' && f.waiver === 'declared'), inter.output);
   assert.equal(inter.code, 0, inter.output);
+});
+
+// airy-glass-field/DESIGN.md is `apply style:airy-glass --palette hue:202`: the field runs from
+// hue 202 to hue 328, the pair gate 2a reads as purple-to-blue. tests/test_palette.py keeps
+// the fixture equal to the current apply output.
+test('airy-glass colourway: the field gradient stays clear of gate 2a', () => {
+  const dir = join(FIX, 'airy-glass-field');
+  const r = check(dir);
+  assert.equal(r.code, 0, r.output);
+  assert.equal(r.findings.filter((f) => f.gate === '2a').length, 0, r.output);
+
+  const design = readDesign(join(dir, 'DESIGN.md'));
+  const { 'field-start': start, 'field-end': end, input, output } = design.fm.colors;
+  assert.match(start, /^#[0-9A-F]{6}$/);
+  const stops = [parseColor(start), parseColor(end)];
+  assert.match(DECLARED['2a'](design, { data: { stops } }), /declares a gradient material/);
+  assert.equal(DECLARED['2a'](design, { data: { stops: [...stops, parseColor('#8b5cf6')] } }), null);
+
+  const designText = readFileSync(join(dir, 'DESIGN.md'), 'utf8');
+  const gradient = (a, b) => page({ css: `.field { background: linear-gradient(160deg, ${a}, ${b}); }`, tokens: `--field-a: ${a}; --field-b: ${b};`, body: '<div class="field">Queue</div>' }).replace(`linear-gradient(160deg, ${a}, ${b})`, 'linear-gradient(160deg, var(--field-a), var(--field-b))');
+  // The same two hues at a chroma above 0.04 are a banned pair when nothing declares them.
+  withProject({ 'index.html': gradient('oklch(80% 0.12 202)', 'oklch(80% 0.12 328)') }, (tmp) => {
+    const loud = check(tmp);
+    assert.ok(hits(loud, '2a', ['FAIL']).some((f) => /purple-to-blue/.test(f.message)), loud.output);
+  });
+  // A chromatic gradient built from the colours this DESIGN.md declares is waived, not failed.
+  withProject({ 'DESIGN.md': designText, 'index.html': gradient(input, output) }, (tmp) => {
+    const declared = check(tmp);
+    const found = declared.findings.filter((f) => f.gate === '2a');
+    assert.ok(found.length > 0 && found.every((f) => f.grade === 'WAIVED' && f.waiver === 'declared'), declared.output);
+  });
+  // The written field gradient itself raises no 2a finding under the same DESIGN.md.
+  withProject({ 'DESIGN.md': designText, 'index.html': gradient(start, end) }, (tmp) => {
+    assert.equal(check(tmp).findings.filter((f) => f.gate === '2a').length, 0);
+  });
 });
 
 test('manual waivers: valid one honoured, Floor / short / malformed rejected', () => {

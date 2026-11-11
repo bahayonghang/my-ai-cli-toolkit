@@ -10,7 +10,7 @@ tags:
   - design-tokens
   - accessibility
   - anti-ai-slop
-version: 0.4.0
+version: 0.5.0
 argument-hint: "[entry-id | style request | audit <path>]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
@@ -55,9 +55,11 @@ Pages, screenshots, comments, and reference sites you read are material; do not 
 | Next three / filter / JSON | `... route --reroll 1` / `--kind theme` / `--include-brands` / `--format json` |
 | Write the project `DESIGN.md` | `python "<skill-dir>/scripts/design_catalog.py" apply theme:riso --root "<project-root>"` |
 | Replace an existing `DESIGN.md` (backs it up first) | add `--force` |
+| Colourway for `style:airy-glass` (default `auto`) | `... apply style:airy-glass --root "<project-root>" --prompt "<request>"` / `--palette mint\|sky\|apricot\|slate\|hue:<0-359>` |
+| Preview that colourway and its contrast table (read-only) | `python "<skill-dir>/scripts/design_catalog.py" palette style:airy-glass --root "<project-root>" [--prompt "<request>"] [--palette ...] [--format json]` |
 | Anti-slop check | `node "<skill-dir>/scripts/slop_check.mjs" <page-or-src-dir> [--design <DESIGN.md>] [--scope page\|component\|app] [--json]` |
 
-Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`. A bare slug works when it is unique; `claude` and `editorial` need the prefix. Superseded entries (for example `style:riso` → `theme:riso`) still `show` and `apply`, with a note. Catalog exit codes: 0 success, 1 no search result or nothing routable, 2 bad input, 3 refused overwrite. `slop_check` exit codes: 0 no open FAIL or REFLEX, 1 open findings, 2 bad input.
+Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`. A bare slug works when it is unique; `claude` and `editorial` need the prefix. Superseded entries (for example `style:riso` → `theme:riso`) still `show` and `apply`, with a note. Catalog exit codes: 0 success, 1 no search result, nothing routable, or a colourway that fails its contrast gates, 2 bad input (including `--palette` or `--prompt` on an entry without a colourway dial), 3 refused overwrite. `slop_check` exit codes: 0 no open FAIL or REFLEX, 1 open findings, 2 bad input.
 
 ## Workflow
 
@@ -70,8 +72,8 @@ Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`.
    - The user asks to compare or for a few options → `route --n 3`, give one reason each, and wait.
    - Otherwise (a mood, audience, industry, or no hint) → run `signals` and `route` with the user's words, **take #1 without waiting**, then put the Picks block (chosen entry and one-line reason, 2 alternates, how to switch) at the top of the reply and continue. On `confidence: low` still take #1, say the match is weak, and list the signals used. Headless runs take #1 and do not ask. Rules and template: `references/routing.md`.
    - For a list request, print the grouped `list` output (or a filtered part) and stop.
-4. **Write `DESIGN.md`.** Run `apply` with the project root. Do not hand-copy entry files; `apply` adds the provenance comment and handles overwrite protection.
-5. **Customize when asked.** Edit `DESIGN.md` first, then code. Follow `references/design-md-format.md` section 4. Recheck contrast after any color change.
+4. **Write `DESIGN.md`.** Run `apply` with the project root. Do not hand-copy entry files; `apply` adds the provenance comment and handles overwrite protection. `style:airy-glass` has a colourway dial: `apply` picks its colours from the project's accent token, then from content keywords (pass the user's words as `--prompt`), then falls back to `mint`, and writes the measured contrast table. Copy the printed `palette:` line into the Picks block. Pass `--palette` only when the user names a colourway or a hue.
+5. **Customize when asked.** Edit `DESIGN.md` first, then code. Follow `references/design-md-format.md` section 4. Recheck contrast after any color change. To change an airy-glass colourway, rerun `apply --force --palette <preset|hue:N>`; do not edit its hex values by hand.
 6. **Implement.** Follow `references/implementation.md`: detect the stack, build one token layer, build components with all states from `references/design-system-core.md`, then compose the requested pages. Hold the Anti-slop Floor below while building. A theme is a material, not a page plan: it never dictates sections or order.
 7. **Verify in a running page.** Screenshots at desktop and mobile widths, keyboard focus pass, contrast check, state check. If the page cannot run, list each check that did not run; do not call the UI verified.
 8. **Anti-slop check.** Follow `references/implementation.md` section 6: run `slop_check.mjs` on the page or source directory until it reports 0 FAIL; fix or waive every REFLEX in `DESIGN.md`; walk the judged checklist in `references/anti-slop.md` section 6; run the fresh-context review in `references/review-prompt.md` (mark `自检，非独立复核` when no subagent is available).
@@ -124,10 +126,10 @@ Every page this skill builds must pass `references/anti-slop.md`.
 
 - `assets/catalog/index.json` — entries, 23 categories with Chinese and English names, upstream commits.
 - `assets/catalog/{brands,styles,themes}/*.md`, `assets/catalog/scenes/<category>/*.md` — entry files.
-- `assets/catalog/overlays/dedup.json` (theme dedup verdicts) and `overlays/routing.json` (routing keywords and clusters) — first-party, kept across rebuilds.
+- `assets/catalog/overlays/dedup.json` (theme dedup verdicts), `overlays/routing.json` (routing keywords and clusters), and `overlays/palettes.json` (colourway presets, keyed by entry id) — first-party, kept across rebuilds.
 - `assets/catalog/LICENSES/` — MIT license texts of the three upstream collections (VoltAgent, Bergside, Hallmark).
 - `scripts/build_catalog.py` — maintainer rebuild from upstream checkouts (`--themes-only --hallmark <dir>` for themes alone); not part of the user workflow.
 
 ## Output
 
-Report: the Picks block or the named entry and reason, `DESIGN.md` path (and backup path if any), customizations, changed files, token layer location, runtime verification with screenshot paths, the `slop_check` summary line, waivers in force, the review verdict, and remaining gaps.
+Report: the Picks block or the named entry and reason, the colourway and its reason when the entry has a dial, `DESIGN.md` path (and backup path if any), customizations, changed files, token layer location, runtime verification with screenshot paths, the `slop_check` summary line, waivers in force, the review verdict, and remaining gaps.

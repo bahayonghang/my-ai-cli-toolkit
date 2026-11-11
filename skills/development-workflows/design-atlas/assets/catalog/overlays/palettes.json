@@ -1,0 +1,61 @@
+{
+  "style:airy-glass": {
+    "default": "mint",
+    "match_degrees": 20,
+    "min_accent_chroma": 0.03,
+    "min_accent_lightness": 0.25,
+    "output_offsets": [126, -126, 150, -150, 100],
+    "reserved_hues": [[340, 40], [60, 100]],
+    "fixed": {"ink": "#24303A", "muted": "#5C6B76", "sheet-alpha": 0.78},
+    "presets": {
+      "mint": {
+        "anchor": 163,
+        "label": {"zh": "薄荷 → 薰衣草", "en": "mint to lavender"},
+        "field-start": "#E7F6F1",
+        "field-end": "#EDE7F8",
+        "input": "#187A56",
+        "input-wash": "#E7F7F0",
+        "output": "#6D4BD6",
+        "output-wash": "#F3EEFC",
+        "keywords_en": ["healthcare", "medical", "clinic", "wellness", "climate", "esg", "sustainability", "carbon"],
+        "keywords_zh": ["医疗", "诊所", "养老", "环保", "低碳", "碳排放", "可持续"]
+      },
+      "sky": {
+        "anchor": 250,
+        "label": {"zh": "天蓝 → 鼠尾草绿", "en": "sky to sage"},
+        "field-start": "#E8F3FF",
+        "field-end": "#E5F3E7",
+        "input": "#1F6CB0",
+        "input-wash": "#EBF5FF",
+        "output": "#317A45",
+        "output-wash": "#EBF8EC",
+        "keywords_en": ["finance", "fintech", "bank", "banking", "payments", "data platform", "logistics"],
+        "keywords_zh": ["金融", "银行", "支付", "理财", "数据平台", "物流"]
+      },
+      "apricot": {
+        "anchor": 55,
+        "label": {"zh": "杏色 → 青绿", "en": "apricot to teal"},
+        "field-start": "#FFEEE3",
+        "field-end": "#E1F3F0",
+        "input": "#9C5313",
+        "input-wash": "#FFF0E7",
+        "output": "#007A70",
+        "output-wash": "#E4F9F5",
+        "keywords_en": ["food", "restaurant", "cafe", "bakery", "education", "school"],
+        "keywords_zh": ["餐饮", "餐厅", "外卖", "美食", "烘焙", "教育", "课程", "亲子"]
+      },
+      "slate": {
+        "anchor": 215,
+        "label": {"zh": "石板蓝灰 → 雾紫", "en": "slate to haze"},
+        "field-start": "#E7F3F6",
+        "field-end": "#F0EAF3",
+        "input": "#327382",
+        "input-wash": "#EAF6F9",
+        "output": "#7A5B89",
+        "output-wash": "#F7F1FA",
+        "keywords_en": ["compliance", "audit", "government", "insurance"],
+        "keywords_zh": ["合规", "法务", "审计", "政务", "保险", "风控"]
+      }
+    }
+  }
+}

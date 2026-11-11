@@ -93,6 +93,7 @@ Edit `DESIGN.md` itself. Then change code. Do not let code drift from the file.
 
 1. Keep the provenance comment that `apply` wrote under the frontmatter. Add one line under it: `<!-- customized: <what changed> -->`.
 2. Brand color change: replace the `primary` family (`primary`, `primary-active`, `on-primary`, related tints). Recheck contrast for every pair that uses them.
+   - Exception, an entry with a colourway dial (`style:airy-glass`): do not edit its hex values. Rerun `apply --force --palette <preset|hue:N>`. It rewrites the six colourway colors, the CSS example, and the measured contrast table together, and records the choice in the `<!-- palette: ... -->` line under the provenance comment. The text between `<!-- palette:begin ... -->` and `<!-- palette:end ... -->` is generated; leave it as written.
 3. Font change: change `fontFamily` in every typography token of the same role. Record the substitution in `Known Gaps` when the original font is licensed.
 4. Dark mode: add `-dark` surface and text tokens or a second color group, and state the switch rule in `Overview`. Recheck contrast in both themes.
 5. Combining two entries: start from the entry that matches the layout and component model. Take only color or typography tokens from the second entry. Record both entry ids in the customization comment.
