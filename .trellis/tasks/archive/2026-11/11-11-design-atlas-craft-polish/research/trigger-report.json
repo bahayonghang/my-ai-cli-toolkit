@@ -1,0 +1,264 @@
+{
+  "ok": true,
+  "threshold": 0.34,
+  "description_concepts": [
+    "audit",
+    "catalog",
+    "design_action",
+    "design_source",
+    "style_language",
+    "ui_surface"
+  ],
+  "missing_description_concepts": [],
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "false_positive": 0,
+    "false_negative": 0,
+    "pass_rate": 1.0
+  },
+  "failures": [],
+  "results": {
+    "should_trigger": [
+      {
+        "prompt": "Restyle this existing UI while keeping its look.",
+        "family": "preserve",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "按 DESIGN.md 实施设置页面。",
+        "family": "build",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "design_action",
+          "design_source",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Build a terminal component using the existing design system.",
+        "family": "preserve",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.8,
+        "matched_concepts": [
+          "design_action",
+          "design_source",
+          "style_language",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "保留原风格，改稿精修这个页面。",
+        "family": "preserve",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Audit this page for AI slop; report findings only.",
+        "family": "audit",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "audit",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "审查这个页面的 AI 味，先别修改。",
+        "family": "audit",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "audit",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Compare design styles and themes from the catalog before we build this UI.",
+        "family": "catalog",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "catalog",
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Build a BI UI from our DESIGN.md.",
+        "family": "bi",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "design_action",
+          "design_source",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "按现有 DESIGN.md 精修轻盈毛玻璃组件。",
+        "family": "glass",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "design_source",
+          "style_language",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Implement a documentation page with the existing design system.",
+        "family": "mixed-text",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "design_action",
+          "design_source",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Restyle the streaming chat component while preserving APIs.",
+        "family": "streaming",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "Build this settings page in the style of Apple.",
+        "family": "brand",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.6,
+        "matched_concepts": [
+          "design_action",
+          "style_language",
+          "ui_surface"
+        ],
+        "negative_pattern": null
+      }
+    ],
+    "should_not_trigger": [
+      {
+        "prompt": "Repair backend search and URL normalization.",
+        "family": "business-logic",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "backend"
+      },
+      {
+        "prompt": "Rewrite prose in this document.",
+        "family": "copy",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.0,
+        "matched_concepts": [],
+        "negative_pattern": "rewrite prose"
+      }
+    ],
+    "near_neighbor": [
+      {
+        "prompt": "Build a standalone SVG empty-state asset for our UI.",
+        "family": "standalone-asset",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": "standalone SVG"
+      },
+      {
+        "prompt": "Build an HTML report page explaining our database costs.",
+        "family": "report",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": "HTML report"
+      },
+      {
+        "prompt": "Make a faithful recreation of this UI screenshot.",
+        "family": "screenshot",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.2,
+        "matched_concepts": [
+          "ui_surface"
+        ],
+        "negative_pattern": "faithful recreation"
+      },
+      {
+        "prompt": "Build a 3D scene and video for this page.",
+        "family": "media",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.4,
+        "matched_concepts": [
+          "design_action",
+          "ui_surface"
+        ],
+        "negative_pattern": "video"
+      }
+    ]
+  }
+}

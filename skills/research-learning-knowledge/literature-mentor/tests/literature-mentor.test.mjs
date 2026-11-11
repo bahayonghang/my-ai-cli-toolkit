@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 
 const skillMd = readFileSync(new URL("../SKILL.md", import.meta.url), "utf8");
 const evals = JSON.parse(readFileSync(new URL("../evals/evals.json", import.meta.url), "utf8"));
-const exclusions = ["paper-workbench"];
+const exclusions = ["多篇综合", "批量规范化"];
 
 function descriptionOf(markdown) {
   const fence = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);

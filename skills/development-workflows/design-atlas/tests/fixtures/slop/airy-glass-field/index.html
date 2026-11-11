@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Queue</title>
+<style>
+:root {
+  --color-field-start: #E3F6F7;
+  --color-field-end: #F5E6F4;
+  --color-paper: #FFFFFF;
+  --color-sheet: rgba(255,255,255,0.78);
+  --color-sheet-solid: rgba(255,255,255,0.96);
+  --color-sheet-edge: rgba(255,255,255,0.80);
+  --color-ink: #24303A;
+  --color-muted: #5C6B76;
+  --color-input: #00787F;
+  --color-input-wash: #E5F8F9;
+  --color-output: #8D4D8C;
+  --color-output-wash: #FBEFFA;
+  --shadow-sheet: 0 20px 48px rgba(70, 90, 120, 0.08);
+  --font-display: "Figtree", "PingFang SC", "Noto Sans SC", sans-serif;
+  --font-body: "Figtree", "PingFang SC", "Noto Sans SC", sans-serif;
+}
+html, body { overflow-x: clip; }
+body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); font-size: 14px; line-height: 1.7; }
+.field { min-height: 100vh; padding: 48px 24px; background: linear-gradient(160deg, var(--color-field-start), var(--color-field-end)); }
+.sheet { max-width: 640px; margin: 0 auto; padding: 24px; background: var(--color-sheet); backdrop-filter: blur(20px) saturate(1.15); border: 1px solid var(--color-sheet-edge); border-radius: 20px; box-shadow: var(--shadow-sheet); }
+h1 { margin: 0 0 16px; font-family: var(--font-display); font-size: 16px; font-weight: 650; }
+.well { padding: 16px; border-radius: 16px; }
+.well + .well { margin-top: 12px; }
+.well-input { background: var(--color-input-wash); color: var(--color-input); }
+.well-output { background: var(--color-output-wash); color: var(--color-output); }
+.num { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; }
+a { display: inline-block; color: var(--color-input); }
+a:hover { color: var(--color-ink); }
+a:active { transform: scale(0.98); transition: transform 120ms; }
+a:focus-visible { outline: 2px solid var(--color-input); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  a:active { transform: none; }
+}
+@media (max-width: 959px), (prefers-reduced-transparency: reduce) {
+  .sheet { background: var(--color-sheet-solid); backdrop-filter: none; }
+}
+</style>
+</head>
+<body>
+  <main class="field">
+    <section class="sheet">
+      <h1>Queue status</h1>
+      <div class="well well-input"><span class="num">128</span> received today</div>
+      <div class="well well-output"><span class="num">117</span> sent today</div>
+      <p><a href="/queue">Open the queue</a></p>
+    </section>
+  </main>
+</body>
+</html>

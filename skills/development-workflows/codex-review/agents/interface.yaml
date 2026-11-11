@@ -3,7 +3,7 @@ interface:
   short_description: 经 Herdr 发起一个只读 Codex reviewer 并核验具体发现。
   default_prompt: >-
     仅在已建立 Herdr + Codex 审查意图时使用本包；若我是已分配的 leaf reviewer，则直接审查，不调用任何编排或更多 Agent。
-    捕获明确 cwd、唯一范围和输入证据，通过已加载 herdr-orchestra 的 delegation 契约启动一个新交互 Codex，
+    捕获明确 cwd、唯一范围和输入证据。本仓库不再附带 Herdr orchestra skill；只通过当前已加载、且自带 delegation 契约的 Herdr 编排技能启动一个新交互 Codex。没有该 owner 时停下来，不直接启动 Codex。
     使用 --sandbox read-only --ask-for-approval never --no-alt-screen，保留用户模型选择，否则继承配置。
     不修复、写 CHANGELOG、改 Git/config/hooks/trust 或安装；同一 reviewer 分段恢复，不写 temp file 或扩大 sandbox。
     核验完整结果与未变化输入，报告具体发现、证据、范围漂移和未验证项；不把 lifecycle 当作审查通过。

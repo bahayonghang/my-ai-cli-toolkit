@@ -1,8 +1,7 @@
 {
   "positive_concepts": {
     "herdr_context": [
-      "Herdr",
-      "herdr-orchestra"
+      "Herdr"
     ],
     "codex_reviewer": [
       "Codex",
@@ -46,7 +45,7 @@
       "family": "files"
     },
     {
-      "text": "Use herdr-orchestra to start Codex for a plan review.",
+      "text": "Use Herdr to start Codex for a plan review.",
       "family": "plan"
     },
     {

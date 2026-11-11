@@ -1,0 +1,74 @@
+{
+  "schema_version": "2.0.0-qiaomu-lite",
+  "generated_at": "2026-11-11",
+  "package": {
+    "name": "design-atlas",
+    "version": null,
+    "owner": null,
+    "maturity_tier": null,
+    "lifecycle_stage": null,
+    "upstream_inspiration": null,
+    "upstream_sync": {}
+  },
+  "intent": {
+    "description": "UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates. Use when the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格. Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), 3D scene or SVG asset work, code animation or video, or backend work.",
+    "job_to_be_done": "UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates. Use when the user asks to build or restyle a page or component, list or compare design styles or themes, design in the style of a known product (Linear, Vercel, Stripe, Apple), use a look such as minimal, editorial, riso, newsprint, terminal, glassmorphism, 轻盈毛玻璃, or brutalism, build a BI / 经营分析 / 数据看板 workbench, create or follow DESIGN.md, audit a page for AI slop, or restyle an existing page while keeping its look / 自动选主题、生成 DESIGN.md、按 DESIGN.md 实施 UI、页面去 AI 模板味、审查 AI 味、改稿保留原风格. Not for copy or prose de-AI rewriting (use write), HTML reports, plans, or slides (use html-artifact), screenshot or mockup recreation (use image-to-ui-skill), 3D scene or SVG asset work, code animation or video, or backend work.",
+    "target_users": [
+      "Qiaomu operator"
+    ],
+    "inputs": [],
+    "outputs": [],
+    "exclusions": [],
+    "qiaomu_defaults": {}
+  },
+  "triggers": {
+    "should_trigger": [],
+    "should_not_trigger": [],
+    "near_neighbor": []
+  },
+  "workflow": {
+    "router_rules": [],
+    "compact_workflow": [],
+    "gate_ladder": [],
+    "output_contract": []
+  },
+  "resources": {
+    "references": [
+      "references\\anti-slop.md",
+      "references\\brand-boundary.md",
+      "references\\craft-polish.md",
+      "references\\design-md-format.md",
+      "references\\design-system-core.md",
+      "references\\implementation.md",
+      "references\\restyle.md",
+      "references\\review-prompt.md",
+      "references\\routing.md",
+      "references\\texture.md"
+    ],
+    "scripts": [
+      "scripts\\build_catalog.py",
+      "scripts\\design_catalog.py",
+      "scripts\\palette.py"
+    ],
+    "evals": [
+      "evals\\evals.json"
+    ],
+    "reports": []
+  },
+  "portability": {
+    "canonical_format": null,
+    "adapter_targets": [],
+    "activation": {},
+    "execution": {},
+    "trust": {},
+    "permissions": {},
+    "degradation": {}
+  },
+  "gates": {},
+  "evidence_boundary": {
+    "generated_reports_are_evidence": true,
+    "planned_work_is_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what local validation, install proof, human review, or provider-backed evidence actually supports"
+  }
+}

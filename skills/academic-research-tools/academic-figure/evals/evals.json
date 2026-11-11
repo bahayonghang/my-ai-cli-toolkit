@@ -158,11 +158,11 @@
     {
       "id": 13,
       "prompt": "把这 5 篇论文整理成一张对比表并找出研究空白，做成文献综述。",
-      "expected_output": "Routes to paper-workbench for multi-paper synthesis, not academic-figure.",
+      "expected_output": "Multi-paper synthesis stays outside academic-figure.",
       "files": [],
       "assertions": [
         "Does NOT route to academic-figure",
-        "Routes to paper-workbench",
+        "Does not draw a comparison chart as a substitute for the literature synthesis",
         "Recognizes a literature-synthesis table rather than a plotted figure"
       ]
     },

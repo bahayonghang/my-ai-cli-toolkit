@@ -1,7 +1,7 @@
 ---
 name: codex-review
 description: >-
-  Use when the user asks an Agent inside Herdr to start Codex for an independent review through herdr-orchestra, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer.
+  Use when the user asks an Agent inside Herdr to start Codex for an independent read-only review, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer; this repository no longer ships a Herdr orchestra skill.
 category: development-workflows
 tags: [codex, herdr, review, read-only, delegation]
 version: 0.1.0
@@ -15,7 +15,7 @@ version: 0.1.0
 
 - 仅在明确要求 Herdr + Codex 审查，或本技能调用已有该任务上下文时使用。普通正确性审查交给现有 review 流程；可维护性问题沿用 `code-quality-review`；非 Herdr 的 Codex 协作不要走本技能。
 - 若已被分配为 leaf reviewer，直接完成审查，不调用本技能、orchestra 或更多 Agent。讨论/研究这些技能不授权启动进程。
-- 通过已加载的 `herdr-orchestra` 名称/实际路径读取其 `references/delegation.md`；它是唯一进程控制 owner。本包不分配 pane、不重复环境探测、不直接启动 Codex。缺少依赖时报告源路径 `skills/developer-tools-integrations/herdr-orchestra/` 与未完成项，不绕过 Herdr。
+- 本仓库不再附带 Herdr orchestra skill。进程控制只交给当前会话已经加载、并且自带 `references/delegation.md` 的 Herdr 编排技能。本包不分配 pane、不重复环境探测、不直接启动 Codex。没有这个编排 owner 时停下来说明缺依赖，不绕过 Herdr。
 - 核对当前加载的本包身份；同名第三方入口不等于此源。若仍加载含自动 CHANGELOG 的旧入口，报告不匹配，不修改安装、全局配置或 hooks。宿主加载边界见仓库 `docs/harnesses.md`。
 
 ## Compact Workflow

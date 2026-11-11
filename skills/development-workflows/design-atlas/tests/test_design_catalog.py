@@ -445,5 +445,21 @@ class ApplyTests(unittest.TestCase):
         )
 
 
+class SkillReferenceTests(unittest.TestCase):
+    def test_every_reference_file_is_listed_in_skill_md(self) -> None:
+        skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        match = re.search(
+            r"^## References\n(?P<body>.*?)(?=^## |\Z)",
+            skill,
+            re.M | re.S,
+        )
+        self.assertIsNotNone(match, "SKILL.md is missing a References section")
+        assert match is not None
+        listed = set(re.findall(r"`references/([a-z0-9-]+\.md)`", match.group("body")))
+        on_disk = {path.name for path in (SKILL_ROOT / "references").glob("*.md")}
+        self.assertEqual(sorted(on_disk - listed), [])
+        self.assertEqual(sorted(listed - on_disk), [])
+
+
 if __name__ == "__main__":
     unittest.main()

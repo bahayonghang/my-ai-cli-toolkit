@@ -595,25 +595,23 @@
       "id": "boundary-paper-workbench-routing",
       "kind": "boundary",
       "prompt": "请整理这五篇 arXiv/DOI 论文，按我的研究画像做结构化综述和对比矩阵。",
-      "expected_output": "Route the multi-paper researcher-profile workflow to paper-workbench.",
+      "expected_output": "Multi-paper researcher-profile synthesis is outside laoyeye.",
       "files": [],
       "assertions": [
-        "Use the sibling normalization and multi-paper workflow; do not present laoyeye horizontal research as equivalent paper-workbench completion."
+        "Do not present laoyeye horizontal research as multi-paper normalization or a completed literature matrix."
       ],
-      "routing_negative": true,
-      "expected_sibling": "paper-workbench"
+      "routing_negative": true
     },
     {
       "id": "boundary-writing-routing",
       "kind": "boundary",
       "prompt": "只把这段论文英文润色得自然一些，别改论点，不需要教学。",
-      "expected_output": "Route academic register editing to humanizer-paper.",
+      "expected_output": "Academic register editing is outside laoyeye.",
       "files": [],
       "assertions": [
         "Do not launch laoyeye concept teaching or fact research; preserve the editing-only scope."
       ],
-      "routing_negative": true,
-      "expected_sibling": "humanizer-paper"
+      "routing_negative": true
     },
     {
       "id": "boundary-native-goal-routing",

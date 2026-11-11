@@ -40,11 +40,11 @@
     {
       "id": 4,
       "prompt": "帮我润色博士论文中文摘要，降低 AI 味，标点和术语要符合学位论文规范。",
-      "expected_output": "Routing-negative: academic dissertation polishing belongs to humanizer-paper, not renhua.",
+      "expected_output": "Routing-negative: academic dissertation polishing is outside renhua.",
       "files": [],
       "assertions": [
         "Does not apply renhua's public-writing defaults to a dissertation abstract.",
-        "Routes or defers to humanizer-paper.",
+        "Does not treat public-writing polish as academic norm compliance.",
         "Mentions academic norm compliance as outside renhua's scope."
       ]
     },

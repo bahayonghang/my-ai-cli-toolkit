@@ -13,8 +13,8 @@ description: >
   should I use, 投稿前审计图的字号 DPI 与导出合规, pre-submission figure audit, or
   参考图筛选 with AgentFigureGallery. An explicit journal target takes precedence
   over a style or reference image. Exploratory data checks with no publication
-  goal, paper reading, and multi-paper synthesis route to their dedicated
-  skills.
+  goal and paper reading route to their dedicated skills. Multi-paper
+  synthesis stays outside this skill.
 category: academic-research-tools
 tags:
   [
@@ -80,7 +80,7 @@ The selected row is authoritative.
 | Request                                                  | Route to                                                                       |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | Deep-read or summarize one paper                         | **literature-mentor** (`skills/research-learning-knowledge/literature-mentor`) |
-| Intake, compare, or synthesize multiple papers           | **paper-workbench** (`skills/research-learning-knowledge/paper-workbench`)     |
+| Intake, compare, or synthesize multiple papers           | Outside this skill. A synthesis table is not a plotted figure. **idea-bib-review** applies only when the user already supplies an argument and BibTeX. |
 | Build a BI dashboard or linked operational charts        | Dashboard or BI tooling                                                        |
 | Generate an AI graphical abstract or illustration        | Image-generation tooling                                                       |
 | Explore a dataset with no publication or submission goal | General-purpose plotting; this skill adds no value there                       |

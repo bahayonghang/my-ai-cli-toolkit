@@ -33,7 +33,7 @@
 将下列整个文本连同填好的 scope 作为交互任务文本交给 orchestra，不通过 shell 重解析；不发送 `/review`，不使用它启动更多 skills。
 
 ```text
-你是父 Agent 指派的 leaf reviewer。自己完成本次独立审查；不调用 codex-review、herdr-orchestra、其他技能或任何额外 Agent/进程来再次委派。
+你是父 Agent 指派的 leaf reviewer。自己完成本次独立审查；不调用 codex-review、Herdr 编排、其他技能或任何额外 Agent/进程来再次委派。
 
 审查位置：[绝对 cwd]
 唯一范围：[current / staged-only / base / commit / files / plan 的实际语义]

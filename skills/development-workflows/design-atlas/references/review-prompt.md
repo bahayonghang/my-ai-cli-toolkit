@@ -39,6 +39,9 @@ Whole page (full-page screenshot and source)
    could sit on any product.
 9. Check the details at close range: alignment edges, spacing rhythm between sections, one icon style,
    image crops, focus rings, hover and disabled states visible in the source.
+10. Did a change remove or hide information a visitor needs (a form label, an input limit, an error, a price,
+   consent or legal text, a risk or irreversible-action warning, or a credit), including by moving it into a
+   hover-only tooltip?
 
 Answer format (nothing before the first word)
 - First word: ship, fix, or rebuild.

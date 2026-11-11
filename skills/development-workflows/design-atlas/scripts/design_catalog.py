@@ -5,7 +5,9 @@ Commands:
   list   [--kind brand|style|theme|scene] [--category ID] [--all] [--format text|json]
   search QUERY [--kind brand|style|theme|scene] [--all] [--format text|json]
   show   ID                      ID is kind:slug, or a slug when it is unique
-  apply  ID [--root DIR] [--force]
+  apply  ID [--root DIR] [--force] [--palette auto|PRESET|hue:N] [--prompt TEXT]
+  palette ID [--root DIR] [--prompt TEXT] [--palette auto|PRESET|hue:N]
+         [--format text|json]
   signals [--root DIR] [--prompt TEXT]
   route  --prompt TEXT [--root DIR] [--n 3] [--reroll N] [--kind K ...]
          [--include-brands] [--format text|json]
@@ -18,6 +20,19 @@ apply writes DIR/DESIGN.md (UTF-8, LF). An existing design.md in any letter
 case stops the command with exit 3 unless --force is given; --force first
 renames the old file to <name>.bak-YYYYMMDD-HHMMSS.
 
+An entry with data in overlays/palettes.json (style:airy-glass) has a colourway
+dial. apply picks the colourway from the project: a chromatic accent token
+first (a preset when its hue is close, a derived colourway otherwise), then
+preset keywords in --prompt and the project text, then the default. --palette
+names a preset or hue:N (0-359) and skips the automatic choice. apply renders
+the entry with that colourway, adds a palette comment under the provenance
+comment, and prints a palette: line. palette prints the same choice and its
+contrast table and never writes. A colourway that fails a contrast gate is
+exit 1 in both commands, and apply writes nothing. --palette or --prompt on an
+entry without palette data is exit 2 and writes nothing. When several accent
+tokens exist, the first one with enough chroma and lightness is used (signals
+"accents"); a near-gray or near-black token is skipped with a note.
+
 signals reads the project root (package.json, pyproject.toml, Cargo.toml, the
 README head, CSS token blocks, Tailwind config, DESIGN.md) and prints JSON. It
 never writes. Unreadable sources are listed in "notes".
@@ -27,8 +42,8 @@ only with --include-brands) against the prompt and, with --root, the project
 signals, then picks n entries with distinct clusters. The result is
 deterministic: no date or random salt. See references/routing.md.
 
-Exit codes: 0 success, 1 search found nothing or nothing is routable,
-2 bad input, 3 refused overwrite.
+Exit codes: 0 success, 1 search found nothing, nothing is routable, or a
+colourway failed its contrast gates, 2 bad input, 3 refused overwrite.
 """
 
 from __future__ import annotations
@@ -43,6 +58,10 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import palette as colourway  # noqa: E402
 
 CATALOG = Path(__file__).resolve().parents[1] / "assets" / "catalog"
 KINDS = ("brand", "style", "theme", "scene")
@@ -150,7 +169,27 @@ def note_superseded(entry: dict) -> None:
         )
 
 
-def apply(index: dict, entry: dict, root: Path, force: bool) -> int:
+def pick_colourway(spec: dict, root: Path, prompt: str, override: str | None) -> dict:
+    """Choose a colourway for the project at root. Reads the project; never writes."""
+    signals = collect_signals(root)
+    return colourway.choose(
+        spec,
+        signal=signals.get("palette"),
+        prompt=prompt,
+        project=project_text(signals),
+        override=override,
+    )
+
+
+def apply(
+    index: dict,
+    entry: dict,
+    root: Path,
+    force: bool,
+    spec: dict | None = None,
+    override: str | None = None,
+    prompt: str = "",
+) -> int:
     if not root.is_dir():
         print(f"error: --root is not a directory: {root}", file=sys.stderr)
         return 2
@@ -166,17 +205,87 @@ def apply(index: dict, entry: dict, root: Path, force: bool) -> int:
             file=sys.stderr,
         )
         return 3
+    text = (CATALOG / entry["path"]).read_text(encoding="utf-8")
+    comment = provenance(index, entry)
+    choice = None
+    if spec is not None:
+        # Render before any rename, so a failure leaves the project untouched.
+        try:
+            choice = pick_colourway(spec, root, prompt, override)
+            failed = colourway.failures(colourway.gates(choice["colors"], spec["fixed"]))
+            if failed:
+                raise ValueError(
+                    f"{choice['palette']} fails contrast gates {', '.join(failed)}; nothing written"
+                )
+            text = colourway.render(text, choice, spec)
+        except ValueError as error:
+            print(f"error: {entry['id']} colourway: {error}", file=sys.stderr)
+            return 1
+        comment = f"{comment}\n{colourway.comment(choice)}"
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     for path in existing:
         backup = path.with_name(f"{path.name}.bak-{stamp}")
         path.rename(backup)
         print(f"backup: {backup}")
-    text = (CATALOG / entry["path"]).read_text(encoding="utf-8")
     target = root / "DESIGN.md"
-    target.write_text(
-        with_provenance(text, provenance(index, entry)), encoding="utf-8", newline="\n"
-    )
+    target.write_text(with_provenance(text, comment), encoding="utf-8", newline="\n")
     print(f"wrote: {target} ({entry['id']})")
+    if choice is not None:
+        print(f"palette: {choice['palette']} ({choice['reason']})")
+        for note in choice["notes"]:
+            print(f"note: {note}")
+    return 0
+
+
+def colourway_spec(entry: dict, args: argparse.Namespace) -> tuple[dict | None, int]:
+    """Palette data for the entry and an exit code (0 ok, 2 bad input)."""
+    try:
+        specs = colourway.load_palettes()
+    except (OSError, ValueError) as error:
+        print(f"error: cannot read overlays/palettes.json: {error}", file=sys.stderr)
+        return None, 2
+    spec = specs.get(entry["id"])
+    if spec is None:
+        used = [
+            flag
+            for flag, value in (("--palette", args.palette), ("--prompt", args.prompt))
+            if value is not None
+        ]
+        if args.command == "palette" or used:
+            what = " and ".join(used) or "the palette command"
+            print(
+                f"error: {entry['id']} has no colourway dial; {what} only works with: "
+                f"{', '.join(sorted(specs))}",
+                file=sys.stderr,
+            )
+            return None, 2
+        return None, 0
+    try:
+        colourway.parse_override(args.palette, spec)
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return None, 2
+    return spec, 0
+
+
+def show_colourway(entry: dict, spec: dict, args: argparse.Namespace) -> int:
+    if not args.root.is_dir():
+        print(f"error: --root is not a directory: {args.root}", file=sys.stderr)
+        return 2
+    try:
+        choice = pick_colourway(spec, args.root, args.prompt or "", args.palette)
+    except ValueError as error:
+        print(f"error: {entry['id']} colourway: {error}", file=sys.stderr)
+        return 1
+    if args.format == "json":
+        payload = colourway.as_json(entry["id"], choice, spec)
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    else:
+        print(colourway.format_text(entry["id"], choice, spec))
+    failed = colourway.failures(colourway.gates(choice["colors"], spec["fixed"]))
+    if failed:
+        print(f"error: contrast gates failed: {', '.join(failed)}", file=sys.stderr)
+        return 1
     return 0
 
 
@@ -265,6 +374,7 @@ SKIP_DIRS = {
     ".svelte-kit", ".astro", "ref",
 }
 README_BYTES = 4096
+MAX_ACCENTS = 8
 MAX_CSS_FILES = 40
 MAX_CSS_BYTES = 512 * 1024
 PROJECT_WEIGHT = 0.5
@@ -472,6 +582,47 @@ def parse_color(value: str) -> tuple[float, float] | None:
     return None
 
 
+def color_detail(value: str) -> dict | None:
+    """OKLCH chroma and a hex form of a colour parse_color accepts, or None."""
+    v = value.strip().lower()
+    try:
+        m = re.fullmatch(r"oklch\((.*)\)", v)
+        if m:
+            parts = re.split(r"[\s,/]+", m.group(1).strip())
+            L = _num(parts[0])
+            L = L / 100 if L > 1 else L
+            C = _num(parts[1], 0.4)
+            hue = float(re.sub(r"deg$", "", parts[2])) % 360
+            return {"C": round(C, 3), "hex": colourway.oklch_to_hex(L, C, hue)}
+        m = re.fullmatch(r"#([0-9a-f]{3,8})", v)
+        if m:
+            h = m.group(1)
+            if len(h) in (3, 4):
+                h = "".join(c * 2 for c in h[:3])
+            rgb = [int(h[i : i + 2], 16) / 255 for i in (0, 2, 4)]
+        else:
+            m = re.fullmatch(r"rgba?\((.*)\)", v)
+            if m:
+                parts = re.split(r"[\s,/]+", m.group(1).strip())[:3]
+                rgb = [_num(p, 255) / 255 if not p.endswith("%") else _num(p) for p in parts]
+            else:
+                m = re.fullmatch(
+                    r"(?:hsla?\()?\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%.*?\)?", v
+                )
+                if not m:
+                    return None
+                rgb = list(
+                    _hsl_to_rgb(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100)
+                )
+        r, g, b = (min(1.0, max(0.0, c)) for c in rgb)
+        return {
+            "C": round(colourway.srgb_to_oklch(r, g, b)[1], 3),
+            "hex": colourway.rgb_to_hex(tuple(math.floor(c * 255 + 0.5) for c in (r, g, b))),
+        }
+    except (ValueError, IndexError):
+        return None
+
+
 def paper_band(lightness: float) -> str:
     if lightness < 0.30:
         return "dark"
@@ -486,7 +637,11 @@ def token_blocks(css: str) -> dict[str, str]:
     for m in re.finditer(r"(:root|@theme|\[data-theme[^\]]*\]|\.dark)\b[^{]*\{([^{}]*)\}", css):
         if m.group(1) == ".dark":
             continue  # alternate mode; the default paper is in :root
-        for name, value in re.findall(r"(--[\w-]+)\s*:\s*([^;]+);", m.group(2)):
+        # The last declaration of a block may omit its semicolon. A commented-out one
+        # (`/* --brand: red */ }`) is not a declaration, so its value is not read.
+        for name, value, end in re.findall(r"(--[\w-]+)\s*:\s*([^;]+)(;|$)", m.group(2)):
+            if not end and "*/" in value:
+                continue
             found.setdefault(name.lower(), value.strip())
     return found
 
@@ -504,14 +659,27 @@ PAPER_NAMES = (r"(^|-)(bg|background|paper|canvas|page)($|-)", r"(^|-)(surface|b
 ACCENT_NAMES = (r"(^|-)(accent|primary|brand)($|-)",)
 
 
-def _pick_prop(props: dict[str, str], patterns: tuple[str, ...]) -> tuple[str, tuple[float, float]] | None:
+def _pick_props(
+    props: dict[str, str], patterns: tuple[str, ...]
+) -> list[tuple[str, tuple[float, float]]]:
+    """Every token a pattern names whose value parses as a colour, in pick order."""
+    found: list[tuple[str, tuple[float, float]]] = []
+    seen: set[str] = set()
     for pattern in patterns:
         for name in sorted(props):
+            if name in seen:
+                continue
             if re.search(pattern, name[2:]) and not re.search(r"(fg|foreground|ink|text|on-)", name):
                 parsed = parse_color(resolve_var(props[name], props))
                 if parsed:
-                    return name, parsed
-    return None
+                    seen.add(name)
+                    found.append((name, parsed))
+    return found
+
+
+def _pick_prop(props: dict[str, str], patterns: tuple[str, ...]) -> tuple[str, tuple[float, float]] | None:
+    found = _pick_props(props, patterns)
+    return found[0] if found else None
 
 
 def _walk_css(root: Path) -> list[Path]:
@@ -620,17 +788,39 @@ def collect_signals(root: Path) -> dict:
             props.setdefault(name, value)
     if props:
         paper = _pick_prop(props, PAPER_NAMES)
-        accent = _pick_prop(props, ACCENT_NAMES)
+        # accent_* is the first accent-named token. accents lists every candidate, so a
+        # near-gray --accent does not hide a chromatic --primary from the colourway dial.
+        accents = []
+        for name, parsed in _pick_props(props, ACCENT_NAMES)[:MAX_ACCENTS]:
+            detail = color_detail(resolve_var(props[name], props))
+            accents.append(
+                {
+                    "var": name,
+                    "hue": round(parsed[1]) % 360,
+                    "C": detail["C"] if detail else None,
+                    "hex": detail["hex"] if detail else None,
+                }
+            )
+        accent = accents[0] if accents else None
+        accent_fields = {
+            "accent_var": accent["var"] if accent else None,
+            "accent_hue": accent["hue"] if accent else None,
+            "accent_C": accent["C"] if accent else None,
+            "accent_hex": accent["hex"] if accent else None,
+            "accents": accents,
+        }
         if paper:
             out["palette"] = {
                 "band": paper_band(paper[1][0]),
                 "paper_var": paper[0],
                 "L": round(paper[1][0], 3),
-                "accent_var": accent[0] if accent else None,
-                "accent_hue": round(accent[1][1]) if accent else None,
+                **accent_fields,
             }
         else:
             notes.append("token layer found but no paper/background color could be read")
+            if accent:
+                # The colourway dial can still follow an accent without a paper token.
+                out["palette"] = {"band": None, "paper_var": None, "L": None, **accent_fields}
         out["fonts"] = [
             resolve_var(v, props) for k, v in sorted(props.items()) if k.startswith("--font")
         ][:6]
@@ -958,6 +1148,21 @@ def main(argv: list[str] | None = None) -> int:
     apply_cmd.add_argument("id")
     apply_cmd.add_argument("--root", type=Path, default=Path.cwd())
     apply_cmd.add_argument("--force", action="store_true")
+    apply_cmd.add_argument(
+        "--palette", help="colourway for an entry with a dial: auto, a preset, or hue:<0-359>"
+    )
+    apply_cmd.add_argument(
+        "--prompt", help="the user's request; used to pick a colourway by content"
+    )
+
+    palette_cmd = commands.add_parser(
+        "palette", help="print the colourway an entry would get, with its contrast table"
+    )
+    palette_cmd.add_argument("id")
+    palette_cmd.add_argument("--root", type=Path, default=Path.cwd())
+    palette_cmd.add_argument("--prompt")
+    palette_cmd.add_argument("--palette")
+    palette_cmd.add_argument("--format", choices=("text", "json"), default="text")
 
     signals_cmd = commands.add_parser("signals", help="print project signals as JSON")
     signals_cmd.add_argument("--root", type=Path, default=Path.cwd())
@@ -1066,7 +1271,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "show":
         sys.stdout.write((CATALOG / entry["path"]).read_text(encoding="utf-8"))
         return 0
-    return apply(index, entry, args.root, args.force)
+    spec, code = colourway_spec(entry, args)
+    if code:
+        return code
+    if args.command == "palette":
+        return show_colourway(entry, spec, args)
+    return apply(
+        index, entry, args.root, args.force,
+        spec=spec, override=args.palette, prompt=args.prompt or "",
+    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,19 @@
+{
+  "ok": false,
+  "root": "D:\\Documents\\Code\\Agents\\my-claude-code-settings\\skills\\development-workflows\\design-atlas",
+  "failures": [
+    "missing required file: manifest.json",
+    "agents/interface.yaml missing compatibility.adapter_targets"
+  ],
+  "warnings": [
+    "README may be missing natural examples",
+    "README may be missing verification commands",
+    "README may be missing troubleshooting",
+    "adapter target not declared: openai",
+    "adapter target not declared: claude",
+    "adapter target not declared: generic",
+    "adapter target not declared: agent-skills-compatible",
+    "evals/trigger_cases.json missing; recommended for production/library packages",
+    "script has no argparse help or internal-module marker: palette.py"
+  ]
+}

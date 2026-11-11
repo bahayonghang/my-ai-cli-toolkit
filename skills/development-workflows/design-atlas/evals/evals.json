@@ -179,6 +179,239 @@
         "Builds one token layer from the DESIGN.md oklch tokens",
         "Runs slop_check.mjs and reports the summary line"
       ]
+    },
+    {
+      "id": 16,
+      "prompt": "这个后台首页看着太 AI 了，品牌规定用 Inter，帮我去去模板味，别动业务逻辑和表单。",
+      "expected_output": "Skill takes the Restyle branch, captures the existing look into DESIGN.md and declares Inter as the display face, keeps form labels and validation, compares before and after at the same viewport, and reports what was kept, what changed, and what is unverified.",
+      "files": [],
+      "assertions": [
+        "Uses the Restyle branch rather than building a new page from a fresh catalog pick",
+        "Captures the existing look into DESIGN.md and declares Inter as a brand material",
+        "Keeps form labels and validation text",
+        "Does not change business logic",
+        "Compares before and after at the same viewport and reports kept, changed, and unverified items"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "把这个落地页改稿，换一个更有辨识度的风格，内容和价格别动。",
+      "expected_output": "Skill takes the Restyle branch and changes the look with route and apply, using --force when a DESIGN.md already exists, and keeps prices and the existing content.",
+      "files": [],
+      "assertions": [
+        "Uses the Restyle branch and selects a new entry with route and apply",
+        "Uses apply --force when a DESIGN.md already exists",
+        "Keeps prices and fees visible (DA2)",
+        "Does not rewrite or remove the page content"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "audit ./admin，看看哪些说明文字是多余的，先别改代码。",
+      "expected_output": "Skill takes the Audit branch, reports redundant explanation as DA1, includes a Keep section, changes no files, and does not conclude that the page was AI-generated.",
+      "files": [],
+      "assertions": [
+        "Uses the Audit branch and runs slop_check.mjs on ./admin",
+        "Reports redundant explanation under DA1",
+        "Includes a Keep section listing required information and deliberate choices to leave alone",
+        "Does not modify any file",
+        "Does not conclude that the page was AI-generated"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "落地页首屏嵌了一个 Three.js 模型，帮我把页面去 AI 味。",
+      "expected_output": "Skill takes the Restyle branch, judges House and Reflex tells only on the UI around the canvas, applies Floor gates 33 and 27 to the canvas element, and does not change the scene lighting or modelling.",
+      "files": [],
+      "assertions": [
+        "Uses the Restyle branch on the page",
+        "Judges House and Reflex findings only on the UI around the embed",
+        "Applies gates 33 and 27 to the canvas element",
+        "Does not change the Three.js scene lighting or modelling"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "这个 Three.js 浮空岛场景里的树在飘，帮我修正接触关系和光影，保留 low-poly。",
+      "expected_output": "Routing-negative. The request is 3D scene modelling and lighting, so it does not trigger design-atlas.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas",
+        "Does not write DESIGN.md or run slop_check",
+        "Treats 3D scene modelling and lighting as out of scope"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "做一支 15 秒动态图形 showreel，写代码逐帧渲染成视频。",
+      "expected_output": "Routing-negative. The request is code animation rendered to video, so it does not trigger design-atlas.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas",
+        "Does not write DESIGN.md or edit a web UI",
+        "Treats code animation and video as out of scope"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "用轻盈毛玻璃做一个运营后台首页。项目里已经有 :root { --color-primary: #2563EB; --color-bg: #ffffff }，主色别换。",
+      "expected_output": "Skill applies style:airy-glass with the default auto colourway. apply reads --color-primary #2563EB, picks the blue sky colourway instead of the mint default, and writes DESIGN.md with that colourway's measured contrast table. The Picks block names the colourway and cites --color-primary as the reason.",
+      "files": [],
+      "assertions": [
+        "Runs apply style:airy-glass through the skill-dir path and does not hand-edit hex values",
+        "The colourway follows the project's blue accent: DESIGN.md does not contain the mint defaults #E7F6F1, #187A56, or #6D4BD6",
+        "Reports the palette line from apply, with --color-primary #2563EB as the reason",
+        "DESIGN.md carries the measured contrast table for the chosen colourway, every text pair at 4.5:1 or above",
+        "Keeps the airy-glass material rules: one blur on paper only, opaque fallback, solid wells"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "轻盈毛玻璃风格，做一个餐饮会员系统的后台，项目是新的，还没有任何配色。",
+      "expected_output": "Skill applies style:airy-glass and passes the user's words as --prompt. With no accent token in the project, apply matches the content keyword 餐饮 to the warm apricot colourway and writes DESIGN.md with its measured contrast table. The reply states the colourway, the keyword reason, and how to switch with --palette.",
+      "files": [],
+      "assertions": [
+        "Passes the user's request to apply as --prompt, or previews with the palette command first",
+        "Picks the warm apricot colourway from the content keyword, not the mint fallback",
+        "States the reason for the colourway (the 餐饮 keyword) and that --palette switches it",
+        "Does not invent a brand color or edit the colourway hex values by hand",
+        "DESIGN.md records the colourway in the palette comment under the provenance comment"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "保留现有 DESIGN.md 的 terminal 风格，精修按钮反馈和菜单，别改组件 API。",
+      "expected_output": "Uses the Restyle branch and applicable craft recipes while preserving the existing terminal design and component system.",
+      "files": [],
+      "assertions": [
+        "Reads DESIGN.md and the existing component variants/tokens; does not run route or apply",
+        "Preserves component API/props, semantics, business behavior and dependencies",
+        "Uses terminal-compatible state feedback and explains why glass, bevels and bounce are not applicable",
+        "Reports selected states, keyboard/touch, reduced motion, interruption and actual verification or unverified reasons"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "这个设置 Tooltip 里有帮助链接和保存按钮；想把支付确认也收进去，顺便让删除成功提示支持撤销。只做交互精修。",
+      "expected_output": "Separates supplemental tooltip text from interactive popover or dialog tasks; preserves payment/deletion safeguards and does not invent an undo operation.",
+      "files": [],
+      "assertions": [
+        "Keeps Tooltip content noninteractive and available on focus as well as hover",
+        "Uses the existing accessible popover or dialog for actions with suitable dismissal and focus behavior",
+        "Does not hide payment or deletion confirmation, required instructions or risk text in a hover-only tooltip",
+        "Does not claim or add undo without an existing supported operation",
+        "Records Escape, touch, focus return, rapid toggle, reduced-motion and fallback checks"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "给现有抽屉精修进入和退出动效，用户会连续点开关，键盘焦点要稳，系统关闭动画时也要能用。",
+      "expected_output": "Defines role-based entry/exit motion with interruptible state transitions, immediate focus and a functional reduced-motion end state.",
+      "files": [],
+      "assertions": [
+        "Maps entry and exit to existing duration/easing tokens and specifies triggers, end states and cancellation",
+        "Uses only transform and opacity for animation; does not animate all, blur or shadow values",
+        "Rapid open-close-open retargets or reverses from the current presentation and cancels stale work",
+        "Keeps focus indicators immediate and keyboard/touch controls usable without waiting for animation",
+        "Reduced motion reaches the same functional state immediately; reports actual runtime checks or missing evidence"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "文档页中英混排，长 API 标题、标点和很长 URL 在手机上很挤，保留当前字号体系做精修。",
+      "expected_output": "Keeps the type hierarchy and uses scoped wrapping enhancements with readable baseline fallbacks.",
+      "files": [],
+      "assertions": [
+        "Reuses existing type/measure/spacing tokens and allows flex/grid text children to shrink where needed",
+        "Uses ordinary wrapping as the baseline and optional balance/pretty only where appropriate",
+        "Does not apply keep-all globally, insert manual script spaces or add a segmentation dependency",
+        "Checks mixed punctuation, long labels and identifiers, font fallback, text zoom and 320px overflow",
+        "Does not claim browser support or readable line breaks from CSS syntax alone"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "聊天消息流式输出时会把用户拉回底部，输入框也跳，保留现有功能只精修体验。",
+      "expected_output": "Preserves the composer and reading anchor, follows output only while already following the bottom, and allows meaningful text growth.",
+      "files": [],
+      "assertions": [
+        "Keeps the composer and focused controls stable while permitting normal streamed content growth",
+        "Preserves the reading position after the user scrolls away and uses the existing explicit return-to-latest action",
+        "Covers pending, partial, complete, failed and cancelled states without redesigning request behavior",
+        "Avoids per-token forced scrolling and excessive live announcements; reduced motion avoids smooth forced scrolling",
+        "Reports actual scroll-away, cancel, keyboard/touch and reduced-motion checks or lists each unverified scenario"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "BI 看板刷新数字时每列都抖动，负数、小数和大数都可能出现，按现有 DESIGN.md 精修。",
+      "expected_output": "Stabilises numeric layout within the existing design while accommodating real value growth.",
+      "files": [],
+      "assertions": [
+        "Reuses numeric typography and spacing tokens; tabular-nums is conditional on font support",
+        "Accounts for signs, separators, decimals and changing digit count instead of assuming tabular digits fix every width",
+        "Does not truncate true values or add decorative counters to preserve layout",
+        "Checks loading/error states and short/long numeric updates with immediate reduced-motion results",
+        "Does not call static or schema tests proof of dynamic stability"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "现有多级菜单老是误关，拖拽列表落点不清楚，想精修但不换库。",
+      "expected_output": "Selects existing-library pointer-safe menu and drag feedback adapters with cancellation and non-pointer access.",
+      "files": [],
+      "assertions": [
+        "Uses existing menu intent/safe-area support only for an observed pointer-travel problem; adds no dependency",
+        "Keeps keyboard menu operation immediate and touch explicitly operable instead of requiring hover",
+        "Shows the true drag insertion target and preserves original order on cancel or invalid drop",
+        "Retains existing non-drag keyboard/touch alternatives and focus after commit",
+        "Does not hardcode source-post timings or claim undo for an unsupported committed operation"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "现有轻盈毛玻璃设置页在关闭 blur 的设备上字看不清，保留色板拨盘和深浅主题做精修。",
+      "expected_output": "Keeps airy-glass material/palette contracts and adds only applicable readable surface fallbacks.",
+      "files": [],
+      "assertions": [
+        "Preserves the existing colourway dial, paper-only blur, opaque fallback and layer limits; does not hand-edit palette hex values",
+        "Uses existing surface/on-surface/border roles and an opaque baseline when backdrop-filter is unavailable or unsuitable",
+        "Does not add liquid refraction, Halo, blend-mode text, mock browser chrome or animation dependencies",
+        "Checks actual worst-case text/boundary contrast, both supported themes, focus/disabled states and fallback",
+        "Makes no minimum browser-version or performance claim without evidence"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "帮我单独画一张精致的 SVG 浏览器窗口空状态插画，不改页面。",
+      "expected_output": "Routing-negative. Standalone SVG asset creation is outside design-atlas even when the request uses polish language.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas or write DESIGN.md",
+        "Treats standalone SVG asset work as out of scope rather than applying craft-polish recipes"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "后端搜索加拼音匹配和 URL 自动纠错，提高质感，不涉及页面。",
+      "expected_output": "Routing-negative. Backend search and URL-repair functionality is outside design-atlas.",
+      "files": [],
+      "assertions": [
+        "Does not trigger design-atlas or run route/apply",
+        "Treats search matching and URL repair as application functionality, not a UI polish adapter"
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "audit ./chat，检查流式滚动和浮层质感，只要报告，先别改任何文件。",
+      "expected_output": "Uses the read-only Audit branch and applicable craft guidance to report observed problems without claiming unrun dynamic checks.",
+      "files": [],
+      "assertions": [
+        "Runs the existing audit checks and reads applicable craft guidance without editing source or DESIGN.md",
+        "Reports concrete selectors/states and keeps protected information and existing design choices in the Keep section",
+        "Distinguishes source/screenshot findings from runtime scroll, interruption, keyboard/touch and reduced-motion checks",
+        "Lists each unrun check as unverified and does not claim aesthetic improvement from schema validation"
+      ]
     }
   ]
 }

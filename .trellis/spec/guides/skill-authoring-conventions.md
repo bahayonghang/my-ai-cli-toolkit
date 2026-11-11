@@ -213,6 +213,50 @@ not delete `first-party/` or `LICENSES/`.
 - Running `slop_check.mjs` on the whole skill directory exits 1 by design,
   because `tests/fixtures/slop/` holds deliberately failing pages.
 
+### Restyle branch and judged DA gates (design-atlas 0.4.0)
+
+- `DA1`–`DA8` are design-atlas-owned ids, class `J`. Register each one in
+  `TIERS`, `CLASSES`, and the `references/anti-slop.md` gate table, and do not
+  add a detector. They must not change `slop_check` exit codes. Floor gates
+  `DA2` and `DA7` reject `waive` with a NOTE; a Reflex `DA*` waiver is
+  accepted. Lock both outcomes in `tests/fixtures/slop/da-waiver/`.
+- Gate 19 Chinese hits fail at House, same as the English hits, and stay
+  waivable. Do not use a bare substring when the token sits inside an ordinary
+  word (`天赋能力`, `天衣无缝`, `重新定义函数`, `全方位检查`). Lock one slogan
+  hit and one ordinary miss. Do not add `打造`, `助力`, `智能`, or `高效`.
+- Restyle rules live in `references/restyle.md` and must be listed in the
+  SKILL.md References table. Do not copy text from
+  LearnPrompt/vibecoding-humanizer; that checkout ships no license.
+
+### Colourway dial (design-atlas 0.5.0)
+
+- `assets/catalog/overlays/palettes.json` is first-party and kept across
+  rebuilds. It is keyed by entry id; an entry without a key has no dial and
+  its `apply` output must not change.
+- An entry with a dial is a render template. Keep colour names out of its
+  prose (use role tokens such as `{colors.input}`), and keep per-colourway
+  text inside the `palette:begin` / `palette:end` blocks.
+- Preset hex values are fixed by hand and proven by tests; derivation is the
+  fallback for a brand hue far from every preset. Do not regenerate presets
+  from `derive` in a rebuild.
+- Command contract, selection order, and required tests:
+  `.trellis/spec/backend/skill-helper-command-contracts.md`.
+
+### Craft recipe ownership (design-atlas 0.6.0)
+
+- `references/craft-polish.md` owns applicability, recipes and per-state
+  evidence. Root/build/restyle/core guidance links there instead of copying
+  the recipes. `tests/test_craft_contract.py` checks reachability, local links
+  and existing gate ownership; it does not score visual quality.
+- Keep DA4/DA5/DA6/DA8 and the detector registry as the existing owners. A
+  recipe adds no gate, waiver, exit code, catalog entry or palette behavior.
+- Preserve the component API/props, semantics, dependencies and selected
+  design. Reduced motion must reach the functional state immediately; focus
+  rings must not wait for a transition. Ordinary streamed content may grow.
+- Distinguish schema/static checks, hand-authored fixture runtime, actual
+  baseline/candidate model outputs and human blind review. Pending output or
+  runtime cases remain `missing evidence` with no inferred winner.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

@@ -126,10 +126,26 @@ class PackageContracts(unittest.TestCase):
                 self.assertFalse(re.search(r"[\u4e00-\u9fff]", text), case["id"])
 
     def test_sibling_routing_negatives_are_explicit(self):
-        negatives = {case["expected_sibling"]: case for case in self.evals if case.get("routing_negative")}
-        for sibling in ("literature-mentor", "paper-workbench", "humanizer-paper"):
-            self.assertIn(sibling, negatives)
-            self.assertTrue(any("do not" in assertion.lower() for assertion in negatives[sibling]["assertions"]))
+        negatives = {
+            case["expected_sibling"]: case
+            for case in self.evals
+            if case.get("routing_negative") and case.get("expected_sibling")
+        }
+        self.assertIn("literature-mentor", negatives)
+        self.assertTrue(any("do not" in assertion.lower() for assertion in negatives["literature-mentor"]["assertions"]))
+        retired = {
+            case["id"]: case
+            for case in self.evals
+            if case["id"] in {"boundary-paper-workbench-routing", "boundary-writing-routing"}
+        }
+        self.assertEqual(set(retired), {"boundary-paper-workbench-routing", "boundary-writing-routing"})
+        for case in retired.values():
+            self.assertNotIn("expected_sibling", case)
+            blob = " ".join([case["expected_output"], *case["assertions"]]).lower()
+            self.assertNotIn("paper-workbench", blob)
+            self.assertNotIn("humanizer-paper", blob)
+            self.assertIn("outside", case["expected_output"].lower())
+            self.assertTrue(any("do not" in assertion.lower() for assertion in case["assertions"]))
         description = reporter.metadata(reporter.read_text(ROOT / "SKILL.md"))["description"]
         self.assertEqual(missing_routing_boundaries(description), [])
         for exclusion in ("学术论文", "润色", "生产 UI", "Trellis", "原生 Goal"):

@@ -1,12 +1,14 @@
 # academic-research-tools — suite conventions
 
 House standard for academic research tooling skills. This category currently
-holds `academic-figure`, which creates or reviews journal-compliant figures and
-also reproduces paper styles from data or uploaded images. Future academic
-research tools — reference/citation helpers, submission-prep aids, and similar
-— belong here and should follow the same conventions. `academic-figure` is the
-structural template: a lean `SKILL.md` router + a `references/` layer for heavy
-content + bundled `scripts`, `assets`, `tests`, and `evals`.
+holds `academic-figure` and `idea-bib-review`. `academic-figure` creates or
+reviews journal-compliant figures and also reproduces paper styles from data
+or uploaded images. `idea-bib-review` drafts an evidence-grounded literature
+review only when the user supplies both an argument and BibTeX. Future academic
+research tools belong here and should follow the same conventions.
+`academic-figure` is the structural template for figure skills: a lean
+`SKILL.md` router + a `references/` layer for heavy content + bundled
+`scripts`, `assets`, `tests`, and `evals`.
 
 ## Script path resolution
 
@@ -43,8 +45,10 @@ content + bundled `scripts`, `assets`, `tests`, and `evals`.
 - Cover all four internal modes (`advise`, `journal-spec`, `from-data`,
   `from-image`), the display branch of `from-data`, the explicit-journal
   precedence rule, and create/review behavior. Include at
-  least two near-neighbor routing negatives for `literature-mentor`
-  (single-paper reading) and `paper-workbench` (multi-paper synthesis).
+  least two near-neighbor routing negatives: single-paper reading belongs to
+  `literature-mentor`, and multi-paper synthesis stays outside this skill.
+  That synthesis job is `idea-bib-review` only when the user already supplied
+  an argument and BibTeX.
 - `just evals-check` checks this schema. It does not call a model.
   `scripts/check.py` still validates only `SKILL.md` frontmatter, and
   `node-test` runs `tests/*.mjs`.

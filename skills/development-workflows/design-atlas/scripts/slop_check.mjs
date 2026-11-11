@@ -33,6 +33,8 @@ export const TIERS = Object.freeze({
   '68': 'reflex', '69': 'reflex', '70': 'floor', '73': 'floor', '74': 'reflex', '76': 'floor',
   '80': 'reflex', '83': 'reflex', '84': 'reflex', '85': 'reflex',
   'F4': 'finish', 'F21': 'finish', 'F23': 'finish', 'F26': 'finish',
+  'DA1': 'house', 'DA2': 'floor', 'DA3': 'reflex', 'DA4': 'finish',
+  'DA5': 'reflex', 'DA6': 'reflex', 'DA7': 'floor', 'DA8': 'reflex',
 });
 export const CLASSES = Object.freeze({
   '1': 'M', '2a': 'M', '2b': 'M', '3': 'J', '4': 'M', '6b': 'J', '7a': 'M', '8': 'J', '9': 'J',
@@ -43,8 +45,9 @@ export const CLASSES = Object.freeze({
   '58': 'J', '62': 'M', '63': 'M+J', '64': 'M', '65': 'J', '66': 'J', '67': 'M', '68': 'J',
   '69': 'J', '70': 'J', '73': 'J', '74': 'M', '76': 'J', '80': 'J', '83': 'J', '84': 'J', '85': 'J',
   'F4': 'J', 'F21': 'J', 'F23': 'J', 'F26': 'J',
+  'DA1': 'J', 'DA2': 'J', 'DA3': 'J', 'DA4': 'J', 'DA5': 'J', 'DA6': 'J', 'DA7': 'J', 'DA8': 'J',
 });
-/** Gates this script implements (class M or M+J). */
+/** Gates this script implements (class M or M+J). DA* is class J: registered for tiers and waivers, no detector. */
 export const IMPLEMENTED = Object.freeze(Object.keys(CLASSES).filter((g) => CLASSES[g].startsWith('M')));
 
 const TIER_LABEL = { floor: 'Floor', house: 'House', reflex: 'Reflex', finish: 'Finish' };
@@ -1755,8 +1758,26 @@ function gate15(ctx) {
 
 // Gate 19. Upstream check19 L1443-L1458 and checkCopyTell L2375-L2390. Dashes count only
 // between Latin words, so CJK copy with 破折号 passes. Stock second actions added (upstream 42).
+// BUZZ19_CJK is a closed list on the same visible text (no \b). Do not add 打造, 助力, 智能, 高效.
+// 了解更多 is a stock action on the same rule as Learn more: the whole control label, after a trailing arrow is stripped.
+// A listed piece inside a longer ordinary word is not a hit: 天赋能力 / 禀赋能力 (not 赋能),
+// 天衣无缝 (not 无缝). Literal unseamed goods (无缝钢…, 无缝焊接, 无缝内衣, 无缝针织, 无缝服装, 无缝袜) are not hits.
+// 聊天赋能 still matches. 全方位 matches only before a slogan object, so 全方位检查 stays quiet.
+// 重新定义 matches a slogan, not "redefine this setting / symbol / as a value".
+// The 释放…潜能 gap skips 按钮, 点击, 查看, and 设置 so "释放按钮…潜能" is not a slogan.
 const BUZZ19 = /\b(seamless(ly)?|robust|empower(s|ing)?|supercharge[sd]?|best[- ]in[- ]class|industry[- ]leading|mission[- ]critical|future[- ]proof(ed)?|unleash(es|ed|ing)?|elevate[sd]?|effortless(ly)?|unlock(s|ing)?|next[- ]generation|world[- ]class|cutting[- ]edge|streamline[sd]?|revolutioni[sz]e[sd]?|game[- ]chang(er|ing)|enterprise[- ]grade|quietly (trusted|in use)|built for the modern|in today's)\b/gi;
-const STOCK_ACTION = /^(learn more|get started|book a demo|see how it works|watch (the )?demo|request a demo)$/i;
+const BUZZ19_CJK = new RegExp([
+  String.raw`赋能(?!(?<=[天禀]赋能)[力够量])`,
+  String.raw`(?<!天衣)无缝(?!钢|焊接|内衣|针织|服装|袜)`,
+  String.raw`一站式`,
+  String.raw`全方位(?=(?:的)?(?:服务|解决方案|解决|方案|体验|护航|覆盖|升级|打通|整合|赋能))`,
+  String.raw`释放(?:(?!按钮|点击|查看|设置)[^\u3002！，,]){0,6}潜能`,
+  String.raw`开启[^\u3002！，,]{0,8}之旅`,
+  String.raw`颠覆性`,
+  String.raw`极致体验`,
+  String.raw`重新定义(?!(?:为|成)|了?(?:[0-9０-９]+|[一二三四五六七八九十两])?[个种项条位]?(?:该|此|其|以下|下列)?(?:函数|变量|方法|类型|类别|接口|宏|常量|字段|参数|属性|样式|规则|权限|角色|快捷键|热键|密码|策略|阈值|配额|坐标|区域|范围|条件|筛选|配置|选项|枚举|结构|模板|组件|钩子|路由|列宽|尺寸|按键|选择器|命名空间|环境变量|类名))`,
+].join('|'), 'g');
+const STOCK_ACTION = /^(learn more|get started|book a demo|see how it works|watch (the )?demo|request a demo|了解更多)$/i;
 function gate19(ctx) {
   for (const doc of ctx.docs) {
     const prose = maskedProse(doc);
@@ -1773,6 +1794,12 @@ function gate19(ctx) {
     const seen = new Set();
     for (const buzz of prose.matchAll(BUZZ19)) {
       const word = buzz[0].toLowerCase();
+      if (seen.has(word)) continue;
+      seen.add(word);
+      ctx.report('19', 'FAIL', doc.file, doc.lineOf(buzz.index), `buzzword "${buzz[0]}"`, 'Say what the product does, in its own nouns');
+    }
+    for (const buzz of prose.matchAll(BUZZ19_CJK)) {
+      const word = buzz[0];
       if (seen.has(word)) continue;
       seen.add(word);
       ctx.report('19', 'FAIL', doc.file, doc.lineOf(buzz.index), `buzzword "${buzz[0]}"`, 'Say what the product does, in its own nouns');

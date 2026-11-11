@@ -1,10 +1,10 @@
 ---
 version: alpha
 name: 轻盈毛玻璃
-description: "轻盈毛玻璃 is airy frosted glass: a light field, white paper, and two semantic colors, green for input and purple for output."
+description: "轻盈毛玻璃 is airy frosted glass: a light field, white paper, and two semantic colors, one for input and one for output, in a colourway picked for the project."
 colors:
-  canvas-mint: "#E7F6F1"
-  canvas-lavender: "#EDE7F8"
+  field-start: "#E7F6F1"
+  field-end: "#EDE7F8"
   sheet: "rgba(255,255,255,0.78)"
   sheet-solid: "rgba(255,255,255,0.96)"
   sheet-edge: "rgba(255,255,255,0.80)"
@@ -69,17 +69,32 @@ motion:
 
 ## Overview
 
-轻盈毛玻璃 is airy frosted glass for a workbench. The field is bright, low-chroma, cool air. White paper floats on a mint-to-lavender gradient. Read status, then the number, then the action. There is no marketing hero.
+轻盈毛玻璃 is airy frosted glass for a workbench. The field is bright, low-chroma air. White paper floats on the field gradient, which runs from `{colors.field-start}` to `{colors.field-end}`. Read status, then the number, then the action. There is no marketing hero.
 
-绿与紫是两个语义色. `{colors.input}` means input or completion. `{colors.output}` means output. Text sits on paper or on a solid well, never on the field.
+语义色只有两个. `{colors.input}` means input or completion. `{colors.output}` means output. Text sits on paper or on a solid well, never on the field.
 
 Glass is not the default card skin. Only the paper uses `backdrop-filter`, and only once. This file does not define a component library. Do not import the glassmorphism palette, fonts, or radii.
+
+## Colourway
+
+The colourway is a dial. `apply` sets it from the project: an accent token the project already has, then the project content, then the default. The roles, the material, and the contrast gates are the same in every colourway. Only the six hex values below change.
+
+<!-- palette:begin colourway -->
+Colourway: `mint` (薄荷 → 薰衣草 / mint to lavender).
+
+- Field: `#E7F6F1` to `#EDE7F8`.
+- Input: `#187A56` on `#E7F7F0`.
+- Output: `#6D4BD6` on `#F3EEFC`.
+- Other colourways: `mint`, `sky`, `apricot`, `slate`, or `hue:<0-359>`.
+<!-- palette:end colourway -->
+
+To switch, rerun `apply --force --palette <preset|hue:N>`. Do not edit one hex by hand. The contrast table under Accessibility is measured for this colourway only.
 
 ## Colors
 
 Field:
 
-- `{colors.canvas-mint}` (`#E7F6F1`) to `{colors.canvas-lavender}` (`#EDE7F8`), about 160deg.
+- `{colors.field-start}` (`#E7F6F1`) to `{colors.field-end}` (`#EDE7F8`), about 160deg. Both ends stay low-chroma (OKLCH C at most 0.03) in every colourway.
 - At most 3 blobs. A blob keeps the hue of one field end and raises chroma slightly. Do not assign a new hex. Blur about 80px, opacity about 0.55. Keep blobs out from under text.
 
 Paper is the only surface that may blur:
@@ -93,8 +108,8 @@ Wells are solid and do not blur again. `{colors.input-wash}` (`#E7F7F0`) is the 
 
 Text:
 
-- `{colors.ink}` (`#24303A`) for titles and body.
-- `{colors.muted}` (`#5C6B76`) for 12px secondary text.
+- `{colors.ink}` (`#24303A`) for titles and body. It is the same neutral in every colourway.
+- `{colors.muted}` (`#5C6B76`) for 12px secondary text. It is also fixed.
 - `{colors.input}` (`#187A56`) for input, completion, links, and the focus ring.
 - `{colors.output}` (`#6D4BD6`) for output and secondary figures.
 
@@ -172,23 +187,26 @@ Buttons and tags are pills. Paper is 20px. With 8px padding, the inner image is 
 
 ## Accessibility
 
-Meet WCAG 2.2 AA on the worst specified background, not on an average of the field. These ratios were measured for this palette. Do not replace them with a new calculation in this file.
+Meet WCAG 2.2 AA on the worst specified background, not on an average of the field. Both field ends are checked, and the worse one decides. These ratios were measured for this colourway: white 0.78 over the field end, mixed per sRGB channel, then WCAG 2.x relative luminance. Do not replace them with a new calculation in this file. Change the colourway with `apply --force --palette`, which measures again.
 
-Controls show their boundary by fill, plus a 2px focus ring in `{colors.input}` (`#187A56`). On white that ring is 5.31:1. The white edge on the mint field is 1.11:1, which is below the 3:1 non-text boundary, so the edge cannot be the control boundary.
+<!-- palette:begin contrast -->
+Controls show their boundary by fill, plus a 2px focus ring in `{colors.input}` (`#187A56`). On white that ring is 5.31:1. The white edge on the field start is 1.11:1, which is below the 3:1 non-text boundary, so the edge cannot be the control boundary.
 
 | 前景 | 背景 | 比值 | 用途 |
 | --- | --- | --- | --- |
 | `#24303A` | `#FFFFFF` | 13.47 | 正文,不透明回退 |
-| `#24303A` | 白 0.78 叠 `#E7F6F1` | 13.16 | 正文,最亮薄荷字段 |
-| `#5C6B76` | 白 0.78 叠 `#E7F6F1` | 5.37 | 次要文字 |
+| `#24303A` | 白 0.78 叠 `#E7F6F1` | 13.16 | 正文,字段起点 |
+| `#24303A` | 白 0.78 叠 `#EDE7F8` | 12.95 | 正文,字段终点 |
+| `#5C6B76` | 白 0.78 叠 `#E7F6F1` | 5.37 | 次要文字,字段起点 |
+| `#5C6B76` | 白 0.78 叠 `#EDE7F8` | 5.29 | 次要文字,字段终点 |
 | `#187A56` | `#E7F7F0` | 4.79 | 输入或完成,正文与大号数字 |
 | `#187A56` | `#FFFFFF` | 5.31 | 链接与焦点环 |
 | `#6D4BD6` | `#F3EEFC` | 5.08 | 输出,正文与大号数字 |
 | `#6D4BD6` | `#FFFFFF` | 5.79 | 输出色在白纸上 |
 | `#FFFFFF` | `#E7F6F1` | 1.11 | 白描边,不能当控件边界 |
-| `#1F8A62` | `#E7F7F0` | 3.89 | 更亮的绿,不够正文,不使用 |
+<!-- palette:end contrast -->
 
-`#1F8A62` is not a token. On the input well it is 3.89:1, short of 4.5:1. Use `#187A56` (4.79:1) and keep the well light.
+A lighter tint of `{colors.input}` or `{colors.output}` that falls under 4.5:1 on its well is not a token. Use the measured value and keep the well light.
 
 ## Writing Tone
 
@@ -209,15 +227,16 @@ State the status, then the number, then the action. Keep labels short. No slogan
 ### Don't
 
 - Don't use glass as the default card skin. Wells, list rows, and tables are solid. Only paper on the field may use one `backdrop-filter`.
-- Don't use the 1px `rgba(255,255,255,0.80)` edge as a control boundary or as an opaque fence. On mint it is 1.11:1.
+- Don't use the 1px `rgba(255,255,255,0.80)` edge as a control boundary or as an opaque fence. On the field it is far below 3:1. The Accessibility table has the ratio.
 - Don't nest paper, and don't put more than 6 `backdrop-filter` layers in one viewport.
 - Don't animate blur.
 - Don't use Inter, Plus Jakarta Sans, or DM Sans.
-- Don't set body text in `#1F8A62`. On `#E7F7F0` it is 3.89:1.
+- Don't set body text in a lighter tint of `{colors.input}` or `{colors.output}`. Under 4.5:1 on its well, it fails.
 - Don't apply negative letter-spacing to Chinese running text.
-- Don't add a second shadow, a neon glow, or a purple-to-blue neon gradient.
+- Don't add a second shadow, a neon glow, or a saturated neon gradient.
 - Don't put text on the field or on a blob.
 - Don't turn this field gradient off as decoration, and don't paste it onto another DESIGN.md. Choosing this style means the gradient is the material.
+- Don't change one hex of the colourway by hand, and don't raise the chroma of a field end. Switch the whole colourway with `apply --force --palette`.
 
 ## Responsive Behavior
 
@@ -232,9 +251,10 @@ Pills stay pills. The focus ring stays 2px `{colors.input}`. Keyboard focus does
 
 ## Known Gaps
 
-- No dark theme.
+- No dark theme. Every colourway is light.
 - No chart palette.
-- Contrast ratios above are measured on static wells and on the white-paper mix (white 0.78 over `#E7F6F1`, or `#FFFFFF` for the opaque fallback). They are not measured on photographs.
+- `{colors.ink}` and `{colors.muted}` do not tint with the colourway. On a warm field they read slightly cool.
+- Contrast ratios above are measured on static wells and on the white-paper mix (white 0.78 over each field end, or `#FFFFFF` for the opaque fallback). They are not measured on photographs.
 - If Figtree is unavailable, fall back to the system sans-serif and keep `"PingFang SC", "Noto Sans SC"` after the Latin family.
 - Title weight 650 needs the Figtree variable font. Static Figtree files step by 100. If only a static file is available, use 600 for that role and do not add a second token.
 - Line-height is specified for Chinese body text only (1.7). Other roles do not add a second line-height.

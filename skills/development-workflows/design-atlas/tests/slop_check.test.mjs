@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { run, TIERS, CLASSES, IMPLEMENTED, parseYaml } from '../scripts/slop_check.mjs';
+import { run, TIERS, CLASSES, IMPLEMENTED, parseYaml, DECLARED, readDesign, parseColor } from '../scripts/slop_check.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SKILL = dirname(HERE);
@@ -221,6 +221,41 @@ test('declared material: mono x-theme waives 64, Inter display waives 1', () => 
   assert.equal(inter.code, 0, inter.output);
 });
 
+// airy-glass-field/DESIGN.md is `apply style:airy-glass --palette hue:202`: the field runs from
+// hue 202 to hue 328, the pair gate 2a reads as purple-to-blue. tests/test_palette.py keeps
+// the fixture equal to the current apply output.
+test('airy-glass colourway: the field gradient stays clear of gate 2a', () => {
+  const dir = join(FIX, 'airy-glass-field');
+  const r = check(dir);
+  assert.equal(r.code, 0, r.output);
+  assert.equal(r.findings.filter((f) => f.gate === '2a').length, 0, r.output);
+
+  const design = readDesign(join(dir, 'DESIGN.md'));
+  const { 'field-start': start, 'field-end': end, input, output } = design.fm.colors;
+  assert.match(start, /^#[0-9A-F]{6}$/);
+  const stops = [parseColor(start), parseColor(end)];
+  assert.match(DECLARED['2a'](design, { data: { stops } }), /declares a gradient material/);
+  assert.equal(DECLARED['2a'](design, { data: { stops: [...stops, parseColor('#8b5cf6')] } }), null);
+
+  const designText = readFileSync(join(dir, 'DESIGN.md'), 'utf8');
+  const gradient = (a, b) => page({ css: `.field { background: linear-gradient(160deg, ${a}, ${b}); }`, tokens: `--field-a: ${a}; --field-b: ${b};`, body: '<div class="field">Queue</div>' }).replace(`linear-gradient(160deg, ${a}, ${b})`, 'linear-gradient(160deg, var(--field-a), var(--field-b))');
+  // The same two hues at a chroma above 0.04 are a banned pair when nothing declares them.
+  withProject({ 'index.html': gradient('oklch(80% 0.12 202)', 'oklch(80% 0.12 328)') }, (tmp) => {
+    const loud = check(tmp);
+    assert.ok(hits(loud, '2a', ['FAIL']).some((f) => /purple-to-blue/.test(f.message)), loud.output);
+  });
+  // A chromatic gradient built from the colours this DESIGN.md declares is waived, not failed.
+  withProject({ 'DESIGN.md': designText, 'index.html': gradient(input, output) }, (tmp) => {
+    const declared = check(tmp);
+    const found = declared.findings.filter((f) => f.gate === '2a');
+    assert.ok(found.length > 0 && found.every((f) => f.grade === 'WAIVED' && f.waiver === 'declared'), declared.output);
+  });
+  // The written field gradient itself raises no 2a finding under the same DESIGN.md.
+  withProject({ 'DESIGN.md': designText, 'index.html': gradient(start, end) }, (tmp) => {
+    assert.equal(check(tmp).findings.filter((f) => f.gate === '2a').length, 0);
+  });
+});
+
 test('manual waivers: valid one honoured, Floor / short / malformed rejected', () => {
   const r = check(join(FIX, 'waiver'));
   const g1 = r.findings.filter((f) => f.gate === '1');
@@ -237,6 +272,35 @@ test('a Floor waiver is refused and gate 27 stays FAIL', () => {
   assert.ok(hits(r, '27', ['FAIL']).length > 0, r.output);
   assert.ok(r.findings.some((f) => f.grade === 'NOTE' && f.gate === '27'));
   assert.equal(r.code, 1);
+});
+
+test('gate 19 reports Chinese buzzwords and 了解更多, and stays quiet on ordinary Chinese', () => {
+  const bad = check(join(FIX, 'cjk-copy-fail'));
+  const msgs = hits(bad, '19', ['FAIL']).map((f) => f.message);
+  assert.ok(hits(bad, '19').every((f) => f.grade === 'FAIL' && f.tier === 'house'), bad.output);
+  for (const word of ['赋能', '无缝', '一站式', '全方位', '释放团队潜能', '开启协作之旅', '颠覆性', '极致体验', '重新定义', '了解更多']) {
+    assert.ok(msgs.some((m) => m.includes(word)), `missing ${word}:\n${bad.output}`);
+  }
+  assert.ok(msgs.some((m) => /stock action label/.test(m) && m.includes('了解更多')), bad.output);
+  const failHtml = readFileSync(join(FIX, 'cjk-copy-fail', 'index.html'), 'utf8');
+  assert.ok(failHtml.includes('聊天赋能'), 'fail fixture must keep the 聊天赋能 case');
+  const passHtml = readFileSync(join(FIX, 'cjk-copy-pass', 'index.html'), 'utf8');
+  for (const phrase of ['天赋能力', '禀赋能力', '天衣无缝', '无缝钢管', '无缝内衣', '无缝焊接', '重新定义快捷键', '重新定义一个函数', '重新定义为', '全方位检查', '释放按钮', '释放。潜能', '开启。之旅', '打造', '助力', '智能', '高效', '了解更多细节']) {
+    assert.ok(passHtml.includes(phrase), `pass fixture dropped ${phrase}`);
+  }
+  const good = check(join(FIX, 'cjk-copy-pass'));
+  assert.equal(hits(good, '19').length, 0, good.output);
+});
+
+test('waive DA3 is accepted and Floor waive DA2 is rejected', () => {
+  const r = check(join(FIX, 'da-waiver'));
+  const notes = r.findings.filter((f) => f.grade === 'NOTE');
+  assert.equal(notes.length, 1, r.output);
+  assert.equal(notes[0].gate, 'DA2');
+  assert.equal(notes[0].rule, 'waiver-rejected');
+  assert.match(notes[0].message, /waiver rejected/);
+  assert.match(notes[0].message, /Floor/);
+  assert.equal(r.code, 0, r.output);
 });
 
 test('waiver reason must relate to the page', () => {

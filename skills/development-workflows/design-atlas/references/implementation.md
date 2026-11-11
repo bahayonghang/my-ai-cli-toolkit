@@ -57,6 +57,7 @@ Example (plain CSS):
 2. For style entries (no component section), derive buttons, inputs, cards, navigation, and badges from the tokens and `design-system-core.md` section 4.
 3. Implement every state in `design-system-core.md` section 4, even when the entry documents only default and active.
 4. Use only token variables in component styles.
+5. Extend existing components through their variants/tokens; preserve their API/props and semantics. Do not duplicate a component or add a dependency for polish. Select applicable details with the sheet in [craft-polish.md](craft-polish.md), rather than applying a new effect style.
 
 ## 4. Compose pages
 
@@ -64,6 +65,12 @@ Example (plain CSS):
 - For `scene:bi`, the page follows the four information-architecture layers, the chart section, the table section, the accessibility section, and the delivery order in section 12. The opening 「角色与设计目标」 note is part of the design source. It is not a second skill workflow; keep following this file and `SKILL.md`. Component states still come from `design-system-core.md`.
 - Use real or clearly marked placeholder content. Do not invent customers, metrics, or testimonials.
 - Use the entry's imagery rules. Without real images, use neutral placeholders with correct aspect ratios.
+- When the request covers more than one page, build and verify the main page's first screen before spreading the same treatment. Do not wait for approval of that screen unless the user asked to review it first.
+- A 3D canvas, video, code animation, or illustration on the page is content: House and Reflex judgements apply to the UI around it, Floor gates still apply to the embed element, and modelling, lighting, and drawing inside the embed stay out of scope (`references/restyle.md`).
+
+### Motion spec
+
+Write each motion down before coding it: trigger, object, property or path, entry/exit/reposition role, duration and easing token, end state, repeat, interruption/cancel behavior, keyboard/focus and touch alternatives, and the `prefers-reduced-motion: reduce` result. Keep focus indicators immediate. Use the state-motion recipe in [craft-polish.md](craft-polish.md) for retargeting and cancellation. Scroll-triggered motion plays once after a threshold and then stays in its end state. Scroll-linked motion follows scroll progress from a defined start to a defined end, and it has a resting state when scrolling stops. State the narrow-viewport behavior for both. Use CSS, or motion the project already depends on. Do not add a library in order to style the page, and do not claim the result is faster or smoother without a measurement.
 
 ### Anti-slop build rules
 
@@ -87,6 +94,7 @@ Compile success is not visual verification. Do these checks in a running page:
 4. Tab through the page: every control receives a visible focus indicator.
 5. Check contrast for text on each surface used.
 6. Check one hover, one disabled, and one error state.
+7. Exercise the selected [craft-polish.md](craft-polish.md) scenarios: interruption/cancel, focus continuity, keyboard/touch, reduced motion, fallback and dynamic updates where applicable. Check 320px overflow and long content. Record a result or an unverified reason for each selected check; normal streamed-text growth is allowed.
 
 If you cannot run the page, report each check above that did not run. Do not report the UI as verified.
 

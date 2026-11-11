@@ -30,6 +30,8 @@ Use this file when you write, extend, or check design rules: a new `DESIGN.md`, 
 
 For every interactive component, define these states where they apply: default, hover, focus-visible, active/pressed, disabled, loading, error.
 
+When extending an existing component, preserve its API/props and semantics; prefer its current variants and tokens over a parallel implementation. Applicable feedback, overlays, mixed-language type and dynamic-content decisions live in [craft-polish.md](craft-polish.md).
+
 - Keyboard: every action is reachable with Tab/Shift+Tab and runs with Enter or Space. Focus order follows visual order.
 - Focus-visible: a visible indicator with at least 3:1 contrast against adjacent colors. Never remove an outline without a replacement.
 - Pointer and touch: touch targets are at least 44×44 CSS px, or the entry records a smaller size in `Known Gaps`.
@@ -38,6 +40,16 @@ For every interactive component, define these states where they apply: default, 
 - Error: color plus text or icon. Color alone is not an error signal.
 - State the token for spacing, type, and color of each part. Example: "button-primary: background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button}`, height 40px".
 - Cover edge cases: long labels, empty states, overflow, and right-to-left text when the product needs it.
+
+### Icons
+
+Inline icons that belong to one set follow one drawing rule.
+
+- Share one `viewBox`, stroke width, line cap, and fill style across the set.
+- A monochrome icon uses `currentColor`. Do not recolor a multi-color illustration as if it were a monochrome icon.
+- When you optimize an SVG, keep every `id`, `class`, and `defs` entry that CSS, script, or animation still references.
+- Check the icon at the size it renders. A shape that is unreadable at that size does not belong in the set.
+- A decorative icon is `aria-hidden="true"`. An icon-only button or link has an accessible name.
 
 ## 5. Responsive rules
 
@@ -67,6 +79,7 @@ Run this list in code review or after implementation:
 - [ ] The entry's Do's and Don'ts hold on every new screen.
 - [ ] No brand asset violates `brand-boundary.md`.
 - [ ] `anti-slop.md` holds: `slop_check` reports 0 FAIL, every REFLEX is fixed or waived in `DESIGN.md`, and the judged checklist (section 6) is walked.
+- [ ] Inline icons in one set follow one drawing rule (DA8): a shared `viewBox`, stroke, and caps; monochrome icons use `currentColor`; each icon is readable at its rendered size.
 
 ## Source
 

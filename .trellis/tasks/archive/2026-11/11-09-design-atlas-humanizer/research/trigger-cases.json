@@ -1,0 +1,79 @@
+{
+  "note": "草案，供实现阶段使用。用例未执行，也未跑 trigger eval。中文短语按原词写入，须与最终 description 用词一致。",
+  "group_meaning": {
+    "should_trigger": "应触发 design-atlas。改稿用例走 Restyle 分支并读 restyle.md。",
+    "should_not_trigger": "不应触发 design-atlas。",
+    "near_neighbor": "容易读错分支或误触发：嵌入 3D 的页面仍触发，但不得改场景本身；只审查不得改文件；忠实复刻转 image-to-ui-skill。"
+  },
+  "should_trigger": [
+    {
+      "id": "restyle-keep-brand-zh",
+      "prompt": "这个后台首页看着太 AI 了，品牌规定用 Inter，帮我去去模板味，别动业务逻辑和表单。",
+      "why": "改稿且保留品牌 → Restyle 分支，捕获现有外观为 DESIGN.md 并声明 Inter；保留表单标签与校验。"
+    },
+    {
+      "id": "restyle-switch-zh",
+      "prompt": "把这个落地页改稿，换一个更有辨识度的风格，内容和价格别动。",
+      "why": "改稿且换风格 → Restyle 分支走 route/apply；价格属于 DA2 保留项。"
+    },
+    {
+      "id": "restyle-en",
+      "prompt": "Restyle our existing settings page so it stops looking like a generic template, but keep our colors.",
+      "why": "restyle an existing page while keeping its look。"
+    },
+    {
+      "id": "audit-redundant-zh",
+      "prompt": "audit ./admin，看看哪些说明文字是多余的，先别改代码。",
+      "why": "审计分支；报告 DA1，同时列出必须保留的标签与限制（DA2），不改文件。"
+    },
+    {
+      "id": "build-zh-copy",
+      "prompt": "给我们的协作工具做个官网首页，文案别写赋能、一站式这种套话。",
+      "why": "新建页面；gate 19 中文套话检测应生效。"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "id": "threejs-scene-zh",
+      "prompt": "这个 Three.js 浮空岛场景里的树在飘，帮我修正接触关系和光影，保留 low-poly。",
+      "why": "3D 场景建模与灯光，不是 Web UI。"
+    },
+    {
+      "id": "svg-icons-zh",
+      "prompt": "清理这组 SVG 图标：合并重叠路径、减少节点、跑一遍 SVGO。",
+      "why": "独立矢量资产优化，不是页面实施。"
+    },
+    {
+      "id": "code-animation-zh",
+      "prompt": "做一支 15 秒动态图形 showreel，写代码逐帧渲染成视频。",
+      "why": "代码动画 / 视频作品。"
+    },
+    {
+      "id": "copy-only-zh",
+      "prompt": "把这段产品介绍去 AI 味，改得像人写的。",
+      "why": "纯文案 → write。"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "id": "page-with-3d-hero-zh",
+      "prompt": "落地页首屏嵌了一个 Three.js 模型，帮我把页面去 AI 味。",
+      "why": "触发 Restyle；29/80 等判断只评外围 UI，Floor gate 33/27 作用于画布；不改场景灯光。"
+    },
+    {
+      "id": "reference-borrow-zh",
+      "prompt": "参考这张截图的网格和字体比例，重做我们的定价页。",
+      "why": "借鉴点名属性 → design-atlas 定制 DESIGN.md，列明借鉴项；不复刻截图。"
+    },
+    {
+      "id": "reference-clone-zh",
+      "prompt": "把这张截图一比一复刻成可点击的页面。",
+      "why": "忠实复刻 → image-to-ui-skill，不触发 design-atlas。"
+    },
+    {
+      "id": "html-poster-zh",
+      "prompt": "做一张 HTML 动态海报，标题和图注要能改，边框用 SVG 动画。",
+      "why": "动态海报不是产品 UI；不触发 design-atlas（无仓库内技能，通用转出）。"
+    }
+  ]
+}

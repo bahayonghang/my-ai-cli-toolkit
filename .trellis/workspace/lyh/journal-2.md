@@ -264,3 +264,102 @@ Compact Workflow 在 agent start 前选择 pane 或 agent surface；未登记 id
 ### Status
 
 [OK] **Completed**
+
+
+## Session 74: 吸收 humanizer 到 design-atlas 0.4.0
+<!-- trellis-session: v=2 fp=c1069cfdd1e5c5eb -->
+
+**Date**: 2026-11-09
+**Task**: 吸收 humanizer 到 design-atlas 0.4.0
+**Branch**: `dev`
+
+### Summary
+
+design-atlas 0.4.0 增加 Restyle 分支、DA 判断门禁和中文套话检测。just ci 通过，任务已归档。
+
+### Main Changes
+
+- 新增 Restyle 分支，保留必要信息，3D、独立 SVG 和代码动画转出。
+- DA1–DA8 只做判断；gate 19 中文套话与英文同级失败。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fbd7a5d1` | feat(design-atlas): ✨ 给已有页面加改稿分支和判断门禁 |
+
+### Testing
+
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 75: design-atlas 轻盈毛玻璃色板拨盘
+<!-- trellis-session: v=2 fp=7605ea40c7bad28d -->
+
+**Date**: 2026-11-10
+**Task**: design-atlas 轻盈毛玻璃色板拨盘
+**Branch**: `dev`
+
+### Summary
+
+让 style:airy-glass 按项目主色或内容选择配色，材质和对比度门禁保持不变。色板契约已写入 spec，任务已归档。
+
+### Main Changes
+
+- design-atlas 0.5.0：airy-glass 色板拨盘、预设与色相推导、对比度门禁
+- 记录 helper command contracts 与技能编写约定
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `18e7e19918b8c61370dd6d26dfa787e0f4e11815` | feat(design-atlas): ✨ 让轻盈毛玻璃按项目选择配色 |
+| `c737d13b5aa4d0bc14154dc147ee7108aafd1983` | docs(spec): 📝 记录轻盈毛玻璃色板拨盘约定 |
+
+### Testing
+
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 76: Design Atlas 0.6.0 craft polish
+<!-- trellis-session: v=2 fp=c3acd04666f9fb81 -->
+
+**Date**: 2026-11-11
+**Task**: Design Atlas 0.6.0 craft polish
+**Branch**: `dev`
+
+### Summary
+
+Implemented style-preserving craft guidance, evals and contract tests; committed all task changes and archived the task with explicit evidence limits.
+
+### Main Changes
+
+- Added one craft-polish reference, lean workflow hooks, 11 behavior cases, 3 resource contracts and bilingual generated docs.
+- Preserved component APIs, design identity, dependencies, gate ownership and airy-glass palette behavior.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f25076ce` | feat(design-atlas): ✨ 增加保留风格的交互精修指引 |
+
+### Testing
+
+- [OK] Final just ci passed all eight stages; target Python 151 passed and Node 52 passed; independent Trellis check found no blocking findings.
+- [OK] Lexical trigger smoke 18/18; staged whitespace check passed before work commit.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Runtime replay, actual model A/B output comparison and human aesthetic review remain missing evidence; archival does not turn these into passed checks.

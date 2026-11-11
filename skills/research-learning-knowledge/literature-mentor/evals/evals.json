@@ -37,21 +37,21 @@
     {
       "id": 4,
       "prompt": "我手上有五篇相关 paper，帮我整合一下，顺便找研究空白。",
-      "expected_output": "Routing-negative: multi-paper synthesis and gap mapping should route to paper-workbench, not literature-mentor.",
+      "expected_output": "Routing-negative: multi-paper synthesis and gap mapping are outside literature-mentor.",
       "files": [],
       "assertions": [
         "Does NOT start a single-paper tutor read",
-        "Defers to paper-workbench for cross-paper synthesis"
+        "States that 多篇综合 is outside this skill"
       ]
     },
     {
       "id": 5,
       "prompt": "把这批 arXiv 链接规范化成机器可读的 JSON。",
-      "expected_output": "Routing-negative: source normalization into machine-readable artifacts should route to paper-workbench.",
+      "expected_output": "Routing-negative: source normalization into machine-readable artifacts is outside literature-mentor.",
       "files": [],
       "assertions": [
         "Does NOT enter interactive tutor reading",
-        "Defers to paper-workbench's normalization path"
+        "States that 批量规范化 is outside this skill"
       ]
     }
   ]

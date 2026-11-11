@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Validation gates and test standards for skill-local Python helpers"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Exit codes and stderr conventions for the new --palette flag and palette subcommand"}
+{"file": ".trellis/spec/guides/skill-authoring-conventions.md", "reason": "SKILL.md frontmatter, version bump, and catalog asset conventions"}
+{"file": ".trellis/tasks/11-09-airy-glass-adaptive-palette/research/prior-art.md", "reason": "Internal prior art (theme colourway dials) and verified contrast method"}
