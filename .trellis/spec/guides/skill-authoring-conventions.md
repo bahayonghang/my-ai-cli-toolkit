@@ -228,6 +228,20 @@ not delete `first-party/` or `LICENSES/`.
   SKILL.md References table. Do not copy text from
   LearnPrompt/vibecoding-humanizer; that checkout ships no license.
 
+### Colourway dial (design-atlas 0.5.0)
+
+- `assets/catalog/overlays/palettes.json` is first-party and kept across
+  rebuilds. It is keyed by entry id; an entry without a key has no dial and
+  its `apply` output must not change.
+- An entry with a dial is a render template. Keep colour names out of its
+  prose (use role tokens such as `{colors.input}`), and keep per-colourway
+  text inside the `palette:begin` / `palette:end` blocks.
+- Preset hex values are fixed by hand and proven by tests; derivation is the
+  fallback for a brand hue far from every preset. Do not regenerate presets
+  from `derive` in a rebuild.
+- Command contract, selection order, and required tests:
+  `.trellis/spec/backend/skill-helper-command-contracts.md`.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

@@ -345,3 +345,117 @@ count characters until a blank line, including the closing fence.
 
 Correct: extract each command once for local validation and length accounting;
 validate the presentation envelope separately without lending it to a command.
+
+## Scenario: design-atlas colourway dial (`apply --palette`, `palette`)
+
+### 1. Scope / Trigger
+
+- Trigger: `skills/development-workflows/design-atlas/scripts/design_catalog.py`
+  gained a flag and a subcommand that rewrite an entry's colours per project.
+  Applies when adding a dial to another entry, changing preset data, or
+  touching the token reader in `collect_signals`.
+
+### 2. Signatures
+
+```text
+design_catalog.py apply <id> [--root DIR] [--force] [--palette auto|<preset>|hue:<0-359>] [--prompt TEXT]
+design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--format text|json]
+```
+
+- `scripts/palette.py`: `load_palettes()`, `gates(colors, fixed)`,
+  `derive(hue, spec)`, `choose(spec, *, signal, prompt, project, override)`,
+  `render(template, choice, spec)`. Pure functions; no project writes.
+- Data: `assets/catalog/overlays/palettes.json`, keyed by entry id. Only
+  `style:airy-glass` has a dial today.
+
+### 3. Contracts
+
+- `palettes.json` per entry: `default`, `match_degrees`, `min_accent_chroma`,
+  `min_accent_lightness`, `output_offsets`, `reserved_hues` (a band with
+  lo > hi wraps through 0), `fixed` (`ink`, `muted`, `sheet-alpha`), and
+  `presets.<name>` with `anchor`, `label.{zh,en}`, six role hex values, and
+  `keywords_en` / `keywords_zh`.
+- Selection order for `auto`: explicit `--palette`; first accent-named CSS
+  token that clears both chroma and lightness floors (nearest preset within
+  `match_degrees`, else derived from its hue); preset keywords in prompt
+  (weight 1) and project text (weight 0.5); `default`.
+- `signals.palette` keeps `band`, `paper_var`, `L`, `accent_var`,
+  `accent_hue`, and adds `accent_C`, `accent_hex`, `accents[]`. When an accent
+  exists and no paper token does, it is an object whose `band`, `paper_var`,
+  and `L` are null. Consumers test `band` for truthiness.
+- The entry file is the render template. Hex values are replaced in one regex
+  pass; the `<!-- palette:begin NAME -->` / `<!-- palette:end NAME -->` blocks
+  (`colourway`, `contrast`) are rewritten whole. `apply` appends
+  `<!-- palette: <name>; reason: ... -->` under the provenance comment and
+  prints `palette: <name> (<reason>)` after `wrote:`.
+- `palette --format json`: `entry`, `palette`, `reason`, `notes`, `colors`,
+  `contrast[]` of `{id, fg, bg, ratio, min, pass}`.
+- Contrast: white at `sheet-alpha` over each field end, mixed per sRGB channel
+  and rounded to 8 bits, then WCAG 2.x luminance. Ink and muted are gated on
+  both field ends.
+
+### 4. Validation & Error Matrix
+
+| Input | Result |
+| --- | --- |
+| `--palette` not `auto`, a preset name, or `hue:0`–`hue:359` | exit 2, nothing written |
+| `--palette` or `--prompt` on an entry with no dial | exit 2, nothing written |
+| Chosen colourway fails a gate, or a `palette:` marker is missing | exit 1, nothing written |
+| Any failure together with `--force` | Existing `DESIGN.md` is not renamed |
+| Accent below `min_accent_chroma` or `min_accent_lightness` | Skipped with a note; next candidate tried |
+| Entry without a dial, no palette flags | Output byte-identical to before |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `--color-primary: #2563EB` picks `sky` and the reason names the token.
+- Base: no CSS tokens and no domain keyword falls back to `mint`, labelled as
+  a fallback.
+- Bad: a README `## Community` heading, or shadcn's near-black `--primary`
+  (`#0F172A`), selecting a preset.
+
+### 6. Tests Required
+
+`tests/test_palette.py` must keep asserting:
+
+- the mint table reproduces 13.47 / 13.16 / 5.37 / 4.79 / 5.31 / 5.08 / 5.79 / 1.11;
+- every preset and all 360 derived hues pass every gate, field chroma stays
+  at or below 0.03, and the output hue is outside the reserved bands;
+- rendering a rendered file again with the same choice changes nothing, and
+  no default hex that the chosen colourway does not use is left in the output;
+- every exit-2 and exit-1 path leaves the project directory unchanged;
+- for every other entry, `show` prints the catalog file and `apply` writes it
+  plus provenance only, with or without project signals;
+- `tests/fixtures/slop/airy-glass-field/DESIGN.md` equals current `apply` output.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```python
+# First accent-named token wins, and the renamed backup happens first.
+accent = _pick_prop(props, ACCENT_NAMES)
+backup_existing(root)
+colors = choose(...)          # may fail after the rename
+```
+
+A gray `--accent` hides a chromatic `--primary`, and a failed run loses the
+user's `DESIGN.md` name.
+
+#### Correct
+
+```python
+for candidate in accents:     # skip gray and near-black, note each skip
+    ...
+colors = choose(...)          # validate and gate first
+if any(not g["pass"] for g in gates(colors, fixed)):
+    return 1
+backup_existing(root)         # only after every check passed
+```
+
+> **Warning**: keyword lists must name an industry or product domain. Words
+> that appear in any README (`community`, `security`, `enterprise`, `cloud`,
+> `health`) select a preset from a heading alone.
+
+> **Warning**: the CSS token reader accepts a last declaration with no
+> trailing semicolon. Strip comments before reading, or
+> `/* --brand: #f00 */` is read as a token.
