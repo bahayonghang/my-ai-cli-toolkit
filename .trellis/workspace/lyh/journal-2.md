@@ -295,3 +295,35 @@ design-atlas 0.4.0 增加 Restyle 分支、DA 判断门禁和中文套话检测�
 ### Status
 
 [OK] **Completed**
+
+
+## Session 75: design-atlas 轻盈毛玻璃色板拨盘
+<!-- trellis-session: v=2 fp=7605ea40c7bad28d -->
+
+**Date**: 2026-11-10
+**Task**: design-atlas 轻盈毛玻璃色板拨盘
+**Branch**: `dev`
+
+### Summary
+
+让 style:airy-glass 按项目主色或内容选择配色，材质和对比度门禁保持不变。色板契约已写入 spec，任务已归档。
+
+### Main Changes
+
+- design-atlas 0.5.0：airy-glass 色板拨盘、预设与色相推导、对比度门禁
+- 记录 helper command contracts 与技能编写约定
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `18e7e19918b8c61370dd6d26dfa787e0f4e11815` | feat(design-atlas): ✨ 让轻盈毛玻璃按项目选择配色 |
+| `c737d13b5aa4d0bc14154dc147ee7108aafd1983` | docs(spec): 📝 记录轻盈毛玻璃色板拨盘约定 |
+
+### Testing
+
+- [OK] just ci
+
+### Status
+
+[OK] **Completed**
