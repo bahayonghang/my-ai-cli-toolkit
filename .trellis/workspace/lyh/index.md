@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 75
-- **Last Active**: 2026-11-10
+- **Total Sessions**: 76
+- **Last Active**: 2026-11-11
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~329 | Active |
+| `journal-2.md` | ~365 | Active |
 | `journal-1.md` | ~1999 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 76 | 2026-11-11 | Design Atlas 0.6.0 craft polish | `f25076ce` | `dev` |
 | 75 | 2026-11-10 | design-atlas 轻盈毛玻璃色板拨盘 | `18e7e19918b8c61370dd6d26dfa787e0f4e11815`, `c737d13b5aa4d0bc14154dc147ee7108aafd1983` | `dev` |
 | 74 | 2026-11-09 | 吸收 humanizer 到 design-atlas 0.4.0 | `fbd7a5d1` | `dev` |
 | 73 | 2026-10-26 | design-md 默认工程规范与场景接入分析 | `3d40e899` | `dev` |

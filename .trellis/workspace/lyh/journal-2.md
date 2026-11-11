@@ -327,3 +327,39 @@ design-atlas 0.4.0 增加 Restyle 分支、DA 判断门禁和中文套话检测�
 ### Status
 
 [OK] **Completed**
+
+
+## Session 76: Design Atlas 0.6.0 craft polish
+<!-- trellis-session: v=2 fp=c3acd04666f9fb81 -->
+
+**Date**: 2026-11-11
+**Task**: Design Atlas 0.6.0 craft polish
+**Branch**: `dev`
+
+### Summary
+
+Implemented style-preserving craft guidance, evals and contract tests; committed all task changes and archived the task with explicit evidence limits.
+
+### Main Changes
+
+- Added one craft-polish reference, lean workflow hooks, 11 behavior cases, 3 resource contracts and bilingual generated docs.
+- Preserved component APIs, design identity, dependencies, gate ownership and airy-glass palette behavior.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f25076ce` | feat(design-atlas): ✨ 增加保留风格的交互精修指引 |
+
+### Testing
+
+- [OK] Final just ci passed all eight stages; target Python 151 passed and Node 52 passed; independent Trellis check found no blocking findings.
+- [OK] Lexical trigger smoke 18/18; staged whitespace check passed before work commit.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Runtime replay, actual model A/B output comparison and human aesthetic review remain missing evidence; archival does not turn these into passed checks.
