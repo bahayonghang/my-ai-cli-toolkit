@@ -44,6 +44,7 @@ Leave these alone:
 - Form semantics, including each control's label and its association.
 - The Keep list in `anti-slop.md`: labels, input limits and formats, errors, prices and fees, consent and legal text, risk and irreversible-action warnings, credits, and the user's declared brand choices. Move or restyle an item on that list. Do not delete it, and do not move it into a hover-only tooltip.
 - The framework, the component library, and the dependency set. Do not add a dependency in order to change the styling.
+- Existing component API/props and semantics; use its current variants/tokens instead of a parallel component.
 
 ## 6. Fix order
 
@@ -53,6 +54,8 @@ Leave these alone:
 
 Change the few things with the largest effect. Do not rebuild a page that is already clear in order to satisfy gates. Gate 58's word ceiling is met by cutting restatement, not by cutting a constraint, an error, or a price.
 
+After diagnosis, use [craft-polish.md](craft-polish.md) only for applicable feedback, overlays, type, dynamic content or surface findings. Record the selection sheet and n/a reasons. Its recipes keep the selected design and existing gate ownership; they do not authorise glass, bounce, new dependencies or business changes.
+
 ## 7. Embedded media
 
 A 3D canvas, video, code animation, or illustration on the page is content, not chrome. House and Reflex judgements, including gates 29 and 80 and shadow or glow judgements, apply to the UI around the embed. Floor gates still apply to the embed element itself: 33 (accessible name), 27 (reduced motion), 28a (autoplay muted), and 62 (visible by default). Modelling, lighting, and vector drawing inside the embed are out of scope. Say that in the report, and do not edit them.
@@ -60,6 +63,8 @@ A 3D canvas, video, code animation, or illustration on the page is content, not 
 ## 8. Verify
 
 Compare the page before and after at the same viewport, state, and scroll position. Then run `SKILL.md` Workflow steps 7 and 8: a running-page check, and the anti-slop check. If a check cannot be run, list it. Do not call that check verified.
+
+For selected craft changes, also exercise the recipe's interruption, keyboard/touch, focus, reduced-motion and fallback scenarios. Report evidence separately from static checks and visual impressions.
 
 ## 9. Report
 

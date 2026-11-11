@@ -1,0 +1,37 @@
+{
+  "positive_concepts": {
+    "ui_surface": ["UI", "page", "component", "页面", "组件", "看板"],
+    "design_action": ["build", "restyle", "implement", "style", "实施", "改稿", "风格"],
+    "design_source": ["DESIGN.md", "design language", "design system", "设计系统"],
+    "audit": ["audit", "slop", "AI 味", "审查"],
+    "style_language": ["terminal", "glassmorphism", "轻盈毛玻璃", "brutalism", "Linear", "Vercel", "Stripe", "Apple"],
+    "catalog": ["catalog", "list", "compare", "design styles", "themes", "自动选主题"]
+  },
+  "description_required_concepts": ["ui_surface", "design_action", "design_source", "audit", "style_language", "catalog"],
+  "recommended_threshold": 0.34,
+  "negative_patterns": ["standalone SVG", "backend", "HTML report", "HTML reports", "faithful recreation", "rewrite prose", "video", "3D scene"],
+  "should_trigger": [
+    {"text": "Restyle this existing UI while keeping its look.", "family": "preserve"},
+    {"text": "按 DESIGN.md 实施设置页面。", "family": "build"},
+    {"text": "Build a terminal component using the existing design system.", "family": "preserve"},
+    {"text": "保留原风格，改稿精修这个页面。", "family": "preserve"},
+    {"text": "Audit this page for AI slop; report findings only.", "family": "audit"},
+    {"text": "审查这个页面的 AI 味，先别修改。", "family": "audit"},
+    {"text": "Compare design styles and themes from the catalog before we build this UI.", "family": "catalog"},
+    {"text": "Build a BI UI from our DESIGN.md.", "family": "bi"},
+    {"text": "按现有 DESIGN.md 精修轻盈毛玻璃组件。", "family": "glass"},
+    {"text": "Implement a documentation page with the existing design system.", "family": "mixed-text"},
+    {"text": "Restyle the streaming chat component while preserving APIs.", "family": "streaming"},
+    {"text": "Build this settings page in the style of Apple.", "family": "brand"}
+  ],
+  "should_not_trigger": [
+    {"text": "Repair backend search and URL normalization.", "family": "business-logic"},
+    {"text": "Rewrite prose in this document.", "family": "copy"}
+  ],
+  "near_neighbor": [
+    {"text": "Build a standalone SVG empty-state asset for our UI.", "family": "standalone-asset"},
+    {"text": "Build an HTML report page explaining our database costs.", "family": "report"},
+    {"text": "Make a faithful recreation of this UI screenshot.", "family": "screenshot"},
+    {"text": "Build a 3D scene and video for this page.", "family": "media"}
+  ]
+}

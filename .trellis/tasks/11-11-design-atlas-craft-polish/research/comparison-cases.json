@@ -1,0 +1,60 @@
+{
+  "evidence_kind": "comparison_protocol",
+  "baseline": {"version": "0.5.0", "git_revision": "61ede6dc", "root": "skills/development-workflows/design-atlas"},
+  "candidate": {"root": "skills/development-workflows/design-atlas", "revision": "task working tree; record commit and file hashes when a model run occurs"},
+  "common_inputs": {
+    "viewports": [{"width": 1440, "height": 900}, {"width": 390, "height": 844}, {"width": 320, "height": 740}],
+    "dependencies": "existing browser HTML/CSS/JS only; no new dependency",
+    "runtime": "same browser version, OS, font files, device scale, zoom and reduced-motion preference for each pair; record exact values",
+    "design_authority": "case input_spec is an existing DESIGN.md; preserve it and use existing component APIs",
+    "business_behavior": "frozen for each pair; change only explicitly listed presentation defects",
+    "input_files": [],
+    "assets": "system fonts, text and native controls only; no network assets"
+  },
+  "execution_protocol": [
+    "Materialize each input_spec once as a minimal app and DESIGN.md; hash these inputs before either run. Use the same byte-identical input files, prompt, assets and state replay in isolated copies for baseline and candidate.",
+    "Export the pinned baseline skill without modifying the live checkout. Run baseline and candidate with the same model/provider/version/settings and equivalent clean context. Record actual command, runtime, input/output hashes and missing settings. Never invent outputs or usage metadata.",
+    "Use the exact case prompt for both arms. Run existing slop_check and functional assertions independently of screenshot judging. Record selector/state evidence and regressions per arm.",
+    "Replay default, focus, disabled, loading/error, interrupted transition and reduced-motion states at each listed viewport. Touch and keyboard runs must exercise the same action outcomes. For unsupported CSS force the baseline branch and check readability.",
+    "Capture matching screenshots and interaction traces. Only if human review is run, randomize anonymous A/B artifacts, store the answer key separately, and record reviewer/time/decision/rubric reason plus pre-reveal attestation. Pending cases have no winner or combined score."
+  ],
+  "rubric": ["design identity preserved", "feedback clarity", "typography and spacing legibility", "restrained surface depth", "state continuity without distraction"],
+  "cases": [
+    {
+      "id": "dense-bi",
+      "prompt": "精修现有 BI 数据看板，保持配色、表格组件和数据 API；刷新指标时不要让数字和按钮跳动。",
+      "input_spec": {"design": "flat light, system type, 4px radius; canvas #f5f5f5, ink #202020, primary #275ea8", "components": "Metric(value,label), RefreshButton(pending,onClick); APIs frozen", "defects": "proportional counter widths; loading label shrinks button", "data": ["99.9", "100.0", "1,000.0", "-12.5"], "states": "refresh success/error, double refresh, disabled; keyboard and touch"},
+      "assertions": ["No glass or new chart library", "Test numeral font support and digit-count changes", "Stable loading box and readable final value; no invented live metrics"],
+      "baseline_output": null, "with_skill_output": null, "status": "missing evidence"
+    },
+    {
+      "id": "mixed-docs",
+      "prompt": "保留文档站风格，精修中文和 English API 混排；处理窄屏、长标识符、括号与标点。",
+      "input_spec": {"design": "white reading surface, system type, existing text scale and blue links", "components": "DocTitle(text), Prose(children), CodeIdentifier(text); APIs frozen", "defects": "long token overflows; forced keep-all makes mobile unusable", "text": "中文与 English API（含 punctuation）、版本 v2.0；VeryLongIdentifierWithoutNaturalBreakPoints0123456789", "states": "320px width, long title, keyboard link focus, enhancement unsupported"},
+      "assertions": ["No universal keep-all or typography dependency", "Normal wrapping fallback readable and punctuation inspected", "Preserve full identifiers and critical text; no silent clipping"],
+      "baseline_output": null, "with_skill_output": null, "status": "missing evidence"
+    },
+    {
+      "id": "streaming-chat",
+      "prompt": "精修聊天加载与逐字输出，保留发送/停止 API；我向上看历史消息时，不要把我拉回底部。",
+      "input_spec": {"design": "existing neutral chat, fixed composer, normal message growth", "components": "Message(id,text,status), Composer(onSend,onStop); APIs frozen", "defects": "loading replaces composer geometry; unconditional bottom scroll", "replay": ["start response", "append CJK and English chunks", "user scrolls up", "append 3 chunks", "stop response", "explicit return to latest"], "states": "error/retry, reduced-motion, focus in composer"},
+      "assertions": ["Content may grow normally", "Preserve reader scroll intent and stable composer", "No per-chunk animated re-entry or noisy live-region announcements"],
+      "baseline_output": null, "with_skill_output": null, "status": "missing evidence"
+    },
+    {
+      "id": "terminal-app",
+      "prompt": "保留 terminal 风格和现有组件，只精修按钮、菜单及确认浮层，别换主题。",
+      "input_spec": {"design": "black-green terminal, mono is declared, square corners, no shadows or glass", "components": "Button(variant,onClick), Menu(items), Confirm(onConfirm,onCancel); APIs frozen", "defects": "action link inside tooltip; focus appears late; submenu closes across gap", "states": "rapid open-close-open, keyboard menu, touch open, destructive confirmation"},
+      "assertions": ["No route/apply, bevel, bounce or library replacement", "Tooltip holds only supplementary noninteractive text", "Immediate focus, existing confirmation preserved; pointer safe zone does not delay keyboard"],
+      "baseline_output": null, "with_skill_output": null, "status": "missing evidence"
+    },
+    {
+      "id": "glass-settings",
+      "prompt": "按现有 airy-glass DESIGN.md 精修设置页深浅主题和表面层次；保留色板、支付确认和所有 props。",
+      "input_spec": {"design": "existing airy-glass palette is frozen; token roles surface/ink/border/contact-shadow exist", "components": "SettingsPanel(theme), PayButton(pending,onConfirm); APIs frozen", "defects": "transparent text surface unreadable on busy background; shadow transition", "states": "light/dark, unsupported backdrop-filter, reduced-motion, payment pending/error"},
+      "assertions": ["No palette engine/catalog edits or fake undo", "Opaque token fallback readable; no filter/shadow animation", "Use static layers with opacity only when applicable; preserve payment confirmation"],
+      "baseline_output": null, "with_skill_output": null, "status": "missing evidence"
+    }
+  ],
+  "execution": {"provider_model": "missing evidence", "commands": [], "human_review": "missing evidence", "winner": null, "notes": "This file prepares five controlled comparisons. It is not a generated-output run. Hand-authored mechanism-probe.html is separate authored-fixture runtime evidence."}
+}

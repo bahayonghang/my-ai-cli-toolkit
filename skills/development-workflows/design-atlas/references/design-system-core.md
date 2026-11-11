@@ -30,6 +30,8 @@ Use this file when you write, extend, or check design rules: a new `DESIGN.md`, 
 
 For every interactive component, define these states where they apply: default, hover, focus-visible, active/pressed, disabled, loading, error.
 
+When extending an existing component, preserve its API/props and semantics; prefer its current variants and tokens over a parallel implementation. Applicable feedback, overlays, mixed-language type and dynamic-content decisions live in [craft-polish.md](craft-polish.md).
+
 - Keyboard: every action is reachable with Tab/Shift+Tab and runs with Enter or Space. Focus order follows visual order.
 - Focus-visible: a visible indicator with at least 3:1 contrast against adjacent colors. Never remove an outline without a replacement.
 - Pointer and touch: touch targets are at least 44×44 CSS px, or the entry records a smaller size in `Known Gaps`.

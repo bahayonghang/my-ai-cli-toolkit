@@ -242,6 +242,21 @@ not delete `first-party/` or `LICENSES/`.
 - Command contract, selection order, and required tests:
   `.trellis/spec/backend/skill-helper-command-contracts.md`.
 
+### Craft recipe ownership (design-atlas 0.6.0)
+
+- `references/craft-polish.md` owns applicability, recipes and per-state
+  evidence. Root/build/restyle/core guidance links there instead of copying
+  the recipes. `tests/test_craft_contract.py` checks reachability, local links
+  and existing gate ownership; it does not score visual quality.
+- Keep DA4/DA5/DA6/DA8 and the detector registry as the existing owners. A
+  recipe adds no gate, waiver, exit code, catalog entry or palette behavior.
+- Preserve the component API/props, semantics, dependencies and selected
+  design. Reduced motion must reach the functional state immediately; focus
+  rings must not wait for a transition. Ordinary streamed content may grow.
+- Distinguish schema/static checks, hand-authored fixture runtime, actual
+  baseline/candidate model outputs and human blind review. Pending output or
+  runtime cases remain `missing evidence` with no inferred winner.
+
 ### 6. Tests Required
 
 - Parse every bundled `.ps1` file with the PowerShell AST parser.

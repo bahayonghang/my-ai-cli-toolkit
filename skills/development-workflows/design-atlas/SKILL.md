@@ -10,7 +10,7 @@ tags:
   - design-tokens
   - accessibility
   - anti-ai-slop
-version: 0.5.0
+version: 0.6.0
 argument-hint: "[entry-id | style request | audit <path>]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
@@ -74,7 +74,7 @@ Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`.
    - For a list request, print the grouped `list` output (or a filtered part) and stop.
 4. **Write `DESIGN.md`.** Run `apply` with the project root. Do not hand-copy entry files; `apply` adds the provenance comment and handles overwrite protection. `style:airy-glass` has a colourway dial: `apply` picks its colours from the project's accent token, then from content keywords (pass the user's words as `--prompt`), then falls back to `mint`, and writes the measured contrast table. Copy the printed `palette:` line into the Picks block. Pass `--palette` only when the user names a colourway or a hue.
 5. **Customize when asked.** Edit `DESIGN.md` first, then code. Follow `references/design-md-format.md` section 4. Recheck contrast after any color change. To change an airy-glass colourway, rerun `apply --force --palette <preset|hue:N>`; do not edit its hex values by hand.
-6. **Implement.** Follow `references/implementation.md`: detect the stack, build one token layer, build components with all states from `references/design-system-core.md`, then compose the requested pages. Hold the Anti-slop Floor below while building. A theme is a material, not a page plan: it never dictates sections or order.
+6. **Implement.** Follow `references/implementation.md`: detect the stack, build one token layer, build components with all states from `references/design-system-core.md`, then compose the requested pages. For polish of feedback, type, overlays or changing content, select only applicable mechanisms from `references/craft-polish.md` and verify their state contracts. Hold the Anti-slop Floor below while building. A theme is a material, not a page plan: it never dictates sections or order.
 7. **Verify in a running page.** Screenshots at desktop and mobile widths, keyboard focus pass, contrast check, state check. If the page cannot run, list each check that did not run; do not call the UI verified.
 8. **Anti-slop check.** Follow `references/implementation.md` section 6: run `slop_check.mjs` on the page or source directory until it reports 0 FAIL; fix or waive every REFLEX in `DESIGN.md`; walk the judged checklist in `references/anti-slop.md` section 6; run the fresh-context review in `references/review-prompt.md` (mark `自检，非独立复核` when no subagent is available).
 9. **Apply the brand boundary.** For every `brand:*` entry, follow `references/brand-boundary.md`: no logos, wordmarks, brand names, brand imagery, or proprietary font files in the output. `theme:*` and `scene:*` entries carry no brand assets and do not use those prohibitions unless a `brand:*` entry was also selected.
@@ -118,6 +118,7 @@ Every page this skill builds must pass `references/anti-slop.md`.
 | `references/implementation.md` | mapping tokens to the stack, building, verifying, and the anti-slop check |
 | `references/anti-slop.md` | gate tiers, waivers, judged checklist; any build or audit |
 | `references/restyle.md` | restyling, de-templating, or polishing an existing page |
+| `references/craft-polish.md` | applicable feedback, overlay, typography, loading/streaming or surface details; audit findings stay report-only |
 | `references/review-prompt.md` | the fresh-context review in step 8 |
 | `references/texture.md` | a theme names a texture recipe |
 | `references/brand-boundary.md` | any `brand:*` entry; skip it for `theme:*` and `scene:*` unless a brand was also chosen |

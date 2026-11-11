@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Craft mechanism probe — authored fixture</title>
+<style>
+  :root { --surface:#f4f4f4; --ink:#202020; --accent:#275ea8; --motion-enter:160ms; --motion-exit:100ms; --space:16px; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:var(--space); background:var(--surface); color:var(--ink); font:16px/1.5 system-ui,sans-serif; }
+  main { max-inline-size:64rem; margin-inline:auto; }
+  section { border-block-start:1px solid #888; padding-block:var(--space); min-inline-size:0; }
+  h1,h2,p { margin:0 0 var(--space); }
+  button,a,input { font:inherit; }
+  button { min-block-size:44px; padding:8px 16px; cursor:pointer; }
+  :focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+  .long { min-inline-size:0; overflow-wrap:anywhere; }
+  @supports (text-wrap:balance) { h1 { text-wrap:balance; } }
+  @supports (text-wrap:pretty) { .prose { text-wrap:pretty; } }
+  .counter { display:inline-block; min-inline-size:12ch; text-align:end; font-variant-numeric:tabular-nums; }
+  #refresh { inline-size:12rem; }
+  #log { block-size:180px; overflow:auto; overflow-anchor:none; border:1px solid #888; padding:8px; }
+  #composer { display:flex; gap:8px; padding-block:8px; }
+  #composer input { min-inline-size:0; flex:1; }
+  #composer button { padding-inline:8px; }
+  #terminal { background:#102018; color:#b8f2c8; font-family:monospace; padding:16px; }
+  #terminal button { border-radius:0; box-shadow:none; }
+  #overlay { opacity:0; transform:translateY(-4px); transition:opacity var(--motion-exit),transform var(--motion-exit); pointer-events:none; }
+  #overlay.open { opacity:1; transform:none; transition-duration:var(--motion-enter); pointer-events:auto; }
+  #overlay[inert] { visibility:hidden; }
+  .glass { background:#fff; padding:16px; border:1px solid #888; }
+  @supports (backdrop-filter:blur(8px)) { .glass { background:rgb(255 255 255 / .94); backdrop-filter:blur(8px); } }
+  .no-enhance .glass { background:#fff; backdrop-filter:none; }
+  .no-enhance h1,.no-enhance .prose { text-wrap:wrap; }
+  [data-theme=dark] .glass { background:#202020; color:#f4f4f4; }
+  dialog { max-inline-size:calc(100% - 32px); }
+  @media (prefers-reduced-motion:reduce) { #overlay,#overlay.open { transition:none; transform:none; } }
+</style>
+<main>
+  <h1>Craft mechanism probe：本地机制检查，不是模型生成或审美比较</h1>
+  <section aria-labelledby="bi-title">
+    <h2 id="bi-title">BI 数字与加载几何</h2>
+    <p>Fixture value: <output class="counter" id="counter">99.9</output></p>
+    <button id="refresh">Refresh</button>
+  </section>
+  <section aria-labelledby="docs-title">
+    <h2 id="docs-title">中文与 English API（标点）</h2>
+    <p class="prose long">中文与 English API（含 punctuation）、版本 v2.0；VeryLongIdentifierWithoutNaturalBreakPoints0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
+  </section>
+  <section aria-labelledby="chat-title">
+    <h2 id="chat-title">Streaming and scroll intent</h2>
+    <div id="log" role="log" aria-label="Fixture history" aria-live="off"></div>
+    <form id="composer"><input aria-label="Message"><button type="button" id="append">Append</button></form>
+    <button id="latest">Return to latest</button>
+  </section>
+  <section id="terminal" aria-labelledby="terminal-title">
+    <h2 id="terminal-title">Terminal — existing square controls</h2>
+    <button id="toggle" aria-expanded="false" aria-controls="overlay">Details</button>
+    <div id="overlay" inert><p>Supplementary content with an action: interactive disclosure, not Tooltip.</p><button id="action">Action</button></div>
+  </section>
+  <section aria-labelledby="glass-title">
+    <h2 id="glass-title">Existing glass material / opaque fallback</h2>
+    <div class="glass"><p>Surface text stays readable. No palette engine or source catalog is used in this probe.</p><button id="pay">Confirm payment</button></div>
+    <dialog aria-labelledby="confirm-title"><h2 id="confirm-title">Fixture confirmation</h2><p>No payment is sent.</p><button id="cancel">Cancel</button><button id="confirm">Confirm</button></dialog>
+  </section>
+</main>
+<script>
+  // Original authored probe; validates these mechanisms only, never skill-generated output quality.
+  const log = document.querySelector('#log');
+  let serial = 0;
+  const append = () => {
+    const following = log.scrollHeight - log.scrollTop - log.clientHeight <= 2;
+    const row = document.createElement('p');
+    row.textContent = `Fixture chunk ${++serial} — 中文与 English streaming content`;
+    log.append(row);
+    if (following) log.scrollTop = log.scrollHeight;
+  };
+  for (let i = 0; i < 12; i++) append();
+  log.scrollTop = log.scrollHeight;
+  document.querySelector('#append').onclick = append;
+  document.querySelector('#latest').onclick = () => { log.scrollTop = log.scrollHeight; };
+  document.querySelector('#refresh').onclick = event => {
+    event.target.textContent = event.target.textContent === 'Refresh' ? 'Loading…' : 'Refresh';
+    document.querySelector('#counter').textContent = event.target.textContent === 'Refresh' ? '-12.5' : '1,000.0';
+  };
+  const toggle = document.querySelector('#toggle');
+  const overlay = document.querySelector('#overlay');
+  const setOpen = open => {
+    overlay.inert = !open;
+    overlay.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  };
+  toggle.onclick = () => setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+  overlay.onkeydown = event => { if (event.key === 'Escape') { setOpen(false); toggle.focus(); } };
+  const dialog = document.querySelector('dialog');
+  document.querySelector('#pay').onclick = () => { dialog.showModal(); document.querySelector('#cancel').focus(); };
+  document.querySelector('#cancel').onclick = () => dialog.close();
+  document.querySelector('#confirm').onclick = () => dialog.close();
+  document.querySelector('#composer').onsubmit = event => event.preventDefault();
+</script>
+</html>

@@ -47,6 +47,13 @@ npx skills add https://github.com/bahayonghang/my-ai-cli-toolkit --skill design-
 - Implement the landing page from our existing DESIGN.md
 - audit ./site — 看看这个落地页有没有 AI 模板味，先别改代码
 - 这个后台首页太像模板了，按品牌继续用 Inter，别动表单和业务逻辑
+- 保留现有终端风格，精修状态反馈、中英混排和流式消息，别加玻璃或弹跳
+
+## 按现有风格精修
+
+0.6.0 增加按需加载的 `references/craft-polish.md`：为反馈、浮层、中英混排、动态数字和流式内容先记录适用条件、已有 token/组件、状态与打断、键盘/触屏、reduced-motion、回退和运行检查。按钮触感、菜单安全区、拖拽反馈及表面层次只在实际问题需要时选用；保留现有组件 API、业务行为和依赖，不默认给 flat/terminal 增加玻璃或弹跳。
+
+Preserve the existing design and component system, select only applicable polish mechanisms, and verify their states, interruption, access and fallbacks. These are implementation decisions, not new anti-slop gates or a verified aesthetic improvement. Runtime checks, model runs and human comparisons need their own evidence.
 
 ## 命令
 
@@ -139,6 +146,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - 按 `DESIGN.md` 实现的组件与页面
 - 运行时核对结果：桌面与移动端截图、键盘焦点、对比度、组件状态
 - anti-slop 结果：`slop_check` 汇总行、生效的豁免、复核结论
+- 有精修改动时：适用项与 n/a 原因、状态/回退检查及证据路径；未运行项逐项列明
 
 ## 限制
 
@@ -146,6 +154,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - 主题条目的颜色是 OKLCH；需要兼容旧浏览器时由项目自行加 hex 回退。主题预览图不随包提供，条目里的 `preview_url` 指向上游固定 commit。
 - 主题是“材质”，不规定页面结构；hallmark 的页面构成库、图片库、截图采集与渲染层检查没有引入。
 - `slop_check.mjs` 只做静态检查，不启动浏览器。
+- 精修参考及确定性测试不证明生成效果更好；行为 eval 的 schema 检查不执行模型，人工审美比较未运行时仍为缺失证据。
 - 3D 场景建模与灯光、独立 SVG 资产优化、代码动画与视频不在本技能范围内。页面里嵌着画布、视频或插画时，仍可改外围界面，不改嵌入物自身的建模、灯光或绘制。
 - `DA1`–`DA8` 不改变 `slop_check` 退出码。gate 19 的中文套话命中会使退出码从 0 变为 1。
 - 目录是离线快照，不自动跟随上游更新。
@@ -159,6 +168,8 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | `8f6969f` | MIT（主题、texture 配方，以及 anti-slop gate 与 sloplint 检查逻辑的移植） |
 
 [LearnPrompt/vibecoding-humanizer](https://github.com/LearnPrompt/vibecoding-humanizer) commit `51f8b09`：思路参考；上游未附许可证，未复制文本。
+
+[Jakevin 对 Kubai 设计技巧的二次整理](https://x.com/jakevin/status/2120416309859021185)（2026-11-11 阅读）：精修机制的思路参考，未复制原文或代码；原始实现和参数未独立核验。适用条件、取舍和标准链接见 `references/craft-polish.md`。
 
 许可证原文在 `assets/catalog/LICENSES/`。维护者更新目录：
 
