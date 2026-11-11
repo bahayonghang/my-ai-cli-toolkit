@@ -4,11 +4,11 @@
 
 ## 用途概览
 
-Use when the user asks an Agent inside Herdr to start Codex for an independent review through herdr-orchestra, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer.
+Use when the user asks an Agent inside Herdr to start Codex for an independent read-only review, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer; this repository no longer ships a Herdr orchestra skill.
 
 ## 触发场景
 
-- the user asks an Agent inside Herdr to start Codex for an independent review through herdr-orchestra, or invokes codex-review with established Herdr task context
+- the user asks an Agent inside Herdr to start Codex for an independent read-only review, or invokes codex-review with established Herdr task context
 - 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。
 
 ## 元数据

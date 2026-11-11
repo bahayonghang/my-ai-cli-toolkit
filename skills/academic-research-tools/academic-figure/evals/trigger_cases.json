@@ -33,7 +33,7 @@
   ],
   "should_not_trigger": [
     {"text": "帮我深读这篇 arXiv 论文的方法部分，像导师一样讲讲它的创新点和实验设计。", "family": "literature-mentor"},
-    {"text": "把这 5 篇论文整理成一张对比表并找出研究空白，做成文献综述。", "family": "paper-workbench"},
+    {"text": "把这 5 篇论文整理成一张对比表并找出研究空白，做成文献综述。", "family": "literature-synthesis"},
     {"text": "帮我做一个运营数据的 BI 大屏 dashboard，多个图表实时联动。", "family": "bi-dashboard"},
     {"text": "用 AI 帮我生成一张论文的图形摘要（graphical abstract）配图。", "family": "image-generation"},
     {"text": "随便帮我看看这份数据的分布长什么样，不发论文。", "family": "exploratory"}

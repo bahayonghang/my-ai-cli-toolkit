@@ -13,7 +13,7 @@ First-party installable skill catalog organized by category and skill slug.
 - `development-workflows/` — planning, review, handoff, and implementation workflow skills.
 - `docs-writing-publishing/` — writing, document, and presentation-oriented skills.
 - `git-github-collaboration/` — Git/GitHub issue, PR, CI, and commit workflow skills.
-- `research-learning-knowledge/` — research and paper-workbench skills.
+- `research-learning-knowledge/` — literature reading and learning skills.
 - `<category>/<skill>/SKILL.md` — skill entrypoint and frontmatter source.
 - `<category>/<skill>/scripts/` — bundled executable helpers.
 - `<category>/<skill>/tests/` — skill-local tests, usually Node `*.mjs` or Python tests.

@@ -38,13 +38,13 @@ why a sentence feels AI-like or asks for audit-only feedback.
 
 ## When Not to Use
 
-- Academic papers, journal sections, dissertations, abstracts, or norm checks:
-  use `humanizer-paper`.
+- Academic papers, journal sections, dissertations, abstracts, or norm checks
+  are outside renhua. Do not apply public-writing defaults.
 - Codebase-grounded README/API/architecture docs or JSDoc: use
   `document-writer`.
 - Tender, bid, procurement, RFP, or proposal documents: use `bidwriter`.
-- Paper intake, deep reading, DOI normalization, synthesis, or gap finding: use
-  `paper-workbench` or the relevant research skill.
+- Paper intake, deep reading, DOI normalization, synthesis, or gap finding is
+  outside renhua. Single-paper Zotero reading belongs to `literature-mentor`.
 - Detector-evasion framing such as "rewrite generated text so no AI detector
   flags it": refuse that framing and redirect to legitimate authorship work
   such as adding real tests, facts, evidence, and personal judgment.

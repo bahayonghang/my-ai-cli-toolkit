@@ -1,6 +1,6 @@
 ---
 name: literature-mentor
-description: 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇论文综合、对比、找研究空白或批量规范化时改用 paper-workbench。
+description: 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇综合、对比、找研究空白和批量规范化不在本技能范围内。
 category: research-learning-knowledge
 tags:
   - literature
@@ -16,7 +16,7 @@ version: 1.1.0
 
 个人向的交互式文献导师，专注计算机科学、深度学习、自动化方向的单篇论文深读。Zotero 优先获取、逐图停顿、像导师一样带你真正读懂一篇论文。
 
-**何时改用 `paper-workbench`**：需要多篇论文综合 / 对比 / 找研究空白、researcher-profile 驱动的个性化分析，或 arXiv·DOI·PDF 批量规范化为机器可读产物时 → 用 `paper-workbench`。本 skill 专注 Zotero 优先 + 逐图导师式 + 个人 CS/DL 领域的**单篇**深读。
+**范围外**：多篇综合、对比、找研究空白、researcher-profile 驱动的批量分析，以及 arXiv·DOI·PDF 批量规范化。这些请求不要改写成单篇导师精读。本 skill 专注 Zotero 优先 + 逐图导师式 + 个人 CS/DL 领域的**单篇**深读。
 
 完整深读的主线（详见 `references/`）：
 

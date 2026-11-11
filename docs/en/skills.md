@@ -1,6 +1,6 @@
 # Skills
 
-`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 37 skills**; every entry has its own detail page.
+`skills/` is the first-party skill catalog. The generated catalog currently indexes **6 categories and 34 skills**; every entry has its own detail page.
 
 ## Quick install
 
@@ -27,14 +27,13 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Developer Tools & Integrations
 
-`developer-tools-integrations` · 12 skills
+`developer-tools-integrations` · 11 skills
 
 - [ast-grep](/en/skills/developer-tools-integrations/ast-grep) — Write, debug, and validate ast-grep structural code search rules.
 - [claude-context-improver](/en/skills/developer-tools-integrations/claude-context-improver) — Audit and improve the Claude Code context layer — CLAUDE.md guidance files, .claude/rules/ path-scoped rules, and companion code_map.md navigation maps — against Claude 5 context-engineering rules (judgement over rules, progressive disclosure, no cross-layer conflicts). Asks whether to optimize the current repository (default) or the global ~/.claude context.
 - [codex-context-improver](/en/skills/developer-tools-integrations/codex-context-improver) — Audit or improve Codex instruction context: AGENTS.md, task-relevant skills, prompts, and code_map.md.
 - [file-sorter](/en/skills/developer-tools-integrations/file-sorter) — Use when the user wants to categorize, sort, organize, or suggest renames for files in a local folder such as Downloads, or for files that share one parent directory.
 - [goal-meta-skill](/en/skills/developer-tools-integrations/goal-meta-skill) — Use when the user explicitly asks to use Goal mode or to author, save, or manage a Goal for Claude Code, Codex, Grok Build, Oh My Pi, or Kimi Code.
-- [herdr-orchestra](/en/skills/developer-tools-integrations/herdr-orchestra) — Use when the user explicitly asks to coordinate worker agents in Herdr, delegate tasks across Herdr panes, or collect and compare their results; 支持 Herdr 多 Agent 编排、分工、交叉核验和结果收集。Do not use for ordinary local subagents, simple pane inspection, documentation research, work outside Herdr, or when already assigned as a leaf worker.
 - [image-to-ui-skill](/en/skills/developer-tools-integrations/image-to-ui-skill) — 将 UI 截图或设计稿复刻为可点击前端/App demo，区分代码 UI 与真实位图资产。Use for image-to-UI, screenshot-to-code, clickable app/iOS prototypes, or faithful recreation; exclude image-only generation and reference-free UI polish.
 - [ripgrep](/en/skills/developer-tools-integrations/ripgrep) — Use when the user needs text or regex content search with ripgrep: composing rg commands, choosing flags, glob/type filtering, multiline or PCRE2 searches, pipeline output, grep-to-rg migration, or diagnosing why rg missed a file (gitignore, hidden, binary defaults).
 - [skill-session-review](/en/skills/developer-tools-integrations/skill-session-review) — Analyze how an existing agent skill was used in past Claude Code, Grok, Codex, and Oh My Pi conversations.
@@ -49,7 +48,7 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 - [code-auditor](/en/skills/development-workflows/code-auditor) — Independent pre-merge review of a git diff, PR, or named files.
 - [code-quality-review](/en/skills/development-workflows/code-quality-review) — Run a maintainability and structure review focused on abstraction quality, branching complexity, file growth, canonical ownership, duplication, and refactoring opportunities.
 - [code-refactor](/en/skills/development-workflows/code-refactor) — Implement safe, behavior-preserving code refactors after inspecting the existing project.
-- [codex-review](/en/skills/development-workflows/codex-review) — Use when the user asks an Agent inside Herdr to start Codex for an independent review through herdr-orchestra, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer.
+- [codex-review](/en/skills/development-workflows/codex-review) — Use when the user asks an Agent inside Herdr to start Codex for an independent read-only review, or invokes codex-review with established Herdr task context; 支持在 Herdr 中让 Codex 审查改动、提交、文件或计划。Do not use for generic review, direct non-Herdr Codex collaboration, automatic fixes or CHANGELOG generation, research-only discussion, or when already assigned as the leaf reviewer; this repository no longer ships a Herdr orchestra skill.
 - [design-atlas](/en/skills/development-workflows/design-atlas) — UI design skill with an offline catalog of 202 design languages (84 brands, 67 styles, 50 material themes, 1 business scene). Picks one for the project automatically when none is set, writes it as DESIGN.md, implements or restyles production UI from it, and checks the result against anti-AI-slop gates.
 - [html-artifact](/en/skills/development-workflows/html-artifact) — Create self-contained HTML artifacts (single-file by default, split bundles when oversized) for complex, reviewable, or shareable work outputs.
 - [repo-test-audit](/en/skills/development-workflows/repo-test-audit) — Use when the user asks where tests live, which test directory holds them, how complete the tests are, or which tests are not collected by CI.
@@ -78,12 +77,10 @@ npx skills add bahayonghang/my-claude-code-settings/skills --skill '<skill-name>
 
 ### Research, Learning & Knowledge
 
-`research-learning-knowledge` · 4 skills
+`research-learning-knowledge` · 2 skills
 
-- [humanizer-paper](/en/skills/research-learning-knowledge/humanizer-paper) — Register-aware academic language polisher for English journal articles and Chinese doctoral dissertations: removes AI-writing tells while keeping academic norms.
 - [laoyeye](/en/skills/research-learning-knowledge/laoyeye) — 整合式思考与学习伙伴：理清问题、追问设计、讲透概念、拆解范例、横纵深度研究、核查说法、多视角解题、比较两项选择、设计最小实验；明确请求时做持续教学、agent 任务书、知识收尾、天赋探索与人生设计。支持 Socratic questioning, grilling, critical thinking, first principles, steelman, fact check；可点名原方法。排除普通润色翻译、学术论文精读综述、生产 UI 实施、专业 diff 或 Trellis 规划审查、原生 Goal 管理；代码诊断与治理仅在明确选择本包或其流程内执行。
-- [literature-mentor](/en/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇论文综合、对比、找研究空白或批量规范化时改用 paper-workbench。
-- [paper-workbench](/en/skills/research-learning-knowledge/paper-workbench) — Researcher-profile-driven paper intake and literature workbench for academic workflows.
+- [literature-mentor](/en/skills/research-learning-knowledge/literature-mentor) — 文献深度解读助手，像研究生导师一样交互式解读 Zotero 库中的学术论文（计算机/深度学习/自动化方向，个人向）。当用户提供文献题目、DOI、PDF 或要求解读某篇论文时触发；通过 Zotero MCP 优先获取全文，按用户意图自动选择快速筛选、导师深读或研究复盘模式。多篇综合、对比、找研究空白和批量规范化不在本技能范围内。
 
 ## Frontmatter contract
 
