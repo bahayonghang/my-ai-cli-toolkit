@@ -11,7 +11,7 @@
  * the project DESIGN.md, only the gates in references/anti-slop.md with class M are checked.
  *
  * usage: node slop_check.mjs <file-or-dir ...> [--design DESIGN.md] [--scope page|component|app] [--json]
- * exit:  0 no open FAIL/REFLEX · 1 open FAIL or REFLEX · 2 bad arguments
+ * exit:  0 no open FAIL/REFLEX · 1 open FAIL or REFLEX · 2 bad arguments, or no file this script reads
  */
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, extname, dirname, basename, resolve, relative, isAbsolute } from 'node:path';
@@ -62,6 +62,8 @@ const FOLD_AFTER = 8;
 const DOC_EXT = new Set(['.html', '.jsx', '.tsx', '.vue', '.svelte', '.astro']);
 const BUILD_DIRS = new Set(['dist', 'build', 'coverage']);
 const TW_CONFIG = /^tailwind\.config\.(?:js|cjs|mjs|ts|cts|mts)$/i;
+// What collectFiles keeps, for the message printed when it keeps nothing.
+const SCANNED = `${['.css', ...DOC_EXT].join(', ')} and tailwind.config.*`;
 function collectFiles(paths, errors) {
   const files = [];
   const seen = new Set();
@@ -2674,6 +2676,8 @@ export function run(argv, env = {}) {
   const errors = [];
   const files = collectFiles(opts.paths, errors);
   if (errors.length) return fail(errors.join('; '));
+  // Nothing was read, so nothing was checked: that is "did not run", never a pass.
+  if (!files.length) return fail(`no scannable files in ${opts.paths.join(', ')}; the mechanical gates did not run. This script reads only ${SCANNED}`);
 
   let designFile = null;
   if (opts.design) {

@@ -73,7 +73,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - `apply` 写入 `<root>/DESIGN.md`（UTF-8、LF），并在 frontmatter 后加一行来源注释。根目录已有任何大小写形式的 `design.md` 时拒绝写入（退出码 3）；加 `--force` 会先把旧文件改名为 `design.md.bak-<时间戳>`。
 - `palette` 只读：打印某个项目会得到的色板、选择理由和对比度表（`--format json` 输出 JSON）。目前只有 `style:airy-glass` 有色板拨盘；对其他条目使用 `palette`、`--palette` 或 `apply --prompt` 以退出码 2 结束，不写文件。
 - `route` 结果确定可复现：同一需求、同一项目得到同一结果；`--reroll 1` 换下一组。中英文需求都能路由；brand 条目只在点名或 `--include-brands` 时参与。
-- `slop_check.mjs` 退出码 0 表示没有未处理的 FAIL/REFLEX，1 表示有，2 表示参数错误。豁免写在 `DESIGN.md` 的 `## Anti-slop Waivers` 章节。
+- `slop_check.mjs` 退出码 0 表示没有未处理的 FAIL/REFLEX，1 表示有，2 表示参数错误，或路径下没有脚本会读的文件（见「限制」）。豁免写在 `DESIGN.md` 的 `## Anti-slop Waivers` 章节。
 
 ## 自动路由
 
@@ -154,6 +154,7 @@ node skills/development-workflows/design-atlas/scripts/slop_check.mjs ./src
 - 主题条目的颜色是 OKLCH；需要兼容旧浏览器时由项目自行加 hex 回退。主题预览图不随包提供，条目里的 `preview_url` 指向上游固定 commit。
 - 主题是“材质”，不规定页面结构；hallmark 的页面构成库、图片库、截图采集与渲染层检查没有引入。
 - `slop_check.mjs` 只做静态检查，不启动浏览器。
+- `slop_check.mjs` 只读 `.css`、`.html`、`.jsx`、`.tsx`、`.vue`、`.svelte`、`.astro` 和 `tailwind.config.*`。路径下没有这些文件时（例如只有 `.rs` 的原生源码目录），脚本从 0.7.0 起以退出码 2 结束，stderr 写明 `no scannable files`，stdout 为空；此前是输出 `files 0` 并以 0 退出。这表示机械门禁没有运行，不是通过；此时按 `references/anti-slop.md` 第 3 节手动走每个 gate。
 - 精修参考及确定性测试不证明生成效果更好；行为 eval 的 schema 检查不执行模型，人工审美比较未运行时仍为缺失证据。
 - 3D 场景建模与灯光、独立 SVG 资产优化、代码动画与视频不在本技能范围内。页面里嵌着画布、视频或插画时，仍可改外围界面，不改嵌入物自身的建模、灯光或绘制。
 - `DA1`–`DA8` 不改变 `slop_check` 退出码。gate 19 的中文套话命中会使退出码从 0 变为 1。

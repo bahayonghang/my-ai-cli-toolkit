@@ -344,8 +344,63 @@ test('text output: one line per finding plus a summary line', () => {
   assert.match(lines[lines.length - 1], /^slop_check: Floor 1 FAIL/);
 });
 
+const cli = (...args) => spawnSync(process.execPath, [SCRIPT, ...args], { encoding: 'utf8' });
+
+// A directory holding exactly these files, with no DESIGN.md added.
+function withDir(files, fn) {
+  const dir = mkdtempSync(join(tmpdir(), 'slop-check-bare-'));
+  try {
+    for (const [name, content] of Object.entries(files)) writeFileSync(join(dir, name), content);
+    return fn(dir);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+// Nothing the script reads means the mechanical gates did not run. That is exit 2, never a pass.
+const UNSCANNED = {
+  'a directory holding only main.rs': { 'main.rs': 'fn main() {}\n' },
+  'an empty directory': {},
+  'a directory holding only DESIGN.md': { 'DESIGN.md': PLAIN_DESIGN },
+};
+for (const [label, files] of Object.entries(UNSCANNED)) {
+  for (const flags of [[], ['--json']]) {
+    test(`${label}${flags.length ? ' with --json' : ''}: exit 2, the gates did not run, stdout empty`, () => {
+      withDir(files, (dir) => {
+        const r = cli(dir, ...flags);
+        assert.equal(r.status, 2, r.stdout);
+        assert.equal(r.stdout, '');
+        assert.match(r.stderr, /no scannable files/);
+        assert.match(r.stderr, /mechanical gates did not run/);
+        assert.ok(r.stderr.includes(dir), r.stderr);
+        for (const kind of ['.css', '.html', '.jsx', '.tsx', '.vue', '.svelte', '.astro', 'tailwind.config.*']) {
+          assert.ok(r.stderr.includes(kind), `stderr does not name ${kind}:\n${r.stderr}`);
+        }
+      });
+    });
+  }
+}
+
+test('a directory with one .html is checked as before: the summary line counts it', () => {
+  withProject({ 'index.html': page() }, (dir) => {
+    const r = cli(dir);
+    assert.ok(r.status === 0 || r.status === 1, r.stderr);
+    assert.equal(r.stderr, '');
+    assert.match(r.stdout.trimEnd().split('\n').pop(), /^slop_check: Floor \d+ FAIL .* · files 1 · design /);
+    const j = JSON.parse(cli(dir, '--json').stdout);
+    assert.ok(j.summary.files >= 1);
+  });
+});
+
+test('files the script cannot read next to one it can change nothing', () => {
+  const alone = withProject({ 'index.html': page() }, (dir) => check(dir));
+  const mixed = withProject({ 'index.html': page(), 'src/main.rs': 'fn main() {}\n' }, (dir) => check(dir));
+  assert.equal(mixed.code, alone.code);
+  assert.equal(mixed.summary.files, 1);
+  assert.equal(mixed.output, alone.output);
+});
+
 test('exit codes over the CLI: 0 clean, 1 open findings, 2 bad arguments', () => {
-  const cli = (...args) => spawnSync(process.execPath, [SCRIPT, ...args], { encoding: 'utf8' });
   assert.equal(cli(join(FIX, 'eyebrow-pass')).status, 0);
   assert.equal(cli(join(FIX, 'slopped')).status, 1);
   assert.equal(cli().status, 2);

@@ -212,6 +212,15 @@ not delete `first-party/` or `LICENSES/`.
   `--space-*`). Port single gates with token-name-agnostic detection instead.
 - Running `slop_check.mjs` on the whole skill directory exits 1 by design,
   because `tests/fixtures/slop/` holds deliberately failing pages.
+- `slop_check.mjs` exit codes: 0 no open FAIL or REFLEX, 1 open findings,
+  2 bad input. When the paths resolve and `collectFiles` returns no file
+  (it keeps `.css`, `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.astro` and
+  `tailwind.config.*`), `run()` returns 2 through `fail()`: stderr carries
+  `no scannable files`, the input paths, the file types read, and that the
+  mechanical gates did not run; stdout is empty, with or without `--json`.
+  A run that read nothing must not exit 0. Do not add a flag that allows an
+  empty scan. Paths that hold at least one scannable file behave as before.
+  (design-atlas 0.7.0)
 
 ### Restyle branch and judged DA gates (design-atlas 0.4.0)
 

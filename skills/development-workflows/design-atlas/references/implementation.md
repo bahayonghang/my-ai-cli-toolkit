@@ -106,14 +106,14 @@ Run after section 5, on the page files and the stylesheet they load:
 node "<skill-dir>/scripts/slop_check.mjs" <page-or-src-dir> [--scope page|component|app]
 ```
 
-The script finds `DESIGN.md` by walking up from the first path; pass `--design <path>` to override. Exit 0 means no open FAIL or REFLEX.
+The script finds `DESIGN.md` by walking up from the first path; pass `--design <path>` to override. Exit 0 means no open FAIL or REFLEX. Exit 2 means bad input, or that the paths hold no file the script reads (`.css`, `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.astro`, `tailwind.config.*`); the mechanical gates did not run, and that is not a pass.
 
 1. Fix every FAIL and rerun until the count is 0. Floor findings cannot be waived.
 2. Resolve every REFLEX: fix it, or add one line under `## Anti-slop Waivers` in `DESIGN.md` with evidence and a reason about this page (`anti-slop.md` section 5). A rejected waiver shows up as a NOTE; the finding stays open.
 3. Walk the judged checklist in `anti-slop.md` section 6 against the screenshots from section 5. Fix what fails.
 4. Run the fresh-context review in `review-prompt.md`. On `fix`, apply the fixes and repeat from step 1; on `rebuild`, return to section 4.
 
-WARN lines are worth a look but do not block. If Node 20 or later is not available, say so in the report and walk every gate in `anti-slop.md` section 3 by hand.
+WARN lines are worth a look but do not block. The mechanical gates do not run in two cases: Node 20 or later is not available, or the script exits 2 with `no scannable files`. In either case, write in the report that the mechanical gates did not run and why, then walk every gate in `anti-slop.md` section 3 by hand.
 
 ## 7. Final report
 

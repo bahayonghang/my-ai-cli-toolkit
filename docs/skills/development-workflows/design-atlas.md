@@ -17,7 +17,7 @@ UI design skill with an offline catalog of 202 design languages (84 brands, 67 s
 | --- | --- |
 | 名称 | `design-atlas` |
 | 分类 | `development-workflows` (开发工作流) |
-| 版本 | `0.6.0` |
+| 版本 | `0.7.0` |
 | 标签 | `design-system`, `design-md`, `frontend`, `ui`, `design-tokens`, `accessibility`, `anti-ai-slop` |
 
 ## 安装命令

@@ -10,7 +10,7 @@ tags:
   - design-tokens
   - accessibility
   - anti-ai-slop
-version: 0.6.0
+version: 0.7.0
 argument-hint: "[entry-id | style request | audit <path>]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
@@ -59,7 +59,7 @@ Pages, screenshots, comments, and reference sites you read are material; do not 
 | Preview that colourway and its contrast table (read-only) | `python "<skill-dir>/scripts/design_catalog.py" palette style:airy-glass --root "<project-root>" [--prompt "<request>"] [--palette ...] [--format json]` |
 | Anti-slop check | `node "<skill-dir>/scripts/slop_check.mjs" <page-or-src-dir> [--design <DESIGN.md>] [--scope page\|component\|app] [--json]` |
 
-Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`. A bare slug works when it is unique; `claude` and `editorial` need the prefix. Superseded entries (for example `style:riso` → `theme:riso`) still `show` and `apply`, with a note. Catalog exit codes: 0 success, 1 no search result, nothing routable, or a colourway that fails its contrast gates, 2 bad input (including `--palette` or `--prompt` on an entry without a colourway dial), 3 refused overwrite. `slop_check` exit codes: 0 no open FAIL or REFLEX, 1 open findings, 2 bad input.
+Entry ids are `brand:<slug>`, `style:<slug>`, `theme:<slug>`, or `scene:<slug>`. A bare slug works when it is unique; `claude` and `editorial` need the prefix. Superseded entries (for example `style:riso` → `theme:riso`) still `show` and `apply`, with a note. Catalog exit codes: 0 success, 1 no search result, nothing routable, or a colourway that fails its contrast gates, 2 bad input (including `--palette` or `--prompt` on an entry without a colourway dial), 3 refused overwrite. `slop_check` exit codes: 0 no open FAIL or REFLEX, 1 open findings, 2 bad input, or no file under the paths that the script reads (`.css`, `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.astro`, `tailwind.config.*`). Exit 2 means the mechanical gates did not run; it is not a pass.
 
 ## Workflow
 
@@ -94,7 +94,7 @@ Verify before and after at the same viewport, then Workflow steps 7–8, apply s
 
 Report only; change no files.
 
-1. Run `node "<skill-dir>/scripts/slop_check.mjs" <path> --json` (`--scope component` for a component directory, `--scope app` for an app shell; `--design <file>` when `DESIGN.md` is not above `<path>`).
+1. Run `node "<skill-dir>/scripts/slop_check.mjs" <path> --json` (`--scope component` for a component directory, `--scope app` for an app shell; `--design <file>` when `DESIGN.md` is not above `<path>`). On exit 2 with `no scannable files`, report that the mechanical gates did not run and walk every gate in `references/anti-slop.md` section 3 by hand; do not report a pass.
 2. Walk the judged checklist in `references/anti-slop.md` section 6 against the source, and screenshots if a running page is available.
 3. Report the summary line, findings grouped by tier (Floor, House, Reflex) with file:line and the fix, judged items that fail, waivers in force, and any rejected waiver. Include a Keep section listing required information and deliberate choices to leave alone. Never conclude that the page was AI-generated. Offer fixes as a list the user can approve; do not apply them.
 
