@@ -23,6 +23,15 @@ python "<skill-dir>/scripts/design_catalog.py" route --prompt "<the user's reque
   colourway dial uses the first one with enough chroma and lightness, so a
   near-gray `--accent` does not hide a chromatic `--primary`, and a near-black
   `--primary` (OKLCH L under 0.25) is not read as a brand colour.
+  `frameworks` lists the npm frameworks, then `gpui` when the root
+  `Cargo.toml` depends on GPUI (`[dependencies]`, `[workspace.dependencies]`,
+  or a `[target.<cfg>.dependencies]` table; a renamed dependency counts by its
+  `package`), plus `gpui-kit` for `gpui-component` or `gpui-kit`. A GPUI
+  project has no CSS token layer: `notes` says the tokens are in Rust source,
+  which the script does not read, so name the colourway with `--palette` or
+  `--prompt`. When GPUI is only in a `Cargo.toml` one directory down,
+  `frameworks` stays as it is and `notes` names that file and the `--root` to
+  rerun with.
 - `route` prints the top 3 with a score breakdown
   (`kw`, `genre`, `scene`, `palette`, `deps`), the matched keywords, and
   `confidence: high|low`. Options: `--n N`, `--reroll K` (skip the entries

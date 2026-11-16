@@ -383,6 +383,26 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
   `accent_hue`, and adds `accent_C`, `accent_hex`, `accents[]`. When an accent
   exists and no paper token does, it is an object whose `band`, `paper_var`,
   and `L` are null. Consumers test `band` for truthiness.
+- `signals.frameworks` (design-atlas 0.7.0) lists npm frameworks in
+  `FRAMEWORKS` order, then Cargo frameworks read from the root `Cargo.toml`
+  only: `[dependencies]`, `[workspace.dependencies]`, and every
+  `[target.<cfg>.dependencies]`. A dependency whose key or `package` field is
+  `gpui` adds `gpui`; `gpui-component` or `gpui-kit` adds `gpui` and
+  `gpui-kit`. Other published names of the same crates go in the same
+  `CARGO_FRAMEWORKS` table and in the test (`gpui-pre`, `gpui-ce`: checked
+  against crates.io and `gpui-ce/gpui-ce` on 2026-11-16).
+  - With `gpui` reported and no CSS token layer, the note
+    `no CSS token layer found` is replaced by one saying the tokens are in
+    Rust source, which the script does not read, and that the colourway comes
+    from `--palette` or `--prompt`.
+  - With no GPUI dependency in the root manifest, `<child>/Cargo.toml` one
+    level down is checked, skipping `SKIP_DIRS`. A hit adds a note with that
+    relative path and the `--root` to rerun with; `frameworks` does not change.
+  - The keys of the `signals` object do not change, `signals` stays
+    read-only, and `route` scoring does not read Cargo dependencies.
+  - Inference, not confirmed by the ticket: `gpui-fast` is in the table;
+    `[dev-dependencies]` and `[build-dependencies]` are not read; the child
+    check also runs when the root has no `Cargo.toml`.
 - The entry file is the render template. Hex values are replaced in one regex
   pass; the `<!-- palette:begin NAME -->` / `<!-- palette:end NAME -->` blocks
   (`colourway`, `contrast`) are rewritten whole. `apply` appends
@@ -426,6 +446,10 @@ design_catalog.py palette <id> [--root DIR] [--prompt TEXT] [--palette ...] [--f
 - for every other entry, `show` prints the catalog file and `apply` writes it
   plus provenance only, with or without project signals;
 - `tests/fixtures/slop/airy-glass-field/DESIGN.md` equals current `apply` output.
+
+`tests/test_routing.py` (`CargoSignalTests`) must keep one fixture for each
+`signals.frameworks` case above, and `SignalTests` must keep
+`frameworks == ["next"]` for the npm fixture.
 
 ### 7. Wrong vs Correct
 

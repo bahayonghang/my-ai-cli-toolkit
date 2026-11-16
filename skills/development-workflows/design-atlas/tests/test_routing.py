@@ -260,6 +260,42 @@ class SignalTests(RoutingBase):
             self.assertIsNone(data["palette"])
             self.assertTrue(data["design_md"].endswith("design.md"))
 
+    def test_js_project_output_is_unchanged_by_cargo_support(self) -> None:
+        # Literal captured from the script as it was before it read Cargo dependency tables.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_project(
+                root,
+                package={
+                    "name": "shop",
+                    "description": "Storefront",
+                    "keywords": ["retail"],
+                    "dependencies": {"astro": "5", "react": "19"},
+                    "devDependencies": {"vite": "6"},
+                },
+            )
+            (root / "README.md").write_text("# Shop\n", encoding="utf-8", newline="\n")
+            data = dc.collect_signals(root)
+        self.assertEqual(
+            data,
+            {
+                "root": str(root),
+                "project": {
+                    "name": "shop",
+                    "description": "Storefront",
+                    "keywords": ["retail"],
+                    "readme": "# Shop\n",
+                },
+                "dependency_hints": [],
+                "frameworks": ["vite", "astro", "react"],
+                "palette": None,
+                "fonts": [],
+                "tailwind": False,
+                "design_md": None,
+                "notes": ["no CSS token layer found"],
+            },
+        )
+
     def test_dark_tokens_raise_dark_entries(self) -> None:
         prompt = "observability and monitoring for developers"
         with tempfile.TemporaryDirectory() as tmp:
@@ -290,6 +326,219 @@ class SignalTests(RoutingBase):
         self.assertTrue(dashboard_words & set(record["keywords_en"]), top["id"])
         self.assertEqual(top["parts"]["deps"], 1)
         self.assertIn("dependency:dashboard", result["signals_used"])
+
+
+def make_cargo_project(root: Path, manifest: str, *, children: dict[str, str] | None = None) -> None:
+    (root / "Cargo.toml").write_text(manifest, encoding="utf-8")
+    for name, child in (children or {}).items():
+        (root / name).mkdir()
+        (root / name / "Cargo.toml").write_text(child, encoding="utf-8")
+
+
+GPUI_GIT = """
+[package]
+name = "desk"
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1"
+gpui = { git = "https://github.com/zed-industries/zed", rev = "322cd509" }
+"""
+
+
+GPUI_WORKSPACE_PATH = """
+[workspace]
+members = ["crates/app"]
+
+[workspace.dependencies]
+gpui = { path = "vendor/gpui" }
+serde = "1"
+"""
+
+
+GPUI_TARGET = """
+[package]
+name = "desk"
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1"
+
+[target.'cfg(windows)'.dependencies]
+gpui = "0.2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+"""
+
+
+GPUI_RENAMED = """
+[package]
+name = "desk"
+version = "0.1.0"
+
+[dependencies]
+ui = { package = "gpui", version = "0.2" }
+"""
+
+
+GPUI_COMPONENT = """
+[package]
+name = "desk"
+version = "0.1.0"
+
+[dependencies]
+gpui-component = "0.7"
+"""
+
+
+WORKSPACE_WITHOUT_GPUI = """
+[workspace]
+members = ["cli", "desktop"]
+
+[workspace.dependencies]
+anyhow = "1"
+"""
+
+
+class CargoSignalTests(unittest.TestCase):
+    def signals(self, manifest: str, **kwargs) -> dict:
+        with tempfile.TemporaryDirectory() as tmp:
+            make_cargo_project(Path(tmp), manifest, **kwargs)
+            return dc.collect_signals(Path(tmp))
+
+    def test_git_dependency_on_gpui_is_reported(self) -> None:
+        self.assertEqual(self.signals(GPUI_GIT)["frameworks"], ["gpui"])
+
+    def test_workspace_path_dependency_is_reported(self) -> None:
+        self.assertEqual(self.signals(GPUI_WORKSPACE_PATH)["frameworks"], ["gpui"])
+
+    def test_target_specific_dependency_is_reported(self) -> None:
+        self.assertEqual(self.signals(GPUI_TARGET)["frameworks"], ["gpui"])
+
+    def test_renamed_dependency_is_reported_by_its_package(self) -> None:
+        self.assertEqual(self.signals(GPUI_RENAMED)["frameworks"], ["gpui"])
+
+    def test_gpui_component_reports_gpui_and_gpui_kit(self) -> None:
+        self.assertEqual(self.signals(GPUI_COMPONENT)["frameworks"], ["gpui", "gpui-kit"])
+
+    def test_every_published_gpui_package_name_is_recognised(self) -> None:
+        # Names as published on crates.io, checked 2026-11-16: gpui-pre is the Zed
+        # snapshot gpui-kit 0.7.3 pins, gpui-fast its optional renderer, gpui-ce the
+        # community fork (package name in gpui-ce/gpui-ce crates/gpui/Cargo.toml).
+        cases = {
+            'gpui-kit = "0.7"': ["gpui", "gpui-kit"],
+            'gpui-pre = "=0.3.9"': ["gpui"],
+            'gpui = { package = "gpui-pre", version = "=0.3.9" }': ["gpui"],
+            'gpui-fast = "0.1.7"': ["gpui"],
+            'gpui-ce = "0.3"': ["gpui"],
+            'gpui = { package = "gpui-ce", version = "0.3" }': ["gpui"],
+            'ui = { package = "gpui-ce", version = "0.3" }': ["gpui"],
+            'gpui = "0.2"\ngpui-component = "0.7"': ["gpui", "gpui-kit"],
+            'gpui-component = "0.7"\ngpui = "0.2"': ["gpui", "gpui-kit"],
+        }
+        for line, expected in cases.items():
+            with self.subTest(dependency=line):
+                manifest = f'[package]\nname = "desk"\n\n[dependencies]\n{line}\n'
+                self.assertEqual(self.signals(manifest)["frameworks"], expected)
+
+    def test_other_cargo_dependencies_report_no_framework(self) -> None:
+        manifest = (
+            '[package]\nname = "cli"\n\n[dependencies]\nclap = "4"\n'
+            'gpui-not-a-crate = "1"\nstripe = { package = "async-stripe", version = "0.39" }\n'
+            '\n[dev-dependencies]\ngpui = "0.2"\n'
+        )
+        data = self.signals(manifest)
+        self.assertEqual(data["frameworks"], [])
+        self.assertEqual(data["dependency_hints"], [])
+        self.assertIn("no CSS token layer found", data["notes"])
+
+    def test_gpui_project_explains_where_tokens_live(self) -> None:
+        for manifest in (GPUI_GIT, GPUI_WORKSPACE_PATH, GPUI_TARGET, GPUI_RENAMED, GPUI_COMPONENT):
+            with self.subTest(manifest=manifest):
+                notes = self.signals(manifest)["notes"]
+                self.assertFalse([n for n in notes if "no CSS token layer found" in n], notes)
+                hint = [n for n in notes if "Rust source" in n]
+                self.assertEqual(len(hint), 1, notes)
+                self.assertIn("--palette", hint[0])
+                self.assertIn("--prompt", hint[0])
+
+    def test_gpui_in_a_child_crate_is_a_note_not_a_framework(self) -> None:
+        data = self.signals(
+            WORKSPACE_WITHOUT_GPUI,
+            children={"desktop": GPUI_GIT, "cli": '[package]\nname = "cli"\n\n[dependencies]\nclap = "4"\n'},
+        )
+        self.assertEqual(data["frameworks"], [])
+        hints = [n for n in data["notes"] if "--root" in n]
+        self.assertEqual(len(hints), 1, data["notes"])
+        self.assertIn("desktop/Cargo.toml", hints[0])
+        self.assertNotIn("cli", hints[0])
+        self.assertIn("no CSS token layer found", data["notes"])
+
+    def test_child_hint_names_a_root_that_reports_gpui(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_cargo_project(root, WORKSPACE_WITHOUT_GPUI, children={"desktop": GPUI_GIT})
+            hint = next(n for n in dc.collect_signals(root)["notes"] if "--root" in n)
+            suggested = Path(hint.split("--root ", 1)[1].strip('"'))
+            self.assertEqual(suggested, root / "desktop")
+            self.assertEqual(dc.collect_signals(suggested)["frameworks"], ["gpui"])
+
+    def test_child_crates_are_not_scanned_when_the_root_reports_gpui(self) -> None:
+        data = self.signals(GPUI_WORKSPACE_PATH, children={"desktop": GPUI_GIT})
+        self.assertEqual(data["frameworks"], ["gpui"])
+        self.assertFalse([n for n in data["notes"] if "--root" in n], data["notes"])
+
+    def test_child_scan_is_one_level_and_skips_tool_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_cargo_project(
+                root, WORKSPACE_WITHOUT_GPUI, children={"target": GPUI_GIT, "vendor": GPUI_GIT}
+            )
+            (root / "apps" / "desktop").mkdir(parents=True)
+            (root / "apps" / "desktop" / "Cargo.toml").write_text(GPUI_GIT, encoding="utf-8")
+            data = dc.collect_signals(root)
+        self.assertEqual(data["frameworks"], [])
+        self.assertFalse([n for n in data["notes"] if "--root" in n], data["notes"])
+
+    def test_child_crate_is_found_without_a_root_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_project(root, package={"name": "site", "dependencies": {"vite": "6"}})
+            (root / "desktop").mkdir()
+            (root / "desktop" / "Cargo.toml").write_text(GPUI_COMPONENT, encoding="utf-8")
+            data = dc.collect_signals(root)
+        self.assertEqual(data["frameworks"], ["vite"])
+        self.assertEqual(len([n for n in data["notes"] if "desktop/Cargo.toml" in n and "--root" in n]), 1)
+
+    def test_unreadable_child_manifest_is_a_note(self) -> None:
+        data = self.signals(WORKSPACE_WITHOUT_GPUI, children={"broken": "not = [valid", "desktop": GPUI_GIT})
+        self.assertTrue(any(n.startswith("broken/Cargo.toml skipped") for n in data["notes"]), data["notes"])
+        self.assertEqual(len([n for n in data["notes"] if "--root" in n]), 1)
+
+    def test_malformed_dependency_tables_are_ignored(self) -> None:
+        manifest = '[package]\nname = "odd"\ndependencies = "gpui"\ntarget = ["gpui"]\nworkspace = "gpui"\n'
+        self.assertEqual(self.signals(manifest)["frameworks"], [])
+
+    def test_cli_keeps_its_keys_and_writes_nothing(self) -> None:
+        keys = [
+            "root", "project", "dependency_hints", "frameworks", "palette", "fonts",
+            "tailwind", "design_md", "notes",
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_cargo_project(root, WORKSPACE_WITHOUT_GPUI, children={"desktop": GPUI_COMPONENT})
+            before = {p.as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+            outer = run("signals", "--root", str(root))
+            inner = run("signals", "--root", str(root / "desktop"))
+            after = {p.as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+        self.assertEqual((outer.returncode, inner.returncode), (0, 0), outer.stderr + inner.stderr)
+        self.assertEqual(before, after)
+        self.assertEqual(list(json.loads(outer.stdout)), keys)
+        self.assertEqual(list(json.loads(inner.stdout)), keys)
+        self.assertEqual(json.loads(outer.stdout)["frameworks"], [])
+        self.assertEqual(json.loads(inner.stdout)["frameworks"], ["gpui", "gpui-kit"])
+        self.assertEqual(json.loads(inner.stdout)["project"]["name"], "desk")
 
 
 class OverlayTests(RoutingBase):

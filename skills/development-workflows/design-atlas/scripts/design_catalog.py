@@ -35,7 +35,10 @@ tokens exist, the first one with enough chroma and lightness is used (signals
 
 signals reads the project root (package.json, pyproject.toml, Cargo.toml, the
 README head, CSS token blocks, Tailwind config, DESIGN.md) and prints JSON. It
-never writes. Unreadable sources are listed in "notes".
+never writes. Unreadable sources are listed in "notes". "frameworks" lists the
+npm frameworks, then "gpui" (and "gpui-kit") when the root Cargo.toml depends
+on GPUI. A GPUI crate one directory down is not a framework of this root; it
+is a note that names the --root to rerun with.
 
 route scores every routable entry (non-superseded style, theme, scene; brands
 only with --include-brands) against the prompt and, with --root, the project
@@ -368,6 +371,17 @@ FRAMEWORKS = (
     "next", "vite", "astro", "nuxt", "@sveltejs/kit", "svelte", "@remix-run/react",
     "gatsby", "react", "vue", "solid-js", "angular", "@angular/core",
 )
+# Cargo package name (as published on crates.io) -> the frameworks it implies.
+# gpui-pre is the Zed snapshot that gpui-kit pins, gpui-fast its optional
+# renderer, gpui-ce the community fork.
+CARGO_FRAMEWORKS = {
+    "gpui": ("gpui",),
+    "gpui-pre": ("gpui",),
+    "gpui-fast": ("gpui",),
+    "gpui-ce": ("gpui",),
+    "gpui-component": ("gpui", "gpui-kit"),
+    "gpui-kit": ("gpui", "gpui-kit"),
+}
 SKIP_DIRS = {
     "node_modules", ".git", "dist", "build", ".next", "out", "target", "worktrees",
     ".claude", "__pycache__", "vendor", "coverage", ".venv", "venv", ".nuxt",
@@ -700,11 +714,38 @@ def _read_toml(path: Path) -> dict:
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
+def _cargo_dep_tables(manifest: dict) -> list[dict]:
+    workspace = manifest.get("workspace")
+    targets = manifest.get("target")
+    tables = [
+        manifest.get("dependencies"),
+        workspace.get("dependencies") if isinstance(workspace, dict) else None,
+    ]
+    if isinstance(targets, dict):
+        tables.extend(t.get("dependencies") for t in targets.values() if isinstance(t, dict))
+    return [t for t in tables if isinstance(t, dict)]
+
+
+def cargo_frameworks(manifest: dict) -> list[str]:
+    """Frameworks named by the dependency tables of a parsed Cargo.toml."""
+    found: list[str] = []
+    for table in _cargo_dep_tables(manifest):
+        for key, spec in table.items():
+            # A renamed dependency keeps its real name in "package".
+            package = spec.get("package") if isinstance(spec, dict) else None
+            for name in (key, package):
+                for framework in CARGO_FRAMEWORKS.get(name, ()) if isinstance(name, str) else ():
+                    if framework not in found:
+                        found.append(framework)
+    return found
+
+
 def collect_signals(root: Path) -> dict:
     """Read-only project scan. Missing or unreadable sources are recorded in notes."""
     notes: list[str] = []
     project: dict = {"name": None, "description": None, "keywords": [], "readme": ""}
     deps: list[str] = []
+    cargo: list[str] = []
     out: dict = {
         "root": str(root),
         "project": project,
@@ -742,6 +783,8 @@ def collect_signals(root: Path) -> dict:
         except Exception as error:  # noqa: BLE001 - any parse failure is a note
             notes.append(f"{name} skipped: {error}")
             continue
+        if name == "Cargo.toml":
+            cargo = cargo_frameworks(data)
         for dotted in table:
             node = data
             for part in dotted.split("."):
@@ -751,6 +794,23 @@ def collect_signals(root: Path) -> dict:
                 project["description"] = project["description"] or node.get("description")
                 if isinstance(node.get("keywords"), list):
                     project["keywords"].extend(str(k) for k in node["keywords"])
+
+    if "gpui" not in cargo and root.is_dir():
+        # A UI crate one level down is a hint only: its tokens and DESIGN.md belong to that root.
+        for child in sorted(p for p in root.iterdir() if p.is_dir() and p.name not in SKIP_DIRS):
+            manifest = child / "Cargo.toml"
+            if not manifest.is_file():
+                continue
+            try:
+                nested = cargo_frameworks(_read_toml(manifest))
+            except Exception as error:  # noqa: BLE001 - any parse failure is a note
+                notes.append(f"{child.name}/Cargo.toml skipped: {error}")
+                continue
+            if "gpui" in nested:
+                notes.append(
+                    f"GPUI dependency found in {child.name}/Cargo.toml but not at this root; "
+                    f'rerun with --root "{(root / child.name).as_posix()}"'
+                )
 
     readmes = sorted(p for p in root.iterdir() if p.is_file() and p.name.lower().startswith("readme")) if root.is_dir() else []
     if readmes:
@@ -767,7 +827,7 @@ def collect_signals(root: Path) -> dict:
         if any(dep == p or (p.endswith("/") and dep.startswith(p)) for dep in deps for p in packages):
             hints.append(hint)
     out["dependency_hints"] = hints
-    out["frameworks"] = [f for f in FRAMEWORKS if f in deps]
+    out["frameworks"] = [f for f in FRAMEWORKS if f in deps] + cargo
 
     tailwind_files = [p.name for p in sorted(root.glob("tailwind.config.*"))]
     out["tailwind"] = bool(tailwind_files) or "tailwindcss" in deps
@@ -824,6 +884,11 @@ def collect_signals(root: Path) -> dict:
         out["fonts"] = [
             resolve_var(v, props) for k, v in sorted(props.items()) if k.startswith("--font")
         ][:6]
+    elif "gpui" in cargo:
+        notes.append(
+            "GPUI project: tokens live in Rust source, which this script does not read; "
+            "choose the colourway with --palette or --prompt"
+        )
     else:
         notes.append("no CSS token layer found")
 
