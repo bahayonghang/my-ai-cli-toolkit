@@ -69,6 +69,10 @@ Use Conventional Commits with an optional scope and emoji, for example `feat(ski
 
 Issues live in GitHub Issues for `bahayonghang/my-ai-cli-toolkit`. See `docs/agents/issue-tracker.md`.
 
+### Triage labels
+
+Default role names: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
 ### Domain docs
 
 single-context. See `docs/agents/domain.md`.
