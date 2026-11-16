@@ -9,13 +9,11 @@ one parser cannot drift from another. Returns an empty dict on
 missing/malformed files so callers stay simple.
 
 Supported subset: ``key: value`` scalars (everything is a string), nested
-mappings by indentation, ``- `` lists of scalars, simple flow sequences of
-scalars (``tools: []`` / ``tools: [Edit, Write]``), ``#`` comments
-(whole-line and inline outside quotes), and one layer of matching surrounding
-quotes. Constructs outside that subset — block scalars, anchors, aliases,
-merge keys, nested flow collections, and mappings nested inside a list — are
-reported on stderr and skipped rather than parsed into a plausible-looking
-wrong value.
+mappings by indentation, ``- `` lists of scalars, ``#`` comments (whole-line
+and inline outside quotes), and one layer of matching surrounding quotes.
+Constructs outside that subset — block scalars, anchors, aliases, merge keys,
+flow collections, and mappings nested inside a list — are reported on stderr
+and skipped rather than parsed into a plausible-looking wrong value.
 """
 
 from __future__ import annotations
@@ -95,30 +93,10 @@ def _unsupported_value(key: str, value: str) -> str | None:
     if value.startswith("*"):
         return "YAML aliases are not supported"
     if value.startswith("["):
-        if _parse_flow_sequence(value) is None:
-            return "nested or invalid flow sequences are not supported (use `- ` list items)"
-        return None
+        return "flow sequences are not supported (use `- ` list items)"
     if value.startswith("{"):
         return "flow mappings are not supported (use an indented mapping)"
     return None
-
-
-def _parse_flow_sequence(value: str) -> list[str] | None:
-    """Parse ``[]`` / ``[a, b]`` of scalars. None if nested or malformed."""
-    if not (value.startswith("[") and value.endswith("]")):
-        return None
-    inner = value[1:-1].strip()
-    if not inner:
-        return []
-    if any(ch in inner for ch in "[]{}"):
-        return None
-    items: list[str] = []
-    for part in inner.split(","):
-        token = part.strip()
-        if not token:
-            continue
-        items.append(_unquote(token))
-    return items
 
 
 def _skip_indented_body(lines: list[str], start: int, indent: int) -> int:
@@ -184,22 +162,6 @@ def _parse_yaml_block(
                     current_list = None
                     i = _skip_indented_body(lines, i + 1, indent)
                     continue
-                if value.startswith("["):
-                    parsed_flow = _parse_flow_sequence(value)
-                    if parsed_flow is None:
-                        _warn_unsupported(
-                            source,
-                            i + 1,
-                            line,
-                            "nested or invalid flow sequences are not supported (use `- ` list items)",
-                        )
-                        current_list = None
-                        i = _skip_indented_body(lines, i + 1, indent)
-                        continue
-                    target[key] = parsed_flow
-                    current_list = None
-                    i += 1
-                    continue
 
             value = _unquote(value)
             current_list = None
@@ -246,8 +208,7 @@ def parse_simple_yaml(content: str, source: str = "config.yaml") -> dict:
               - item
 
     Uses indentation to detect nesting (2+ spaces deeper = child). Every value
-    is a string; consumers coerce. Simple flow sequences of scalars become
-    ``list[str]``. Unsupported constructs are reported on
+    is a string; consumers coerce. Unsupported constructs are reported on
     stderr against ``source`` and skipped — see the module docstring.
 
     Args:
