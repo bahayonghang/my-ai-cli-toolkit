@@ -192,42 +192,111 @@ def _worst(fg: str, surfaces: list[tuple[str, str]]) -> tuple[str, str]:
     return min(surfaces, key=lambda surface: contrast(fg, surface[0]))
 
 
-def gates(colors: dict, fixed: dict) -> list[dict]:
-    """The contrast pairs for one colourway. Rows with min None are reported, not gated."""
-    sheet_alpha = float(fixed["sheet-alpha"])
+def _layer(value: dict) -> tuple[str, float]:
+    return value["color"], float(value["alpha"])
+
+
+def _material(fixed: dict, theme: str) -> dict:
+    """The fixed values of one group in one shape: a surface is a (colour, alpha) pair.
+
+    Light paper is white at an alpha. Dark paper and overlays are their own colour
+    at their own alpha; white at any alpha would be lighter than the text on it.
+    """
+    if theme == "light":
+        return {
+            "ink": fixed["ink"],
+            "muted": fixed["muted"],
+            "sheet": (WHITE, float(fixed["sheet-alpha"])),
+            "control-edge": _layer(fixed["control-edge"]),
+        }
+    if theme == "dark":
+        dark = fixed["dark"]
+        return {
+            "ink": dark["ink"],
+            "muted": dark["muted"],
+            "sheet": _layer(dark["sheet"]),
+            "overlay": _layer(dark["overlay"]),
+            "sheet-edge": _layer(dark["sheet-edge"]),
+            "control-edge": _layer(dark["control-edge"]),
+        }
+    raise ValueError(f"theme must be light or dark; got {theme!r}")
+
+
+def _name(color: str) -> str:
+    """A colour as the upper layer of a mix. White is spelled out, the rest are hex."""
+    return "白" if color.upper() == WHITE else f"`{color}`"
+
+
+def gates(colors: dict, fixed: dict, theme: str = "light") -> list[dict]:
+    """The contrast pairs for one group of a colourway. Rows with min None are reported, not gated.
+
+    The dark group measures the same pairs on its own paper, with the paper colour
+    as the opaque fallback, then repeats the text and control-edge pairs on
+    overlays. A dark overlay is lighter than dark paper, so it is the weaker
+    surface for light text. A light overlay is whiter than light paper, so text
+    that passes on paper passes on it and the light group has no overlay rows.
+    """
+    material = _material(fixed, theme)
+    dark = theme == "dark"
+    sheet_color = material["sheet"][0]
     well_alpha = float(fixed["well-alpha"])
-    edge_color = fixed["control-edge"]["color"]
-    edge_alpha = float(fixed["control-edge"]["alpha"])
-    ink, muted = fixed["ink"], fixed["muted"]
+    edge_color, edge_alpha = material["control-edge"]
+    ink, muted = material["ink"], material["muted"]
     start = colors["field-start"]
 
     def tick(value: str) -> str:
         return f"`{value}`"
 
     fields = backgrounds(colors, fixed)
-    papers = [
-        (over(WHITE, bg, sheet_alpha), f"白 {sheet_alpha:.2f} 叠 {_on(label)}")
-        for bg, label in fields
-    ]
+
+    def laid(layer: tuple[str, float]) -> list[tuple[str, str]]:
+        """One translucent layer over every field background, as (hex, label)."""
+        color, alpha = layer
+        return [
+            (over(color, bg, alpha), f"{_name(color)} {alpha:.2f} 叠 {_on(label)}")
+            for bg, label in fields
+        ]
+
+    def weakest_edge(surfaces: list[tuple[str, str]]) -> tuple[str, tuple[str, str]]:
+        """The control edge and the surface under it, where the two are closest."""
+        return min(
+            ((over(edge_color, surface, edge_alpha), (surface, label)) for surface, label in surfaces),
+            key=lambda pair: contrast(pair[0], pair[1][0]),
+        )
+
+    papers = laid(material["sheet"])
     wells = [
         (over(ink, paper, well_alpha), f"{tick(ink)} {well_alpha:.2f} 叠 {label}")
         for paper, label in papers
     ]
     sheet_start, sheet_end = papers[0], papers[1]
-    edge, edge_paper = min(
-        ((over(edge_color, paper, edge_alpha), (paper, label)) for paper, label in papers),
-        key=lambda pair: contrast(pair[0], pair[1][0]),
-    )
+    edge, edge_paper = weakest_edge(papers)
     flat_paper, flat_field = min(
         zip(papers, fields), key=lambda pair: contrast(pair[0][0], pair[1][0])
     )
     muted_field = _worst(muted, fields)
     verdict = "可以" if contrast(muted, muted_field[0]) >= TEXT_MIN else "不可"
-    white = (WHITE, tick(WHITE))
+    solid = (sheet_color, tick(sheet_color))
     input_wash = (colors["input-wash"], tick(colors["input-wash"]))
     output_wash = (colors["output-wash"], tick(colors["output-wash"]))
+    fg_labels = {
+        "control-edge-sheet": f"{_name(edge_color)} {edge_alpha:.2f} 叠纸",
+        "sheet-field": flat_paper[1],
+    }
+    if dark:
+        ink_solid, input_solid, output_solid = "ink-solid", "input-solid", "output-solid"
+        on_input = "深色字"
+        line_color, line_alpha = material["sheet-edge"]
+        paper_edge = over(line_color, sheet_start[0], line_alpha)
+        paper_edge_use = "纸的描边,不能当控件边界"
+        fg_labels["edge-field"] = f"{_name(line_color)} {line_alpha:.2f} 叠纸"
+    else:
+        ink_solid, input_solid, output_solid = "ink-white", "input-white", "output-white"
+        on_input = "白字"
+        paper_edge = WHITE
+        paper_edge_use = "白描边,不能当控件边界"
     rows = [
-        ("ink-white", ink, white, TEXT_MIN, "正文,不透明回退"),
+        (ink_solid, ink, solid, TEXT_MIN, "正文,不透明回退"),
         ("ink-sheet-start", ink, sheet_start, TEXT_MIN, "正文,纸在底场起点上"),
         ("ink-sheet-end", ink, sheet_end, TEXT_MIN, "正文,纸在底场终点上"),
         ("muted-sheet-start", muted, sheet_start, TEXT_MIN, "次要文字,纸在底场起点上"),
@@ -240,17 +309,24 @@ def gates(colors: dict, fixed: dict) -> list[dict]:
         ("control-edge-sheet", edge, edge_paper, EDGE_MIN, "输入框、复选框、单选、开关的边界,最差的纸"),
         ("input-wash", colors["input"], input_wash, TEXT_MIN, "输入或完成,正文与大号数字"),
         ("input-sheet-worst", colors["input"], _worst(colors["input"], papers), TEXT_MIN, "链接,最差的纸"),
-        ("input-white", colors["input"], white, TEXT_MIN, "主要按钮上的白字,不透明回退上的链接"),
+        (input_solid, colors["input"], solid, TEXT_MIN, f"主要按钮上的{on_input},不透明回退上的链接"),
         ("output-wash", colors["output"], output_wash, TEXT_MIN, "输出,正文与大号数字"),
         ("output-sheet-worst", colors["output"], _worst(colors["output"], papers), TEXT_MIN, "输出色的文字,最差的纸"),
-        ("output-white", colors["output"], white, TEXT_MIN, "输出色,不透明回退"),
-        ("edge-field", WHITE, (start, tick(start)), None, "白描边,不能当控件边界"),
+        (output_solid, colors["output"], solid, TEXT_MIN, "输出色,不透明回退"),
+        ("edge-field", paper_edge, (start, tick(start)), None, paper_edge_use),
         ("sheet-field", flat_paper[0], flat_field, None, "纸与底场的明度比,只报告,层次不靠它"),
     ]
-    fg_labels = {
-        "control-edge-sheet": f"{tick(edge_color)} {edge_alpha:.2f} 叠纸",
-        "sheet-field": flat_paper[1],
-    }
+    if dark:
+        overlays = laid(material["overlay"])
+        overlay_edge, edge_overlay = weakest_edge(overlays)
+        rows += [
+            ("ink-overlay-worst", ink, _worst(ink, overlays), TEXT_MIN, "正文,最差的浮层"),
+            ("muted-overlay-worst", muted, _worst(muted, overlays), TEXT_MIN, "次要文字,最差的浮层"),
+            ("control-edge-overlay", overlay_edge, edge_overlay, EDGE_MIN, "输入框、复选框、单选、开关的边界,最差的浮层"),
+            ("input-overlay-worst", colors["input"], _worst(colors["input"], overlays), TEXT_MIN, "链接,最差的浮层"),
+            ("output-overlay-worst", colors["output"], _worst(colors["output"], overlays), TEXT_MIN, "输出色的文字,最差的浮层"),
+        ]
+        fg_labels["control-edge-overlay"] = f"{_name(edge_color)} {edge_alpha:.2f} 叠浮层"
     out = []
     for gate_id, fg, (bg, bg_label), minimum, use in rows:
         ratio = contrast(fg, bg)

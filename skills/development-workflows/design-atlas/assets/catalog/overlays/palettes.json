@@ -13,7 +13,17 @@
       "overlay-alpha": 0.82,
       "blob-alpha": 0.7,
       "well-alpha": 0.04,
-      "control-edge": {"color": "#24303A", "alpha": 0.54}
+      "control-edge": {"color": "#24303A", "alpha": 0.54},
+      "dark": {
+        "ink": "#E7EDF3",
+        "muted": "#A3AFBD",
+        "sheet": {"color": "#1C2530", "alpha": 0.6},
+        "overlay": {"color": "#1E2834", "alpha": 0.84},
+        "sheet-edge": {"color": "#FFFFFF", "alpha": 0.08},
+        "sheet-highlight": {"color": "#FFFFFF", "alpha": 0.06},
+        "overlay-highlight": {"color": "#FFFFFF", "alpha": 0.08},
+        "control-edge": {"color": "#FFFFFF", "alpha": 0.36}
+      }
     },
     "presets": {
       "mint": {

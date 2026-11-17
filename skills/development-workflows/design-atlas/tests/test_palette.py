@@ -28,6 +28,18 @@ ENTRY = "style:airy-glass"
 SPEC = palette.load_palettes()[ENTRY]
 REFERENCE_PAGE = SKILL_ROOT / "assets" / "reference" / "airy-glass" / "index.html"
 SLOP_CHECK = SKILL_ROOT / "scripts" / "slop_check.mjs"
+# Dark paper is a dark colour at an alpha, not white: the dark column of the
+# "起点数值" table of bahayonghang/my-ai-cli-toolkit#47.
+FIXED_DARK = {
+    "ink": "#E7EDF3",
+    "muted": "#A3AFBD",
+    "sheet": {"color": "#1C2530", "alpha": 0.6},
+    "overlay": {"color": "#1E2834", "alpha": 0.84},
+    "sheet-edge": {"color": "#FFFFFF", "alpha": 0.08},
+    "sheet-highlight": {"color": "#FFFFFF", "alpha": 0.06},
+    "overlay-highlight": {"color": "#FFFFFF", "alpha": 0.08},
+    "control-edge": {"color": "#FFFFFF", "alpha": 0.36},
+}
 FIXED = {
     "ink": "#24303A",
     "muted": "#5C6B76",
@@ -36,6 +48,7 @@ FIXED = {
     "blob-alpha": 0.7,
     "well-alpha": 0.04,
     "control-edge": {"color": "#24303A", "alpha": 0.54},
+    "dark": FIXED_DARK,
 }
 MINT = {
     "field-start": "#E7F6F1",
@@ -75,6 +88,28 @@ MINT_WORST = {
     "control-edge-sheet": 3.17,
     "sheet-field": 1.07,
 }
+# The field, the blobs and the two text accents are the dark column of the same table
+# and SkillPort's dark text accents; the washes are this entry's.
+MINT_DARK = {
+    "field-start": "#0F1B1F",
+    "field-end": "#18172B",
+    "blob-start": "#12302A",
+    "blob-end": "#2A2550",
+    "blob-mid": "#142536",
+    "input": "#5FD6A8",
+    "input-wash": "#1F362C",
+    "output": "#B3A8FF",
+    "output-wash": "#302D41",
+}
+# Worst background, dark column of the measured table of bahayonghang/my-ai-cli-toolkit#47.
+MINT_DARK_WORST = {
+    "ink-sheet-worst": 13.04,
+    "muted-sheet-worst": 6.90,
+    "ink-field-worst": 12.86,
+    "muted-field-worst": 6.81,
+    "control-edge-sheet": 3.24,
+    "sheet-field": 1.01,
+}
 GATED = (
     "ink-white", "ink-sheet-start", "ink-sheet-end", "muted-sheet-start",
     "muted-sheet-end", "ink-sheet-worst", "muted-sheet-worst", "muted-well-worst",
@@ -89,15 +124,54 @@ GATE_ORDER = (
     "input-sheet-worst", "input-white", "output-wash", "output-sheet-worst",
     "output-white", "edge-field", "sheet-field",
 )
+# The dark group: the same pairs on dark paper (its opaque fallback is the paper colour,
+# not white), then the text and control-edge pairs again on overlays.
+DARK_GATE_ORDER = (
+    "ink-solid", "ink-sheet-start", "ink-sheet-end", "muted-sheet-start",
+    "muted-sheet-end", "ink-sheet-worst", "muted-sheet-worst", "muted-well-worst",
+    "ink-field-worst", "muted-field-worst", "control-edge-sheet", "input-wash",
+    "input-sheet-worst", "input-solid", "output-wash", "output-sheet-worst",
+    "output-solid", "edge-field", "sheet-field",
+    "ink-overlay-worst", "muted-overlay-worst", "control-edge-overlay",
+    "input-overlay-worst", "output-overlay-worst",
+)
+DARK_GATED = tuple(gate_id for gate_id in DARK_GATE_ORDER if gate_id not in REPORTED)
+# Every row of the mint dark group, worked from over() and contrast() one pair at a time.
+MINT_DARK_TABLE = {
+    "ink-solid": 13.12,
+    "ink-sheet-start": 13.85,
+    "ink-sheet-end": 13.92,
+    "muted-sheet-start": 7.33,
+    "muted-sheet-end": 7.37,
+    "ink-sheet-worst": 13.04,
+    "muted-sheet-worst": 6.90,
+    "muted-well-worst": 6.21,
+    "ink-field-worst": 12.86,
+    "muted-field-worst": 6.81,
+    "control-edge-sheet": 3.24,
+    "input-wash": 7.19,
+    "input-sheet-worst": 8.55,
+    "input-solid": 8.60,
+    "output-wash": 6.32,
+    "output-sheet-worst": 7.30,
+    "output-solid": 7.34,
+    "edge-field": 1.36,
+    "sheet-field": 1.01,
+    "ink-overlay-worst": 12.69,
+    "muted-overlay-worst": 6.71,
+    "control-edge-overlay": 3.22,
+    "input-overlay-worst": 8.31,
+    "output-overlay-worst": 7.10,
+}
 HEX = re.compile(r"#[0-9A-F]{6}")
 
 
 def minimum(gate_id: str) -> float:
-    return 3.0 if gate_id == "control-edge-sheet" else 4.5
+    return 3.0 if gate_id.startswith("control-edge") else 4.5
 
 
-def ratios(colors: dict) -> dict[str, dict]:
-    return {row["id"]: row for row in palette.gates(colors, SPEC["fixed"])}
+def ratios(colors: dict, theme: str = "light") -> dict[str, dict]:
+    return {row["id"]: row for row in palette.gates(colors, SPEC["fixed"], theme)}
 
 
 def run(*args: str) -> subprocess.CompletedProcess:
@@ -137,6 +211,137 @@ class ColourMathTests(unittest.TestCase):
         skillport = {**FIXED, "control-edge": {"color": "#1F2A37", "alpha": 0.54}}
         edge = {row["id"]: row for row in palette.gates(MINT, skillport)}["control-edge-sheet"]
         self.assertEqual(edge["ratio"], 3.29)
+
+    def test_mint_dark_worst_background_rows_match_the_spec_table(self) -> None:
+        rows = ratios(MINT_DARK, "dark")
+        for gate_id, expected in MINT_DARK_WORST.items():
+            self.assertEqual(rows[gate_id]["ratio"], expected, gate_id)
+        # Light text is weakest on the lightest background: the start blob over the field
+        # start, 0.7 * (18, 48, 42) + 0.3 * (15, 27, 31) = (17.1, 41.7, 38.7).
+        self.assertEqual(rows["ink-field-worst"]["bg"], "#112A27")
+        # Dark paper is #1C2530 at 0.60 over it: 0.6 * (28, 37, 48) + 0.4 * (17, 42, 39)
+        # = (23.6, 39.0, 44.4). White at 0.60 there would be far lighter than this.
+        self.assertEqual(rows["ink-sheet-worst"]["bg"], "#18272C")
+        self.assertEqual(rows["muted-sheet-worst"]["bg"], "#18272C")
+
+    def test_dark_gate_rows(self) -> None:
+        rows = palette.gates(MINT_DARK, SPEC["fixed"], "dark")
+        self.assertEqual([row["id"] for row in rows], list(DARK_GATE_ORDER))
+        self.assertEqual({row["id"]: row["ratio"] for row in rows}, MINT_DARK_TABLE)
+        for row in rows:
+            self.assertEqual(
+                set(row), {"id", "fg", "bg", "fg_label", "bg_label", "ratio", "min", "pass", "use"}
+            )
+            if row["id"] in REPORTED:
+                self.assertIsNone(row["min"], row["id"])
+                self.assertIsNone(row["pass"], row["id"])
+            else:
+                self.assertEqual(row["min"], minimum(row["id"]), row["id"])
+                self.assertIs(row["pass"], True, row["id"])
+            self.assertRegex(row["fg"], HEX, row["id"])
+            self.assertRegex(row["bg"], HEX, row["id"])
+        self.assertEqual(palette.failures(rows), [])
+        # The light group keeps its nineteen rows: no overlay rows, white as the fallback.
+        self.assertEqual(
+            [row["id"] for row in palette.gates(MINT, SPEC["fixed"], "light")], list(GATE_ORDER)
+        )
+        self.assertEqual(palette.gates(MINT, SPEC["fixed"], "light"), palette.gates(MINT, SPEC["fixed"]))
+        with self.assertRaises(ValueError):
+            palette.gates(MINT, SPEC["fixed"], "sepia")
+
+    def test_dark_rows_name_the_dark_paper_and_overlay(self) -> None:
+        rows = ratios(MINT_DARK, "dark")
+
+        def labels(gate_id: str) -> tuple[str, str]:
+            return rows[gate_id]["fg_label"], rows[gate_id]["bg_label"]
+
+        # The opaque fallback is the paper colour, and so is the label on a primary button.
+        self.assertEqual(labels("ink-solid"), ("`#E7EDF3`", "`#1C2530`"))
+        self.assertEqual(rows["ink-solid"]["use"], "正文,不透明回退")
+        self.assertEqual(labels("input-solid"), ("`#5FD6A8`", "`#1C2530`"))
+        self.assertEqual(rows["input-solid"]["use"], "主要按钮上的深色字,不透明回退上的链接")
+        self.assertEqual(labels("ink-sheet-start"), ("`#E7EDF3`", "`#1C2530` 0.60 叠 `#0F1B1F`"))
+        self.assertEqual(
+            labels("ink-sheet-worst"),
+            ("`#E7EDF3`", "`#1C2530` 0.60 叠 (`#12302A` 0.70 叠 `#0F1B1F`)"),
+        )
+        self.assertEqual(
+            labels("muted-well-worst"),
+            ("`#A3AFBD`", "`#E7EDF3` 0.04 叠 `#1C2530` 0.60 叠 (`#12302A` 0.70 叠 `#0F1B1F`)"),
+        )
+        # The control edge is white at 0.36. On paper it is weakest over the end blob:
+        # paper 0.6 * (28, 37, 48) + 0.4 * (37, 33, 69) = (31.6, 35.4, 56.4), then the edge
+        # 0.36 * 255 + 0.64 * (32, 35, 56) = (112.28, 114.2, 127.64).
+        self.assertEqual(
+            labels("control-edge-sheet"),
+            ("白 0.36 叠纸", "`#1C2530` 0.60 叠 (`#2A2550` 0.70 叠 `#18172B`)"),
+        )
+        self.assertEqual(
+            (rows["control-edge-sheet"]["fg"], rows["control-edge-sheet"]["bg"]),
+            ("#707280", "#202338"),
+        )
+        self.assertEqual(
+            labels("control-edge-overlay"),
+            ("白 0.36 叠浮层", "`#1E2834` 0.84 叠 (`#12302A` 0.70 叠 `#0F1B1F`)"),
+        )
+        self.assertEqual(
+            (rows["control-edge-overlay"]["fg"], rows["control-edge-overlay"]["bg"]),
+            ("#6E757C", "#1C2832"),
+        )
+        # The paper edge is white at 0.08 over the paper, not a white line: paper on the
+        # field start is (22.8, 33.0, 41.2), the edge 0.08 * 255 + 0.92 * (23, 33, 41).
+        self.assertEqual(labels("edge-field"), ("白 0.08 叠纸", "`#0F1B1F`"))
+        self.assertEqual(
+            (rows["edge-field"]["fg"], rows["edge-field"]["bg"]), ("#2A333A", "#0F1B1F")
+        )
+        self.assertEqual(rows["edge-field"]["use"], "纸的描边,不能当控件边界")
+        self.assertEqual(
+            labels("ink-overlay-worst"),
+            ("`#E7EDF3`", "`#1E2834` 0.84 叠 (`#2A2550` 0.70 叠 `#18172B`)"),
+        )
+        self.assertEqual(rows["ink-overlay-worst"]["use"], "正文,最差的浮层")
+        self.assertIn("本色板可以", rows["muted-field-worst"]["use"])
+
+    def test_dark_overlay_rows_catch_what_the_paper_rows_miss(self) -> None:
+        # A dark overlay is lighter than dark paper, so light text is weaker on it. The
+        # lightest one is over the end blob: 0.84 * (30, 40, 52) + 0.16 * (37, 33, 69)
+        # = (31.12, 38.88, 54.72).
+        rows = ratios(MINT_DARK, "dark")
+        self.assertEqual(rows["ink-overlay-worst"]["bg"], "#1F2737")
+        for name in ("ink", "muted", "input", "output"):
+            self.assertLess(
+                rows[f"{name}-overlay-worst"]["ratio"], rows[f"{name}-sheet-worst"]["ratio"], name
+            )
+        self.assertLess(
+            palette.luminance(rows["ink-sheet-worst"]["bg"]),
+            palette.luminance(rows["ink-overlay-worst"]["bg"]),
+        )
+        # A lighter overlay fails its own rows while every paper row still passes.
+        lighter = copy.deepcopy(SPEC["fixed"])
+        lighter["dark"]["overlay"]["color"] = "#3B4550"
+        self.assertEqual(
+            palette.failures(palette.gates(MINT_DARK, lighter, "dark")), ["control-edge-overlay"]
+        )
+        lighter["dark"]["overlay"]["color"] = "#59636E"
+        self.assertEqual(
+            palette.failures(palette.gates(MINT_DARK, lighter, "dark")),
+            ["muted-overlay-worst", "control-edge-overlay", "input-overlay-worst",
+             "output-overlay-worst"],
+        )
+
+    def test_dark_failures(self) -> None:
+        weak = {**MINT_DARK, "input": "#3F8F70"}
+        self.assertEqual(
+            palette.failures(palette.gates(weak, SPEC["fixed"], "dark")),
+            ["input-wash", "input-sheet-worst", "input-solid", "input-overlay-worst"],
+        )
+        # A blob much lighter than the field. Both bare ends still pass; on that blob the
+        # control edge drops under 3:1 and muted text on the field is reported as unfit.
+        pale = ratios({**MINT_DARK, "blob-mid": "#6A7482"}, "dark")
+        self.assertEqual(palette.failures(list(pale.values())), ["control-edge-sheet"])
+        self.assertEqual(pale["muted-field-worst"]["ratio"], 3.2)
+        self.assertIsNone(pale["muted-field-worst"]["pass"])
+        self.assertIn("本色板不可", pale["muted-field-worst"]["use"])
 
     def test_worst_background_includes_the_bare_field_ends(self) -> None:
         # Blobs lighter than both field ends: the bare end is then the darkest background.
