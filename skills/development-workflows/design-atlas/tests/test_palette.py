@@ -8,6 +8,7 @@ import copy
 import io
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -920,6 +921,112 @@ class MaterialModelTests(unittest.TestCase):
     def test_comment_cannot_close_itself(self) -> None:
         choice = {**palette.choose(SPEC), "reason": "keywords a --> b"}
         self.assertEqual(palette.comment(choice).count("-->"), 1)
+
+
+class ReferencePageTests(unittest.TestCase):
+    """assets/reference/airy-glass/index.html is the mint target picture for non-CSS stacks."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.page = REFERENCE_PAGE.read_text(encoding="utf-8")
+        cls.css = "\n".join(re.findall(r"<style>(.*?)</style>", cls.page, flags=re.S))
+        cls.rules = css_rules(cls.css)
+        root = next(body for name, body in cls.rules if name == ":root")
+        cls.tokens = dict(re.findall(r"(--[\w-]+):\s*([^;]+);", root))
+
+    def test_root_values_are_the_mint_preset(self) -> None:
+        mint = SPEC["presets"]["mint"]
+        for role in palette.ROLES:
+            self.assertEqual(self.tokens[f"--color-{role}"], mint[role], role)
+        fixed = SPEC["fixed"]
+        self.assertEqual(self.tokens["--color-ink"], fixed["ink"])
+        self.assertEqual(self.tokens["--color-muted"], fixed["muted"])
+        self.assertEqual(
+            self.tokens["--color-sheet"], f"rgba(255,255,255,{fixed['sheet-alpha']:.2f})"
+        )
+        self.assertEqual(
+            self.tokens["--color-overlay"], f"rgba(255,255,255,{fixed['overlay-alpha']:.2f})"
+        )
+        r, g, b = palette.hex_to_rgb(fixed["ink"])
+        self.assertEqual(
+            self.tokens["--color-well"], f"rgba({r},{g},{b},{fixed['well-alpha']:.2f})"
+        )
+        r, g, b = palette.hex_to_rgb(fixed["control-edge"]["color"])
+        self.assertEqual(
+            self.tokens["--color-control-edge"],
+            f"rgba({r},{g},{b},{fixed['control-edge']['alpha']:.2f})",
+        )
+        self.assertEqual(self.tokens["--blob-opacity"], f"{fixed['blob-alpha'] * 100:.0f}%")
+        # No other hex in the page: every colour comes from the preset or the fixed values.
+        allowed = {*(mint[role] for role in palette.ROLES), fixed["ink"], fixed["muted"], "#FFFFFF"}
+        self.assertEqual(set(re.findall(r"#[0-9A-Fa-f]{6}\b", self.css)) - allowed, set())
+
+    def test_root_material_matches_the_entry(self) -> None:
+        head = template()[: template().index("\n---\n", 4)]
+        for token, key in (
+            ("--color-sheet-solid", "sheet-solid"), ("--color-sheet-edge", "sheet-edge"),
+            ("--color-control-fill", "control-fill"),
+        ):
+            self.assertIn(f'  {key}: "{self.tokens[token]}"', head, token)
+        sheet = f"{self.tokens['--highlight-sheet']}, {self.tokens['--shadow-sheet']}"
+        self.assertEqual(
+            sheet, "inset 0 1px 0 rgba(255,255,255,0.55), 0 12px 40px -16px rgba(30,60,90,0.14)"
+        )
+        overlay = f"{self.tokens['--highlight-overlay']}, {self.tokens['--shadow-overlay']}"
+        self.assertEqual(
+            overlay, "inset 0 1px 0 rgba(255,255,255,0.65), 0 24px 64px -24px rgba(30,60,90,0.22)"
+        )
+
+    def test_only_the_overlay_blurs(self) -> None:
+        blurred = [name for name, body in self.rules if "backdrop-filter" in body]
+        self.assertTrue(blurred)
+        for name in blurred:
+            self.assertIn(".overlay", name)
+            self.assertNotIn(".sheet", name)
+        self.assertEqual(self.css.count("blur("), 2)  # the overlay rule and its @supports test
+        self.assertNotRegex(self.css, r"(?<!backdrop-)filter\s*:")
+        field = next(body for name, body in self.rules if name == ".field")
+        self.assertEqual(field.count("radial-gradient("), 3)
+        self.assertEqual(field.count("transparent 70%)"), 3)
+        self.assertIn("linear-gradient(160deg, var(--color-field-start), var(--color-field-end))", field)
+
+    def test_page_makes_no_external_request(self) -> None:
+        for needle in ("http://", "https://", "url(", "@import", "<link", "<script", "<img", "src="):
+            self.assertNotIn(needle, self.page, needle)
+
+    def test_page_has_the_workbench_parts(self) -> None:
+        body = self.page[self.page.index("<body") :]
+        self.assertGreaterEqual(len(re.findall(r'class="sheet\b', body)), 4)  # sidebar + 3 cards
+        self.assertLessEqual(len(re.findall(r'class="sheet\b', body)), 5)
+        for needle in (
+            'class="sheet sidebar"', "<h1", 'class="well', "btn-primary", "btn-secondary",
+            '<input type="text"', '<input type="checkbox"', 'class="tag', 'class="segmented"',
+            'class="overlay',
+        ):
+            self.assertIn(needle, body, needle)
+        self.assertIn("占位", body)
+        # Paper is not nested: no sheet opens before the previous one closed.
+        depth = 0
+        for tag, cls in re.findall(r"<(/?)(?:section|aside)\b([^>]*)>", body):
+            if tag:
+                depth -= 1
+            else:
+                self.assertEqual(depth, 0, cls)
+                depth += 1
+        self.assertNotIn("\r", self.page)
+
+    @unittest.skipUnless(shutil.which("node"), "node is not installed")
+    def test_slop_check_passes_next_to_the_apply_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            applied = run("apply", "style:airy-glass", "--root", tmp, "--palette", "mint")
+            self.assertEqual(applied.returncode, 0, applied.stderr)
+            shutil.copyfile(REFERENCE_PAGE, Path(tmp) / "index.html")
+            result = subprocess.run(
+                ["node", str(SLOP_CHECK), tmp], capture_output=True, text=True, encoding="utf-8"
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("files 1", result.stdout)
+            self.assertIn("Floor 0 FAIL", result.stdout)
 
 
 def make_project(root: Path, *, css: str | None = None, readme: str | None = None) -> None:
