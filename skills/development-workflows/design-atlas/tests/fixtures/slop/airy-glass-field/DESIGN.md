@@ -15,12 +15,32 @@ colors:
   well: "rgba(36,48,58,0.04)"
   control-fill: "rgba(36,48,58,0.08)"
   control-edge: "rgba(36,48,58,0.54)"
+  on-input: "#FFFFFF"
   ink: "#24303A"
   muted: "#5C6B76"
   input: "#00787F"
   input-wash: "#E5F8F9"
   output: "#8D4D8C"
   output-wash: "#FBEFFA"
+  field-start-dark: "#0E1C1D"
+  field-end-dark: "#241323"
+  blob-start-dark: "#0F2F32"
+  blob-end-dark: "#401D3F"
+  blob-mid-dark: "#1A2337"
+  sheet-dark: "rgba(28,37,48,0.60)"
+  sheet-solid-dark: "rgba(28,37,48,0.96)"
+  sheet-edge-dark: "rgba(255,255,255,0.08)"
+  overlay-dark: "rgba(30,40,52,0.84)"
+  well-dark: "rgba(231,237,243,0.04)"
+  control-fill-dark: "rgba(231,237,243,0.08)"
+  control-edge-dark: "rgba(255,255,255,0.36)"
+  on-input-dark: "#1C2530"
+  ink-dark: "#E7EDF3"
+  muted-dark: "#A3AFBD"
+  input-dark: "#32D2DD"
+  input-wash-dark: "#193638"
+  output-dark: "#E69DE3"
+  output-wash-dark: "#3A2A39"
 typography:
   display-num:
     fontFamily: 'Figtree, "PingFang SC", "Noto Sans SC", sans-serif'
@@ -73,6 +93,10 @@ elevation:
   sheet-shadow: "0 12px 40px -16px rgba(30,60,90,0.14)"
   overlay-highlight: "inset 0 1px 0 rgba(255,255,255,0.65)"
   overlay-shadow: "0 24px 64px -24px rgba(30,60,90,0.22)"
+  sheet-highlight-dark: "inset 0 1px 0 rgba(255,255,255,0.06)"
+  sheet-shadow-dark: "0 12px 40px -16px rgba(0,0,0,0.45)"
+  overlay-highlight-dark: "inset 0 1px 0 rgba(255,255,255,0.08)"
+  overlay-shadow-dark: "0 24px 64px -24px rgba(0,0,0,0.60)"
 motion:
   press-scale: 0.98
   press-duration: 120ms
@@ -88,9 +112,11 @@ motion:
 
 Blur is not the material. Paper, wells, and the field never blur. This file does not define a component library. Do not import the glassmorphism palette, fonts, or radii.
 
+The file carries two groups, light and dark. The sections below describe the light group, and Dark Group describes the dark one. A token whose name ends in `-dark` replaces the token of the same name without the suffix. Follow the system appearance, and let an explicit choice by the user win over it.
+
 ## Colourway
 
-The colourway is a dial. `apply` sets it from the project: an accent token the project already has, then the project content, then the default. The roles, the material, and the contrast gates are the same in every colourway. Only the nine hex values below change.
+The colourway is a dial. `apply` sets it from the project: an accent token the project already has, then the project content, then the default. The roles, the material, and the contrast gates are the same in every colourway. Only the hex values below change: nine in the light group and nine in the dark group.
 
 <!-- palette:begin colourway -->
 Colourway: `hue:202` (derived: input hue 202, output hue 328).
@@ -102,7 +128,16 @@ Colourway: `hue:202` (derived: input hue 202, output hue 328).
 - Other colourways: `mint`, `sky`, `apricot`, `slate`, or `hue:<0-359>`.
 <!-- palette:end colourway -->
 
-To switch, rerun `apply --force --palette <preset|hue:N>`. Do not edit one hex by hand. The contrast table under Accessibility is measured for this colourway only.
+<!-- palette:begin colourway-dark -->
+Dark group of `hue:202`.
+
+- Field: `#0E1C1D` to `#241323`.
+- Blobs: `#0F2F32`, `#401D3F`, `#1A2337`, each at opacity 0.70.
+- Input: `#32D2DD` on `#193638`.
+- Output: `#E69DE3` on `#3A2A39`.
+<!-- palette:end colourway-dark -->
+
+To switch, rerun `apply --force --palette <preset|hue:N>`. It rewrites both groups together. Do not edit one hex by hand. The contrast tables under Accessibility are measured for this colourway only.
 
 ## Colors
 
@@ -138,6 +173,7 @@ Controls:
 
 - `{colors.control-edge}` (`rgba(36,48,58,0.54)`) is the 1px boundary of inputs, checkboxes, radios, and switches.
 - `{colors.control-fill}` (`rgba(36,48,58,0.08)`) fills a secondary button, a neutral tag, and the track of a segmented control. Its label is `{colors.ink}`.
+- `{colors.on-input}` (`#FFFFFF`) is the label, the check mark, and the switch thumb on a `{colors.input}` fill.
 
 Text:
 
@@ -147,6 +183,79 @@ Text:
 - `{colors.output}` (`#8D4D8C`) for output and secondary figures. It sits on paper or on `{colors.output-wash}`.
 
 减少透明度时 (`prefers-reduced-transparency: reduce`),以及系统高对比度时,纸和浮层都改为 `{colors.sheet-solid}` (`rgba(255,255,255,0.96)`),浮层不再模糊. 保持同一色相,只提高不透明度. 纸的填充是 0.62. 轻来自底场的色斑、纸之间露出的底场、白描边、内高光和柔影,不来自模糊.
+
+## Dark Group
+
+The dark group is the same material with the lightness order turned over. The field is the darkest layer, paper is a little lighter, and an overlay is lighter than paper. Every rule in this file holds for it unless this section changes it.
+
+Use the dark group when the system appearance is dark (`prefers-color-scheme: dark`). An explicit choice by the user wins over the system appearance, in both directions. Typography, radii, spacing, `material`, and motion have no dark twin: both groups use the same values.
+
+| Role | Light token | Dark token | Dark value |
+| --- | --- | --- | --- |
+| Field ends | `{colors.field-start}`, `{colors.field-end}` | `{colors.field-start-dark}`, `{colors.field-end-dark}` | `#0E1C1D`, `#241323` |
+| Blobs | `{colors.blob-start}`, `{colors.blob-end}`, `{colors.blob-mid}` | `{colors.blob-start-dark}`, `{colors.blob-end-dark}`, `{colors.blob-mid-dark}` | `#0F2F32`, `#401D3F`, `#1A2337` |
+| Paper fill | `{colors.sheet}` | `{colors.sheet-dark}` | `rgba(28,37,48,0.60)` |
+| Opaque fallback | `{colors.sheet-solid}` | `{colors.sheet-solid-dark}` | `rgba(28,37,48,0.96)` |
+| Paper edge | `{colors.sheet-edge}` | `{colors.sheet-edge-dark}` | `rgba(255,255,255,0.08)` |
+| Paper highlight | `{elevation.sheet-highlight}` | `{elevation.sheet-highlight-dark}` | `inset 0 1px 0 rgba(255,255,255,0.06)` |
+| Paper shadow | `{elevation.sheet-shadow}` | `{elevation.sheet-shadow-dark}` | `0 12px 40px -16px rgba(0,0,0,0.45)` |
+| Overlay fill | `{colors.overlay}` | `{colors.overlay-dark}` | `rgba(30,40,52,0.84)` |
+| Overlay highlight | `{elevation.overlay-highlight}` | `{elevation.overlay-highlight-dark}` | `inset 0 1px 0 rgba(255,255,255,0.08)` |
+| Overlay shadow | `{elevation.overlay-shadow}` | `{elevation.overlay-shadow-dark}` | `0 24px 64px -24px rgba(0,0,0,0.60)` |
+| Neutral well | `{colors.well}` | `{colors.well-dark}` | `rgba(231,237,243,0.04)` |
+| Control fill | `{colors.control-fill}` | `{colors.control-fill-dark}` | `rgba(231,237,243,0.08)` |
+| Control boundary | `{colors.control-edge}` | `{colors.control-edge-dark}` | `rgba(255,255,255,0.36)` |
+| Label on an input fill | `{colors.on-input}` | `{colors.on-input-dark}` | `#1C2530` |
+| Text | `{colors.ink}` | `{colors.ink-dark}` | `#E7EDF3` |
+| Secondary text | `{colors.muted}` | `{colors.muted-dark}` | `#A3AFBD` |
+| Input and its well | `{colors.input}`, `{colors.input-wash}` | `{colors.input-dark}`, `{colors.input-wash-dark}` | `#32D2DD`, `#193638` |
+| Output and its well | `{colors.output}`, `{colors.output-wash}` | `{colors.output-dark}`, `{colors.output-wash-dark}` | `#E69DE3`, `#3A2A39` |
+
+What the dark group changes:
+
+- Paper is `{colors.sheet-dark}`: a dark color of its own, at 0.60. It is not white at a low alpha. White at a low alpha only grays the field, and it leaves no color for the opaque fallback.
+- The paper edge and the two highlights stay white, at a far lower alpha. The two shadows are black and heavier.
+- Both field ends stay dark and low-chroma: OKLCH L at most 0.23, C at most 0.045. A blob is lighter than both ends, and a blob stays at C 0.08 or less.
+- An overlay is lighter than paper, so it is the weaker surface for light text. The dark contrast table measures text and the control boundary on the worst overlay as well as on the worst paper.
+- `{colors.well-dark}` is `{colors.ink-dark}` at 0.04 over paper. The two semantic wells are dark tints of their accent, a little lighter than the paper color.
+- `{colors.input-dark}` and `{colors.output-dark}` are light enough to be text on dark paper. A fill of `{colors.input-dark}` takes a dark label, check mark, and switch thumb: `{colors.on-input-dark}`, which is the paper color.
+- Under 减少透明度 and under system high contrast, paper and overlays use `{colors.sheet-solid-dark}`: the paper color at 0.96. An overlay with no backdrop blur uses it too.
+
+The recipe below is written for an explicit dark choice: `data-theme="dark"` on the root. Bind the same values when `prefers-color-scheme: dark` matches and the root carries no `data-theme="light"`. Radii, the press scale, and the rule for which overlay may blur come from the light recipe under Elevation & Depth.
+
+```css
+:root[data-theme="dark"] .field {
+  background:
+    radial-gradient(42rem 32rem at 12% 6%, color-mix(in srgb, #0F2F32 70%, transparent), transparent 70%),
+    radial-gradient(40rem 32rem at 92% 96%, color-mix(in srgb, #401D3F 70%, transparent), transparent 70%),
+    radial-gradient(30rem 24rem at 82% 10%, color-mix(in srgb, #1A2337 70%, transparent), transparent 70%),
+    linear-gradient(160deg, #0E1C1D, #241323);
+}
+:root[data-theme="dark"] .sheet {
+  background: rgba(28,37,48,0.60);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 40px -16px rgba(0,0,0,0.45);
+}
+:root[data-theme="dark"] .well {
+  background: rgba(231,237,243,0.04);
+}
+:root[data-theme="dark"] .overlay {
+  background: rgba(30,40,52,0.84);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 24px 64px -24px rgba(0,0,0,0.60);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  :root[data-theme="dark"] .overlay {
+    background: rgba(28,37,48,0.96);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root[data-theme="dark"] .sheet,
+  :root[data-theme="dark"] .overlay {
+    background: rgba(28,37,48,0.96);
+  }
+}
+```
 
 ## Typography
 
@@ -288,6 +397,45 @@ Inputs, checkboxes, radios, and switches draw their boundary in `{colors.control
 
 A lighter tint of `{colors.input}` or `{colors.output}` that falls under 4.5:1 on its well is not a token. Use the measured value and keep the well light.
 
+### Dark group contrast
+
+The dark group is measured the same way, on its own eight backgrounds. Paper is `{colors.sheet-dark}` over one of them, and a neutral well is `{colors.ink-dark}` 0.04 over that paper. An overlay is `{colors.overlay-dark}` over the same backgrounds. It is lighter than paper, so the text rows and the control boundary are measured on the worst overlay as well. The opaque fallback is the paper color.
+
+<!-- palette:begin contrast-dark -->
+In the dark group, inputs, checkboxes, radios, and switches draw their boundary in `{colors.control-edge-dark}`. That edge is 3.25:1 on the worst paper and 3.21:1 on the worst overlay; the non-text minimum is 3:1. The 2px focus ring is `{colors.input-dark}` (`#32D2DD`): 8.34:1 on the worst paper and 8.12:1 on the worst overlay. The paper edge on the field start is 1.35:1, so it cannot be a control boundary.
+
+`{colors.ink-dark}` may sit directly on the field: 12.96:1 on the worst blob. `{colors.muted-dark}` on the field is 6.86:1 at worst, so 12px secondary text may sit on the field in this colourway.
+
+| 前景 | 背景 | 比值 | 门槛 | 用途 |
+| --- | --- | --- | --- | --- |
+| `#E7EDF3` | `#1C2530` | 13.12 | 4.5 | 正文,不透明回退 |
+| `#E7EDF3` | `#1C2530` 0.60 叠 `#0E1C1D` | 13.89 | 4.5 | 正文,纸在底场起点上 |
+| `#E7EDF3` | `#1C2530` 0.60 叠 `#241323` | 13.92 | 4.5 | 正文,纸在底场终点上 |
+| `#A3AFBD` | `#1C2530` 0.60 叠 `#0E1C1D` | 7.35 | 4.5 | 次要文字,纸在底场起点上 |
+| `#A3AFBD` | `#1C2530` 0.60 叠 `#241323` | 7.37 | 4.5 | 次要文字,纸在底场终点上 |
+| `#E7EDF3` | `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#0E1C1D`) | 13.03 | 4.5 | 正文,最差的纸 |
+| `#A3AFBD` | `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#0E1C1D`) | 6.90 | 4.5 | 次要文字,最差的纸 |
+| `#A3AFBD` | `#E7EDF3` 0.04 叠 `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#0E1C1D`) | 6.21 | 4.5 | 次要文字,最差的纸上的中性内容块 |
+| `#E7EDF3` | `#0F2F32` 0.70 叠 `#0E1C1D` | 12.96 | 4.5 | 正文直接落在底场上,最差的色斑 |
+| `#A3AFBD` | `#0F2F32` 0.70 叠 `#0E1C1D` | 6.86 | 只报告 | 次要文字落在底场上,只报告,本色板可以 |
+| 白 0.36 叠纸 | `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#241323`) | 3.25 | 3 | 输入框、复选框、单选、开关的边界,最差的纸 |
+| `#32D2DD` | `#193638` | 7.01 | 4.5 | 输入或完成,正文与大号数字 |
+| `#32D2DD` | `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#0E1C1D`) | 8.34 | 4.5 | 链接,最差的纸 |
+| `#32D2DD` | `#1C2530` | 8.40 | 4.5 | 主要按钮上的深色字,不透明回退上的链接 |
+| `#E69DE3` | `#3A2A39` | 6.56 | 4.5 | 输出,正文与大号数字 |
+| `#E69DE3` | `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#0E1C1D`) | 7.54 | 4.5 | 输出色的文字,最差的纸 |
+| `#E69DE3` | `#1C2530` | 7.59 | 4.5 | 输出色,不透明回退 |
+| 白 0.08 叠纸 | `#0E1C1D` | 1.35 | 只报告 | 纸的描边,不能当控件边界 |
+| `#1C2530` 0.60 叠 (`#0F2F32` 0.70 叠 `#241323`) | `#0F2F32` 0.70 叠 `#241323` | 1.00 | 只报告 | 纸与底场的明度比,只报告,层次不靠它 |
+| `#E7EDF3` | `#1E2834` 0.84 叠 (`#0F2F32` 0.70 叠 `#241323`) | 12.69 | 4.5 | 正文,最差的浮层 |
+| `#A3AFBD` | `#1E2834` 0.84 叠 (`#0F2F32` 0.70 叠 `#241323`) | 6.71 | 4.5 | 次要文字,最差的浮层 |
+| 白 0.36 叠浮层 | `#1E2834` 0.84 叠 (`#0F2F32` 0.70 叠 `#241323`) | 3.21 | 3 | 输入框、复选框、单选、开关的边界,最差的浮层 |
+| `#32D2DD` | `#1E2834` 0.84 叠 (`#0F2F32` 0.70 叠 `#241323`) | 8.12 | 4.5 | 链接,最差的浮层 |
+| `#E69DE3` | `#1E2834` 0.84 叠 (`#0F2F32` 0.70 叠 `#241323`) | 7.34 | 4.5 | 输出色的文字,最差的浮层 |
+<!-- palette:end contrast-dark -->
+
+A darker shade of `{colors.input-dark}` or `{colors.output-dark}` that falls under 4.5:1 on its well is not a token. Use the measured value and keep the well dark.
+
 ### Control boundaries
 
 WCAG 1.4.11 asks for 3:1 on the visual information that identifies a control and its state. It does not ask for an outline on a control that a fill and a text label already identify.
@@ -296,14 +444,16 @@ WCAG 1.4.11 asks for 3:1 on the visual information that identifies a control and
 | --- | --- | --- |
 | Text input, textarea, select | 1px `{colors.control-edge}` | Required: 3:1 on paper |
 | Checkbox or radio, off | 1px `{colors.control-edge}` | Required: 3:1 on paper |
-| Checkbox or radio, on | Fill `{colors.input}` with a white mark | The fill is the boundary |
+| Checkbox or radio, on | Fill `{colors.input}` with a mark in `{colors.on-input}` | The fill is the boundary |
 | Switch, off | 1px `{colors.control-edge}` on the track, thumb in `{colors.muted}` | Required: 3:1 on paper |
-| Switch, on | Track fill `{colors.input}`, white thumb | The fill is the boundary |
-| Primary button | Fill `{colors.input}`, white label | No outline |
+| Switch, on | Track fill `{colors.input}`, thumb in `{colors.on-input}` | The fill is the boundary |
+| Primary button | Fill `{colors.input}`, label `{colors.on-input}` | No outline |
 | Secondary button | Fill `{colors.control-fill}`, label `{colors.ink}` | No outline |
 | Tag | Fill `{colors.input-wash}` or `{colors.output-wash}` with its semantic color as the label, or fill `{colors.control-fill}` with label `{colors.ink}` | No outline |
 | Segmented item | Track `{colors.control-fill}`. The selected item is `{colors.input-wash}` with label `{colors.input}`. Other items have label `{colors.ink}` | No outline |
 | Focus ring, every control | 2px `{colors.input}`, offset 2px | Same in every state |
+
+The table names the light tokens. In the dark group each one becomes its `-dark` twin, and the boundary must reach 3:1 on paper and on an overlay.
 
 The inside of a text input, an unchecked box, and an off switch is paper. Give it no fill of its own, so the edge mixes over paper as measured. An icon-only button has no text label. Its icon is the identifying information and must reach 3:1 on its background. Do not draw a gray outline around a button, a tag, a segmented item, or a well.
 
@@ -322,6 +472,7 @@ State the status, then the number, then the action. Keep labels short. No slogan
 - Use `{colors.output}` for output and secondary figures.
 - Draw the boundary of inputs, checkboxes, radios, and switches in `{colors.control-edge}`.
 - Use `{colors.sheet-solid}` for paper and overlays under 减少透明度 and under system high contrast.
+- Ship the light group and the dark group together. Follow the system appearance, and let an explicit choice by the user win.
 - Set numbers in `tabular-nums`.
 - On pointer press, scale to 0.98 for about 120ms on `transform` only. Skip that motion for keyboard activation and for `prefers-reduced-motion`.
 
@@ -331,14 +482,16 @@ State the status, then the number, then the action. Keep labels short. No slogan
 - Don't cover the window with one paper. Without the field showing, the material is a white page.
 - Don't nest paper, and don't put more than 6 blurred overlays in one viewport.
 - Don't draw a blob with a blur filter, and don't give a blob a new hex.
-- Don't use the 1px `rgba(255,255,255,0.70)` edge as a control boundary or as an opaque fence. On the field it is far below 3:1. The Accessibility table has the ratio.
+- Don't use the 1px `rgba(255,255,255,0.70)` edge as a control boundary or as an opaque fence. On the field it is far below 3:1. The Accessibility table has the ratio. The dark paper edge is not a control boundary either.
+- Don't make dark paper from white at a low alpha. Dark paper is `{colors.sheet-dark}`.
+- Don't put a `-dark` token on a light surface, or a light token on a dark one.
 - Don't outline a button, a tag, a segmented item, or a well in gray. A fill and a text label identify them.
 - Don't animate blur.
 - Don't use Inter, Plus Jakarta Sans, or DM Sans.
 - Don't set body text in a lighter tint of `{colors.input}` or `{colors.output}`. Under 4.5:1 on its well, it fails.
 - Don't apply negative letter-spacing to Chinese running text.
 - Don't add a second outer shadow, a neon glow, or a saturated neon gradient.
-- Don't put `{colors.muted}`, `{colors.input}`, or `{colors.output}` text on the field. The one exception is `{colors.muted}` in a colourway whose Accessibility table allows it.
+- Don't put `{colors.muted}`, `{colors.input}`, or `{colors.output}` text on the field. The one exception is `{colors.muted}` in a group whose contrast table allows it.
 - Don't put accent-colored text on the neutral well. `{colors.input}` and `{colors.output}` are measured on paper and on their own wash.
 - Don't turn this field gradient off as decoration, and don't paste it onto another DESIGN.md. Choosing this style means the gradient is the material.
 - Don't change one hex of the colourway by hand, and don't raise the chroma of a field end. Switch the whole colourway with `apply --force --palette`.
@@ -351,16 +504,18 @@ State the status, then the number, then the action. Keep labels short. No slogan
 | The stack has no backdrop blur | Unchanged | `{colors.sheet-solid}` |
 | `prefers-reduced-transparency: reduce`, or system high contrast | 减少透明度时的不透明回退: `{colors.sheet-solid}` | `{colors.sheet-solid}`, blur none |
 
+The dark group follows the same table with its `-dark` tokens.
+
 At a narrow width the papers stack in one column. Keep the gap between them and the margin at the window edge, so the field still shows.
 
 Pills stay pills. The focus ring stays 2px `{colors.input}`. Keyboard focus does not scale.
 
 ## Known Gaps
 
-- No dark theme. Every colourway is light.
+- No high-contrast palette. Under system high contrast, paper and overlays turn opaque and every color stays as it is.
 - No chart palette.
 - `{colors.ink}` and `{colors.muted}` do not tint with the colourway. On a warm field they read slightly cool.
-- Contrast ratios above are measured on the eight field backgrounds, on paper and the neutral well over them, on the two semantic wells, and on `#FFFFFF` for the opaque fallback. They are not measured on photographs, and not on content that shows through an overlay.
+- Contrast ratios above are measured on the eight field backgrounds of each group, on paper and the neutral well over them, on the two semantic wells, and on the opaque fallback: `#FFFFFF` in the light group, the paper color in the dark group. The dark group is also measured on overlays. They are not measured on photographs, not on content that shows through an overlay, and not on a well inside an overlay.
 - The neutral well is 0.04. At 0.05, `{colors.muted}` on the worst paper is 4.50:1 in some derived colourways, which leaves no margin.
 - Blob positions and sizes are a starting point for a desktop window. They are not tokens.
 - If Figtree is unavailable, fall back to the system sans-serif and keep `"PingFang SC", "Noto Sans SC"` after the Latin family.

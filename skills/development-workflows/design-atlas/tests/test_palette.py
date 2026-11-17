@@ -88,8 +88,9 @@ MINT_WORST = {
     "control-edge-sheet": 3.17,
     "sheet-field": 1.07,
 }
-# The field, the blobs and the two text accents are the dark column of the same table
-# and SkillPort's dark text accents; the washes are this entry's.
+# The field and the blobs are the dark column of the same table; the two accents are
+# SkillPort's dark text accents. The washes are this entry's: the lightness of SkillPort's
+# 12% accent fill over the paper colour (0.33), at the hue of each accent.
 MINT_DARK = {
     "field-start": "#0F1B1F",
     "field-end": "#18172B",
@@ -97,9 +98,9 @@ MINT_DARK = {
     "blob-end": "#2A2550",
     "blob-mid": "#142536",
     "input": "#5FD6A8",
-    "input-wash": "#1F362C",
+    "input-wash": "#243B31",
     "output": "#B3A8FF",
-    "output-wash": "#302D41",
+    "output-wash": "#353346",
 }
 # Worst background, dark column of the measured table of bahayonghang/my-ai-cli-toolkit#47.
 MINT_DARK_WORST = {
@@ -149,10 +150,10 @@ MINT_DARK_TABLE = {
     "ink-field-worst": 12.86,
     "muted-field-worst": 6.81,
     "control-edge-sheet": 3.24,
-    "input-wash": 7.19,
+    "input-wash": 6.69,
     "input-sheet-worst": 8.55,
     "input-solid": 8.60,
-    "output-wash": 6.32,
+    "output-wash": 5.81,
     "output-sheet-worst": 7.30,
     "output-solid": 7.34,
     "edge-field": 1.36,
@@ -534,7 +535,12 @@ class PresetDataTests(unittest.TestCase):
             for role in ("input-wash", "output-wash"):
                 L, C, H = palette.hex_to_oklch(dark[role])
                 self.assertLessEqual(C, 0.04, f"{name}.dark.{role}")
-                self.assertLessEqual(L, 0.32, f"{name}.dark.{role}")
+                self.assertLessEqual(L, 0.34, f"{name}.dark.{role}")
+                # A wash is a tint of its own accent, not of the paper.
+                accent = "input" if role == "input-wash" else "output"
+                self.assertLessEqual(
+                    palette.hue_distance(H, hues[accent]), 5, f"{name}.dark.{role}"
+                )
                 # A wash is a fill inside paper: lighter than the opaque paper colour.
                 self.assertGreater(
                     palette.luminance(dark[role]),
@@ -632,6 +638,39 @@ class PresetDataTests(unittest.TestCase):
             f'  control-edge: "rgba({r},{g},{b},{fixed["control-edge"]["alpha"]:.2f})"', head
         )
         self.assertIn(f'  blob-opacity: {fixed["blob-alpha"]:.2f}\n', head)
+
+    def test_template_dark_tokens_match_the_fixed_dark_values(self) -> None:
+        head = template()[: template().index("\n---\n", 4)]
+        fixed, dark = SPEC["fixed"], SPEC["fixed"]["dark"]
+
+        def rgba(layer: dict) -> str:
+            r, g, b = palette.hex_to_rgb(layer["color"])
+            return f"rgba({r},{g},{b},{layer['alpha']:.2f})"
+
+        self.assertIn(f'  sheet-dark: "{rgba(dark["sheet"])}"', head)
+        self.assertIn('  sheet-dark: "rgba(28,37,48,0.60)"', head)
+        self.assertIn(f'  overlay-dark: "{rgba(dark["overlay"])}"', head)
+        self.assertIn(f'  sheet-edge-dark: "{rgba(dark["sheet-edge"])}"', head)
+        self.assertIn(f'  control-edge-dark: "{rgba(dark["control-edge"])}"', head)
+        self.assertIn(f'  ink-dark: "{dark["ink"]}"', head)
+        self.assertIn(f'  muted-dark: "{dark["muted"]}"', head)
+        self.assertIn(
+            f'  well-dark: "{rgba({"color": dark["ink"], "alpha": fixed["well-alpha"]})}"', head
+        )
+        # The opaque fallback and the label on an input fill are the paper colour.
+        self.assertIn(
+            f'  sheet-solid-dark: "{rgba({"color": dark["sheet"]["color"], "alpha": 0.96})}"', head
+        )
+        self.assertIn(f'  on-input-dark: "{dark["sheet"]["color"]}"', head)
+        self.assertIn('  on-input: "#FFFFFF"', head)
+        self.assertIn(
+            f'  sheet-highlight-dark: "inset 0 1px 0 {rgba(dark["sheet-highlight"])}"', head
+        )
+        self.assertIn(
+            f'  overlay-highlight-dark: "inset 0 1px 0 {rgba(dark["overlay-highlight"])}"', head
+        )
+        for role in palette.ROLES:
+            self.assertIn(f'  {role}-dark: "{MINT_DARK[role]}"', head)
 
     def test_anchors_are_further_apart_than_the_match_window(self) -> None:
         anchors = sorted(p["anchor"] for p in SPEC["presets"].values())
@@ -1068,42 +1107,192 @@ class ChooseTests(unittest.TestCase):
             self.assertEqual(palette.choose(SPEC, **kwargs), palette.choose(SPEC, **kwargs))
 
 
+BLOCK_NAMES = ("colourway", "colourway-dark", "contrast", "contrast-dark")
+
+
+def marked(begin: str, body: str = "old", end: str | None = None) -> str:
+    return f"<!-- palette:begin {begin} -->\n{body}\n<!-- palette:end {begin if end is None else end} -->"
+
+
+def blocks_of(text: str) -> dict[str, str]:
+    """The palette blocks of a document by name, in document order."""
+    return {m.group("name"): m.group("body") for m in palette.BLOCK.finditer(text)}
+
+
+# The smallest template render() accepts: one default hex of each group and the four blocks.
+MINI = "light #E7F6F1, dark #0F1B1F\n" + "\n".join(marked(name) for name in BLOCK_NAMES) + "\n"
+
+
 class RenderTests(unittest.TestCase):
-    def check_document(self, text: str, colors: dict) -> None:
-        allowed = {*colors.values(), SPEC["fixed"]["ink"], SPEC["fixed"]["muted"], "#FFFFFF"}
+    def test_render_fills_a_light_and_a_dark_block_of_each_kind(self) -> None:
+        sky = palette.choose(SPEC, override="sky")
+        out = palette.render(MINI, sky, SPEC)
+        # Each default hex becomes the hex of the same role in the same group.
+        self.assertEqual(out.split("\n")[0], "light #E8F3FF, dark #121A22")
+        blocks = blocks_of(out)
+        self.assertEqual(list(blocks), list(BLOCK_NAMES))
+        self.assertNotIn("old", out)
+        self.assertEqual(
+            blocks["colourway"],
+            "Colourway: `sky` (天蓝 → 鼠尾草绿 / sky to sage).\n"
+            "\n"
+            "- Field: `#E8F3FF` to `#E5F3E7`.\n"
+            "- Blobs: `#D2E7FE`, `#CAE5CE`, `#D6EDEE`, each at opacity 0.70.\n"
+            "- Input: `#1F6CB0` on `#EBF5FF`.\n"
+            "- Output: `#317A45` on `#EBF8EC`.\n"
+            "- Other colourways: `mint`, `sky`, `apricot`, `slate`, or `hue:<0-359>`.",
+        )
+        self.assertEqual(
+            blocks["colourway-dark"],
+            "Dark group of `sky`.\n"
+            "\n"
+            "- Field: `#121A22` to `#0B1F10`.\n"
+            "- Blobs: `#1B2B3C`, `#053616`, `#06292B`, each at opacity 0.70.\n"
+            "- Input: `#82C0FF` on `#233242`.\n"
+            "- Output: `#7CD18F` on `#233527`.",
+        )
+        for name, theme, colors in (
+            ("contrast", "light", sky["colors"]), ("contrast-dark", "dark", sky["dark"]),
+        ):
+            rows = palette.gates(colors, SPEC["fixed"], theme)
+            lines = [line for line in blocks[name].split("\n") if line.startswith("| ")]
+            self.assertEqual(lines[0], "| 前景 | 背景 | 比值 | 门槛 | 用途 |", name)
+            self.assertEqual(len(lines) - 2, len(rows), name)
+            for line, row in zip(lines[2:], rows):
+                wanted = "只报告" if row["min"] is None else f"{row['min']:g}"
+                self.assertEqual(
+                    line,
+                    f"| {row['fg_label']} | {row['bg_label']} | {row['ratio']:.2f} | {wanted} "
+                    f"| {row['use']} |",
+                )
+        self.assertEqual(len([l for l in blocks["contrast"].split("\n") if l.startswith("| ")]), 21)
+        self.assertEqual(
+            len([l for l in blocks["contrast-dark"].split("\n") if l.startswith("| ")]), 26
+        )
+        # Rendering the result again with the same choice changes nothing.
+        self.assertEqual(palette.render(out, sky, SPEC), out)
+        derived = palette.render(MINI, palette.choose(SPEC, override="hue:18"), SPEC)
+        self.assertTrue(blocks_of(derived)["colourway-dark"].startswith("Dark group of `hue:18`.\n"))
+
+    def test_dark_contrast_block_leads_with_the_dark_numbers(self) -> None:
+        mint = palette.choose(SPEC, override="mint")
+        lead = palette.render(MINI, mint, SPEC)
+        lead = blocks_of(lead)["contrast-dark"].split("\n| 前景 ")[0]
+        self.assertEqual(
+            lead,
+            "In the dark group, inputs, checkboxes, radios, and switches draw their boundary in "
+            "`{colors.control-edge-dark}`. That edge is 3.24:1 on the worst paper and 3.22:1 on "
+            "the worst overlay; the non-text minimum is 3:1. The 2px focus ring is "
+            "`{colors.input-dark}` (`#5FD6A8`): 8.55:1 on the worst paper and 8.31:1 on the "
+            "worst overlay. The paper edge on the field start is 1.36:1, so it cannot be a "
+            "control boundary.\n"
+            "\n"
+            "`{colors.ink-dark}` may sit directly on the field: 12.86:1 on the worst blob. "
+            "`{colors.muted-dark}` on the field is 6.81:1 at worst, so 12px secondary text may "
+            "sit on the field in this colourway.\n",
+        )
+        # A blob light enough to take muted text under 4.5:1 turns the verdict around.
+        pale = {**mint, "dark": {**mint["dark"], "blob-mid": "#55606E"}}
+        self.assertIn(
+            "`{colors.muted-dark}` on the field is 3.98:1 at worst, below 4.5:1, so secondary "
+            "text stays on paper or a well in this colourway.",
+            palette.contrast_block(pale, SPEC, "dark"),
+        )
+
+    def test_block_names_are_lowercase_words_joined_by_single_hyphens(self) -> None:
+        def names(text: str) -> list[str]:
+            return [m.group("name") for m in palette.BLOCK.finditer(text)]
+
+        for good in ("colourway", "colourway-dark", "contrast-dark", "a-b-c"):
+            self.assertEqual(names(marked(good)), [good], good)
+        for bad in ("Colourway", "colourway_dark", "colourway2", "-dark", "dark-",
+                    "colourway--dark", "colourway dark", "colourway-Dark", ""):
+            self.assertEqual(names(marked(bad)), [], bad)
+        # The end marker must carry the whole name of the begin marker.
+        self.assertEqual(names(marked("colourway", end="colourway-dark")), [])
+        self.assertEqual(names(marked("colourway-dark", end="colourway")), [])
+        # A block ends at its own end marker, not at the one of a longer name.
+        both = marked("colourway", "one") + "\n" + marked("colourway-dark", "two")
+        self.assertEqual(blocks_of(both), {"colourway": "one", "colourway-dark": "two"})
+        nested = marked("colourway", marked("colourway-dark", "inner"))
+        self.assertEqual(names(nested), ["colourway"])
+
+    def test_render_needs_all_four_blocks_and_knows_no_other(self) -> None:
+        sky = palette.choose(SPEC, override="sky")
+        for name in BLOCK_NAMES:
+            broken = MINI.replace(f"<!-- palette:begin {name} -->", "<!-- gone -->")
+            with self.assertRaises(ValueError) as caught:
+                palette.render(broken, sky, SPEC)
+            self.assertEqual(str(caught.exception), f"template has no palette block {name}")
+        with self.assertRaises(ValueError) as caught:
+            palette.render(MINI + marked("colourway-darker") + "\n", sky, SPEC)
+        self.assertEqual(str(caught.exception), "unknown palette block 'colourway-darker'")
+        # A marker whose name is not well formed is not a block: it is left as written.
+        loose = MINI + marked("Colourway_2") + "\n"
+        self.assertTrue(palette.render(loose, sky, SPEC).endswith(marked("Colourway_2") + "\n"))
+
+    def check_document(self, text: str, colors: dict, dark: dict) -> None:
+        fixed = SPEC["fixed"]
+        allowed = {
+            *colors.values(), *dark.values(), fixed["ink"], fixed["muted"], "#FFFFFF",
+            fixed["dark"]["ink"], fixed["dark"]["muted"], fixed["dark"]["sheet"]["color"],
+            fixed["dark"]["overlay"]["color"],
+        }
         self.assertEqual(set(re.findall(r"#[0-9A-Fa-f]{6}\b", text)) - allowed, set())
         head = text[: text.index("\n---\n", 4)]
         for role in palette.ROLES:
             self.assertIn(f'  {role}: "{colors[role]}"', head)
+            self.assertIn(f'  {role}-dark: "{dark[role]}"', head)
         self.assertNotIn("canvas-mint", text)
         self.assertNotIn("canvas-lavender", text)
-        self.assertIn(
-            f"linear-gradient(160deg, {colors['field-start']}, {colors['field-end']})", text
-        )
-        # Every gate row is in the Accessibility table with the measured ratio.
-        table = text[text.index("<!-- palette:begin contrast -->") :]
-        table = table[: table.index("<!-- palette:end contrast -->")]
-        rows = palette.gates(colors, SPEC["fixed"])
-        lines = [line for line in table.split("\n") if line.startswith("| ")]
-        self.assertEqual(lines[0], "| 前景 | 背景 | 比值 | 门槛 | 用途 |")
-        self.assertEqual(len(lines) - 2, len(rows))
-        for line, row in zip(lines[2:], rows):
-            wanted = "只报告" if row["min"] is None else f"{row['min']:g}"
-            self.assertEqual(
-                line,
-                f"| {row['fg_label']} | {row['bg_label']} | {row['ratio']:.2f} | {wanted} "
-                f"| {row['use']} |",
+        for group in (colors, dark):
+            self.assertIn(
+                f"linear-gradient(160deg, {group['field-start']}, {group['field-end']})", text
             )
-        self.assertEqual(sum("| 只报告 |" in line for line in lines), len(REPORTED))
+            for role in palette.BLOBS:
+                self.assertIn(
+                    f"color-mix(in srgb, {group[role]} 70%, transparent), transparent 70%)", text
+                )
+        # Every gate row of each group is in its table with the measured ratio.
+        blocks = blocks_of(text)
+        self.assertEqual(list(blocks), ["colourway", "colourway-dark", "contrast", "contrast-dark"])
+        tables = {}
+        for name, theme, group in (("contrast", "light", colors), ("contrast-dark", "dark", dark)):
+            table = blocks[name]
+            rows = palette.gates(group, fixed, theme)
+            lines = [line for line in table.split("\n") if line.startswith("| ")]
+            self.assertEqual(lines[0], "| 前景 | 背景 | 比值 | 门槛 | 用途 |")
+            self.assertEqual(len(lines) - 2, len(rows))
+            for line, row in zip(lines[2:], rows):
+                wanted = "只报告" if row["min"] is None else f"{row['min']:g}"
+                self.assertEqual(
+                    line,
+                    f"| {row['fg_label']} | {row['bg_label']} | {row['ratio']:.2f} | {wanted} "
+                    f"| {row['use']} |",
+                )
+            self.assertEqual(sum("| 只报告 |" in line for line in lines), len(REPORTED))
+            tables[name] = (table, {row["id"]: row for row in rows})
         # The three blob tokens, the control boundary table, and the lead numbers.
         for role in palette.BLOBS:
             self.assertIn(f"`{{colors.{role}}}` (`{colors[role]}`)", text)
-            self.assertIn(f"color-mix(in srgb, {colors[role]} 70%, transparent), transparent 70%)", text)
-        by_id = {row["id"]: row for row in rows}
+        table, by_id = tables["contrast"]
         self.assertIn(f"that edge is {by_id['control-edge-sheet']['ratio']:.2f}:1", table)
         self.assertIn(f"on the field is {by_id['muted-field-worst']['ratio']:.2f}:1 at worst", table)
+        table, by_id = tables["contrast-dark"]
+        self.assertIn(
+            f"That edge is {by_id['control-edge-sheet']['ratio']:.2f}:1 on the worst paper and "
+            f"{by_id['control-edge-overlay']['ratio']:.2f}:1 on the worst overlay",
+            table,
+        )
+        self.assertIn(f"on the field is {by_id['muted-field-worst']['ratio']:.2f}:1 at worst", table)
+        # The token table in Dark Group names the dark values of this colourway.
+        section = text[text.index("## Dark Group") : text.index("## Typography")]
+        self.assertIn(f"| `{dark['field-start']}`, `{dark['field-end']}` |", section)
+        self.assertIn("| " + ", ".join(f"`{dark[role]}`" for role in palette.BLOBS) + " |", section)
+        self.assertIn(f"| `{dark['input']}`, `{dark['input-wash']}` |", section)
+        self.assertIn(f"| `{dark['output']}`, `{dark['output-wash']}` |", section)
         self.assertIn("### Control boundaries", text)
-        self.assertNotIn("\u2014", text)
+        self.assertNotIn("—", text)
         for line in text.split("\n"):
             self.assertEqual(line, line.rstrip())
 
@@ -1111,16 +1300,32 @@ class RenderTests(unittest.TestCase):
         text = template()
         mint = palette.choose(SPEC, override="mint")
         self.assertEqual(palette.render(text, mint, SPEC), text)
-        self.check_document(text, MINT)
-        for name in ("colourway", "contrast"):
+        self.check_document(text, MINT, MINT_DARK)
+        for name in BLOCK_NAMES:
             self.assertEqual(text.count(f"<!-- palette:begin {name} -->"), 1)
             self.assertEqual(text.count(f"<!-- palette:end {name} -->"), 1)
+        # Both groups of the colourway sit in the dial section, both tables under Accessibility.
+        dial = text[text.index("## Colourway") : text.index("## Colors")]
+        self.assertEqual(list(blocks_of(dial)), ["colourway", "colourway-dark"])
+        measured = text[text.index("## Accessibility") : text.index("## Writing Tone")]
+        self.assertEqual(list(blocks_of(measured)), ["contrast", "contrast-dark"])
+        self.assertLess(
+            measured.index("### Dark group contrast"),
+            measured.index("<!-- palette:begin contrast-dark -->"),
+        )
+        self.assertLess(
+            measured.index("<!-- palette:end contrast-dark -->"),
+            measured.index("### Control boundaries"),
+        )
 
-    def test_template_names_colours_only_inside_the_colourway_block(self) -> None:
+    def test_template_names_colours_only_inside_the_colourway_blocks(self) -> None:
         text = template()
-        start = text.index("<!-- palette:begin colourway -->")
-        end = text.index("<!-- palette:end colourway -->")
-        outside = (text[:start] + text[end:]).lower()
+        outside = text
+        for name in ("colourway", "colourway-dark"):
+            start = outside.index(f"<!-- palette:begin {name} -->")
+            end = outside.index(f"<!-- palette:end {name} -->")
+            outside = outside[:start] + outside[end:]
+        outside = outside.lower()
         for word in ("mint", "lavender", "green", "purple", "薄荷", "薰衣草", "绿", "紫"):
             self.assertNotIn(word, outside, word)
         self.assertNotIn("#1F8A62", text)
@@ -1132,22 +1337,35 @@ class RenderTests(unittest.TestCase):
         text = template()
         choices = [palette.choose(SPEC, override=name) for name in SPEC["presets"]]
         choices += [palette.choose(SPEC, override=f"hue:{hue}") for hue in range(0, 360, 15)]
+        default = {*MINT.values(), *MINT_DARK.values()}
         for choice in choices:
             out = palette.render(text, choice, SPEC)
-            self.check_document(out, choice["colors"])
+            self.check_document(out, choice["colors"], choice["dark"])
             self.assertIn(f"Colourway: `{choice['palette']}`", out)
-            if choice["colors"] != MINT:
-                for value in MINT.values():
-                    if value not in choice["colors"].values():
-                        self.assertNotIn(value, out, choice["palette"])
+            self.assertIn(f"Dark group of `{choice['palette']}`.", out)
+            chosen = {*choice["colors"].values(), *choice["dark"].values()}
+            for value in default - chosen:
+                self.assertNotIn(value, out, choice["palette"])
             # Rendering a rendered file again with the same choice changes nothing:
             # no default hex is left to swap, and the blocks come out the same.
             self.assertEqual(palette.render(out, choice, SPEC), out, choice["palette"])
 
-    def test_render_needs_both_blocks(self) -> None:
-        broken = template().replace("<!-- palette:begin contrast -->", "<!-- gone -->")
-        with self.assertRaises(ValueError):
-            palette.render(broken, palette.choose(SPEC, override="sky"), SPEC)
+    def test_no_colourway_reuses_a_default_hex_in_another_role(self) -> None:
+        # render() swaps by hex. A chosen value equal to the default hex of a different
+        # role would be swapped a second time when the same file is rendered again.
+        default = {**MINT, **{f"{role}-dark": value for role, value in MINT_DARK.items()}}
+        owner = {value: role for role, value in default.items()}
+        choices = [palette.choose(SPEC, override=name) for name in SPEC["presets"]]
+        choices += [palette.choose(SPEC, override=f"hue:{hue}") for hue in range(360)]
+        for choice in choices:
+            chosen = {
+                **choice["colors"],
+                **{f"{role}-dark": value for role, value in choice["dark"].items()},
+            }
+            for role, value in chosen.items():
+                self.assertEqual(
+                    owner.get(value, role), role, f"{choice['palette']} {role} {value}"
+                )
 
     def test_muted_on_the_field_verdict_follows_the_measured_ratio(self) -> None:
         choice = palette.choose(SPEC, override="mint")
@@ -1290,6 +1508,137 @@ class MaterialModelTests(unittest.TestCase):
     def test_comment_cannot_close_itself(self) -> None:
         choice = {**palette.choose(SPEC), "reason": "keywords a --> b"}
         self.assertEqual(palette.comment(choice).count("-->"), 1)
+
+
+class DarkGroupTests(unittest.TestCase):
+    """The entry states the dark group: its tokens, the rules that differ, and its recipe."""
+
+    def setUp(self) -> None:
+        self.text = template()
+        self.head = self.text[: self.text.index("\n---\n", 4)]
+        self.section = self.text[
+            self.text.index("## Dark Group") : self.text.index("## Typography")
+        ]
+        css = "\n".join(re.findall(r"```css\n(.*?)```", self.section, flags=re.S))
+        self.rules = css_rules(css)
+
+    def body(self, selector: str) -> str:
+        (found,) = [body for name, body in self.rules if name == selector]
+        return found
+
+    def test_section_follows_colors_and_overview_states_the_switch_rule(self) -> None:
+        order = [self.text.index(f"\n## {name}\n") for name in ("Colors", "Dark Group", "Typography")]
+        self.assertEqual(order, sorted(order))
+        self.assertEqual(self.text.count("\n## Dark Group\n"), 1)
+        # design-md-format.md section 4: a dark group states its switch rule in Overview.
+        overview = self.text[self.text.index("## Overview") : self.text.index("## Colourway")]
+        for needle in ("`-dark`", "system appearance", "explicit choice"):
+            self.assertIn(needle, overview)
+        for needle in ("`prefers-color-scheme: dark`", "An explicit choice by the user wins"):
+            self.assertIn(needle, self.section)
+
+    def test_every_dark_token_has_a_light_twin_and_is_named_in_the_section(self) -> None:
+        groups = {
+            "colors": self.head[self.head.index("\ncolors:\n") : self.head.index("\ntypography:\n")],
+            "elevation": self.head[self.head.index("\nelevation:\n") : self.head.index("\nmotion:\n")],
+        }
+        found = {
+            group: re.findall(r"^  ([a-z-]+)-dark: ", block, flags=re.M)
+            for group, block in groups.items()
+        }
+        self.assertEqual(len(found["colors"]), 19)
+        self.assertEqual(
+            found["elevation"],
+            ["sheet-highlight", "sheet-shadow", "overlay-highlight", "overlay-shadow"],
+        )
+        for group, block in groups.items():
+            self.assertEqual(len(found[group]), len(set(found[group])), group)
+            light = set(re.findall(r"^  ([a-z-]+): ", block, flags=re.M))
+            light = {name for name in light if not name.endswith("-dark")}
+            # Every token of the group has a dark twin, and no twin is an orphan.
+            self.assertEqual(set(found[group]), light, group)
+            for name in found[group]:
+                self.assertIn(f"`{{{group}.{name}-dark}}`", self.section, name)
+                self.assertIn(f"`{{{group}.{name}}}`", self.section, name)
+        # Typography, radii, spacing, material and motion are shared by both groups.
+        rest = self.head
+        for block in groups.values():
+            rest = rest.replace(block, "")
+        self.assertNotIn("-dark:", rest)
+        self.assertIn(
+            "Typography, radii, spacing, `material`, and motion have no dark twin", self.section
+        )
+
+    def test_dark_paper_is_a_dark_colour_not_white(self) -> None:
+        sheet = self.body(':root[data-theme="dark"] .sheet')
+        self.assertIn("background: rgba(28,37,48,0.60);", sheet)
+        self.assertIn("border-color: rgba(255,255,255,0.08);", sheet)
+        self.assertIn(
+            "box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), "
+            "0 12px 40px -16px rgba(0,0,0,0.45);",
+            sheet,
+        )
+        self.assertNotIn("backdrop-filter", sheet)
+        self.assertNotIn("255,255,255", sheet.split("background:")[1].split(";")[0])
+        self.assertIn("It is not white at a low alpha", self.section)
+        self.assertIn('  sheet-shadow-dark: "0 12px 40px -16px rgba(0,0,0,0.45)"', self.head)
+        self.assertIn('  overlay-shadow-dark: "0 24px 64px -24px rgba(0,0,0,0.60)"', self.head)
+
+    def test_dark_field_well_and_overlay_recipes(self) -> None:
+        field = self.body(':root[data-theme="dark"] .field')
+        layers = [layer.strip() for layer in field.split("background:")[1].split(",\n")]
+        self.assertEqual(len(layers), 4)
+        for layer in layers[:3]:
+            self.assertRegex(layer, r"^radial-gradient\(.*, transparent 70%\)$")
+        self.assertRegex(layers[3], r"^linear-gradient\(160deg, #0F1B1F, #18172B\);$")
+        self.assertNotIn("filter", field)
+        self.assertIn(
+            "background: rgba(231,237,243,0.04);", self.body(':root[data-theme="dark"] .well')
+        )
+        overlay = self.body(':root[data-theme="dark"] .overlay')
+        self.assertIn("background: rgba(30,40,52,0.84);", overlay)
+        self.assertIn("border-color: rgba(255,255,255,0.08);", overlay)
+        self.assertIn(
+            "box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), "
+            "0 24px 64px -24px rgba(0,0,0,0.60);",
+            overlay,
+        )
+        # Without blur, and when the user asks for less transparency, the dark fallback
+        # is the paper colour at 0.96, for paper and overlays alike.
+        no_blur = self.body(
+            '@supports not (backdrop-filter: blur(1px)) :root[data-theme="dark"] .overlay'
+        )
+        self.assertIn("background: rgba(28,37,48,0.96);", no_blur)
+        reduced = "@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) "
+        solid = self.body(
+            f'{reduced}:root[data-theme="dark"] .sheet, :root[data-theme="dark"] .overlay'
+        )
+        self.assertIn("background: rgba(28,37,48,0.96);", solid)
+        # The dark recipe adds no blur of its own: which overlay may blur is a light rule.
+        self.assertFalse([name for name, body in self.rules if "backdrop-filter" in body])
+        self.assertIn(
+            "Under 减少透明度 and under system high contrast, paper and overlays use "
+            "`{colors.sheet-solid-dark}`",
+            self.section,
+        )
+
+    def test_rules_and_known_gaps(self) -> None:
+        # The limits the palette tests hold every dark group to are the ones stated here.
+        self.assertIn("OKLCH L at most 0.23, C at most 0.045", self.section)
+        self.assertIn("a blob stays at C 0.08 or less", self.section)
+        self.assertIn("An overlay is lighter than paper", self.section)
+        self.assertIn("`{colors.on-input-dark}`", self.section)
+        donts = self.text[self.text.index("### Don't") : self.text.index("## Responsive Behavior")]
+        self.assertIn("- Don't make dark paper from white at a low alpha", donts)
+        dos = self.text[self.text.index("### Do\n") : self.text.index("### Don't")]
+        self.assertIn("- Ship the light group and the dark group together.", dos)
+        gaps = self.text[self.text.index("## Known Gaps") :]
+        self.assertNotIn("No dark theme", self.text)
+        self.assertNotIn("Every colourway is light", self.text)
+        self.assertIn("- No high-contrast palette.", gaps)
+        # The control table names the label token, so its dark twin applies to it.
+        table = self.text[self.text.index("### Control boundaries") :]
+        self.assertIn("| Primary button | Fill `{colors.input}`, label `{colors.on-input}` |", table)
 
 
 class ReferencePageTests(unittest.TestCase):

@@ -45,9 +45,9 @@
           "blob-end": "#2A2550",
           "blob-mid": "#142536",
           "input": "#5FD6A8",
-          "input-wash": "#1F362C",
+          "input-wash": "#243B31",
           "output": "#B3A8FF",
-          "output-wash": "#302D41"
+          "output-wash": "#353346"
         },
         "keywords_en": ["healthcare", "medical", "clinic", "wellness", "climate", "esg", "sustainability", "carbon"],
         "keywords_zh": ["医疗", "诊所", "养老", "环保", "低碳", "碳排放", "可持续"]

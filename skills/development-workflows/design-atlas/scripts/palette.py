@@ -618,12 +618,20 @@ def choose(
 
 # --- rendering ---------------------------------------------------------------
 
-BLOCK = re.compile(r"(<!-- palette:begin (?P<name>[a-z]+) -->\n)(?P<body>.*?)(\n<!-- palette:end (?P=name) -->)", re.S)
+# A block name is lowercase words joined by single hyphens: colourway, colourway-dark.
+BLOCK = re.compile(
+    r"(<!-- palette:begin (?P<name>[a-z]+(?:-[a-z]+)*) -->\n)(?P<body>.*?)(\n<!-- palette:end (?P=name) -->)",
+    re.S,
+)
 
 
-def colourway_block(choice: dict, spec: dict) -> str:
-    c = choice["colors"]
-    if choice["kind"] == "preset":
+def colourway_block(choice: dict, spec: dict, theme: str = "light") -> str:
+    """The nine hex values of one group of the chosen colourway."""
+    dark = theme == "dark"
+    c = choice["dark"] if dark else choice["colors"]
+    if dark:
+        head = f"Dark group of `{choice['palette']}`."
+    elif choice["kind"] == "preset":
         label = spec["presets"][choice["palette"]]["label"]
         head = f"Colourway: `{choice['palette']}` ({label['zh']} / {label['en']})."
     else:
@@ -631,25 +639,28 @@ def colourway_block(choice: dict, spec: dict) -> str:
             f"Colourway: `{choice['palette']}` (derived: input hue {choice['hue']}, "
             f"output hue {choice['output_hue']})."
         )
-    presets = ", ".join(f"`{name}`" for name in spec["presets"])
     blobs = ", ".join(f"`{c[role]}`" for role in BLOBS)
-    return "\n".join(
-        [
-            head,
-            "",
-            f"- Field: `{c['field-start']}` to `{c['field-end']}`.",
-            f"- Blobs: {blobs}, each at opacity {float(spec['fixed']['blob-alpha']):.2f}.",
-            f"- Input: `{c['input']}` on `{c['input-wash']}`.",
-            f"- Output: `{c['output']}` on `{c['output-wash']}`.",
-            f"- Other colourways: {presets}, or `hue:<0-359>`.",
-        ]
-    )
+    lines = [
+        head,
+        "",
+        f"- Field: `{c['field-start']}` to `{c['field-end']}`.",
+        f"- Blobs: {blobs}, each at opacity {float(spec['fixed']['blob-alpha']):.2f}.",
+        f"- Input: `{c['input']}` on `{c['input-wash']}`.",
+        f"- Output: `{c['output']}` on `{c['output-wash']}`.",
+    ]
+    if not dark:
+        presets = ", ".join(f"`{name}`" for name in spec["presets"])
+        lines.append(f"- Other colourways: {presets}, or `hue:<0-359>`.")
+    return "\n".join(lines)
 
 
-def contrast_block(choice: dict, spec: dict) -> str:
-    rows = gates(choice["colors"], spec["fixed"])
+def contrast_block(choice: dict, spec: dict, theme: str = "light") -> str:
+    """The lead numbers and the measured table of one group."""
+    dark = theme == "dark"
+    colors = choice["dark"] if dark else choice["colors"]
+    rows = gates(colors, spec["fixed"], theme)
     by_id = {row["id"]: row for row in rows}
-    ring, ring_paper = by_id["input-white"], by_id["input-sheet-worst"]
+    ring_paper = by_id["input-sheet-worst"]
     edge, control = by_id["edge-field"], by_id["control-edge-sheet"]
     ink_field, muted_field = by_id["ink-field-worst"], by_id["muted-field-worst"]
     if muted_field["ratio"] >= TEXT_MIN:
@@ -658,16 +669,34 @@ def contrast_block(choice: dict, spec: dict) -> str:
         muted_verdict = (
             f"below {TEXT_MIN:g}:1, so secondary text stays on paper or a well in this colourway."
         )
+    if dark:
+        ring_overlay, control_overlay = by_id["input-overlay-worst"], by_id["control-edge-overlay"]
+        lead = (
+            "In the dark group, inputs, checkboxes, radios, and switches draw their boundary in "
+            f"`{{colors.control-edge-dark}}`. That edge is {control['ratio']:.2f}:1 on the worst "
+            f"paper and {control_overlay['ratio']:.2f}:1 on the worst overlay; the non-text "
+            f"minimum is {EDGE_MIN:g}:1. The 2px focus ring is `{{colors.input-dark}}` "
+            f"(`{colors['input']}`): {ring_paper['ratio']:.2f}:1 on the worst paper and "
+            f"{ring_overlay['ratio']:.2f}:1 on the worst overlay. The paper edge on the field "
+            f"start is {edge['ratio']:.2f}:1, so it cannot be a control boundary."
+        )
+        ink_token, muted_token = "{colors.ink-dark}", "{colors.muted-dark}"
+    else:
+        ring = by_id["input-white"]
+        lead = (
+            "Inputs, checkboxes, radios, and switches draw their boundary in `{colors.control-edge}`. "
+            f"On the worst paper that edge is {control['ratio']:.2f}:1; the non-text minimum is "
+            f"{EDGE_MIN:g}:1. The 2px focus ring is `{{colors.input}}` (`{colors['input']}`): "
+            f"{ring['ratio']:.2f}:1 on white and {ring_paper['ratio']:.2f}:1 on the worst paper. "
+            f"The white paper edge on the field start is {edge['ratio']:.2f}:1, so it cannot be a "
+            "control boundary."
+        )
+        ink_token, muted_token = "{colors.ink}", "{colors.muted}"
     lines = [
-        "Inputs, checkboxes, radios, and switches draw their boundary in `{colors.control-edge}`. "
-        f"On the worst paper that edge is {control['ratio']:.2f}:1; the non-text minimum is "
-        f"{EDGE_MIN:g}:1. The 2px focus ring is `{{colors.input}}` (`{choice['colors']['input']}`): "
-        f"{ring['ratio']:.2f}:1 on white and {ring_paper['ratio']:.2f}:1 on the worst paper. "
-        f"The white paper edge on the field start is {edge['ratio']:.2f}:1, so it cannot be a "
-        "control boundary.",
+        lead,
         "",
-        f"`{{colors.ink}}` may sit directly on the field: {ink_field['ratio']:.2f}:1 on the worst "
-        f"blob. `{{colors.muted}}` on the field is {muted_field['ratio']:.2f}:1 at worst, "
+        f"`{ink_token}` may sit directly on the field: {ink_field['ratio']:.2f}:1 on the worst "
+        f"blob. `{muted_token}` on the field is {muted_field['ratio']:.2f}:1 at worst, "
         f"{muted_verdict}",
         "",
         "| 前景 | 背景 | 比值 | 门槛 | 用途 |",
@@ -682,12 +711,20 @@ def contrast_block(choice: dict, spec: dict) -> str:
 
 
 def render(template: str, choice: dict, spec: dict) -> str:
-    """Swap the default colourway hex values and regenerate the palette blocks."""
-    default = _preset(spec["default"], spec)
-    mapping = {default[role]: choice["colors"][role] for role in ROLES}
+    """Swap the default hex values of both groups and regenerate the four palette blocks."""
+    default = spec["default"]
+    mapping = {
+        **{_preset(default, spec)[role]: choice["colors"][role] for role in ROLES},
+        **{_preset_dark(default, spec)[role]: choice["dark"][role] for role in ROLES},
+    }
     pattern = re.compile("|".join(re.escape(h) for h in mapping))
     text = pattern.sub(lambda m: mapping[m.group(0)], template)
-    blocks = {"colourway": colourway_block(choice, spec), "contrast": contrast_block(choice, spec)}
+    blocks = {
+        "colourway": colourway_block(choice, spec),
+        "colourway-dark": colourway_block(choice, spec, "dark"),
+        "contrast": contrast_block(choice, spec),
+        "contrast-dark": contrast_block(choice, spec, "dark"),
+    }
     seen: set[str] = set()
 
     def fill(m: re.Match) -> str:
@@ -698,7 +735,7 @@ def render(template: str, choice: dict, spec: dict) -> str:
         return f"{m.group(1)}{blocks[name]}{m.group(4)}"
 
     text = BLOCK.sub(fill, text)
-    missing = sorted(set(blocks) - seen)
+    missing = [name for name in blocks if name not in seen]
     if missing:
         raise ValueError(f"template has no palette block {', '.join(missing)}")
     return text
